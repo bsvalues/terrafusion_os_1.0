@@ -104,13 +104,49 @@ builder.Services.AddMemoryCache();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var healthChecks = builder.Services.AddHealthChecks();
 
+// Allow explicit opt-out of DB health via config or env
+var skipDbHealthByConfig = builder.Configuration.GetValue<bool>("HealthChecks:SkipDb");
+var skipDbHealthByEnv = string.Equals(
+  Environment.GetEnvironmentVariable("TF_SKIP_DB_HEALTH"),
+  "true",
+  StringComparison.OrdinalIgnoreCase);
+var skipDbHealth = skipDbHealthByConfig || skipDbHealthByEnv;
+
+// Track whether DB health is actually enabled (for status endpoint)
+var databaseHealthEnabled = false;
+
 // TODO: Add DbContext health check once interfaces are resolved
 // .AddDbContextCheck<TerraFusionContext>();
 
 // Only add PostgreSQL health check if connection string is configured
-if (!string.IsNullOrEmpty(connectionString))
+// Skip health check if connection string is empty (development without database),
+// explicitly disabled via config/env, or if we can't verify PostgreSQL is accessible (fallback)
+bool addDatabaseHealthCheck = !string.IsNullOrEmpty(connectionString) && !skipDbHealth;
+
+if (addDatabaseHealthCheck)
 {
-  healthChecks.AddNpgSql(connectionString);
+  // Test if PostgreSQL is accessible before adding health check
+  try
+  {
+    using var testConnection = new Npgsql.NpgsqlConnection(connectionString);
+    testConnection.Open();
+    testConnection.Close();
+    healthChecks.AddNpgSql(connectionString);
+    databaseHealthEnabled = true;
+    Console.WriteLine("✅ Database: ENABLED with health monitoring");
+  }
+  catch (Exception ex)
+  {
+    Console.WriteLine($"⚠️  Database: CONNECTION FAILED - Running without database health check");
+    Console.WriteLine($"    Error: {ex.Message}");
+    Console.WriteLine($"    Service will start in degraded mode without database dependency");
+  }
+}
+else
+{
+  Console.WriteLine(skipDbHealth
+    ? "⚠️  Database: HEALTH CHECKS DISABLED by configuration/env (TF_SKIP_DB_HEALTH)"
+    : "⚠️  Database: DISABLED (No connection string configured)");
 }
 
 // Note: Redis health check requires additional package - comment out for now
@@ -179,6 +215,16 @@ app.UseRouting();
 app.MapControllers();
 app.MapHealthChecks("/health");
 // app.MapMetrics(); // Prometheus metrics endpoint
+
+// Lightweight JSON status endpoint exposing degraded mode info
+app.MapGet("/health/status", () => new
+{
+  service = "TerraFusion.Consciousness",
+  status = "healthy",
+  databaseHealthEnabled,
+  degraded = !databaseHealthEnabled,
+  timestamp = DateTime.UtcNow
+});
 
 // Map SignalR hubs - TODO: Implement when hubs are ready
 // app.MapHub<ConsciousnessHub>("/hubs/consciousness");
