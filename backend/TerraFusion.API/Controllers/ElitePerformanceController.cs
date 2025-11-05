@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.API.Services;
 using TerraFusion.Abstractions.Interfaces;
+using ElitePerformanceMetrics = TerraFusion.API.Services.ElitePerformanceMetrics;
 
 namespace TerraFusion.API.Controllers;
 
@@ -66,7 +67,8 @@ public class ElitePerformanceController : ControllerBase
         {
             _logger.LogError(ex, "Error getting elite performance metrics");
             await _auditLogger.LogAsync("ELITE_PERFORMANCE_ERROR", $"Performance metrics error: {ex.Message}", false);
-            return StatusCode(500, new {
+            return StatusCode(500, new
+            {
                 error = "Failed to get elite performance metrics",
                 details = ex.Message,
                 timestamp = DateTime.UtcNow,
@@ -117,7 +119,8 @@ public class ElitePerformanceController : ControllerBase
         {
             _logger.LogError(ex, "Error enabling Elite Mode");
             await _auditLogger.LogAsync("ELITE_MODE_ERROR", $"Elite Mode activation error: {ex.Message}", false);
-            return StatusCode(500, new {
+            return StatusCode(500, new
+            {
                 error = "Failed to enable Elite Mode",
                 details = ex.Message,
                 timestamp = DateTime.UtcNow,
@@ -169,7 +172,8 @@ public class ElitePerformanceController : ControllerBase
         {
             _logger.LogError(ex, "Error optimizing AI coordination");
             await _auditLogger.LogAsync("AI_COORDINATION_ERROR", $"AI coordination optimization error: {ex.Message}", false);
-            return StatusCode(500, new {
+            return StatusCode(500, new
+            {
                 error = "Failed to optimize AI coordination",
                 details = ex.Message,
                 timestamp = DateTime.UtcNow,
@@ -224,7 +228,8 @@ public class ElitePerformanceController : ControllerBase
         {
             _logger.LogError(ex, "Error applying quantum optimization to module: {ModuleName}", moduleName);
             await _auditLogger.LogAsync("QUANTUM_OPTIMIZE_ERROR", $"Quantum optimization error for {moduleName}: {ex.Message}", false);
-            return StatusCode(500, new {
+            return StatusCode(500, new
+            {
                 error = "Failed to apply quantum optimization",
                 details = ex.Message,
                 timestamp = DateTime.UtcNow,
@@ -290,7 +295,8 @@ public class ElitePerformanceController : ControllerBase
         {
             _logger.LogError(ex, "Error getting government-grade health status");
             await _auditLogger.LogAsync("GOVERNMENT_HEALTH_ERROR", $"Government health check error: {ex.Message}", false);
-            return StatusCode(500, new {
+            return StatusCode(500, new
+            {
                 error = "Failed to get government-grade health status",
                 details = ex.Message,
                 timestamp = DateTime.UtcNow,

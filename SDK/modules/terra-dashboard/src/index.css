@@ -9,11 +9,11 @@
 
 /* === QUANTUM THEME VARIABLES === */
 :root {
-  --terra-cyan: #00FFFF;
-  --terra-midnight: #0A0E1A;
-  --terra-blue: #0080FF;
-  --terra-green: #00FF88;
-  --terra-slate: #1E293B;
+  --terra-cyan: #00ffff;
+  --terra-midnight: #0a0e1a;
+  --terra-blue: #0080ff;
+  --terra-green: #00ff88;
+  --terra-slate: #1e293b;
   --quantum-factor: 949;
   --golden-ratio: 1.618;
 }
@@ -23,12 +23,12 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-slate-950 text-slate-100;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+      'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: auto;
@@ -70,7 +70,7 @@
 
   /* Terra-cyan gradient */
   .terra-gradient {
-    background: linear-gradient(135deg, #00FFFF 0%, #00FF88 50%, #0080FF 100%);
+    background: linear-gradient(135deg, #00ffff 0%, #00ff88 50%, #0080ff 100%);
   }
 
   /* Glassmorphism effect */
@@ -86,7 +86,8 @@
   }
 
   @keyframes quantum-pulse {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 1;
       transform: scale(1);
     }
@@ -98,9 +99,10 @@
 
   /* Shimmer effect for loading states */
   .shimmer {
-    background: linear-gradient(90deg, 
-      rgba(255, 255, 255, 0.1) 0%, 
-      rgba(0, 255, 255, 0.3) 50%, 
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(0, 255, 255, 0.3) 50%,
       rgba(255, 255, 255, 0.1) 100%
     );
     background-size: 200% 100%;
@@ -129,11 +131,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, 
-      transparent, 
-      rgba(0, 255, 255, 0.4), 
-      transparent
-    );
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.4), transparent);
     animation: scan 3s ease-in-out infinite;
   }
 
@@ -266,7 +264,7 @@
 /* === HIGH CONTRAST MODE === */
 @media (prefers-contrast: high) {
   :root {
-    --terra-cyan: #00FFFF;
+    --terra-cyan: #00ffff;
     --terra-midnight: #000000;
     --terra-slate: #333333;
   }

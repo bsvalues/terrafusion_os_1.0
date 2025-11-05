@@ -13,22 +13,22 @@ replicaCount: 3
 image:
   repository: ghcr.io/terrafusion/terrafusion-gateway
   pullPolicy: IfNotPresent
-  tag: "1.0.0"
+  tag: '1.0.0'
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: ''
+fullnameOverride: ''
 
 serviceAccount:
   create: true
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/TerraFusionGatewayRole
-  name: ""
+  name: ''
 
 podAnnotations:
-  prometheus.io/scrape: "true"
-  prometheus.io/port: "3002"
-  prometheus.io/path: "/metrics"
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '3002'
+  prometheus.io/path: '/metrics'
 
 podSecurityContext:
   runAsNonRoot: true
@@ -52,21 +52,21 @@ service:
   targetPort: http
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-type: nlb
-    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    service.beta.kubernetes.io/aws-load-balancer-internal: 'true'
 
 ingress:
   enabled: true
   className: nginx
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/rate-limit: "1000"
-    nginx.ingress.kubernetes.io/rate-limit-burst: "2000"
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://terrafusion.gov,https://*.terrafusion.gov"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
-    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: '1000'
+    nginx.ingress.kubernetes.io/rate-limit-burst: '2000'
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
+    nginx.ingress.kubernetes.io/cors-allow-origin: 'https://terrafusion.gov,https://*.terrafusion.gov'
+    nginx.ingress.kubernetes.io/cors-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS'
+    nginx.ingress.kubernetes.io/cors-allow-headers: 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
   hosts:
     - host: gateway.terrafusion.gov
       paths:
@@ -134,26 +134,26 @@ ocelot:
     requestIdKey: TerraFusion-Request-Id
     rateLimitOptions:
       disableRateLimitHeaders: false
-      quotaExceededMessage: "Rate limit exceeded. Please retry after {0} seconds."
+      quotaExceededMessage: 'Rate limit exceeded. Please retry after {0} seconds.'
       httpStatusCode: 429
     qosOptions:
       exceptionsAllowedBeforeBreaking: 3
-      durationOfBreak: 30000  # 30 seconds
-      timeoutValue: 30000      # 30 seconds
+      durationOfBreak: 30000 # 30 seconds
+      timeoutValue: 30000 # 30 seconds
     loadBalancerOptions:
       type: RoundRobin
-      key: ""
+      key: ''
       expiry: 0
-  
+
   # Backend Routes
   routes:
     # TerraFusion API (port 5000)
-    - downstreamPathTemplate: "/api/{everything}"
+    - downstreamPathTemplate: '/api/{everything}'
       downstreamScheme: http
       downstreamHostAndPorts:
         - host: terrafusion-api
           port: 5000
-      upstreamPathTemplate: "/api/{everything}"
+      upstreamPathTemplate: '/api/{everything}'
       upstreamHttpMethod:
         - GET
         - POST
@@ -172,14 +172,14 @@ ocelot:
         exceptionsAllowedBeforeBreaking: 3
         durationOfBreak: 30000
         timeoutValue: 30000
-    
+
     # TerraFusion Consciousness Engine (port 3004)
-    - downstreamPathTemplate: "/consciousness/{everything}"
+    - downstreamPathTemplate: '/consciousness/{everything}'
       downstreamScheme: http
       downstreamHostAndPorts:
         - host: terrafusion-consciousness
           port: 3004
-      upstreamPathTemplate: "/consciousness/{everything}"
+      upstreamPathTemplate: '/consciousness/{everything}'
       upstreamHttpMethod:
         - GET
         - POST
@@ -193,15 +193,15 @@ ocelot:
       qosOptions:
         exceptionsAllowedBeforeBreaking: 5
         durationOfBreak: 60000
-        timeoutValue: 60000  # AI operations may take longer
-    
+        timeoutValue: 60000 # AI operations may take longer
+
     # TerraFusion Operations (port 5003)
-    - downstreamPathTemplate: "/operations/{everything}"
+    - downstreamPathTemplate: '/operations/{everything}'
       downstreamScheme: http
       downstreamHostAndPorts:
         - host: terrafusion-operations
           port: 5003
-      upstreamPathTemplate: "/operations/{everything}"
+      upstreamPathTemplate: '/operations/{everything}'
       upstreamHttpMethod:
         - GET
         - POST
@@ -216,7 +216,7 @@ ocelot:
       qosOptions:
         exceptionsAllowedBeforeBreaking: 3
         durationOfBreak: 30000
-        timeoutValue: 45000  # County sync operations
+        timeoutValue: 45000 # County sync operations
 
 # Health checks
 healthChecks:
@@ -261,7 +261,7 @@ cors:
   allowedOrigins:
     - https://terrafusion.gov
     - https://*.terrafusion.gov
-    - https://localhost:5173  # Vite dev server
+    - https://localhost:5173 # Vite dev server
   allowedMethods:
     - GET
     - POST
@@ -299,13 +299,13 @@ rateLimiting:
 circuitBreaker:
   enabled: true
   exceptionsAllowedBeforeBreaking: 3
-  durationOfBreak: 30000  # milliseconds
-  timeoutValue: 30000     # milliseconds
+  durationOfBreak: 30000 # milliseconds
+  timeoutValue: 30000 # milliseconds
 
 # Load Balancing
 loadBalancer:
-  type: RoundRobin  # Options: RoundRobin, LeastConnection, NoLoadBalancer
-  
+  type: RoundRobin # Options: RoundRobin, LeastConnection, NoLoadBalancer
+
 # Compliance
 compliance:
   fisma:

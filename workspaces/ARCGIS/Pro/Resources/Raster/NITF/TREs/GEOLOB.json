@@ -1,8 +1,6 @@
 {
   "TRE": "GEOLOB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix P: GEOSDE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix P: GEOSDE"],
   "Name": "Local Geographic (Lat/Long) Coordinate System",
   "Description": "The Local Geographic (Lat/Long) Coordinate System (GEOLOB) TRE provides the description of the link between the local coordinate system (rows and columns) and the absolute geographic coordinate system (longitude and latitude) defined by GEOPS for rectified data (rows and columns are aligned with the coordinate system axis).",
   "Size": 48,
@@ -13,9 +11,7 @@
       "Size": 9,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "pixels"
-      ],
+      "Units": ["pixels"],
       "Values": [
         {
           "Type": "Range",
@@ -30,9 +26,7 @@
       "Size": 9,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "pixels"
-      ],
+      "Units": ["pixels"],
       "Values": [
         {
           "Type": "Range",
@@ -47,9 +41,7 @@
       "Size": 15,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Double"
@@ -62,9 +54,7 @@
       "Size": 15,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Double"

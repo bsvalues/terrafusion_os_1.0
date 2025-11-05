@@ -4,7 +4,7 @@ metadata:
   name: postgres
   namespace: terrafusionpro
 spec:
-  serviceName: "postgres"
+  serviceName: 'postgres'
   replicas: 1
   selector:
     matchLabels:
@@ -15,40 +15,40 @@ spec:
         app: postgres
     spec:
       containers:
-      - name: postgres
-        image: postgres:14-alpine
-        ports:
-        - containerPort: 5432
-          name: postgres
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: terrafusionpro-secrets
-              key: postgres-password
-        - name: POSTGRES_USER
-          value: "terrafusionpro"
-        - name: POSTGRES_DB
-          value: "terrafusionpro"
-        volumeMounts:
-        - name: postgres-data
-          mountPath: /var/lib/postgresql/data
-        resources:
-          limits:
-            cpu: 1000m
-            memory: 1Gi
-          requests:
-            cpu: 500m
-            memory: 512Mi
+        - name: postgres
+          image: postgres:14-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusionpro-secrets
+                  key: postgres-password
+            - name: POSTGRES_USER
+              value: 'terrafusionpro'
+            - name: POSTGRES_DB
+              value: 'terrafusionpro'
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+            requests:
+              cpu: 500m
+              memory: 512Mi
   volumeClaimTemplates:
-  - metadata:
-      name: postgres-data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "standard"
-      resources:
-        requests:
-          storage: 10Gi
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: 'standard'
+        resources:
+          requests:
+            storage: 10Gi
 ---
 apiVersion: v1
 kind: Service
@@ -59,9 +59,9 @@ metadata:
     app: postgres
 spec:
   ports:
-  - port: 5432
-    targetPort: 5432
-    name: postgres
+    - port: 5432
+      targetPort: 5432
+      name: postgres
   selector:
     app: postgres
   clusterIP: None

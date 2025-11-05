@@ -16,124 +16,124 @@
   .sidebar-item {
     @apply flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200;
   }
-  
+
   .sidebar-item-active {
     @apply text-white bg-gray-900;
   }
-  
+
   .sidebar-item-inactive {
     @apply text-gray-300 hover:text-white hover:bg-gray-700;
   }
-  
+
   /* Card styling */
   .card {
     @apply bg-white overflow-hidden shadow rounded-lg divide-y divide-gray-200;
   }
-  
+
   .card-header {
     @apply px-6 py-5 bg-white;
   }
-  
+
   .card-body {
     @apply px-6 py-5;
   }
-  
+
   .card-footer {
     @apply px-6 py-4 bg-gray-50;
   }
-  
+
   /* Stat cards */
   .stat-card {
     @apply bg-white overflow-hidden shadow rounded-lg p-5;
   }
-  
+
   .stat-title {
     @apply text-sm font-medium text-gray-500 truncate;
   }
-  
+
   .stat-value {
     @apply mt-1 text-3xl font-semibold text-gray-900;
   }
-  
+
   .stat-desc {
     @apply mt-1 text-sm text-gray-500;
   }
-  
+
   /* Status indicators */
   .status-dot {
     @apply h-2.5 w-2.5 rounded-full;
   }
-  
+
   .status-success {
     @apply bg-green-500;
   }
-  
+
   .status-danger {
     @apply bg-red-500;
   }
-  
+
   .status-warning {
     @apply bg-yellow-500;
   }
-  
+
   .status-info {
     @apply bg-blue-500;
   }
-  
+
   /* Badges */
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
-  
+
   .badge-success {
     @apply bg-green-100 text-green-800;
   }
-  
+
   .badge-danger {
     @apply bg-red-100 text-red-800;
   }
-  
+
   .badge-warning {
     @apply bg-yellow-100 text-yellow-800;
   }
-  
+
   .badge-info {
     @apply bg-blue-100 text-blue-800;
   }
-  
+
   /* Buttons */
   .btn {
     @apply inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
-  
+
   .btn-primary {
     @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500;
   }
-  
+
   .btn-secondary {
     @apply text-gray-700 bg-white border-gray-300 hover:bg-gray-50 focus:ring-blue-500;
   }
-  
+
   .btn-success {
     @apply text-white bg-green-600 hover:bg-green-700 focus:ring-green-500;
   }
-  
+
   .btn-danger {
     @apply text-white bg-red-600 hover:bg-red-700 focus:ring-red-500;
   }
-  
+
   .btn-warning {
     @apply text-white bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500;
   }
-  
+
   .btn-info {
     @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500;
   }
-  
+
   .btn-sm {
     @apply px-3 py-1.5 text-xs;
   }
-  
+
   .btn-lg {
     @apply px-5 py-2.5 text-base;
   }

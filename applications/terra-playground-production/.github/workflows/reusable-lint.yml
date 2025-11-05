@@ -6,7 +6,7 @@ on:
       paths:
         required: true
         type: string
-        description: "Glob patterns for files to lint"
+        description: 'Glob patterns for files to lint'
 
 jobs:
   lint:

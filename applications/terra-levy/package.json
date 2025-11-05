@@ -2,7 +2,14 @@
   "name": "@terrafusion/terra-levy-elite",
   "version": "1.0.0",
   "description": "PhD-Level Quantum AI Power User Platform for Government Analytics",
-  "keywords": ["quantum", "ai", "analytics", "government", "phd", "research"],
+  "keywords": [
+    "quantum",
+    "ai",
+    "analytics",
+    "government",
+    "phd",
+    "research"
+  ],
   "author": "TerraFusion OS Engineering Team",
   "license": "PROPRIETARY",
   "private": true,

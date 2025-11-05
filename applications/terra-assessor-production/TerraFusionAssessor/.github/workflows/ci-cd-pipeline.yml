@@ -2,11 +2,11 @@ name: TerraFusionPro-1 Advanced CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop, feature/* ]
+    branches: [main, develop, feature/*]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   release:
-    types: [ published ]
+    types: [published]
 
 env:
   REGISTRY: ghcr.io
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -26,7 +26,7 @@ jobs:
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
-      
+
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v2
         with:
@@ -37,25 +37,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run ESLint
         run: npm run lint
-      
+
       - name: Run TypeScript check
         run: npx tsc --noEmit
-      
+
       - name: Run unit tests
         run: npm test -- --coverage --watchAll=false
-      
+
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
 
@@ -68,17 +68,17 @@ jobs:
       image-tag: ${{ steps.meta.outputs.tags }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Log in to Container Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -89,7 +89,7 @@ jobs:
             type=ref,event=pr
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
-      
+
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v5
@@ -109,17 +109,17 @@ jobs:
     environment: staging
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Deploy to staging
         run: |
           echo "Deploying to staging environment..."
           echo "Image: ${{ needs.build-and-push.outputs.image-tag }}"
-      
+
       - name: Run integration tests
         run: |
           echo "Running integration tests against staging..."
           npm run test:integration
-      
+
       - name: Performance benchmark
         run: |
           echo "Running performance benchmarks..."
@@ -142,17 +142,17 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Deploy canary (10% traffic)
         run: |
           echo "Deploying canary with 10% traffic..."
           echo "Image: ${{ needs.build-and-push.outputs.image-tag }}"
-      
+
       - name: Monitor canary metrics
         run: |
           echo "Monitoring canary deployment for 10 minutes..."
           sleep 600
-      
+
       - name: Validate canary health
         run: |
           echo "Validating canary health metrics..."
@@ -166,11 +166,11 @@ jobs:
       - name: Deploy to full production
         run: |
           echo "Promoting canary to full production..."
-      
+
       - name: Post-deployment verification
         run: |
           echo "Running post-deployment health checks..."
-      
+
       - name: Notify team
         run: |
           echo "Notifying team of successful deployment..."
@@ -184,7 +184,7 @@ jobs:
       - name: Execute rollback
         run: |
           echo "Executing automatic rollback..."
-      
+
       - name: Notify incident response team
         run: |
           echo "Notifying incident response team..."

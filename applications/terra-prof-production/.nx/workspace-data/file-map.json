@@ -53,9 +53,7 @@
         {
           "file": "packages/web-client/package.json",
           "hash": "11815133182936716046",
-          "deps": [
-            "npm:nodemon"
-          ]
+          "deps": ["npm:nodemon"]
         },
         {
           "file": "packages/web-client/public/favicon.ico",
@@ -94,10 +92,7 @@
         {
           "file": "packages/shared/package.json",
           "hash": "16008582795503294225",
-          "deps": [
-            "npm:drizzle-orm",
-            "npm:pg"
-          ]
+          "deps": ["npm:drizzle-orm", "npm:pg"]
         },
         {
           "file": "packages/shared/schema/index.js",
@@ -124,11 +119,7 @@
         {
           "file": "services/form-service/package.json",
           "hash": "6560364213261189490",
-          "deps": [
-            "npm:cors",
-            "npm:express",
-            "npm:helmet"
-          ]
+          "deps": ["npm:cors", "npm:express", "npm:helmet"]
         }
       ],
       "@terrafusionpro/property-service": [
@@ -149,11 +140,7 @@
         {
           "file": "services/report-service/package.json",
           "hash": "5129919185989139906",
-          "deps": [
-            "npm:cors",
-            "npm:express",
-            "npm:helmet"
-          ]
+          "deps": ["npm:cors", "npm:express", "npm:helmet"]
         }
       ],
       "@terrafusionpro/api": [
@@ -164,9 +151,7 @@
         {
           "file": "packages/api/package.json",
           "hash": "5200940145707562144",
-          "deps": [
-            "npm:jsonwebtoken"
-          ]
+          "deps": ["npm:jsonwebtoken"]
         }
       ],
       "analysis-service": [
@@ -177,11 +162,7 @@
         {
           "file": "services/analysis-service/package.json",
           "hash": "16207687854915999730",
-          "deps": [
-            "npm:cors",
-            "npm:express",
-            "npm:helmet"
-          ]
+          "deps": ["npm:cors", "npm:express", "npm:helmet"]
         }
       ],
       "@terrafusionpro/user-service": [

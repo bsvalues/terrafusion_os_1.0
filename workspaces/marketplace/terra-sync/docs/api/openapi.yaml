@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/terra-sync
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/terra-sync
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/terra-sync
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/terra-sync
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/terra-sync
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/terra-sync
+    description: Development Environment
 paths:
   /health:
     get:
       tags:
-      - terra-sync
+        - terra-sync
       summary: Health check
       description: Health check - Terra Sync operations APIs
       operationId: get__health
       security:
-      - OAuth2:
-        - terra-sync:read
+        - OAuth2:
+            - terra-sync:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /data:
     get:
       tags:
-      - terra-sync
+        - terra-sync
       summary: Data retrieval
       description: Data retrieval - Terra Sync operations APIs
       operationId: get__data
       security:
-      - OAuth2:
-        - terra-sync:read
+        - OAuth2:
+            - terra-sync:read
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /operations:
     post:
       tags:
-      - terra-sync
+        - terra-sync
       summary: Operation execution
       description: Operation execution - Terra Sync operations APIs
       operationId: post__operations
       security:
-      - OAuth2:
-        - terra-sync:write
+        - OAuth2:
+            - terra-sync:write
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /status:
     get:
       tags:
-      - terra-sync
+        - terra-sync
       summary: Service status
       description: Service status - Terra Sync operations APIs
       operationId: get__status
       security:
-      - OAuth2:
-        - terra-sync:read
+        - OAuth2:
+            - terra-sync:read
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -206,12 +206,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - terra-sync:read
-- ApiKey: []
+  - OAuth2:
+      - terra-sync:read
+  - ApiKey: []
 tags:
-- name: terra-sync
-  description: Terra Sync operations
-  externalDocs:
-    description: Find out more about terra-sync
-    url: https://docs.terrafusion.gov/marketplace/terra-sync
+  - name: terra-sync
+    description: Terra Sync operations
+    externalDocs:
+      description: Find out more about terra-sync
+      url: https://docs.terrafusion.gov/marketplace/terra-sync

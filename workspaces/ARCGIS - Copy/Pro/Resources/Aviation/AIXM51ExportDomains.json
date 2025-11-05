@@ -187,7 +187,7 @@
   },
   "adhpgroundservice": {
     "adhpgroundservice.fuelsupply_code": {
-        "aixm:category": [
+      "aixm:category": [
         {
           "aixm_ancestor_name": "aixm:fuel",
           "domain": {
@@ -1523,7 +1523,7 @@
         }
       ]
     },
-	"adhpsurfaceelement.towingavailable_code": {
+    "adhpsurfaceelement.towingavailable_code": {
       "aixm:towingavailability": [
         {
           "aixm_ancestor_name": "*",
@@ -1535,7 +1535,7 @@
         }
       ]
     },
-	"adhpsurfaceelement.dockingavailable_code": {
+    "adhpsurfaceelement.dockingavailable_code": {
       "aixm:dockingavailability": [
         {
           "aixm_ancestor_name": "*",
@@ -1547,7 +1547,7 @@
         }
       ]
     },
-	"adhpsurfaceelement.gndpwravailable_code": {
+    "adhpsurfaceelement.gndpwravailable_code": {
       "aixm:groundpoweravailability": [
         {
           "aixm_ancestor_name": "*",

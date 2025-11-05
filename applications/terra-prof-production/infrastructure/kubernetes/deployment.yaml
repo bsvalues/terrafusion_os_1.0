@@ -29,34 +29,34 @@ spec:
         component: frontend
     spec:
       containers:
-      - name: web-client
-        image: ${REGISTRY_URL}/terrafusion/web-client:${IMAGE_TAG}
-        ports:
-        - containerPort: 5000
-        env:
-        - name: PORT
-          value: "5000"
-        - name: API_GATEWAY_URL
-          value: "http://api-gateway:5002"
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 5000
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 5000
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          limits:
-            cpu: "0.5"
-            memory: "512Mi"
-          requests:
-            cpu: "0.2"
-            memory: "256Mi"
+        - name: web-client
+          image: ${REGISTRY_URL}/terrafusion/web-client:${IMAGE_TAG}
+          ports:
+            - containerPort: 5000
+          env:
+            - name: PORT
+              value: '5000'
+            - name: API_GATEWAY_URL
+              value: 'http://api-gateway:5002'
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            limits:
+              cpu: '0.5'
+              memory: '512Mi'
+            requests:
+              cpu: '0.2'
+              memory: '256Mi'
 
 ---
 # API Gateway Deployment
@@ -80,43 +80,43 @@ spec:
         component: backend
     spec:
       containers:
-      - name: api-gateway
-        image: ${REGISTRY_URL}/terrafusion/api-gateway:${IMAGE_TAG}
-        ports:
-        - containerPort: 5002
-        env:
-        - name: PORT
-          value: "5002"
-        - name: USER_SERVICE_URL
-          value: "http://user-service:5004"
-        - name: PROPERTY_SERVICE_URL
-          value: "http://property-service:5003"
-        - name: FORM_SERVICE_URL
-          value: "http://form-service:5005"
-        - name: ANALYSIS_SERVICE_URL
-          value: "http://analysis-service:5006"
-        - name: REPORT_SERVICE_URL
-          value: "http://report-service:5007"
-        # Add other integrated app URLs as needed
-        readinessProbe:
-          httpGet:
-            path: /api/health
-            port: 5002
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: 5002
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          limits:
-            cpu: "0.5"
-            memory: "512Mi"
-          requests:
-            cpu: "0.2"
-            memory: "256Mi"
+        - name: api-gateway
+          image: ${REGISTRY_URL}/terrafusion/api-gateway:${IMAGE_TAG}
+          ports:
+            - containerPort: 5002
+          env:
+            - name: PORT
+              value: '5002'
+            - name: USER_SERVICE_URL
+              value: 'http://user-service:5004'
+            - name: PROPERTY_SERVICE_URL
+              value: 'http://property-service:5003'
+            - name: FORM_SERVICE_URL
+              value: 'http://form-service:5005'
+            - name: ANALYSIS_SERVICE_URL
+              value: 'http://analysis-service:5006'
+            - name: REPORT_SERVICE_URL
+              value: 'http://report-service:5007'
+          # Add other integrated app URLs as needed
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 5002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 5002
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            limits:
+              cpu: '0.5'
+              memory: '512Mi'
+            requests:
+              cpu: '0.2'
+              memory: '256Mi'
 
 ---
 # User Service Deployment
@@ -140,37 +140,37 @@ spec:
         component: backend
     spec:
       containers:
-      - name: user-service
-        image: ${REGISTRY_URL}/terrafusion/user-service:${IMAGE_TAG}
-        ports:
-        - containerPort: 5004
-        env:
-        - name: PORT
-          value: "5004"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-db
-              key: database-url
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 5004
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 5004
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          limits:
-            cpu: "0.5"
-            memory: "512Mi"
-          requests:
-            cpu: "0.2"
-            memory: "256Mi"
+        - name: user-service
+          image: ${REGISTRY_URL}/terrafusion/user-service:${IMAGE_TAG}
+          ports:
+            - containerPort: 5004
+          env:
+            - name: PORT
+              value: '5004'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-db
+                  key: database-url
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5004
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5004
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            limits:
+              cpu: '0.5'
+              memory: '512Mi'
+            requests:
+              cpu: '0.2'
+              memory: '256Mi'
 
 ---
 # Property Service Deployment
@@ -194,37 +194,37 @@ spec:
         component: backend
     spec:
       containers:
-      - name: property-service
-        image: ${REGISTRY_URL}/terrafusion/property-service:${IMAGE_TAG}
-        ports:
-        - containerPort: 5003
-        env:
-        - name: PORT
-          value: "5003"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-db
-              key: database-url
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 5003
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 5003
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          limits:
-            cpu: "0.5"
-            memory: "512Mi"
-          requests:
-            cpu: "0.2"
-            memory: "256Mi"
+        - name: property-service
+          image: ${REGISTRY_URL}/terrafusion/property-service:${IMAGE_TAG}
+          ports:
+            - containerPort: 5003
+          env:
+            - name: PORT
+              value: '5003'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-db
+                  key: database-url
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5003
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5003
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            limits:
+              cpu: '0.5'
+              memory: '512Mi'
+            requests:
+              cpu: '0.2'
+              memory: '256Mi'
 
 ---
 # Form Service Deployment
@@ -248,37 +248,37 @@ spec:
         component: backend
     spec:
       containers:
-      - name: form-service
-        image: ${REGISTRY_URL}/terrafusion/form-service:${IMAGE_TAG}
-        ports:
-        - containerPort: 5005
-        env:
-        - name: PORT
-          value: "5005"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-db
-              key: database-url
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 5005
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 5005
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          limits:
-            cpu: "0.5"
-            memory: "512Mi"
-          requests:
-            cpu: "0.2"
-            memory: "256Mi"
+        - name: form-service
+          image: ${REGISTRY_URL}/terrafusion/form-service:${IMAGE_TAG}
+          ports:
+            - containerPort: 5005
+          env:
+            - name: PORT
+              value: '5005'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-db
+                  key: database-url
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            limits:
+              cpu: '0.5'
+              memory: '512Mi'
+            requests:
+              cpu: '0.2'
+              memory: '256Mi'
 
 ---
 # Analysis Service Deployment
@@ -302,37 +302,37 @@ spec:
         component: backend
     spec:
       containers:
-      - name: analysis-service
-        image: ${REGISTRY_URL}/terrafusion/analysis-service:${IMAGE_TAG}
-        ports:
-        - containerPort: 5006
-        env:
-        - name: PORT
-          value: "5006"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-db
-              key: database-url
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 5006
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 5006
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          limits:
-            cpu: "0.5"
-            memory: "512Mi"
-          requests:
-            cpu: "0.2"
-            memory: "256Mi"
+        - name: analysis-service
+          image: ${REGISTRY_URL}/terrafusion/analysis-service:${IMAGE_TAG}
+          ports:
+            - containerPort: 5006
+          env:
+            - name: PORT
+              value: '5006'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-db
+                  key: database-url
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5006
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5006
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            limits:
+              cpu: '0.5'
+              memory: '512Mi'
+            requests:
+              cpu: '0.2'
+              memory: '256Mi'
 
 ---
 # Report Service Deployment
@@ -356,37 +356,37 @@ spec:
         component: backend
     spec:
       containers:
-      - name: report-service
-        image: ${REGISTRY_URL}/terrafusion/report-service:${IMAGE_TAG}
-        ports:
-        - containerPort: 5007
-        env:
-        - name: PORT
-          value: "5007"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-db
-              key: database-url
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 5007
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 5007
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          limits:
-            cpu: "0.5"
-            memory: "512Mi"
-          requests:
-            cpu: "0.2"
-            memory: "256Mi"
+        - name: report-service
+          image: ${REGISTRY_URL}/terrafusion/report-service:${IMAGE_TAG}
+          ports:
+            - containerPort: 5007
+          env:
+            - name: PORT
+              value: '5007'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-db
+                  key: database-url
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5007
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5007
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            limits:
+              cpu: '0.5'
+              memory: '512Mi'
+            requests:
+              cpu: '0.2'
+              memory: '256Mi'
 
 ---
 # Apollo Federation Gateway Deployment
@@ -410,35 +410,35 @@ spec:
         component: backend
     spec:
       containers:
-      - name: apollo-gateway
-        image: ${REGISTRY_URL}/terrafusion/apollo-gateway:${IMAGE_TAG}
-        ports:
-        - containerPort: 4000
-        - containerPort: 4001
-        env:
-        - name: PORT
-          value: "4000"
-        - name: HEALTH_PORT
-          value: "4001"
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 4001
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 4001
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          limits:
-            cpu: "0.5"
-            memory: "512Mi"
-          requests:
-            cpu: "0.2"
-            memory: "256Mi"
+        - name: apollo-gateway
+          image: ${REGISTRY_URL}/terrafusion/apollo-gateway:${IMAGE_TAG}
+          ports:
+            - containerPort: 4000
+            - containerPort: 4001
+          env:
+            - name: PORT
+              value: '4000'
+            - name: HEALTH_PORT
+              value: '4001'
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4001
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            limits:
+              cpu: '0.5'
+              memory: '512Mi'
+            requests:
+              cpu: '0.2'
+              memory: '256Mi'
 
 ---
 # Services
@@ -453,8 +453,8 @@ spec:
   selector:
     app: web-client
   ports:
-  - port: 5000
-    targetPort: 5000
+    - port: 5000
+      targetPort: 5000
   type: ClusterIP
 
 ---
@@ -468,8 +468,8 @@ spec:
   selector:
     app: api-gateway
   ports:
-  - port: 5002
-    targetPort: 5002
+    - port: 5002
+      targetPort: 5002
   type: ClusterIP
 
 ---
@@ -483,8 +483,8 @@ spec:
   selector:
     app: user-service
   ports:
-  - port: 5004
-    targetPort: 5004
+    - port: 5004
+      targetPort: 5004
   type: ClusterIP
 
 ---
@@ -498,8 +498,8 @@ spec:
   selector:
     app: property-service
   ports:
-  - port: 5003
-    targetPort: 5003
+    - port: 5003
+      targetPort: 5003
   type: ClusterIP
 
 ---
@@ -513,8 +513,8 @@ spec:
   selector:
     app: form-service
   ports:
-  - port: 5005
-    targetPort: 5005
+    - port: 5005
+      targetPort: 5005
   type: ClusterIP
 
 ---
@@ -528,8 +528,8 @@ spec:
   selector:
     app: analysis-service
   ports:
-  - port: 5006
-    targetPort: 5006
+    - port: 5006
+      targetPort: 5006
   type: ClusterIP
 
 ---
@@ -543,8 +543,8 @@ spec:
   selector:
     app: report-service
   ports:
-  - port: 5007
-    targetPort: 5007
+    - port: 5007
+      targetPort: 5007
   type: ClusterIP
 
 ---
@@ -558,12 +558,12 @@ spec:
   selector:
     app: apollo-gateway
   ports:
-  - name: graphql
-    port: 4000
-    targetPort: 4000
-  - name: health
-    port: 4001
-    targetPort: 4001
+    - name: graphql
+      port: 4000
+      targetPort: 4000
+    - name: health
+      port: 4001
+      targetPort: 4001
   type: ClusterIP
 
 ---
@@ -574,47 +574,47 @@ metadata:
   name: terrafusion-ingress
   namespace: terrafusion-core
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
 spec:
   tls:
-  - hosts:
-    - app.terrafusion.io
-    - api.terrafusion.io
-    - graphql.terrafusion.io
-    secretName: terrafusion-tls
+    - hosts:
+        - app.terrafusion.io
+        - api.terrafusion.io
+        - graphql.terrafusion.io
+      secretName: terrafusion-tls
   rules:
-  - host: app.terrafusion.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: web-client
-            port:
-              number: 5000
-  - host: api.terrafusion.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: api-gateway
-            port:
-              number: 5002
-  - host: graphql.terrafusion.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: apollo-gateway
-            port:
-              number: 4000
+    - host: app.terrafusion.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-client
+                port:
+                  number: 5000
+    - host: api.terrafusion.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 5002
+    - host: graphql.terrafusion.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: apollo-gateway
+                port:
+                  number: 4000
 
 ---
 # Database Secret
@@ -626,7 +626,7 @@ metadata:
 type: Opaque
 data:
   # Replace these with actual base64-encoded values in production
-  database-url: cG9zdGdyZXNxbDovL3Bvc3RncmVzOnBhc3N3b3JkQHBvc3RncmVzLXNlcnZpY2U6NTQzMi90ZXJyYWZ1c2lvbg==  # postgresql://postgres:password@postgres-service:5432/terrafusion
+  database-url: cG9zdGdyZXNxbDovL3Bvc3RncmVzOnBhc3N3b3JkQHBvc3RncmVzLXNlcnZpY2U6NTQzMi90ZXJyYWZ1c2lvbg== # postgresql://postgres:password@postgres-service:5432/terrafusion
 
 ---
 # Postgres Service (for development and staging environments)
@@ -639,8 +639,8 @@ spec:
   selector:
     app: postgres
   ports:
-  - port: 5432
-    targetPort: 5432
+    - port: 5432
+      targetPort: 5432
   type: ClusterIP
 
 ---
@@ -665,31 +665,31 @@ spec:
         component: database
     spec:
       containers:
-      - name: postgres
-        image: postgres:14
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_USER
-          value: "postgres"
-        - name: POSTGRES_PASSWORD
-          value: "password"  # Use a secret in production
-        - name: POSTGRES_DB
-          value: "terrafusion"
-        volumeMounts:
-        - name: postgres-data
-          mountPath: /var/lib/postgresql/data
-        resources:
-          limits:
-            cpu: "1"
-            memory: "1Gi"
-          requests:
-            cpu: "0.5"
-            memory: "512Mi"
+        - name: postgres
+          image: postgres:14
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: 'postgres'
+            - name: POSTGRES_PASSWORD
+              value: 'password' # Use a secret in production
+            - name: POSTGRES_DB
+              value: 'terrafusion'
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            limits:
+              cpu: '1'
+              memory: '1Gi'
+            requests:
+              cpu: '0.5'
+              memory: '512Mi'
       volumes:
-      - name: postgres-data
-        persistentVolumeClaim:
-          claimName: postgres-pvc
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
 
 ---
 # Persistent Volume Claim for Postgres

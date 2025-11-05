@@ -1,373 +1,375 @@
 {
-	"TRE": "SENSRA",
-	"Source": [
-		"STDI-0002-1 v2021.1, Appendix E: ASDE"
-	],
-	"Name": "EO-IR Sensor Parameters",
-	"Description": "The SENSRA TRE provides information about the sensor's geospatial position, attitude, dynamics, and other parameters needed for computing accurate and precise geolocations from the imagery.",
-	"Size": 132,
-	"Fields": {
-		"REF_ROW" : {
-			"Name": "Reference Row",
-			"Description": "The data in this extension was collected at REF_ROW of the imaging operation. This field identifies the point at which the data fo this extension was valid during extended imaging operations.",
-			"Size": 8,
-			"Format": "BCS-N",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "00000000",
-					"Max": "99999999"
-				}
-			]
-		},
-		"REF_COL" : {
-			"Name": "Reference Column",
-			"Description": "The data in this extension was collected at REF_COL of the imaging operation. This field identifies the point at which the data of this extension was valid during extended imaging operations.",
-			"Size": 8,
-			"Format": "BCS-N",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "00000000",
-					"Max": "99999999"
-				}
-			]
-		},
-		"SENSOR_MODEL" : {
-			"Name": "Sensor Model Name",
-			"Description": "This field identifies which specific sensor produced the image. See \"FieldRegistry\" SENSRA SENSOR_MODEL, as defined in the main body of STDI-0002 Volume 1, paragraph 3.2 for values added through registration.",
-			"Size": 6,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"SENSOR_MOUNT" : {
-			"Name": "Sensor Mounting Pitch Angle",
-			"Description": "This field ontains the angle in degrees between the longitudinal centerline of the platform and the sensor scan axix. Normally this is only applicable to push broom sensors.",
-			"Size": 3,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": ["degrees"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "-45",
-					"Max": "+45"
-				}
-			]
-		},
-		"SENSOR_LOC" : {
-			"Name": "Sensor Location",
-			"Description": "The earth coordinate of the sensor location ma be expressed in either degrees-minutes-seconds or in decimal degrees. See section E.2.1 for further detail on expressing coordinates.",
-			"Size": 21,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["ddmmss.ssXdddmmss.ssY", "+/- dd.dddddd +/-ddd.dddddd", "BCS Spaces"]
-				}
-			]
-		},
-		"SENSOR_ALT_SOURCE" : {
-			"Name": "Sensor Altitude Source",
-			"Description": "This field identifies the source for the value in SENSOR_ALT (and associated reference level). B = Barometric Altimeter (MSL), G = Global Positioning System (WGS-84 Ellipsoid), M = Manual Entry (undetermined), R = Radar Alimeter (AGL). See \"FieldRegistry\" SENSRA SENSOR_ALT_SOURCE, as defined in the main body of STDI-0002 Volume 1, paragraph 3.2 for values added through registration.",
-			"Size": 1,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["B", "G", "M", "R"]
-				}
-			]
-		},
-		"SENSOR_ALT" : {
-			"Name": "Sensor Altitude",
-			"Description": "This field contains the altitude above reference level specified by SENSOR_ALT_SOURCE. This field is measured in feet or meters, as specified by SENSOR_ALT_UNIT.",
-			"Size": 6,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": ["feet", "meters"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "-010000",
-					"Max": "+99000"
-				}
-			]
-		},
-		"SENSOR_ALT_UNIT" : {
-			"Name": "Unit of Sensor Altitude",
-			"Description": "This field applies to both SENSOR_ALT and SENSOR_AGL, and may be null if both altitudes are null. f = feet and m = meters.",
-			"Size": 1,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["f", "m"]
-				}
-			]
-		},
-		"SENSOR_AGL" : {
-			"Name": "Sensor Radar Altitude",
-			"Description": "This field contains the altitude above ground level (AGL), measured in feet or meters, as specified by SENSOR_ALT_UNIT. This field is filled with spaces when not available or outside equipment operating range.",
-			"Size": 5,
-			"Format": "BCS-N",
-			"Type": "<R>",
-			"Units": ["feet", "meters"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "00010",
-					"Max": "99000"
-				}
-			]
-		},
-		"SENSOR_PITCH" : {
-			"Name": "Sensor Pitch Angle",
-			"Description": "This field contains the sensor pitch angle. An indeterminacy occurs when the sensor optical axis is parallel to the platform pitch axis, in which case the field is set to +00.000.",
-			"Size": 7,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": ["degrees"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "-180.00",
-					"Max": "-100.00"
-				},
-				{
-					"Type": "Range",
-					"Min": "-99.999",
-					"Max": "+99.999"
-				},
-				{
-					"Type": "Range",
-					"Min": "100.000",
-					"Max": "180.000"
-				}
-			]
-		},
-		"SENSOR_ROLL" : {
-			"Name": "Sensor Roll Angle",
-			"Description": "This field contains the sensor roll angle. An indeterminacy occurs when the sensor optical axis is parallel to the platform roll axis, in which case the field is set to +000.000.",
-			"Size": 8,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": ["degrees"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "-180.000",
-					"Max": "180.000"
-				}
-			]
-		},
-		"SENSOR_YAW" : {
-			"Name": "Sensor Yaw Angle",
-			"Description": "This field contains the sensor yaw angle. An indeterminacy occurs when the sensor opitcal axis is parallel to the platform yaw axix, in which case the field is set to +000.000.",
-			"Size": 8,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": ["degrees"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "-180.000",
-					"Max": "180.000"
-				}
-			]
-		},
-		"PLATFORM_PITCH" : {
-			"Name": "Platform Pitch",
-			"Description": "This field contains the platform pitch. For more information, see Appendix Z: SENSRB.",
-			"Size": 7,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": ["degrees"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "-90.000",
-					"Max": "+90.000"
-				}
-			]
-		},
-		"PLATFORM_ROLL" : {
-			"Name": "Platform Roll",
-			"Description": "This field contains platform roll. For more information, see Appendix Z: SENSRB.",
-			"Size": 8,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": ["degrees"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "-180.000",
-					"Max": "180.000"
-				}
-			]
-		},
-		"PLATFORM_HDG" : {
-			"Name": "Platform Heading",
-			"Description": "This field contains platform heading. For more information, see Appendix Z: SENSRB. An indeterminacy occurs when PLATFORM_PITCH is -90.000 or +90.000, in which case this field is 000.0.",
-			"Size": 5,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": ["degrees"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "000.0",
-					"Max": "359.9"
-				}
-			]
-		},
-		"GROUND_SPD_SOURCE" : {
-			"Name": "Ground Speed Source",
-			"Description": "This field contains the ground speed source. R = Doppler Radar, N = Navigation System, G = Global Positioning System, and M = Manual Entry. A space (0x20) = unknown.",
-			"Size": 1,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["R", "N", "G", "M"]
-				}
-			]
-		},
-		"GROUND_SPD" : {
-			"Name": "Ground Speed",
-			"Description": "This field contains the ground speed as reported by GROUND_SPD_SOURCE at the time of imagery collection.",
-			"Size": 6,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "0000.0",
-					"Max": "9999.9"
-				}
-			]
-		},
-		"GROUND_SPD_UNIT" : {
-			"Name": "Unit of Ground Speed",
-			"Description": "This field contains the unit of GROUND_SPD, and may be null if GROUND_SPD is null. k = knots, f = feet/sec, and m = meters/sec. See \"FieldRegistry\" SENSRA SENSOR_GROUND_SPD_UNIT, as defined in the main body of STDI-0002 Volume 1, paragraph 3.2 for values added through registration.",
-			"Size": 1,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["k", "f", "m"]
-				}
-			]
-		},
-		"GROUND_TRACK" : {
-			"Name": "Ground Track",
-			"Description": "This field contains the angle from north to the horizontal projection of the platform path (positive from north to east).",
-			"Size": 5,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": ["degrees"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "000.0",
-					"Max": "359.9"
-				}
-			]
-		},
-		"VERT_VEL" : {
-			"Name": "Vertical Velocity",
-			"Description": "This field contains the vertical velocity, measured in either feet/min or meters/min, as specified by VERT_VEL_UNIT.",
-			"Size": 5,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": ["feet/minute", "meters/minute"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "-9999",
-					"Max": "+9999"
-				}
-			]
-		},
-		"VERT_VEL_UNIT" : {
-			"Name": "Unit of Vertical Velocity",
-			"Description": "This field conains the unit of vertical velocity and may be null only if VERT_VEL is null. f = feet/minute and m = meters/minute.",
-			"Size": 1,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["f", "m"]
-				}
-			]
-		},
-		"SWATH_FRAMES" : {
-			"Name": "Number of Frames per Swath",
-			"Description": "This field contains the number of frames per swath. A swath is a continuous strip of frames swept out by the scanning motion of certain dynamic sensors. Platform dynamics may cause the number of frames to vary from one swath to another.",
-			"Size": 4,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "0001",
-					"Max": "9999"
-				}
-			]
-		},
-		"N_SWATHS" : {
-			"Name": "Number of Swaths",
-			"Description": "This field contains the number of swaths in this TRE.",
-			"Size": 4,
-			"Format": "BCS-N",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "0001",
-					"Max": "9999"
-				}
-			]
-		},
-		"SPOT_NUM" : {
-			"Name": "Spot Number",
-			"Description": "This field contains the spot number in point targets mode.",
-			"Size": 3,
-			"Format": "BCS-N",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "001",
-					"Max": "999"
-				}
-			]
-		}
-	}
+  "TRE": "SENSRA",
+  "Source": ["STDI-0002-1 v2021.1, Appendix E: ASDE"],
+  "Name": "EO-IR Sensor Parameters",
+  "Description": "The SENSRA TRE provides information about the sensor's geospatial position, attitude, dynamics, and other parameters needed for computing accurate and precise geolocations from the imagery.",
+  "Size": 132,
+  "Fields": {
+    "REF_ROW": {
+      "Name": "Reference Row",
+      "Description": "The data in this extension was collected at REF_ROW of the imaging operation. This field identifies the point at which the data fo this extension was valid during extended imaging operations.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "00000000",
+          "Max": "99999999"
+        }
+      ]
+    },
+    "REF_COL": {
+      "Name": "Reference Column",
+      "Description": "The data in this extension was collected at REF_COL of the imaging operation. This field identifies the point at which the data of this extension was valid during extended imaging operations.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "00000000",
+          "Max": "99999999"
+        }
+      ]
+    },
+    "SENSOR_MODEL": {
+      "Name": "Sensor Model Name",
+      "Description": "This field identifies which specific sensor produced the image. See \"FieldRegistry\" SENSRA SENSOR_MODEL, as defined in the main body of STDI-0002 Volume 1, paragraph 3.2 for values added through registration.",
+      "Size": 6,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "SENSOR_MOUNT": {
+      "Name": "Sensor Mounting Pitch Angle",
+      "Description": "This field ontains the angle in degrees between the longitudinal centerline of the platform and the sensor scan axix. Normally this is only applicable to push broom sensors.",
+      "Size": 3,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "-45",
+          "Max": "+45"
+        }
+      ]
+    },
+    "SENSOR_LOC": {
+      "Name": "Sensor Location",
+      "Description": "The earth coordinate of the sensor location ma be expressed in either degrees-minutes-seconds or in decimal degrees. See section E.2.1 for further detail on expressing coordinates.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "ddmmss.ssXdddmmss.ssY",
+            "+/- dd.dddddd +/-ddd.dddddd",
+            "BCS Spaces"
+          ]
+        }
+      ]
+    },
+    "SENSOR_ALT_SOURCE": {
+      "Name": "Sensor Altitude Source",
+      "Description": "This field identifies the source for the value in SENSOR_ALT (and associated reference level). B = Barometric Altimeter (MSL), G = Global Positioning System (WGS-84 Ellipsoid), M = Manual Entry (undetermined), R = Radar Alimeter (AGL). See \"FieldRegistry\" SENSRA SENSOR_ALT_SOURCE, as defined in the main body of STDI-0002 Volume 1, paragraph 3.2 for values added through registration.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["B", "G", "M", "R"]
+        }
+      ]
+    },
+    "SENSOR_ALT": {
+      "Name": "Sensor Altitude",
+      "Description": "This field contains the altitude above reference level specified by SENSOR_ALT_SOURCE. This field is measured in feet or meters, as specified by SENSOR_ALT_UNIT.",
+      "Size": 6,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": ["feet", "meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "-010000",
+          "Max": "+99000"
+        }
+      ]
+    },
+    "SENSOR_ALT_UNIT": {
+      "Name": "Unit of Sensor Altitude",
+      "Description": "This field applies to both SENSOR_ALT and SENSOR_AGL, and may be null if both altitudes are null. f = feet and m = meters.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["f", "m"]
+        }
+      ]
+    },
+    "SENSOR_AGL": {
+      "Name": "Sensor Radar Altitude",
+      "Description": "This field contains the altitude above ground level (AGL), measured in feet or meters, as specified by SENSOR_ALT_UNIT. This field is filled with spaces when not available or outside equipment operating range.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": ["feet", "meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "00010",
+          "Max": "99000"
+        }
+      ]
+    },
+    "SENSOR_PITCH": {
+      "Name": "Sensor Pitch Angle",
+      "Description": "This field contains the sensor pitch angle. An indeterminacy occurs when the sensor optical axis is parallel to the platform pitch axis, in which case the field is set to +00.000.",
+      "Size": 7,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "-180.00",
+          "Max": "-100.00"
+        },
+        {
+          "Type": "Range",
+          "Min": "-99.999",
+          "Max": "+99.999"
+        },
+        {
+          "Type": "Range",
+          "Min": "100.000",
+          "Max": "180.000"
+        }
+      ]
+    },
+    "SENSOR_ROLL": {
+      "Name": "Sensor Roll Angle",
+      "Description": "This field contains the sensor roll angle. An indeterminacy occurs when the sensor optical axis is parallel to the platform roll axis, in which case the field is set to +000.000.",
+      "Size": 8,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "-180.000",
+          "Max": "180.000"
+        }
+      ]
+    },
+    "SENSOR_YAW": {
+      "Name": "Sensor Yaw Angle",
+      "Description": "This field contains the sensor yaw angle. An indeterminacy occurs when the sensor opitcal axis is parallel to the platform yaw axix, in which case the field is set to +000.000.",
+      "Size": 8,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "-180.000",
+          "Max": "180.000"
+        }
+      ]
+    },
+    "PLATFORM_PITCH": {
+      "Name": "Platform Pitch",
+      "Description": "This field contains the platform pitch. For more information, see Appendix Z: SENSRB.",
+      "Size": 7,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "-90.000",
+          "Max": "+90.000"
+        }
+      ]
+    },
+    "PLATFORM_ROLL": {
+      "Name": "Platform Roll",
+      "Description": "This field contains platform roll. For more information, see Appendix Z: SENSRB.",
+      "Size": 8,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "-180.000",
+          "Max": "180.000"
+        }
+      ]
+    },
+    "PLATFORM_HDG": {
+      "Name": "Platform Heading",
+      "Description": "This field contains platform heading. For more information, see Appendix Z: SENSRB. An indeterminacy occurs when PLATFORM_PITCH is -90.000 or +90.000, in which case this field is 000.0.",
+      "Size": 5,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "000.0",
+          "Max": "359.9"
+        }
+      ]
+    },
+    "GROUND_SPD_SOURCE": {
+      "Name": "Ground Speed Source",
+      "Description": "This field contains the ground speed source. R = Doppler Radar, N = Navigation System, G = Global Positioning System, and M = Manual Entry. A space (0x20) = unknown.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["R", "N", "G", "M"]
+        }
+      ]
+    },
+    "GROUND_SPD": {
+      "Name": "Ground Speed",
+      "Description": "This field contains the ground speed as reported by GROUND_SPD_SOURCE at the time of imagery collection.",
+      "Size": 6,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "0000.0",
+          "Max": "9999.9"
+        }
+      ]
+    },
+    "GROUND_SPD_UNIT": {
+      "Name": "Unit of Ground Speed",
+      "Description": "This field contains the unit of GROUND_SPD, and may be null if GROUND_SPD is null. k = knots, f = feet/sec, and m = meters/sec. See \"FieldRegistry\" SENSRA SENSOR_GROUND_SPD_UNIT, as defined in the main body of STDI-0002 Volume 1, paragraph 3.2 for values added through registration.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["k", "f", "m"]
+        }
+      ]
+    },
+    "GROUND_TRACK": {
+      "Name": "Ground Track",
+      "Description": "This field contains the angle from north to the horizontal projection of the platform path (positive from north to east).",
+      "Size": 5,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "000.0",
+          "Max": "359.9"
+        }
+      ]
+    },
+    "VERT_VEL": {
+      "Name": "Vertical Velocity",
+      "Description": "This field contains the vertical velocity, measured in either feet/min or meters/min, as specified by VERT_VEL_UNIT.",
+      "Size": 5,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": ["feet/minute", "meters/minute"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "-9999",
+          "Max": "+9999"
+        }
+      ]
+    },
+    "VERT_VEL_UNIT": {
+      "Name": "Unit of Vertical Velocity",
+      "Description": "This field conains the unit of vertical velocity and may be null only if VERT_VEL is null. f = feet/minute and m = meters/minute.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["f", "m"]
+        }
+      ]
+    },
+    "SWATH_FRAMES": {
+      "Name": "Number of Frames per Swath",
+      "Description": "This field contains the number of frames per swath. A swath is a continuous strip of frames swept out by the scanning motion of certain dynamic sensors. Platform dynamics may cause the number of frames to vary from one swath to another.",
+      "Size": 4,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "0001",
+          "Max": "9999"
+        }
+      ]
+    },
+    "N_SWATHS": {
+      "Name": "Number of Swaths",
+      "Description": "This field contains the number of swaths in this TRE.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "0001",
+          "Max": "9999"
+        }
+      ]
+    },
+    "SPOT_NUM": {
+      "Name": "Spot Number",
+      "Description": "This field contains the spot number in point targets mode.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "001",
+          "Max": "999"
+        }
+      ]
+    }
+  }
 }

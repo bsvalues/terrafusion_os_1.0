@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Validate Version
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
@@ -18,7 +18,7 @@ jobs:
             echo "Invalid version format: $VERSION"
             exit 1
           fi
-          
+
       - name: Check Package Version
         run: |
           NODE_VERSION=$(node -p "require('./package.json').version")
@@ -38,44 +38,44 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-          
+
       - name: Install Dependencies
         run: |
           npm ci
           pip install torch numpy
         continue-on-error: true
-        
+
       - name: Build Application
         run: npm run build
         env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
-          ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: "true"
-        
+          NODE_OPTIONS: '--max-old-space-size=8192'
+          ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
           cache: 'pip'
-          
+
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install torch
         continue-on-error: true
-        
+
       - name: Install 7-Zip
         if: matrix.os == 'windows-latest'
         run: |
           choco install 7zip
           refreshenv
         continue-on-error: true
-          
+
       - name: Optimize Build
         run: |
           if [ "${{ matrix.os }}" == "windows-latest" ]; then
@@ -84,7 +84,7 @@ jobs:
             ./scripts/optimize-build.sh
           fi
         continue-on-error: true
-          
+
       - name: Compress Models
         run: |
           if [ "${{ matrix.os }}" == "windows-latest" ]; then
@@ -93,19 +93,19 @@ jobs:
             bash scripts/compress-models.sh
           fi
         continue-on-error: true
-          
+
       - name: Setup Code Signing
         if: matrix.os == 'windows-latest'
         run: pwsh -File scripts/setup-code-signing.ps1
         continue-on-error: true
-        
+
       - name: Build Installer
         run: npm run electron-builder
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_OPTIONS: "--max-old-space-size=8192"
+          NODE_OPTIONS: '--max-old-space-size=8192'
         continue-on-error: true
-          
+
       - name: Generate Checksums
         run: |
           if [ "${{ matrix.os }}" == "windows-latest" ]; then
@@ -113,7 +113,7 @@ jobs:
           else
             sha256sum dist/* > dist/checksums.txt
           fi
-          
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -123,7 +123,7 @@ jobs:
             models/compressed/
             build-dashboard/
           if-no-files-found: error
-          
+
       - name: Create Release
         if: matrix.os == 'windows-latest'
         uses: softprops/action-gh-release@v1
@@ -139,7 +139,7 @@ jobs:
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Notify on Failure
         if: failure()
         uses: actions/github-script@v6

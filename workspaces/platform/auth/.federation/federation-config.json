@@ -6,11 +6,7 @@
     "gateway_type": "identity_gateway"
   },
   "inter_workspace_communication": {
-    "protocols": [
-      "OAuth2",
-      "SAML",
-      "OpenID Connect"
-    ],
+    "protocols": ["OAuth2", "SAML", "OpenID Connect"],
     "sync_frequency_ms": 500,
     "replication_target": "critical",
     "timeout_ms": 5000,

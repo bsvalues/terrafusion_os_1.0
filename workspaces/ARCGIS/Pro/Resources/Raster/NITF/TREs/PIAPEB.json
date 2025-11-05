@@ -1,8 +1,6 @@
 {
   "TRE": "PIAPEB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix C: PIAE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix C: PIAE"],
   "Name": "Profile for Imagery Access Person Identification Version B",
   "Description": "The Profile for Imagery Access Person Identification Version B (PIAPEB) TRE is designed to identify information contained in the Imagery Archive that is directly related to a person(s) contained in a data type (image, symbol, label, and text). This extension shall be present for each person identified in a data type, and there may be up to 500 occurrences of this extension for each data type in an NITF file.",
   "Size": 94,

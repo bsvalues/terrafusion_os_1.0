@@ -7,15 +7,15 @@ metadata:
     app: pipeline-metrics
     component: monitoring
   annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "8080"
-    prometheus.io/path: "/metrics"
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '8080'
+    prometheus.io/path: '/metrics'
 spec:
   selector:
     app: terrafusion
     component: pipeline-service
   ports:
-  - name: metrics
-    port: 8080
-    targetPort: metrics
+    - name: metrics
+      port: 8080
+      targetPort: metrics
   type: ClusterIP

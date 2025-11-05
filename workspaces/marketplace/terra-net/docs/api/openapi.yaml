@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/terra-net
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/terra-net
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/terra-net
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/terra-net
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/terra-net
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/terra-net
+    description: Development Environment
 paths:
   /health:
     get:
       tags:
-      - terra-net
+        - terra-net
       summary: Health check
       description: Health check - Terra Net operations APIs
       operationId: get__health
       security:
-      - OAuth2:
-        - terra-net:read
+        - OAuth2:
+            - terra-net:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /data:
     get:
       tags:
-      - terra-net
+        - terra-net
       summary: Data retrieval
       description: Data retrieval - Terra Net operations APIs
       operationId: get__data
       security:
-      - OAuth2:
-        - terra-net:read
+        - OAuth2:
+            - terra-net:read
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /operations:
     post:
       tags:
-      - terra-net
+        - terra-net
       summary: Operation execution
       description: Operation execution - Terra Net operations APIs
       operationId: post__operations
       security:
-      - OAuth2:
-        - terra-net:write
+        - OAuth2:
+            - terra-net:write
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /status:
     get:
       tags:
-      - terra-net
+        - terra-net
       summary: Service status
       description: Service status - Terra Net operations APIs
       operationId: get__status
       security:
-      - OAuth2:
-        - terra-net:read
+        - OAuth2:
+            - terra-net:read
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -206,12 +206,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - terra-net:read
-- ApiKey: []
+  - OAuth2:
+      - terra-net:read
+  - ApiKey: []
 tags:
-- name: terra-net
-  description: Terra Net operations
-  externalDocs:
-    description: Find out more about terra-net
-    url: https://docs.terrafusion.gov/marketplace/terra-net
+  - name: terra-net
+    description: Terra Net operations
+    externalDocs:
+      description: Find out more about terra-net
+      url: https://docs.terrafusion.gov/marketplace/terra-net

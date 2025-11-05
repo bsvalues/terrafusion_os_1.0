@@ -1,15 +1,16 @@
-html, body {
-    width: 100%;
-    height: 100%;
-    margin: 0px;
-    overflow: hidden;
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  overflow: hidden;
 }
 
 .wj-flexchart {
-    font-family: Calibri;
-    padding: 0px 5px 8px 0px;
-    margin: 0px;
-    border: none;
+  font-family: Calibri;
+  padding: 0px 5px 8px 0px;
+  margin: 0px;
+  border: none;
 }
 
 /* .wj-flexchart .wj-label {
@@ -17,63 +18,64 @@ html, body {
 }
 */
 
-.wj-flexchart .wj-state-selected, .wj-flexchart .wj-state-selected > * {
-    stroke:cyan;
-	stroke-width: 3px;
-	stroke-dasharray: 0;
-	stroke-linecap: square;
+.wj-flexchart .wj-state-selected,
+.wj-flexchart .wj-state-selected > * {
+  stroke: cyan;
+  stroke-width: 3px;
+  stroke-dasharray: 0;
+  stroke-linecap: square;
 }
 
 .wj-tooltip {
-    font-family: 'Segoe UI';
-    border-radius: 0px;
-    border: 1px solid;
-    font-size: 9pt;
-    box-shadow: none;
+  font-family: 'Segoe UI';
+  border-radius: 0px;
+  border: 1px solid;
+  font-size: 9pt;
+  box-shadow: none;
 }
 
 .wj-legend:not(.esri-default-pointer) g:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .wj-legend:not(.esri-default-pointer) g:hover > .wj-label {
-    fill: #0079C1;
-    cursor: pointer;
+  fill: #0079c1;
+  cursor: pointer;
 }
 
 .partial-selected {
-    stroke: cyan;
-    stroke-width: 3px;
-    stroke-dasharray: 0;
-    stroke-linecap: square;
-    fill: cyan;
-    fill-opacity: 0.5;
+  stroke: cyan;
+  stroke-width: 3px;
+  stroke-dasharray: 0;
+  stroke-linecap: square;
+  fill: cyan;
+  fill-opacity: 0.5;
 }
 
 .wj-flexchart text {
-    cursor: default;
+  cursor: default;
 }
 
 .rsquare-text::selection {
-    background:transparent;
+  background: transparent;
 }
 
 .wj-flexchart.esri-pan-state {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .wj-flexchart.esri-zoom-state {
-    cursor: zoom-in;
+  cursor: zoom-in;
 }
 
 .wj-flexchart.wj-panable.esri-panning {
-    cursor: grabbing;
+  cursor: grabbing;
 }
 
 .wj-flexchart.esri-zoom-state.esri-pan-state {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .wj-flexchart.esri-zoom-state.wj-panable.esri-panning {
-    cursor: grabbing;
+  cursor: grabbing;
 }

@@ -1,25 +1,25 @@
 {
-    "narrpr": {
-        "username": "${NARRPR_USERNAME}",
-        "password": "${NARRPR_PASSWORD}",
-        "base_url": "https://www.narrpr.com",
-        "headless": true,
-        "timeout": 30
-    },
-    "scraping": {
-        "wait_time": 5,
-        "retry_attempts": 3,
-        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    },
-    "database": {
-        "host": "${DB_HOST}",
-        "port": "${DB_PORT}",
-        "user": "${DB_USER}",
-        "password": "${DB_PASSWORD}",
-        "database": "${DB_NAME}"
-    },
-    "output": {
-        "csv_directory": "output",
-        "report_directory": "reports"
-    }
+  "narrpr": {
+    "username": "${NARRPR_USERNAME}",
+    "password": "${NARRPR_PASSWORD}",
+    "base_url": "https://www.narrpr.com",
+    "headless": true,
+    "timeout": 30
+  },
+  "scraping": {
+    "wait_time": 5,
+    "retry_attempts": 3,
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+  },
+  "database": {
+    "host": "${DB_HOST}",
+    "port": "${DB_PORT}",
+    "user": "${DB_USER}",
+    "password": "${DB_PASSWORD}",
+    "database": "${DB_NAME}"
+  },
+  "output": {
+    "csv_directory": "output",
+    "report_directory": "reports"
+  }
 }

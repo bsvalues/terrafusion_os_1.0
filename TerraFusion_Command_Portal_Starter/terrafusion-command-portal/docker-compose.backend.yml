@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 # TerraFusion IDE Backend Docker Compose
 # Supports development, testing, and production environments
@@ -15,7 +15,7 @@ services:
 
     # Port configuration
     ports:
-      - "8787:8787"
+      - '8787:8787'
 
     # Volume mounts for workspace access
     volumes:
@@ -35,10 +35,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2"
+          cpus: '2'
           memory: 2G
         reservations:
-          cpus: "1"
+          cpus: '1'
           memory: 1G
 
     # Restart policy
@@ -46,7 +46,7 @@ services:
 
     # Health check
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8787/health/ready"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8787/health/ready']
       interval: 30s
       timeout: 3s
       retries: 3
@@ -56,8 +56,8 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: "100m"
-        max-file: "3"
+        max-size: '100m'
+        max-file: '3'
 
     # Network
     networks:

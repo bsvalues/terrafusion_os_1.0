@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/LeafScope
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/LeafScope
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/LeafScope
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/LeafScope
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/LeafScope
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/LeafScope
+    description: Development Environment
 paths:
   /health:
     get:
       tags:
-      - LeafScope
+        - LeafScope
       summary: Health check
       description: Health check - Leafscope operations APIs
       operationId: get__health
       security:
-      - OAuth2:
-        - LeafScope:read
+        - OAuth2:
+            - LeafScope:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /data:
     get:
       tags:
-      - LeafScope
+        - LeafScope
       summary: Data retrieval
       description: Data retrieval - Leafscope operations APIs
       operationId: get__data
       security:
-      - OAuth2:
-        - LeafScope:read
+        - OAuth2:
+            - LeafScope:read
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /operations:
     post:
       tags:
-      - LeafScope
+        - LeafScope
       summary: Operation execution
       description: Operation execution - Leafscope operations APIs
       operationId: post__operations
       security:
-      - OAuth2:
-        - LeafScope:write
+        - OAuth2:
+            - LeafScope:write
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /status:
     get:
       tags:
-      - LeafScope
+        - LeafScope
       summary: Service status
       description: Service status - Leafscope operations APIs
       operationId: get__status
       security:
-      - OAuth2:
-        - LeafScope:read
+        - OAuth2:
+            - LeafScope:read
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -206,12 +206,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - LeafScope:read
-- ApiKey: []
+  - OAuth2:
+      - LeafScope:read
+  - ApiKey: []
 tags:
-- name: LeafScope
-  description: Leafscope operations
-  externalDocs:
-    description: Find out more about LeafScope
-    url: https://docs.terrafusion.gov/marketplace/LeafScope
+  - name: LeafScope
+    description: Leafscope operations
+    externalDocs:
+      description: Find out more about LeafScope
+      url: https://docs.terrafusion.gov/marketplace/LeafScope

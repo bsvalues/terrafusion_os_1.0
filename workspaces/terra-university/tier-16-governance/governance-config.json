@@ -23,13 +23,7 @@
       "audit_logging": "100%"
     },
     "regulatory_compliance": {
-      "frameworks": [
-        "GDPR",
-        "HIPAA",
-        "FISMA",
-        "SOC2",
-        "ISO27001"
-      ],
+      "frameworks": ["GDPR", "HIPAA", "FISMA", "SOC2", "ISO27001"],
       "enforcement": "Automated",
       "violation_response": "Immediate escalation",
       "audit_frequency": "Continuous"

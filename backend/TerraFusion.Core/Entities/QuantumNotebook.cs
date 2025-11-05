@@ -36,12 +36,12 @@ public class QuantumNotebook
     /// <summary>
     /// Owning user ID (from GovernmentUser)
     /// </summary>
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
 
     /// <summary>
     /// County context (for data isolation)
     /// </summary>
-    public int CountyId { get; set; }
+    public Guid CountyId { get; set; }
 
     /// <summary>
     /// Notebook cells (JSON serialized)

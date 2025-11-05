@@ -6,14 +6,7 @@
   "author": "TerraFusion Elite Government OS Team",
   "category": "government-finance",
   "icon": "balance-scale-quantum",
-  "targetCounties": [
-    "benton",
-    "king",
-    "pierce",
-    "spokane",
-    "thurston",
-    "*"
-  ],
+  "targetCounties": ["benton", "king", "pierce", "spokane", "thurston", "*"],
   "permissions": [
     "load:terra-levy",
     "read:levy-measures",

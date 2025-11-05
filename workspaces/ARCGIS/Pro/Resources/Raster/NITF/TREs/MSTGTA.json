@@ -1,8 +1,6 @@
 {
   "TRE": "MSTGTA",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix E: ASDE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix E: ASDE"],
   "Name": "Mission Target Information Version A",
   "Description": "The Mission Target Information Version A (MSTGTA) TRE provides information from the collection plan associated with the image, and should identify specific targets contained within the image (however, due to collection geometry, a referenced target may not actually correspond to the area contained in the image). Use of this TRE is optional.",
   "Size": 101,
@@ -153,10 +151,7 @@
       "Size": 6,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "feet",
-        "meters"
-      ],
+      "Units": ["feet", "meters"],
       "Values": [
         {
           "Type": "Range",
@@ -175,10 +170,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "f",
-            "m"
-          ]
+          "Values": ["f", "m"]
         }
       ]
     },
@@ -192,9 +184,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "ddmmss.ssXdddmmss.ssY"
-          ]
+          "Values": ["ddmmss.ssXdddmmss.ssY"]
         },
         {
           "Type": "Double"

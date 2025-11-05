@@ -4,14 +4,14 @@ metadata:
   name: terrafusion-gateway-prod
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "1"  # Deploy gateway first
+    argocd.argoproj.io/sync-wave: '1' # Deploy gateway first
     notifications.argoproj.io/subscribe.on-deployed.slack: terrafusion-deployments
     notifications.argoproj.io/subscribe.on-health-degraded.slack: terrafusion-alerts
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: terrafusion
-  
+
   source:
     repoURL: https://github.com/terrafusion/terrafusion-os
     targetRevision: main
@@ -24,24 +24,24 @@ spec:
         - name: global.environment
           value: production
         - name: image.tag
-          value: "1.0.0"
+          value: '1.0.0'
         - name: replicaCount
-          value: "3"
+          value: '3'
         - name: gateway.rateLimiting.enabled
-          value: "true"
+          value: 'true'
         - name: gateway.rateLimiting.requestsPerSecond
-          value: "1000"
+          value: '1000'
         - name: autoscaling.enabled
-          value: "true"
+          value: 'true'
         - name: autoscaling.minReplicas
-          value: "3"
+          value: '3'
         - name: autoscaling.maxReplicas
-          value: "20"
-  
+          value: '20'
+
   destination:
     server: https://kubernetes.default.svc
     namespace: terrafusion
-  
+
   syncPolicy:
     automated:
       prune: true
@@ -56,15 +56,15 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
-  
+
   ignoreDifferences:
     - group: apps
       kind: Deployment
       jsonPointers:
         - /spec/replicas
-  
+
   revisionHistoryLimit: 10
-  
+
   info:
     - name: 'Environment'
       value: 'Production'

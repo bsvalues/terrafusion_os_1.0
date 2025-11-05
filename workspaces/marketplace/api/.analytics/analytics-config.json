@@ -6,27 +6,15 @@
   },
   "predictive_analytics": {
     "enabled": true,
-    "features": [
-      "api-failure",
-      "latency-spike",
-      "throughput-demand"
-    ],
+    "features": ["api-failure", "latency-spike", "throughput-demand"],
     "prediction_window_days": 7,
     "confidence_threshold": 0.75,
     "update_frequency_hours": 6,
-    "models": [
-      "time-series",
-      "clustering",
-      "anomaly"
-    ]
+    "models": ["time-series", "clustering", "anomaly"]
   },
   "anomaly_detection": {
     "enabled": true,
-    "detectors": [
-      "traffic-anomalies",
-      "error-rate-spikes",
-      "ddos-patterns"
-    ],
+    "detectors": ["traffic-anomalies", "error-rate-spikes", "ddos-patterns"],
     "sensitivity": "high",
     "real_time": true,
     "batch_window_hours": 1,
@@ -42,11 +30,7 @@
     "daily_volume_gb": 3000
   },
   "ml_infrastructure": {
-    "frameworks": [
-      "statsmodels",
-      "tensorflow",
-      "isolation-forest"
-    ],
+    "frameworks": ["statsmodels", "tensorflow", "isolation-forest"],
     "gpu_enabled": true,
     "distributed_training": true,
     "model_registry": "enabled",
@@ -56,11 +40,7 @@
   "optimization": {
     "auto_scaling": {
       "enabled": true,
-      "metrics": [
-        "cpu",
-        "memory",
-        "request_latency"
-      ],
+      "metrics": ["cpu", "memory", "request_latency"],
       "target_utilization": 70,
       "scale_up_threshold": 80,
       "scale_down_threshold": 30,

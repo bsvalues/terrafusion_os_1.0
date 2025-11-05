@@ -49,4 +49,4 @@ body {
   .card {
     @apply bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700;
   }
-} 
+}

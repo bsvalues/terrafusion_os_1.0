@@ -46,15 +46,8 @@
         "security_level": "HIGH"
       }
     ],
-    "data_endpoints": [
-      "/health",
-      "/metrics",
-      "/integration",
-      "/webhooks"
-    ],
-    "integration_points": [
-      "/api/v1/integration"
-    ]
+    "data_endpoints": ["/health", "/metrics", "/integration", "/webhooks"],
+    "integration_points": ["/api/v1/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

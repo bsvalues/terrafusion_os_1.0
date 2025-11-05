@@ -146,7 +146,7 @@
     "MatchRule-ProductIsNOT": {
       "Key": "#MatchKey-Product",
       "Operator": "NotEqual",
-      "Value": [ "P1", "P2", "G1", "G2", "G3", "R1", "R2", "R3" ]
+      "Value": ["P1", "P2", "G1", "G2", "G3", "R1", "R2", "R3"]
     },
     "MatchRule-ProductIsP2": {
       "Key": "#MatchKey-Product",
@@ -226,7 +226,7 @@
     "MatchRule-ICATIsNOT": {
       "Key": "$/Images/%i/ICAT$",
       "Operator": "NotEqual",
-      "Value": [ "VIS", "PAN", "MS", "RGB", "CAVIS", "SWIR" ]
+      "Value": ["VIS", "PAN", "MS", "RGB", "CAVIS", "SWIR"]
     },
     "MatchRule-ImageHasICATIsVIS": {
       "Key": "$/Images/%i/ICAT$",

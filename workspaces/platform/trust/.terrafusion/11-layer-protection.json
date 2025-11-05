@@ -9,11 +9,7 @@
         "workspace_role": "trust specialized AI agent",
         "scope_definition": "Optimize and protect platform_service operations",
         "success_criteria": "Maintain medium-level security for platform_service",
-        "data_types_handled": [
-          "service_data",
-          "user_data",
-          "system_configs"
-        ],
+        "data_types_handled": ["service_data", "user_data", "system_configs"],
         "protection_priorities": [
           "data_security",
           "service_availability",
@@ -27,11 +23,7 @@
         "risk_level_controls": "medium"
       },
       "L3_data_classification": {
-        "data_types": [
-          "service_data",
-          "user_data",
-          "system_configs"
-        ],
+        "data_types": ["service_data", "user_data", "system_configs"],
         "classification_level": "medium",
         "privacy_requirements": "platform_service_privacy_rules",
         "retention_policies": "trust_data_retention",

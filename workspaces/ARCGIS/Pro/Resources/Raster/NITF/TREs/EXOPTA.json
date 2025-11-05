@@ -1,11 +1,11 @@
 {
   "TRE": "EXOPTA",
-  "Source": [ "STDI-0002-1 v2021.1, Appendix E: ASDE" ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix E: ASDE"],
   "Name": "Exploitation Usability Optical Information",
   "Description": "The Exploitation Usability Optical Information extension is optional. EXOPT provides metadata that allows a user program to determine if the image is suitable for the exploitation problem currently being performed. It contains some of the fields, which would make up a NGA standard directory entry. The format and descriptions for the user-defined fields of the EXOPTA are detailed in table E-10. A single EXOPT is placed in the image subheader with the corresponding AIMID and ACFT extensions.",
   "Size": 107,
   "Fields": {
-    "ANGLE_TO_NORTH" : {
+    "ANGLE_TO_NORTH": {
       "Name": "Angle to True North",
       "Description": "This field indicateds the angle, measured clockwise, from the first-row vector (pointing from the first column to the last) to a vector pointing to True North.",
       "Size": 3,
@@ -17,7 +17,7 @@
           "Type": "Range",
           "Min": 0,
           "Max": 359
-        }        
+        }
       ]
     },
     "MEAN_GSD": {

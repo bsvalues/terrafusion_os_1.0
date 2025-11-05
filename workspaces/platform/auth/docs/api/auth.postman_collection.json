@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/login",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "login"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["login"]
         }
       },
       "response": []
@@ -127,12 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/token",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "token"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["token"]
         }
       },
       "response": []
@@ -160,12 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/authorize",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "authorize"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["authorize"]
         }
       },
       "response": []
@@ -193,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/logout",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "logout"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["logout"]
         }
       },
       "response": []

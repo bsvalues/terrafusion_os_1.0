@@ -47,15 +47,8 @@
         "security_level": "CRITICAL"
       }
     ],
-    "data_endpoints": [
-      "/threats",
-      "/incidents",
-      "/scanning",
-      "/alerts"
-    ],
-    "integration_points": [
-      "/api/v1/security/integration"
-    ]
+    "data_endpoints": ["/threats", "/incidents", "/scanning", "/alerts"],
+    "integration_points": ["/api/v1/security/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

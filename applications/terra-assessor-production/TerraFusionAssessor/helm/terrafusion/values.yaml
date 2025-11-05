@@ -3,7 +3,7 @@ replicaCount: 3
 image:
   repository: ghcr.io/terrafusion/terrafusion-pro-1
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: 'latest'
 
 service:
   type: ClusterIP
@@ -12,11 +12,11 @@ service:
 
 ingress:
   enabled: true
-  className: "nginx"
+  className: 'nginx'
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/rate-limit: "1000"
-    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
+    nginx.ingress.kubernetes.io/rate-limit: '1000'
+    nginx.ingress.kubernetes.io/rate-limit-window: '1m'
   hosts:
     - host: terrafusion.com
       paths:
@@ -47,21 +47,21 @@ tolerations: []
 affinity:
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
-    - weight: 100
-      podAffinityTerm:
-        labelSelector:
-          matchExpressions:
-          - key: app.kubernetes.io/name
-            operator: In
-            values:
-            - terrafusion-pro
-        topologyKey: kubernetes.io/hostname
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - terrafusion-pro
+          topologyKey: kubernetes.io/hostname
 
 postgresql:
   enabled: true
   auth:
-    postgresPassword: "terrafusion-secure-password"
-    database: "terrafusion_pro"
+    postgresPassword: 'terrafusion-secure-password'
+    database: 'terrafusion_pro'
   primary:
     persistence:
       enabled: true
@@ -73,7 +73,7 @@ redis:
   enabled: true
   auth:
     enabled: true
-    password: "redis-secure-password"
+    password: 'redis-secure-password'
   master:
     persistence:
       enabled: true
@@ -84,4 +84,4 @@ monitoring:
     enabled: true
   grafana:
     enabled: true
-    adminPassword: "grafana-admin-password"
+    adminPassword: 'grafana-admin-password'

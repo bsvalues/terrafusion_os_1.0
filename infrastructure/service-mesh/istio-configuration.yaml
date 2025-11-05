@@ -1,7 +1,7 @@
 # ==================================================
 # REVOLUTIONARY: TerraFusion OS 1.0 Service Mesh
 # Istio Configuration for Government-Grade Zero-Trust
-# 
+#
 # This configuration implements the most advanced
 # service mesh architecture for government systems,
 # providing quantum-enhanced security, observability,
@@ -16,8 +16,8 @@ metadata:
   labels:
     name: terrafusion-system
     istio-injection: enabled
-    terrafusion.gov/security-level: "FISMA-HIGH"
-    terrafusion.gov/compliance: "NIST-800-53"
+    terrafusion.gov/security-level: 'FISMA-HIGH'
+    terrafusion.gov/compliance: 'NIST-800-53'
 ---
 # Main Application Namespace
 apiVersion: v1
@@ -27,8 +27,8 @@ metadata:
   labels:
     name: terrafusion-microservices
     istio-injection: enabled
-    terrafusion.gov/security-level: "FISMA-HIGH"
-    terrafusion.gov/compliance: "NIST-800-53"
+    terrafusion.gov/security-level: 'FISMA-HIGH'
+    terrafusion.gov/compliance: 'NIST-800-53'
 ---
 # Gateway Configuration
 apiVersion: networking.istio.io/v1beta1
@@ -39,32 +39,32 @@ metadata:
   labels:
     app: terrafusion-gateway
     version: v1.0.0
-    terrafusion.gov/service-type: "government-portal"
+    terrafusion.gov/service-type: 'government-portal'
 spec:
   selector:
     istio: ingressgateway
   servers:
-  - port:
-      number: 80
-      name: http
-      protocol: HTTP
-    hosts:
-    - api.terrafusion.gov
-    - portal.terrafusion.gov
-    - "*.terrafusion.gov"
-    tls:
-      httpsRedirect: true
-  - port:
-      number: 443
-      name: https
-      protocol: HTTPS
-    hosts:
-    - api.terrafusion.gov
-    - portal.terrafusion.gov
-    - "*.terrafusion.gov"
-    tls:
-      mode: SIMPLE
-      credentialName: terrafusion-tls-secret
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - api.terrafusion.gov
+        - portal.terrafusion.gov
+        - '*.terrafusion.gov'
+      tls:
+        httpsRedirect: true
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - api.terrafusion.gov
+        - portal.terrafusion.gov
+        - '*.terrafusion.gov'
+      tls:
+        mode: SIMPLE
+        credentialName: terrafusion-tls-secret
 ---
 # Virtual Service for API Gateway
 apiVersion: networking.istio.io/v1beta1
@@ -74,38 +74,38 @@ metadata:
   namespace: terrafusion-microservices
   labels:
     app: api-gateway
-    terrafusion.gov/quantum-enhanced: "true"
+    terrafusion.gov/quantum-enhanced: 'true'
 spec:
   hosts:
-  - api.terrafusion.gov
+    - api.terrafusion.gov
   gateways:
-  - terrafusion-gateway
+    - terrafusion-gateway
   http:
-  - match:
-    - uri:
-        prefix: /api/v1/
-    route:
-    - destination:
-        host: terrafusion-gateway-service
-        port:
-          number: 5000
-      weight: 100
-    fault:
-      abort:
-        percentage:
-          value: 0.1
-        httpStatus: 503
-    retries:
-      attempts: 3
-      perTryTimeout: 10s
-      retryOn: 5xx,reset,connect-failure,refused-stream
-    timeout: 30s
-    headers:
-      request:
-        add:
-          x-government-service: "terrafusion-os"
-          x-security-level: "fisma-high"
-          x-request-id: "%REQ(x-request-id)%"
+    - match:
+        - uri:
+            prefix: /api/v1/
+      route:
+        - destination:
+            host: terrafusion-gateway-service
+            port:
+              number: 5000
+          weight: 100
+      fault:
+        abort:
+          percentage:
+            value: 0.1
+          httpStatus: 503
+      retries:
+        attempts: 3
+        perTryTimeout: 10s
+        retryOn: 5xx,reset,connect-failure,refused-stream
+      timeout: 30s
+      headers:
+        request:
+          add:
+            x-government-service: 'terrafusion-os'
+            x-security-level: 'fisma-high'
+            x-request-id: '%REQ(x-request-id)%'
 ---
 # Destination Rules for Circuit Breaker
 apiVersion: networking.istio.io/v1beta1
@@ -114,9 +114,9 @@ metadata:
   name: terrafusion-circuit-breaker
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/pattern: "circuit-breaker"
+    terrafusion.gov/pattern: 'circuit-breaker'
 spec:
-  host: "*.terrafusion-microservices.svc.cluster.local"
+  host: '*.terrafusion-microservices.svc.cluster.local'
   trafficPolicy:
     connectionPool:
       tcp:
@@ -145,11 +145,11 @@ spec:
     loadBalancer:
       simple: LEAST_CONN
   portLevelSettings:
-  - port:
-      number: 5000
-    connectionPool:
-      tcp:
-        maxConnections: 50
+    - port:
+        number: 5000
+      connectionPool:
+        tcp:
+          maxConnections: 50
 ---
 # Peer Authentication for mTLS
 apiVersion: security.istio.io/v1beta1
@@ -158,7 +158,7 @@ metadata:
   name: terrafusion-mtls
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/security: "zero-trust"
+    terrafusion.gov/security: 'zero-trust'
 spec:
   mtls:
     mode: STRICT
@@ -170,27 +170,27 @@ metadata:
   name: terrafusion-authorization
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/compliance: "fisma-high"
+    terrafusion.gov/compliance: 'fisma-high'
 spec:
   rules:
-  - from:
-    - source:
-        principals: ["cluster.local/ns/terrafusion-microservices/sa/terrafusion-gateway"]
-    to:
-    - operation:
-        methods: ["GET", "POST", "PUT", "DELETE"]
-    when:
-    - key: request.headers[x-government-service]
-      values: ["terrafusion-os"]
-  - from:
-    - source:
-        namespaces: ["terrafusion-microservices"]
-    to:
-    - operation:
-        methods: ["GET", "POST", "PUT", "DELETE"]
-    when:
-    - key: request.headers[x-security-level]
-      values: ["fisma-high"]
+    - from:
+        - source:
+            principals: ['cluster.local/ns/terrafusion-microservices/sa/terrafusion-gateway']
+      to:
+        - operation:
+            methods: ['GET', 'POST', 'PUT', 'DELETE']
+      when:
+        - key: request.headers[x-government-service]
+          values: ['terrafusion-os']
+    - from:
+        - source:
+            namespaces: ['terrafusion-microservices']
+      to:
+        - operation:
+            methods: ['GET', 'POST', 'PUT', 'DELETE']
+      when:
+        - key: request.headers[x-security-level]
+          values: ['fisma-high']
 ---
 # Telemetry Configuration for Observability
 apiVersion: telemetry.istio.io/v1alpha1
@@ -199,27 +199,27 @@ metadata:
   name: terrafusion-telemetry
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/observability: "comprehensive"
+    terrafusion.gov/observability: 'comprehensive'
 spec:
   metrics:
-  - providers:
-    - name: prometheus
-  - overrides:
-    - match:
-        metric: ALL_METRICS
-      tagOverrides:
-        government_service:
-          value: "terrafusion-os"
-        security_level:
-          value: "fisma-high"
-        citizen_facing:
-          value: "true"
+    - providers:
+        - name: prometheus
+    - overrides:
+        - match:
+            metric: ALL_METRICS
+          tagOverrides:
+            government_service:
+              value: 'terrafusion-os'
+            security_level:
+              value: 'fisma-high'
+            citizen_facing:
+              value: 'true'
   accessLogging:
-  - providers:
-    - name: envoy
+    - providers:
+        - name: envoy
   tracing:
-  - providers:
-    - name: jaeger
+    - providers:
+        - name: jaeger
 ---
 # Service Monitor for Prometheus Integration
 apiVersion: monitoring.coreos.com/v1
@@ -228,16 +228,16 @@ metadata:
   name: terrafusion-service-monitor
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/monitoring: "prometheus"
+    terrafusion.gov/monitoring: 'prometheus'
 spec:
   selector:
     matchLabels:
       app: terrafusion-microservices
   endpoints:
-  - port: http-monitoring
-    path: /metrics
-    interval: 15s
-    honorLabels: true
+    - port: http-monitoring
+      path: /metrics
+      interval: 15s
+      honorLabels: true
 ---
 # Network Policy for Zero-Trust
 apiVersion: networking.k8s.io/v1
@@ -246,40 +246,40 @@ metadata:
   name: terrafusion-zero-trust
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/security: "zero-trust"
+    terrafusion.gov/security: 'zero-trust'
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: istio-system
-    - namespaceSelector:
-        matchLabels:
-          name: terrafusion-microservices
-    - namespaceSelector:
-        matchLabels:
-          name: terrafusion-system
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: istio-system
+        - namespaceSelector:
+            matchLabels:
+              name: terrafusion-microservices
+        - namespaceSelector:
+            matchLabels:
+              name: terrafusion-system
   egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: istio-system
-    - namespaceSelector:
-        matchLabels:
-          name: terrafusion-microservices
-    - namespaceSelector:
-        matchLabels:
-          name: terrafusion-system
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 53
-    - protocol: UDP
-      port: 53
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: istio-system
+        - namespaceSelector:
+            matchLabels:
+              name: terrafusion-microservices
+        - namespaceSelector:
+            matchLabels:
+              name: terrafusion-system
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
 ---
 # EnvoyFilter for Custom Headers
 apiVersion: networking.istio.io/v1alpha3
@@ -288,52 +288,52 @@ metadata:
   name: terrafusion-headers
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/customization: "headers"
+    terrafusion.gov/customization: 'headers'
 spec:
   configPatches:
-  - applyTo: HTTP_FILTER
-    match:
-      context: SIDECAR_INBOUND
-      listener:
-        filterChain:
-          filter:
-            name: "envoy.filters.network.http_connection_manager"
-    patch:
-      operation: INSERT_BEFORE
-      value:
-        name: envoy.filters.http.wasm
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
-          config:
-            name: "terrafusion_headers"
-            vm_config:
-              vm_id: "terrafusion_headers"
-              runtime: "envoy.wasm.runtime.null"
-              code:
-                local:
-                  inline_string: |
-                    addEventListener("context_creation", (rootContext) => {
-                      return new HeadersContext(rootContext);
-                    });
-                    
-                    class HeadersContext {
-                      constructor(rootContext) {
-                        this.rootContext = rootContext;
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: 'envoy.filters.network.http_connection_manager'
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.wasm
+          typed_config:
+            '@type': type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+            config:
+              name: 'terrafusion_headers'
+              vm_config:
+                vm_id: 'terrafusion_headers'
+                runtime: 'envoy.wasm.runtime.null'
+                code:
+                  local:
+                    inline_string: |
+                      addEventListener("context_creation", (rootContext) => {
+                        return new HeadersContext(rootContext);
+                      });
+
+                      class HeadersContext {
+                        constructor(rootContext) {
+                          this.rootContext = rootContext;
+                        }
+                        
+                        onHttpRequestHeaders() {
+                          this.addRequestHeader("x-terrafusion-version", "1.0.0");
+                          this.addRequestHeader("x-government-compliance", "fisma-high");
+                          this.addRequestHeader("x-quantum-enhanced", "true");
+                          return FilterHeadersStatus.Continue;
+                        }
+                        
+                        onHttpResponseHeaders() {
+                          this.addResponseHeader("x-terrafusion-processed", "true");
+                          this.addResponseHeader("x-security-headers-applied", "true");
+                          return FilterHeadersStatus.Continue;
+                        }
                       }
-                      
-                      onHttpRequestHeaders() {
-                        this.addRequestHeader("x-terrafusion-version", "1.0.0");
-                        this.addRequestHeader("x-government-compliance", "fisma-high");
-                        this.addRequestHeader("x-quantum-enhanced", "true");
-                        return FilterHeadersStatus.Continue;
-                      }
-                      
-                      onHttpResponseHeaders() {
-                        this.addResponseHeader("x-terrafusion-processed", "true");
-                        this.addResponseHeader("x-security-headers-applied", "true");
-                        return FilterHeadersStatus.Continue;
-                      }
-                    }
 ---
 # Request Authentication for JWT
 apiVersion: security.istio.io/v1beta1
@@ -342,18 +342,18 @@ metadata:
   name: terrafusion-jwt
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/auth: "jwt"
+    terrafusion.gov/auth: 'jwt'
 spec:
   selector:
     matchLabels:
       app: terrafusion-gateway
   jwtRules:
-  - issuer: "https://auth.terrafusion.gov"
-    jwksUri: "https://auth.terrafusion.gov/.well-known/jwks.json"
-    audiences:
-    - "api.terrafusion.gov"
-    - "portal.terrafusion.gov"
-    forwardOriginalToken: true
+    - issuer: 'https://auth.terrafusion.gov'
+      jwksUri: 'https://auth.terrafusion.gov/.well-known/jwks.json'
+      audiences:
+        - 'api.terrafusion.gov'
+        - 'portal.terrafusion.gov'
+      forwardOriginalToken: true
 ---
 # Workload Entry for External Services
 apiVersion: networking.istio.io/v1beta1
@@ -363,7 +363,7 @@ metadata:
   namespace: terrafusion-microservices
   labels:
     app: harris-pacs
-    terrafusion.gov/external-service: "true"
+    terrafusion.gov/external-service: 'true'
 spec:
   address: harris-pacs.county.gov
   ports:
@@ -379,18 +379,18 @@ metadata:
   name: terrafusion-external-services
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/external: "true"
+    terrafusion.gov/external: 'true'
 spec:
   hosts:
-  - harris-pacs.county.gov
-  - tyler-tech.api.com
-  - aumentum.systems.api
+    - harris-pacs.county.gov
+    - tyler-tech.api.com
+    - aumentum.systems.api
   ports:
-  - number: 443
-    name: https
-    protocol: HTTPS
-  - number: 80
-    name: http
-    protocol: HTTP
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
   location: MESH_EXTERNAL
   resolution: DNS

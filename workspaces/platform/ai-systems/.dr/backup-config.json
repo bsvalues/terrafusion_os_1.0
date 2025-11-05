@@ -50,10 +50,7 @@
       "strategy": "active-passive",
       "rpo_hours": 4,
       "data_centers": 2,
-      "regions": [
-        "us-east-1",
-        "us-west-2"
-      ],
+      "regions": ["us-east-1", "us-west-2"],
       "consistency": "strong",
       "conflict_resolution": "latest-write-wins"
     },

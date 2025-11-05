@@ -5,6 +5,7 @@ using TerraFusion.Operations.Services;
 using TerraFusion.Operations.Interfaces;
 using TerraFusion.Operations.Models;
 using TerraFusion.Abstractions.Interfaces;
+using ElitePerformanceMetrics = TerraFusion.Operations.Models.ElitePerformanceMetrics;
 
 namespace TerraFusion.API.Controllers;
 

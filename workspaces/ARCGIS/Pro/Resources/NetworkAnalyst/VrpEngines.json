@@ -1,13 +1,13 @@
 {
-    "VrpEngines": {
-        "MediumDensity": {
-            "Name": "MediumDensity"
-        },
-        "HighDensity": {
-            "Name": "HighDensity"
-        },
-        "Custom": {
-            "Name": "CustomEngine"
-        }
+  "VrpEngines": {
+    "MediumDensity": {
+      "Name": "MediumDensity"
+    },
+    "HighDensity": {
+      "Name": "HighDensity"
+    },
+    "Custom": {
+      "Name": "CustomEngine"
     }
+  }
 }

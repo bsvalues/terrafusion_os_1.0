@@ -1,27 +1,17 @@
 {
-    "renderer": {
-        "type": "simple",
-        "symbol": {
-            "type": "esriSFS",
-            "style": "esriSFSSolid",
-            "color": [
-                79,
-                129,
-                189,
-                255
-            ],
-            "outline": {
-                "type": "esriSLS",
-                "style": "esriSLSSolid",
-                "color": [
-                    54,
-                    93,
-                    141,
-                    255
-                ],
-                "width": 1.5
-            }
-        }
-    },
-    "transparency": 25
+  "renderer": {
+    "type": "simple",
+    "symbol": {
+      "type": "esriSFS",
+      "style": "esriSFSSolid",
+      "color": [79, 129, 189, 255],
+      "outline": {
+        "type": "esriSLS",
+        "style": "esriSLSSolid",
+        "color": [54, 93, 141, 255],
+        "width": 1.5
+      }
+    }
+  },
+  "transparency": 25
 }

@@ -5,7 +5,7 @@
   "Description": "The Common Sensor Attitude data (CSATTB) DES provides chronologically-ordered sensor attitude information needed to run the rigorous sensor model that performs geolocation and mensuration. Quaternion data provided in this DES are used to construct an orthogonal rotation matrix that transforms a line-of-sight vector from the sensor frame to the object (ECF or ECI) frame. This DES is used in conjunction with the other GLAS/GFM SDEs.",
   "Size": 25,
   "Fields": {
-    "DE" : {
+    "DE": {
       "Name": "File Part Type",
       "Description": "This field shall contain the characters DE.",
       "Size": 2,
@@ -15,8 +15,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["DE"]          
-        }        
+          "Values": ["DE"]
+        }
       ]
     },
     "DESVER": {
@@ -71,7 +71,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -86,7 +86,7 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 999          
+          "Max": 999
         },
         {
           "Type": "Value",
@@ -105,7 +105,7 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 999          
+          "Max": 999
         }
       ]
     },
@@ -120,7 +120,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 276          
+          "Max": 276
         }
       ]
     },
@@ -133,7 +133,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"                   
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -147,7 +147,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0"]                   
+          "Values": ["0"]
         }
       ]
     },
@@ -160,7 +160,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"                             
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -175,7 +175,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 1                             
+          "Max": 1
         }
       ]
     },
@@ -190,7 +190,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 3                             
+          "Max": 3
         }
       ]
     },
@@ -204,7 +204,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["3", "5", "7", "1", "3"]                                       
+          "Values": ["3", "5", "7", "1", "3"]
         }
       ]
     },
@@ -219,7 +219,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 2                                      
+          "Max": 2
         }
       ]
     },
@@ -234,7 +234,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 1                                      
+          "Max": 1
         }
       ]
     },
@@ -247,7 +247,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                                               
+          "Type": "DateTimeUTC"
         }
       ]
     },
@@ -261,8 +261,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                               
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -279,8 +279,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                               
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -297,8 +297,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                               
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -315,8 +315,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                               
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -333,8 +333,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                               
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -351,8 +351,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                               
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -368,7 +368,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                                              
+          "Type": "DateTimeUTC"
         }
       ]
     },
@@ -381,7 +381,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                                              
+          "Type": "DateTimeUTC"
         }
       ]
     },
@@ -395,8 +395,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                              
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -413,8 +413,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                              
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -431,8 +431,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                              
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -449,8 +449,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                              
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -467,8 +467,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                              
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -485,8 +485,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                                              
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -502,7 +502,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                                              
+          "Type": "DateTimeUTC"
         }
       ]
     },
@@ -515,7 +515,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                                              
+          "Type": "DateTimeUTC"
         }
       ]
     },
@@ -528,7 +528,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                                              
+          "Type": "DateTimeUTC"
         }
       ]
     },
@@ -542,8 +542,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -560,8 +560,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -578,8 +578,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -596,8 +596,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -614,8 +614,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -632,8 +632,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -650,8 +650,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -668,8 +668,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -686,8 +686,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -704,8 +704,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -718,7 +718,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                                                      
+          "Type": "DateTimeUTC"
         }
       ]
     },
@@ -731,7 +731,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                                            
+          "Type": "DateTimeUTC"
         }
       ]
     },
@@ -744,7 +744,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                                            
+          "Type": "DateTimeUTC"
         }
       ]
     },
@@ -757,7 +757,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                                            
+          "Type": "DateTimeUTC"
         }
       ]
     },
@@ -772,7 +772,7 @@
         {
           "Type": "Range",
           "Min": 0.000000001,
-          "Max": 999.999999999                                            
+          "Max": 999.999999999
         }
       ]
     },
@@ -785,7 +785,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"                                            
+          "Type": "Date"
         }
       ]
     },
@@ -798,7 +798,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"                                            
+          "Type": "Time"
         }
       ]
     },
@@ -813,7 +813,7 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99999                                            
+          "Max": 99999
         }
       ]
     },
@@ -827,8 +827,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000000000,
-          "Max": 1.000000000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -842,8 +842,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000000000,
-          "Max": 1.000000000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -857,8 +857,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000000000,
-          "Max": 1.000000000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -872,8 +872,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000000000000,
-          "Max": 1.000000000000000                                            
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -887,8 +887,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min":  0,
-          "Max":  0                                            
+          "Min": 0,
+          "Max": 0
         }
       ]
     }

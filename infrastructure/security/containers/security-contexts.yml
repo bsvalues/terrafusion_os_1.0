@@ -11,7 +11,7 @@ data:
   security_requirements: |
     # GOVERNMENT-GRADE CONTAINER SECURITY
     # All containers MUST comply with these standards
-    
+
     MANDATORY_REQUIREMENTS:
     1. Non-root user execution (UID >= 1000)
     2. Read-only root filesystem
@@ -92,89 +92,89 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - name: api
-        image: terrafusion/api:latest-secure
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 5000
-          name: http
-          protocol: TCP
-        env:
-        - name: ASPNETCORE_ENVIRONMENT
-          value: "Production"
-        - name: ASPNETCORE_URLS
-          value: "http://+:5000"
-        - name: DATABASE_CONNECTION
-          valueFrom:
-            secretKeyRef:
-              name: database-credentials
-              key: connection-string
-        - name: JWT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: jwt-credentials
-              key: secret
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 1001
-          runAsGroup: 1001
-          capabilities:
-            drop:
-            - ALL
-          seccompProfile:
-            type: RuntimeDefault
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-            ephemeral-storage: "1Gi"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-            ephemeral-storage: "2Gi"
-        livenessProbe:
-          httpGet:
-            path: /health/live
-            port: 5000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/ready
-            port: 5000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 3
-        volumeMounts:
-        - name: tmp-volume
-          mountPath: /tmp
-        - name: app-cache
-          mountPath: /app/cache
-        - name: logs-volume
-          mountPath: /app/logs
+        - name: api
+          image: terrafusion/api:latest-secure
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+              name: http
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: 'Production'
+            - name: ASPNETCORE_URLS
+              value: 'http://+:5000'
+            - name: DATABASE_CONNECTION
+              valueFrom:
+                secretKeyRef:
+                  name: database-credentials
+                  key: connection-string
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-credentials
+                  key: secret
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '250m'
+              ephemeral-storage: '1Gi'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
+              ephemeral-storage: '2Gi'
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: app-cache
+              mountPath: /app/cache
+            - name: logs-volume
+              mountPath: /app/logs
       volumes:
-      - name: tmp-volume
-        emptyDir:
-          sizeLimit: 100Mi
-      - name: app-cache
-        emptyDir:
-          sizeLimit: 500Mi
-      - name: logs-volume
-        emptyDir:
-          sizeLimit: 1Gi
+        - name: tmp-volume
+          emptyDir:
+            sizeLimit: 100Mi
+        - name: app-cache
+          emptyDir:
+            sizeLimit: 500Mi
+        - name: logs-volume
+          emptyDir:
+            sizeLimit: 1Gi
       nodeSelector:
         kubernetes.io/arch: amd64
         node-security-level: high
       tolerations:
-      - key: "government-workload"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
+        - key: 'government-workload'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoSchedule'
 
 ---
 # AI Swarm Service - Secure Deployment
@@ -206,48 +206,48 @@ spec:
         runAsGroup: 1002
         fsGroup: 1002
       containers:
-      - name: ai-coordinator
-        image: terrafusion/ai-swarm:latest-secure
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-          name: coordinator
-        env:
-        - name: AI_SWARM_SIZE
-          value: "1008"
-        - name: REDIS_CONNECTION
-          valueFrom:
-            secretKeyRef:
-              name: redis-credentials
-              key: connection-string
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 1002
-          capabilities:
-            drop:
-            - ALL
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "4Gi"
-            cpu: "2000m"
-        volumeMounts:
-        - name: ai-tmp
-          mountPath: /tmp
-        - name: ai-models
-          mountPath: /app/models
-          readOnly: true
+        - name: ai-coordinator
+          image: terrafusion/ai-swarm:latest-secure
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: coordinator
+          env:
+            - name: AI_SWARM_SIZE
+              value: '1008'
+            - name: REDIS_CONNECTION
+              valueFrom:
+                secretKeyRef:
+                  name: redis-credentials
+                  key: connection-string
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1002
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
+            limits:
+              memory: '4Gi'
+              cpu: '2000m'
+          volumeMounts:
+            - name: ai-tmp
+              mountPath: /tmp
+            - name: ai-models
+              mountPath: /app/models
+              readOnly: true
       volumes:
-      - name: ai-tmp
-        emptyDir:
-          sizeLimit: 2Gi
-      - name: ai-models
-        configMap:
-          name: ai-models-config
+        - name: ai-tmp
+          emptyDir:
+            sizeLimit: 2Gi
+        - name: ai-models
+          configMap:
+            name: ai-models-config
 
 ---
 # Database - Secure PostgreSQL
@@ -271,64 +271,64 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 999  # PostgreSQL user
+        runAsUser: 999 # PostgreSQL user
         runAsGroup: 999
         fsGroup: 999
       containers:
-      - name: postgres
-        image: postgres:15-alpine
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_DB
-          value: terrafusion_production
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: postgres-credentials
-              key: username
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-credentials
-              key: password
-        - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false  # PostgreSQL needs write access
-          runAsNonRoot: true
-          runAsUser: 999
-          capabilities:
-            drop:
-            - ALL
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: terrafusion_production
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false # PostgreSQL needs write access
+            runAsNonRoot: true
+            runAsUser: 999
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              memory: '2Gi'
+              cpu: '1000m'
+            limits:
+              memory: '8Gi'
+              cpu: '4000m'
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+            - name: postgres-config
+              mountPath: /etc/postgresql/postgresql.conf
+              subPath: postgresql.conf
+              readOnly: true
+      volumes:
+        - name: postgres-config
+          configMap:
+            name: postgres-secure-config
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: fast-ssd-encrypted
         resources:
           requests:
-            memory: "2Gi"
-            cpu: "1000m"
-          limits:
-            memory: "8Gi"
-            cpu: "4000m"
-        volumeMounts:
-        - name: postgres-data
-          mountPath: /var/lib/postgresql/data
-        - name: postgres-config
-          mountPath: /etc/postgresql/postgresql.conf
-          subPath: postgresql.conf
-          readOnly: true
-      volumes:
-      - name: postgres-config
-        configMap:
-          name: postgres-secure-config
-  volumeClaimTemplates:
-  - metadata:
-      name: postgres-data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: fast-ssd-encrypted
-      resources:
-        requests:
-          storage: 100Gi
+            storage: 100Gi
 
 ---
 # Network Security Policies
@@ -340,49 +340,49 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: ingress-nginx
-    - podSelector:
-        matchLabels:
-          tier: frontend
-    ports:
-    - protocol: TCP
-      port: 5000
-  - from:
-    - podSelector:
-        matchLabels:
-          tier: monitoring
-    ports:
-    - protocol: TCP
-      port: 8080  # Metrics
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+        - podSelector:
+            matchLabels:
+              tier: frontend
+      ports:
+        - protocol: TCP
+          port: 5000
+    - from:
+        - podSelector:
+            matchLabels:
+              tier: monitoring
+      ports:
+        - protocol: TCP
+          port: 8080 # Metrics
   egress:
-  - to:
-    - podSelector:
-        matchLabels:
-          tier: database
-    ports:
-    - protocol: TCP
-      port: 5432
-  - to:
-    - podSelector:
-        matchLabels:
-          app: redis
-    ports:
-    - protocol: TCP
-      port: 6379
-  - to: []  # Allow external HTTPS
-    ports:
-    - protocol: TCP
-      port: 443
-    - protocol: TCP
-      port: 53   # DNS
-    - protocol: UDP
-      port: 53   # DNS
+    - to:
+        - podSelector:
+            matchLabels:
+              tier: database
+      ports:
+        - protocol: TCP
+          port: 5432
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to: [] # Allow external HTTPS
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 53 # DNS
+        - protocol: UDP
+          port: 53 # DNS
 
 ---
 # Resource Quotas for Security
@@ -393,14 +393,14 @@ metadata:
   namespace: terrafusion-system
 spec:
   hard:
-    requests.cpu: "20"
+    requests.cpu: '20'
     requests.memory: 40Gi
-    limits.cpu: "50"
+    limits.cpu: '50'
     limits.memory: 100Gi
-    persistentvolumeclaims: "10"
-    pods: "50"
-    secrets: "20"
-    configmaps: "20"
+    persistentvolumeclaims: '10'
+    pods: '50'
+    secrets: '20'
+    configmaps: '20'
 
 ---
 # Security Monitoring ServiceMonitor
@@ -414,6 +414,6 @@ spec:
     matchLabels:
       security.monitoring: enabled
   endpoints:
-  - port: metrics
-    interval: 30s
-    path: /metrics/security
+    - port: metrics
+      interval: 30s
+      path: /metrics/security

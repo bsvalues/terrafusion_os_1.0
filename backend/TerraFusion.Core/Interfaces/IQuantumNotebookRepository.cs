@@ -34,8 +34,8 @@ public interface IQuantumNotebookRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of notebooks</returns>
     Task<IEnumerable<QuantumNotebook>> GetByUserIdAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         bool includeArchived = false,
         CancellationToken cancellationToken = default);
 
@@ -47,7 +47,7 @@ public interface IQuantumNotebookRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of notebooks</returns>
     Task<IEnumerable<QuantumNotebook>> GetByCountyIdAsync(
-        int countyId,
+        Guid countyId,
         bool includeArchived = false,
         CancellationToken cancellationToken = default);
 
@@ -60,8 +60,8 @@ public interface IQuantumNotebookRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of notebooks</returns>
     Task<IEnumerable<QuantumNotebook>> GetByLanguageAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string language,
         CancellationToken cancellationToken = default);
 
@@ -74,8 +74,8 @@ public interface IQuantumNotebookRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of matching notebooks</returns>
     Task<IEnumerable<QuantumNotebook>> SearchAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string searchTerm,
         CancellationToken cancellationToken = default);
 
@@ -87,8 +87,8 @@ public interface IQuantumNotebookRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of favorite notebooks</returns>
     Task<IEnumerable<QuantumNotebook>> GetFavoritesAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -133,8 +133,8 @@ public interface IQuantumNotebookRepository
     /// <returns>True if user has access</returns>
     Task<bool> HasAccessAsync(
         int notebookId,
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -145,7 +145,7 @@ public interface IQuantumNotebookRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Notebook count</returns>
     Task<int> GetCountAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default);
 }

@@ -1,89 +1,88 @@
-
 groups:
-- name: xmtp_recording_rules
-  interval: 30s
-  rules:
-  - record: xmtp_messages_rate_per_minute
-    expr: sum by (consent,scope) (rate(xmtp_messages_total[1m])) * 60
-  - record: xmtp_messages_rate_per_second
-    expr: sum by (consent,scope) (rate(xmtp_messages_total[1m]))
-  - record: xmtp_latency_p95_ms
-    expr: histogram_quantile(0.95, sum by (le) (rate(xmtp_message_latency_ms_bucket[5m])))
-  - record: xmtp_latency_p99_ms
-    expr: histogram_quantile(0.99, sum by (le) (rate(xmtp_message_latency_ms_bucket[5m])))
-  - record: xmtp_push_success_ratio
-    expr: sum(rate(xmtp_push_deliveries_total{status="success"}[5m])) / clamp_min(sum(rate(xmtp_push_deliveries_total[5m])), 1)
-  - record: xmtp_push_latency_p95_ms
-    expr: histogram_quantile(0.95, sum by (le) (rate(xmtp_push_latency_ms_bucket[5m])))
-  - record: xmtp_error_rate_per_minute
-    expr: sum(rate(xmtp_errors_total[1m])) * 60
-  - record: xmtp_ai_router_utilization
-    expr: sum(rate(xmtp_ai_router_requests_total[5m])) / clamp_min(sum(xmtp_ai_router_capacity), 1)
-  - record: xmtp_consents_allowed_ratio
-    expr: sum(xmtp_inbox_state{consent="allowed"}) / clamp_min(sum(xmtp_inbox_state), 1)
-  - record: xmtp_records_threads_ratio
-    expr: sum(xmtp_threads_records_enabled) / clamp_min(sum(xmtp_threads_total), 1)
-  - record: xmtp_kms_escrow_latency_p95_ms
-    expr: histogram_quantile(0.95, sum by (le) (rate(xmtp_kms_escrow_latency_ms_bucket[5m])))
-  - record: xmtp_federation_link_health_ratio
-    expr: sum(xmtp_federation_link_up) / clamp_min(count(xmtp_federation_link_up),1)
+  - name: xmtp_recording_rules
+    interval: 30s
+    rules:
+      - record: xmtp_messages_rate_per_minute
+        expr: sum by (consent,scope) (rate(xmtp_messages_total[1m])) * 60
+      - record: xmtp_messages_rate_per_second
+        expr: sum by (consent,scope) (rate(xmtp_messages_total[1m]))
+      - record: xmtp_latency_p95_ms
+        expr: histogram_quantile(0.95, sum by (le) (rate(xmtp_message_latency_ms_bucket[5m])))
+      - record: xmtp_latency_p99_ms
+        expr: histogram_quantile(0.99, sum by (le) (rate(xmtp_message_latency_ms_bucket[5m])))
+      - record: xmtp_push_success_ratio
+        expr: sum(rate(xmtp_push_deliveries_total{status="success"}[5m])) / clamp_min(sum(rate(xmtp_push_deliveries_total[5m])), 1)
+      - record: xmtp_push_latency_p95_ms
+        expr: histogram_quantile(0.95, sum by (le) (rate(xmtp_push_latency_ms_bucket[5m])))
+      - record: xmtp_error_rate_per_minute
+        expr: sum(rate(xmtp_errors_total[1m])) * 60
+      - record: xmtp_ai_router_utilization
+        expr: sum(rate(xmtp_ai_router_requests_total[5m])) / clamp_min(sum(xmtp_ai_router_capacity), 1)
+      - record: xmtp_consents_allowed_ratio
+        expr: sum(xmtp_inbox_state{consent="allowed"}) / clamp_min(sum(xmtp_inbox_state), 1)
+      - record: xmtp_records_threads_ratio
+        expr: sum(xmtp_threads_records_enabled) / clamp_min(sum(xmtp_threads_total), 1)
+      - record: xmtp_kms_escrow_latency_p95_ms
+        expr: histogram_quantile(0.95, sum by (le) (rate(xmtp_kms_escrow_latency_ms_bucket[5m])))
+      - record: xmtp_federation_link_health_ratio
+        expr: sum(xmtp_federation_link_up) / clamp_min(count(xmtp_federation_link_up),1)
 
-- name: xmtp_alerts
-  interval: 30s
-  rules:
-  - alert: XMTPHighLatency
-    expr: xmtp_latency_p95_ms > 300
-    for: 5m
-    labels: { severity: "warning", team: "platform" }
-    annotations:
-      summary: "XMTP p95 latency high (>300ms)"
-      description: "Message p95 latency is {{ $value }} ms for the last 5m."
-  - alert: XMTPElevatedErrors
-    expr: sum(rate(xmtp_errors_total[5m])) > 5
-    for: 10m
-    labels: { severity: "critical", team: "platform" }
-    annotations:
-      summary: "XMTP error rate elevated"
-      description: "Errors/sec across gateway or worker exceeded threshold."
-  - alert: XMTPLowPushSuccess
-    expr: xmtp_push_success_ratio < 0.995
-    for: 10m
-    labels: { severity: "critical", team: "platform" }
-    annotations:
-      summary: "Push delivery ratio dropped"
-      description: "Push deliveries < 99.5% success over 10m window."
-  - alert: XMTPFederationLinkDown
-    expr: xmtp_federation_link_health_ratio < 1
-    for: 10m
-    labels: { severity: "warning", team: "platform" }
-    annotations:
-      summary: "Federation link unhealthy"
-      description: "One or more inter-county/state links are down."
-  - alert: XMTPKmsEscrowSlowness
-    expr: xmtp_kms_escrow_latency_p95_ms > 2000
-    for: 5m
-    labels: { severity: "warning", team: "security" }
-    annotations:
-      summary: "KMS escrow latency high"
-      description: "p95 escrow round-trip exceeds 2s."
-  - alert: XMTPAIOrchestratorSaturation
-    expr: xmtp_ai_router_utilization > 0.8
-    for: 10m
-    labels: { severity: "warning", team: "ai" }
-    annotations:
-      summary: "AI relay saturation"
-      description: "Agent Relay Protocol router >80% capacity."
-  - alert: XMTPConsentDrift
-    expr: xmtp_consents_allowed_ratio < 0.7
-    for: 60m
-    labels: { severity: "info", team: "civic" }
-    annotations:
-      summary: "Consent allowed ratio low"
-      description: "Less than 70% of inboxes are in allowed state; review outreach."
-  - alert: XMTPRecordsCoverageLow
-    expr: xmtp_records_threads_ratio < 0.2
-    for: 60m
-    labels: { severity: "info", team: "records" }
-    annotations:
-      summary: "Records coverage low"
-      description: "Only a small portion of threads have Records toggle ON."
+  - name: xmtp_alerts
+    interval: 30s
+    rules:
+      - alert: XMTPHighLatency
+        expr: xmtp_latency_p95_ms > 300
+        for: 5m
+        labels: { severity: 'warning', team: 'platform' }
+        annotations:
+          summary: 'XMTP p95 latency high (>300ms)'
+          description: 'Message p95 latency is {{ $value }} ms for the last 5m.'
+      - alert: XMTPElevatedErrors
+        expr: sum(rate(xmtp_errors_total[5m])) > 5
+        for: 10m
+        labels: { severity: 'critical', team: 'platform' }
+        annotations:
+          summary: 'XMTP error rate elevated'
+          description: 'Errors/sec across gateway or worker exceeded threshold.'
+      - alert: XMTPLowPushSuccess
+        expr: xmtp_push_success_ratio < 0.995
+        for: 10m
+        labels: { severity: 'critical', team: 'platform' }
+        annotations:
+          summary: 'Push delivery ratio dropped'
+          description: 'Push deliveries < 99.5% success over 10m window.'
+      - alert: XMTPFederationLinkDown
+        expr: xmtp_federation_link_health_ratio < 1
+        for: 10m
+        labels: { severity: 'warning', team: 'platform' }
+        annotations:
+          summary: 'Federation link unhealthy'
+          description: 'One or more inter-county/state links are down.'
+      - alert: XMTPKmsEscrowSlowness
+        expr: xmtp_kms_escrow_latency_p95_ms > 2000
+        for: 5m
+        labels: { severity: 'warning', team: 'security' }
+        annotations:
+          summary: 'KMS escrow latency high'
+          description: 'p95 escrow round-trip exceeds 2s.'
+      - alert: XMTPAIOrchestratorSaturation
+        expr: xmtp_ai_router_utilization > 0.8
+        for: 10m
+        labels: { severity: 'warning', team: 'ai' }
+        annotations:
+          summary: 'AI relay saturation'
+          description: 'Agent Relay Protocol router >80% capacity.'
+      - alert: XMTPConsentDrift
+        expr: xmtp_consents_allowed_ratio < 0.7
+        for: 60m
+        labels: { severity: 'info', team: 'civic' }
+        annotations:
+          summary: 'Consent allowed ratio low'
+          description: 'Less than 70% of inboxes are in allowed state; review outreach.'
+      - alert: XMTPRecordsCoverageLow
+        expr: xmtp_records_threads_ratio < 0.2
+        for: 60m
+        labels: { severity: 'info', team: 'records' }
+        annotations:
+          summary: 'Records coverage low'
+          description: 'Only a small portion of threads have Records toggle ON.'

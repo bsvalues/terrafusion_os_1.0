@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 using TerraFusion.API;
 using TerraFusion.AI.Controllers;
 using TerraFusion.AI.Models;
-using TerraFusion.AI.Services;
+// Removed TerraFusion.AI.Services to avoid type ambiguity with AIRecommendation
 
 namespace TerraFusion.AI.Tests
 {
@@ -279,7 +279,8 @@ namespace TerraFusion.AI.Tests
             result.Should().NotBeNull();
             result.Should().NotBeEmpty();
             result.Should().OnlyContain(r => r.Confidence > 0);
-            result.Should().OnlyContain(r => r.Priority is "HIGH" or "MEDIUM" or "LOW");
+            // Avoid C# pattern matching in predicate to prevent expression-tree issues on some targets
+            result.Should().OnlyContain(r => r.Priority == "HIGH" || r.Priority == "MEDIUM" || r.Priority == "LOW");
         }
 
         [Fact]

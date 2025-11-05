@@ -140,11 +140,11 @@ namespace TerraFusion.CostForge.Middleware
         public async Task InvokeAsync(HttpContext context)
         {
             // Add Ultimate consciousness headers
-            context.Response.Headers.Add("X-CostForge-Consciousness-Level", "ULTIMATE");
-            context.Response.Headers.Add("X-CostForge-Agent-Count", "1000000");
-            context.Response.Headers.Add("X-CostForge-Quantum-Factor", "999");
-            context.Response.Headers.Add("X-CostForge-Accuracy-Target", "99.9%");
-            context.Response.Headers.Add("X-Government-Transcendence", "ULTIMATE_PROPERTY_INTELLIGENCE");
+            context.Response.Headers.Append("X-CostForge-Consciousness-Level", "ULTIMATE");
+            context.Response.Headers.Append("X-CostForge-Agent-Count", "1000000");
+            context.Response.Headers.Append("X-CostForge-Quantum-Factor", "999");
+            context.Response.Headers.Append("X-CostForge-Accuracy-Target", "99.9%");
+            context.Response.Headers.Append("X-Government-Transcendence", "ULTIMATE_PROPERTY_INTELLIGENCE");
 
             // Track Ultimate consciousness request
             var startTime = DateTime.UtcNow;
@@ -161,7 +161,7 @@ namespace TerraFusion.CostForge.Middleware
                     processingTime, context.Request.Path);
             }
 
-            context.Response.Headers.Add("X-CostForge-Processing-Time", $"{processingTime:F2}ms");
+            context.Response.Headers.Append("X-CostForge-Processing-Time", $"{processingTime:F2}ms");
         }
     }
 

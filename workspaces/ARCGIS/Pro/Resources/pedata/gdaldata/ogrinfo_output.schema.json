@@ -9,7 +9,6 @@
   ],
 
   "definitions": {
-
     "dataset": {
       "type": "object",
       "properties": {
@@ -41,11 +40,7 @@
           "$ref": "#/definitions/group"
         }
       },
-      "required": [
-        "layers",
-        "metadata",
-        "domains"
-      ],
+      "required": ["layers", "metadata", "domains"],
       "additionalProperties": false
     },
 
@@ -83,12 +78,7 @@
           }
         }
       },
-      "required": [
-        "name",
-        "metadata",
-        "geometryFields",
-        "fields"
-      ],
+      "required": ["name", "metadata", "geometryFields", "fields"],
       "additionalProperties": false
     },
 
@@ -155,12 +145,7 @@
           "pattern": "^(localtime|(mixed timezones)|UTC|((\\+|-)[0-9][0-9]:[0-9][0-9]))$"
         }
       },
-      "required": [
-        "name",
-        "type",
-        "nullable",
-        "uniqueConstraint"
-      ],
+      "required": ["name", "type", "nullable", "uniqueConstraint"],
       "additionalProperties": false
     },
 
@@ -182,14 +167,7 @@
     },
 
     "fieldSubType": {
-      "enum": [
-        "None",
-        "Boolean",
-        "Int16",
-        "Float32",
-        "JSON",
-        "UUID"
-      ]
+      "enum": ["None", "Boolean", "Int16", "Float32", "JSON", "UUID"]
     },
 
     "geometryField": {
@@ -215,10 +193,7 @@
         "extent3D": {
           "type": "array",
           "items": {
-            "type": [
-              "null",
-              "number"
-            ],
+            "type": ["null", "number"],
             "minItems": 6,
             "maxItems": 6
           }
@@ -279,10 +254,7 @@
           "type": "object"
         }
       },
-      "required": [
-        "name",
-        "type"
-      ],
+      "required": ["name", "type"],
       "additionalProperties": false
     },
 
@@ -307,10 +279,7 @@
           "type": "number"
         }
       },
-      "required": [
-        "wkt",
-        "dataAxisToSRSAxisMapping"
-      ],
+      "required": ["wkt", "dataAxisToSRSAxisMapping"],
       "additionalProperties": false
     },
 
@@ -338,11 +307,7 @@
           "type": "string"
         },
         "type": {
-          "enum": [
-            "coded",
-            "range",
-            "glob"
-          ]
+          "enum": ["coded", "range", "glob"]
         },
         "fieldType": {
           "$ref": "#/definitions/fieldType"
@@ -359,18 +324,10 @@
           "$ref": "#/definitions/keyValueDict"
         },
         "splitPolicy": {
-          "enum": [
-            "default value",
-            "duplicate",
-            "geometry ratio"
-          ]
+          "enum": ["default value", "duplicate", "geometry ratio"]
         },
         "mergePolicy": {
-          "enum": [
-            "default value",
-            "sum",
-            "geometry weighted"
-          ]
+          "enum": ["default value", "sum", "geometry weighted"]
         },
         "minValue": {
           "$comment": "only present when type=range",
@@ -403,12 +360,7 @@
           "type": "boolean"
         }
       },
-      "required": [
-        "type",
-        "fieldType",
-        "splitPolicy",
-        "mergePolicy"
-      ],
+      "required": ["type", "fieldType", "splitPolicy", "mergePolicy"],
       "additionalProperties": false
     },
 
@@ -431,10 +383,7 @@
           }
         }
       },
-      "required": [
-        "layerNames",
-        "groups"
-      ],
+      "required": ["layerNames", "groups"],
       "additionalProperties": false
     },
 
@@ -453,23 +402,14 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "Composite",
-            "Association",
-            "Aggregation"
-          ]
+          "enum": ["Composite", "Association", "Aggregation"]
         },
         "related_table_type": {
           "type": "string"
         },
         "cardinality": {
           "type": "string",
-          "enum": [
-            "OneToOne",
-            "OneToMany",
-            "ManyToOne",
-            "ManyToMany"
-          ]
+          "enum": ["OneToOne", "OneToMany", "ManyToOne", "ManyToMany"]
         },
         "left_table_name": {
           "type": "string"

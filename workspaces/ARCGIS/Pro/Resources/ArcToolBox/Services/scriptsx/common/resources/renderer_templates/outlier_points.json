@@ -1,140 +1,95 @@
 {
-    "renderer": {
-        "type": "uniqueValue",
-        "field1": "COType",
-        "uniqueValueInfos": [
-            {
-                "symbol": {
-                    "type": "esriSMS",
-                    "style": "esriSMSCircle",
-                    "color": [
-                        240,
-                        184,
-                        177,
-                        255
-                    ],
-                    "size": 5,
-                    "angle": 0,
-                    "xoffset": 0,
-                    "yoffset": 0,
-                    "outline": {
-                        "color": [
-                            179,
-                            137,
-                            132,
-                            255
-                        ],
-                        "width": 0.5
-                    }
-                },
-                "value": "HH",
-                "label": "High-High Cluster",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSMS",
-                    "style": "esriSMSCircle",
-                    "color": [
-                        224,
-                        27,
-                        27,
-                        255
-                    ],
-                    "size": 6,
-                    "angle": 0,
-                    "xoffset": 0,
-                    "yoffset": 0,
-                    "outline": {
-                        "color": [
-                            168,
-                            20,
-                            20,
-                            255
-                        ],
-                        "width": 0.5
-                    }
-                },
-                "value": "HL",
-                "label": "High-Low Outlier",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSMS",
-                    "style": "esriSMSCircle",
-                    "color": [
-                        27,
-                        83,
-                        224,
-                        255
-                    ],
-                    "size": 6,
-                    "angle": 0,
-                    "xoffset": 0,
-                    "yoffset": 0,
-                    "outline": {
-                        "color": [
-                            18,
-                            57,
-                            118,
-                            255
-                        ],
-                        "width": 0.5
-                    }
-                },
-                "value": "LH",
-                "label": "Low-High Outlier",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSMS",
-                    "style": "esriSMSCircle",
-                    "color": [
-                        153,
-                        208,
-                        232,
-                        255
-                    ],
-                    "size": 5,
-                    "angle": 0,
-                    "xoffset": 0,
-                    "yoffset": 0,
-                    "outline": {
-                        "color": [
-                            126,
-                            171,
-                            191,
-                            255
-                        ],
-                        "width": 0.5
-                    }
-                },
-                "value": "LL",
-                "label": "Low-Low Cluster",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSMS",
-                    "style": "esriSMSCircle",
-                    "color": [
-                        156,
-                        156,
-                        156,
-                        255
-                    ],
-                    "size": 2,
-                    "angle": 0,
-                    "xoffset": 0,
-                    "yoffset": 0
-                },
-                "value": "NS",
-                "label": "Not Significant",
-                "description": ""
-            }
-        ],
-        "fieldDelimiter": ","
-    }
+  "renderer": {
+    "type": "uniqueValue",
+    "field1": "COType",
+    "uniqueValueInfos": [
+      {
+        "symbol": {
+          "type": "esriSMS",
+          "style": "esriSMSCircle",
+          "color": [240, 184, 177, 255],
+          "size": 5,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0,
+          "outline": {
+            "color": [179, 137, 132, 255],
+            "width": 0.5
+          }
+        },
+        "value": "HH",
+        "label": "High-High Cluster",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSMS",
+          "style": "esriSMSCircle",
+          "color": [224, 27, 27, 255],
+          "size": 6,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0,
+          "outline": {
+            "color": [168, 20, 20, 255],
+            "width": 0.5
+          }
+        },
+        "value": "HL",
+        "label": "High-Low Outlier",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSMS",
+          "style": "esriSMSCircle",
+          "color": [27, 83, 224, 255],
+          "size": 6,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0,
+          "outline": {
+            "color": [18, 57, 118, 255],
+            "width": 0.5
+          }
+        },
+        "value": "LH",
+        "label": "Low-High Outlier",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSMS",
+          "style": "esriSMSCircle",
+          "color": [153, 208, 232, 255],
+          "size": 5,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0,
+          "outline": {
+            "color": [126, 171, 191, 255],
+            "width": 0.5
+          }
+        },
+        "value": "LL",
+        "label": "Low-Low Cluster",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSMS",
+          "style": "esriSMSCircle",
+          "color": [156, 156, 156, 255],
+          "size": 2,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0
+        },
+        "value": "NS",
+        "label": "Not Significant",
+        "description": ""
+      }
+    ],
+    "fieldDelimiter": ","
+  }
 }

@@ -2,52 +2,24 @@
   "quantum_security": {
     "enabled": true,
     "level": "quantum-resistant",
-    "pqc_algorithms": [
-      "kyber",
-      "dilithium",
-      "sphincs"
-    ],
-    "standards": [
-      "NIST-PQC",
-      "FIPS-203",
-      "FIPS-204",
-      "FIPS-205"
-    ]
+    "pqc_algorithms": ["kyber", "dilithium", "sphincs"],
+    "standards": ["NIST-PQC", "FIPS-203", "FIPS-204", "FIPS-205"]
   },
   "post_quantum_cryptography": {
     "enabled": true,
     "key_encapsulation_mechanism": {
       "algorithm": "kyber",
-      "variants": [
-        "kyber512",
-        "kyber768",
-        "kyber1024"
-      ],
-      "security_levels": [
-        "level1",
-        "level3",
-        "level5"
-      ]
+      "variants": ["kyber512", "kyber768", "kyber1024"],
+      "security_levels": ["level1", "level3", "level5"]
     },
     "digital_signatures": {
       "algorithm": "dilithium",
-      "variants": [
-        "dilithium2",
-        "dilithium3",
-        "dilithium5"
-      ],
-      "security_levels": [
-        "level2",
-        "level3",
-        "level5"
-      ]
+      "variants": ["dilithium2", "dilithium3", "dilithium5"],
+      "security_levels": ["level2", "level3", "level5"]
     },
     "hash_based_signatures": {
       "algorithm": "sphincs",
-      "variants": [
-        "sphincs-shake256",
-        "sphincs-sha2"
-      ],
+      "variants": ["sphincs-shake256", "sphincs-sha2"],
       "stateless": true
     },
     "lattice_encryption": {

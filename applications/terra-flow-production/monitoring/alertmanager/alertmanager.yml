@@ -52,8 +52,8 @@ route:
       group_wait: 1m
       group_interval: 10m
       repeat_interval: 1h
-      
-    # System alerts  
+
+    # System alerts
     - match:
         job: node
       receiver: 'system-notifications'

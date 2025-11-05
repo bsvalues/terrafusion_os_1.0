@@ -10,7 +10,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/property/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "ServiceName": "property-service",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
@@ -41,7 +41,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/citizen/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "ServiceName": "citizen-service",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
@@ -68,7 +68,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/policy/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "ServiceName": "policy-service",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
@@ -88,7 +88,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/compliance/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "ServiceName": "compliance-service",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
@@ -108,7 +108,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/ai/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "ServiceName": "quantum-ai-service",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
@@ -135,7 +135,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/knowledge/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "ServiceName": "knowledge-graph-service",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
@@ -155,7 +155,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/emotion/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "ServiceName": "emotional-intelligence-service",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
@@ -175,7 +175,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/integration/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "ServiceName": "legacy-integration-service",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
@@ -195,7 +195,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/analytics/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "ServiceName": "analytics-service",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"
@@ -215,7 +215,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/identity/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "ServiceName": "identity-service",
       "LoadBalancerOptions": {
         "Type": "RoundRobin"

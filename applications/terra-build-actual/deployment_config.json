@@ -7,9 +7,6 @@
   },
   "ai_orchestrator": {
     "max_agents": 6,
-    "models": [
-      "gpt-4",
-      "llama3.2"
-    ]
+    "models": ["gpt-4", "llama3.2"]
   }
 }

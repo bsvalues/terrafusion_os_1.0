@@ -6,7 +6,7 @@ services:
     image: postgres:14-alpine
     container_name: terrafusionpro-postgres
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_USER: terrafusionpro
       POSTGRES_PASSWORD: terrafusionpro
@@ -23,7 +23,7 @@ services:
       dockerfile: ./packages/api/Dockerfile
     container_name: terrafusionpro-api-gateway
     ports:
-      - "5002:5002"
+      - '5002:5002'
     environment:
       - NODE_ENV=development
       - API_GATEWAY_PORT=5002
@@ -44,7 +44,7 @@ services:
       dockerfile: ./packages/web-client/Dockerfile
     container_name: terrafusionpro-web-client
     ports:
-      - "5000:5000"
+      - '5000:5000'
     environment:
       - NODE_ENV=development
       - API_URL=http://api-gateway:5002

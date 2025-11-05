@@ -8,9 +8,9 @@ groups:
           severity: warning
           service: ai_agents
         annotations:
-          summary: "Agent Inactive"
-          description: "Agent {{ $labels.agent_id }} has been inactive for {{ $value }} seconds"
-          
+          summary: 'Agent Inactive'
+          description: 'Agent {{ $labels.agent_id }} has been inactive for {{ $value }} seconds'
+
       - alert: AgentHighErrorRate
         expr: terrafusion_agent_error_count{} > 10
         for: 15m
@@ -18,9 +18,9 @@ groups:
           severity: warning
           service: ai_agents
         annotations:
-          summary: "Agent High Error Rate"
-          description: "Agent {{ $labels.agent_id }} has {{ $value }} errors in the last 15 minutes"
-          
+          summary: 'Agent High Error Rate'
+          description: 'Agent {{ $labels.agent_id }} has {{ $value }} errors in the last 15 minutes'
+
       - alert: AgentCriticalError
         expr: terrafusion_agent_critical_errors{} > 0
         for: 1m
@@ -28,9 +28,9 @@ groups:
           severity: critical
           service: ai_agents
         annotations:
-          summary: "Agent Critical Error"
-          description: "Agent {{ $labels.agent_id }} has encountered a critical error: {{ $labels.error }}"
-          
+          summary: 'Agent Critical Error'
+          description: 'Agent {{ $labels.agent_id }} has encountered a critical error: {{ $labels.error }}'
+
       - alert: AgentMemoryHigh
         expr: terrafusion_agent_memory_usage{} > 90
         for: 10m
@@ -38,9 +38,9 @@ groups:
           severity: warning
           service: ai_agents
         annotations:
-          summary: "Agent High Memory Usage"
-          description: "Agent {{ $labels.agent_id }} is using {{ $value }}% of memory"
-          
+          summary: 'Agent High Memory Usage'
+          description: 'Agent {{ $labels.agent_id }} is using {{ $value }}% of memory'
+
       - alert: AgentRestartFailure
         expr: terrafusion_agent_restart_failure{} > 3
         for: 30m
@@ -48,9 +48,9 @@ groups:
           severity: critical
           service: ai_agents
         annotations:
-          summary: "Agent Restart Failure"
-          description: "Agent {{ $labels.agent_id }} failed to restart {{ $value }} times"
-          
+          summary: 'Agent Restart Failure'
+          description: 'Agent {{ $labels.agent_id }} failed to restart {{ $value }} times'
+
       - alert: AgentSystemUnhealthy
         expr: terrafusion_agent_system_healthy == 0
         for: 5m
@@ -58,9 +58,9 @@ groups:
           severity: critical
           service: ai_agents
         annotations:
-          summary: "Agent System Unhealthy"
-          description: "The Agent System is reporting unhealthy status"
-          
+          summary: 'Agent System Unhealthy'
+          description: 'The Agent System is reporting unhealthy status'
+
       - alert: TooFewActiveAgents
         expr: terrafusion_active_agent_count < 3
         for: 10m
@@ -68,5 +68,5 @@ groups:
           severity: warning
           service: ai_agents
         annotations:
-          summary: "Too Few Active Agents"
-          description: "Only {{ $value }} agents are active, expected at least 3"
+          summary: 'Too Few Active Agents'
+          description: 'Only {{ $value }} agents are active, expected at least 3'

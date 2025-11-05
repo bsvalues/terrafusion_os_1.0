@@ -1,50 +1,50 @@
-body{
-    font-family: Arial, Helvetica, sans-serif;
-    font-size:14px;
-    padding:1em;
-    max-width:960px;
-    margin: 0 auto;
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  padding: 1em;
+  max-width: 960px;
+  margin: 0 auto;
 }
 
 h1 {
-    color: #007AC2;
-    font-size: 30px;
-    }
-h1#Adjustment_Report{
-    padding-top:64px;
-    background:url("logo.jpg") no-repeat;
-    }
+  color: #007ac2;
+  font-size: 30px;
+}
+h1#Adjustment_Report {
+  padding-top: 64px;
+  background: url('logo.jpg') no-repeat;
+}
 
 h1#Adjustment_Subtitle {
-    background-color: none;
-    color: #007AC2;
-    font-size: 20px;
-    margin-top:1em;
+  background-color: none;
+  color: #007ac2;
+  font-size: 20px;
+  margin-top: 1em;
 }
 /* section headers */
-h2{
-    background-color: #d9dd69;
-    font-size: 16px;
-    line-height: 20px;
-    padding: 3px;
-    padding-left: 6px;
-    margin-top:1.8em;
+h2 {
+  background-color: #d9dd69;
+  font-size: 16px;
+  line-height: 20px;
+  padding: 3px;
+  padding-left: 6px;
+  margin-top: 1.8em;
 }
-h2#Adjustment_Summary{
-    color: white;
-    background-color: #007AC2;
+h2#Adjustment_Summary {
+  color: white;
+  background-color: #007ac2;
 }
 /* table styles */
 table {
-    border-collapse: collapse;
-    border:1px solid #ccc;
-    //border-top:7px solid #444;
-    width:95%;
-    margin: 0 0 0 5%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  //border-top: 7px solid #444;
+  width: 95%;
+  margin: 0 0 0 5%;
 }
 
-table tbody tr td{
-    border-bottom:1px solid #ccc;
+table tbody tr td {
+  border-bottom: 1px solid #ccc;
 }
 /*
  table rows
@@ -62,79 +62,73 @@ table tr:nth-child(3n+2) td{
  table cells
  alternating white and gray cell background color
 */
-table tbody tr td{
-    width:auto;
-    border-left:1px solid #ccc;
-    padding: 5px;
-    font-size:14px;
-    color: #444;
+table tbody tr td {
+  width: auto;
+  border-left: 1px solid #ccc;
+  padding: 5px;
+  font-size: 14px;
+  color: #444;
 }
 table tbody tr td:nth-child(2n) {
-    background-color:#eee;
+  background-color: #eee;
 }
 table thead tr th {
-    border-left:1px solid #ccc;
-    padding:5px 3px;
-    font-size:14px;
-    text-align:left;
-    border-top:#ccc 1px solid;
+  border-left: 1px solid #ccc;
+  padding: 5px 3px;
+  font-size: 14px;
+  text-align: left;
+  border-top: #ccc 1px solid;
 }
 table thead tr th {
-    background-color:#e9eea9;
+  background-color: #e9eea9;
 }
 table#Summary thead tr th {
-    background-color:#66aad6;
-    color:white;
+  background-color: #66aad6;
+  color: white;
 }
 table#Overlap tbody tr td {
-    background-color:white;
-    border:none;
+  background-color: white;
+  border: none;
 }
-table#Overlap  {
-    border:none;
+table#Overlap {
+  border: none;
 }
-div.center img{
-    max-width:95%;
-    margin:0 0 0 5%;
-    border: none;
+div.center img {
+  max-width: 95%;
+  margin: 0 0 0 5%;
+  border: none;
 }
-h5.caption{
-    margin:0 0 0 5%
+h5.caption {
+  margin: 0 0 0 5%;
 }
-.overlap_scale #one
-{
-    width: 30px;
-    height: 15px;
-    background-color: rgb(255,128,0);
+.overlap_scale #one {
+  width: 30px;
+  height: 15px;
+  background-color: rgb(255, 128, 0);
 }
-.overlap_scale #two
-{
-    width: 30px;
-    height: 15px;
-    background-color: rgb(255,171,0);
+.overlap_scale #two {
+  width: 30px;
+  height: 15px;
+  background-color: rgb(255, 171, 0);
 }
-.overlap_scale #three
-{
-    width: 30px;
-    height: 15px;
-    background-color: rgb(255,213,0);
+.overlap_scale #three {
+  width: 30px;
+  height: 15px;
+  background-color: rgb(255, 213, 0);
 }
-.overlap_scale #four
- {
-     width: 30px;
-     height: 15px;
-     background-color: rgb(192,255,0);
- }
-.overlap_scale #five
-{
-    width: 30px;
-    height: 15px;
-    background-color: rgb(128,255,0);
+.overlap_scale #four {
+  width: 30px;
+  height: 15px;
+  background-color: rgb(192, 255, 0);
+}
+.overlap_scale #five {
+  width: 30px;
+  height: 15px;
+  background-color: rgb(128, 255, 0);
 }
 
-.overlap_scale #six
-{
-    width: 30px;
-    height: 15px;
-    background-color: rgb(0,255,0);
+.overlap_scale #six {
+  width: 30px;
+  height: 15px;
+  background-color: rgb(0, 255, 0);
 }

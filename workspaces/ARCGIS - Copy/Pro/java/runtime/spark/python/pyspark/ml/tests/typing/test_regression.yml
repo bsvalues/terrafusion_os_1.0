@@ -26,9 +26,8 @@
     reveal_type(lrm.setPredictionCol("baz"))
 
   out: |
-     main:4: note: Revealed type is "pyspark.ml.regression.LinearRegression"
-     main:7: note: Revealed type is "pyspark.ml.regression.LinearRegressionModel"
-
+    main:4: note: Revealed type is "pyspark.ml.regression.LinearRegression"
+    main:7: note: Revealed type is "pyspark.ml.regression.LinearRegressionModel"
 
 - case: loadFMRegressor
   main: |
@@ -41,7 +40,6 @@
     fm_model.factors.numCols
 
     fm_model.foo()  # E: "FMRegressionModel" has no attribute "foo"  [attr-defined]
-
 
 - case: loadLinearRegressor
   main: |

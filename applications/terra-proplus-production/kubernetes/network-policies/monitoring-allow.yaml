@@ -8,16 +8,16 @@ spec:
     matchLabels:
       app.kubernetes.io/name: terrafusion
   policyTypes:
-  - Ingress
+    - Ingress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: monitoring
-    - podSelector:
-        matchLabels:
-          app: prometheus
-    ports:
-    - protocol: TCP
-      port: 8080
-      # Metrics endpoint
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8080
+          # Metrics endpoint

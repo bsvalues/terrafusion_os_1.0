@@ -6,13 +6,18 @@ using Moq;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Services;
+using TerraFusion.Core.Metrics;
+// Resolve type ambiguities: Use types from interface namespace
+using PropertyValuationRequest = TerraFusion.Core.Interfaces.PropertyValuationRequest;
+using PropertyValuationResult = TerraFusion.Core.Interfaces.PropertyValuationResult;
+using IHarrisPACSIntegrationService = TerraFusion.Core.Interfaces.IHarrisPACSIntegrationService;
 
 namespace TerraFusion.Performance.Tests.UnitBenchmarks;
 
 /// <summary>
 /// 🎯 Property Valuation AI Enhancement Service - Unit Benchmark Tests
 /// Championship Target: <2 seconds end-to-end, <500ms per workflow step
-/// 
+///
 /// Validates performance of individual PropertyValuationAIEnhancementService operations:
 /// - Step 1: Data Ingestion (TerraSync) - Target: <200ms
 /// - Step 2: Multi-System Validation - Target: <150ms

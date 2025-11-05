@@ -5,7 +5,13 @@
   "description": "JSON schema for TerraFusion Agent Relay Protocol enabling secure inter-agent communication and workflow orchestration across government environments",
   "type": "object",
   "version": "1.0.0",
-  "required": ["protocol_version", "message_type", "source_agent", "target_agent", "payload"],
+  "required": [
+    "protocol_version",
+    "message_type",
+    "source_agent",
+    "target_agent",
+    "payload"
+  ],
   "properties": {
     "protocol_version": {
       "type": "string",
@@ -14,7 +20,16 @@
     },
     "message_type": {
       "type": "string",
-      "enum": ["workflow_request", "workflow_response", "status_update", "error_notification", "heartbeat", "discovery", "capability_query", "resource_allocation"],
+      "enum": [
+        "workflow_request",
+        "workflow_response",
+        "status_update",
+        "error_notification",
+        "heartbeat",
+        "discovery",
+        "capability_query",
+        "resource_allocation"
+      ],
       "description": "Type of message being transmitted"
     },
     "message_id": {
@@ -46,14 +61,14 @@
     },
     "payload": {
       "oneOf": [
-        {"$ref": "#/definitions/workflow_request"},
-        {"$ref": "#/definitions/workflow_response"},
-        {"$ref": "#/definitions/status_update"},
-        {"$ref": "#/definitions/error_notification"},
-        {"$ref": "#/definitions/heartbeat"},
-        {"$ref": "#/definitions/discovery"},
-        {"$ref": "#/definitions/capability_query"},
-        {"$ref": "#/definitions/resource_allocation"}
+        { "$ref": "#/definitions/workflow_request" },
+        { "$ref": "#/definitions/workflow_response" },
+        { "$ref": "#/definitions/status_update" },
+        { "$ref": "#/definitions/error_notification" },
+        { "$ref": "#/definitions/heartbeat" },
+        { "$ref": "#/definitions/discovery" },
+        { "$ref": "#/definitions/capability_query" },
+        { "$ref": "#/definitions/resource_allocation" }
       ],
       "description": "Message payload specific to the message type"
     },
@@ -74,7 +89,14 @@
         },
         "agent_type": {
           "type": "string",
-          "enum": ["coordination_agent", "compliance_agent", "workflow_agent", "monitoring_agent", "security_agent", "data_agent"],
+          "enum": [
+            "coordination_agent",
+            "compliance_agent",
+            "workflow_agent",
+            "monitoring_agent",
+            "security_agent",
+            "data_agent"
+          ],
           "description": "Type/role of the agent"
         },
         "agent_name": {
@@ -94,7 +116,16 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["data_processing", "workflow_execution", "compliance_checking", "monitoring", "alerting", "reporting", "coordination", "resource_management"]
+            "enum": [
+              "data_processing",
+              "workflow_execution",
+              "compliance_checking",
+              "monitoring",
+              "alerting",
+              "reporting",
+              "coordination",
+              "resource_management"
+            ]
           },
           "description": "List of capabilities this agent provides"
         },
@@ -111,12 +142,24 @@
       "properties": {
         "classification": {
           "type": "string",
-          "enum": ["unclassified", "cui", "confidential", "secret", "top_secret"],
+          "enum": [
+            "unclassified",
+            "cui",
+            "confidential",
+            "secret",
+            "top_secret"
+          ],
           "description": "Data classification level"
         },
         "clearance_level": {
           "type": "string",
-          "enum": ["public", "internal", "restricted", "confidential", "secret"],
+          "enum": [
+            "public",
+            "internal",
+            "restricted",
+            "confidential",
+            "secret"
+          ],
           "description": "Required clearance level to process this message"
         },
         "access_controls": {
@@ -172,7 +215,14 @@
         },
         "workflow_type": {
           "type": "string",
-          "enum": ["compliance_check", "data_processing", "report_generation", "monitoring_setup", "resource_provision", "incident_response"],
+          "enum": [
+            "compliance_check",
+            "data_processing",
+            "report_generation",
+            "monitoring_setup",
+            "resource_provision",
+            "incident_response"
+          ],
           "description": "Type of workflow being requested"
         },
         "priority": {
@@ -222,7 +272,15 @@
         },
         "step_type": {
           "type": "string",
-          "enum": ["validate", "process", "transform", "notify", "approve", "escalate", "archive"],
+          "enum": [
+            "validate",
+            "process",
+            "transform",
+            "notify",
+            "approve",
+            "escalate",
+            "archive"
+          ],
           "description": "Type of operation for this step"
         },
         "step_name": {
@@ -276,7 +334,14 @@
         },
         "status": {
           "type": "string",
-          "enum": ["accepted", "rejected", "in_progress", "completed", "failed", "cancelled"],
+          "enum": [
+            "accepted",
+            "rejected",
+            "in_progress",
+            "completed",
+            "failed",
+            "cancelled"
+          ],
           "description": "Current status of the workflow"
         },
         "progress": {
@@ -475,7 +540,11 @@
       "properties": {
         "query_type": {
           "type": "string",
-          "enum": ["list_capabilities", "check_capability", "request_capability"],
+          "enum": [
+            "list_capabilities",
+            "check_capability",
+            "request_capability"
+          ],
           "description": "Type of capability query"
         },
         "capability_filter": {
@@ -527,7 +596,14 @@
       "properties": {
         "resource_type": {
           "type": "string",
-          "enum": ["cpu", "memory", "storage", "network_bandwidth", "compute_instance", "database_connection"],
+          "enum": [
+            "cpu",
+            "memory",
+            "storage",
+            "network_bandwidth",
+            "compute_instance",
+            "database_connection"
+          ],
           "description": "Type of resource"
         },
         "quantity": {

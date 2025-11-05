@@ -5,7 +5,7 @@
   "Description": "The NITF file shall begin with the file header, whose fields contain identification and origination information, file-level security information, and the number and size of segments of each type, such as image segment(s), graphics segments(s), and text segment(s), contained in the file.",
   "Size": 362,
   "Fields": {
-    "FHDR" : {
+    "FHDR": {
       "Name": "File Profile Name",
       "Description": "A BCS character string of the form NITFNN.NN which indicates this file is formatted using version NN.NN of NITF. The valid value for this field is 02.10..",
       "Size": 4,
@@ -19,7 +19,7 @@
         }
       ]
     },
-    "FVER" : {
+    "FVER": {
       "Name": "File Version",
       "Description": "This field shall contain a BCS-A character string uniquely denoting the version. The valid valuefor this field is 02.10.",
       "Size": 5,
@@ -523,7 +523,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["000"]          
+          "Values": ["000"]
         }
       ]
     },
@@ -538,7 +538,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 999         
+          "Max": 999
         }
       ]
     },
@@ -553,7 +553,7 @@
         {
           "Type": "Range",
           "Min": 282,
-          "Max": 9999         
+          "Max": 9999
         }
       ]
     },
@@ -568,7 +568,7 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99999         
+          "Max": 99999
         }
       ]
     },
@@ -583,7 +583,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 999         
+          "Max": 999
         }
       ]
     },
@@ -598,7 +598,7 @@
         {
           "Type": "Range",
           "Min": 200,
-          "Max": 9999         
+          "Max": 9999
         }
       ]
     },
@@ -613,7 +613,7 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 999999999         
+          "Max": 999999999
         }
       ]
     },
@@ -628,7 +628,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 999        
+          "Max": 999
         }
       ]
     },
@@ -643,7 +643,7 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 9999        
+          "Max": 9999
         }
       ]
     },
@@ -658,7 +658,7 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 9999999        
+          "Max": 9999999
         }
       ]
     },
@@ -673,7 +673,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 99999        
+          "Max": 99999
         }
       ]
     },
@@ -688,7 +688,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 999        
+          "Max": 999
         }
       ]
     },
@@ -702,7 +702,7 @@
       "Values": [
         {
           "Type": "AlphaNumeric"
-        }  
+        }
       ]
     },
     "XHDL": {
@@ -717,7 +717,7 @@
           "Type": "Range",
           "Min": 0,
           "Max": 99999
-        }  
+        }
       ]
     },
     "XHDLOFL": {
@@ -732,7 +732,7 @@
           "Type": "Range",
           "Min": 0,
           "Max": 999
-        }  
+        }
       ]
     },
     "XHD": {
@@ -745,8 +745,8 @@
       "Values": [
         {
           "Type": "AlphaNumeric"
-        }  
+        }
       ]
-    }    
+    }
   }
 }

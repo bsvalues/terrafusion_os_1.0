@@ -7,41 +7,41 @@ on:
     branches: [main, develop]
   schedule:
     # Run nightly builds at 2 AM UTC
-    - cron: "0 2 * * *"
+    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       deployment_environment:
-        description: "Target deployment environment"
+        description: 'Target deployment environment'
         required: true
-        default: "staging"
+        default: 'staging'
         type: choice
         options:
           - staging
           - production
       run_security_scan:
-        description: "Run comprehensive security scan"
+        description: 'Run comprehensive security scan'
         required: false
         default: true
         type: boolean
       run_penetration_test:
-        description: "Run penetration testing"
+        description: 'Run penetration testing'
         required: false
         default: false
         type: boolean
       run_compliance_validation:
-        description: "Run government compliance validation"
+        description: 'Run government compliance validation'
         required: false
         default: true
         type: boolean
 
 env:
-  DOTNET_VERSION: "8.0.x"
-  NODE_VERSION: "20.x"
+  DOTNET_VERSION: '8.0.x'
+  NODE_VERSION: '20.x'
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  TERRAFUSION_VERSION: "1.0.0"
+  TERRAFUSION_VERSION: '1.0.0'
   AZURE_WEBAPP_NAME: terrafusion-os
-  AZURE_WEBAPP_PACKAGE_PATH: "."
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
 
 jobs:
   # Code Quality and Security Scanning
@@ -59,7 +59,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: 'npm'
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -144,7 +144,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: 'npm'
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -173,8 +173,8 @@ jobs:
 
       - name: Run integration tests
         env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres"
-          ConnectionStrings__Redis: "localhost:6379"
+          ConnectionStrings__DefaultConnection: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
+          ConnectionStrings__Redis: 'localhost:6379'
         run: |
           cd backend
           dotnet test TerraFusion.IntegrationTests --configuration Release --verbosity normal
@@ -214,7 +214,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: 'npm'
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -277,7 +277,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: "*-build-*"
+          pattern: '*-build-*'
           merge-multiple: true
 
       - name: Set up Docker Buildx
@@ -538,7 +538,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: success
-          text: "TerraFusion OS 1.0 successfully deployed to production! 🚀"
+          text: 'TerraFusion OS 1.0 successfully deployed to production! 🚀'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -577,6 +577,6 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: failure
-          text: "TerraFusion OS 1.0 deployment failed. Rollback completed. 🔄"
+          text: 'TerraFusion OS 1.0 deployment failed. Rollback completed. 🔄'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

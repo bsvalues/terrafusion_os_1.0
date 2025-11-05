@@ -6,26 +6,15 @@
   },
   "predictive_analytics": {
     "enabled": true,
-    "features": [
-      "violation-likelihood",
-      "resolution-time",
-      "repeat-offender"
-    ],
+    "features": ["violation-likelihood", "resolution-time", "repeat-offender"],
     "prediction_window_days": 90,
     "confidence_threshold": 0.75,
     "update_frequency_hours": 24,
-    "models": [
-      "classification",
-      "clustering"
-    ]
+    "models": ["classification", "clustering"]
   },
   "anomaly_detection": {
     "enabled": true,
-    "detectors": [
-      "complaint-anomalies",
-      "case-anomalies",
-      "fraud-patterns"
-    ],
+    "detectors": ["complaint-anomalies", "case-anomalies", "fraud-patterns"],
     "sensitivity": "medium",
     "real_time": false,
     "batch_window_hours": 24,
@@ -41,10 +30,7 @@
     "daily_volume_gb": 200
   },
   "ml_infrastructure": {
-    "frameworks": [
-      "scikit-learn",
-      "xgboost"
-    ],
+    "frameworks": ["scikit-learn", "xgboost"],
     "gpu_enabled": false,
     "distributed_training": true,
     "model_registry": "enabled",
@@ -54,11 +40,7 @@
   "optimization": {
     "auto_scaling": {
       "enabled": true,
-      "metrics": [
-        "cpu",
-        "memory",
-        "request_latency"
-      ],
+      "metrics": ["cpu", "memory", "request_latency"],
       "target_utilization": 70,
       "scale_up_threshold": 80,
       "scale_down_threshold": 30,

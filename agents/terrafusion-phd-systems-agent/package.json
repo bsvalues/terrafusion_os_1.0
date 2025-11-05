@@ -1,0 +1,30 @@
+{
+  "name": "terrafusion-phd-systems-agent",
+  "version": "1.0.0",
+  "description": "TerraFusion MIT PhD Systems Agent - Elite evidence-based engineering agent",
+  "main": "dist/engine/quality-first-engine.js",
+  "scripts": {
+    "build": "tsc",
+    "diagnostic": "ts-node tools/system-diagnostic.ts",
+    "validate": "ts-node tools/validation-framework.ts",
+    "test": "echo 'Integration tests coming soon'",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "terrafusion",
+    "ai-agent",
+    "systems-engineering",
+    "quality-first",
+    "evidence-based"
+  ],
+  "author": "TerraFusion OS",
+  "license": "PROPRIETARY",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "ts-node": "^10.9.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

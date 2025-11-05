@@ -53,4 +53,4 @@ groups:
           severity: warning
         annotations:
           summary: High Redis memory usage
-          description: Redis memory usage is above 80% 
+          description: Redis memory usage is above 80%

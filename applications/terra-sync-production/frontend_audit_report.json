@@ -178,15 +178,8 @@
           "lookup_by_coordinates": "/api/district/lookup/coordinates"
         },
         "service": "Terrafusion District Lookup",
-        "supported_counties": [
-          "benton-wa"
-        ],
-        "supported_district_types": [
-          "fire",
-          "school",
-          "water",
-          "voting"
-        ],
+        "supported_counties": ["benton-wa"],
+        "supported_district_types": ["fire", "school", "water", "voting"],
         "version": "1.0.0"
       }
     },

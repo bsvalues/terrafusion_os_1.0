@@ -27,11 +27,7 @@
         "risk_level_controls": "high"
       },
       "L3_data_classification": {
-        "data_types": [
-          "system_metrics",
-          "performance_data",
-          "alert_data"
-        ],
+        "data_types": ["system_metrics", "performance_data", "alert_data"],
         "classification_level": "high",
         "privacy_requirements": "system_monitoring_privacy_rules",
         "retention_policies": "monitoring_data_retention",

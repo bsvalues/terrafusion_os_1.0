@@ -5,7 +5,7 @@
   "Description": "This TRE is used for pixel padding of images.",
   "Size": 362,
   "Fields": {
-    "RESERVED" : {
+    "RESERVED": {
       "Name": "Reserved Binary Field",
       "Description": "This field is a reserved binary field used for pixel padding of images.",
       "Size": 300,
@@ -17,6 +17,6 @@
           "Type": "Binary"
         }
       ]
-    }        
+    }
   }
 }

@@ -21,11 +21,7 @@
       "jsx": true
     }
   },
-  "plugins": [
-    "@typescript-eslint",
-    "react-refresh",
-    "react"
-  ],
+  "plugins": ["@typescript-eslint", "react-refresh", "react"],
   "settings": {
     "react": {
       "version": "detect"

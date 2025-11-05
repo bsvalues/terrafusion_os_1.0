@@ -17,7 +17,7 @@
     --tf-accent: #00e5ff;
 
     /* Typography tokens */
-    --font-family-base: "Inter", sans-serif;
+    --font-family-base: 'Inter', sans-serif;
     --font-size-h1: 48px;
     --font-size-body: 16px;
     --weight-bold: 600;
@@ -58,7 +58,7 @@
   }
 
   .tf-glow::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: -5px;
     background: var(--tf-primary);

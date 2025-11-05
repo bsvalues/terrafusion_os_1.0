@@ -47,15 +47,8 @@
         "security_level": "MEDIUM"
       }
     ],
-    "data_endpoints": [
-      "/health",
-      "/data",
-      "/operations",
-      "/status"
-    ],
-    "integration_points": [
-      "/api/v1/specialized/integration"
-    ]
+    "data_endpoints": ["/health", "/data", "/operations", "/status"],
+    "integration_points": ["/api/v1/specialized/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

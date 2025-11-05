@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/auth
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/auth
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/auth
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/auth
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/auth
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/auth
+    description: Development Environment
 paths:
   /login:
     post:
       tags:
-      - auth
+        - auth
       summary: User authentication
       description: User authentication - Authentication and authorization APIs
       operationId: post__login
       security:
-      - OAuth2:
-        - auth:write
+        - OAuth2:
+            - auth:write
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /token:
     post:
       tags:
-      - auth
+        - auth
       summary: Token generation
       description: Token generation - Authentication and authorization APIs
       operationId: post__token
       security:
-      - OAuth2:
-        - auth:write
+        - OAuth2:
+            - auth:write
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /authorize:
     get:
       tags:
-      - auth
+        - auth
       summary: Authorization check
       description: Authorization check - Authentication and authorization APIs
       operationId: get__authorize
       security:
-      - OAuth2:
-        - auth:read
+        - OAuth2:
+            - auth:read
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /logout:
     post:
       tags:
-      - auth
+        - auth
       summary: User logout
       description: User logout - Authentication and authorization APIs
       operationId: post__logout
       security:
-      - OAuth2:
-        - auth:write
+        - OAuth2:
+            - auth:write
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -206,12 +206,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - auth:read
-- ApiKey: []
+  - OAuth2:
+      - auth:read
+  - ApiKey: []
 tags:
-- name: auth
-  description: Auth operations
-  externalDocs:
-    description: Find out more about auth
-    url: https://docs.terrafusion.gov/platform/auth
+  - name: auth
+    description: Auth operations
+    externalDocs:
+      description: Find out more about auth
+      url: https://docs.terrafusion.gov/platform/auth

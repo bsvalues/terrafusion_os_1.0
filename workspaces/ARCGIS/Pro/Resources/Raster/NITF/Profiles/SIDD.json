@@ -26,30 +26,30 @@
       ],
       "LayerDefinitions": [
         {
-          "@Variables" : {
-            "SourceTemplate" : "RasterInfo-Geometric"
+          "@Variables": {
+            "SourceTemplate": "RasterInfo-Geometric"
           },
           "ref": "#LayerDefinition-1Band-Base",
           "Key": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Image_1Band_$%i+1$"
         },
         {
-          "@Variables" : {
-            "SourceTemplate" : "Catalog-1band-SIDD-RGB"
+          "@Variables": {
+            "SourceTemplate": "Catalog-1band-SIDD-RGB"
           },
           "ref": "#LayerDefinition-1Band-Base",
           "Key": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Catalog_Image_1Band_$%i+1$",
           "Disposition": "None"
         },
         {
-          "@Variables" : {
-            "SourceTemplate" : "RasterInfo-Geometric"
+          "@Variables": {
+            "SourceTemplate": "RasterInfo-Geometric"
           },
           "ref": "#LayerDefinition-3Bands-Base",
           "Key": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Image_3Bands_$%i+1$"
         },
         {
-          "@Variables" : {
-            "SourceTemplate" : "Catalog-3band-SIDD-RGB"
+          "@Variables": {
+            "SourceTemplate": "Catalog-3band-SIDD-RGB"
           },
           "ref": "#LayerDefinition-3Bands-Base",
           "Key": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Catalog_Image_3Bands_$%i+1$",
@@ -109,21 +109,11 @@
         "resamplingType": "BilinearInterpolation",
         "noDataColor": {
           "type": "CIMRGBColor",
-          "values": [
-            0,
-            0,
-            0,
-            0
-          ]
+          "values": [0, 0, 0, 0]
         },
         "backgroundColor": {
           "type": "CIMRGBColor",
-          "values": [
-            0,
-            0,
-            0,
-            0
-          ]
+          "values": [0, 0, 0, 0]
         },
         "backgroundValue": 0,
         "displayBackgroundValue": false,
@@ -135,8 +125,7 @@
       "autoComputeStatsHistogram": true
     },
     "LayerDefinition-Base": {
-      "@Variables": {
-      },
+      "@Variables": {},
       "Type": "Image",
       "Key": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Image_$%i+1$",
       "Title": "($/Images/%i/ICAT$) $/Images/%i/IID1$ / $/Images/%i/IID2$",
@@ -163,7 +152,6 @@
         "SAR_Product_StopTime": "$@{CollectDuration}$",
 
         "SAR_Product_Polarization": "$/DESs/%i/XML/SIDD/ImageFormation/TxRcvPolarizationProc?exp=@,(.*):(.*),\\1\\2,regex$",
-
 
         "SAR_Product_Rows": "$/DESs/%i/XML/SIDD/ImageData/NumRows$",
         "SAR_Product_Cols": "$/DESs/%i/XML/SIDD/ImageData/NumCols$",
@@ -241,7 +229,7 @@
         "autoComputeStatsHistogram": true
       }
     },
-    "MosaicDefinition-Base" : {
+    "MosaicDefinition-Base": {
       "ItemURI": {
         "Path": "$uri.path$/$uri.profile$##@{LayerObject}",
         "Key": "",
@@ -259,8 +247,7 @@
       },
       "Footprint": "",
       "ProcessingTemplate": "Default",
-      "Variables": {
-      },
+      "Variables": {},
       "Properties": {}
     }
   }

@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/businesses",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "businesses"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["businesses"]
         }
       },
       "response": []
@@ -127,12 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/incentives",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "incentives"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["incentives"]
         }
       },
       "response": []
@@ -160,12 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/permits",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "permits"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["permits"]
         }
       },
       "response": []
@@ -193,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/economic-data",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "economic-data"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["economic-data"]
         }
       },
       "response": []

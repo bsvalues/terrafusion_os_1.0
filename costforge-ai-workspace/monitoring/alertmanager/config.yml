@@ -45,12 +45,12 @@ receivers:
     email_configs:
       - to: 'team@terrafusion.example.com'
         send_resolved: true
-  
+
   - name: 'team-pager'
     pagerduty_configs:
       - service_key: '<PAGERDUTY_SERVICE_KEY>'
         send_resolved: true
-  
+
   - name: 'db-team'
     email_configs:
       - to: 'db-team@terrafusion.example.com'

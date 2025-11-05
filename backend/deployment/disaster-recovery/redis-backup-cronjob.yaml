@@ -13,7 +13,7 @@ metadata:
     app.kubernetes.io/name: redis-backup
     app.kubernetes.io/part-of: terrafusion-os
 spec:
-  schedule: "15 */6 * * *"  # Offset from Postgres by 15 minutes
+  schedule: '15 */6 * * *' # Offset from Postgres by 15 minutes
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 3
   jobTemplate:
@@ -33,7 +33,7 @@ spec:
               envFrom:
                 - secretRef:
                     name: redis-backup-credentials
-              command: ["/bin/sh","-c"]
+              command: ['/bin/sh', '-c']
               args:
                 - |
                   set -euo pipefail
@@ -51,11 +51,11 @@ spec:
                   mountPath: /backups
               resources:
                 requests:
-                  cpu: "50m"
-                  memory: "128Mi"
+                  cpu: '50m'
+                  memory: '128Mi'
                 limits:
-                  cpu: "250m"
-                  memory: "256Mi"
+                  cpu: '250m'
+                  memory: '256Mi'
           volumes:
             - name: backups
               persistentVolumeClaim:

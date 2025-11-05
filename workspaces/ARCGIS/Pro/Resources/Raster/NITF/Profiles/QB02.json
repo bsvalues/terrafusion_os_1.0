@@ -14,10 +14,8 @@
   "IDs": {
     "SensorNamePaths": [],
     "MissionPaths": [],
-    "MissionMatch": [ "QB02", "QB2", "QUICKBIRD2", "QUICKBIRD-2" ],
-    "Bands-Panchromatic-Basic": [
-      "#Band-Pan"
-    ],
+    "MissionMatch": ["QB02", "QB2", "QUICKBIRD2", "QUICKBIRD-2"],
+    "Bands-Panchromatic-Basic": ["#Band-Pan"],
     "Bands-Multispectral4Bands-Basic": [
       "#Band-Blue",
       "#Band-Green",
@@ -25,9 +23,7 @@
       "#Band-Near"
     ],
     "Bands-Multispectral8Bands-Basic": [],
-    "Bands-Panchromatic-Geo": [
-      "#Band-Pan"
-    ],
+    "Bands-Panchromatic-Geo": ["#Band-Pan"],
     "Bands-Multispectral4Bands-Geo": [
       "#Band-Blue",
       "#Band-Green",
@@ -35,11 +31,7 @@
       "#Band-Near"
     ],
     "Bands-Multispectral8Bands-Geo": [],
-    "Bands-Multispectral3Bands-Psh": [
-      "#Band-Red",
-      "#Band-Green",
-      "#Band-Blue"
-    ],
+    "Bands-Multispectral3Bands-Psh": ["#Band-Red", "#Band-Green", "#Band-Blue"],
     "Bands-Multispectral4Bands-Psh": [
       "#Band-Red",
       "#Band-Green",

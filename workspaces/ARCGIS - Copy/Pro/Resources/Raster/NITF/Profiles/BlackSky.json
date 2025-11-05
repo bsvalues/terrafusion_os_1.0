@@ -9,16 +9,46 @@
     "8BandRedIndex": 0,
     "8BandGreenIndex": 0,
     "8BandBlueIndex": 0
-
   },
   "Products": "Commercial/Products.json#NCDRDProducts-Max3Bands",
   "IDs": {
     "SensorNamePaths": [],
     "MissionPaths": "Commercial/Properties.json#Mission-Match-Paths",
-    "MissionMatch": ["GL01NA", "GL02NA", "GL04NA", "GL07NA", "GL08NA", "GL09NA", "GB08NA", "GL12NA","GL13NA", "GL14NA", "GL15NA","GL16NA", "GL17NA", "GL18NA", "GL19NA", "GL20NA", "GL01", "GL02", "GL04", "GL07", "GL08", "GL09", "GB08", "GL12", "GL13", "GL14", "GL15", "GL16", "GL17", "GL18", "GL19", "GL20"],
-    "Bands-Panchromatic-Basic": [
-      "#Band-Pan"
+    "MissionMatch": [
+      "GL01NA",
+      "GL02NA",
+      "GL04NA",
+      "GL07NA",
+      "GL08NA",
+      "GL09NA",
+      "GB08NA",
+      "GL12NA",
+      "GL13NA",
+      "GL14NA",
+      "GL15NA",
+      "GL16NA",
+      "GL17NA",
+      "GL18NA",
+      "GL19NA",
+      "GL20NA",
+      "GL01",
+      "GL02",
+      "GL04",
+      "GL07",
+      "GL08",
+      "GL09",
+      "GB08",
+      "GL12",
+      "GL13",
+      "GL14",
+      "GL15",
+      "GL16",
+      "GL17",
+      "GL18",
+      "GL19",
+      "GL20"
     ],
+    "Bands-Panchromatic-Basic": ["#Band-Pan"],
     "Bands-Multispectral3Bands-Basic": [
       "#Band-Blue",
       "#Band-Green",
@@ -30,25 +60,15 @@
       "#Band-Red",
       "#Band-Near"
     ],
-    "Bands-Panchromatic-Geo": [
-      "#Band-Pan"
-    ],
-    "Bands-Multispectral3Bands-Geo": [
-      "#Band-Blue",
-      "#Band-Green",
-      "#Band-Red"
-    ],
+    "Bands-Panchromatic-Geo": ["#Band-Pan"],
+    "Bands-Multispectral3Bands-Geo": ["#Band-Blue", "#Band-Green", "#Band-Red"],
     "Bands-Multispectral4Bands-Geo": [
       "#Band-Blue",
       "#Band-Green",
       "#Band-Red",
       "#Band-Near"
     ],
-    "Bands-Multispectral3Bands-Psh": [
-      "#Band-Red",
-      "#Band-Green",
-      "#Band-Blue"
-    ],
+    "Bands-Multispectral3Bands-Psh": ["#Band-Red", "#Band-Green", "#Band-Blue"],
     "Bands-Multispectral4Bands-Psh": [
       "#Band-Red",
       "#Band-Green",
@@ -82,6 +102,6 @@
       "BandName": "NearInfrared",
       "WavelengthMin": 780.0,
       "WavelengthMax": 920.0
-    }    
+    }
   }
 }

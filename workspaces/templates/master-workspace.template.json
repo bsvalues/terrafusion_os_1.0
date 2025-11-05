@@ -61,11 +61,7 @@
     },
     "git.autofetch": true,
     "git.enableSmartCommit": true,
-    "git.branchProtection": [
-      "main",
-      "develop",
-      "production"
-    ],
+    "git.branchProtection": ["main", "develop", "production"],
     "terminal.integrated.defaultProfile.windows": "PowerShell",
     "terrafusion.workspace": {
       "type": "${workspaceType}",
@@ -221,9 +217,7 @@
         "label": "Initialize AI Agent Team",
         "type": "shell",
         "command": "node",
-        "args": [
-          "${workspaceFolder}/.vscode/scripts/init-agents.js"
-        ],
+        "args": ["${workspaceFolder}/.vscode/scripts/init-agents.js"],
         "group": "build",
         "presentation": {
           "echo": true,
@@ -239,9 +233,7 @@
         "label": "Validate WorkForge Compatibility",
         "type": "shell",
         "command": "node",
-        "args": [
-          "${workspaceFolder}/.vscode/scripts/validate-workforge.js"
-        ],
+        "args": ["${workspaceFolder}/.vscode/scripts/validate-workforge.js"],
         "group": "test",
         "presentation": {
           "reveal": "always",
@@ -278,9 +270,7 @@
         "label": "Generate Agent Health Report",
         "type": "shell",
         "command": "node",
-        "args": [
-          "${workspaceFolder}/.vscode/scripts/agent-health.js"
-        ],
+        "args": ["${workspaceFolder}/.vscode/scripts/agent-health.js"],
         "group": "test",
         "presentation": {
           "reveal": "always",
@@ -292,10 +282,13 @@
         "type": "shell",
         "command": "curl",
         "args": [
-          "-X", "POST",
+          "-X",
+          "POST",
           "http://localhost:3004/api/agents/sync",
-          "-H", "Content-Type: application/json",
-          "-d", "{\"workspaceId\": \"${workspaceName}\", \"status\": \"active\"}"
+          "-H",
+          "Content-Type: application/json",
+          "-d",
+          "{\"workspaceId\": \"${workspaceName}\", \"status\": \"active\"}"
         ],
         "group": "build",
         "presentation": {

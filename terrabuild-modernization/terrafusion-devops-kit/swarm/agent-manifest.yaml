@@ -1,4 +1,4 @@
-version: "1.0.0"
+version: '1.0.0'
 environment: dev
 
 # Default settings applied to all agents unless overridden
@@ -15,36 +15,36 @@ agents:
     version: 1.0.0
     description: Optimizes adjustment factors for cost calculations
     mode: autonomous
-    schedule: "0 */6 * * *" # Every 6 hours
+    schedule: '0 */6 * * *' # Every 6 hours
     memory: persistent
     sensitivity: medium
     on_anomaly: suggest_correction
     settings:
       optimization_algorithm: bayesian
-      convergence_threshold: "0.01"
+      convergence_threshold: '0.01'
       max_iterations: 100
 
   - name: benchmark-guard
     version: 1.0.0
     description: Monitors and validates benchmark data accuracy
     mode: watchdog
-    alert_threshold: "0.15"
+    alert_threshold: '0.15'
     sensitivity: high
     on_anomaly: log_and_notify
     settings:
       benchmark_dataset: historical_benchmarks
       detection_algorithm: isolation_forest
-      confidence_threshold: "0.85"
+      confidence_threshold: '0.85'
 
   - name: curve-trainer
     version: 1.0.0
     description: Trains and updates cost prediction curves
     mode: autonomous
-    schedule: "0 0 * * 1" # Every Monday at midnight
+    schedule: '0 0 * * 1' # Every Monday at midnight
     max_outputs: 5
     settings:
       training_algorithm: gradient_boost
-      cross_validation: "true"
+      cross_validation: 'true'
       feature_selection: auto
 
   - name: scenario-agent
@@ -55,7 +55,7 @@ agents:
     settings:
       scenario_types: market,regulatory,environmental
       max_variations: 5
-      probability_weighting: "true"
+      probability_weighting: 'true'
 
   - name: boe-arguer
     version: 1.0.0

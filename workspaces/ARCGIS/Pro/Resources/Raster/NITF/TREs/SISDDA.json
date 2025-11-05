@@ -5,7 +5,7 @@
   "Description": "This TRE contains DPPDB stereo segment model data. It is a user-defined file included in the data extension subheader. All fields are repeated for each segment model.",
   "Size": 99999,
   "Fields": {
-    "SISEGID" : {
+    "SISEGID": {
       "Name": "Segment Model ID",
       "Description": "This field indicates the ID of the DPPDB segment model.",
       "Size": 4,
@@ -14,8 +14,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"          
-        }        
+          "Type": "Integer"
+        }
       ]
     },
     "SNACE": {
@@ -29,7 +29,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -47,7 +47,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -65,7 +65,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -83,7 +83,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -100,8 +100,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXALERF": {
@@ -114,8 +114,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "SNRCE0_1": {
@@ -129,7 +129,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -147,7 +147,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -165,7 +165,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -183,7 +183,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -201,7 +201,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -219,7 +219,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -237,7 +237,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -255,7 +255,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -273,7 +273,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -291,7 +291,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -308,8 +308,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRLE0_1": {
@@ -322,8 +322,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRCE1_5": {
@@ -336,8 +336,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRLE1_5": {
@@ -350,8 +350,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRCE5_15": {
@@ -364,8 +364,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRLE5_15": {
@@ -378,8 +378,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRCE15_30": {
@@ -392,8 +392,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRLE15_30": {
@@ -406,8 +406,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRCE30": {
@@ -420,8 +420,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRLE30": {
@@ -434,9 +434,9 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
-    }    
+    }
   }
 }

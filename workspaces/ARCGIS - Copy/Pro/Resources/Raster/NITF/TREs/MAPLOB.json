@@ -5,7 +5,7 @@
   "Description": "The MAPLO extension provides the description of the link between the local coordinate system (rows and columns) and the absolute cartographic coordinate system (Easting and Northing) defined by GEOPS and PRJPS. The user-defined fields of the MAPLO extension are detailed in Table P-6. A single MAPLO is placed in the Image Subheader.",
   "Size": 43,
   "Fields": {
-    "UNILOA" : {
+    "UNILOA": {
       "Name": "Length Units",
       "Description": "This field shall contain the unit of measure (UoM) used for Easting (LOD) and Northing (LAD) intervals. The default value is M.",
       "Size": 3,
@@ -15,8 +15,20 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["micrometers", "millimeters", "centimeters", "decimeters", "meters", "kilometers", "inches", "feet", "yards", "statute miles", "nautical miles"]        
-        }        
+          "Values": [
+            "micrometers",
+            "millimeters",
+            "centimeters",
+            "decimeters",
+            "meters",
+            "kilometers",
+            "inches",
+            "feet",
+            "yards",
+            "statute miles",
+            "nautical miles"
+          ]
+        }
       ]
     },
     "LOD": {
@@ -78,6 +90,6 @@
           "Max": 999999999999.9
         }
       ]
-    }    
+    }
   }
 }

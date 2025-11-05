@@ -14,7 +14,7 @@
   --tf-deep-space: #0a0f1c;
   --tf-dark-teal: #1a2f3a;
   --tf-accent-cyan: #22d3ee;
-  
+
   /* Extended Brand Palette */
   --tf-primary: #00e5ff;
   --tf-primary-dark: #00b8d4;
@@ -22,13 +22,13 @@
   --tf-secondary: #004d7a;
   --tf-secondary-dark: #002a4a;
   --tf-secondary-light: #0078ad;
-  
+
   /* Semantic Colors */
   --tf-success: #10b981;
   --tf-warning: #f59e0b;
   --tf-error: #ef4444;
   --tf-info: #3b82f6;
-  
+
   /* Neutral Palette */
   --tf-neutral-50: #f9fafb;
   --tf-neutral-100: #f3f4f6;
@@ -40,16 +40,17 @@
   --tf-neutral-700: #374151;
   --tf-neutral-800: #1f2937;
   --tf-neutral-900: #111827;
-  
+
   /* Glass Morphism Effects */
   --tf-glass-bg: rgba(255, 255, 255, 0.05);
   --tf-glass-border: rgba(0, 210, 255, 0.2);
   --tf-backdrop-blur: blur(15px);
-  
+
   /* Typography */
-  --tf-font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --tf-font-primary:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --tf-font-mono: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-  
+
   /* Spacing & Layout */
   --tf-border-radius: 12px;
   --tf-border-radius-sm: 8px;
@@ -278,7 +279,8 @@
 
 /* TerraFusion Brand Animations */
 @keyframes tf-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -287,7 +289,8 @@
 }
 
 @keyframes tf-glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
   }
   50% {
@@ -351,18 +354,18 @@
 }
 
 /* Dark Theme Overrides */
-.tf-app[data-theme="dark"] {
+.tf-app[data-theme='dark'] {
   background-color: var(--tf-deep-space);
   color: var(--tf-stellar-white);
 }
 
-.tf-app[data-theme="dark"] .tf-card {
+.tf-app[data-theme='dark'] .tf-card {
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--tf-glass-border);
   color: var(--tf-stellar-white);
 }
 
-.tf-app[data-theme="dark"] .tf-form-control {
+.tf-app[data-theme='dark'] .tf-form-control {
   background-color: rgba(255, 255, 255, 0.05);
   border-color: var(--tf-glass-border);
   color: var(--tf-stellar-white);
@@ -373,17 +376,17 @@
   .tf-container {
     padding: 0 1rem;
   }
-  
+
   .tf-section {
     padding: 2rem 0;
   }
-  
+
   .tf-grid-2,
   .tf-grid-3,
   .tf-grid-4 {
     grid-template-columns: 1fr;
   }
-  
+
   .tf-btn-primary,
   .tf-btn-outline-primary {
     width: 100%;
@@ -422,16 +425,16 @@
   .tf-footer {
     display: none;
   }
-  
+
   .tf-card {
     box-shadow: none;
     border: 1px solid var(--tf-neutral-300);
   }
-  
+
   .tf-btn-primary,
   .tf-btn-outline-primary {
     background: none !important;
     color: var(--tf-neutral-900) !important;
     border: 1px solid var(--tf-neutral-300) !important;
   }
-} 
+}

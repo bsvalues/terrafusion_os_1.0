@@ -1,52 +1,52 @@
 {
-    "fixedSymbols": true,
-    "renderer": {
-       "type": "uniqueValue",
-       "field1": "BarrierType",
-       "defaultSymbol": {
+  "fixedSymbols": true,
+  "renderer": {
+    "type": "uniqueValue",
+    "field1": "BarrierType",
+    "defaultSymbol": {
+      "type": "esriSFS",
+      "style": "esriSFSSolid",
+      "color": [255, 0, 0, 255],
+      "outline": {
+        "type": "esriSLS",
+        "style": "esriSLSSolid",
+        "color": [255, 0, 0, 255],
+        "width": 2.4
+      }
+    },
+    "defaultLabel": "<all other values>",
+    "uniqueValueInfos": [
+      {
+        "value": "0",
+        "label": "Restriction",
+        "symbol": {
           "type": "esriSFS",
           "style": "esriSFSSolid",
-          "color": [255, 0, 0, 255],
+          "color": [255, 0, 0, 156],
           "outline": {
-             "type": "esriSLS",
-             "style": "esriSLSSolid",
-             "color": [255, 0, 0, 255],
-             "width": 2.4
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [255, 0, 0, 153],
+            "width": 2.4
           }
-       },
-       "defaultLabel": "<all other values>",
-       "uniqueValueInfos": [
-          {
-             "value": "0",
-             "label": "Restriction",
-             "symbol": {
-                "type": "esriSFS",
-                "style": "esriSFSSolid",
-                "color": [255, 0, 0, 156],
-                "outline": {
-                   "type": "esriSLS",
-                   "style": "esriSLSSolid",
-                   "color": [255, 0, 0, 153],
-                   "width": 2.4
-                }
-             }
-          },
-          {
-             "value": "1",
-             "label": "Scaled Cost",
-             "symbol": {
-                "type": "esriSFS",
-                "style": "esriSFSSolid",
-                "color": [255, 170, 0, 156],
-                "outline": {
-                   "type": "esriSLS",
-                   "style": "esriSLSSolid",
-                   "color": [255, 0, 0, 153],
-                   "width": 7.5
-                }
-             }
+        }
+      },
+      {
+        "value": "1",
+        "label": "Scaled Cost",
+        "symbol": {
+          "type": "esriSFS",
+          "style": "esriSFSSolid",
+          "color": [255, 170, 0, 156],
+          "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [255, 0, 0, 153],
+            "width": 7.5
           }
-       ]
-    },
-    "transparency": 40
+        }
+      }
+    ]
+  },
+  "transparency": 40
 }

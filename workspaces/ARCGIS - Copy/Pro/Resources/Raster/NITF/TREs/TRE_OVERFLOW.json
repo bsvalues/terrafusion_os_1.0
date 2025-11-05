@@ -5,7 +5,7 @@
   "Description": "The TRE_OVERFLOW DES is used for encapsulating a series of TRE in a DES as overflow from the NITF file header or any segment subheader. A separate DES is used for each NITF file header or subheader field that overflows. Which NITF file header or subheader field overflowed is indicated in the DES Overflowed Header Type (DESOFLOW) field and DES Data Segment Overflowed (DESITEM) field contents.",
   "Size": 25,
   "Fields": {
-    "DE" : {
+    "DE": {
       "Name": "Data Extensioin Subheader",
       "Description": "This field shall contain the characters DE to identify the subheader as a data extension.",
       "Size": 2,
@@ -16,7 +16,7 @@
         {
           "Type": "Value",
           "Values": ["DE"]
-        }        
+        }
       ]
     },
     "DESID": {
@@ -42,7 +42,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"          
+          "Type": "Integer"
         }
       ]
     },
@@ -56,7 +56,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["T", "S", "C", "R", "U"]          
+          "Values": ["T", "S", "C", "R", "U"]
         }
       ]
     },
@@ -69,7 +69,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -82,7 +82,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -95,7 +95,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -108,7 +108,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -122,7 +122,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["DD", "DE", "GD", "GE", "O", "X"]          
+          "Values": ["DD", "DE", "GD", "GE", "O", "X"]
         }
       ]
     },
@@ -135,7 +135,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"          
+          "Type": "Date"
         }
       ]
     },
@@ -149,7 +149,25 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X251", "X252", "X253", "X254", "X255", "X256", "X257", "X258", "X259"]          
+          "Values": [
+            "X1",
+            "X2",
+            "X3",
+            "X4",
+            "X5",
+            "X6",
+            "X7",
+            "X8",
+            "X251",
+            "X252",
+            "X253",
+            "X254",
+            "X255",
+            "X256",
+            "X257",
+            "X258",
+            "X259"
+          ]
         }
       ]
     },
@@ -163,7 +181,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["S", "C", "R"]          
+          "Values": ["S", "C", "R"]
         }
       ]
     },
@@ -176,7 +194,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"          
+          "Type": "Date"
         }
       ]
     },
@@ -189,7 +207,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -203,7 +221,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["O", "D", "M"]          
+          "Values": ["O", "D", "M"]
         }
       ]
     },
@@ -216,7 +234,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -230,7 +248,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["A", "B", "C", "D", "E", "F", "G"]          
+          "Values": ["A", "B", "C", "D", "E", "F", "G"]
         }
       ]
     },
@@ -243,7 +261,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"                    
+          "Type": "Date"
         }
       ]
     },
@@ -256,7 +274,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"                    
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -270,7 +288,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["UDHD", "UDID", "XHD", "IXSHD", "SXSHD", "TXSHD"]                    
+          "Values": ["UDHD", "UDID", "XHD", "IXSHD", "SXSHD", "TXSHD"]
         }
       ]
     },
@@ -285,7 +303,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 999                   
+          "Max": 999
         }
       ]
     },
@@ -298,22 +316,22 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"                              
+          "Type": "Integer"
         }
       ]
     },
     "DESDATA": {
       "Name": "DES-Defined Data Field",
       "Description": "This field shall contain data of either binary or character types defined by and formatted according to the user's specification. The length of this field shall not cause any other NITF field length limits to be exceeded, but is otherwise fully user-defined.",
-      "Size": 0 ,
+      "Size": 0,
       "Format": "BCS-N",
       "Type": "R",
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"                              
+          "Type": "AlphaNumeric"
         }
       ]
-    }        
+    }
   }
 }

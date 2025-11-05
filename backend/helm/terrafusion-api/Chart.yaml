@@ -8,7 +8,7 @@ name: terrafusion-api
 description: TerraFusion OS Core API Service - Government AI Operating System
 type: application
 version: 1.0.0
-appVersion: "1.0.0"
+appVersion: '1.0.0'
 
 # Chart metadata
 home: https://terrafusion.gov
@@ -41,4 +41,4 @@ annotations:
   license: Proprietary
   terrafusion.io/component: api
   terrafusion.io/tier: core
-  terrafusion.io/counties: "39"
+  terrafusion.io/counties: '39'

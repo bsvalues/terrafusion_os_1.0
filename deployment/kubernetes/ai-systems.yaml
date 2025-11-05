@@ -17,23 +17,23 @@ spec:
         ai-enhanced: quantum
     spec:
       containers:
-      - name: consciousness
-        image: terrafusion/consciousness:latest
-        ports:
-        - containerPort: 3000
-        env:
-        - name: TERRAFUSION_SERVICE
-          value: "consciousness"
-        - name: AI_AGENT_COUNT
-          value: "1008"
-        - name: SWARM_COORDINATION
-          value: "enabled"
-        - name: QUANTUM_PROCESSING
-          value: "enabled"
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
+        - name: consciousness
+          image: terrafusion/consciousness:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: TERRAFUSION_SERVICE
+              value: 'consciousness'
+            - name: AI_AGENT_COUNT
+              value: '1008'
+            - name: SWARM_COORDINATION
+              value: 'enabled'
+            - name: QUANTUM_PROCESSING
+              value: 'enabled'
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'

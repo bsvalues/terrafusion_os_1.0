@@ -41,9 +41,6 @@
     <Folder Include="CostForge\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- Temporarily exclude tests while fixing production code -->
-    <Compile Remove="Tests\**\*.cs" />
-  </ItemGroup>
+  <!-- Tests re-enabled: removed previous compile exclusion for Tests/** -->
 
 </Project>

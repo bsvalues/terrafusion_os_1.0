@@ -25,24 +25,24 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 210 100% 45%;
     --radius: 0.75rem;
-    
+
     /* TerraFusion brand colors - updated for 2025 design trends */
     --color-primary-blue: 210 100% 45%;
     --color-primary-blue-dark: 210 100% 35%;
     --color-primary-blue-light: 210 100% 55%;
-    
+
     --color-secondary-teal: 188 100% 42%;
     --color-secondary-teal-dark: 188 100% 32%;
     --color-secondary-teal-light: 188 100% 52%;
-    
+
     --color-accent-purple: 265 100% 60%;
     --color-accent-purple-dark: 265 100% 40%;
     --color-accent-purple-light: 265 100% 75%;
-    
+
     --color-accent-pink: 330 86% 62%;
     --color-accent-pink-dark: 330 86% 42%;
     --color-accent-pink-light: 330 86% 75%;
-    
+
     /* Chart colors - updated for better contrast */
     --chart-1: 210 100% 45%;
     --chart-2: 265 100% 60%;
@@ -72,7 +72,7 @@
     --border: 222 47% 16%;
     --input: 222 47% 16%;
     --ring: 210 90% 55%;
-    
+
     /* Sidebar colors - refined for modern UI */
     --sidebar-background: 222 47% 3%;
     --sidebar-foreground: 213 31% 95%;
@@ -92,7 +92,9 @@
   @apply bg-card rounded-xl border border-border/30 shadow-sm dark:shadow-none dark:bg-opacity-70 backdrop-blur-sm;
   position: relative;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .tf-card::before {
@@ -111,8 +113,9 @@
 
 .tf-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 
-              0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.05),
+    0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 
 .tf-card-gradient {
@@ -156,7 +159,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: 0.5s;
   z-index: -1;
 }
@@ -300,8 +303,9 @@
   position: relative;
   transform-style: preserve-3d;
   perspective: 1000px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
-              0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
   border-radius: var(--radius);
   overflow: hidden;
   transition: transform 0.3s ease;
@@ -320,8 +324,12 @@
   bottom: 0;
   pointer-events: none;
   z-index: 10;
-  background: 
-    linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.2) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
   mix-blend-mode: overlay;
   border-radius: inherit;
 }
@@ -361,7 +369,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: 
+  background:
     radial-gradient(circle at 10% 90%, rgba(59, 130, 246, 0.1), transparent 30%),
     radial-gradient(circle at 90% 10%, rgba(147, 51, 234, 0.1), transparent 30%);
   pointer-events: none;
@@ -370,10 +378,11 @@
 /* 3D elevation chart - Noise and Texture */
 .tf-elevation-chart {
   @apply relative h-40 rounded-xl overflow-hidden;
-  background: linear-gradient(180deg, 
-    rgba(59, 130, 246, 0.8) 0%, 
+  background: linear-gradient(
+    180deg,
+    rgba(59, 130, 246, 0.8) 0%,
     rgba(14, 165, 233, 0.7) 30%,
-    rgba(147, 51, 234, 0.6) 70%, 
+    rgba(147, 51, 234, 0.6) 70%,
     rgba(236, 72, 153, 0.5) 100%
   );
 }
@@ -385,8 +394,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%),
+  background:
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 100%),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   opacity: 0.15;
   mix-blend-mode: overlay;
@@ -430,8 +439,14 @@
 }
 
 @keyframes slideTextUp {
-  0% { transform: translateY(100%); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .tf-text-kinetic-fade {
@@ -439,6 +454,10 @@
 }
 
 @keyframes textFade {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

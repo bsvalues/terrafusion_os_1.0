@@ -7,7 +7,7 @@
       },
       "Type": "Image",
       "Key": "Layer_Image_@{ImageType}_$%i$",
-      "Aliases": [ "Layer_Image_@{ImageType}" ],
+      "Aliases": ["Layer_Image_@{ImageType}"],
       "Disposition": "TOC|Catalog",
       "Title": "#NCDRDTitle",
       "DisplayLevel": "$/Images/%i/IDLVL?parse=double$",
@@ -21,7 +21,7 @@
       "Key": "Layer_Image_Catalog_@{ImageType}",
       "Disposition": "None"
     },
-    
+
     "NCDRDPrimaryImage-Generic": {
       "Type": "Image",
       "Key": "Layer_Image_$%i+1$",
@@ -71,7 +71,7 @@
       "Match": "MatchRules.json#MatchRules-ImageIsPan",
       "Source": "#Source-Catalog-1BandPanchromatic-RGBChain"
     },
-    
+
     "NCDRDPrimaryImage-Multispectral3Bands-Basic": {
       "@Variables": {
         "ImageType": "Multispectral3Bands-Psh",
@@ -202,7 +202,7 @@
       ],
       "Source": "#Source-Catalog-3BandMS-BGRChain"
     },
-    
+
     "NCDRDPrimaryImage-Multispectral4Bands-Basic": {
       "@Variables": {
         "ImageType": "Multispectral4Bands-Basic",
@@ -224,7 +224,7 @@
       "Match": "MatchRules.json#MatchRules-ImageIsMSI4Bands",
       "Source": "#Source-Catalog-4BandMS-RGBChain"
     },
-    
+
     "NCDRDPrimaryImage-Multispectral8Bands-Basic": {
       "@Variables": {
         "ImageType": "Multispectral8Bands-Basic",
@@ -254,7 +254,7 @@
       ],
       "Source": "#Source-Catalog-8BandMS-RGBChain"
     },
-    
+
     "NCDRDPrimaryImage-SWIR8": {
       "@Variables": {
         "ImageType": "SWIR8",
@@ -285,7 +285,7 @@
       ],
       "Source": "#Source-Catalog-SWIR-RGBChain"
     },
-    
+
     "NCDRDPrimaryImage-CAVIS6": {
       "@Variables": {
         "ImageType": "CAVIS6",
@@ -349,18 +349,14 @@
         "FeatureType": "Clouds"
       },
       "ref": "#NCDRDFeatureLayer-Base",
-      "Match": [
-        "MatchRules.json#MatchRule-DESIsCLOUD_SHAPES"
-      ]
+      "Match": ["MatchRules.json#MatchRule-DESIsCLOUD_SHAPES"]
     },
     "NCDRDFeatureLayer-Image": {
       "@Variables": {
         "FeatureType": "Image"
       },
       "ref": "#NCDRDFeatureLayer-Base",
-      "Match": [
-        "MatchRules.json#MatchRule-DESIsIMAGE_SHAPE"
-      ]
+      "Match": ["MatchRules.json#MatchRule-DESIsIMAGE_SHAPE"]
     },
     "NCDRDFeatureLayer-Generic": {
       "ref": "#NCDRDFeatureLayer-Base",
@@ -405,7 +401,7 @@
     "CIM-Multispectral3Bands-Basic": "#CIM-Multispectral-Base",
     "CIM-Multispectral4Bands-Basic": "#CIM-Multispectral-Base",
     "CIM-Multispectral8Bands-Basic": "#CIM-Multispectral-Base",
-    
+
     "CIM-Panchromatic-Geo": "#CIM-Panchromatic-Base",
     "CIM-Multispectral3Bands-Geo": "#CIM-Multispectral-Base",
     "CIM-Multispectral4Bands-Geo": "#CIM-Multispectral-Base",
@@ -415,14 +411,14 @@
     "CIM-Multispectral3Bands-Ortho": "#CIM-Multispectral-Base",
     "CIM-Multispectral4Bands-Ortho": "#CIM-Multispectral-Base",
     "CIM-Multispectral8Bands-Ortho": "#CIM-Multispectral-Base",
-    
+
     "CIM-Multispectral3Bands-RGB": "#CIM-Multispectral-Base",
     "CIM-Multispectral3Bands-Psh": "#CIM-Multispectral-Base",
     "CIM-Multispectral4Bands-Psh": "#CIM-Multispectral-Base",
 
     "CIM-SWIR8": "#CIM-Multispectral-Base",
     "CIM-CAVIS6": "#CIM-Multispectral-Base",
-    
+
     "CIM-Clouds": {
       "type": "CIMNitfImageSubLayer",
       "name": "#NCDRDTitle",
@@ -475,7 +471,7 @@
       },
       "renderer": "Colorizers.json#ImageShapeFeatureRenderer"
     },
-    
+
     "Source-RasterInfoGeometricStretchChain": {
       "Template": "RasterInfo-Geometric",
       "Arguments": {

@@ -76,11 +76,11 @@
         "TREName": "SECTGA",
         "RowCountField": "NUM_NAMES",
         "Sources": [
-          {"name": "SECTGA", "segment": "FileHeader", "index": "-1"}
+          { "name": "SECTGA", "segment": "FileHeader", "index": "-1" }
         ],
         "Fields": [
-          {"name": "SEC_ID", "type": "string" },
-          {"name": "SEC_BE", "type": "string" }
+          { "name": "SEC_ID", "type": "string" },
+          { "name": "SEC_BE", "type": "string" }
         ]
       }
     },
@@ -93,12 +93,10 @@
         "TableType": "MultiTRE",
         "TREName": "SECTGA",
         "RowCountField": "NUM_NAMES",
-        "Sources": [
-          {"name": "SECTGA", "segment": "Images", "index": "0"}
-        ],
+        "Sources": [{ "name": "SECTGA", "segment": "Images", "index": "0" }],
         "Fields": [
-          {"name": "SEC_ID", "type": "string" },
-          {"name": "SEC_BE", "type": "string" }
+          { "name": "SEC_ID", "type": "string" },
+          { "name": "SEC_BE", "type": "string" }
         ]
       }
     },
@@ -111,13 +109,11 @@
         "TableType": "SingleTRE",
         "TREName": "CSEPHA",
         "RowCountField": "NUM_EPHEM",
-        "Sources": [
-          {"name": "CSEPHA", "segment": "Images", "index": "0"}
-        ],
+        "Sources": [{ "name": "CSEPHA", "segment": "Images", "index": "0" }],
         "Fields": [
-          {"name": "EPHEM_X", "type": "double" },
-          {"name": "EPHEM_Y", "type": "double" },
-          {"name": "EPHEM_Z", "type": "double" }
+          { "name": "EPHEM_X", "type": "double" },
+          { "name": "EPHEM_Y", "type": "double" },
+          { "name": "EPHEM_Z", "type": "double" }
         ]
       }
     },
@@ -130,29 +126,27 @@
         "TableType": "SingleTRE",
         "TREName": "HISTOA",
         "RowCountField": "NEVENTS",
-        "Sources": [
-          {"name": "HISTOA", "segment": "Images", "index": "0"}
-        ],
+        "Sources": [{ "name": "HISTOA", "segment": "Images", "index": "0" }],
         "Fields": [
-          {"name": "PDATE", "type": "string" },
-          {"name": "PSITE", "type": "string" },
-          {"name": "PAS", "type": "string" },
-          {"name": "NIPCOM", "type": "string" },
-          {"name": "IBPP", "type": "string" },
-          {"name": "IPVTYPE", "type": "string" },
-          {"name": "INBWC", "type": "string" },
-          {"name": "DISP_FLAG", "type": "string" },
-          {"name": "ROT_FLAG", "type": "string" },
-          {"name": "ASYM_FLAG", "type": "string" },
-          {"name": "PROJ_FLAG", "type": "string" },
-          {"name": "SHARP_FLAG", "type": "string" },
-          {"name": "MAG_FLAG", "type": "string" },
-          {"name": "DRA_FLAG", "type": "string" },
-          {"name": "TTC_FLAG", "type": "string" },
-          {"name": "DEVLUT_FLAG", "type": "string" },
-          {"name": "OBPP", "type": "string" },
-          {"name": "OPVTYPE", "type": "string" },
-          {"name": "OUTBWC", "type": "string" }
+          { "name": "PDATE", "type": "string" },
+          { "name": "PSITE", "type": "string" },
+          { "name": "PAS", "type": "string" },
+          { "name": "NIPCOM", "type": "string" },
+          { "name": "IBPP", "type": "string" },
+          { "name": "IPVTYPE", "type": "string" },
+          { "name": "INBWC", "type": "string" },
+          { "name": "DISP_FLAG", "type": "string" },
+          { "name": "ROT_FLAG", "type": "string" },
+          { "name": "ASYM_FLAG", "type": "string" },
+          { "name": "PROJ_FLAG", "type": "string" },
+          { "name": "SHARP_FLAG", "type": "string" },
+          { "name": "MAG_FLAG", "type": "string" },
+          { "name": "DRA_FLAG", "type": "string" },
+          { "name": "TTC_FLAG", "type": "string" },
+          { "name": "DEVLUT_FLAG", "type": "string" },
+          { "name": "OBPP", "type": "string" },
+          { "name": "OPVTYPE", "type": "string" },
+          { "name": "OUTBWC", "type": "string" }
         ]
       }
     }

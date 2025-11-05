@@ -1,1748 +1,1748 @@
 {
-	"arpt": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"arpt_name": {
-				"field_name": "name_txt"
-			},
-			"symbol": {
-				"domain": {
-					"A": "AD",
-					"B": "AD",
-					"C": "AD",
-					"D": "AD",
-					"E": "AD",
-					"G": "AD",
-					"H": "HP",
-					"J": "HP",
-					"K": "HP",
-					"L": "HP"
-				},
-				"field_name": "type_code"
-			},
-			"dcdt_unmapped": {
-				"field_name": "dcdt_unmapped"
-			},
-			"wgs_dlat": {
-				"field_name": "lat_txt"
-			},
-			"wgs_dlong": {
-				"field_name": "long_txt"
-			},
-			"elev": {
-				"field_name": "elev_val"
-			},
-			"icao_txt": {
-				"field_name": "icao_txt"
-			},
-			"prim_opr_agcy": {
-				"domain": {
-					"PVT": "1",
-					"PA": "0"
-				},
-				"field_name": "privateuse_code"
-			},
-			"pro": {
-				"domain": {
-					"Y": "1",
-					"N": "0"
-				},
-				"field_name": "terminalprocedure_code"
-			},
-			"lra": {
-				"domain": {
-					"Y": "1",
-					"N": "0"
-				},
-				"field_name": "landingrightsavailable_code"
-			}
-		},
-		"table_name": "adhp"
-	},
-	"adhpsurfacearea": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"wac_innr": {
-				"field_name": "adhp_id"
-			},
-			"designator_txt": {
-				"field_name": "designator_txt"
-			},
-			"len": {
-				"field_name": "length_val"
-			},
-			"surfacecharacteristic_id": {
-				"field_name": "surfacecharacteristic_id"
-			},
-			"subtype_code": {
-				"field_name": "subtype_code"
-			}
-		},
-		"table_name": "adhpsurfacearea"
-	},
-	"surfacelighting": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"lighted_id": {
-				"field_name": "lighted_id"
-			},
-			"subtype_code": {
-				"field_name": "subtype_code"
-			},
-			"lightactivation": {
-				"domain": {
-					"YYYYY": 4,
-					"NYYYY": 4,
-					"YNYYY": 4,
-					"YYNYY": 4,
-					"NYNYY": 4,
-					"YNNYY": 4,
-					"YYYNY": 4,
-					"NYYNY": 4,
-					"YNYNY": 4,
-					"YYYYN": 4,
-					"NYYYN": 4,
-					"YNYYN": 4,
-					"YYNYN": 4,
-					"NYNYN": 4,
-					"YNNYN": 4,
-					"YYYNN": 4,
-					"NYYNN": 4,
-					"YNYNN": 4,
-					"NNYYY": 2,
-					"NNNYY": 2,
-					"NNYNY": 2,
-					"NNYYN": 2,
-					"NNNYN": 2,
-					"NNYNN": 2,
-					"YYNNY": 3,
-					"NYNNY": 3,
-					"YNNNY": 3,
-					"YYNNN": 3,
-					"NYNNN": 3,
-					"YNNNN": 3,
-					"NNNNY": 1,
-					"NNNNN": 0
-				},
-				"field_name": "lightingactivation_code"
-			}
-		},
-		"table_name": "surfacelightsys"
-	},
-	"characterstic": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"sfc": {
-				"domain": {
-					"ASP": "ASPH",
-					"BIT": "BITUM",
-					"CLA": "CLAY",
-					"COM": "COMP",
-					"CON": "CONC",
-					"COP": "COMP",
-					"COR": "CORAL",
-					"GRE": "GRADE",
-					"GRS": "GRASS",
-					"GVL": "GRAVE",
-					"ICE": "ICE",
-					"LAT": "LATERITE",
-					"MEM": "MEMBRANE",
-					"MAC": "MACADAM",
-					"MIX": "MIX",
-					"PER": "PERM",
-					"PEM": "CONC+ASPH",
-					"PSP": "PSP",
-					"SAN": "SAND",
-					"SNO": "SNOW",
-					"U": "UNK"
-				},
-				"field_name": "composition_code"
-			}
-		},
-		"table_name": "surfacecharacteristic"
-	},
-	"serviceatadhp": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"adhp_id": {
-				"field_name": "adhp_id"
-			},
-			"service_id": {
-				"field_name": "service_id"
-			}
-		},
-		"table_name": "serviceatadhp"
-	},
-	"service": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"com_type": {
-				"field_name": "type_code"
-			},
-			"com_opr_hrs": {
-				"field_name": "workhrrmk_txt"
-			}
-		},
-		"table_name": "service"
-	},
-	"freq1": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"freq1_val": {
-				"field_name": "freqtrans_val"
-			},
-			"freq1_txt": {
-				"domain": {
-					"M": "MH",
-					"K": "KH",
-					"O": "O"
-				},
-				"field_name": "frequency_uom"
-			},
-			"service_id": {
-				"field_name": "service_id"
-			}
-		},
-		"table_name": "frequency"
-	},
-	"freq2": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"freq2_val": {
-				"field_name": "freqtrans_val"
-			},
-			"freq2_txt": {
-				"domain": {
-					"M": "MH",
-					"K": "KH",
-					"O": "O"
-				},
-				"field_name": "frequency_uom"
-			},
-			"service_id": {
-				"field_name": "service_id"
-			}
-		},
-		"table_name": "frequency"
-	},
-	"freq3": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"freq3_val": {
-				"field_name": "freqtrans_val"
-			},
-			"freq3_txt": {
-				"domain": {
-					"M": "MH",
-					"K": "KH",
-					"O": "O"
-				},
-				"field_name": "frequency_uom"
-			},
-			"service_id": {
-				"field_name": "service_id"
-			}
-		},
-		"table_name": "frequency"
-	},
-	"freq4": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"freq4_val": {
-				"field_name": "freqtrans_val"
-			},
-			"freq4_txt": {
-				"domain": {
-					"M": "MH",
-					"K": "KH",
-					"O": "O"
-				},
-				"field_name": "frequency_uom"
-			},
-			"service_id": {
-				"field_name": "service_id"
-			}
-		},
-		"table_name": "frequency"
-	},
-	"freq5": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"freq5_val": {
-				"field_name": "freqtrans_val"
-			},
-			"freq5_txt": {
-				"domain": {
-					"M": "MH",
-					"K": "KH",
-					"O": "O"
-				},
-				"field_name": "frequency_uom"
-			},
-			"service_id": {
-				"field_name": "service_id"
-			}
-		},
-		"table_name": "frequency"
-	},
-	"ats": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"ats_type": {
-				"domain": {
-					"A": "OCEAN",
-					"B": "OCEAN",
-					"C": "COR",
-					"D": "ADV",
-					"E": "DIR",
-					"O": "OCEAN",
-					"R": "RNAV",
-					"S": "SUB",
-					"T": "TACAN",
-					"W": "CONV"
-				},
-				"field_name": "routetype_code"
-			},
-			"wpt1_key": {
-				"field_name": "startpoint_id"
-			},
-			"wpt2_key": {
-				"field_name": "endpoint_id"
-			},
-			"ats_ident": {
-				"field_name": "ident_txt"
-			},
-			"cdr": {
-				"field_name": "cdr_txt"
-			},
-			"change_over": {
-				"field_name": "copdist_val"
-			},
-			"dme_dist": {
-				"field_name": "dmedist_val"
-			},
-			"flt_level": {
-				"domain": {
-					"U": "H",
-					"L": "L",
-					"B": "B"
-				},
-				"field_name": "level_code"
-			},
-			"freq_class": {
-				"field_name": "frequencyclass_code"
-			},
-			"lower_limit": {
-				"field_name": "distvertlowerval_txt"
-			},
-			"max_auth_alt_val": {
-				"field_name": "maximumauthalt_val"
-			},
-			"max_auth_alt_txt": {
-				"field_name": "maximumauthalt_uom"
-			},
-			"mbp1": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "startmbp_code"
-			},
-			"mbp2": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "endmbp_code"
-			},
-			"mca1_alt_val": {
-				"field_name": "startmca_val"
-			},
-			"mca1_alt_txt": {
-				"field_name": "startmca_uom"
-			},
-			"mca2_alt_val": {
-				"field_name": "endmca_val"
-			},
-			"mca2_alt_txt": {
-				"field_name": "endmca_uom"
-			},
-			"mra1_alt_val": {
-				"field_name": "startmra_val"
-			},
-			"mra1_alt_txt": {
-				"field_name": "startmra_uom"
-			},
-			"mra2_alt_val": {
-				"field_name": "endmra_val"
-			},
-			"mra2_alt_txt": {
-				"field_name": "endmra_uom"
-			},
-			"nr": {
-				"domain": {
-					"N": "0",
-					"Y": "4"
-				},
-				"field_name": "rtereportexc_code"
-			},
-			"route_direction": {
-				"field_name": "direction_code"
-			},
-			"upper_limit": {
-				"field_name": "distvertupperval_txt"
-			},
-			"status": {
-				"domain": {
-					"C": "0",
-					"A": "1",
-					"O": "1",
-					"R": "1",
-					"S": "1"
-				},
-				"field_name": "status_code"
-			},
-			"width_left": {
-				"field_name": "widthleft_val"
-			},
-			"width_right": {
-				"field_name": "widthright_val"
-			},
-			"wpt1_desc_code_3": {
-				"field_name": "repatcstart_code"
-			},
-			"wpt2_desc_code_3": {
-				"field_name": "repatcend_code"
-			},
-			"wpt1_desc_code_1": {
-				"field_name": "descriptionstart_code"
-			},
-			"wpt2_desc_code_1": {
-				"field_name": "descriptionend_code"
-			},
-			"wpt1_rnav_fly": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "startrnavfly_code"
-			},
-			"wpt2_rnav_fly": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "endrnavfly_code"
-			},
-			"hi_alt_floor": {
-				"field_name": "highfloor_txt"
-			},
-			"course_grid_true": {
-				"domain": {
-					"T": "TRUE",
-					"M": "MAG",
-					"G": "GRID"
-				},
-				"field_name": "northtype_code"
-			},
-			"mileage": {
-				"field_name": "length_val"
-			},
-			"dcdt_unmapped": {
-				"field_name": "dcdt_unmapped"
-			}
-		},
-		"table_name": "atsroute"
-	},
-	"wpt": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"chart_text": {
-				"field_name": "remarks_txt"
-			},
-			"wgs_dlat": {
-				"field_name": "lat_txt"
-			},
-			"wgs_dlong": {
-				"field_name": "long_txt"
-			},
-			"wpt_ident": {
-				"field_name": "ident_txt"
-			},
-			"description": {
-				"field_name": "name_txt"
-			},
-			"var": {
-				"field_name": "magneticvariation_val"
-			},
-			"usage_code": {
-				"domain": {
-					"H": "0",
-					"L": "1",
-					"B": "2",
-					"T": "3"
-				},
-				"field_name": "awystructure_code"
-			},
-			"dcdt_unmapped": {
-				"field_name": "dcdt_unmapped"
-			}
-		},
-		"table_name": "designatedpoint"
-	},
-	"bdry": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"bdry_ident": {
-				"field_name": "ident_txt"
-			},
-			"type_code": {
-				"domain": {
-					"1|Y|||": "ADA",
-					"1||||": "ADA",
-					"2|Y|||": "ADIZ",
-					"2||||": "ADIZ",
-					"3|Y|||": "ARTCC",
-					"3||||": "ARTCC",
-					"4|Y|||": "ARTCC",
-					"4||||": "ARTCC",
-					"5|Y|||": "BZ",
-					"5||||": "BZ",
-					"6|Y||Y|": "UTA",
-					"6|||Y|": "UTA",
-					"6|Y|Y||": "CTA-P",
-					"6||Y||": "CTA",
-					"7|Y|||": "CTR",
-					"7||||": "CTR",
-					"8|Y|||": "FIR",
-					"8||||": "FIR",
-					"9|Y|||": "OCA",
-					"9||||": "OCA",
-					"10|Y|||": "RDR",
-					"10||||": "RDR",
-					"11|Y|||": "TMA-P",
-					"11||||": "TMA",
-					"12|Y|||": "UIR",
-					"12||||": "UIR",
-					"13|Y|||": "MODE-C",
-					"13||||": "MODE-C",
-					"14|Y|||4": "ASR",
-					"14|Y|||5": "AWY",
-					"14|Y|||6": "RCA",
-					"14|Y|||7": "LTA",
-					"14|Y|||8": "SRA",
-					"14|Y|||9": "DSP",
-					"14||||4": "ASR",
-					"14||||5": "AWY",
-					"14||||6": "RCA",
-					"14||||7": "LTA",
-					"14||||8": "SRA",
-					"14||||9": "DSP"
-				},
-				"field_name": "type_code"
-			},
-			"bdry_name": {
-				"field_name": "name_txt"
-			},
-			"bdry_sector": {
-				"field_name": "sector_txt"
-			},
-			"bdry_level": {
-				"domain": {
-					"U": "H",
-					"L": "L",
-					"B": "B"
-				},
-				"field_name": "level_code"
-			},
-			"class": {
-				"field_name": "class_code"
-			},
-			"comname_txt": {
-				"field_name": "comname_txt"
-			},
-			"footnote": {
-				"field_name": "remarks_txt"
-			},
-			"icao_txt": {
-				"field_name": "icao_txt"
-			},
-			"icao_rgn": {
-				"field_name": "locationind_txt"
-			},
-			"lo_eff_alt_val": {
-				"field_name": "distvertlower_val"
-			},
-			"lo_eff_alt_txt": {
-				"field_name": "distvertlower_uom"
-			},
-			"lo_eff_alt_code": {
-				"domain": {
-					"GND": "GND",
-					"SURFACE": "SFC",
-					"BY NOTAM": "BYNOTAM"
-				},
-				"field_name": "distvertlower_code"
-			},
-			"up_eff_alt_val": {
-				"field_name": "distvertupper_val"
-			},
-			"up_eff_alt_txt": {
-				"field_name": "distvertupper_uom"
-			},
-			"up_eff_alt_code": {
-				"domain": {
-					"GND": "GND",
-					"SURFACE": "SFC",
-					"BY NOTAM": "BYNOTAM"
-				},
-				"field_name": "distvertupper_code"
-			},
-			"chartstructures_txt": {
-				"domain": {
-					"Y|Y|Y|Y|Y|Y": "highchart lowchart bothchart tchart aacdtdchart termchart",
-					"Y|Y|Y|Y|Y|": "highchart lowchart bothchart tchart aacdtdchart ",
-					"Y|Y|Y|Y||Y": "highchart lowchart bothchart tchart termchart",
-					"Y|Y|Y|Y||": "highchart lowchart bothchart tchart ",
-					"Y|Y|Y||Y|Y": "highchart lowchart bothchart aacdtdchart termchart",
-					"Y|Y|Y||Y|": "highchart lowchart bothchart aacdtdchart ",
-					"Y|Y|Y|||Y": "highchart lowchart bothchart termchart",
-					"Y|Y|Y|||": "highchart lowchart bothchart ",
-					"Y|Y||Y|Y|Y": "highchart lowchart tchart aacdtdchart termchart",
-					"Y|Y||Y|Y|": "highchart lowchart tchart aacdtdchart ",
-					"Y|Y||Y||Y": "highchart lowchart tchart termchart",
-					"Y|Y||Y||": "highchart lowchart tchart ",
-					"Y|Y|||Y|Y": "highchart lowchart aacdtdchart termchart",
-					"Y|Y|||Y|": "highchart lowchart aacdtdchart ",
-					"Y|Y||||Y": "highchart lowchart termchart",
-					"Y|Y||||": "highchart lowchart ",
-					"Y||Y|Y|Y|Y": "highchart bothchart tchart aacdtdchart termchart",
-					"Y||Y|Y|Y|": "highchart bothchart tchart aacdtdchart ",
-					"Y||Y|Y||Y": "highchart bothchart tchart termchart",
-					"Y||Y|Y||": "highchart bothchart tchart ",
-					"Y||Y||Y|Y": "highchart bothchart aacdtdchart termchart",
-					"Y||Y||Y|": "highchart bothchart aacdtdchart ",
-					"Y||Y|||Y": "highchart bothchart termchart",
-					"Y||Y|||": "highchart bothchart ",
-					"Y|||Y|Y|Y": "highchart tchart aacdtdchart termchart",
-					"Y|||Y|Y|": "highchart tchart aacdtdchart ",
-					"Y|||Y||Y": "highchart tchart termchart",
-					"Y|||Y||": "highchart tchart ",
-					"Y||||Y|Y": "highchart aacdtdchart termchart",
-					"Y||||Y|": "highchart aacdtdchart ",
-					"Y|||||Y": "highchart termchart",
-					"Y|||||": "highchart ",
-					"|Y|Y|Y|Y|Y": "lowchart bothchart tchart aacdtdchart termchart",
-					"|Y|Y|Y|Y|": "lowchart bothchart tchart aacdtdchart ",
-					"|Y|Y|Y||Y": "lowchart bothchart tchart termchart",
-					"|Y|Y|Y||": "lowchart bothchart tchart ",
-					"|Y|Y||Y|Y": "lowchart bothchart aacdtdchart termchart",
-					"|Y|Y||Y|": "lowchart bothchart aacdtdchart ",
-					"|Y|Y|||Y": "lowchart bothchart termchart",
-					"|Y|Y|||": "lowchart bothchart ",
-					"|Y||Y|Y|Y": "lowchart tchart aacdtdchart termchart",
-					"|Y||Y|Y|": "lowchart tchart aacdtdchart ",
-					"|Y||Y||Y": "lowchart tchart termchart",
-					"|Y||Y||": "lowchart tchart ",
-					"|Y|||Y|Y": "lowchart aacdtdchart termchart",
-					"|Y|||Y|": "lowchart aacdtdchart ",
-					"|Y||||Y": "lowchart termchart",
-					"|Y||||": "lowchart ",
-					"||Y|Y|Y|Y": "bothchart tchart aacdtdchart termchart",
-					"||Y|Y|Y|": "bothchart tchart aacdtdchart ",
-					"||Y|Y||Y": "bothchart tchart termchart",
-					"||Y|Y||": "bothchart tchart ",
-					"||Y||Y|Y": "bothchart aacdtdchart termchart",
-					"||Y||Y|": "bothchart aacdtdchart ",
-					"||Y|||Y": "bothchart termchart",
-					"||Y|||": "bothchart ",
-					"|||Y|Y|Y": "tchart aacdtdchart termchart",
-					"|||Y|Y|": "tchart aacdtdchart ",
-					"|||Y||Y": "tchart termchart",
-					"|||Y||": "tchart ",
-					"||||Y|Y": "aacdtdchart termchart",
-					"||||Y|": "aacdtdchart ",
-					"|||||Y": "termchart",
-					"|||||": ""
-				},
-				"field_name": "chartstructures_txt"
-			}
-		},
-		"table_name": "airspace"
-	},
-	"suas": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"suas_ident": {
-				"field_name": "ident_txt"
-			},
-			"suas_name": {
-				"field_name": "name_txt"
-			},
-			"suas_sctr": {
-				"field_name": "sector_txt"
-			},
-			"suas_level": {
-				"domain": {
-					"U": "H",
-					"L": "L",
-					"B": "B"
-				},
-				"field_name": "level_code"
-			},
-			"lo_eff_alt_val": {
-				"field_name": "distvertlower_val"
-			},
-			"lo_eff_alt_txt": {
-				"field_name": "distvertlower_uom"
-			},
-			"lo_eff_alt_code": {
-				"domain": {
-					"GND": "GND",
-					"SURFACE": "SFC",
-					"BY NOTAM": "BYNOTAM"
-				},
-				"field_name": "distvertlower_code"
-			},
-			"up_eff_alt_val": {
-				"field_name": "distvertupper_val"
-			},
-			"up_eff_alt_txt": {
-				"field_name": "distvertupper_uom"
-			},
-			"up_eff_alt_code": {
-				"domain": {
-					"GND": "GND",
-					"SURFACE": "SFC",
-					"BY NOTAM": "BYNOTAM"
-				},
-				"field_name": "distvertupper_code"
-			},
-			"com_name": {
-				"field_name": "comname_txt"
-			},
-			"suas_type": {
-				"domain": {
-					"A": "A",
-					"D": "D",
-					"M": "MOA",
-					"P": "P",
-					"R": "R",
-					"T": "TRA",
-					"W": "W"
-				},
-				"field_name": "type_code"
-			},
-			"weather": {
-				"domain": {
-					"VFR": "0",
-					"IFR": "6",
-					"IMC": "7",
-					"VFR-IFR": "1",
-					"VMC": "2",
-					"VMC-IMC": "3",
-					"BY NOTAM": "8"
-				},
-				"field_name": "weatherrestrictions_code"
-			},
-			"eff_times": {
-				"field_name": "workhrrmk_txt"
-			},
-			"chartstructures_txt": {
-				"domain": {
-					"Y|Y|Y|Y|Y|Y": "highchart lowchart bothchart tchart aacdtdchart termchart",
-					"Y|Y|Y|Y|Y|": "highchart lowchart bothchart tchart aacdtdchart ",
-					"Y|Y|Y|Y||Y": "highchart lowchart bothchart tchart termchart",
-					"Y|Y|Y|Y||": "highchart lowchart bothchart tchart ",
-					"Y|Y|Y||Y|Y": "highchart lowchart bothchart aacdtdchart termchart",
-					"Y|Y|Y||Y|": "highchart lowchart bothchart aacdtdchart ",
-					"Y|Y|Y|||Y": "highchart lowchart bothchart termchart",
-					"Y|Y|Y|||": "highchart lowchart bothchart ",
-					"Y|Y||Y|Y|Y": "highchart lowchart tchart aacdtdchart termchart",
-					"Y|Y||Y|Y|": "highchart lowchart tchart aacdtdchart ",
-					"Y|Y||Y||Y": "highchart lowchart tchart termchart",
-					"Y|Y||Y||": "highchart lowchart tchart ",
-					"Y|Y|||Y|Y": "highchart lowchart aacdtdchart termchart",
-					"Y|Y|||Y|": "highchart lowchart aacdtdchart ",
-					"Y|Y||||Y": "highchart lowchart termchart",
-					"Y|Y||||": "highchart lowchart ",
-					"Y||Y|Y|Y|Y": "highchart bothchart tchart aacdtdchart termchart",
-					"Y||Y|Y|Y|": "highchart bothchart tchart aacdtdchart ",
-					"Y||Y|Y||Y": "highchart bothchart tchart termchart",
-					"Y||Y|Y||": "highchart bothchart tchart ",
-					"Y||Y||Y|Y": "highchart bothchart aacdtdchart termchart",
-					"Y||Y||Y|": "highchart bothchart aacdtdchart ",
-					"Y||Y|||Y": "highchart bothchart termchart",
-					"Y||Y|||": "highchart bothchart ",
-					"Y|||Y|Y|Y": "highchart tchart aacdtdchart termchart",
-					"Y|||Y|Y|": "highchart tchart aacdtdchart ",
-					"Y|||Y||Y": "highchart tchart termchart",
-					"Y|||Y||": "highchart tchart ",
-					"Y||||Y|Y": "highchart aacdtdchart termchart",
-					"Y||||Y|": "highchart aacdtdchart ",
-					"Y|||||Y": "highchart termchart",
-					"Y|||||": "highchart ",
-					"|Y|Y|Y|Y|Y": "lowchart bothchart tchart aacdtdchart termchart",
-					"|Y|Y|Y|Y|": "lowchart bothchart tchart aacdtdchart ",
-					"|Y|Y|Y||Y": "lowchart bothchart tchart termchart",
-					"|Y|Y|Y||": "lowchart bothchart tchart ",
-					"|Y|Y||Y|Y": "lowchart bothchart aacdtdchart termchart",
-					"|Y|Y||Y|": "lowchart bothchart aacdtdchart ",
-					"|Y|Y|||Y": "lowchart bothchart termchart",
-					"|Y|Y|||": "lowchart bothchart ",
-					"|Y||Y|Y|Y": "lowchart tchart aacdtdchart termchart",
-					"|Y||Y|Y|": "lowchart tchart aacdtdchart ",
-					"|Y||Y||Y": "lowchart tchart termchart",
-					"|Y||Y||": "lowchart tchart ",
-					"|Y|||Y|Y": "lowchart aacdtdchart termchart",
-					"|Y|||Y|": "lowchart aacdtdchart ",
-					"|Y||||Y": "lowchart termchart",
-					"|Y||||": "lowchart ",
-					"||Y|Y|Y|Y": "bothchart tchart aacdtdchart termchart",
-					"||Y|Y|Y|": "bothchart tchart aacdtdchart ",
-					"||Y|Y||Y": "bothchart tchart termchart",
-					"||Y|Y||": "bothchart tchart ",
-					"||Y||Y|Y": "bothchart aacdtdchart termchart",
-					"||Y||Y|": "bothchart aacdtdchart ",
-					"||Y|||Y": "bothchart termchart",
-					"||Y|||": "bothchart ",
-					"|||Y|Y|Y": "tchart aacdtdchart termchart",
-					"|||Y|Y|": "tchart aacdtdchart ",
-					"|||Y||Y": "tchart termchart",
-					"|||Y||": "tchart ",
-					"||||Y|Y": "aacdtdchart termchart",
-					"||||Y|": "aacdtdchart ",
-					"|||||Y": "termchart",
-					"|||||": ""
-				},
-				"field_name": "chartstructures_txt"
-			}
-		},
-		"table_name": "airspace"
-	},
-	"airspaceauth": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"airspace_id": {
-				"field_name": "airspace_id"
-			},
-			"orgauth_id": {
-				"field_name": "orgauth_id"
-			}
-		},
-		"table_name": "airspaceauth"
-	},
-	"orgauth_airspace": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"ctl_agency": {
-				"field_name": "name_txt"
-			}
-		},
-		"table_name": "orgauth"
-	},
-	"nav": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"name": {
-				"field_name": "name_txt"
-			},
-			"nav_type": {
-				"domain": {
-					"1": "7",
-					"2": "8",
-					"3": "9",
-					"4": "6",
-					"5": "3",
-					"7": "4",
-					"9": "5"
-				},
-				"field_name": "subtype_code"
-			}
-		},
-		"table_name": "navaidsystem"
-	},
-	"assoc_vor": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"navaidsystem_id": {
-				"field_name": "navaidsystem_id"
-			},
-			"navaidcomponent_id": {
-				"field_name": "navaidcomponent_id"
-			}
-		},
-		"table_name": "navaidassociation"
-	},
-	"assoc_dme": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"navaidsystem_id": {
-				"field_name": "navaidsystem_id"
-			},
-			"navaidcomponent_id": {
-				"field_name": "navaidcomponent_id"
-			}
-		},
-		"table_name": "navaidassociation"
-	},
-	"assoc_ndb": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"navaidsystem_id": {
-				"field_name": "navaidsystem_id"
-			},
-			"navaidcomponent_id": {
-				"field_name": "navaidcomponent_id"
-			}
-		},
-		"table_name": "navaidassociation"
-	},
-	"assoc_tacan": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"navaidsystem_id": {
-				"field_name": "navaidsystem_id"
-			},
-			"navaidcomponent_id": {
-				"field_name": "navaidcomponent_id"
-			}
-		},
-		"table_name": "navaidassociation"
-	},
-	"comp_vor": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"name": {
-				"field_name": "name_txt"
-			},
-			"freq_val": {
-				"field_name": "frequency_val"
-			},
-			"freq_txt": {
-				"domain": {
-					"M": "MH",
-					"K": "KH",
-					"O": "O"
-				},
-				"field_name": "frequency_uom"
-			},
-			"channel_txt": {
-				"field_name": "channel_txt"
-			},
-			"mag_var": {
-				"field_name": "magneticvariation_val"
-			},
-			"nav_ident": {
-				"field_name": "ident_txt"
-			},
-			"opr_hours": {
-				"field_name": "workhrrmk_txt"
-			},
-			"os": {
-				"domain": {
-					"I": "1",
-					"O": "0",
-					"T": "2"
-				},
-				"field_name": "status_code"
-			},
-			"slaved_var": {
-				"field_name": "slavedvariation_val"
-			},
-			"usage_cd": {
-				"domain": {
-					"H": "0",
-					"L": "1",
-					"B": "2",
-					"T": "3"
-				},
-				"field_name": "awystructure_code"
-			},
-			"voice": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "voice_code"
-			},
-			"wgs_dlat": {
-				"field_name": "lat_txt"
-			},
-			"wgs_dlong": {
-				"field_name": "long_txt"
-			},
-			"freq_prot_split_1": {
-				"field_name": "protectiondisthorz_val"
-			},
-			"freq_prot_split_2": {
-				"field_name": "protectiondistvert_val"
-			},
-			"protectiondisthorz_uom": {
-				"field_name": "protectiondisthorz_uom"
-			},
-			"protectiondistvert_uom": {
-				"field_name": "protectiondistvert_uom"
-			},
-			"mult_prot": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "multiprotection_code"
-			},
-			"nav_type": {
-				"domain": {
-					"1": "3",
-					"2": "3",
-					"4": "3"
-				},
-				"field_name": "subtype_code"
-			}
-		},
-		"table_name": "navaidcomponent"
-	},
-	"comp_dme": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"name": {
-				"field_name": "name_txt"
-			},
-			"freq_val": {
-				"field_name": "frequency_val"
-			},
-			"freq_txt": {
-				"domain": {
-					"M": "MH",
-					"K": "KH",
-					"O": "O"
-				},
-				"field_name": "frequency_uom"
-			},
-			"channel_txt": {
-				"field_name": "channel_txt"
-			},
-			"mag_var": {
-				"field_name": "magneticvariation_val"
-			},
-			"nav_ident": {
-				"field_name": "ident_txt"
-			},
-			"opr_hours": {
-				"field_name": "workhrrmk_txt"
-			},
-			"os": {
-				"domain": {
-					"I": "1",
-					"O": "0",
-					"T": "2"
-				},
-				"field_name": "status_code"
-			},
-			"slaved_var": {
-				"field_name": "slavedvariation_val"
-			},
-			"usage_cd": {
-				"domain": {
-					"H": "0",
-					"L": "1",
-					"B": "2",
-					"T": "3"
-				},
-				"field_name": "awystructure_code"
-			},
-			"voice": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "voice_code"
-			},
-			"wgs_dlat": {
-				"field_name": "lat_txt"
-			},
-			"wgs_dlong": {
-				"field_name": "long_txt"
-			},
-			"freq_prot_split_1": {
-				"field_name": "protectiondisthorz_val"
-			},
-			"freq_prot_split_2": {
-				"field_name": "protectiondistvert_val"
-			},
-			"protectiondisthorz_uom": {
-				"field_name": "protectiondisthorz_uom"
-			},
-			"protectiondistvert_uom": {
-				"field_name": "protectiondistvert_uom"
-			},
-			"mult_prot": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "multiprotection_code"
-			},
-			"nav_type": {
-				"domain": {
-					"4": "2",
-					"7": "2",
-					"9": "2"
-				},
-				"field_name": "subtype_code"
-			}
-		},
-		"table_name": "navaidcomponent"
-	},
-	"comp_ndb": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"name": {
-				"field_name": "name_txt"
-			},
-			"freq_val": {
-				"field_name": "frequency_val"
-			},
-			"freq_txt": {
-				"domain": {
-					"M": "MH",
-					"K": "KH",
-					"O": "O"
-				},
-				"field_name": "frequency_uom"
-			},
-			"channel_txt": {
-				"field_name": "channel_txt"
-			},
-			"mag_var": {
-				"field_name": "magneticvariation_val"
-			},
-			"nav_ident": {
-				"field_name": "ident_txt"
-			},
-			"opr_hours": {
-				"field_name": "workhrrmk_txt"
-			},
-			"os": {
-				"domain": {
-					"I": "1",
-					"O": "0",
-					"T": "2"
-				},
-				"field_name": "status_code"
-			},
-			"slaved_var": {
-				"field_name": "slavedvariation_val"
-			},
-			"usage_cd": {
-				"domain": {
-					"H": "0",
-					"L": "1",
-					"B": "2",
-					"T": "3"
-				},
-				"field_name": "awystructure_code"
-			},
-			"voice": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "voice_code"
-			},
-			"wgs_dlat": {
-				"field_name": "lat_txt"
-			},
-			"wgs_dlong": {
-				"field_name": "long_txt"
-			},
-			"freq_prot_split_1": {
-				"field_name": "protectiondisthorz_val"
-			},
-			"freq_prot_split_2": {
-				"field_name": "protectiondistvert_val"
-			},
-			"protectiondisthorz_uom": {
-				"field_name": "protectiondisthorz_uom"
-			},
-			"protectiondistvert_uom": {
-				"field_name": "protectiondistvert_uom"
-			},
-			"mult_prot": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "multiprotection_code"
-			},
-			"nav_type": {
-				"domain": {
-					"5": "1",
-					"7": "1"
-				},
-				"field_name": "subtype_code"
-			}
-		},
-		"table_name": "navaidcomponent"
-	},
-	"comp_tacan": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"name": {
-				"field_name": "name_txt"
-			},
-			"freq_val": {
-				"field_name": "frequency_val"
-			},
-			"freq_txt": {
-				"domain": {
-					"M": "MH",
-					"K": "KH",
-					"O": "O"
-				},
-				"field_name": "frequency_uom"
-			},
-			"channel_txt": {
-				"field_name": "channel_txt"
-			},
-			"mag_var": {
-				"field_name": "magneticvariation_val"
-			},
-			"nav_ident": {
-				"field_name": "ident_txt"
-			},
-			"opr_hours": {
-				"field_name": "workhrrmk_txt"
-			},
-			"os": {
-				"domain": {
-					"I": "1",
-					"O": "0",
-					"T": "2"
-				},
-				"field_name": "status_code"
-			},
-			"slaved_var": {
-				"field_name": "slavedvariation_val"
-			},
-			"usage_cd": {
-				"domain": {
-					"H": "0",
-					"L": "1",
-					"B": "2",
-					"T": "3"
-				},
-				"field_name": "awystructure_code"
-			},
-			"voice": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "voice_code"
-			},
-			"wgs_dlat": {
-				"field_name": "lat_txt"
-			},
-			"wgs_dlong": {
-				"field_name": "long_txt"
-			},
-			"freq_prot_split_1": {
-				"field_name": "protectiondisthorz_val"
-			},
-			"freq_prot_split_2": {
-				"field_name": "protectiondistvert_val"
-			},
-			"protectiondisthorz_uom": {
-				"field_name": "protectiondisthorz_uom"
-			},
-			"protectiondistvert_uom": {
-				"field_name": "protectiondistvert_uom"
-			},
-			"mult_prot": {
-				"domain": {
-					"N": "0",
-					"Y": "1"
-				},
-				"field_name": "multiprotection_code"
-			},
-			"nav_type": {
-				"domain": {
-					"2": "4",
-					"3": "4"
-				},
-				"field_name": "subtype_code"
-			}
-		},
-		"table_name": "navaidcomponent"
-	},
-	"desigpt_navassoc": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"navaidsystem_id": {
-				"field_name": "navaidsystem_id"
-			},
-			"designatedpoint_id": {
-				"field_name": "designatedpoint_id"
-			},
-			"wpt_bearing": {
-				"field_name": "bearing_val"
-			},
-			"wpt_dist": {
-				"field_name": "distance_val"
-			},
-			"wpt_navaid_flag": {
-				"domain": {
-					"Y": "2"
-				},
-				"field_name": "navaidrole_code"
-			}
-		},
-		"table_name": "desigpoint_navaidassoc"
-	},
-	"desigpt_navassoc2": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"navaidsystem_id": {
-				"field_name": "navaidsystem_id"
-			},
-			"designatedpoint_id": {
-				"field_name": "designatedpoint_id"
-			},
-			"sec_bearing": {
-				"field_name": "bearing_val"
-			},
-			"sec_dme_dist": {
-				"field_name": "distance_val"
-			}
-		},
-		"table_name": "desigpoint_navaidassoc"
-	},
-	"chart": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"chart_note": {
-				"field_name": "note_txt"
-			},
-			"cross_ref_rmk": {
-				"field_name": "remarks_txt"
-			},
-			"lat": {
-				"field_name": "lat_txt"
-			},
-			"lon": {
-				"field_name": "long_txt"
-			},
-			"mapid": {
-				"field_name": "mapid_txt"
-			},
-			"style_txt": {
-				"field_name": "style_txt"
-			},
-			"mod_date": {
-				"field_name": "note_date"
-			},
-			"note_type": {
-				"domain": {
-					"BOUNDARY": "24",
-					"FSS/RCO": "32",
-					"GENERAL/MISC": "1",
-					"ISLAND SKETCH": "20",
-					"OVERLAP": "16",
-					"RCAG/IATA": "33",
-					"SPECIAL/SUPP EXPLANATORY": "34",
-					"WARNING": "3"
-				},
-				"field_name": "type_code"
-			},
-			"country": {
-				"field_name": "country_txt"
-			},
-			"source_txt": {
-				"field_name": "source_txt"
-			}
-		},
-		"table_name": "notes"
-	},
-	"holding": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"dup": {
-				"domain": {
-					"00": "ENR",
-					"10": "ENRH",
-					"20": "ENRL",
-					"01": "ENR",
-					"11": "ENRH",
-					"21": "ENRL",
-					"02": "ENR",
-					"12": "ENRH",
-					"22": "ENRL"
-				},
-				"field_name": "type_code"
-			},
-			"mag_crs_transform": {
-				"field_name": "inboundcourse_val"
-			},
-			"turn_dir": {
-				"field_name": "dirturn_code"
-			},
-			"wgs_dlat": {
-				"field_name": "lat_txt"
-			},
-			"wgs_dlong": {
-				"field_name": "long_txt"
-			},
-			"designatedpoint_id": {
-				"field_name": "designatedpoint_id"
-			}
-		},
-		"table_name": "holdingpattern"
-	},
-	"mtr": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"mtr_route_type": {
-				"domain": {
-					"IR": "0",
-					"VR": "1",
-					"SR": "2"
-				},
-				"field_name": "subtype_code"
-			},
-			"usage": {
-				"field_name": "pointtype_code"
-			},
-			"mtr_ident": {
-				"field_name": "ident_txt"
-			},
-			"wgs_lat": {
-				"field_name": "lat_txt"
-			},
-			"wgs_long": {
-				"field_name": "long_txt"
-			},
-			"width_left": {
-				"field_name": "widthleft_val"
-			},
-			"width_right": {
-				"field_name": "widthright_val"
-			},
-			"country": {
-				"field_name": "country_txt"
-			},
-			"point_id": {
-				"field_name": "point_id"
-			},
-			"next_pt": {
-				"field_name": "nextpoint_id"
-			},
-			"seqno": {
-				"field_name": "numseq_val"
-			}
-		},
-		"table_name": "mtrpoint"
-	},
-	"mtrsegment": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"mtr_route_type": {
-				"domain": {
-					"IR": "0",
-					"VR": "1",
-					"SR": "2"
-				},
-				"field_name": "subtype_code"
-			},
-			"mtr_ident": {
-				"field_name": "ident_txt"
-			},
-			"wgs_lat": {
-				"field_name": "lat_txt"
-			},
-			"wgs_long": {
-				"field_name": "long_txt"
-			},
-			"width_left": {
-				"field_name": "widthleft_val"
-			},
-			"width_right": {
-				"field_name": "widthright_val"
-			},
-			"country": {
-				"field_name": "country_txt"
-			},
-			"startpoint_id": {
-				"field_name": "startpoint_id"
-			},
-			"endpoint_id": {
-				"field_name": "endpoint_id"
-			},
-			"seqno": {
-				"field_name": "numseq_val"
-			},
-			"enroute_alt_1_val": {
-				"field_name": "distvertlower_val"
-			},
-			"enroute_alt_1_code": {
-				"domain": {
-					"AGL": "HEI",
-					"MSL": "ALT",
-					"FL": "OTHER"
-				},
-				"field_name": "distvertlower_code"
-			},
-			"enroute_alt_2_val": {
-				"field_name": "distvertupper_val"
-			},
-			"enroute_alt_2_code": {
-				"domain": {
-					"AGL": "HEI",
-					"MSL": "ALT",
-					"FL": "OTHER"
-				},
-				"field_name": "distvertupper_code"
-			},
-			"enroute_alt_1_txt": {
-				"domain": {
-					"AGL": "FT",
-					"MSL": "FT",
-					"FL": "FL"
-				},
-				"field_name": "distvertlower_uom"
-			},
-			"enroute_alt_2_txt": {
-				"domain": {
-					"AGL": "FT",
-					"MSL": "FT",
-					"FL": "FL"
-				},
-				"field_name": "distvertupper_uom"
-			},
-			"effect_time": {
-				"field_name": "workhrrmk_txt"
-			}
-		},
-		"table_name": "mtrsegment"
-	},
-	"refueling": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"air_ref_ident": {
-				"field_name": "ident_txt"
-			},
-			"country": {
-				"field_name": "country_txt"
-			},
-			"direc": {
-				"field_name": "direction_code"
-			},
-			"refuel_trk_type": {
-				"domain": {
-					"A": "1",
-					"T": "0"
-				},
-				"field_name": "type_code"
-			},
-			"point_seq": {
-				"field_name": "numseq_val"
-			},
-			"wgs_lat": {
-				"field_name": "lat_txt"
-			},
-			"wgs_long": {
-				"field_name": "long_txt"
-			}
-		},
-		"table_name": "refuelingtrack"
-	},
-	"refuelingpoint": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"air_ref_ident": {
-				"field_name": "ident_txt"
-			},
-			"country": {
-				"field_name": "country_txt"
-			},
-			"direc": {
-				"field_name": "direction_code"
-			},
-			"refuel_trk_type": {
-				"domain": {
-					"A": "1",
-					"T": "0"
-				},
-				"field_name": "type_code"
-			},
-			"point_seq": {
-				"field_name": "numseq_val"
-			},
-			"usage": {
-				"domain": {
-					"IP": "INITIAL",
-					"CP": "CONTROL",
-					"NC": "CHECK",
-					"EX": "EXIT",
-					"ET": "ENTRY",
-					"AN": "ANCHOR",
-					"AP": "PATTERN"
-				},
-				"field_name": "usage_code"
-			},
-			"wgs_lat": {
-				"field_name": "lat_txt"
-			},
-			"wgs_long": {
-				"field_name": "long_txt"
-			}
-		},
-		"table_name": "refuelingpoint"
-	},
-	"ortca": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"altitude": {
-				"field_name": "clearance_val"
-			},
-			"sw_lat": {
-				"field_name": "lat_txt"
-			},
-			"sw_lon": {
-				"field_name": "long_txt"
-			},
-			"interval_val": {
-				"field_name": "quadtype_code"
-			}
-		},
-		"table_name": "clearance"
-	},
-	"avoidance": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"address_id": {
-				"field_name": "address_id"
-			},
-			"latstring": {
-				"field_name": "lat_txt"
-			},
-			"lonstring": {
-				"field_name": "long_txt"
-			},
-			"type": {
-				"domain": {
-					"NPP": "Nuclear Power Plants",
-					"RWS": "Radioactive Waste Sites"
-				},
-				"field_name": "type_code"
-			}
-		},
-		"table_name": "avoidance"
-	},
-	"address_avoidance": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"country": {
-				"field_name": "addresscountry_txt"
-			},
-			"province": {
-				"field_name": "addressstateprovince_txt"
-			}
-		},
-		"table_name": "address"
-	},
-	"wpt_mca": {
-		"fields": {
-			"featureid": {
-				"field_name": "clientkey_id"
-			},
-			"reference_id": {
-				"field_name": "reference_id"
-			},
-			"referenceclass_txt": {
-				"field_name": "referenceclass_txt"
-			},
-			"note_txt": {
-				"field_name": "note_txt"
-			},
-			"note_type": {
-				"field_name": "type_code"
-			}
-		},
-		"table_name": "notes"
-	}
+  "arpt": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "arpt_name": {
+        "field_name": "name_txt"
+      },
+      "symbol": {
+        "domain": {
+          "A": "AD",
+          "B": "AD",
+          "C": "AD",
+          "D": "AD",
+          "E": "AD",
+          "G": "AD",
+          "H": "HP",
+          "J": "HP",
+          "K": "HP",
+          "L": "HP"
+        },
+        "field_name": "type_code"
+      },
+      "dcdt_unmapped": {
+        "field_name": "dcdt_unmapped"
+      },
+      "wgs_dlat": {
+        "field_name": "lat_txt"
+      },
+      "wgs_dlong": {
+        "field_name": "long_txt"
+      },
+      "elev": {
+        "field_name": "elev_val"
+      },
+      "icao_txt": {
+        "field_name": "icao_txt"
+      },
+      "prim_opr_agcy": {
+        "domain": {
+          "PVT": "1",
+          "PA": "0"
+        },
+        "field_name": "privateuse_code"
+      },
+      "pro": {
+        "domain": {
+          "Y": "1",
+          "N": "0"
+        },
+        "field_name": "terminalprocedure_code"
+      },
+      "lra": {
+        "domain": {
+          "Y": "1",
+          "N": "0"
+        },
+        "field_name": "landingrightsavailable_code"
+      }
+    },
+    "table_name": "adhp"
+  },
+  "adhpsurfacearea": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "wac_innr": {
+        "field_name": "adhp_id"
+      },
+      "designator_txt": {
+        "field_name": "designator_txt"
+      },
+      "len": {
+        "field_name": "length_val"
+      },
+      "surfacecharacteristic_id": {
+        "field_name": "surfacecharacteristic_id"
+      },
+      "subtype_code": {
+        "field_name": "subtype_code"
+      }
+    },
+    "table_name": "adhpsurfacearea"
+  },
+  "surfacelighting": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "lighted_id": {
+        "field_name": "lighted_id"
+      },
+      "subtype_code": {
+        "field_name": "subtype_code"
+      },
+      "lightactivation": {
+        "domain": {
+          "YYYYY": 4,
+          "NYYYY": 4,
+          "YNYYY": 4,
+          "YYNYY": 4,
+          "NYNYY": 4,
+          "YNNYY": 4,
+          "YYYNY": 4,
+          "NYYNY": 4,
+          "YNYNY": 4,
+          "YYYYN": 4,
+          "NYYYN": 4,
+          "YNYYN": 4,
+          "YYNYN": 4,
+          "NYNYN": 4,
+          "YNNYN": 4,
+          "YYYNN": 4,
+          "NYYNN": 4,
+          "YNYNN": 4,
+          "NNYYY": 2,
+          "NNNYY": 2,
+          "NNYNY": 2,
+          "NNYYN": 2,
+          "NNNYN": 2,
+          "NNYNN": 2,
+          "YYNNY": 3,
+          "NYNNY": 3,
+          "YNNNY": 3,
+          "YYNNN": 3,
+          "NYNNN": 3,
+          "YNNNN": 3,
+          "NNNNY": 1,
+          "NNNNN": 0
+        },
+        "field_name": "lightingactivation_code"
+      }
+    },
+    "table_name": "surfacelightsys"
+  },
+  "characterstic": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "sfc": {
+        "domain": {
+          "ASP": "ASPH",
+          "BIT": "BITUM",
+          "CLA": "CLAY",
+          "COM": "COMP",
+          "CON": "CONC",
+          "COP": "COMP",
+          "COR": "CORAL",
+          "GRE": "GRADE",
+          "GRS": "GRASS",
+          "GVL": "GRAVE",
+          "ICE": "ICE",
+          "LAT": "LATERITE",
+          "MEM": "MEMBRANE",
+          "MAC": "MACADAM",
+          "MIX": "MIX",
+          "PER": "PERM",
+          "PEM": "CONC+ASPH",
+          "PSP": "PSP",
+          "SAN": "SAND",
+          "SNO": "SNOW",
+          "U": "UNK"
+        },
+        "field_name": "composition_code"
+      }
+    },
+    "table_name": "surfacecharacteristic"
+  },
+  "serviceatadhp": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "adhp_id": {
+        "field_name": "adhp_id"
+      },
+      "service_id": {
+        "field_name": "service_id"
+      }
+    },
+    "table_name": "serviceatadhp"
+  },
+  "service": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "com_type": {
+        "field_name": "type_code"
+      },
+      "com_opr_hrs": {
+        "field_name": "workhrrmk_txt"
+      }
+    },
+    "table_name": "service"
+  },
+  "freq1": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "freq1_val": {
+        "field_name": "freqtrans_val"
+      },
+      "freq1_txt": {
+        "domain": {
+          "M": "MH",
+          "K": "KH",
+          "O": "O"
+        },
+        "field_name": "frequency_uom"
+      },
+      "service_id": {
+        "field_name": "service_id"
+      }
+    },
+    "table_name": "frequency"
+  },
+  "freq2": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "freq2_val": {
+        "field_name": "freqtrans_val"
+      },
+      "freq2_txt": {
+        "domain": {
+          "M": "MH",
+          "K": "KH",
+          "O": "O"
+        },
+        "field_name": "frequency_uom"
+      },
+      "service_id": {
+        "field_name": "service_id"
+      }
+    },
+    "table_name": "frequency"
+  },
+  "freq3": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "freq3_val": {
+        "field_name": "freqtrans_val"
+      },
+      "freq3_txt": {
+        "domain": {
+          "M": "MH",
+          "K": "KH",
+          "O": "O"
+        },
+        "field_name": "frequency_uom"
+      },
+      "service_id": {
+        "field_name": "service_id"
+      }
+    },
+    "table_name": "frequency"
+  },
+  "freq4": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "freq4_val": {
+        "field_name": "freqtrans_val"
+      },
+      "freq4_txt": {
+        "domain": {
+          "M": "MH",
+          "K": "KH",
+          "O": "O"
+        },
+        "field_name": "frequency_uom"
+      },
+      "service_id": {
+        "field_name": "service_id"
+      }
+    },
+    "table_name": "frequency"
+  },
+  "freq5": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "freq5_val": {
+        "field_name": "freqtrans_val"
+      },
+      "freq5_txt": {
+        "domain": {
+          "M": "MH",
+          "K": "KH",
+          "O": "O"
+        },
+        "field_name": "frequency_uom"
+      },
+      "service_id": {
+        "field_name": "service_id"
+      }
+    },
+    "table_name": "frequency"
+  },
+  "ats": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "ats_type": {
+        "domain": {
+          "A": "OCEAN",
+          "B": "OCEAN",
+          "C": "COR",
+          "D": "ADV",
+          "E": "DIR",
+          "O": "OCEAN",
+          "R": "RNAV",
+          "S": "SUB",
+          "T": "TACAN",
+          "W": "CONV"
+        },
+        "field_name": "routetype_code"
+      },
+      "wpt1_key": {
+        "field_name": "startpoint_id"
+      },
+      "wpt2_key": {
+        "field_name": "endpoint_id"
+      },
+      "ats_ident": {
+        "field_name": "ident_txt"
+      },
+      "cdr": {
+        "field_name": "cdr_txt"
+      },
+      "change_over": {
+        "field_name": "copdist_val"
+      },
+      "dme_dist": {
+        "field_name": "dmedist_val"
+      },
+      "flt_level": {
+        "domain": {
+          "U": "H",
+          "L": "L",
+          "B": "B"
+        },
+        "field_name": "level_code"
+      },
+      "freq_class": {
+        "field_name": "frequencyclass_code"
+      },
+      "lower_limit": {
+        "field_name": "distvertlowerval_txt"
+      },
+      "max_auth_alt_val": {
+        "field_name": "maximumauthalt_val"
+      },
+      "max_auth_alt_txt": {
+        "field_name": "maximumauthalt_uom"
+      },
+      "mbp1": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "startmbp_code"
+      },
+      "mbp2": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "endmbp_code"
+      },
+      "mca1_alt_val": {
+        "field_name": "startmca_val"
+      },
+      "mca1_alt_txt": {
+        "field_name": "startmca_uom"
+      },
+      "mca2_alt_val": {
+        "field_name": "endmca_val"
+      },
+      "mca2_alt_txt": {
+        "field_name": "endmca_uom"
+      },
+      "mra1_alt_val": {
+        "field_name": "startmra_val"
+      },
+      "mra1_alt_txt": {
+        "field_name": "startmra_uom"
+      },
+      "mra2_alt_val": {
+        "field_name": "endmra_val"
+      },
+      "mra2_alt_txt": {
+        "field_name": "endmra_uom"
+      },
+      "nr": {
+        "domain": {
+          "N": "0",
+          "Y": "4"
+        },
+        "field_name": "rtereportexc_code"
+      },
+      "route_direction": {
+        "field_name": "direction_code"
+      },
+      "upper_limit": {
+        "field_name": "distvertupperval_txt"
+      },
+      "status": {
+        "domain": {
+          "C": "0",
+          "A": "1",
+          "O": "1",
+          "R": "1",
+          "S": "1"
+        },
+        "field_name": "status_code"
+      },
+      "width_left": {
+        "field_name": "widthleft_val"
+      },
+      "width_right": {
+        "field_name": "widthright_val"
+      },
+      "wpt1_desc_code_3": {
+        "field_name": "repatcstart_code"
+      },
+      "wpt2_desc_code_3": {
+        "field_name": "repatcend_code"
+      },
+      "wpt1_desc_code_1": {
+        "field_name": "descriptionstart_code"
+      },
+      "wpt2_desc_code_1": {
+        "field_name": "descriptionend_code"
+      },
+      "wpt1_rnav_fly": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "startrnavfly_code"
+      },
+      "wpt2_rnav_fly": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "endrnavfly_code"
+      },
+      "hi_alt_floor": {
+        "field_name": "highfloor_txt"
+      },
+      "course_grid_true": {
+        "domain": {
+          "T": "TRUE",
+          "M": "MAG",
+          "G": "GRID"
+        },
+        "field_name": "northtype_code"
+      },
+      "mileage": {
+        "field_name": "length_val"
+      },
+      "dcdt_unmapped": {
+        "field_name": "dcdt_unmapped"
+      }
+    },
+    "table_name": "atsroute"
+  },
+  "wpt": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "chart_text": {
+        "field_name": "remarks_txt"
+      },
+      "wgs_dlat": {
+        "field_name": "lat_txt"
+      },
+      "wgs_dlong": {
+        "field_name": "long_txt"
+      },
+      "wpt_ident": {
+        "field_name": "ident_txt"
+      },
+      "description": {
+        "field_name": "name_txt"
+      },
+      "var": {
+        "field_name": "magneticvariation_val"
+      },
+      "usage_code": {
+        "domain": {
+          "H": "0",
+          "L": "1",
+          "B": "2",
+          "T": "3"
+        },
+        "field_name": "awystructure_code"
+      },
+      "dcdt_unmapped": {
+        "field_name": "dcdt_unmapped"
+      }
+    },
+    "table_name": "designatedpoint"
+  },
+  "bdry": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "bdry_ident": {
+        "field_name": "ident_txt"
+      },
+      "type_code": {
+        "domain": {
+          "1|Y|||": "ADA",
+          "1||||": "ADA",
+          "2|Y|||": "ADIZ",
+          "2||||": "ADIZ",
+          "3|Y|||": "ARTCC",
+          "3||||": "ARTCC",
+          "4|Y|||": "ARTCC",
+          "4||||": "ARTCC",
+          "5|Y|||": "BZ",
+          "5||||": "BZ",
+          "6|Y||Y|": "UTA",
+          "6|||Y|": "UTA",
+          "6|Y|Y||": "CTA-P",
+          "6||Y||": "CTA",
+          "7|Y|||": "CTR",
+          "7||||": "CTR",
+          "8|Y|||": "FIR",
+          "8||||": "FIR",
+          "9|Y|||": "OCA",
+          "9||||": "OCA",
+          "10|Y|||": "RDR",
+          "10||||": "RDR",
+          "11|Y|||": "TMA-P",
+          "11||||": "TMA",
+          "12|Y|||": "UIR",
+          "12||||": "UIR",
+          "13|Y|||": "MODE-C",
+          "13||||": "MODE-C",
+          "14|Y|||4": "ASR",
+          "14|Y|||5": "AWY",
+          "14|Y|||6": "RCA",
+          "14|Y|||7": "LTA",
+          "14|Y|||8": "SRA",
+          "14|Y|||9": "DSP",
+          "14||||4": "ASR",
+          "14||||5": "AWY",
+          "14||||6": "RCA",
+          "14||||7": "LTA",
+          "14||||8": "SRA",
+          "14||||9": "DSP"
+        },
+        "field_name": "type_code"
+      },
+      "bdry_name": {
+        "field_name": "name_txt"
+      },
+      "bdry_sector": {
+        "field_name": "sector_txt"
+      },
+      "bdry_level": {
+        "domain": {
+          "U": "H",
+          "L": "L",
+          "B": "B"
+        },
+        "field_name": "level_code"
+      },
+      "class": {
+        "field_name": "class_code"
+      },
+      "comname_txt": {
+        "field_name": "comname_txt"
+      },
+      "footnote": {
+        "field_name": "remarks_txt"
+      },
+      "icao_txt": {
+        "field_name": "icao_txt"
+      },
+      "icao_rgn": {
+        "field_name": "locationind_txt"
+      },
+      "lo_eff_alt_val": {
+        "field_name": "distvertlower_val"
+      },
+      "lo_eff_alt_txt": {
+        "field_name": "distvertlower_uom"
+      },
+      "lo_eff_alt_code": {
+        "domain": {
+          "GND": "GND",
+          "SURFACE": "SFC",
+          "BY NOTAM": "BYNOTAM"
+        },
+        "field_name": "distvertlower_code"
+      },
+      "up_eff_alt_val": {
+        "field_name": "distvertupper_val"
+      },
+      "up_eff_alt_txt": {
+        "field_name": "distvertupper_uom"
+      },
+      "up_eff_alt_code": {
+        "domain": {
+          "GND": "GND",
+          "SURFACE": "SFC",
+          "BY NOTAM": "BYNOTAM"
+        },
+        "field_name": "distvertupper_code"
+      },
+      "chartstructures_txt": {
+        "domain": {
+          "Y|Y|Y|Y|Y|Y": "highchart lowchart bothchart tchart aacdtdchart termchart",
+          "Y|Y|Y|Y|Y|": "highchart lowchart bothchart tchart aacdtdchart ",
+          "Y|Y|Y|Y||Y": "highchart lowchart bothchart tchart termchart",
+          "Y|Y|Y|Y||": "highchart lowchart bothchart tchart ",
+          "Y|Y|Y||Y|Y": "highchart lowchart bothchart aacdtdchart termchart",
+          "Y|Y|Y||Y|": "highchart lowchart bothchart aacdtdchart ",
+          "Y|Y|Y|||Y": "highchart lowchart bothchart termchart",
+          "Y|Y|Y|||": "highchart lowchart bothchart ",
+          "Y|Y||Y|Y|Y": "highchart lowchart tchart aacdtdchart termchart",
+          "Y|Y||Y|Y|": "highchart lowchart tchart aacdtdchart ",
+          "Y|Y||Y||Y": "highchart lowchart tchart termchart",
+          "Y|Y||Y||": "highchart lowchart tchart ",
+          "Y|Y|||Y|Y": "highchart lowchart aacdtdchart termchart",
+          "Y|Y|||Y|": "highchart lowchart aacdtdchart ",
+          "Y|Y||||Y": "highchart lowchart termchart",
+          "Y|Y||||": "highchart lowchart ",
+          "Y||Y|Y|Y|Y": "highchart bothchart tchart aacdtdchart termchart",
+          "Y||Y|Y|Y|": "highchart bothchart tchart aacdtdchart ",
+          "Y||Y|Y||Y": "highchart bothchart tchart termchart",
+          "Y||Y|Y||": "highchart bothchart tchart ",
+          "Y||Y||Y|Y": "highchart bothchart aacdtdchart termchart",
+          "Y||Y||Y|": "highchart bothchart aacdtdchart ",
+          "Y||Y|||Y": "highchart bothchart termchart",
+          "Y||Y|||": "highchart bothchart ",
+          "Y|||Y|Y|Y": "highchart tchart aacdtdchart termchart",
+          "Y|||Y|Y|": "highchart tchart aacdtdchart ",
+          "Y|||Y||Y": "highchart tchart termchart",
+          "Y|||Y||": "highchart tchart ",
+          "Y||||Y|Y": "highchart aacdtdchart termchart",
+          "Y||||Y|": "highchart aacdtdchart ",
+          "Y|||||Y": "highchart termchart",
+          "Y|||||": "highchart ",
+          "|Y|Y|Y|Y|Y": "lowchart bothchart tchart aacdtdchart termchart",
+          "|Y|Y|Y|Y|": "lowchart bothchart tchart aacdtdchart ",
+          "|Y|Y|Y||Y": "lowchart bothchart tchart termchart",
+          "|Y|Y|Y||": "lowchart bothchart tchart ",
+          "|Y|Y||Y|Y": "lowchart bothchart aacdtdchart termchart",
+          "|Y|Y||Y|": "lowchart bothchart aacdtdchart ",
+          "|Y|Y|||Y": "lowchart bothchart termchart",
+          "|Y|Y|||": "lowchart bothchart ",
+          "|Y||Y|Y|Y": "lowchart tchart aacdtdchart termchart",
+          "|Y||Y|Y|": "lowchart tchart aacdtdchart ",
+          "|Y||Y||Y": "lowchart tchart termchart",
+          "|Y||Y||": "lowchart tchart ",
+          "|Y|||Y|Y": "lowchart aacdtdchart termchart",
+          "|Y|||Y|": "lowchart aacdtdchart ",
+          "|Y||||Y": "lowchart termchart",
+          "|Y||||": "lowchart ",
+          "||Y|Y|Y|Y": "bothchart tchart aacdtdchart termchart",
+          "||Y|Y|Y|": "bothchart tchart aacdtdchart ",
+          "||Y|Y||Y": "bothchart tchart termchart",
+          "||Y|Y||": "bothchart tchart ",
+          "||Y||Y|Y": "bothchart aacdtdchart termchart",
+          "||Y||Y|": "bothchart aacdtdchart ",
+          "||Y|||Y": "bothchart termchart",
+          "||Y|||": "bothchart ",
+          "|||Y|Y|Y": "tchart aacdtdchart termchart",
+          "|||Y|Y|": "tchart aacdtdchart ",
+          "|||Y||Y": "tchart termchart",
+          "|||Y||": "tchart ",
+          "||||Y|Y": "aacdtdchart termchart",
+          "||||Y|": "aacdtdchart ",
+          "|||||Y": "termchart",
+          "|||||": ""
+        },
+        "field_name": "chartstructures_txt"
+      }
+    },
+    "table_name": "airspace"
+  },
+  "suas": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "suas_ident": {
+        "field_name": "ident_txt"
+      },
+      "suas_name": {
+        "field_name": "name_txt"
+      },
+      "suas_sctr": {
+        "field_name": "sector_txt"
+      },
+      "suas_level": {
+        "domain": {
+          "U": "H",
+          "L": "L",
+          "B": "B"
+        },
+        "field_name": "level_code"
+      },
+      "lo_eff_alt_val": {
+        "field_name": "distvertlower_val"
+      },
+      "lo_eff_alt_txt": {
+        "field_name": "distvertlower_uom"
+      },
+      "lo_eff_alt_code": {
+        "domain": {
+          "GND": "GND",
+          "SURFACE": "SFC",
+          "BY NOTAM": "BYNOTAM"
+        },
+        "field_name": "distvertlower_code"
+      },
+      "up_eff_alt_val": {
+        "field_name": "distvertupper_val"
+      },
+      "up_eff_alt_txt": {
+        "field_name": "distvertupper_uom"
+      },
+      "up_eff_alt_code": {
+        "domain": {
+          "GND": "GND",
+          "SURFACE": "SFC",
+          "BY NOTAM": "BYNOTAM"
+        },
+        "field_name": "distvertupper_code"
+      },
+      "com_name": {
+        "field_name": "comname_txt"
+      },
+      "suas_type": {
+        "domain": {
+          "A": "A",
+          "D": "D",
+          "M": "MOA",
+          "P": "P",
+          "R": "R",
+          "T": "TRA",
+          "W": "W"
+        },
+        "field_name": "type_code"
+      },
+      "weather": {
+        "domain": {
+          "VFR": "0",
+          "IFR": "6",
+          "IMC": "7",
+          "VFR-IFR": "1",
+          "VMC": "2",
+          "VMC-IMC": "3",
+          "BY NOTAM": "8"
+        },
+        "field_name": "weatherrestrictions_code"
+      },
+      "eff_times": {
+        "field_name": "workhrrmk_txt"
+      },
+      "chartstructures_txt": {
+        "domain": {
+          "Y|Y|Y|Y|Y|Y": "highchart lowchart bothchart tchart aacdtdchart termchart",
+          "Y|Y|Y|Y|Y|": "highchart lowchart bothchart tchart aacdtdchart ",
+          "Y|Y|Y|Y||Y": "highchart lowchart bothchart tchart termchart",
+          "Y|Y|Y|Y||": "highchart lowchart bothchart tchart ",
+          "Y|Y|Y||Y|Y": "highchart lowchart bothchart aacdtdchart termchart",
+          "Y|Y|Y||Y|": "highchart lowchart bothchart aacdtdchart ",
+          "Y|Y|Y|||Y": "highchart lowchart bothchart termchart",
+          "Y|Y|Y|||": "highchart lowchart bothchart ",
+          "Y|Y||Y|Y|Y": "highchart lowchart tchart aacdtdchart termchart",
+          "Y|Y||Y|Y|": "highchart lowchart tchart aacdtdchart ",
+          "Y|Y||Y||Y": "highchart lowchart tchart termchart",
+          "Y|Y||Y||": "highchart lowchart tchart ",
+          "Y|Y|||Y|Y": "highchart lowchart aacdtdchart termchart",
+          "Y|Y|||Y|": "highchart lowchart aacdtdchart ",
+          "Y|Y||||Y": "highchart lowchart termchart",
+          "Y|Y||||": "highchart lowchart ",
+          "Y||Y|Y|Y|Y": "highchart bothchart tchart aacdtdchart termchart",
+          "Y||Y|Y|Y|": "highchart bothchart tchart aacdtdchart ",
+          "Y||Y|Y||Y": "highchart bothchart tchart termchart",
+          "Y||Y|Y||": "highchart bothchart tchart ",
+          "Y||Y||Y|Y": "highchart bothchart aacdtdchart termchart",
+          "Y||Y||Y|": "highchart bothchart aacdtdchart ",
+          "Y||Y|||Y": "highchart bothchart termchart",
+          "Y||Y|||": "highchart bothchart ",
+          "Y|||Y|Y|Y": "highchart tchart aacdtdchart termchart",
+          "Y|||Y|Y|": "highchart tchart aacdtdchart ",
+          "Y|||Y||Y": "highchart tchart termchart",
+          "Y|||Y||": "highchart tchart ",
+          "Y||||Y|Y": "highchart aacdtdchart termchart",
+          "Y||||Y|": "highchart aacdtdchart ",
+          "Y|||||Y": "highchart termchart",
+          "Y|||||": "highchart ",
+          "|Y|Y|Y|Y|Y": "lowchart bothchart tchart aacdtdchart termchart",
+          "|Y|Y|Y|Y|": "lowchart bothchart tchart aacdtdchart ",
+          "|Y|Y|Y||Y": "lowchart bothchart tchart termchart",
+          "|Y|Y|Y||": "lowchart bothchart tchart ",
+          "|Y|Y||Y|Y": "lowchart bothchart aacdtdchart termchart",
+          "|Y|Y||Y|": "lowchart bothchart aacdtdchart ",
+          "|Y|Y|||Y": "lowchart bothchart termchart",
+          "|Y|Y|||": "lowchart bothchart ",
+          "|Y||Y|Y|Y": "lowchart tchart aacdtdchart termchart",
+          "|Y||Y|Y|": "lowchart tchart aacdtdchart ",
+          "|Y||Y||Y": "lowchart tchart termchart",
+          "|Y||Y||": "lowchart tchart ",
+          "|Y|||Y|Y": "lowchart aacdtdchart termchart",
+          "|Y|||Y|": "lowchart aacdtdchart ",
+          "|Y||||Y": "lowchart termchart",
+          "|Y||||": "lowchart ",
+          "||Y|Y|Y|Y": "bothchart tchart aacdtdchart termchart",
+          "||Y|Y|Y|": "bothchart tchart aacdtdchart ",
+          "||Y|Y||Y": "bothchart tchart termchart",
+          "||Y|Y||": "bothchart tchart ",
+          "||Y||Y|Y": "bothchart aacdtdchart termchart",
+          "||Y||Y|": "bothchart aacdtdchart ",
+          "||Y|||Y": "bothchart termchart",
+          "||Y|||": "bothchart ",
+          "|||Y|Y|Y": "tchart aacdtdchart termchart",
+          "|||Y|Y|": "tchart aacdtdchart ",
+          "|||Y||Y": "tchart termchart",
+          "|||Y||": "tchart ",
+          "||||Y|Y": "aacdtdchart termchart",
+          "||||Y|": "aacdtdchart ",
+          "|||||Y": "termchart",
+          "|||||": ""
+        },
+        "field_name": "chartstructures_txt"
+      }
+    },
+    "table_name": "airspace"
+  },
+  "airspaceauth": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "airspace_id": {
+        "field_name": "airspace_id"
+      },
+      "orgauth_id": {
+        "field_name": "orgauth_id"
+      }
+    },
+    "table_name": "airspaceauth"
+  },
+  "orgauth_airspace": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "ctl_agency": {
+        "field_name": "name_txt"
+      }
+    },
+    "table_name": "orgauth"
+  },
+  "nav": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "name": {
+        "field_name": "name_txt"
+      },
+      "nav_type": {
+        "domain": {
+          "1": "7",
+          "2": "8",
+          "3": "9",
+          "4": "6",
+          "5": "3",
+          "7": "4",
+          "9": "5"
+        },
+        "field_name": "subtype_code"
+      }
+    },
+    "table_name": "navaidsystem"
+  },
+  "assoc_vor": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "navaidsystem_id": {
+        "field_name": "navaidsystem_id"
+      },
+      "navaidcomponent_id": {
+        "field_name": "navaidcomponent_id"
+      }
+    },
+    "table_name": "navaidassociation"
+  },
+  "assoc_dme": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "navaidsystem_id": {
+        "field_name": "navaidsystem_id"
+      },
+      "navaidcomponent_id": {
+        "field_name": "navaidcomponent_id"
+      }
+    },
+    "table_name": "navaidassociation"
+  },
+  "assoc_ndb": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "navaidsystem_id": {
+        "field_name": "navaidsystem_id"
+      },
+      "navaidcomponent_id": {
+        "field_name": "navaidcomponent_id"
+      }
+    },
+    "table_name": "navaidassociation"
+  },
+  "assoc_tacan": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "navaidsystem_id": {
+        "field_name": "navaidsystem_id"
+      },
+      "navaidcomponent_id": {
+        "field_name": "navaidcomponent_id"
+      }
+    },
+    "table_name": "navaidassociation"
+  },
+  "comp_vor": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "name": {
+        "field_name": "name_txt"
+      },
+      "freq_val": {
+        "field_name": "frequency_val"
+      },
+      "freq_txt": {
+        "domain": {
+          "M": "MH",
+          "K": "KH",
+          "O": "O"
+        },
+        "field_name": "frequency_uom"
+      },
+      "channel_txt": {
+        "field_name": "channel_txt"
+      },
+      "mag_var": {
+        "field_name": "magneticvariation_val"
+      },
+      "nav_ident": {
+        "field_name": "ident_txt"
+      },
+      "opr_hours": {
+        "field_name": "workhrrmk_txt"
+      },
+      "os": {
+        "domain": {
+          "I": "1",
+          "O": "0",
+          "T": "2"
+        },
+        "field_name": "status_code"
+      },
+      "slaved_var": {
+        "field_name": "slavedvariation_val"
+      },
+      "usage_cd": {
+        "domain": {
+          "H": "0",
+          "L": "1",
+          "B": "2",
+          "T": "3"
+        },
+        "field_name": "awystructure_code"
+      },
+      "voice": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "voice_code"
+      },
+      "wgs_dlat": {
+        "field_name": "lat_txt"
+      },
+      "wgs_dlong": {
+        "field_name": "long_txt"
+      },
+      "freq_prot_split_1": {
+        "field_name": "protectiondisthorz_val"
+      },
+      "freq_prot_split_2": {
+        "field_name": "protectiondistvert_val"
+      },
+      "protectiondisthorz_uom": {
+        "field_name": "protectiondisthorz_uom"
+      },
+      "protectiondistvert_uom": {
+        "field_name": "protectiondistvert_uom"
+      },
+      "mult_prot": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "multiprotection_code"
+      },
+      "nav_type": {
+        "domain": {
+          "1": "3",
+          "2": "3",
+          "4": "3"
+        },
+        "field_name": "subtype_code"
+      }
+    },
+    "table_name": "navaidcomponent"
+  },
+  "comp_dme": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "name": {
+        "field_name": "name_txt"
+      },
+      "freq_val": {
+        "field_name": "frequency_val"
+      },
+      "freq_txt": {
+        "domain": {
+          "M": "MH",
+          "K": "KH",
+          "O": "O"
+        },
+        "field_name": "frequency_uom"
+      },
+      "channel_txt": {
+        "field_name": "channel_txt"
+      },
+      "mag_var": {
+        "field_name": "magneticvariation_val"
+      },
+      "nav_ident": {
+        "field_name": "ident_txt"
+      },
+      "opr_hours": {
+        "field_name": "workhrrmk_txt"
+      },
+      "os": {
+        "domain": {
+          "I": "1",
+          "O": "0",
+          "T": "2"
+        },
+        "field_name": "status_code"
+      },
+      "slaved_var": {
+        "field_name": "slavedvariation_val"
+      },
+      "usage_cd": {
+        "domain": {
+          "H": "0",
+          "L": "1",
+          "B": "2",
+          "T": "3"
+        },
+        "field_name": "awystructure_code"
+      },
+      "voice": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "voice_code"
+      },
+      "wgs_dlat": {
+        "field_name": "lat_txt"
+      },
+      "wgs_dlong": {
+        "field_name": "long_txt"
+      },
+      "freq_prot_split_1": {
+        "field_name": "protectiondisthorz_val"
+      },
+      "freq_prot_split_2": {
+        "field_name": "protectiondistvert_val"
+      },
+      "protectiondisthorz_uom": {
+        "field_name": "protectiondisthorz_uom"
+      },
+      "protectiondistvert_uom": {
+        "field_name": "protectiondistvert_uom"
+      },
+      "mult_prot": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "multiprotection_code"
+      },
+      "nav_type": {
+        "domain": {
+          "4": "2",
+          "7": "2",
+          "9": "2"
+        },
+        "field_name": "subtype_code"
+      }
+    },
+    "table_name": "navaidcomponent"
+  },
+  "comp_ndb": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "name": {
+        "field_name": "name_txt"
+      },
+      "freq_val": {
+        "field_name": "frequency_val"
+      },
+      "freq_txt": {
+        "domain": {
+          "M": "MH",
+          "K": "KH",
+          "O": "O"
+        },
+        "field_name": "frequency_uom"
+      },
+      "channel_txt": {
+        "field_name": "channel_txt"
+      },
+      "mag_var": {
+        "field_name": "magneticvariation_val"
+      },
+      "nav_ident": {
+        "field_name": "ident_txt"
+      },
+      "opr_hours": {
+        "field_name": "workhrrmk_txt"
+      },
+      "os": {
+        "domain": {
+          "I": "1",
+          "O": "0",
+          "T": "2"
+        },
+        "field_name": "status_code"
+      },
+      "slaved_var": {
+        "field_name": "slavedvariation_val"
+      },
+      "usage_cd": {
+        "domain": {
+          "H": "0",
+          "L": "1",
+          "B": "2",
+          "T": "3"
+        },
+        "field_name": "awystructure_code"
+      },
+      "voice": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "voice_code"
+      },
+      "wgs_dlat": {
+        "field_name": "lat_txt"
+      },
+      "wgs_dlong": {
+        "field_name": "long_txt"
+      },
+      "freq_prot_split_1": {
+        "field_name": "protectiondisthorz_val"
+      },
+      "freq_prot_split_2": {
+        "field_name": "protectiondistvert_val"
+      },
+      "protectiondisthorz_uom": {
+        "field_name": "protectiondisthorz_uom"
+      },
+      "protectiondistvert_uom": {
+        "field_name": "protectiondistvert_uom"
+      },
+      "mult_prot": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "multiprotection_code"
+      },
+      "nav_type": {
+        "domain": {
+          "5": "1",
+          "7": "1"
+        },
+        "field_name": "subtype_code"
+      }
+    },
+    "table_name": "navaidcomponent"
+  },
+  "comp_tacan": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "name": {
+        "field_name": "name_txt"
+      },
+      "freq_val": {
+        "field_name": "frequency_val"
+      },
+      "freq_txt": {
+        "domain": {
+          "M": "MH",
+          "K": "KH",
+          "O": "O"
+        },
+        "field_name": "frequency_uom"
+      },
+      "channel_txt": {
+        "field_name": "channel_txt"
+      },
+      "mag_var": {
+        "field_name": "magneticvariation_val"
+      },
+      "nav_ident": {
+        "field_name": "ident_txt"
+      },
+      "opr_hours": {
+        "field_name": "workhrrmk_txt"
+      },
+      "os": {
+        "domain": {
+          "I": "1",
+          "O": "0",
+          "T": "2"
+        },
+        "field_name": "status_code"
+      },
+      "slaved_var": {
+        "field_name": "slavedvariation_val"
+      },
+      "usage_cd": {
+        "domain": {
+          "H": "0",
+          "L": "1",
+          "B": "2",
+          "T": "3"
+        },
+        "field_name": "awystructure_code"
+      },
+      "voice": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "voice_code"
+      },
+      "wgs_dlat": {
+        "field_name": "lat_txt"
+      },
+      "wgs_dlong": {
+        "field_name": "long_txt"
+      },
+      "freq_prot_split_1": {
+        "field_name": "protectiondisthorz_val"
+      },
+      "freq_prot_split_2": {
+        "field_name": "protectiondistvert_val"
+      },
+      "protectiondisthorz_uom": {
+        "field_name": "protectiondisthorz_uom"
+      },
+      "protectiondistvert_uom": {
+        "field_name": "protectiondistvert_uom"
+      },
+      "mult_prot": {
+        "domain": {
+          "N": "0",
+          "Y": "1"
+        },
+        "field_name": "multiprotection_code"
+      },
+      "nav_type": {
+        "domain": {
+          "2": "4",
+          "3": "4"
+        },
+        "field_name": "subtype_code"
+      }
+    },
+    "table_name": "navaidcomponent"
+  },
+  "desigpt_navassoc": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "navaidsystem_id": {
+        "field_name": "navaidsystem_id"
+      },
+      "designatedpoint_id": {
+        "field_name": "designatedpoint_id"
+      },
+      "wpt_bearing": {
+        "field_name": "bearing_val"
+      },
+      "wpt_dist": {
+        "field_name": "distance_val"
+      },
+      "wpt_navaid_flag": {
+        "domain": {
+          "Y": "2"
+        },
+        "field_name": "navaidrole_code"
+      }
+    },
+    "table_name": "desigpoint_navaidassoc"
+  },
+  "desigpt_navassoc2": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "navaidsystem_id": {
+        "field_name": "navaidsystem_id"
+      },
+      "designatedpoint_id": {
+        "field_name": "designatedpoint_id"
+      },
+      "sec_bearing": {
+        "field_name": "bearing_val"
+      },
+      "sec_dme_dist": {
+        "field_name": "distance_val"
+      }
+    },
+    "table_name": "desigpoint_navaidassoc"
+  },
+  "chart": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "chart_note": {
+        "field_name": "note_txt"
+      },
+      "cross_ref_rmk": {
+        "field_name": "remarks_txt"
+      },
+      "lat": {
+        "field_name": "lat_txt"
+      },
+      "lon": {
+        "field_name": "long_txt"
+      },
+      "mapid": {
+        "field_name": "mapid_txt"
+      },
+      "style_txt": {
+        "field_name": "style_txt"
+      },
+      "mod_date": {
+        "field_name": "note_date"
+      },
+      "note_type": {
+        "domain": {
+          "BOUNDARY": "24",
+          "FSS/RCO": "32",
+          "GENERAL/MISC": "1",
+          "ISLAND SKETCH": "20",
+          "OVERLAP": "16",
+          "RCAG/IATA": "33",
+          "SPECIAL/SUPP EXPLANATORY": "34",
+          "WARNING": "3"
+        },
+        "field_name": "type_code"
+      },
+      "country": {
+        "field_name": "country_txt"
+      },
+      "source_txt": {
+        "field_name": "source_txt"
+      }
+    },
+    "table_name": "notes"
+  },
+  "holding": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "dup": {
+        "domain": {
+          "00": "ENR",
+          "10": "ENRH",
+          "20": "ENRL",
+          "01": "ENR",
+          "11": "ENRH",
+          "21": "ENRL",
+          "02": "ENR",
+          "12": "ENRH",
+          "22": "ENRL"
+        },
+        "field_name": "type_code"
+      },
+      "mag_crs_transform": {
+        "field_name": "inboundcourse_val"
+      },
+      "turn_dir": {
+        "field_name": "dirturn_code"
+      },
+      "wgs_dlat": {
+        "field_name": "lat_txt"
+      },
+      "wgs_dlong": {
+        "field_name": "long_txt"
+      },
+      "designatedpoint_id": {
+        "field_name": "designatedpoint_id"
+      }
+    },
+    "table_name": "holdingpattern"
+  },
+  "mtr": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "mtr_route_type": {
+        "domain": {
+          "IR": "0",
+          "VR": "1",
+          "SR": "2"
+        },
+        "field_name": "subtype_code"
+      },
+      "usage": {
+        "field_name": "pointtype_code"
+      },
+      "mtr_ident": {
+        "field_name": "ident_txt"
+      },
+      "wgs_lat": {
+        "field_name": "lat_txt"
+      },
+      "wgs_long": {
+        "field_name": "long_txt"
+      },
+      "width_left": {
+        "field_name": "widthleft_val"
+      },
+      "width_right": {
+        "field_name": "widthright_val"
+      },
+      "country": {
+        "field_name": "country_txt"
+      },
+      "point_id": {
+        "field_name": "point_id"
+      },
+      "next_pt": {
+        "field_name": "nextpoint_id"
+      },
+      "seqno": {
+        "field_name": "numseq_val"
+      }
+    },
+    "table_name": "mtrpoint"
+  },
+  "mtrsegment": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "mtr_route_type": {
+        "domain": {
+          "IR": "0",
+          "VR": "1",
+          "SR": "2"
+        },
+        "field_name": "subtype_code"
+      },
+      "mtr_ident": {
+        "field_name": "ident_txt"
+      },
+      "wgs_lat": {
+        "field_name": "lat_txt"
+      },
+      "wgs_long": {
+        "field_name": "long_txt"
+      },
+      "width_left": {
+        "field_name": "widthleft_val"
+      },
+      "width_right": {
+        "field_name": "widthright_val"
+      },
+      "country": {
+        "field_name": "country_txt"
+      },
+      "startpoint_id": {
+        "field_name": "startpoint_id"
+      },
+      "endpoint_id": {
+        "field_name": "endpoint_id"
+      },
+      "seqno": {
+        "field_name": "numseq_val"
+      },
+      "enroute_alt_1_val": {
+        "field_name": "distvertlower_val"
+      },
+      "enroute_alt_1_code": {
+        "domain": {
+          "AGL": "HEI",
+          "MSL": "ALT",
+          "FL": "OTHER"
+        },
+        "field_name": "distvertlower_code"
+      },
+      "enroute_alt_2_val": {
+        "field_name": "distvertupper_val"
+      },
+      "enroute_alt_2_code": {
+        "domain": {
+          "AGL": "HEI",
+          "MSL": "ALT",
+          "FL": "OTHER"
+        },
+        "field_name": "distvertupper_code"
+      },
+      "enroute_alt_1_txt": {
+        "domain": {
+          "AGL": "FT",
+          "MSL": "FT",
+          "FL": "FL"
+        },
+        "field_name": "distvertlower_uom"
+      },
+      "enroute_alt_2_txt": {
+        "domain": {
+          "AGL": "FT",
+          "MSL": "FT",
+          "FL": "FL"
+        },
+        "field_name": "distvertupper_uom"
+      },
+      "effect_time": {
+        "field_name": "workhrrmk_txt"
+      }
+    },
+    "table_name": "mtrsegment"
+  },
+  "refueling": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "air_ref_ident": {
+        "field_name": "ident_txt"
+      },
+      "country": {
+        "field_name": "country_txt"
+      },
+      "direc": {
+        "field_name": "direction_code"
+      },
+      "refuel_trk_type": {
+        "domain": {
+          "A": "1",
+          "T": "0"
+        },
+        "field_name": "type_code"
+      },
+      "point_seq": {
+        "field_name": "numseq_val"
+      },
+      "wgs_lat": {
+        "field_name": "lat_txt"
+      },
+      "wgs_long": {
+        "field_name": "long_txt"
+      }
+    },
+    "table_name": "refuelingtrack"
+  },
+  "refuelingpoint": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "air_ref_ident": {
+        "field_name": "ident_txt"
+      },
+      "country": {
+        "field_name": "country_txt"
+      },
+      "direc": {
+        "field_name": "direction_code"
+      },
+      "refuel_trk_type": {
+        "domain": {
+          "A": "1",
+          "T": "0"
+        },
+        "field_name": "type_code"
+      },
+      "point_seq": {
+        "field_name": "numseq_val"
+      },
+      "usage": {
+        "domain": {
+          "IP": "INITIAL",
+          "CP": "CONTROL",
+          "NC": "CHECK",
+          "EX": "EXIT",
+          "ET": "ENTRY",
+          "AN": "ANCHOR",
+          "AP": "PATTERN"
+        },
+        "field_name": "usage_code"
+      },
+      "wgs_lat": {
+        "field_name": "lat_txt"
+      },
+      "wgs_long": {
+        "field_name": "long_txt"
+      }
+    },
+    "table_name": "refuelingpoint"
+  },
+  "ortca": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "altitude": {
+        "field_name": "clearance_val"
+      },
+      "sw_lat": {
+        "field_name": "lat_txt"
+      },
+      "sw_lon": {
+        "field_name": "long_txt"
+      },
+      "interval_val": {
+        "field_name": "quadtype_code"
+      }
+    },
+    "table_name": "clearance"
+  },
+  "avoidance": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "address_id": {
+        "field_name": "address_id"
+      },
+      "latstring": {
+        "field_name": "lat_txt"
+      },
+      "lonstring": {
+        "field_name": "long_txt"
+      },
+      "type": {
+        "domain": {
+          "NPP": "Nuclear Power Plants",
+          "RWS": "Radioactive Waste Sites"
+        },
+        "field_name": "type_code"
+      }
+    },
+    "table_name": "avoidance"
+  },
+  "address_avoidance": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "country": {
+        "field_name": "addresscountry_txt"
+      },
+      "province": {
+        "field_name": "addressstateprovince_txt"
+      }
+    },
+    "table_name": "address"
+  },
+  "wpt_mca": {
+    "fields": {
+      "featureid": {
+        "field_name": "clientkey_id"
+      },
+      "reference_id": {
+        "field_name": "reference_id"
+      },
+      "referenceclass_txt": {
+        "field_name": "referenceclass_txt"
+      },
+      "note_txt": {
+        "field_name": "note_txt"
+      },
+      "note_type": {
+        "field_name": "type_code"
+      }
+    },
+    "table_name": "notes"
+  }
 }

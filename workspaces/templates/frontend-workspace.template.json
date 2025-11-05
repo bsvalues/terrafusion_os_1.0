@@ -180,7 +180,12 @@
         "label": "Accessibility Audit",
         "type": "shell",
         "command": "npx",
-        "args": ["axe", "http://localhost:3000", "--save", "accessibility-report.json"],
+        "args": [
+          "axe",
+          "http://localhost:3000",
+          "--save",
+          "accessibility-report.json"
+        ],
         "group": "test",
         "presentation": {
           "reveal": "always",
@@ -191,7 +196,12 @@
         "label": "Performance Benchmark",
         "type": "shell",
         "command": "npx",
-        "args": ["lighthouse", "http://localhost:3000", "--output=json", "--output-path=lighthouse-report.json"],
+        "args": [
+          "lighthouse",
+          "http://localhost:3000",
+          "--output=json",
+          "--output-path=lighthouse-report.json"
+        ],
         "group": "test",
         "presentation": {
           "reveal": "always",

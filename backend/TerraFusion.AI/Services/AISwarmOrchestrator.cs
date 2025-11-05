@@ -135,7 +135,7 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        public async Task<Interfaces.WorkflowExecutionResult> ExecuteWorkflowAsync(string workflowId, Dictionary<string, object>? parameters = null)
+        public async Task<TerraFusion.AI.Interfaces.WorkflowExecutionResult> ExecuteWorkflowAsync(string workflowId, Dictionary<string, object>? parameters = null)
         {
             try
             {
@@ -159,7 +159,7 @@ namespace TerraFusion.AI.Services
                     var result = JsonSerializer.Deserialize<JsonElement>(responseContent);
                     var endTime = DateTime.UtcNow;
 
-                    return new Interfaces.WorkflowExecutionResult
+                    return new TerraFusion.AI.Interfaces.WorkflowExecutionResult
                     {
                         Success = true,
                         WorkflowId = workflowId,
@@ -171,7 +171,7 @@ namespace TerraFusion.AI.Services
                 else
                 {
                     _logger.LogWarning("Workflow execution failed for {WorkflowId}: {StatusCode}", workflowId, response.StatusCode);
-                    return new Interfaces.WorkflowExecutionResult
+                    return new TerraFusion.AI.Interfaces.WorkflowExecutionResult
                     {
                         Success = false,
                         WorkflowId = workflowId,
@@ -182,7 +182,7 @@ namespace TerraFusion.AI.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error executing workflow {WorkflowId}", workflowId);
-                return new Interfaces.WorkflowExecutionResult
+                return new TerraFusion.AI.Interfaces.WorkflowExecutionResult
                 {
                     Success = false,
                     WorkflowId = workflowId,

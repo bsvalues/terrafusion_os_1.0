@@ -1,4 +1,3 @@
-
 /* TerraFusion Brand System - Official Implementation */
 :root {
   /* Primary Brand Colors */
@@ -9,21 +8,23 @@
   --tf-deep-space: #0a0f1c;
   --tf-dark-teal: #1a2f3a;
   --tf-accent-cyan: #22d3ee;
-  
+
   /* Glass Morphism Effects */
   --tf-glass-bg: rgba(255, 255, 255, 0.05);
   --tf-glass-border: rgba(0, 210, 255, 0.2);
   --tf-backdrop-blur: blur(15px);
-  
+
   /* Typography */
-  --tf-font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --tf-font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-  
+  --tf-font-primary:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --tf-font-mono:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+
   /* Gradients */
   --tf-gradient-primary: linear-gradient(135deg, var(--tf-quantum-teal), var(--tf-cosmic-blue));
   --tf-gradient-secondary: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-neural-purple));
   --tf-gradient-accent: linear-gradient(135deg, var(--tf-quantum-teal), var(--tf-accent-cyan));
-  
+
   /* Shadows */
   --tf-shadow-glow: 0 0 30px rgba(0, 210, 255, 0.3);
   --tf-shadow-deep: 0 20px 40px rgba(10, 15, 28, 0.4);
@@ -76,7 +77,7 @@
 }
 
 .tf-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -162,17 +163,22 @@
 
 /* TerraFusion Logo Animations */
 @keyframes tf-glow-pulse {
-  0%, 100% { 
+  0%,
+  100% {
     filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.5));
   }
-  50% { 
+  50% {
     filter: drop-shadow(0 0 40px rgba(0, 210, 255, 0.8));
   }
 }
 
 @keyframes tf-rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .tf-logo-animated {
@@ -185,7 +191,12 @@
 
 /* TerraFusion Dashboard Styles */
 .tf-dashboard {
-  background: radial-gradient(ellipse at center, var(--tf-deep-space) 0%, #1a2332 35%, #2a3441 100%);
+  background: radial-gradient(
+    ellipse at center,
+    var(--tf-deep-space) 0%,
+    #1a2332 35%,
+    #2a3441 100%
+  );
   min-height: 100vh;
   color: var(--tf-stellar-white);
   font-family: var(--tf-font-primary);
@@ -222,11 +233,11 @@
   .tf-title {
     font-size: 2rem;
   }
-  
+
   .tf-navbar {
     padding: 0.5rem 1rem;
   }
-  
+
   .tf-card {
     padding: 1rem;
   }

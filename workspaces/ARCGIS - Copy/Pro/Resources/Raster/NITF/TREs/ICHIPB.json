@@ -1,16 +1,14 @@
 {
   "TRE": "ICHIPB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix B: ICHIPB"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix B: ICHIPB"],
   "Name": "Image Chip B",
   "Description": "The Image Chip  B (ICHIPB) TRE is a system independent NITF TRE that holds the support data needed for the mensuration of (non-warped) SDE-based image chips.",
   "Size": 224,
   "Fields": {
-    "XFRM_FLAG" : {
+    "XFRM_FLAG": {
       "Name": "Non-linear Transformation Flag",
       "Description": "This field contains the non-linear transformation flag.",
-      "Size":  2,
+      "Size": 2,
       "Format": "BCS-A",
       "Type": "R",
       "Units": [],
@@ -18,8 +16,8 @@
         {
           "Type": "Value",
           "Values": {
-              "00": "Non-warped, data provided",
-              "01": "No data provided"
+            "00": "Non-warped, data provided",
+            "01": "No data provided"
           }
         }
       ]
@@ -46,11 +44,11 @@
       "Units": [],
       "Values": [
         {
-          "Type":"Value",
-		  "Values": {
-		  "00":"No anamorphic correction",
-		  "01":"Anamorphic correction"
-		  }
+          "Type": "Value",
+          "Values": {
+            "00": "No anamorphic correction",
+            "01": "Anamorphic correction"
+          }
         }
       ]
     },
@@ -63,7 +61,7 @@
       "Units": [],
       "Values": [
         {
-          "Type":"Range",
+          "Type": "Range",
           "Min": 0,
           "Max": 99
         }
@@ -94,7 +92,7 @@
           "Type": "Double"
         }
       ]
-    },	
+    },
     "OP_ROW_12": {
       "Name": "Output product row number component of grid point index (1,2)",
       "Description": "This field contains the output product row number component of grid point index (1,2) for intelligent data.",
@@ -120,7 +118,7 @@
           "Type": "Double"
         }
       ]
-    },	
+    },
     "OP_ROW_21": {
       "Name": "Output product row number component of grid point index (2,1)",
       "Description": "This field contains the output product row number component of grid point index (2,1) for intelligent data.",
@@ -224,7 +222,7 @@
           "Type": "Double"
         }
       ]
-    },	
+    },
     "FI_ROW_21": {
       "Name": "Grid point (2,1) row number in full image coordinate system",
       "Description": "This field contains the Grid point (2,1), row number in full image coordinate system.",
@@ -250,7 +248,7 @@
           "Type": "Double"
         }
       ]
-    },	
+    },
     "FI_ROW_22": {
       "Name": "Grid point (2,2) row number in full image coordinate system",
       "Description": "This field contains the Grid point (2,2), row number in full image coordinate system.",
@@ -276,7 +274,7 @@
           "Type": "Double"
         }
       ]
-    },		
+    },
     "FI_ROW": {
       "Name": "Full Image Number of Rows",
       "Description": "This field contains the number of rows in a full image.",

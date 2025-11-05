@@ -34,13 +34,13 @@ data:
     # Loki Server Configuration
     # ========================================================================
     auth_enabled: false
-    
+
     # Server Configuration
     server:
       http_listen_port: 3100
       grpc_listen_port: 9096
       log_level: info
-    
+
     # Ingester Configuration
     ingester:
       lifecycler:
@@ -56,7 +56,7 @@ data:
       wal:
         enabled: true
         dir: /loki/wal
-    
+
     # Schema Configuration
     schema_config:
       configs:
@@ -67,7 +67,7 @@ data:
           index:
             prefix: index_
             period: 24h
-    
+
     # Storage Configuration
     storage_config:
       boltdb_shipper:
@@ -76,7 +76,7 @@ data:
         shared_store: filesystem
       filesystem:
         directory: /loki/chunks
-    
+
     # Limits Configuration
     limits_config:
       enforce_metric_name: false
@@ -87,23 +87,23 @@ data:
       max_entries_limit_per_query: 10000
       max_query_length: 721h
       max_query_parallelism: 32
-    
+
     # Chunk Store Configuration
     chunk_store_config:
       max_look_back_period: 168h
-    
+
     # Table Manager Configuration
     table_manager:
       retention_deletes_enabled: true
       retention_period: 168h
-    
+
     # Query Configuration
     query_range:
       align_queries_with_step: true
       max_retries: 5
       parallelise_shardable_queries: true
       cache_results: true
-    
+
     # Compactor Configuration
     compactor:
       working_directory: /loki/compactor
@@ -136,9 +136,9 @@ spec:
         app: loki
         app.kubernetes.io/name: loki
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "3100"
-        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3100'
+        prometheus.io/path: '/metrics'
     spec:
       serviceAccountName: loki
       securityContext:
@@ -205,8 +205,8 @@ metadata:
   labels:
     app.kubernetes.io/name: loki
   annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "3100"
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3100'
 spec:
   type: ClusterIP
   ports:
@@ -272,11 +272,11 @@ data:
       http_listen_port: 9080
       grpc_listen_port: 0
       log_level: info
-    
+
     # Positions file to track log file offsets
     positions:
       filename: /run/promtail/positions.yaml
-    
+
     # Loki client configuration
     clients:
       - url: http://loki.logging.svc.cluster.local:3100/loki/api/v1/push
@@ -286,7 +286,7 @@ data:
           min_period: 500ms
           max_period: 5m
           max_retries: 10
-    
+
     # Scrape configurations
     scrape_configs:
       # ======================================================================
@@ -407,8 +407,8 @@ spec:
         app: promtail
         app.kubernetes.io/name: promtail
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9080"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9080'
     spec:
       serviceAccountName: promtail
       securityContext:
@@ -484,14 +484,14 @@ metadata:
   labels:
     app.kubernetes.io/name: promtail
 rules:
-  - apiGroups: [""]
+  - apiGroups: ['']
     resources:
       - nodes
       - nodes/proxy
       - services
       - endpoints
       - pods
-    verbs: ["get", "watch", "list"]
+    verbs: ['get', 'watch', 'list']
 
 ---
 # ============================================================================
@@ -524,8 +524,8 @@ metadata:
   labels:
     app.kubernetes.io/name: promtail
   annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "9080"
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9080'
 spec:
   type: ClusterIP
   ports:
@@ -535,7 +535,6 @@ spec:
       name: http-metrics
   selector:
     app: promtail
-
 # ============================================================================
 # Apply Instructions
 # ============================================================================

@@ -4,11 +4,7 @@
       "id": "data-quality-agent",
       "name": "Data Quality Agent",
       "status": "active",
-      "capabilities": [
-        "data:validate",
-        "data:analyze:quality",
-        "data:repair"
-      ],
+      "capabilities": ["data:validate", "data:analyze:quality", "data:repair"],
       "metadata": {
         "description": "Validates data quality and identifies issues in property data",
         "version": "1.0.0"
@@ -34,11 +30,7 @@
       "id": "cost-analysis-agent",
       "name": "Cost Analysis Agent",
       "status": "active",
-      "capabilities": [
-        "cost:analyze",
-        "cost:estimate",
-        "cost:compare"
-      ],
+      "capabilities": ["cost:analyze", "cost:estimate", "cost:compare"],
       "metadata": {
         "description": "Analyzes building cost data and provides estimation services",
         "version": "1.0.0"
@@ -49,10 +41,7 @@
       "id": "geo-mapping-agent",
       "name": "Geographic Mapping Agent",
       "status": "active",
-      "capabilities": [
-        "geography:map:property",
-        "geography:analyze:region"
-      ],
+      "capabilities": ["geography:map:property", "geography:analyze:region"],
       "metadata": {
         "description": "Maps and analyzes geographic data for properties and regions"
       },
@@ -76,10 +65,7 @@
       "id": "design-agent",
       "name": "Design Agent",
       "status": "active",
-      "capabilities": [
-        "design:request",
-        "accessibility:request"
-      ],
+      "capabilities": ["design:request", "accessibility:request"],
       "metadata": {
         "description": "Assists with UI/UX design tasks and accessibility"
       },

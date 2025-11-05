@@ -27,11 +27,7 @@
         "risk_level_controls": "high"
       },
       "L3_data_classification": {
-        "data_types": [
-          "api_keys",
-          "service_data",
-          "integration_configs"
-        ],
+        "data_types": ["api_keys", "service_data", "integration_configs"],
         "classification_level": "high",
         "privacy_requirements": "api_services_privacy_rules",
         "retention_policies": "api_data_retention",

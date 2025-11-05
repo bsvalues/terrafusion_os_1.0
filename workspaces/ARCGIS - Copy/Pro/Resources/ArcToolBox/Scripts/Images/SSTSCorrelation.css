@@ -2,23 +2,22 @@
 override some old properties of wj-tooltip class
  */
 
- .custom-gridlines.wj-flexchart .wj-axis-x .wj-tick,
- .custom-gridlines.wj-flexchart .wj-axis-y .wj-tick {
-     stroke: "#424242";
- }
- 
- .custom-gridlines.wj-flexchart .wj-axis-y .wj-gridline {
-     opacity: .25;
-     stroke: "#424242";
-     stroke-width: 1px;
- }
- 
- 
- .custom-gridlines.wj-flexchart .wj-axis-x .wj-gridline,
- .custom-gridlines.wj-flexchart .wj-axis-x .wj-gridline-minor,
- .custom-gridlines.wj-flexchart .wj-axis-y .wj-gridline-minor {
-     opacity: .25;
-     stroke: "#424242";
-     stroke-dasharray: 0;
-     stroke-width: .25px;
- }
+.custom-gridlines.wj-flexchart .wj-axis-x .wj-tick,
+.custom-gridlines.wj-flexchart .wj-axis-y .wj-tick {
+  stroke: '#424242';
+}
+
+.custom-gridlines.wj-flexchart .wj-axis-y .wj-gridline {
+  opacity: 0.25;
+  stroke: '#424242';
+  stroke-width: 1px;
+}
+
+.custom-gridlines.wj-flexchart .wj-axis-x .wj-gridline,
+.custom-gridlines.wj-flexchart .wj-axis-x .wj-gridline-minor,
+.custom-gridlines.wj-flexchart .wj-axis-y .wj-gridline-minor {
+  opacity: 0.25;
+  stroke: '#424242';
+  stroke-dasharray: 0;
+  stroke-width: 0.25px;
+}

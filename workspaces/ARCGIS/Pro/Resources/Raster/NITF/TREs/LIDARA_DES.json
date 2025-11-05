@@ -5,7 +5,7 @@
   "Description": "The Light Detection and Ranging (LiDAR) version A (LIDARA) Data Extension Segment (DES) methodology is designed to store a LiDAR point cloud dataset, in binary Large Area Sensor (LAS) format, in its entirety. The inclusion of this DES is optional, but if it is included, it shall be accompanied by an intensity image segment, an elevation image segment, or both. The point cloud data can be extracted from the NITF2.1 file for use with appropriate LiDAR exploitation tools that support files in LAS format. The data contained within the LAS file must be the source from which the Intensity and Elevation image segments were derived. The Intensity and or Elevation image segments are provided to give the user the ability to view the area of coverage of the LiDAR point cloud (a set of vertices in a three-dimensional coordinate system) data set. These image segments are not intended for exploitation use but provide a quick look visualization of the area covered by the point cloud dataset.",
   "Size": 362,
   "Fields": {
-    "DE" : {
+    "DE": {
       "Name": "File Part Type",
       "Description": "This field shall contain the characters DE to identify the subheader as a data extension.",
       "Size": 2,
@@ -16,7 +16,7 @@
         {
           "Type": "Value",
           "Values": ["DE"]
-        }        
+        }
       ]
     },
     "DESID": {
@@ -34,260 +34,259 @@
       ]
     },
     "DESVER": {
-        "Name": "Version of the Data Definition",
-        "Description": "This field shall contain the alphanumeric version number of the use of the Tag. The version number is assigned as part of the registration process.",
-        "Size": 2,
-        "Format": "BCS-N",
-        "Type": "R",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["01"]
-          }
-        ]
-      },
-      "DECLAS": {
-        "Name": "Data Extension File Security Classification",
-        "Description": "This field shall contain a valid value representing the classification level of the DES. Valid values are T for top Secret, S for Secret, C for Confidential, R for Restricted, or U for Unclassified.",
-        "Size": 1,
-        "Format": "ECS-A",
-        "Type": "R",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["T", "S", "C", "R", "U"]
-          }
-        ]
-      },
-      "DESCLSY": {
-        "Name": "DES Security Classification System",
-        "Description": "This field shall contain valid digraph country code values indicating the national or multinational security system used to classify the DES.",
-        "Size": 2,
-        "Format": "ECS-A",
-        "Type": "R",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "AlphaNumeric"            
-          }
-        ]
-      },
-      "DESCODE": {
-        "Name": "DES Codewords",
-        "Description": "This field shall contain a valid digraph indicator of the security compoartments associated with the DES. Multiple entries shall be separated by a single ECS space. If this field is all ECS spaces (0x20), it shall imply that no codewords apply to the DES.",
-        "Size": 11,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "AlphaNumeric"            
-          }
-        ]
-      },
-      "DESCTLH": {
-        "Name": "DES Control and Handling",
-        "Description": "This field shall contain valid digraph values for additional security control and/or handling instructions (caveats) associated with the DES. If this field is all ESC spaces (code 0x20) it shall imply that no DES control and handling instructions apply to the DES.",
-        "Size": 2,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "AlphaNumeric"            
-          }
-        ]
-      },
-      "DESREL": {
-        "Name": "DES Releasing Instructions",
-        "Description": "This field shall contain a valid list of digraph country and/or multilateral entity codes to which countries and/or multilateral entities the DES is authorized for release. If this field is all ECS spaces (code 0x20), it shall imply that no DES release instructions apply.",
-        "Size": 20,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "AlphaNumeric"            
-          }
-        ]
-      },      
-      "DESDCTP": {
-        "Name": "DES Declassification Type",
-        "Description": "This field shall contain a valid indicator of the type of security declassification or downgrading instructions that aply to the DES. Valid values are DD for declassify on a specific date, DE for declassify upon occurrence of an event, GD for downgrade to a specified level on a specific date, GE for downgrade to a specified level upon occurrence of an event, O for OADR, and X for exempt from automatic declassification. If this field is all ECS spaces (0x20), it shall imply that no DES security declassification or downgrading instructions apply.",
-        "Size": 2,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["DD", "DE", "GD", "GE", "O", "X", "*"]
-          }
-        ]
-      },
-      "DESDCDT": {
-        "Name": "DES Declassification Date",
-        "Description": "This field shall indicate the date on which a DES is to be declassified if the value in File Declassification Type is DD. If this field is all ECS spaces (code 0x20), it shall imply that a DES security source date does not apply.",
-        "Size": 8,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Date"            
-          }
-        ]
-      },
-      "DESDCXM": {
-        "Name": "DES Declassification Exemption",
-        "Description": "This field shall indicate the reason the file is exempt from automatic declassification if the value in DES Declassification Type is X. If this field is all ECS spaces (0x20), it shall imply that a DES declassification exemption does not apply.",
-        "Size": 4,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "AlphaNumeric"            
-          }
-        ]
-      },
-      "DESDG": {
-        "Name": "DES Downgrade",
-        "Description": "This field shall indicate the reason the file is exxempt from automatic declassification if the value in DES Declassification Type is X. Valid values are S for Secret, C for Confidential, R for Restricted. If this field contains an ECS space (0x20), it shall imiply that DES security downgrading does not apply.",
-        "Size": 1,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["S", "C", "R", "*"]            
-          }
-        ]
-      },
-      "DESDGDT": {
-        "Name": "DES Classification Text",
-        "Description": "This field shall indicate the date on which a file is to be downgraded if the values in DES Declassification Type is GD. If this field is all ECS spaces (code 0x20), it shall imply that a DES security source date does not apply.",
-        "Size": 8,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Date"           
-          }
-        ]
-      },
-      "DESCLTX": {
-        "Name": "DES Classification Text",
-        "Description": "This field shall be used to provide additional information about file classification to include identification of a declassification or downgrading even if the alues in the DES Declassification Type are DE or GE. It may also be used to identiry multiple classification sources and/or any other special handling rules. If theis fieldd is all ECS spaces (0x20), it shall imply that additional information about DES classification does not apply.",
-        "Size": 43,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "AlphaNumeric"            
-          }
-        ]
-      },
-      "DESCATP": {
-        "Name": "DES Classification Authority Type",
-        "Description": "This field shall indicate the type of authority used to classify the DES. Valid values are O (original classification authority), D (derivative from a single source), and M (derivate from multiple sources). If this field contains an ECS space (0x20), it shall imply that DES DESCATP does not apply.",
-        "Size": 1,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["O", "D", "M", "*"]        
-          }
-        ]
-      },
-      "DESCAUT": {
-        "Name": "DES Classification Authority",
-        "Description": "This field shall identify the classification authority for the DES dependent upon the value in DESCATP. Values are user defined free text which should contain the following information: original classification authority name and position or personal identifier if the value in DESCATP is O; title of the document or security classification guide used to classify the file if the value in DESCATP is D, and Derive-Multiple if the file classification was derived from multiple sources and the value of the DESCATP field is M. In the latter case, the file originator will maintain a record of the sources used in accordance with existing security directives. One of the multiple sources may be identified in DES Classification Text if desired. If this field is all ECS spaces (code 0x20), it shall imply that a DES security source date does not apply.",
-        "Size": 40,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "AlphaNumeric"                    
-          }
-        ]
-      },
-      "DESCRSN": {
-        "Name": "DES Classification Reason",
-        "Description": "This field shall contain values indicating the reason for classifying the DES. Valid values are A to G. These correspond to the reasons for original classification per E.O. 12958, Section 1.5.(a) to(g). If this field contains an ECS spaces (0x20), it shall imply that no DES classification reason applies.",
-        "Size": 1,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["A", "B", "C", "D", "E", "F", "G"]                    
-          }
-        ]
-      },
-      "DESSRDT": {
-        "Name": "DES Security Source Date",
-        "Description": "This field shall indicate the date of the source used to derive the classification of the DES. In the case of multiple sources, the date of the most recent source shall be used. If this field is all ECS spaces (code 0x20), it shall imply that a DES security source date does not apply.",
-        "Size": 8,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Date"                             
-          }
-        ]
-      },
-      "DESCTLN": {
-        "Name": "DES Security Control Number",
-        "Description": "This field shall contain a valid security control number associated with the file. The format of the security control number shall be in accordance with the regulations governing the appropriate security channel(s). If this field is all ECS spaces (0x20), it shall imply that no DES security control number applies.",
-        "Size": 15,
-        "Format": "ECS-A",
-        "Type": "<R>",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "AlphaNumeric"                             
-          }
-        ]
-      },
-      "DESSHL": {
-        "Name": "DES User-defined Subheader Lenth",
-        "Description": "This field shall contain the number of bytes in the DES User-Defined Subheader Fields.",
-        "Size": 4,
-        "Format": "BCS-N",
-        "Type": "R",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "AlphaNumeric"                             
-          }
-        ]
-      },
-      "INDES": {
-        "Name": "DES Position",
-        "Description": "This field shall reference the sequential position of the DES with respect to all others created to encapsulate an LAS file. This value is assigned during the encapsulation process.",
-        "Size": 3,
-        "Format": "BCS-N",
-        "Type": "R",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 998                             
-          }
-        ]
-      }
-    }      
+      "Name": "Version of the Data Definition",
+      "Description": "This field shall contain the alphanumeric version number of the use of the Tag. The version number is assigned as part of the registration process.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["01"]
+        }
+      ]
+    },
+    "DECLAS": {
+      "Name": "Data Extension File Security Classification",
+      "Description": "This field shall contain a valid value representing the classification level of the DES. Valid values are T for top Secret, S for Secret, C for Confidential, R for Restricted, or U for Unclassified.",
+      "Size": 1,
+      "Format": "ECS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["T", "S", "C", "R", "U"]
+        }
+      ]
+    },
+    "DESCLSY": {
+      "Name": "DES Security Classification System",
+      "Description": "This field shall contain valid digraph country code values indicating the national or multinational security system used to classify the DES.",
+      "Size": 2,
+      "Format": "ECS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESCODE": {
+      "Name": "DES Codewords",
+      "Description": "This field shall contain a valid digraph indicator of the security compoartments associated with the DES. Multiple entries shall be separated by a single ECS space. If this field is all ECS spaces (0x20), it shall imply that no codewords apply to the DES.",
+      "Size": 11,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESCTLH": {
+      "Name": "DES Control and Handling",
+      "Description": "This field shall contain valid digraph values for additional security control and/or handling instructions (caveats) associated with the DES. If this field is all ESC spaces (code 0x20) it shall imply that no DES control and handling instructions apply to the DES.",
+      "Size": 2,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESREL": {
+      "Name": "DES Releasing Instructions",
+      "Description": "This field shall contain a valid list of digraph country and/or multilateral entity codes to which countries and/or multilateral entities the DES is authorized for release. If this field is all ECS spaces (code 0x20), it shall imply that no DES release instructions apply.",
+      "Size": 20,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESDCTP": {
+      "Name": "DES Declassification Type",
+      "Description": "This field shall contain a valid indicator of the type of security declassification or downgrading instructions that aply to the DES. Valid values are DD for declassify on a specific date, DE for declassify upon occurrence of an event, GD for downgrade to a specified level on a specific date, GE for downgrade to a specified level upon occurrence of an event, O for OADR, and X for exempt from automatic declassification. If this field is all ECS spaces (0x20), it shall imply that no DES security declassification or downgrading instructions apply.",
+      "Size": 2,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["DD", "DE", "GD", "GE", "O", "X", "*"]
+        }
+      ]
+    },
+    "DESDCDT": {
+      "Name": "DES Declassification Date",
+      "Description": "This field shall indicate the date on which a DES is to be declassified if the value in File Declassification Type is DD. If this field is all ECS spaces (code 0x20), it shall imply that a DES security source date does not apply.",
+      "Size": 8,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Date"
+        }
+      ]
+    },
+    "DESDCXM": {
+      "Name": "DES Declassification Exemption",
+      "Description": "This field shall indicate the reason the file is exempt from automatic declassification if the value in DES Declassification Type is X. If this field is all ECS spaces (0x20), it shall imply that a DES declassification exemption does not apply.",
+      "Size": 4,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESDG": {
+      "Name": "DES Downgrade",
+      "Description": "This field shall indicate the reason the file is exxempt from automatic declassification if the value in DES Declassification Type is X. Valid values are S for Secret, C for Confidential, R for Restricted. If this field contains an ECS space (0x20), it shall imiply that DES security downgrading does not apply.",
+      "Size": 1,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["S", "C", "R", "*"]
+        }
+      ]
+    },
+    "DESDGDT": {
+      "Name": "DES Classification Text",
+      "Description": "This field shall indicate the date on which a file is to be downgraded if the values in DES Declassification Type is GD. If this field is all ECS spaces (code 0x20), it shall imply that a DES security source date does not apply.",
+      "Size": 8,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Date"
+        }
+      ]
+    },
+    "DESCLTX": {
+      "Name": "DES Classification Text",
+      "Description": "This field shall be used to provide additional information about file classification to include identification of a declassification or downgrading even if the alues in the DES Declassification Type are DE or GE. It may also be used to identiry multiple classification sources and/or any other special handling rules. If theis fieldd is all ECS spaces (0x20), it shall imply that additional information about DES classification does not apply.",
+      "Size": 43,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESCATP": {
+      "Name": "DES Classification Authority Type",
+      "Description": "This field shall indicate the type of authority used to classify the DES. Valid values are O (original classification authority), D (derivative from a single source), and M (derivate from multiple sources). If this field contains an ECS space (0x20), it shall imply that DES DESCATP does not apply.",
+      "Size": 1,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["O", "D", "M", "*"]
+        }
+      ]
+    },
+    "DESCAUT": {
+      "Name": "DES Classification Authority",
+      "Description": "This field shall identify the classification authority for the DES dependent upon the value in DESCATP. Values are user defined free text which should contain the following information: original classification authority name and position or personal identifier if the value in DESCATP is O; title of the document or security classification guide used to classify the file if the value in DESCATP is D, and Derive-Multiple if the file classification was derived from multiple sources and the value of the DESCATP field is M. In the latter case, the file originator will maintain a record of the sources used in accordance with existing security directives. One of the multiple sources may be identified in DES Classification Text if desired. If this field is all ECS spaces (code 0x20), it shall imply that a DES security source date does not apply.",
+      "Size": 40,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESCRSN": {
+      "Name": "DES Classification Reason",
+      "Description": "This field shall contain values indicating the reason for classifying the DES. Valid values are A to G. These correspond to the reasons for original classification per E.O. 12958, Section 1.5.(a) to(g). If this field contains an ECS spaces (0x20), it shall imply that no DES classification reason applies.",
+      "Size": 1,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["A", "B", "C", "D", "E", "F", "G"]
+        }
+      ]
+    },
+    "DESSRDT": {
+      "Name": "DES Security Source Date",
+      "Description": "This field shall indicate the date of the source used to derive the classification of the DES. In the case of multiple sources, the date of the most recent source shall be used. If this field is all ECS spaces (code 0x20), it shall imply that a DES security source date does not apply.",
+      "Size": 8,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Date"
+        }
+      ]
+    },
+    "DESCTLN": {
+      "Name": "DES Security Control Number",
+      "Description": "This field shall contain a valid security control number associated with the file. The format of the security control number shall be in accordance with the regulations governing the appropriate security channel(s). If this field is all ECS spaces (0x20), it shall imply that no DES security control number applies.",
+      "Size": 15,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESSHL": {
+      "Name": "DES User-defined Subheader Lenth",
+      "Description": "This field shall contain the number of bytes in the DES User-Defined Subheader Fields.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "INDES": {
+      "Name": "DES Position",
+      "Description": "This field shall reference the sequential position of the DES with respect to all others created to encapsulate an LAS file. This value is assigned during the encapsulation process.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 998
+        }
+      ]
+    }
   }
-  
+}

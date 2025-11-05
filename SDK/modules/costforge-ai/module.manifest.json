@@ -7,16 +7,9 @@
   "tier": "tier1",
   "priority": "normal",
   "status": "development",
-  "capabilities": [
-    "data-processing",
-    "api-integration",
-    "ai-integration"
-  ],
+  "capabilities": ["data-processing", "api-integration", "ai-integration"],
   "components": [],
-  "dependencies": [
-    "government-edition",
-    "ai-command-brain"
-  ],
+  "dependencies": ["government-edition", "ai-command-brain"],
   "configuration": {
     "environment": {
       "MODULE_ENABLED": "true",
@@ -29,14 +22,8 @@
     }
   },
   "api": {
-    "endpoints": [
-      "/api/costforge-ai/health",
-      "/api/costforge-ai/metrics"
-    ],
-    "events": [
-      "module-initialized",
-      "data-processed"
-    ]
+    "endpoints": ["/api/costforge-ai/health", "/api/costforge-ai/metrics"],
+    "events": ["module-initialized", "data-processed"]
   },
   "security": {
     "authentication": "required",
@@ -44,15 +31,8 @@
     "encryption": "aes-256"
   },
   "monitoring": {
-    "metrics": [
-      "requests_total",
-      "response_time",
-      "error_rate"
-    ],
-    "alerts": [
-      "high_error_rate",
-      "slow_response"
-    ]
+    "metrics": ["requests_total", "response_time", "error_rate"],
+    "alerts": ["high_error_rate", "slow_response"]
   },
   "testing": {
     "unitTests": "npm run test:unit",

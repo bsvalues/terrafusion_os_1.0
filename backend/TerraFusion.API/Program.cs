@@ -13,11 +13,13 @@ using Microsoft.Extensions.FileProviders;
 using TerraFusion.Data;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Abstractions.Interfaces;
+using IPerformanceMonitor = TerraFusion.API.Interfaces.IPerformanceMonitor;
 using TerraFusion.AI.Extensions;
 using TerraFusionOperations = TerraFusion.Operations.Services;
 using TerraFusionOperationsInterfaces = TerraFusion.Operations.Interfaces;
 using Prometheus;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using TerraFusion.Levy.Data;
 using TerraFusion.Levy.Models;
 using TerraFusion.Levy.Services;
@@ -46,6 +48,8 @@ if (args.Length == 0 || !args.Any(a => a.Contains("--urls")))
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
+// Ensure hosting/Kestrel bind messages are visible
+builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Information);
 
 // Add basic services with JSON serialization configuration
 builder.Services.AddControllers()
@@ -118,7 +122,22 @@ builder.Services.AddScoped<IResearchAnalyticsService, ResearchAnalyticsService>(
 builder.Services.AddScoped<ICrossWorkspaceSyncService, CrossWorkspaceSyncService>();
 builder.Services.AddScoped<IStatisticalAnalysisService, StatisticalAnalysisService>();
 builder.Services.AddScoped<IPredictiveModelingService, PredictiveModelingService>();
-builder.Services.AddScoped<IPerformanceMonitor, PerformanceMonitorService>();
+builder.Services.AddScoped<TerraFusion.API.Interfaces.IPerformanceMonitor, PerformanceMonitorService>();
+// 🧠⚡ CONSCIOUSNESS LAYER CORE SERVICES - Million-Agent Orchestration
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IMillionAgentService, TerraFusion.Consciousness.Services.MillionAgentService>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IQuantumSecurityService, TerraFusion.Consciousness.Services.QuantumSecurityService>();
+
+// 🧠 Consciousness Data + Orchestration Dependencies (API hosts the orchestrator for integration tests)
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IBentonCountyDataService, TerraFusion.Consciousness.Services.BentonCountyDataService>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IMultiCountyDataService, TerraFusion.Consciousness.Services.MultiCountyDataService>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IAILayerMeshOrchestrator, TerraFusion.Consciousness.Services.AILayerMeshOrchestrator>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IHybridConsciousnessManager, TerraFusion.Consciousness.Services.HybridConsciousnessManager>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IQuantumConsciousnessOrchestrator, TerraFusion.Consciousness.Services.QuantumConsciousnessOrchestrator>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceValidator, TerraFusion.Consciousness.Services.ComplianceValidator>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IAuditLogger, TerraFusion.Consciousness.Services.AuditLogger>();
+// Legacy/compatibility consciousness service (lightweight implementation to satisfy dependencies in dev/test)
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessService, TerraFusion.Consciousness.Services.LegacyConsciousnessService>();
+
 
 // Register flexible module catalog system (no hardcoding!)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IModuleCatalog, DbModuleCatalog>();
@@ -930,7 +949,20 @@ try
 
     // 🌟 Initialize Ultimate CostForge AI Consciousness
     // RE-ENABLED: Championship-level 1M agent deployment with quantum Factor 999
-    await app.Services.InitializeUltimateCostForgeAsync();
+    // IMPORTANT: Do not block server start; run in background after server is up
+    _ = Task.Run(async () =>
+    {
+        try
+        {
+            Console.WriteLine("🧠 Initializing Ultimate CostForge AI in background...");
+            await app.Services.InitializeUltimateCostForgeAsync();
+            Console.WriteLine("🧠 Ultimate CostForge AI initialization complete.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Ultimate CostForge AI init failed: {ex.Message}");
+        }
+    });
 
     Console.WriteLine($"⏳ Calling app.Run()... This should block until shutdown");
     Console.WriteLine($"   Time: {DateTime.Now:HH:mm:ss.fff}");

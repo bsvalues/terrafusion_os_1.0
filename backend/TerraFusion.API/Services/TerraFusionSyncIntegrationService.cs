@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services;
+using SyncResult = TerraFusion.Abstractions.DTOs.Responses.SyncResult;
 using System.Text.Json;
 using System.Diagnostics;
 
@@ -30,14 +31,14 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
         _logger = logger;
         _configuration = configuration;
         _legacyDatabaseService = legacyDatabaseService;
-        
+
         InitializeDefaultSystems();
         InitializeDefaultCounties();
     }
 
     public async Task<SyncResult> StartSynchronizationAsync(string? specificCounty = null)
     {
-        _logger.LogInformation("🚀 Starting TerraFusionSync synchronization for {County}", 
+        _logger.LogInformation("🚀 Starting TerraFusionSync synchronization for {County}",
             specificCounty ?? "all counties");
 
         var result = new SyncResult
@@ -82,7 +83,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
                         totalAdded += countyResult.RecordsAdded;
                         totalSkipped += countyResult.RecordsSkipped;
                         allErrors.AddRange(countyResult.Errors);
-                        
+
                         if (!countyResult.Success)
                         {
                             allSuccess = false;
@@ -124,12 +125,12 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
         catch (Exception ex)
         {
             _logger.LogError(ex, "❌ TerraFusionSync synchronization failed");
-            
+
             result.Success = false;
             result.Errors.Add($"Synchronization failed: {ex.Message}");
             result.ErrorCount = result.Errors.Count;
             result.Duration = DateTime.UtcNow - result.Timestamp;
-            
+
             return result;
         }
     }
@@ -161,7 +162,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
             {
                 ["TotalSystems"] = _registeredSystems.Count,
                 ["ActiveCounties"] = _configuredCounties.Count(c => c.Value.IsActive),
-                ["UptimeSeconds"] = _isOrchestrationActive ? 
+                ["UptimeSeconds"] = _isOrchestrationActive ?
                     (DateTime.UtcNow - _orchestrationStartTime).TotalSeconds : 0
             }
         });
@@ -202,7 +203,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
             };
 
             _registeredSystems[config.SystemId] = systemInfo;
-            
+
             _logger.LogInformation("✅ Legacy system {SystemName} registered successfully", config.SystemName);
             return await Task.FromResult(true);
         }
@@ -352,7 +353,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
                 CountyName = config.CountyName,
                 State = config.State,
                 LegacySystemId = config.LegacySystemId,
-                LegacySystemType = _registeredSystems.TryGetValue(config.LegacySystemId, out var system) ? 
+                LegacySystemType = _registeredSystems.TryGetValue(config.LegacySystemId, out var system) ?
                     system.SystemType : "Unknown",
                 IsConfigured = true,
                 IsActive = config.EnableAutoSync,
@@ -387,7 +388,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
             AverageResponseTime = 1250.5, // Simulated milliseconds
             TotalRecordsProcessed = 89247,
             CountyMetrics = _configuredCounties.ToDictionary(
-                c => c.Key, 
+                c => c.Key,
                 c => c.Value.TotalParcels
             ),
             SystemMetrics = _registeredSystems.ToDictionary(
@@ -416,8 +417,8 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
                 EventType = i % 4 == 0 ? "Error" : (i % 3 == 0 ? "Warning" : "Completed"),
                 CountyName = i % 2 == 0 ? "Benton" : "Franklin",
                 LegacySystem = "Harris PACS v12.4.7",
-                Message = i % 4 == 0 ? "Connection retry succeeded" : 
-                         i % 3 == 0 ? "Slow response detected" : 
+                Message = i % 4 == 0 ? "Connection retry succeeded" :
+                         i % 3 == 0 ? "Slow response detected" :
                          "Sync completed successfully",
                 Details = new Dictionary<string, object>
                 {
@@ -461,7 +462,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
 
             _isOrchestrationActive = false;
             await Task.Delay(1000); // Simulate shutdown
-            
+
             _isOrchestrationActive = true;
             _orchestrationStartTime = DateTime.UtcNow;
 

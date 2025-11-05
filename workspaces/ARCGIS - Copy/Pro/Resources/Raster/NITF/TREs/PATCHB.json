@@ -1,8 +1,6 @@
 {
   "TRE": "PATCHB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix E: ASDE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix E: ASDE"],
   "Name": "Patch Information Version B",
   "Description": "The Patch Information Version B (PATCHB) TRE provides information describing a portion of an image, a patch, to support exploitation. This TRE contains support data pertaining to a single image patch, and one PATCH extension is created for each image patch.",
   "Size": 121,
@@ -32,7 +30,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [ "0", "1" ]
+          "Values": ["0", "1"]
         }
       ]
     },
@@ -117,7 +115,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [ "pixels" ],
+      "Units": ["pixels"],
       "Values": [
         {
           "Type": "Range",
@@ -132,7 +130,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [ "pixels" ],
+      "Units": ["pixels"],
       "Values": [
         {
           "Type": "Range",
@@ -162,7 +160,7 @@
       "Size": 8,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [ "seconds" ],
+      "Units": ["seconds"],
       "Values": [
         {
           "Type": "Range",
@@ -177,7 +175,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [ "degrees" ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -192,7 +190,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [ "feet/second^2" ],
+      "Units": ["feet/second^2"],
       "Values": [
         {
           "Type": "Range",
@@ -207,7 +205,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [ "feet/second" ],
+      "Units": ["feet/second"],
       "Values": [
         {
           "Type": "Range",
@@ -222,7 +220,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [ "feet/second" ],
+      "Units": ["feet/second"],
       "Values": [
         {
           "Type": "Range",
@@ -237,7 +235,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [ "feet/second" ],
+      "Units": ["feet/second"],
       "Values": [
         {
           "Type": "Range",
@@ -252,12 +250,12 @@
       "Size": 8,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [ "seconds" ],
+      "Units": ["seconds"],
       "Values": [
         {
           "Type": "Range",
-          "Min": -80.0000,
-          "Max": 80.0000
+          "Min": -80.0,
+          "Max": 80.0
         }
       ]
     },
@@ -267,12 +265,12 @@
       "Size": 8,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [ "seconds" ],
+      "Units": ["seconds"],
       "Values": [
         {
           "Type": "Range",
-          "Min": -80.0000,
-          "Max": 80.0000
+          "Min": -80.0,
+          "Max": 80.0
         }
       ]
     },
@@ -302,7 +300,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 120.00
+          "Max": 120.0
         }
       ]
     },
@@ -316,8 +314,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.850000,
-          "Max": 1.000000
+          "Min": 0.85,
+          "Max": 1.0
         }
       ]
     },

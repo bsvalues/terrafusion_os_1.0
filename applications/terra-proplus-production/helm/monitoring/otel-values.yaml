@@ -3,8 +3,8 @@ mode: deployment
 replicaCount: 2
 
 podAnnotations:
-  prometheus.io/scrape: "true"
-  prometheus.io/port: "8888"
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '8888'
 
 resources:
   limits:
@@ -79,16 +79,12 @@ config:
     tail_sampling:
       policies:
         [
-          {
-            name: error-policy,
-            type: status_code,
-            status_code: { status_codes: [ERROR] }
-          },
+          { name: error-policy, type: status_code, status_code: { status_codes: [ERROR] } },
           {
             name: app-policy,
             type: string_attribute,
-            string_attribute: { key: "service.name", values: ["terrafusion-api"] }
-          }
+            string_attribute: { key: 'service.name', values: ['terrafusion-api'] },
+          },
         ]
       decision_wait: 10s
 
@@ -106,13 +102,13 @@ config:
         insecure: true
     loki:
       endpoint: http://loki-gateway.monitoring.svc.cluster.local:3100/loki/api/v1/push
-      tenant_id: "terrafusion"
+      tenant_id: 'terrafusion'
       format: json
       labels:
         resource:
-          service.name: "service_name"
-          service.namespace: "service_namespace"
-          service.instance.id: "service_instance_id"
+          service.name: 'service_name'
+          service.namespace: 'service_namespace'
+          service.instance.id: 'service_instance_id'
 
   service:
     pipelines:

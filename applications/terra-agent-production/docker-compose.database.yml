@@ -9,22 +9,22 @@ networks:
     driver: bridge
     encrypted: true
     labels:
-      - "classification=government"
-      - "compliance=fisma-high"
-      - "security=championship"
+      - 'classification=government'
+      - 'compliance=fisma-high'
+      - 'security=championship'
 
 volumes:
   terrafusion-postgres-data:
     driver: local
     labels:
-      - "classification=government-data"
-      - "encryption=aes-256"
-      - "retention=7-years"
+      - 'classification=government-data'
+      - 'encryption=aes-256'
+      - 'retention=7-years'
   terrafusion-postgres-logs:
     driver: local
     labels:
-      - "type=audit-logs"
-      - "retention=7-years"
+      - 'type=audit-logs'
+      - 'retention=7-years'
 
 services:
   # 🏛️ Elite PostgreSQL Database
@@ -38,7 +38,7 @@ services:
       POSTGRES_DB: terrafusion_government
       POSTGRES_USER: terrafusion_admin
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-TerraFusion_Elite_2025!}
-      POSTGRES_INITDB_ARGS: "--auth-host=md5 --auth-local=md5"
+      POSTGRES_INITDB_ARGS: '--auth-host=md5 --auth-local=md5'
       PGDATA: /var/lib/postgresql/data/pgdata
 
       # Security Environment Variables
@@ -47,7 +47,7 @@ services:
 
     # Elite Port Configuration
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
     # Government-Grade Volume Mapping
     volumes:
@@ -83,16 +83,16 @@ services:
 
     # Government Security Labels
     labels:
-      - "classification=government"
-      - "compliance=fisma-high"
-      - "security=championship"
-      - "data-sovereignty=county-isolated"
-      - "audit-retention=7-years"
-      - "encryption=aes-256-gcm"
+      - 'classification=government'
+      - 'compliance=fisma-high'
+      - 'security=championship'
+      - 'data-sovereignty=county-isolated'
+      - 'audit-retention=7-years'
+      - 'encryption=aes-256-gcm'
 
     # Health Check for Government Operations
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U terrafusion_admin -d terrafusion_government"]
+      test: ['CMD-SHELL', 'pg_isready -U terrafusion_admin -d terrafusion_government']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -117,7 +117,7 @@ services:
       - no-new-privileges:true
 
     # User Mapping for Security
-    user: "999:999"
+    user: '999:999'
 
     # Read-only root filesystem for security
     read_only: false
@@ -132,11 +132,11 @@ services:
     restart: always
 
     environment:
-      DATA_SOURCE_NAME: "postgresql://terrafusion_admin:${POSTGRES_PASSWORD:-TerraFusion_Elite_2025!}@terrafusion-postgres:5432/terrafusion_government?sslmode=require"
-      PG_EXPORTER_EXTEND_QUERY_PATH: "/etc/postgres_exporter/queries.yaml"
+      DATA_SOURCE_NAME: 'postgresql://terrafusion_admin:${POSTGRES_PASSWORD:-TerraFusion_Elite_2025!}@terrafusion-postgres:5432/terrafusion_government?sslmode=require'
+      PG_EXPORTER_EXTEND_QUERY_PATH: '/etc/postgres_exporter/queries.yaml'
 
     ports:
-      - "9187:9187"
+      - '9187:9187'
 
     volumes:
       - ./monitoring/postgres-queries.yaml:/etc/postgres_exporter/queries.yaml:ro
@@ -149,9 +149,9 @@ services:
       - terrafusion-government
 
     labels:
-      - "classification=monitoring"
-      - "compliance=fisma-high"
-      - "purpose=database-monitoring"
+      - 'classification=monitoring'
+      - 'compliance=fisma-high'
+      - 'purpose=database-monitoring'
 
   # 🛡️ Government Database Backup Service
   postgres-backup:
@@ -164,11 +164,11 @@ services:
       POSTGRES_DB: terrafusion_government
       POSTGRES_USER: terrafusion_admin
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-TerraFusion_Elite_2025!}
-      POSTGRES_EXTRA_OPTS: "--schema-only --blobs"
-      SCHEDULE: "@daily"
-      BACKUP_KEEP_DAYS: 2555  # 7 years retention
-      BACKUP_KEEP_WEEKS: 365  # 7 years weekly
-      BACKUP_KEEP_MONTHS: 84  # 7 years monthly
+      POSTGRES_EXTRA_OPTS: '--schema-only --blobs'
+      SCHEDULE: '@daily'
+      BACKUP_KEEP_DAYS: 2555 # 7 years retention
+      BACKUP_KEEP_WEEKS: 365 # 7 years weekly
+      BACKUP_KEEP_MONTHS: 84 # 7 years monthly
       HEALTHCHECK_PORT: 8080
 
     volumes:
@@ -182,16 +182,16 @@ services:
       - terrafusion-government
 
     labels:
-      - "classification=backup"
-      - "compliance=fisma-high"
-      - "retention=7-years"
-      - "purpose=government-backup"
+      - 'classification=backup'
+      - 'compliance=fisma-high'
+      - 'retention=7-years'
+      - 'purpose=government-backup'
 
   # 🔐 Government SSL Certificate Manager
   ssl-cert-generator:
     image: alpine:latest
     container_name: terrafusion-ssl-generator
-    restart: "no"
+    restart: 'no'
 
     volumes:
       - ./ssl-certs:/ssl-output
@@ -210,6 +210,6 @@ services:
       "
 
     labels:
-      - "classification=security"
-      - "purpose=ssl-generation"
-      - "compliance=fisma-high"
+      - 'classification=security'
+      - 'purpose=ssl-generation'
+      - 'compliance=fisma-high'

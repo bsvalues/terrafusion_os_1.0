@@ -49,14 +49,14 @@ services:
       POSTGRES_PASSWORD: devpassword123
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
       terrafusion-network:
         ipv4_address: 172.20.0.10
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -80,14 +80,14 @@ services:
     container_name: terrafusion-redis-dev
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis-data:/data
     networks:
       terrafusion-network:
         ipv4_address: 172.20.0.11
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -110,12 +110,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:5000
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123"
-      Redis__Configuration: "redis:6379"
+      ConnectionStrings__DefaultConnection: 'Host=postgres;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123'
+      Redis__Configuration: 'redis:6379'
       Logging__LogLevel__Default: Information
       Logging__LogLevel__Microsoft: Warning
     ports:
-      - "5000:5000"
+      - '5000:5000'
     depends_on:
       postgres:
         condition: service_healthy
@@ -125,7 +125,7 @@ services:
       terrafusion-network:
         ipv4_address: 172.20.0.20
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:5000/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -143,8 +143,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:3004
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123"
-      Redis__Configuration: "redis:6379"
+      ConnectionStrings__DefaultConnection: 'Host=postgres;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123'
+      Redis__Configuration: 'redis:6379'
       AI__SwarmSize: 1000
       AI__QuantumOptimizationFactor: 949
       AI__ConsciousnessLevel: TRANSCENDENT
@@ -153,7 +153,7 @@ services:
       AI__MaxConcurrentTasks: 1000
       Logging__LogLevel__Default: Information
     ports:
-      - "3004:3004"
+      - '3004:3004'
     depends_on:
       postgres:
         condition: service_healthy
@@ -163,7 +163,7 @@ services:
       terrafusion-network:
         ipv4_address: 172.20.0.21
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3004/health']
       interval: 15s
       timeout: 10s
       retries: 3
@@ -199,7 +199,7 @@ services:
       RateLimiting__PermitLimit: 100
       Logging__LogLevel__Default: Information
     ports:
-      - "3002:3002"
+      - '3002:3002'
     depends_on:
       api:
         condition: service_healthy
@@ -209,7 +209,7 @@ services:
       terrafusion-network:
         ipv4_address: 172.20.0.22
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3002/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -227,11 +227,11 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:5002
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123"
-      Redis__Configuration: "redis:6379"
+      ConnectionStrings__DefaultConnection: 'Host=postgres;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123'
+      Redis__Configuration: 'redis:6379'
       Logging__LogLevel__Default: Information
     ports:
-      - "5002:5002"
+      - '5002:5002'
     depends_on:
       postgres:
         condition: service_healthy
@@ -241,7 +241,7 @@ services:
       terrafusion-network:
         ipv4_address: 172.20.0.23
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:5002/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -255,7 +255,7 @@ services:
     container_name: terrafusion-prometheus-dev
     restart: unless-stopped
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
@@ -268,7 +268,6 @@ services:
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
-
 # ============================================================================
 # Usage Instructions
 # ============================================================================

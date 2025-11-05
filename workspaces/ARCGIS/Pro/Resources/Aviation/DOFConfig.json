@@ -4,7 +4,12 @@
     "coordinate_system": "4326",
     "mode": "update",
     "obstacles": {
-	    "tables": ["ais_obstacle", "etod_vertical_structure", "18b_obstacle", "18c_objectpoint"],
+      "tables": [
+        "ais_obstacle",
+        "etod_vertical_structure",
+        "18b_obstacle",
+        "18c_objectpoint"
+      ],
       "columns": {
         "oas_code": {
           "start": "1",

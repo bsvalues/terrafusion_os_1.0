@@ -8,9 +8,9 @@ groups:
           severity: critical
           service: database
         annotations:
-          summary: "Database Connection Failed"
-          description: "The application cannot connect to the database"
-          
+          summary: 'Database Connection Failed'
+          description: 'The application cannot connect to the database'
+
       - alert: DatabaseQuerySlowResponse
         expr: terrafusion_database_query_time_ms > 1000
         for: 5m
@@ -18,9 +18,9 @@ groups:
           severity: warning
           service: database
         annotations:
-          summary: "Slow Database Queries"
-          description: "Database queries are taking more than 1 second to complete"
-          
+          summary: 'Slow Database Queries'
+          description: 'Database queries are taking more than 1 second to complete'
+
       - alert: DatabaseHighConnections
         expr: terrafusion_database_connections > 80
         for: 10m
@@ -28,9 +28,9 @@ groups:
           severity: warning
           service: database
         annotations:
-          summary: "High Database Connections"
-          description: "There are {{ $value }} active database connections"
-          
+          summary: 'High Database Connections'
+          description: 'There are {{ $value }} active database connections'
+
       - alert: DatabaseLowDiskSpace
         expr: terrafusion_database_disk_free_gb < 5
         for: 5m
@@ -38,9 +38,9 @@ groups:
           severity: critical
           service: database
         annotations:
-          summary: "Low Database Disk Space"
-          description: "The database has only {{ $value }}GB free disk space remaining"
-          
+          summary: 'Low Database Disk Space'
+          description: 'The database has only {{ $value }}GB free disk space remaining'
+
       - alert: DatabaseBackupFailure
         expr: terrafusion_database_backup_success == 0
         for: 24h
@@ -48,9 +48,9 @@ groups:
           severity: critical
           service: database
         annotations:
-          summary: "Database Backup Failure"
-          description: "Database backup has failed for more than 24 hours"
-          
+          summary: 'Database Backup Failure'
+          description: 'Database backup has failed for more than 24 hours'
+
       - alert: PostgreSQLHighCPU
         expr: terrafusion_postgres_cpu_usage > 80
         for: 15m
@@ -58,9 +58,9 @@ groups:
           severity: warning
           service: database
         annotations:
-          summary: "PostgreSQL High CPU Usage"
-          description: "PostgreSQL is using {{ $value }}% CPU"
-          
+          summary: 'PostgreSQL High CPU Usage'
+          description: 'PostgreSQL is using {{ $value }}% CPU'
+
       - alert: PostgreSQLHighMemory
         expr: terrafusion_postgres_memory_usage > 85
         for: 15m
@@ -68,9 +68,9 @@ groups:
           severity: warning
           service: database
         annotations:
-          summary: "PostgreSQL High Memory Usage"
-          description: "PostgreSQL is using {{ $value }}% memory"
-          
+          summary: 'PostgreSQL High Memory Usage'
+          description: 'PostgreSQL is using {{ $value }}% memory'
+
       - alert: PostGISFunctionFailure
         expr: terrafusion_postgis_function_success == 0
         for: 5m
@@ -78,5 +78,5 @@ groups:
           severity: warning
           service: database
         annotations:
-          summary: "PostGIS Function Failure"
-          description: "A PostGIS database function has failed"
+          summary: 'PostGIS Function Failure'
+          description: 'A PostGIS database function has failed'

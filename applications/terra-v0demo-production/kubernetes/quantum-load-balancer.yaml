@@ -4,29 +4,29 @@ metadata:
   name: terrafusion-quantum-lb
   namespace: terrafusion-pro
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
-    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
+    service.beta.kubernetes.io/aws-load-balancer-type: 'nlb'
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: 'tcp'
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
 spec:
   type: LoadBalancer
   ports:
-  - name: http
-    port: 80
-    targetPort: 3000
-    protocol: TCP
-  - name: https
-    port: 443
-    targetPort: 3000
-    protocol: TCP
-  - name: quantum-api
-    port: 8080
-    targetPort: 8080
-    protocol: TCP
-  - name: quantum-websocket
-    port: 9090
-    targetPort: 9090
-    protocol: TCP
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: 3000
+      protocol: TCP
+    - name: quantum-api
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+    - name: quantum-websocket
+      port: 9090
+      targetPort: 9090
+      protocol: TCP
   selector:
     app: terrafusion-quantum-app
   sessionAffinity: None
@@ -37,39 +37,39 @@ metadata:
   name: terrafusion-quantum-ingress
   namespace: terrafusion-pro
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: 'nginx'
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/rate-limit: "10000"
-    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/proxy-body-size: '100m'
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '600'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '600'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '600'
+    nginx.ingress.kubernetes.io/rate-limit: '10000'
+    nginx.ingress.kubernetes.io/rate-limit-window: '1m'
 spec:
   tls:
-  - hosts:
-    - quantum.terrafusion.pro
-    - api.quantum.terrafusion.pro
-    secretName: quantum-tls-secret
+    - hosts:
+        - quantum.terrafusion.pro
+        - api.quantum.terrafusion.pro
+      secretName: quantum-tls-secret
   rules:
-  - host: quantum.terrafusion.pro
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-quantum-lb
-            port:
-              number: 80
-  - host: api.quantum.terrafusion.pro
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-quantum-lb
-            port:
-              number: 8080
+    - host: quantum.terrafusion.pro
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-quantum-lb
+                port:
+                  number: 80
+    - host: api.quantum.terrafusion.pro
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-quantum-lb
+                port:
+                  number: 8080

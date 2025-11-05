@@ -107,7 +107,8 @@
   background-color: rgba(65, 90, 119, 0.3);
 }
 
-.table-unified td, .table-unified th {
+.table-unified td,
+.table-unified th {
   border-top: 1px solid var(--tm-light-blue);
   padding: 0.75rem;
 }
@@ -133,7 +134,12 @@
 /* Skeleton Loading Animation */
 .skeleton-loader {
   animation: skeleton-loading 1.5s infinite;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
   background-size: 200% 100%;
   border-radius: 4px;
   display: inline-block;
@@ -152,7 +158,9 @@
 
 /* Property Card Styling */
 .property-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   margin-bottom: 1.5rem;
 }
 
@@ -194,13 +202,16 @@
 
 /* Responsive font sizes */
 @media (max-width: 768px) {
-  .h1, h1 {
+  .h1,
+  h1 {
     font-size: 1.85rem;
   }
-  .h2, h2 {
+  .h2,
+  h2 {
     font-size: 1.65rem;
   }
-  .h3, h3 {
+  .h3,
+  h3 {
     font-size: 1.45rem;
   }
 }

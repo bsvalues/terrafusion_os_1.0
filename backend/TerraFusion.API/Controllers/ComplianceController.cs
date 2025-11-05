@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.Entities;
 using TerraFusion.Abstractions.DTOs;
+using ComplianceViolation = TerraFusion.Abstractions.DTOs.ComplianceViolation;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

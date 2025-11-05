@@ -92,7 +92,7 @@ namespace TerraFusion.API.Controllers
         /// <param name="context">Current context (optional)</param>
         /// <returns>List of AI recommendations</returns>
         [HttpGet("recommendations/{countyId}")]
-        [ProducesResponseType(typeof(System.Collections.Generic.List<AIRecommendation>), 200)]
+        [ProducesResponseType(typeof(System.Collections.Generic.List<TerraFusion.AI.Models.AIRecommendation>), 200)]
         public async Task<ActionResult> GetRecommendations(
             string countyId,
             [FromQuery] string context = null)

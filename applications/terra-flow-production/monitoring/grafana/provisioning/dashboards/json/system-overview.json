@@ -65,9 +65,7 @@
       "options": {
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -129,9 +127,7 @@
       "options": {
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -222,10 +218,7 @@
       "id": 4,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -319,10 +312,7 @@
       "id": 5,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -726,10 +716,7 @@
   "refresh": "5s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": [
-    "terrafusion",
-    "overview"
-  ],
+  "tags": ["terrafusion", "overview"],
   "templating": {
     "list": []
   },

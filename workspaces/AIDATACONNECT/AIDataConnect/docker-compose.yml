@@ -8,8 +8,8 @@ services:
     container_name: rag-drive-app
     restart: unless-stopped
     ports:
-      - "3000:3000"
-      - "21:21"
+      - '3000:3000'
+      - '21:21'
     env_file:
       - .env
     volumes:
@@ -22,7 +22,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/api/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -41,11 +41,11 @@ services:
       - postgres-data:/data/postgres
       - ./scripts/db-init:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ragdrivedb}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ragdrivedb}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -56,8 +56,8 @@ services:
     container_name: rag-drive-nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx/conf:/etc/nginx/conf.d
       - ./nginx/ssl:/etc/nginx/ssl

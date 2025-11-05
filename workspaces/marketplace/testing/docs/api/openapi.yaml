@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/testing
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/testing
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/testing
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/testing
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/testing
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/testing
+    description: Development Environment
 paths:
   /health:
     get:
       tags:
-      - testing
+        - testing
       summary: Health check
       description: Health check - Testing operations APIs
       operationId: get__health
       security:
-      - OAuth2:
-        - testing:read
+        - OAuth2:
+            - testing:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /data:
     get:
       tags:
-      - testing
+        - testing
       summary: Data retrieval
       description: Data retrieval - Testing operations APIs
       operationId: get__data
       security:
-      - OAuth2:
-        - testing:read
+        - OAuth2:
+            - testing:read
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /operations:
     post:
       tags:
-      - testing
+        - testing
       summary: Operation execution
       description: Operation execution - Testing operations APIs
       operationId: post__operations
       security:
-      - OAuth2:
-        - testing:write
+        - OAuth2:
+            - testing:write
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /status:
     get:
       tags:
-      - testing
+        - testing
       summary: Service status
       description: Service status - Testing operations APIs
       operationId: get__status
       security:
-      - OAuth2:
-        - testing:read
+        - OAuth2:
+            - testing:read
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -206,12 +206,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - testing:read
-- ApiKey: []
+  - OAuth2:
+      - testing:read
+  - ApiKey: []
 tags:
-- name: testing
-  description: Testing operations
-  externalDocs:
-    description: Find out more about testing
-    url: https://docs.terrafusion.gov/marketplace/testing
+  - name: testing
+    description: Testing operations
+    externalDocs:
+      description: Find out more about testing
+      url: https://docs.terrafusion.gov/marketplace/testing

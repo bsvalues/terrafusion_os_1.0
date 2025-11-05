@@ -5,25 +5,25 @@
   "privacy_levels": {
     "public": {
       "epsilon": 5.0,
-      "delta": 1e-05,
+      "delta": 1e-5,
       "max_queries_per_minute": 100,
       "aggregation_threshold": 5
     },
     "internal": {
       "epsilon": 1.0,
-      "delta": 1e-06,
+      "delta": 1e-6,
       "max_queries_per_minute": 50,
       "aggregation_threshold": 3
     },
     "confidential": {
       "epsilon": 0.1,
-      "delta": 1e-07,
+      "delta": 1e-7,
       "max_queries_per_minute": 10,
       "aggregation_threshold": 1
     },
     "restricted": {
       "epsilon": 0.01,
-      "delta": 1e-08,
+      "delta": 1e-8,
       "max_queries_per_minute": 1,
       "aggregation_threshold": 1
     }
@@ -46,12 +46,7 @@
     "enabled": true,
     "scheme": "ckks",
     "poly_modulus_degree": 8192,
-    "coeff_modulus": [
-      60,
-      40,
-      40,
-      60
-    ],
+    "coeff_modulus": [60, 40, 40, 60],
     "scale": 40
   },
   "privacy_preserving_analytics": {

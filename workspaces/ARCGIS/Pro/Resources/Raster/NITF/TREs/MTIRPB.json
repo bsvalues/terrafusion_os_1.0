@@ -1,8 +1,6 @@
 {
   "TRE": "MTIRPB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix E: ASDE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix E: ASDE"],
   "Name": "Moving Target Report Version B",
   "Description": "The Moving Target Report Version B (MTIRPB) TRE is an optional extension that provides a standard format to report moving targets located by the radar system.",
   "Size": 119,
@@ -105,9 +103,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "ddmmss.ssXdddmmss.ssY"
-          ]
+          "Values": ["ddmmss.ssXdddmmss.ssY"]
         },
         {
           "Type": "Double"
@@ -120,10 +116,7 @@
       "Size": 6,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "feet",
-        "meters"
-      ],
+      "Units": ["feet", "meters"],
       "Values": [
         {
           "Type": "Range",
@@ -142,10 +135,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "f",
-            "m"
-          ]
+          "Values": ["f", "m"]
         }
       ]
     },
@@ -155,9 +145,7 @@
       "Size": 3,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -176,10 +164,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "R",
-            "L"
-          ]
+          "Values": ["R", "L"]
         }
       ]
     },
@@ -189,9 +174,7 @@
       "Size": 6,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -215,9 +198,7 @@
         },
         {
           "Type": "Value",
-          "Values": [
-            "9.99999"
-          ]
+          "Values": ["9.99999"]
         }
       ]
     },
@@ -246,9 +227,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "ddmmss.ssXdddmmss.ssY"
-          ]
+          "Values": ["ddmmss.ssXdddmmss.ssY"]
         },
         {
           "Type": "Double"
@@ -261,9 +240,7 @@
       "Size": 6,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "feet"
-      ],
+      "Units": ["feet"],
       "Values": [
         {
           "Type": "Range",
@@ -272,10 +249,7 @@
         },
         {
           "Type": "Value",
-          "Values": [
-            "000000",
-            "000.00"
-          ]
+          "Values": ["000000", "000.00"]
         }
       ]
     },
@@ -285,9 +259,7 @@
       "Size": 4,
       "Format": "BCS-N",
       "Type": "<C>",
-      "Units": [
-        "feet/second"
-      ],
+      "Units": ["feet/second"],
       "Values": [
         {
           "Type": "Range",
@@ -302,9 +274,7 @@
       "Size": 3,
       "Format": "BCS-N",
       "Type": "<C>",
-      "Units": [
-        "feet/second"
-      ],
+      "Units": ["feet/second"],
       "Values": [
         {
           "Type": "Range",
@@ -319,9 +289,7 @@
       "Size": 3,
       "Format": "BCS-N",
       "Type": "<C>",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -355,12 +323,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "H",
-            "T",
-            "U",
-            "W"
-          ]
+          "Values": ["H", "T", "U", "W"]
         }
       ]
     }

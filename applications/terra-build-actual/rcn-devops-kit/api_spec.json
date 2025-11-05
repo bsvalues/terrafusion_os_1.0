@@ -187,58 +187,27 @@
     "schemas": {
       "UseType": {
         "type": "string",
-        "enum": [
-          "Residential",
-          "Commercial",
-          "Industrial", 
-          "Agricultural"
-        ],
+        "enum": ["Residential", "Commercial", "Industrial", "Agricultural"],
         "description": "The primary use type of the building"
       },
       "ConstructionType": {
         "type": "string",
-        "enum": [
-          "Wood Frame",
-          "Masonry",
-          "Steel Frame",
-          "Concrete"
-        ],
+        "enum": ["Wood Frame", "Masonry", "Steel Frame", "Concrete"],
         "description": "The primary construction material/method of the building"
       },
       "QualityClass": {
         "type": "string",
-        "enum": [
-          "A+",
-          "A",
-          "B+",
-          "B",
-          "C+", 
-          "C",
-          "D+",
-          "D",
-          "E"
-        ],
+        "enum": ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "E"],
         "description": "The quality class of the building construction and finishes"
       },
       "Condition": {
         "type": "string",
-        "enum": [
-          "Excellent",
-          "Good",
-          "Average",
-          "Fair",
-          "Poor"
-        ],
+        "enum": ["Excellent", "Good", "Average", "Fair", "Poor"],
         "description": "The current condition of the building"
       },
       "RCNRequest": {
         "type": "object",
-        "required": [
-          "use_type",
-          "construction_type",
-          "sqft",
-          "year_built"
-        ],
+        "required": ["use_type", "construction_type", "sqft", "year_built"],
         "properties": {
           "use_type": {
             "$ref": "#/components/schemas/UseType"
@@ -367,11 +336,7 @@
       },
       "ErrorResponse": {
         "type": "object",
-        "required": [
-          "status",
-          "code",
-          "message"
-        ],
+        "required": ["status", "code", "message"],
         "properties": {
           "status": {
             "type": "string",

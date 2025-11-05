@@ -209,7 +209,7 @@
       "relevantExtensions": "odc"
     },
 
-	{
+    {
       "id": "{598DF053-772B-4335-A6E4-FE891D761EFD}",
       "name": "NoSQL Geodatabase",
       "factoryID": "{15DEC9E1-AB97-4311-AFAE-F91B62B6D334}",

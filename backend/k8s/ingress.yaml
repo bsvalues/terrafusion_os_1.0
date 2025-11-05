@@ -19,44 +19,44 @@ metadata:
     app.kubernetes.io/part-of: terrafusion-platform
   annotations:
     # NGINX Ingress Controller Annotations
-    kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    
+    kubernetes.io/ingress.class: 'nginx'
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
+
     # SSL/TLS Configuration
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.3"
-    nginx.ingress.kubernetes.io/ssl-ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384"
-    
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/ssl-protocols: 'TLSv1.3'
+    nginx.ingress.kubernetes.io/ssl-ciphers: 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384'
+
     # CORS Configuration
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://terrafusion.gov,https://app.terrafusion.gov"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
-    nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization,Content-Type,X-County-Id,X-Request-ID"
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    nginx.ingress.kubernetes.io/cors-max-age: "3600"
-    
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
+    nginx.ingress.kubernetes.io/cors-allow-origin: 'https://terrafusion.gov,https://app.terrafusion.gov'
+    nginx.ingress.kubernetes.io/cors-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS'
+    nginx.ingress.kubernetes.io/cors-allow-headers: 'Authorization,Content-Type,X-County-Id,X-Request-ID'
+    nginx.ingress.kubernetes.io/cors-allow-credentials: 'true'
+    nginx.ingress.kubernetes.io/cors-max-age: '3600'
+
     # Rate Limiting
-    nginx.ingress.kubernetes.io/rate-limit: "1000"
-    nginx.ingress.kubernetes.io/limit-rps: "100"
-    nginx.ingress.kubernetes.io/limit-connections: "100"
-    
+    nginx.ingress.kubernetes.io/rate-limit: '1000'
+    nginx.ingress.kubernetes.io/limit-rps: '100'
+    nginx.ingress.kubernetes.io/limit-connections: '100'
+
     # Connection and Timeout Configuration
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "30"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
-    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
-    nginx.ingress.kubernetes.io/client-body-buffer-size: "10m"
-    
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '30'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '30'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '30'
+    nginx.ingress.kubernetes.io/proxy-body-size: '100m'
+    nginx.ingress.kubernetes.io/client-body-buffer-size: '10m'
+
     # Load Balancing
-    nginx.ingress.kubernetes.io/load-balance: "ewma"
-    nginx.ingress.kubernetes.io/upstream-hash-by: "$remote_addr"
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "TERRAFUSION_SESSION"
-    nginx.ingress.kubernetes.io/session-cookie-path: "/"
-    nginx.ingress.kubernetes.io/session-cookie-max-age: "10800"
-    nginx.ingress.kubernetes.io/session-cookie-samesite: "Strict"
-    
+    nginx.ingress.kubernetes.io/load-balance: 'ewma'
+    nginx.ingress.kubernetes.io/upstream-hash-by: '$remote_addr'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'TERRAFUSION_SESSION'
+    nginx.ingress.kubernetes.io/session-cookie-path: '/'
+    nginx.ingress.kubernetes.io/session-cookie-max-age: '10800'
+    nginx.ingress.kubernetes.io/session-cookie-samesite: 'Strict'
+
     # Security Headers
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "X-Frame-Options: DENY";
@@ -65,10 +65,10 @@ metadata:
       more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
       more_set_headers "Permissions-Policy: geolocation=(), microphone=(), camera=()";
       more_set_headers "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.terrafusion.gov;";
-    
+
     # Monitoring
-    nginx.ingress.kubernetes.io/enable-access-log: "true"
-    nginx.ingress.kubernetes.io/enable-rewrite-log: "false"
+    nginx.ingress.kubernetes.io/enable-access-log: 'true'
+    nginx.ingress.kubernetes.io/enable-rewrite-log: 'false'
 
 spec:
   tls:
@@ -77,7 +77,7 @@ spec:
         - app.terrafusion.gov
         - terrafusion.gov
       secretName: terrafusion-tls-secret
-  
+
   rules:
     # ========================================================================
     # Gateway - Primary Entry Point
@@ -93,7 +93,7 @@ spec:
                 name: terrafusion-gateway
                 port:
                   number: 3002
-          
+
           # API endpoints (routed through gateway)
           - path: /api
             pathType: Prefix
@@ -102,7 +102,7 @@ spec:
                 name: terrafusion-gateway
                 port:
                   number: 3002
-          
+
           # Consciousness endpoints (routed through gateway)
           - path: /consciousness
             pathType: Prefix
@@ -111,7 +111,7 @@ spec:
                 name: terrafusion-gateway
                 port:
                   number: 3002
-          
+
           # Operations endpoints (routed through gateway)
           - path: /operations
             pathType: Prefix
@@ -120,7 +120,7 @@ spec:
                 name: terrafusion-gateway
                 port:
                   number: 3002
-    
+
     # ========================================================================
     # Application Domain (Frontend)
     # ========================================================================
@@ -135,7 +135,7 @@ spec:
                 name: terrafusion-frontend
                 port:
                   number: 3000
-    
+
     # ========================================================================
     # Root Domain (Marketing/Documentation Site)
     # ========================================================================
@@ -211,8 +211,8 @@ type: kubernetes.io/tls
 data:
   # Base64-encoded TLS certificate and private key
   # Replace with actual certificate data or use cert-manager
-  tls.crt: LS0tLS1CRUdJTi...  # Replace with base64-encoded certificate
-  tls.key: LS0tLS1CRUdJTi...  # Replace with base64-encoded private key
+  tls.crt: LS0tLS1CRUdJTi... # Replace with base64-encoded certificate
+  tls.key: LS0tLS1CRUdJTi... # Replace with base64-encoded private key
 
 ---
 # ============================================================================
@@ -228,43 +228,42 @@ metadata:
     app.kubernetes.io/component: controller-config
 data:
   # Global NGINX Configuration
-  use-forwarded-headers: "true"
-  compute-full-forwarded-for: "true"
-  use-proxy-protocol: "false"
-  
+  use-forwarded-headers: 'true'
+  compute-full-forwarded-for: 'true'
+  use-proxy-protocol: 'false'
+
   # SSL Configuration
-  ssl-protocols: "TLSv1.3"
-  ssl-ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256"
-  ssl-prefer-server-ciphers: "on"
-  ssl-session-cache: "shared:SSL:10m"
-  ssl-session-timeout: "10m"
-  
+  ssl-protocols: 'TLSv1.3'
+  ssl-ciphers: 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256'
+  ssl-prefer-server-ciphers: 'on'
+  ssl-session-cache: 'shared:SSL:10m'
+  ssl-session-timeout: '10m'
+
   # Performance Tuning
-  worker-processes: "auto"
-  max-worker-connections: "16384"
-  upstream-keepalive-connections: "320"
-  upstream-keepalive-timeout: "60"
-  upstream-keepalive-requests: "10000"
-  
+  worker-processes: 'auto'
+  max-worker-connections: '16384'
+  upstream-keepalive-connections: '320'
+  upstream-keepalive-timeout: '60'
+  upstream-keepalive-requests: '10000'
+
   # Body Size Limits
-  proxy-body-size: "100m"
-  client-body-buffer-size: "10m"
-  
+  proxy-body-size: '100m'
+  client-body-buffer-size: '10m'
+
   # Timeouts
-  proxy-connect-timeout: "30"
-  proxy-send-timeout: "30"
-  proxy-read-timeout: "30"
-  client-header-timeout: "60"
-  client-body-timeout: "60"
-  
+  proxy-connect-timeout: '30'
+  proxy-send-timeout: '30'
+  proxy-read-timeout: '30'
+  client-header-timeout: '60'
+  client-body-timeout: '60'
+
   # Logging
   log-format-upstream: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length $request_time [$proxy_upstream_name] [$proxy_alternative_upstream_name] $upstream_addr $upstream_response_length $upstream_response_time $upstream_status $req_id'
-  enable-access-log: "true"
-  
-  # Rate Limiting
-  limit-req-status-code: "429"
-  limit-conn-status-code: "429"
+  enable-access-log: 'true'
 
+  # Rate Limiting
+  limit-req-status-code: '429'
+  limit-conn-status-code: '429'
 # ============================================================================
 # Apply Instructions
 # ============================================================================

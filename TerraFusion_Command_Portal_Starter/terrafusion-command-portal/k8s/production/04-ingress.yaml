@@ -9,16 +9,16 @@ metadata:
     environment: production
   annotations:
     # Ingress controller specific annotations
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/backend-protocol: 'HTTP'
+
     # Security annotations
-    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
-    nginx.ingress.kubernetes.io/ssl-ciphers: "TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,ECDHE-RSA-AES256-GCM-SHA384"
-    nginx.ingress.kubernetes.io/ssl-prefer-server-ciphers: "true"
-    
+    nginx.ingress.kubernetes.io/ssl-protocols: 'TLSv1.2 TLSv1.3'
+    nginx.ingress.kubernetes.io/ssl-ciphers: 'TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,ECDHE-RSA-AES256-GCM-SHA384'
+    nginx.ingress.kubernetes.io/ssl-prefer-server-ciphers: 'true'
+
     # HSTS (HTTP Strict Transport Security)
     nginx.ingress.kubernetes.io/server-snippet: |
       add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
@@ -27,21 +27,21 @@ metadata:
       add_header X-XSS-Protection "1; mode=block" always;
       add_header Referrer-Policy "strict-origin-when-cross-origin" always;
       add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' wss: https:; frame-ancestors 'none';" always;
-    
+
     # Rate limiting
-    nginx.ingress.kubernetes.io/rate-limit: "100"
-    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
-    nginx.ingress.kubernetes.io/rate-limit-connections: "10"
-    
+    nginx.ingress.kubernetes.io/rate-limit: '100'
+    nginx.ingress.kubernetes.io/rate-limit-window: '1m'
+    nginx.ingress.kubernetes.io/rate-limit-connections: '10'
+
     # Request size limits
-    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
-    nginx.ingress.kubernetes.io/client-body-buffer-size: "1m"
-    
+    nginx.ingress.kubernetes.io/proxy-body-size: '10m'
+    nginx.ingress.kubernetes.io/client-body-buffer-size: '1m'
+
     # Timeouts
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
-    
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '30'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '60'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '60'
+
     # WebSocket support
     nginx.ingress.kubernetes.io/proxy-set-headers: |
       Upgrade $http_upgrade
@@ -50,15 +50,15 @@ metadata:
       X-Forwarded-For $proxy_add_x_forwarded_for
       X-Forwarded-Proto $scheme
       X-Forwarded-Host $host
-    
+
     # Certificate management
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    acme.cert-manager.io/http01-edit-in-place: "true"
-    
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
+    acme.cert-manager.io/http01-edit-in-place: 'true'
+
     # Government compliance
-    description: "TerraFusion Government Portal - Production Ingress"
-    security.compliance/fedramp: "moderate"
-    security.compliance/soc2: "type-ii"
+    description: 'TerraFusion Government Portal - Production Ingress'
+    security.compliance/fedramp: 'moderate'
+    security.compliance/soc2: 'type-ii'
 
 spec:
   tls:
@@ -70,7 +70,7 @@ spec:
         - contra-costa.terrafusion.gov
         - solano.terrafusion.gov
       secretName: terrafusion-tls-cert
-  
+
   rules:
     # Main frontend application
     - host: terrafusion.gov
@@ -83,7 +83,7 @@ spec:
                 name: terrafusion-frontend-service
                 port:
                   number: 80
-    
+
     # API backend
     - host: api.terrafusion.gov
       http:
@@ -109,7 +109,7 @@ spec:
                 name: terrafusion-backend-service
                 port:
                   number: 9090
-    
+
     # WebSocket endpoint
     - host: ws.terrafusion.gov
       http:
@@ -121,7 +121,7 @@ spec:
                 name: terrafusion-backend-service
                 port:
                   number: 8080
-    
+
     # County-specific endpoints
     - host: alameda.terrafusion.gov
       http:
@@ -133,7 +133,7 @@ spec:
                 name: terrafusion-frontend-service
                 port:
                   number: 80
-    
+
     - host: contra-costa.terrafusion.gov
       http:
         paths:
@@ -144,7 +144,7 @@ spec:
                 name: terrafusion-frontend-service
                 port:
                   number: 80
-    
+
     - host: solano.terrafusion.gov
       http:
         paths:
@@ -167,18 +167,18 @@ metadata:
     component: load-balancer
     environment: production
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012"
-    service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
-    service.beta.kubernetes.io/aws-load-balancer-connection-draining-enabled: "true"
-    service.beta.kubernetes.io/aws-load-balancer-connection-draining-timeout: "60"
-    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
-    service.beta.kubernetes.io/aws-load-balancer-access-log-enabled: "true"
-    service.beta.kubernetes.io/aws-load-balancer-access-log-s3-bucket-name: "terrafusion-access-logs"
-    service.beta.kubernetes.io/aws-load-balancer-access-log-s3-bucket-prefix: "production"
-    description: "TerraFusion Production Load Balancer"
+    service.beta.kubernetes.io/aws-load-balancer-type: 'nlb'
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: 'tcp'
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: '443'
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: 'arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012'
+    service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: 'ELBSecurityPolicy-TLS-1-2-2017-01'
+    service.beta.kubernetes.io/aws-load-balancer-connection-draining-enabled: 'true'
+    service.beta.kubernetes.io/aws-load-balancer-connection-draining-timeout: '60'
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
+    service.beta.kubernetes.io/aws-load-balancer-access-log-enabled: 'true'
+    service.beta.kubernetes.io/aws-load-balancer-access-log-s3-bucket-name: 'terrafusion-access-logs'
+    service.beta.kubernetes.io/aws-load-balancer-access-log-s3-bucket-prefix: 'production'
+    description: 'TerraFusion Production Load Balancer'
 spec:
   type: LoadBalancer
   ports:
@@ -194,9 +194,9 @@ spec:
     app: nginx-ingress-controller
   loadBalancerSourceRanges:
     # Restrict access to government IP ranges
-    - "192.0.2.0/24"      # Government network range 1
-    - "198.51.100.0/24"   # Government network range 2
-    - "203.0.113.0/24"    # Government network range 3
+    - '192.0.2.0/24' # Government network range 1
+    - '198.51.100.0/24' # Government network range 2
+    - '203.0.113.0/24' # Government network range 3
 
 ---
 apiVersion: cert-manager.io/v1
@@ -212,11 +212,11 @@ spec:
     # Production ACME server
     server: https://acme-v02.api.letsencrypt.org/directory
     email: certificates@terrafusion.gov
-    
+
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
       name: letsencrypt-prod-private-key
-    
+
     # Enable the HTTP-01 challenge provider
     solvers:
       - http01:
@@ -243,15 +243,15 @@ metadata:
 spec:
   # Secret name where the certificate will be stored
   secretName: terrafusion-tls-cert
-  
+
   # Certificate issuer
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
-  
+
   # Common name
   commonName: terrafusion.gov
-  
+
   # Subject Alternative Names
   dnsNames:
     - terrafusion.gov
@@ -260,16 +260,16 @@ spec:
     - alameda.terrafusion.gov
     - contra-costa.terrafusion.gov
     - solano.terrafusion.gov
-  
+
   # Certificate duration and renewal
-  duration: 2160h  # 90 days
-  renewBefore: 360h  # 15 days before expiration
-  
+  duration: 2160h # 90 days
+  renewBefore: 360h # 15 days before expiration
+
   # Key algorithm and size
   privateKey:
     algorithm: RSA
-    size: 4096  # Government-grade key size
-  
+    size: 4096 # Government-grade key size
+
   # Certificate usage
   usages:
     - digital signature
@@ -292,7 +292,7 @@ spec:
   policyTypes:
     - Ingress
     - Egress
-  
+
   # Ingress rules for ingress controller
   ingress:
     # Allow HTTP/HTTPS traffic from anywhere
@@ -303,8 +303,8 @@ spec:
         - protocol: TCP
           port: 443
         - protocol: TCP
-          port: 8080  # WebSocket
-    
+          port: 8080 # WebSocket
+
     # Allow monitoring from Prometheus
     - from:
         - namespaceSelector:
@@ -312,8 +312,8 @@ spec:
               name: monitoring
       ports:
         - protocol: TCP
-          port: 10254  # Nginx metrics
-  
+          port: 10254 # Nginx metrics
+
   # Egress rules for ingress controller
   egress:
     # Allow DNS resolution
@@ -323,7 +323,7 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
-    
+
     # Allow communication to backend services
     - to:
         - podSelector:
@@ -332,7 +332,7 @@ spec:
       ports:
         - protocol: TCP
           port: 3000
-    
+
     - to:
         - podSelector:
             matchLabels:
@@ -354,10 +354,10 @@ metadata:
     component: monitoring
     environment: production
   annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "9090"
-    prometheus.io/path: "/metrics"
-    description: "TerraFusion Monitoring Aggregation Service"
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9090'
+    prometheus.io/path: '/metrics'
+    description: 'TerraFusion Monitoring Aggregation Service'
 spec:
   type: ClusterIP
   ports:
@@ -383,37 +383,37 @@ metadata:
     environment: production
 data:
   # Government-grade Nginx configuration
-  ssl-protocols: "TLSv1.2 TLSv1.3"
-  ssl-ciphers: "TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,ECDHE-RSA-AES256-GCM-SHA384,ECDHE-RSA-AES128-GCM-SHA256"
-  ssl-prefer-server-ciphers: "true"
-  ssl-session-cache: "shared:SSL:10m"
-  ssl-session-timeout: "10m"
-  
+  ssl-protocols: 'TLSv1.2 TLSv1.3'
+  ssl-ciphers: 'TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,ECDHE-RSA-AES256-GCM-SHA384,ECDHE-RSA-AES128-GCM-SHA256'
+  ssl-prefer-server-ciphers: 'true'
+  ssl-session-cache: 'shared:SSL:10m'
+  ssl-session-timeout: '10m'
+
   # Security headers
-  enable-real-ip: "true"
-  forwarded-for-header: "X-Forwarded-For"
-  compute-full-forwarded-for: "true"
-  use-forwarded-headers: "true"
-  
+  enable-real-ip: 'true'
+  forwarded-for-header: 'X-Forwarded-For'
+  compute-full-forwarded-for: 'true'
+  use-forwarded-headers: 'true'
+
   # Performance tuning
-  worker-processes: "auto"
-  worker-connections: "16384"
-  worker-rlimit-nofile: "65535"
-  
+  worker-processes: 'auto'
+  worker-connections: '16384'
+  worker-rlimit-nofile: '65535'
+
   # Request limits
-  proxy-body-size: "10m"
-  client-body-buffer-size: "1m"
-  client-body-timeout: "60"
-  client-header-timeout: "60"
-  
+  proxy-body-size: '10m'
+  client-body-buffer-size: '1m'
+  client-body-timeout: '60'
+  client-header-timeout: '60'
+
   # Rate limiting
-  limit-req-status-code: "429"
-  limit-conn-status-code: "503"
-  
+  limit-req-status-code: '429'
+  limit-conn-status-code: '503'
+
   # Logging
-  access-log-path: "/var/log/nginx/access.log"
-  error-log-path: "/var/log/nginx/error.log"
-  log-format-escape-json: "true"
+  access-log-path: '/var/log/nginx/access.log'
+  error-log-path: '/var/log/nginx/error.log'
+  log-format-escape-json: 'true'
   log-format-upstream: >
     {
       "time": "$time_iso8601",

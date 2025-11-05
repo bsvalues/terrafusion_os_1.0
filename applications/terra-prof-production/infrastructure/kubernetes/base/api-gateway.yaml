@@ -16,39 +16,39 @@ spec:
         app: api-gateway
     spec:
       containers:
-      - name: api-gateway
-        image: terrafusionpro/api-gateway:latest
-        ports:
-        - containerPort: 5002
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: API_GATEWAY_PORT
-          value: "5002"
-        - name: JWT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: terrafusionpro-secrets
-              key: jwt-secret
-        readinessProbe:
-          httpGet:
-            path: /api/health
-            port: 5002
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: 5002
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          limits:
-            cpu: 500m
-            memory: 512Mi
-          requests:
-            cpu: 200m
-            memory: 256Mi
+        - name: api-gateway
+          image: terrafusionpro/api-gateway:latest
+          ports:
+            - containerPort: 5002
+          env:
+            - name: NODE_ENV
+              value: 'production'
+            - name: API_GATEWAY_PORT
+              value: '5002'
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusionpro-secrets
+                  key: jwt-secret
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 5002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 5002
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
 ---
 apiVersion: v1
 kind: Service
@@ -59,6 +59,6 @@ spec:
   selector:
     app: api-gateway
   ports:
-  - port: 80
-    targetPort: 5002
+    - port: 80
+      targetPort: 5002
   type: ClusterIP

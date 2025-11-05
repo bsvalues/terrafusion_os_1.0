@@ -50,7 +50,7 @@ jobs:
   terraform-lint:
     name: 'Terraform Format and Validation'
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -83,7 +83,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: terraform-lint
     if: success() && (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch')
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -147,7 +147,7 @@ jobs:
             </details>
 
             *Pushed by: @${{ github.actor }}, Action: \`${{ steps.environment.outputs.ACTION }}\`*`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -162,7 +162,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply'
     environment:
       name: ${{ github.event.inputs.environment }}
-      
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -199,7 +199,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy'
     environment:
       name: ${{ github.event.inputs.environment }}
-      
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3

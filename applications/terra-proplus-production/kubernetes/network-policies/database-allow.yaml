@@ -8,12 +8,12 @@ spec:
     matchLabels:
       app: postgresql
   policyTypes:
-  - Ingress
+    - Ingress
   ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/name: terrafusion
-    ports:
-    - protocol: TCP
-      port: 5432
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: terrafusion
+      ports:
+        - protocol: TCP
+          port: 5432

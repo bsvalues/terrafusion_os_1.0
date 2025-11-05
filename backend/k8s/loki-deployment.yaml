@@ -34,7 +34,7 @@ data:
     # Global Configuration
     # ========================================================================
     auth_enabled: false
-    
+
     # ========================================================================
     # Server Configuration
     # ========================================================================
@@ -42,7 +42,7 @@ data:
       http_listen_port: 3100
       grpc_listen_port: 9096
       log_level: info
-    
+
     # ========================================================================
     # Ingester Configuration (log ingestion)
     # ========================================================================
@@ -60,7 +60,7 @@ data:
       wal:
         enabled: true
         dir: /loki/wal
-    
+
     # ========================================================================
     # Schema Configuration
     # ========================================================================
@@ -73,7 +73,7 @@ data:
           index:
             prefix: index_
             period: 24h
-    
+
     # ========================================================================
     # Storage Configuration
     # ========================================================================
@@ -85,7 +85,7 @@ data:
         shared_store: filesystem
       filesystem:
         directory: /loki/chunks
-    
+
     # ========================================================================
     # Compactor Configuration (index cleanup)
     # ========================================================================
@@ -96,7 +96,7 @@ data:
       retention_enabled: true
       retention_delete_delay: 2h
       retention_delete_worker_count: 150
-    
+
     # ========================================================================
     # Limits Configuration
     # ========================================================================
@@ -112,20 +112,20 @@ data:
       max_query_parallelism: 32
       max_streams_per_user: 10000
       max_chunks_per_query: 2000000
-    
+
     # ========================================================================
     # Table Manager (index retention)
     # ========================================================================
     table_manager:
       retention_deletes_enabled: true
       retention_period: 168h  # 7 days
-    
+
     # ========================================================================
     # Querier Configuration
     # ========================================================================
     querier:
       max_concurrent: 20
-    
+
     # ========================================================================
     # Query Frontend Configuration
     # ========================================================================
@@ -162,8 +162,8 @@ spec:
         app: loki
         app.kubernetes.io/name: loki
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "3100"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3100'
     spec:
       securityContext:
         runAsNonRoot: true
@@ -229,8 +229,8 @@ metadata:
   labels:
     app.kubernetes.io/name: loki
   annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "3100"
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3100'
 spec:
   type: ClusterIP
   ports:
@@ -276,10 +276,10 @@ metadata:
   labels:
     app.kubernetes.io/name: loki
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/backend-protocol: 'HTTP'
 spec:
   ingressClassName: nginx
   tls:
@@ -321,7 +321,7 @@ data:
         active_index_directory: /loki/index
         cache_location: /loki/cache
         shared_store: s3
-    
+
     # S3 credentials (use AWS IAM roles or secrets)
     # AWS_REGION: us-west-2
     # AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}

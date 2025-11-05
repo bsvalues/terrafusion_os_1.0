@@ -12,24 +12,24 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/justice
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/justice
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/justice
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/justice
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/justice
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/justice
+    description: Development Environment
 paths:
   /cases:
     get:
       tags:
-      - terra-justice
+        - terra-justice
       summary: Justice case management
       description: Justice case management - Justice system operations and case management
         APIs
       operationId: get__cases
       security:
-      - OAuth2:
-        - terra-justice:read
+        - OAuth2:
+            - terra-justice:read
       responses:
         '200':
           description: Successful operation
@@ -58,14 +58,14 @@ paths:
   /defendants:
     get:
       tags:
-      - terra-justice
+        - terra-justice
       summary: Defendant information
       description: Defendant information - Justice system operations and case management
         APIs
       operationId: get__defendants
       security:
-      - OAuth2:
-        - terra-justice:read
+        - OAuth2:
+            - terra-justice:read
       responses:
         '200':
           description: Successful operation
@@ -94,14 +94,14 @@ paths:
   /court-proceedings:
     post:
       tags:
-      - terra-justice
+        - terra-justice
       summary: Court proceeding records
       description: Court proceeding records - Justice system operations and case management
         APIs
       operationId: post__court-proceedings
       security:
-      - OAuth2:
-        - terra-justice:write
+        - OAuth2:
+            - terra-justice:write
       responses:
         '200':
           description: Successful operation
@@ -130,14 +130,14 @@ paths:
   /sentencing:
     post:
       tags:
-      - terra-justice
+        - terra-justice
       summary: Sentencing information
       description: Sentencing information - Justice system operations and case management
         APIs
       operationId: post__sentencing
       security:
-      - OAuth2:
-        - terra-justice:write
+        - OAuth2:
+            - terra-justice:write
       responses:
         '200':
           description: Successful operation
@@ -168,8 +168,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -184,9 +184,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -210,12 +210,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - terra-justice:read
-- ApiKey: []
+  - OAuth2:
+      - terra-justice:read
+  - ApiKey: []
 tags:
-- name: terra-justice
-  description: Terra Justice operations
-  externalDocs:
-    description: Find out more about terra-justice
-    url: https://docs.terrafusion.gov/marketplace/terra-justice
+  - name: terra-justice
+    description: Terra Justice operations
+    externalDocs:
+      description: Find out more about terra-justice
+      url: https://docs.terrafusion.gov/marketplace/terra-justice

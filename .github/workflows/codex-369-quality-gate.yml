@@ -29,9 +29,9 @@ env:
   NODE_VERSION: '20.x'
 
   # Codex 3-6-9 Thresholds
-  PRODUCTION_MIN_SCORE: 10.0      # Championship Mode required
-  STAGING_MIN_SCORE: 8.0          # Operational Excellence required
-  DEVELOPMENT_MIN_SCORE: 6.0      # Basic functionality required
+  PRODUCTION_MIN_SCORE: 10.0 # Championship Mode required
+  STAGING_MIN_SCORE: 8.0 # Operational Excellence required
+  DEVELOPMENT_MIN_SCORE: 6.0 # Basic functionality required
 
   # Divine Balance Targets
   DIVINE_BALANCE_MIN: 11.5

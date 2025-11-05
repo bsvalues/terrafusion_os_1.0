@@ -2,12 +2,12 @@ name: Lint and Test
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths-ignore:
       - '**.md'
       - 'docs/**'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths-ignore:
       - '**.md'
       - 'docs/**'
@@ -84,10 +84,10 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_terraminer
           REDIS_URL: redis://localhost:6379/0
-          TESTING: "true"
-          AWS_ACCESS_KEY_ID: "test"
-          AWS_SECRET_ACCESS_KEY: "test"
-          AWS_DEFAULT_REGION: "us-west-2"
+          TESTING: 'true'
+          AWS_ACCESS_KEY_ID: 'test'
+          AWS_SECRET_ACCESS_KEY: 'test'
+          AWS_DEFAULT_REGION: 'us-west-2'
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3

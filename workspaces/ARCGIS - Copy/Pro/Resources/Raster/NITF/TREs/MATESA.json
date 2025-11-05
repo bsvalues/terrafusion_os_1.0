@@ -5,7 +5,7 @@
   "Description": "The MATESA TRE lists all the files known to the DP that are related to the NITF dataset in which the instance of the MATESA TRE occurs, i.e., the current NITF dataset. For example, when a sensor collects data, the data provider uses MATESA to list the current dataset and all companion datasets along with information as to how these datasets are related.",
   "Size": 158,
   "Fields": {
-    "CUR_SOURCE" : {
+    "CUR_SOURCE": {
       "Name": "Current File/Segment Source",
       "Description": "This field shall indicate the source of the current file or file segment. For images, the source is the sensor name and model. For IDPs, where the sensor name is no longer relevant (such as textual products), the name of the mate producer shall be provided.",
       "Size": 42,
@@ -15,8 +15,20 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["ISORCE", "SENSOR_ID", "PLATFORM_CODE", "VEHICLE_ID", "SENSOR", "PLATFORM_ID", "PAYLOAD_ID", "SYSTYP", "SID", "MISSION", "PLATFORM"]
-        }        
+          "Values": [
+            "ISORCE",
+            "SENSOR_ID",
+            "PLATFORM_CODE",
+            "VEHICLE_ID",
+            "SENSOR",
+            "PLATFORM_ID",
+            "PAYLOAD_ID",
+            "SYSTYP",
+            "SID",
+            "MISSION",
+            "PLATFORM"
+          ]
+        }
       ]
     },
     "CUR_MATE_TYPE": {
@@ -188,7 +200,7 @@
             "POST_REFERENCE",
             "POST_SHARPEN",
             "POST_SPECIFICATION"
-          ]          
+          ]
         }
       ]
     },
@@ -217,7 +229,19 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["ISORCE", "SENSOR_ID", "PLATFORM_CODE", "VEHICLE_ID", "SENSOR", "PLATFORM_ID", "PAYLOAD_ID", "SYSTYP", "SID", "MISSION", "PLATFORM"]
+          "Values": [
+            "ISORCE",
+            "SENSOR_ID",
+            "PLATFORM_CODE",
+            "VEHICLE_ID",
+            "SENSOR",
+            "PLATFORM_ID",
+            "PAYLOAD_ID",
+            "SYSTYP",
+            "SID",
+            "MISSION",
+            "PLATFORM"
+          ]
         }
       ]
     },
@@ -262,6 +286,6 @@
           "Type": "AlphaNumeric"
         }
       ]
-    }    
+    }
   }
 }

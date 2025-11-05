@@ -40,8 +40,8 @@ spec:
         app: jaeger
         app.kubernetes.io/name: jaeger
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "14269"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '14269'
     spec:
       securityContext:
         runAsNonRoot: true
@@ -61,7 +61,7 @@ spec:
             - containerPort: 5778
               name: config-rest
               protocol: TCP
-            
+
             # Collector ports
             - containerPort: 14268
               name: jaeger-http
@@ -69,12 +69,12 @@ spec:
             - containerPort: 14250
               name: jaeger-grpc
               protocol: TCP
-            
+
             # Query/UI port
             - containerPort: 16686
               name: query-http
               protocol: TCP
-            
+
             # Admin port
             - containerPort: 14269
               name: admin-http
@@ -82,25 +82,25 @@ spec:
           env:
             # Collector settings
             - name: COLLECTOR_ZIPKIN_HOST_PORT
-              value: ":9411"
+              value: ':9411'
             - name: COLLECTOR_OTLP_ENABLED
-              value: "true"
-            
+              value: 'true'
+
             # Storage backend (in-memory for dev, can switch to Elasticsearch)
             - name: SPAN_STORAGE_TYPE
-              value: "memory"
+              value: 'memory'
             - name: MEMORY_MAX_TRACES
-              value: "50000"
-            
+              value: '50000'
+
             # Query settings
             - name: QUERY_BASE_PATH
-              value: "/"
+              value: '/'
             - name: QUERY_MAX_CLOCK_SKEW_ADJUSTMENT
-              value: "1s"
-            
+              value: '1s'
+
             # Sampling configuration
             - name: SAMPLING_STRATEGIES_FILE
-              value: "/etc/jaeger/sampling-strategies.json"
+              value: '/etc/jaeger/sampling-strategies.json'
           volumeMounts:
             - name: jaeger-config
               mountPath: /etc/jaeger
@@ -278,11 +278,11 @@ metadata:
   labels:
     app.kubernetes.io/name: jaeger
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    nginx.ingress.kubernetes.io/rate-limit: "50"
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/backend-protocol: 'HTTP'
+    nginx.ingress.kubernetes.io/rate-limit: '50'
 spec:
   ingressClassName: nginx
   tls:
@@ -325,7 +325,7 @@ data:
   elasticsearch-config.yaml: |
     # Elasticsearch configuration for Jaeger
     # Replace with actual Elasticsearch cluster details
-    
+
     ES_SERVER_URLS: https://elasticsearch.tracing.svc.cluster.local:9200
     ES_USERNAME: jaeger
     ES_PASSWORD: ${ES_PASSWORD}
@@ -352,7 +352,7 @@ metadata:
 data:
   dotnet-instrumentation.md: |
     # TerraFusion .NET Service Instrumentation
-    
+
     ## 1. Add OpenTelemetry Packages
     ```bash
     dotnet add package OpenTelemetry
@@ -360,14 +360,14 @@ data:
     dotnet add package OpenTelemetry.Instrumentation.AspNetCore
     dotnet add package OpenTelemetry.Instrumentation.Http
     ```
-    
+
     ## 2. Configure OpenTelemetry in Program.cs
     ```csharp
     using OpenTelemetry.Resources;
     using OpenTelemetry.Trace;
-    
+
     var builder = WebApplication.CreateBuilder(args);
-    
+
     // Add OpenTelemetry tracing
     builder.Services.AddOpenTelemetry()
         .WithTracing(tracerProviderBuilder =>
@@ -396,12 +396,12 @@ data:
                 });
         });
     ```
-    
+
     ## 3. Custom Span Creation
     ```csharp
     using System.Diagnostics;
     using OpenTelemetry;
-    
+
     public class PropertyValuationService
     {
         private static readonly ActivitySource ActivitySource = 
@@ -428,7 +428,7 @@ data:
         }
     }
     ```
-    
+
     ## 4. AI Agent Trace Correlation
     ```csharp
     public class AIAgentCoordinator
@@ -469,9 +469,9 @@ data:
 
   environment-variables.md: |
     # Environment Variables for Jaeger Tracing
-    
+
     Add these to your service deployments:
-    
+
     ```yaml
     env:
       # Jaeger configuration
@@ -491,7 +491,7 @@ data:
 
   trace-context-propagation.md: |
     # Trace Context Propagation Between Services
-    
+
     ## HTTP Header Propagation (W3C Trace Context)
     ```csharp
     public class TraceContextPropagatingHandler : DelegatingHandler
@@ -517,7 +517,7 @@ data:
         }
     }
     ```
-    
+
     ## Message Queue Propagation (RabbitMQ/Azure Service Bus)
     ```csharp
     public class TracedMessagePublisher
@@ -540,24 +540,24 @@ data:
 
   query-examples.md: |
     # Jaeger Query Examples
-    
+
     ## 1. Find traces for specific service
     Service: terrafusion-api
-    
+
     ## 2. Find traces with errors
     Tags: error=true
-    
+
     ## 3. Find slow requests (>1s)
     Min Duration: 1s
-    
+
     ## 4. Find AI agent coordination traces
     Service: terrafusion-consciousness
     Operation: CoordinateAISwarm
     Tags: swarm.agent_count=50000
-    
+
     ## 5. Find traces by county
     Tags: property.county=benton
-    
+
     ## 6. Trace correlation with logs
     Use trace ID from Jaeger UI to search logs in Loki:
     {service="terrafusion-api"} |= "trace-id=<TRACE_ID>"

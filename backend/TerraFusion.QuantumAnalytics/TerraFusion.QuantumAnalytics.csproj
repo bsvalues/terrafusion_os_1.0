@@ -22,12 +22,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
 
     <!-- Mathematical & Statistical Libraries -->
-    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
-    <PackageReference Include="Accord.Statistics" Version="3.8.0" />
-    <PackageReference Include="Accord.Math" Version="3.8.0" />
+    <PackageReference Include="MathNet.Numerics" />
+    <PackageReference Include="Accord.Statistics" />
+    <PackageReference Include="Accord.Math" />
 
     <!-- R.NET for advanced statistical computing -->
-    <PackageReference Include="R.NET.Community" Version="1.9.0" />
+    <PackageReference Include="R.NET.Community" />
 
     <!-- Monitoring & Observability -->
     <PackageReference Include="Serilog.AspNetCore" />

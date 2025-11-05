@@ -1,13 +1,11 @@
 {
   "TRE": "AIMIDB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix E: ASDE"
-  ],  
+  "Source": ["STDI-0002-1 v2021.1, Appendix E: ASDE"],
   "Name": "Additional Image ID",
   "Description": "The Additional Image ID extension is used for storage and retrieval from standard imagery libraries. AIMID is a required component of all airborne imagery files. A single AIMID is placed in the respective subheader of every NITF image segment . Data from AIMID are copied into the first forty characters of the image subheader ITITLE (NITF 2.0) or IID2 (NITF 2.1) field.",
   "Size": 89,
   "Fields": {
-    "ACQUISITION_DATE" : {
+    "ACQUISITION_DATE": {
       "Name": "Acquisition Date / Time",
       "Description": "This field shall contain the date and time, referenced to UTC, of the collection in the format CCYYMMDDhhmmss, in which CCYY is the year, MM is the month (01 to 12), DD is the day of the month (01 to 31), hh is the hour (00 to 23), mm is the minute (00 to 59), and ss is the second (00 to 59). This field is equivalent to the IDATIM field in the image subheader.",
       "Size": 14,
@@ -45,7 +43,7 @@
           "Type": "AlphaNumeric"
         }
       ]
-    },    
+    },
     "FLIGHT_NO": {
       "Name": "Flight Number",
       "Description": "The flight number shall be identified by a flight number in the range 01 to 09. Flight 01 shall be the first flight of the day, flight 02 the second, etc. In order to ensure uniqueness in the image id, if the aircraft mission extends across midnight UTC, the flight number shall be 0x (where x is in the range 0 to 9) on images acquired before midnight UTC and Ax on images acquired after midnight UTC; for extended missions Bx, Zx shall designate images acquired on subsequent days. The value 00 indicates the flight number is unavailable.",
@@ -89,16 +87,16 @@
     },
     "REPRO_NUM": {
       "Name": "Reprocess Number",
-      "Description": "The reprocess number for SAR imagery this field indicates whether the data was reprocessed to overcome initial processing failures, or has been enhanced. A 00 in this field indicates that the data is an originally processed image, a 01 indicates the first reprocess/enhancement, etc. For visible and infrared imagery this field shall contain 00 to indicate no reprocessing or enhancement.", 
+      "Description": "The reprocess number for SAR imagery this field indicates whether the data was reprocessed to overcome initial processing failures, or has been enhanced. A 00 in this field indicates that the data is an originally processed image, a 01 indicates the first reprocess/enhancement, etc. For visible and infrared imagery this field shall contain 00 to indicate no reprocessing or enhancement.",
       "Size": 2,
       "Format": "BCS-N",
       "Type": "R",
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 99
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
         }
       ]
     },
@@ -115,20 +113,20 @@
         }
       ]
     },
-    "RESERVED_001":{
+    "RESERVED_001": {
       "Name": "Reserved 1",
       "Description": "This field is reserved and used only to maintain alignment and functional equivalence for systems beyond the scope of this document.",
       "Size": 1,
       "Format": "BCS-A",
-      "Type":"R",
+      "Type": "R",
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"         
+          "Type": "AlphaNumeric"
         }
       ]
     },
-    "START_COLUMN": {  
+    "START_COLUMN": {
       "Name": "Start Tile Column",
       "Description": "This field is for tiled (blocked) sub-images, the number of the first tile within the CURRENT_SEGMENT, relative to tiling at the start of the imaging operation. Tiles are rectangular arrays of pixels (dimensionally defined by the NITF image subheader NPPBH and NPPBV fields) that subdivide an image. For untiled (single block) images this field shall contain 001.",
       "Size": 3,
@@ -137,13 +135,13 @@
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 1,
-            "Max": 99
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99
         }
       ]
     },
-    "START_ROW": {  
+    "START_ROW": {
       "Name": "Start Tile Row",
       "Description": "This field is for tiled (blocked) sub-images, the number of the first tile within the CURRENT_SEGMENT, relative to tiling at the start of the imaging operation. For untiled (single block) images this field shall contain 00001.",
       "Size": 5,
@@ -152,12 +150,12 @@
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 1,
-            "Max": 99999
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99999
         }
       ]
-    },    
+    },
     "END_SEGMENT": {
       "Name": "Ending Segment",
       "Description": "This is the ending segment ID of the imaging operation. This field shall contain AA if the image is not segmented (i.e., consists of a single segment). During an extended imaging operation the end segment may not be known or predictable before it is collected; the value 00 (numeric zeros) shall indicate that the ending segment of the operation is unknown.",
@@ -215,12 +213,12 @@
         }
       ]
     },
-    "RESERVED002":{
+    "RESERVED002": {
       "Name": "Reserved 2",
       "Description": "This field is reserved and used only to maintain alignment and functional equivalence for systems beyond the scope of this document.",
       "Size": 4,
       "Format": "BCS-A",
-      "Type":"R",
+      "Type": "R",
       "Units": [],
       "Values": [
         {
@@ -241,12 +239,12 @@
         }
       ]
     },
-    "RESERVED003":{
+    "RESERVED003": {
       "Name": "Reserved 3",
       "Description": "This field is reserved and used only to maintain alignment and functional equivalence for systems beyond the scope of this document.",
       "Size": 13,
       "Format": "BCS-A",
-      "Type":"R",
+      "Type": "R",
       "Units": [],
       "Values": [
         {

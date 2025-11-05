@@ -14,30 +14,22 @@
   "IDs": {
     "SensorNamePaths": [],
     "MissionPaths": [],
-    "MissionMatch": [ "GE01", "GE1", "GEOEYE1", "GeoEye-1" ],
-    "Bands-Panchromatic-Basic": [
-      "#Band-Pan"
-    ],
+    "MissionMatch": ["GE01", "GE1", "GEOEYE1", "GeoEye-1"],
+    "Bands-Panchromatic-Basic": ["#Band-Pan"],
     "Bands-Multispectral4Bands-Basic": [
       "#Band-Blue",
       "#Band-Green",
       "#Band-Red",
       "#Band-Near"
     ],
-    "Bands-Panchromatic-Geo": [
-      "#Band-Pan"
-    ],
+    "Bands-Panchromatic-Geo": ["#Band-Pan"],
     "Bands-Multispectral4Bands-Geo": [
       "#Band-Blue",
       "#Band-Green",
       "#Band-Red",
       "#Band-Near"
     ],
-    "Bands-Multispectral3Bands-Psh": [
-      "#Band-Red",
-      "#Band-Green",
-      "#Band-Blue"
-    ],
+    "Bands-Multispectral3Bands-Psh": ["#Band-Red", "#Band-Green", "#Band-Blue"],
     "Bands-Multispectral4Bands-Psh": [
       "#Band-Red",
       "#Band-Green",

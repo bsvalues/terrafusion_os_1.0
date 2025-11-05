@@ -5,14 +5,14 @@
   "Description": "The Common Sensor Sensor Field Alignment (CSSFAB) DES provides information about the detectors, sensor type, and sensor field alignment including the focal length and principal point offset components. For GLAS, CSSFAB uses field alignment pairs to define the virtual focal plane locations of the endpoints of segments of the linear array. For GFM, CSSFAB uses either field alignment blocks to define the virtual focal plane locations of the corner points of square areas of the 2D frame array or interior orientation parameters in a Concatenated Approach (Section M.5.6.6). The CSSFAB DES is an integral part of the GLAS and GFM models and provides the band wavelength metadata for the stored image(s) to estimate the effect of wavelength on geopositioning and mensuration. The band wavelength metadata are included in the CSSFAB DES so that the GLAS/GFM SDEs contain all the necessary information without the need to leverage other SDEs, which may not be present, or the ISH, which may not contain the band wavelength. These metadata are applied in the GLAS and GFM projection models. For single band imagery, the application of the CSSFAB DES is straightforward. However, for multi-band imagery, it is more complicated and involves one of the following two cases: (1) band-to-band registered, i.e., co-registered, multi-band image segment; and (2) non-co-registered multi-band image segment. Section M.7.5 provides implementation guidance for an image segment without band-to-band registration. The CSSFAB DES contains two valid versions for use. Version 1 (DESVER = 01) is the original version where the only valid TELESCOPE_OPTICS_FLAG value is 0. Version 2 (DESVER = 02) allows for the TELESCOPE_OPTICS_FLAG values 0, 1, and 2 as valid options. While both versions are acceptable, version 2 is preferred, and data providers may simply set the TELESCOPE_OPTICS_FLAG to zero (0) when it is not applicable.",
   "Size": 46,
   "Fields": {
-    "DE" : {
+    "DE": {
       "Name": "File Part Type",
       "Description": "This field shall contain the characters DE.",
       "Size": 2,
       "Format": "BCS-A",
       "Type": "R",
       "Units": [],
-      "Values": [        
+      "Values": [
         {
           "Type": "Value",
           "Values": ["DE"]
@@ -201,7 +201,7 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000000,
+          "Min": 0.0,
           "Max": 99.99999999
         },
         {
@@ -290,7 +290,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]          
+          "Values": ["0", "1"]
         }
       ]
     },
@@ -303,7 +303,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"          
+          "Type": "Date"
         }
       ]
     },
@@ -317,8 +317,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.000000000,
-          "Max": 99999.999999999          
+          "Min": 0.0,
+          "Max": 99999.999999999
         },
         {
           "Type": "Double"
@@ -335,8 +335,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000000,
-          "Max": 99.99999999         
+          "Min": 0.0,
+          "Max": 99.99999999
         },
         {
           "Type": "Double"
@@ -354,8 +354,8 @@
         {
           "Type": "Range",
           "Min": -99.999999,
-          "Max": 99.999999         
-        }        
+          "Max": 99.999999
+        }
       ]
     },
     "PPOFF_Y": {
@@ -369,8 +369,8 @@
         {
           "Type": "Range",
           "Min": -99.999999,
-          "Max": 99.999999         
-        }        
+          "Max": 99.999999
+        }
       ]
     },
     "PPOFF_Z": {
@@ -384,8 +384,8 @@
         {
           "Type": "Range",
           "Min": -99.999999,
-          "Max": 99.999999         
-        }        
+          "Max": 99.999999
+        }
       ]
     },
     "ANGOFF_X": {
@@ -399,8 +399,8 @@
         {
           "Type": "Range",
           "Min": -3.1415927,
-          "Max": 3.1415927         
-        }        
+          "Max": 3.1415927
+        }
       ]
     },
     "ANGOFF_Y": {
@@ -414,8 +414,8 @@
         {
           "Type": "Range",
           "Min": -3.1415927,
-          "Max": 3.1415927         
-        }        
+          "Max": 3.1415927
+        }
       ]
     },
     "ANGOFF_Z": {
@@ -429,8 +429,8 @@
         {
           "Type": "Range",
           "Min": -3.1415927,
-          "Max": 3.1415927         
-        }        
+          "Max": 3.1415927
+        }
       ]
     },
     "SMPL_NUM_FIRST": {
@@ -444,8 +444,8 @@
         {
           "Type": "Range",
           "Min": -99999.99999,
-          "Max": 99999.99999         
-        }        
+          "Max": 99999.99999
+        }
       ]
     },
     "DELTA_SMPL_PAIRS": {
@@ -458,9 +458,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000,
-          "Max": 99999.99999         
-        }        
+          "Min": 0.0,
+          "Max": 99999.99999
+        }
       ]
     },
     "NUM_FA_PAIRS": {
@@ -474,8 +474,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 999         
-        }        
+          "Max": 999
+        }
       ]
     },
     "START_FALIGN_X<NUM_FA_PAIRS>": {
@@ -489,8 +489,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999        
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "START_FALIGN_Y<NUM_FA_PAIRS>": {
@@ -504,8 +504,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999        
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "END_FALIGN_X<NUM_FA_PAIRS>": {
@@ -519,8 +519,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999        
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "END_FALIGN_Y<NUM_FA_PAIRS>": {
@@ -534,8 +534,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999        
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "NUM_SETS_FA_DATA": {
@@ -549,8 +549,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 9        
-        }        
+          "Max": 9
+        }
       ]
     },
     "FIELD_ANGLE_TYPE": {
@@ -563,8 +563,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]        
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "FA_INTERP": {
@@ -577,8 +577,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]        
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "FL_CAL<NUM_SETS_FA_DATA>": {
@@ -591,9 +591,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000000,
-          "Max": 99.99999999       
-        }        
+          "Min": 0.0,
+          "Max": 99.99999999
+        }
       ]
     },
     "NUM_FIR_LINE<NUM_SETS_FA_DATA>": {
@@ -607,8 +607,8 @@
         {
           "Type": "Range",
           "Min": -99999.99999,
-          "Max": 99999.99999       
-        }        
+          "Max": 99999.99999
+        }
       ]
     },
     "DELTA_LINE<NUM_SETS_FA_DATA>": {
@@ -621,9 +621,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000,
-          "Max": 99999.99999       
-        }        
+          "Min": 0.0,
+          "Max": 99999.99999
+        }
       ]
     },
     "NUM_FA_BLOCKS_LINE<NUM_SETS_FA_DATA>": {
@@ -637,8 +637,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 999       
-        }        
+          "Max": 999
+        }
       ]
     },
     "NUM_FIR_SAMP<NUM_SETS_FA_DATA>": {
@@ -652,8 +652,8 @@
         {
           "Type": "Range",
           "Min": -99999.99999,
-          "Max": 99999.99999       
-        }        
+          "Max": 99999.99999
+        }
       ]
     },
     "DELTA_SAMP<NUM_SETS_FA_DATA>": {
@@ -666,9 +666,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000,
-          "Max": 99999.99999       
-        }        
+          "Min": 0.0,
+          "Max": 99999.99999
+        }
       ]
     },
     "NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>": {
@@ -682,8 +682,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 999       
-        }        
+          "Max": 999
+        }
       ]
     },
     "FA_X1<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
@@ -697,8 +697,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999       
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "FA_Y1<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
@@ -712,8 +712,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999       
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "FA_X2<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
@@ -727,8 +727,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999       
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "FA_Y2<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
@@ -742,8 +742,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999       
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "FA_X3<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
@@ -757,8 +757,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999       
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "FA_Y3<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
@@ -772,8 +772,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999       
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "FA_X4<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
@@ -787,8 +787,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999       
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "FA_Y4<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
@@ -802,8 +802,8 @@
         {
           "Type": "Range",
           "Min": -99.9999999,
-          "Max": 99.9999999       
-        }        
+          "Max": 99.9999999
+        }
       ]
     },
     "NUM_FP_ARRAYS_LINE": {
@@ -817,8 +817,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 999      
-        }        
+          "Max": 999
+        }
       ]
     },
     "NUM_FP_ARRAYS_SAMP": {
@@ -832,8 +832,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 999      
-        }        
+          "Max": 999
+        }
       ]
     },
     "LS_FID_TRANS_T0<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
@@ -847,8 +847,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "LS_FID_TRANS_T1<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
@@ -862,8 +862,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "LS_FID_TRANS_T2<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
@@ -877,8 +877,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "LS_FID_TRANS_T3<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
@@ -892,8 +892,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "LS_FID_TRANS_T4<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
@@ -907,8 +907,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "LS_FID_TRANS_T5<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
@@ -922,8 +922,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "LS_FID_TRANS_T6<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
@@ -937,8 +937,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "LS_FID_TRANS_T7<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
@@ -952,8 +952,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "FL_CAL_IOP<NUM_SETS_FA_DATA>": {
@@ -966,9 +966,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000000,
-          "Max": 99.99999999      
-        }        
+          "Min": 0.0,
+          "Max": 99.99999999
+        }
       ]
     },
     "PPO_X0<NUM_SETS_FA_DATA>": {
@@ -982,8 +982,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "PPO_Y0<NUM_SETS_FA_DATA>": {
@@ -997,8 +997,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "RLD_K0<NUM_SETS_FA_DATA>": {
@@ -1012,8 +1012,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "RLD_K1<NUM_SETS_FA_DATA>": {
@@ -1027,8 +1027,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "RLD_K2<NUM_SETS_FA_DATA>": {
@@ -1042,8 +1042,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "RLD_K3<NUM_SETS_FA_DATA>": {
@@ -1057,8 +1057,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "DCD_P1<NUM_SETS_FA_DATA>": {
@@ -1072,8 +1072,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "DCD_P2<NUM_SETS_FA_DATA>": {
@@ -1087,8 +1087,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "DCD_P3<NUM_SETS_FA_DATA>": {
@@ -1102,8 +1102,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "AD_A1<NUM_SETS_FA_DATA>": {
@@ -1117,8 +1117,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "AD_A2<NUM_SETS_FA_DATA>": {
@@ -1132,8 +1132,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "RADIUS_OF_VALIDITY<NUM_SETS_FA_DATA>": {
@@ -1146,9 +1146,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000000000000e00,
-          "Max": 9.99999999999999e99     
-        }        
+          "Min": 0.0,
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TELESCOPE_OPTICS_FLAG": {
@@ -1161,8 +1161,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1", "2"]             
-        }        
+          "Values": ["0", "1", "2"]
+        }
       ]
     },
     "NUM_TELE_SETS_FA_DATA": {
@@ -1175,8 +1175,8 @@
       "Values": [
         {
           "Type": "Values",
-          "Values": ["0", "1"]             
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "N_FRAMES": {
@@ -1188,8 +1188,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "UnsignedInteger"                      
-        }        
+          "Type": "UnsignedInteger"
+        }
       ]
     },
     "TELE_TRANS_T0<N_FRAMES>": {
@@ -1203,8 +1203,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TELE_TRANS_T1<N_FRAMES>": {
@@ -1218,8 +1218,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TELE_TRANS_T2<N_FRAMES>": {
@@ -1233,8 +1233,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TELE_TRANS_T3<N_FRAMES>": {
@@ -1248,8 +1248,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TELE_TRANS_T4<N_FRAMES>": {
@@ -1263,8 +1263,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TELE_TRANS_T5<N_FRAMES>": {
@@ -1278,8 +1278,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TELE_TRANS_T6<N_FRAMES>": {
@@ -1293,8 +1293,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TELE_TRANS_T7<N_FRAMES>": {
@@ -1308,8 +1308,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "FL_CAL_IOP_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1322,9 +1322,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000000,
-          "Max": 99.99999999                      
-        }        
+          "Min": 0.0,
+          "Max": 99.99999999
+        }
       ]
     },
     "PPO_X0_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1338,8 +1338,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "PPO_Y0_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1353,8 +1353,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "RLD_K0_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1368,8 +1368,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "RLD_K1_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1383,8 +1383,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "RLD_K2_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1398,8 +1398,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "RLD_K3_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1413,8 +1413,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "DCD_P1_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1428,8 +1428,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "DCD_P2_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1443,8 +1443,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "DCD_P3_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1458,8 +1458,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "AD_A1_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1473,8 +1473,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "AD_A2_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1488,8 +1488,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99                      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "RADIUS_OF_VALIDITY_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1502,10 +1502,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000000000000e00,
+          "Min": 0.0,
           "Max": 9.99999999999999e99
-                      
-        }        
+        }
       ]
     },
     "NUM_TELE_SETS_FA_DATA": {
@@ -1519,8 +1518,7 @@
         {
           "Type": "Value",
           "Values": ["0", "1"]
-                      
-        }        
+        }
       ]
     },
     "N_FRAME_TIMES": {
@@ -1532,8 +1530,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "UnsignedInteger"                      
-        }        
+          "Type": "UnsignedInteger"
+        }
       ]
     },
     "N_VARYING_IO": {
@@ -1548,7 +1546,7 @@
           "Type": "Range",
           "Min": 0,
           "Max": 11
-        }        
+        }
       ]
     },
     "TIME_VARYING_IO_PARM_ID<N_VARYING_IO>": {
@@ -1563,7 +1561,7 @@
           "Type": "Range",
           "Min": 0,
           "Max": 11
-        }        
+        }
       ]
     },
     "TELE_DATE": {
@@ -1576,7 +1574,7 @@
       "Values": [
         {
           "Type": "Date"
-        }        
+        }
       ]
     },
     "TELE_TIME": {
@@ -1589,9 +1587,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.000000000,
+          "Min": 0.0,
           "Max": 99999.999999999
-        }        
+        }
       ]
     },
     "TELE_TRANS_T0<N_FRAME_TIMES>": {
@@ -1606,7 +1604,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "TELE_TRANS_T1<N_FRAME_TIMES>": {
@@ -1621,7 +1619,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "TELE_TRANS_T2<N_FRAME_TIMES>": {
@@ -1636,7 +1634,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "TELE_TRANS_T3<N_FRAME_TIMES>": {
@@ -1651,7 +1649,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "TELE_TRANS_T4<N_FRAME_TIMES>": {
@@ -1666,7 +1664,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "TELE_TRANS_T5<N_FRAME_TIMES>": {
@@ -1681,7 +1679,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "TELE_TRANS_T6<N_FRAME_TIMES>": {
@@ -1696,7 +1694,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "TELE_TRANS_T7<N_FRAME_TIMES>": {
@@ -1711,7 +1709,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "TIME_VARYING_IO_M<N_VARYING_IO<N_FRAME_TIMES>>": {
@@ -1726,7 +1724,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "FL_CAL_IOP_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1739,9 +1737,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000000,
+          "Min": 0.0,
           "Max": 99.99999999
-        }        
+        }
       ]
     },
     "PPO_X0_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1756,7 +1754,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "PPO_Y0_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1771,7 +1769,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "RLD_K0_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1786,7 +1784,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "RLD_K1_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1801,7 +1799,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "RLD_K2_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1816,7 +1814,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "RLD_K3_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1831,7 +1829,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "DCD_P1_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1846,7 +1844,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "DCD_P2_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1861,7 +1859,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "DCD_P3_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1876,7 +1874,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "AD_A1_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1891,7 +1889,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "AD_A2_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1906,7 +1904,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "RADIUS_OF_VALIDITY_TELE<NUM_TELE_SETS_FA_DATA>": {
@@ -1919,9 +1917,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000000000000e00,
+          "Min": 0.0,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "RESERVED_LEN": {
@@ -1934,7 +1932,7 @@
       "Values": [
         {
           "Type": "Integer"
-        }        
+        }
       ]
     },
     "RESERVED": {
@@ -1947,8 +1945,8 @@
       "Values": [
         {
           "Type": "AlphaNumeric"
-        }        
+        }
       ]
-    }    
+    }
   }
 }

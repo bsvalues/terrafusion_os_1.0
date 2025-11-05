@@ -16,13 +16,13 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 
 # Load rules once and periodically evaluate them
 rule_files:
-  - "rules/*.yml"
-  - "rules/bulletproof/*.yml"
-  - "rules/government-compliance/*.yml"
+  - 'rules/*.yml'
+  - 'rules/bulletproof/*.yml'
+  - 'rules/government-compliance/*.yml'
 
 # 🎯 BULLETPROOF SCRAPE CONFIGURATIONS
 scrape_configs:
@@ -107,7 +107,7 @@ scrape_configs:
       - role: endpoints
         namespaces:
           names:
-          - terrafusion-system
+            - terrafusion-system
     relabel_configs:
       - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
         action: keep
@@ -188,10 +188,10 @@ scrape_configs:
   - job_name: 'envoy-sidecar-bulletproof'
     static_configs:
       - targets:
-        - 'terrafusion-gateway:15090'
-        - 'terrafusion-api:15091'
-        - 'terrafusion-operations:15092'
-        - 'terrafusion-ai:15093'
+          - 'terrafusion-gateway:15090'
+          - 'terrafusion-api:15091'
+          - 'terrafusion-operations:15092'
+          - 'terrafusion-ai:15093'
     scrape_interval: 15s
     metrics_path: '/stats/prometheus'
     relabel_configs:
@@ -265,9 +265,9 @@ scrape_configs:
   - job_name: 'business-metrics-bulletproof'
     static_configs:
       - targets:
-        - 'terrafusion-api:5001'
-        - 'terrafusion-operations:5002'
-        - 'terrafusion-ai:5003'
+          - 'terrafusion-api:5001'
+          - 'terrafusion-operations:5002'
+          - 'terrafusion-ai:5003'
     scrape_interval: 60s
     metrics_path: '/business-metrics'
     relabel_configs:
@@ -278,7 +278,7 @@ scrape_configs:
 
 # 🎯 REMOTE WRITE CONFIGURATION (Long-term Storage)
 remote_write:
-  - url: "http://thanos-receive:19291/api/v1/receive"
+  - url: 'http://thanos-receive:19291/api/v1/receive'
     queue_config:
       max_samples_per_send: 10000
       max_shards: 20
@@ -296,7 +296,7 @@ remote_write:
 
 # 🎯 REMOTE READ CONFIGURATION (Historical Data)
 remote_read:
-  - url: "http://thanos-query:9090/api/v1/query"
+  - url: 'http://thanos-query:9090/api/v1/query'
     read_recent: true
     required_matchers:
-      environment: "terrafusion-bulletproof"
+      environment: 'terrafusion-bulletproof'

@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-
 - case: featureMethodChaining
   main: |
     from pyspark.ml.feature import NGram
@@ -24,7 +23,6 @@
 
   out: |
     main:3: note: Revealed type is "pyspark.ml.feature.NGram"
-
 
 - case: stringIndexerOverloads
   main: |

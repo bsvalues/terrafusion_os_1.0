@@ -26,25 +26,40 @@
         "description": "Lead Assessor with approval rights for valuations and reports.",
         "permissions": [
           "view_dashboard",
-          "run_valuation", "view_valuation_status", "view_valuation_results", "approve_valuation",
-          "run_report", "view_report_status", "view_report_results", "approve_report",
-          "run_market_analysis", "view_market_analysis_status", "view_market_analysis_results",
-          "run_gis_export", "view_gis_export_status", "view_gis_export_results",
-          "view_file_uploads", "approve_file_upload"
+          "run_valuation",
+          "view_valuation_status",
+          "view_valuation_results",
+          "approve_valuation",
+          "run_report",
+          "view_report_status",
+          "view_report_results",
+          "approve_report",
+          "run_market_analysis",
+          "view_market_analysis_status",
+          "view_market_analysis_results",
+          "run_gis_export",
+          "view_gis_export_status",
+          "view_gis_export_results",
+          "view_file_uploads",
+          "approve_file_upload"
         ]
       },
       "ValuationStaff": {
         "description": "Staff performing valuation tasks.",
         "permissions": [
           "view_dashboard",
-          "run_valuation", "view_valuation_status", "view_valuation_results"
+          "run_valuation",
+          "view_valuation_status",
+          "view_valuation_results"
         ]
       },
       "ReportingStaff": {
         "description": "Staff generating and viewing reports.",
         "permissions": [
           "view_dashboard",
-          "run_report", "view_report_status", "view_report_results"
+          "run_report",
+          "view_report_status",
+          "view_report_results"
         ]
       },
       "ITAdmin": {
@@ -55,11 +70,16 @@
         "description": "View-only access for audit purposes.",
         "permissions": [
           "view_dashboard",
-          "view_valuation_status", "view_valuation_results",
-          "view_report_status", "view_report_results",
-          "view_market_analysis_status", "view_market_analysis_results",
-          "view_gis_export_status", "view_gis_export_results",
-          "view_file_uploads", "view_audit_logs"
+          "view_valuation_status",
+          "view_valuation_results",
+          "view_report_status",
+          "view_report_results",
+          "view_market_analysis_status",
+          "view_market_analysis_results",
+          "view_gis_export_status",
+          "view_gis_export_results",
+          "view_file_uploads",
+          "view_audit_logs"
         ]
       }
     }
@@ -70,7 +90,10 @@
       "confidence_threshold_for_review": 0.75
     },
     "reporting": {
-      "standard_report_types": ["sales_ratio_study_annual", "assessment_roll_summary"],
+      "standard_report_types": [
+        "sales_ratio_study_annual",
+        "assessment_roll_summary"
+      ],
       "default_export_format": "PDF"
     },
     "market_analysis": {
@@ -84,14 +107,17 @@
       "include_attributes_default": true
     },
     "file_ingestion": {
-        "allowed_file_types": [".csv", ".txt", ".xml"],
-        "max_file_size_mb": 100
+      "allowed_file_types": [".csv", ".txt", ".xml"],
+      "max_file_size_mb": 100
     }
   },
   "ui_settings": {
     "dashboard_branding_logo_url": "/static/county_logos/benton_wa_logo.png",
     "default_map_extent": {
-      "min_lat": 46.0, "min_lon": -120.0, "max_lat": 46.5, "max_lon": -119.0
+      "min_lat": 46.0,
+      "min_lon": -120.0,
+      "max_lat": 46.5,
+      "max_lon": -119.0
     }
   }
 }

@@ -1,8 +1,6 @@
 {
   "TRE": "NBLOCA",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix I: NBLOCA"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix I: NBLOCA"],
   "Name": "NBLOCA TRE",
   "Description": "The NBLOCA TRE allows the NITF image to be accessed in a random or parallel fashion by providing the ability to find the offset to the location of th efirst data byte of any frame or block. This offset is determined by summing the offset values for the previous blocks and allows direct access to a frame without reading through any portion of the image frames.",
   "Size": 8,

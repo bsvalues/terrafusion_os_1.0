@@ -2,9 +2,9 @@ name: Lighthouse CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   lhci:
@@ -51,10 +51,10 @@ jobs:
           script: |
             const fs = require('fs');
             const lighthouseReport = JSON.parse(fs.readFileSync('./lhci_reports/manifest.json'));
-            
+
             const metrics = ['performance', 'accessibility', 'best-practices', 'seo'];
             let comment = '## Lighthouse Results\n\n';
-            
+
             for (const url of Object.keys(lighthouseReport)) {
               const urlReport = lighthouseReport[url][0];
               comment += `### ${url}\n\n`;
@@ -97,7 +97,7 @@ jobs:
               
               comment += '\n';
             }
-            
+
             const failingMetrics = Object.values(lighthouseReport)
               .flatMap(reports => reports[0])
               .filter(report => 
@@ -105,15 +105,15 @@ jobs:
                 report.audits['cumulative-layout-shift'].numericValue > 0.1 ||
                 report.audits['server-response-time'].numericValue > 600
               );
-            
+
             if (failingMetrics.length > 0) {
               comment += '\n⚠️ **Performance metrics exceed thresholds. Please check and improve!**\n';
             } else {
               comment += '\n✅ **All performance metrics are within acceptable thresholds!**\n';
             }
-            
+
             comment += '\n[📖 View detailed reports](https://htmlpreview.github.io/?https://raw.githubusercontent.com/${{ github.repository }}/${{ github.event.pull_request.head.sha }}/lighthouse-results/index.html)';
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,

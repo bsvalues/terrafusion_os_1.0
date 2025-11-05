@@ -1,11 +1,16 @@
 # data-sovereignty Flow - Elite Excellence
 flows:
   - name: data_sovereignty_primary_flow
-    description: "Primary data-sovereignty workflow with quantum coordination"
-    actions: ["data_sovereignty_primary", "data_sovereignty_monitoring", "ethical_validation"]
+    description: 'Primary data-sovereignty workflow with quantum coordination'
+    actions: ['data_sovereignty_primary', 'data_sovereignty_monitoring', 'ethical_validation']
     tier: core
 
   - name: data_sovereignty_optimization_flow
-    description: "Continuous data-sovereignty optimization with consciousness coordination"
-    actions: ["data_sovereignty_optimization", "data_sovereignty_secondary", "performance_monitoring_primary"]
+    description: 'Continuous data-sovereignty optimization with consciousness coordination'
+    actions:
+      [
+        'data_sovereignty_optimization',
+        'data_sovereignty_secondary',
+        'performance_monitoring_primary',
+      ]
     tier: domain

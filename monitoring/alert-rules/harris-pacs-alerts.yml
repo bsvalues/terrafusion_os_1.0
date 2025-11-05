@@ -21,9 +21,9 @@ groups:
           component: harris-pacs
           compliance: fisma-high
         annotations:
-          summary: "Harris PACS sync experiencing consecutive failures"
-          description: "County {{ $labels.county }} jurisdiction {{ $labels.jurisdiction }} has {{ $value }} sync failures in 15 minutes. IMMEDIATE ACTION REQUIRED."
-          runbook_url: "https://docs.terrafusion.gov/runbooks/harris-pacs-sync-failure"
+          summary: 'Harris PACS sync experiencing consecutive failures'
+          description: 'County {{ $labels.county }} jurisdiction {{ $labels.jurisdiction }} has {{ $value }} sync failures in 15 minutes. IMMEDIATE ACTION REQUIRED.'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/harris-pacs-sync-failure'
 
       - alert: HarrisPACSSyncDown
         expr: |
@@ -33,9 +33,9 @@ groups:
           severity: critical
           component: harris-pacs
         annotations:
-          summary: "Harris PACS sync service is DOWN"
-          description: "No successful sync metrics detected for 10 minutes. Service may be down."
-          runbook_url: "https://docs.terrafusion.gov/runbooks/harris-pacs-service-down"
+          summary: 'Harris PACS sync service is DOWN'
+          description: 'No successful sync metrics detected for 10 minutes. Service may be down.'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/harris-pacs-service-down'
 
       - alert: DataDiscrepancyRateCritical
         expr: |
@@ -46,9 +46,9 @@ groups:
           component: data-validation
           compliance: data-integrity
         annotations:
-          summary: "Data discrepancy rate CRITICAL for county {{ $labels.county }}"
-          description: "Discrepancy rate is {{ $value }}% (threshold: 5%). Data integrity compromised."
-          runbook_url: "https://docs.terrafusion.gov/runbooks/data-discrepancy-critical"
+          summary: 'Data discrepancy rate CRITICAL for county {{ $labels.county }}'
+          description: 'Discrepancy rate is {{ $value }}% (threshold: 5%). Data integrity compromised.'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/data-discrepancy-critical'
 
       # ───────────────────────────────────────────────────────────────
       # HIGH SEVERITY ALERTS - Attention Within 1 Hour
@@ -63,9 +63,9 @@ groups:
           component: harris-pacs
           performance: degraded
         annotations:
-          summary: "Harris PACS sync performance degraded"
-          description: "P95 sync duration for {{ $labels.county }}/{{ $labels.jurisdiction }} is {{ $value }}s (target: <300s)"
-          runbook_url: "https://docs.terrafusion.gov/runbooks/harris-pacs-slow-sync"
+          summary: 'Harris PACS sync performance degraded'
+          description: 'P95 sync duration for {{ $labels.county }}/{{ $labels.jurisdiction }} is {{ $value }}s (target: <300s)'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/harris-pacs-slow-sync'
 
       - alert: DataDiscrepancyRateHigh
         expr: |
@@ -75,9 +75,9 @@ groups:
           severity: high
           component: data-validation
         annotations:
-          summary: "Data discrepancy rate HIGH for county {{ $labels.county }}"
-          description: "Discrepancy rate is {{ $value }}% (threshold: 5%). Monitor closely."
-          runbook_url: "https://docs.terrafusion.gov/runbooks/data-discrepancy-high"
+          summary: 'Data discrepancy rate HIGH for county {{ $labels.county }}'
+          description: 'Discrepancy rate is {{ $value }}% (threshold: 5%). Monitor closely.'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/data-discrepancy-high'
 
       - alert: AutoCorrectionSuccessRateLow
         expr: |
@@ -89,9 +89,9 @@ groups:
           severity: high
           component: data-validation
         annotations:
-          summary: "Auto-correction success rate low for county {{ $labels.county }}"
-          description: "Auto-correction success rate is {{ $value | humanizePercentage }} (target: >=95%)"
-          runbook_url: "https://docs.terrafusion.gov/runbooks/auto-correction-low"
+          summary: 'Auto-correction success rate low for county {{ $labels.county }}'
+          description: 'Auto-correction success rate is {{ $value | humanizePercentage }} (target: >=95%)'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/auto-correction-low'
 
       # ───────────────────────────────────────────────────────────────
       # WARNING ALERTS - Monitor and Investigate
@@ -108,9 +108,9 @@ groups:
           component: harris-pacs
           anomaly: sync-volume
         annotations:
-          summary: "Harris PACS sync volume anomaly detected"
-          description: "County {{ $labels.county }} sync volume is {{ $value }} (3 std dev from 24h average)"
-          runbook_url: "https://docs.terrafusion.gov/runbooks/harris-pacs-anomaly"
+          summary: 'Harris PACS sync volume anomaly detected'
+          description: 'County {{ $labels.county }} sync volume is {{ $value }} (3 std dev from 24h average)'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/harris-pacs-anomaly'
 
       - alert: ValidationDurationIncreasing
         expr: |
@@ -121,9 +121,9 @@ groups:
           component: data-validation
           performance: degraded
         annotations:
-          summary: "Data validation duration increasing"
-          description: "P95 validation duration for {{ $labels.county }} is {{ $value }}s (target: <60s)"
-          runbook_url: "https://docs.terrafusion.gov/runbooks/validation-slow"
+          summary: 'Data validation duration increasing'
+          description: 'P95 validation duration for {{ $labels.county }} is {{ $value }}s (target: <60s)'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/validation-slow'
 
       # ───────────────────────────────────────────────────────────────
       # CHAMPIONSHIP-LEVEL SLA MONITORING
@@ -140,9 +140,9 @@ groups:
           component: harris-pacs
           sla: championship
         annotations:
-          summary: "Harris PACS sync success rate below 99.9% for {{ $labels.county }}"
-          description: "Success rate is {{ $value | humanizePercentage }} (championship target: >=99.9%)"
-          runbook_url: "https://docs.terrafusion.gov/runbooks/harris-pacs-sla-breach"
+          summary: 'Harris PACS sync success rate below 99.9% for {{ $labels.county }}'
+          description: 'Success rate is {{ $value | humanizePercentage }} (championship target: >=99.9%)'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/harris-pacs-sla-breach'
 
       - alert: DataValidationSLABreach
         expr: |
@@ -153,9 +153,9 @@ groups:
           component: data-validation
           sla: championship
         annotations:
-          summary: "Data validation P95 latency SLA breach for {{ $labels.county }}"
-          description: "P95 validation latency is {{ $value }}s (championship target: <30s)"
-          runbook_url: "https://docs.terrafusion.gov/runbooks/validation-sla-breach"
+          summary: 'Data validation P95 latency SLA breach for {{ $labels.county }}'
+          description: 'P95 validation latency is {{ $value }}s (championship target: <30s)'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/validation-sla-breach'
 
   # ═══════════════════════════════════════════════════════════════════
   # MULTI-COUNTY AGGREGATION ALERTS
@@ -173,9 +173,9 @@ groups:
           component: harris-pacs
           scope: regional
         annotations:
-          summary: "Multiple counties experiencing Harris PACS sync failures"
-          description: "{{ $value }} counties have sync failures - potential regional issue"
-          runbook_url: "https://docs.terrafusion.gov/runbooks/harris-pacs-regional-outage"
+          summary: 'Multiple counties experiencing Harris PACS sync failures'
+          description: '{{ $value }} counties have sync failures - potential regional issue'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/harris-pacs-regional-outage'
 
       - alert: SystemWideDiscrepancyRateHigh
         expr: |
@@ -186,6 +186,6 @@ groups:
           component: data-validation
           scope: system-wide
         annotations:
-          summary: "System-wide data discrepancy rate elevated"
-          description: "Average discrepancy rate across all counties is {{ $value }}% (target: <2%)"
-          runbook_url: "https://docs.terrafusion.gov/runbooks/system-wide-discrepancy"
+          summary: 'System-wide data discrepancy rate elevated'
+          description: 'Average discrepancy rate across all counties is {{ $value }}% (target: <2%)'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/system-wide-discrepancy'

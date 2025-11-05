@@ -6,21 +6,15 @@
   },
   "predictive_analytics": {
     "enabled": true,
-    "features": [
-      "general-metrics"
-    ],
+    "features": ["general-metrics"],
     "prediction_window_days": 60,
     "confidence_threshold": 0.75,
     "update_frequency_hours": 6,
-    "models": [
-      "clustering"
-    ]
+    "models": ["clustering"]
   },
   "anomaly_detection": {
     "enabled": true,
-    "detectors": [
-      "anomalies"
-    ],
+    "detectors": ["anomalies"],
     "sensitivity": "medium",
     "real_time": false,
     "batch_window_hours": 24,
@@ -36,9 +30,7 @@
     "daily_volume_gb": 100
   },
   "ml_infrastructure": {
-    "frameworks": [
-      "scikit-learn"
-    ],
+    "frameworks": ["scikit-learn"],
     "gpu_enabled": false,
     "distributed_training": false,
     "model_registry": "enabled",
@@ -48,11 +40,7 @@
   "optimization": {
     "auto_scaling": {
       "enabled": true,
-      "metrics": [
-        "cpu",
-        "memory",
-        "request_latency"
-      ],
+      "metrics": ["cpu", "memory", "request_latency"],
       "target_utilization": 70,
       "scale_up_threshold": 80,
       "scale_down_threshold": 30,

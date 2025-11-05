@@ -16,91 +16,102 @@
     overflow-x: hidden;
     padding-bottom: 60px; /* Space for the bottom navigation bar */
   }
-  
+
   /* Fix font sizing */
   html {
     font-size: 16px; /* Base font size */
   }
-  
+
   h1 {
     font-size: 1.75rem;
   }
-  
+
   h2 {
     font-size: 1.5rem;
   }
-  
+
   h3 {
     font-size: 1.25rem;
   }
-  
+
   /* Optimize touch targets */
-  button, .btn, a.btn, 
-  input[type="button"], 
-  input[type="submit"],
+  button,
+  .btn,
+  a.btn,
+  input[type='button'],
+  input[type='submit'],
   .nav-link,
   .dropdown-item {
     min-height: 44px;
     min-width: 44px;
     padding: 0.5rem 0.75rem;
   }
-  
+
   /* Improve readability */
-  p, li, td, th, input, select, textarea {
+  p,
+  li,
+  td,
+  th,
+  input,
+  select,
+  textarea {
     font-size: 1rem;
     line-height: 1.5;
   }
-  
+
   /* Adjust layout for smaller screens */
-  .container, .container-fluid {
+  .container,
+  .container-fluid {
     padding-left: 15px;
     padding-right: 15px;
   }
-  
+
   .row {
     margin-left: -10px;
     margin-right: -10px;
   }
-  
-  .col, [class*="col-"] {
+
+  .col,
+  [class*='col-'] {
     padding-left: 10px;
     padding-right: 10px;
   }
-  
+
   /* Optimize forms for touch */
-  .form-control, .form-select {
+  .form-control,
+  .form-select {
     height: 44px;
     font-size: 16px; /* Prevents iOS zoom on focus */
   }
-  
+
   textarea.form-control {
     height: auto;
   }
-  
+
   .form-check-input {
     width: 1.1rem;
     height: 1.1rem;
   }
-  
+
   /* Adjust card layout */
   .card {
     margin-bottom: 1rem;
   }
-  
+
   .card-body {
     padding: 1rem;
   }
-  
+
   /* Optimize tables */
   .table-responsive {
     border: 0;
   }
-  
+
   /* Adjust navigation */
   .navbar {
     padding: 0.5rem 1rem;
   }
-  
+
   .navbar-brand {
     font-size: 1.25rem;
     margin-right: 0.5rem;
@@ -113,24 +124,24 @@
     padding-left: 10px;
     padding-right: 10px;
   }
-  
+
   h1 {
     font-size: 1.5rem;
   }
-  
+
   h2 {
     font-size: 1.25rem;
   }
-  
+
   h3 {
     font-size: 1.125rem;
   }
-  
+
   /* Hide certain elements on very small screens */
   .d-xs-none {
     display: none !important;
   }
-  
+
   /* Adjust button groups */
   .btn-group .btn {
     padding-left: 0.5rem;
@@ -156,8 +167,8 @@ body.field-assessment-mode {
 .field-assessment-mode button,
 .field-assessment-mode .btn,
 .field-assessment-mode a.btn,
-.field-assessment-mode input[type="button"],
-.field-assessment-mode input[type="submit"] {
+.field-assessment-mode input[type='button'],
+.field-assessment-mode input[type='submit'] {
   padding: 0.625rem 1rem;
   font-size: 1.1rem;
   min-height: 48px;
@@ -264,7 +275,9 @@ body.offline .navbar {
   z-index: 2000;
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .offline-notification.show {
@@ -315,7 +328,9 @@ body.offline .navbar {
   cursor: pointer;
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .update-notification.show {

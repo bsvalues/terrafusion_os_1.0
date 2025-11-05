@@ -2,14 +2,7 @@
   "idm": 1019833875,
   "building": 1019833875,
   "indoors_env": "prod",
-  "recordings": [
-      24572,
-      24575,
-      24573,
-      24571,
-      24570,
-      24574
-  ],
+  "recordings": [24572, 24575, 24573, 24571, 24570, 24574],
   "api_key": "7a5ad1b3-36ea-4a50-b176-52bf368f9c50",
-    "meta":"houhou"
+  "meta": "houhou"
 }

@@ -5,7 +5,7 @@
   "Description": "This DES provides the stochastic modeled sensor errors and the unmodeled sensor errors for the optical dataset. It includes the definition of correlated parameter groups, adjustable Parameter (AP) uncertainties for each CPG, unmodeled error (UE) covariance and cross covariance, and a postieriori AP data.",
   "Size": 25,
   "Fields": {
-    "DE" : {
+    "DE": {
       "Name": "File Part Type",
       "Description": "This field shall contain the characters DE.",
       "Size": 2,
@@ -16,7 +16,7 @@
         {
           "Type": "Value",
           "Values": ["DE"]
-        }        
+        }
       ]
     },
     "DES_ID": {
@@ -120,7 +120,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 999
-        }        
+        }
       ]
     },
     "NUM_ASSOC_ELEM": {
@@ -135,7 +135,7 @@
           "Type": "Range",
           "Min": 0,
           "Max": 276
-        }        
+        }
       ]
     },
     "ASSOC_ELEM_UUID<NUM_ASSOC_ELEM>": {
@@ -148,7 +148,7 @@
       "Values": [
         {
           "Type": "AlphaNumeric"
-        }        
+        }
       ]
     },
     "RESERVEDSUBH_LEN": {
@@ -161,7 +161,7 @@
       "Values": [
         {
           "Type": "Integer"
-        }        
+        }
       ]
     },
     "COV_VERSION_DATE": {
@@ -174,7 +174,7 @@
       "Values": [
         {
           "Type": "Date"
-        }        
+        }
       ]
     },
     "CORE_SETS": {
@@ -189,7 +189,7 @@
           "Type": "Range",
           "Min": 0,
           "Max": 6
-        }        
+        }
       ]
     },
     "REF_FRAME_POSITION<CORE_SETS>": {
@@ -203,14 +203,14 @@
         {
           "Type": "Value",
           "Values": {
-            "1":"ECF",
-            "2":"Sensor Frame",
-            "3":"Orbital Frame",
-            "4":"TCEF-Target-Centered Earth Fixed",
-            "5":"ECI",
-            "6":"SCEF-Sensor-Centered Earth Fixed"
-          }          
-        }        
+            "1": "ECF",
+            "2": "Sensor Frame",
+            "3": "Orbital Frame",
+            "4": "TCEF-Target-Centered Earth Fixed",
+            "5": "ECI",
+            "6": "SCEF-Sensor-Centered Earth Fixed"
+          }
+        }
       ]
     },
     "REF_FRAME_ATTITUDE<CORE_SETS>": {
@@ -224,14 +224,14 @@
         {
           "Type": "Value",
           "Values": {
-            "1":"ECF",
-            "2":"Sensor Frame",
-            "3":"Orbital Frame",
-            "4":"TCEF-Target-Centered Earth Fixed",
-            "5":"ECI",
-            "6":"SCEF-Sensor-Centered Earth Fixed"
-          }          
-        }        
+            "1": "ECF",
+            "2": "Sensor Frame",
+            "3": "Orbital Frame",
+            "4": "TCEF-Target-Centered Earth Fixed",
+            "5": "ECI",
+            "6": "SCEF-Sensor-Centered Earth Fixed"
+          }
+        }
       ]
     },
     "NUM_GROUPS<CORE_SETS>": {
@@ -246,7 +246,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 7
-        }        
+        }
       ]
     },
     "CORR_REF_DATE<NUM_GROUPS<CORE_SETS>>": {
@@ -259,7 +259,7 @@
       "Values": [
         {
           "Type": "Date"
-        }        
+        }
       ]
     },
     "CORR_REF_TIME<NUM_GROUPS<CORE_SETS>>": {
@@ -275,7 +275,7 @@
         },
         {
           "Type": "Double"
-        }        
+        }
       ]
     },
     "NUM_ADJ_PARM<NUM_GROUPS<CORE_SETS>>": {
@@ -290,7 +290,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 7
-        }        
+        }
       ]
     },
     "ADJ_PARM_ID<NUM_ADJ_PARM<NUM_GROUPS<CORE_SETS>>>": {
@@ -304,7 +304,7 @@
         {
           "Type": "Value",
           "Values": ["1", "2", "3", "4", "5", "6", "7"]
-        }        
+        }
       ]
     },
     "BASIC_SUB_ALLOC<NUM_GROUPS<CORE_SETS>>": {
@@ -318,7 +318,7 @@
         {
           "Type": "Value",
           "Values": ["0", "1"]
-        }        
+        }
       ]
     },
     "ERRCOV_C1<(0.5xNUM_ADJ_PARM)x(NUM_ADJ_PARM+1)<NUM_GROUPS<CORE_SETS>>>": {
@@ -333,7 +333,7 @@
           "Type": "Range",
           "Min": -9.99999999999999e99,
           "Max": 9.99999999999999e99
-        }        
+        }
       ]
     },
     "BASIC_PF_FLAG<NUM_GROUPS<CORE_SETS>>": {
@@ -347,7 +347,7 @@
         {
           "Type": "Value",
           "Values": ["0", "1"]
-        }        
+        }
       ]
     },
     "NUM_BASIC_PF<NUM_GROUPS<CORE_SETS>>": {
@@ -362,7 +362,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 99
-        }        
+        }
       ]
     },
     "BASIC_PF_SPDCF<NUM_BASIC_PF<NUM_GROUPS<CORE_SETS>>>": {
@@ -377,7 +377,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 99
-        }        
+        }
       ]
     },
     "NUM_PAIRINGS_BASIC_PF<NUM_BASIC_PF<NUM_GROUPS<CORE_SETS>>>": {
@@ -392,7 +392,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 99
-        }        
+        }
       ]
     },
     "BASIC_PF_SPDCF_SENSOR<NUM_PAIRINGS_BASIC<NUM_BASIC_PF<NUM_GROUPS<CORE_SETS>>>>": {
@@ -405,7 +405,7 @@
       "Values": [
         {
           "Type": "AlphaNumeric"
-        }        
+        }
       ]
     },
     "BASIC_PL_FLAG<NUM_GROUPS<CORE_SETS>>": {
@@ -419,7 +419,7 @@
         {
           "Type": "Value",
           "Values": ["0", "1"]
-        }        
+        }
       ]
     },
     "NUM_BASIC_PL<NUM_GROUPS<CORE_SETS>>": {
@@ -434,7 +434,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 99
-        }        
+        }
       ]
     },
     "BASIC_PL_SPDCF<NUM_BASIC_PL<NUM_GROUPS<CORE_SETS>>>": {
@@ -449,7 +449,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 99
-        }        
+        }
       ]
     },
     "NUM_PAIRINGS_BASIC<NUM_BASIC_PL<NUM_GROUPS<CORE_SETS>>>": {
@@ -464,7 +464,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 99
-        }        
+        }
       ]
     },
     "BASIC_PL_SPDCF_SENSOR<NUM_PAIRINGS_BASIC<NUM_BASIC_PL<NUM_GROUPS<CORE_SETS>>>>": {
@@ -476,8 +476,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric" 
-        }        
+          "Type": "AlphaNumeric"
+        }
       ]
     },
     "BASIC_SR_FLAG<NUM_GROUPS<CORE_SETS>>": {
@@ -490,8 +490,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"] 
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "BASIC_SR_SPDCF<NUM_GROUPS<CORE_SETS>>": {
@@ -506,7 +506,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 99
-        }        
+        }
       ]
     },
     "POST_SUB_ALLOC<NUM_GROUPS<CORE_SETS>>": {
@@ -519,8 +519,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]          
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "POST_START_TIME<NUM_GROUPS<CORE_SETS>>": {
@@ -533,9 +533,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.000000000,
-          "Max": 86399.999999999        
-        }        
+          "Min": 0.0,
+          "Max": 86399.999999999
+        }
       ]
     },
     "POST_DT<NUM_GROUPS<CORE_SETS>>": {
@@ -548,9 +548,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.000000000,
-          "Max": 999.999999999        
-        }        
+          "Min": 0.0,
+          "Max": 999.999999999
+        }
       ]
     },
     "NUM_POSTS<NUM_GROUPS<CORE_SETS>>": {
@@ -564,8 +564,8 @@
         {
           "Type": "Range",
           "Min": 2,
-          "Max": 999        
-        }        
+          "Max": 999
+        }
       ]
     },
     "COMMON_POSTS_COV<NUM_GROUPS<CORE_SETS>>": {
@@ -578,8 +578,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]        
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "ERRCOV_C2<(0.5xNUM_ADJ_PARM)x(NUM_ADJ_PARM+1)<NUM_GROUPS<CORE_SETS>>>": {
@@ -593,8 +593,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99       
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "ERRCOV_C2<NUM_POSTS<NUM_ADJ_PARM<NUM_GROUPS<CORE_SETS>>>>": {
@@ -608,8 +608,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99       
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "POST_INTERP<NUM_GROUPS<CORE_SETS>>": {
@@ -622,8 +622,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]                 
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "POST_PF_FLAG<NUM_GROUPS<CORE_SETS>>": {
@@ -636,8 +636,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]                 
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "NUM_POST_PF<NUM_GROUPS<CORE_SETS>>": {
@@ -651,8 +651,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99                
-        }        
+          "Max": 99
+        }
       ]
     },
     "POST_PF_SPDCF<NUM_POST_PF<NUM_GROUPS<CORE_SETS>>>": {
@@ -666,8 +666,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99                
-        }        
+          "Max": 99
+        }
       ]
     },
     "NUM_PAIRINGS_POST_PF<NUM_POST_PF<NUM_GROUPS<CORE_SETS>>>": {
@@ -681,8 +681,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99                
-        }        
+          "Max": 99
+        }
       ]
     },
     "POST_PF_SPDCF_SENSOR<NUM_PAIRINGS_POST_PF<NUM_POST_PF<NUM_GROUPS<CORE_SETS>>>>": {
@@ -694,8 +694,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"                
-        }        
+          "Type": "AlphaNumeric"
+        }
       ]
     },
     "POST_PL_FLAG<NUM_GROUPS<CORE_SETS>>": {
@@ -708,8 +708,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]                
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "NUM_POST_PL<NUM_GROUPS<CORE_SETS>>": {
@@ -723,8 +723,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99                
-        }        
+          "Max": 99
+        }
       ]
     },
     "POST_PL_SPDCF<NUM_POST_PL<NUM_GROUPS<CORE_SETS>>>": {
@@ -738,8 +738,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99                
-        }        
+          "Max": 99
+        }
       ]
     },
     "NUM_PAIRINGS_POST_PL<NUM_POST_PL<NUM_GROUPS<CORE_SETS>>>": {
@@ -753,8 +753,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99                
-        }        
+          "Max": 99
+        }
       ]
     },
     "POST_PL_SPDCF_SENSOR<NUM_PAIRINGS_POST_PL<NUM_POST_PL<NUM_GROUPS<CORE_SETS>>>>": {
@@ -766,12 +766,12 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"               
+          "Type": "AlphaNumeric"
         },
         {
           "Type": "Value",
           "Values": ["ALL"]
-        }        
+        }
       ]
     },
     "POST_SR_FLAG<NUM_GROUPS<CORE_SETS>>": {
@@ -784,8 +784,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]               
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "POST_SR_SPDCF<NUM_GROUPS<CORE_SETS>>": {
@@ -799,8 +799,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99               
-        }        
+          "Max": 99
+        }
       ]
     },
     "POST_CORR<NUM_GROUPS<CORE_SETS>>": {
@@ -813,8 +813,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0","1"]              
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "IO_CAL_AP": {
@@ -827,8 +827,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0","1"]              
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "NUM_SETS_CAL_AP": {
@@ -842,8 +842,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99             
-        }        
+          "Max": 99
+        }
       ]
     },
     "FOCAL_LENGTH_CAL<NUM_SETS_CAL_AP>": {
@@ -856,9 +856,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000000,
-          "Max": 99.99999999             
-        }        
+          "Min": 0.0,
+          "Max": 99.99999999
+        }
       ]
     },
     "NCAL_CPG": {
@@ -872,8 +872,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 11            
-        }        
+          "Max": 11
+        }
       ]
     },
     "CORR_REF_DATE_IO<NCAL_CPG>": {
@@ -885,8 +885,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"            
-        }        
+          "Type": "Date"
+        }
       ]
     },
     "CORR_REF_TIME_IO<NCAL_CPG>": {
@@ -898,8 +898,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"            
-        }        
+          "Type": "Time"
+        }
       ]
     },
     "N1CAL<NCAL_CPG>": {
@@ -913,8 +913,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 11            
-        }        
+          "Max": 11
+        }
       ]
     },
     "CAL_AP_ID<N1CAL<NCAL_CPG>>": {
@@ -927,8 +927,21 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["01", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"]            
-        }        
+          "Values": [
+            "01",
+            "01",
+            "02",
+            "03",
+            "04",
+            "05",
+            "06",
+            "07",
+            "08",
+            "09",
+            "10",
+            "11"
+          ]
+        }
       ]
     },
     "ERRCOV_C3<(0.5xNUM_SETS_CAL_AP)x(NUM_SETS_CAL_AP+1)<N1CAL<NCAL_CPG>>>": {
@@ -942,8 +955,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99           
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "CAL_INTERP<NCAL_CPG>": {
@@ -956,8 +969,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]         
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "SPDCF_ID_TIME<NCAL_CPG>": {
@@ -971,8 +984,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99        
-        }        
+          "Max": 99
+        }
       ]
     },
     "SPDCF_ID_FL<NCAL_CPG>": {
@@ -986,8 +999,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99        
-        }        
+          "Max": 99
+        }
       ]
     },
     "TS_CAL_AP": {
@@ -1000,8 +1013,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]        
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "NUM_TS_GRP": {
@@ -1014,8 +1027,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["1", "2", "3", "4", "5"]        
-        }        
+          "Values": ["1", "2", "3", "4", "5"]
+        }
       ]
     },
     "CORR_REF_DATE_TS": {
@@ -1027,8 +1040,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"        
-        }        
+          "Type": "Date"
+        }
       ]
     },
     "CORR_REF_TIME_TS": {
@@ -1040,8 +1053,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"        
-        }        
+          "Type": "Time"
+        }
       ]
     },
     "TSRR": {
@@ -1055,8 +1068,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99        
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TSRC": {
@@ -1070,8 +1083,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99        
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TSCC": {
@@ -1085,8 +1098,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99        
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_SPDCF": {
@@ -1100,8 +1113,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99        
-        }        
+          "Max": 99
+        }
       ]
     },
     "CORR_REF_DATE_TSP": {
@@ -1113,8 +1126,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"        
-        }        
+          "Type": "Date"
+        }
       ]
     },
     "CORR_REF_TIME_TSP": {
@@ -1126,8 +1139,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"        
-        }        
+          "Type": "Time"
+        }
       ]
     },
     "TS_POS_COV": {
@@ -1141,8 +1154,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99          
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_POS_SPDCF": {
@@ -1156,8 +1169,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99          
-        }        
+          "Max": 99
+        }
       ]
     },
     "CORR_REF_DATE_TSA": {
@@ -1169,8 +1182,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"          
-        }        
+          "Type": "Date"
+        }
       ]
     },
     "CORR_REF_TIME_TSA": {
@@ -1182,8 +1195,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"          
-        }        
+          "Type": "Time"
+        }
       ]
     },
     "TS_ATT_COV": {
@@ -1197,8 +1210,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99          
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_ATT_SPDCF": {
@@ -1212,8 +1225,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99         
-        }        
+          "Max": 99
+        }
       ]
     },
     "CORR_REF_DATE_TS": {
@@ -1225,8 +1238,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"         
-        }        
+          "Type": "Date"
+        }
       ]
     },
     "CORR_REF_TIME_TS": {
@@ -1238,8 +1251,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"         
-        }        
+          "Type": "Time"
+        }
       ]
     },
     "TS_POS_COV": {
@@ -1253,8 +1266,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_POS_ATT_COV": {
@@ -1268,8 +1281,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_POS_FL_COV": {
@@ -1283,8 +1296,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_ATT_COV": {
@@ -1298,8 +1311,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_ATT_FL_COV": {
@@ -1313,8 +1326,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_FL_COV": {
@@ -1328,8 +1341,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_SPDCF": {
@@ -1343,8 +1356,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99         
-        }        
+          "Max": 99
+        }
       ]
     },
     "CORR_REF_DATE_TSPA": {
@@ -1356,8 +1369,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"         
-        }        
+          "Type": "Date"
+        }
       ]
     },
     "CORR_REF_TIME_TSPA": {
@@ -1369,8 +1382,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"         
-        }        
+          "Type": "Time"
+        }
       ]
     },
     "TS_POS_COV": {
@@ -1384,8 +1397,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_POS_ATT_COV": {
@@ -1399,8 +1412,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_ATT_COV": {
@@ -1414,8 +1427,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_PA_SPDCF": {
@@ -1429,8 +1442,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99         
-        }        
+          "Max": 99
+        }
       ]
     },
     "CORR_REF_DATE_TSFL": {
@@ -1442,8 +1455,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"         
-        }        
+          "Type": "Date"
+        }
       ]
     },
     "CORR_REF_TIME_TSFL": {
@@ -1455,8 +1468,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"         
-        }        
+          "Type": "Time"
+        }
       ]
     },
     "TS_FL_COV": {
@@ -1470,8 +1483,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_FL_SPDCF": {
@@ -1485,8 +1498,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99         
-        }        
+          "Max": 99
+        }
       ]
     },
     "CORR_REF_DATE_TSP": {
@@ -1498,8 +1511,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"         
-        }        
+          "Type": "Date"
+        }
       ]
     },
     "CORR_REF_TIME_TSP": {
@@ -1511,8 +1524,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"         
-        }        
+          "Type": "Time"
+        }
       ]
     },
     "TS_POS_COV": {
@@ -1526,8 +1539,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_POS_SPDCF": {
@@ -1541,8 +1554,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99         
-        }        
+          "Max": 99
+        }
       ]
     },
     "CORR_REF_DATE_TSA": {
@@ -1554,8 +1567,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"         
-        }        
+          "Type": "Date"
+        }
       ]
     },
     "CORR_REF_TIME_TSA": {
@@ -1567,8 +1580,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"         
-        }        
+          "Type": "Time"
+        }
       ]
     },
     "TS_ATT_COV": {
@@ -1582,8 +1595,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_ATT_SPDCF": {
@@ -1597,8 +1610,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99         
-        }        
+          "Max": 99
+        }
       ]
     },
     "CORR_REF_DATE_TSFL": {
@@ -1610,8 +1623,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"         
-        }        
+          "Type": "Date"
+        }
       ]
     },
     "CORR_REF_TIME_TSFL": {
@@ -1623,8 +1636,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"         
-        }        
+          "Type": "Time"
+        }
       ]
     },
     "TS_FL_COV": {
@@ -1638,8 +1651,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99         
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "TS_FL_SPDCF": {
@@ -1653,8 +1666,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99         
-        }        
+          "Max": 99
+        }
       ]
     },
     "UE_FLAG": {
@@ -1667,8 +1680,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]         
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "LINE_DIMENSION": {
@@ -1682,8 +1695,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 999        
-        }        
+          "Max": 999
+        }
       ]
     },
     "SAMPLE_DIMENSION": {
@@ -1697,8 +1710,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99        
-        }        
+          "Max": 99
+        }
       ]
     },
     "URR<LINE_DIMENSION<SAMPLE_DIMENSION>>": {
@@ -1712,8 +1725,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99        
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "URC<LINE_DIMENSION<SAMPLE_DIMENSION>>": {
@@ -1727,8 +1740,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99        
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "UCC<LINE_DIMENSION<SAMPLE_DIMENSION>>": {
@@ -1742,8 +1755,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99        
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "LINE_SPDCF": {
@@ -1757,8 +1770,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99        
-        }        
+          "Max": 99
+        }
       ]
     },
     "SAMPLE_SPDCF": {
@@ -1772,8 +1785,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99        
-        }        
+          "Max": 99
+        }
       ]
     },
     "SPDCF_FLAG": {
@@ -1786,8 +1799,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]        
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "NUM_SPDCF": {
@@ -1801,8 +1814,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99        
-        }        
+          "Max": 99
+        }
       ]
     },
     "SPDCF_ID<NUM_SPDCF>": {
@@ -1816,8 +1829,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99        
-        }        
+          "Max": 99
+        }
       ]
     },
     "SPDCF_P<NUM_SPDCF>": {
@@ -1831,8 +1844,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99        
-        }        
+          "Max": 99
+        }
       ]
     },
     "SPDCF_FAM<SPDCF_P<NUM_SPDCF>>": {
@@ -1845,8 +1858,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1", "2"]        
-        }        
+          "Values": ["0", "1", "2"]
+        }
       ]
     },
     "SPDCF_WEIGHT<SPDCF_P<NUM_SPDCF>>": {
@@ -1859,9 +1872,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.000,
-          "Max": 1.000        
-        }        
+          "Min": 0.0,
+          "Max": 1.0
+        }
       ]
     },
     "FP_A<SPDCF_P<NUM_SPDCF>>": {
@@ -1875,8 +1888,8 @@
         {
           "Type": "Range",
           "Min": 0.000001,
-          "Max": 1.000000        
-        }        
+          "Max": 1.0
+        }
       ]
     },
     "FP_ALPHA<SPDCF_P<NUM_SPDCF>>": {
@@ -1889,9 +1902,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.000000,
-          "Max": 1.000000        
-        }        
+          "Min": 0.0,
+          "Max": 1.0
+        }
       ]
     },
     "FP_BETA<SPDCF_P<NUM_SPDCF>>": {
@@ -1904,9 +1917,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.000000,
-          "Max": 10.000000        
-        }        
+          "Min": 0.0,
+          "Max": 10.0
+        }
       ]
     },
     "FP_T<SPDCF_P<NUM_SPDCF>>": {
@@ -1919,9 +1932,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 1.00000000000000e-06,
-          "Max": 9.99999999999999e99        
-        }        
+          "Min": 1.0e-6,
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "NUM_SEGS<SPDCF_P<NUM_SPDCF>>": {
@@ -1935,8 +1948,8 @@
         {
           "Type": "Range",
           "Min": 2,
-          "Max": 10        
-        }        
+          "Max": 10
+        }
       ]
     },
     "PL_MAX_COR<NUM_SEGS<SPDCF_P<NUM_SPDCF>>>": {
@@ -1949,9 +1962,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.000000,
-          "Max": 1.000000        
-        }        
+          "Min": 0.0,
+          "Max": 1.0
+        }
       ]
     },
     "PL_TAU_MAX_COR<NUM_SEGS<SPDCF_P<NUM_SPDCF>>>": {
@@ -1964,9 +1977,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.00000000000000e00,
-          "Max": 9.99999999999999e99        
-        }        
+          "Min": 0.0,
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "DC_A<SPDCF_P<NUM_SPDCF>>": {
@@ -1980,8 +1993,8 @@
         {
           "Type": "Range",
           "Min": 0.000001,
-          "Max": 1.000000        
-        }        
+          "Max": 1.0
+        }
       ]
     },
     "DC_T<SPDCF_P<NUM_SPDCF>>": {
@@ -1994,9 +2007,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 1.00000000000000e-06,
-          "Max": 9.99999999999999e99        
-        }        
+          "Min": 1.0e-6,
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "DC_P<SPDCF_P<NUM_SPDCF>>": {
@@ -2009,9 +2022,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 1.00000000000000e-06,
-          "Max": 9.99999999999999e99        
-        }        
+          "Min": 1.0e-6,
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "DIRECT_COVARIANCE_FLAG": {
@@ -2024,8 +2037,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]       
-        }        
+          "Values": ["0", "1"]
+        }
       ]
     },
     "DC_TYPE": {
@@ -2038,8 +2051,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]       
-        }        
+          "Values": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        }
       ]
     },
     "NUM_PARA": {
@@ -2053,8 +2066,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 9999      
-        }        
+          "Max": 9999
+        }
       ]
     },
     "ADJ<NUM_PARA>": {
@@ -2068,8 +2081,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "ERRCOV_C4<(0.5xNUM_PARA)x(NUM_PARA+1)>": {
@@ -2083,8 +2096,8 @@
         {
           "Type": "Range",
           "Min": -9.99999999999999e99,
-          "Max": 9.99999999999999e99      
-        }        
+          "Max": 9.99999999999999e99
+        }
       ]
     },
     "RESERVED_LEN": {
@@ -2098,9 +2111,9 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 9     
-        }        
+          "Max": 9
+        }
       ]
-    }    
+    }
   }
 }

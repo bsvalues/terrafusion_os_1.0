@@ -428,10 +428,7 @@
   "refresh": "5s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": [
-    "terrafusion",
-    "database"
-  ],
+  "tags": ["terrafusion", "database"],
   "templating": {
     "list": []
   },

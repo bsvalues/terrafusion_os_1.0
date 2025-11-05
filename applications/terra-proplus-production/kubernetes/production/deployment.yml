@@ -23,81 +23,81 @@ spec:
         app: terrafusion-api
         environment: production
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"
-        prometheus.io/port: "5000"
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: '/metrics'
+        prometheus.io/port: '5000'
     spec:
       securityContext:
         fsGroup: 1001
         runAsNonRoot: true
         runAsUser: 1001
       containers:
-      - name: terrafusion-api
-        image: ghcr.io/terrafusionpro/api:latest
-        imagePullPolicy: Always
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
-        ports:
-        - name: http
-          containerPort: 5000
-          protocol: TCP
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: PORT
-          value: "5000"
-        - name: LOG_LEVEL
-          value: "info"
-        - name: ENABLE_METRICS
-          value: "true"
-        - name: CORS_ALLOWED_ORIGINS
-          value: "https://terrafusion.pro,https://www.terrafusion.pro,https://app.terrafusion.pro"
-        - name: API_VERSION
-          value: "v1"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-db-credentials
-              key: DATABASE_URL
-        - name: AI_SERVICE_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-api-credentials
-              key: AI_SERVICE_API_KEY
-        resources:
-          limits:
-            cpu: 2000m
-            memory: 2Gi
-          requests:
-            cpu: 1000m
-            memory: 1Gi
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: http
-          initialDelaySeconds: 30
-          periodSeconds: 20
-          timeoutSeconds: 5
-          failureThreshold: 3
-          successThreshold: 1
-        readinessProbe:
-          httpGet:
-            path: /api/health
-            port: http
-          initialDelaySeconds: 15
-          periodSeconds: 10
-          timeoutSeconds: 3
-          failureThreshold: 3
-          successThreshold: 1
-        volumeMounts:
-        - name: tmp-volume
-          mountPath: /tmp
+        - name: terrafusion-api
+          image: ghcr.io/terrafusionpro/api:latest
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: 'production'
+            - name: PORT
+              value: '5000'
+            - name: LOG_LEVEL
+              value: 'info'
+            - name: ENABLE_METRICS
+              value: 'true'
+            - name: CORS_ALLOWED_ORIGINS
+              value: 'https://terrafusion.pro,https://www.terrafusion.pro,https://app.terrafusion.pro'
+            - name: API_VERSION
+              value: 'v1'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-db-credentials
+                  key: DATABASE_URL
+            - name: AI_SERVICE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-api-credentials
+                  key: AI_SERVICE_API_KEY
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+            requests:
+              cpu: 1000m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+            successThreshold: 1
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
       volumes:
-      - name: tmp-volume
-        emptyDir: {}
+        - name: tmp-volume
+          emptyDir: {}
       imagePullSecrets:
-      - name: docker-registry-secret
+        - name: docker-registry-secret

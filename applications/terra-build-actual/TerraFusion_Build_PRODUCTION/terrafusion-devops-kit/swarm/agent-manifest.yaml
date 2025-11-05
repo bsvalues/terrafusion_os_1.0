@@ -115,7 +115,7 @@ agents:
       - name: 'redis'
         type: 'redis'
         required: true
-        
+
   - name: 'data-processor'
     description: 'Specialized agent for data processing tasks'
     type: 'processor'
@@ -140,7 +140,7 @@ agents:
       batchSize: 1000
       processingTimeout: 300
       retryCount: 3
-      
+
   - name: 'document-processing-agent'
     description: 'Document analysis and processing agent'
     type: 'service'
@@ -161,7 +161,7 @@ agents:
       supportedFormats: ['pdf', 'docx', 'txt', 'html']
       maxDocumentSize: '20MB'
       modelType: 'transformer'
-      
+
   - name: 'geospatial-analysis-agent'
     description: 'Geospatial data analysis and processing agent'
     type: 'service'
@@ -189,22 +189,22 @@ connections:
     target: 'data-processor'
     protocol: 'http'
     type: 'sync'
-    
+
   - source: 'data-processor'
     target: 'model-inference'
     protocol: 'grpc'
     type: 'async'
-    
+
   - source: 'task-scheduler'
     target: 'data-processor'
     protocol: 'http'
     type: 'async'
-    
+
   - source: 'document-processing-agent'
     target: 'model-inference'
     protocol: 'http'
     type: 'sync'
-    
+
   - source: 'geospatial-analysis-agent'
     target: 'model-inference'
     protocol: 'http'

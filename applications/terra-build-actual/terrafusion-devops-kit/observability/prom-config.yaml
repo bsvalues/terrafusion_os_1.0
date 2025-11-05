@@ -47,7 +47,7 @@ scrape_configs:
         target_label: version
       - source_labels: [__meta_kubernetes_pod_container_port_number]
         target_label: port
-  
+
   # Backend application monitoring
   - job_name: 'terrafusion-backend'
     kubernetes_sd_configs:
@@ -113,7 +113,12 @@ scrape_configs:
       ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
     bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
     relabel_configs:
-      - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+      - source_labels:
+          [
+            __meta_kubernetes_namespace,
+            __meta_kubernetes_service_name,
+            __meta_kubernetes_endpoint_port_name,
+          ]
         action: keep
         regex: default;kubernetes;https
 
@@ -151,9 +156,9 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-        - https://api.openai.com/v1/engines # OpenAI health check
-        - https://api.anthropic.com/v1/complete # Anthropic health check
-        - https://api.replicate.com/v1/models # Replicate health check
+          - https://api.openai.com/v1/engines # OpenAI health check
+          - https://api.anthropic.com/v1/complete # Anthropic health check
+          - https://api.replicate.com/v1/models # Replicate health check
         labels:
           service: 'external-ai-apis'
     relabel_configs:
@@ -189,7 +194,7 @@ scrape_configs:
 
 # Remote write configuration for long-term storage
 remote_write:
-  - url: "http://thanos-receive:10908/api/v1/receive"
+  - url: 'http://thanos-receive:10908/api/v1/receive'
     queue_config:
       max_samples_per_send: 1000
       max_shards: 200

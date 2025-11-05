@@ -4,8 +4,8 @@
   "Name": "Offset",
   "Description": "This data extension segment is retired per the NITF Technical Board, and is included for documentation purposes only within ArcGIS Pro.",
   "Size": 16,
-  "Fields" : {
-    "LINE" : {},
-    "SAMPLE" : {}
-  } 
+  "Fields": {
+    "LINE": {},
+    "SAMPLE": {}
+  }
 }

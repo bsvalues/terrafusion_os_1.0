@@ -2,10 +2,10 @@
   "IDs": {
     "TitleFormat": "$/FileHeader/FTITLE$",
     "ProductID-ValueMapping": [
-      [ "P1BS", "P1" ],
-      [ "M1BS", "P2" ],
-      [ "P2AS", "G1" ],
-      [ "M2AS", "G2" ]
+      ["P1BS", "P1"],
+      ["M1BS", "P2"],
+      ["P2AS", "G1"],
+      ["M2AS", "G2"]
     ],
     "ProductName-Property": {
       "@Variables": {
@@ -66,29 +66,27 @@
         {
           "Path": "$/Images/%i/Bands/%b/IREPBAND$",
           "Map": [
-            [ "R",  "Red" ],
-            [ "G",  "Green" ],
-            [ "B",  "Blue" ],
-            [ "LU", "LUT" ],
-            [ "M",  "Panchromatic" ],
-            [ "N",  "NearInfrared" ],
-            [ "Y",  "Luminance" ],
-            [ "Cb", "Chrominance Blue" ],
-            [ "Cr", "Chrominance Red" ],
-            [ "P",  "Panchromatic" ],
-            [ "C",  "CoastalBlue" ],
-            [ "E",  "RedEdge" ],
-            [ "1",  "NearInfrared_1" ],
-            [ "2",  "NearInfrared_2" ]
+            ["R", "Red"],
+            ["G", "Green"],
+            ["B", "Blue"],
+            ["LU", "LUT"],
+            ["M", "Panchromatic"],
+            ["N", "NearInfrared"],
+            ["Y", "Luminance"],
+            ["Cb", "Chrominance Blue"],
+            ["Cr", "Chrominance Red"],
+            ["P", "Panchromatic"],
+            ["C", "CoastalBlue"],
+            ["E", "RedEdge"],
+            ["1", "NearInfrared_1"],
+            ["2", "NearInfrared_2"]
           ]
         }
       ]
     },
     "Band-WavelengthCenter": "$/Images/%i/Bands/%b/ISUBCAT?parse=double$",
     "ImageID-Property": {
-      "Aliases": [
-        "ImageID"
-      ],
+      "Aliases": ["ImageID"],
       "SourcePaths": [
         "$/Images/%i/IID2?parse=ImageID$",
         "$/Images/%i/ITITLE?parse=ImageID$",
@@ -100,32 +98,17 @@
       "Default": ""
     },
     "Originator-Property": {
-      "Aliases": [
-        "Originator",
-        "NITF_ONAME",
-        "ONAME"
-      ],
-      "SourcePaths": [
-        "$/FileHeader/ONAME?exp=@,~,trim$"
-      ],
+      "Aliases": ["Originator", "NITF_ONAME", "ONAME"],
+      "SourcePaths": ["$/FileHeader/ONAME?exp=@,~,trim$"],
       "Default": "Not available"
     },
     "OriginatorPhone-Property": {
-      "Aliases": [
-        "OriginatorPhone",
-        "NITF_OPHONE",
-        "OPHONE"
-      ],
-      "SourcePaths": [
-        "$/FileHeader/OPHONE?exp=@,ws,trim$"
-      ],
+      "Aliases": ["OriginatorPhone", "NITF_OPHONE", "OPHONE"],
+      "SourcePaths": ["$/FileHeader/OPHONE?exp=@,ws,trim$"],
       "Default": "Not available"
     },
     "AcquisitionDate-Property": {
-      "Aliases": [
-        "AcquisitionDate",
-        "NITF_IDATIM"
-      ],
+      "Aliases": ["AcquisitionDate", "NITF_IDATIM"],
       "SourcePaths": [
         "$/Image/IDATIM?parse=FDT$",
         "$/FileHeader/FDT?parse=FDT$"
@@ -133,49 +116,33 @@
       "Default": null
     },
     "NIIRS-Property": {
-      "Aliases": [
-        "NIIRS",
-        "NITF_PREDICTED_NIIRS"
-      ],
-      "SourcePaths": [
-        "$/TRE/CSEXRA/PREDICTED_NIIRS?parse=double$"
-      ],
+      "Aliases": ["NIIRS", "NITF_PREDICTED_NIIRS"],
+      "SourcePaths": ["$/TRE/CSEXRA/PREDICTED_NIIRS?parse=double$"],
       "Default": -999.99
     },
     "CircularError-Property": {
-      "Aliases": [
-        "CircularError",
-        "NITF_CIRCL_ERR"
-      ],
+      "Aliases": ["CircularError", "NITF_CIRCL_ERR"],
       "SourcePaths": [
         "$/TRE/CSEXRA/CIRCL_ERR?parse=double&range=0,998&units=ft$"
       ],
       "Default": -999.99
     },
     "LinearError-Property": {
-      "Aliases": [
-        "LinearError",
-        "NITF_LINEAR_ERR"
-      ],
+      "Aliases": ["LinearError", "NITF_LINEAR_ERR"],
       "SourcePaths": [
         "$/TRE/CSEXRA/LINEAR_ERR?parse=double&range=0,998&units=ft$"
       ],
       "Default": -999.99
     },
     "CloudCover-Property": {
-      "Aliases": [
-        "CloudCover",
-        "NITF_CLOUDCVR"
-      ],
+      "Aliases": ["CloudCover", "NITF_CLOUDCVR"],
       "SourcePaths": [
         "$/Images/%i/TREs/PIAIMC/CLOUDCVR?parse=double&range=0,100&exp=@,0.01,*$"
       ],
       "Default": -999.99
     },
     "SunAzimuth-Property": {
-      "Aliases": [
-        "SunAzimuth"
-      ],
+      "Aliases": ["SunAzimuth"],
       "SourcePaths": [
         "$/Images/%i/TREs/CSEXRA/SUN_AZIMUTH?parse=double&range=0,-$",
         "$/Images/%i/TREs/USE00A/SUN_AZ?parse=double&range=0,-$"
@@ -183,9 +150,7 @@
       "Default": -999.99
     },
     "SunElevation-Property": {
-      "Aliases": [
-        "SunElevation"
-      ],
+      "Aliases": ["SunElevation"],
       "SourcePaths": [
         "$/Images/%i/TREs/CSEXRA/SUN_ELEVATION?parse=double&range=0,-$",
         "$/Images/%i/TREs/USE00A/SUN_EL?parse=double&range=0,-$"
@@ -193,20 +158,12 @@
       "Default": -999.99
     },
     "SensorAzimuth-Property": {
-      "Aliases": [
-        "SensorAzimuth",
-        "SatAzimuth"
-      ],
-      "SourcePaths": [
-        "$/Images/%i/TREs/CSEXRA/AZ_OF_OBLIQUITY?parse=double$"
-      ],
+      "Aliases": ["SensorAzimuth", "SatAzimuth"],
+      "SourcePaths": ["$/Images/%i/TREs/CSEXRA/AZ_OF_OBLIQUITY?parse=double$"],
       "Default": -999.99
     },
     "SensorElevation-Property": {
-      "Aliases": [
-        "SensorElevation",
-        "SatElevation"
-      ],
+      "Aliases": ["SensorElevation", "SatElevation"],
       "SourcePaths": [
         "$/Images/%i/TREs/CSEXRA/OBLIQUITY_ANGLE?parse=double&range=-180,180&exp=90,@,-$",
         "$/Images/%i/TREs/USE00A/OBL_ANG?parse=double&range=-180,180&exp=90,@,-$"
@@ -214,9 +171,7 @@
       "Default": -999.99
     },
     "OffNadir-Property": {
-      "Aliases": [
-        "OffNadir"
-      ],
+      "Aliases": ["OffNadir"],
       "SourcePaths": [
         "$/Images/%i/TREs/CSEXRA/OBLIQUITY_ANGLE?parse=double&range=-180,180$",
         "$/Images/%i/TREs/USE00A/OBL_ANG?parse=double&range=-180,180$"
@@ -224,20 +179,12 @@
       "Default": -999.99
     },
     "SensorMode-Property": {
-      "Aliases": [
-        "SensorMode",
-        "NITF_SENSMODE"
-      ],
-      "SourcePaths": [
-        "$/Images/%i/TREs/PIAIMC/SENSMODE?exp=@,ws,trim$"
-      ],
+      "Aliases": ["SensorMode", "NITF_SENSMODE"],
+      "SourcePaths": ["$/Images/%i/TREs/PIAIMC/SENSMODE?exp=@,ws,trim$"],
       "Default": "Unknown"
     },
     "MeanGSD-Property": {
-      "Aliases": [
-        "MeanGSD",
-        "NITF_MEANGSD"
-      ],
+      "Aliases": ["MeanGSD", "NITF_MEANGSD"],
       "SourcePaths": [
         "$/Images/%i/TREs/PIAIMC/MEANGSD?parse=double&range=0,99999.8&units=in$",
         "$/Images/%i/TREs/USE00A/MEAN_GSD?parse=double&range=0,99999.8&units=in$"
@@ -246,95 +193,50 @@
     },
     "FileID-Property": "$/FileHeader/FTITLE$",
     "Format-Property": {
-      "Aliases": [
-        "Format",
-        "NITF_FHDR"
-      ],
-      "SourcePaths": [
-        "$/FileHeader/FHDR$"
-      ],
+      "Aliases": ["Format", "NITF_FHDR"],
+      "SourcePaths": ["$/FileHeader/FHDR$"],
       "Default": ""
     },
     "FormatVer-Property": "$/FileHeader/FVER$",
     "ClassificationCodewords-Property": {
-      "Aliases": [
-        "ClassificationCodewords",
-        "FSCODE"
-      ],
-      "SourcePaths": [
-        "$/FileHeader/Security/FSCODE?exp=@,ws,trim$"
-      ],
+      "Aliases": ["ClassificationCodewords", "FSCODE"],
+      "SourcePaths": ["$/FileHeader/Security/FSCODE?exp=@,ws,trim$"],
       "Default": "Unknown"
     },
     "ClassificationControl-Property": {
-      "Aliases": [
-        "ClassificationControl",
-        "FSCTLH"
-      ],
-      "SourcePaths": [
-        "$/FileHeader/Security/FSCTLH?exp=@,ws,trim$"
-      ],
+      "Aliases": ["ClassificationControl", "FSCTLH"],
+      "SourcePaths": ["$/FileHeader/Security/FSCTLH?exp=@,ws,trim$"],
       "Default": "Unknown"
     },
     "ClassificationRelease-Property": {
-      "Aliases": [
-        "ClassificationRelease",
-        "FSREL"
-      ],
-      "SourcePaths": [
-        "$/FileHeader/Security/FSREL?exp=@,ws,trim$"
-      ],
+      "Aliases": ["ClassificationRelease", "FSREL"],
+      "SourcePaths": ["$/FileHeader/Security/FSREL?exp=@,ws,trim$"],
       "Default": "Unknown"
     },
     "ClassificationSystem-Property": {
-      "Aliases": [
-        "ClassificationSystem",
-        "FSCLSY"
-      ],
-      "SourcePaths": [
-        "$/FileHeader/Security/FSCLSY?exp=@,ws,trim$"
-      ],
+      "Aliases": ["ClassificationSystem", "FSCLSY"],
+      "SourcePaths": ["$/FileHeader/Security/FSCLSY?exp=@,ws,trim$"],
       "Default": "?"
     },
     "SecurityClassification-Property": {
-      "Aliases": [
-        "SecurityClassification",
-        "FSCLAS"
-      ],
-      "SourcePaths": [
-        "$/FileHeader/FSCLAS?exp=@,ws,trim$"
-      ],
+      "Aliases": ["SecurityClassification", "FSCLAS"],
+      "SourcePaths": ["$/FileHeader/FSCLAS?exp=@,ws,trim$"],
       "Default": "?"
     },
     "Bands-Property": "$/Image/NBANDS?parse=double$",
     "ImageRepresentation-Property": {
-      "Aliases": [
-        "ImageRepresentation",
-        "NITF_IREP"
-      ],
-      "SourcePaths": [
-        "$/Images/%i/IREP$"
-      ],
+      "Aliases": ["ImageRepresentation", "NITF_IREP"],
+      "SourcePaths": ["$/Images/%i/IREP$"],
       "Default": ""
     },
     "ImageCategory-Property": {
-      "Aliases": [
-        "ImageCategory",
-        "NITF_ICAT"
-      ],
-      "SourcePaths": [
-        "$/Images/%i/ICAT$"
-      ],
+      "Aliases": ["ImageCategory", "NITF_ICAT"],
+      "SourcePaths": ["$/Images/%i/ICAT$"],
       "Default": ""
     },
     "TargetID-Property": {
-      "Aliases": [
-        "TargetID",
-        "TGTID"
-      ],
-      "SourcePaths": [
-        "$/Images/%i/TGTID?exp=@,ws,trim$"
-      ],
+      "Aliases": ["TargetID", "TGTID"],
+      "SourcePaths": ["$/Images/%i/TGTID?exp=@,ws,trim$"],
       "Default": "Unknown"
     },
     "ImageSource-Property": "$/Images/%i/ISORCE$",

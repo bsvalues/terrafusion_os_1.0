@@ -47,61 +47,81 @@
   "dataModels": {
     "Property": {
       "fields": [
-        {"name": "id", "type": "number", "primary": true},
-        {"name": "address", "type": "string", "required": true},
-        {"name": "city", "type": "string", "required": true},
-        {"name": "state", "type": "string", "required": true},
-        {"name": "zipCode", "type": "string", "required": true},
-        {"name": "propertyType", "type": "string", "required": true},
-        {"name": "yearBuilt", "type": "number"},
-        {"name": "squareFeet", "type": "number"},
-        {"name": "bedrooms", "type": "number"},
-        {"name": "bathrooms", "type": "number"},
-        {"name": "lotSize", "type": "number"},
-        {"name": "description", "type": "string"},
-        {"name": "lastSalePrice", "type": "number"},
-        {"name": "lastSaleDate", "type": "date"}
+        { "name": "id", "type": "number", "primary": true },
+        { "name": "address", "type": "string", "required": true },
+        { "name": "city", "type": "string", "required": true },
+        { "name": "state", "type": "string", "required": true },
+        { "name": "zipCode", "type": "string", "required": true },
+        { "name": "propertyType", "type": "string", "required": true },
+        { "name": "yearBuilt", "type": "number" },
+        { "name": "squareFeet", "type": "number" },
+        { "name": "bedrooms", "type": "number" },
+        { "name": "bathrooms", "type": "number" },
+        { "name": "lotSize", "type": "number" },
+        { "name": "description", "type": "string" },
+        { "name": "lastSalePrice", "type": "number" },
+        { "name": "lastSaleDate", "type": "date" }
       ]
     },
     "Appraisal": {
       "fields": [
-        {"name": "id", "type": "number", "primary": true},
-        {"name": "propertyId", "type": "number", "required": true, "foreignKey": "Property.id"},
-        {"name": "appraiserId", "type": "number", "required": true, "foreignKey": "User.id"},
-        {"name": "createdAt", "type": "date", "required": true},
-        {"name": "completedAt", "type": "date"},
-        {"name": "status", "type": "string", "required": true},
-        {"name": "purpose", "type": "string"},
-        {"name": "marketValue", "type": "number"},
-        {"name": "valuationMethod", "type": "string"}
+        { "name": "id", "type": "number", "primary": true },
+        {
+          "name": "propertyId",
+          "type": "number",
+          "required": true,
+          "foreignKey": "Property.id"
+        },
+        {
+          "name": "appraiserId",
+          "type": "number",
+          "required": true,
+          "foreignKey": "User.id"
+        },
+        { "name": "createdAt", "type": "date", "required": true },
+        { "name": "completedAt", "type": "date" },
+        { "name": "status", "type": "string", "required": true },
+        { "name": "purpose", "type": "string" },
+        { "name": "marketValue", "type": "number" },
+        { "name": "valuationMethod", "type": "string" }
       ]
     },
     "Comparable": {
       "fields": [
-        {"name": "id", "type": "number", "primary": true},
-        {"name": "appraisalId", "type": "number", "required": true, "foreignKey": "Appraisal.id"},
-        {"name": "address", "type": "string", "required": true},
-        {"name": "salePrice", "type": "number", "required": true},
-        {"name": "saleDate", "type": "date", "required": true},
-        {"name": "squareFeet", "type": "number", "required": true},
-        {"name": "bedrooms", "type": "number"},
-        {"name": "bathrooms", "type": "number"},
-        {"name": "yearBuilt", "type": "number"},
-        {"name": "adjustments", "type": "json"},
-        {"name": "adjustedPrice", "type": "number"}
+        { "name": "id", "type": "number", "primary": true },
+        {
+          "name": "appraisalId",
+          "type": "number",
+          "required": true,
+          "foreignKey": "Appraisal.id"
+        },
+        { "name": "address", "type": "string", "required": true },
+        { "name": "salePrice", "type": "number", "required": true },
+        { "name": "saleDate", "type": "date", "required": true },
+        { "name": "squareFeet", "type": "number", "required": true },
+        { "name": "bedrooms", "type": "number" },
+        { "name": "bathrooms", "type": "number" },
+        { "name": "yearBuilt", "type": "number" },
+        { "name": "adjustments", "type": "json" },
+        { "name": "adjustedPrice", "type": "number" }
       ]
     },
     "User": {
       "fields": [
-        {"name": "id", "type": "number", "primary": true},
-        {"name": "username", "type": "string", "required": true, "unique": true},
-        {"name": "email", "type": "string", "required": true, "unique": true},
-        {"name": "password", "type": "string", "required": true},
-        {"name": "firstName", "type": "string"},
-        {"name": "lastName", "type": "string"},
-        {"name": "role", "type": "string", "required": true},
-        {"name": "licenseNumber", "type": "string"},
-        {"name": "company", "type": "string"}
+        { "name": "id", "type": "number", "primary": true },
+        {
+          "name": "username",
+          "type": "string",
+          "required": true,
+          "unique": true
+        },
+        { "name": "email", "type": "string", "required": true, "unique": true },
+        { "name": "password", "type": "string", "required": true },
+        { "name": "firstName", "type": "string" },
+        { "name": "lastName", "type": "string" },
+        { "name": "role", "type": "string", "required": true },
+        { "name": "licenseNumber", "type": "string" },
+        { "name": "company", "type": "string" }
       ]
     }
   }

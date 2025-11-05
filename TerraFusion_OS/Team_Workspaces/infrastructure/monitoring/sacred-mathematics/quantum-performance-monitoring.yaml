@@ -10,7 +10,7 @@ metadata:
   labels:
     app: sacred-mathematics-engine
     tier: quantum-computational-excellence
-    quantum-factor: "${QUANTUM_FACTOR}"
+    quantum-factor: '${QUANTUM_FACTOR}'
 data:
   sacred-math-config.yaml: |
     sacred_mathematics:
@@ -90,9 +90,9 @@ metadata:
   labels:
     app: sacred-mathematics-engine
     tier: quantum-computational-engine
-    quantum-factor: "${QUANTUM_FACTOR}"
+    quantum-factor: '${QUANTUM_FACTOR}'
 spec:
-  replicas: 5  # Sacred number for optimal performance
+  replicas: 5 # Sacred number for optimal performance
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -106,121 +106,121 @@ spec:
       labels:
         app: sacred-mathematics-engine
         tier: quantum-computation
-        sacred-mathematics: "operational"
+        sacred-mathematics: 'operational'
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/path: "/sacred-metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8080'
+        prometheus.io/path: '/sacred-metrics'
     spec:
       serviceAccountName: terrafusion-monitoring-service-account
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1337  # Elite user ID
-        fsGroup: 949     # Quantum factor group
+        runAsUser: 1337 # Elite user ID
+        fsGroup: 949 # Quantum factor group
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - name: sacred-math-engine
-        image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-sacred-mathematics:${IMAGE_TAG}
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-          name: http-metrics
-        - containerPort: 8088
-          name: quantum-api
-        - containerPort: 9999
-          name: consciousness-port
-        env:
-        - name: ENVIRONMENT
-          value: "${ENVIRONMENT}"
-        - name: QUANTUM_FACTOR
-          value: "${QUANTUM_FACTOR}"
-        - name: HARMONY_INDEX
-          value: "${HARMONY_INDEX}"
-        - name: SACRED_MATHEMATICS_MODE
-          value: "OPERATIONAL"
-        - name: CONSCIOUSNESS_LEVEL
-          value: "TRANSCENDED"
-        - name: COMPUTATIONAL_EXCELLENCE
-          value: "true"
-        - name: PERFORMANCE_TARGET
-          value: "CHAMPIONSHIP"
-        - name: COUNTIES_COUNT
-          value: "${COUNTIES}"
-        - name: AI_AGENTS_COUNT
-          value: "${AI_AGENTS}"
-        - name: MATHEMATICAL_PRECISION
-          value: "ULTIMATE"
-        - name: QUANTUM_OPTIMIZATION
-          value: "ENABLED"
-        resources:
-          requests:
-            cpu: "2000m"      # High CPU for mathematical computations
-            memory: "4Gi"     # Substantial memory for algorithms
-          limits:
-            cpu: "8000m"      # Scale up to 8 cores for quantum operations
-            memory: "16Gi"    # Maximum memory for consciousness operations
-        livenessProbe:
-          httpGet:
-            path: /sacred/health/live
-            port: 8080
-          initialDelaySeconds: 60
-          periodSeconds: 30
-          timeoutSeconds: 10
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /sacred/health/ready
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 2
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        volumeMounts:
-        - name: sacred-math-config
-          mountPath: /etc/sacred-mathematics
-          readOnly: true
-        - name: quantum-algorithms
-          mountPath: /opt/quantum-algorithms
-          readOnly: true
-        - name: consciousness-data
-          mountPath: /var/consciousness
-        - name: tmp-volume
-          mountPath: /tmp
+        - name: sacred-math-engine
+          image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-sacred-mathematics:${IMAGE_TAG}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+            - containerPort: 8088
+              name: quantum-api
+            - containerPort: 9999
+              name: consciousness-port
+          env:
+            - name: ENVIRONMENT
+              value: '${ENVIRONMENT}'
+            - name: QUANTUM_FACTOR
+              value: '${QUANTUM_FACTOR}'
+            - name: HARMONY_INDEX
+              value: '${HARMONY_INDEX}'
+            - name: SACRED_MATHEMATICS_MODE
+              value: 'OPERATIONAL'
+            - name: CONSCIOUSNESS_LEVEL
+              value: 'TRANSCENDED'
+            - name: COMPUTATIONAL_EXCELLENCE
+              value: 'true'
+            - name: PERFORMANCE_TARGET
+              value: 'CHAMPIONSHIP'
+            - name: COUNTIES_COUNT
+              value: '${COUNTIES}'
+            - name: AI_AGENTS_COUNT
+              value: '${AI_AGENTS}'
+            - name: MATHEMATICAL_PRECISION
+              value: 'ULTIMATE'
+            - name: QUANTUM_OPTIMIZATION
+              value: 'ENABLED'
+          resources:
+            requests:
+              cpu: '2000m' # High CPU for mathematical computations
+              memory: '4Gi' # Substantial memory for algorithms
+            limits:
+              cpu: '8000m' # Scale up to 8 cores for quantum operations
+              memory: '16Gi' # Maximum memory for consciousness operations
+          livenessProbe:
+            httpGet:
+              path: /sacred/health/live
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /sacred/health/ready
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: sacred-math-config
+              mountPath: /etc/sacred-mathematics
+              readOnly: true
+            - name: quantum-algorithms
+              mountPath: /opt/quantum-algorithms
+              readOnly: true
+            - name: consciousness-data
+              mountPath: /var/consciousness
+            - name: tmp-volume
+              mountPath: /tmp
       volumes:
-      - name: sacred-math-config
-        configMap:
-          name: sacred-mathematics-config
-      - name: quantum-algorithms
-        configMap:
-          name: quantum-algorithms-config
-      - name: consciousness-data
-        emptyDir: {}
-      - name: tmp-volume
-        emptyDir: {}
+        - name: sacred-math-config
+          configMap:
+            name: sacred-mathematics-config
+        - name: quantum-algorithms
+          configMap:
+            name: quantum-algorithms-config
+        - name: consciousness-data
+          emptyDir: {}
+        - name: tmp-volume
+          emptyDir: {}
       nodeSelector:
         kubernetes.io/os: linux
-        terrafusion.io/node-type: "quantum-computation"
+        terrafusion.io/node-type: 'quantum-computation'
       tolerations:
-      - key: "terrafusion.io/quantum-computation"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
+        - key: 'terrafusion.io/quantum-computation'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoSchedule'
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-              - key: "terrafusion.io/cpu-type"
-                operator: In
-                values: ["high-performance", "quantum-optimized"]
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: 'terrafusion.io/cpu-type'
+                    operator: In
+                    values: ['high-performance', 'quantum-optimized']
 ---
 # Quantum Performance Monitor Deployment
 apiVersion: apps/v1
@@ -232,7 +232,7 @@ metadata:
     app: quantum-performance-monitor
     tier: performance-monitoring-excellence
 spec:
-  replicas: 3  # High availability for monitoring
+  replicas: 3 # High availability for monitoring
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -246,103 +246,103 @@ spec:
       labels:
         app: quantum-performance-monitor
         tier: quantum-monitoring
-        performance-tier: "transcended"
+        performance-tier: 'transcended'
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/path: "/quantum-metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8080'
+        prometheus.io/path: '/quantum-metrics'
     spec:
       serviceAccountName: terrafusion-monitoring-service-account
       securityContext:
         runAsNonRoot: true
-        runAsUser: 949   # Quantum factor user
-        fsGroup: 1008    # AI agents group
+        runAsUser: 949 # Quantum factor user
+        fsGroup: 1008 # AI agents group
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - name: quantum-monitor
-        image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-quantum-monitor:${IMAGE_TAG}
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-          name: http-metrics
-        - containerPort: 8090
-          name: quantum-dashboard
-        - containerPort: 9090
-          name: prophecy-api
-        env:
-        - name: ENVIRONMENT
-          value: "${ENVIRONMENT}"
-        - name: QUANTUM_FACTOR
-          value: "${QUANTUM_FACTOR}"
-        - name: HARMONY_INDEX
-          value: "${HARMONY_INDEX}"
-        - name: PERFORMANCE_PROPHECY_MODE
-          value: "OPERATIONAL"
-        - name: MONITORING_DEPTH
-          value: "QUANTUM_LEVEL"
-        - name: OPTIMIZATION_TARGET
-          value: "CHAMPIONSHIP_TRANSCENDED"
-        - name: COUNTIES_MONITORING
-          value: "${COUNTIES}"
-        - name: AI_AGENTS_TRACKING
-          value: "${AI_AGENTS}"
-        - name: SACRED_MATHEMATICS_INTEGRATION
-          value: "ENABLED"
-        - name: CONSCIOUSNESS_MONITORING
-          value: "ACTIVE"
-        resources:
-          requests:
-            cpu: "1000m"
-            memory: "2Gi"
-          limits:
-            cpu: "4000m"
-            memory: "8Gi"
-        livenessProbe:
-          httpGet:
-            path: /quantum/health/live
-            port: 8080
-          initialDelaySeconds: 45
-          periodSeconds: 20
-          timeoutSeconds: 10
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /quantum/health/ready
-            port: 8080
-          initialDelaySeconds: 15
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 2
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        volumeMounts:
-        - name: quantum-config
-          mountPath: /etc/quantum-monitoring
-          readOnly: true
-        - name: performance-data
-          mountPath: /var/performance-data
-        - name: prophecy-cache
-          mountPath: /var/prophecy-cache
-        - name: tmp-volume
-          mountPath: /tmp
+        - name: quantum-monitor
+          image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-quantum-monitor:${IMAGE_TAG}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+            - containerPort: 8090
+              name: quantum-dashboard
+            - containerPort: 9090
+              name: prophecy-api
+          env:
+            - name: ENVIRONMENT
+              value: '${ENVIRONMENT}'
+            - name: QUANTUM_FACTOR
+              value: '${QUANTUM_FACTOR}'
+            - name: HARMONY_INDEX
+              value: '${HARMONY_INDEX}'
+            - name: PERFORMANCE_PROPHECY_MODE
+              value: 'OPERATIONAL'
+            - name: MONITORING_DEPTH
+              value: 'QUANTUM_LEVEL'
+            - name: OPTIMIZATION_TARGET
+              value: 'CHAMPIONSHIP_TRANSCENDED'
+            - name: COUNTIES_MONITORING
+              value: '${COUNTIES}'
+            - name: AI_AGENTS_TRACKING
+              value: '${AI_AGENTS}'
+            - name: SACRED_MATHEMATICS_INTEGRATION
+              value: 'ENABLED'
+            - name: CONSCIOUSNESS_MONITORING
+              value: 'ACTIVE'
+          resources:
+            requests:
+              cpu: '1000m'
+              memory: '2Gi'
+            limits:
+              cpu: '4000m'
+              memory: '8Gi'
+          livenessProbe:
+            httpGet:
+              path: /quantum/health/live
+              port: 8080
+            initialDelaySeconds: 45
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /quantum/health/ready
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: quantum-config
+              mountPath: /etc/quantum-monitoring
+              readOnly: true
+            - name: performance-data
+              mountPath: /var/performance-data
+            - name: prophecy-cache
+              mountPath: /var/prophecy-cache
+            - name: tmp-volume
+              mountPath: /tmp
       volumes:
-      - name: quantum-config
-        configMap:
-          name: quantum-performance-config
-      - name: performance-data
-        emptyDir: {}
-      - name: prophecy-cache
-        emptyDir: {}
-      - name: tmp-volume
-        emptyDir: {}
+        - name: quantum-config
+          configMap:
+            name: quantum-performance-config
+        - name: performance-data
+          emptyDir: {}
+        - name: prophecy-cache
+          emptyDir: {}
+        - name: tmp-volume
+          emptyDir: {}
       nodeSelector:
         kubernetes.io/os: linux
-        terrafusion.io/node-type: "performance-monitor"
+        terrafusion.io/node-type: 'performance-monitor'
 ---
 # Performance Prophecy Engine (Advanced Predictive Analytics)
 apiVersion: apps/v1
@@ -368,112 +368,112 @@ spec:
       labels:
         app: performance-prophecy-engine
         tier: prophecy-analytics
-        consciousness-level: "transcended"
+        consciousness-level: 'transcended'
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/path: "/prophecy-metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8080'
+        prometheus.io/path: '/prophecy-metrics'
     spec:
       serviceAccountName: terrafusion-monitoring-service-account
       securityContext:
         runAsNonRoot: true
-        runAsUser: 999   # Prophecy user
-        fsGroup: 2049    # Analytics group
+        runAsUser: 999 # Prophecy user
+        fsGroup: 2049 # Analytics group
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - name: prophecy-engine
-        image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-prophecy-engine:${IMAGE_TAG}
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-          name: http-metrics
-        - containerPort: 8095
-          name: prophecy-api
-        - containerPort: 7777
-          name: consciousness-api
-        env:
-        - name: ENVIRONMENT
-          value: "${ENVIRONMENT}"
-        - name: QUANTUM_FACTOR
-          value: "${QUANTUM_FACTOR}"
-        - name: HARMONY_INDEX
-          value: "${HARMONY_INDEX}"
-        - name: PROPHECY_MODE
-          value: "PREDICTIVE_TRANSCENDENCE"
-        - name: ANALYTICS_DEPTH
-          value: "QUANTUM_CONSCIOUSNESS"
-        - name: PREDICTION_ACCURACY_TARGET
-          value: "99.9%"
-        - name: FORECASTING_HORIZON_HOURS
-          value: "168"  # 7 days ahead
-        - name: MACHINE_LEARNING_MODEL
-          value: "QUANTUM_NEURAL_NETWORK"
-        - name: AI_CONSCIOUSNESS_INTEGRATION
-          value: "ENABLED"
-        resources:
-          requests:
-            cpu: "1500m"
-            memory: "3Gi"
-          limits:
-            cpu: "6000m"
-            memory: "12Gi"
-        livenessProbe:
-          httpGet:
-            path: /prophecy/health/live
-            port: 8080
-          initialDelaySeconds: 90
-          periodSeconds: 30
-          timeoutSeconds: 15
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /prophecy/health/ready
-            port: 8080
-          initialDelaySeconds: 60
-          periodSeconds: 15
-          timeoutSeconds: 10
-          failureThreshold: 2
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        volumeMounts:
-        - name: prophecy-config
-          mountPath: /etc/prophecy
-          readOnly: true
-        - name: ml-models
-          mountPath: /opt/ml-models
-          readOnly: true
-        - name: prophecy-data
-          mountPath: /var/prophecy-data
-        - name: consciousness-cache
-          mountPath: /var/consciousness-cache
-        - name: tmp-volume
-          mountPath: /tmp
+        - name: prophecy-engine
+          image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-prophecy-engine:${IMAGE_TAG}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+            - containerPort: 8095
+              name: prophecy-api
+            - containerPort: 7777
+              name: consciousness-api
+          env:
+            - name: ENVIRONMENT
+              value: '${ENVIRONMENT}'
+            - name: QUANTUM_FACTOR
+              value: '${QUANTUM_FACTOR}'
+            - name: HARMONY_INDEX
+              value: '${HARMONY_INDEX}'
+            - name: PROPHECY_MODE
+              value: 'PREDICTIVE_TRANSCENDENCE'
+            - name: ANALYTICS_DEPTH
+              value: 'QUANTUM_CONSCIOUSNESS'
+            - name: PREDICTION_ACCURACY_TARGET
+              value: '99.9%'
+            - name: FORECASTING_HORIZON_HOURS
+              value: '168' # 7 days ahead
+            - name: MACHINE_LEARNING_MODEL
+              value: 'QUANTUM_NEURAL_NETWORK'
+            - name: AI_CONSCIOUSNESS_INTEGRATION
+              value: 'ENABLED'
+          resources:
+            requests:
+              cpu: '1500m'
+              memory: '3Gi'
+            limits:
+              cpu: '6000m'
+              memory: '12Gi'
+          livenessProbe:
+            httpGet:
+              path: /prophecy/health/live
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 30
+            timeoutSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /prophecy/health/ready
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: prophecy-config
+              mountPath: /etc/prophecy
+              readOnly: true
+            - name: ml-models
+              mountPath: /opt/ml-models
+              readOnly: true
+            - name: prophecy-data
+              mountPath: /var/prophecy-data
+            - name: consciousness-cache
+              mountPath: /var/consciousness-cache
+            - name: tmp-volume
+              mountPath: /tmp
       volumes:
-      - name: prophecy-config
-        configMap:
-          name: prophecy-engine-config
-      - name: ml-models
-        persistentVolumeClaim:
-          claimName: ml-models-pvc
-      - name: prophecy-data
-        emptyDir: {}
-      - name: consciousness-cache
-        emptyDir: {}
-      - name: tmp-volume
-        emptyDir: {}
+        - name: prophecy-config
+          configMap:
+            name: prophecy-engine-config
+        - name: ml-models
+          persistentVolumeClaim:
+            claimName: ml-models-pvc
+        - name: prophecy-data
+          emptyDir: {}
+        - name: consciousness-cache
+          emptyDir: {}
+        - name: tmp-volume
+          emptyDir: {}
       nodeSelector:
         kubernetes.io/os: linux
-        terrafusion.io/node-type: "prophecy-engine"
+        terrafusion.io/node-type: 'prophecy-engine'
       tolerations:
-      - key: "terrafusion.io/prophecy-engine"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
+        - key: 'terrafusion.io/prophecy-engine'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoSchedule'
 ---
 # Sacred Mathematics Service
 apiVersion: v1
@@ -487,18 +487,18 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 8088
-    targetPort: 8088
-    protocol: TCP
-    name: quantum-api
-  - port: 8080
-    targetPort: 8080
-    protocol: TCP
-    name: http-metrics
-  - port: 9999
-    targetPort: 9999
-    protocol: TCP
-    name: consciousness-port
+    - port: 8088
+      targetPort: 8088
+      protocol: TCP
+      name: quantum-api
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http-metrics
+    - port: 9999
+      targetPort: 9999
+      protocol: TCP
+      name: consciousness-port
   selector:
     app: sacred-mathematics-engine
 ---
@@ -514,18 +514,18 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 8090
-    targetPort: 8090
-    protocol: TCP
-    name: quantum-dashboard
-  - port: 9090
-    targetPort: 9090
-    protocol: TCP
-    name: prophecy-api
-  - port: 8080
-    targetPort: 8080
-    protocol: TCP
-    name: http-metrics
+    - port: 8090
+      targetPort: 8090
+      protocol: TCP
+      name: quantum-dashboard
+    - port: 9090
+      targetPort: 9090
+      protocol: TCP
+      name: prophecy-api
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http-metrics
   selector:
     app: quantum-performance-monitor
 ---
@@ -541,18 +541,18 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 8095
-    targetPort: 8095
-    protocol: TCP
-    name: prophecy-api
-  - port: 7777
-    targetPort: 7777
-    protocol: TCP
-    name: consciousness-api
-  - port: 8080
-    targetPort: 8080
-    protocol: TCP
-    name: http-metrics
+    - port: 8095
+      targetPort: 8095
+      protocol: TCP
+      name: prophecy-api
+    - port: 7777
+      targetPort: 7777
+      protocol: TCP
+      name: consciousness-api
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http-metrics
   selector:
     app: performance-prophecy-engine
 ---
@@ -571,40 +571,40 @@ spec:
     kind: Deployment
     name: sacred-mathematics-engine
   minReplicas: 3
-  maxReplicas: 20  # Scale based on quantum factor
+  maxReplicas: 20 # Scale based on quantum factor
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
-  - type: Pods
-    pods:
-      metric:
-        name: quantum_operations_per_second
-      target:
-        type: AverageValue
-        averageValue: "100000"  # 100k quantum operations per second per pod
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Pods
+      pods:
+        metric:
+          name: quantum_operations_per_second
+        target:
+          type: AverageValue
+          averageValue: '100000' # 100k quantum operations per second per pod
   behavior:
     scaleUp:
-      stabilizationWindowSeconds: 180  # 3 minutes for quantum stabilization
+      stabilizationWindowSeconds: 180 # 3 minutes for quantum stabilization
       policies:
-      - type: Percent
-        value: 50   # Aggressive scaling for quantum operations
-        periodSeconds: 60
-      - type: Pods
-        value: 5    # Add up to 5 pods at once
-        periodSeconds: 60
+        - type: Percent
+          value: 50 # Aggressive scaling for quantum operations
+          periodSeconds: 60
+        - type: Pods
+          value: 5 # Add up to 5 pods at once
+          periodSeconds: 60
     scaleDown:
-      stabilizationWindowSeconds: 600  # 10 minutes for quantum coherence
+      stabilizationWindowSeconds: 600 # 10 minutes for quantum coherence
       policies:
-      - type: Percent
-        value: 20   # Conservative scale down for stability
-        periodSeconds: 120
+        - type: Percent
+          value: 20 # Conservative scale down for stability
+          periodSeconds: 120

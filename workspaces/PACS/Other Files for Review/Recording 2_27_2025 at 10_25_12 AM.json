@@ -1,3579 +1,2446 @@
 {
-    "title": "Recording 2/27/2025 at 10:25:12 AM",
-    "steps": [
-        {
-            "type": "setViewport",
-            "width": 1209,
-            "height": 911,
-            "deviceScaleFactor": 1,
-            "isMobile": false,
-            "hasTouch": false,
-            "isLandscape": false
-        },
-        {
-            "type": "navigate",
-            "url": "https://auth.narrpr.com/auth/sign-in?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Dmain_website%26redirect_uri%3Dhttps%253A%252F%252Fwww.narrpr.com%252Fauth%252Fcallback%26response_type%3Dcode%26scope%3Dopenid%2520email%2520rpr_contact%2520rpr_current_user%2520rpr_permissions%2520rpr_roles%2520main_api_access%2520web_api_access%2520auth_api_access%26state%3D802ed7bc0c7543eb8b913b1fb76123e8%26code_challenge%3DhJ1bwCfL5WDAghPFjB5j0CALEma90RE_CUz42HeOQw8%26code_challenge_method%3DS256%26response_mode%3Dquery",
-            "assertedEvents": [
-                {
-                    "type": "navigation",
-                    "url": "https://auth.narrpr.com/auth/sign-in?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Dmain_website%26redirect_uri%3Dhttps%253A%252F%252Fwww.narrpr.com%252Fauth%252Fcallback%26response_type%3Dcode%26scope%3Dopenid%2520email%2520rpr_contact%2520rpr_current_user%2520rpr_permissions%2520rpr_roles%2520main_api_access%2520web_api_access%2520auth_api_access%26state%3D802ed7bc0c7543eb8b913b1fb76123e8%26code_challenge%3DhJ1bwCfL5WDAghPFjB5j0CALEma90RE_CUz42HeOQw8%26code_challenge_method%3DS256%26response_mode%3Dquery",
-                    "title": "Welcome - Realtors Property Resource"
-                }
-            ]
-        },
-        {
-            "type": "click",
-            "target": "chrome-extension://pejdijmoenmkgeppbflobdenhhabjlaj/completion_list.html?username=billspencerappraisal@gmail.com&colorScheme=undefined&screenX=0&screenY=0&effectiveWindowWidth=1924.8200000000002",
-            "selectors": [
-                [
-                    "p.name"
-                ],
-                [
-                    "xpath///*[@id=\"credentialList\"]/li[2]/div/p[1]"
-                ],
-                [
-                    "pierce/p.name"
-                ],
-                [
-                    "text/billspencerappraisal@gmail.com"
-                ]
-            ],
-            "offsetY": 5.640625,
-            "offsetX": 144
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Sign In"
-                ],
-                [
-                    "#SignInBtn"
-                ],
-                [
-                    "xpath///*[@id=\"SignInBtn\"]"
-                ],
-                [
-                    "pierce/#SignInBtn"
-                ],
-                [
-                    "text/Sign In"
-                ]
-            ],
-            "offsetY": 24.25,
-            "offsetX": 173.25,
-            "assertedEvents": [
-                {
-                    "type": "navigation",
-                    "url": "https://www.narrpr.com/auth/callback?code=26DC863A7432B1C78CA32C48E00CA109B0E8C9F5DD05D837D7D054C1394E5BC8-1&scope=openid%20email%20rpr_contact%20rpr_current_user%20rpr_permissions%20rpr_roles%20main_api_access%20web_api_access%20auth_api_access&state=802ed7bc0c7543eb8b913b1fb76123e8&session_state=eebi5Sby6Zn1t2Frbj8zskhPAFe0uks-xPMdTx1_-v0.FFEBA491D493C30C02CC4A6AFD01446F&iss=https%3A%2F%2Fauth.narrpr.com",
-                    "title": ""
-                }
-            ]
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Close modal"
-                ],
-                [
-                    "modal-container > div > a"
-                ],
-                [
-                    "xpath//html/body/appcues/modal-container/div/a"
-                ],
-                [
-                    "pierce/modal-container > div > a"
-                ],
-                [
-                    "text/×"
-                ]
-            ],
-            "offsetY": 15,
-            "offsetX": 21,
-            "frame": [
-                6
-            ]
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Enter Address, Place, APN/Tax IDs or Listing IDs"
-                ],
-                [
-                    "div.margin-0 input"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-home/div[1]/div/rpr-property-search-form/form/div/div[1]/div[2]/input"
-                ],
-                [
-                    "pierce/div.margin-0 input"
-                ]
-            ],
-            "offsetY": 16.75,
-            "offsetX": 156.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(3) > div.search-name"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-home/div[1]/div/rpr-property-search-form/form/div/div[1]/div[2]/div/div/div/div[3]/div[1]"
-                ],
-                [
-                    "pierce/div:nth-of-type(3) > div.search-name"
-                ],
-                [
-                    "text/7811 Three Rivers"
-                ]
-            ],
-            "offsetY": 8.25,
-            "offsetX": 110.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Create CMA "
-                ],
-                [
-                    "section.yellow a"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-property-details/div[2]/div[5]/rpr-property-details-info-tab/div[2]/div[1]/div/rpr-property-details-pricing-tools/rpr-collapsible-panel/section/div/div/div/section[2]/section/div[2]/a"
-                ],
-                [
-                    "pierce/section.yellow a"
-                ],
-                [
-                    "text/Create CMA"
-                ]
-            ],
-            "offsetY": 10.5625,
-            "offsetX": 34,
-            "assertedEvents": [
-                {
-                    "type": "navigation",
-                    "url": "https://www.narrpr.com/homes/wa/pasco/99301/7811-three-rivers-dr/21213814-valuation.aspx?orgid=&listingid=&pmode=1",
-                    "title": ""
-                }
-            ]
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Find Comps"
-                ],
-                [
-                    "#Valuation_FindCompsBtn"
-                ],
-                [
-                    "xpath///*[@id=\"Valuation_FindCompsBtn\"]"
-                ],
-                [
-                    "pierce/#Valuation_FindCompsBtn"
-                ],
-                [
-                    "text/Find Comps"
-                ]
-            ],
-            "offsetY": 21.046875,
-            "offsetX": 93.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Off Market Timeframe"
-                ],
-                [
-                    "#VCSD_DateGroup select"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_DateGroup\"]/div/div[1]/div/div/select"
-                ],
-                [
-                    "pierce/#VCSD_DateGroup select"
-                ],
-                [
-                    "text/90"
-                ]
-            ],
-            "offsetY": 16.5,
-            "offsetX": 238
-        },
-        {
-            "type": "change",
-            "value": "360",
-            "selectors": [
-                [
-                    "aria/Off Market Timeframe"
-                ],
-                [
-                    "#VCSD_DateGroup select"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_DateGroup\"]/div/div[1]/div/div/select"
-                ],
-                [
-                    "pierce/#VCSD_DateGroup select"
-                ],
-                [
-                    "text/90"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Zoom out"
-                ],
-                [
-                    "div.zoomOutButton > a"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[2]/div[2]/div[2]/div[2]/div[1]/div/div[3]/div[2]/a"
-                ],
-                [
-                    "pierce/div.zoomOutButton > a"
-                ]
-            ],
-            "offsetY": 5.5,
-            "offsetX": 4
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Search"
-                ],
-                [
-                    "#VCSD_SearchBtn"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_SearchBtn\"]"
-                ],
-                [
-                    "pierce/#VCSD_SearchBtn"
-                ]
-            ],
-            "offsetY": 12,
-            "offsetX": 34
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div.action-buttons"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[2]/div[3]"
-                ],
-                [
-                    "pierce/div.action-buttons"
-                ]
-            ],
-            "offsetY": 58.5,
-            "offsetX": 65
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Modify Search"
-                ],
-                [
-                    "#VCSD_ModifySearchBtn"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_ModifySearchBtn\"]"
-                ],
-                [
-                    "pierce/#VCSD_ModifySearchBtn"
-                ],
-                [
-                    "text/Modify Search"
-                ]
-            ],
-            "offsetY": 30.5,
-            "offsetX": 58
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Proximity"
-                ],
-                [
-                    "section:nth-of-type(2) select"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_FacetsForm\"]/section[2]/div/div/div[2]/div/select"
-                ],
-                [
-                    "pierce/section:nth-of-type(2) select"
-                ]
-            ],
-            "offsetY": 22.5,
-            "offsetX": 87.5
-        },
-        {
-            "type": "change",
-            "value": "1",
-            "selectors": [
-                [
-                    "aria/Proximity"
-                ],
-                [
-                    "section:nth-of-type(2) select"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_FacetsForm\"]/section[2]/div/div/div[2]/div/select"
-                ],
-                [
-                    "pierce/section:nth-of-type(2) select"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Proximity"
-                ],
-                [
-                    "section:nth-of-type(2) select"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_FacetsForm\"]/section[2]/div/div/div[2]/div/select"
-                ],
-                [
-                    "pierce/section:nth-of-type(2) select"
-                ]
-            ],
-            "offsetY": 18.5,
-            "offsetX": 130.5
-        },
-        {
-            "type": "change",
-            "value": "2",
-            "selectors": [
-                [
-                    "aria/Proximity"
-                ],
-                [
-                    "section:nth-of-type(2) select"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_FacetsForm\"]/section[2]/div/div/div[2]/div/select"
-                ],
-                [
-                    "pierce/section:nth-of-type(2) select"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "change",
-            "value": "1800",
-            "selectors": [
-                [
-                    "aria/Living Area To"
-                ],
-                [
-                    "div:nth-of-type(3) > div:nth-of-type(3) > input"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_FacetsForm\"]/section[3]/div/div[3]/div[3]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(3) > div:nth-of-type(3) > input"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "section:nth-of-type(5) span"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_FacetsForm\"]/section[5]/div/div/label/span"
-                ],
-                [
-                    "pierce/section:nth-of-type(5) span"
-                ],
-                [
-                    "text/Year Built"
-                ]
-            ],
-            "offsetY": 12,
-            "offsetX": 14
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Living Area From"
-                ],
-                [
-                    "div:nth-of-type(3) > div:nth-of-type(1) > input"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_FacetsForm\"]/section[3]/div/div[3]/div[1]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(3) > div:nth-of-type(1) > input"
-                ]
-            ],
-            "offsetY": 20.5,
-            "offsetX": 31
-        },
-        {
-            "type": "change",
-            "value": "1400",
-            "selectors": [
-                [
-                    "aria/Living Area From"
-                ],
-                [
-                    "div:nth-of-type(3) > div:nth-of-type(1) > input"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_FacetsForm\"]/section[3]/div/div[3]/div[1]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(3) > div:nth-of-type(1) > input"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Search"
-                ],
-                [
-                    "#VCSD_SearchBtn"
-                ],
-                [
-                    "xpath///*[@id=\"VCSD_SearchBtn\"]"
-                ],
-                [
-                    "pierce/#VCSD_SearchBtn"
-                ]
-            ],
-            "offsetY": 11,
-            "offsetX": 30
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Date[role=\"link\"]"
-                ],
-                [
-                    "td:nth-of-type(5) > a"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/thead/tr/td[5]/a"
-                ],
-                [
-                    "pierce/td:nth-of-type(5) > a"
-                ]
-            ],
-            "offsetY": 2.5,
-            "offsetX": 27
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(2) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[2]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(2) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 13.28125,
-            "offsetX": 11
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(5) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[5]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(5) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 11.0625,
-            "offsetX": 13
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(8) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[8]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(8) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 20.84375,
-            "offsetX": 12
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(11) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[11]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(11) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 20.625,
-            "offsetX": 15
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(20) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[20]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(20) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 14.96875,
-            "offsetX": 5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(26) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[26]/td[2]/div/div[1]/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(26) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 7.53125,
-            "offsetX": 11
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(29) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[29]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(29) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 22.3125,
-            "offsetX": 11
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(38) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[38]/td[2]/div/div[1]/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(38) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 15.65625,
-            "offsetX": 6
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(50) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[50]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(50) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 12.78125,
-            "offsetX": 11
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(53) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[53]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(53) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 9.5625,
-            "offsetX": 8
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(59) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[59]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(59) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 17.125,
-            "offsetX": 4
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(62) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[62]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(62) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 17.90625,
-            "offsetX": 6
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(65) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[65]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(65) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 19.6875,
-            "offsetX": 12
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(68) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[68]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(68) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 14.46875,
-            "offsetX": 6
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(71) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[71]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(71) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 7.25,
-            "offsetX": 13
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(74) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[74]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(74) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 15.03125,
-            "offsetX": 6
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(77) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[77]/td[2]/div/div[1]/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(77) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 18.8125,
-            "offsetX": 17
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(92) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[92]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(92) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 13.71875,
-            "offsetX": 1
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tr:nth-of-type(89) > td.chkCell span"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[89]/td[2]/div/div/div[2]/label/span"
-                ],
-                [
-                    "pierce/tr:nth-of-type(89) > td.chkCell span"
-                ]
-            ],
-            "offsetY": 5.9375,
-            "offsetX": 12
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "#ValuationCompsSearchDialogTemplate > div.clearfix > div.left a.button"
-                ],
-                [
-                    "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/div[2]/div/a[2]"
-                ],
-                [
-                    "pierce/#ValuationCompsSearchDialogTemplate > div.clearfix > div.left a.button"
-                ]
-            ],
-            "offsetY": 15.78125,
-            "offsetX": 55
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/[role=\"contentinfo\"]",
-                    "aria/[role=\"list\"]"
-                ],
-                [
-                    "footer ul"
-                ],
-                [
-                    "xpath//html/body/rpr-layout/footer/div/div/div[2]/ul"
-                ],
-                [
-                    "pierce/footer ul"
-                ],
-                [
-                    "text/About RPR\nLegal\nBlog\nFacebook\nInstagram\nREALTOR"
-                ]
-            ],
-            "offsetY": 4.546875,
-            "offsetX": 109.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Adjust Comps"
-                ],
-                [
-                    "#Valuation_AdjustCompsBtn"
-                ],
-                [
-                    "xpath///*[@id=\"Valuation_AdjustCompsBtn\"]"
-                ],
-                [
-                    "pierce/#Valuation_AdjustCompsBtn"
-                ],
-                [
-                    "text/Adjust Comps"
-                ]
-            ],
-            "offsetY": 9.046875,
-            "offsetX": 35.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tfoot a:nth-of-type(2)"
-                ],
-                [
-                    "xpath///*[@id=\"VCAD_MainTable\"]/tfoot/tr/td[3]/div/div[2]/a[2]"
-                ],
-                [
-                    "pierce/tfoot a:nth-of-type(2)"
-                ]
-            ],
-            "offsetY": 6.890625,
-            "offsetX": 12.5
-        },
-        {
-            "type": "doubleClick",
-            "target": "main",
-            "selectors": [
-                [
-                    "tfoot a:nth-of-type(2)"
-                ],
-                [
-                    "xpath///*[@id=\"VCAD_MainTable\"]/tfoot/tr/td[3]/div/div[2]/a[2]"
-                ],
-                [
-                    "pierce/tfoot a:nth-of-type(2)"
-                ]
-            ],
-            "offsetY": 10.890625,
-            "offsetX": 9.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tfoot a:nth-of-type(2)"
-                ],
-                [
-                    "xpath///*[@id=\"VCAD_MainTable\"]/tfoot/tr/td[3]/div/div[2]/a[2]"
-                ],
-                [
-                    "pierce/tfoot a:nth-of-type(2)"
-                ]
-            ],
-            "offsetY": 10.890625,
-            "offsetX": 9.5,
-            "duration": 517.7999999988824
-        },
-        {
-            "type": "doubleClick",
-            "target": "main",
-            "selectors": [
-                [
-                    "tfoot a:nth-of-type(2)"
-                ],
-                [
-                    "xpath///*[@id=\"VCAD_MainTable\"]/tfoot/tr/td[3]/div/div[2]/a[2]"
-                ],
-                [
-                    "pierce/tfoot a:nth-of-type(2)"
-                ]
-            ],
-            "offsetY": 7.890625,
-            "offsetX": 12.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "tfoot a:nth-of-type(2)"
-                ],
-                [
-                    "xpath///*[@id=\"VCAD_MainTable\"]/tfoot/tr/td[3]/div/div[2]/a[2]"
-                ],
-                [
-                    "pierce/tfoot a:nth-of-type(2)"
-                ]
-            ],
-            "offsetY": 7.890625,
-            "offsetX": 12.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Update Valuation and Close"
-                ],
-                [
-                    "#VCAD_SaveBtn"
-                ],
-                [
-                    "xpath///*[@id=\"VCAD_SaveBtn\"]"
-                ],
-                [
-                    "pierce/#VCAD_SaveBtn"
-                ]
-            ],
-            "offsetY": 25.609375,
-            "offsetX": 102,
-            "duration": 1026.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Create Report"
-                ],
-                [
-                    "#Valuation_Step5 a"
-                ],
-                [
-                    "xpath///*[@id=\"Valuation_Step5\"]/div[1]/div[3]/a"
-                ],
-                [
-                    "pierce/#Valuation_Step5 a"
-                ]
-            ],
-            "offsetY": 27.8125,
-            "offsetX": 96,
-            "assertedEvents": [
-                {
-                    "type": "navigation",
-                    "url": "https://www.narrpr.com/reports?reporttype=12&propertyid=21213814&orgid=&listingid=&PerformScroll=True",
-                    "title": "RPR"
-                }
-            ]
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Run Report"
-                ],
-                [
-                    "div.run-report-sticky-footer > input"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports/div[2]/form/div/div[1]/div/div/div/rpr-report-personalize/div[2]/input"
-                ],
-                [
-                    "pierce/div.run-report-sticky-footer > input"
-                ],
-                [
-                    "text/Run Report"
-                ]
-            ],
-            "offsetY": 34,
-            "offsetX": 85
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Close"
-                ],
-                [
-                    "div.cdk-overlay-container button"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-0\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/button"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container button"
-                ],
-                [
-                    "text/Close"
-                ]
-            ],
-            "offsetY": 12.78125,
-            "offsetX": 81.4375
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Market Activity Report (approx. 26 pgs) Available for Neighborhoods"
-                ],
-                [
-                    "#mat-radio-10-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-radio-10-input\"]"
-                ],
-                [
-                    "pierce/#mat-radio-10-input"
-                ]
-            ],
-            "offsetY": 21,
-            "offsetX": 29
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Run Report"
-                ],
-                [
-                    "div.run-report-sticky-footer > input"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports/div[2]/form/div/div[1]/div/div/div/rpr-report-personalize/div[2]/input"
-                ],
-                [
-                    "pierce/div.run-report-sticky-footer > input"
-                ],
-                [
-                    "text/Run Report"
-                ]
-            ],
-            "offsetY": 31,
-            "offsetX": 26
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Close"
-                ],
-                [
-                    "div.cdk-overlay-container button"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-1\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/button"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container button"
-                ],
-                [
-                    "text/Close"
-                ]
-            ],
-            "offsetY": 6.78125,
-            "offsetX": 36.4375
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Neighborhood Report (approx. 10 pgs) Available for Neighborhoods"
-                ],
-                [
-                    "#mat-radio-11-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-radio-11-input\"]"
-                ],
-                [
-                    "pierce/#mat-radio-11-input"
-                ]
-            ],
-            "offsetY": 25,
-            "offsetX": 30
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Run Report"
-                ],
-                [
-                    "div.run-report-sticky-footer > input"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports/div[2]/form/div/div[1]/div/div/div/rpr-report-personalize/div[2]/input"
-                ],
-                [
-                    "pierce/div.run-report-sticky-footer > input"
-                ],
-                [
-                    "text/Run Report"
-                ]
-            ],
-            "offsetY": 23,
-            "offsetX": 36
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Close"
-                ],
-                [
-                    "div.cdk-overlay-container button"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-2\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/button"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container button"
-                ],
-                [
-                    "text/Close"
-                ]
-            ],
-            "offsetY": 36.78125,
-            "offsetX": 22.4375
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Property Report (approx. 28 pgs)"
-                ],
-                [
-                    "#mat-radio-5-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-radio-5-input\"]"
-                ],
-                [
-                    "pierce/#mat-radio-5-input"
-                ]
-            ],
-            "offsetY": 27,
-            "offsetX": 13
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Run Report"
-                ],
-                [
-                    "div.run-report-sticky-footer > input"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports/div[2]/form/div/div[1]/div/div/div/rpr-report-personalize/div[2]/input"
-                ],
-                [
-                    "pierce/div.run-report-sticky-footer > input"
-                ],
-                [
-                    "text/Run Report"
-                ]
-            ],
-            "offsetY": 14,
-            "offsetX": 40
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Close"
-                ],
-                [
-                    "div.cdk-overlay-container button"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-3\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/button"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container button"
-                ],
-                [
-                    "text/Close"
-                ]
-            ],
-            "offsetY": 37.78125,
-            "offsetX": 27.4375
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/View Beta Templates "
-                ],
-                [
-                    "h2 > a"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports/div[2]/form/div/div[1]/div/div/div/rpr-report-selection/div/mat-radio-group/h2/a"
-                ],
-                [
-                    "pierce/h2 > a"
-                ],
-                [
-                    "text/View Beta Templates"
-                ]
-            ],
-            "offsetY": 23,
-            "offsetX": 129.609375
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Download Report"
-                ],
-                [
-                    "div.cdk-overlay-container a"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-4\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/a"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container a"
-                ],
-                [
-                    "text/Download Report"
-                ]
-            ],
-            "offsetY": 33.703125,
-            "offsetX": 98.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "rpr-reports-thumbnail.ng-tns-c1057351054-56 p"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-templates/section/section[2]/section[3]/ol/rpr-reports-thumbnail[2]/li/p"
-                ],
-                [
-                    "pierce/rpr-reports-thumbnail.ng-tns-c1057351054-56 p"
-                ]
-            ],
-            "offsetY": 167.625,
-            "offsetX": 98
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Location input"
-                ],
-                [
-                    "mat-dialog-content > div:nth-of-type(1) input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[1]/rpr-location-input/input"
-                ],
-                [
-                    "pierce/mat-dialog-content > div:nth-of-type(1) input"
-                ]
-            ],
-            "offsetY": 20.5,
-            "offsetX": 158.5
-        },
-        {
-            "type": "change",
-            "value": "W",
-            "selectors": [
-                [
-                    "aria/Location input"
-                ],
-                [
-                    "mat-dialog-content > div:nth-of-type(1) input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[1]/rpr-location-input/input"
-                ],
-                [
-                    "pierce/mat-dialog-content > div:nth-of-type(1) input"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "keyUp",
-            "key": "w",
-            "target": "main"
-        },
-        {
-            "type": "change",
-            "value": "West Pasco",
-            "selectors": [
-                [
-                    "aria/Location input"
-                ],
-                [
-                    "mat-dialog-content > div:nth-of-type(1) input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[1]/rpr-location-input/input"
-                ],
-                [
-                    "pierce/mat-dialog-content > div:nth-of-type(1) input"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "b:nth-of-type(2)"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[1]/rpr-location-input/div/div/div/div[2]/div/b[2]"
-                ],
-                [
-                    "pierce/b:nth-of-type(2)"
-                ]
-            ],
-            "offsetY": 8.5,
-            "offsetX": 10.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Report Title"
-                ],
-                [
-                    "div:nth-of-type(2) > input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(2) > input"
-                ]
-            ],
-            "offsetY": 22.703125,
-            "offsetX": 62.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Report Title"
-                ],
-                [
-                    "div:nth-of-type(2) > input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(2) > input"
-                ]
-            ],
-            "offsetY": 22.703125,
-            "offsetX": 137.5
-        },
-        {
-            "type": "change",
-            "value": "M",
-            "selectors": [
-                [
-                    "aria/Report Title"
-                ],
-                [
-                    "div:nth-of-type(2) > input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(2) > input"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "keyUp",
-            "key": "m",
-            "target": "main"
-        },
-        {
-            "type": "change",
-            "value": "Market A",
-            "selectors": [
-                [
-                    "aria/Report Title"
-                ],
-                [
-                    "div:nth-of-type(2) > input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(2) > input"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "keyUp",
-            "key": "a",
-            "target": "main"
-        },
-        {
-            "type": "change",
-            "value": "Market Activi",
-            "selectors": [
-                [
-                    "aria/Report Title"
-                ],
-                [
-                    "div:nth-of-type(2) > input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(2) > input"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "t"
-        },
-        {
-            "type": "keyUp",
-            "key": "t",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "y"
-        },
-        {
-            "type": "keyUp",
-            "key": "y",
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Download Report"
-                ],
-                [
-                    "div.cdk-overlay-container > div:nth-of-type(4) a"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-6\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/a"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container > div:nth-of-type(4) a"
-                ],
-                [
-                    "text/Download Report"
-                ]
-            ],
-            "offsetY": 17.703125,
-            "offsetX": 58.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Report Title"
-                ],
-                [
-                    "div:nth-of-type(2) > input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(2) > input"
-                ]
-            ],
-            "offsetY": 30.703125,
-            "offsetX": 141.5
-        },
-        {
-            "type": "change",
-            "value": "Market Activity",
-            "selectors": [
-                [
-                    "aria/Report Title"
-                ],
-                [
-                    "div:nth-of-type(2) > input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(2) > input"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(6) a"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-8\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/a"
-                ],
-                [
-                    "pierce/div:nth-of-type(6) a"
-                ]
-            ],
-            "offsetY": 28.703125,
-            "offsetX": 93.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Download Report"
-                ],
-                [
-                    "div.cdk-overlay-container > div:nth-of-type(4) a"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-7\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/a"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container > div:nth-of-type(4) a"
-                ],
-                [
-                    "text/Download Report"
-                ]
-            ],
-            "offsetY": 26.703125,
-            "offsetX": 106.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Continue"
-                ],
-                [
-                    "div.cdk-overlay-container button:nth-of-type(1)"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/div/button[1]"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container button:nth-of-type(1)"
-                ]
-            ],
-            "offsetY": 33.703125,
-            "offsetX": 57.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "#cdk-drop-list-0 > div:nth-of-type(2) a.collapse-toggle > i"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-0\"]/div[2]/div/a[3]/i"
-                ],
-                [
-                    "pierce/#cdk-drop-list-0 > div:nth-of-type(2) a.collapse-toggle > i"
-                ]
-            ],
-            "offsetY": 12.984375,
-            "offsetX": 4
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Market Snapshot 1/1"
-                ],
-                [
-                    "div:nth-of-type(3) a.section-name"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-0\"]/div[3]/div/a[2]"
-                ],
-                [
-                    "pierce/div:nth-of-type(3) a.section-name"
-                ],
-                [
-                    "text/Market Snapshot 1/1"
-                ]
-            ],
-            "offsetY": 9,
-            "offsetX": 222
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(3) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-3\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(3) select"
-                ]
-            ],
-            "offsetY": 27.5,
-            "offsetX": 267
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(3) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-3\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(3) select"
-                ]
-            ],
-            "offsetY": 27.5,
-            "offsetX": 267
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Market Activity 3/3"
-                ],
-                [
-                    "div:nth-of-type(4) a.section-name"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-0\"]/div[4]/div/a[2]"
-                ],
-                [
-                    "pierce/div:nth-of-type(4) a.section-name"
-                ],
-                [
-                    "text/Market Activity 3/3"
-                ]
-            ],
-            "offsetY": 29.5,
-            "offsetX": 251
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "#cdk-drop-list-4 > div:nth-of-type(4) a.collapse-toggle"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-4\"]/div[4]/div/div/a[2]"
-                ],
-                [
-                    "pierce/#cdk-drop-list-4 > div:nth-of-type(4) a.collapse-toggle"
-                ]
-            ],
-            "offsetY": 28,
-            "offsetX": 5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "#cdk-drop-list-4 > div:nth-of-type(4) div:nth-of-type(3) label"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-55\"]/div/label"
-                ],
-                [
-                    "pierce/#cdk-drop-list-4 > div:nth-of-type(4) div:nth-of-type(3) label"
-                ],
-                [
-                    "text/Property Description"
-                ]
-            ],
-            "offsetY": 31,
-            "offsetX": 104
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "#cdk-drop-list-0 > div:nth-of-type(5) a.collapse-toggle > i"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-0\"]/div[5]/div/a[3]/i"
-                ],
-                [
-                    "pierce/#cdk-drop-list-0 > div:nth-of-type(5) a.collapse-toggle > i"
-                ]
-            ],
-            "offsetY": 15.484375,
-            "offsetX": 1
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/About RPR 0/1"
-                ],
-                [
-                    "div:nth-of-type(6) a.section-name"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-0\"]/div[6]/div/a[2]"
-                ],
-                [
-                    "pierce/div:nth-of-type(6) a.section-name"
-                ],
-                [
-                    "text/About RPR 0/1"
-                ]
-            ],
-            "offsetY": 25.5,
-            "offsetX": 178
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Custom Pages"
-                ],
-                [
-                    "div:nth-of-type(7) a.section-name"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-0\"]/div[7]/div/a[2]"
-                ],
-                [
-                    "pierce/div:nth-of-type(7) a.section-name"
-                ]
-            ],
-            "offsetY": 33,
-            "offsetX": 149
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Select Custom Pages "
-                ],
-                [
-                    "div:nth-of-type(7) button"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-8\"]/div/div/button"
-                ],
-                [
-                    "pierce/div:nth-of-type(7) button"
-                ],
-                [
-                    "text/Select Custom"
-                ]
-            ],
-            "offsetY": 15.5,
-            "offsetX": 129
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/ Add Page"
-                ],
-                [
-                    "main p:nth-of-type(2) > button"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-custom-pages/p[2]/button"
-                ],
-                [
-                    "pierce/main p:nth-of-type(2) > button"
-                ]
-            ],
-            "offsetY": 19.609375,
-            "offsetX": 112.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/ Custom Pages[role=\"button\"]",
-                    "aria/[role=\"generic\"]"
-                ],
-                [
-                    "div.sidebar-column header i"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-custom-pages/header/h1/button/i"
-                ],
-                [
-                    "pierce/div.sidebar-column header i"
-                ]
-            ],
-            "offsetY": 13,
-            "offsetX": 0
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/ Run Report"
-                ],
-                [
-                    "div.page-tabs > div.align-items-center > button"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[1]/div[2]/button"
-                ],
-                [
-                    "pierce/div.page-tabs > div.align-items-center > button"
-                ],
-                [
-                    "text/Run Report"
-                ]
-            ],
-            "offsetY": 18,
-            "offsetX": 73
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div.cdk-overlay-container div:nth-of-type(5) span"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-9\"]/div/div/rpr-report-actions-dialog/mat-dialog-content/div[5]/a/span"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container div:nth-of-type(5) span"
-                ],
-                [
-                    "text/Download"
-                ]
-            ],
-            "offsetY": 19.109375,
-            "offsetX": 16
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div.cdk-overlay-backdrop"
-                ],
-                [
-                    "xpath//html/body/div[3]/div[1]"
-                ],
-                [
-                    "pierce/div.cdk-overlay-backdrop"
-                ]
-            ],
-            "offsetY": 405,
-            "offsetX": 1295
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Reports 4 "
-                ],
-                [
-                    "#SiteMenu_Reports"
-                ],
-                [
-                    "xpath///*[@id=\"SiteMenu_Reports\"]"
-                ],
-                [
-                    "pierce/#SiteMenu_Reports"
-                ],
-                [
-                    "text/Reports  4\n "
-                ]
-            ],
-            "offsetY": 19,
-            "offsetX": 22
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Tour Start a CMA"
-                ],
-                [
-                    "a.is-flex"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/header/div/div/rpr-balloon/div/div[2]/div/rpr-layout-reports-menu/div[2]/section[1]/div[1]/a[1]"
-                ],
-                [
-                    "pierce/a.is-flex"
-                ],
-                [
-                    "text/TourStart a CMA"
-                ]
-            ],
-            "offsetY": 19,
-            "offsetX": 150
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Okay, show me"
-                ],
-                [
-                    "#button-15ef405e-c065-4463-8bae-084a356da384"
-                ],
-                [
-                    "xpath///*[@id=\"button-15ef405e-c065-4463-8bae-084a356da384\"]"
-                ],
-                [
-                    "pierce/#button-15ef405e-c065-4463-8bae-084a356da384"
-                ],
-                [
-                    "text/Okay, show me"
-                ]
-            ],
-            "offsetY": 18.5,
-            "offsetX": 51.5,
-            "frame": [
-                5
-            ]
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Enter Address, Place, APN/Tax IDs or Listing IDs"
-                ],
-                [
-                    "div.margin-0 input"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-home/div[1]/div/rpr-property-search-form/form/div/div[1]/div[2]/input"
-                ],
-                [
-                    "pierce/div.margin-0 input"
-                ]
-            ],
-            "offsetY": 23,
-            "offsetX": 114
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(7) > div.search-name"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-home/div[1]/div/rpr-property-search-form/form/div/div[1]/div[2]/div/div/div/div[7]/div[1]"
-                ],
-                [
-                    "pierce/div:nth-of-type(7) > div.search-name"
-                ],
-                [
-                    "text/2718 W Bonneville"
-                ]
-            ],
-            "offsetY": 9,
-            "offsetX": 197
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Create CMA ",
-                    "aria/[role=\"generic\"]"
-                ],
-                [
-                    "section.yellow div.padding-top-10 i"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-property-details/div[2]/div[5]/rpr-property-details-info-tab/div[2]/div[1]/div/rpr-property-details-pricing-tools/rpr-collapsible-panel/section/div/div/div/section[2]/section/div[2]/a/i"
-                ],
-                [
-                    "pierce/section.yellow div.padding-top-10 i"
-                ]
-            ],
-            "offsetY": 4.203125,
-            "offsetX": 2.5,
-            "assertedEvents": [
-                {
-                    "type": "navigation",
-                    "url": "https://www.narrpr.com/homes/wa/pasco/99301/2718-w-bonneville-st/139106785-valuation.aspx?orgid=&listingid=&pmode=1",
-                    "title": "Home Details for 2718 W Bonneville St, Pasco, WA 99301 (CMA) - Realtors Property Resource"
-                }
-            ]
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/ Create Report"
-                ],
-                [
-                    "div.tools-cont button"
-                ],
-                [
-                    "xpath//html/body/rpr-layout/main/div/div/div[2]/div[2]/div/button"
-                ],
-                [
-                    "pierce/div.tools-cont button"
-                ]
-            ],
-            "offsetY": 27,
-            "offsetX": 41
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "p:nth-of-type(4) b"
-                ],
-                [
-                    "xpath//html/body/rpr-layout/main/div/div/div[2]/div[2]/div/div/div[2]/div[2]/section/p[4]/a/b"
-                ],
-                [
-                    "pierce/p:nth-of-type(4) b"
-                ],
-                [
-                    "text/Beta\nMarket Activity"
-                ]
-            ],
-            "offsetY": 3,
-            "offsetX": 130,
-            "assertedEvents": [
-                {
-                    "type": "navigation",
-                    "url": "https://www.narrpr.com/reports-v2/templates?TemplateId=-5&propertyid=139106785&orgid=&listingid=&placeid=70099301&pmode=1",
-                    "title": "RPR"
-                }
-            ]
-        },
-        {
-            "type": "change",
-            "value": "Market Activity",
-            "selectors": [
-                [
-                    "aria/Report Title"
-                ],
-                [
-                    "div.cdk-overlay-container input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-0\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div/input"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container input"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Continue"
-                ],
-                [
-                    "div.cdk-overlay-container button:nth-of-type(1)"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-0\"]/div/div/rpr-report-location-title-dialog/form/div/button[1]"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container button:nth-of-type(1)"
-                ]
-            ],
-            "offsetY": 20.109375,
-            "offsetX": 67.5
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Report Cover"
-                ],
-                [
-                    "#mat-mdc-checkbox-1-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-1-input\"]"
-                ],
-                [
-                    "pierce/#mat-mdc-checkbox-1-input"
-                ]
-            ],
-            "offsetY": 19.5,
-            "offsetX": 13
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "#cdk-drop-list-0 > div:nth-of-type(2) span.main-text"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-0\"]/div[2]/div/a[2]/span[1]"
-                ],
-                [
-                    "pierce/#cdk-drop-list-0 > div:nth-of-type(2) span.main-text"
-                ]
-            ],
-            "offsetY": 15.25,
-            "offsetX": 73
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/New Listings"
-                ],
-                [
-                    "#mat-mdc-checkbox-5-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-5-input\"]"
-                ],
-                [
-                    "pierce/#mat-mdc-checkbox-5-input"
-                ]
-            ],
-            "offsetY": 26,
-            "offsetX": 29
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Time Period"
-                ],
-                [
-                    "#cdk-drop-list-3 > div:nth-of-type(2) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-3\"]/div[2]/div[2]/select"
-                ],
-                [
-                    "pierce/#cdk-drop-list-3 > div:nth-of-type(2) select"
-                ],
-                [
-                    "text/3: 7"
-                ]
-            ],
-            "offsetY": 12,
-            "offsetX": 72
-        },
-        {
-            "type": "change",
-            "value": "0: 1",
-            "selectors": [
-                [
-                    "aria/Time Period"
-                ],
-                [
-                    "#cdk-drop-list-3 > div:nth-of-type(2) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-3\"]/div[2]/div[2]/select"
-                ],
-                [
-                    "pierce/#cdk-drop-list-3 > div:nth-of-type(2) select"
-                ],
-                [
-                    "text/3: 7"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/New Pending Listings"
-                ],
-                [
-                    "#mat-mdc-checkbox-7-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-7-input\"]"
-                ],
-                [
-                    "pierce/#mat-mdc-checkbox-7-input"
-                ]
-            ],
-            "offsetY": 15,
-            "offsetX": 24
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(6) div.is-first select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-4\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(6) div.is-first select"
-                ],
-                [
-                    "text/5: 3"
-                ]
-            ],
-            "offsetY": 17,
-            "offsetX": 217
-        },
-        {
-            "type": "change",
-            "value": "4: 8",
-            "selectors": [
-                [
-                    "div:nth-of-type(6) div.is-first select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-4\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(6) div.is-first select"
-                ],
-                [
-                    "text/5: 3"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Pending Listings"
-                ],
-                [
-                    "#mat-mdc-checkbox-8-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-8-input\"]"
-                ],
-                [
-                    "pierce/#mat-mdc-checkbox-8-input"
-                ]
-            ],
-            "offsetY": 31,
-            "offsetX": 15
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(8) label"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-9\"]/div/label"
-                ],
-                [
-                    "pierce/div:nth-of-type(8) label"
-                ]
-            ],
-            "offsetY": 26,
-            "offsetX": 126
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Sold Listings"
-                ],
-                [
-                    "#mat-mdc-checkbox-9-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-9-input\"]"
-                ],
-                [
-                    "pierce/#mat-mdc-checkbox-9-input"
-                ]
-            ],
-            "offsetY": 19,
-            "offsetX": 30
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "text/5: 4"
-                ]
-            ],
-            "offsetY": 21,
-            "offsetX": 266
-        },
-        {
-            "type": "change",
-            "value": "4: 8",
-            "selectors": [
-                [
-                    "div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "text/5: 4"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "text/5: 4"
-                ]
-            ],
-            "offsetY": 34,
-            "offsetX": 209
-        },
-        {
-            "type": "change",
-            "value": "2: 5",
-            "selectors": [
-                [
-                    "div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "text/5: 4"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "text/5: 4"
-                ]
-            ],
-            "offsetY": 21,
-            "offsetX": 229
-        },
-        {
-            "type": "change",
-            "value": "5: 4",
-            "selectors": [
-                [
-                    "div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(8) div.is-first select"
-                ],
-                [
-                    "text/5: 4"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Listing Inventory"
-                ],
-                [
-                    "#mat-mdc-checkbox-10-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-10-input\"]"
-                ],
-                [
-                    "pierce/#mat-mdc-checkbox-10-input"
-                ]
-            ],
-            "offsetY": 29,
-            "offsetX": 20
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Inventory of Distressed Properties"
-                ],
-                [
-                    "#mat-mdc-checkbox-11-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-11-input\"]"
-                ],
-                [
-                    "pierce/#mat-mdc-checkbox-11-input"
-                ]
-            ],
-            "offsetY": 27,
-            "offsetX": 22
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Months Supply of Inventory"
-                ],
-                [
-                    "#mat-mdc-checkbox-12-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-12-input\"]"
-                ],
-                [
-                    "pierce/#mat-mdc-checkbox-12-input"
-                ]
-            ],
-            "offsetY": 17,
-            "offsetX": 19
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(11) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-7\"]/div/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(11) select"
-                ]
-            ],
-            "offsetY": 36,
-            "offsetX": 104
-        },
-        {
-            "type": "change",
-            "value": "2: 3",
-            "selectors": [
-                [
-                    "div:nth-of-type(11) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-7\"]/div/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(11) select"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Sold Public Records"
-                ],
-                [
-                    "#mat-mdc-checkbox-13-input"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-13-input\"]"
-                ],
-                [
-                    "pierce/#mat-mdc-checkbox-13-input"
-                ]
-            ],
-            "offsetY": 26,
-            "offsetX": 22
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "#cdk-drop-list-8 > div:nth-of-type(2) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-8\"]/div[2]/div[2]/select"
-                ],
-                [
-                    "pierce/#cdk-drop-list-8 > div:nth-of-type(2) select"
-                ]
-            ],
-            "offsetY": 31,
-            "offsetX": 258
-        },
-        {
-            "type": "change",
-            "value": "0: 1",
-            "selectors": [
-                [
-                    "#cdk-drop-list-8 > div:nth-of-type(2) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-8\"]/div[2]/div[2]/select"
-                ],
-                [
-                    "pierce/#cdk-drop-list-8 > div:nth-of-type(2) select"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Market Snapshot 1/1"
-                ],
-                [
-                    "div:nth-of-type(3) a.section-name"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-0\"]/div[3]/div/a[2]"
-                ],
-                [
-                    "pierce/div:nth-of-type(3) a.section-name"
-                ],
-                [
-                    "text/Market Snapshot 1/1"
-                ]
-            ],
-            "offsetY": 29,
-            "offsetX": 245
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Market Activity 3/3"
-                ],
-                [
-                    "div:nth-of-type(4) a.section-name"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-0\"]/div[4]/div/a[2]"
-                ],
-                [
-                    "pierce/div:nth-of-type(4) a.section-name"
-                ],
-                [
-                    "text/Market Activity 3/3"
-                ]
-            ],
-            "offsetY": 15.5,
-            "offsetX": 249
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Market Activity Filters "
-                ],
-                [
-                    "div:nth-of-type(4) button"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-10\"]/div[1]/div/button"
-                ],
-                [
-                    "pierce/div:nth-of-type(4) button"
-                ],
-                [
-                    "text/Market Activity Filters"
-                ]
-            ],
-            "offsetY": 12,
-            "offsetX": 128
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Maximum Properties per Change Type"
-                ],
-                [
-                    "div:nth-of-type(9) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-11\"]/div[9]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(9) select"
-                ],
-                [
-                    "text/0: 10"
-                ]
-            ],
-            "offsetY": 34,
-            "offsetX": 107
-        },
-        {
-            "type": "change",
-            "value": "2: 50",
-            "selectors": [
-                [
-                    "aria/Maximum Properties per Change Type"
-                ],
-                [
-                    "div:nth-of-type(9) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-11\"]/div[9]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(9) select"
-                ],
-                [
-                    "text/0: 10"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(20) div:nth-of-type(1) > input"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-11\"]/div[20]/rpr-reports-editor-numerical-range/div[1]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(20) div:nth-of-type(1) > input"
-                ]
-            ],
-            "offsetY": 23,
-            "offsetX": 108
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(23) div:nth-of-type(3) > input"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-11\"]/div[23]/rpr-reports-editor-numerical-range/div[3]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(23) div:nth-of-type(3) > input"
-                ]
-            ],
-            "offsetY": 25,
-            "offsetX": 73.5
-        },
-        {
-            "type": "change",
-            "value": "1990",
-            "selectors": [
-                [
-                    "div:nth-of-type(23) div:nth-of-type(3) > input"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-11\"]/div[23]/rpr-reports-editor-numerical-range/div[3]/input"
-                ],
-                [
-                    "pierce/div:nth-of-type(23) div:nth-of-type(3) > input"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Lot Size In"
-                ],
-                [
-                    "div:nth-of-type(22) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-11\"]/div[22]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(22) select"
-                ]
-            ],
-            "offsetY": 12,
-            "offsetX": 295
-        },
-        {
-            "type": "change",
-            "value": "0: 0",
-            "selectors": [
-                [
-                    "aria/Lot Size In"
-                ],
-                [
-                    "div:nth-of-type(22) select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-11\"]/div[22]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(22) select"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Apply Filters"
-                ],
-                [
-                    "div.reports-page-content button.is-primary"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-elements/rpr-reports-editor-elements-child-form/footer/button[2]"
-                ],
-                [
-                    "pierce/div.reports-page-content button.is-primary"
-                ],
-                [
-                    "text/Apply Filters"
-                ]
-            ],
-            "offsetY": 21,
-            "offsetX": 90
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "#cdk-drop-list-22 > div:nth-of-type(4) label"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-56\"]/div/label"
-                ],
-                [
-                    "pierce/#cdk-drop-list-22 > div:nth-of-type(4) label"
-                ]
-            ],
-            "offsetY": 33,
-            "offsetX": 211
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "#cdk-drop-list-22 > div:nth-of-type(4) label"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-checkbox-56\"]/div/label"
-                ],
-                [
-                    "pierce/#cdk-drop-list-22 > div:nth-of-type(4) label"
-                ],
-                [
-                    "text/Property Details"
-                ]
-            ],
-            "offsetY": 36,
-            "offsetX": 198
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "#cdk-drop-list-12 > div:nth-of-type(5) a.collapse-toggle > i"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-12\"]/div[5]/div/a[3]/i"
-                ],
-                [
-                    "pierce/#cdk-drop-list-12 > div:nth-of-type(5) a.collapse-toggle > i"
-                ]
-            ],
-            "offsetY": 11.484375,
-            "offsetX": 12
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "#cdk-drop-list-12 > div:nth-of-type(6) a.collapse-toggle > i"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-12\"]/div[6]/div/a[3]/i"
-                ],
-                [
-                    "pierce/#cdk-drop-list-12 > div:nth-of-type(6) a.collapse-toggle > i"
-                ]
-            ],
-            "offsetY": 7.984375,
-            "offsetX": 15
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Custom Pages"
-                ],
-                [
-                    "div:nth-of-type(7) a.section-name"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-12\"]/div[7]/div/a[2]"
-                ],
-                [
-                    "pierce/div:nth-of-type(7) a.section-name"
-                ]
-            ],
-            "offsetY": 25,
-            "offsetX": 123
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div:nth-of-type(6) div.is-first select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-16\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(6) div.is-first select"
-                ],
-                [
-                    "text/4: 8"
-                ]
-            ],
-            "offsetY": 10,
-            "offsetX": 118
-        },
-        {
-            "type": "change",
-            "value": "5: 3",
-            "selectors": [
-                [
-                    "div:nth-of-type(6) div.is-first select"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-16\"]/div[1]/div[2]/select"
-                ],
-                [
-                    "pierce/div:nth-of-type(6) div.is-first select"
-                ],
-                [
-                    "text/4: 8"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Edit Cover "
-                ],
-                [
-                    "#cdk-drop-list-12 > div.is-first button"
-                ],
-                [
-                    "xpath///*[@id=\"cdk-drop-list-13\"]/div/div/div[2]/button"
-                ],
-                [
-                    "pierce/#cdk-drop-list-12 > div.is-first button"
-                ],
-                [
-                    "text/Edit Cover"
-                ]
-            ],
-            "offsetY": 7.5,
-            "offsetX": 31
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Phone 1"
-                ],
-                [
-                    "select"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[1]/section/rpr-reports-editor-cover-page-contact-info/section/div/select"
-                ],
-                [
-                    "pierce/select"
-                ]
-            ],
-            "offsetY": 31,
-            "offsetX": 153
-        },
-        {
-            "type": "change",
-            "value": "",
-            "selectors": [
-                [
-                    "aria/Phone 1"
-                ],
-                [
-                    "select"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[1]/section/rpr-reports-editor-cover-page-contact-info/section/div/select"
-                ],
-                [
-                    "pierce/select"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "rpr-reports-editor-cover-page"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page"
-                ],
-                [
-                    "pierce/rpr-reports-editor-cover-page"
-                ]
-            ],
-            "offsetY": 775,
-            "offsetX": 14,
-            "duration": 689.4000000003725
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "section.personalize-your-report"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]"
-                ],
-                [
-                    "pierce/section.personalize-your-report"
-                ],
-                [
-                    "text/Personalize Your Report(250"
-                ]
-            ],
-            "offsetY": 31,
-            "offsetX": 9,
-            "duration": 691.0999999996275
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Personalize Your Report"
-                ],
-                [
-                    "section.personalize-your-report > h2"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/h2"
-                ],
-                [
-                    "pierce/section.personalize-your-report > h2"
-                ],
-                [
-                    "text/Personalize Your"
-                ]
-            ],
-            "offsetY": 20,
-            "offsetX": 20
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "rpr-reports-editor-cover-page"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page"
-                ],
-                [
-                    "pierce/rpr-reports-editor-cover-page"
-                ]
-            ],
-            "offsetY": 719,
-            "offsetX": 231,
-            "duration": 902
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Personalize Your Report"
-                ],
-                [
-                    "section.personalize-your-report > h2"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/h2"
-                ],
-                [
-                    "pierce/section.personalize-your-report > h2"
-                ],
-                [
-                    "text/Personalize Your"
-                ]
-            ],
-            "offsetY": 18,
-            "offsetX": 125,
-            "button": "secondary"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
-                ],
-                [
-                    "textarea"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
-                ],
-                [
-                    "pierce/textarea"
-                ]
-            ],
-            "offsetY": 65,
-            "offsetX": 102
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
-                ],
-                [
-                    "textarea"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
-                ],
-                [
-                    "pierce/textarea"
-                ]
-            ],
-            "offsetY": 65,
-            "offsetX": 102,
-            "button": "secondary"
-        },
-        {
-            "type": "change",
-            "value": "Thank you for the opportunity to work with you. This comprehensive report has been prepared with your unique property in mind and is designed to provide you with a clear, up‑to‑date view of market activity, property details, and a valuation analysis ",
-            "selectors": [
-                [
-                    "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
-                ],
-                [
-                    "textarea"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
-                ],
-                [
-                    "pierce/textarea"
-                ]
-            ],
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
-                ],
-                [
-                    "textarea"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
-                ],
-                [
-                    "pierce/textarea"
-                ]
-            ],
-            "offsetY": 143,
-            "offsetX": 172
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "q"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "u"
-        },
-        {
-            "type": "keyUp",
-            "key": "q",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "i"
-        },
-        {
-            "type": "keyUp",
-            "key": "u",
-            "target": "main"
-        },
-        {
-            "type": "keyUp",
-            "key": "i",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "c"
-        },
-        {
-            "type": "keyUp",
-            "key": "c",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "k"
-        },
-        {
-            "type": "keyUp",
-            "key": "k",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": " "
-        },
-        {
-            "type": "keyUp",
-            "key": " ",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "l"
-        },
-        {
-            "type": "keyUp",
-            "key": "l",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "o"
-        },
-        {
-            "type": "keyUp",
-            "key": "o",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "o"
-        },
-        {
-            "type": "keyUp",
-            "key": "o",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "k"
-        },
-        {
-            "type": "keyUp",
-            "key": "k",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": " "
-        },
-        {
-            "type": "keyUp",
-            "key": " ",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "a"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": "t"
-        },
-        {
-            "type": "keyUp",
-            "key": "a",
-            "target": "main"
-        },
-        {
-            "type": "keyUp",
-            "key": "t",
-            "target": "main"
-        },
-        {
-            "type": "keyDown",
-            "target": "main",
-            "key": " "
-        },
-        {
-            "type": "keyUp",
-            "key": " ",
-            "target": "main"
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
-                ],
-                [
-                    "textarea"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
-                ],
-                [
-                    "pierce/textarea"
-                ]
-            ],
-            "offsetY": 153,
-            "offsetX": 176
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
-                ],
-                [
-                    "textarea"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
-                ],
-                [
-                    "pierce/textarea"
-                ]
-            ],
-            "offsetY": 142,
-            "offsetX": 290
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
-                ],
-                [
-                    "textarea"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
-                ],
-                [
-                    "pierce/textarea"
-                ]
-            ],
-            "offsetY": 149,
-            "offsetX": 177
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "section.customize-cover-wrapper > p"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/p"
-                ],
-                [
-                    "pierce/section.customize-cover-wrapper > p"
-                ]
-            ],
-            "offsetY": 10,
-            "offsetX": 150
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
-                ],
-                [
-                    "textarea"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
-                ],
-                [
-                    "pierce/textarea"
-                ]
-            ],
-            "offsetY": 92,
-            "offsetX": 168
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "aria/ Run Report"
-                ],
-                [
-                    "div.page-tabs > div.align-items-center > button"
-                ],
-                [
-                    "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[1]/div[2]/button"
-                ],
-                [
-                    "pierce/div.page-tabs > div.align-items-center > button"
-                ],
-                [
-                    "text/Run Report"
-                ]
-            ],
-            "offsetY": 21,
-            "offsetX": 92
-        },
-        {
-            "type": "click",
-            "target": "main",
-            "selectors": [
-                [
-                    "div.cdk-overlay-container div:nth-of-type(5) span"
-                ],
-                [
-                    "xpath///*[@id=\"mat-mdc-dialog-1\"]/div/div/rpr-report-actions-dialog/mat-dialog-content/div[5]/a/span"
-                ],
-                [
-                    "pierce/div.cdk-overlay-container div:nth-of-type(5) span"
-                ],
-                [
-                    "text/Download"
-                ]
-            ],
-            "offsetY": 13.109375,
-            "offsetX": 36
+  "title": "Recording 2/27/2025 at 10:25:12 AM",
+  "steps": [
+    {
+      "type": "setViewport",
+      "width": 1209,
+      "height": 911,
+      "deviceScaleFactor": 1,
+      "isMobile": false,
+      "hasTouch": false,
+      "isLandscape": false
+    },
+    {
+      "type": "navigate",
+      "url": "https://auth.narrpr.com/auth/sign-in?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Dmain_website%26redirect_uri%3Dhttps%253A%252F%252Fwww.narrpr.com%252Fauth%252Fcallback%26response_type%3Dcode%26scope%3Dopenid%2520email%2520rpr_contact%2520rpr_current_user%2520rpr_permissions%2520rpr_roles%2520main_api_access%2520web_api_access%2520auth_api_access%26state%3D802ed7bc0c7543eb8b913b1fb76123e8%26code_challenge%3DhJ1bwCfL5WDAghPFjB5j0CALEma90RE_CUz42HeOQw8%26code_challenge_method%3DS256%26response_mode%3Dquery",
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "https://auth.narrpr.com/auth/sign-in?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Dmain_website%26redirect_uri%3Dhttps%253A%252F%252Fwww.narrpr.com%252Fauth%252Fcallback%26response_type%3Dcode%26scope%3Dopenid%2520email%2520rpr_contact%2520rpr_current_user%2520rpr_permissions%2520rpr_roles%2520main_api_access%2520web_api_access%2520auth_api_access%26state%3D802ed7bc0c7543eb8b913b1fb76123e8%26code_challenge%3DhJ1bwCfL5WDAghPFjB5j0CALEma90RE_CUz42HeOQw8%26code_challenge_method%3DS256%26response_mode%3Dquery",
+          "title": "Welcome - Realtors Property Resource"
         }
-    ]
+      ]
+    },
+    {
+      "type": "click",
+      "target": "chrome-extension://pejdijmoenmkgeppbflobdenhhabjlaj/completion_list.html?username=billspencerappraisal@gmail.com&colorScheme=undefined&screenX=0&screenY=0&effectiveWindowWidth=1924.8200000000002",
+      "selectors": [
+        ["p.name"],
+        ["xpath///*[@id=\"credentialList\"]/li[2]/div/p[1]"],
+        ["pierce/p.name"],
+        ["text/billspencerappraisal@gmail.com"]
+      ],
+      "offsetY": 5.640625,
+      "offsetX": 144
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Sign In"],
+        ["#SignInBtn"],
+        ["xpath///*[@id=\"SignInBtn\"]"],
+        ["pierce/#SignInBtn"],
+        ["text/Sign In"]
+      ],
+      "offsetY": 24.25,
+      "offsetX": 173.25,
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "https://www.narrpr.com/auth/callback?code=26DC863A7432B1C78CA32C48E00CA109B0E8C9F5DD05D837D7D054C1394E5BC8-1&scope=openid%20email%20rpr_contact%20rpr_current_user%20rpr_permissions%20rpr_roles%20main_api_access%20web_api_access%20auth_api_access&state=802ed7bc0c7543eb8b913b1fb76123e8&session_state=eebi5Sby6Zn1t2Frbj8zskhPAFe0uks-xPMdTx1_-v0.FFEBA491D493C30C02CC4A6AFD01446F&iss=https%3A%2F%2Fauth.narrpr.com",
+          "title": ""
+        }
+      ]
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Close modal"],
+        ["modal-container > div > a"],
+        ["xpath//html/body/appcues/modal-container/div/a"],
+        ["pierce/modal-container > div > a"],
+        ["text/×"]
+      ],
+      "offsetY": 15,
+      "offsetX": 21,
+      "frame": [6]
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Enter Address, Place, APN/Tax IDs or Listing IDs"],
+        ["div.margin-0 input"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-home/div[1]/div/rpr-property-search-form/form/div/div[1]/div[2]/input"
+        ],
+        ["pierce/div.margin-0 input"]
+      ],
+      "offsetY": 16.75,
+      "offsetX": 156.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(3) > div.search-name"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-home/div[1]/div/rpr-property-search-form/form/div/div[1]/div[2]/div/div/div/div[3]/div[1]"
+        ],
+        ["pierce/div:nth-of-type(3) > div.search-name"],
+        ["text/7811 Three Rivers"]
+      ],
+      "offsetY": 8.25,
+      "offsetX": 110.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Create CMA "],
+        ["section.yellow a"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-property-details/div[2]/div[5]/rpr-property-details-info-tab/div[2]/div[1]/div/rpr-property-details-pricing-tools/rpr-collapsible-panel/section/div/div/div/section[2]/section/div[2]/a"
+        ],
+        ["pierce/section.yellow a"],
+        ["text/Create CMA"]
+      ],
+      "offsetY": 10.5625,
+      "offsetX": 34,
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "https://www.narrpr.com/homes/wa/pasco/99301/7811-three-rivers-dr/21213814-valuation.aspx?orgid=&listingid=&pmode=1",
+          "title": ""
+        }
+      ]
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Find Comps"],
+        ["#Valuation_FindCompsBtn"],
+        ["xpath///*[@id=\"Valuation_FindCompsBtn\"]"],
+        ["pierce/#Valuation_FindCompsBtn"],
+        ["text/Find Comps"]
+      ],
+      "offsetY": 21.046875,
+      "offsetX": 93.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Off Market Timeframe"],
+        ["#VCSD_DateGroup select"],
+        ["xpath///*[@id=\"VCSD_DateGroup\"]/div/div[1]/div/div/select"],
+        ["pierce/#VCSD_DateGroup select"],
+        ["text/90"]
+      ],
+      "offsetY": 16.5,
+      "offsetX": 238
+    },
+    {
+      "type": "change",
+      "value": "360",
+      "selectors": [
+        ["aria/Off Market Timeframe"],
+        ["#VCSD_DateGroup select"],
+        ["xpath///*[@id=\"VCSD_DateGroup\"]/div/div[1]/div/div/select"],
+        ["pierce/#VCSD_DateGroup select"],
+        ["text/90"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Zoom out"],
+        ["div.zoomOutButton > a"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[2]/div[2]/div[2]/div[2]/div[1]/div/div[3]/div[2]/a"
+        ],
+        ["pierce/div.zoomOutButton > a"]
+      ],
+      "offsetY": 5.5,
+      "offsetX": 4
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Search"],
+        ["#VCSD_SearchBtn"],
+        ["xpath///*[@id=\"VCSD_SearchBtn\"]"],
+        ["pierce/#VCSD_SearchBtn"]
+      ],
+      "offsetY": 12,
+      "offsetX": 34
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div.action-buttons"],
+        ["xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[2]/div[3]"],
+        ["pierce/div.action-buttons"]
+      ],
+      "offsetY": 58.5,
+      "offsetX": 65
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Modify Search"],
+        ["#VCSD_ModifySearchBtn"],
+        ["xpath///*[@id=\"VCSD_ModifySearchBtn\"]"],
+        ["pierce/#VCSD_ModifySearchBtn"],
+        ["text/Modify Search"]
+      ],
+      "offsetY": 30.5,
+      "offsetX": 58
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Proximity"],
+        ["section:nth-of-type(2) select"],
+        [
+          "xpath///*[@id=\"VCSD_FacetsForm\"]/section[2]/div/div/div[2]/div/select"
+        ],
+        ["pierce/section:nth-of-type(2) select"]
+      ],
+      "offsetY": 22.5,
+      "offsetX": 87.5
+    },
+    {
+      "type": "change",
+      "value": "1",
+      "selectors": [
+        ["aria/Proximity"],
+        ["section:nth-of-type(2) select"],
+        [
+          "xpath///*[@id=\"VCSD_FacetsForm\"]/section[2]/div/div/div[2]/div/select"
+        ],
+        ["pierce/section:nth-of-type(2) select"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Proximity"],
+        ["section:nth-of-type(2) select"],
+        [
+          "xpath///*[@id=\"VCSD_FacetsForm\"]/section[2]/div/div/div[2]/div/select"
+        ],
+        ["pierce/section:nth-of-type(2) select"]
+      ],
+      "offsetY": 18.5,
+      "offsetX": 130.5
+    },
+    {
+      "type": "change",
+      "value": "2",
+      "selectors": [
+        ["aria/Proximity"],
+        ["section:nth-of-type(2) select"],
+        [
+          "xpath///*[@id=\"VCSD_FacetsForm\"]/section[2]/div/div/div[2]/div/select"
+        ],
+        ["pierce/section:nth-of-type(2) select"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "change",
+      "value": "1800",
+      "selectors": [
+        ["aria/Living Area To"],
+        ["div:nth-of-type(3) > div:nth-of-type(3) > input"],
+        [
+          "xpath///*[@id=\"VCSD_FacetsForm\"]/section[3]/div/div[3]/div[3]/input"
+        ],
+        ["pierce/div:nth-of-type(3) > div:nth-of-type(3) > input"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["section:nth-of-type(5) span"],
+        ["xpath///*[@id=\"VCSD_FacetsForm\"]/section[5]/div/div/label/span"],
+        ["pierce/section:nth-of-type(5) span"],
+        ["text/Year Built"]
+      ],
+      "offsetY": 12,
+      "offsetX": 14
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Living Area From"],
+        ["div:nth-of-type(3) > div:nth-of-type(1) > input"],
+        [
+          "xpath///*[@id=\"VCSD_FacetsForm\"]/section[3]/div/div[3]/div[1]/input"
+        ],
+        ["pierce/div:nth-of-type(3) > div:nth-of-type(1) > input"]
+      ],
+      "offsetY": 20.5,
+      "offsetX": 31
+    },
+    {
+      "type": "change",
+      "value": "1400",
+      "selectors": [
+        ["aria/Living Area From"],
+        ["div:nth-of-type(3) > div:nth-of-type(1) > input"],
+        [
+          "xpath///*[@id=\"VCSD_FacetsForm\"]/section[3]/div/div[3]/div[1]/input"
+        ],
+        ["pierce/div:nth-of-type(3) > div:nth-of-type(1) > input"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Search"],
+        ["#VCSD_SearchBtn"],
+        ["xpath///*[@id=\"VCSD_SearchBtn\"]"],
+        ["pierce/#VCSD_SearchBtn"]
+      ],
+      "offsetY": 11,
+      "offsetX": 30
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Date[role=\"link\"]"],
+        ["td:nth-of-type(5) > a"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/thead/tr/td[5]/a"
+        ],
+        ["pierce/td:nth-of-type(5) > a"]
+      ],
+      "offsetY": 2.5,
+      "offsetX": 27
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(2) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[2]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(2) > td.chkCell span"]
+      ],
+      "offsetY": 13.28125,
+      "offsetX": 11
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(5) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[5]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(5) > td.chkCell span"]
+      ],
+      "offsetY": 11.0625,
+      "offsetX": 13
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(8) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[8]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(8) > td.chkCell span"]
+      ],
+      "offsetY": 20.84375,
+      "offsetX": 12
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(11) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[11]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(11) > td.chkCell span"]
+      ],
+      "offsetY": 20.625,
+      "offsetX": 15
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(20) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[20]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(20) > td.chkCell span"]
+      ],
+      "offsetY": 14.96875,
+      "offsetX": 5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(26) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[26]/td[2]/div/div[1]/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(26) > td.chkCell span"]
+      ],
+      "offsetY": 7.53125,
+      "offsetX": 11
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(29) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[29]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(29) > td.chkCell span"]
+      ],
+      "offsetY": 22.3125,
+      "offsetX": 11
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(38) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[38]/td[2]/div/div[1]/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(38) > td.chkCell span"]
+      ],
+      "offsetY": 15.65625,
+      "offsetX": 6
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(50) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[50]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(50) > td.chkCell span"]
+      ],
+      "offsetY": 12.78125,
+      "offsetX": 11
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(53) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[53]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(53) > td.chkCell span"]
+      ],
+      "offsetY": 9.5625,
+      "offsetX": 8
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(59) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[59]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(59) > td.chkCell span"]
+      ],
+      "offsetY": 17.125,
+      "offsetX": 4
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(62) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[62]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(62) > td.chkCell span"]
+      ],
+      "offsetY": 17.90625,
+      "offsetX": 6
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(65) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[65]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(65) > td.chkCell span"]
+      ],
+      "offsetY": 19.6875,
+      "offsetX": 12
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(68) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[68]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(68) > td.chkCell span"]
+      ],
+      "offsetY": 14.46875,
+      "offsetX": 6
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(71) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[71]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(71) > td.chkCell span"]
+      ],
+      "offsetY": 7.25,
+      "offsetX": 13
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(74) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[74]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(74) > td.chkCell span"]
+      ],
+      "offsetY": 15.03125,
+      "offsetX": 6
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(77) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[77]/td[2]/div/div[1]/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(77) > td.chkCell span"]
+      ],
+      "offsetY": 18.8125,
+      "offsetX": 17
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(92) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[92]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(92) > td.chkCell span"]
+      ],
+      "offsetY": 13.71875,
+      "offsetX": 1
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tr:nth-of-type(89) > td.chkCell span"],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/table/tbody[2]/tr[89]/td[2]/div/div/div[2]/label/span"
+        ],
+        ["pierce/tr:nth-of-type(89) > td.chkCell span"]
+      ],
+      "offsetY": 5.9375,
+      "offsetX": 12
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "#ValuationCompsSearchDialogTemplate > div.clearfix > div.left a.button"
+        ],
+        [
+          "xpath///*[@id=\"ValuationCompsSearchDialogTemplate\"]/div[3]/div[1]/div[2]/div/a[2]"
+        ],
+        [
+          "pierce/#ValuationCompsSearchDialogTemplate > div.clearfix > div.left a.button"
+        ]
+      ],
+      "offsetY": 15.78125,
+      "offsetX": 55
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/[role=\"contentinfo\"]", "aria/[role=\"list\"]"],
+        ["footer ul"],
+        ["xpath//html/body/rpr-layout/footer/div/div/div[2]/ul"],
+        ["pierce/footer ul"],
+        ["text/About RPR\nLegal\nBlog\nFacebook\nInstagram\nREALTOR"]
+      ],
+      "offsetY": 4.546875,
+      "offsetX": 109.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Adjust Comps"],
+        ["#Valuation_AdjustCompsBtn"],
+        ["xpath///*[@id=\"Valuation_AdjustCompsBtn\"]"],
+        ["pierce/#Valuation_AdjustCompsBtn"],
+        ["text/Adjust Comps"]
+      ],
+      "offsetY": 9.046875,
+      "offsetX": 35.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tfoot a:nth-of-type(2)"],
+        ["xpath///*[@id=\"VCAD_MainTable\"]/tfoot/tr/td[3]/div/div[2]/a[2]"],
+        ["pierce/tfoot a:nth-of-type(2)"]
+      ],
+      "offsetY": 6.890625,
+      "offsetX": 12.5
+    },
+    {
+      "type": "doubleClick",
+      "target": "main",
+      "selectors": [
+        ["tfoot a:nth-of-type(2)"],
+        ["xpath///*[@id=\"VCAD_MainTable\"]/tfoot/tr/td[3]/div/div[2]/a[2]"],
+        ["pierce/tfoot a:nth-of-type(2)"]
+      ],
+      "offsetY": 10.890625,
+      "offsetX": 9.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tfoot a:nth-of-type(2)"],
+        ["xpath///*[@id=\"VCAD_MainTable\"]/tfoot/tr/td[3]/div/div[2]/a[2]"],
+        ["pierce/tfoot a:nth-of-type(2)"]
+      ],
+      "offsetY": 10.890625,
+      "offsetX": 9.5,
+      "duration": 517.7999999988824
+    },
+    {
+      "type": "doubleClick",
+      "target": "main",
+      "selectors": [
+        ["tfoot a:nth-of-type(2)"],
+        ["xpath///*[@id=\"VCAD_MainTable\"]/tfoot/tr/td[3]/div/div[2]/a[2]"],
+        ["pierce/tfoot a:nth-of-type(2)"]
+      ],
+      "offsetY": 7.890625,
+      "offsetX": 12.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["tfoot a:nth-of-type(2)"],
+        ["xpath///*[@id=\"VCAD_MainTable\"]/tfoot/tr/td[3]/div/div[2]/a[2]"],
+        ["pierce/tfoot a:nth-of-type(2)"]
+      ],
+      "offsetY": 7.890625,
+      "offsetX": 12.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Update Valuation and Close"],
+        ["#VCAD_SaveBtn"],
+        ["xpath///*[@id=\"VCAD_SaveBtn\"]"],
+        ["pierce/#VCAD_SaveBtn"]
+      ],
+      "offsetY": 25.609375,
+      "offsetX": 102,
+      "duration": 1026.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Create Report"],
+        ["#Valuation_Step5 a"],
+        ["xpath///*[@id=\"Valuation_Step5\"]/div[1]/div[3]/a"],
+        ["pierce/#Valuation_Step5 a"]
+      ],
+      "offsetY": 27.8125,
+      "offsetX": 96,
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "https://www.narrpr.com/reports?reporttype=12&propertyid=21213814&orgid=&listingid=&PerformScroll=True",
+          "title": "RPR"
+        }
+      ]
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Run Report"],
+        ["div.run-report-sticky-footer > input"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports/div[2]/form/div/div[1]/div/div/div/rpr-report-personalize/div[2]/input"
+        ],
+        ["pierce/div.run-report-sticky-footer > input"],
+        ["text/Run Report"]
+      ],
+      "offsetY": 34,
+      "offsetX": 85
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Close"],
+        ["div.cdk-overlay-container button"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-0\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/button"
+        ],
+        ["pierce/div.cdk-overlay-container button"],
+        ["text/Close"]
+      ],
+      "offsetY": 12.78125,
+      "offsetX": 81.4375
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Market Activity Report (approx. 26 pgs) Available for Neighborhoods"
+        ],
+        ["#mat-radio-10-input"],
+        ["xpath///*[@id=\"mat-radio-10-input\"]"],
+        ["pierce/#mat-radio-10-input"]
+      ],
+      "offsetY": 21,
+      "offsetX": 29
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Run Report"],
+        ["div.run-report-sticky-footer > input"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports/div[2]/form/div/div[1]/div/div/div/rpr-report-personalize/div[2]/input"
+        ],
+        ["pierce/div.run-report-sticky-footer > input"],
+        ["text/Run Report"]
+      ],
+      "offsetY": 31,
+      "offsetX": 26
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Close"],
+        ["div.cdk-overlay-container button"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-1\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/button"
+        ],
+        ["pierce/div.cdk-overlay-container button"],
+        ["text/Close"]
+      ],
+      "offsetY": 6.78125,
+      "offsetX": 36.4375
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Neighborhood Report (approx. 10 pgs) Available for Neighborhoods"
+        ],
+        ["#mat-radio-11-input"],
+        ["xpath///*[@id=\"mat-radio-11-input\"]"],
+        ["pierce/#mat-radio-11-input"]
+      ],
+      "offsetY": 25,
+      "offsetX": 30
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Run Report"],
+        ["div.run-report-sticky-footer > input"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports/div[2]/form/div/div[1]/div/div/div/rpr-report-personalize/div[2]/input"
+        ],
+        ["pierce/div.run-report-sticky-footer > input"],
+        ["text/Run Report"]
+      ],
+      "offsetY": 23,
+      "offsetX": 36
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Close"],
+        ["div.cdk-overlay-container button"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-2\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/button"
+        ],
+        ["pierce/div.cdk-overlay-container button"],
+        ["text/Close"]
+      ],
+      "offsetY": 36.78125,
+      "offsetX": 22.4375
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Property Report (approx. 28 pgs)"],
+        ["#mat-radio-5-input"],
+        ["xpath///*[@id=\"mat-radio-5-input\"]"],
+        ["pierce/#mat-radio-5-input"]
+      ],
+      "offsetY": 27,
+      "offsetX": 13
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Run Report"],
+        ["div.run-report-sticky-footer > input"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports/div[2]/form/div/div[1]/div/div/div/rpr-report-personalize/div[2]/input"
+        ],
+        ["pierce/div.run-report-sticky-footer > input"],
+        ["text/Run Report"]
+      ],
+      "offsetY": 14,
+      "offsetX": 40
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Close"],
+        ["div.cdk-overlay-container button"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-3\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/button"
+        ],
+        ["pierce/div.cdk-overlay-container button"],
+        ["text/Close"]
+      ],
+      "offsetY": 37.78125,
+      "offsetX": 27.4375
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/View Beta Templates "],
+        ["h2 > a"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports/div[2]/form/div/div[1]/div/div/div/rpr-report-selection/div/mat-radio-group/h2/a"
+        ],
+        ["pierce/h2 > a"],
+        ["text/View Beta Templates"]
+      ],
+      "offsetY": 23,
+      "offsetX": 129.609375
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Download Report"],
+        ["div.cdk-overlay-container a"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-4\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/a"
+        ],
+        ["pierce/div.cdk-overlay-container a"],
+        ["text/Download Report"]
+      ],
+      "offsetY": 33.703125,
+      "offsetX": 98.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["rpr-reports-thumbnail.ng-tns-c1057351054-56 p"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-templates/section/section[2]/section[3]/ol/rpr-reports-thumbnail[2]/li/p"
+        ],
+        ["pierce/rpr-reports-thumbnail.ng-tns-c1057351054-56 p"]
+      ],
+      "offsetY": 167.625,
+      "offsetX": 98
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Location input"],
+        ["mat-dialog-content > div:nth-of-type(1) input"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[1]/rpr-location-input/input"
+        ],
+        ["pierce/mat-dialog-content > div:nth-of-type(1) input"]
+      ],
+      "offsetY": 20.5,
+      "offsetX": 158.5
+    },
+    {
+      "type": "change",
+      "value": "W",
+      "selectors": [
+        ["aria/Location input"],
+        ["mat-dialog-content > div:nth-of-type(1) input"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[1]/rpr-location-input/input"
+        ],
+        ["pierce/mat-dialog-content > div:nth-of-type(1) input"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "keyUp",
+      "key": "w",
+      "target": "main"
+    },
+    {
+      "type": "change",
+      "value": "West Pasco",
+      "selectors": [
+        ["aria/Location input"],
+        ["mat-dialog-content > div:nth-of-type(1) input"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[1]/rpr-location-input/input"
+        ],
+        ["pierce/mat-dialog-content > div:nth-of-type(1) input"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["b:nth-of-type(2)"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[1]/rpr-location-input/div/div/div/div[2]/div/b[2]"
+        ],
+        ["pierce/b:nth-of-type(2)"]
+      ],
+      "offsetY": 8.5,
+      "offsetX": 10.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Report Title"],
+        ["div:nth-of-type(2) > input"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
+        ],
+        ["pierce/div:nth-of-type(2) > input"]
+      ],
+      "offsetY": 22.703125,
+      "offsetX": 62.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Report Title"],
+        ["div:nth-of-type(2) > input"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
+        ],
+        ["pierce/div:nth-of-type(2) > input"]
+      ],
+      "offsetY": 22.703125,
+      "offsetX": 137.5
+    },
+    {
+      "type": "change",
+      "value": "M",
+      "selectors": [
+        ["aria/Report Title"],
+        ["div:nth-of-type(2) > input"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
+        ],
+        ["pierce/div:nth-of-type(2) > input"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "keyUp",
+      "key": "m",
+      "target": "main"
+    },
+    {
+      "type": "change",
+      "value": "Market A",
+      "selectors": [
+        ["aria/Report Title"],
+        ["div:nth-of-type(2) > input"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
+        ],
+        ["pierce/div:nth-of-type(2) > input"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "keyUp",
+      "key": "a",
+      "target": "main"
+    },
+    {
+      "type": "change",
+      "value": "Market Activi",
+      "selectors": [
+        ["aria/Report Title"],
+        ["div:nth-of-type(2) > input"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
+        ],
+        ["pierce/div:nth-of-type(2) > input"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "t"
+    },
+    {
+      "type": "keyUp",
+      "key": "t",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "y"
+    },
+    {
+      "type": "keyUp",
+      "key": "y",
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Download Report"],
+        ["div.cdk-overlay-container > div:nth-of-type(4) a"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-6\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/a"
+        ],
+        ["pierce/div.cdk-overlay-container > div:nth-of-type(4) a"],
+        ["text/Download Report"]
+      ],
+      "offsetY": 17.703125,
+      "offsetX": 58.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Report Title"],
+        ["div:nth-of-type(2) > input"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
+        ],
+        ["pierce/div:nth-of-type(2) > input"]
+      ],
+      "offsetY": 30.703125,
+      "offsetX": 141.5
+    },
+    {
+      "type": "change",
+      "value": "Market Activity",
+      "selectors": [
+        ["aria/Report Title"],
+        ["div:nth-of-type(2) > input"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div[2]/input"
+        ],
+        ["pierce/div:nth-of-type(2) > input"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(6) a"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-8\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/a"
+        ],
+        ["pierce/div:nth-of-type(6) a"]
+      ],
+      "offsetY": 28.703125,
+      "offsetX": 93.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Download Report"],
+        ["div.cdk-overlay-container > div:nth-of-type(4) a"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-7\"]/div/div/rpr-status-dialog/div/div/div[2]/div/div/a"
+        ],
+        ["pierce/div.cdk-overlay-container > div:nth-of-type(4) a"],
+        ["text/Download Report"]
+      ],
+      "offsetY": 26.703125,
+      "offsetX": 106.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Continue"],
+        ["div.cdk-overlay-container button:nth-of-type(1)"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-5\"]/div/div/rpr-report-location-title-dialog/form/div/button[1]"
+        ],
+        ["pierce/div.cdk-overlay-container button:nth-of-type(1)"]
+      ],
+      "offsetY": 33.703125,
+      "offsetX": 57.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["#cdk-drop-list-0 > div:nth-of-type(2) a.collapse-toggle > i"],
+        ["xpath///*[@id=\"cdk-drop-list-0\"]/div[2]/div/a[3]/i"],
+        ["pierce/#cdk-drop-list-0 > div:nth-of-type(2) a.collapse-toggle > i"]
+      ],
+      "offsetY": 12.984375,
+      "offsetX": 4
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Market Snapshot 1/1"],
+        ["div:nth-of-type(3) a.section-name"],
+        ["xpath///*[@id=\"cdk-drop-list-0\"]/div[3]/div/a[2]"],
+        ["pierce/div:nth-of-type(3) a.section-name"],
+        ["text/Market Snapshot 1/1"]
+      ],
+      "offsetY": 9,
+      "offsetX": 222
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(3) select"],
+        ["xpath///*[@id=\"cdk-drop-list-3\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(3) select"]
+      ],
+      "offsetY": 27.5,
+      "offsetX": 267
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(3) select"],
+        ["xpath///*[@id=\"cdk-drop-list-3\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(3) select"]
+      ],
+      "offsetY": 27.5,
+      "offsetX": 267
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Market Activity 3/3"],
+        ["div:nth-of-type(4) a.section-name"],
+        ["xpath///*[@id=\"cdk-drop-list-0\"]/div[4]/div/a[2]"],
+        ["pierce/div:nth-of-type(4) a.section-name"],
+        ["text/Market Activity 3/3"]
+      ],
+      "offsetY": 29.5,
+      "offsetX": 251
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["#cdk-drop-list-4 > div:nth-of-type(4) a.collapse-toggle"],
+        ["xpath///*[@id=\"cdk-drop-list-4\"]/div[4]/div/div/a[2]"],
+        ["pierce/#cdk-drop-list-4 > div:nth-of-type(4) a.collapse-toggle"]
+      ],
+      "offsetY": 28,
+      "offsetX": 5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["#cdk-drop-list-4 > div:nth-of-type(4) div:nth-of-type(3) label"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-55\"]/div/label"],
+        [
+          "pierce/#cdk-drop-list-4 > div:nth-of-type(4) div:nth-of-type(3) label"
+        ],
+        ["text/Property Description"]
+      ],
+      "offsetY": 31,
+      "offsetX": 104
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["#cdk-drop-list-0 > div:nth-of-type(5) a.collapse-toggle > i"],
+        ["xpath///*[@id=\"cdk-drop-list-0\"]/div[5]/div/a[3]/i"],
+        ["pierce/#cdk-drop-list-0 > div:nth-of-type(5) a.collapse-toggle > i"]
+      ],
+      "offsetY": 15.484375,
+      "offsetX": 1
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/About RPR 0/1"],
+        ["div:nth-of-type(6) a.section-name"],
+        ["xpath///*[@id=\"cdk-drop-list-0\"]/div[6]/div/a[2]"],
+        ["pierce/div:nth-of-type(6) a.section-name"],
+        ["text/About RPR 0/1"]
+      ],
+      "offsetY": 25.5,
+      "offsetX": 178
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Custom Pages"],
+        ["div:nth-of-type(7) a.section-name"],
+        ["xpath///*[@id=\"cdk-drop-list-0\"]/div[7]/div/a[2]"],
+        ["pierce/div:nth-of-type(7) a.section-name"]
+      ],
+      "offsetY": 33,
+      "offsetX": 149
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Select Custom Pages "],
+        ["div:nth-of-type(7) button"],
+        ["xpath///*[@id=\"cdk-drop-list-8\"]/div/div/button"],
+        ["pierce/div:nth-of-type(7) button"],
+        ["text/Select Custom"]
+      ],
+      "offsetY": 15.5,
+      "offsetX": 129
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/ Add Page"],
+        ["main p:nth-of-type(2) > button"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-custom-pages/p[2]/button"
+        ],
+        ["pierce/main p:nth-of-type(2) > button"]
+      ],
+      "offsetY": 19.609375,
+      "offsetX": 112.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/ Custom Pages[role=\"button\"]", "aria/[role=\"generic\"]"],
+        ["div.sidebar-column header i"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-custom-pages/header/h1/button/i"
+        ],
+        ["pierce/div.sidebar-column header i"]
+      ],
+      "offsetY": 13,
+      "offsetX": 0
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/ Run Report"],
+        ["div.page-tabs > div.align-items-center > button"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[1]/div[2]/button"
+        ],
+        ["pierce/div.page-tabs > div.align-items-center > button"],
+        ["text/Run Report"]
+      ],
+      "offsetY": 18,
+      "offsetX": 73
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div.cdk-overlay-container div:nth-of-type(5) span"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-9\"]/div/div/rpr-report-actions-dialog/mat-dialog-content/div[5]/a/span"
+        ],
+        ["pierce/div.cdk-overlay-container div:nth-of-type(5) span"],
+        ["text/Download"]
+      ],
+      "offsetY": 19.109375,
+      "offsetX": 16
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div.cdk-overlay-backdrop"],
+        ["xpath//html/body/div[3]/div[1]"],
+        ["pierce/div.cdk-overlay-backdrop"]
+      ],
+      "offsetY": 405,
+      "offsetX": 1295
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Reports 4 "],
+        ["#SiteMenu_Reports"],
+        ["xpath///*[@id=\"SiteMenu_Reports\"]"],
+        ["pierce/#SiteMenu_Reports"],
+        ["text/Reports  4\n "]
+      ],
+      "offsetY": 19,
+      "offsetX": 22
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Tour Start a CMA"],
+        ["a.is-flex"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/header/div/div/rpr-balloon/div/div[2]/div/rpr-layout-reports-menu/div[2]/section[1]/div[1]/a[1]"
+        ],
+        ["pierce/a.is-flex"],
+        ["text/TourStart a CMA"]
+      ],
+      "offsetY": 19,
+      "offsetX": 150
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Okay, show me"],
+        ["#button-15ef405e-c065-4463-8bae-084a356da384"],
+        ["xpath///*[@id=\"button-15ef405e-c065-4463-8bae-084a356da384\"]"],
+        ["pierce/#button-15ef405e-c065-4463-8bae-084a356da384"],
+        ["text/Okay, show me"]
+      ],
+      "offsetY": 18.5,
+      "offsetX": 51.5,
+      "frame": [5]
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Enter Address, Place, APN/Tax IDs or Listing IDs"],
+        ["div.margin-0 input"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-home/div[1]/div/rpr-property-search-form/form/div/div[1]/div[2]/input"
+        ],
+        ["pierce/div.margin-0 input"]
+      ],
+      "offsetY": 23,
+      "offsetX": 114
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(7) > div.search-name"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-home/div[1]/div/rpr-property-search-form/form/div/div[1]/div[2]/div/div/div/div[7]/div[1]"
+        ],
+        ["pierce/div:nth-of-type(7) > div.search-name"],
+        ["text/2718 W Bonneville"]
+      ],
+      "offsetY": 9,
+      "offsetX": 197
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Create CMA ", "aria/[role=\"generic\"]"],
+        ["section.yellow div.padding-top-10 i"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-property-details/div[2]/div[5]/rpr-property-details-info-tab/div[2]/div[1]/div/rpr-property-details-pricing-tools/rpr-collapsible-panel/section/div/div/div/section[2]/section/div[2]/a/i"
+        ],
+        ["pierce/section.yellow div.padding-top-10 i"]
+      ],
+      "offsetY": 4.203125,
+      "offsetX": 2.5,
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "https://www.narrpr.com/homes/wa/pasco/99301/2718-w-bonneville-st/139106785-valuation.aspx?orgid=&listingid=&pmode=1",
+          "title": "Home Details for 2718 W Bonneville St, Pasco, WA 99301 (CMA) - Realtors Property Resource"
+        }
+      ]
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/ Create Report"],
+        ["div.tools-cont button"],
+        ["xpath//html/body/rpr-layout/main/div/div/div[2]/div[2]/div/button"],
+        ["pierce/div.tools-cont button"]
+      ],
+      "offsetY": 27,
+      "offsetX": 41
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["p:nth-of-type(4) b"],
+        [
+          "xpath//html/body/rpr-layout/main/div/div/div[2]/div[2]/div/div/div[2]/div[2]/section/p[4]/a/b"
+        ],
+        ["pierce/p:nth-of-type(4) b"],
+        ["text/Beta\nMarket Activity"]
+      ],
+      "offsetY": 3,
+      "offsetX": 130,
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "https://www.narrpr.com/reports-v2/templates?TemplateId=-5&propertyid=139106785&orgid=&listingid=&placeid=70099301&pmode=1",
+          "title": "RPR"
+        }
+      ]
+    },
+    {
+      "type": "change",
+      "value": "Market Activity",
+      "selectors": [
+        ["aria/Report Title"],
+        ["div.cdk-overlay-container input"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-0\"]/div/div/rpr-report-location-title-dialog/form/mat-dialog-content/div/input"
+        ],
+        ["pierce/div.cdk-overlay-container input"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Continue"],
+        ["div.cdk-overlay-container button:nth-of-type(1)"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-0\"]/div/div/rpr-report-location-title-dialog/form/div/button[1]"
+        ],
+        ["pierce/div.cdk-overlay-container button:nth-of-type(1)"]
+      ],
+      "offsetY": 20.109375,
+      "offsetX": 67.5
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Report Cover"],
+        ["#mat-mdc-checkbox-1-input"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-1-input\"]"],
+        ["pierce/#mat-mdc-checkbox-1-input"]
+      ],
+      "offsetY": 19.5,
+      "offsetX": 13
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["#cdk-drop-list-0 > div:nth-of-type(2) span.main-text"],
+        ["xpath///*[@id=\"cdk-drop-list-0\"]/div[2]/div/a[2]/span[1]"],
+        ["pierce/#cdk-drop-list-0 > div:nth-of-type(2) span.main-text"]
+      ],
+      "offsetY": 15.25,
+      "offsetX": 73
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/New Listings"],
+        ["#mat-mdc-checkbox-5-input"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-5-input\"]"],
+        ["pierce/#mat-mdc-checkbox-5-input"]
+      ],
+      "offsetY": 26,
+      "offsetX": 29
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Time Period"],
+        ["#cdk-drop-list-3 > div:nth-of-type(2) select"],
+        ["xpath///*[@id=\"cdk-drop-list-3\"]/div[2]/div[2]/select"],
+        ["pierce/#cdk-drop-list-3 > div:nth-of-type(2) select"],
+        ["text/3: 7"]
+      ],
+      "offsetY": 12,
+      "offsetX": 72
+    },
+    {
+      "type": "change",
+      "value": "0: 1",
+      "selectors": [
+        ["aria/Time Period"],
+        ["#cdk-drop-list-3 > div:nth-of-type(2) select"],
+        ["xpath///*[@id=\"cdk-drop-list-3\"]/div[2]/div[2]/select"],
+        ["pierce/#cdk-drop-list-3 > div:nth-of-type(2) select"],
+        ["text/3: 7"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/New Pending Listings"],
+        ["#mat-mdc-checkbox-7-input"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-7-input\"]"],
+        ["pierce/#mat-mdc-checkbox-7-input"]
+      ],
+      "offsetY": 15,
+      "offsetX": 24
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(6) div.is-first select"],
+        ["xpath///*[@id=\"cdk-drop-list-4\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(6) div.is-first select"],
+        ["text/5: 3"]
+      ],
+      "offsetY": 17,
+      "offsetX": 217
+    },
+    {
+      "type": "change",
+      "value": "4: 8",
+      "selectors": [
+        ["div:nth-of-type(6) div.is-first select"],
+        ["xpath///*[@id=\"cdk-drop-list-4\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(6) div.is-first select"],
+        ["text/5: 3"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Pending Listings"],
+        ["#mat-mdc-checkbox-8-input"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-8-input\"]"],
+        ["pierce/#mat-mdc-checkbox-8-input"]
+      ],
+      "offsetY": 31,
+      "offsetX": 15
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(8) label"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-9\"]/div/label"],
+        ["pierce/div:nth-of-type(8) label"]
+      ],
+      "offsetY": 26,
+      "offsetX": 126
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Sold Listings"],
+        ["#mat-mdc-checkbox-9-input"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-9-input\"]"],
+        ["pierce/#mat-mdc-checkbox-9-input"]
+      ],
+      "offsetY": 19,
+      "offsetX": 30
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(8) div.is-first select"],
+        ["xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(8) div.is-first select"],
+        ["text/5: 4"]
+      ],
+      "offsetY": 21,
+      "offsetX": 266
+    },
+    {
+      "type": "change",
+      "value": "4: 8",
+      "selectors": [
+        ["div:nth-of-type(8) div.is-first select"],
+        ["xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(8) div.is-first select"],
+        ["text/5: 4"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(8) div.is-first select"],
+        ["xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(8) div.is-first select"],
+        ["text/5: 4"]
+      ],
+      "offsetY": 34,
+      "offsetX": 209
+    },
+    {
+      "type": "change",
+      "value": "2: 5",
+      "selectors": [
+        ["div:nth-of-type(8) div.is-first select"],
+        ["xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(8) div.is-first select"],
+        ["text/5: 4"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(8) div.is-first select"],
+        ["xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(8) div.is-first select"],
+        ["text/5: 4"]
+      ],
+      "offsetY": 21,
+      "offsetX": 229
+    },
+    {
+      "type": "change",
+      "value": "5: 4",
+      "selectors": [
+        ["div:nth-of-type(8) div.is-first select"],
+        ["xpath///*[@id=\"cdk-drop-list-6\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(8) div.is-first select"],
+        ["text/5: 4"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Listing Inventory"],
+        ["#mat-mdc-checkbox-10-input"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-10-input\"]"],
+        ["pierce/#mat-mdc-checkbox-10-input"]
+      ],
+      "offsetY": 29,
+      "offsetX": 20
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Inventory of Distressed Properties"],
+        ["#mat-mdc-checkbox-11-input"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-11-input\"]"],
+        ["pierce/#mat-mdc-checkbox-11-input"]
+      ],
+      "offsetY": 27,
+      "offsetX": 22
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Months Supply of Inventory"],
+        ["#mat-mdc-checkbox-12-input"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-12-input\"]"],
+        ["pierce/#mat-mdc-checkbox-12-input"]
+      ],
+      "offsetY": 17,
+      "offsetX": 19
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(11) select"],
+        ["xpath///*[@id=\"cdk-drop-list-7\"]/div/div[2]/select"],
+        ["pierce/div:nth-of-type(11) select"]
+      ],
+      "offsetY": 36,
+      "offsetX": 104
+    },
+    {
+      "type": "change",
+      "value": "2: 3",
+      "selectors": [
+        ["div:nth-of-type(11) select"],
+        ["xpath///*[@id=\"cdk-drop-list-7\"]/div/div[2]/select"],
+        ["pierce/div:nth-of-type(11) select"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Sold Public Records"],
+        ["#mat-mdc-checkbox-13-input"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-13-input\"]"],
+        ["pierce/#mat-mdc-checkbox-13-input"]
+      ],
+      "offsetY": 26,
+      "offsetX": 22
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["#cdk-drop-list-8 > div:nth-of-type(2) select"],
+        ["xpath///*[@id=\"cdk-drop-list-8\"]/div[2]/div[2]/select"],
+        ["pierce/#cdk-drop-list-8 > div:nth-of-type(2) select"]
+      ],
+      "offsetY": 31,
+      "offsetX": 258
+    },
+    {
+      "type": "change",
+      "value": "0: 1",
+      "selectors": [
+        ["#cdk-drop-list-8 > div:nth-of-type(2) select"],
+        ["xpath///*[@id=\"cdk-drop-list-8\"]/div[2]/div[2]/select"],
+        ["pierce/#cdk-drop-list-8 > div:nth-of-type(2) select"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Market Snapshot 1/1"],
+        ["div:nth-of-type(3) a.section-name"],
+        ["xpath///*[@id=\"cdk-drop-list-0\"]/div[3]/div/a[2]"],
+        ["pierce/div:nth-of-type(3) a.section-name"],
+        ["text/Market Snapshot 1/1"]
+      ],
+      "offsetY": 29,
+      "offsetX": 245
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Market Activity 3/3"],
+        ["div:nth-of-type(4) a.section-name"],
+        ["xpath///*[@id=\"cdk-drop-list-0\"]/div[4]/div/a[2]"],
+        ["pierce/div:nth-of-type(4) a.section-name"],
+        ["text/Market Activity 3/3"]
+      ],
+      "offsetY": 15.5,
+      "offsetX": 249
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Market Activity Filters "],
+        ["div:nth-of-type(4) button"],
+        ["xpath///*[@id=\"cdk-drop-list-10\"]/div[1]/div/button"],
+        ["pierce/div:nth-of-type(4) button"],
+        ["text/Market Activity Filters"]
+      ],
+      "offsetY": 12,
+      "offsetX": 128
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Maximum Properties per Change Type"],
+        ["div:nth-of-type(9) select"],
+        ["xpath///*[@id=\"cdk-drop-list-11\"]/div[9]/div[2]/select"],
+        ["pierce/div:nth-of-type(9) select"],
+        ["text/0: 10"]
+      ],
+      "offsetY": 34,
+      "offsetX": 107
+    },
+    {
+      "type": "change",
+      "value": "2: 50",
+      "selectors": [
+        ["aria/Maximum Properties per Change Type"],
+        ["div:nth-of-type(9) select"],
+        ["xpath///*[@id=\"cdk-drop-list-11\"]/div[9]/div[2]/select"],
+        ["pierce/div:nth-of-type(9) select"],
+        ["text/0: 10"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(20) div:nth-of-type(1) > input"],
+        [
+          "xpath///*[@id=\"cdk-drop-list-11\"]/div[20]/rpr-reports-editor-numerical-range/div[1]/input"
+        ],
+        ["pierce/div:nth-of-type(20) div:nth-of-type(1) > input"]
+      ],
+      "offsetY": 23,
+      "offsetX": 108
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(23) div:nth-of-type(3) > input"],
+        [
+          "xpath///*[@id=\"cdk-drop-list-11\"]/div[23]/rpr-reports-editor-numerical-range/div[3]/input"
+        ],
+        ["pierce/div:nth-of-type(23) div:nth-of-type(3) > input"]
+      ],
+      "offsetY": 25,
+      "offsetX": 73.5
+    },
+    {
+      "type": "change",
+      "value": "1990",
+      "selectors": [
+        ["div:nth-of-type(23) div:nth-of-type(3) > input"],
+        [
+          "xpath///*[@id=\"cdk-drop-list-11\"]/div[23]/rpr-reports-editor-numerical-range/div[3]/input"
+        ],
+        ["pierce/div:nth-of-type(23) div:nth-of-type(3) > input"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Lot Size In"],
+        ["div:nth-of-type(22) select"],
+        ["xpath///*[@id=\"cdk-drop-list-11\"]/div[22]/div[2]/select"],
+        ["pierce/div:nth-of-type(22) select"]
+      ],
+      "offsetY": 12,
+      "offsetX": 295
+    },
+    {
+      "type": "change",
+      "value": "0: 0",
+      "selectors": [
+        ["aria/Lot Size In"],
+        ["div:nth-of-type(22) select"],
+        ["xpath///*[@id=\"cdk-drop-list-11\"]/div[22]/div[2]/select"],
+        ["pierce/div:nth-of-type(22) select"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Apply Filters"],
+        ["div.reports-page-content button.is-primary"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-elements/rpr-reports-editor-elements-child-form/footer/button[2]"
+        ],
+        ["pierce/div.reports-page-content button.is-primary"],
+        ["text/Apply Filters"]
+      ],
+      "offsetY": 21,
+      "offsetX": 90
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["#cdk-drop-list-22 > div:nth-of-type(4) label"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-56\"]/div/label"],
+        ["pierce/#cdk-drop-list-22 > div:nth-of-type(4) label"]
+      ],
+      "offsetY": 33,
+      "offsetX": 211
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["#cdk-drop-list-22 > div:nth-of-type(4) label"],
+        ["xpath///*[@id=\"mat-mdc-checkbox-56\"]/div/label"],
+        ["pierce/#cdk-drop-list-22 > div:nth-of-type(4) label"],
+        ["text/Property Details"]
+      ],
+      "offsetY": 36,
+      "offsetX": 198
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["#cdk-drop-list-12 > div:nth-of-type(5) a.collapse-toggle > i"],
+        ["xpath///*[@id=\"cdk-drop-list-12\"]/div[5]/div/a[3]/i"],
+        ["pierce/#cdk-drop-list-12 > div:nth-of-type(5) a.collapse-toggle > i"]
+      ],
+      "offsetY": 11.484375,
+      "offsetX": 12
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["#cdk-drop-list-12 > div:nth-of-type(6) a.collapse-toggle > i"],
+        ["xpath///*[@id=\"cdk-drop-list-12\"]/div[6]/div/a[3]/i"],
+        ["pierce/#cdk-drop-list-12 > div:nth-of-type(6) a.collapse-toggle > i"]
+      ],
+      "offsetY": 7.984375,
+      "offsetX": 15
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Custom Pages"],
+        ["div:nth-of-type(7) a.section-name"],
+        ["xpath///*[@id=\"cdk-drop-list-12\"]/div[7]/div/a[2]"],
+        ["pierce/div:nth-of-type(7) a.section-name"]
+      ],
+      "offsetY": 25,
+      "offsetX": 123
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div:nth-of-type(6) div.is-first select"],
+        ["xpath///*[@id=\"cdk-drop-list-16\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(6) div.is-first select"],
+        ["text/4: 8"]
+      ],
+      "offsetY": 10,
+      "offsetX": 118
+    },
+    {
+      "type": "change",
+      "value": "5: 3",
+      "selectors": [
+        ["div:nth-of-type(6) div.is-first select"],
+        ["xpath///*[@id=\"cdk-drop-list-16\"]/div[1]/div[2]/select"],
+        ["pierce/div:nth-of-type(6) div.is-first select"],
+        ["text/4: 8"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Edit Cover "],
+        ["#cdk-drop-list-12 > div.is-first button"],
+        ["xpath///*[@id=\"cdk-drop-list-13\"]/div/div/div[2]/button"],
+        ["pierce/#cdk-drop-list-12 > div.is-first button"],
+        ["text/Edit Cover"]
+      ],
+      "offsetY": 7.5,
+      "offsetX": 31
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Phone 1"],
+        ["select"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[1]/section/rpr-reports-editor-cover-page-contact-info/section/div/select"
+        ],
+        ["pierce/select"]
+      ],
+      "offsetY": 31,
+      "offsetX": 153
+    },
+    {
+      "type": "change",
+      "value": "",
+      "selectors": [
+        ["aria/Phone 1"],
+        ["select"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[1]/section/rpr-reports-editor-cover-page-contact-info/section/div/select"
+        ],
+        ["pierce/select"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["rpr-reports-editor-cover-page"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page"
+        ],
+        ["pierce/rpr-reports-editor-cover-page"]
+      ],
+      "offsetY": 775,
+      "offsetX": 14,
+      "duration": 689.4000000003725
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["section.personalize-your-report"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]"
+        ],
+        ["pierce/section.personalize-your-report"],
+        ["text/Personalize Your Report(250"]
+      ],
+      "offsetY": 31,
+      "offsetX": 9,
+      "duration": 691.0999999996275
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Personalize Your Report"],
+        ["section.personalize-your-report > h2"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/h2"
+        ],
+        ["pierce/section.personalize-your-report > h2"],
+        ["text/Personalize Your"]
+      ],
+      "offsetY": 20,
+      "offsetX": 20
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["rpr-reports-editor-cover-page"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page"
+        ],
+        ["pierce/rpr-reports-editor-cover-page"]
+      ],
+      "offsetY": 719,
+      "offsetX": 231,
+      "duration": 902
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/Personalize Your Report"],
+        ["section.personalize-your-report > h2"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/h2"
+        ],
+        ["pierce/section.personalize-your-report > h2"],
+        ["text/Personalize Your"]
+      ],
+      "offsetY": 18,
+      "offsetX": 125,
+      "button": "secondary"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
+        ],
+        ["textarea"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
+        ],
+        ["pierce/textarea"]
+      ],
+      "offsetY": 65,
+      "offsetX": 102
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
+        ],
+        ["textarea"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
+        ],
+        ["pierce/textarea"]
+      ],
+      "offsetY": 65,
+      "offsetX": 102,
+      "button": "secondary"
+    },
+    {
+      "type": "change",
+      "value": "Thank you for the opportunity to work with you. This comprehensive report has been prepared with your unique property in mind and is designed to provide you with a clear, up‑to‑date view of market activity, property details, and a valuation analysis ",
+      "selectors": [
+        [
+          "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
+        ],
+        ["textarea"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
+        ],
+        ["pierce/textarea"]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
+        ],
+        ["textarea"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
+        ],
+        ["pierce/textarea"]
+      ],
+      "offsetY": 143,
+      "offsetX": 172
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "q"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "u"
+    },
+    {
+      "type": "keyUp",
+      "key": "q",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "i"
+    },
+    {
+      "type": "keyUp",
+      "key": "u",
+      "target": "main"
+    },
+    {
+      "type": "keyUp",
+      "key": "i",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "c"
+    },
+    {
+      "type": "keyUp",
+      "key": "c",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "k"
+    },
+    {
+      "type": "keyUp",
+      "key": "k",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": " "
+    },
+    {
+      "type": "keyUp",
+      "key": " ",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "l"
+    },
+    {
+      "type": "keyUp",
+      "key": "l",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "o"
+    },
+    {
+      "type": "keyUp",
+      "key": "o",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "o"
+    },
+    {
+      "type": "keyUp",
+      "key": "o",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "k"
+    },
+    {
+      "type": "keyUp",
+      "key": "k",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": " "
+    },
+    {
+      "type": "keyUp",
+      "key": " ",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "a"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": "t"
+    },
+    {
+      "type": "keyUp",
+      "key": "a",
+      "target": "main"
+    },
+    {
+      "type": "keyUp",
+      "key": "t",
+      "target": "main"
+    },
+    {
+      "type": "keyDown",
+      "target": "main",
+      "key": " "
+    },
+    {
+      "type": "keyUp",
+      "key": " ",
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
+        ],
+        ["textarea"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
+        ],
+        ["pierce/textarea"]
+      ],
+      "offsetY": 153,
+      "offsetX": 176
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
+        ],
+        ["textarea"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
+        ],
+        ["pierce/textarea"]
+      ],
+      "offsetY": 142,
+      "offsetX": 290
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
+        ],
+        ["textarea"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
+        ],
+        ["pierce/textarea"]
+      ],
+      "offsetY": 149,
+      "offsetX": 177
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["section.customize-cover-wrapper > p"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/p"
+        ],
+        ["pierce/section.customize-cover-wrapper > p"]
+      ],
+      "offsetY": 10,
+      "offsetX": 150
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Hello!It was so great to meet you today! Take a look at that property I was telling you about!Best,Jessica JonesRealtors Property Resource"
+        ],
+        ["textarea"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[2]/rpr-reports-editor/div/div[2]/div/ng-scrollbar/div/section/rpr-reports-editor-cover-page/section[1]/section/section[2]/textarea"
+        ],
+        ["pierce/textarea"]
+      ],
+      "offsetY": 92,
+      "offsetX": 168
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["aria/ Run Report"],
+        ["div.page-tabs > div.align-items-center > button"],
+        [
+          "xpath//html/body/rpr-app/rpr-layout/main/rpr-reports-v2/div/div[1]/div[2]/button"
+        ],
+        ["pierce/div.page-tabs > div.align-items-center > button"],
+        ["text/Run Report"]
+      ],
+      "offsetY": 21,
+      "offsetX": 92
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["div.cdk-overlay-container div:nth-of-type(5) span"],
+        [
+          "xpath///*[@id=\"mat-mdc-dialog-1\"]/div/div/rpr-report-actions-dialog/mat-dialog-content/div[5]/a/span"
+        ],
+        ["pierce/div.cdk-overlay-container div:nth-of-type(5) span"],
+        ["text/Download"]
+      ],
+      "offsetY": 13.109375,
+      "offsetX": 36
+    }
+  ]
 }

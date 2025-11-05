@@ -4,14 +4,14 @@ metadata:
   name: terrafusion-consciousness-prod
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "3"  # Deploy after API
+    argocd.argoproj.io/sync-wave: '3' # Deploy after API
     notifications.argoproj.io/subscribe.on-deployed.slack: terrafusion-deployments
     notifications.argoproj.io/subscribe.on-health-degraded.slack: terrafusion-critical
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: terrafusion
-  
+
   source:
     repoURL: https://github.com/terrafusion/terrafusion-os
     targetRevision: main
@@ -24,30 +24,30 @@ spec:
         - name: global.environment
           value: production
         - name: image.tag
-          value: "1.0.0"
+          value: '1.0.0'
         - name: replicaCount
-          value: "5"
+          value: '5'
         - name: aiAgent.totalAgents
-          value: "50000"
+          value: '50000'
         - name: aiAgent.agentsPerPod
-          value: "10000"
+          value: '10000'
         - name: aiAgent.quantumOptimizationFactor
-          value: "949"
+          value: '949'
         - name: autoscaling.enabled
-          value: "true"
+          value: 'true'
         - name: autoscaling.minReplicas
-          value: "5"
+          value: '5'
         - name: autoscaling.maxReplicas
-          value: "50"
+          value: '50'
         - name: persistence.enabled
-          value: "true"
+          value: 'true'
         - name: persistence.size
-          value: "50Gi"
-  
+          value: '50Gi'
+
   destination:
     server: https://kubernetes.default.svc
     namespace: terrafusion
-  
+
   syncPolicy:
     automated:
       prune: true
@@ -63,7 +63,7 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 5m
-  
+
   ignoreDifferences:
     - group: apps
       kind: Deployment
@@ -75,9 +75,9 @@ spec:
         - /spec/minReplicas
         - /spec/maxReplicas
         - /status
-  
+
   revisionHistoryLimit: 10
-  
+
   info:
     - name: 'Environment'
       value: 'Production'

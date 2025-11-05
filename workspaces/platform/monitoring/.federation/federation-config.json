@@ -6,11 +6,7 @@
     "gateway_type": "data_gateway"
   },
   "inter_workspace_communication": {
-    "protocols": [
-      "gRPC",
-      "REST",
-      "Kafka"
-    ],
+    "protocols": ["gRPC", "REST", "Kafka"],
     "sync_frequency_ms": 5000,
     "replication_target": "high_tier",
     "timeout_ms": 5000,

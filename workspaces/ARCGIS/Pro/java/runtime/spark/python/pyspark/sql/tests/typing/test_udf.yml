@@ -41,7 +41,6 @@
     pandas_udf(lambda x, y: x, "string", PandasUDFType.SCALAR)
     pandas_udf(lambda *xs: xs[0], "string", PandasUDFType.SCALAR)
 
-
 - case: scalarIterUDF
   main: |
     from pyspark.sql.pandas.functions import pandas_udf, PandasUDFType
@@ -53,7 +52,6 @@
     def f(xs: Iterable[pandas.core.series.Series]) -> Iterable[pandas.core.series.Series]:
         for x in xs:
             yield x + 1
-
 
 - case: groupedMapUdf
   main: |
@@ -86,7 +84,6 @@
     dfg.applyInPandas(h, "id long")
     dfg.applyInPandas(h, StructType([StructField("id", LongType())]))
 
-
 - case: groupedAggUDF
   main: |
     # Let's keep this one to make sure compatibility imports work
@@ -110,7 +107,6 @@
     pandas_udf(lambda x, y: 42, "str", PandasUDFType.GROUPED_AGG)
     pandas_udf(lambda *xs: 42, "str", PandasUDFType.GROUPED_AGG)
 
-
 - case: mapIterUdf
   main: |
     from pyspark.sql.session import SparkSession
@@ -124,7 +120,6 @@
             yield pdf[pdf.id == 1]
 
     spark.range(1).mapInPandas(f, "id long").show()
-
 
 - case: legacyUDF
   main: |
@@ -150,7 +145,6 @@
     @udf
     def i(x: str) -> str:
         return x
-
 
 - case: cogroupedAggUdf
   main: |

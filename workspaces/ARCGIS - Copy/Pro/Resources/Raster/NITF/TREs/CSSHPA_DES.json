@@ -1,8 +1,6 @@
 {
   "TRE": "CSSHPA_DES",
-  "Source": [
-    "STDI-0006 Apr2014, 4.2"
-  ],
+  "Source": ["STDI-0006 Apr2014, 4.2"],
   "Name": "Shapefile DES",
   "Description": "This DES defines the three files (e.g. SHP, SHX, and DBF) which together comprise the description of an Esri Shapefile.",
   "Size": 62,
@@ -17,10 +15,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "IMAGE_SHAPE",
-            "CLOUD_SHAPES"
-          ]
+          "Values": ["IMAGE_SHAPE", "CLOUD_SHAPES"]
         }
       ]
     },
@@ -34,9 +29,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "POLYGON"
-          ]
+          "Values": ["POLYGON"]
         }
       ]
     },
@@ -50,11 +43,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "PAN",
-            "MS",
-            "PAN, MS"
-          ]
+          "Values": ["PAN", "MS", "PAN, MS"]
         }
       ]
     },
@@ -68,11 +57,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "SHP",
-            "SHX",
-            "DBF"
-          ]
+          "Values": ["SHP", "SHX", "DBF"]
         }
       ]
     },
@@ -99,11 +84,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "SHP",
-            "SHX",
-            "DBF"
-          ]
+          "Values": ["SHP", "SHX", "DBF"]
         }
       ]
     },
@@ -130,11 +111,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "SHP",
-            "SHX",
-            "DBF"
-          ]
+          "Values": ["SHP", "SHX", "DBF"]
         }
       ]
     },

@@ -6,10 +6,7 @@
     "gateway_type": "domain_gateway"
   },
   "inter_workspace_communication": {
-    "protocols": [
-      "REST",
-      "gRPC"
-    ],
+    "protocols": ["REST", "gRPC"],
     "sync_frequency_ms": 2000,
     "replication_target": "all",
     "timeout_ms": 5000,

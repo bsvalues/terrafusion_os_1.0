@@ -52,9 +52,7 @@
       "/forecasting",
       "/reports"
     ],
-    "integration_points": [
-      "/api/v1/cost-analysis/integration"
-    ]
+    "integration_points": ["/api/v1/cost-analysis/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

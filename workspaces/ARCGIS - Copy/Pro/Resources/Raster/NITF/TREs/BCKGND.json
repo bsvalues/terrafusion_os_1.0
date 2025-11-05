@@ -1,10 +1,8 @@
 {
-	"TRE": "BCKGND",
-	"Source": [
-	],	
-	"Name": "BCKGND",
-	"Description": "BCKGND",
-	"Size": 0,
-	"Fields": {
-	}
+  "TRE": "BCKGND",
+  "Source": [],
+  "Name": "BCKGND",
+  "Description": "BCKGND",
+  "Size": 0,
+  "Fields": {}
 }

@@ -9,9 +9,9 @@ groups:
           severity: warning
           type: network_quality
         annotations:
-          summary: "Slow LCP on {{ $labels.network }} networks"
-          description: "LCP is {{ $value }}s (95th percentile) on {{ $labels.network }} networks over the last 5m."
-          
+          summary: 'Slow LCP on {{ $labels.network }} networks'
+          description: 'LCP is {{ $value }}s (95th percentile) on {{ $labels.network }} networks over the last 5m.'
+
       - alert: WEBVITALS_TTFB_SLOW_NETWORK
         expr: histogram_quantile(0.95, sum(rate(web_vitals_ttfb_bucket{network=~"slow-2g|2g|3g"}[5m])) by (le, network)) > 1.5
         for: 5m
@@ -19,8 +19,8 @@ groups:
           severity: warning
           type: network_quality
         annotations:
-          summary: "Slow TTFB on {{ $labels.network }} networks"
-          description: "TTFB is {{ $value }}s (95th percentile) on {{ $labels.network }} networks over the last 5m."
+          summary: 'Slow TTFB on {{ $labels.network }} networks'
+          description: 'TTFB is {{ $value }}s (95th percentile) on {{ $labels.network }} networks over the last 5m.'
 
       # Page-specific alerts for critical pages
       - alert: WEBVITALS_LCP_CRITICAL_PAGE
@@ -30,9 +30,9 @@ groups:
           severity: warning
           type: page_performance
         annotations:
-          summary: "Slow LCP on {{ $labels.page_type }} page"
-          description: "LCP is {{ $value }}s (95th percentile) on {{ $labels.page_type }} page over the last 5m."
-          
+          summary: 'Slow LCP on {{ $labels.page_type }} page'
+          description: 'LCP is {{ $value }}s (95th percentile) on {{ $labels.page_type }} page over the last 5m.'
+
       - alert: WEBVITALS_CLS_CRITICAL_PAGE
         expr: histogram_quantile(0.95, sum(rate(web_vitals_cls_bucket{page_type=~"dashboard|map-view|property-details"}[5m])) by (le, page_type)) > 0.15
         for: 5m
@@ -40,9 +40,9 @@ groups:
           severity: warning
           type: page_performance
         annotations:
-          summary: "High CLS on {{ $labels.page_type }} page"
-          description: "CLS is {{ $value }} (95th percentile) on {{ $labels.page_type }} page over the last 5m."
-          
+          summary: 'High CLS on {{ $labels.page_type }} page'
+          description: 'CLS is {{ $value }} (95th percentile) on {{ $labels.page_type }} page over the last 5m.'
+
       - alert: WEBVITALS_FID_CRITICAL_PAGE
         expr: histogram_quantile(0.95, sum(rate(web_vitals_fid_bucket{page_type=~"dashboard|map-view|property-details"}[5m])) by (le, page_type)) > 0.2
         for: 5m
@@ -50,9 +50,9 @@ groups:
           severity: warning
           type: page_performance
         annotations:
-          summary: "High FID on {{ $labels.page_type }} page"
-          description: "FID is {{ $value }}s (95th percentile) on {{ $labels.page_type }} page over the last 5m."
-          
+          summary: 'High FID on {{ $labels.page_type }} page'
+          description: 'FID is {{ $value }}s (95th percentile) on {{ $labels.page_type }} page over the last 5m.'
+
       # Combined dimension alerts (network + page type)
       - alert: WEBVITALS_LCP_CRITICAL_PAGE_SLOW_NETWORK
         expr: histogram_quantile(0.95, sum(rate(web_vitals_lcp_bucket{page_type=~"dashboard|map-view|property-details", network=~"slow-2g|2g|3g"}[5m])) by (le, page_type, network)) > 5.0
@@ -61,9 +61,9 @@ groups:
           severity: critical
           type: combined
         annotations:
-          summary: "Very slow LCP on {{ $labels.page_type }} page with {{ $labels.network }} network"
-          description: "LCP is {{ $value }}s (95th percentile) on {{ $labels.page_type }} page with {{ $labels.network }} network over the last 5m."
-          
+          summary: 'Very slow LCP on {{ $labels.page_type }} page with {{ $labels.network }} network'
+          description: 'LCP is {{ $value }}s (95th percentile) on {{ $labels.page_type }} page with {{ $labels.network }} network over the last 5m.'
+
       # Mobile network experience
       - alert: WEBVITALS_MOBILE_NETWORK_EXPERIENCE
         expr: histogram_quantile(0.95, sum(rate(web_vitals_lcp_bucket{device_type="mobile", network=~"slow-2g|2g|3g"}[5m])) by (le, network)) > 4.5
@@ -72,9 +72,9 @@ groups:
           severity: warning
           type: mobile_experience
         annotations:
-          summary: "Poor mobile experience on {{ $labels.network }} networks"
-          description: "LCP is {{ $value }}s (95th percentile) on mobile devices with {{ $labels.network }} network over the last 5m."
-          
+          summary: 'Poor mobile experience on {{ $labels.network }} networks'
+          description: 'LCP is {{ $value }}s (95th percentile) on mobile devices with {{ $labels.network }} network over the last 5m.'
+
       # Budget breach rate by page type
       - alert: WEBVITALS_BUDGET_BREACH_RATE_BY_PAGE
         expr: sum(increase(web_vitals_budget_breaches_total{page_type=~"dashboard|map-view|property-details"}[30m])) by (page_type) > 20
@@ -83,5 +83,5 @@ groups:
           severity: warning
           type: budget_breach
         annotations:
-          summary: "High budget breach rate on {{ $labels.page_type }} page"
-          description: "{{ $value }} budget breaches detected on {{ $labels.page_type }} page in the last 30m."
+          summary: 'High budget breach rate on {{ $labels.page_type }} page'
+          description: '{{ $value }} budget breaches detected on {{ $labels.page_type }} page in the last 30m.'

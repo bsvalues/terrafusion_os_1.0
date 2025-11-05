@@ -1,0 +1,13 @@
+// Legacy Codex 3-6-9 health checks have been removed from the codebase.
+// These scenarios are now covered by unified health endpoint tests under TerraFusion.AI.Tests.
+// Keeping a placeholder test to retain file history while avoiding compile failures.
+
+using Xunit;
+
+namespace TerraFusion.API.Tests;
+
+public class Codex369HealthCheckTests
+{
+    [Fact(Skip = "Legacy Codex 3-6-9 health checks removed; replaced by unified health endpoint tests in TerraFusion.AI.Tests")]
+    public void LegacyHealthChecks_Removed() { }
+}

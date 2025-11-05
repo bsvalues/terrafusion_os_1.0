@@ -1,8 +1,6 @@
 {
   "TRE": "BLOCKA",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix E: ASDE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix E: ASDE"],
   "Name": "Image Block Information Extension Format",
   "Description": "The Image Block Information TRE is optional, but often needed for exploitation of imagery. BLOCK is placed in the image subheader with the corresponding AIMID and ACFT extensions.  The format for the user defined fields of the BLOCKA extension and a description of their contents is detailed in table E-9.",
   "Size": 123,
@@ -58,9 +56,7 @@
       "Size": 3,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -75,9 +71,7 @@
       "Size": 3,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -96,9 +90,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            " "
-          ]
+          "Values": [" "]
         }
       ]
     },
@@ -108,15 +100,11 @@
       "Size": 21,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "Xddmmss.ssYdddmmss.ss"
-          ]
+          "Values": ["Xddmmss.ssYdddmmss.ss"]
         },
         {
           "Type": "Double"
@@ -129,15 +117,11 @@
       "Size": 21,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "Xddmmss.ssYdddmmss.ss"
-          ]
+          "Values": ["Xddmmss.ssYdddmmss.ss"]
         },
         {
           "Type": "Double"
@@ -150,15 +134,11 @@
       "Size": 21,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "Xddmmss.ssYdddmmss.ss"
-          ]
+          "Values": ["Xddmmss.ssYdddmmss.ss"]
         },
         {
           "Type": "Double"
@@ -171,15 +151,11 @@
       "Size": 21,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "Xddmmss.ssYdddmmss.ss"
-          ]
+          "Values": ["Xddmmss.ssYdddmmss.ss"]
         },
         {
           "Type": "Double"
@@ -196,9 +172,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "010.0"
-          ]
+          "Values": ["010.0"]
         }
       ]
     }

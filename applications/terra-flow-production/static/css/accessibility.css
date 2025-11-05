@@ -56,7 +56,7 @@
   transition: var(--transition-base);
 }
 
-.a11y-panel-toggle:hover, 
+.a11y-panel-toggle:hover,
 .a11y-panel-toggle:focus {
   background-color: var(--primary-700);
   transform: scale(1.05);
@@ -114,7 +114,7 @@
   transition: var(--transition-base);
 }
 
-.a11y-option:hover, 
+.a11y-option:hover,
 .a11y-option:focus {
   background-color: var(--primary-100);
 }
@@ -136,18 +136,18 @@
   font-size: 120% !important;
 }
 
-.large-text-mode h1, 
-.large-text-mode h2, 
-.large-text-mode h3, 
-.large-text-mode h4, 
-.large-text-mode h5, 
+.large-text-mode h1,
+.large-text-mode h2,
+.large-text-mode h3,
+.large-text-mode h4,
+.large-text-mode h5,
 .large-text-mode h6 {
   font-size: 120% !important;
 }
 
-.large-text-mode .btn, 
-.large-text-mode .form-control, 
-.large-text-mode .nav-link, 
+.large-text-mode .btn,
+.large-text-mode .form-control,
+.large-text-mode .nav-link,
 .large-text-mode .dropdown-item {
   font-size: 120% !important;
   line-height: 1.5 !important;
@@ -167,12 +167,12 @@
     bottom: 80px;
     right: 16px;
   }
-  
+
   .a11y-panel-content {
     width: 230px;
     padding: 12px;
   }
-  
+
   /* Ensure large text mode increases sizes appropriately on mobile */
   .large-text-mode.mobile-device {
     font-size: 130% !important;

@@ -237,18 +237,12 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "distance",
-        "units"
-      ]
+      "required": ["distance", "units"]
     },
     "GPArealUnit": {
       "description": "The JSON schema for a GPArealUnit as an input.",
       "type": "object",
-      "required": [
-        "area",
-        "units"
-      ],
+      "required": ["area", "units"],
       "properties": {
         "area": {
           "description": "The area in a numeric format.",
@@ -282,10 +276,7 @@
     },
     "GPValueTable": {
       "description": "Schema for GPValueTable. Using object over array whenever possible.",
-      "type": [
-        "object",
-        "array"
-      ],
+      "type": ["object", "array"],
       "title": "GPValueTable"
     },
     "GPComposite": {
@@ -474,12 +465,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "xmax",
-        "xmin",
-        "ymax",
-        "ymin"
-      ]
+      "required": ["xmax", "xmin", "ymax", "ymin"]
     },
     "GPEnvelope": {
       "description": "GPEnvelope shares the same schema as GPExtent, and it is used to define rectangles and bounding boxes.",
@@ -555,10 +541,7 @@
         },
         "time": {
           "description": "Time can be filtered as a single instant or by separating the two ends of a time extent with a comma\ne.g. 967855732000 or \"967855732000,null\"",
-          "type": [
-            "string",
-            "number"
-          ],
+          "type": ["string", "number"],
           "title": "time"
         },
         "serviceToken": {
@@ -578,9 +561,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "url"
-      ]
+      "required": ["url"]
     },
     "LayerUrlRuleFilter": {
       "description": "Object containing a url to a layer, along with a renderingrule and mosaicrule\nUsed in GPRasterDataLayer only",
@@ -608,9 +589,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "url"
-      ]
+      "required": ["url"]
     },
     "ItemId": {
       "description": "Object containing an id to an item\\\nUsed in GPRasterDataLayer, GPFeatureRecordSetLayer, GPRecordSet",
@@ -624,9 +603,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "itemId"
-      ]
+      "required": ["itemId"]
     },
     "RecordAttributes": {
       "description": "Object defining a records attributes.",
@@ -643,10 +620,7 @@
                 "format": "date-time"
               },
               {
-                "type": [
-                  "string",
-                  "number"
-                ]
+                "type": ["string", "number"]
               }
             ]
           },
@@ -654,9 +628,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "attributes"
-      ]
+      "required": ["attributes"]
     },
     "RecordField": {
       "description": "Object defining a fields name, type, and optional alias",
@@ -680,10 +652,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "name",
-        "type"
-      ]
+      "required": ["name", "type"]
     },
     "RecordSet": {
       "description": "Object containing features and fields to use in GPRecordSet",
@@ -708,10 +677,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "features",
-        "fields"
-      ]
+      "required": ["features", "fields"]
     },
     "FeatureCollection": {
       "description": "An object defining a layer of features whose geometry and attributes will be stored directly within the web map.\nThis is the REST FeatureCollection type used by GPFeatureRecordSetLayer\nSee https://developers.arcgis.com/rest/services-reference/enterprise/gp-data-types.htm#ESRI_SECTION3_5AEB979537F94AD783ED51F97432BFB7 for more details.",
@@ -730,9 +696,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "featureSet"
-      ]
+      "required": ["featureSet"]
     },
     "IFeatureSet": {
       "description": "`IFeatureSet` can also be imported from the following packages:\n\n```js\nimport { IFeatureSet } from \"@esri/arcgis-rest-feature-layer\";\n```",
@@ -790,9 +754,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "features"
-      ]
+      "required": ["features"]
     },
     "GeometryType": {
       "description": "`GeometryType` can also be imported from the following packages:\n\n```js\nimport { GeometryType } from \"@esri/arcgis-rest-feature-layer\";\n```",
@@ -901,18 +863,12 @@
                   },
                   "code": {
                     "description": "The value stored in the feature attribute.",
-                    "type": [
-                      "string",
-                      "number"
-                    ],
+                    "type": ["string", "number"],
                     "title": "code"
                   }
                 },
                 "additionalProperties": false,
-                "required": [
-                  "code",
-                  "name"
-                ]
+                "required": ["code", "name"]
               },
               "title": "codedValues"
             },
@@ -933,9 +889,7 @@
             }
           },
           "additionalProperties": false,
-          "required": [
-            "type"
-          ],
+          "required": ["type"],
           "title": "domain"
         },
         "editable": {
@@ -964,10 +918,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "name",
-        "type"
-      ]
+      "required": ["name", "type"]
     },
     "FieldType": {
       "description": "Field type.",
@@ -992,11 +943,7 @@
     "DomainType": {
       "description": "Domain types",
       "title": "DomainType",
-      "enum": [
-        "codedValue",
-        "inherited",
-        "range"
-      ],
+      "enum": ["codedValue", "inherited", "range"],
       "type": "string"
     },
     "IFeature": {
@@ -1019,9 +966,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "attributes"
-      ]
+      "required": ["attributes"]
     },
     "IGeometry": {
       "description": "a building block for discrete geometries\n\n`IGeometry` can also be imported from the following packages:\n\n```js\nimport { IGeometry } from \"@esri/arcgis-rest-feature-layer\";\n```",
@@ -1112,20 +1057,11 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "type"
-      ]
+      "required": ["type"]
     },
     "SymbolType": {
       "title": "SymbolType",
-      "enum": [
-        "esriPFS",
-        "esriPMS",
-        "esriSFS",
-        "esriSLS",
-        "esriSMS",
-        "esriTS"
-      ],
+      "enum": ["esriPFS", "esriPMS", "esriSFS", "esriSLS", "esriSMS", "esriTS"],
       "type": "string"
     },
     "Url": {
@@ -1140,9 +1076,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "url"
-      ]
+      "required": ["url"]
     },
     "ILayerDefinition": {
       "description": "`ILayerDefinition` can also be imported from the following packages:\n\n```js\nimport { ILayerDefinition } from \"@esri/arcgis-rest-service-admin\";\nimport { ILayerDefinition } from \"@esri/arcgis-rest-feature-layer\";\n```",
@@ -1352,10 +1286,7 @@
         },
         "type": {
           "description": "Indicates whether the layerDefinition applies to a Feature Layer or a Table.",
-          "enum": [
-            "Feature Layer",
-            "Table"
-          ],
+          "enum": ["Feature Layer", "Table"],
           "type": "string",
           "title": "type"
         },
@@ -1574,10 +1505,7 @@
       "properties": {
         "defaultValue": {
           "description": "The default value that is automatically given if nothing is provided.",
-          "type": [
-            "string",
-            "number"
-          ],
+          "type": ["string", "number"],
           "title": "defaultValue"
         },
         "fieldName": {
@@ -1640,12 +1568,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "xmax",
-        "xmin",
-        "ymax",
-        "ymin"
-      ]
+      "required": ["xmax", "xmin", "ymax", "ymin"]
     },
     "IEditingInfo": {
       "title": "IEditingInfo",

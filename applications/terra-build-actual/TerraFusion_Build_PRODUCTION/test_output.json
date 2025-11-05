@@ -16713,9 +16713,7 @@
       }
     }
   ],
-  "regions": [
-    "Central Benton"
-  ],
+  "regions": ["Central Benton"],
   "buildingTypes": [
     "A2",
     "C4",

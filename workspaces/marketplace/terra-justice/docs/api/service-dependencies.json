@@ -52,9 +52,7 @@
       "/court-proceedings",
       "/sentencing"
     ],
-    "integration_points": [
-      "/api/v1/justice/integration"
-    ]
+    "integration_points": ["/api/v1/justice/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

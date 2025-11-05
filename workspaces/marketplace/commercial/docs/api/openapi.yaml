@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/commercial
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/commercial
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/commercial
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/commercial
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/commercial
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/commercial
+    description: Development Environment
 paths:
   /health:
     get:
       tags:
-      - commercial
+        - commercial
       summary: Health check
       description: Health check - Commercial operations APIs
       operationId: get__health
       security:
-      - OAuth2:
-        - commercial:read
+        - OAuth2:
+            - commercial:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /data:
     get:
       tags:
-      - commercial
+        - commercial
       summary: Data retrieval
       description: Data retrieval - Commercial operations APIs
       operationId: get__data
       security:
-      - OAuth2:
-        - commercial:read
+        - OAuth2:
+            - commercial:read
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /operations:
     post:
       tags:
-      - commercial
+        - commercial
       summary: Operation execution
       description: Operation execution - Commercial operations APIs
       operationId: post__operations
       security:
-      - OAuth2:
-        - commercial:write
+        - OAuth2:
+            - commercial:write
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /status:
     get:
       tags:
-      - commercial
+        - commercial
       summary: Service status
       description: Service status - Commercial operations APIs
       operationId: get__status
       security:
-      - OAuth2:
-        - commercial:read
+        - OAuth2:
+            - commercial:read
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -206,12 +206,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - commercial:read
-- ApiKey: []
+  - OAuth2:
+      - commercial:read
+  - ApiKey: []
 tags:
-- name: commercial
-  description: Commercial operations
-  externalDocs:
-    description: Find out more about commercial
-    url: https://docs.terrafusion.gov/marketplace/commercial
+  - name: commercial
+    description: Commercial operations
+    externalDocs:
+      description: Find out more about commercial
+      url: https://docs.terrafusion.gov/marketplace/commercial

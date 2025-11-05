@@ -2,10 +2,7 @@
   "idm": 56697,
   "building": 1407881152,
   "indoors_env": "prod",
-  "recordings": [
-    23855,
-    23842
-  ],
+  "recordings": [23855, 23842],
   "api_key": "8746eacf-8a29-4d25-b29a-3f64b9255689",
   "meta": "ESRI_campus_new_Bluetooth"
 }

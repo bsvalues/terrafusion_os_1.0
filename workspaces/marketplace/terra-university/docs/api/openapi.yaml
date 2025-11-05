@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/terra-university
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/terra-university
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/terra-university
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/terra-university
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/terra-university
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/terra-university
+    description: Development Environment
 paths:
   /health:
     get:
       tags:
-      - terra-university
+        - terra-university
       summary: Health check
       description: Health check - Terra University operations APIs
       operationId: get__health
       security:
-      - OAuth2:
-        - terra-university:read
+        - OAuth2:
+            - terra-university:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /data:
     get:
       tags:
-      - terra-university
+        - terra-university
       summary: Data retrieval
       description: Data retrieval - Terra University operations APIs
       operationId: get__data
       security:
-      - OAuth2:
-        - terra-university:read
+        - OAuth2:
+            - terra-university:read
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /operations:
     post:
       tags:
-      - terra-university
+        - terra-university
       summary: Operation execution
       description: Operation execution - Terra University operations APIs
       operationId: post__operations
       security:
-      - OAuth2:
-        - terra-university:write
+        - OAuth2:
+            - terra-university:write
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /status:
     get:
       tags:
-      - terra-university
+        - terra-university
       summary: Service status
       description: Service status - Terra University operations APIs
       operationId: get__status
       security:
-      - OAuth2:
-        - terra-university:read
+        - OAuth2:
+            - terra-university:read
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -206,12 +206,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - terra-university:read
-- ApiKey: []
+  - OAuth2:
+      - terra-university:read
+  - ApiKey: []
 tags:
-- name: terra-university
-  description: Terra University operations
-  externalDocs:
-    description: Find out more about terra-university
-    url: https://docs.terrafusion.gov/marketplace/terra-university
+  - name: terra-university
+    description: Terra University operations
+    externalDocs:
+      description: Find out more about terra-university
+      url: https://docs.terrafusion.gov/marketplace/terra-university

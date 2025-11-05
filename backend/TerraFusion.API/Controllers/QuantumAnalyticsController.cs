@@ -11,6 +11,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.AI.Services;
 using TerraFusion.Core.Entities;
+using WorkflowExecution = TerraFusion.Core.Entities.WorkflowExecution;
 
 namespace TerraFusion.API.Controllers;
 
@@ -63,8 +64,8 @@ public class QuantumAnalyticsController : ControllerBase
     [HttpGet("notebooks/{id}")]
     public async Task<ActionResult<QuantumNotebook>> GetNotebook(
         int id,
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         var notebook = await _quantumAnalyticsService.GetNotebookAsync(id, userId, countyId);
         if (notebook == null)
@@ -80,8 +81,8 @@ public class QuantumAnalyticsController : ControllerBase
     /// </summary>
     [HttpGet("notebooks")]
     public async Task<ActionResult<IEnumerable<QuantumNotebook>>> GetUserNotebooks(
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         var notebooks = await _quantumAnalyticsService.GetUserNotebooksAsync(userId, countyId);
         return Ok(notebooks);
@@ -131,8 +132,8 @@ public class QuantumAnalyticsController : ControllerBase
     [HttpDelete("notebooks/{id}")]
     public async Task<IActionResult> DeleteNotebook(
         int id,
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         var deleted = await _quantumAnalyticsService.DeleteNotebookAsync(id, userId, countyId);
         if (!deleted)
@@ -149,8 +150,8 @@ public class QuantumAnalyticsController : ControllerBase
     [HttpPost("notebooks/{id}/execute")]
     public async Task<ActionResult<QuantumNotebook>> ExecuteNotebook(
         int id,
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         try
         {
@@ -199,8 +200,8 @@ public class QuantumAnalyticsController : ControllerBase
     [HttpGet("analysis/{id}")]
     public async Task<ActionResult<AnalysisResult>> GetAnalysisResult(
         int id,
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         var result = await _quantumAnalyticsService.GetAnalysisResultAsync(id, userId, countyId);
         if (result == null)
@@ -216,8 +217,8 @@ public class QuantumAnalyticsController : ControllerBase
     /// </summary>
     [HttpGet("analysis")]
     public async Task<ActionResult<IEnumerable<AnalysisResult>>> GetUserAnalysisResults(
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         var results = await _quantumAnalyticsService.GetUserAnalysisResultsAsync(userId, countyId);
         return Ok(results);
@@ -228,8 +229,8 @@ public class QuantumAnalyticsController : ControllerBase
     /// </summary>
     [HttpGet("analysis/significant")]
     public async Task<ActionResult<IEnumerable<AnalysisResult>>> GetSignificantResults(
-        [FromQuery] int userId,
-        [FromQuery] int countyId,
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId,
         [FromQuery] double pValueThreshold = 0.05)
     {
         var results = await _quantumAnalyticsService.GetSignificantResultsAsync(userId, countyId, pValueThreshold);
@@ -241,8 +242,8 @@ public class QuantumAnalyticsController : ControllerBase
     /// </summary>
     [HttpGet("analysis/statistics")]
     public async Task<ActionResult<object>> GetAnalysisStatistics(
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         var statistics = await _quantumAnalyticsService.GetAnalysisStatisticsAsync(userId, countyId);
         return Ok(statistics);
@@ -281,8 +282,8 @@ public class QuantumAnalyticsController : ControllerBase
     [HttpGet("workflows/{id}")]
     public async Task<ActionResult<Workflow>> GetWorkflow(
         int id,
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         var workflow = await _quantumAnalyticsService.GetWorkflowAsync(id, userId, countyId);
         if (workflow == null)
@@ -298,8 +299,8 @@ public class QuantumAnalyticsController : ControllerBase
     /// </summary>
     [HttpGet("workflows")]
     public async Task<ActionResult<IEnumerable<Workflow>>> GetUserWorkflows(
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         var workflows = await _quantumAnalyticsService.GetUserWorkflowsAsync(userId, countyId);
         return Ok(workflows);
@@ -348,8 +349,8 @@ public class QuantumAnalyticsController : ControllerBase
     [HttpPost("workflows/{workflowId}/executions")]
     public async Task<ActionResult<WorkflowExecution>> StartWorkflowExecution(
         int workflowId,
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         try
         {
@@ -416,8 +417,8 @@ public class QuantumAnalyticsController : ControllerBase
     [HttpGet("workflows/{workflowId}/executions")]
     public async Task<ActionResult<IEnumerable<WorkflowExecution>>> GetWorkflowExecutionHistory(
         int workflowId,
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         var executions = await _quantumAnalyticsService.GetWorkflowExecutionHistoryAsync(workflowId, userId, countyId);
         return Ok(executions);
@@ -429,8 +430,8 @@ public class QuantumAnalyticsController : ControllerBase
     [HttpGet("workflows/{workflowId}/executions/statistics")]
     public async Task<ActionResult<object>> GetWorkflowExecutionStatistics(
         int workflowId,
-        [FromQuery] int userId,
-        [FromQuery] int countyId)
+        [FromQuery] Guid userId,
+        [FromQuery] Guid countyId)
     {
         try
         {
@@ -448,11 +449,11 @@ public class QuantumAnalyticsController : ControllerBase
 
     #region Request Models
 
-    public record CreateNotebookRequest(int UserId, int CountyId, string Name, string? Language = null);
-    public record UpdateNotebookRequest(int UserId, int CountyId, string? Name, string? Description, string? CellsJson, string? Language, bool? IsFavorite);
-    public record RunAnalysisRequest(int UserId, int CountyId, string AnalysisType, double[] Data1, double[]? Data2 = null, int? NotebookId = null);
-    public record CreateWorkflowRequest(int UserId, int CountyId, string Name, string? Category = null);
-    public record CreateFromTemplateRequest(int TemplateId, int UserId, int CountyId, string Name);
+    public record CreateNotebookRequest(Guid UserId, Guid CountyId, string Name, string? Language = null);
+    public record UpdateNotebookRequest(Guid UserId, Guid CountyId, string? Name, string? Description, string? CellsJson, string? Language, bool? IsFavorite);
+    public record RunAnalysisRequest(Guid UserId, Guid CountyId, string AnalysisType, double[] Data1, double[]? Data2 = null, int? NotebookId = null);
+    public record CreateWorkflowRequest(Guid UserId, Guid CountyId, string Name, string? Category = null);
+    public record CreateFromTemplateRequest(int TemplateId, Guid UserId, Guid CountyId, string Name);
     public record UpdateProgressRequest(int NodesExecuted, int NodesFailed);
     public record CompleteExecutionRequest(string Status, string? ErrorMessage = null);
 

@@ -220,10 +220,22 @@
         "dataEndpoint": "/api/quantum/counties/status",
         "refreshInterval": 10,
         "counties": [
-          "King County", "Pierce County", "Snohomish County", "Spokane County",
-          "Clark County", "Thurston County", "Whatcom County", "Benton County",
-          "Franklin County", "Yakima County", "Kitsap County", "Cowlitz County",
-          "Grant County", "Island County", "Clallam County", "Chelan County"
+          "King County",
+          "Pierce County",
+          "Snohomish County",
+          "Spokane County",
+          "Clark County",
+          "Thurston County",
+          "Whatcom County",
+          "Benton County",
+          "Franklin County",
+          "Yakima County",
+          "Kitsap County",
+          "Cowlitz County",
+          "Grant County",
+          "Island County",
+          "Clallam County",
+          "Chelan County"
         ],
         "statusIndicators": {
           "quantumActive": { "color": "#00FFFF", "icon": "🚀" },
@@ -502,7 +514,10 @@
           "focus": { "threshold": 80, "color": "#00FFAA" },
           "stress": { "threshold": 20, "color": "#FF4444", "inverted": true },
           "cognitiveLoad": { "threshold": 85, "color": "#FFD700" },
-          "mentalState": { "display": "text", "className": "text-[#FFFFFF] font-bold" }
+          "mentalState": {
+            "display": "text",
+            "className": "text-[#FFFFFF] font-bold"
+          }
         }
       }
     },
@@ -746,7 +761,9 @@
       "keyframes": {
         "0%": { "textShadow": "0 0 10px #FFD700" },
         "25%": { "textShadow": "0 0 20px #FFD700, 0 0 30px #FFD700" },
-        "50%": { "textShadow": "0 0 40px #FFD700, 0 0 50px #FFD700, 0 0 60px #FFD700" },
+        "50%": {
+          "textShadow": "0 0 40px #FFD700, 0 0 50px #FFD700, 0 0 60px #FFD700"
+        },
         "75%": { "textShadow": "0 0 20px #FFD700, 0 0 30px #FFD700" },
         "100%": { "textShadow": "0 0 10px #FFD700" }
       }
@@ -756,10 +773,18 @@
       "duration": "4s",
       "iterations": "infinite",
       "keyframes": {
-        "0%": { "textShadow": "0 0 15px #FF6B6B, 0 0 25px #FFD700, 0 0 35px #00FFFF" },
-        "33%": { "textShadow": "0 0 25px #00FFAA, 0 0 35px #0099FF, 0 0 45px #FF6B6B" },
-        "66%": { "textShadow": "0 0 35px #FFD700, 0 0 45px #00FFFF, 0 0 55px #00FFAA" },
-        "100%": { "textShadow": "0 0 15px #FF6B6B, 0 0 25px #FFD700, 0 0 35px #00FFFF" }
+        "0%": {
+          "textShadow": "0 0 15px #FF6B6B, 0 0 25px #FFD700, 0 0 35px #00FFFF"
+        },
+        "33%": {
+          "textShadow": "0 0 25px #00FFAA, 0 0 35px #0099FF, 0 0 45px #FF6B6B"
+        },
+        "66%": {
+          "textShadow": "0 0 35px #FFD700, 0 0 45px #00FFFF, 0 0 55px #00FFAA"
+        },
+        "100%": {
+          "textShadow": "0 0 15px #FF6B6B, 0 0 25px #FFD700, 0 0 35px #00FFFF"
+        }
       }
     }
   },

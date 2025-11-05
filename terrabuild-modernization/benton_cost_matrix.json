@@ -121,20 +121,8 @@
       }
     }
   ],
-  "regions": [
-    "Central Benton",
-    "East Benton",
-    "West Benton"
-  ],
-  "buildingTypes": [
-    "A1",
-    "C1",
-    "C4",
-    "I1",
-    "R1",
-    "R2",
-    "S1"
-  ],
+  "regions": ["Central Benton", "East Benton", "West Benton"],
+  "buildingTypes": ["A1", "C1", "C4", "I1", "R1", "R2", "S1"],
   "matrixYear": 2025,
   "errors": [],
   "rowCount": 7

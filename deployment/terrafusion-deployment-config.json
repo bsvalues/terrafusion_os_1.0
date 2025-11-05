@@ -72,10 +72,7 @@
       "trust",
       "services"
     ],
-    "validation_ecosystem": [
-      "validation",
-      "terrafusion-ecosystem"
-    ]
+    "validation_ecosystem": ["validation", "terrafusion-ecosystem"]
   },
   "ai_systems": {
     "agent_count": 1008,

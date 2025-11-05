@@ -2,15 +2,18 @@
 
 .tf-main-container {
   min-height: 100vh;
-  background-color: #0A0E1A;
-  color: #00FFFF;
-  font-family: system-ui, -apple-system, sans-serif;
+  background-color: #0a0e1a;
+  color: #00ffff;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 /* Header Styles */
 .tf-header {
   border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-  background-color: #0A0E1A;
+  background-color: #0a0e1a;
 }
 
 .tf-header-content {
@@ -29,7 +32,7 @@
 .tf-title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #00FFFF;
+  color: #00ffff;
   margin: 0;
 }
 
@@ -47,14 +50,14 @@
 .tf-button {
   background-color: rgba(0, 255, 255, 0.1);
   border: 1px solid rgba(0, 255, 255, 0.2);
-  color: #00FFFF;
+  color: #00ffff;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .tf-status {
-  color: #00FFFF;
+  color: #00ffff;
 }
 
 /* Content Wrapper */
@@ -67,7 +70,7 @@
 .tf-sidebar {
   width: 16rem;
   border-right: 1px solid rgba(0, 255, 255, 0.2);
-  background-color: #0A0E1A;
+  background-color: #0a0e1a;
 }
 
 .tf-sidebar-nav {
@@ -89,7 +92,7 @@
 
 .tf-nav-text {
   font-size: 0.875rem;
-  color: #00FFFF;
+  color: #00ffff;
 }
 
 .tf-quick-actions {
@@ -102,7 +105,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 0.75rem;
-  color: #00FFFF;
+  color: #00ffff;
 }
 
 .tf-action-buttons {
@@ -119,7 +122,7 @@
   font-weight: 500;
   background-color: rgba(0, 255, 255, 0.1);
   border: 1px solid rgba(0, 255, 255, 0.2);
-  color: #00FFFF;
+  color: #00ffff;
   cursor: pointer;
 }
 
@@ -146,7 +149,7 @@
 .tf-section-title {
   font-size: 1.5rem;
   font-weight: 300;
-  color: #00FFFF;
+  color: #00ffff;
   margin: 0;
 }
 
@@ -174,7 +177,7 @@
 .tf-stat-value {
   font-size: 1.5rem;
   font-weight: 300;
-  color: #00FFFF;
+  color: #00ffff;
 }
 
 .tf-stat-desc {
@@ -216,7 +219,14 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, #00FFFF 0deg, transparent 90deg, #00FFFF 180deg, transparent 270deg, #00FFFF 360deg);
+  background: conic-gradient(
+    from 0deg,
+    #00ffff 0deg,
+    transparent 90deg,
+    #00ffff 180deg,
+    transparent 270deg,
+    #00ffff 360deg
+  );
   margin-right: 1rem;
   position: relative;
 }
@@ -229,13 +239,13 @@
   width: 80%;
   height: 80%;
   border-radius: 50%;
-  background-color: #0A0E1A;
+  background-color: #0a0e1a;
 }
 
 .tf-agent-name {
   font-size: 1.125rem;
   font-weight: 500;
-  color: #00FFFF;
+  color: #00ffff;
   margin: 0;
 }
 
@@ -266,7 +276,7 @@
 
 .tf-cap-item {
   font-size: 0.875rem;
-  color: #FFFFFF;
+  color: #ffffff;
   margin-bottom: 0.25rem;
 }
 
@@ -278,7 +288,7 @@
 
 .tf-risk-level {
   font-size: 0.875rem;
-  color: #00FFFF;
+  color: #00ffff;
 }
 
 .tf-agent-footer {
@@ -294,7 +304,7 @@
 .tf-footer {
   border-top: 1px solid rgba(0, 255, 255, 0.2);
   padding: 0.75rem;
-  background-color: #0A0E1A;
+  background-color: #0a0e1a;
 }
 
 .tf-footer-content {
@@ -318,5 +328,5 @@
 
 .tf-footer-left span,
 .tf-footer-right span {
-  color: #00FFFF;
+  color: #00ffff;
 }

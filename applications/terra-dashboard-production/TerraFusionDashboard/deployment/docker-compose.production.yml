@@ -14,12 +14,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./production-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - terrafusion-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U terrafusion -d terrafusion_prod"]
+      test: ['CMD-SHELL', 'pg_isready -U terrafusion -d terrafusion_prod']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -32,12 +32,12 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - terrafusion-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -55,7 +55,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       PORT: 5000
     ports:
-      - "5000:5000"
+      - '5000:5000'
     depends_on:
       postgres:
         condition: service_healthy
@@ -65,7 +65,15 @@ services:
       - terrafusion-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/system/health"]
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:5000/api/system/health',
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -78,8 +86,8 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/nginx/ssl
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     depends_on:
       - app
     networks:
@@ -101,7 +109,7 @@ services:
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
     ports:
-      - "9090:9090"
+      - '9090:9090'
     networks:
       - terrafusion-network
     restart: unless-stopped
@@ -116,7 +124,7 @@ services:
       - grafana_data:/var/lib/grafana
       - ./grafana-dashboards:/etc/grafana/provisioning/dashboards
     ports:
-      - "3000:3000"
+      - '3000:3000'
     networks:
       - terrafusion-network
     restart: unless-stopped
@@ -125,7 +133,7 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
-    driver: local  
+    driver: local
   prometheus_data:
     driver: local
   grafana_data:

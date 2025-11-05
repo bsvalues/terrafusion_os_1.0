@@ -1,8 +1,6 @@
 {
   "TRE": "PIAEQA",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix C: PIAE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix C: PIAE"],
   "Name": "Profile for Imagery Access Equipment Extension Version A",
   "Description": "The Profile for Imagery Access Equipment Extension Version A (PIAEQA) TRE was created to provide space in the NITF file for data contained in the archive that is specifically related to equipment that is contained in an image. This extension shall be present for each instance of equipment identified in an image. There may be up to 250 occurrences of this extension for each data type in an NITF file.",
   "Size": 130,

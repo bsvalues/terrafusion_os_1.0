@@ -24,7 +24,8 @@
     transform: scale(0.5);
     opacity: 0.2;
   }
-  70%, 100% {
+  70%,
+  100% {
     transform: scale(2);
     opacity: 0;
   }

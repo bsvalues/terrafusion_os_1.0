@@ -12,412 +12,261 @@
     "build_order": 1
   },
   "costforge_ai_workspace": {
-    "provides_services": [
-      "CostForge.AI.Services",
-      "PropertyValuation.Engine"
-    ],
+    "provides_services": ["CostForge.AI.Services", "PropertyValuation.Engine"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "COORDINATED_WITH_SUPREME",
     "build_order": 2
   },
   "terrabuild_modernization": {
-    "provides_services": [
-      "TerraBuild.Modernization",
-      "Legacy.Integration"
-    ],
+    "provides_services": ["TerraBuild.Modernization", "Legacy.Integration"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main",
-      "costforge_ai_workspace"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main", "costforge_ai_workspace"],
     "coordination_level": "COORDINATED_WITH_SUPREME",
     "build_order": 2
   },
   "marketplace_api": {
-    "provides_services": [
-      "Marketplace.api"
-    ],
+    "provides_services": ["Marketplace.api"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_autonomous-research-engine": {
-    "provides_services": [
-      "Marketplace.autonomous-research-engine"
-    ],
+    "provides_services": ["Marketplace.autonomous-research-engine"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_commercial": {
-    "provides_services": [
-      "Marketplace.commercial"
-    ],
+    "provides_services": ["Marketplace.commercial"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_commercial-suite": {
-    "provides_services": [
-      "Marketplace.commercial-suite"
-    ],
+    "provides_services": ["Marketplace.commercial-suite"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_costforge-ai": {
-    "provides_services": [
-      "Marketplace.costforge-ai"
-    ],
+    "provides_services": ["Marketplace.costforge-ai"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_government-core": {
-    "provides_services": [
-      "Marketplace.government-core"
-    ],
+    "provides_services": ["Marketplace.government-core"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_government-edition": {
-    "provides_services": [
-      "Marketplace.government-edition"
-    ],
+    "provides_services": ["Marketplace.government-edition"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_LeafScope": {
-    "provides_services": [
-      "Marketplace.LeafScope"
-    ],
+    "provides_services": ["Marketplace.LeafScope"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_marketplace-frontend": {
-    "provides_services": [
-      "Marketplace.marketplace-frontend"
-    ],
+    "provides_services": ["Marketplace.marketplace-frontend"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_plugins": {
-    "provides_services": [
-      "Marketplace.plugins"
-    ],
+    "provides_services": ["Marketplace.plugins"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_property-workbench": {
-    "provides_services": [
-      "Marketplace.property-workbench"
-    ],
+    "provides_services": ["Marketplace.property-workbench"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_RAGPanel": {
-    "provides_services": [
-      "Marketplace.RAGPanel"
-    ],
+    "provides_services": ["Marketplace.RAGPanel"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_revenue": {
-    "provides_services": [
-      "Marketplace.revenue"
-    ],
+    "provides_services": ["Marketplace.revenue"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_shock-and-awe": {
-    "provides_services": [
-      "Marketplace.shock-and-awe"
-    ],
+    "provides_services": ["Marketplace.shock-and-awe"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_store": {
-    "provides_services": [
-      "Marketplace.store"
-    ],
+    "provides_services": ["Marketplace.store"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_submissions": {
-    "provides_services": [
-      "Marketplace.submissions"
-    ],
+    "provides_services": ["Marketplace.submissions"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_templates": {
-    "provides_services": [
-      "Marketplace.templates"
-    ],
+    "provides_services": ["Marketplace.templates"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_terra-bank": {
-    "provides_services": [
-      "Marketplace.terra-bank"
-    ],
+    "provides_services": ["Marketplace.terra-bank"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_terra-collections": {
-    "provides_services": [
-      "Marketplace.terra-collections"
-    ],
+    "provides_services": ["Marketplace.terra-collections"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_terra-flow": {
-    "provides_services": [
-      "Marketplace.terra-flow"
-    ],
+    "provides_services": ["Marketplace.terra-flow"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_terra-fusion-dashboard": {
-    "provides_services": [
-      "Marketplace.terra-fusion-dashboard"
-    ],
+    "provides_services": ["Marketplace.terra-fusion-dashboard"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_terra-fusion-sync": {
-    "provides_services": [
-      "Marketplace.terra-fusion-sync"
-    ],
+    "provides_services": ["Marketplace.terra-fusion-sync"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_terra-insight": {
-    "provides_services": [
-      "Marketplace.terra-insight"
-    ],
+    "provides_services": ["Marketplace.terra-insight"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_terra-justice": {
-    "provides_services": [
-      "Marketplace.terra-justice"
-    ],
+    "provides_services": ["Marketplace.terra-justice"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_terra-levy": {
-    "provides_services": [
-      "Marketplace.terra-levy"
-    ],
+    "provides_services": ["Marketplace.terra-levy"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_terra-net": {
-    "provides_services": [
-      "Marketplace.terra-net"
-    ],
+    "provides_services": ["Marketplace.terra-net"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_terra-sync": {
-    "provides_services": [
-      "Marketplace.terra-sync"
-    ],
+    "provides_services": ["Marketplace.terra-sync"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_terra-university": {
-    "provides_services": [
-      "Marketplace.terra-university"
-    ],
+    "provides_services": ["Marketplace.terra-university"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_TerraFusion-PublicRecords": {
-    "provides_services": [
-      "Marketplace.TerraFusion-PublicRecords"
-    ],
+    "provides_services": ["Marketplace.TerraFusion-PublicRecords"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_TerraFusionIDE": {
-    "provides_services": [
-      "Marketplace.TerraFusionIDE"
-    ],
+    "provides_services": ["Marketplace.TerraFusionIDE"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_testing": {
-    "provides_services": [
-      "Marketplace.testing"
-    ],
+    "provides_services": ["Marketplace.testing"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "marketplace_unified-system": {
-    "provides_services": [
-      "Marketplace.unified-system"
-    ],
+    "provides_services": ["Marketplace.unified-system"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "SUPERVISED_COORDINATION",
     "build_order": 3
   },
   "testing_tests": {
-    "provides_services": [
-      "Testing.tests"
-    ],
+    "provides_services": ["Testing.tests"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "COORDINATED_WITH_SUPREME",
     "build_order": 3
   },
   "testing_testing-coordination": {
-    "provides_services": [
-      "Testing.testing-coordination"
-    ],
+    "provides_services": ["Testing.testing-coordination"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "COORDINATED_WITH_SUPREME",
     "build_order": 3
   },
   "testing_generated_tests": {
-    "provides_services": [
-      "Testing.generated_tests"
-    ],
+    "provides_services": ["Testing.generated_tests"],
     "consumes_services": [],
-    "dependency_workspaces": [
-      "terrafusion_os_main"
-    ],
+    "dependency_workspaces": ["terrafusion_os_main"],
     "coordination_level": "COORDINATED_WITH_SUPREME",
     "build_order": 3
   }

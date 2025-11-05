@@ -33,10 +33,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "0",
-            "1"
-          ]
+          "Values": ["0", "1"]
         }
       ]
     },
@@ -121,9 +118,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "pixels"
-      ],
+      "Units": ["pixels"],
       "Values": [
         {
           "Type": "Range",
@@ -178,9 +173,7 @@
       "Size": 8,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "seconds"
-      ],
+      "Units": ["seconds"],
       "Values": [
         {
           "Type": "Range",
@@ -195,9 +188,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -212,9 +203,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "feet/second^2"
-      ],
+      "Units": ["feet/second^2"],
       "Values": [
         {
           "Type": "Range",
@@ -229,9 +218,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "feet/second"
-      ],
+      "Units": ["feet/second"],
       "Values": [
         {
           "Type": "Range",
@@ -246,9 +233,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "feet/second"
-      ],
+      "Units": ["feet/second"],
       "Values": [
         {
           "Type": "Range",
@@ -263,9 +248,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "feet/second"
-      ],
+      "Units": ["feet/second"],
       "Values": [
         {
           "Type": "Range",
@@ -280,9 +263,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "seconds"
-      ],
+      "Units": ["seconds"],
       "Values": [
         {
           "Type": "Range",
@@ -297,9 +278,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "seconds"
-      ],
+      "Units": ["seconds"],
       "Values": [
         {
           "Type": "Range",
@@ -314,9 +293,7 @@
       "Size": 3,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -331,9 +308,7 @@
       "Size": 6,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",

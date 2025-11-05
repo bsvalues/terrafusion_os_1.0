@@ -235,7 +235,7 @@ namespace TerraFusion.AI.Services
             {
                 MessageId = Guid.NewGuid().ToString(),
                 Content = content,
-                Confidence = swarmResponse.ConfidenceScore,
+                Confidence = (double)swarmResponse.ConfidenceScore,
                 Suggestions = suggestions,
                 Metadata = swarmResponse.Results,
                 Timestamp = DateTime.UtcNow,

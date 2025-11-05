@@ -70,9 +70,7 @@
     "Properties-Base": {
       "MapBackgroundColor": {
         "Aliases": [],
-        "SourcePaths": [
-          "$/FileHeader/FBKGC$"
-        ]
+        "SourcePaths": ["$/FileHeader/FBKGC$"]
       }
     },
     "NCDRDProduct-Base": {
@@ -97,7 +95,7 @@
         "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral8Bands-Basic",
         "LayerDefinitions.json#NCDRDPrimaryImage-SWIR8",
         "LayerDefinitions.json#NCDRDPrimaryImage-CAVIS6",
-        
+
         "LayerDefinitions.json#NCDRDCatalogImage-Panchromatic-Basic",
         "LayerDefinitions.json#NCDRDCatalogImage-Multispectral3Bands-Basic",
         "LayerDefinitions.json#NCDRDCatalogImage-Multispectral4Bands-Basic",
@@ -148,7 +146,7 @@
         "MosaicDefinitions.json#MosaicDefinition-Catalog-BasicRGB"
       ]
     },
-	"NCDRDProduct-Basic-MSI4": {
+    "NCDRDProduct-Basic-MSI4": {
       "ref": "#NCDRDProduct-Base",
       "Name": "@{SensorName} Basic MSI (4 Bands)",
       "Type": "Basic MSI",
@@ -257,7 +255,7 @@
         "MosaicDefinitions.json#MosaicDefinition-Default-GeoRGB",
         "MosaicDefinitions.json#MosaicDefinition-Catalog-GeoRGB"
       ]
-    },    
+    },
     "NCDRDProduct-Geo-MSI4": {
       "ref": "#NCDRDProduct-Base",
       "Name": "@{SensorName} Geo MSI (4 Bands)",

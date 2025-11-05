@@ -16,11 +16,7 @@
   },
   "vr_environment": {
     "enabled": true,
-    "platforms": [
-      "Meta Quest 3",
-      "HTC Vive Pro",
-      "Valve Index"
-    ],
+    "platforms": ["Meta Quest 3", "HTC Vive Pro", "Valve Index"],
     "experience_type": "privacy_command_center",
     "immersion_level": "full_6dof",
     "spatial_audio": true,
@@ -28,11 +24,7 @@
   },
   "ar_compliance_interface": {
     "enabled": true,
-    "platforms": [
-      "iOS",
-      "Android",
-      "HoloLens 2"
-    ],
+    "platforms": ["iOS", "Android", "HoloLens 2"],
     "features": {
       "real_time_privacy_overlay": true,
       "compliance_score_display": true,
@@ -49,11 +41,7 @@
   },
   "metaverse_integration": {
     "enabled": true,
-    "platforms": [
-      "Decentraland",
-      "The Sandbox",
-      "Roblox"
-    ],
+    "platforms": ["Decentraland", "The Sandbox", "Roblox"],
     "features": {
       "privacy_embassy": true,
       "collaborative_spaces": true,

@@ -14,23 +14,23 @@ spec:
   selector:
     istio: ingressgateway
   servers:
-  - port:
-      number: 443
-      name: https
-      protocol: HTTPS
-    tls:
-      mode: TERMINATE
-      credentialName: terrafusion-ai-tls-cert
-    hosts:
-    - "ai-agents.${ENVIRONMENT}.terrafusion.gov"
-  - port:
-      number: 80
-      name: http
-      protocol: HTTP
-    hosts:
-    - "ai-agents.${ENVIRONMENT}.terrafusion.gov"
-    tls:
-      httpsRedirect: true
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: TERMINATE
+        credentialName: terrafusion-ai-tls-cert
+      hosts:
+        - 'ai-agents.${ENVIRONMENT}.terrafusion.gov'
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - 'ai-agents.${ENVIRONMENT}.terrafusion.gov'
+      tls:
+        httpsRedirect: true
 ---
 # Virtual Service for AI Agent Routing
 apiVersion: networking.istio.io/v1beta1
@@ -43,42 +43,42 @@ metadata:
     tier: traffic-management
 spec:
   hosts:
-  - "ai-agents.${ENVIRONMENT}.terrafusion.gov"
+    - 'ai-agents.${ENVIRONMENT}.terrafusion.gov'
   gateways:
-  - terrafusion-ai-agents-gateway
+    - terrafusion-ai-agents-gateway
   http:
-  - match:
-    - uri:
-        prefix: "/api/v1/agents"
-    route:
-    - destination:
-        host: terrafusion-ai-agent-workers-service.terrafusion-ai-agents.svc.cluster.local
-        port:
-          number: 8081
-      weight: 100
-    fault:
-      delay:
-        percentage:
-          value: 0.1
-        fixedDelay: 5s
-    retries:
-      attempts: 3
-      perTryTimeout: 10s
-      retryOn: gateway-error,connect-failure,refused-stream
-  - match:
-    - uri:
-        prefix: "/api/v1/control"
-    route:
-    - destination:
-        host: terrafusion-ai-agent-master-service.terrafusion-ai-agents.svc.cluster.local
-        port:
-          number: 8080
-      weight: 100
-    headers:
-      request:
-        set:
-          x-terrafusion-environment: "${ENVIRONMENT}"
-          x-quantum-factor: "${QUANTUM_FACTOR}"
+    - match:
+        - uri:
+            prefix: '/api/v1/agents'
+      route:
+        - destination:
+            host: terrafusion-ai-agent-workers-service.terrafusion-ai-agents.svc.cluster.local
+            port:
+              number: 8081
+          weight: 100
+      fault:
+        delay:
+          percentage:
+            value: 0.1
+          fixedDelay: 5s
+      retries:
+        attempts: 3
+        perTryTimeout: 10s
+        retryOn: gateway-error,connect-failure,refused-stream
+    - match:
+        - uri:
+            prefix: '/api/v1/control'
+      route:
+        - destination:
+            host: terrafusion-ai-agent-master-service.terrafusion-ai-agents.svc.cluster.local
+            port:
+              number: 8080
+          weight: 100
+      headers:
+        request:
+          set:
+            x-terrafusion-environment: '${ENVIRONMENT}'
+            x-quantum-factor: '${QUANTUM_FACTOR}'
 ---
 # Destination Rule for AI Agent Load Balancing
 apiVersion: networking.istio.io/v1beta1
@@ -94,7 +94,7 @@ spec:
   trafficPolicy:
     loadBalancer:
       consistentHash:
-        httpHeaderName: "x-agent-id"
+        httpHeaderName: 'x-agent-id'
     connectionPool:
       tcp:
         maxConnections: 100
@@ -117,26 +117,26 @@ spec:
       maxEjectionPercent: 50
       minHealthPercent: 50
   subsets:
-  - name: championship
-    labels:
-      quantum-level: championship
-    trafficPolicy:
-      portLevelSettings:
-      - port:
-          number: 8081
-        connectionPool:
-          tcp:
-            maxConnections: 50
-  - name: transcended
-    labels:
-      quantum-level: transcended
-    trafficPolicy:
-      portLevelSettings:
-      - port:
-          number: 8080
-        connectionPool:
-          tcp:
-            maxConnections: 25
+    - name: championship
+      labels:
+        quantum-level: championship
+      trafficPolicy:
+        portLevelSettings:
+          - port:
+              number: 8081
+            connectionPool:
+              tcp:
+                maxConnections: 50
+    - name: transcended
+      labels:
+        quantum-level: transcended
+      trafficPolicy:
+        portLevelSettings:
+          - port:
+              number: 8080
+            connectionPool:
+              tcp:
+                maxConnections: 25
 ---
 # Service Entry for Cross-Cloud Communication
 apiVersion: networking.istio.io/v1beta1
@@ -149,12 +149,12 @@ metadata:
     tier: cross-cloud-connectivity
 spec:
   hosts:
-  - "eks.us-gov-west-1.amazonaws.com"
-  - "s3.us-gov-west-1.amazonaws.com"
+    - 'eks.us-gov-west-1.amazonaws.com'
+    - 's3.us-gov-west-1.amazonaws.com'
   ports:
-  - number: 443
-    name: https
-    protocol: HTTPS
+    - number: 443
+      name: https
+      protocol: HTTPS
   location: MESH_EXTERNAL
   resolution: DNS
 ---
@@ -173,20 +173,21 @@ spec:
       app: terrafusion-ai-agent-workers
   action: ALLOW
   rules:
-  - from:
-    - source:
-        principals: ["cluster.local/ns/terrafusion-ai-agents/sa/terrafusion-ai-agent-service-account"]
-    - source:
-        namespaces: ["istio-system"]
-  - to:
-    - operation:
-        methods: ["GET", "POST"]
-        paths: ["/api/v1/*", "/health/*", "/metrics"]
-  - when:
-    - key: request.headers[x-terrafusion-environment]
-      values: ["${ENVIRONMENT}"]
-    - key: request.headers[x-quantum-factor]
-      values: ["${QUANTUM_FACTOR}"]
+    - from:
+        - source:
+            principals:
+              ['cluster.local/ns/terrafusion-ai-agents/sa/terrafusion-ai-agent-service-account']
+        - source:
+            namespaces: ['istio-system']
+    - to:
+        - operation:
+            methods: ['GET', 'POST']
+            paths: ['/api/v1/*', '/health/*', '/metrics']
+    - when:
+        - key: request.headers[x-terrafusion-environment]
+          values: ['${ENVIRONMENT}']
+        - key: request.headers[x-quantum-factor]
+          values: ['${QUANTUM_FACTOR}']
 ---
 # Peer Authentication for mTLS
 apiVersion: security.istio.io/v1beta1
@@ -218,11 +219,11 @@ spec:
     matchLabels:
       app: terrafusion-ai-agent-workers
   jwtRules:
-  - issuer: "https://sts.windows.net/${AZURE_TENANT_ID}/"
-    jwksUri: "https://login.microsoftonline.us/${AZURE_TENANT_ID}/discovery/v2.0/keys"
-    audiences:
-    - "api://terrafusion-ai-agents-${ENVIRONMENT}"
-    forwardOriginalToken: true
+    - issuer: 'https://sts.windows.net/${AZURE_TENANT_ID}/'
+      jwksUri: 'https://login.microsoftonline.us/${AZURE_TENANT_ID}/discovery/v2.0/keys'
+      audiences:
+        - 'api://terrafusion-ai-agents-${ENVIRONMENT}'
+      forwardOriginalToken: true
 ---
 # Telemetry Configuration for Observability
 apiVersion: telemetry.istio.io/v1alpha1
@@ -238,26 +239,26 @@ spec:
     matchLabels:
       app: terrafusion-ai-agent-workers
   metrics:
-  - providers:
-    - name: prometheus
-  - overrides:
-    - match:
-        metric: ALL_METRICS
-      tagOverrides:
-        quantum_factor:
-          value: "${QUANTUM_FACTOR}"
-        harmony_index:
-          value: "${HARMONY_INDEX}"
-        environment:
-          value: "${ENVIRONMENT}"
-        counties:
-          value: "${COUNTIES}"
+    - providers:
+        - name: prometheus
+    - overrides:
+        - match:
+            metric: ALL_METRICS
+          tagOverrides:
+            quantum_factor:
+              value: '${QUANTUM_FACTOR}'
+            harmony_index:
+              value: '${HARMONY_INDEX}'
+            environment:
+              value: '${ENVIRONMENT}'
+            counties:
+              value: '${COUNTIES}'
   tracing:
-  - providers:
-    - name: jaeger
+    - providers:
+        - name: jaeger
   accessLogging:
-  - providers:
-    - name: otel
+    - providers:
+        - name: otel
 ---
 # Sidecar Configuration for Resource Optimization
 apiVersion: networking.istio.io/v1beta1
@@ -273,29 +274,29 @@ spec:
     labels:
       app: terrafusion-ai-agent-workers
   ingress:
-  - port:
-      number: 8081
-      protocol: HTTP
-      name: http-api
-    defaultEndpoint: 127.0.0.1:8081
-  - port:
-      number: 8080
-      protocol: HTTP
-      name: http-metrics
-    defaultEndpoint: 127.0.0.1:8080
+    - port:
+        number: 8081
+        protocol: HTTP
+        name: http-api
+      defaultEndpoint: 127.0.0.1:8081
+    - port:
+        number: 8080
+        protocol: HTTP
+        name: http-metrics
+      defaultEndpoint: 127.0.0.1:8080
   egress:
-  - hosts:
-    - "./*"
-    - "istio-system/*"
-    - "kube-system/*"
-  - port:
-      number: 443
-      protocol: HTTPS
-      name: https-external
-    hosts:
-    - "eks.us-gov-west-1.amazonaws.com"
-    - "s3.us-gov-west-1.amazonaws.com"
-    - "*.core.usgovcloudapi.net"
+    - hosts:
+        - './*'
+        - 'istio-system/*'
+        - 'kube-system/*'
+    - port:
+        number: 443
+        protocol: HTTPS
+        name: https-external
+      hosts:
+        - 'eks.us-gov-west-1.amazonaws.com'
+        - 's3.us-gov-west-1.amazonaws.com'
+        - '*.core.usgovcloudapi.net'
 ---
 # Envoy Filter for Advanced Traffic Control
 apiVersion: networking.istio.io/v1alpha3
@@ -311,41 +312,41 @@ spec:
     labels:
       app: terrafusion-ai-agent-workers
   configPatches:
-  - applyTo: HTTP_FILTER
-    match:
-      context: SIDECAR_INBOUND
-      listener:
-        filterChain:
-          filter:
-            name: "envoy.filters.network.http_connection_manager"
-    patch:
-      operation: INSERT_BEFORE
-      value:
-        name: envoy.filters.http.local_ratelimit
-        typed_config:
-          "@type": type.googleapis.com/udpa.type.v1.TypedStruct
-          type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
-          value:
-            stat_prefix: terrafusion_ai_agents_rate_limiter
-            token_bucket:
-              max_tokens: 1000
-              tokens_per_fill: 100
-              fill_interval: 1s
-            filter_enabled:
-              runtime_key: terrafusion_ai_rate_limit_enabled
-              default_value:
-                numerator: 100
-                denominator: HUNDRED
-            filter_enforced:
-              runtime_key: terrafusion_ai_rate_limit_enforced
-              default_value:
-                numerator: 100
-                denominator: HUNDRED
-            response_headers_to_add:
-            - append: false
-              header:
-                key: x-terrafusion-rate-limit
-                value: "active"
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: 'envoy.filters.network.http_connection_manager'
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.local_ratelimit
+          typed_config:
+            '@type': type.googleapis.com/udpa.type.v1.TypedStruct
+            type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+            value:
+              stat_prefix: terrafusion_ai_agents_rate_limiter
+              token_bucket:
+                max_tokens: 1000
+                tokens_per_fill: 100
+                fill_interval: 1s
+              filter_enabled:
+                runtime_key: terrafusion_ai_rate_limit_enabled
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              filter_enforced:
+                runtime_key: terrafusion_ai_rate_limit_enforced
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              response_headers_to_add:
+                - append: false
+                  header:
+                    key: x-terrafusion-rate-limit
+                    value: 'active'
 ---
 # Workspace Configuration for Multi-Cluster
 apiVersion: networking.istio.io/v1alpha3
@@ -357,7 +358,7 @@ metadata:
     app: terrafusion-ai-agents
     tier: cross-cloud-workload
 spec:
-  address: "${AWS_GOVCLOUD_EKS_ENDPOINT}"
+  address: '${AWS_GOVCLOUD_EKS_ENDPOINT}'
   ports:
     https: 443
   labels:
@@ -379,7 +380,7 @@ spec:
     labels:
       app: terrafusion-ai-agent-workers
       quantum-level: championship
-      cross-cloud: "true"
+      cross-cloud: 'true'
   template:
     ports:
       https: 443

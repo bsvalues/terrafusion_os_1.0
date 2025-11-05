@@ -23,39 +23,39 @@ spec:
         version: v1
     spec:
       containers:
-      - name: app
-        image: ghcr.io/terrafusion/terrafusion-pro-1:latest
-        ports:
-        - containerPort: 3000
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-secrets
-              key: database-url
-        - name: JWT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-secrets
-              key: jwt-secret
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /api/ready
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: app
+          image: ghcr.io/terrafusion/terrafusion-pro-1:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: 'production'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: database-url
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: jwt-secret
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '250m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5

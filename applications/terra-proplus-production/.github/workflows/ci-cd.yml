@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.ref_name == 'main' && 'production' || 'development' }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

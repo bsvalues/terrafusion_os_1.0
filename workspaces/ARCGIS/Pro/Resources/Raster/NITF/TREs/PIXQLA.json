@@ -1,11 +1,11 @@
 {
   "TRE": "PIXQLA",
-  "Source": [ "STDI-0002-1 v2021.1, Appendix AA: PIXQLA" ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix AA: PIXQLA"],
   "Name": "Profile for Imagery Access",
   "Description": "The PIXQLA TRE provides pixel quality metadata encoded within one or more NITF Image Segments that relate to pixel values recorded in one or more ther Image Segments.",
   "Size": 3,
   "Fields": {
-    "NUMAIS" : {
+    "NUMAIS": {
       "Name": "Length of User-defined Data",
       "Description": "This field designates the number of IS(s)associated with the PQS. If NUMAIS = ALL, then the PQS is associated with allIS(s)in the NITF dataset except those with ICAT = PIXQUAL. If NUMAIS = ALL,the conditional field(s) AISDLVL is(are)omitted from this TRE. Otherwise, NUMAIS is a number between 001 and 999 and is no more than the actual number of non-pixel-quality IS(s)in the dataset.",
       "Size": 3,
@@ -26,7 +26,7 @@
       "Size": 3,
       "Format": "BCS-N",
       "Type": "C",
-	  "Units": [],
+      "Units": [],
       "Values": [
         {
           "Type": "Range",
@@ -35,7 +35,7 @@
         }
       ]
     },
-    "NPIXQUAL" : {
+    "NPIXQUAL": {
       "Name": "Number of Pixel Quality Conditions",
       "Description": "This field designates the number of pixel quality conditions represented by the per-pixel values in the PQS. This value exactly equals the number of bits used to encode pixel quality.  The first pixel quality condition is encoded in the least significant bit, with subsequent pixel quality conditions encoded in sequentially more significant bits. Data providers should avoid using different bits to encode pixel conditions that are exact opposites of each other.",
       "Size": 4,
@@ -49,28 +49,28 @@
           "Max": 64
         }
       ]
-    },	
+    },
     "PQ_BIT_VALUE": {
       "Name": "Pixel Quality Bit Value",
       "Description": "This field identifies the value of the nthbit when the PQ_CONDITIONn is present.",
       "Size": 1,
       "Format": "BCS-A",
       "Type": "R",
-	  "Units": [],
+      "Units": [],
       "Values": [
         {
           "Type": "Value",
-		  "Values": ["1"]
+          "Values": ["1"]
         }
       ]
-    },	
+    },
     "PQ_CONDITION": {
       "Name": "Pixel Quality Condition",
       "Description": "This field identifies the value of the nthbit when the PQ_CONDITIONn is present.",
       "Size": 40,
       "Format": "BCS-A",
       "Type": "R",
-	  "Units": [],
+      "Units": [],
       "Values": [
         {
           "Type": "AlphaNumeric"

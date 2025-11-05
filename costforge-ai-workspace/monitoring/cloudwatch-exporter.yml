@@ -7,7 +7,8 @@ metrics:
     aws_statistics: [Average, Maximum]
     aws_period_seconds: 60
     aws_dimension_select:
-      ClusterName: ["dev-terrafusion-cluster", "staging-terrafusion-cluster", "prod-terrafusion-cluster"]
+      ClusterName:
+        ['dev-terrafusion-cluster', 'staging-terrafusion-cluster', 'prod-terrafusion-cluster']
 
   - aws_namespace: AWS/ECS
     aws_metric_name: MemoryUtilization
@@ -15,7 +16,8 @@ metrics:
     aws_statistics: [Average, Maximum]
     aws_period_seconds: 60
     aws_dimension_select:
-      ClusterName: ["dev-terrafusion-cluster", "staging-terrafusion-cluster", "prod-terrafusion-cluster"]
+      ClusterName:
+        ['dev-terrafusion-cluster', 'staging-terrafusion-cluster', 'prod-terrafusion-cluster']
 
   - aws_namespace: AWS/ApplicationELB
     aws_metric_name: HTTPCode_Target_4XX_Count
@@ -47,7 +49,7 @@ metrics:
     aws_statistics: [Average, Maximum]
     aws_period_seconds: 60
     aws_dimension_select:
-      DBInstanceIdentifier: ["dev-terrafusion-db", "staging-terrafusion-db", "prod-terrafusion-db"]
+      DBInstanceIdentifier: ['dev-terrafusion-db', 'staging-terrafusion-db', 'prod-terrafusion-db']
 
   - aws_namespace: AWS/RDS
     aws_metric_name: DatabaseConnections
@@ -55,7 +57,7 @@ metrics:
     aws_statistics: [Average, Maximum]
     aws_period_seconds: 60
     aws_dimension_select:
-      DBInstanceIdentifier: ["dev-terrafusion-db", "staging-terrafusion-db", "prod-terrafusion-db"]
+      DBInstanceIdentifier: ['dev-terrafusion-db', 'staging-terrafusion-db', 'prod-terrafusion-db']
 
   - aws_namespace: AWS/RDS
     aws_metric_name: FreeStorageSpace
@@ -63,7 +65,7 @@ metrics:
     aws_statistics: [Average, Minimum]
     aws_period_seconds: 60
     aws_dimension_select:
-      DBInstanceIdentifier: ["dev-terrafusion-db", "staging-terrafusion-db", "prod-terrafusion-db"]
+      DBInstanceIdentifier: ['dev-terrafusion-db', 'staging-terrafusion-db', 'prod-terrafusion-db']
 
   - aws_namespace: AWS/RDS
     aws_metric_name: ReadIOPS
@@ -71,7 +73,7 @@ metrics:
     aws_statistics: [Average, Maximum]
     aws_period_seconds: 60
     aws_dimension_select:
-      DBInstanceIdentifier: ["dev-terrafusion-db", "staging-terrafusion-db", "prod-terrafusion-db"]
+      DBInstanceIdentifier: ['dev-terrafusion-db', 'staging-terrafusion-db', 'prod-terrafusion-db']
 
   - aws_namespace: AWS/RDS
     aws_metric_name: WriteIOPS
@@ -79,7 +81,7 @@ metrics:
     aws_statistics: [Average, Maximum]
     aws_period_seconds: 60
     aws_dimension_select:
-      DBInstanceIdentifier: ["dev-terrafusion-db", "staging-terrafusion-db", "prod-terrafusion-db"]
+      DBInstanceIdentifier: ['dev-terrafusion-db', 'staging-terrafusion-db', 'prod-terrafusion-db']
 
   - aws_namespace: AWS/Lambda
     aws_metric_name: Invocations

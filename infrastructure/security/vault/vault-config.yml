@@ -15,43 +15,43 @@ data:
   vault.hcl: |
     # TerraFusion Vault Configuration - Production Ready
     ui = true
-    
+
     listener "tcp" {
       address     = "0.0.0.0:8200"
       tls_cert_file = "/vault/tls/vault.crt"
       tls_key_file  = "/vault/tls/vault.key"
       tls_min_version = "tls12"
     }
-    
+
     storage "postgresql" {
       connection_url = "postgres://vault:VAULT_DB_PASSWORD@postgres:5432/vault?sslmode=require"
       table = "vault_kv_store"
       max_parallel = "128"
     }
-    
+
     seal "transit" {
       address = "https://vault-transit:8200"
       key_name = "terrafusion-auto-unseal"
       mount_path = "transit/"
       tls_skip_verify = false
     }
-    
+
     # High Availability Configuration
     cluster_addr = "https://VAULT_CLUSTER_ADDR:8201"
     api_addr = "https://VAULT_API_ADDR:8200"
-    
+
     # Government Compliance
     raw_storage_endpoint = false
     disable_mlock = false
     disable_cache = false
-    
+
     # Audit Logging (FISMA Required)
     audit_device "file" {
       file_path = "/vault/audit/audit.log"
       log_raw = false
       format = "jsonx"
     }
-    
+
     # Telemetry for Monitoring
     telemetry {
       prometheus_retention_time = "30s"
@@ -79,9 +79,9 @@ spec:
         app: vault
         tier: security
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8200"
-        prometheus.io/path: "/v1/sys/metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8200'
+        prometheus.io/path: '/v1/sys/metrics'
     spec:
       serviceAccountName: vault
       securityContext:
@@ -89,101 +89,101 @@ spec:
         runAsUser: 100
         fsGroup: 1000
       containers:
-      - name: vault
-        image: hashicorp/vault:1.15.2
-        imagePullPolicy: Always
-        command:
-        - "/bin/sh"
-        - "-ec"
-        args:
-        - |
-          cp /vault/config/vault.hcl /tmp/vault.hcl
-          sed -i "s/VAULT_DB_PASSWORD/$VAULT_DB_PASSWORD/g" /tmp/vault.hcl
-          sed -i "s/VAULT_CLUSTER_ADDR/$VAULT_CLUSTER_ADDR/g" /tmp/vault.hcl
-          sed -i "s/VAULT_API_ADDR/$VAULT_API_ADDR/g" /tmp/vault.hcl
-          /usr/local/bin/docker-entrypoint.sh vault server -config=/tmp/vault.hcl
-        env:
-        - name: VAULT_ADDR
-          value: "https://127.0.0.1:8200"
-        - name: VAULT_CLUSTER_ADDR
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        - name: VAULT_API_ADDR
-          value: "https://$(VAULT_CLUSTER_ADDR):8200"
-        - name: VAULT_DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: vault-db-secret
-              key: password
-        - name: SKIP_CHOWN
-          value: "true"
-        - name: SKIP_SETCAP
-          value: "true"
-        ports:
-        - containerPort: 8200
-          name: vault-port
-          protocol: TCP
-        - containerPort: 8201
-          name: cluster-port
-          protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204
-            port: 8200
-            scheme: HTTPS
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /v1/sys/health?standbyok=true
-            port: 8200
-            scheme: HTTPS
-          initialDelaySeconds: 60
-          periodSeconds: 30
+        - name: vault
+          image: hashicorp/vault:1.15.2
+          imagePullPolicy: Always
+          command:
+            - '/bin/sh'
+            - '-ec'
+          args:
+            - |
+              cp /vault/config/vault.hcl /tmp/vault.hcl
+              sed -i "s/VAULT_DB_PASSWORD/$VAULT_DB_PASSWORD/g" /tmp/vault.hcl
+              sed -i "s/VAULT_CLUSTER_ADDR/$VAULT_CLUSTER_ADDR/g" /tmp/vault.hcl
+              sed -i "s/VAULT_API_ADDR/$VAULT_API_ADDR/g" /tmp/vault.hcl
+              /usr/local/bin/docker-entrypoint.sh vault server -config=/tmp/vault.hcl
+          env:
+            - name: VAULT_ADDR
+              value: 'https://127.0.0.1:8200'
+            - name: VAULT_CLUSTER_ADDR
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: VAULT_API_ADDR
+              value: 'https://$(VAULT_CLUSTER_ADDR):8200'
+            - name: VAULT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: vault-db-secret
+                  key: password
+            - name: SKIP_CHOWN
+              value: 'true'
+            - name: SKIP_SETCAP
+              value: 'true'
+          ports:
+            - containerPort: 8200
+              name: vault-port
+              protocol: TCP
+            - containerPort: 8201
+              name: cluster-port
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204
+              port: 8200
+              scheme: HTTPS
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /v1/sys/health?standbyok=true
+              port: 8200
+              scheme: HTTPS
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: vault-config
+              mountPath: /vault/config
+              readOnly: true
+            - name: vault-tls
+              mountPath: /vault/tls
+              readOnly: true
+            - name: vault-audit
+              mountPath: /vault/audit
+            - name: vault-data
+              mountPath: /vault/data
+      volumes:
+        - name: vault-config
+          configMap:
+            name: vault-config
+        - name: vault-tls
+          secret:
+            secretName: vault-tls-secret
+        - name: vault-audit
+          persistentVolumeClaim:
+            claimName: vault-audit-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: vault-data
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: fast-ssd
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        volumeMounts:
-        - name: vault-config
-          mountPath: /vault/config
-          readOnly: true
-        - name: vault-tls
-          mountPath: /vault/tls
-          readOnly: true
-        - name: vault-audit
-          mountPath: /vault/audit
-        - name: vault-data
-          mountPath: /vault/data
-      volumes:
-      - name: vault-config
-        configMap:
-          name: vault-config
-      - name: vault-tls
-        secret:
-          secretName: vault-tls-secret
-      - name: vault-audit
-        persistentVolumeClaim:
-          claimName: vault-audit-pvc
-  volumeClaimTemplates:
-  - metadata:
-      name: vault-data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: fast-ssd
-      resources:
-        requests:
-          storage: 10Gi
+            storage: 10Gi
 
 ---
 apiVersion: v1
@@ -196,14 +196,14 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 8200
-    targetPort: 8200
-    protocol: TCP
-    name: vault-port
-  - port: 8201
-    targetPort: 8201
-    protocol: TCP
-    name: cluster-port
+    - port: 8200
+      targetPort: 8200
+      protocol: TCP
+      name: vault-port
+    - port: 8201
+      targetPort: 8201
+      protocol: TCP
+      name: cluster-port
   selector:
     app: vault
 
@@ -225,9 +225,9 @@ roleRef:
   kind: ClusterRole
   name: system:auth-delegator
 subjects:
-- kind: ServiceAccount
-  name: vault
-  namespace: terrafusion-security
+  - kind: ServiceAccount
+    name: vault
+    namespace: terrafusion-security
 
 ---
 # External Secrets Operator Integration
@@ -239,12 +239,12 @@ metadata:
 spec:
   provider:
     vault:
-      server: "https://vault:8200"
-      path: "secret"
-      version: "v2"
+      server: 'https://vault:8200'
+      path: 'secret'
+      version: 'v2'
       auth:
         kubernetes:
-          mountPath: "kubernetes"
-          role: "terrafusion-role"
+          mountPath: 'kubernetes'
+          role: 'terrafusion-role'
           serviceAccountRef:
-            name: "vault"
+            name: 'vault'

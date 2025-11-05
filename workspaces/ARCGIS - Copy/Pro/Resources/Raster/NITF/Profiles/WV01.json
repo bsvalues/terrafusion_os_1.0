@@ -14,13 +14,9 @@
   "IDs": {
     "SensorNamePaths": [],
     "MissionPaths": [],
-    "MissionMatch": [ "WV01", "WV1", "WORLDVIEW1", "WORLDVIEW-1" ],
-    "Bands-Panchromatic-Basic": [
-      "#Band-Pan"
-    ],
-    "Bands-Panchromatic-Geo": [
-      "#Band-Pan"
-    ],
+    "MissionMatch": ["WV01", "WV1", "WORLDVIEW1", "WORLDVIEW-1"],
+    "Bands-Panchromatic-Basic": ["#Band-Pan"],
+    "Bands-Panchromatic-Geo": ["#Band-Pan"],
     "Bands-Multispectral4Bands-Basic": [],
     "Bands-Multispectral8Bands-Basic": [],
     "Bands-Multispectral3Bands-Psh": [],

@@ -60,10 +60,10 @@ kind: Namespace
 metadata:
   name: terrafusion
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: '-1'
   labels:
-    terrafusion.io/platform: "complete"
-    terrafusion.io/environment: "production"
+    terrafusion.io/platform: 'complete'
+    terrafusion.io/environment: 'production'
 
 ---
 apiVersion: v1
@@ -71,10 +71,10 @@ kind: Namespace
 metadata:
   name: terrafusion-dev
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: '-1'
   labels:
-    terrafusion.io/platform: "complete"
-    terrafusion.io/environment: "development"
+    terrafusion.io/platform: 'complete'
+    terrafusion.io/environment: 'development'
 
 ---
 apiVersion: v1
@@ -82,10 +82,10 @@ kind: Namespace
 metadata:
   name: terrafusion-staging
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: '-1'
   labels:
-    terrafusion.io/platform: "complete"
-    terrafusion.io/environment: "staging"
+    terrafusion.io/platform: 'complete'
+    terrafusion.io/environment: 'staging'
 
 ---
 # Example sync-wave annotation usage in Helm charts:

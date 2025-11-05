@@ -1,8 +1,6 @@
 {
   "TRE": "CSPROA",
-  "Source": [
-    "STDI-0006 Apr2014, 3.6"
-  ],
+  "Source": ["STDI-0006 Apr2014, 3.6"],
   "Name": "Processing Information TRE",
   "Description": "The Processing Information TRE (CSPROA) identifies processing options that were applied during image formation.  The CSPROA TRE is a required TRE that resides in image segment subheaders.  If the data for a given sensor (sub-image) spans multiple image segments, the CSPROA TRE shall be identical in each of the image segments and shall represent information for the entire sub-image.",
   "Size": 120,
@@ -17,9 +15,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "LATESTCAL"
-          ]
+          "Values": ["LATESTCAL"]
         }
       ]
     },
@@ -33,9 +29,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            " "
-          ]
+          "Values": [" "]
         }
       ]
     },
@@ -49,9 +43,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            " "
-          ]
+          "Values": [" "]
         }
       ]
     },
@@ -65,9 +57,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "MARKANDFIX"
-          ]
+          "Values": ["MARKANDFIX"]
         }
       ]
     },
@@ -81,9 +71,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            " "
-          ]
+          "Values": [" "]
         }
       ]
     },
@@ -97,10 +85,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "CORR",
-            " "
-          ]
+          "Values": ["CORR", " "]
         }
       ]
     },
@@ -114,9 +99,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "SKIPAGM"
-          ]
+          "Values": ["SKIPAGM"]
         }
       ]
     },
@@ -130,9 +113,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "INTERP"
-          ]
+          "Values": ["INTERP"]
         }
       ]
     },
@@ -146,9 +127,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            " "
-          ]
+          "Values": [" "]
         }
       ]
     },
@@ -162,11 +141,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "VISUAL",
-            "NUMERICAL",
-            "UNCOMPRESSED"
-          ]
+          "Values": ["VISUAL", "NUMERICAL", "UNCOMPRESSED"]
         }
       ]
     }

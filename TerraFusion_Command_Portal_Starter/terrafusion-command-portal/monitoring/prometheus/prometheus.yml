@@ -10,14 +10,14 @@ global:
     region: 'washington-state'
 
 rule_files:
-  - "alert_rules.yml"
-  - "recording_rules.yml"
+  - 'alert_rules.yml'
+  - 'recording_rules.yml'
 
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 
 scrape_configs:
   # Prometheus Self-Monitoring
@@ -114,11 +114,11 @@ scrape_configs:
   # Emergency Services Monitoring
   - job_name: 'emergency-services'
     static_configs:
-      - targets: 
-        - 'emergency.benton.gov:443'
-        - 'emergency.franklin.gov:443'
-        - 'emergency.yakima.gov:443'
-    scrape_interval: 10s  # More frequent for emergency services
+      - targets:
+          - 'emergency.benton.gov:443'
+          - 'emergency.franklin.gov:443'
+          - 'emergency.yakima.gov:443'
+    scrape_interval: 10s # More frequent for emergency services
     metrics_path: /health/metrics
     scheme: https
 

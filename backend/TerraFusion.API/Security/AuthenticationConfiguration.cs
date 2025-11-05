@@ -49,7 +49,7 @@ namespace TerraFusion.API.Security
                     {
                         if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                         {
-                            context.Response.Headers.Add("Token-Expired", "true");
+                            context.Response.Headers.Append("Token-Expired", "true");
                         }
                         return Task.CompletedTask;
                     },
@@ -79,10 +79,10 @@ namespace TerraFusion.API.Security
             {
                 options.AddPolicy("RequireAdmin", policy =>
                     policy.RequireRole("Admin", "SystemAdmin"));
-                
+
                 options.AddPolicy("RequireAssessor", policy =>
                     policy.RequireRole("Assessor", "Admin", "SystemAdmin"));
-                
+
                 options.AddPolicy("RequireUser", policy =>
                     policy.RequireAuthenticatedUser());
             });
@@ -109,7 +109,7 @@ namespace TerraFusion.API.Security
         public bool Validate(AuthEnvelope envelope, out string? reason)
         {
             reason = null;
-            
+
             // Check timestamp drift
             var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var delta = Math.Abs(now - envelope.Payload.Ts);

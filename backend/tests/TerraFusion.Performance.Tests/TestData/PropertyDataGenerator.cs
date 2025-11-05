@@ -1,17 +1,19 @@
 using Bogus;
 using TerraFusion.Core.Models;
+// Resolve type ambiguity: Use property data types from interface namespace
+using PropertyData = TerraFusion.Core.Interfaces.PropertyData;
 
 namespace TerraFusion.Performance.Tests.TestData;
 
 /// <summary>
 /// 🎲 Realistic Property Data Generator - Government. Transcended. Test Data
-/// 
+///
 /// Generates realistic property data for performance testing across Washington State counties:
 /// - Property Types: Residential, Commercial, Industrial, Agricultural, Mixed-Use
 /// - Value Ranges: $50K (rural) to $5M+ (urban commercial)
 /// - Geographic Distribution: 39 Washington State counties with realistic property densities
 /// - Assessment Scenarios: Annual assessment, appeal review, new construction, market correction
-/// 
+///
 /// Supports generation of:
 /// - 10K properties: Small county testing
 /// - 100K properties: Medium county testing (King, Pierce, Spokane)

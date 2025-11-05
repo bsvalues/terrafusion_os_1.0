@@ -8,8 +8,8 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
 
 ---
 # Allow DNS resolution
@@ -21,17 +21,17 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Egress
+    - Egress
   egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: kube-system
-    ports:
-    - protocol: UDP
-      port: 53
-    - protocol: TCP
-      port: 53
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
 
 ---
 # Allow API to receive traffic from ingress and connect to database
@@ -45,35 +45,35 @@ spec:
     matchLabels:
       app: terrafusion-api
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: ingress-nginx
-    ports:
-    - protocol: TCP
-      port: 5000
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 5000
   egress:
-  - to:
-    - ipBlock:
-        cidr: 0.0.0.0/0
-        except:
-        - 169.254.0.0/16
-        - 10.0.0.0/8
-    ports:
-    - protocol: TCP
-      port: 5432 # PostgreSQL
-    - protocol: TCP
-      port: 443 # HTTPS
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: monitoring
-    ports:
-    - protocol: TCP
-      port: 9090 # Prometheus
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 169.254.0.0/16
+              - 10.0.0.0/8
+      ports:
+        - protocol: TCP
+          port: 5432 # PostgreSQL
+        - protocol: TCP
+          port: 443 # HTTPS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9090 # Prometheus
 
 ---
 # Allow monitoring to scrape metrics
@@ -85,17 +85,17 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
+    - Ingress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: monitoring
-    ports:
-    - protocol: TCP
-      port: 5000 # API metrics
-    - protocol: TCP
-      port: 9102 # Node exporter
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 5000 # API metrics
+        - protocol: TCP
+          port: 9102 # Node exporter
 
 ---
 # Allow logging collection
@@ -107,9 +107,9 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
+    - Ingress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: logging
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: logging

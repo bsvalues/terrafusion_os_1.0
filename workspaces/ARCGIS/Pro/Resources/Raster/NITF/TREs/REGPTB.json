@@ -1,8 +1,6 @@
 {
   "TRE": "REGPTB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix P: GEOSDE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix P: GEOSDE"],
   "Name": "Registration Points",
   "Description": "The Registration Points Version B (REGPTB) TRE contains registration points that may be provided for image or map data to identify specific pixels in this data and provide spatial locations (geographic or cartographic) for these pixels.",
   "Size": 81,
@@ -41,7 +39,7 @@
       "Size": 15,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [ "degrees", "meters" ],
+      "Units": ["degrees", "meters"],
       "Values": [
         {
           "Type": "Double"
@@ -54,7 +52,7 @@
       "Size": 15,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [ "degrees", "meters" ],
+      "Units": ["degrees", "meters"],
       "Values": [
         {
           "Type": "Double"
@@ -70,7 +68,7 @@
       "Units": [],
       "Values": [
         {
-          "Type":  "Double"
+          "Type": "Double"
         }
       ]
     },
@@ -83,7 +81,7 @@
       "Units": ["columns"],
       "Values": [
         {
-          "Type":  "Double"
+          "Type": "Double"
         }
       ]
     },
@@ -96,7 +94,7 @@
       "Units": ["rows"],
       "Values": [
         {
-          "Type":  "Double"
+          "Type": "Double"
         }
       ]
     }

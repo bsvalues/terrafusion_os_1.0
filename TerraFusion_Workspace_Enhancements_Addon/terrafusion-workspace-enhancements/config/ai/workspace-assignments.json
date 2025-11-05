@@ -2,29 +2,19 @@
   "assignments": {
     "supreme_commander": {
       "workspace": "workspaces/supreme-commander-dashboard.code-workspace",
-      "permissions": [
-        "read",
-        "write",
-        "admin"
-      ],
+      "permissions": ["read", "write", "admin"],
       "scope": "all"
     },
     "field_generals": [
       {
         "agents": "general-backend-001..200",
         "workspace": "workspaces/backend.code-workspace",
-        "permissions": [
-          "read",
-          "write"
-        ]
+        "permissions": ["read", "write"]
       },
       {
         "agents": "general-marketplace-001..400",
         "workspace": "workspaces/marketplace.code-workspace",
-        "permissions": [
-          "read",
-          "write"
-        ]
+        "permissions": ["read", "write"]
       }
     ],
     "operational_rules": [

@@ -12,12 +12,12 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 
 # Load rules once and periodically evaluate them
 rule_files:
-  - "alert_rules.yml"
-  - "recording_rules.yml"
+  - 'alert_rules.yml'
+  - 'recording_rules.yml'
 
 # Scrape configurations
 scrape_configs:
@@ -172,9 +172,9 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-        - https://api.terrafusion.ai/health
-        - https://consciousness.terrafusion.ai/health
-        - https://assessor.terrafusion.ai/health
+          - https://api.terrafusion.ai/health
+          - https://consciousness.terrafusion.ai/health
+          - https://assessor.terrafusion.ai/health
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -243,48 +243,48 @@ alert_rules:
   - name: championship_performance_alerts
     rules:
       - alert: APIResponseTimeHigh
-        expr: terrafusion:api:response_time_p95_5m > 0.010  # 10ms threshold
+        expr: terrafusion:api:response_time_p95_5m > 0.010 # 10ms threshold
         for: 2m
         labels:
           severity: critical
           service: api
           performance_tier: championship
         annotations:
-          summary: "API response time exceeds championship standards"
-          description: "API P95 response time is {{ $value }}ms, exceeding 10ms championship threshold"
+          summary: 'API response time exceeds championship standards'
+          description: 'API P95 response time is {{ $value }}ms, exceeding 10ms championship threshold'
 
       - alert: PropertyAssessmentAccuracyLow
-        expr: terrafusion:assessments:accuracy_score_avg_1h < 0.999  # 99.9% accuracy threshold
+        expr: terrafusion:assessments:accuracy_score_avg_1h < 0.999 # 99.9% accuracy threshold
         for: 5m
         labels:
           severity: critical
           service: property_assessment
           compliance: iaao
         annotations:
-          summary: "Property assessment accuracy below championship standards"
-          description: "Property assessment accuracy is {{ $value | humanizePercentage }}, below 99.9% championship requirement"
+          summary: 'Property assessment accuracy below championship standards'
+          description: 'Property assessment accuracy is {{ $value | humanizePercentage }}, below 99.9% championship requirement'
 
       - alert: SwarmHarmonyLow
-        expr: terrafusion:swarm:harmony_score_avg_5m < 0.98  # 98% harmony threshold
+        expr: terrafusion:swarm:harmony_score_avg_5m < 0.98 # 98% harmony threshold
         for: 3m
         labels:
           severity: warning
           service: consciousness
           performance_tier: elite
         annotations:
-          summary: "AI swarm harmony below elite standards"
-          description: "Swarm harmony score is {{ $value | humanizePercentage }}, below 98% elite threshold"
+          summary: 'AI swarm harmony below elite standards'
+          description: 'Swarm harmony score is {{ $value | humanizePercentage }}, below 98% elite threshold'
 
       - alert: MLModelAccuracyDegraded
-        expr: terrafusion:ml:accuracy_avg_1h < 0.995  # 99.5% accuracy threshold
+        expr: terrafusion:ml:accuracy_avg_1h < 0.995 # 99.5% accuracy threshold
         for: 10m
         labels:
           severity: warning
           service: ml_models
           performance_tier: championship
         annotations:
-          summary: "ML model accuracy degraded below championship standards"
-          description: "ML model accuracy is {{ $value | humanizePercentage }}, below 99.5% championship threshold"
+          summary: 'ML model accuracy degraded below championship standards'
+          description: 'ML model accuracy is {{ $value | humanizePercentage }}, below 99.5% championship threshold'
 
   # Infrastructure Health Alerts
   - name: infrastructure_health_alerts
@@ -296,8 +296,8 @@ alert_rules:
           severity: warning
           component: infrastructure
         annotations:
-          summary: "High memory usage detected"
-          description: "Memory usage is above 90% on instance {{ $labels.instance }}"
+          summary: 'High memory usage detected'
+          description: 'Memory usage is above 90% on instance {{ $labels.instance }}'
 
       - alert: HighCPUUsage
         expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
@@ -306,8 +306,8 @@ alert_rules:
           severity: warning
           component: infrastructure
         annotations:
-          summary: "High CPU usage detected"
-          description: "CPU usage is above 85% on instance {{ $labels.instance }}"
+          summary: 'High CPU usage detected'
+          description: 'CPU usage is above 85% on instance {{ $labels.instance }}'
 
       - alert: DiskSpaceLow
         expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 10
@@ -316,8 +316,8 @@ alert_rules:
           severity: critical
           component: infrastructure
         annotations:
-          summary: "Low disk space detected"
-          description: "Disk space is below 10% on instance {{ $labels.instance }}"
+          summary: 'Low disk space detected'
+          description: 'Disk space is below 10% on instance {{ $labels.instance }}'
 
   # Service Availability Alerts
   - name: service_availability_alerts
@@ -329,19 +329,19 @@ alert_rules:
           severity: critical
           component: service_availability
         annotations:
-          summary: "Service is down"
-          description: "Service {{ $labels.job }} on instance {{ $labels.instance }} is down"
+          summary: 'Service is down'
+          description: 'Service {{ $labels.job }} on instance {{ $labels.instance }} is down'
 
       - alert: HighErrorRate
-        expr: terrafusion:api:error_rate_5m > 0.01  # 1% error rate threshold
+        expr: terrafusion:api:error_rate_5m > 0.01 # 1% error rate threshold
         for: 3m
         labels:
           severity: critical
           service: api
           performance_tier: championship
         annotations:
-          summary: "High error rate detected"
-          description: "Error rate is {{ $value | humanizePercentage }}, above 1% championship threshold"
+          summary: 'High error rate detected'
+          description: 'Error rate is {{ $value | humanizePercentage }}, above 1% championship threshold'
 
 # External Labels for Multi-Cluster Monitoring
 external_labels:

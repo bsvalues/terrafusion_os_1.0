@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/property
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/property
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/property
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/property
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/property
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/property
+    description: Development Environment
 paths:
   /properties:
     get:
       tags:
-      - property-workbench
+        - property-workbench
       summary: Property information
       description: Property information - Property management and valuation APIs
       operationId: get__properties
       security:
-      - OAuth2:
-        - property-workbench:read
+        - OAuth2:
+            - property-workbench:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /valuations:
     post:
       tags:
-      - property-workbench
+        - property-workbench
       summary: Property valuations
       description: Property valuations - Property management and valuation APIs
       operationId: post__valuations
       security:
-      - OAuth2:
-        - property-workbench:write
+        - OAuth2:
+            - property-workbench:write
       responses:
         '200':
           description: Successful operation
@@ -92,14 +92,14 @@ paths:
   /ownership:
     get:
       tags:
-      - property-workbench
+        - property-workbench
       summary: Property ownership records
       description: Property ownership records - Property management and valuation
         APIs
       operationId: get__ownership
       security:
-      - OAuth2:
-        - property-workbench:read
+        - OAuth2:
+            - property-workbench:read
       responses:
         '200':
           description: Successful operation
@@ -128,14 +128,14 @@ paths:
   /transfers:
     post:
       tags:
-      - property-workbench
+        - property-workbench
       summary: Property transfer processing
       description: Property transfer processing - Property management and valuation
         APIs
       operationId: post__transfers
       security:
-      - OAuth2:
-        - property-workbench:write
+        - OAuth2:
+            - property-workbench:write
       responses:
         '200':
           description: Successful operation
@@ -166,8 +166,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -182,9 +182,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -208,12 +208,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - property-workbench:read
-- ApiKey: []
+  - OAuth2:
+      - property-workbench:read
+  - ApiKey: []
 tags:
-- name: property-workbench
-  description: Property Workbench operations
-  externalDocs:
-    description: Find out more about property-workbench
-    url: https://docs.terrafusion.gov/marketplace/property-workbench
+  - name: property-workbench
+    description: Property Workbench operations
+    externalDocs:
+      description: Find out more about property-workbench
+      url: https://docs.terrafusion.gov/marketplace/property-workbench

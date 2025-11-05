@@ -5,7 +5,7 @@
   "Description": "This TRE contains segment model diagnostic point data to include X and Y coordinates, elevation, segment ID, and number of diagnostic points.",
   "Size": 99999,
   "Fields": {
-    "SISEGID" : {
+    "SISEGID": {
       "Name": "Segment Model ID",
       "Description": "This field indicates the ID of the segment model.",
       "Size": 4,
@@ -14,8 +14,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"          
-        }        
+          "Type": "Integer"
+        }
       ]
     },
     "NBRDP": {
@@ -27,7 +27,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"          
+          "Type": "Integer"
         }
       ]
     },
@@ -40,7 +40,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DMS"          
+          "Type": "DMS"
         },
         {
           "Type": "AlphaNumeric"
@@ -56,7 +56,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"          
+          "Type": "Double"
         },
         {
           "Type": "AlphaNumeric"
@@ -73,8 +73,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -10000.00,
-          "Max": 10000.00          
+          "Min": -10000.0,
+          "Max": 10000.0
         },
         {
           "Type": "Double"
@@ -91,8 +91,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -100000.00,
-          "Max": 100000.00          
+          "Min": -100000.0,
+          "Max": 100000.0
         },
         {
           "Type": "Double"
@@ -109,8 +109,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -100000.00,
-          "Max": 100000.00          
+          "Min": -100000.0,
+          "Max": 100000.0
         },
         {
           "Type": "Double"
@@ -127,8 +127,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -100000.00,
-          "Max": 100000.00          
+          "Min": -100000.0,
+          "Max": 100000.0
         },
         {
           "Type": "Double"
@@ -145,13 +145,13 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -100000.00,
-          "Max": 100000.00          
+          "Min": -100000.0,
+          "Max": 100000.0
         },
         {
           "Type": "Double"
         }
       ]
-    }    
+    }
   }
 }

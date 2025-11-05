@@ -5,19 +5,19 @@
   "default_quality_adjustments": {
     "A+": 1.25,
     "A": 1.15,
-    "B+": 1.10,
-    "B": 1.00,
+    "B+": 1.1,
+    "B": 1.0,
     "C+": 0.95,
-    "C": 0.90,
+    "C": 0.9,
     "D+": 0.85,
-    "D": 0.80,
-    "E": 0.70
+    "D": 0.8,
+    "E": 0.7
   },
   "default_condition_adjustments": {
-    "Excellent": 1.10,
-    "Good": 1.00,
-    "Average": 0.90,
-    "Fair": 0.80,
+    "Excellent": 1.1,
+    "Good": 1.0,
+    "Average": 0.9,
+    "Fair": 0.8,
     "Poor": 0.65
   },
   "locality_factors": {

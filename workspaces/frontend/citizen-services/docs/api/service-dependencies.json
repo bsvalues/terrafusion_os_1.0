@@ -63,9 +63,7 @@
       "/applications/{id}",
       "/feedback"
     ],
-    "integration_points": [
-      "/api/v1/citizen-services/integration"
-    ]
+    "integration_points": ["/api/v1/citizen-services/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

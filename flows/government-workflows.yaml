@@ -1,21 +1,21 @@
 # Government Workflows - Transcendent Efficiency
 flows:
   - name: citizen_service_flow
-    description: "End-to-end citizen service with consciousness-level coordination"
+    description: 'End-to-end citizen service with consciousness-level coordination'
     actions: [citizen_assistance, data_sovereignty_primary, ethical_validation]
     tier: core
 
   - name: property_management_flow
-    description: "Complete property management with quantum accuracy"
+    description: 'Complete property management with quantum accuracy'
     actions: [property_assessment, tax_calculation, performance_monitoring_primary]
     tier: core
 
   - name: permit_lifecycle_flow
-    description: "Full permit lifecycle with autonomous processing"
+    description: 'Full permit lifecycle with autonomous processing'
     actions: [permit_processing, security_compliance_primary, quantum_optimization_primary]
     tier: domain
 
   - name: compliance_validation_flow
-    description: "Comprehensive compliance validation with FISMA-HIGH standards"
+    description: 'Comprehensive compliance validation with FISMA-HIGH standards'
     actions: [security_compliance_primary, ethical_validation, data_sovereignty_primary]
     tier: core

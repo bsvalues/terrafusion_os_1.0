@@ -57,15 +57,8 @@
         "security_level": "CRITICAL"
       }
     ],
-    "data_endpoints": [
-      "/employees",
-      "/payroll",
-      "/benefits",
-      "/performance"
-    ],
-    "integration_points": [
-      "/api/v1/hr/integration"
-    ]
+    "data_endpoints": ["/employees", "/payroll", "/benefits", "/performance"],
+    "integration_points": ["/api/v1/hr/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

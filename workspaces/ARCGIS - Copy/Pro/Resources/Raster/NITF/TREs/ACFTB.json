@@ -1,13 +1,11 @@
 {
   "TRE": "ACFTB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix E: ASDE"
-  ],  
+  "Source": ["STDI-0002-1 v2021.1, Appendix E: ASDE"],
   "Name": "Aircraft Information Extension Format",
   "Description": "The ACFT TRE provides miscellaneous information unique to airborne sensors. The ACFT extension is required. A single ACFT extension, containing information relative to the capture of its associated image data will be placed in the respective subheader of every NITF image segment.",
   "Size": 207,
   "Fields": {
-    "AC_MSN_ID" : {
+    "AC_MSN_ID": {
       "Name": "Aircraft Mission ID",
       "Description": "This is the name of the mission. 'NOT AVAILABLE' (without quotes) shall be used if a mission name is unavailable.",
       "Size": 20,
@@ -21,10 +19,10 @@
         {
           "Type": "Value",
           "Values": ["NOT AVAIL"]
-        }        
+        }
       ]
     },
-    "AC_TAIL_NO" : {
+    "AC_TAIL_NO": {
       "Name": "Aircraft Tail Number",
       "Description": "This field is used to specify the aircraft tail number.",
       "Size": 10,
@@ -37,7 +35,7 @@
         }
       ]
     },
-    "AC_TO" : {
+    "AC_TO": {
       "Name": "Aircraft Takeoff Date/Time",
       "Description": "This field contains the date and time that the aircraft took off. Date and time, are referenced to UTC, in the format CCYYMMDDhhmm, in which CCYY is the year, MM is the month (01 to 12), DD is the day of the month (01 to 31), hh is the hour (00 to 23), and mm is the minute (00 to 59).",
       "Size": 12,
@@ -157,10 +155,10 @@
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 999999
-          }
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999999
+        }
       ]
     },
     "PDATE": {
@@ -176,7 +174,7 @@
         }
       ]
     },
-    "IMHOSTNO": {  
+    "IMHOSTNO": {
       "Name": "Immediate Scene Host",
       "Description": "This field, together with the immediate scene request ID field, denotes the scene that the immediate was initiated from and can be used to renumber the scene, Example: If the immediate scene was initiated from scene number 123 and this is the third request from that scene, then the scene number field will be zero, the immediate scene host field will contain 123 and the immediate scene request id will contain 00003. When the scene number is greater than 999, this field will only contain the three least significant digits of the scene number; any resulting ambiguity can be resolved by comparing collection times. Shall contain 000 for Pre-Planned scenes.",
       "Size": 6,
@@ -185,9 +183,9 @@
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 999999
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999999
         }
       ]
     },
@@ -206,7 +204,7 @@
         }
       ]
     },
-    "MPLAN": {  
+    "MPLAN": {
       "Name": "Mission Plan Mode",
       "Description": "This field defines the current sensor-specific SENSOR_TYPE / SENSOR_ID collection mode.  Currently allowable values can be found in Table 6-a. Other values are TBD. See, FieldRegistry ACFTB MPLAN, as defined in the main body of STDI-0002 Volume 1, paragraph 3.2 for values added through registration.",
       "Size": 3,
@@ -221,7 +219,7 @@
         }
       ]
     },
-    "ENTLOC": {  
+    "ENTLOC": {
       "Name": "Entry Location",
       "Description": "The entry location For any persistent surveillance platform. The definition of the Entry Location field values is different from the published value. A persistent surveillance platform may define the ENTLOC field as holding the location of the Persistent Surveillance stare point, which may or may not be within the bounds of the individual frame image camera extent.",
       "Size": 25,
@@ -234,7 +232,7 @@
         }
       ]
     },
-    "LOC_ACCY": {  
+    "LOC_ACCY": {
       "Name": "Location Accuracy",
       "Description": "The location accuracy is represented as the 90% probable circular error in ENTLOC and EXITLOC positions. Unknown=000000 or 000.00.",
       "Size": 6,
@@ -247,7 +245,7 @@
         }
       ]
     },
-    "ENTELV": {  
+    "ENTELV": {
       "Name": "Entry Elevation",
       "Description": "The imaging operation entry point ground elevation. For any persistent surveillance platform, the value stored in the ENTELV field corresponds to the elevation of the stare point. The stare point may not fall within the field of view of the individual frame where its elevation is being recorded.",
       "Size": 6,
@@ -261,25 +259,25 @@
           "Max": 30000
         }
       ]
-    },    
-    "ELV_UNIT": {  
+    },
+    "ELV_UNIT": {
       "Name": "Elevation Units",
       "Description": "This field defines the units for both the entry and exit altitudes.",
       "Size": 1,
       "Format": "BCS-A",
       "Type": "<R>",
-      "Units": ["feet","meters"],
+      "Units": ["feet", "meters"],
       "Values": [
         {
           "Type": "Value",
           "Values": {
-            "f":"feet",
-            "m":"meters"
+            "f": "feet",
+            "m": "meters"
           }
         }
       ]
     },
-    "EXITLOC": {  
+    "EXITLOC": {
       "Name": "Exit Location",
       "Description": "The version of the standard used to define this version of the ACFTA TRE provides no description for this field.",
       "Size": 25,
@@ -292,7 +290,7 @@
         }
       ]
     },
-    "EXITELV": {  
+    "EXITELV": {
       "Name": "Exit Elevation",
       "Description": "The imaging operation exit point for ground elevation.",
       "Size": 6,
@@ -307,7 +305,7 @@
         }
       ]
     },
-    "TMAP": {  
+    "TMAP": {
       "Name": "True Map Angle",
       "Description": "The true map angle for SAR data in search modes, the true map angle is the angle between the ground projection of the line of sight from the aircraft and the scene centerline. For SAR data in Spot modes, the true map angle is the angle, measured at the central reference point, between the ground projection of the line of sight from the aircraft and a line parallel to the aircraft desired track heading. For EO-IR data, the true map angle is defined in the NED coordinate system with origin at the aircraft (aircraft local NED), as the angle between the scene entry line of sight and the instantaneous aircraft track heading vector. The aircraft trackheading vector is obtained by rotating the north unit vector of the aircraft local NED coordinate system in the aircraft local NE plane through the aircraft trackheading angle. The true map angle is measured in the slanted plane containing the scene entry line of sight and the aircraft track-heading vector. This angle is always positive. A value of 999.999 indicates the true map angle is unavailable.",
       "Size": 7,
@@ -318,77 +316,77 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 180.000
+          "Max": 180.0
         }
       ]
     },
-    "ROW_SPACING": {  
+    "ROW_SPACING": {
       "Name": "Row Spacing",
       "Description": "The row spacing is measured at the center of the image. Distance in the image plane between corresponding pixels of adjacent rows measured in feet or meters; or Angular center-to-center distance (pitch) between corresponding pixels of adjacent rows measured in micro-radians. If the actual spacing (or associated units) is unknown, the default value of 0000000 will be entered.",
       "Size": 7,
       "Format": "BCS-A",
       "Type": "R",
-      "Units": ["feet","meters","microradians","unknown"],
+      "Units": ["feet", "meters", "microradians", "unknown"],
       "Values": [
         {
           "Type": "Double"
         }
       ]
     },
-    "ROW_SPACING_UNITS": {  
+    "ROW_SPACING_UNITS": {
       "Name": "Row Spacing Units",
       "Description": "The version of the standard used to define this version of the ACFTA TRE provides no description for this field.",
       "Size": 1,
       "Format": "BCS-A",
       "Type": "R",
-      "Units": ["feet","meters","microradians","unknown"],
+      "Units": ["feet", "meters", "microradians", "unknown"],
       "Values": [
         {
           "Type": "Value",
           "Values": {
-            "f":"feet",
-            "m":"meters",
-            "r":"microradians",
-            "u":"unknown spacing"
+            "f": "feet",
+            "m": "meters",
+            "r": "microradians",
+            "u": "unknown spacing"
           }
         }
       ]
     },
-    "COL_SPACING": {  
+    "COL_SPACING": {
       "Name": "Col Spacing",
       "Description": "The column Spacing is measured at the center of the image. Distance in the image plane between adjacent pixels within a row measured in feet or meters; or Angular center-to-center distance (pitch) between adjacent pixels within a row measured in micro-radians. If the actual spacing (or associated units) is unknown, the default value of '0000000' will be entered.",
       "Size": 7,
       "Format": "BCS-A",
       "Type": "R",
-      "Units": ["feet","meters","microradians","unknown"],
+      "Units": ["feet", "meters", "microradians", "unknown"],
       "Values": [
         {
           "Type": "Double"
         }
       ]
     },
-    "COL_SPACING_UNITS": {  
+    "COL_SPACING_UNITS": {
       "Name": "Col Spacing Units",
       "Description": "The version of the standard used to define this version of the ACFTA TRE provides no description for this field.",
       "Size": 1,
       "Format": "BCS-A",
       "Type": "R",
-      "Units": ["feet","meters","microradians","unknown"],
+      "Units": ["feet", "meters", "microradians", "unknown"],
       "Values": [
         {
           "Type": "Value",
           "Values": {
-            "f":"feet",
-            "m":"meters",
-            "r":"microradians",
-            "u":"unknown spacing"
+            "f": "feet",
+            "m": "meters",
+            "r": "microradians",
+            "u": "unknown spacing"
           }
         }
       ]
     },
     "FOCAL_LENGTH": {
-      "Name":"Sensor Focal Length",
-      "Description":"This is the effective distance from optical lens to sensor element(s), used when either ROW_SPACING_UNITS or COL_SPACING_UNITS indicates microradians. 999.99 indicates focal length is not available or not applicable to this sensor.",
+      "Name": "Sensor Focal Length",
+      "Description": "This is the effective distance from optical lens to sensor element(s), used when either ROW_SPACING_UNITS or COL_SPACING_UNITS indicates microradians. 999.99 indicates focal length is not available or not applicable to this sensor.",
       "Size": 6,
       "Format": "BCS-A",
       "Type": "R",
@@ -396,12 +394,12 @@
       "Values": [
         {
           "Type": "Double"
-        }        
-      ]  
+        }
+      ]
     },
-    "SENSERIAL": {  
+    "SENSERIAL": {
       "Name": "Sensor Serial Number",
-      "Description": "This is the serial number of the line replaceable unit (LRU) containing EO-IR imaging electronics or SAR Receiver/Exciter involved in creating the imagery contained in this file.", 
+      "Description": "This is the serial number of the line replaceable unit (LRU) containing EO-IR imaging electronics or SAR Receiver/Exciter involved in creating the imagery contained in this file.",
       "Size": 6,
       "Format": "BCS-A",
       "Type": "<R>",
@@ -412,9 +410,9 @@
         }
       ]
     },
-    "ABSWVER": {  
+    "ABSWVER": {
       "Name": "Airborne Software Version",
-      "Description": "This is the airborne software version (vvvv) and revision (rr) numbers.", 
+      "Description": "This is the airborne software version (vvvv) and revision (rr) numbers.",
       "Size": 7,
       "Format": "BCS-A",
       "Type": "<R>",
@@ -425,7 +423,7 @@
         }
       ]
     },
-    "CAL_DATE": {  
+    "CAL_DATE": {
       "Name": "Calibration Date",
       "Description": "This is the date the sensor was last calibrated. CCYY is the year, MM is the month (01 to 12), and DD is the day of the month (01 to 31).",
       "Size": 8,
@@ -437,7 +435,7 @@
           "Type": "Date"
         }
       ]
-    },          
+    },
     "PATCH_TOT": {
       "Name": "Total Number of Patches",
       "Description": "This is the total number of patches contained in the imaging operation. Generally this will also be consistent with the number of PATCH and/or CMETAA extensions contained in an imaging operation. 0000 for EO-IR imagery. (0000 indicates no PATCH extension present.",
@@ -462,9 +460,9 @@
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 999
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999
         }
       ]
     }

@@ -25,11 +25,11 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
     ports:
-      - "9090:9090"
+      - '9090:9090'
     networks:
       - monitoring
     labels:
-      org.label-schema.group: "monitoring"
+      org.label-schema.group: 'monitoring'
 
   alertmanager:
     image: prom/alertmanager:v0.25.0
@@ -41,11 +41,11 @@ services:
       - '--config.file=/etc/alertmanager/config.yml'
       - '--storage.path=/alertmanager'
     ports:
-      - "9093:9093"
+      - '9093:9093'
     networks:
       - monitoring
     labels:
-      org.label-schema.group: "monitoring"
+      org.label-schema.group: 'monitoring'
 
   nodeexporter:
     image: prom/node-exporter:v1.6.1
@@ -61,11 +61,11 @@ services:
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     ports:
-      - "9100:9100"
+      - '9100:9100'
     networks:
       - monitoring
     labels:
-      org.label-schema.group: "monitoring"
+      org.label-schema.group: 'monitoring'
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.47.1
@@ -78,11 +78,11 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
     ports:
-      - "8080:8080"
+      - '8080:8080'
     networks:
       - monitoring
     labels:
-      org.label-schema.group: "monitoring"
+      org.label-schema.group: 'monitoring'
 
   grafana:
     image: grafana/grafana:9.5.3
@@ -98,11 +98,11 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
     ports:
-      - "3000:3000"
+      - '3000:3000'
     networks:
       - monitoring
     labels:
-      org.label-schema.group: "monitoring"
+      org.label-schema.group: 'monitoring'
 
   loki:
     image: grafana/loki:2.8.3
@@ -113,11 +113,11 @@ services:
       - loki_data:/loki
     command: -config.file=/etc/loki/config.yml
     ports:
-      - "3100:3100"
+      - '3100:3100'
     networks:
       - monitoring
     labels:
-      org.label-schema.group: "monitoring"
+      org.label-schema.group: 'monitoring'
 
   promtail:
     image: grafana/promtail:2.8.3
@@ -132,7 +132,7 @@ services:
     networks:
       - monitoring
     labels:
-      org.label-schema.group: "monitoring"
+      org.label-schema.group: 'monitoring'
 
   tempo:
     image: grafana/tempo:2.2.3
@@ -143,13 +143,13 @@ services:
       - tempo_data:/tmp/tempo
     command: -config.file=/etc/tempo/config.yml
     ports:
-      - "14268:14268"  # jaeger ingest
-      - "3200:3200"    # tempo
-      - "9411:9411"    # zipkin
+      - '14268:14268' # jaeger ingest
+      - '3200:3200' # tempo
+      - '9411:9411' # zipkin
     networks:
       - monitoring
     labels:
-      org.label-schema.group: "monitoring"
+      org.label-schema.group: 'monitoring'
 
   grafana-agent:
     image: grafana/agent:v0.36.1
@@ -165,4 +165,4 @@ services:
     networks:
       - monitoring
     labels:
-      org.label-schema.group: "monitoring"
+      org.label-schema.group: 'monitoring'

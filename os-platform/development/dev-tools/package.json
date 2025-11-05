@@ -1,0 +1,11 @@
+{
+  "name": "terrafusion-dev-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "TerraFusion OS Development Tools scripts",
+  "scripts": {
+    "build:all-development": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"dotnet build 'C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\TerraFusion.sln' -c Release\"",
+    "test:all-development": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"dotnet test 'C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\TerraFusion.sln' -c Release --no-build\"",
+    "quality:gate": "npm run build:all-development && npm run test:all-development"
+  }
+}

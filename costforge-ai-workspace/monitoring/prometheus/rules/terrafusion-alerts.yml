@@ -9,9 +9,9 @@ groups:
           severity: critical
           service: api
         annotations:
-          summary: "TerraFusion API is down"
-          description: "TerraFusion API has been down for more than 1 minute."
-          runbook_url: "https://wiki.terrafusion.example/ops/runbooks/api-down"
+          summary: 'TerraFusion API is down'
+          description: 'TerraFusion API has been down for more than 1 minute.'
+          runbook_url: 'https://wiki.terrafusion.example/ops/runbooks/api-down'
 
       # Request Errors
       - alert: HighAPIErrorRate
@@ -21,9 +21,9 @@ groups:
           severity: warning
           service: api
         annotations:
-          summary: "High API error rate"
-          description: "Error rate is above 5% ({{ $value | printf \"%.2f\" }})"
-          runbook_url: "https://wiki.terrafusion.example/ops/runbooks/high-error-rate"
+          summary: 'High API error rate'
+          description: 'Error rate is above 5% ({{ $value | printf "%.2f" }})'
+          runbook_url: 'https://wiki.terrafusion.example/ops/runbooks/high-error-rate'
 
       # Latency
       - alert: APIHighLatency
@@ -33,9 +33,9 @@ groups:
           severity: warning
           service: api
         annotations:
-          summary: "High API latency"
-          description: "95th percentile request latency is above 2 seconds for path {{ $labels.path }}"
-          runbook_url: "https://wiki.terrafusion.example/ops/runbooks/high-latency"
+          summary: 'High API latency'
+          description: '95th percentile request latency is above 2 seconds for path {{ $labels.path }}'
+          runbook_url: 'https://wiki.terrafusion.example/ops/runbooks/high-latency'
 
       # System Resources
       - alert: APIHighCPUUsage
@@ -45,9 +45,9 @@ groups:
           severity: warning
           service: api
         annotations:
-          summary: "High CPU usage in API"
-          description: "API CPU usage is above 80% for more than 5 minutes"
-          runbook_url: "https://wiki.terrafusion.example/ops/runbooks/high-cpu"
+          summary: 'High CPU usage in API'
+          description: 'API CPU usage is above 80% for more than 5 minutes'
+          runbook_url: 'https://wiki.terrafusion.example/ops/runbooks/high-cpu'
 
       - alert: APIHighMemoryUsage
         expr: process_resident_memory_bytes{job="terrafusion"} > 1.5e+9
@@ -56,9 +56,9 @@ groups:
           severity: warning
           service: api
         annotations:
-          summary: "High memory usage in API"
-          description: "API memory usage is above 1.5GB for more than 5 minutes"
-          runbook_url: "https://wiki.terrafusion.example/ops/runbooks/high-memory"
+          summary: 'High memory usage in API'
+          description: 'API memory usage is above 1.5GB for more than 5 minutes'
+          runbook_url: 'https://wiki.terrafusion.example/ops/runbooks/high-memory'
 
       # Database
       - alert: PostgreSQLDown
@@ -68,9 +68,9 @@ groups:
           severity: critical
           service: database
         annotations:
-          summary: "PostgreSQL is down"
-          description: "PostgreSQL exporter has been down for more than 1 minute"
-          runbook_url: "https://wiki.terrafusion.example/ops/runbooks/postgresql-down"
+          summary: 'PostgreSQL is down'
+          description: 'PostgreSQL exporter has been down for more than 1 minute'
+          runbook_url: 'https://wiki.terrafusion.example/ops/runbooks/postgresql-down'
 
       - alert: PostgreSQLHighConnections
         expr: pg_stat_activity_count{datname="terrafusion"} > 50
@@ -79,10 +79,10 @@ groups:
           severity: warning
           service: database
         annotations:
-          summary: "High number of PostgreSQL connections"
-          description: "More than 50 PostgreSQL connections for more than 5 minutes"
-          runbook_url: "https://wiki.terrafusion.example/ops/runbooks/postgresql-connections"
-      
+          summary: 'High number of PostgreSQL connections'
+          description: 'More than 50 PostgreSQL connections for more than 5 minutes'
+          runbook_url: 'https://wiki.terrafusion.example/ops/runbooks/postgresql-connections'
+
       # Agent Monitoring
       - alert: AgentDown
         expr: up{job="terrafusion-agents"} == 0
@@ -91,6 +91,6 @@ groups:
           severity: warning
           service: agents
         annotations:
-          summary: "TerraFusion agent is down"
-          description: "Agent {{ $labels.instance }} has been down for more than 2 minutes"
-          runbook_url: "https://wiki.terrafusion.example/ops/runbooks/agent-down"
+          summary: 'TerraFusion agent is down'
+          description: 'Agent {{ $labels.instance }} has been down for more than 2 minutes'
+          runbook_url: 'https://wiki.terrafusion.example/ops/runbooks/agent-down'

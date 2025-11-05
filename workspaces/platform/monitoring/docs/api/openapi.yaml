@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/monitoring
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/monitoring
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/monitoring
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/monitoring
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/monitoring
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/monitoring
+    description: Development Environment
 paths:
   /metrics:
     get:
       tags:
-      - monitoring
+        - monitoring
       summary: System metrics
       description: System metrics - System monitoring and observability APIs
       operationId: get__metrics
       security:
-      - OAuth2:
-        - monitoring:read
+        - OAuth2:
+            - monitoring:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /logs:
     get:
       tags:
-      - monitoring
+        - monitoring
       summary: Log aggregation
       description: Log aggregation - System monitoring and observability APIs
       operationId: get__logs
       security:
-      - OAuth2:
-        - monitoring:read
+        - OAuth2:
+            - monitoring:read
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /alerts:
     post:
       tags:
-      - monitoring
+        - monitoring
       summary: Alert management
       description: Alert management - System monitoring and observability APIs
       operationId: post__alerts
       security:
-      - OAuth2:
-        - monitoring:write
+        - OAuth2:
+            - monitoring:write
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /dashboards:
     get:
       tags:
-      - monitoring
+        - monitoring
       summary: Monitoring dashboards
       description: Monitoring dashboards - System monitoring and observability APIs
       operationId: get__dashboards
       security:
-      - OAuth2:
-        - monitoring:read
+        - OAuth2:
+            - monitoring:read
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -206,12 +206,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - monitoring:read
-- ApiKey: []
+  - OAuth2:
+      - monitoring:read
+  - ApiKey: []
 tags:
-- name: monitoring
-  description: Monitoring operations
-  externalDocs:
-    description: Find out more about monitoring
-    url: https://docs.terrafusion.gov/platform/monitoring
+  - name: monitoring
+    description: Monitoring operations
+    externalDocs:
+      description: Find out more about monitoring
+      url: https://docs.terrafusion.gov/platform/monitoring

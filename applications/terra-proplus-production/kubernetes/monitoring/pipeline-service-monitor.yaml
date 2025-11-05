@@ -14,15 +14,15 @@ spec:
     matchNames:
       - terrafusion-prod
   endpoints:
-  - port: metrics
-    interval: 15s
-    path: /metrics
-    honorLabels: true
-    metricRelabelings:
-    - sourceLabels: [__name__]
-      regex: 'pipeline_(.*)'
-      action: keep
-    - sourceLabels: [stage]
-      regex: '(.*)'
-      targetLabel: pipeline_stage
-      action: replace
+    - port: metrics
+      interval: 15s
+      path: /metrics
+      honorLabels: true
+      metricRelabelings:
+        - sourceLabels: [__name__]
+          regex: 'pipeline_(.*)'
+          action: keep
+        - sourceLabels: [stage]
+          regex: '(.*)'
+          targetLabel: pipeline_stage
+          action: replace

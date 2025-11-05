@@ -12,10 +12,10 @@
 /* TerraFusion Design System - Permit Management */
 :root {
   /* TerraFusion Color Palette */
-  --terra-cyan: #00FFFF;
-  --terra-midnight: #0A0E1A;
-  --terra-blue: #0080FF;
-  --terra-slate: #1E293B;
+  --terra-cyan: #00ffff;
+  --terra-midnight: #0a0e1a;
+  --terra-blue: #0080ff;
+  --terra-slate: #1e293b;
   --quantum-factor: 949;
   --golden-ratio: 1.618;
 
@@ -143,11 +143,12 @@ body {
 }
 
 @keyframes quantum-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
-    opacity: .7;
+    opacity: 0.7;
   }
 }
 
@@ -277,13 +278,13 @@ textarea:focus {
 /* High Contrast Mode Support */
 @media (prefers-contrast: high) {
   :root {
-    --terra-cyan: #00FFFF;
+    --terra-cyan: #00ffff;
     --terra-midnight: #000000;
   }
 
   .terra-glass {
     background: rgba(0, 0, 0, 0.8);
-    border: 2px solid #00FFFF;
+    border: 2px solid #00ffff;
   }
 }
 

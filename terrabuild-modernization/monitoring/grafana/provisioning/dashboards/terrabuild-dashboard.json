@@ -173,9 +173,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -255,9 +253,7 @@
         "minVizWidth": 0,
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },

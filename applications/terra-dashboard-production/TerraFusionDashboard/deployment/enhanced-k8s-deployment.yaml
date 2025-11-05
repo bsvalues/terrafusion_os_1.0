@@ -23,13 +23,13 @@ metadata:
   name: terrafusion-config
   namespace: terrafusion
 data:
-  NODE_ENV: "production"
-  DATABASE_URL: "postgresql://terrafusion:terrafusion_pass@postgres-service:5432/terrafusion"
-  REDIS_URL: "redis://redis-service:6379/0"
-  API_RATE_LIMIT: "1000"
-  LOG_LEVEL: "INFO"
-  ENABLE_MONITORING: "true"
-  ENABLE_WEBSOCKETS: "true"
+  NODE_ENV: 'production'
+  DATABASE_URL: 'postgresql://terrafusion:terrafusion_pass@postgres-service:5432/terrafusion'
+  REDIS_URL: 'redis://redis-service:6379/0'
+  API_RATE_LIMIT: '1000'
+  LOG_LEVEL: 'INFO'
+  ENABLE_MONITORING: 'true'
+  ENABLE_WEBSOCKETS: 'true'
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -38,7 +38,7 @@ metadata:
   namespace: terrafusion
   labels:
     app: terrafusion-app
-    version: "2.0.0"
+    version: '2.0.0'
 spec:
   replicas: 3
   selector:
@@ -48,73 +48,73 @@ spec:
     metadata:
       labels:
         app: terrafusion-app
-        version: "2.0.0"
+        version: '2.0.0'
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "5000"
-        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '5000'
+        prometheus.io/path: '/metrics'
     spec:
       containers:
-      - name: terrafusion-app
-        image: terrafusion/app:2.0.0
-        ports:
-        - containerPort: 5000
-          name: http
-        env:
-        - name: NODE_ENV
-          valueFrom:
-            configMapKeyRef:
-              name: terrafusion-config
-              key: NODE_ENV
-        - name: DATABASE_URL
-          valueFrom:
-            configMapKeyRef:
-              name: terrafusion-config
-              key: DATABASE_URL
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-secrets
-              key: postgres-password
-        - name: JWT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-secrets
-              key: jwt-secret
-        - name: OPENAI_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-secrets
-              key: openai-api-key
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-        livenessProbe:
-          httpGet:
-            path: /api/system/health
-            port: 5000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /api/system/health
-            port: 5000
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 2
-        volumeMounts:
-        - name: logs
-          mountPath: /app/logs
+        - name: terrafusion-app
+          image: terrafusion/app:2.0.0
+          ports:
+            - containerPort: 5000
+              name: http
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: terrafusion-config
+                  key: NODE_ENV
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: terrafusion-config
+                  key: DATABASE_URL
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: postgres-password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: jwt-secret
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: openai-api-key
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '250m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
+          livenessProbe:
+            httpGet:
+              path: /api/system/health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/system/health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          volumeMounts:
+            - name: logs
+              mountPath: /app/logs
       volumes:
-      - name: logs
-        emptyDir: {}
+        - name: logs
+          emptyDir: {}
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -128,10 +128,10 @@ spec:
   selector:
     app: terrafusion-app
   ports:
-  - name: http
-    port: 80
-    targetPort: 5000
-    protocol: TCP
+    - name: http
+      port: 80
+      targetPort: 5000
+      protocol: TCP
   type: ClusterIP
 ---
 apiVersion: apps/v1
@@ -150,50 +150,50 @@ spec:
         app: postgres
     spec:
       containers:
-      - name: postgres
-        image: postgres:15-alpine
-        env:
-        - name: POSTGRES_DB
-          value: "terrafusion"
-        - name: POSTGRES_USER
-          value: "terrafusion"
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-secrets
-              key: postgres-password
-        ports:
-        - containerPort: 5432
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        volumeMounts:
-        - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
-        livenessProbe:
-          exec:
-            command:
-            - pg_isready
-            - -U
-            - terrafusion
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          exec:
-            command:
-            - pg_isready
-            - -U
-            - terrafusion
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_DB
+              value: 'terrafusion'
+            - name: POSTGRES_USER
+              value: 'terrafusion'
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: postgres-password
+          ports:
+            - containerPort: 5432
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - terrafusion
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - terrafusion
+            initialDelaySeconds: 5
+            periodSeconds: 5
       volumes:
-      - name: postgres-storage
-        persistentVolumeClaim:
-          claimName: postgres-pvc
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -204,8 +204,8 @@ spec:
   selector:
     app: postgres
   ports:
-  - port: 5432
-    targetPort: 5432
+    - port: 5432
+      targetPort: 5432
   type: ClusterIP
 ---
 apiVersion: v1
@@ -237,31 +237,31 @@ spec:
         app: redis
     spec:
       containers:
-      - name: redis
-        image: redis:7-alpine
-        ports:
-        - containerPort: 6379
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "50m"
-          limits:
-            memory: "512Mi"
-            cpu: "200m"
-        livenessProbe:
-          exec:
-            command:
-            - redis-cli
-            - ping
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          exec:
-            command:
-            - redis-cli
-            - ping
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '50m'
+            limits:
+              memory: '512Mi'
+              cpu: '200m'
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service
@@ -272,8 +272,8 @@ spec:
   selector:
     app: redis
   ports:
-  - port: 6379
-    targetPort: 6379
+    - port: 6379
+      targetPort: 6379
   type: ClusterIP
 ---
 apiVersion: autoscaling/v2
@@ -289,31 +289,31 @@ spec:
   minReplicas: 2
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 65
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 75
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 65
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 75
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 60
       policies:
-      - type: Percent
-        value: 50
-        periodSeconds: 60
+        - type: Percent
+          value: 50
+          periodSeconds: 60
     scaleDown:
       stabilizationWindowSeconds: 300
       policies:
-      - type: Percent
-        value: 25
-        periodSeconds: 60
+        - type: Percent
+          value: 25
+          periodSeconds: 60
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -321,40 +321,40 @@ metadata:
   name: terrafusion-ingress
   namespace: terrafusion
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/websocket-services: "terrafusion-service"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/websocket-services: 'terrafusion-service'
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '86400'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '86400'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '86400'
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
 spec:
   tls:
-  - hosts:
-    - terrafusion.gov
-    - api.terrafusion.gov
-    secretName: terrafusion-tls
+    - hosts:
+        - terrafusion.gov
+        - api.terrafusion.gov
+      secretName: terrafusion-tls
   rules:
-  - host: terrafusion.gov
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-service
-            port:
-              number: 80
-  - host: api.terrafusion.gov
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-service
-            port:
-              number: 80
+    - host: terrafusion.gov
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-service
+                port:
+                  number: 80
+    - host: api.terrafusion.gov
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-service
+                port:
+                  number: 80
 ---
 apiVersion: v1
 kind: ServiceMonitor
@@ -366,9 +366,9 @@ spec:
     matchLabels:
       app: terrafusion-app
   endpoints:
-  - port: http
-    path: /metrics
-    interval: 30s
+    - port: http
+      path: /metrics
+      interval: 30s
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget

@@ -4,7 +4,7 @@ metadata:
   name: terrafusion-platform-prod
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "0"  # Umbrella chart - coordinates all services
+    argocd.argoproj.io/sync-wave: '0' # Umbrella chart - coordinates all services
     notifications.argoproj.io/subscribe.on-deployed.slack: terrafusion-deployments
     notifications.argoproj.io/subscribe.on-sync-succeeded.slack: terrafusion-deployments
     notifications.argoproj.io/subscribe.on-health-degraded.slack: terrafusion-critical
@@ -12,7 +12,7 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: terrafusion
-  
+
   source:
     repoURL: https://github.com/terrafusion/terrafusion-os
     targetRevision: main
@@ -29,18 +29,18 @@ spec:
         - name: global.imageRegistry
           value: ghcr.io/terrafusion
         - name: api.enabled
-          value: "true"
+          value: 'true'
         - name: consciousness.enabled
-          value: "true"
+          value: 'true'
         - name: gateway.enabled
-          value: "true"
+          value: 'true'
         - name: operations.enabled
-          value: "true"
-  
+          value: 'true'
+
   destination:
     server: https://kubernetes.default.svc
     namespace: terrafusion
-  
+
   syncPolicy:
     automated:
       prune: true
@@ -56,16 +56,16 @@ spec:
         duration: 10s
         factor: 2
         maxDuration: 10m
-  
+
   ignoreDifferences:
     - group: '*'
       kind: '*'
       jsonPointers:
         - /spec/replicas
         - /status
-  
+
   revisionHistoryLimit: 10
-  
+
   info:
     - name: 'Environment'
       value: 'Production'

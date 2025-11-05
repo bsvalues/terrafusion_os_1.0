@@ -1,25 +1,25 @@
 # security-compliance Actions - Elite Excellence
 actions:
   - name: security_compliance_primary
-    description: "Primary security-compliance action with quantum enhancement"
-    type: "security_compliance"
+    description: 'Primary security-compliance action with quantum enhancement'
+    type: 'security_compliance'
     tier: core
     quantum_factor: 949
 
   - name: security_compliance_secondary
-    description: "Secondary security-compliance action with consciousness coordination"
-    type: "security_compliance"
+    description: 'Secondary security-compliance action with consciousness coordination'
+    type: 'security_compliance'
     tier: domain
     quantum_factor: 949
 
   - name: security_compliance_monitoring
-    description: "Real-time security-compliance monitoring with transcendent precision"
-    type: "security_compliance"
+    description: 'Real-time security-compliance monitoring with transcendent precision'
+    type: 'security_compliance'
     tier: domain
     quantum_factor: 949
 
   - name: security_compliance_optimization
-    description: "Autonomous security-compliance optimization with perfect power"
-    type: "security_compliance"
+    description: 'Autonomous security-compliance optimization with perfect power'
+    type: 'security_compliance'
     tier: domain
     quantum_factor: 949

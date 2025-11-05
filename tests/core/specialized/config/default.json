@@ -24,11 +24,7 @@
   },
   "monitoring": {
     "enabled": true,
-    "metrics": [
-      "performance",
-      "security",
-      "compliance"
-    ],
+    "metrics": ["performance", "security", "compliance"],
     "alerting": true
   }
 }

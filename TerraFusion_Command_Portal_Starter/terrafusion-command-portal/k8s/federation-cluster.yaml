@@ -100,7 +100,7 @@ metadata:
     app: federation-relay
     component: networking
 spec:
-  replicas: 3  # High availability across counties
+  replicas: 3 # High availability across counties
   selector:
     matchLabels:
       app: federation-relay
@@ -109,8 +109,8 @@ spec:
       labels:
         app: federation-relay
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9090"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9090'
     spec:
       serviceAccountName: terrafusion-federation
       securityContext:
@@ -118,72 +118,72 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       containers:
-      - name: federation-relay
-        image: terrafusion/federation-relay:v1.0.0
-        imagePullPolicy: Always
-        ports:
-        - name: http
-          containerPort: 8080
-          protocol: TCP
-        - name: websocket
-          containerPort: 8081
-          protocol: TCP
-        - name: metrics
-          containerPort: 9090
-          protocol: TCP
-        - name: federation
-          containerPort: 8082
-          protocol: TCP
-        env:
-        - name: COUNTY_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['county.terrafusion.gov/name']
-        - name: CLUSTER_ID
-          value: "terrafusion-pilot"
-        - name: LOG_LEVEL
-          value: "info"
-        - name: RUST_LOG
-          value: "federation_relay=info,hyper=warn"
-        volumeMounts:
-        - name: config
-          mountPath: /etc/terrafusion
-          readOnly: true
-        - name: tls-certs
-          mountPath: /etc/ssl/terrafusion
-          readOnly: true
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+        - name: federation-relay
+          image: terrafusion/federation-relay:v1.0.0
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: websocket
+              containerPort: 8081
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+            - name: federation
+              containerPort: 8082
+              protocol: TCP
+          env:
+            - name: COUNTY_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['county.terrafusion.gov/name']
+            - name: CLUSTER_ID
+              value: 'terrafusion-pilot'
+            - name: LOG_LEVEL
+              value: 'info'
+            - name: RUST_LOG
+              value: 'federation_relay=info,hyper=warn'
+          volumeMounts:
+            - name: config
+              mountPath: /etc/terrafusion
+              readOnly: true
+            - name: tls-certs
+              mountPath: /etc/ssl/terrafusion
+              readOnly: true
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
       volumes:
-      - name: config
-        configMap:
-          name: terrafusion-federation-config
-      - name: tls-certs
-        secret:
-          secretName: terrafusion-federation-tls
+        - name: config
+          configMap:
+            name: terrafusion-federation-config
+        - name: tls-certs
+          secret:
+            secretName: terrafusion-federation-tls
 
 ---
 apiVersion: v1
@@ -194,23 +194,23 @@ metadata:
   labels:
     app: federation-relay
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-west-2:account:certificate/cert-id"
+    service.beta.kubernetes.io/aws-load-balancer-type: 'nlb'
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: 'arn:aws:acm:us-west-2:account:certificate/cert-id'
 spec:
   type: LoadBalancer
   ports:
-  - name: http
-    port: 443
-    targetPort: 8080
-    protocol: TCP
-  - name: websocket
-    port: 8081
-    targetPort: 8081
-    protocol: TCP
-  - name: federation
-    port: 8082
-    targetPort: 8082
-    protocol: TCP
+    - name: http
+      port: 443
+      targetPort: 8080
+      protocol: TCP
+    - name: websocket
+      port: 8081
+      targetPort: 8081
+      protocol: TCP
+    - name: federation
+      port: 8082
+      targetPort: 8082
+      protocol: TCP
   selector:
     app: federation-relay
 
@@ -225,41 +225,41 @@ spec:
     matchLabels:
       app: federation-relay
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: terrafusion-system
-    - podSelector:
-        matchLabels:
-          component: api-gateway
-    ports:
-    - protocol: TCP
-      port: 8080
-    - protocol: TCP
-      port: 8081
-    - protocol: TCP
-      port: 8082
-  # External county federation traffic
-  - from: []
-    ports:
-    - protocol: TCP
-      port: 8082
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: terrafusion-system
+        - podSelector:
+            matchLabels:
+              component: api-gateway
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8081
+        - protocol: TCP
+          port: 8082
+    # External county federation traffic
+    - from: []
+      ports:
+        - protocol: TCP
+          port: 8082
   egress:
-  # Allow federation traffic to other counties
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 443
-    - protocol: TCP
-      port: 8082
-  # DNS resolution
-  - to: []
-    ports:
-    - protocol: UDP
-      port: 53
+    # Allow federation traffic to other counties
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 8082
+    # DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
 
 ---
 apiVersion: v1
@@ -268,7 +268,7 @@ metadata:
   name: terrafusion-federation
   namespace: terrafusion-system
   annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::account:role/TerraFusionFederationRole"
+    eks.amazonaws.com/role-arn: 'arn:aws:iam::account:role/TerraFusionFederationRole'
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -276,15 +276,15 @@ kind: ClusterRole
 metadata:
   name: terrafusion-federation
 rules:
-- apiGroups: [""]
-  resources: ["configmaps", "secrets"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: [""]
-  resources: ["events"]
-  verbs: ["create"]
-- apiGroups: ["metrics.k8s.io"]
-  resources: ["pods", "nodes"]
-  verbs: ["get", "list"]
+  - apiGroups: ['']
+    resources: ['configmaps', 'secrets']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['']
+    resources: ['events']
+    verbs: ['create']
+  - apiGroups: ['metrics.k8s.io']
+    resources: ['pods', 'nodes']
+    verbs: ['get', 'list']
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -296,9 +296,9 @@ roleRef:
   kind: ClusterRole
   name: terrafusion-federation
 subjects:
-- kind: ServiceAccount
-  name: terrafusion-federation
-  namespace: terrafusion-system
+  - kind: ServiceAccount
+    name: terrafusion-federation
+    namespace: terrafusion-system
 
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -313,10 +313,10 @@ spec:
     matchLabels:
       app: federation-relay
   endpoints:
-  - port: metrics
-    interval: 30s
-    path: /metrics
-    honorLabels: true
+    - port: metrics
+      interval: 30s
+      path: /metrics
+      honorLabels: true
 
 ---
 apiVersion: v1
@@ -330,7 +330,7 @@ data:
   # In production, these would be managed by cert-manager
   tls.crt: LS0tLS1CRUdJTi... # Base64 encoded certificate
   tls.key: LS0tLS1CRUdJTi... # Base64 encoded private key
-  ca.crt: LS0tLS1CRUdJTi...  # Base64 encoded CA certificate
+  ca.crt: LS0tLS1CRUdJTi... # Base64 encoded CA certificate
 
 ---
 # Grafana Dashboard ConfigMap for Federation Monitoring
@@ -340,7 +340,7 @@ metadata:
   name: terrafusion-federation-dashboard
   namespace: terrafusion-system
   labels:
-    grafana_dashboard: "1"
+    grafana_dashboard: '1'
 data:
   federation-monitoring.json: |
     {

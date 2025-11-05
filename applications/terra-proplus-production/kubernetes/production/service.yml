@@ -7,8 +7,8 @@ metadata:
     app: terrafusion-api
     environment: production
   annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "5000"
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '5000'
 spec:
   type: ClusterIP
   ports:

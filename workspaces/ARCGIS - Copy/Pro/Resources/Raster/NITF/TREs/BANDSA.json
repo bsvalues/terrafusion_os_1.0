@@ -9,7 +9,7 @@
   "Notes": "The format and descriptions of the user-defined fields of this extension are detailed in Table E-8.",
   "Size": 6,
   "Fields": {
-    "ROW_SPACING" : {
+    "ROW_SPACING": {
       "Name": "Row Spacing",
       "Description": "The row spacing is measured at the center of the image.  It is the distance in the image plane between corresponding pixels of adjacent rows measured in feet or meters.  Alternatively, row spacing can be the angular center to cetner distance (pitch) between corresponding pixels of adjacent rows measured in microradians.",
       "Size": 7,
@@ -18,13 +18,13 @@
       "Units": ["feet", "meters", "microradians"],
       "Values": [
         {
-          "Type": "Double"        
+          "Type": "Double"
         }
       ]
     },
     "ROW_SPACING_UNITS": {
       "Name": "The units of ROW_SPACING",
-      "Description": "This field describes the the units used for the ROW_SPACING field.",      
+      "Description": "This field describes the the units used for the ROW_SPACING field.",
       "Size": 1,
       "Format": "BCS-A",
       "Type": "R",
@@ -33,14 +33,14 @@
         {
           "Type": "Value",
           "Values": {
-            "f":"feet",
-            "m":"meters",
-            "r":"microradians"
-            }
+            "f": "feet",
+            "m": "meters",
+            "r": "microradians"
+          }
         }
       ]
     },
-    "COL_SPACING" : {
+    "COL_SPACING": {
       "Name": "Column Spacing",
       "Description": "The column spacing is measured at the center of the image.  It is the distance in the image plane between adjacent pixels within a row measured in feet or meters.  Alternatively, column spacing can be the angular center to center distance (pitch) between adjacent pixels within a row measured in microradians.",
       "Size": 7,
@@ -49,13 +49,13 @@
       "Units": ["feet", "meters", "microradians"],
       "Values": [
         {
-          "Type": "Double"        
+          "Type": "Double"
         }
       ]
     },
     "COL_SPACING_UNITS": {
       "Name": "The units of COL_SPACING",
-      "Description": "This field describes the the units used for the COL_SPACING field.",      
+      "Description": "This field describes the the units used for the COL_SPACING field.",
       "Size": 1,
       "Format": "BCS-A",
       "Type": "R",
@@ -64,16 +64,16 @@
         {
           "Type": "Value",
           "Values": {
-            "f":"feet",
-            "m":"meters",
-            "r":"microradians"
-            }
-         }
+            "f": "feet",
+            "m": "meters",
+            "r": "microradians"
+          }
+        }
       ]
     },
     "FOCAL_LENGTH": {
       "Name": "Sensor Focal Length",
-      "Description": "The effective distance from the optical lens to sensor elements.  This is used when either ROW_SPACING_UNITS or COL_SPACING_UNITS indicates microradians.  The value of 999.99 indicates the focal length is not available or not applicable to this sensor.", 
+      "Description": "The effective distance from the optical lens to sensor elements.  This is used when either ROW_SPACING_UNITS or COL_SPACING_UNITS indicates microradians.  The value of 999.99 indicates the focal length is not available or not applicable to this sensor.",
       "Size": 6,
       "Format": "BCS-N",
       "Type": "R",
@@ -82,17 +82,17 @@
         {
           "Type": "Range",
           "Min": 0.01,
-          "Max": 899.99                              
+          "Max": 899.99
         },
         {
-            "Type": "Value",
-            "Values": ["999.99"]
-        }   
+          "Type": "Value",
+          "Values": ["999.99"]
+        }
       ]
     },
     "BANDCOUNT": {
       "Name": "Number of bands",
-      "Description": "The number of bands making up the image.", 
+      "Description": "The number of bands making up the image.",
       "Size": 4,
       "Format": "BCS-N",
       "Type": "R",
@@ -136,18 +136,18 @@
       ]
     },
     "BANDUBOUND<BANDCOUNT>": {
-        "Name": "Band Upper Wavelength Bound",
-        "Description": "This field describes the wavelength for the nth band at the higher 50 percent (-3db) point of the sensor spectral response.",
-        "Size": 5,
-        "Format": "BCS-N",
-        "Type": "<C>",
-        "Units": ["microradians"],
-        "Values": [
-          {
+      "Name": "Band Upper Wavelength Bound",
+      "Description": "This field describes the wavelength for the nth band at the higher 50 percent (-3db) point of the sensor spectral response.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "<C>",
+      "Units": ["microradians"],
+      "Values": [
+        {
           "Type": "Range",
           "Min": 0.01,
           "Max": 19.99
-          }
+        }
       ]
     },
     "BANDWIDTH<BANDCOUNT>": {
@@ -159,7 +159,7 @@
       "Units": ["microradians"],
       "Values": [
         {
-         "Type": "Range",
+          "Type": "Range",
           "Min": 0.01,
           "Max": 19.99
         }
@@ -174,12 +174,12 @@
       "Units": ["microwatts / cm2-sr-micrometer"],
       "Values": [
         {
-        "Type": "Range",
-        "Min": 0.1,
-        "Max": 9999.9
+          "Type": "Range",
+          "Min": 0.1,
+          "Max": 9999.9
         }
-      ]  
-    }, 
+      ]
+    },
     "BANDCALINC<BANDCOUNT>": {
       "Name": "Band Calibration (Increment)",
       "Description": "This field describes the mean change in power level for the nth band that corresponds to an increase of 1 in pixel value.",
@@ -189,12 +189,12 @@
       "Units": ["microwatts / cm2-sr-micrometer"],
       "Values": [
         {
-        "Type": "Range",
-        "Min": 0.01,
-        "Max": 99.99
+          "Type": "Range",
+          "Min": 0.01,
+          "Max": 99.99
         }
-      ]  
-    },      
+      ]
+    },
     "BANDRESP<BANDCOUNT>": {
       "Name": "Band Spatial Response",
       "Description": "This field describes the nominal pixel size, expressed in microradians.",
@@ -204,12 +204,12 @@
       "Units": ["microradians"],
       "Values": [
         {
-        "Type": "Range",
-        "Min": 0.1,
-        "Max": 999.9
+          "Type": "Range",
+          "Min": 0.1,
+          "Max": 999.9
         }
-      ]  
-    },      
+      ]
+    },
     "BANDASD<BANDCOUNT>": {
       "Name": "Band Angular Sample Distance",
       "Description": "The pixel, center to center distance, expressed in microradians.",
@@ -219,12 +219,12 @@
       "Units": ["microradians"],
       "Values": [
         {
-        "Type": "Range",
-        "Min": 0.1,
-        "Max": 999.9
+          "Type": "Range",
+          "Min": 0.1,
+          "Max": 999.9
         }
-      ]  
-    },     
+      ]
+    },
     "BANDGSD<BANDCOUNT>": {
       "Name": "Band Ground Sample Distance",
       "Description": "The average distance between adjacent pixels for the nth band.",
@@ -234,16 +234,11 @@
       "Units": ["meters"],
       "Values": [
         {
-        "Type": "Range",
-        "Min": 0.01,
-        "Max": 99.99
+          "Type": "Range",
+          "Min": 0.01,
+          "Max": 99.99
         }
-      ]  
+      ]
     }
   }
 }
-      
-
-      
-
-       

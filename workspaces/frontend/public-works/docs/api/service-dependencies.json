@@ -63,9 +63,7 @@
       "/projects",
       "/work-orders"
     ],
-    "integration_points": [
-      "/api/v1/public-works/integration"
-    ]
+    "integration_points": ["/api/v1/public-works/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

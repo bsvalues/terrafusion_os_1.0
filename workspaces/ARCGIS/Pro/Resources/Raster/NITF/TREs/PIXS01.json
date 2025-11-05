@@ -5,7 +5,7 @@
   "Description": "This is the Pixscript Extensions TRE.",
   "Size": 362,
   "Fields": {
-    "RESERVED" : {
+    "RESERVED": {
       "Name": "Reserved Field",
       "Description": "This TRE field is reserved for Pixscript extensions.",
       "Size": 46,
@@ -17,6 +17,6 @@
           "Type": "Binary"
         }
       ]
-    }        
+    }
   }
 }

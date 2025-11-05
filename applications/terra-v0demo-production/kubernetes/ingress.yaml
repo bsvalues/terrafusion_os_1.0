@@ -6,32 +6,32 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/rate-limit: "100"
-    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/rate-limit: '100'
+    nginx.ingress.kubernetes.io/rate-limit-window: '1m'
 spec:
   tls:
-  - hosts:
-    - terrafusion.com
-    - api.terrafusion.com
-    secretName: terrafusion-tls
+    - hosts:
+        - terrafusion.com
+        - api.terrafusion.com
+      secretName: terrafusion-tls
   rules:
-  - host: terrafusion.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-app-service
-            port:
-              number: 80
-  - host: api.terrafusion.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-app-service
-            port:
-              number: 80
+    - host: terrafusion.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-app-service
+                port:
+                  number: 80
+    - host: api.terrafusion.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-app-service
+                port:
+                  number: 80

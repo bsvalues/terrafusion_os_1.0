@@ -5,16 +5,12 @@
   "properties": {
     "file_type": {
       "type": "string",
-      "enum": [
-        "triangulation_file"
-      ],
+      "enum": ["triangulation_file"],
       "description": "File type. Always \"triangulation_file\""
     },
     "format_version": {
       "type": "string",
-      "enum": [
-        "1.0", "1.1"
-      ]
+      "enum": ["1.0", "1.1"]
     },
     "name": {
       "type": "string",
@@ -30,11 +26,7 @@
     },
     "fallback_strategy": {
       "type": "string",
-      "enum": [
-        "none",
-        "nearest_side",
-        "nearest_centroid"
-      ]
+      "enum": ["none", "nearest_side", "nearest_centroid"]
     },
     "license": {
       "type": "string",
@@ -67,9 +59,7 @@
           "format": "email"
         }
       },
-      "required": [
-        "name"
-      ],
+      "required": ["name"],
       "additionalProperties": false
     },
     "links": {
@@ -96,9 +86,7 @@
             "description": "Description of the link"
           }
         },
-        "required": [
-          "href"
-        ],
+        "required": ["href"],
         "additionalProperties": false
       }
     },
@@ -121,10 +109,7 @@
       "maxItems": 2,
       "items": {
         "type": "string",
-        "enum": [
-          "horizontal",
-          "vertical"
-        ]
+        "enum": ["horizontal", "vertical"]
       }
     },
     "vertices_columns": {
@@ -182,11 +167,9 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "bbox"
-          ]
+          "enum": ["bbox"]
         },
-        "name" : {
+        "name": {
           "type": "string",
           "description": "Name of the extent (e.g. \"Finland - mainland south of 66°N\")"
         },
@@ -204,10 +187,7 @@
           }
         }
       },
-      "required": [
-        "type",
-        "parameters"
-      ],
+      "required": ["type", "parameters"],
       "additionalProperties": false
     }
   }

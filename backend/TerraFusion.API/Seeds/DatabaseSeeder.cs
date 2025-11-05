@@ -89,11 +89,13 @@ public static class DatabaseSeeder
 
     private static async System.Threading.Tasks.Task SeedCostMatrices(TerraFusionContext context)
     {
+        var kingCountyId = Guid.Parse("00000000-0000-0000-0000-000000000001"); // Placeholder county ID
+
         var costMatrices = new[]
         {
             new CostMatrix
             {
-                CountyId = 1,
+                CountyId = kingCountyId,
                 MatrixType = "PropertyTax",
                 BaseRate = 0.0123m,
                 Multiplier = 1.0m,
@@ -101,7 +103,7 @@ public static class DatabaseSeeder
             },
             new CostMatrix
             {
-                CountyId = 1,
+                CountyId = kingCountyId,
                 MatrixType = "BusinessLicense",
                 BaseRate = 50.0m,
                 Multiplier = 1.2m,

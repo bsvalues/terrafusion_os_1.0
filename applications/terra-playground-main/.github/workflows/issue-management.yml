@@ -29,7 +29,7 @@ jobs:
           script: |
             const issue = context.payload.issue;
             const projectNumber = 1; // Your project board number
-            
+
             await github.rest.projects.createCard({
               column_id: 'in-progress',
               content_id: issue.id,
@@ -42,7 +42,7 @@ jobs:
           script: |
             const issue = context.payload.issue;
             const title = issue.title.toLowerCase();
-            
+
             if (title.includes('bug') || title.includes('error')) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -51,7 +51,7 @@ jobs:
                 labels: ['bug']
               });
             }
-            
+
             if (title.includes('feature') || title.includes('enhancement')) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -67,7 +67,7 @@ jobs:
           script: |
             const issue = context.payload.issue;
             const labels = issue.labels.map(label => label.name);
-            
+
             if (labels.includes('frontend')) {
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
@@ -76,7 +76,7 @@ jobs:
                 assignees: ['frontend-team-lead']
               });
             }
-            
+
             if (labels.includes('backend')) {
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
@@ -85,7 +85,7 @@ jobs:
                 assignees: ['backend-team-lead']
               });
             }
-            
+
             if (labels.includes('security')) {
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
@@ -101,10 +101,10 @@ jobs:
           script: |
             const issue = context.payload.issue;
             const projectNumber = 1; // Your project board number
-            
+
             if (context.payload.action === 'closed') {
               await github.rest.projects.moveCard({
                 card_id: issue.id,
                 column_id: 'done'
               });
-            } 
+            }

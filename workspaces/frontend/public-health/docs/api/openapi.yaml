@@ -12,24 +12,24 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/public-health
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/public-health
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/public-health
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/public-health
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/public-health
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/public-health
+    description: Development Environment
 paths:
   /health-records:
     get:
       tags:
-      - public-health
+        - public-health
       summary: Health records (HIPAA compliant)
       description: Health records (HIPAA compliant) - Public health services and medical
         operations APIs
       operationId: get__health-records
       security:
-      - OAuth2:
-        - public-health:read
+        - OAuth2:
+            - public-health:read
       responses:
         '200':
           description: Successful operation
@@ -58,14 +58,14 @@ paths:
   /immunizations:
     post:
       tags:
-      - public-health
+        - public-health
       summary: Record immunizations
       description: Record immunizations - Public health services and medical operations
         APIs
       operationId: post__immunizations
       security:
-      - OAuth2:
-        - public-health:write
+        - OAuth2:
+            - public-health:write
       responses:
         '200':
           description: Successful operation
@@ -94,14 +94,14 @@ paths:
   /health-alerts:
     get:
       tags:
-      - public-health
+        - public-health
       summary: Public health alerts
       description: Public health alerts - Public health services and medical operations
         APIs
       operationId: get__health-alerts
       security:
-      - OAuth2:
-        - public-health:read
+        - OAuth2:
+            - public-health:read
       responses:
         '200':
           description: Successful operation
@@ -130,14 +130,14 @@ paths:
   /inspections:
     post:
       tags:
-      - public-health
+        - public-health
       summary: Health facility inspections
       description: Health facility inspections - Public health services and medical
         operations APIs
       operationId: post__inspections
       security:
-      - OAuth2:
-        - public-health:write
+        - OAuth2:
+            - public-health:write
       responses:
         '200':
           description: Successful operation
@@ -168,8 +168,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -184,9 +184,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -210,12 +210,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - public-health:read
-- ApiKey: []
+  - OAuth2:
+      - public-health:read
+  - ApiKey: []
 tags:
-- name: public-health
-  description: Public Health operations
-  externalDocs:
-    description: Find out more about public-health
-    url: https://docs.terrafusion.gov/frontend/public-health
+  - name: public-health
+    description: Public Health operations
+    externalDocs:
+      description: Find out more about public-health
+      url: https://docs.terrafusion.gov/frontend/public-health

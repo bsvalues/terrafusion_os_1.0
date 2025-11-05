@@ -17,6 +17,7 @@ using TerraFusion.AI.Services;
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.API.Interfaces;
 using CorePerformanceMetrics = TerraFusion.Core.DTOs.PerformanceMetrics;
+using SyncResult = TerraFusion.Abstractions.DTOs.Responses.SyncResult;
 
 namespace TerraFusion.API.Services;
 
@@ -541,7 +542,7 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
 
             // Perform IAAO ratio study (wrap in lists for interface compatibility)
             var ratioStudy = await _complianceValidator.PerformRatioStudyAsync(
-                new List<object> { assessmentData }, 
+                new List<object> { assessmentData },
                 new List<object> { salesData });
 
             // Validate specific IAAO standards
@@ -872,10 +873,10 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
     private async Task<PipelineStepResult> ExecuteDataExtractionAsync()
     {
         await Task.CompletedTask;
-        return new PipelineStepResult 
-        { 
-            Success = true, 
-            StepName = "Extraction", 
+        return new PipelineStepResult
+        {
+            Success = true,
+            StepName = "Extraction",
             RecordsExtracted = 10000,
             ExtractedData = new { Records = 10000 }
         };
@@ -884,9 +885,9 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
     private async Task<PipelineStepResult> ExecuteDataTransformationAsync(object? extractedData)
     {
         await Task.CompletedTask;
-        return new PipelineStepResult 
-        { 
-            Success = true, 
+        return new PipelineStepResult
+        {
+            Success = true,
             StepName = "Transformation",
             TransformedData = new { Records = 10000 }
         };
@@ -895,9 +896,9 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
     private async Task<PipelineStepResult> ExecuteDataLoadingAsync(object? transformedData)
     {
         await Task.CompletedTask;
-        return new PipelineStepResult 
-        { 
-            Success = true, 
+        return new PipelineStepResult
+        {
+            Success = true,
             StepName = "Loading",
             LoadedData = new { Records = 10000 }
         };
@@ -906,9 +907,9 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
     private async Task<PipelineStepResult> ExecuteDataValidationAsync(object? loadedData)
     {
         await Task.CompletedTask;
-        return new PipelineStepResult 
-        { 
-            Success = true, 
+        return new PipelineStepResult
+        {
+            Success = true,
             StepName = "Validation",
             ValidatedData = new { Records = 10000 },
             QualityScore = 0.999m
@@ -918,9 +919,9 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
     private async Task<PipelineStepResult> UpdateAITrainingDatasetsAsync(object? validatedData)
     {
         await Task.CompletedTask;
-        return new PipelineStepResult 
-        { 
-            Success = true, 
+        return new PipelineStepResult
+        {
+            Success = true,
             StepName = "AI Training Update"
         };
     }

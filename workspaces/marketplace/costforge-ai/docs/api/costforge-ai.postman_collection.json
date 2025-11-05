@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/cost-analysis",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "cost-analysis"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["cost-analysis"]
         }
       },
       "response": []
@@ -127,12 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/budget-optimization",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "budget-optimization"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["budget-optimization"]
         }
       },
       "response": []
@@ -160,12 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/forecasting",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "forecasting"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["forecasting"]
         }
       },
       "response": []
@@ -193,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/reports",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "reports"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["reports"]
         }
       },
       "response": []

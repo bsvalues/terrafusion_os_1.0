@@ -360,28 +360,28 @@
     border: none;
     margin-bottom: 1rem;
   }
-  
+
   .tf-data-toolbar {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .tf-toolbar-content {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .tf-toolbar-icon {
     margin-right: 0;
     margin-bottom: 0.5rem;
   }
-  
+
   .tf-toolbar-actions {
     margin-left: 0;
     margin-top: 0.5rem;
     width: 100%;
   }
-  
+
   .tf-action-button {
     width: 100%;
   }
@@ -440,9 +440,11 @@
   .tf-action-button {
     transition: none;
   }
-  
+
   @keyframes pulse {
-    0%, 50%, 100% {
+    0%,
+    50%,
+    100% {
       opacity: 1;
     }
   }

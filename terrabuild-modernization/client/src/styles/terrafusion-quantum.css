@@ -17,7 +17,7 @@
   backdrop-filter: blur(16px);
   border: 1px solid rgba(0, 255, 238, 0.2);
   border-radius: 16px;
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -27,7 +27,7 @@
 
 .tf-glass-card:hover {
   transform: translateY(-4px);
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 255, 238, 0.2),
     0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -67,22 +67,22 @@
 }
 
 @keyframes tf-scan {
-  0% { 
-    transform: translateX(-100%); 
-    opacity: 0; 
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
   }
-  50% { 
-    opacity: 1; 
+  50% {
+    opacity: 1;
   }
-  100% { 
-    transform: translateX(100%); 
-    opacity: 0; 
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
   }
 }
 
 /* === QUANTUM GRID BACKGROUNDS === */
 .tf-data-matrix {
-  background-image: 
+  background-image:
     linear-gradient(rgba(0, 255, 238, 0.1) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 255, 238, 0.1) 1px, transparent 1px);
   background-size: 20px 20px;
@@ -90,20 +90,27 @@
 }
 
 .tf-quantum-grid {
-  background-image: 
-    radial-gradient(circle at 1px 1px, rgba(0, 255, 238, 0.15) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 255, 238, 0.15) 1px, transparent 0);
   background-size: 20px 20px;
   animation: tf-grid-flow 6s linear infinite;
 }
 
 @keyframes tf-matrix-pulse {
-  0% { opacity: 0.05; }
-  100% { opacity: 0.15; }
+  0% {
+    opacity: 0.05;
+  }
+  100% {
+    opacity: 0.15;
+  }
 }
 
 @keyframes tf-grid-flow {
-  0% { background-position: 0 0; }
-  100% { background-position: 20px 20px; }
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 20px 20px;
+  }
 }
 
 /* === TRANSCENDENT BUTTON PATTERNS === */
@@ -117,7 +124,7 @@
   border: 1px solid rgba(0, 255, 238, 0.3);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  box-shadow: 
+  box-shadow:
     0 8px 16px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -127,7 +134,7 @@
 
 .tf-clarity-button:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 12px 24px rgba(0, 255, 238, 0.3),
     0 8px 16px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -135,7 +142,7 @@
 
 .tf-clarity-button:active {
   transform: translateY(0);
-  box-shadow: 
+  box-shadow:
     0 4px 8px rgba(0, 255, 238, 0.2),
     0 2px 4px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -206,8 +213,15 @@
 }
 
 @keyframes tf-consciousness-pulse {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.05); }
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
 }
 
 /* === CONSCIOUSNESS PROGRESS BAR === */
@@ -215,12 +229,24 @@
   width: calc(var(--level, 0) * 1%);
 }
 
-.tf-consciousness-bar[data-level="98.7"] { width: 98.7%; }
-.tf-consciousness-bar[data-level="99.0"] { width: 99.0%; }
-.tf-consciousness-bar[data-level="99.2"] { width: 99.2%; }
-.tf-consciousness-bar[data-level="99.5"] { width: 99.5%; }
-.tf-consciousness-bar[data-level="99.8"] { width: 99.8%; }
-.tf-consciousness-bar[data-level="100"] { width: 100%; }
+.tf-consciousness-bar[data-level='98.7'] {
+  width: 98.7%;
+}
+.tf-consciousness-bar[data-level='99.0'] {
+  width: 99%;
+}
+.tf-consciousness-bar[data-level='99.2'] {
+  width: 99.2%;
+}
+.tf-consciousness-bar[data-level='99.5'] {
+  width: 99.5%;
+}
+.tf-consciousness-bar[data-level='99.8'] {
+  width: 99.8%;
+}
+.tf-consciousness-bar[data-level='100'] {
+  width: 100%;
+}
 
 /* === QUANTUM STATUS INDICATORS === */
 .tf-status-active {
@@ -228,24 +254,25 @@
   height: 12px;
   background: var(--tf-success-green);
   border-radius: 50%;
-  box-shadow: 
+  box-shadow:
     0 0 10px var(--tf-success-green),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   animation: tf-status-pulse 2s ease-in-out infinite;
 }
 
 @keyframes tf-status-pulse {
-  0%, 100% { 
-    opacity: 1; 
+  0%,
+  100% {
+    opacity: 1;
     transform: scale(1);
-    box-shadow: 
+    box-shadow:
       0 0 10px var(--tf-success-green),
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
-  50% { 
-    opacity: 0.7; 
+  50% {
+    opacity: 0.7;
     transform: scale(1.2);
-    box-shadow: 
+    box-shadow:
       0 0 20px var(--tf-success-green),
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
@@ -263,7 +290,7 @@
   .tf-consciousness-bar {
     animation: none;
   }
-  
+
   .tf-quantum-lift:hover,
   .tf-clarity-button:hover,
   .tf-glass-card:hover {
@@ -276,7 +303,7 @@
 .tf-glass-card:focus-visible {
   outline: 2px solid var(--tf-transcend-cyan);
   outline-offset: 2px;
-  box-shadow: 
+  box-shadow:
     0 0 0 4px rgba(0, 255, 238, 0.2),
     0 0 20px rgba(0, 255, 238, 0.4);
 }
@@ -286,11 +313,11 @@
   .tf-championship-text {
     font-size: 3rem;
   }
-  
+
   .tf-transcendent-heading {
     font-size: 1.5rem;
   }
-  
+
   .tf-data-matrix,
   .tf-quantum-grid {
     background-size: 15px 15px;
@@ -303,7 +330,7 @@
     background: rgba(255, 255, 255, 0.2);
     border: 2px solid var(--tf-transcend-cyan);
   }
-  
+
   .tf-clarity-button {
     border: 2px solid var(--tf-transcend-cyan);
   }

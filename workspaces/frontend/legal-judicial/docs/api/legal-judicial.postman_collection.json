@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/cases",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "cases"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["cases"]
         }
       },
       "response": []
@@ -127,12 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/documents",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "documents"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["documents"]
         }
       },
       "response": []
@@ -160,12 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/hearings",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "hearings"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["hearings"]
         }
       },
       "response": []
@@ -193,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/judgments",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "judgments"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["judgments"]
         }
       },
       "response": []

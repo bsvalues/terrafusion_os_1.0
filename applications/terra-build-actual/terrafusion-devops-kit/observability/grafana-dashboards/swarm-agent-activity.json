@@ -112,9 +112,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -204,10 +202,7 @@
       "id": 4,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -301,10 +296,7 @@
       "id": 6,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -398,10 +390,7 @@
       "id": 8,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -495,11 +484,7 @@
       "id": 10,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "p95",
-            "max"
-          ],
+          "calcs": ["mean", "p95", "max"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -596,16 +581,11 @@
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
-          "values": [
-            "value",
-            "percent"
-          ]
+          "values": ["value", "percent"]
         },
         "pieType": "pie",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -664,16 +644,11 @@
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
-          "values": [
-            "value",
-            "percent"
-          ]
+          "values": ["value", "percent"]
         },
         "pieType": "pie",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },

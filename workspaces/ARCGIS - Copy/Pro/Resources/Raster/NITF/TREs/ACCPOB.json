@@ -1,13 +1,11 @@
 {
   "TRE": "ACCPOB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix P: GEOSDE"
-  ],  
+  "Source": ["STDI-0002-1 v2021.1, Appendix P: GEOSDE"],
   "Name": "Positional Accuracy Extension",
   "Description": "This extension conveys accuracy information where the boundaries of the horizontal and vertical regions are coincident. There may be many positional accuracy regions, possibly associated with vertical and horizontal accuracy regions conveyed respectively by the ACCVT and ACCHZ extensions. When vertical and horizontal accuracies are homogeneous over the whole extent of the Image Segment, the ACCPO extension contains a single positional accuracy region and the ACCVT and ACCHZ are not present.",
   "Size": 99985,
   "Fields": {
-    "NUM_ACPO" : {
+    "NUM_ACPO": {
       "Name": "Number of Positional Accuracy Regions",
       "Description": "This field shall contain the number of positional accuracy regions to follow.",
       "Size": 2,
@@ -32,7 +30,21 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["UM", "MM", "CM", "DM", "M", "KM", "IN", "FT", "YD", "MI", "NM", " ", "*"]
+          "Values": [
+            "UM",
+            "MM",
+            "CM",
+            "DM",
+            "M",
+            "KM",
+            "IN",
+            "FT",
+            "YD",
+            "MI",
+            "NM",
+            " ",
+            "*"
+          ]
         }
       ]
     },
@@ -61,7 +73,21 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["UM", "MM", "CM", "DM", "M", "KM", "IN", "FT", "YD", "MI", "NM", " ", "*"]
+          "Values": [
+            "UM",
+            "MM",
+            "CM",
+            "DM",
+            "M",
+            "KM",
+            "IN",
+            "FT",
+            "YD",
+            "MI",
+            "NM",
+            " ",
+            "*"
+          ]
         }
       ]
     },
@@ -90,7 +116,21 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["UM", "MM", "CM", "DM", "M", "KM", "IN", "FT", "YD", "MI", "NM", " ", "*"]
+          "Values": [
+            "UM",
+            "MM",
+            "CM",
+            "DM",
+            "M",
+            "KM",
+            "IN",
+            "FT",
+            "YD",
+            "MI",
+            "NM",
+            " ",
+            "*"
+          ]
         }
       ]
     },
@@ -109,7 +149,7 @@
         }
       ]
     },
-    "UNIAPV<NUM_ACPO>": {  
+    "UNIAPV<NUM_ACPO>": {
       "Name": "Unit of Measure for the APVn Field",
       "Description": "This field shall contain the units of measure (UoM) for the corresponding APVn field or all BCS spaces (0x20) if the point-to-point (relative) vertical accuracy is unknown or not applicable.",
       "Size": 3,
@@ -119,7 +159,21 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["UM", "MM", "CM", "DM", "M", "KM", "IN", "FT", "YD", "MI", "NM", " ","*"]
+          "Values": [
+            "UM",
+            "MM",
+            "CM",
+            "DM",
+            "M",
+            "KM",
+            "IN",
+            "FT",
+            "YD",
+            "MI",
+            "NM",
+            " ",
+            "*"
+          ]
         }
       ]
     },
@@ -154,10 +208,10 @@
         {
           "Type": "Value",
           "Values": ["000"]
-        }        
+        }
       ]
     },
-    "LON<NUM_PTS<NUM_ACPO>>": {  
+    "LON<NUM_PTS<NUM_ACPO>>": {
       "Name": "Longitude / Easting",
       "Description": "This field shall be omitted when the value of NUM_PTSn is 000. Otherwise, this field shall contain the Easting (when the value of GEOPS.UNI is M) or Longitude (otherwise) of the mth polygon point.",
       "Size": 15,
@@ -166,17 +220,17 @@
       "Units": ["degrees", "meters"],
       "Values": [
         {
-          "Type": "Double"        
+          "Type": "Double"
         }
       ]
     },
-    "LAT<NUM_PTS<NUM_ACPO>>": {  
+    "LAT<NUM_PTS<NUM_ACPO>>": {
       "Name": "Latitude / Northing",
       "Description": "This field shall be omitted when the value of NUM_PTSn is 000. Otherwise, this field shall contain the Northing (when the value of GEOPS.UNI is M) or Latitude (otherwise) of the mth polygon point.",
       "Size": 15,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": ["degrees","meters"],
+      "Units": ["degrees", "meters"],
       "Values": [
         {
           "Type": "Double"

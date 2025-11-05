@@ -5,7 +5,7 @@
   "Description": "The Common Sensor Warping terms (CSWRPB) TRE accommodates the general case of a scanner when samples along a line of an image were not all imaged at the same time. For a framer, the CSWRPB TRE can model the effects of optical distortion in teh image, pair-wise rectifying it to aid in stereo viewing, or image stabilization. This TRE provides teh de-warping information needed to handle these situations. For products where time increases with increasing or decreasing column (sample) coordinates, contrasted with the usual case where time increases with row (line) coordinates, the CSWRPB TRE shall be populated with values that induce a 90 degree rotation so that the resultant first row (line) is associated with TIME_FIRST_LINE_IMAGE.",
   "Size": 69,
   "Fields": {
-    "NUM_SETS_WARP_DATA" : {
+    "NUM_SETS_WARP_DATA": {
       "Name": "Number of Sets of Warping Data",
       "Description": "This field contains the number of sets of warping data in this instance of the CSWRPB TRE. If the sensor is a scanner, there shall be one set of warping data.",
       "Size": 1,
@@ -17,7 +17,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 9
-        }        
+        }
       ]
     },
     "SENSOR_TYPE": {
@@ -287,6 +287,6 @@
           "Max": 0
         }
       ]
-    }    
+    }
   }
 }

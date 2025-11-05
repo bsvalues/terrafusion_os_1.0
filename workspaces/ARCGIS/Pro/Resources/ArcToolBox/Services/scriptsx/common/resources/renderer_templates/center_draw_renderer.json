@@ -1,101 +1,66 @@
 {
-    "esriGeometryPoint": {
-        "renderer": {
-            "type": "simple",
-            "symbol": {
-                "type": "esriSMS",
-                "style": "esriSMSCircle",
-                "color": [
-                    38,
-                    204,
-                    255,
-                    255
-                ],
-                "size": 18,
-                "angle": 0,
-                "xoffset": 0,
-                "yoffset": 0,
-                "outline": {
-                    "color": [
-                        54,
-                        93,
-                        141,
-                        255
-                    ],
-                    "width": 1
-                }
-            }
+  "esriGeometryPoint": {
+    "renderer": {
+      "type": "simple",
+      "symbol": {
+        "type": "esriSMS",
+        "style": "esriSMSCircle",
+        "color": [38, 204, 255, 255],
+        "size": 18,
+        "angle": 0,
+        "xoffset": 0,
+        "yoffset": 0,
+        "outline": {
+          "color": [54, 93, 141, 255],
+          "width": 1
         }
-    },
-    "esriGeometryMultipoint": {
-        "renderer": {
-            "type": "simple",
-            "symbol": {
-                "type": "esriSMS",
-                "style": "esriSMSCircle",
-                "color": [
-                    38,
-                    204,
-                    255,
-                    255
-                ],
-                "size": 18,
-                "angle": 0,
-                "xoffset": 0,
-                "yoffset": 0,
-                "outline": {
-                    "color": [
-                        54,
-                        93,
-                        141,
-                        255
-                    ],
-                    "width": 1
-                }
-            }
-        }
-    },
-    "esriGeometryPolyline": {
-        "renderer": {
-            "type": "simple",
-            "symbol": {
-                "type": "esriSLS",
-                "style": "esriSLSSolid",
-                "color": [
-                    38,
-                    204,
-                    255,
-                    255
-                ],
-                "width": 2
-            }
-        }
-    },
-    "esriGeometryPolygon": {
-        "renderer": {
-            "type": "simple",
-            "symbol": {
-                "type": "esriSFS",
-                "style": "esriSFSSolid",
-                "color": [
-                    38,
-                    204,
-                    255,
-                    255
-                ],
-                "outline": {
-                    "type": "esriSLS",
-                    "style": "esriSLSSolid",
-                    "color": [
-                        54,
-                        93,
-                        141,
-                        255
-                    ],
-                    "width": 1.5
-                }
-            }
-        },
-        "transparency": 25
+      }
     }
+  },
+  "esriGeometryMultipoint": {
+    "renderer": {
+      "type": "simple",
+      "symbol": {
+        "type": "esriSMS",
+        "style": "esriSMSCircle",
+        "color": [38, 204, 255, 255],
+        "size": 18,
+        "angle": 0,
+        "xoffset": 0,
+        "yoffset": 0,
+        "outline": {
+          "color": [54, 93, 141, 255],
+          "width": 1
+        }
+      }
+    }
+  },
+  "esriGeometryPolyline": {
+    "renderer": {
+      "type": "simple",
+      "symbol": {
+        "type": "esriSLS",
+        "style": "esriSLSSolid",
+        "color": [38, 204, 255, 255],
+        "width": 2
+      }
+    }
+  },
+  "esriGeometryPolygon": {
+    "renderer": {
+      "type": "simple",
+      "symbol": {
+        "type": "esriSFS",
+        "style": "esriSFSSolid",
+        "color": [38, 204, 255, 255],
+        "outline": {
+          "type": "esriSLS",
+          "style": "esriSLSSolid",
+          "color": [54, 93, 141, 255],
+          "width": 1.5
+        }
+      }
+    },
+    "transparency": 25
+  }
 }

@@ -5,60 +5,60 @@
 # Terraform Security Scanning Rules
 terraform_security:
   rules:
-    - id: "TF001"
-      name: "Azure Government Cloud Enforcement"
-      description: "Ensure all resources use Azure Government environment"
-      severity: "HIGH"
+    - id: 'TF001'
+      name: 'Azure Government Cloud Enforcement'
+      description: 'Ensure all resources use Azure Government environment'
+      severity: 'HIGH'
       pattern: 'environment\s*=\s*"(?!usgovernment)'
-      message: "All Azure resources must use usgovernment environment for FIPS compliance"
+      message: 'All Azure resources must use usgovernment environment for FIPS compliance'
 
-    - id: "TF002"
-      name: "TLS Version Enforcement"
-      description: "Require minimum TLS 1.2 for all connections"
-      severity: "HIGH"
+    - id: 'TF002'
+      name: 'TLS Version Enforcement'
+      description: 'Require minimum TLS 1.2 for all connections'
+      severity: 'HIGH'
       pattern: 'min_tls_version\s*=\s*"(?!TLS1_[23])'
-      message: "Minimum TLS version must be 1.2 or higher for government security"
+      message: 'Minimum TLS version must be 1.2 or higher for government security'
 
-    - id: "TF003"
-      name: "Key Vault Premium Requirement"
-      description: "Enforce Premium SKU for FIPS-140-2 Level 2 compliance"
-      severity: "CRITICAL"
+    - id: 'TF003'
+      name: 'Key Vault Premium Requirement'
+      description: 'Enforce Premium SKU for FIPS-140-2 Level 2 compliance'
+      severity: 'CRITICAL'
       pattern: 'sku_name\s*=\s*"(?!premium)'
-      message: "Key Vault must use Premium SKU for FIPS-140-2 Level 2 hardware security"
+      message: 'Key Vault must use Premium SKU for FIPS-140-2 Level 2 hardware security'
 
-    - id: "TF004"
-      name: "Storage Public Access Prevention"
-      description: "Prevent public blob access on storage accounts"
-      severity: "HIGH"
+    - id: 'TF004'
+      name: 'Storage Public Access Prevention'
+      description: 'Prevent public blob access on storage accounts'
+      severity: 'HIGH'
       pattern: 'allow_nested_items_to_be_public\s*=\s*true'
-      message: "Storage accounts must not allow public access for government security"
+      message: 'Storage accounts must not allow public access for government security'
 
-    - id: "TF005"
-      name: "Network Security Group Default Deny"
-      description: "Require explicit deny-all rule in NSGs"
-      severity: "MEDIUM"
+    - id: 'TF005'
+      name: 'Network Security Group Default Deny'
+      description: 'Require explicit deny-all rule in NSGs'
+      severity: 'MEDIUM'
       pattern: 'security_rule.*access\s*=\s*"Allow".*priority\s*=\s*4096'
-      message: "NSG must have explicit deny-all rule with lowest priority for zero-trust"
+      message: 'NSG must have explicit deny-all rule with lowest priority for zero-trust'
 
 # Azure Bicep Security Rules
 bicep_security:
   rules:
-    - name: "Government Cloud Template Validation"
-      description: "Validate Bicep templates for Azure Government compatibility"
-      command: "az bicep build --file ${file} --outdir ./build"
-      post_validation: "Check for government cloud resource types"
+    - name: 'Government Cloud Template Validation'
+      description: 'Validate Bicep templates for Azure Government compatibility'
+      command: 'az bicep build --file ${file} --outdir ./build'
+      post_validation: 'Check for government cloud resource types'
 
-    - name: "FIPS Compliance Check"
-      description: "Verify FIPS-140-2 compliant configurations"
+    - name: 'FIPS Compliance Check'
+      description: 'Verify FIPS-140-2 compliant configurations'
       patterns:
         - "keyVault.properties.sku.name must be 'premium'"
         - "storageAccount.properties.minimumTlsVersion must be 'TLS1_2'"
-        - "networkSecurityGroup must have denyAll rule"
+        - 'networkSecurityGroup must have denyAll rule'
 
 # Kubernetes Security Policies
 kubernetes_security:
   pod_security_standards:
-    - name: "Restricted Security Context"
+    - name: 'Restricted Security Context'
       policy: |
         apiVersion: v1
         kind: Pod
@@ -78,7 +78,7 @@ kubernetes_security:
                 drop:
                 - ALL
 
-    - name: "Network Policy Enforcement"
+    - name: 'Network Policy Enforcement'
       policy: |
         apiVersion: networking.k8s.io/v1
         kind: NetworkPolicy
@@ -95,45 +95,45 @@ kubernetes_security:
 # Elite Compliance Scanning Commands
 scanning_commands:
   terraform:
-    init: "terraform init -backend-config=backend-government.conf"
-    validate: "terraform validate"
-    plan: "terraform plan -var-file=government.tfvars"
-    security_scan: "tfsec . --config-file=.tfsec.yml"
-    compliance_check: "checkov -f main.tf --framework terraform"
+    init: 'terraform init -backend-config=backend-government.conf'
+    validate: 'terraform validate'
+    plan: 'terraform plan -var-file=government.tfvars'
+    security_scan: 'tfsec . --config-file=.tfsec.yml'
+    compliance_check: 'checkov -f main.tf --framework terraform'
 
   bicep:
-    build: "az bicep build --file main.bicep"
-    validate: "az deployment group validate --resource-group rg --template-file main.bicep"
-    security_scan: "PSRule.Rules.Azure -InputPath ."
+    build: 'az bicep build --file main.bicep'
+    validate: 'az deployment group validate --resource-group rg --template-file main.bicep'
+    security_scan: 'PSRule.Rules.Azure -InputPath .'
 
   kubernetes:
-    validate: "kubectl apply --dry-run=client -f k8s/"
-    security_scan: "kube-score score k8s/*.yaml"
-    policy_check: "conftest verify --policy policy/ k8s/"
+    validate: 'kubectl apply --dry-run=client -f k8s/'
+    security_scan: 'kube-score score k8s/*.yaml'
+    policy_check: 'conftest verify --policy policy/ k8s/'
 
 # Government-Grade Quality Gates
 quality_gates:
   pre_deployment:
-    - name: "Security Scan"
-      command: "tfsec ."
-      pass_criteria: "Zero HIGH or CRITICAL findings"
+    - name: 'Security Scan'
+      command: 'tfsec .'
+      pass_criteria: 'Zero HIGH or CRITICAL findings'
 
-    - name: "Compliance Check"
-      command: "checkov -f ."
-      pass_criteria: "100% FIPS compliance score"
+    - name: 'Compliance Check'
+      command: 'checkov -f .'
+      pass_criteria: '100% FIPS compliance score'
 
-    - name: "Code Quality"
-      command: "terraform fmt -check"
-      pass_criteria: "All files properly formatted"
+    - name: 'Code Quality'
+      command: 'terraform fmt -check'
+      pass_criteria: 'All files properly formatted'
 
   post_deployment:
-    - name: "Runtime Security"
-      command: "az security assessment list"
-      pass_criteria: "All resources secure"
+    - name: 'Runtime Security'
+      command: 'az security assessment list'
+      pass_criteria: 'All resources secure'
 
-    - name: "Compliance Monitoring"
-      command: "az policy state list"
-      pass_criteria: "Zero policy violations"
+    - name: 'Compliance Monitoring'
+      command: 'az policy state list'
+      pass_criteria: 'Zero policy violations'
 
 # TerraFusion Championship Security Metrics
 championship_metrics:
@@ -141,10 +141,10 @@ championship_metrics:
   compliance_percentage: 100
   vulnerability_count: 0
   threat_detection_rate: 0.999
-  incident_response_time: "< 15 minutes"
+  incident_response_time: '< 15 minutes'
 
   targets:
     quantum_security_factor: 949
-    government_transcendence_level: "ELITE"
-    sacred_mathematics_protection: "ACTIVATED"
-    zero_trust_maturity: "CHAMPIONSHIP"
+    government_transcendence_level: 'ELITE'
+    sacred_mathematics_protection: 'ACTIVATED'
+    zero_trust_maturity: 'CHAMPIONSHIP'

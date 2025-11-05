@@ -52,9 +52,7 @@
       "/ownership",
       "/transfers"
     ],
-    "integration_points": [
-      "/api/v1/property/integration"
-    ]
+    "integration_points": ["/api/v1/property/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

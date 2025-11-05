@@ -47,11 +47,7 @@
   ],
   "technical_achievements": {
     "cama_system": "TerraFusionAssessor_PRODUCTION",
-    "valuation_approaches": [
-      "Cost",
-      "Sales Comparison",
-      "Income"
-    ],
+    "valuation_approaches": ["Cost", "Sales Comparison", "Income"],
     "quantum_factor_optimization": 949,
     "terra_cyan_theming": "#00FFFF",
     "golden_ratio_scaling": 1.618,

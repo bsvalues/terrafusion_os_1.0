@@ -3,383 +3,377 @@
 # Government-Grade Incident Detection and Response
 
 groups:
-- name: terrafusion-bulletproof-core-services
-  interval: 30s
-  rules:
+  - name: terrafusion-bulletproof-core-services
+    interval: 30s
+    rules:
+      # 🚨 SERVICE AVAILABILITY ALERTS
+      - alert: ServiceDown
+        expr: up{job=~"terrafusion-.*-bulletproof"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          tier: core
+          government_priority: immediate
+          escalation: 'sms,email,teams'
+        annotations:
+          summary: '🚨 CRITICAL: TerraFusion service {{ $labels.service_name }} is DOWN'
+          description: |
+            TerraFusion service {{ $labels.service_name }} has been down for more than 30 seconds.
+            This is a CRITICAL government service failure requiring immediate attention.
 
-  # 🚨 SERVICE AVAILABILITY ALERTS
-  - alert: ServiceDown
-    expr: up{job=~"terrafusion-.*-bulletproof"} == 0
-    for: 30s
-    labels:
-      severity: critical
-      tier: core
-      government_priority: immediate
-      escalation: "sms,email,teams"
-    annotations:
-      summary: "🚨 CRITICAL: TerraFusion service {{ $labels.service_name }} is DOWN"
-      description: |
-        TerraFusion service {{ $labels.service_name }} has been down for more than 30 seconds.
-        This is a CRITICAL government service failure requiring immediate attention.
+            Service: {{ $labels.service_name }}
+            Instance: {{ $labels.instance }}
+            Job: {{ $labels.job }}
 
-        Service: {{ $labels.service_name }}
-        Instance: {{ $labels.instance }}
-        Job: {{ $labels.job }}
+            IMMEDIATE ACTION REQUIRED:
+            1. Check service health dashboard
+            2. Verify container/pod status
+            3. Review application logs
+            4. Activate incident response team
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/service-down'
+          government_impact: 'HIGH - Affects property assessment services'
 
-        IMMEDIATE ACTION REQUIRED:
-        1. Check service health dashboard
-        2. Verify container/pod status
-        3. Review application logs
-        4. Activate incident response team
-      runbook_url: "https://docs.terrafusion.gov/runbooks/service-down"
-      government_impact: "HIGH - Affects property assessment services"
+      - alert: ServicePartiallyDown
+        expr: |
+          (
+            count by (service_name) (up{job=~"terrafusion-.*-bulletproof"} == 1) /
+            count by (service_name) (up{job=~"terrafusion-.*-bulletproof"})
+          ) < 0.8
+        for: 2m
+        labels:
+          severity: warning
+          tier: core
+          government_priority: high
+        annotations:
+          summary: '⚠️ WARNING: TerraFusion service {{ $labels.service_name }} partially degraded'
+          description: |
+            Less than 80% of {{ $labels.service_name }} instances are healthy.
+            Current availability: {{ $value | humanizePercentage }}
 
-  - alert: ServicePartiallyDown
-    expr: |
-      (
-        count by (service_name) (up{job=~"terrafusion-.*-bulletproof"} == 1) /
-        count by (service_name) (up{job=~"terrafusion-.*-bulletproof"})
-      ) < 0.8
-    for: 2m
-    labels:
-      severity: warning
-      tier: core
-      government_priority: high
-    annotations:
-      summary: "⚠️ WARNING: TerraFusion service {{ $labels.service_name }} partially degraded"
-      description: |
-        Less than 80% of {{ $labels.service_name }} instances are healthy.
-        Current availability: {{ $value | humanizePercentage }}
+            This may impact government service performance.
 
-        This may impact government service performance.
+      # 🔥 HIGH ERROR RATE ALERTS
+      - alert: HighErrorRate
+        expr: |
+          (
+            rate(http_requests_total{code=~"5..",job=~"terrafusion-.*-bulletproof"}[5m]) /
+            rate(http_requests_total{job=~"terrafusion-.*-bulletproof"}[5m])
+          ) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+          tier: performance
+          government_priority: high
+        annotations:
+          summary: '🔥 CRITICAL: High error rate in {{ $labels.service_name }}'
+          description: |
+            Error rate is {{ $value | printf "%.2f" }}% for service {{ $labels.service_name }}.
+            This exceeds the 5% threshold for government services.
 
-  # 🔥 HIGH ERROR RATE ALERTS
-  - alert: HighErrorRate
-    expr: |
-      (
-        rate(http_requests_total{code=~"5..",job=~"terrafusion-.*-bulletproof"}[5m]) /
-        rate(http_requests_total{job=~"terrafusion-.*-bulletproof"}[5m])
-      ) * 100 > 5
-    for: 2m
-    labels:
-      severity: critical
-      tier: performance
-      government_priority: high
-    annotations:
-      summary: "🔥 CRITICAL: High error rate in {{ $labels.service_name }}"
-      description: |
-        Error rate is {{ $value | printf "%.2f" }}% for service {{ $labels.service_name }}.
-        This exceeds the 5% threshold for government services.
+            Instance: {{ $labels.instance }}
+            Method: {{ $labels.method }}
+            Endpoint: {{ $labels.handler }}
 
-        Instance: {{ $labels.instance }}
-        Method: {{ $labels.method }}
-        Endpoint: {{ $labels.handler }}
+            Immediate investigation required.
 
-        Immediate investigation required.
+      - alert: ErrorRateSpike
+        expr: |
+          (
+            rate(http_requests_total{code=~"5..",job=~"terrafusion-.*-bulletproof"}[1m]) /
+            rate(http_requests_total{job=~"terrafusion-.*-bulletproof"}[1m])
+          ) > 0.1
+        for: 30s
+        labels:
+          severity: warning
+          tier: performance
+        annotations:
+          summary: '📈 WARNING: Error rate spike in {{ $labels.service_name }}'
+          description: |
+            Sudden error rate spike detected: {{ $value | humanizePercentage }}
+            Service: {{ $labels.service_name }}
+            This may indicate a developing issue.
 
-  - alert: ErrorRateSpike
-    expr: |
-      (
-        rate(http_requests_total{code=~"5..",job=~"terrafusion-.*-bulletproof"}[1m]) /
-        rate(http_requests_total{job=~"terrafusion-.*-bulletproof"}[1m])
-      ) > 0.1
-    for: 30s
-    labels:
-      severity: warning
-      tier: performance
-    annotations:
-      summary: "📈 WARNING: Error rate spike in {{ $labels.service_name }}"
-      description: |
-        Sudden error rate spike detected: {{ $value | humanizePercentage }}
-        Service: {{ $labels.service_name }}
-        This may indicate a developing issue.
+      # ⚡ RESPONSE TIME ALERTS
+      - alert: HighResponseTime
+        expr: |
+          histogram_quantile(0.95,
+            rate(http_request_duration_seconds_bucket{job=~"terrafusion-.*-bulletproof"}[5m])
+          ) > 2
+        for: 3m
+        labels:
+          severity: warning
+          tier: performance
+          government_sla: 'violated'
+        annotations:
+          summary: '⚡ WARNING: High response time in {{ $labels.service_name }}'
+          description: |
+            95th percentile response time is {{ $value | printf "%.2f" }}s
+            This exceeds the 2-second SLA for government services.
 
-  # ⚡ RESPONSE TIME ALERTS
-  - alert: HighResponseTime
-    expr: |
-      histogram_quantile(0.95,
-        rate(http_request_duration_seconds_bucket{job=~"terrafusion-.*-bulletproof"}[5m])
-      ) > 2
-    for: 3m
-    labels:
-      severity: warning
-      tier: performance
-      government_sla: "violated"
-    annotations:
-      summary: "⚡ WARNING: High response time in {{ $labels.service_name }}"
-      description: |
-        95th percentile response time is {{ $value | printf "%.2f" }}s
-        This exceeds the 2-second SLA for government services.
+            Service: {{ $labels.service_name }}
+            Endpoint: {{ $labels.handler }}
+            Method: {{ $labels.method }}
 
-        Service: {{ $labels.service_name }}
-        Endpoint: {{ $labels.handler }}
-        Method: {{ $labels.method }}
+      - alert: ExtremeResponseTime
+        expr: |
+          histogram_quantile(0.95,
+            rate(http_request_duration_seconds_bucket{job=~"terrafusion-.*-bulletproof"}[5m])
+          ) > 10
+        for: 1m
+        labels:
+          severity: critical
+          tier: performance
+          government_sla: 'severely_violated'
+        annotations:
+          summary: '🚨 CRITICAL: Extreme response time in {{ $labels.service_name }}'
+          description: |
+            95th percentile response time is {{ $value | printf "%.2f" }}s
+            This is unacceptable for government services.
 
-  - alert: ExtremeResponseTime
-    expr: |
-      histogram_quantile(0.95,
-        rate(http_request_duration_seconds_bucket{job=~"terrafusion-.*-bulletproof"}[5m])
-      ) > 10
-    for: 1m
-    labels:
-      severity: critical
-      tier: performance
-      government_sla: "severely_violated"
-    annotations:
-      summary: "🚨 CRITICAL: Extreme response time in {{ $labels.service_name }}"
-      description: |
-        95th percentile response time is {{ $value | printf "%.2f" }}s
-        This is unacceptable for government services.
+            IMMEDIATE ACTION REQUIRED.
 
-        IMMEDIATE ACTION REQUIRED.
+  - name: terrafusion-bulletproof-circuit-breakers
+    interval: 15s
+    rules:
+      # 🔌 CIRCUIT BREAKER ALERTS
+      - alert: CircuitBreakerOpen
+        expr: |
+          terrafusion_circuit_breaker_state{state="open"} == 1
+        for: 30s
+        labels:
+          severity: warning
+          tier: resilience
+          circuit_breaker: '{{ $labels.circuit_breaker }}'
+        annotations:
+          summary: '🔌 WARNING: Circuit breaker OPEN for {{ $labels.service_name }}'
+          description: |
+            Circuit breaker {{ $labels.circuit_breaker }} is OPEN.
+            Service: {{ $labels.service_name }}
 
-- name: terrafusion-bulletproof-circuit-breakers
-  interval: 15s
-  rules:
+            This indicates repeated failures and automatic protection is active.
+            Requests are being failed fast to prevent cascade failures.
 
-  # 🔌 CIRCUIT BREAKER ALERTS
-  - alert: CircuitBreakerOpen
-    expr: |
-      terrafusion_circuit_breaker_state{state="open"} == 1
-    for: 30s
-    labels:
-      severity: warning
-      tier: resilience
-      circuit_breaker: "{{ $labels.circuit_breaker }}"
-    annotations:
-      summary: "🔌 WARNING: Circuit breaker OPEN for {{ $labels.service_name }}"
-      description: |
-        Circuit breaker {{ $labels.circuit_breaker }} is OPEN.
-        Service: {{ $labels.service_name }}
+      - alert: CircuitBreakerHalfOpen
+        expr: |
+          terrafusion_circuit_breaker_state{state="half_open"} == 1
+        for: 1m
+        labels:
+          severity: info
+          tier: resilience
+        annotations:
+          summary: '🔄 INFO: Circuit breaker HALF-OPEN for {{ $labels.service_name }}'
+          description: |
+            Circuit breaker {{ $labels.circuit_breaker }} is HALF-OPEN.
+            Testing if service has recovered.
 
-        This indicates repeated failures and automatic protection is active.
-        Requests are being failed fast to prevent cascade failures.
+      - alert: CircuitBreakerFailureRateHigh
+        expr: |
+          (
+            rate(terrafusion_circuit_breaker_requests_total{result="failure"}[5m]) /
+            rate(terrafusion_circuit_breaker_requests_total[5m])
+          ) * 100 > 50
+        for: 2m
+        labels:
+          severity: warning
+          tier: resilience
+        annotations:
+          summary: '⚠️ WARNING: High circuit breaker failure rate'
+          description: |
+            Circuit breaker failure rate is {{ $value | printf "%.2f" }}%
+            Service: {{ $labels.service_name }}
+            Circuit Breaker: {{ $labels.circuit_breaker }}
 
-  - alert: CircuitBreakerHalfOpen
-    expr: |
-      terrafusion_circuit_breaker_state{state="half_open"} == 1
-    for: 1m
-    labels:
-      severity: info
-      tier: resilience
-    annotations:
-      summary: "🔄 INFO: Circuit breaker HALF-OPEN for {{ $labels.service_name }}"
-      description: |
-        Circuit breaker {{ $labels.circuit_breaker }} is HALF-OPEN.
-        Testing if service has recovered.
+  - name: terrafusion-bulletproof-service-mesh
+    interval: 30s
+    rules:
+      # 🌐 SERVICE MESH ALERTS
+      - alert: ServiceMeshSidecarDown
+        expr: |
+          up{job="envoy-sidecar-bulletproof"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          tier: mesh
+          component: sidecar
+        annotations:
+          summary: '🌐 CRITICAL: Service mesh sidecar down'
+          description: |
+            Envoy sidecar proxy is down for service {{ $labels.service_name }}.
 
-  - alert: CircuitBreakerFailureRateHigh
-    expr: |
-      (
-        rate(terrafusion_circuit_breaker_requests_total{result="failure"}[5m]) /
-        rate(terrafusion_circuit_breaker_requests_total[5m])
-      ) * 100 > 50
-    for: 2m
-    labels:
-      severity: warning
-      tier: resilience
-    annotations:
-      summary: "⚠️ WARNING: High circuit breaker failure rate"
-      description: |
-        Circuit breaker failure rate is {{ $value | printf "%.2f" }}%
-        Service: {{ $labels.service_name }}
-        Circuit Breaker: {{ $labels.circuit_breaker }}
+            This breaks service mesh functionality:
+            - mTLS encryption
+            - Circuit breakers
+            - Traffic management
+            - Observability
 
-- name: terrafusion-bulletproof-service-mesh
-  interval: 30s
-  rules:
+            Service may be unreachable or insecure.
 
-  # 🌐 SERVICE MESH ALERTS
-  - alert: ServiceMeshSidecarDown
-    expr: |
-      up{job="envoy-sidecar-bulletproof"} == 0
-    for: 1m
-    labels:
-      severity: critical
-      tier: mesh
-      component: sidecar
-    annotations:
-      summary: "🌐 CRITICAL: Service mesh sidecar down"
-      description: |
-        Envoy sidecar proxy is down for service {{ $labels.service_name }}.
+      - alert: HighServiceMeshErrorRate
+        expr: |
+          (
+            rate(envoy_http_downstream_rq_xx{envoy_response_code_class="5"}[5m]) /
+            rate(envoy_http_downstream_rq_completed[5m])
+          ) * 100 > 5
+        for: 2m
+        labels:
+          severity: warning
+          tier: mesh
+        annotations:
+          summary: '🌐 WARNING: High error rate in service mesh'
+          description: |
+            Service mesh error rate is {{ $value | printf "%.2f" }}%
+            Service: {{ $labels.envoy_cluster_name }}
 
-        This breaks service mesh functionality:
-        - mTLS encryption
-        - Circuit breakers
-        - Traffic management
-        - Observability
+            This may indicate network issues or upstream service problems.
 
-        Service may be unreachable or insecure.
+      - alert: ServiceMeshHighLatency
+        expr: |
+          histogram_quantile(0.99,
+            rate(envoy_http_downstream_rq_time_bucket[5m])
+          ) > 5000
+        for: 3m
+        labels:
+          severity: warning
+          tier: mesh
+        annotations:
+          summary: '🌐 WARNING: High latency in service mesh'
+          description: |
+            99th percentile latency is {{ $value }}ms through service mesh
+            Service: {{ $labels.envoy_cluster_name }}
 
-  - alert: HighServiceMeshErrorRate
-    expr: |
-      (
-        rate(envoy_http_downstream_rq_xx{envoy_response_code_class="5"}[5m]) /
-        rate(envoy_http_downstream_rq_completed[5m])
-      ) * 100 > 5
-    for: 2m
-    labels:
-      severity: warning
-      tier: mesh
-    annotations:
-      summary: "🌐 WARNING: High error rate in service mesh"
-      description: |
-        Service mesh error rate is {{ $value | printf "%.2f" }}%
-        Service: {{ $labels.envoy_cluster_name }}
+  - name: terrafusion-bulletproof-infrastructure
+    interval: 60s
+    rules:
+      # 🏗️ INFRASTRUCTURE ALERTS
+      - alert: HighCPUUsage
+        expr: |
+          (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+        for: 3m
+        labels:
+          severity: warning
+          tier: infrastructure
+        annotations:
+          summary: '💻 WARNING: High CPU usage on {{ $labels.instance }}'
+          description: |
+            CPU usage is {{ $value | printf "%.2f" }}% on {{ $labels.instance }}
+            This may impact TerraFusion service performance.
 
-        This may indicate network issues or upstream service problems.
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) /
+            node_memory_MemTotal_bytes * 100
+          ) > 85
+        for: 3m
+        labels:
+          severity: warning
+          tier: infrastructure
+        annotations:
+          summary: '💾 WARNING: High memory usage on {{ $labels.instance }}'
+          description: |
+            Memory usage is {{ $value | printf "%.2f" }}% on {{ $labels.instance }}
 
-  - alert: ServiceMeshHighLatency
-    expr: |
-      histogram_quantile(0.99,
-        rate(envoy_http_downstream_rq_time_bucket[5m])
-      ) > 5000
-    for: 3m
-    labels:
-      severity: warning
-      tier: mesh
-    annotations:
-      summary: "🌐 WARNING: High latency in service mesh"
-      description: |
-        99th percentile latency is {{ $value }}ms through service mesh
-        Service: {{ $labels.envoy_cluster_name }}
+      - alert: DiskSpaceLow
+        expr: |
+          (
+            (node_filesystem_size_bytes{fstype!="tmpfs"} -
+             node_filesystem_free_bytes{fstype!="tmpfs"}) /
+            node_filesystem_size_bytes{fstype!="tmpfs"} * 100
+          ) > 85
+        for: 5m
+        labels:
+          severity: warning
+          tier: infrastructure
+        annotations:
+          summary: '💽 WARNING: Low disk space on {{ $labels.instance }}'
+          description: |
+            Disk usage is {{ $value | printf "%.2f" }}% on {{ $labels.instance }}
+            Mountpoint: {{ $labels.mountpoint }}
 
-- name: terrafusion-bulletproof-infrastructure
-  interval: 60s
-  rules:
+  - name: terrafusion-bulletproof-database
+    interval: 30s
+    rules:
+      # 🗄️ DATABASE ALERTS
+      - alert: DatabaseConnectionsHigh
+        expr: |
+          (
+            pg_stat_database_numbackends /
+            pg_settings_max_connections * 100
+          ) > 80
+        for: 2m
+        labels:
+          severity: warning
+          tier: database
+          database_role: '{{ $labels.database_role }}'
+        annotations:
+          summary: '🗄️ WARNING: High database connections'
+          description: |
+            Database connections at {{ $value | printf "%.2f" }}% of maximum
+            Database: {{ $labels.database_role }}
+            Instance: {{ $labels.instance }}
 
-  # 🏗️ INFRASTRUCTURE ALERTS
-  - alert: HighCPUUsage
-    expr: |
-      (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
-    for: 3m
-    labels:
-      severity: warning
-      tier: infrastructure
-    annotations:
-      summary: "💻 WARNING: High CPU usage on {{ $labels.instance }}"
-      description: |
-        CPU usage is {{ $value | printf "%.2f" }}% on {{ $labels.instance }}
-        This may impact TerraFusion service performance.
+      - alert: DatabaseReplicationLag
+        expr: |
+          pg_stat_replication_lag_seconds > 30
+        for: 1m
+        labels:
+          severity: warning
+          tier: database
+        annotations:
+          summary: '🔄 WARNING: Database replication lag high'
+          description: |
+            Replication lag is {{ $value }}s between primary and replica
+            This may affect read consistency.
 
-  - alert: HighMemoryUsage
-    expr: |
-      (
-        (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) /
-        node_memory_MemTotal_bytes * 100
-      ) > 85
-    for: 3m
-    labels:
-      severity: warning
-      tier: infrastructure
-    annotations:
-      summary: "💾 WARNING: High memory usage on {{ $labels.instance }}"
-      description: |
-        Memory usage is {{ $value | printf "%.2f" }}% on {{ $labels.instance }}
+      - alert: DatabaseDown
+        expr: |
+          pg_up == 0
+        for: 30s
+        labels:
+          severity: critical
+          tier: database
+          government_priority: immediate
+        annotations:
+          summary: '🚨 CRITICAL: Database is DOWN'
+          description: |
+            PostgreSQL database is unreachable
+            Database Role: {{ $labels.database_role }}
+            Instance: {{ $labels.instance }}
 
-  - alert: DiskSpaceLow
-    expr: |
-      (
-        (node_filesystem_size_bytes{fstype!="tmpfs"} -
-         node_filesystem_free_bytes{fstype!="tmpfs"}) /
-        node_filesystem_size_bytes{fstype!="tmpfs"} * 100
-      ) > 85
-    for: 5m
-    labels:
-      severity: warning
-      tier: infrastructure
-    annotations:
-      summary: "💽 WARNING: Low disk space on {{ $labels.instance }}"
-      description: |
-        Disk usage is {{ $value | printf "%.2f" }}% on {{ $labels.instance }}
-        Mountpoint: {{ $labels.mountpoint }}
+            IMMEDIATE ACTION REQUIRED - This affects all government services.
 
-- name: terrafusion-bulletproof-database
-  interval: 30s
-  rules:
+  - name: terrafusion-bulletproof-business-metrics
+    interval: 60s
+    rules:
+      # 📊 BUSINESS METRICS ALERTS
+      - alert: PropertyAssessmentServiceDegraded
+        expr: |
+          rate(terrafusion_property_assessments_completed_total[10m]) < 100
+        for: 5m
+        labels:
+          severity: warning
+          tier: business
+          government_service: property_assessment
+        annotations:
+          summary: '🏠 WARNING: Property assessment rate below target'
+          description: |
+            Property assessment completion rate is {{ $value | printf "%.0f" }} per 10 minutes
+            Target is 100+ assessments per 10 minutes
 
-  # 🗄️ DATABASE ALERTS
-  - alert: DatabaseConnectionsHigh
-    expr: |
-      (
-        pg_stat_database_numbackends /
-        pg_settings_max_connections * 100
-      ) > 80
-    for: 2m
-    labels:
-      severity: warning
-      tier: database
-      database_role: "{{ $labels.database_role }}"
-    annotations:
-      summary: "🗄️ WARNING: High database connections"
-      description: |
-        Database connections at {{ $value | printf "%.2f" }}% of maximum
-        Database: {{ $labels.database_role }}
-        Instance: {{ $labels.instance }}
+            This may impact citizen services.
 
-  - alert: DatabaseReplicationLag
-    expr: |
-      pg_stat_replication_lag_seconds > 30
-    for: 1m
-    labels:
-      severity: warning
-      tier: database
-    annotations:
-      summary: "🔄 WARNING: Database replication lag high"
-      description: |
-        Replication lag is {{ $value }}s between primary and replica
-        This may affect read consistency.
+      - alert: AIAgentPerformanceDegraded
+        expr: |
+          terrafusion_ai_agent_response_time_seconds > 5
+        for: 3m
+        labels:
+          severity: warning
+          tier: ai
+        annotations:
+          summary: '🤖 WARNING: AI agent performance degraded'
+          description: |
+            AI agent response time is {{ $value | printf "%.2f" }}s
+            Target is under 2 seconds
 
-  - alert: DatabaseDown
-    expr: |
-      pg_up == 0
-    for: 30s
-    labels:
-      severity: critical
-      tier: database
-      government_priority: immediate
-    annotations:
-      summary: "🚨 CRITICAL: Database is DOWN"
-      description: |
-        PostgreSQL database is unreachable
-        Database Role: {{ $labels.database_role }}
-        Instance: {{ $labels.instance }}
-
-        IMMEDIATE ACTION REQUIRED - This affects all government services.
-
-- name: terrafusion-bulletproof-business-metrics
-  interval: 60s
-  rules:
-
-  # 📊 BUSINESS METRICS ALERTS
-  - alert: PropertyAssessmentServiceDegraded
-    expr: |
-      rate(terrafusion_property_assessments_completed_total[10m]) < 100
-    for: 5m
-    labels:
-      severity: warning
-      tier: business
-      government_service: property_assessment
-    annotations:
-      summary: "🏠 WARNING: Property assessment rate below target"
-      description: |
-        Property assessment completion rate is {{ $value | printf "%.0f" }} per 10 minutes
-        Target is 100+ assessments per 10 minutes
-
-        This may impact citizen services.
-
-  - alert: AIAgentPerformanceDegraded
-    expr: |
-      terrafusion_ai_agent_response_time_seconds > 5
-    for: 3m
-    labels:
-      severity: warning
-      tier: ai
-    annotations:
-      summary: "🤖 WARNING: AI agent performance degraded"
-      description: |
-        AI agent response time is {{ $value | printf "%.2f" }}s
-        Target is under 2 seconds
-
-        Agent: {{ $labels.agent_name }}
-        Service: {{ $labels.service_name }}
+            Agent: {{ $labels.agent_name }}
+            Service: {{ $labels.service_name }}

@@ -5,16 +5,12 @@
   "properties": {
     "file_type": {
       "type": "string",
-      "enum": [
-        "deformation_model_master_file"
-      ],
+      "enum": ["deformation_model_master_file"],
       "description": "File type. Always \"deformation_model_master_file\""
     },
     "format_version": {
       "type": "string",
-      "enum": [
-        "1.0"
-      ]
+      "enum": ["1.0"]
     },
     "name": {
       "type": "string",
@@ -59,9 +55,7 @@
           "format": "email"
         }
       },
-      "required": [
-        "name"
-      ],
+      "required": ["name"],
       "additionalProperties": false
     },
     "links": {
@@ -88,9 +82,7 @@
             "description": "Description of the link"
           }
         },
-        "required": [
-          "href"
-        ],
+        "required": ["href"],
         "additionalProperties": false
       }
     },
@@ -116,48 +108,32 @@
     },
     "horizontal_offset_unit": {
       "type": "string",
-      "enum": [
-        "metre",
-        "degree"
-      ]
+      "enum": ["metre", "degree"]
     },
     "vertical_offset_unit": {
       "type": "string",
-      "enum": [
-        "metre"
-      ]
+      "enum": ["metre"]
     },
     "horizontal_uncertainty_type": {
       "type": "string",
-      "enum": [
-        "circular 95% confidence limit"
-      ]
+      "enum": ["circular 95% confidence limit"]
     },
     "horizontal_uncertainty_unit": {
       "type": "string",
-      "enum": [
-        "metre"
-      ]
+      "enum": ["metre"]
     },
     "vertical_uncertainty_type": {
       "type": "string",
-      "enum": [
-        "95% confidence limit"
-      ]
+      "enum": ["95% confidence limit"]
     },
     "vertical_uncertainty_unit": {
       "type": "string",
-      "enum": [
-        "metre"
-      ]
+      "enum": ["metre"]
     },
     "horizontal_offset_method": {
       "type": "string",
       "description": "Defines how the horizontal offsets are applied to geographic coordinates",
-      "enum": [
-        "addition",
-        "geocentric"
-      ]
+      "enum": ["addition", "geocentric"]
     },
     "extent": {
       "$ref": "#/definitions/extent",
@@ -174,10 +150,7 @@
           "$ref": "#/definitions/datetime"
         }
       },
-      "required": [
-        "first",
-        "last"
-      ],
+      "required": ["first", "last"],
       "additionalProperties": false
     },
     "components": {
@@ -214,22 +187,12 @@
         "displacement_type": {
           "type": "string",
           "description": "The displacement parameters defined by the model. The \"none\" option allows for a component which defines uncertainty with different grids to those defining displacement",
-          "enum": [
-            "none",
-            "horizontal",
-            "vertical",
-            "3d"
-          ]
+          "enum": ["none", "horizontal", "vertical", "3d"]
         },
         "uncertainty_type": {
           "type": "string",
           "description": "The uncertainty parameters defined by the model",
-          "enum": [
-            "none",
-            "horizontal",
-            "vertical",
-            "3d"
-          ]
+          "enum": ["none", "horizontal", "vertical", "3d"]
         },
         "horizontal_uncertainty": {
           "type": "number",
@@ -246,17 +209,12 @@
             "type": {
               "type": "string",
               "description": "Specifies the type of the spatial model data file. Initially it is proposed that only GeoTIFF is supported",
-              "enum": [
-                "GeoTIFF"
-              ]
+              "enum": ["GeoTIFF"]
             },
             "interpolation_method": {
               "type": "string",
               "description": "Interpolation method",
-              "enum": [
-                "bilinear",
-                "geocentric_bilinear"
-              ]
+              "enum": ["bilinear", "geocentric_bilinear"]
             },
             "filename": {
               "type": "string",
@@ -267,11 +225,7 @@
               "description": "A hex encoded MD5 checksum of the grid file that can be used to validate that it is the correct version of the file"
             }
           },
-          "required": [
-            "type",
-            "interpolation_method",
-            "filename"
-          ],
+          "required": ["type", "interpolation_method", "filename"],
           "additionalProperties": false
         },
         "time_function": {
@@ -301,9 +255,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "bbox"
-          ]
+          "enum": ["bbox"]
         },
         "parameters": {
           "type": "object",
@@ -319,10 +271,7 @@
           }
         }
       },
-      "required": [
-        "type",
-        "parameters"
-      ],
+      "required": ["type", "parameters"],
       "additionalProperties": false
     },
     "time_function": {
@@ -354,20 +303,15 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "constant"
-          ]
+          "enum": ["constant"]
         },
         "parameters": {
           "type": "object",
-          "properties": {
-          },
+          "properties": {},
           "additionalProperties": false
         }
       },
-      "required": [
-        "type"
-      ],
+      "required": ["type"],
       "additionalProperties": false
     },
     "time_function_velocity": {
@@ -376,9 +320,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "velocity"
-          ]
+          "enum": ["velocity"]
         },
         "parameters": {
           "type": "object",
@@ -387,16 +329,11 @@
               "$ref": "#/definitions/datetime"
             }
           },
-          "required": [
-            "reference_epoch"
-          ],
+          "required": ["reference_epoch"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "type",
-        "parameters"
-      ],
+      "required": ["type", "parameters"],
       "additionalProperties": false
     },
     "time_function_step": {
@@ -405,9 +342,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "step"
-          ]
+          "enum": ["step"]
         },
         "parameters": {
           "type": "object",
@@ -416,16 +351,11 @@
               "$ref": "#/definitions/datetime"
             }
           },
-          "required": [
-            "step_epoch"
-          ],
+          "required": ["step_epoch"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "type",
-        "parameters"
-      ],
+      "required": ["type", "parameters"],
       "additionalProperties": false
     },
     "time_function_reverse_step": {
@@ -434,9 +364,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "reverse_step"
-          ]
+          "enum": ["reverse_step"]
         },
         "parameters": {
           "type": "object",
@@ -445,16 +373,11 @@
               "$ref": "#/definitions/datetime"
             }
           },
-          "required": [
-            "step_epoch"
-          ],
+          "required": ["step_epoch"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "type",
-        "parameters"
-      ],
+      "required": ["type", "parameters"],
       "additionalProperties": false
     },
     "time_function_piecewise": {
@@ -463,9 +386,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "piecewise"
-          ]
+          "enum": ["piecewise"]
         },
         "parameters": {
           "type": "object",
@@ -473,20 +394,12 @@
             "before_first": {
               "type": "string",
               "description": "Defines the behaviour of the function before the first defined epoch",
-              "enum": [
-                "zero",
-                "constant",
-                "linear"
-              ]
+              "enum": ["zero", "constant", "linear"]
             },
             "after_last": {
               "type": "string",
               "description": "Defines the behaviour of the function after the last defined epoch",
-              "enum": [
-                "zero",
-                "constant",
-                "linear"
-              ]
+              "enum": ["zero", "constant", "linear"]
             },
             "model": {
               "type": "array",
@@ -501,27 +414,17 @@
                     "type": "number"
                   }
                 },
-                "required": [
-                  "epoch",
-                  "scale_factor"
-                ],
+                "required": ["epoch", "scale_factor"],
                 "additionalProperties": false
               },
               "minItems": 2
             }
           },
-          "required": [
-            "before_first",
-            "after_last",
-            "model"
-          ],
+          "required": ["before_first", "after_last", "model"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "type",
-        "parameters"
-      ],
+      "required": ["type", "parameters"],
       "additionalProperties": false
     },
     "time_function_exponential": {
@@ -530,9 +433,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [
-            "exponential"
-          ]
+          "enum": ["exponential"]
         },
         "parameters": {
           "type": "object",
@@ -572,10 +473,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "type",
-        "parameters"
-      ],
+      "required": ["type", "parameters"],
       "additionalProperties": false
     }
   }

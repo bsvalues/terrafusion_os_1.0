@@ -44,7 +44,7 @@ receivers:
           - type: button
             text: 'View in Prometheus'
             url: 'https://prometheus.benton-county.example.com/alerts'
-  
+
   - name: 'email-notifications'
     email_configs:
       - to: 'infrastructure@benton-county.example.com'
@@ -54,7 +54,7 @@ receivers:
         auth_identity: 'prometheus@benton-county.example.com'
         auth_password: '{{ .Values.alertmanager.smtp_auth_password }}'
         send_resolved: true
-  
+
   - name: 'pagerduty-critical'
     pagerduty_configs:
       - service_key: '{{ .Values.alertmanager.pagerduty_key }}'

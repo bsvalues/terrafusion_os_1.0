@@ -36,21 +36,38 @@
       {
         "from": "../../",
         "to": "terrafusion-app",
-        "filter": ["**/*", "!node_modules/**/*", "!.git/**/*", "!deployment/**/*", "!dist/**/*", "!archive/**/*"]
+        "filter": [
+          "**/*",
+          "!node_modules/**/*",
+          "!.git/**/*",
+          "!deployment/**/*",
+          "!dist/**/*",
+          "!archive/**/*"
+        ]
       }
     ],
     "win": {
-      "target": ["nsis", "portable"],
+      "target": [
+        "nsis",
+        "portable"
+      ],
       "icon": "assets/icons/icon.ico",
       "requestedExecutionLevel": "requireAdministrator"
     },
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "icon": "assets/icons/icon.icns",
       "category": "public.app-category.business"
     },
     "linux": {
-      "target": ["AppImage", "deb", "rpm"],
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm"
+      ],
       "icon": "assets/icons/",
       "category": "Office"
     },

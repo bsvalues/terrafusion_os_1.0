@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/properties",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "properties"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["properties"]
         }
       },
       "response": []
@@ -127,12 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/valuations",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "valuations"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["valuations"]
         }
       },
       "response": []
@@ -160,12 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/ownership",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "ownership"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["ownership"]
         }
       },
       "response": []
@@ -193,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/transfers",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "transfers"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["transfers"]
         }
       },
       "response": []

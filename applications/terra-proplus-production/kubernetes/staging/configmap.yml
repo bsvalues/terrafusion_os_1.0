@@ -4,10 +4,10 @@ metadata:
   name: terrafusion-config
   namespace: terrafusion-staging
 data:
-  NODE_ENV: "staging"
-  PORT: "5000"
-  LOG_LEVEL: "debug"
-  ENABLE_SWAGGER: "true"
-  API_VERSION: "v1"
-  CORS_ALLOWED_ORIGINS: "https://staging.terrafusion.pro,https://staging-app.terrafusion.pro"
-  METRICS_ENABLED: "true"
+  NODE_ENV: 'staging'
+  PORT: '5000'
+  LOG_LEVEL: 'debug'
+  ENABLE_SWAGGER: 'true'
+  API_VERSION: 'v1'
+  CORS_ALLOWED_ORIGINS: 'https://staging.terrafusion.pro,https://staging-app.terrafusion.pro'
+  METRICS_ENABLED: 'true'

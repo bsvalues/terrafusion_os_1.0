@@ -35,13 +35,17 @@
       "name": "Map Viewer",
       "short_name": "Map",
       "url": "/map-viewer",
-      "icons": [{ "src": "/static/img/icons/map-192x192.png", "sizes": "192x192" }]
+      "icons": [
+        { "src": "/static/img/icons/map-192x192.png", "sizes": "192x192" }
+      ]
     },
     {
       "name": "Property Search",
       "short_name": "Search",
       "url": "/search",
-      "icons": [{ "src": "/static/img/icons/search-192x192.png", "sizes": "192x192" }]
+      "icons": [
+        { "src": "/static/img/icons/search-192x192.png", "sizes": "192x192" }
+      ]
     }
   ]
 }

@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/security
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/security
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/security
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/security
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/security
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/security
+    description: Development Environment
 paths:
   /threats:
     get:
       tags:
-      - security
+        - security
       summary: Threat intelligence
       description: Threat intelligence - Cybersecurity and threat management APIs
       operationId: get__threats
       security:
-      - OAuth2:
-        - security:read
+        - OAuth2:
+            - security:read
       responses:
         '200':
           description: Successful operation
@@ -57,14 +57,14 @@ paths:
   /incidents:
     post:
       tags:
-      - security
+        - security
       summary: Security incident reporting
       description: Security incident reporting - Cybersecurity and threat management
         APIs
       operationId: post__incidents
       security:
-      - OAuth2:
-        - security:write
+        - OAuth2:
+            - security:write
       responses:
         '200':
           description: Successful operation
@@ -93,13 +93,13 @@ paths:
   /scanning:
     post:
       tags:
-      - security
+        - security
       summary: Security scanning
       description: Security scanning - Cybersecurity and threat management APIs
       operationId: post__scanning
       security:
-      - OAuth2:
-        - security:write
+        - OAuth2:
+            - security:write
       responses:
         '200':
           description: Successful operation
@@ -128,13 +128,13 @@ paths:
   /alerts:
     get:
       tags:
-      - security
+        - security
       summary: Security alerts
       description: Security alerts - Cybersecurity and threat management APIs
       operationId: get__alerts
       security:
-      - OAuth2:
-        - security:read
+        - OAuth2:
+            - security:read
       responses:
         '200':
           description: Successful operation
@@ -165,8 +165,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -181,9 +181,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -207,12 +207,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - security:read
-- ApiKey: []
+  - OAuth2:
+      - security:read
+  - ApiKey: []
 tags:
-- name: security
-  description: Security operations
-  externalDocs:
-    description: Find out more about security
-    url: https://docs.terrafusion.gov/platform/security
+  - name: security
+    description: Security operations
+    externalDocs:
+      description: Find out more about security
+      url: https://docs.terrafusion.gov/platform/security

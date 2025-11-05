@@ -3,12 +3,12 @@
   "Source": [
     "STDI-0002-1 v3.0, Appendix E: ASDE",
     "STDI-0002-1 v2021.1, Appendix E: ASDE"
-  ],  
+  ],
   "Name": "Additional Image ID",
   "Description": "The Additional Image ID extension is used for storage and retrieval from standard imagery libraries. AIMID is a required component of all airborne imagery files. A single AIMID is placed in the respective subheader of every NITF image segment . Data from AIMID are copied into the first forty characters of the image subheader ITITLE (NITF 2.0) or IID2 (NITF 2.1) field.",
   "Size": 69,
   "Fields": {
-    "MISSION_DATE" : {
+    "MISSION_DATE": {
       "Name": "Aircraft T.O. Date",
       "Description": "The date of the collection mission (date of aircraft takeoff) in the format DDMMMYY, in which DD is the day of the month (01-31), MMM is the first three characters of the month (JAN to DEC), and YY is the last two digits of the year (00 to 99).",
       "Size": 7,
@@ -77,16 +77,16 @@
     },
     "REPRO_NUM": {
       "Name": "Reprocess Number",
-      "Description": "The reprocess number for SAR imagery indicates whether the data was reprocessed to overcome initial processing failures, or has been enhanced. A '00' in this field indicates that the data is an originally processed image, a '01' indicates the first reprocess/enhancement, etc. In the case of visible and infrared imagery this field shall contain 00 to indicate no reprocessing or enhancement.", 
+      "Description": "The reprocess number for SAR imagery indicates whether the data was reprocessed to overcome initial processing failures, or has been enhanced. A '00' in this field indicates that the data is an originally processed image, a '01' indicates the first reprocess/enhancement, etc. In the case of visible and infrared imagery this field shall contain 00 to indicate no reprocessing or enhancement.",
       "Size": 2,
       "Format": "BCS-N",
       "Type": "R",
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 99
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
         }
       ]
     },
@@ -103,20 +103,20 @@
         }
       ]
     },
-    "RESVD001":{
+    "RESVD001": {
       "Name": "Reserved 1",
       "Description": "This field is reserved and used only to maintain alignment and functional equivalence for systems beyond the scope of this document.",
       "Size": 1,
       "Format": "BCS-A",
-      "Type":"R",
+      "Type": "R",
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"         
+          "Type": "AlphaNumeric"
         }
       ]
     },
-    "START_COLUMN": {  
+    "START_COLUMN": {
       "Name": "Starting Tile Column",
       "Description": "This field is for tiled (blocked) sub-images, where the number of the first tile relative to start of the original image tiling within this segment. Tiles are rectangular arrays of pixels that subdivide an image. For untiled images this field shall contain 01.",
       "Size": 2,
@@ -125,13 +125,13 @@
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 1,
-            "Max": 99
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99
         }
       ]
     },
-    "START_ROW": {  
+    "START_ROW": {
       "Name": "Starting Tile Row",
       "Description": "This field is for tiled (blocked) sub-images, the number of the first tile relative to start of the original image tiling within this segment. For untiled images this field shall contain 00001.",
       "Size": 5,
@@ -140,12 +140,12 @@
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 1,
-            "Max": 99999
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99999
         }
       ]
-    },    
+    },
     "END_SEGMENT": {
       "Name": "Ending Segment",
       "Description": "This is the ending segment ID of this file.  Spaces indicate the image is not segmented.",
@@ -202,12 +202,12 @@
         }
       ]
     },
-    "RESVD002":{
+    "RESVD002": {
       "Name": "Reserved 2",
       "Description": "This field is reserved and used only to maintain alignment and functional equivalence for systems beyond the scope of this document.",
       "Size": 4,
       "Format": "BCS-A",
-      "Type":"R",
+      "Type": "R",
       "Units": [],
       "Values": [
         {

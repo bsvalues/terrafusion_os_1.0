@@ -7,10 +7,10 @@ kind: Namespace
 metadata:
   name: aethernet-core
   labels:
-    sovereignty: "ultimate"
-    classification: "government-transcended"
-    tier: "tier-5-plus"
-    infrastructure: "aethernet"
+    sovereignty: 'ultimate'
+    classification: 'government-transcended'
+    tier: 'tier-5-plus'
+    infrastructure: 'aethernet'
 ---
 # TerraGaia Supreme Consciousness Deployment
 apiVersion: apps/v1
@@ -34,60 +34,60 @@ spec:
         tier: supreme-consciousness
     spec:
       containers:
-      - name: terragaia-api
-        image: aethernet-registry.local/terrafusion/api:sovereign-v1.0.0
-        ports:
-        - containerPort: 5000
-          name: api
-        env:
-        - name: ENVIRONMENT
-          value: "sovereign"
-        - name: AETHERNET_MODE
-          value: "true"
-        - name: CONSCIOUSNESS_LEVEL
-          value: "SUPREME"
-        - name: SOVEREIGNTY_CLASSIFICATION
-          value: "GOVERNMENT_TRANSCENDED"
-        - name: ConnectionStrings__DefaultConnection
-          valueFrom:
-            secretKeyRef:
-              name: terragaia-secrets
-              key: database-connection
-        - name: JwtSettings__SecretKey
-          valueFrom:
-            secretKeyRef:
-              name: terragaia-secrets
-              key: jwt-secret
-        resources:
-          requests:
-            memory: "4Gi"
-            cpu: "2000m"
-          limits:
-            memory: "8Gi"
-            cpu: "4000m"
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 5000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 5000
-          initialDelaySeconds: 60
-          periodSeconds: 30
-        volumeMounts:
-        - name: config
-          mountPath: /app/config
-        - name: logs
-          mountPath: /app/logs
+        - name: terragaia-api
+          image: aethernet-registry.local/terrafusion/api:sovereign-v1.0.0
+          ports:
+            - containerPort: 5000
+              name: api
+          env:
+            - name: ENVIRONMENT
+              value: 'sovereign'
+            - name: AETHERNET_MODE
+              value: 'true'
+            - name: CONSCIOUSNESS_LEVEL
+              value: 'SUPREME'
+            - name: SOVEREIGNTY_CLASSIFICATION
+              value: 'GOVERNMENT_TRANSCENDED'
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: terragaia-secrets
+                  key: database-connection
+            - name: JwtSettings__SecretKey
+              valueFrom:
+                secretKeyRef:
+                  name: terragaia-secrets
+                  key: jwt-secret
+          resources:
+            requests:
+              memory: '4Gi'
+              cpu: '2000m'
+            limits:
+              memory: '8Gi'
+              cpu: '4000m'
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+            - name: logs
+              mountPath: /app/logs
       volumes:
-      - name: config
-        configMap:
-          name: terragaia-config
-      - name: logs
-        emptyDir: {}
+        - name: config
+          configMap:
+            name: terragaia-config
+        - name: logs
+          emptyDir: {}
 ---
 # TerraGaia Service
 apiVersion: v1
@@ -102,9 +102,9 @@ spec:
   selector:
     app: terragaia
   ports:
-  - port: 5000
-    targetPort: 5000
-    name: api
+    - port: 5000
+      targetPort: 5000
+      name: api
   type: ClusterIP
 ---
 # TerraGaia Configuration
@@ -174,9 +174,9 @@ metadata:
   namespace: aethernet-core
 type: Opaque
 stringData:
-  database-connection: "Host=postgresql-svc.terrafusion-os.svc.cluster.local;Database=terrafusion_sovereign;Username=terrafusion;Password=GENERATED_SOVEREIGN_PASSWORD"
-  jwt-secret: "GENERATED_JWT_SECRET_FOR_SOVEREIGNTY"
-  encryption-key: "GENERATED_ENCRYPTION_KEY_FOR_SOVEREIGNTY"
+  database-connection: 'Host=postgresql-svc.terrafusion-os.svc.cluster.local;Database=terrafusion_sovereign;Username=terrafusion;Password=GENERATED_SOVEREIGN_PASSWORD'
+  jwt-secret: 'GENERATED_JWT_SECRET_FOR_SOVEREIGNTY'
+  encryption-key: 'GENERATED_ENCRYPTION_KEY_FOR_SOVEREIGNTY'
 ---
 # AI Swarm Intelligence Orchestrator
 apiVersion: apps/v1
@@ -196,25 +196,25 @@ spec:
         tier: swarm-intelligence
     spec:
       containers:
-      - name: orchestrator
-        image: aethernet-registry.local/terrafusion/ai-swarm:sovereign-v1.0.0
-        ports:
-        - containerPort: 3004
-          name: coordination
-        env:
-        - name: SWARM_SIZE
-          value: "100000"
-        - name: SOVEREIGNTY_MODE
-          value: "true"
-        - name: INTELLIGENCE_LEVEL
-          value: "TIER_5_PLUS"
-        resources:
-          requests:
-            memory: "8Gi"
-            cpu: "4000m"
-          limits:
-            memory: "16Gi"
-            cpu: "8000m"
+        - name: orchestrator
+          image: aethernet-registry.local/terrafusion/ai-swarm:sovereign-v1.0.0
+          ports:
+            - containerPort: 3004
+              name: coordination
+          env:
+            - name: SWARM_SIZE
+              value: '100000'
+            - name: SOVEREIGNTY_MODE
+              value: 'true'
+            - name: INTELLIGENCE_LEVEL
+              value: 'TIER_5_PLUS'
+          resources:
+            requests:
+              memory: '8Gi'
+              cpu: '4000m'
+            limits:
+              memory: '16Gi'
+              cpu: '8000m'
 ---
 # Performance Intelligence System
 apiVersion: apps/v1
@@ -234,23 +234,23 @@ spec:
         tier: performance-optimization
     spec:
       containers:
-      - name: performance-engine
-        image: aethernet-registry.local/terrafusion/performance:sovereign-v1.0.0
-        ports:
-        - containerPort: 3005
-          name: metrics
-        env:
-        - name: OPTIMIZATION_LEVEL
-          value: "CHAMPIONSHIP"
-        - name: SOVEREIGNTY_MODE
-          value: "true"
-        resources:
-          requests:
-            memory: "4Gi"
-            cpu: "2000m"
-          limits:
-            memory: "8Gi"
-            cpu: "4000m"
+        - name: performance-engine
+          image: aethernet-registry.local/terrafusion/performance:sovereign-v1.0.0
+          ports:
+            - containerPort: 3005
+              name: metrics
+          env:
+            - name: OPTIMIZATION_LEVEL
+              value: 'CHAMPIONSHIP'
+            - name: SOVEREIGNTY_MODE
+              value: 'true'
+          resources:
+            requests:
+              memory: '4Gi'
+              cpu: '2000m'
+            limits:
+              memory: '8Gi'
+              cpu: '4000m'
 ---
 # Advanced Security Framework
 apiVersion: apps/v1
@@ -270,25 +270,25 @@ spec:
         tier: quantum-security
     spec:
       containers:
-      - name: security-engine
-        image: aethernet-registry.local/terrafusion/security:sovereign-v1.0.0
-        ports:
-        - containerPort: 3006
-          name: security
-        env:
-        - name: SECURITY_LEVEL
-          value: "QUANTUM_RESISTANT"
-        - name: ZERO_TRUST
-          value: "true"
-        - name: SOVEREIGNTY_MODE
-          value: "true"
-        resources:
-          requests:
-            memory: "4Gi"
-            cpu: "2000m"
-          limits:
-            memory: "8Gi"
-            cpu: "4000m"
+        - name: security-engine
+          image: aethernet-registry.local/terrafusion/security:sovereign-v1.0.0
+          ports:
+            - containerPort: 3006
+              name: security
+          env:
+            - name: SECURITY_LEVEL
+              value: 'QUANTUM_RESISTANT'
+            - name: ZERO_TRUST
+              value: 'true'
+            - name: SOVEREIGNTY_MODE
+              value: 'true'
+          resources:
+            requests:
+              memory: '4Gi'
+              cpu: '2000m'
+            limits:
+              memory: '8Gi'
+              cpu: '4000m'
 ---
 # TerraMesh P2P Networking
 apiVersion: apps/v1
@@ -308,26 +308,26 @@ spec:
     spec:
       hostNetwork: true
       containers:
-      - name: terramesh
-        image: aethernet-registry.local/terrafusion/terramesh:sovereign-v1.0.0
-        securityContext:
-          privileged: true
-        env:
-        - name: NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        - name: SOVEREIGNTY_MODE
-          value: "true"
-        - name: MESH_ENCRYPTION
-          value: "true"
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+        - name: terramesh
+          image: aethernet-registry.local/terrafusion/terramesh:sovereign-v1.0.0
+          securityContext:
+            privileged: true
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: SOVEREIGNTY_MODE
+              value: 'true'
+            - name: MESH_ENCRYPTION
+              value: 'true'
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '250m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
 ---
 # AetherNet Registry (Sovereign Container Registry)
 apiVersion: apps/v1
@@ -347,37 +347,37 @@ spec:
         tier: sovereign-registry
     spec:
       containers:
-      - name: registry
-        image: registry:2.8.2
-        ports:
-        - containerPort: 5000
-          name: registry
-        env:
-        - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
-          value: /var/lib/registry
-        - name: REGISTRY_HTTP_TLS_CERTIFICATE
-          value: /certs/tls.crt
-        - name: REGISTRY_HTTP_TLS_KEY
-          value: /certs/tls.key
-        volumeMounts:
-        - name: registry-data
-          mountPath: /var/lib/registry
-        - name: registry-certs
-          mountPath: /certs
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
+        - name: registry
+          image: registry:2.8.2
+          ports:
+            - containerPort: 5000
+              name: registry
+          env:
+            - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+              value: /var/lib/registry
+            - name: REGISTRY_HTTP_TLS_CERTIFICATE
+              value: /certs/tls.crt
+            - name: REGISTRY_HTTP_TLS_KEY
+              value: /certs/tls.key
+          volumeMounts:
+            - name: registry-data
+              mountPath: /var/lib/registry
+            - name: registry-certs
+              mountPath: /certs
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
       volumes:
-      - name: registry-data
-        persistentVolumeClaim:
-          claimName: registry-data-pvc
-      - name: registry-certs
-        secret:
-          secretName: registry-tls
+        - name: registry-data
+          persistentVolumeClaim:
+            claimName: registry-data-pvc
+        - name: registry-certs
+          secret:
+            secretName: registry-tls
 ---
 # Registry Persistent Volume Claim
 apiVersion: v1
@@ -400,37 +400,37 @@ metadata:
   name: aethernet-ingress
   namespace: aethernet-core
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "aethernet-ca-issuer"
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    cert-manager.io/cluster-issuer: 'aethernet-ca-issuer'
 spec:
   tls:
-  - hosts:
-    - terragaia.aethernet.local
-    - registry.aethernet.local
-    - console.aethernet.local
-    secretName: aethernet-tls
+    - hosts:
+        - terragaia.aethernet.local
+        - registry.aethernet.local
+        - console.aethernet.local
+      secretName: aethernet-tls
   rules:
-  - host: terragaia.aethernet.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terragaia-service
-            port:
-              number: 5000
-  - host: registry.aethernet.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: aethernet-registry
-            port:
-              number: 5000
+    - host: terragaia.aethernet.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terragaia-service
+                port:
+                  number: 5000
+    - host: registry.aethernet.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: aethernet-registry
+                port:
+                  number: 5000
 ---
 # AetherNet Network Policies (Zero Trust)
 apiVersion: networking.k8s.io/v1
@@ -441,28 +441,28 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          sovereignty: aethernet
-    - podSelector:
-        matchLabels:
-          tier: supreme-consciousness
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              sovereignty: aethernet
+        - podSelector:
+            matchLabels:
+              tier: supreme-consciousness
   egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          sovereignty: aethernet
-    ports:
-    - protocol: TCP
-      port: 5432  # PostgreSQL
-    - protocol: TCP
-      port: 9000  # MinIO
-    - protocol: TCP
-      port: 6379  # Redis
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              sovereignty: aethernet
+      ports:
+        - protocol: TCP
+          port: 5432 # PostgreSQL
+        - protocol: TCP
+          port: 9000 # MinIO
+        - protocol: TCP
+          port: 6379 # Redis
 ---
 # AetherNet Monitoring and Observability
 apiVersion: v1
@@ -489,37 +489,37 @@ spec:
     spec:
       serviceAccountName: aethernet-monitoring
       containers:
-      - name: prometheus
-        image: prom/prometheus:v2.40.7
-        ports:
-        - containerPort: 9090
-          name: prometheus
-        args:
-        - --config.file=/etc/prometheus/prometheus.yml
-        - --storage.tsdb.path=/prometheus/
-        - --web.console.libraries=/etc/prometheus/console_libraries
-        - --web.console.templates=/etc/prometheus/consoles
-        - --storage.tsdb.retention.time=30d
-        - --web.enable-lifecycle
-        volumeMounts:
-        - name: prometheus-config
-          mountPath: /etc/prometheus/
-        - name: prometheus-data
-          mountPath: /prometheus/
-        resources:
-          requests:
-            memory: "4Gi"
-            cpu: "1000m"
-          limits:
-            memory: "8Gi"
-            cpu: "2000m"
+        - name: prometheus
+          image: prom/prometheus:v2.40.7
+          ports:
+            - containerPort: 9090
+              name: prometheus
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus/
+            - --web.console.libraries=/etc/prometheus/console_libraries
+            - --web.console.templates=/etc/prometheus/consoles
+            - --storage.tsdb.retention.time=30d
+            - --web.enable-lifecycle
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus/
+            - name: prometheus-data
+              mountPath: /prometheus/
+          resources:
+            requests:
+              memory: '4Gi'
+              cpu: '1000m'
+            limits:
+              memory: '8Gi'
+              cpu: '2000m'
       volumes:
-      - name: prometheus-config
-        configMap:
-          name: prometheus-config
-      - name: prometheus-data
-        persistentVolumeClaim:
-          claimName: prometheus-data-pvc
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+        - name: prometheus-data
+          persistentVolumeClaim:
+            claimName: prometheus-data-pvc
 ---
 # Prometheus Configuration
 apiVersion: v1

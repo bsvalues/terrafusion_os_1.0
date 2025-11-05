@@ -4,10 +4,10 @@ metadata:
   name: terrafusion-config
   namespace: terrafusion-production
 data:
-  NODE_ENV: "production"
-  PORT: "5000"
-  LOG_LEVEL: "info"
-  ENABLE_SWAGGER: "true"
-  API_VERSION: "v1"
-  CORS_ALLOWED_ORIGINS: "https://terrafusion.pro,https://app.terrafusion.pro"
-  METRICS_ENABLED: "true"
+  NODE_ENV: 'production'
+  PORT: '5000'
+  LOG_LEVEL: 'info'
+  ENABLE_SWAGGER: 'true'
+  API_VERSION: 'v1'
+  CORS_ALLOWED_ORIGINS: 'https://terrafusion.pro,https://app.terrafusion.pro'
+  METRICS_ENABLED: 'true'

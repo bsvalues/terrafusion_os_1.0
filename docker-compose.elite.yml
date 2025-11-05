@@ -2,7 +2,7 @@
 # Championship-level Docker Compose configuration for property assessment excellence
 # Supports 99.9% accuracy property valuation with government-grade performance
 
-version: "3.9"
+version: '3.9'
 
 services:
   # API Gateway - Elite Traffic Management
@@ -12,8 +12,8 @@ services:
       dockerfile: backend/TerraFusion.Gateway/Dockerfile
     container_name: terrafusion-gateway-elite
     ports:
-      - "3002:8080"
-      - "3003:8443" # HTTPS for production
+      - '3002:8080'
+      - '3003:8443' # HTTPS for production
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080;https://+:8443
@@ -30,10 +30,10 @@ services:
     networks:
       - terrafusion-elite
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.gateway.rule=Host(`gateway.terrafusion.local`)"
-      - "terrafusion.service.type=gateway"
-      - "terrafusion.performance.mode=elite"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.gateway.rule=Host(`gateway.terrafusion.local`)'
+      - 'terrafusion.service.type=gateway'
+      - 'terrafusion.performance.mode=elite'
 
   # Core API Service - Championship Property Assessment
   terrafusion-api:
@@ -43,7 +43,7 @@ services:
       target: runtime
     container_name: terrafusion-api-championship
     ports:
-      - "3001:8080"
+      - '3001:8080'
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
@@ -68,9 +68,9 @@ services:
     networks:
       - terrafusion-elite
     labels:
-      - "terrafusion.service.type=api"
-      - "terrafusion.performance.mode=championship"
-      - "terrafusion.accuracy.target=99.9%"
+      - 'terrafusion.service.type=api'
+      - 'terrafusion.performance.mode=championship'
+      - 'terrafusion.accuracy.target=99.9%'
 
   # AI Coordination Service - Elite Agent Management
   terrafusion-ai:
@@ -96,9 +96,9 @@ services:
     networks:
       - terrafusion-elite
     labels:
-      - "terrafusion.service.type=ai-coordination"
-      - "terrafusion.ai.swarm.size=1008"
-      - "terrafusion.quantum.enabled=true"
+      - 'terrafusion.service.type=ai-coordination'
+      - 'terrafusion.ai.swarm.size=1008'
+      - 'terrafusion.quantum.enabled=true'
 
   # Consciousness Service - Elite AI Swarm Orchestration (50,000+ Agents)
   terrafusion-consciousness:
@@ -107,7 +107,7 @@ services:
       dockerfile: backend/TerraFusion.Consciousness/Dockerfile
     container_name: terrafusion-consciousness-elite
     ports:
-      - "3004:3004"
+      - '3004:3004'
     environment:
       - NODE_ENV=development
       - CONSCIOUSNESS_PORT=3004
@@ -126,9 +126,9 @@ services:
     networks:
       - terrafusion-elite
     labels:
-      - "terrafusion.service.type=consciousness-orchestration"
-      - "terrafusion.agents.max=50000"
-      - "terrafusion.performance.mode=elite"
+      - 'terrafusion.service.type=consciousness-orchestration'
+      - 'terrafusion.agents.max=50000'
+      - 'terrafusion.performance.mode=elite'
 
   # PostgreSQL Database - Elite Data Management
   postgres-elite:
@@ -140,7 +140,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres-data-elite:/var/lib/postgresql/data
       - ./database/init:/docker-entrypoint-initdb.d
@@ -148,13 +148,13 @@ services:
     networks:
       - terrafusion-elite
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U terrafusion_user -d TerraFusionDB"]
+      test: ['CMD-SHELL', 'pg_isready -U terrafusion_user -d TerraFusionDB']
       interval: 10s
       timeout: 5s
       retries: 5
     labels:
-      - "terrafusion.service.type=database"
-      - "terrafusion.persistence.type=postgresql"
+      - 'terrafusion.service.type=database'
+      - 'terrafusion.persistence.type=postgresql'
 
   # Redis Cache - Championship Performance Caching
   redis-elite:
@@ -162,20 +162,20 @@ services:
     container_name: redis-terrafusion-elite
     command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis-data-elite:/data
     restart: unless-stopped
     networks:
       - terrafusion-elite
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 3s
       retries: 5
     labels:
-      - "terrafusion.service.type=cache"
-      - "terrafusion.performance.type=elite-caching"
+      - 'terrafusion.service.type=cache'
+      - 'terrafusion.performance.type=elite-caching'
 
   # ML Model Server - 99.9% Accuracy Property Valuation
   ml-model-server:
@@ -196,9 +196,9 @@ services:
     networks:
       - terrafusion-elite
     labels:
-      - "terrafusion.service.type=ml-inference"
-      - "terrafusion.accuracy.target=99.9%"
-      - "terrafusion.ml.mode=championship"
+      - 'terrafusion.service.type=ml-inference'
+      - 'terrafusion.accuracy.target=99.9%'
+      - 'terrafusion.ml.mode=championship'
 
   # Property Assessment Interface - Elite Assessor Dashboard
   assessor-interface:
@@ -207,7 +207,7 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-assessor-elite
     ports:
-      - "3005:80"
+      - '3005:80'
     environment:
       - NODE_ENV=development
       - REACT_APP_API_URL=http://localhost:3002
@@ -221,25 +221,25 @@ services:
     networks:
       - terrafusion-elite
     labels:
-      - "terrafusion.service.type=frontend"
-      - "terrafusion.interface.type=assessor-elite"
+      - 'terrafusion.service.type=frontend'
+      - 'terrafusion.interface.type=assessor-elite'
 
   # Monitoring Stack - Championship Performance Analytics
   prometheus:
     image: prom/prometheus:v2.48.1
     container_name: prometheus-terrafusion
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/etc/prometheus/console_libraries"
-      - "--web.console.templates=/etc/prometheus/consoles"
-      - "--storage.tsdb.retention.time=30d"
-      - "--web.enable-lifecycle"
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
     restart: unless-stopped
     networks:
       - terrafusion-elite
@@ -248,7 +248,7 @@ services:
     image: grafana/grafana:10.2.3
     container_name: grafana-terrafusion
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
       - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
@@ -267,8 +267,8 @@ services:
     image: jaegertracing/all-in-one:1.51
     container_name: jaeger-terrafusion
     ports:
-      - "16686:16686"
-      - "14268:14268"
+      - '16686:16686'
+      - '14268:14268'
     environment:
       - COLLECTOR_OTLP_ENABLED=true
     restart: unless-stopped
@@ -281,8 +281,8 @@ services:
     image: mailhog/mailhog:v1.0.1
     container_name: mailhog-terrafusion
     ports:
-      - "1025:1025" # SMTP
-      - "8025:8025" # Web UI
+      - '1025:1025' # SMTP
+      - '8025:8025' # Web UI
     restart: unless-stopped
     networks:
       - terrafusion-elite
@@ -295,7 +295,7 @@ services:
       - PGADMIN_DEFAULT_EMAIL=admin@terrafusion.local
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
     ports:
-      - "5050:80"
+      - '5050:80'
     depends_on:
       - postgres-elite
     volumes:
@@ -312,43 +312,43 @@ networks:
       config:
         - subnet: 172.20.0.0/16
     labels:
-      - "terrafusion.network.type=elite-development"
+      - 'terrafusion.network.type=elite-development'
 
 # Championship Data Volumes
 volumes:
   postgres-data-elite:
     driver: local
     labels:
-      - "terrafusion.volume.type=database"
+      - 'terrafusion.volume.type=database'
   redis-data-elite:
     driver: local
     labels:
-      - "terrafusion.volume.type=cache"
+      - 'terrafusion.volume.type=cache'
   property-data:
     driver: local
     labels:
-      - "terrafusion.volume.type=property-data"
+      - 'terrafusion.volume.type=property-data'
   ml-models:
     driver: local
     labels:
-      - "terrafusion.volume.type=ml-models"
+      - 'terrafusion.volume.type=ml-models'
   ai-models:
     driver: local
     labels:
-      - "terrafusion.volume.type=ai-models"
+      - 'terrafusion.volume.type=ai-models'
   consciousness-state:
     driver: local
     labels:
-      - "terrafusion.volume.type=consciousness-state"
+      - 'terrafusion.volume.type=consciousness-state'
   prometheus-data:
     driver: local
     labels:
-      - "terrafusion.volume.type=monitoring"
+      - 'terrafusion.volume.type=monitoring'
   grafana-data:
     driver: local
     labels:
-      - "terrafusion.volume.type=dashboards"
+      - 'terrafusion.volume.type=dashboards'
   pgadmin-data:
     driver: local
     labels:
-      - "terrafusion.volume.type=admin-tools"
+      - 'terrafusion.volume.type=admin-tools'

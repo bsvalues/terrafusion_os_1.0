@@ -1,10 +1,8 @@
 {
-	"TRE": "OSDDEF",
-	"Source": [
-	],
-	"Name": "OSDDEF",
-	"Description": "OSDDEF",
-	"Size": 0,
-	"Fields": {
-	}
+  "TRE": "OSDDEF",
+  "Source": [],
+  "Name": "OSDDEF",
+  "Description": "OSDDEF",
+  "Size": 0,
+  "Fields": {}
 }

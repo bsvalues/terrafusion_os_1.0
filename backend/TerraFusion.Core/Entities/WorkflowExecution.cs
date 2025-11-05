@@ -29,12 +29,12 @@ public class WorkflowExecution
     /// <summary>
     /// User who triggered execution
     /// </summary>
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
 
     /// <summary>
     /// County context
     /// </summary>
-    public int CountyId { get; set; }
+    public Guid CountyId { get; set; }
 
     /// <summary>
     /// Execution status (running, completed, failed, cancelled)

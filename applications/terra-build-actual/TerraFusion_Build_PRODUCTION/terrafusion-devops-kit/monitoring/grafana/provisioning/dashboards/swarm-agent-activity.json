@@ -126,9 +126,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -218,10 +216,7 @@
       "id": 34,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -315,10 +310,7 @@
       "id": 32,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -408,10 +400,7 @@
       "id": 36,
       "options": {
         "legend": {
-          "calcs": [
-            "sum",
-            "mean"
-          ],
+          "calcs": ["sum", "mean"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -518,10 +507,7 @@
       "id": 4,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -611,10 +597,7 @@
       "id": 6,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull"
-          ],
+          "calcs": ["mean", "lastNotNull"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -705,9 +688,7 @@
       "id": 26,
       "options": {
         "legend": {
-          "calcs": [
-            "sum"
-          ],
+          "calcs": ["sum"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -771,9 +752,7 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -837,9 +816,7 @@
       },
       "id": 40,
       "options": {
-        "displayLabels": [
-          "percent"
-        ],
+        "displayLabels": ["percent"],
         "legend": {
           "displayMode": "list",
           "placement": "bottom",
@@ -847,9 +824,7 @@
         },
         "pieType": "pie",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -951,9 +926,7 @@
       "id": 10,
       "options": {
         "legend": {
-          "calcs": [
-            "sum"
-          ],
+          "calcs": ["sum"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -1021,11 +994,7 @@
   "refresh": "30s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": [
-    "terrafusion",
-    "agents",
-    "ai"
-  ],
+  "tags": ["terrafusion", "agents", "ai"],
   "templating": {
     "list": [
       {

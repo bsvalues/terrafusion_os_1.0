@@ -24,11 +24,7 @@
       "quantum_readiness": 100.0,
       "integration_potential": 89.0,
       "foundation_value": 0.098,
-      "capabilities": [
-        "Data Hub",
-        "Web Portal",
-        "Citizen Services"
-      ],
+      "capabilities": ["Data Hub", "Web Portal", "Citizen Services"],
       "technologies": [
         "Node.js",
         "TypeScript",
@@ -76,18 +72,8 @@
       "quantum_readiness": 95.0,
       "integration_potential": 84.0,
       "foundation_value": 0.088,
-      "capabilities": [
-        "Development",
-        "Prototyping",
-        "Testing"
-      ],
-      "technologies": [
-        "Node.js",
-        "TypeScript",
-        "TypeScript",
-        "Vite",
-        "React"
-      ],
+      "capabilities": ["Development", "Prototyping", "Testing"],
+      "technologies": ["Node.js", "TypeScript", "TypeScript", "Vite", "React"],
       "production_ready": true,
       "priority": "HIGH"
     },
@@ -100,10 +86,7 @@
       "quantum_readiness": 100.0,
       "integration_potential": 86.0,
       "foundation_value": 0.086,
-      "capabilities": [
-        "Tax Assessment",
-        "Payment in Lieu of Taxes"
-      ],
+      "capabilities": ["Tax Assessment", "Payment in Lieu of Taxes"],
       "technologies": [
         "Node.js",
         "TypeScript",
@@ -125,17 +108,8 @@
       "quantum_readiness": 95.0,
       "integration_potential": 81.0,
       "foundation_value": 0.077,
-      "capabilities": [
-        "Business Intelligence",
-        "Data Visualization"
-      ],
-      "technologies": [
-        "Node.js",
-        "TypeScript",
-        "TypeScript",
-        "Vite",
-        "React"
-      ],
+      "capabilities": ["Business Intelligence", "Data Visualization"],
+      "technologies": ["Node.js", "TypeScript", "TypeScript", "Vite", "React"],
       "production_ready": true,
       "priority": "MEDIUM"
     },
@@ -148,10 +122,7 @@
       "quantum_readiness": 90.0,
       "integration_potential": 81.0,
       "foundation_value": 0.073,
-      "capabilities": [
-        "Machine Learning",
-        "Advanced Analytics"
-      ],
+      "capabilities": ["Machine Learning", "Advanced Analytics"],
       "technologies": [
         "Node.js",
         "TypeScript",
@@ -195,10 +166,7 @@
       "quantum_readiness": 100.0,
       "integration_potential": 91.0,
       "foundation_value": 0.064,
-      "capabilities": [
-        "Build System",
-        "Deployment"
-      ],
+      "capabilities": ["Build System", "Deployment"],
       "technologies": [
         "Node.js",
         "TypeScript",
@@ -222,18 +190,8 @@
       "quantum_readiness": 95.0,
       "integration_potential": 84.0,
       "foundation_value": 0.064,
-      "capabilities": [
-        "Development",
-        "Prototyping",
-        "Testing"
-      ],
-      "technologies": [
-        "Node.js",
-        "TypeScript",
-        "TypeScript",
-        "Vite",
-        "React"
-      ],
+      "capabilities": ["Development", "Prototyping", "Testing"],
+      "technologies": ["Node.js", "TypeScript", "TypeScript", "Vite", "React"],
       "production_ready": false,
       "priority": "MEDIUM"
     },
@@ -246,15 +204,8 @@
       "quantum_readiness": 75.0,
       "integration_potential": 74.0,
       "foundation_value": 0.061,
-      "capabilities": [
-        "Analytics",
-        "Reporting",
-        "Visualization"
-      ],
-      "technologies": [
-        "Python",
-        "Flask"
-      ],
+      "capabilities": ["Analytics", "Reporting", "Visualization"],
+      "technologies": ["Python", "Flask"],
       "production_ready": true,
       "priority": "MEDIUM"
     },
@@ -267,14 +218,8 @@
       "quantum_readiness": 80.0,
       "integration_potential": 76.0,
       "foundation_value": 0.061,
-      "capabilities": [
-        "Appraisal",
-        "Professional Services"
-      ],
-      "technologies": [
-        "Node.js",
-        "TypeScript"
-      ],
+      "capabilities": ["Appraisal", "Professional Services"],
+      "technologies": ["Node.js", "TypeScript"],
       "production_ready": true,
       "priority": "MEDIUM"
     },
@@ -287,15 +232,8 @@
       "quantum_readiness": 75.0,
       "integration_potential": 71.0,
       "foundation_value": 0.053,
-      "capabilities": [
-        "Automation",
-        "AI Agents"
-      ],
-      "technologies": [
-        "Python",
-        "Python",
-        "Flask"
-      ],
+      "capabilities": ["Automation", "AI Agents"],
+      "technologies": ["Python", "Python", "Flask"],
       "production_ready": true,
       "priority": "MEDIUM"
     },
@@ -308,11 +246,7 @@
       "quantum_readiness": 70.0,
       "integration_potential": 69.0,
       "foundation_value": 0.053,
-      "capabilities": [
-        "Help Desk",
-        "AI Assistant",
-        "Chatbot"
-      ],
+      "capabilities": ["Help Desk", "AI Assistant", "Chatbot"],
       "technologies": [],
       "production_ready": true,
       "priority": "LOW"
@@ -326,15 +260,8 @@
       "quantum_readiness": 75.0,
       "integration_potential": 71.0,
       "foundation_value": 0.053,
-      "capabilities": [
-        "Data Synchronization",
-        "Integration"
-      ],
-      "technologies": [
-        "Python",
-        "Python",
-        "Flask"
-      ],
+      "capabilities": ["Data Synchronization", "Integration"],
+      "technologies": ["Python", "Python", "Flask"],
       "production_ready": true,
       "priority": "MEDIUM"
     },
@@ -347,14 +274,8 @@
       "quantum_readiness": 75.0,
       "integration_potential": 71.0,
       "foundation_value": 0.053,
-      "capabilities": [
-        "Analytics",
-        "Data Mining"
-      ],
-      "technologies": [
-        "Python",
-        "Flask"
-      ],
+      "capabilities": ["Analytics", "Data Mining"],
+      "technologies": ["Python", "Flask"],
       "production_ready": true,
       "priority": "MEDIUM"
     },
@@ -368,12 +289,7 @@
       "integration_potential": 75.0,
       "foundation_value": 0.051,
       "capabilities": [],
-      "technologies": [
-        "Node.js",
-        "TypeScript",
-        "Drizzle ORM",
-        "PostgreSQL"
-      ],
+      "technologies": ["Node.js", "TypeScript", "Drizzle ORM", "PostgreSQL"],
       "production_ready": true,
       "priority": "MEDIUM"
     },
@@ -387,11 +303,7 @@
       "integration_potential": 70.0,
       "foundation_value": 0.048,
       "capabilities": [],
-      "technologies": [
-        "Node.js",
-        "TypeScript",
-        "TypeScript"
-      ],
+      "technologies": ["Node.js", "TypeScript", "TypeScript"],
       "production_ready": true,
       "priority": "LOW"
     },
@@ -405,11 +317,7 @@
       "integration_potential": 70.0,
       "foundation_value": 0.048,
       "capabilities": [],
-      "technologies": [
-        "Node.js",
-        "TypeScript",
-        "TypeScript"
-      ],
+      "technologies": ["Node.js", "TypeScript", "TypeScript"],
       "production_ready": true,
       "priority": "LOW"
     },
@@ -422,10 +330,7 @@
       "quantum_readiness": 70.0,
       "integration_potential": 66.0,
       "foundation_value": 0.046,
-      "capabilities": [
-        "API Management",
-        "Integration Hub"
-      ],
+      "capabilities": ["API Management", "Integration Hub"],
       "technologies": [],
       "production_ready": true,
       "priority": "LOW"
@@ -479,11 +384,7 @@
       "system": "BCBSWebhub_PRODUCTION",
       "foundation_enhancement": 0.098,
       "priority": "HIGH",
-      "capabilities": [
-        "Data Hub",
-        "Web Portal",
-        "Citizen Services"
-      ],
+      "capabilities": ["Data Hub", "Web Portal", "Citizen Services"],
       "integration_effort": "2-3 weeks",
       "recommendation": "Integrate BCBSWebhub_PRODUCTION for Data Hub, Web Portal capabilities"
     },
@@ -505,10 +406,7 @@
       "system": "TerraFusionPilt_PRODUCTION",
       "foundation_enhancement": 0.086,
       "priority": "HIGH",
-      "capabilities": [
-        "Tax Assessment",
-        "Payment in Lieu of Taxes"
-      ],
+      "capabilities": ["Tax Assessment", "Payment in Lieu of Taxes"],
       "integration_effort": "2-3 weeks",
       "recommendation": "Integrate TerraFusionPilt_PRODUCTION for Tax Assessment, Payment in Lieu of Taxes capabilities"
     }

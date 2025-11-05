@@ -12,21 +12,21 @@ stringData:
   username: terrafusion-bot
   password: ${GITHUB_TOKEN}
   project: terrafusion
-  
+
   # SSH key for alternative authentication (optional)
   # sshPrivateKey: |
   #   -----BEGIN OPENSSH PRIVATE KEY-----
   #   ...
   #   -----END OPENSSH PRIVATE KEY-----
-  
+
   # TLS certificate verification
-  insecure: "false"
-  
+  insecure: 'false'
+
   # Enable LFS support
-  enableLfs: "true"
-  
+  enableLfs: 'true'
+
   # Helm repository configuration
-  enableOCI: "true"
+  enableOCI: 'true'
 
 ---
 apiVersion: v1
@@ -60,7 +60,7 @@ stringData:
   url: oci://ghcr.io/terrafusion/charts
   username: ${GITHUB_USERNAME}
   password: ${GITHUB_TOKEN}
-  enableOCI: "true"
+  enableOCI: 'true'
   project: terrafusion
 
 ---
@@ -71,11 +71,11 @@ metadata:
   namespace: argocd
 data:
   # Repository polling interval
-  timeout.reconciliation: "180s"
-  
+  timeout.reconciliation: '180s'
+
   # Retry configuration
-  timeout.hard.reconciliation: "0"
-  
+  timeout.hard.reconciliation: '0'
+
   # Resource exclusions
   resource.exclusions: |
     - apiGroups:

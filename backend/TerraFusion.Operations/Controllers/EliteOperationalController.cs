@@ -244,7 +244,7 @@ public class EliteOperationalController : ControllerBase
     /// </summary>
     /// <returns>Elite performance metrics</returns>
     [HttpGet("performance")]
-    [ProducesResponseType(typeof(ElitePerformanceMetrics), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Models.ElitePerformanceMetrics), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetElitePerformanceMetrics()
     {
         try

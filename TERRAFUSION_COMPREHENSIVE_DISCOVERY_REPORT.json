@@ -4,11 +4,7 @@
     "quantum_factor": 949,
     "terra_cyan": "#00FFFF",
     "golden_ratio": 1.618,
-    "locations_scanned": [
-      "from_d",
-      "terrafusion_mono",
-      "d_drive"
-    ]
+    "locations_scanned": ["from_d", "terrafusion_mono", "d_drive"]
   },
   "executive_summary": {
     "total_systems_discovered": 68,
@@ -51,9 +47,7 @@
         "Docker",
         "Drizzle"
       ],
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "system_type": "PRODUCTION"
     },
     {
@@ -81,9 +75,7 @@
         "Next.js",
         "Docker"
       ],
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "system_type": "PRODUCTION"
     },
     {
@@ -109,9 +101,7 @@
         "Node.js",
         "Drizzle"
       ],
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "system_type": "PRODUCTION"
     },
     {
@@ -136,9 +126,7 @@
         "Flask",
         "Docker"
       ],
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "system_type": "PRODUCTION"
     },
     {
@@ -155,16 +143,8 @@
         "Advanced Features",
         "Professional Tools"
       ],
-      "technologies": [
-        "TypeScript",
-        "Vite",
-        "React",
-        "Node.js",
-        "Drizzle"
-      ],
-      "locations": [
-        "from_d"
-      ],
+      "technologies": ["TypeScript", "Vite", "React", "Node.js", "Drizzle"],
+      "locations": ["from_d"],
       "system_type": "PRODUCTION"
     },
     {
@@ -189,9 +169,7 @@
         "Node.js",
         "Drizzle"
       ],
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "system_type": "ACTIVE"
     },
     {
@@ -208,15 +186,8 @@
         "Professional Tools",
         "Visualization"
       ],
-      "technologies": [
-        "TypeScript",
-        "Python",
-        "Flask",
-        "PostgreSQL"
-      ],
-      "locations": [
-        "from_d"
-      ],
+      "technologies": ["TypeScript", "Python", "Flask", "PostgreSQL"],
+      "locations": ["from_d"],
       "system_type": "PRODUCTION"
     },
     {
@@ -226,10 +197,7 @@
       "priority": "MEDIUM",
       "quantum_readiness": 98,
       "integration_potential": 86,
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
+      "capabilities": ["Advanced Features", "Professional Tools"],
       "technologies": [
         "TypeScript",
         "Python",
@@ -241,9 +209,7 @@
         "Docker",
         "Drizzle"
       ],
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "system_type": "PRODUCTION"
     },
     {
@@ -259,16 +225,8 @@
         "AI Agents",
         "Autonomous Operations"
       ],
-      "technologies": [
-        "Python",
-        "PostgreSQL",
-        "FastAPI",
-        "Flask",
-        "Docker"
-      ],
-      "locations": [
-        "from_d"
-      ],
+      "technologies": ["Python", "PostgreSQL", "FastAPI", "Flask", "Docker"],
+      "locations": ["from_d"],
       "system_type": "PRODUCTION"
     },
     {
@@ -278,11 +236,7 @@
       "priority": "MEDIUM",
       "quantum_readiness": 98,
       "integration_potential": 89,
-      "capabilities": [
-        "CI/CD",
-        "Build Automation",
-        "Deployment"
-      ],
+      "capabilities": ["CI/CD", "Build Automation", "Deployment"],
       "technologies": [
         "TypeScript",
         "Python",
@@ -294,9 +248,7 @@
         "Docker",
         "Drizzle"
       ],
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "system_type": "ACTIVE"
     },
     {
@@ -306,11 +258,7 @@
       "priority": "MEDIUM",
       "quantum_readiness": 98,
       "integration_potential": 89,
-      "capabilities": [
-        "Prototyping",
-        "Testing",
-        "Dev Environment"
-      ],
+      "capabilities": ["Prototyping", "Testing", "Dev Environment"],
       "technologies": [
         "TypeScript",
         "Python",
@@ -322,9 +270,7 @@
         "Next.js",
         "Docker"
       ],
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "system_type": "DEVELOPMENT"
     },
     {
@@ -334,20 +280,9 @@
       "priority": "MEDIUM",
       "quantum_readiness": 95,
       "integration_potential": 82,
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
-      "technologies": [
-        "TypeScript",
-        "Vite",
-        "React",
-        "PostgreSQL",
-        "Node.js"
-      ],
-      "locations": [
-        "from_d"
-      ],
+      "capabilities": ["Advanced Features", "Professional Tools"],
+      "technologies": ["TypeScript", "Vite", "React", "PostgreSQL", "Node.js"],
+      "locations": ["from_d"],
       "system_type": "PRODUCTION"
     },
     {
@@ -357,10 +292,7 @@
       "priority": "MEDIUM",
       "quantum_readiness": 95,
       "integration_potential": 82,
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
+      "capabilities": ["Advanced Features", "Professional Tools"],
       "technologies": [
         "TypeScript",
         "Python",
@@ -370,9 +302,7 @@
         "Node.js",
         "Docker"
       ],
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "system_type": "PRODUCTION"
     },
     {
@@ -382,10 +312,7 @@
       "priority": "MEDIUM",
       "quantum_readiness": 93,
       "integration_potential": 82,
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
+      "capabilities": ["Advanced Features", "Professional Tools"],
       "technologies": [
         "TypeScript",
         "React",
@@ -393,9 +320,7 @@
         "Docker",
         "Node.js"
       ],
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "system_type": "PRODUCTION"
     },
     {
@@ -412,15 +337,8 @@
         "Parcel Management",
         "Legislative Tracking"
       ],
-      "technologies": [
-        "TypeScript",
-        "Python",
-        "Flask",
-        "FastAPI"
-      ],
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "technologies": ["TypeScript", "Python", "Flask", "FastAPI"],
+      "locations": ["terrafusion_mono"],
       "system_type": "ACTIVE"
     }
   ],
@@ -537,9 +455,7 @@
       "foundation_value": 0.094,
       "priority": "HIGH",
       "is_integrated": true,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -549,13 +465,7 @@
       "size_bytes": 32769744,
       "last_modified": "2025-10-21T13:25:50.466674",
       "type": "PRODUCTION",
-      "technologies": [
-        "TypeScript",
-        "Vite",
-        "React",
-        "Node.js",
-        "Drizzle"
-      ],
+      "technologies": ["TypeScript", "Vite", "React", "Node.js", "Drizzle"],
       "capabilities": [
         "Citizen Services",
         "Data Hub",
@@ -568,9 +478,7 @@
       "foundation_value": 0.094,
       "priority": "HIGH",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -601,9 +509,7 @@
       "foundation_value": 0.094,
       "priority": "HIGH",
       "is_integrated": true,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -613,13 +519,7 @@
       "size_bytes": 211363620,
       "last_modified": "2025-10-21T22:52:47.118866",
       "type": "PRODUCTION",
-      "technologies": [
-        "Python",
-        "PostgreSQL",
-        "FastAPI",
-        "Flask",
-        "Docker"
-      ],
+      "technologies": ["Python", "PostgreSQL", "FastAPI", "Flask", "Docker"],
       "capabilities": [
         "Advanced Features",
         "Professional Tools",
@@ -631,9 +531,7 @@
       "foundation_value": 0.072,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -663,9 +561,7 @@
       "foundation_value": 0.096,
       "priority": "HIGH",
       "is_integrated": true,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -686,19 +582,13 @@
         "Docker",
         "Drizzle"
       ],
-      "capabilities": [
-        "CI/CD",
-        "Build Automation",
-        "Deployment"
-      ],
+      "capabilities": ["CI/CD", "Build Automation", "Deployment"],
       "quantum_readiness": 98,
       "integration_potential": 89,
       "foundation_value": 0.07,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -708,12 +598,7 @@
       "size_bytes": 991184603,
       "last_modified": "2025-09-01T12:39:42.238573",
       "type": "PRODUCTION",
-      "technologies": [
-        "TypeScript",
-        "Python",
-        "Flask",
-        "PostgreSQL"
-      ],
+      "technologies": ["TypeScript", "Python", "Flask", "PostgreSQL"],
       "capabilities": [
         "Reporting",
         "Analytics",
@@ -726,9 +611,7 @@
       "foundation_value": 0.085,
       "priority": "HIGH",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -738,25 +621,14 @@
       "size_bytes": 446098,
       "last_modified": "2025-10-21T12:53:07.477007",
       "type": "PRODUCTION",
-      "technologies": [
-        "TypeScript",
-        "Python",
-        "React",
-        "Flask",
-        "Node.js"
-      ],
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
+      "technologies": ["TypeScript", "Python", "React", "Flask", "Node.js"],
+      "capabilities": ["Advanced Features", "Professional Tools"],
       "quantum_readiness": 85,
       "integration_potential": 74,
       "foundation_value": 0.057,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -787,9 +659,7 @@
       "foundation_value": 0.104,
       "priority": "CRITICAL",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -821,9 +691,7 @@
       "foundation_value": 0.112,
       "priority": "CRITICAL",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -844,19 +712,13 @@
         "Next.js",
         "Docker"
       ],
-      "capabilities": [
-        "Prototyping",
-        "Testing",
-        "Dev Environment"
-      ],
+      "capabilities": ["Prototyping", "Testing", "Dev Environment"],
       "quantum_readiness": 98,
       "integration_potential": 89,
       "foundation_value": 0.07,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -889,9 +751,7 @@
       "foundation_value": 0.112,
       "priority": "CRITICAL",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -901,25 +761,14 @@
       "size_bytes": 1788183,
       "last_modified": "2025-10-21T14:31:27.270515",
       "type": "PRODUCTION",
-      "technologies": [
-        "TypeScript",
-        "Vite",
-        "React",
-        "PostgreSQL",
-        "Node.js"
-      ],
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
+      "technologies": ["TypeScript", "Vite", "React", "PostgreSQL", "Node.js"],
+      "capabilities": ["Advanced Features", "Professional Tools"],
       "quantum_readiness": 95,
       "integration_potential": 82,
       "foundation_value": 0.07,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -936,18 +785,13 @@
         "Docker",
         "Node.js"
       ],
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
+      "capabilities": ["Advanced Features", "Professional Tools"],
       "quantum_readiness": 93,
       "integration_potential": 82,
       "foundation_value": 0.069,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -965,18 +809,13 @@
         "Node.js",
         "Drizzle"
       ],
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
+      "capabilities": ["Advanced Features", "Professional Tools"],
       "quantum_readiness": 90,
       "integration_potential": 78,
       "foundation_value": 0.063,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -997,18 +836,13 @@
         "Docker",
         "Drizzle"
       ],
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
+      "capabilities": ["Advanced Features", "Professional Tools"],
       "quantum_readiness": 98,
       "integration_potential": 86,
       "foundation_value": 0.076,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -1038,9 +872,7 @@
       "foundation_value": 0.096,
       "priority": "HIGH",
       "is_integrated": true,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -1070,9 +902,7 @@
       "foundation_value": 0.096,
       "priority": "HIGH",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -1091,18 +921,13 @@
         "Node.js",
         "Docker"
       ],
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
+      "capabilities": ["Advanced Features", "Professional Tools"],
       "quantum_readiness": 95,
       "integration_potential": 82,
       "foundation_value": 0.07,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -1119,19 +944,13 @@
         "FastAPI",
         "Flask"
       ],
-      "capabilities": [
-        "Budget Management",
-        "Tax Calculation",
-        "Mill Rate"
-      ],
+      "capabilities": ["Budget Management", "Tax Calculation", "Mill Rate"],
       "quantum_readiness": 85,
       "integration_potential": 81,
       "foundation_value": 0.055,
       "priority": "MEDIUM",
       "is_integrated": true,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -1141,22 +960,14 @@
       "size_bytes": 978377474,
       "last_modified": "2025-10-21T13:07:21.292761",
       "type": "PRODUCTION",
-      "technologies": [
-        "Python",
-        "Flask"
-      ],
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
+      "technologies": ["Python", "Flask"],
+      "capabilities": ["Advanced Features", "Professional Tools"],
       "quantum_readiness": 70,
       "integration_potential": 66,
       "foundation_value": 0.042,
       "priority": "LOW",
       "is_integrated": false,
-      "locations": [
-        "from_d"
-      ],
+      "locations": ["from_d"],
       "location_count": 1
     },
     {
@@ -1166,10 +977,7 @@
       "size_bytes": 9354,
       "last_modified": "2025-09-13T16:24:05.300781",
       "type": "ACTIVE",
-      "technologies": [
-        "Python",
-        "Docker"
-      ],
+      "technologies": ["Python", "Docker"],
       "capabilities": [],
       "quantum_readiness": 73,
       "integration_potential": 64,
@@ -1177,9 +985,7 @@
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1205,9 +1011,7 @@
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1238,9 +1042,7 @@
       "priority": "HIGH",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1250,26 +1052,15 @@
       "size_bytes": 93856760,
       "last_modified": "2025-09-13T08:36:44.679066",
       "type": "ACTIVE",
-      "technologies": [
-        "Python",
-        "Flask",
-        "PostgreSQL",
-        "FastAPI"
-      ],
-      "capabilities": [
-        "Budget Management",
-        "Tax Calculation",
-        "Mill Rate"
-      ],
+      "technologies": ["Python", "Flask", "PostgreSQL", "FastAPI"],
+      "capabilities": ["Budget Management", "Tax Calculation", "Mill Rate"],
       "quantum_readiness": 75,
       "integration_potential": 77,
       "foundation_value": 0.046,
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1279,27 +1070,15 @@
       "size_bytes": 15311412,
       "last_modified": "2025-09-13T18:50:54.261577",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "Vite",
-        "React",
-        "Node.js",
-        "Drizzle"
-      ],
-      "capabilities": [
-        "Data Hub",
-        "Web Portal",
-        "Citizen Services"
-      ],
+      "technologies": ["TypeScript", "Vite", "React", "Node.js", "Drizzle"],
+      "capabilities": ["Data Hub", "Web Portal", "Citizen Services"],
       "quantum_readiness": 90,
       "integration_potential": 81,
       "foundation_value": 0.058,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1309,12 +1088,7 @@
       "size_bytes": 124539728,
       "last_modified": "2025-09-13T08:38:47.656403",
       "type": "ACTIVE",
-      "technologies": [
-        "Python",
-        "Flask",
-        "PostgreSQL",
-        "FastAPI"
-      ],
+      "technologies": ["Python", "Flask", "PostgreSQL", "FastAPI"],
       "capabilities": [],
       "quantum_readiness": 75,
       "integration_potential": 68,
@@ -1322,9 +1096,7 @@
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1342,20 +1114,14 @@
         "Node.js",
         "Drizzle"
       ],
-      "capabilities": [
-        "Cap Rate Analysis",
-        "NOI Calculation",
-        "DCF Modeling"
-      ],
+      "capabilities": ["Cap Rate Analysis", "NOI Calculation", "DCF Modeling"],
       "quantum_readiness": 95,
       "integration_potential": 85,
       "foundation_value": 0.065,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1366,20 +1132,14 @@
       "last_modified": "unknown",
       "type": "ACTIVE",
       "technologies": [],
-      "capabilities": [
-        "Citizen Portal",
-        "Public Access",
-        "Self-Service"
-      ],
+      "capabilities": ["Citizen Portal", "Public Access", "Self-Service"],
       "quantum_readiness": 70,
       "integration_potential": 69,
       "foundation_value": 0.039,
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1389,26 +1149,15 @@
       "size_bytes": 200363631,
       "last_modified": "2025-09-15T00:41:46.409497",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "React",
-        "Docker",
-        "Node.js"
-      ],
-      "capabilities": [
-        "Service Routing",
-        "Load Balancing",
-        "API Gateway"
-      ],
+      "technologies": ["TypeScript", "React", "Docker", "Node.js"],
+      "capabilities": ["Service Routing", "Load Balancing", "API Gateway"],
       "quantum_readiness": 88,
       "integration_potential": 81,
       "foundation_value": 0.057,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1418,25 +1167,15 @@
       "size_bytes": 35168371,
       "last_modified": "2025-09-15T00:41:47.469461",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "React",
-        "Node.js"
-      ],
-      "capabilities": [
-        "Agriculture",
-        "Crop Analysis",
-        "Yield Prediction"
-      ],
+      "technologies": ["TypeScript", "React", "Node.js"],
+      "capabilities": ["Agriculture", "Crop Analysis", "Yield Prediction"],
       "quantum_readiness": 85,
       "integration_potential": 77,
       "foundation_value": 0.052,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1446,25 +1185,15 @@
       "size_bytes": 35160339,
       "last_modified": "2025-09-15T00:41:47.469461",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "React",
-        "Node.js"
-      ],
-      "capabilities": [
-        "Agriculture",
-        "Crop Analysis",
-        "Yield Prediction"
-      ],
+      "technologies": ["TypeScript", "React", "Node.js"],
+      "capabilities": ["Agriculture", "Crop Analysis", "Yield Prediction"],
       "quantum_readiness": 85,
       "integration_potential": 77,
       "foundation_value": 0.052,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1474,23 +1203,15 @@
       "size_bytes": 17524,
       "last_modified": "2025-09-13T08:38:53.906101",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript"
-      ],
-      "capabilities": [
-        "Parcel Management",
-        "Mapping",
-        "Spatial Analysis"
-      ],
+      "technologies": ["TypeScript"],
+      "capabilities": ["Parcel Management", "Mapping", "Spatial Analysis"],
       "quantum_readiness": 80,
       "integration_potential": 73,
       "foundation_value": 0.047,
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1501,19 +1222,14 @@
       "last_modified": "unknown",
       "type": "ACTIVE",
       "technologies": [],
-      "capabilities": [
-        "Plugin Discovery",
-        "Service Marketplace"
-      ],
+      "capabilities": ["Plugin Discovery", "Service Marketplace"],
       "quantum_readiness": 70,
       "integration_potential": 66,
       "foundation_value": 0.032,
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1523,25 +1239,15 @@
       "size_bytes": 68987376,
       "last_modified": "2025-09-15T00:40:52.118931",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "Python",
-        "React",
-        "Node.js"
-      ],
-      "capabilities": [
-        "AI Integration",
-        "Model Context Protocol"
-      ],
+      "technologies": ["TypeScript", "Python", "React", "Node.js"],
+      "capabilities": ["AI Integration", "Model Context Protocol"],
       "quantum_readiness": 85,
       "integration_potential": 74,
       "foundation_value": 0.044,
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1551,9 +1257,7 @@
       "size_bytes": 29672,
       "last_modified": "2025-09-13T08:38:54.238763",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript"
-      ],
+      "technologies": ["TypeScript"],
       "capabilities": [],
       "quantum_readiness": 80,
       "integration_potential": 64,
@@ -1561,9 +1265,7 @@
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1573,25 +1275,15 @@
       "size_bytes": 1676120,
       "last_modified": "2025-09-13T15:53:41.195079",
       "type": "ACTIVE",
-      "technologies": [
-        "Python",
-        "Flask",
-        "Docker",
-        "FastAPI"
-      ],
-      "capabilities": [
-        "Autonomous Operations",
-        "AI Agents"
-      ],
+      "technologies": ["Python", "Flask", "Docker", "FastAPI"],
+      "capabilities": ["Autonomous Operations", "AI Agents"],
       "quantum_readiness": 73,
       "integration_potential": 74,
       "foundation_value": 0.038,
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1601,12 +1293,7 @@
       "size_bytes": 127245768,
       "last_modified": "2025-09-13T08:39:16.065472",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "Python",
-        "Flask",
-        "PostgreSQL"
-      ],
+      "technologies": ["TypeScript", "Python", "Flask", "PostgreSQL"],
       "capabilities": [],
       "quantum_readiness": 85,
       "integration_potential": 68,
@@ -1614,9 +1301,7 @@
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1626,25 +1311,15 @@
       "size_bytes": 1074387313,
       "last_modified": "2025-09-15T00:41:46.409497",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "React",
-        "Node.js"
-      ],
-      "capabilities": [
-        "Offline Sync",
-        "Field Operations",
-        "Mobile"
-      ],
+      "technologies": ["TypeScript", "React", "Node.js"],
+      "capabilities": ["Offline Sync", "Field Operations", "Mobile"],
       "quantum_readiness": 85,
       "integration_potential": 77,
       "foundation_value": 0.052,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1673,9 +1348,7 @@
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1685,9 +1358,7 @@
       "size_bytes": 6453,
       "last_modified": "2025-09-14T22:22:41.008491",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript"
-      ],
+      "technologies": ["TypeScript"],
       "capabilities": [],
       "quantum_readiness": 80,
       "integration_potential": 64,
@@ -1695,9 +1366,7 @@
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1715,9 +1384,7 @@
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1727,10 +1394,7 @@
       "size_bytes": 7122,
       "last_modified": "2025-09-14T22:22:49.804657",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "PostgreSQL"
-      ],
+      "technologies": ["TypeScript", "PostgreSQL"],
       "capabilities": [],
       "quantum_readiness": 85,
       "integration_potential": 68,
@@ -1738,9 +1402,7 @@
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1750,25 +1412,15 @@
       "size_bytes": 349485629,
       "last_modified": "2025-09-13T09:13:38.228153",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "Python",
-        "PostgreSQL"
-      ],
-      "capabilities": [
-        "AI Assistant",
-        "Natural Language",
-        "Task Automation"
-      ],
+      "technologies": ["TypeScript", "Python", "PostgreSQL"],
+      "capabilities": ["AI Assistant", "Natural Language", "Task Automation"],
       "quantum_readiness": 85,
       "integration_potential": 77,
       "foundation_value": 0.052,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1778,25 +1430,15 @@
       "size_bytes": 5992257479,
       "last_modified": "2025-10-21T11:57:44.349658",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "Python",
-        "PostgreSQL"
-      ],
-      "capabilities": [
-        "CI/CD",
-        "Build Automation",
-        "Deployment"
-      ],
+      "technologies": ["TypeScript", "Python", "PostgreSQL"],
+      "capabilities": ["CI/CD", "Build Automation", "Deployment"],
       "quantum_readiness": 85,
       "integration_potential": 77,
       "foundation_value": 0.052,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1806,26 +1448,15 @@
       "size_bytes": 809185934,
       "last_modified": "2025-09-13T09:21:33.474760",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "Python",
-        "PostgreSQL"
-      ],
-      "capabilities": [
-        "Parcel Management",
-        "Mapping",
-        "Spatial Analysis"
-      ],
+      "technologies": ["TypeScript", "Python", "PostgreSQL"],
+      "capabilities": ["Parcel Management", "Mapping", "Spatial Analysis"],
       "quantum_readiness": 85,
       "integration_potential": 77,
       "foundation_value": 0.052,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono",
-        "d_drive"
-      ],
+      "locations": ["terrafusion_mono", "d_drive"],
       "location_count": 2
     },
     {
@@ -1845,20 +1476,14 @@
         "Node.js",
         "Drizzle"
       ],
-      "capabilities": [
-        "Cap Rate Analysis",
-        "NOI Calculation",
-        "DCF Modeling"
-      ],
+      "capabilities": ["Cap Rate Analysis", "NOI Calculation", "DCF Modeling"],
       "quantum_readiness": 95,
       "integration_potential": 85,
       "foundation_value": 0.065,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1868,23 +1493,15 @@
       "size_bytes": 27202,
       "last_modified": "2025-09-01T12:39:38.368602",
       "type": "ACTIVE",
-      "technologies": [
-        "Python"
-      ],
-      "capabilities": [
-        "Alerting",
-        "System Monitoring",
-        "Health Checks"
-      ],
+      "technologies": ["Python"],
+      "capabilities": ["Alerting", "System Monitoring", "Health Checks"],
       "quantum_readiness": 70,
       "integration_potential": 69,
       "foundation_value": 0.039,
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1903,19 +1520,14 @@
         "Docker",
         "Drizzle"
       ],
-      "capabilities": [
-        "Advanced Features",
-        "Professional Tools"
-      ],
+      "capabilities": ["Advanced Features", "Professional Tools"],
       "quantum_readiness": 98,
       "integration_potential": 86,
       "foundation_value": 0.059,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1925,25 +1537,15 @@
       "size_bytes": 2093983,
       "last_modified": "2025-09-13T08:39:49.321051",
       "type": "ACTIVE",
-      "technologies": [
-        "Python",
-        "FastAPI"
-      ],
-      "capabilities": [
-        "ETL",
-        "Data Synchronization",
-        "Integration"
-      ],
+      "technologies": ["Python", "FastAPI"],
+      "capabilities": ["ETL", "Data Synchronization", "Integration"],
       "quantum_readiness": 70,
       "integration_potential": 73,
       "foundation_value": 0.041,
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono",
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono", "terrafusion_mono"],
       "location_count": 2
     },
     {
@@ -1953,9 +1555,7 @@
       "size_bytes": 6453,
       "last_modified": "2025-04-30T10:39:20",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript"
-      ],
+      "technologies": ["TypeScript"],
       "capabilities": [],
       "quantum_readiness": 80,
       "integration_potential": 64,
@@ -1963,9 +1563,7 @@
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -1975,11 +1573,7 @@
       "size_bytes": 52901770,
       "last_modified": "2025-09-13T08:40:11.605901",
       "type": "ACTIVE",
-      "technologies": [
-        "Python",
-        "Flask",
-        "FastAPI"
-      ],
+      "technologies": ["Python", "Flask", "FastAPI"],
       "capabilities": [
         "Spatial Analysis",
         "Mapping",
@@ -1993,9 +1587,7 @@
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2005,11 +1597,7 @@
       "size_bytes": 8330215,
       "last_modified": "2025-09-13T08:40:15.191033",
       "type": "ACTIVE",
-      "technologies": [
-        "Python",
-        "Flask",
-        "FastAPI"
-      ],
+      "technologies": ["Python", "Flask", "FastAPI"],
       "capabilities": [],
       "quantum_readiness": 70,
       "integration_potential": 64,
@@ -2017,9 +1605,7 @@
       "priority": "LOW",
       "is_integrated": false,
       "monorepo_location": "apps",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2029,11 +1615,7 @@
       "size_bytes": 25565538,
       "last_modified": "2025-09-15T00:41:46.409497",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "React",
-        "Node.js"
-      ],
+      "technologies": ["TypeScript", "React", "Node.js"],
       "capabilities": [],
       "quantum_readiness": 85,
       "integration_potential": 68,
@@ -2042,9 +1624,7 @@
       "is_integrated": false,
       "monorepo_location": "packages",
       "is_shared_package": true,
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2054,16 +1634,8 @@
       "size_bytes": 94976348,
       "last_modified": "2025-09-15T00:41:47.469461",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "React",
-        "Node.js"
-      ],
-      "capabilities": [
-        "Agriculture",
-        "Crop Analysis",
-        "Yield Prediction"
-      ],
+      "technologies": ["TypeScript", "React", "Node.js"],
+      "capabilities": ["Agriculture", "Crop Analysis", "Yield Prediction"],
       "quantum_readiness": 85,
       "integration_potential": 77,
       "foundation_value": 0.052,
@@ -2071,9 +1643,7 @@
       "is_integrated": false,
       "monorepo_location": "packages",
       "is_shared_package": true,
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2083,10 +1653,7 @@
       "size_bytes": 52205,
       "last_modified": "2025-09-16T17:57:10.478219",
       "type": "ACTIVE",
-      "technologies": [
-        "React",
-        "Node.js"
-      ],
+      "technologies": ["React", "Node.js"],
       "capabilities": [],
       "quantum_readiness": 75,
       "integration_potential": 64,
@@ -2095,9 +1662,7 @@
       "is_integrated": false,
       "monorepo_location": "packages",
       "is_shared_package": true,
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2107,15 +1672,8 @@
       "size_bytes": 90681121,
       "last_modified": "2025-09-15T00:41:46.409497",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "React",
-        "Node.js"
-      ],
-      "capabilities": [
-        "AI Integration",
-        "Model Context Protocol"
-      ],
+      "technologies": ["TypeScript", "React", "Node.js"],
+      "capabilities": ["AI Integration", "Model Context Protocol"],
       "quantum_readiness": 85,
       "integration_potential": 74,
       "foundation_value": 0.044,
@@ -2123,9 +1681,7 @@
       "is_integrated": false,
       "monorepo_location": "packages",
       "is_shared_package": true,
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2135,11 +1691,7 @@
       "size_bytes": 62401934,
       "last_modified": "2025-09-15T00:40:52.405601",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "React",
-        "Node.js"
-      ],
+      "technologies": ["TypeScript", "React", "Node.js"],
       "capabilities": [],
       "quantum_readiness": 85,
       "integration_potential": 68,
@@ -2148,9 +1700,7 @@
       "is_integrated": false,
       "monorepo_location": "packages",
       "is_shared_package": true,
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2169,9 +1719,7 @@
       "is_integrated": false,
       "monorepo_location": "packages",
       "is_shared_package": true,
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2181,9 +1729,7 @@
       "size_bytes": 7080,
       "last_modified": "2025-09-13T08:40:20.939026",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript"
-      ],
+      "technologies": ["TypeScript"],
       "capabilities": [],
       "quantum_readiness": 80,
       "integration_potential": 64,
@@ -2192,9 +1738,7 @@
       "is_integrated": false,
       "monorepo_location": "packages",
       "is_shared_package": true,
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2204,9 +1748,7 @@
       "size_bytes": 49787,
       "last_modified": "2025-09-13T08:40:21.384594",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript"
-      ],
+      "technologies": ["TypeScript"],
       "capabilities": [],
       "quantum_readiness": 80,
       "integration_potential": 64,
@@ -2215,9 +1757,7 @@
       "is_integrated": false,
       "monorepo_location": "packages",
       "is_shared_package": true,
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2227,11 +1767,7 @@
       "size_bytes": 5164197,
       "last_modified": "2025-09-15T00:41:47.490162",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "React",
-        "Node.js"
-      ],
+      "technologies": ["TypeScript", "React", "Node.js"],
       "capabilities": [],
       "quantum_readiness": 85,
       "integration_potential": 68,
@@ -2240,9 +1776,7 @@
       "is_integrated": false,
       "monorepo_location": "packages",
       "is_shared_package": true,
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2261,20 +1795,14 @@
         "Node.js",
         "Drizzle"
       ],
-      "capabilities": [
-        "Cap Rate Analysis",
-        "NOI Calculation",
-        "DCF Modeling"
-      ],
+      "capabilities": ["Cap Rate Analysis", "NOI Calculation", "DCF Modeling"],
       "quantum_readiness": 90,
       "integration_potential": 81,
       "foundation_value": 0.058,
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "root",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2284,12 +1812,7 @@
       "size_bytes": 106769329,
       "last_modified": "2025-10-21T12:35:48.477716",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "Python",
-        "Flask",
-        "FastAPI"
-      ],
+      "technologies": ["TypeScript", "Python", "Flask", "FastAPI"],
       "capabilities": [
         "Spatial Analysis",
         "Mapping",
@@ -2303,9 +1826,7 @@
       "priority": "MEDIUM",
       "is_integrated": false,
       "monorepo_location": "root",
-      "locations": [
-        "terrafusion_mono"
-      ],
+      "locations": ["terrafusion_mono"],
       "location_count": 1
     },
     {
@@ -2315,25 +1836,14 @@
       "size_bytes": 11558799,
       "last_modified": "2025-08-06T10:49:44",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "Vite",
-        "React",
-        "Tauri",
-        "Node.js"
-      ],
-      "capabilities": [
-        "Autonomous Operations",
-        "AI Agents"
-      ],
+      "technologies": ["TypeScript", "Vite", "React", "Tauri", "Node.js"],
+      "capabilities": ["Autonomous Operations", "AI Agents"],
       "quantum_readiness": 90,
       "integration_potential": 78,
       "foundation_value": 0.049,
       "priority": "LOW",
       "is_integrated": false,
-      "locations": [
-        "d_drive"
-      ],
+      "locations": ["d_drive"],
       "location_count": 1
     },
     {
@@ -2343,13 +1853,7 @@
       "size_bytes": 531437,
       "last_modified": "2025-08-06T10:49:54",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "Vite",
-        "React",
-        "Tauri",
-        "Node.js"
-      ],
+      "technologies": ["TypeScript", "Vite", "React", "Tauri", "Node.js"],
       "capabilities": [
         "Process Automation",
         "Workflow Engine",
@@ -2360,9 +1864,7 @@
       "foundation_value": 0.058,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "d_drive"
-      ],
+      "locations": ["d_drive"],
       "location_count": 1
     },
     {
@@ -2372,25 +1874,14 @@
       "size_bytes": 7900732,
       "last_modified": "2025-08-06T10:46:46",
       "type": "ACTIVE",
-      "technologies": [
-        "TypeScript",
-        "React",
-        "Vite",
-        "Node.js"
-      ],
-      "capabilities": [
-        "Budget Management",
-        "Tax Calculation",
-        "Mill Rate"
-      ],
+      "technologies": ["TypeScript", "React", "Vite", "Node.js"],
+      "capabilities": ["Budget Management", "Tax Calculation", "Mill Rate"],
       "quantum_readiness": 90,
       "integration_potential": 81,
       "foundation_value": 0.058,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "d_drive"
-      ],
+      "locations": ["d_drive"],
       "location_count": 1
     },
     {
@@ -2410,19 +1901,13 @@
         "Docker",
         "Drizzle"
       ],
-      "capabilities": [
-        "CI/CD",
-        "Build Automation",
-        "Deployment"
-      ],
+      "capabilities": ["CI/CD", "Build Automation", "Deployment"],
       "quantum_readiness": 93,
       "integration_potential": 85,
       "foundation_value": 0.063,
       "priority": "MEDIUM",
       "is_integrated": false,
-      "locations": [
-        "d_drive"
-      ],
+      "locations": ["d_drive"],
       "location_count": 1
     }
   ]

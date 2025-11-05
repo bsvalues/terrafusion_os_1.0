@@ -1,448 +1,446 @@
 {
-	"TRE": "XML_DATA_CONTENT",
-	"Source": [
-		"STDI-0002-2 v2021.1, Appendix F: XML_DATA_CONTENT DES v1.0"
-	],
-	"Name": "XML_DATA_CONTENT DES",
-	"Description": "The ability to place XML-formatted data/metadata within NSIF/NITF files is a needed function within the Geospatial-Intelligence community. The NSIF and NITF standards allow for inclusion of additional data types via a data structure known as the DES This field contains properties specific to the XML DATA CONTENT data extension segment (DES).",
-	"Size": 25,
-	"Fields": {
-		"DESVER": {
-			"Name": "Data Definition Version",
-			"Description": "This field contains the version number of the Tag.",
-			"Size": 2,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DECLAS": {
-			"Name": "Data Extension File Security Classification",
-			"Description": "This field contains the classification level of the DES.",
-			"Size": 1,
-			"Format": "ECS-A",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": {
-						"T": "Top Secret",
-						"S": "Secret",
-						"C": "Confidential",
-						"R": "Restricted",
-						"U": "Unclassified"
-					}
-				}
-			]
-		},
-		"DESCLSY": {
-			"Name": "DES Security Classification System",
-			"Description": "The classification system used for this DES.",
-			"Size": 2,
-			"Format": "BCS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESCODE": {
-			"Name": "DES Codewords",
-			"Description": "This field contains codewords used for XML DES.",
-			"Size": 11,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESCTLH": {
-			"Name": "DES Control and Handling",
-			"Description": "This field contains control and handling information for XML DES.",
-			"Size": 2,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESREL": {
-			"Name": "DES Release",
-			"Description": "This field contains releasing instructions for XML DES.",
-			"Size": 20,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESDCTP": {
-			"Name": "Declassification Type",
-			"Description": "This field contains declassification type information for XML DES.",
-			"Size": 2,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESDCDT": {
-			"Name": "Declassification Date",
-			"Description": "This field contains declassification date for XML DES.",
-			"Size": 8,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Date"
-				}
-			]
-		},
-		"DESDCXM": {
-			"Name": "DES Declassification Exemption",
-			"Description": "This field contains declassification exemption info for XML DES.",
-			"Size": 4,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESDG": {
-			"Name": "DES Downgrade",
-			"Description": "This field contains downgrade info for XML DES.",
-			"Size": 1,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESDGDT": {
-			"Name": "DES Downgrade Date",
-			"Description": "This field contains the downgrade date for XML DES.",
-			"Size": 8,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Date"
-				}
-			]
-		},
-		"DESCLTX": {
-			"Name": "DES Classification Text",
-			"Description": "This field contains classification text for the XML DES.",
-			"Size": 43,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESCATP": {
-			"Name": "DES Classification Authority Type",
-			"Description": "This field contains classification authority type info for XML DES.",
-			"Size": 1,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESCAUT": {
-			"Name": "DES Classification Authority",
-			"Description": "This field contains classification authority info for XML DES.",
-			"Size": 40,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESCRSN": {
-			"Name": "DES Classification Reason",
-			"Description": "This field contains the classification reason for the XML DES.",
-			"Size": 1,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESSRDT": {
-			"Name": "DES Security Source Date",
-			"Description": "This field contains the security source date for the XML DES.",
-			"Size": 8,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Date"
-				}
-			]
-		},
-		"DESCTLN": {
-			"Name": "DES Security Control Number",
-			"Description": "This field contains the security control number for the XML DES.",
-			"Size": 15,
-			"Format": "ECS-A",
-			"Type": "<R>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESSHL": {
-			"Name": "DES User-defined Subheader Length",
-			"Description": "This field contains the number of bytes in the field DESSHF.",
-			"Size": 4,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": {
-						"0000": "User-defined subheader field is not in use.",
-						"0005": "User-defined subheader field DESCRC only.",
-						"0283": "User-defined subheader fields DESCRC through DESSHTN included.",
-						"0773": "Complete inclusion of all user-defined subheader subfields"
-					}
-				}
-			]
-		},
-		"DESCRC": {
-			"Name": "Cyclic redundancy Check",
-			"Description": "This field contains the calculated CRC value for the content of the DESDATA field.",
-			"Size": 5,
-			"Format": "BCS-A",
-			"Type": "<C>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": 0,
-					"Max": 65535
-				},
-				{
-					"Type": "Value",
-					"Values": {
-						"99999": "CRC is not calculated."
-					}
-				}
-			]
-		},
-		"DESSHFT": {
-			"Name": "XML File Type",
-			"Description": "The data in this field represents the XML file type (e.g. XSD, XML, DTD, XSL, and XSLT).",
-			"Size": 8,
-			"Format": "BCS-A",
-			"Type": "C",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESSHDT": {
-			"Name": "Date and Time",
-			"Description": "This field contains the time (UTC)(Zulu) of the XML file's origination in the format YYYY-MM-DDThh:mm:ssZ.",
-			"Size": 20,
-			"Format": "BCS-A",
-			"Type": "C",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "DateTime"
-				}
-			]
-		},
-		"DESSHRP": {
-			"Name": "Responsible Party - Organization Identifier",
-			"Description": "This field contains the identification of the organization responsible for the content of the XML DES.",
-			"Size": 40,
-			"Format": "U8",
-			"Type": "C",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESSHSI": {
-			"Name": "Specification Identifier",
-			"Description": "This field contains the name of the specification used for the XML data content.",
-			"Size": 60,
-			"Format": "U8",
-			"Type": "C",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESSHSV": {
-			"Name": "Specification Version",
-			"Description": "This field contains the version or edition of the specification.",
-			"Size": 10,
-			"Format": "BCS-A",
-			"Type": "C",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESSHSD": {
-			"Name": "Specification Date",
-			"Description": "This field contains the version or edition date for the specification used for the XML DES.",
-			"Size": 20,
-			"Format": "BCS-A",
-			"Type": "C",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "DateTime"
-				}
-			]
-		},
-		"DESSHTN": {
-			"Name": "Target Namespace",
-			"Description": "This field contains the identification of the target namespace, if any, designated within the XML data content (e.g. http://www.w3.org/2001/XMLSchema.",
-			"Size": 120,
-			"Format": "BCS-A",
-			"Type": "<C>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "DateTime"
-				}
-			]
-		},
-		"DESSHLPG": {
-			"Name": "Location - Polygon",
-			"Description": "This field contains a five-point boundary enclosing the area applicable to the DES, expressed as the closed set of coordinates of the polygon (last point replicates the first point).",
-			"Size": 125,
-			"Format": "BCS-A",
-			"Type": "<C>",
-			"Units": [ "degrees" ],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESSHLPT": {
-			"Name": "Location - Point",
-			"Description": "This field contains a single geographic point applicable to the XML DES.",
-			"Size": 25,
-			"Format": "BCS-A",
-			"Type": "<C>",
-			"Units": [ "degrees" ],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESSHLI": {
-			"Name": "Location - Identifier",
-			"Description": "This field contains the identifier used to represent a geographic area.",
-			"Size": 20,
-			"Format": "BCS-A",
-			"Type": "<C>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESSHLIN": {
-			"Name": "Location Identifier Namespace URI",
-			"Description": "This field contains the URI for the namespace where the location identifier is described (e.g. https://nsgreg.nga.mil/genc/discovery).",
-			"Size": 120,
-			"Format": "BCS-A",
-			"Type": "<C>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESSHABS": {
-			"Name": "XML DATA DES Abstract",
-			"Description": "This field contains a brief narrative summary of the content in the XML DES.",
-			"Size": 200,
-			"Format": "U8",
-			"Type": "<C>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"DESDATA": {
-			"Name": "User-defined data field",
-			"Description": "This field shall contain the XML data.  The length of this field shall not cause any other NSIF/NITF field length limits to be exceeded.",
-			"Size": -1,
-			"Format": "BCS-A",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		}
-	}
+  "TRE": "XML_DATA_CONTENT",
+  "Source": ["STDI-0002-2 v2021.1, Appendix F: XML_DATA_CONTENT DES v1.0"],
+  "Name": "XML_DATA_CONTENT DES",
+  "Description": "The ability to place XML-formatted data/metadata within NSIF/NITF files is a needed function within the Geospatial-Intelligence community. The NSIF and NITF standards allow for inclusion of additional data types via a data structure known as the DES This field contains properties specific to the XML DATA CONTENT data extension segment (DES).",
+  "Size": 25,
+  "Fields": {
+    "DESVER": {
+      "Name": "Data Definition Version",
+      "Description": "This field contains the version number of the Tag.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DECLAS": {
+      "Name": "Data Extension File Security Classification",
+      "Description": "This field contains the classification level of the DES.",
+      "Size": 1,
+      "Format": "ECS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "T": "Top Secret",
+            "S": "Secret",
+            "C": "Confidential",
+            "R": "Restricted",
+            "U": "Unclassified"
+          }
+        }
+      ]
+    },
+    "DESCLSY": {
+      "Name": "DES Security Classification System",
+      "Description": "The classification system used for this DES.",
+      "Size": 2,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESCODE": {
+      "Name": "DES Codewords",
+      "Description": "This field contains codewords used for XML DES.",
+      "Size": 11,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESCTLH": {
+      "Name": "DES Control and Handling",
+      "Description": "This field contains control and handling information for XML DES.",
+      "Size": 2,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESREL": {
+      "Name": "DES Release",
+      "Description": "This field contains releasing instructions for XML DES.",
+      "Size": 20,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESDCTP": {
+      "Name": "Declassification Type",
+      "Description": "This field contains declassification type information for XML DES.",
+      "Size": 2,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESDCDT": {
+      "Name": "Declassification Date",
+      "Description": "This field contains declassification date for XML DES.",
+      "Size": 8,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Date"
+        }
+      ]
+    },
+    "DESDCXM": {
+      "Name": "DES Declassification Exemption",
+      "Description": "This field contains declassification exemption info for XML DES.",
+      "Size": 4,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESDG": {
+      "Name": "DES Downgrade",
+      "Description": "This field contains downgrade info for XML DES.",
+      "Size": 1,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESDGDT": {
+      "Name": "DES Downgrade Date",
+      "Description": "This field contains the downgrade date for XML DES.",
+      "Size": 8,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Date"
+        }
+      ]
+    },
+    "DESCLTX": {
+      "Name": "DES Classification Text",
+      "Description": "This field contains classification text for the XML DES.",
+      "Size": 43,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESCATP": {
+      "Name": "DES Classification Authority Type",
+      "Description": "This field contains classification authority type info for XML DES.",
+      "Size": 1,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESCAUT": {
+      "Name": "DES Classification Authority",
+      "Description": "This field contains classification authority info for XML DES.",
+      "Size": 40,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESCRSN": {
+      "Name": "DES Classification Reason",
+      "Description": "This field contains the classification reason for the XML DES.",
+      "Size": 1,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESSRDT": {
+      "Name": "DES Security Source Date",
+      "Description": "This field contains the security source date for the XML DES.",
+      "Size": 8,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Date"
+        }
+      ]
+    },
+    "DESCTLN": {
+      "Name": "DES Security Control Number",
+      "Description": "This field contains the security control number for the XML DES.",
+      "Size": 15,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESSHL": {
+      "Name": "DES User-defined Subheader Length",
+      "Description": "This field contains the number of bytes in the field DESSHF.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "0000": "User-defined subheader field is not in use.",
+            "0005": "User-defined subheader field DESCRC only.",
+            "0283": "User-defined subheader fields DESCRC through DESSHTN included.",
+            "0773": "Complete inclusion of all user-defined subheader subfields"
+          }
+        }
+      ]
+    },
+    "DESCRC": {
+      "Name": "Cyclic redundancy Check",
+      "Description": "This field contains the calculated CRC value for the content of the DESDATA field.",
+      "Size": 5,
+      "Format": "BCS-A",
+      "Type": "<C>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 65535
+        },
+        {
+          "Type": "Value",
+          "Values": {
+            "99999": "CRC is not calculated."
+          }
+        }
+      ]
+    },
+    "DESSHFT": {
+      "Name": "XML File Type",
+      "Description": "The data in this field represents the XML file type (e.g. XSD, XML, DTD, XSL, and XSLT).",
+      "Size": 8,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESSHDT": {
+      "Name": "Date and Time",
+      "Description": "This field contains the time (UTC)(Zulu) of the XML file's origination in the format YYYY-MM-DDThh:mm:ssZ.",
+      "Size": 20,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "DateTime"
+        }
+      ]
+    },
+    "DESSHRP": {
+      "Name": "Responsible Party - Organization Identifier",
+      "Description": "This field contains the identification of the organization responsible for the content of the XML DES.",
+      "Size": 40,
+      "Format": "U8",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESSHSI": {
+      "Name": "Specification Identifier",
+      "Description": "This field contains the name of the specification used for the XML data content.",
+      "Size": 60,
+      "Format": "U8",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESSHSV": {
+      "Name": "Specification Version",
+      "Description": "This field contains the version or edition of the specification.",
+      "Size": 10,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESSHSD": {
+      "Name": "Specification Date",
+      "Description": "This field contains the version or edition date for the specification used for the XML DES.",
+      "Size": 20,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "DateTime"
+        }
+      ]
+    },
+    "DESSHTN": {
+      "Name": "Target Namespace",
+      "Description": "This field contains the identification of the target namespace, if any, designated within the XML data content (e.g. http://www.w3.org/2001/XMLSchema.",
+      "Size": 120,
+      "Format": "BCS-A",
+      "Type": "<C>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "DateTime"
+        }
+      ]
+    },
+    "DESSHLPG": {
+      "Name": "Location - Polygon",
+      "Description": "This field contains a five-point boundary enclosing the area applicable to the DES, expressed as the closed set of coordinates of the polygon (last point replicates the first point).",
+      "Size": 125,
+      "Format": "BCS-A",
+      "Type": "<C>",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESSHLPT": {
+      "Name": "Location - Point",
+      "Description": "This field contains a single geographic point applicable to the XML DES.",
+      "Size": 25,
+      "Format": "BCS-A",
+      "Type": "<C>",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESSHLI": {
+      "Name": "Location - Identifier",
+      "Description": "This field contains the identifier used to represent a geographic area.",
+      "Size": 20,
+      "Format": "BCS-A",
+      "Type": "<C>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESSHLIN": {
+      "Name": "Location Identifier Namespace URI",
+      "Description": "This field contains the URI for the namespace where the location identifier is described (e.g. https://nsgreg.nga.mil/genc/discovery).",
+      "Size": 120,
+      "Format": "BCS-A",
+      "Type": "<C>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESSHABS": {
+      "Name": "XML DATA DES Abstract",
+      "Description": "This field contains a brief narrative summary of the content in the XML DES.",
+      "Size": 200,
+      "Format": "U8",
+      "Type": "<C>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DESDATA": {
+      "Name": "User-defined data field",
+      "Description": "This field shall contain the XML data.  The length of this field shall not cause any other NSIF/NITF field length limits to be exceeded.",
+      "Size": -1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    }
+  }
 }

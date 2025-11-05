@@ -40,7 +40,6 @@
     main:16: note:     def sample(self, fraction: float, seed: Optional[int] = ...) -> DataFrame
     main:16: note:     def sample(self, withReplacement: Optional[bool], fraction: float, seed: Optional[int] = ...) -> DataFrame
 
-
 - case: selectColumns
   main: |
     from pyspark.sql import SparkSession
@@ -55,7 +54,6 @@
     df.select([col("name"), col("age")])
 
     df.select(["name", col("age")])  # E: Argument 1 to "select" of "DataFrame" has incompatible type "List[object]"; expected "Union[List[Column], List[str]]"  [arg-type]
-
 
 - case: groupBy
   main: |
@@ -73,7 +71,6 @@
     df.groupby([col("name"), col("age")])
     df.groupBy(["name", col("age")])  # E: Argument 1 to "groupBy" of "DataFrame" has incompatible type "List[object]"; expected "Union[List[Column], List[str]]"  [arg-type]
 
-
 - case: rollup
   main: |
     from pyspark.sql import SparkSession
@@ -90,7 +87,6 @@
 
     df.rollup(["name", col("age")])  # E: Argument 1 to "rollup" of "DataFrame" has incompatible type "List[object]"; expected "Union[List[Column], List[str]]"  [arg-type]
 
-
 - case: cube
   main: |
     from pyspark.sql import SparkSession
@@ -106,7 +102,6 @@
 
 
     df.cube(["name", col("age")])  # E: Argument 1 to "cube" of "DataFrame" has incompatible type "List[object]"; expected "Union[List[Column], List[str]]"  [arg-type]
-
 
 - case: dropColumns
   main: |
@@ -126,7 +121,6 @@
     main:10: note: Possible overload variants:
     main:10: note:     def drop(self, cols: Union[Column, str]) -> DataFrame
     main:10: note:     def drop(self, *cols: str) -> DataFrame
-
 
 - case: fillNullValues
   main: |

@@ -1,11 +1,11 @@
 {
   "SensorName": "WorldView-2",
-  "PanWeights": [ 0.39, 0.23, 0.21, 0.17 ],
+  "PanWeights": [0.39, 0.23, 0.21, 0.17],
   "Properties": {
-    "BandDefinitionKeyword" : "WorldView-2",
-    "BandDefinitionFriendlyName" : "WORLDVIEW-2_8BANDS",
-    "MsToPanWeightsGramSchmidt" : "0.39 0.23 0.21 0.17",
-    "MsToPanWeightsEsri" : "0.95 0.7  0.5  1.0"
+    "BandDefinitionKeyword": "WorldView-2",
+    "BandDefinitionFriendlyName": "WORLDVIEW-2_8BANDS",
+    "MsToPanWeightsGramSchmidt": "0.39 0.23 0.21 0.17",
+    "MsToPanWeightsEsri": "0.95 0.7  0.5  1.0"
   },
   "Bands": {
     "Pan": [

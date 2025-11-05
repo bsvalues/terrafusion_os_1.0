@@ -1,7 +1,7 @@
 ## Kibana Helm chart values for TerraFusionPro
 
 # Elasticsearch connection
-elasticsearchHosts: "http://elasticsearch-master:9200"
+elasticsearchHosts: 'http://elasticsearch-master:9200'
 
 # Kibana replica count for availability
 replicas: 2
@@ -9,27 +9,27 @@ replicas: 2
 # Resource limits
 resources:
   requests:
-    cpu: "250m"
-    memory: "512Mi"
+    cpu: '250m'
+    memory: '512Mi'
   limits:
-    cpu: "500m"
-    memory: "1Gi"
+    cpu: '500m'
+    memory: '1Gi'
 
 # Security settings
 extraEnvs:
-  - name: "ELASTICSEARCH_USERNAME"
-    value: "kibana"
-  - name: "ELASTICSEARCH_PASSWORD"
+  - name: 'ELASTICSEARCH_USERNAME'
+    value: 'kibana'
+  - name: 'ELASTICSEARCH_PASSWORD'
     valueFrom:
       secretKeyRef:
         name: kibana-credentials
         key: password
-  - name: "XPACK_SECURITY_ENABLED"
-    value: "true"
-  - name: "XPACK_REPORTING_ENABLED"
-    value: "true"
-  - name: "XPACK_MONITORING_ENABLED"
-    value: "true"
+  - name: 'XPACK_SECURITY_ENABLED'
+    value: 'true'
+  - name: 'XPACK_REPORTING_ENABLED'
+    value: 'true'
+  - name: 'XPACK_MONITORING_ENABLED'
+    value: 'true'
 
 # Default Kibana configuration
 kibanaConfig:
@@ -44,9 +44,9 @@ kibanaConfig:
     xpack.reporting.capture.browser.chromium.disableSandbox: true
     xpack.security.enabled: true
     xpack.spaces.enabled: true
-    
+
 # Health check settings
-healthCheckPath: "/app/kibana"
+healthCheckPath: '/app/kibana'
 livenessProbe:
   initialDelaySeconds: 60
   periodSeconds: 30
@@ -58,13 +58,13 @@ readinessProbe:
 service:
   type: ClusterIP
   port: 5601
-  
+
 # Ingress configuration
 ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
     cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
     - host: kibana.terrafusionpro.com

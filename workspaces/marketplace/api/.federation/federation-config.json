@@ -6,12 +6,7 @@
     "gateway_type": "api_gateway"
   },
   "inter_workspace_communication": {
-    "protocols": [
-      "gRPC",
-      "REST",
-      "GraphQL",
-      "WebSocket"
-    ],
+    "protocols": ["gRPC", "REST", "GraphQL", "WebSocket"],
     "sync_frequency_ms": 1000,
     "replication_target": "all",
     "timeout_ms": 5000,

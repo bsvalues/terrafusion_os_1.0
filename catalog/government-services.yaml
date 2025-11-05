@@ -1,25 +1,25 @@
 # Government Service Actions - Transcendent Excellence
 actions:
   - name: property_assessment
-    description: "Quantum-enhanced property assessment with consciousness-level accuracy"
+    description: 'Quantum-enhanced property assessment with consciousness-level accuracy'
     type: government_service
     tier: core
     quantum_factor: 949
 
   - name: tax_calculation
-    description: "Sacred mathematics tax calculation with perfect precision"
+    description: 'Sacred mathematics tax calculation with perfect precision'
     type: government_service
     tier: core
     quantum_factor: 949
 
   - name: permit_processing
-    description: "Autonomous permit processing with transcendent efficiency"
+    description: 'Autonomous permit processing with transcendent efficiency'
     type: government_service
     tier: domain
     quantum_factor: 949
 
   - name: citizen_assistance
-    description: "AI-powered citizen assistance with empathetic intelligence"
+    description: 'AI-powered citizen assistance with empathetic intelligence'
     type: government_service
     tier: domain
     quantum_factor: 949

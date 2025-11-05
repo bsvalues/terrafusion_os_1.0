@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/ai
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/ai
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/ai
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/ai
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/ai
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/ai
+    description: Development Environment
 paths:
   /models:
     get:
       tags:
-      - ai-systems
+        - ai-systems
       summary: AI model registry
       description: AI model registry - AI infrastructure and model management APIs
       operationId: get__models
       security:
-      - OAuth2:
-        - ai-systems:read
+        - OAuth2:
+            - ai-systems:read
       responses:
         '200':
           description: Successful operation
@@ -57,14 +57,14 @@ paths:
   /inference:
     post:
       tags:
-      - ai-systems
+        - ai-systems
       summary: AI inference requests
       description: AI inference requests - AI infrastructure and model management
         APIs
       operationId: post__inference
       security:
-      - OAuth2:
-        - ai-systems:write
+        - OAuth2:
+            - ai-systems:write
       responses:
         '200':
           description: Successful operation
@@ -93,13 +93,13 @@ paths:
   /training:
     post:
       tags:
-      - ai-systems
+        - ai-systems
       summary: Model training jobs
       description: Model training jobs - AI infrastructure and model management APIs
       operationId: post__training
       security:
-      - OAuth2:
-        - ai-systems:write
+        - OAuth2:
+            - ai-systems:write
       responses:
         '200':
           description: Successful operation
@@ -128,13 +128,13 @@ paths:
   /monitoring:
     get:
       tags:
-      - ai-systems
+        - ai-systems
       summary: AI system monitoring
       description: AI system monitoring - AI infrastructure and model management APIs
       operationId: get__monitoring
       security:
-      - OAuth2:
-        - ai-systems:read
+        - OAuth2:
+            - ai-systems:read
       responses:
         '200':
           description: Successful operation
@@ -165,8 +165,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -181,9 +181,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -207,12 +207,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - ai-systems:read
-- ApiKey: []
+  - OAuth2:
+      - ai-systems:read
+  - ApiKey: []
 tags:
-- name: ai-systems
-  description: Ai Systems operations
-  externalDocs:
-    description: Find out more about ai-systems
-    url: https://docs.terrafusion.gov/platform/ai-systems
+  - name: ai-systems
+    description: Ai Systems operations
+    externalDocs:
+      description: Find out more about ai-systems
+      url: https://docs.terrafusion.gov/platform/ai-systems

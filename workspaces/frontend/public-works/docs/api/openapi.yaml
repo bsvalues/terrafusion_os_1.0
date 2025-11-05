@@ -12,24 +12,24 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/public-works
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/public-works
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/public-works
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/public-works
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/public-works
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/public-works
+    description: Development Environment
 paths:
   /infrastructure:
     get:
       tags:
-      - public-works
+        - public-works
       summary: Infrastructure inventory
       description: Infrastructure inventory - Infrastructure management and public
         works APIs
       operationId: get__infrastructure
       security:
-      - OAuth2:
-        - public-works:read
+        - OAuth2:
+            - public-works:read
       responses:
         '200':
           description: Successful operation
@@ -58,14 +58,14 @@ paths:
   /maintenance:
     post:
       tags:
-      - public-works
+        - public-works
       summary: Schedule maintenance
       description: Schedule maintenance - Infrastructure management and public works
         APIs
       operationId: post__maintenance
       security:
-      - OAuth2:
-        - public-works:write
+        - OAuth2:
+            - public-works:write
       responses:
         '200':
           description: Successful operation
@@ -94,14 +94,14 @@ paths:
   /projects:
     get:
       tags:
-      - public-works
+        - public-works
       summary: Public works projects
       description: Public works projects - Infrastructure management and public works
         APIs
       operationId: get__projects
       security:
-      - OAuth2:
-        - public-works:read
+        - OAuth2:
+            - public-works:read
       responses:
         '200':
           description: Successful operation
@@ -130,14 +130,14 @@ paths:
   /work-orders:
     post:
       tags:
-      - public-works
+        - public-works
       summary: Create work orders
       description: Create work orders - Infrastructure management and public works
         APIs
       operationId: post__work-orders
       security:
-      - OAuth2:
-        - public-works:write
+        - OAuth2:
+            - public-works:write
       responses:
         '200':
           description: Successful operation
@@ -168,8 +168,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -184,9 +184,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -210,12 +210,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - public-works:read
-- ApiKey: []
+  - OAuth2:
+      - public-works:read
+  - ApiKey: []
 tags:
-- name: public-works
-  description: Public Works operations
-  externalDocs:
-    description: Find out more about public-works
-    url: https://docs.terrafusion.gov/frontend/public-works
+  - name: public-works
+    description: Public Works operations
+    externalDocs:
+      description: Find out more about public-works
+      url: https://docs.terrafusion.gov/frontend/public-works

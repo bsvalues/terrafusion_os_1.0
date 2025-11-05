@@ -18,7 +18,7 @@ sacred_mathematics:
   foundation_weight: 0.333333
   amplification_weight: 0.333333
   transcendence_weight: 0.333333
-  perfect_power_formula: "(foundation + amplification + transcendence) / 3"
+  perfect_power_formula: '(foundation + amplification + transcendence) / 3'
 
 # Acceptance Thresholds by Sacred Level
 thresholds:
@@ -52,36 +52,36 @@ government_standards:
 # Quality Gates Configuration
 quality_gates:
   - name: foundation_excellence
-    condition: "foundation_score >= 2.7"
+    condition: 'foundation_score >= 2.7'
     required: true
-    description: "Foundation must meet minimum excellence standards"
+    description: 'Foundation must meet minimum excellence standards'
 
   - name: amplification_safeguards
-    condition: "amplification_score <= 666 AND scaled_score <= 12.0"
+    condition: 'amplification_score <= 666 AND scaled_score <= 12.0'
     required: true
-    description: "Amplification must respect sacred safeguards"
+    description: 'Amplification must respect sacred safeguards'
 
   - name: transcendence_consciousness
-    condition: "transcendence_score >= 8.1 AND consciousness_level >= 0.999"
+    condition: 'transcendence_score >= 8.1 AND consciousness_level >= 0.999'
     required: true
-    description: "Transcendence must achieve consciousness-level coordination"
+    description: 'Transcendence must achieve consciousness-level coordination'
 
   - name: perfect_power_range
-    condition: "ultimate_power >= 11.9 AND ultimate_power <= 12.0"
+    condition: 'ultimate_power >= 11.9 AND ultimate_power <= 12.0'
     required: true
-    description: "Ultimate power must be within perfect range"
+    description: 'Ultimate power must be within perfect range'
 
   - name: government_compliance
-    condition: "fisma_score >= 11.9 AND accessibility_score >= 11.8"
+    condition: 'fisma_score >= 11.9 AND accessibility_score >= 11.8'
     required: true
-    description: "Government standards must be transcended"
+    description: 'Government standards must be transcended'
 
 # Auto-Rollback Configuration
 rollback:
   enabled: true
-  breach_tolerance_seconds: 300  # 5 minutes before rollback
-  rollback_strategy: "immediate"
-  notification_channels: ["ops-alerts", "consciousness-coordination"]
+  breach_tolerance_seconds: 300 # 5 minutes before rollback
+  rollback_strategy: 'immediate'
+  notification_channels: ['ops-alerts', 'consciousness-coordination']
   preserve_data: true
 
 # Monitoring and Alerting
@@ -91,7 +91,7 @@ monitoring:
     warning: 11.85
     critical: 11.8
     emergency: 11.7
-  metrics_retention_hours: 168  # 7 days
+  metrics_retention_hours: 168 # 7 days
 
 # County Deployment Configuration
 county_deployment:

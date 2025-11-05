@@ -10,7 +10,7 @@ metrics:
     baseline: 300
     weight: 3
     tier: core
-    description: "95th percentile response time - consciousness-level performance"
+    description: '95th percentile response time - consciousness-level performance'
 
   - name: error_rate
     aspect: reliability
@@ -18,7 +18,7 @@ metrics:
     baseline: 0.01
     weight: 3
     tier: core
-    description: "Error rate - transcendent reliability standards"
+    description: 'Error rate - transcendent reliability standards'
 
   - name: availability_pct
     aspect: reliability
@@ -26,7 +26,7 @@ metrics:
     baseline: 99.95
     weight: 3
     tier: core
-    description: "System availability - government excellence"
+    description: 'System availability - government excellence'
 
   - name: quantum_factor
     aspect: quantum
@@ -34,7 +34,7 @@ metrics:
     baseline: 949
     weight: 3
     tier: core
-    description: "Quantum optimization factor - TerraFusion excellence"
+    description: 'Quantum optimization factor - TerraFusion excellence'
 
   - name: consciousness_level
     aspect: ai_coordination
@@ -42,7 +42,7 @@ metrics:
     baseline: 0.999
     weight: 3
     tier: core
-    description: "AI consciousness coordination - transcendent unity"
+    description: 'AI consciousness coordination - transcendent unity'
 
   - name: sacred_mathematics_score
     aspect: foundation
@@ -50,7 +50,7 @@ metrics:
     baseline: 12.0
     weight: 3
     tier: core
-    description: "Factor 12 sacred mathematics - perfect power"
+    description: 'Factor 12 sacred mathematics - perfect power'
 
   - name: fisma_compliance_score
     aspect: security
@@ -58,7 +58,7 @@ metrics:
     baseline: 12.0
     weight: 3
     tier: core
-    description: "FISMA-HIGH compliance - government transcended"
+    description: 'FISMA-HIGH compliance - government transcended'
 
   - name: accessibility_score
     aspect: user_experience
@@ -66,7 +66,7 @@ metrics:
     baseline: 12.0
     weight: 3
     tier: core
-    description: "WCAG 2.1 AA accessibility - inclusive excellence"
+    description: 'WCAG 2.1 AA accessibility - inclusive excellence'
 
   - name: audit_trail_completeness
     aspect: governance
@@ -74,7 +74,7 @@ metrics:
     baseline: 12.0
     weight: 3
     tier: core
-    description: "Audit trail completeness - transparent accountability"
+    description: 'Audit trail completeness - transparent accountability'
 
   # Domain Specialized Metrics (Tier: Domain, Weight ×1)
   - name: critical_vulns
@@ -83,7 +83,7 @@ metrics:
     baseline: 0
     weight: 1
     tier: domain
-    description: "Critical vulnerabilities - security excellence"
+    description: 'Critical vulnerabilities - security excellence'
 
   - name: cost_per_tx_usd
     aspect: efficiency
@@ -91,7 +91,7 @@ metrics:
     baseline: 0.01
     weight: 1
     tier: domain
-    description: "Cost per transaction - operational efficiency"
+    description: 'Cost per transaction - operational efficiency'
 
   - name: build_time_minutes
     aspect: efficiency
@@ -99,7 +99,7 @@ metrics:
     baseline: 10
     weight: 1
     tier: domain
-    description: "Build time - development velocity"
+    description: 'Build time - development velocity'
 
   - name: test_coverage_pct
     aspect: quality
@@ -107,7 +107,7 @@ metrics:
     baseline: 97
     weight: 1
     tier: domain
-    description: "Test coverage - quality assurance"
+    description: 'Test coverage - quality assurance'
 
   - name: deployment_frequency
     aspect: velocity
@@ -115,7 +115,7 @@ metrics:
     baseline: 5
     weight: 1
     tier: domain
-    description: "Deployment frequency - continuous delivery"
+    description: 'Deployment frequency - continuous delivery'
 
   - name: mean_time_to_recovery
     aspect: reliability
@@ -123,7 +123,7 @@ metrics:
     baseline: 60
     weight: 1
     tier: domain
-    description: "Mean time to recovery - resilience"
+    description: 'Mean time to recovery - resilience'
 
   - name: user_satisfaction_score
     aspect: user_experience
@@ -131,7 +131,7 @@ metrics:
     baseline: 9.0
     weight: 1
     tier: domain
-    description: "User satisfaction - citizen experience"
+    description: 'User satisfaction - citizen experience'
 
   - name: ai_agent_coordination_score
     aspect: ai_coordination
@@ -139,7 +139,7 @@ metrics:
     baseline: 11.0
     weight: 1
     tier: domain
-    description: "AI agent coordination - swarm harmony"
+    description: 'AI agent coordination - swarm harmony'
 
   - name: data_quality_score
     aspect: data
@@ -147,7 +147,7 @@ metrics:
     baseline: 11.0
     weight: 1
     tier: domain
-    description: "Data quality - information excellence"
+    description: 'Data quality - information excellence'
 
   - name: carbon_efficiency_score
     aspect: sustainability
@@ -155,43 +155,43 @@ metrics:
     baseline: 10.0
     weight: 1
     tier: domain
-    description: "Carbon efficiency - environmental stewardship"
+    description: 'Carbon efficiency - environmental stewardship'
 
 # Aspect definitions with transcendence levels
 aspects:
   - name: foundation
     level: 3
-    description: "Foundation-level metrics - baseline excellence"
+    description: 'Foundation-level metrics - baseline excellence'
     target_range: [0, 3.0]
 
   - name: performance
     level: 6
-    description: "Performance metrics - amplified excellence"
+    description: 'Performance metrics - amplified excellence'
     target_range: [3.1, 6.0]
 
   - name: reliability
     level: 6
-    description: "Reliability metrics - amplified stability"
+    description: 'Reliability metrics - amplified stability'
     target_range: [3.1, 6.0]
 
   - name: security
     level: 9
-    description: "Security metrics - transcendent protection"
+    description: 'Security metrics - transcendent protection'
     target_range: [6.1, 9.0]
 
   - name: ai_coordination
     level: 12
-    description: "AI coordination - perfect power consciousness"
+    description: 'AI coordination - perfect power consciousness'
     target_range: [9.1, 12.0]
 
   - name: quantum
     level: 12
-    description: "Quantum optimization - perfect power transcendence"
+    description: 'Quantum optimization - perfect power transcendence'
     target_range: [9.1, 12.0]
 
   - name: governance
     level: 12
-    description: "Governance and compliance - perfect power accountability"
+    description: 'Governance and compliance - perfect power accountability'
     target_range: [9.1, 12.0]
 
 # Sacred mathematics configuration
@@ -212,9 +212,9 @@ tier_multipliers:
 
 # Government excellence standards
 government_standards:
-  fisma_level: "HIGH"
-  accessibility_standard: "WCAG_2_1_AA"
+  fisma_level: 'HIGH'
+  accessibility_standard: 'WCAG_2_1_AA'
   uptime_target: 99.99
   response_time_max_ms: 300
   error_rate_max: 0.01
-  security_compliance: "Constitutional_AI"
+  security_compliance: 'Constitutional_AI'

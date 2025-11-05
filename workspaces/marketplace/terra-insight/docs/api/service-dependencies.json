@@ -46,15 +46,8 @@
         "security_level": "MEDIUM"
       }
     ],
-    "data_endpoints": [
-      "/health",
-      "/data",
-      "/operations",
-      "/status"
-    ],
-    "integration_points": [
-      "/api/v1/terra-insight/integration"
-    ]
+    "data_endpoints": ["/health", "/data", "/operations", "/status"],
+    "integration_points": ["/api/v1/terra-insight/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

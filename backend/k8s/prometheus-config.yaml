@@ -16,8 +16,8 @@ metadata:
   labels:
     name: monitoring
     app.kubernetes.io/name: terrafusion-monitoring
-    terrafusion.compliance: "FISMA-High"
-    terrafusion.environment: "production"
+    terrafusion.compliance: 'FISMA-High'
+    terrafusion.environment: 'production'
 
 ---
 # ============================================================================
@@ -42,7 +42,7 @@ data:
         cluster: 'terrafusion-prod'
         environment: 'production'
         region: 'us-west-2'
-    
+
     # Alertmanager Configuration
     alerting:
       alertmanagers:
@@ -51,11 +51,11 @@ data:
                 - alertmanager:9093
           scheme: http
           timeout: 10s
-    
+
     # Load alerting and recording rules
     rule_files:
       - /etc/prometheus/rules/*.yml
-    
+
     # Scrape Configurations
     scrape_configs:
       # ======================================================================
@@ -253,8 +253,8 @@ spec:
         app: prometheus
         app.kubernetes.io/name: prometheus
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9090"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9090'
     spec:
       serviceAccountName: prometheus
       containers:
@@ -331,8 +331,8 @@ metadata:
     app.kubernetes.io/name: prometheus
     app.kubernetes.io/component: monitoring
   annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "9090"
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9090'
 spec:
   type: ClusterIP
   ports:
@@ -363,26 +363,26 @@ metadata:
   labels:
     app.kubernetes.io/name: prometheus
 rules:
-  - apiGroups: [""]
+  - apiGroups: ['']
     resources:
       - nodes
       - nodes/proxy
       - services
       - endpoints
       - pods
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["extensions", "apps"]
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['extensions', 'apps']
     resources:
       - deployments
       - replicasets
       - statefulsets
-    verbs: ["get", "list", "watch"]
-  - apiGroups: [""]
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['']
     resources:
       - configmaps
-    verbs: ["get"]
-  - nonResourceURLs: ["/metrics"]
-    verbs: ["get"]
+    verbs: ['get']
+  - nonResourceURLs: ['/metrics']
+    verbs: ['get']
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -522,7 +522,6 @@ spec:
   namespaceSelector:
     matchNames:
       - terrafusion
-
 # ============================================================================
 # Apply Instructions
 # ============================================================================

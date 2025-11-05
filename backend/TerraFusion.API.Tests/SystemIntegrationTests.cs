@@ -42,14 +42,14 @@ using TerraFusion.API;
 namespace TerraFusion.API.Tests
 {
     [Collection("Integration")]
-    public class SystemIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+    public class SystemIntegrationTests : IClassFixture<TerraFusion.API.Tests.Infrastructure.ApiWebAppFactory>
     {
-        private readonly WebApplicationFactory<Program> _factory;
+        private readonly TerraFusion.API.Tests.Infrastructure.ApiWebAppFactory _factory;
         private readonly HttpClient _client;
         private readonly ITestOutputHelper _output;
 
         public SystemIntegrationTests(
-            WebApplicationFactory<Program> factory,
+            TerraFusion.API.Tests.Infrastructure.ApiWebAppFactory factory,
             ITestOutputHelper output)
         {
             _factory = factory;

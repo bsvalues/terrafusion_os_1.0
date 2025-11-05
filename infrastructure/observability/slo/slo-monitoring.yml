@@ -162,122 +162,122 @@ metadata:
     role: alert-rules
 spec:
   groups:
-  - name: terrafusion.slo.api_availability
-    interval: 30s
-    rules:
-    - alert: TerraFusionAPIHighErrorRate
-      expr: |
-        (
-          (
-            sum(rate(http_requests_total{job="terrafusion-api", code=~"5.."}[2m])) /
-            sum(rate(http_requests_total{job="terrafusion-api"}[2m]))
-          ) > (14.4 * (1 - 0.999))
-        ) and
-        (
-          (
-            sum(rate(http_requests_total{job="terrafusion-api", code=~"5.."}[1h])) /
-            sum(rate(http_requests_total{job="terrafusion-api"}[1h]))
-          ) > (14.4 * (1 - 0.999))
-        )
-      for: 1m
-      labels:
-        severity: critical
-        slo: api_availability
-        service: terrafusion-api
-        burn_rate: fast
-      annotations:
-        summary: "TerraFusion API availability SLO burn rate is too high"
-        description: |
-          The error rate for TerraFusion API is burning through the error budget too fast.
-          Current error rate: {{ $value | humanizePercentage }}
-          This will exhaust the monthly error budget in {{ with printf "vector(%.2f)" (1 / $value * 24) | query }}{{ . | first | value | humanizeDuration }}{{ end }}.
-        runbook_url: "https://docs.terrafusion.gov/runbooks/api-availability"
+    - name: terrafusion.slo.api_availability
+      interval: 30s
+      rules:
+        - alert: TerraFusionAPIHighErrorRate
+          expr: |
+            (
+              (
+                sum(rate(http_requests_total{job="terrafusion-api", code=~"5.."}[2m])) /
+                sum(rate(http_requests_total{job="terrafusion-api"}[2m]))
+              ) > (14.4 * (1 - 0.999))
+            ) and
+            (
+              (
+                sum(rate(http_requests_total{job="terrafusion-api", code=~"5.."}[1h])) /
+                sum(rate(http_requests_total{job="terrafusion-api"}[1h]))
+              ) > (14.4 * (1 - 0.999))
+            )
+          for: 1m
+          labels:
+            severity: critical
+            slo: api_availability
+            service: terrafusion-api
+            burn_rate: fast
+          annotations:
+            summary: 'TerraFusion API availability SLO burn rate is too high'
+            description: |
+              The error rate for TerraFusion API is burning through the error budget too fast.
+              Current error rate: {{ $value | humanizePercentage }}
+              This will exhaust the monthly error budget in {{ with printf "vector(%.2f)" (1 / $value * 24) | query }}{{ . | first | value | humanizeDuration }}{{ end }}.
+            runbook_url: 'https://docs.terrafusion.gov/runbooks/api-availability'
 
-    - alert: TerraFusionAPISlowBurn
-      expr: |
-        (
-          (
-            sum(rate(http_requests_total{job="terrafusion-api", code=~"5.."}[15m])) /
-            sum(rate(http_requests_total{job="terrafusion-api"}[15m]))
-          ) > (6.0 * (1 - 0.999))
-        ) and
-        (
-          (
-            sum(rate(http_requests_total{job="terrafusion-api", code=~"5.."}[1h])) /
-            sum(rate(http_requests_total{job="terrafusion-api"}[1h]))
-          ) > (6.0 * (1 - 0.999))
-        )
-      for: 5m
-      labels:
-        severity: warning
-        slo: api_availability
-        service: terrafusion-api
-        burn_rate: slow
-      annotations:
-        summary: "TerraFusion API availability SLO slow burn detected"
-        description: "The error rate for TerraFusion API is elevated and burning error budget."
+        - alert: TerraFusionAPISlowBurn
+          expr: |
+            (
+              (
+                sum(rate(http_requests_total{job="terrafusion-api", code=~"5.."}[15m])) /
+                sum(rate(http_requests_total{job="terrafusion-api"}[15m]))
+              ) > (6.0 * (1 - 0.999))
+            ) and
+            (
+              (
+                sum(rate(http_requests_total{job="terrafusion-api", code=~"5.."}[1h])) /
+                sum(rate(http_requests_total{job="terrafusion-api"}[1h]))
+              ) > (6.0 * (1 - 0.999))
+            )
+          for: 5m
+          labels:
+            severity: warning
+            slo: api_availability
+            service: terrafusion-api
+            burn_rate: slow
+          annotations:
+            summary: 'TerraFusion API availability SLO slow burn detected'
+            description: 'The error rate for TerraFusion API is elevated and burning error budget.'
 
-  - name: terrafusion.slo.api_latency
-    interval: 30s
-    rules:
-    - alert: TerraFusionAPIHighLatency
-      expr: |
-        histogram_quantile(0.95, 
-          sum by (le) (
-            rate(http_request_duration_seconds_bucket{job="terrafusion-api"}[5m])
-          )
-        ) * 1000 > 50
-      for: 2m
-      labels:
-        severity: warning
-        slo: api_latency
-        service: terrafusion-api
-      annotations:
-        summary: "TerraFusion API latency SLO violation"
-        description: |
-          The P95 latency for TerraFusion API is {{ $value }}ms, exceeding the 50ms SLO.
-          This affects government service delivery efficiency.
+    - name: terrafusion.slo.api_latency
+      interval: 30s
+      rules:
+        - alert: TerraFusionAPIHighLatency
+          expr: |
+            histogram_quantile(0.95, 
+              sum by (le) (
+                rate(http_request_duration_seconds_bucket{job="terrafusion-api"}[5m])
+              )
+            ) * 1000 > 50
+          for: 2m
+          labels:
+            severity: warning
+            slo: api_latency
+            service: terrafusion-api
+          annotations:
+            summary: 'TerraFusion API latency SLO violation'
+            description: |
+              The P95 latency for TerraFusion API is {{ $value }}ms, exceeding the 50ms SLO.
+              This affects government service delivery efficiency.
 
-  - name: terrafusion.slo.ai_agents
-    interval: 30s
-    rules:
-    - alert: AIAgentHighFailureRate
-      expr: |
-        (
-          sum(rate(ai_agent_operations_total{status!="success"}[5m])) /
-          sum(rate(ai_agent_operations_total[5m]))
-        ) > 0.005  # 0.5% failure rate threshold
-      for: 2m
-      labels:
-        severity: critical
-        slo: ai_agent_success
-        service: ai-swarm
-      annotations:
-        summary: "AI Agent failure rate exceeding SLO"
-        description: |
-          AI Agent failure rate is {{ $value | humanizePercentage }}, exceeding the 0.5% SLO.
-          Current agent count: {{ with query "ai_agent_count" }}{{ . | first | value }}{{ end }}
-          Failed operations may impact government service quality.
+    - name: terrafusion.slo.ai_agents
+      interval: 30s
+      rules:
+        - alert: AIAgentHighFailureRate
+          expr: |
+            (
+              sum(rate(ai_agent_operations_total{status!="success"}[5m])) /
+              sum(rate(ai_agent_operations_total[5m]))
+            ) > 0.005  # 0.5% failure rate threshold
+          for: 2m
+          labels:
+            severity: critical
+            slo: ai_agent_success
+            service: ai-swarm
+          annotations:
+            summary: 'AI Agent failure rate exceeding SLO'
+            description: |
+              AI Agent failure rate is {{ $value | humanizePercentage }}, exceeding the 0.5% SLO.
+              Current agent count: {{ with query "ai_agent_count" }}{{ . | first | value }}{{ end }}
+              Failed operations may impact government service quality.
 
-  - name: terrafusion.slo.database
-    interval: 30s
-    rules:
-    - alert: DatabaseTransactionFailures
-      expr: |
-        (
-          sum(rate(postgres_transaction_rollbacks_total[5m])) /
-          sum(rate(postgres_transactions_total[5m]))
-        ) > 0.0001  # 0.01% failure threshold
-      for: 1m
-      labels:
-        severity: critical
-        slo: database_transactions
-        service: postgres
-      annotations:
-        summary: "Database transaction failure rate exceeding SLO"
-        description: |
-          PostgreSQL transaction failure rate is {{ $value | humanizePercentage }}.
-          This may indicate database health issues requiring immediate attention.
+    - name: terrafusion.slo.database
+      interval: 30s
+      rules:
+        - alert: DatabaseTransactionFailures
+          expr: |
+            (
+              sum(rate(postgres_transaction_rollbacks_total[5m])) /
+              sum(rate(postgres_transactions_total[5m]))
+            ) > 0.0001  # 0.01% failure threshold
+          for: 1m
+          labels:
+            severity: critical
+            slo: database_transactions
+            service: postgres
+          annotations:
+            summary: 'Database transaction failure rate exceeding SLO'
+            description: |
+              PostgreSQL transaction failure rate is {{ $value | humanizePercentage }}.
+              This may indicate database health issues requiring immediate attention.
 
 ---
 # Error Budget Alert Manager Configuration
@@ -343,7 +343,7 @@ metadata:
   name: slo-dashboard
   namespace: terrafusion-observability
   labels:
-    grafana_dashboard: "1"
+    grafana_dashboard: '1'
 data:
   slo-dashboard.json: |
     {

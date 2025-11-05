@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/legal
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/legal
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/legal
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/legal
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/legal
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/legal
+    description: Development Environment
 paths:
   /cases:
     get:
       tags:
-      - legal-judicial
+        - legal-judicial
       summary: Case management
       description: Case management - Legal proceedings and judicial operations APIs
       operationId: get__cases
       security:
-      - OAuth2:
-        - legal-judicial:read
+        - OAuth2:
+            - legal-judicial:read
       responses:
         '200':
           description: Successful operation
@@ -57,14 +57,14 @@ paths:
   /documents:
     post:
       tags:
-      - legal-judicial
+        - legal-judicial
       summary: Legal document filing
       description: Legal document filing - Legal proceedings and judicial operations
         APIs
       operationId: post__documents
       security:
-      - OAuth2:
-        - legal-judicial:write
+        - OAuth2:
+            - legal-judicial:write
       responses:
         '200':
           description: Successful operation
@@ -93,14 +93,14 @@ paths:
   /hearings:
     get:
       tags:
-      - legal-judicial
+        - legal-judicial
       summary: Court hearing schedule
       description: Court hearing schedule - Legal proceedings and judicial operations
         APIs
       operationId: get__hearings
       security:
-      - OAuth2:
-        - legal-judicial:read
+        - OAuth2:
+            - legal-judicial:read
       responses:
         '200':
           description: Successful operation
@@ -129,14 +129,14 @@ paths:
   /judgments:
     post:
       tags:
-      - legal-judicial
+        - legal-judicial
       summary: Record court judgments
       description: Record court judgments - Legal proceedings and judicial operations
         APIs
       operationId: post__judgments
       security:
-      - OAuth2:
-        - legal-judicial:write
+        - OAuth2:
+            - legal-judicial:write
       responses:
         '200':
           description: Successful operation
@@ -167,8 +167,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -183,9 +183,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -209,12 +209,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - legal-judicial:read
-- ApiKey: []
+  - OAuth2:
+      - legal-judicial:read
+  - ApiKey: []
 tags:
-- name: legal-judicial
-  description: Legal Judicial operations
-  externalDocs:
-    description: Find out more about legal-judicial
-    url: https://docs.terrafusion.gov/frontend/legal-judicial
+  - name: legal-judicial
+    description: Legal Judicial operations
+    externalDocs:
+      description: Find out more about legal-judicial
+      url: https://docs.terrafusion.gov/frontend/legal-judicial

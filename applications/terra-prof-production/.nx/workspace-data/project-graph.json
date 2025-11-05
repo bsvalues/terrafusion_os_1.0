@@ -15,10 +15,7 @@
         ],
         "metadata": {
           "targetGroups": {
-            "NPM Scripts": [
-              "start",
-              "dev"
-            ]
+            "NPM Scripts": ["start", "dev"]
           },
           "description": "TerraFusionPro Property Service",
           "js": {
@@ -54,9 +51,7 @@
           },
           "nx-release-publish": {
             "executor": "@nx/js:release-publish",
-            "dependsOn": [
-              "^nx-release-publish"
-            ],
+            "dependsOn": ["^nx-release-publish"],
             "options": {},
             "configurations": {},
             "parallelism": true
@@ -71,15 +66,10 @@
       "data": {
         "root": "services/analysis-service",
         "name": "analysis-service",
-        "tags": [
-          "npm:public"
-        ],
+        "tags": ["npm:public"],
         "metadata": {
           "targetGroups": {
-            "NPM Scripts": [
-              "start",
-              "dev"
-            ]
+            "NPM Scripts": ["start", "dev"]
           },
           "description": "Analysis Service for TerraFusionPro",
           "js": {
@@ -115,9 +105,7 @@
           },
           "nx-release-publish": {
             "executor": "@nx/js:release-publish",
-            "dependsOn": [
-              "^nx-release-publish"
-            ],
+            "dependsOn": ["^nx-release-publish"],
             "options": {},
             "configurations": {},
             "parallelism": true
@@ -132,15 +120,10 @@
       "data": {
         "root": "services/report-service",
         "name": "report-service",
-        "tags": [
-          "npm:public"
-        ],
+        "tags": ["npm:public"],
         "metadata": {
           "targetGroups": {
-            "NPM Scripts": [
-              "start",
-              "dev"
-            ]
+            "NPM Scripts": ["start", "dev"]
           },
           "description": "Report Service for TerraFusionPro",
           "js": {
@@ -176,9 +159,7 @@
           },
           "nx-release-publish": {
             "executor": "@nx/js:release-publish",
-            "dependsOn": [
-              "^nx-release-publish"
-            ],
+            "dependsOn": ["^nx-release-publish"],
             "options": {},
             "configurations": {},
             "parallelism": true
@@ -203,10 +184,7 @@
         ],
         "metadata": {
           "targetGroups": {
-            "NPM Scripts": [
-              "start",
-              "dev"
-            ]
+            "NPM Scripts": ["start", "dev"]
           },
           "description": "TerraFusionPro User Service",
           "js": {
@@ -242,9 +220,7 @@
           },
           "nx-release-publish": {
             "executor": "@nx/js:release-publish",
-            "dependsOn": [
-              "^nx-release-publish"
-            ],
+            "dependsOn": ["^nx-release-publish"],
             "options": {},
             "configurations": {},
             "parallelism": true
@@ -259,15 +235,10 @@
       "data": {
         "root": "services/form-service",
         "name": "form-service",
-        "tags": [
-          "npm:public"
-        ],
+        "tags": ["npm:public"],
         "metadata": {
           "targetGroups": {
-            "NPM Scripts": [
-              "start",
-              "dev"
-            ]
+            "NPM Scripts": ["start", "dev"]
           },
           "description": "Form Service for TerraFusionPro",
           "js": {
@@ -303,9 +274,7 @@
           },
           "nx-release-publish": {
             "executor": "@nx/js:release-publish",
-            "dependsOn": [
-              "^nx-release-publish"
-            ],
+            "dependsOn": ["^nx-release-publish"],
             "options": {},
             "configurations": {},
             "parallelism": true
@@ -328,11 +297,7 @@
         ],
         "metadata": {
           "targetGroups": {
-            "NPM Scripts": [
-              "start",
-              "dev",
-              "test"
-            ]
+            "NPM Scripts": ["start", "dev", "test"]
           },
           "description": "TerraFusionPro Web Client Application",
           "js": {
@@ -380,9 +345,7 @@
           },
           "nx-release-publish": {
             "executor": "@nx/js:release-publish",
-            "dependsOn": [
-              "^nx-release-publish"
-            ],
+            "dependsOn": ["^nx-release-publish"],
             "options": {},
             "configurations": {},
             "parallelism": true
@@ -406,10 +369,7 @@
         ],
         "metadata": {
           "targetGroups": {
-            "NPM Scripts": [
-              "db:push",
-              "test"
-            ]
+            "NPM Scripts": ["db:push", "test"]
           },
           "description": "Shared utilities and models for TerraFusionPro",
           "js": {
@@ -445,9 +405,7 @@
           },
           "nx-release-publish": {
             "executor": "@nx/js:release-publish",
-            "dependsOn": [
-              "^nx-release-publish"
-            ],
+            "dependsOn": ["^nx-release-publish"],
             "options": {},
             "configurations": {},
             "parallelism": true
@@ -471,10 +429,7 @@
         ],
         "metadata": {
           "targetGroups": {
-            "NPM Scripts": [
-              "start",
-              "dev"
-            ]
+            "NPM Scripts": ["start", "dev"]
           },
           "description": "TerraFusionPro API Gateway",
           "js": {
@@ -510,9 +465,7 @@
           },
           "nx-release-publish": {
             "executor": "@nx/js:release-publish",
-            "dependsOn": [
-              "^nx-release-publish"
-            ],
+            "dependsOn": ["^nx-release-publish"],
             "options": {},
             "configurations": {},
             "parallelism": true

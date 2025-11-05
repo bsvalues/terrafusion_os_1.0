@@ -98,9 +98,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -188,11 +186,7 @@
       "id": 3,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "min"
-          ],
+          "calcs": ["mean", "max", "min"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -283,11 +277,7 @@
       "id": 4,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "min"
-          ],
+          "calcs": ["mean", "max", "min"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -354,9 +344,7 @@
         "minVizWidth": 0,
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -457,11 +445,7 @@
       "id": 7,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "min"
-          ],
+          "calcs": ["mean", "max", "min"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -568,11 +552,7 @@
       "id": 8,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "lastNotNull"
-          ],
+          "calcs": ["mean", "max", "lastNotNull"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -676,11 +656,7 @@
       "id": 10,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "min"
-          ],
+          "calcs": ["mean", "max", "min"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -767,11 +743,7 @@
       "id": 11,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "min"
-          ],
+          "calcs": ["mean", "max", "min"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -801,10 +773,7 @@
   "refresh": "10s",
   "schemaVersion": 36,
   "style": "dark",
-  "tags": [
-    "terrafusion",
-    "overview"
-  ],
+  "tags": ["terrafusion", "overview"],
   "templating": {
     "list": []
   },

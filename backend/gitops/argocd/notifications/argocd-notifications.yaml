@@ -7,7 +7,7 @@ data:
   # Slack integration
   service.slack: |
     token: $slack-token
-    
+
   # Email integration
   service.email.gmail: |
     username: $email-username
@@ -15,14 +15,14 @@ data:
     host: smtp.gmail.com
     port: 465
     from: argocd@terrafusion.gov
-  
+
   # Webhook integration
   service.webhook.terrafusion: |
     url: https://hooks.terrafusion.gov/argocd
     headers:
     - name: Authorization
       value: Bearer $webhook-token
-  
+
   # Templates for notifications
   template.app-deployed: |
     message: |
@@ -62,7 +62,7 @@ data:
             }
           ]
         }]
-  
+
   template.app-health-degraded: |
     message: |
       ⚠️ **Application Health Degraded**
@@ -95,7 +95,7 @@ data:
             }
           ]
         }]
-  
+
   template.app-sync-failed: |
     message: |
       ❌ **Application Sync Failed**
@@ -128,7 +128,7 @@ data:
             }
           ]
         }]
-  
+
   template.app-sync-succeeded: |
     message: |
       ✅ **Application Synced Successfully**
@@ -155,32 +155,32 @@ data:
             }
           ]
         }]
-  
+
   # Triggers - when to send notifications
   trigger.on-deployed: |
     - description: Application is synced and healthy
       send:
       - app-deployed
       when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
-  
+
   trigger.on-health-degraded: |
     - description: Application health is degraded
       send:
       - app-health-degraded
       when: app.status.health.status == 'Degraded'
-  
+
   trigger.on-sync-failed: |
     - description: Application sync failed
       send:
       - app-sync-failed
       when: app.status.operationState.phase in ['Error', 'Failed']
-  
+
   trigger.on-sync-succeeded: |
     - description: Application synced successfully
       send:
       - app-sync-succeeded
       when: app.status.operationState.phase in ['Succeeded']
-  
+
   # Subscriptions - which channels get which notifications
   subscriptions: |
     # Production alerts to critical channel
@@ -190,14 +190,14 @@ data:
       - on-health-degraded
       - on-sync-failed
       selector: metadata.labels.environment == 'production'
-    
+
     # All deployments to deployments channel
     - recipients:
       - slack:terrafusion-deployments
       triggers:
       - on-deployed
       - on-sync-succeeded
-    
+
     # Email notifications for production failures
     - recipients:
       - email:platform-team@terrafusion.gov

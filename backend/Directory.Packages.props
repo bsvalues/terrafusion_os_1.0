@@ -96,6 +96,9 @@
     <PackageVersion Include="Microsoft.ML.OnnxRuntime" Version="1.16.3" />
     <PackageVersion Include="Microsoft.ML.TimeSeries" Version="3.0.1" />
     <PackageVersion Include="MathNet.Numerics" Version="5.0.0" />
+    <PackageVersion Include="Accord.Statistics" Version="3.8.0" />
+    <PackageVersion Include="Accord.Math" Version="3.8.0" />
+    <PackageVersion Include="R.NET.Community" Version="1.7.0" />
   </ItemGroup>
   <!-- Enhanced Monitoring & Telemetry -->
   <ItemGroup>
@@ -130,6 +133,9 @@
     <PackageVersion Include="NBomber.Contracts" Version="6.0.0" />
     <PackageVersion Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
     <PackageVersion Include="Bogus" Version="35.3.0" />
+    <PackageVersion Include="Testcontainers" Version="3.7.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="3.7.0" />
+    <PackageVersion Include="Npgsql" Version="8.0.5" />
   </ItemGroup>
   <!-- OpenTelemetry -->
   <ItemGroup>

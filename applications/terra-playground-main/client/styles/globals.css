@@ -28,4 +28,4 @@
   .input-dark {
     @apply bg-gray-700 border-gray-600 text-white focus:ring-primary-400 focus:border-primary-400;
   }
-} 
+}

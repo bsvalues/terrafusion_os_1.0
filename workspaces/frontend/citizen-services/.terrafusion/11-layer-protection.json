@@ -9,11 +9,7 @@
         "workspace_role": "citizen-services specialized AI agent",
         "scope_definition": "Optimize and protect citizen_engagement operations",
         "success_criteria": "Maintain high-level security for citizen_engagement",
-        "data_types_handled": [
-          "PII",
-          "citizen_records",
-          "service_requests"
-        ],
+        "data_types_handled": ["PII", "citizen_records", "service_requests"],
         "protection_priorities": [
           "data_privacy",
           "accessibility",
@@ -27,11 +23,7 @@
         "risk_level_controls": "high"
       },
       "L3_data_classification": {
-        "data_types": [
-          "PII",
-          "citizen_records",
-          "service_requests"
-        ],
+        "data_types": ["PII", "citizen_records", "service_requests"],
         "classification_level": "high",
         "privacy_requirements": "citizen_engagement_privacy_rules",
         "retention_policies": "citizen-services_data_retention",

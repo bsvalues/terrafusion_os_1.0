@@ -1172,9 +1172,7 @@
         "environments_name_unique": {
           "name": "environments_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -1530,9 +1528,7 @@
         "material_types_code_unique": {
           "name": "material_types_code_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "code"
-          ]
+          "columns": ["code"]
         }
       },
       "policies": {},
@@ -1683,12 +1679,8 @@
           "name": "project_activities_project_id_shared_projects_id_fk",
           "tableFrom": "project_activities",
           "tableTo": "shared_projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1696,12 +1688,8 @@
           "name": "project_activities_user_id_users_id_fk",
           "tableFrom": "project_activities",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1790,12 +1778,8 @@
           "name": "project_invitations_project_id_shared_projects_id_fk",
           "tableFrom": "project_invitations",
           "tableTo": "shared_projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1803,12 +1787,8 @@
           "name": "project_invitations_user_id_users_id_fk",
           "tableFrom": "project_invitations",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1816,12 +1796,8 @@
           "name": "project_invitations_invited_by_users_id_fk",
           "tableFrom": "project_invitations",
           "tableTo": "users",
-          "columnsFrom": [
-            "invited_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["invited_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1908,12 +1884,8 @@
           "name": "project_items_project_id_shared_projects_id_fk",
           "tableFrom": "project_items",
           "tableTo": "shared_projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1921,12 +1893,8 @@
           "name": "project_items_added_by_users_id_fk",
           "tableFrom": "project_items",
           "tableTo": "users",
-          "columnsFrom": [
-            "added_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["added_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2008,12 +1976,8 @@
           "name": "project_members_project_id_shared_projects_id_fk",
           "tableFrom": "project_members",
           "tableTo": "shared_projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2021,12 +1985,8 @@
           "name": "project_members_user_id_users_id_fk",
           "tableFrom": "project_members",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2034,12 +1994,8 @@
           "name": "project_members_invited_by_users_id_fk",
           "tableFrom": "project_members",
           "tableTo": "users",
-          "columnsFrom": [
-            "invited_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["invited_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2250,9 +2206,7 @@
         "settings_key_unique": {
           "name": "settings_key_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "key"
-          ]
+          "columns": ["key"]
         }
       },
       "policies": {},
@@ -2320,12 +2274,8 @@
           "name": "shared_links_project_id_shared_projects_id_fk",
           "tableFrom": "shared_links",
           "tableTo": "shared_projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2333,12 +2283,8 @@
           "name": "shared_links_created_by_users_id_fk",
           "tableFrom": "shared_links",
           "tableTo": "users",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2348,9 +2294,7 @@
         "shared_links_token_unique": {
           "name": "shared_links_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -2420,12 +2364,8 @@
           "name": "shared_projects_created_by_id_users_id_fk",
           "tableFrom": "shared_projects",
           "tableTo": "users",
-          "columnsFrom": [
-            "created_by_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2684,9 +2624,7 @@
         "users_username_unique": {
           "name": "users_username_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "username"
-          ]
+          "columns": ["username"]
         }
       },
       "policies": {},
@@ -3393,9 +3331,7 @@
         "properties_prop_id_unique": {
           "name": "properties_prop_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "prop_id"
-          ]
+          "columns": ["prop_id"]
         }
       },
       "policies": {},

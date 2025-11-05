@@ -111,13 +111,13 @@
     width: calc(100vw - 2rem);
     margin-right: -0.5rem;
   }
-  
+
   /* Increase touch target size for close button */
   .tf-toast .btn-close {
     padding: 0.75rem;
     margin: -0.375rem -0.375rem -0.375rem auto;
   }
-  
+
   /* Move container to bottom for easier thumb access */
   #toast-notification-container.mobile-bottom {
     top: auto !important;
@@ -153,7 +153,7 @@
   .tf-toast {
     transition: none;
   }
-  
+
   .tf-toast.showing,
   .tf-toast.hiding {
     transform: none;

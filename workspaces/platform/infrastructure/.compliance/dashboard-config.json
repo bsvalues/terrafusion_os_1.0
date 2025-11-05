@@ -28,11 +28,7 @@
     "alerts": {
       "compliance_violations": {
         "immediate": true,
-        "channels": [
-          "email",
-          "slack",
-          "dashboard"
-        ]
+        "channels": ["email", "slack", "dashboard"]
       },
       "security_incidents": {
         "escalation": "immediate",

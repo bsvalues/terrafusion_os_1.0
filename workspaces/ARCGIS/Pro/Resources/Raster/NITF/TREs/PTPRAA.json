@@ -5,7 +5,7 @@
   "Description": "This TRE contains the DPPDB segment to segment relative accuracy. It is a user-defined file found in the DPPDB data extension subheader.",
   "Size": 99999,
   "Fields": {
-    "SISEGID" : {
+    "SISEGID": {
       "Name": "Segment Model ID",
       "Description": "This field indicates the model ID of the DPPDB segment.",
       "Size": 4,
@@ -14,8 +14,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"          
-        }        
+          "Type": "Integer"
+        }
       ]
     },
     "SNACE": {
@@ -29,7 +29,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -47,7 +47,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -65,7 +65,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -83,7 +83,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -100,7 +100,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]        
+          "Values": ["Y", "N"]
         }
       ]
     },
@@ -114,7 +114,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]        
+          "Values": ["Y", "N"]
         }
       ]
     },
@@ -129,7 +129,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 999       
+          "Max": 999
         }
       ]
     },
@@ -142,7 +142,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"                
+          "Type": "Integer"
         }
       ]
     },
@@ -157,7 +157,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00                
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -175,7 +175,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00                
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -193,7 +193,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00                
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -211,7 +211,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00                
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -229,7 +229,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00                
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -247,7 +247,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00                
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -265,7 +265,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00                
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -283,7 +283,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00                
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -301,7 +301,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00                
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -319,7 +319,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00                
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -336,8 +336,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]                          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRLE0_1<NBRSEG>": {
@@ -350,8 +350,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]                          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRCE1_5<NBRSEG>": {
@@ -364,8 +364,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]                          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRLE1_5<NBRSEG>": {
@@ -378,8 +378,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]                          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRCE5_15<NBRSEG>": {
@@ -392,8 +392,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]                          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRLE5_15<NBRSEG>": {
@@ -406,8 +406,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]                          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRCE15_30<NBRSEG>": {
@@ -420,8 +420,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]                          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRLE15_30<NBRSEG>": {
@@ -434,8 +434,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]                          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRCE30<NBRSEG>": {
@@ -448,8 +448,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]                          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
     },
     "EXRLE30<NBRSEG>": {
@@ -462,9 +462,9 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["Y", "N"]                          
-        }        
+          "Values": ["Y", "N"]
+        }
       ]
-    }    
+    }
   }
 }

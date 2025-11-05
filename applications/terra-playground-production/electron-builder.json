@@ -5,11 +5,7 @@
     "output": "dist",
     "buildResources": "build"
   },
-  "files": [
-    "build/**/*",
-    "node_modules/**/*",
-    "package.json"
-  ],
+  "files": ["build/**/*", "node_modules/**/*", "package.json"],
   "extraResources": [
     {
       "from": "models",
@@ -50,4 +46,4 @@
     "provider": "github",
     "releaseType": "release"
   }
-} 
+}

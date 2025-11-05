@@ -1130,8 +1130,6 @@
     "S2"
   ],
   "matrixYear": 2025,
-  "errors": [
-    "Could not find building type column in matrix sheet"
-  ],
+  "errors": ["Could not find building type column in matrix sheet"],
   "rowCount": 65
 }

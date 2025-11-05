@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/employees",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "employees"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"]
         }
       },
       "response": []
@@ -127,12 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/payroll",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "payroll"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["payroll"]
         }
       },
       "response": []
@@ -160,12 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/benefits",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "benefits"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["benefits"]
         }
       },
       "response": []
@@ -193,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/performance",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "performance"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["performance"]
         }
       },
       "response": []

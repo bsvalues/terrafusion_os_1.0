@@ -5,7 +5,7 @@
   "Description": "This TRE contains DPPDB stereo model segment shear point data. Shear is a measurement of how closely aligned stereo segments are to one another.",
   "Size": 99999,
   "Fields": {
-    "SISEGID" : {
+    "SISEGID": {
       "Name": "Segment Model ID",
       "Description": "This field indicates the ID of the segment model.",
       "Size": 4,
@@ -14,8 +14,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"          
-        }        
+          "Type": "Integer"
+        }
       ]
     },
     "NBRSP": {
@@ -42,7 +42,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DMS"          
+          "Type": "DMS"
         }
       ]
     },
@@ -55,7 +55,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"          
+          "Type": "Double"
         }
       ]
     },
@@ -69,8 +69,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -10000.00,
-          "Max": 10000.00          
+          "Min": -10000.0,
+          "Max": 10000.0
         },
         {
           "Type": "Double"
@@ -88,8 +88,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 3          
-        }        
+          "Max": 3
+        }
       ]
     },
     "ASSID<NBRASS<NBRSP>>": {
@@ -101,8 +101,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"                    
-        }        
+          "Type": "Integer"
+        }
       ]
     },
     "LATASS<NBRASS<NBRSP>>": {
@@ -114,8 +114,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DMS"                    
-        }        
+          "Type": "DMS"
+        }
       ]
     },
     "LONASS<NBRASS<NBRSP>>": {
@@ -127,8 +127,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"                    
-        }        
+          "Type": "AlphaNumeric"
+        }
       ]
     },
     "ELVSS<NBRASS<NBRSP>>": {
@@ -141,9 +141,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -10000.00,
-          "Max": 10000.00                    
-        }        
+          "Min": -10000.0,
+          "Max": 10000.0
+        }
       ]
     },
     "LATSHR<NBRASS<NBRSP>>": {
@@ -156,9 +156,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -100.00,
-          "Max": 100.00                    
-        }        
+          "Min": -100.0,
+          "Max": 100.0
+        }
       ]
     },
     "LONSHR<NBRASS<NBRSP>>": {
@@ -171,9 +171,9 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -100.00,
-          "Max": 100.00                    
-        }        
+          "Min": -100.0,
+          "Max": 100.0
+        }
       ]
     },
     "ELVSHR<NBRASS<NBRSP>>": {
@@ -186,10 +186,10 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -100.00,
-          "Max": 100.00                    
-        }        
+          "Min": -100.0,
+          "Max": 100.0
+        }
       ]
-    }        
+    }
   }
 }

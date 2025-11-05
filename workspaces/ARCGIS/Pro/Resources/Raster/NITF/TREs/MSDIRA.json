@@ -1,186 +1,189 @@
 {
-	"TRE": "MSDIRA",
-	"Source": [
-		"MIL-PRF-89034, DPPDB: Table 7"
-	],
-	"Name": "Master Product Directory Definition Tag",
-	"Description": "The Master Product Directory Definition Tag (MSDIRA) TRE is a part of the Digital Point Positioning Data Base (DPPDB) to provide the data format and characteristics for point positioning and other applications.",
-	"Size": 1,
-	"Fields": {
-		"PRODID" : {
-			"Name": "Product ID",
-			"Description": "This field shall contain the DPPDB product ID contained on the subsequent media volume.",
-			"Size": 9,
-			"Format": "BCS-A",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["D12345678"]
-				}
-			]
-		},
-		"PRODVOL" : {
-			"Name": "Product Volume",
-			"Description": "This field shall contain the volume number of this media. A DPPDB product is made up of 1-N volumes sequentially numbered.",
-			"Size": 2,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "1",
-					"Max": "99"
-				}
-			]
-		},
-		"PRODTOTVOLS" : {
-			"Name": "Product Total Volume",
-			"Description": "This field shall contain the total number of volumes required for this DPPDB product.",
-			"Size": 2,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "1",
-					"Max": "99"
-				}
-			]
-		},
-		"NUMFILE" : {
-			"Name": "Number of Image Files",
-			"Description": "This field shall contain the total number of image files contained on this product.",
-			"Size": 3,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "1",
-					"Max": "999"
-				}
-			]
-		},
-		"SEGIMGID<NUMFILE>" : {
-			"Name": "Segment Image ID",
-			"Description": "This field shall contain the segment image ID of the segment image contained in the file. The value of this field shall be an alphanumeric of the form 1234XY, where 12 is the stereo model number, 34 is the stereo segment number, X is either L (=left) or R (=right) stereo image, and Y is either the O (=overview) or F (=full resolution) to identify the type of image.",
-			"Size": 6,
-			"Format": "BCS-A",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["1234XY"]
-				}
-			]
-		},
-		"LONCNTCRD<NUMFILE>" : {
-			"Name": "Longitude Continuous Coordinate System Designator",
-			"Description": "This field shall contain the longitude continuous coordinate system designator and shall be 180 for a product built in the +/-180 degree longitude system or 360 for a product built in the 0 to 360 degree longitude system.",
-			"Size": 3,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["180", "360"]
-				}
-			]
-		},
-		"DIMGEOGLO<NUMFILE>" : {
-			"Name": "Display Image Geographic Location",
-			"Description": "This field shall contain the valid geographic locations, in terms of corner locations, of the display image containing the segment image. The locations of the four corners of the image data shall be given in image coordinate order: (0,0), (0,MaxCol), (MaxRow,MaxCol), (MaxRow,0). The value of this field, as valid corner locations in geodetic coordinates, shall be expressed as latitude and longitude. The format ddmmss.hhX represents degrees, minutes, seconds, and hundreths of seconds of latitude with X = N or S for north or south, and ddmmss.hhY represents degrees, minutes, seconds, and hundreths of seconds of longitude with Y = E or W for east or west, respectively.",
-			"Size": 84,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["ddmmss.hhXdddmmss.hhY", "ddmmss.hhXdddmmss.hhY", "ddmmss.hhXdddmmss.hhY", "ddmmss.hhXdddmmss.hhY"]
-				}
-			]
-		},
-		"NBRVERT<NUMFILE>" : {
-			"Name": "Number of Vertices for Segment Image",
-			"Description": "This field shall contain the number of vertices defining the segment image.",
-			"Size": 2,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "4",
-					"Max": "12"
-				}
-			]
-		},
-		"SIMGEOGLO<NBRVERT<NUMFILE>>" : {
-			"Name": "Segment Image Geographic Location",
-			"Description": "This field shall contain the valid geographic locations, in terms of segment image vertices locations, of the segment image within the display image. The locations of the vertices of the (significant) image data shall be given in image coordinate order beginning at (0,0) and proceeding clockwise within the display image. Valid segment image vertices locations in geodetic cordinates shall be expressed as latitude and longitude. The format ddmmss.hhX represents degrees, minutes, seconds, and hundreths of seconds of latitude with X = N or S for north or south, and ddmmss.hhY represents degrees, minutes, seconds, and hundreths of seconds of longitude with Y = E or W for east or west, respectively.",
-			"Size": 21,
-			"Format": "BCS-N",
-			"Type": "C",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["ddmmss.hhXdddmmss.hhY"]
-				}
-			]
-		},
-		"VOLNBR<NUMFILE>" : {
-			"Name": "Volume Number",
-			"Description": "This field shall contain the volume number in which the segment image is contained.",
-			"Size": 2,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "1",
-					"Max": "99"
-				}
-			]
-		},
-		"FLOC<NUMFILE>" : {
-			"Name": "File Location",
-			"Description": "This field shall contain the file offset from the beginning of the volume for this segment image file.",
-			"Size": 3,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "2",
-					"Max": "999"
-				}
-			]
-		},
-		"FLEN<NUMFILE>" : {
-			"Name": "File Length",
-			"Description": "This field shall contain the file length for this segment image file.",
-			"Size": 10,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "388",
-					"Max": "9999999999"
-				}
-			]
-		}
-	}
+  "TRE": "MSDIRA",
+  "Source": ["MIL-PRF-89034, DPPDB: Table 7"],
+  "Name": "Master Product Directory Definition Tag",
+  "Description": "The Master Product Directory Definition Tag (MSDIRA) TRE is a part of the Digital Point Positioning Data Base (DPPDB) to provide the data format and characteristics for point positioning and other applications.",
+  "Size": 1,
+  "Fields": {
+    "PRODID": {
+      "Name": "Product ID",
+      "Description": "This field shall contain the DPPDB product ID contained on the subsequent media volume.",
+      "Size": 9,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["D12345678"]
+        }
+      ]
+    },
+    "PRODVOL": {
+      "Name": "Product Volume",
+      "Description": "This field shall contain the volume number of this media. A DPPDB product is made up of 1-N volumes sequentially numbered.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "1",
+          "Max": "99"
+        }
+      ]
+    },
+    "PRODTOTVOLS": {
+      "Name": "Product Total Volume",
+      "Description": "This field shall contain the total number of volumes required for this DPPDB product.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "1",
+          "Max": "99"
+        }
+      ]
+    },
+    "NUMFILE": {
+      "Name": "Number of Image Files",
+      "Description": "This field shall contain the total number of image files contained on this product.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "1",
+          "Max": "999"
+        }
+      ]
+    },
+    "SEGIMGID<NUMFILE>": {
+      "Name": "Segment Image ID",
+      "Description": "This field shall contain the segment image ID of the segment image contained in the file. The value of this field shall be an alphanumeric of the form 1234XY, where 12 is the stereo model number, 34 is the stereo segment number, X is either L (=left) or R (=right) stereo image, and Y is either the O (=overview) or F (=full resolution) to identify the type of image.",
+      "Size": 6,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["1234XY"]
+        }
+      ]
+    },
+    "LONCNTCRD<NUMFILE>": {
+      "Name": "Longitude Continuous Coordinate System Designator",
+      "Description": "This field shall contain the longitude continuous coordinate system designator and shall be 180 for a product built in the +/-180 degree longitude system or 360 for a product built in the 0 to 360 degree longitude system.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["180", "360"]
+        }
+      ]
+    },
+    "DIMGEOGLO<NUMFILE>": {
+      "Name": "Display Image Geographic Location",
+      "Description": "This field shall contain the valid geographic locations, in terms of corner locations, of the display image containing the segment image. The locations of the four corners of the image data shall be given in image coordinate order: (0,0), (0,MaxCol), (MaxRow,MaxCol), (MaxRow,0). The value of this field, as valid corner locations in geodetic coordinates, shall be expressed as latitude and longitude. The format ddmmss.hhX represents degrees, minutes, seconds, and hundreths of seconds of latitude with X = N or S for north or south, and ddmmss.hhY represents degrees, minutes, seconds, and hundreths of seconds of longitude with Y = E or W for east or west, respectively.",
+      "Size": 84,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "ddmmss.hhXdddmmss.hhY",
+            "ddmmss.hhXdddmmss.hhY",
+            "ddmmss.hhXdddmmss.hhY",
+            "ddmmss.hhXdddmmss.hhY"
+          ]
+        }
+      ]
+    },
+    "NBRVERT<NUMFILE>": {
+      "Name": "Number of Vertices for Segment Image",
+      "Description": "This field shall contain the number of vertices defining the segment image.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "4",
+          "Max": "12"
+        }
+      ]
+    },
+    "SIMGEOGLO<NBRVERT<NUMFILE>>": {
+      "Name": "Segment Image Geographic Location",
+      "Description": "This field shall contain the valid geographic locations, in terms of segment image vertices locations, of the segment image within the display image. The locations of the vertices of the (significant) image data shall be given in image coordinate order beginning at (0,0) and proceeding clockwise within the display image. Valid segment image vertices locations in geodetic cordinates shall be expressed as latitude and longitude. The format ddmmss.hhX represents degrees, minutes, seconds, and hundreths of seconds of latitude with X = N or S for north or south, and ddmmss.hhY represents degrees, minutes, seconds, and hundreths of seconds of longitude with Y = E or W for east or west, respectively.",
+      "Size": 21,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["ddmmss.hhXdddmmss.hhY"]
+        }
+      ]
+    },
+    "VOLNBR<NUMFILE>": {
+      "Name": "Volume Number",
+      "Description": "This field shall contain the volume number in which the segment image is contained.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "1",
+          "Max": "99"
+        }
+      ]
+    },
+    "FLOC<NUMFILE>": {
+      "Name": "File Location",
+      "Description": "This field shall contain the file offset from the beginning of the volume for this segment image file.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "2",
+          "Max": "999"
+        }
+      ]
+    },
+    "FLEN<NUMFILE>": {
+      "Name": "File Length",
+      "Description": "This field shall contain the file length for this segment image file.",
+      "Size": 10,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "388",
+          "Max": "9999999999"
+        }
+      ]
+    }
+  }
 }

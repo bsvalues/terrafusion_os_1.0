@@ -5,7 +5,7 @@
   "Description": "This support extension is the directory for compressed image segment blocks. The segment image compressed blocks directory shall follow immediately after the subheader file.",
   "Size": 5,
   "Fields": {
-    "BOFF" : {
+    "BOFF": {
       "Name": "Block Offset",
       "Description": "This field shall contain the offset from the beginning of the image data to the beginning of the data for this block expressed in bytes.",
       "Size": 10,
@@ -17,7 +17,7 @@
           "Type": "Range",
           "Min": 0,
           "Max": 9999999999
-        }        
+        }
       ]
     },
     "BLEN": {
@@ -34,6 +34,6 @@
           "Max": 9999999
         }
       ]
-    }    
+    }
   }
 }

@@ -12,9 +12,9 @@ groups:
           severity: warning
           component: system
         annotations:
-          summary: "High CPU usage detected on {{ $labels.instance }}"
-          description: "CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}"
-          runbook_url: "https://docs.terrafusion.gov/runbooks/high-cpu"
+          summary: 'High CPU usage detected on {{ $labels.instance }}'
+          description: 'CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}'
+          runbook_url: 'https://docs.terrafusion.gov/runbooks/high-cpu'
 
       # High Memory Usage
       - alert: HighMemoryUsage
@@ -24,8 +24,8 @@ groups:
           severity: warning
           component: system
         annotations:
-          summary: "High memory usage detected on {{ $labels.instance }}"
-          description: "Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}"
+          summary: 'High memory usage detected on {{ $labels.instance }}'
+          description: 'Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}'
 
       # Disk Space Critical
       - alert: DiskSpaceCritical
@@ -35,8 +35,8 @@ groups:
           severity: critical
           component: storage
         annotations:
-          summary: "Disk space critically low on {{ $labels.instance }}"
-          description: "Disk usage is above 90% on {{ $labels.instance }} at {{ $labels.mountpoint }}"
+          summary: 'Disk space critically low on {{ $labels.instance }}'
+          description: 'Disk usage is above 90% on {{ $labels.instance }} at {{ $labels.mountpoint }}'
 
   - name: terrafusion-application-alerts
     rules:
@@ -48,8 +48,8 @@ groups:
           severity: warning
           component: api
         annotations:
-          summary: "High API response time detected"
-          description: "95th percentile API response time is above 2 seconds for more than 2 minutes"
+          summary: 'High API response time detected'
+          description: '95th percentile API response time is above 2 seconds for more than 2 minutes'
 
       # API Error Rate
       - alert: HighAPIErrorRate
@@ -59,8 +59,8 @@ groups:
           severity: critical
           component: api
         annotations:
-          summary: "High API error rate detected"
-          description: "API error rate is above 10% for more than 1 minute"
+          summary: 'High API error rate detected'
+          description: 'API error rate is above 10% for more than 1 minute'
 
       # Application Down
       - alert: TerraFusionAPIDown
@@ -70,8 +70,8 @@ groups:
           severity: critical
           component: api
         annotations:
-          summary: "TerraFusion API is down"
-          description: "TerraFusion API has been down for more than 30 seconds"
+          summary: 'TerraFusion API is down'
+          description: 'TerraFusion API has been down for more than 30 seconds'
 
       # Frontend Down
       - alert: TerraFusionWebDown
@@ -81,8 +81,8 @@ groups:
           severity: critical
           component: frontend
         annotations:
-          summary: "TerraFusion Web application is down"
-          description: "TerraFusion Web application has been down for more than 1 minute"
+          summary: 'TerraFusion Web application is down'
+          description: 'TerraFusion Web application has been down for more than 1 minute'
 
   - name: terrafusion-federation-alerts
     rules:
@@ -94,8 +94,8 @@ groups:
           severity: critical
           component: federation
         annotations:
-          summary: "Federation connectivity lost to {{ $labels.job }}"
-          description: "Lost connectivity to {{ $labels.job }} for more than 2 minutes"
+          summary: 'Federation connectivity lost to {{ $labels.job }}'
+          description: 'Lost connectivity to {{ $labels.job }} for more than 2 minutes'
 
       # High Federation Latency
       - alert: HighFederationLatency
@@ -105,8 +105,8 @@ groups:
           severity: warning
           component: federation
         annotations:
-          summary: "High federation latency detected"
-          description: "95th percentile federation request latency is above 5 seconds"
+          summary: 'High federation latency detected'
+          description: '95th percentile federation request latency is above 5 seconds'
 
   - name: terrafusion-emergency-alerts
     rules:
@@ -119,9 +119,9 @@ groups:
           component: emergency
           priority: p0
         annotations:
-          summary: "CRITICAL: Emergency service is down"
-          description: "Emergency service {{ $labels.instance }} is unreachable"
-          escalation: "immediate"
+          summary: 'CRITICAL: Emergency service is down'
+          description: 'Emergency service {{ $labels.instance }} is unreachable'
+          escalation: 'immediate'
 
       # Emergency Response Time
       - alert: EmergencyResponseTimeHigh
@@ -132,8 +132,8 @@ groups:
           component: emergency
           priority: p0
         annotations:
-          summary: "CRITICAL: Emergency response time degraded"
-          description: "Emergency response time is above 1 second for 90th percentile"
+          summary: 'CRITICAL: Emergency response time degraded'
+          description: 'Emergency response time is above 1 second for 90th percentile'
 
   - name: terrafusion-security-alerts
     rules:
@@ -145,8 +145,8 @@ groups:
           severity: warning
           component: security
         annotations:
-          summary: "High failed authentication attempts detected"
-          description: "Failed authentication rate is above 10 per minute"
+          summary: 'High failed authentication attempts detected'
+          description: 'Failed authentication rate is above 10 per minute'
 
       # Suspicious Activity
       - alert: SuspiciousActivity
@@ -156,8 +156,8 @@ groups:
           severity: critical
           component: security
         annotations:
-          summary: "Suspicious activity detected"
-          description: "Security monitoring has detected suspicious activity"
+          summary: 'Suspicious activity detected'
+          description: 'Security monitoring has detected suspicious activity'
 
   - name: terrafusion-compliance-alerts
     rules:
@@ -169,16 +169,16 @@ groups:
           severity: critical
           component: compliance
         annotations:
-          summary: "CRITICAL: Audit log write failures"
-          description: "Audit logging is failing - compliance requirement violation"
+          summary: 'CRITICAL: Audit log write failures'
+          description: 'Audit logging is failing - compliance requirement violation'
 
       # Data Retention Policy Violation
       - alert: DataRetentionViolation
-        expr: data_retention_age_days > 2555  # 7 years
+        expr: data_retention_age_days > 2555 # 7 years
         for: 0s
         labels:
           severity: critical
           component: compliance
         annotations:
-          summary: "CRITICAL: Data retention policy violation"
-          description: "Data older than 7 years detected - compliance violation"
+          summary: 'CRITICAL: Data retention policy violation'
+          description: 'Data older than 7 years detected - compliance violation'

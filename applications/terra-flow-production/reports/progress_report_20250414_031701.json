@@ -302,10 +302,7 @@
       "message": "Agent system initialized",
       "details": {
         "type": "SystemAgent",
-        "capabilities": [
-          "system_info",
-          "dashboard_support"
-        ],
+        "capabilities": ["system_info", "dashboard_support"],
         "registered_at": 1744600574.119648
       }
     }

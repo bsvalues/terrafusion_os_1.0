@@ -9,11 +9,11 @@ services:
       - AI_MODE=quantum_enhanced
       - GOVERNMENT_COMPLIANCE=FISMA_HIGH
     ports:
-      - "5001:5000"
+      - '5001:5000'
     networks:
       - terrafusion-quantum-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:5000/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -25,7 +25,7 @@ services:
       - COUNTY_INTEGRATION=harris_pacs_v12_4_7
       - SYNC_MODE=real_time
     ports:
-      - "5002:5000"
+      - '5002:5000'
     networks:
       - terrafusion-quantum-net
     depends_on:
@@ -39,11 +39,11 @@ services:
       - SWARM_COORDINATION=enabled
       - QUANTUM_PROCESSING=enabled
     ports:
-      - "3004:3000"
+      - '3004:3000'
     networks:
       - terrafusion-quantum-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
       interval: 15s
       timeout: 5s
       retries: 5
@@ -56,7 +56,7 @@ services:
       - SECURITY_LEVEL=zero_trust
       - FISMA_MODE=HIGH
     ports:
-      - "5003:5000"
+      - '5003:5000'
     networks:
       - terrafusion-quantum-net
 
@@ -67,9 +67,9 @@ services:
       - QUANTUM_ANALYTICS=enabled
       - AI_INSIGHTS=enabled
     ports:
-      - "5004:5000"
-      - "3000:3000"  # Grafana
-      - "9090:9090"  # Prometheus
+      - '5004:5000'
+      - '3000:3000' # Grafana
+      - '9090:9090' # Prometheus
     networks:
       - terrafusion-quantum-net
     volumes:
@@ -84,11 +84,11 @@ services:
       - GOVERNMENT_MODE=transcendent
       - CITIZEN_SERVICES=comprehensive
     ports:
-      - "5000:5000"
+      - '5000:5000'
     networks:
       - terrafusion-quantum-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:5000/health']
       interval: 20s
       timeout: 10s
       retries: 3
@@ -101,7 +101,7 @@ services:
       - AI_COORDINATION=swarm_enabled
       - QUANTUM_ENHANCED=true
     ports:
-      - "5005:5000"
+      - '5005:5000'
     networks:
       - terrafusion-quantum-net
     depends_on:
@@ -115,7 +115,7 @@ services:
       - POSTGRES_USER=terrafusion
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - terrafusion-quantum-net
     volumes:
@@ -124,7 +124,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - terrafusion-quantum-net
     volumes:

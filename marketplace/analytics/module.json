@@ -1,0 +1,133 @@
+{
+  "name": "terrafusion-analytics",
+  "version": "1.0.0",
+  "displayName": "TerraFusion Analytics Engine",
+  "description": "County-isolated analytics module for property valuation, tax assessment, and AI performance metrics across 39 Washington State counties",
+  "type": "marketplace-module",
+  "category": "analytics",
+  "author": "TerraFusion Elite Government OS Engineering",
+  "license": "Proprietary - TerraFusion Government Platform",
+  "compatibility": {
+    "terrafusionVersion": ">=1.0.0",
+    "dotnetVersion": ">=8.0.0",
+    "requires": [
+      "TerraFusion.Core",
+      "TerraFusion.Data",
+      "TerraFusion.AI",
+      "TerraFusion.CostForge",
+      "TerraFusion.Consciousness"
+    ]
+  },
+  "governance": {
+    "classification": "Government-Grade",
+    "compliance": [
+      "FISMA-High",
+      "FedRAMP-High",
+      "NIST-800-53",
+      "SOC-2-Type-II"
+    ],
+    "dataIsolation": "county-scoped",
+    "countyIsolationMandatory": true,
+    "integrityLevel": "high"
+  },
+  "features": {
+    "propertyAnalytics": {
+      "description": "Property valuation trend analysis with AI-powered insights",
+      "countyScope": "isolated",
+      "aiEnabled": true
+    },
+    "taxAnalytics": {
+      "description": "Tax levy calculations and rate analysis across assessment periods",
+      "countyScope": "isolated",
+      "integrations": ["TerraLevy"]
+    },
+    "performanceAnalytics": {
+      "description": "County-level system performance and AI swarm metrics",
+      "countyScope": "multi-county-authorized",
+      "quantumEnabled": true
+    },
+    "comparativeAnalytics": {
+      "description": "Cross-county comparisons for authorized power users",
+      "countyScope": "multi-county-authorized",
+      "roleRequired": "PowerUser"
+    }
+  },
+  "api": {
+    "baseRoute": "/api/v1/analytics",
+    "authentication": "required",
+    "authorization": "county-based",
+    "endpoints": [
+      {
+        "path": "/property/trends",
+        "method": "GET",
+        "description": "Property valuation trends for county",
+        "parameters": ["countyCode", "startDate", "endDate"]
+      },
+      {
+        "path": "/tax/levy-analysis",
+        "method": "GET",
+        "description": "Tax levy analysis for county",
+        "parameters": ["countyCode", "assessmentYear"]
+      },
+      {
+        "path": "/performance/county-metrics",
+        "method": "GET",
+        "description": "County system performance metrics",
+        "parameters": ["countyCode", "timeRange"]
+      },
+      {
+        "path": "/comparative/multi-county",
+        "method": "GET",
+        "description": "Cross-county comparative analytics",
+        "parameters": ["countyCodes[]", "metrics[]"],
+        "authorization": "multi-county-access"
+      }
+    ]
+  },
+  "database": {
+    "countyIsolation": true,
+    "guidRequirement": "Guid CountyId on all entities",
+    "migrations": true,
+    "entities": [
+      "PropertyAnalyticsSummary",
+      "TaxAnalyticsSnapshot",
+      "CountyPerformanceMetric",
+      "AISwarmAnalytics"
+    ]
+  },
+  "testing": {
+    "unitTests": true,
+    "integrationTests": true,
+    "countyIsolationTests": true,
+    "testCoverage": ">=90%"
+  },
+  "documentation": {
+    "readme": "docs/README.md",
+    "quickStart": "docs/QUICK_START.md",
+    "countyIsolation": "docs/COUNTY_ISOLATION.md",
+    "apiReference": "docs/API_REFERENCE.md"
+  },
+  "deployment": {
+    "platform": "TerraFusion OS",
+    "runtime": ".NET 8",
+    "hosting": "integrated-backend",
+    "scalability": "horizontal",
+    "performanceTarget": {
+      "latency": "<10ms P95",
+      "throughput": ">10000 requests/second",
+      "concurrency": "1000+ concurrent counties"
+    }
+  },
+  "configuration": {
+    "countyConfigRequired": true,
+    "aiSwarmIntegration": true,
+    "consciousnessEngineEnabled": true,
+    "quantumOptimization": true
+  },
+  "marketplace": {
+    "status": "production-ready",
+    "pricing": "included-government-platform",
+    "support": "elite-engineering-support",
+    "updates": "continuous-integration"
+  }
+}

@@ -403,11 +403,7 @@
     "/home/runner/workspace/src/services/__pycache__",
     "/home/runner/workspace/src/api/__pycache__"
   ],
-  "dependencies_updated": [
-    "Production requirements created"
-  ],
-  "security_improvements": [
-    "Production .env template created"
-  ],
+  "dependencies_updated": ["Production requirements created"],
+  "security_improvements": ["Production .env template created"],
   "performance_optimizations": []
 }

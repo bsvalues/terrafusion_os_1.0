@@ -8,13 +8,13 @@
   --secondary-color: #f50057;
   --secondary-light: #ff5983;
   --secondary-dark: #bb002f;
-  
+
   /* UI Colors */
   --success-color: #4caf50;
   --warning-color: #ff9800;
   --error-color: #f44336;
   --info-color: #2196f3;
-  
+
   /* Neutral Colors */
   --background-light: #ffffff;
   --background-dark: #121212;
@@ -22,7 +22,7 @@
   --surface-dark: #1e1e1e;
   --border-light: #e0e0e0;
   --border-dark: #333333;
-  
+
   /* Text Colors */
   --text-primary-light: rgba(0, 0, 0, 0.87);
   --text-secondary-light: rgba(0, 0, 0, 0.6);
@@ -30,7 +30,7 @@
   --text-primary-dark: rgba(255, 255, 255, 0.87);
   --text-secondary-dark: rgba(255, 255, 255, 0.6);
   --text-disabled-dark: rgba(255, 255, 255, 0.38);
-  
+
   /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -38,7 +38,7 @@
   --spacing-lg: 24px;
   --spacing-xl: 32px;
   --spacing-xxl: 48px;
-  
+
   /* Sizing */
   --header-height: 64px;
   --sidebar-width: 240px;
@@ -77,14 +77,25 @@ html,
 body {
   height: 100%;
   width: 100%;
-  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family:
+    'Roboto',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--background-color);
   color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 #root {
@@ -103,8 +114,7 @@ a:hover {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
   background-color: var(--surface-color);
   padding: 2px 4px;
   border-radius: 4px;
@@ -112,8 +122,8 @@ code {
 }
 
 button,
-input[type="submit"],
-input[type="button"] {
+input[type='submit'],
+input[type='button'] {
   cursor: pointer;
   font-family: inherit;
 }
@@ -264,7 +274,9 @@ input[type="button"] {
   border-radius: var(--border-radius);
   background-color: var(--background-color);
   color: var(--text-primary);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .form-control:focus {
@@ -290,7 +302,9 @@ input[type="button"] {
   border-radius: var(--border-radius);
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
   text-decoration: none;
 }
 
@@ -539,7 +553,9 @@ input[type="button"] {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .reset-button:hover:not(:disabled),
@@ -628,7 +644,9 @@ input[type="button"] {
   top: 0;
   left: 0;
   height: 100%;
-  transition: width 0.3s ease, background-color 0.3s ease;
+  transition:
+    width 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .password-strength.weak::before {
@@ -704,11 +722,11 @@ input[type="button"] {
     margin-left: 0;
     padding: var(--spacing-md);
   }
-  
+
   .sidebar {
     transform: translateX(-100%);
   }
-  
+
   .sidebar.open {
     transform: translateX(0);
   }

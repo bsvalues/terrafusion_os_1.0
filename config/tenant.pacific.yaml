@@ -1,0 +1,14 @@
+# TerraFusion County Configuration
+county: Pacific
+county_code: pacific
+isolation: tenant-database
+ai:
+  swarm_enabled: true
+  consciousness_port: 3004
+harris_pacs:
+  sync_interval_minutes: 15
+database:
+  type: postgresql
+  url_env: DATABASE_URL
+compliance:
+  fisma_level: HIGH

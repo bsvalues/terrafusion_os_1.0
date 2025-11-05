@@ -93,8 +93,8 @@ public class WorkflowExecutionRepository : IWorkflowExecutionRepository
     }
 
     public async Task<IEnumerable<WorkflowExecution>> GetRecentByUserAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         int count = 10,
         CancellationToken cancellationToken = default)
     {
@@ -295,8 +295,8 @@ public class WorkflowExecutionRepository : IWorkflowExecutionRepository
     }
 
     public async Task<object> GetUserStatisticsAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default)
     {
         var executions = await _context.WorkflowExecutions

@@ -9,11 +9,7 @@
         "workspace_role": "ai-systems specialized AI agent",
         "scope_definition": "Optimize and protect ai_infrastructure operations",
         "success_criteria": "Maintain critical-level security for ai_infrastructure",
-        "data_types_handled": [
-          "ai_models",
-          "training_data",
-          "ml_pipelines"
-        ],
+        "data_types_handled": ["ai_models", "training_data", "ml_pipelines"],
         "protection_priorities": [
           "model_security",
           "training_integrity",
@@ -27,11 +23,7 @@
         "risk_level_controls": "critical"
       },
       "L3_data_classification": {
-        "data_types": [
-          "ai_models",
-          "training_data",
-          "ml_pipelines"
-        ],
+        "data_types": ["ai_models", "training_data", "ml_pipelines"],
         "classification_level": "critical",
         "privacy_requirements": "ai_infrastructure_privacy_rules",
         "retention_policies": "ai-systems_data_retention",

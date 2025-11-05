@@ -114,9 +114,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
+          "calcs": ["last"],
           "fields": "",
           "values": false
         },
@@ -176,9 +174,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -239,9 +235,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -302,9 +296,7 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -975,11 +967,7 @@
   "refresh": "10s",
   "schemaVersion": 30,
   "style": "dark",
-  "tags": [
-    "terrafusion",
-    "api",
-    "monitoring"
-  ],
+  "tags": ["terrafusion", "api", "monitoring"],
   "templating": {
     "list": [
       {

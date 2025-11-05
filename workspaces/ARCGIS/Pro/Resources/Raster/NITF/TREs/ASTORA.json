@@ -1,8 +1,6 @@
 {
   "TRE": "ASTORA",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix E: ASDE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix E: ASDE"],
   "Name": "ASTOR Program Radar Data Extension",
   "Description": "The ASTOR radar uses the NITF 2.1 standard to format its output data. The workstation server on the ASTOR aircraft may convert the data to STANAG 4545 for further dissemination. Both NITF 2.1 and STANAG 4545 use STDI-0002, The Compendium of Controlled Extensions, to define their Support Data Extensions. Shown below is a new tag, ASTORA, which the ASTOR program has created as a Registered Extension.",
   "Size": 711,
@@ -73,7 +71,7 @@
       "Size": 7,
       "Format": "BCS-AN",
       "Type": "R",
-      "Units": [ "feet" ],
+      "Units": ["feet"],
       "Values": [
         {
           "Type": "Range",
@@ -88,7 +86,7 @@
       "Size": 16,
       "Format": "BCS-AN",
       "Type": "R",
-      "Units": [ "radians" ],
+      "Units": ["radians"],
       "Values": [
         {
           "Type": "Range",
@@ -238,8 +236,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -253,8 +251,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -268,8 +266,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -343,8 +341,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -358,8 +356,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -373,8 +371,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -388,8 +386,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -403,8 +401,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -418,8 +416,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -433,8 +431,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -448,8 +446,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -463,8 +461,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -637,8 +635,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -652,8 +650,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -667,8 +665,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -682,8 +680,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -697,8 +695,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -712,8 +710,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000000000,
-          "Max": 1.0000000000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },

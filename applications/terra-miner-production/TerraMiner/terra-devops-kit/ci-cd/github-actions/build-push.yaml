@@ -2,8 +2,8 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ main, develop ]
-    tags: [ 'v*' ]
+    branches: [main, develop]
+    tags: ['v*']
     paths-ignore:
       - '**.md'
       - 'docs/**'
@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         component: [api-gateway, data-processor, ml-service, feature-store]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

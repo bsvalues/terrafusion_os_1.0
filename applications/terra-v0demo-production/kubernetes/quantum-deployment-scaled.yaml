@@ -25,88 +25,88 @@ spec:
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - terrafusion-quantum-app
-              topologyKey: kubernetes.io/hostname
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - terrafusion-quantum-app
+                topologyKey: kubernetes.io/hostname
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-type
-                operator: In
-                values:
-                - quantum-compute
-                - high-performance
+              - matchExpressions:
+                  - key: node-type
+                    operator: In
+                    values:
+                      - quantum-compute
+                      - high-performance
       containers:
-      - name: quantum-app
-        image: terrafusion/quantum-app:latest
-        ports:
-        - containerPort: 3000
-          name: http
-        - containerPort: 8080
-          name: quantum-api
-        - containerPort: 9090
-          name: websocket
-        resources:
-          requests:
-            memory: "8Gi"
-            cpu: "4000m"
-            nvidia.com/gpu: 1
-          limits:
-            memory: "16Gi"
-            cpu: "8000m"
-            nvidia.com/gpu: 2
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: QUANTUM_PROCESSORS
-          value: "48"
-        - name: MAX_CONCURRENT_JOBS
-          value: "10000"
-        - name: REDIS_CLUSTER_ENDPOINT
-          value: "redis-cluster.terrafusion-pro.svc.cluster.local:6379"
-        - name: DATABASE_POOL_SIZE
-          value: "100"
-        - name: QUANTUM_OPTIMIZATION_LEVEL
-          value: "maximum"
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /api/ready
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 3
-        volumeMounts:
-        - name: quantum-cache
-          mountPath: /app/cache
-        - name: quantum-logs
-          mountPath: /app/logs
+        - name: quantum-app
+          image: terrafusion/quantum-app:latest
+          ports:
+            - containerPort: 3000
+              name: http
+            - containerPort: 8080
+              name: quantum-api
+            - containerPort: 9090
+              name: websocket
+          resources:
+            requests:
+              memory: '8Gi'
+              cpu: '4000m'
+              nvidia.com/gpu: 1
+            limits:
+              memory: '16Gi'
+              cpu: '8000m'
+              nvidia.com/gpu: 2
+          env:
+            - name: NODE_ENV
+              value: 'production'
+            - name: QUANTUM_PROCESSORS
+              value: '48'
+            - name: MAX_CONCURRENT_JOBS
+              value: '10000'
+            - name: REDIS_CLUSTER_ENDPOINT
+              value: 'redis-cluster.terrafusion-pro.svc.cluster.local:6379'
+            - name: DATABASE_POOL_SIZE
+              value: '100'
+            - name: QUANTUM_OPTIMIZATION_LEVEL
+              value: 'maximum'
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: quantum-cache
+              mountPath: /app/cache
+            - name: quantum-logs
+              mountPath: /app/logs
       volumes:
-      - name: quantum-cache
-        emptyDir:
-          sizeLimit: 10Gi
-      - name: quantum-logs
-        emptyDir:
-          sizeLimit: 5Gi
+        - name: quantum-cache
+          emptyDir:
+            sizeLimit: 10Gi
+        - name: quantum-logs
+          emptyDir:
+            sizeLimit: 5Gi
       nodeSelector:
         node-type: quantum-compute
       tolerations:
-      - key: quantum-workload
-        operator: Equal
-        value: "true"
-        effect: NoSchedule
+        - key: quantum-workload
+          operator: Equal
+          value: 'true'
+          effect: NoSchedule

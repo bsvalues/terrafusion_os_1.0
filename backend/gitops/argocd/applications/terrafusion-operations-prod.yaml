@@ -4,14 +4,14 @@ metadata:
   name: terrafusion-operations-prod
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "4"  # Deploy after consciousness
+    argocd.argoproj.io/sync-wave: '4' # Deploy after consciousness
     notifications.argoproj.io/subscribe.on-deployed.slack: terrafusion-deployments
     notifications.argoproj.io/subscribe.on-health-degraded.slack: terrafusion-alerts
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: terrafusion
-  
+
   source:
     repoURL: https://github.com/terrafusion/terrafusion-os
     targetRevision: main
@@ -24,36 +24,36 @@ spec:
         - name: global.environment
           value: production
         - name: image.tag
-          value: "1.0.0"
+          value: '1.0.0'
         - name: replicaCount
-          value: "3"
+          value: '3'
         - name: counties.benton.enabled
-          value: "true"
+          value: 'true'
         - name: counties.benton.aiAgents
-          value: "1500"
+          value: '1500'
         - name: counties.king.enabled
-          value: "true"
+          value: 'true'
         - name: counties.king.aiAgents
-          value: "3000"
+          value: '3000'
         - name: counties.pierce.enabled
-          value: "true"
+          value: 'true'
         - name: counties.pierce.aiAgents
-          value: "2000"
+          value: '2000'
         - name: counties.spokane.enabled
-          value: "true"
+          value: 'true'
         - name: counties.spokane.aiAgents
-          value: "1500"
+          value: '1500'
         - name: autoscaling.enabled
-          value: "true"
+          value: 'true'
         - name: autoscaling.minReplicas
-          value: "3"
+          value: '3'
         - name: autoscaling.maxReplicas
-          value: "15"
-  
+          value: '15'
+
   destination:
     server: https://kubernetes.default.svc
     namespace: terrafusion
-  
+
   syncPolicy:
     automated:
       prune: true
@@ -68,15 +68,15 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
-  
+
   ignoreDifferences:
     - group: apps
       kind: Deployment
       jsonPointers:
         - /spec/replicas
-  
+
   revisionHistoryLimit: 10
-  
+
   info:
     - name: 'Environment'
       value: 'Production'

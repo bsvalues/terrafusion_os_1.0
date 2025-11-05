@@ -12,24 +12,24 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/cost-analysis
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/cost-analysis
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/cost-analysis
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/cost-analysis
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/cost-analysis
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/cost-analysis
+    description: Development Environment
 paths:
   /cost-analysis:
     post:
       tags:
-      - costforge-ai
+        - costforge-ai
       summary: AI-powered cost analysis
       description: AI-powered cost analysis - Cost analysis and budget optimization
         APIs
       operationId: post__cost-analysis
       security:
-      - OAuth2:
-        - costforge-ai:write
+        - OAuth2:
+            - costforge-ai:write
       responses:
         '200':
           description: Successful operation
@@ -58,14 +58,14 @@ paths:
   /budget-optimization:
     post:
       tags:
-      - costforge-ai
+        - costforge-ai
       summary: Budget optimization recommendations
       description: Budget optimization recommendations - Cost analysis and budget
         optimization APIs
       operationId: post__budget-optimization
       security:
-      - OAuth2:
-        - costforge-ai:write
+        - OAuth2:
+            - costforge-ai:write
       responses:
         '200':
           description: Successful operation
@@ -94,14 +94,14 @@ paths:
   /forecasting:
     get:
       tags:
-      - costforge-ai
+        - costforge-ai
       summary: Cost forecasting models
       description: Cost forecasting models - Cost analysis and budget optimization
         APIs
       operationId: get__forecasting
       security:
-      - OAuth2:
-        - costforge-ai:read
+        - OAuth2:
+            - costforge-ai:read
       responses:
         '200':
           description: Successful operation
@@ -130,13 +130,13 @@ paths:
   /reports:
     get:
       tags:
-      - costforge-ai
+        - costforge-ai
       summary: Cost analysis reports
       description: Cost analysis reports - Cost analysis and budget optimization APIs
       operationId: get__reports
       security:
-      - OAuth2:
-        - costforge-ai:read
+        - OAuth2:
+            - costforge-ai:read
       responses:
         '200':
           description: Successful operation
@@ -167,8 +167,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -183,9 +183,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -209,12 +209,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - costforge-ai:read
-- ApiKey: []
+  - OAuth2:
+      - costforge-ai:read
+  - ApiKey: []
 tags:
-- name: costforge-ai
-  description: Costforge Ai operations
-  externalDocs:
-    description: Find out more about costforge-ai
-    url: https://docs.terrafusion.gov/marketplace/costforge-ai
+  - name: costforge-ai
+    description: Costforge Ai operations
+    externalDocs:
+      description: Find out more about costforge-ai
+      url: https://docs.terrafusion.gov/marketplace/costforge-ai

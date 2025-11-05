@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/cases",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "cases"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["cases"]
         }
       },
       "response": []
@@ -127,12 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/defendants",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "defendants"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["defendants"]
         }
       },
       "response": []
@@ -160,12 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/court-proceedings",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "court-proceedings"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["court-proceedings"]
         }
       },
       "response": []
@@ -193,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/sentencing",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "sentencing"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["sentencing"]
         }
       },
       "response": []

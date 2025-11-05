@@ -29,11 +29,7 @@
       "exemption_seer_ai.py",
       "rbac_manager.py"
     ],
-    "frontend": [
-      "templates/",
-      "static/",
-      "bootstrap_components.json"
-    ]
+    "frontend": ["templates/", "static/", "bootstrap_components.json"]
   },
   "quick_start": {
     "prerequisites": {
@@ -91,7 +87,12 @@
         "deployment": "terraform/aws/"
       },
       "azure": {
-        "services": ["Container Instances", "PostgreSQL", "Blob Storage", "CDN"],
+        "services": [
+          "Container Instances",
+          "PostgreSQL",
+          "Blob Storage",
+          "CDN"
+        ],
         "deployment": "terraform/azure/"
       },
       "gcp": {
@@ -105,10 +106,7 @@
     "base_url": "/api/v1",
     "authentication": "JWT Bearer Token",
     "endpoints": {
-      "system": [
-        "GET /health",
-        "GET /version"
-      ],
+      "system": ["GET /health", "GET /version"],
       "gis_export": [
         "GET /gis-export/jobs",
         "POST /gis-export/jobs",
@@ -159,22 +157,56 @@
     "core_tables": {
       "users": {
         "purpose": "User authentication and authorization",
-        "columns": ["id", "username", "email", "password_hash", "created_at", "active"],
+        "columns": [
+          "id",
+          "username",
+          "email",
+          "password_hash",
+          "created_at",
+          "active"
+        ],
         "indexes": ["username_idx", "email_idx"]
       },
       "counties": {
         "purpose": "Multi-county configuration support",
-        "columns": ["id", "county_code", "county_name", "state_code", "created_at"],
+        "columns": [
+          "id",
+          "county_code",
+          "county_name",
+          "state_code",
+          "created_at"
+        ],
         "indexes": ["county_code_idx"]
       },
       "export_jobs": {
         "purpose": "GIS export job tracking",
-        "columns": ["id", "job_id", "county_id", "username", "export_format", "status", "created_at", "completed_at", "file_path", "error_message"],
+        "columns": [
+          "id",
+          "job_id",
+          "county_id",
+          "username",
+          "export_format",
+          "status",
+          "created_at",
+          "completed_at",
+          "file_path",
+          "error_message"
+        ],
         "indexes": ["job_id_idx", "county_id_idx", "username_idx", "status_idx"]
       },
       "sync_operations": {
         "purpose": "Data synchronization audit trail",
-        "columns": ["id", "operation_id", "county_id", "operation_type", "status", "records_processed", "created_at", "completed_at", "error_message"],
+        "columns": [
+          "id",
+          "operation_id",
+          "county_id",
+          "operation_type",
+          "status",
+          "records_processed",
+          "created_at",
+          "completed_at",
+          "error_message"
+        ],
         "indexes": ["operation_id_idx", "county_id_idx", "operation_type_idx"]
       }
     },
@@ -204,8 +236,18 @@
       "audit_logging": "Complete activity trail with 7-year retention"
     },
     "compliance": {
-      "standards": ["FISMA", "SOC 2 Type II", "WCAG 2.1", "NIST Cybersecurity Framework"],
-      "features": ["Audit trails", "Access controls", "Data encryption", "Regular security assessments"]
+      "standards": [
+        "FISMA",
+        "SOC 2 Type II",
+        "WCAG 2.1",
+        "NIST Cybersecurity Framework"
+      ],
+      "features": [
+        "Audit trails",
+        "Access controls",
+        "Data encryption",
+        "Regular security assessments"
+      ]
     }
   },
   "integration_capabilities": {

@@ -44,7 +44,7 @@ env:
   AWS_REGION: us-west-2
   BASE_IMAGE_REPOSITORY: terrafusion-agent-base
   BASE_IMAGE_TAG: ${{ github.sha }}
-  
+
 jobs:
   determine-agents:
     name: Determine Agents to Build
@@ -52,17 +52,17 @@ jobs:
     outputs:
       agents: ${{ steps.set-agents.outputs.agents }}
       matrix: ${{ steps.set-agents.outputs.matrix }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Determine changed agents
         id: set-agents
         run: |
           # Default list of all agents
           ALL_AGENTS="factor-tuner,benchmark-guard,curve-trainer,scenario-agent,boe-arguer"
-          
+
           # If specific agent filter is provided, use that
           if [[ -n "${{ github.event.inputs.agentFilter }}" ]]; then
             AGENTS="${{ github.event.inputs.agentFilter }}"
@@ -120,10 +120,10 @@ jobs:
               AGENTS="$ALL_AGENTS"
             fi
           fi
-          
+
           echo "Building agents: $AGENTS"
           echo "agents=$AGENTS" >> $GITHUB_OUTPUT
-          
+
           # Create JSON matrix for the build jobs
           MATRIX_JSON="{\"agent\":["
           IFS=',' read -ra AGENT_ARRAY <<< "$AGENTS"
@@ -134,33 +134,33 @@ jobs:
             MATRIX_JSON+="\"${AGENT_ARRAY[$i]}\""
           done
           MATRIX_JSON+="]}"
-          
+
           echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
-  
+
   build-base:
     name: Build Base Agent Image
     runs-on: ubuntu-latest
     outputs:
       base_image: ${{ steps.build-base-image.outputs.base_image }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      
+
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -168,7 +168,7 @@ jobs:
           key: ${{ runner.os }}-buildx-agent-base-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-agent-base-
-      
+
       - name: Build and push base image
         id: build-base-image
         uses: docker/build-push-action@v4
@@ -183,33 +183,33 @@ jobs:
             BUILD_VERSION=${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
-      
+
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-      
+
       - name: Set base image output
         run: echo "base_image=${{ steps.login-ecr.outputs.registry }}/${{ env.BASE_IMAGE_REPOSITORY }}:${{ env.BASE_IMAGE_TAG }}" >> $GITHUB_OUTPUT
-  
+
   test-agents:
     name: Test Agents
     runs-on: ubuntu-latest
     needs: determine-agents
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run agent tests
         run: |
           IFS=',' read -ra AGENT_ARRAY <<< "${{ needs.determine-agents.outputs.agents }}"
@@ -217,7 +217,7 @@ jobs:
             echo "Running tests for $agent agent"
             npm run test:agent -- --agent=$agent
           done
-  
+
   build-agents:
     name: Build Agent Images
     runs-on: ubuntu-latest
@@ -227,25 +227,25 @@ jobs:
       fail-fast: false
     outputs:
       image_${{ matrix.agent }}: ${{ steps.build-agent-image.outputs.agent_image }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      
+
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -253,7 +253,7 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ matrix.agent }}-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-${{ matrix.agent }}-
-      
+
       - name: Build and push agent image
         id: build-agent-image
         uses: docker/build-push-action@v4
@@ -269,15 +269,15 @@ jobs:
             BUILD_VERSION=${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache-${{ matrix.agent }}
           cache-to: type=local,dest=/tmp/.buildx-cache-${{ matrix.agent }}-new
-      
+
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache-${{ matrix.agent }}
           mv /tmp/.buildx-cache-${{ matrix.agent }}-new /tmp/.buildx-cache-${{ matrix.agent }}
-      
+
       - name: Set agent image output
         run: echo "agent_image=${{ steps.login-ecr.outputs.registry }}/terrafusion-${{ matrix.agent }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-      
+
       - name: Scan agent image
         uses: aquasecurity/trivy-action@master
         with:
@@ -285,12 +285,12 @@ jobs:
           format: sarif
           output: trivy-${{ matrix.agent }}-results.sarif
           severity: 'CRITICAL,HIGH'
-      
+
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: trivy-${{ matrix.agent }}-results.sarif
-  
+
   deploy-agents:
     name: Deploy Agents
     runs-on: ubuntu-latest
@@ -298,30 +298,30 @@ jobs:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') || github.event_name == 'workflow_dispatch'
     environment:
       name: ${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || 'dev') }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      
+
       - name: Set environment
         run: echo "ENVIRONMENT=${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || 'dev') }}" >> $GITHUB_ENV
-      
+
       - name: Extract agent list
         run: |
           IFS=',' read -ra AGENT_ARRAY <<< "${{ needs.determine-agents.outputs.agents }}"
           echo "AGENTS=${AGENT_ARRAY[*]}" >> $GITHUB_ENV
-      
+
       - name: Configure kubectl
         run: |
           aws eks update-kubeconfig --name terrafusion-${ENVIRONMENT} --region ${AWS_REGION}
-      
+
       - name: Deploy agents
         run: |
           # Setup variables used in manifests
@@ -329,10 +329,10 @@ jobs:
           export AWS_REGION=${AWS_REGION}
           export AGENT_VERSION=${GITHUB_SHA}
           export ENVIRONMENT=${ENVIRONMENT}
-          
+
           # Create the namespace if it doesn't exist yet
           kubectl apply -f terrafusion-devops-kit/k8s-manifests/agents-deployment.yaml
-          
+
           for agent in ${AGENTS}; do
             echo "Deploying agent: $agent"
             
@@ -346,13 +346,13 @@ jobs:
               envsubst < terrafusion-devops-kit/k8s-manifests/agents-deployment.yaml | kubectl apply -f -
             fi
           done
-      
+
       - name: Trigger agent retraining
         if: github.event.inputs.forceRetrain == 'true'
         run: |
           # Get API gateway URL
           API_GATEWAY=$(kubectl get service -n api-gateway kong-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          
+
           for agent in ${AGENTS}; do
             echo "Triggering retraining for $agent"
             curl -X POST "http://${API_GATEWAY}/api/agents/${agent}/retrain" \
@@ -360,7 +360,7 @@ jobs:
               -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
               -d '{"force": true}'
           done
-      
+
       - name: Notify on success
         if: success()
         uses: slackapi/slack-github-action@v1
@@ -402,7 +402,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      
+
       - name: Notify on failure
         if: failure()
         uses: slackapi/slack-github-action@v1

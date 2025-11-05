@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using TerraFusion.API.Services;
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.API.Interfaces; // ✅ Added for OptimizationRecommendation and performance monitoring types
+using OptimizationRecommendation = TerraFusion.Abstractions.DTOs.Responses.OptimizationRecommendation;
 
 namespace TerraFusion.API.Services
 {
@@ -155,7 +156,8 @@ namespace TerraFusion.API.Services
                     recommendations.Add(new OptimizationRecommendation
                     {
                         Type = OptimizationType.ClassificationAlgorithm.ToString(),
-                        Priority = (int)OptimizationPriority.High,
+                        PriorityInt = (int)OptimizationPriority.High,
+                        Priority = OptimizationPriority.High.ToString(),
                         Title = "Improve Task Classification Accuracy",
                         Description = $"Current accuracy: {performanceReport.ClassificationAccuracy:F1}%. Recommend refining classification thresholds based on misclassification patterns.",
                         EstimatedImpact = Convert.ToDouble(CalculateClassificationImprovementImpact(performanceReport)),
@@ -170,7 +172,8 @@ namespace TerraFusion.API.Services
                     recommendations.Add(new OptimizationRecommendation
                     {
                         Type = OptimizationType.CognitiveLoadBalancing.ToString(),
-                        Priority = (int)OptimizationPriority.Medium,
+                        PriorityInt = (int)OptimizationPriority.Medium,
+                        Priority = OptimizationPriority.Medium.ToString(),
                         Title = "Optimize Cognitive Load Distribution",
                         Description = $"Detected {performanceReport.MillersLawViolations} violations of Miller's Law (7±2). Recommend task decomposition improvements.",
                         EstimatedImpact = Convert.ToDouble(CalculateCognitiveLoadImprovementImpact(performanceReport)),

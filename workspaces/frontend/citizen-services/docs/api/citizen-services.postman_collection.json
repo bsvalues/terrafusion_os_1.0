@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/services",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "services"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["services"]
         }
       },
       "response": []
@@ -127,14 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/services/{id}/apply",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "services",
-            "{id}",
-            "apply"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["services", "{id}", "apply"]
         }
       },
       "response": []
@@ -162,13 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/applications/{id}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "applications",
-            "{id}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["applications", "{id}"]
         }
       },
       "response": []
@@ -196,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/feedback",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "feedback"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["feedback"]
         }
       },
       "response": []

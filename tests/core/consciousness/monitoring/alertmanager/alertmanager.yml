@@ -3,145 +3,145 @@ global:
   smtp_from: alerts@consciousness.gov
 route:
   group_by:
-  - alertname
-  - government
-  - severity
+    - alertname
+    - government
+    - severity
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 12h
   receiver: government-alerts
   routes:
-  - match:
-      severity: critical
-    receiver: government-emergency
-    group_wait: 10s
-    repeat_interval: 5m
-  - match:
-      compliance: wcag_2_2_aa
-    receiver: accessibility-team
-    group_wait: 15s
-  - match:
-      security: vulnerability
-    receiver: security-team
-    group_wait: 5s
-    repeat_interval: 1m
+    - match:
+        severity: critical
+      receiver: government-emergency
+      group_wait: 10s
+      repeat_interval: 5m
+    - match:
+        compliance: wcag_2_2_aa
+      receiver: accessibility-team
+      group_wait: 15s
+    - match:
+        security: vulnerability
+      receiver: security-team
+      group_wait: 5s
+      repeat_interval: 1m
 receivers:
-- name: government-alerts
-  email_configs:
-  - to: ops@consciousness.gov
-    subject: 'TerraFusion consciousness Alert: {{ .GroupLabels.alertname }}'
-    body: '
+  - name: government-alerts
+    email_configs:
+      - to: ops@consciousness.gov
+        subject: 'TerraFusion consciousness Alert: {{ .GroupLabels.alertname }}'
+        body: '
 
-      Government Service Alert - {{ .GroupLabels.alertname }}
-
-
-      Service: {{ .GroupLabels.service }}
-
-      Severity: {{ .GroupLabels.severity }}
-
-      Government Impact: {{ .GroupLabels.citizen_impact }}
+          Government Service Alert - {{ .GroupLabels.alertname }}
 
 
-      Alert Details:
+          Service: {{ .GroupLabels.service }}
 
-      {{ range .Alerts }}
+          Severity: {{ .GroupLabels.severity }}
 
-      - Summary: {{ .Annotations.summary }}
-
-      - Description: {{ .Annotations.description }}
-
-      - Impact: {{ .Annotations.impact }}
-
-      - Action Required: {{ .Annotations.action }}
-
-      {{ end }}
+          Government Impact: {{ .GroupLabels.citizen_impact }}
 
 
-      Government Service Dashboard: http://grafana.gov:3001
+          Alert Details:
 
-      Citizen Service Status: {{ .ExternalURL }}
+          {{ range .Alerts }}
 
+          - Summary: {{ .Annotations.summary }}
 
-      This is an automated alert from TerraFusion Government Monitoring.
+          - Description: {{ .Annotations.description }}
 
-      '
-- name: government-emergency
-  email_configs:
-  - to: emergency@consciousness.gov, cio@consciousness.gov
-    subject: "\U0001F6A8 CRITICAL: TerraFusion consciousness Emergency"
-    body: "\n\U0001F6A8 CRITICAL GOVERNMENT SERVICE EMERGENCY \U0001F6A8\n\nService:\
-      \ {{ .GroupLabels.service }}\nAlert: {{ .GroupLabels.alertname }}\nCitizen Impact:\
-      \ HIGH\n\nIMMEDIATE ACTION REQUIRED\n\n{{ range .Alerts }}\nEmergency Details:\n\
-      - {{ .Annotations.summary }}\n- {{ .Annotations.description }}\n- Citizen Impact:\
-      \ {{ .Annotations.impact }}\n- Required Action: {{ .Annotations.action }}\n\
-      {{ end }}\n\nThis is a critical alert requiring immediate attention.\nGovernment\
-      \ services may be unavailable to citizens.\n"
-  slack_configs:
-  - api_url: https://hooks.slack.com/services/GOVERNMENT/EMERGENCY/WEBHOOK
-    channel: '#government-emergency'
-    title: "\U0001F6A8 Critical Alert: consciousness"
-    text: '{{ .GroupLabels.alertname }} - Immediate action required'
-- name: accessibility-team
-  email_configs:
-  - to: accessibility@consciousness.gov, section508@consciousness.gov
-    subject: "\u267F Accessibility Alert: consciousness"
-    body: '
+          - Impact: {{ .Annotations.impact }}
 
-      Accessibility Compliance Alert
+          - Action Required: {{ .Annotations.action }}
+
+          {{ end }}
 
 
-      Service: {{ .GroupLabels.service }}
+          Government Service Dashboard: http://grafana.gov:3001
 
-      Compliance Issue: {{ .GroupLabels.compliance }}
-
-
-      {{ range .Alerts }}
-
-      Accessibility Details:
-
-      - Issue: {{ .Annotations.summary }}
-
-      - Description: {{ .Annotations.description }}
-
-      - Citizen Impact: {{ .Annotations.impact }}
-
-      - Compliance Requirement: {{ .Annotations.requirement }}
-
-      {{ end }}
+          Citizen Service Status: {{ .ExternalURL }}
 
 
-      Section 508 compliance must be maintained for all government services.
+          This is an automated alert from TerraFusion Government Monitoring.
 
-      '
-- name: security-team
-  email_configs:
-  - to: security@consciousness.gov, cybersecurity@consciousness.gov
-    subject: "\U0001F512 Security Alert: consciousness"
-    body: '
+          '
+  - name: government-emergency
+    email_configs:
+      - to: emergency@consciousness.gov, cio@consciousness.gov
+        subject: "\U0001F6A8 CRITICAL: TerraFusion consciousness Emergency"
+        body: "\n\U0001F6A8 CRITICAL GOVERNMENT SERVICE EMERGENCY \U0001F6A8\n\nService:\
+          \ {{ .GroupLabels.service }}\nAlert: {{ .GroupLabels.alertname }}\nCitizen Impact:\
+          \ HIGH\n\nIMMEDIATE ACTION REQUIRED\n\n{{ range .Alerts }}\nEmergency Details:\n\
+          - {{ .Annotations.summary }}\n- {{ .Annotations.description }}\n- Citizen Impact:\
+          \ {{ .Annotations.impact }}\n- Required Action: {{ .Annotations.action }}\n\
+          {{ end }}\n\nThis is a critical alert requiring immediate attention.\nGovernment\
+          \ services may be unavailable to citizens.\n"
+    slack_configs:
+      - api_url: https://hooks.slack.com/services/GOVERNMENT/EMERGENCY/WEBHOOK
+        channel: '#government-emergency'
+        title: "\U0001F6A8 Critical Alert: consciousness"
+        text: '{{ .GroupLabels.alertname }} - Immediate action required'
+  - name: accessibility-team
+    email_configs:
+      - to: accessibility@consciousness.gov, section508@consciousness.gov
+        subject: "\u267F Accessibility Alert: consciousness"
+        body: '
 
-      Government Security Alert
-
-
-      Service: {{ .GroupLabels.service }}
-
-      Security Issue: {{ .GroupLabels.security }}
-
-
-      {{ range .Alerts }}
-
-      Security Details:
-
-      - Threat: {{ .Annotations.summary }}
-
-      - Description: {{ .Annotations.description }}
-
-      - Risk Level: {{ .Annotations.impact }}
-
-      - Response Required: {{ .Annotations.action }}
-
-      {{ end }}
+          Accessibility Compliance Alert
 
 
-      Government security protocols must be followed immediately.
+          Service: {{ .GroupLabels.service }}
 
-      '
+          Compliance Issue: {{ .GroupLabels.compliance }}
+
+
+          {{ range .Alerts }}
+
+          Accessibility Details:
+
+          - Issue: {{ .Annotations.summary }}
+
+          - Description: {{ .Annotations.description }}
+
+          - Citizen Impact: {{ .Annotations.impact }}
+
+          - Compliance Requirement: {{ .Annotations.requirement }}
+
+          {{ end }}
+
+
+          Section 508 compliance must be maintained for all government services.
+
+          '
+  - name: security-team
+    email_configs:
+      - to: security@consciousness.gov, cybersecurity@consciousness.gov
+        subject: "\U0001F512 Security Alert: consciousness"
+        body: '
+
+          Government Security Alert
+
+
+          Service: {{ .GroupLabels.service }}
+
+          Security Issue: {{ .GroupLabels.security }}
+
+
+          {{ range .Alerts }}
+
+          Security Details:
+
+          - Threat: {{ .Annotations.summary }}
+
+          - Description: {{ .Annotations.description }}
+
+          - Risk Level: {{ .Annotations.impact }}
+
+          - Response Required: {{ .Annotations.action }}
+
+          {{ end }}
+
+
+          Government security protocols must be followed immediately.
+
+          '

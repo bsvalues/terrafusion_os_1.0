@@ -42,7 +42,7 @@ public class NotebookHub : Hub
     /// <summary>
     /// Join a notebook collaboration session
     /// </summary>
-    public async Task JoinNotebook(int notebookId, int userId, int countyId, string userName)
+    public async Task JoinNotebook(int notebookId, Guid userId, Guid countyId, string userName)
     {
         // Verify access to notebook
         var hasAccess = await _notebookRepository.HasAccessAsync(notebookId, userId, countyId);

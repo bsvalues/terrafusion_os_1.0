@@ -27,11 +27,7 @@
         "risk_level_controls": "medium"
       },
       "L3_data_classification": {
-        "data_types": [
-          "cost_data",
-          "budget_analysis",
-          "financial_projections"
-        ],
+        "data_types": ["cost_data", "budget_analysis", "financial_projections"],
         "classification_level": "medium",
         "privacy_requirements": "cost_analysis_privacy_rules",
         "retention_policies": "costforge-ai_data_retention",

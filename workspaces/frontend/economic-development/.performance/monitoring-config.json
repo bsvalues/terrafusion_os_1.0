@@ -12,13 +12,7 @@
     "collection": {
       "interval_seconds": 30,
       "retention_days": 90,
-      "aggregation_periods": [
-        "1m",
-        "5m",
-        "15m",
-        "1h",
-        "1d"
-      ]
+      "aggregation_periods": ["1m", "5m", "15m", "1h", "1d"]
     },
     "metrics": [
       "request_count",
@@ -35,11 +29,7 @@
   },
   "alerts": {
     "priority": "MEDIUM",
-    "escalation_minutes": [
-      15,
-      45,
-      120
-    ],
+    "escalation_minutes": [15, 45, 120],
     "rules": [
       {
         "metric": "response_time_p95",
@@ -76,12 +66,6 @@
   "dashboards": {
     "real_time": true,
     "refresh_interval_seconds": 10,
-    "views": [
-      "overview",
-      "performance",
-      "sla",
-      "alerts",
-      "optimization"
-    ]
+    "views": ["overview", "performance", "sla", "alerts", "optimization"]
   }
 }

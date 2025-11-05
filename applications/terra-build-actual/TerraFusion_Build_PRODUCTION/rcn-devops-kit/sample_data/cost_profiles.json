@@ -9,7 +9,7 @@
           "code": "SFR",
           "name": "Single Family Residential",
           "description": "Detached single-family homes",
-          "base_rate": 125.00,
+          "base_rate": 125.0,
           "construction_details": {
             "frame": "Standard wood framing, 2x4 or 2x6 walls",
             "slab_foundation": "4-inch concrete slab",
@@ -21,7 +21,7 @@
           "code": "MFR",
           "name": "Multi-Family Residential",
           "description": "Apartment and multi-family structures",
-          "base_rate": 115.00,
+          "base_rate": 115.0,
           "construction_details": {
             "frame": "Wood framing with enhanced fire separation",
             "foundation": "Reinforced concrete slab or basement",
@@ -32,7 +32,7 @@
           "code": "MH",
           "name": "Manufactured Home",
           "description": "Factory-built housing assembled on site",
-          "base_rate": 75.00,
+          "base_rate": 75.0,
           "construction_details": {
             "frame": "Metal chassis with wood frame and light metal exterior",
             "foundation": "Temporary or permanent foundation",
@@ -43,7 +43,7 @@
           "code": "DPX",
           "name": "Duplex",
           "description": "Two attached units with separate entrances",
-          "base_rate": 110.00,
+          "base_rate": 110.0,
           "construction_details": {
             "frame": "Wood frame with fire separation between units",
             "foundation": "Shared foundation, typically concrete slab or crawl space",
@@ -61,7 +61,7 @@
           "code": "RET",
           "name": "Retail",
           "description": "Retail stores and shopping centers",
-          "base_rate": 135.00,
+          "base_rate": 135.0,
           "construction_details": {
             "frame": "Metal or wood framing with various exterior finishes",
             "foundation": "Reinforced concrete slab",
@@ -73,7 +73,7 @@
           "code": "OFF",
           "name": "Office",
           "description": "Professional office buildings",
-          "base_rate": 150.00,
+          "base_rate": 150.0,
           "construction_details": {
             "frame": "Steel frame or reinforced concrete",
             "foundation": "Reinforced concrete slab or basement",
@@ -85,7 +85,7 @@
           "code": "RST",
           "name": "Restaurant",
           "description": "Food service establishments",
-          "base_rate": 165.00,
+          "base_rate": 165.0,
           "construction_details": {
             "frame": "Various framing types with enhanced fire protection",
             "foundation": "Reinforced concrete slab",
@@ -97,7 +97,7 @@
           "code": "HTL",
           "name": "Hotel",
           "description": "Lodging facilities",
-          "base_rate": 175.00,
+          "base_rate": 175.0,
           "construction_details": {
             "frame": "Steel or concrete framing with enhanced fire protection",
             "foundation": "Reinforced concrete with basement level amenities",
@@ -116,7 +116,7 @@
           "code": "LM",
           "name": "Light Manufacturing",
           "description": "Light industrial production facilities",
-          "base_rate": 115.00,
+          "base_rate": 115.0,
           "construction_details": {
             "frame": "Steel frame with metal or masonry exterior",
             "foundation": "Reinforced concrete slab",
@@ -128,7 +128,7 @@
           "code": "HM",
           "name": "Heavy Manufacturing",
           "description": "Heavy industrial production facilities",
-          "base_rate": 135.00,
+          "base_rate": 135.0,
           "construction_details": {
             "frame": "Heavy steel frame or reinforced concrete",
             "foundation": "Heavy-duty reinforced concrete slab",
@@ -140,7 +140,7 @@
           "code": "WH",
           "name": "Warehouse",
           "description": "Storage and distribution facilities",
-          "base_rate": 85.00,
+          "base_rate": 85.0,
           "construction_details": {
             "frame": "Steel frame with metal exterior",
             "foundation": "Reinforced concrete slab",
@@ -152,7 +152,7 @@
           "code": "FLX",
           "name": "Flex Space",
           "description": "Combined office and industrial space",
-          "base_rate": 105.00,
+          "base_rate": 105.0,
           "construction_details": {
             "frame": "Steel frame with various exterior finishes",
             "foundation": "Reinforced concrete slab",
@@ -171,7 +171,7 @@
           "code": "BRN",
           "name": "Barn",
           "description": "General purpose farm building",
-          "base_rate": 65.00,
+          "base_rate": 65.0,
           "construction_details": {
             "frame": "Wood or steel frame with metal or wood exterior",
             "foundation": "Concrete perimeter or slab",
@@ -183,7 +183,7 @@
           "code": "STO",
           "name": "Storage Building",
           "description": "Agricultural storage facilities",
-          "base_rate": 55.00,
+          "base_rate": 55.0,
           "construction_details": {
             "frame": "Metal frame with metal exterior",
             "foundation": "Concrete slab or gravel base",
@@ -195,7 +195,7 @@
           "code": "PRC",
           "name": "Processing Facility",
           "description": "Agricultural product processing facilities",
-          "base_rate": 95.00,
+          "base_rate": 95.0,
           "construction_details": {
             "frame": "Steel frame with metal or masonry exterior",
             "foundation": "Reinforced concrete slab",
@@ -207,7 +207,7 @@
           "code": "FR",
           "name": "Farm Residence",
           "description": "Residential building on agricultural property",
-          "base_rate": 115.00,
+          "base_rate": 115.0,
           "construction_details": {
             "frame": "Wood frame with various exterior finishes",
             "foundation": "Concrete slab, crawl space, or basement",
@@ -409,7 +409,7 @@
       "code": "GAR",
       "name": "Garage",
       "description": "Attached or detached vehicle storage",
-      "unit_cost": 45.00,
+      "unit_cost": 45.0,
       "unit": "square_foot",
       "quality_adjustments": {
         "economy": 0.8,
@@ -423,7 +423,7 @@
       "code": "POOL",
       "name": "Swimming Pool",
       "description": "In-ground swimming pool",
-      "unit_cost": 125.00,
+      "unit_cost": 125.0,
       "unit": "square_foot",
       "quality_adjustments": {
         "economy": 0.85,
@@ -437,7 +437,7 @@
       "code": "DECK",
       "name": "Deck",
       "description": "Exterior wood deck",
-      "unit_cost": 35.00,
+      "unit_cost": 35.0,
       "unit": "square_foot",
       "quality_adjustments": {
         "economy": 0.75,
@@ -451,7 +451,7 @@
       "code": "FP",
       "name": "Fireplace",
       "description": "Masonry fireplace",
-      "unit_cost": 7500.00,
+      "unit_cost": 7500.0,
       "unit": "each",
       "quality_adjustments": {
         "economy": 0.7,
@@ -465,7 +465,7 @@
       "code": "HVAC",
       "name": "HVAC System",
       "description": "Central heating and air conditioning",
-      "unit_cost": 10.00,
+      "unit_cost": 10.0,
       "unit": "square_foot",
       "quality_adjustments": {
         "economy": 0.8,
@@ -502,16 +502,16 @@
     "annual_inflation": 0.035,
     "regional_trends": {
       "northwest": 0.045,
-      "southwest": 0.050,
-      "midwest": 0.030,
+      "southwest": 0.05,
+      "midwest": 0.03,
       "southeast": 0.035,
-      "northeast": 0.040,
+      "northeast": 0.04,
       "central": 0.025
     },
     "material_specific": {
       "lumber": 0.045,
       "concrete": 0.035,
-      "steel": 0.040,
+      "steel": 0.04,
       "labor": 0.042
     }
   }

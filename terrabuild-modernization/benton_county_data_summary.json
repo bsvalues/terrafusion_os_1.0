@@ -1,7 +1,5 @@
 {
-  "regions": [
-    "Central Benton"
-  ],
+  "regions": ["Central Benton"],
   "buildingTypes": [
     "S2",
     "C2",

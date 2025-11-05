@@ -7,11 +7,11 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 
 # Load and evaluate rules in this file every 'evaluation_interval' seconds
 rule_files:
-  - "rules/*.yml"
+  - 'rules/*.yml'
 
 # A scrape configuration containing exactly one endpoint to scrape:
 scrape_configs:

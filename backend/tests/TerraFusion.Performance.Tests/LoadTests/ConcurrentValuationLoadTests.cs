@@ -1,21 +1,25 @@
 using NBomber.CSharp;
 using NBomber.Http.CSharp;
+using NBomber.Contracts;
 using System.Net.Http.Json;
 using Xunit;
 using FluentAssertions;
 using TerraFusion.Core.Models;
+using TerraFusion.Core.Interfaces;
+// Resolve type ambiguity: Use property valuation types from interface namespace
+using PropertyValuationRequest = TerraFusion.Core.Interfaces.PropertyValuationRequest;
 
 namespace TerraFusion.Performance.Tests.LoadTests;
 
 /// <summary>
 /// 🚀 Concurrent Valuation Load Testing - Championship Performance Validation
-/// 
+///
 /// Tests system performance under concurrent load to validate championship targets:
 /// - 100 Concurrent Valuations: <2s P95 latency, <5% error rate
 /// - 500 Concurrent Valuations: <3s P95 latency, <10% error rate
 /// - 1,000 Concurrent Valuations: <5s P95 latency, <10% error rate
 /// - 5,000 Concurrent Valuations: <10s P95 latency, graceful degradation
-/// 
+///
 /// Load Profile: Ramp up over 30 seconds, sustain for 5 minutes, ramp down over 30 seconds
 /// Success Criteria: >90% successful requests, P95 latency within targets, no crashes
 /// </summary>

@@ -1,16 +1,14 @@
 {
   "TRE": "CSDIDA",
-  "Source": [
-    "STDI-0006 Apr2014, 2.1"
-    ],
+  "Source": ["STDI-0006 Apr2014, 2.1"],
   "Name": "Commercial Support Dataset Identifier",
   "Description": "This TRE provides basic information that describes the data contained in commercial imagery products that are provided in NITF format.",
   "Size": 70,
   "Fields": {
-    "DAY" : {
+    "DAY": {
       "Name": "Day of Dataset Collection",
       "Description": "This field contains the 'day of start' of Dataset Collection (Image Start Time). For any datasets containing imagery collected at different times, this will be the day of the earliest image included.",
-      "Size":  2,
+      "Size": 2,
       "Format": "BCS-N",
       "Type": "R",
       "Units": [],
@@ -74,13 +72,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "GE",
-            "QB",
-            "IK",
-            "OV",
-            "WV"
-          ]
+          "Values": ["GE", "QB", "IK", "OV", "WV"]
         }
       ]
     },
@@ -95,7 +87,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 99         
+          "Max": 99
         }
       ]
     },
@@ -140,11 +132,11 @@
         {
           "Type": "Value",
           "Values": {
-            "AA":"panchromatic only",
-            "CA":"CAVIS",
-            "GA":"multispectral and pan-sharpened only",
-            "NA":"panchromatic and multispectral together",
-            "SW":"SWIR"
+            "AA": "panchromatic only",
+            "CA": "CAVIS",
+            "GA": "multispectral and pan-sharpened only",
+            "NA": "panchromatic and multispectral together",
+            "SW": "SWIR"
           }
         }
       ]

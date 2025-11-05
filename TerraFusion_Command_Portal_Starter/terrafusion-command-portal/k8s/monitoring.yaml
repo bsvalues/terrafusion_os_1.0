@@ -11,16 +11,16 @@ data:
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
-    
+
     rule_files:
       - "terrafusion_alerts.yml"
-    
+
     alerting:
       alertmanagers:
         - static_configs:
             - targets:
               - alertmanager:9093
-    
+
     scrape_configs:
       - job_name: 'terrafusion-backend'
         kubernetes_sd_configs:
@@ -159,36 +159,36 @@ spec:
     spec:
       serviceAccountName: prometheus
       containers:
-      - name: prometheus
-        image: prom/prometheus:v2.47.0
-        args:
-          - --config.file=/etc/prometheus/prometheus.yml
-          - --storage.tsdb.path=/prometheus/
-          - --web.console.libraries=/usr/share/prometheus/console_libraries
-          - --web.console.templates=/usr/share/prometheus/consoles
-          - --web.enable-lifecycle
-          - --storage.tsdb.retention.time=30d
-        ports:
-        - containerPort: 9090
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-        volumeMounts:
-        - name: config
-          mountPath: /etc/prometheus
-        - name: storage
-          mountPath: /prometheus
+        - name: prometheus
+          image: prom/prometheus:v2.47.0
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus/
+            - --web.console.libraries=/usr/share/prometheus/console_libraries
+            - --web.console.templates=/usr/share/prometheus/consoles
+            - --web.enable-lifecycle
+            - --storage.tsdb.retention.time=30d
+          ports:
+            - containerPort: 9090
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+            - name: storage
+              mountPath: /prometheus
       volumes:
-      - name: config
-        configMap:
-          name: prometheus-config
-      - name: storage
-        persistentVolumeClaim:
-          claimName: prometheus-storage
+        - name: config
+          configMap:
+            name: prometheus-config
+        - name: storage
+          persistentVolumeClaim:
+            claimName: prometheus-storage
 ---
 apiVersion: v1
 kind: Service
@@ -197,8 +197,8 @@ metadata:
   namespace: terrafusion-monitoring
 spec:
   ports:
-  - port: 9090
-    targetPort: 9090
+    - port: 9090
+      targetPort: 9090
   selector:
     app: prometheus
 ---
@@ -213,19 +213,19 @@ kind: ClusterRole
 metadata:
   name: prometheus
 rules:
-- apiGroups: [""]
-  resources:
-  - nodes
-  - nodes/proxy
-  - services
-  - endpoints
-  - pods
-  verbs: ["get", "list", "watch"]
-- apiGroups:
-  - extensions
-  resources:
-  - ingresses
-  verbs: ["get", "list", "watch"]
+  - apiGroups: ['']
+    resources:
+      - nodes
+      - nodes/proxy
+      - services
+      - endpoints
+      - pods
+    verbs: ['get', 'list', 'watch']
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses
+    verbs: ['get', 'list', 'watch']
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -236,9 +236,9 @@ roleRef:
   kind: ClusterRole
   name: prometheus
 subjects:
-- kind: ServiceAccount
-  name: prometheus
-  namespace: terrafusion-monitoring
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: terrafusion-monitoring
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -382,41 +382,41 @@ spec:
         app: grafana
     spec:
       containers:
-      - name: grafana
-        image: grafana/grafana:10.1.0
-        ports:
-        - containerPort: 3000
-        env:
-        - name: GF_SECURITY_ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-secrets
-              key: admin-password
-        - name: GF_SERVER_ROOT_URL
-          value: "https://monitoring.terrafusion.gov"
-        - name: GF_AUTH_ANONYMOUS_ENABLED
-          value: "false"
-        - name: GF_AUTH_DISABLE_LOGIN_FORM
-          value: "false"
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "200m"
-        volumeMounts:
-        - name: grafana-storage
-          mountPath: /var/lib/grafana
-        - name: dashboards
-          mountPath: /etc/grafana/provisioning/dashboards
+        - name: grafana
+          image: grafana/grafana:10.1.0
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secrets
+                  key: admin-password
+            - name: GF_SERVER_ROOT_URL
+              value: 'https://monitoring.terrafusion.gov'
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: 'false'
+            - name: GF_AUTH_DISABLE_LOGIN_FORM
+              value: 'false'
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '200m'
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
+            - name: dashboards
+              mountPath: /etc/grafana/provisioning/dashboards
       volumes:
-      - name: grafana-storage
-        persistentVolumeClaim:
-          claimName: grafana-storage
-      - name: dashboards
-        configMap:
-          name: grafana-dashboards
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-storage
+        - name: dashboards
+          configMap:
+            name: grafana-dashboards
 ---
 apiVersion: v1
 kind: Service
@@ -425,8 +425,8 @@ metadata:
   namespace: terrafusion-monitoring
 spec:
   ports:
-  - port: 3000
-    targetPort: 3000
+    - port: 3000
+      targetPort: 3000
   selector:
     app: grafana
 ---

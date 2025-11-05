@@ -1,136 +1,86 @@
 {
-    "renderer": {
-        "authoringInfo": {
-            "visualVariables": [
-                {
-                    "type": "colorInfo",
-                    "minSliderValue": 7.064092511355528E-7,
-                    "maxSliderValue": 0.6388176969645594
-                }
-            ]
+  "renderer": {
+    "authoringInfo": {
+      "visualVariables": [
+        {
+          "type": "colorInfo",
+          "minSliderValue": 7.064092511355528e-7,
+          "maxSliderValue": 0.6388176969645594
+        }
+      ]
+    },
+    "type": "classBreaks",
+    "field": "INDEX_",
+    "minValue": -9223372036854775808,
+    "classBreakInfos": [
+      {
+        "symbol": {
+          "type": "esriSLS",
+          "style": "esriSLSSolid",
+          "color": [130, 130, 130, 255],
+          "width": 1.5
         },
-        "type": "classBreaks",
-        "field": "INDEX_",
-        "minValue": -9223372036854775808,
-        "classBreakInfos": [
-            {
-                "symbol": {
-                    "type": "esriSLS",
-                    "style": "esriSLSSolid",
-                    "color": [
-                        130,
-                        130,
-                        130,
-                        255
-                    ],
-                    "width": 1.5
-                },
-                "classMaxValue": 9223372036854775807,
-                "label": "Index"
-            }
+        "classMaxValue": 9223372036854775807,
+        "label": "Index"
+      }
+    ],
+    "legendOptions": {
+      "order": "ascendingValues"
+    },
+    "visualVariables": [
+      {
+        "type": "colorInfo",
+        "valueExpressionTitle": "Custom",
+        "valueExpression": "$feature.INDEX_",
+        "stops": [
+          {
+            "value": 7.064092511355528e-7,
+            "color": [247, 252, 253, 255],
+            "label": "0.00000071"
+          },
+          {
+            "value": 0.07985283022866467,
+            "color": [224, 236, 244, 255]
+          },
+          {
+            "value": 0.1597049540480782,
+            "color": [191, 211, 230, 255]
+          },
+          {
+            "value": 0.23955707786749172,
+            "color": [158, 188, 218, 255]
+          },
+          {
+            "value": 0.3194092016869053,
+            "color": [140, 150, 198, 255]
+          },
+          {
+            "value": 0.3992613255063188,
+            "color": [140, 107, 177, 255]
+          },
+          {
+            "value": 0.47911344932573235,
+            "color": [136, 65, 157, 255]
+          },
+          {
+            "value": 0.5589655731451458,
+            "color": [129, 15, 124, 255]
+          },
+          {
+            "value": 0.6388176969645594,
+            "color": [77, 0, 75, 255],
+            "label": "0.64"
+          }
         ],
         "legendOptions": {
-            "order": "ascendingValues"
-        },
-        "visualVariables": [
-            {
-                "type": "colorInfo",
-                "valueExpressionTitle": "Custom",
-                "valueExpression": "$feature.INDEX_",
-                "stops": [
-                    {
-                        "value": 7.064092511355528E-7,
-                        "color": [
-                            247,
-                            252,
-                            253,
-                            255
-                        ],
-                        "label": "0.00000071"
-                    },
-                    {
-                        "value": 0.07985283022866467,
-                        "color": [
-                            224,
-                            236,
-                            244,
-                            255
-                        ]
-                    },
-                    {
-                        "value": 0.1597049540480782,
-                        "color": [
-                            191,
-                            211,
-                            230,
-                            255
-                        ]
-                    },
-                    {
-                        "value": 0.23955707786749172,
-                        "color": [
-                            158,
-                            188,
-                            218,
-                            255
-                        ]
-                    },
-                    {
-                        "value": 0.3194092016869053,
-                        "color": [
-                            140,
-                            150,
-                            198,
-                            255
-                        ]
-                    },
-                    {
-                        "value": 0.3992613255063188,
-                        "color": [
-                            140,
-                            107,
-                            177,
-                            255
-                        ]
-                    },
-                    {
-                        "value": 0.47911344932573235,
-                        "color": [
-                            136,
-                            65,
-                            157,
-                            255
-                        ]
-                    },
-                    {
-                        "value": 0.5589655731451458,
-                        "color": [
-                            129,
-                            15,
-                            124,
-                            255
-                        ]
-                    },
-                    {
-                        "value": 0.6388176969645594,
-                        "color": [
-                            77,
-                            0,
-                            75,
-                            255
-                        ],
-                        "label": "0.64"
-                    }
-                ],
-                "legendOptions": {
-                    "title": "",
-                    "showLegend": true,
-                    "order": "ascendingValues"
-                }
-            }
-        ]
-    },
-    "scaleSymbols": true,
-    "transparency": 0,
-    "labelingInfo": null
+          "title": "",
+          "showLegend": true,
+          "order": "ascendingValues"
+        }
+      }
+    ]
+  },
+  "scaleSymbols": true,
+  "transparency": 0,
+  "labelingInfo": null
 }

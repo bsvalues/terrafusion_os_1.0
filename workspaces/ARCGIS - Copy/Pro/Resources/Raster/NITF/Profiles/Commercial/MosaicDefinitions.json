@@ -27,7 +27,7 @@
       },
       "Properties": {}
     },
-    
+
     "MosaicDefinition-Default-Base": {
       "@Variables": {
         "LayerObject": "Primary"
@@ -41,14 +41,14 @@
       "ref": "#MosaicDefinition-Base",
       "ProcessingTemplate": "Catalog"
     },
-    
+
     "Tag-Pan": "Pan",
     "Tag-RGB": "RGB",
     "Tag-MS": "MS",
     "Tag-SWIR": "SWIR",
     "Tag-CAVIS": "CAVIS",
     "Tag-Pansharpened": "Pansharpened",
-    
+
     "ProductName-BasicPanchromatic": "BasicPanchromatic",
     "ProductName-GeoPanchromatic": "GeoPanchromatic",
     "ProductName-OrthoPanchromatic": "OrthoPanchromatic",
@@ -67,7 +67,7 @@
     "ProductName-BasicCAVIS": "BasicCAVIS",
     "ProductName-GeoCAVIS": "GeoCAVIS",
     "ProductName-OrthoCAVIS": "OrthoCAVIS",
-    
+
     "MosaicDefinition-Catalog-Generic-Pan": {
       "@Variables": {
         "LayerObjectType": "Panchromatic-Basic"
@@ -82,7 +82,7 @@
       "ref": "#MosaicDefinition-Catalog-Base",
       "Match": "MatchRules.json#MatchRules-ImageIsMSI4Bands"
     },
-    
+
     "MosaicDefinition-Default-BasicPan": {
       "ref": "#MosaicDefinition-Default-Base",
       "ItemURI": {

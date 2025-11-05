@@ -1,82 +1,40 @@
 {
-    "type": "uniqueValueDef",
-    "uniqueValueFields": [
-        "RouteName"
-    ],
-    "fieldDelimiter": ",",
-    "baseSymbol": {
-        "type": "esriSLS",
-        "style": "esriSLSSolid",
-        "color": [
-            233,
-            191,
-            255,
-            255
-        ],
-        "width": 2.0,
-        "outline": {
-            "type": "esriSLS",
-            "style": "esriSLSSolid",
-            "color": [
-                255,
-                255,
-                115,
-                255
-            ],
-            "width": 2.0
-        }
-    },
-    "colorRamp": {
-        "type": "multipart",
-        "colorRamps": [
-            {
-                "type": "algorithmic",
-                "fromColor": [
-                    132,
-                    0,
-                    168,
-                    255
-                ],
-                "toColor": [
-                    231,
-                    150,
-                    255,
-                    255
-                ],
-                "algorithm": "esriHSVAlgorithm"
-            },
-            {
-                "type": "algorithmic",
-                "fromColor": [
-                    133,
-                    188,
-                    255,
-                    255
-                ],
-                "toColor": [
-                    0,
-                    78,
-                    186,
-                    255
-                ],
-                "algorithm": "esriHSVAlgorithm"
-            },
-            {
-                "type": "algorithmic",
-                "fromColor": [
-                    112,
-                    224,
-                    0,
-                    255
-                ],
-                "toColor": [
-                    0,
-                    163,
-                    54,
-                    255
-                ],
-                "algorithm": "esriHSVAlgorithm"
-            }
-        ]
+  "type": "uniqueValueDef",
+  "uniqueValueFields": ["RouteName"],
+  "fieldDelimiter": ",",
+  "baseSymbol": {
+    "type": "esriSLS",
+    "style": "esriSLSSolid",
+    "color": [233, 191, 255, 255],
+    "width": 2.0,
+    "outline": {
+      "type": "esriSLS",
+      "style": "esriSLSSolid",
+      "color": [255, 255, 115, 255],
+      "width": 2.0
     }
+  },
+  "colorRamp": {
+    "type": "multipart",
+    "colorRamps": [
+      {
+        "type": "algorithmic",
+        "fromColor": [132, 0, 168, 255],
+        "toColor": [231, 150, 255, 255],
+        "algorithm": "esriHSVAlgorithm"
+      },
+      {
+        "type": "algorithmic",
+        "fromColor": [133, 188, 255, 255],
+        "toColor": [0, 78, 186, 255],
+        "algorithm": "esriHSVAlgorithm"
+      },
+      {
+        "type": "algorithmic",
+        "fromColor": [112, 224, 0, 255],
+        "toColor": [0, 163, 54, 255],
+        "algorithm": "esriHSVAlgorithm"
+      }
+    ]
+  }
 }

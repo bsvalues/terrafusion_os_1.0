@@ -1,5 +1,5 @@
 html {
-  background-color:transparent;
+  background-color: transparent;
 }
 
 body {
@@ -44,28 +44,27 @@ pre {
   white-space: pre-wrap;
 }
 
-pre.mgs_status{
+pre.mgs_status {
   font-style: italic;
   opacity: 0.8;
 }
-pre.mgs_definition{
+pre.mgs_definition {
   color: darkcyan;
 }
 
-.lazy_msg
-{
-  min-height:14px;
+.lazy_msg {
+  min-height: 14px;
   /*visibility: hidden;*/
 }
 
 * {
   margin: 0;
   padding: 0 0 0.25rem 0;
-  font-family: "Segoe UI";
+  font-family: 'Segoe UI';
   font-weight: 400;
   font-family: monospace, monospace;
   color: #333333;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 table * {
@@ -89,63 +88,65 @@ sub {
 h1 {
   font-size: 20pt;
   font-weight: bold;
-  color: #4A4A4A;
+  color: #4a4a4a;
 }
 
 h2 {
   font-size: 15pt;
   font-weight: light;
-  color: #4A4A4A;
+  color: #4a4a4a;
   padding-top: 15pt;
 }
 
 h3 {
   font-size: 14pt;
   font-weight: 600;
-  color: #4A4A4A;
+  color: #4a4a4a;
   padding-top: 14pt;
 }
 
 h4 {
   font-size: 13pt;
   font-weight: 600;
-  color: #6A6A6A;
+  color: #6a6a6a;
   padding-top: 13pt;
 }
 
 h5 {
   font-size: 12pt;
   font-weight: 600;
-  color: #4A4A4A;
+  color: #4a4a4a;
   padding-top: 12pt;
 }
 
-h6{
+h6 {
   font-size: 11pt;
-  color: #4A4A4A;
+  color: #4a4a4a;
 }
 
-h7{
+h7 {
   font-size: 11px;
   font-weight: light;
-  color: #4A4A4A;
+  color: #4a4a4a;
 }
 
-ol, ul{
+ol,
+ul {
   padding-left: 1.25rem;
 }
-  
-li{
+
+li {
   padding: 2px;
 }
 
-a{
+a {
   color: #007ac2;
   cursor: pointer;
   background-color: transparent;
 }
 
-.title, .sub-title {
+.title,
+.sub-title {
   font-weight: bold;
   margin-bottom: 0.8rem;
 }
@@ -162,7 +163,7 @@ a{
   width: 100%;
 }
 
-table.large{
+table.large {
   table-layout: auto;
   width: 100%;
 }
@@ -198,16 +199,17 @@ table.medium {
   overflow: hidden;
 }
 
-.table thead tr, .table thead tr th {
+.table thead tr,
+.table thead tr th {
   background-color: #dfdfdf;
 }
 
-.table tr, .table tr td {
+.table tr,
+.table tr td {
   background-color: #f6f8f8;
 }
 
-.row-underline 
-.table-striped tr:nth-child(even) {
+.row-underline .table-striped tr:nth-child(even) {
   background-color: #ebebeb;
 }
 
@@ -215,12 +217,12 @@ table.medium {
   background-color: #ebebeb;
 }
 
-.table .cell-wrap{
+.table .cell-wrap {
   white-space: normal;
   overflow-wrap: break-word;
 }
 
-.table .cell-no-wrap{
+.table .cell-no-wrap {
   white-space: nowrap;
 }
 
@@ -236,13 +238,14 @@ table.medium {
   text-align: center;
 }
 
-.table .row-underline td, .table .row-underline th{
+.table .row-underline td,
+.table .row-underline th {
   /* border-bottom: 2px solid #828282; */
   text-decoration: underline;
 }
 
 .warning-icon {
-  background-image: url("./images/status-warning16.svg");
+  background-image: url('./images/status-warning16.svg');
   background-repeat: no-repeat;
   background-position: center;
   display: inline-block;
@@ -252,7 +255,7 @@ table.medium {
 }
 
 .error-icon {
-  background-image: url("./images/status-fail16.svg");
+  background-image: url('./images/status-fail16.svg');
   background-repeat: no-repeat;
   background-position: center;
   display: inline-block;
@@ -261,7 +264,7 @@ table.medium {
   width: 16px;
 }
 
-.error-link{
+.error-link {
   text-decoration: none;
   height: 16px;
   font: inherit;
@@ -269,12 +272,11 @@ table.medium {
   color: #de2900;
 }
 
-
 .warning-link {
   text-decoration: none;
   height: 16px;
   vertical-align: super;
-  color: #95841E;
+  color: #95841e;
   font: inherit;
 }
 
@@ -292,10 +294,10 @@ h1.accordion-title div.image {
   width: 26px;
   height: 26px;
   float: left;
-  background-image: url("./images/chevron-right-16-h16.svg");
+  background-image: url('./images/chevron-right-16-h16.svg');
 }
 h1.accordion-title.open div.image {
-  background-image: url("./images/chevron-down-16-h16.svg");
+  background-image: url('./images/chevron-down-16-h16.svg');
 }
 
 h2.accordion-title div.image {
@@ -303,10 +305,10 @@ h2.accordion-title div.image {
   width: 20px;
   height: 20px;
   float: left;
-  background-image: url("./images/chevron-right-16-h16.svg");
+  background-image: url('./images/chevron-right-16-h16.svg');
 }
 h2.accordion-title.open div.image {
-  background-image: url("./images/chevron-down-16-h16.svg");
+  background-image: url('./images/chevron-down-16-h16.svg');
 }
 
 h3.accordion-title div.image {
@@ -314,10 +316,10 @@ h3.accordion-title div.image {
   width: 18px;
   height: 18px;
   float: left;
-  background-image: url("./images/chevron-right-16-h16.svg");
+  background-image: url('./images/chevron-right-16-h16.svg');
 }
 h3.accordion-title.open div.image {
-  background-image: url("./images/chevron-down-16-h16.svg");
+  background-image: url('./images/chevron-down-16-h16.svg');
 }
 
 h4.accordion-title div.image {
@@ -325,10 +327,10 @@ h4.accordion-title div.image {
   width: 18px;
   height: 18px;
   float: left;
-  background-image: url("./images/chevron-right-16-h4.svg");
+  background-image: url('./images/chevron-right-16-h4.svg');
 }
 h4.accordion-title.open div.image {
-  background-image: url("./images/chevron-down-16-h4.svg");
+  background-image: url('./images/chevron-down-16-h4.svg');
 }
 
 h5.accordion-title div.image {
@@ -336,10 +338,10 @@ h5.accordion-title div.image {
   width: 16px;
   height: 16px;
   float: left;
-  background-image: url("./images/chevron-right-16-h16.svg");
-  }
+  background-image: url('./images/chevron-right-16-h16.svg');
+}
 h5.accordion-title.open div.image {
-  background-image: url("./images/chevron-down-16-h16.svg");
+  background-image: url('./images/chevron-down-16-h16.svg');
 }
 
 h6.accordion-title div.image {
@@ -347,10 +349,10 @@ h6.accordion-title div.image {
   width: 14px;
   height: 14px;
   float: left;
-  background-image: url("./images/chevron-right-16-h16.svg");
+  background-image: url('./images/chevron-right-16-h16.svg');
 }
 h6.accordion-title.open div.image {
-  background-image: url("./images/chevron-down-16-h16.svg");
+  background-image: url('./images/chevron-down-16-h16.svg');
 }
 
 .accordion-body {
@@ -371,7 +373,7 @@ h6.accordion-title.open div.image {
 .dark .table th {
   color: #d4d4d4;
   border: 1px solid #5c5c5c;
-  background-color: #6A6A6A;
+  background-color: #6a6a6a;
 }
 
 .dark .table td {
@@ -383,31 +385,33 @@ h6.accordion-title.open div.image {
   background-color: #333333;
 }
 
-.dark .table-striped tr:nth-child(even), .dark .table-striped tr:nth-child(even) td {
+.dark .table-striped tr:nth-child(even),
+.dark .table-striped tr:nth-child(even) td {
   background-color: #333333;
 }
 
-.dark .table-striped tr:nth-child(odd), .dark .table-striped tr:nth-child(odd) td {
+.dark .table-striped tr:nth-child(odd),
+.dark .table-striped tr:nth-child(odd) td {
   background-color: #474747;
 }
 
-.dark .table thead tr, .dark .table thead tr th {
+.dark .table thead tr,
+.dark .table thead tr th {
   background-color: #404040;
 }
 
-
 .dark .error-icon {
-  background-image: url("./images/status-fail16-dark.svg");
+  background-image: url('./images/status-fail16-dark.svg');
 }
 
 .dark .error-link {
-  color: #FF7b72;
+  color: #ff7b72;
 }
 .dark .warning-icon {
-  background-image: url("./images/status-warning16-dark.svg");
+  background-image: url('./images/status-warning16-dark.svg');
 }
 
-.dark a{
+.dark a {
   color: #007ac2;
   cursor: pointer;
   background-color: transparent;
@@ -426,12 +430,12 @@ h6.accordion-title.open div.image {
 .dark h3,
 .dark h5,
 .dark h6,
-.dark h7{
-  color: #D1D1D1
+.dark h7 {
+  color: #d1d1d1;
 }
 
-.dark h4{
-  color: #9E9E9E
+.dark h4 {
+  color: #9e9e9e;
 }
 
 /* .dark h4.accordion-title {
@@ -442,18 +446,18 @@ h6.accordion-title.open div.image {
 } */
 
 .dark h4.accordion-title div.image {
-  background-image: url("./images/chevron-right-16-h4-dark.svg");
-  }
+  background-image: url('./images/chevron-right-16-h4-dark.svg');
+}
 .dark h4.accordion-title.open div.image {
-  background-image: url("./images/chevron-down-16-h4-dark.svg");
-  }
+  background-image: url('./images/chevron-down-16-h4-dark.svg');
+}
 
 .dark h1.accordion-title div.image,
 .dark h2.accordion-title div.image,
 .dark h3.accordion-title div.image,
 .dark h5.accordion-title div.image,
 .dark h6.accordion-title div.image {
-  background-image: url("./images/chevron-right-16-h16-dark.svg");
+  background-image: url('./images/chevron-right-16-h16-dark.svg');
 }
 
 .dark h1.accordion-title.open div.image,
@@ -461,7 +465,7 @@ h6.accordion-title.open div.image {
 .dark h3.accordion-title.open div.image,
 .dark h5.accordion-title.open div.image,
 .dark h6.accordion-title.open div.image {
-  background-image: url("./images/chevron-down-16-h16-dark.svg");
+  background-image: url('./images/chevron-down-16-h16-dark.svg');
 }
 
 .rtl .accordion-title {
@@ -477,11 +481,11 @@ h6.accordion-title.open div.image {
 .rtl h5.accordion-title div.image,
 .rtl h6.accordion-title div.image {
   float: right;
-  background-image: url("./images/chevron-left-16-h16.svg");
+  background-image: url('./images/chevron-left-16-h16.svg');
 }
 .rtl h4.accordion-title div.image {
   float: right;
-  background-image: url("./images/chevron-left-16-h4.svg");
+  background-image: url('./images/chevron-left-16-h4.svg');
 }
 
 .rtl .dark h1.accordion-title div.image,
@@ -489,7 +493,7 @@ h6.accordion-title.open div.image {
 .rtl .dark h3.accordion-title div.image,
 .rtl .dark h5.accordion-title div.image,
 .rtl .dark h6.accordion-title div.image {
-  background-image: url("./images/chevron-left-16-h16-dark.svg");
+  background-image: url('./images/chevron-left-16-h16-dark.svg');
 }
 
 .rtl .table .align-right {
@@ -499,4 +503,3 @@ h6.accordion-title.open div.image {
 .rtl .table .align-left {
   text-align: right;
 }
-

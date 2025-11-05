@@ -2,11 +2,7 @@
   "ai_autonomy": {
     "enabled": true,
     "level": "supervised",
-    "models": [
-      "anomaly-detector",
-      "alert-router",
-      "healing-engine"
-    ]
+    "models": ["anomaly-detector", "alert-router", "healing-engine"]
   },
   "autonomous_capabilities": {
     "decision_making": false,
@@ -18,11 +14,7 @@
   },
   "llm_integration": {
     "enabled": false,
-    "models": [
-      "gpt-4",
-      "claude-opus",
-      "llama-2"
-    ],
+    "models": ["gpt-4", "claude-opus", "llama-2"],
     "code_generation": false,
     "document_analysis": true,
     "natural_language_processing": true,
@@ -32,12 +24,7 @@
   "autonomous_decision_engine": {
     "enabled": true,
     "confidence_threshold": 0.9,
-    "decision_types": [
-      "optimization",
-      "scaling",
-      "remediation",
-      "routing"
-    ],
+    "decision_types": ["optimization", "scaling", "remediation", "routing"],
     "max_decisions_per_hour": 100,
     "human_review_required": true,
     "audit_logging": true
@@ -70,11 +57,7 @@
   },
   "ai_assistant": {
     "enabled": true,
-    "types": [
-      "coding",
-      "troubleshooting",
-      "optimization"
-    ],
+    "types": ["coding", "troubleshooting", "optimization"],
     "conversational": true,
     "context_aware": true,
     "learning_enabled": true

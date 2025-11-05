@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/government-edition
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/government-edition
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/government-edition
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/government-edition
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/government-edition
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/government-edition
+    description: Development Environment
 paths:
   /health:
     get:
       tags:
-      - government-edition
+        - government-edition
       summary: Health check
       description: Health check - Government Edition operations APIs
       operationId: get__health
       security:
-      - OAuth2:
-        - government-edition:read
+        - OAuth2:
+            - government-edition:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /data:
     get:
       tags:
-      - government-edition
+        - government-edition
       summary: Data retrieval
       description: Data retrieval - Government Edition operations APIs
       operationId: get__data
       security:
-      - OAuth2:
-        - government-edition:read
+        - OAuth2:
+            - government-edition:read
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /operations:
     post:
       tags:
-      - government-edition
+        - government-edition
       summary: Operation execution
       description: Operation execution - Government Edition operations APIs
       operationId: post__operations
       security:
-      - OAuth2:
-        - government-edition:write
+        - OAuth2:
+            - government-edition:write
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /status:
     get:
       tags:
-      - government-edition
+        - government-edition
       summary: Service status
       description: Service status - Government Edition operations APIs
       operationId: get__status
       security:
-      - OAuth2:
-        - government-edition:read
+        - OAuth2:
+            - government-edition:read
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -206,12 +206,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - government-edition:read
-- ApiKey: []
+  - OAuth2:
+      - government-edition:read
+  - ApiKey: []
 tags:
-- name: government-edition
-  description: Government Edition operations
-  externalDocs:
-    description: Find out more about government-edition
-    url: https://docs.terrafusion.gov/marketplace/government-edition
+  - name: government-edition
+    description: Government Edition operations
+    externalDocs:
+      description: Find out more about government-edition
+      url: https://docs.terrafusion.gov/marketplace/government-edition

@@ -5,8 +5,8 @@ global:
 
   # Add external labels for better identification in multi-instance setups
   external_labels:
-    environment: "${ENVIRONMENT:-dev}"
-    region: "${REGION:-us-west-2}"
+    environment: '${ENVIRONMENT:-dev}'
+    region: '${REGION:-us-west-2}'
 
 # Alertmanager configuration
 alerting:
@@ -17,48 +17,48 @@ alerting:
 
 # Load and evaluate rules
 rule_files:
-  - "rules/*.yml"
+  - 'rules/*.yml'
 
 # Scrape configurations
 scrape_configs:
   # Prometheus self-monitoring
-  - job_name: "prometheus"
+  - job_name: 'prometheus'
     static_configs:
-      - targets: ["localhost:9090"]
+      - targets: ['localhost:9090']
 
   # Node exporter
-  - job_name: "node-exporter"
+  - job_name: 'node-exporter'
     static_configs:
-      - targets: ["nodeexporter:9100"]
+      - targets: ['nodeexporter:9100']
 
   # cAdvisor
-  - job_name: "cadvisor"
+  - job_name: 'cadvisor'
     static_configs:
-      - targets: ["cadvisor:8080"]
+      - targets: ['cadvisor:8080']
 
   # Grafana
-  - job_name: "grafana"
+  - job_name: 'grafana'
     static_configs:
-      - targets: ["grafana:3000"]
+      - targets: ['grafana:3000']
 
   # Loki
-  - job_name: "loki"
+  - job_name: 'loki'
     static_configs:
-      - targets: ["loki:3100"]
+      - targets: ['loki:3100']
 
   # Tempo
-  - job_name: "tempo"
+  - job_name: 'tempo'
     static_configs:
-      - targets: ["tempo:3200"]
+      - targets: ['tempo:3200']
 
   # TerraFusion Backend
-  - job_name: "terrafusion-backend"
+  - job_name: 'terrafusion-backend'
     kubernetes_sd_configs:
       - role: service
-        kubeconfig_file: "/etc/prometheus/kubeconfig"
+        kubeconfig_file: '/etc/prometheus/kubeconfig'
         selectors:
-          - role: "service"
-            label: "app.kubernetes.io/name=terrafusion-backend"
+          - role: 'service'
+            label: 'app.kubernetes.io/name=terrafusion-backend'
     relabel_configs:
       - source_labels: [__meta_kubernetes_service_name]
         regex: terrafusion-backend
@@ -69,10 +69,10 @@ scrape_configs:
         target_label: kubernetes_service_name
 
   # TerraFusion AI Agents
-  - job_name: "terrafusion-agents"
+  - job_name: 'terrafusion-agents'
     kubernetes_sd_configs:
       - role: pod
-        kubeconfig_file: "/etc/prometheus/kubeconfig"
+        kubeconfig_file: '/etc/prometheus/kubeconfig'
         namespaces:
           names:
             - terrafusion-agents
@@ -91,22 +91,27 @@ scrape_configs:
         target_label: kubernetes_pod_name
 
   # Kubernetes API Server
-  - job_name: "kubernetes-apiservers"
+  - job_name: 'kubernetes-apiservers'
     kubernetes_sd_configs:
       - role: endpoints
-        kubeconfig_file: "/etc/prometheus/kubeconfig"
+        kubeconfig_file: '/etc/prometheus/kubeconfig'
     scheme: https
     tls_config:
       ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
       insecure_skip_verify: true
     bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
     relabel_configs:
-      - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+      - source_labels:
+          [
+            __meta_kubernetes_namespace,
+            __meta_kubernetes_service_name,
+            __meta_kubernetes_endpoint_port_name,
+          ]
         action: keep
         regex: default;kubernetes;https
 
   # Kubernetes Nodes
-  - job_name: "kubernetes-nodes"
+  - job_name: 'kubernetes-nodes'
     scheme: https
     tls_config:
       ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
@@ -114,7 +119,7 @@ scrape_configs:
     bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
     kubernetes_sd_configs:
       - role: node
-        kubeconfig_file: "/etc/prometheus/kubeconfig"
+        kubeconfig_file: '/etc/prometheus/kubeconfig'
     relabel_configs:
       - action: labelmap
         regex: __meta_kubernetes_node_label_(.+)
@@ -126,10 +131,10 @@ scrape_configs:
         replacement: /api/v1/nodes/${1}/proxy/metrics
 
   # Kubernetes Pods
-  - job_name: "kubernetes-pods"
+  - job_name: 'kubernetes-pods'
     kubernetes_sd_configs:
       - role: pod
-        kubeconfig_file: "/etc/prometheus/kubeconfig"
+        kubeconfig_file: '/etc/prometheus/kubeconfig'
     relabel_configs:
       - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
         action: keep

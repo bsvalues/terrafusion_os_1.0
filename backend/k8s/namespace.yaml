@@ -16,14 +16,14 @@ metadata:
     environment: production
     compliance: fisma-high
     app.kubernetes.io/name: terrafusion-os
-    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/version: '1.0.0'
     app.kubernetes.io/component: namespace
     app.kubernetes.io/part-of: terrafusion-platform
     app.kubernetes.io/managed-by: kubectl
   annotations:
-    description: "TerraFusion OS Production Environment - Government. Transcended."
-    owner: "TerraFusion Engineering"
-    compliance: "FISMA-High, NIST 800-53"
+    description: 'TerraFusion OS Production Environment - Government. Transcended.'
+    owner: 'TerraFusion Engineering'
+    compliance: 'FISMA-High, NIST 800-53'
 
 ---
 # ============================================================================
@@ -40,23 +40,23 @@ metadata:
 spec:
   hard:
     # Compute Resources
-    requests.cpu: "50"
+    requests.cpu: '50'
     requests.memory: 100Gi
-    limits.cpu: "100"
+    limits.cpu: '100'
     limits.memory: 200Gi
-    
+
     # Storage Resources
     requests.storage: 500Gi
-    persistentvolumeclaims: "20"
-    
+    persistentvolumeclaims: '20'
+
     # Object Counts
-    pods: "100"
-    services: "50"
-    configmaps: "50"
-    secrets: "50"
-    replicationcontrollers: "20"
-    services.loadbalancers: "5"
-    services.nodeports: "10"
+    pods: '100'
+    services: '50'
+    configmaps: '50'
+    secrets: '50'
+    replicationcontrollers: '20'
+    services.loadbalancers: '5'
+    services.nodeports: '10'
 
 ---
 # ============================================================================
@@ -75,30 +75,30 @@ spec:
     # Container Limits
     - type: Container
       max:
-        cpu: "8"
+        cpu: '8'
         memory: 16Gi
       min:
-        cpu: "100m"
+        cpu: '100m'
         memory: 128Mi
       default:
-        cpu: "1"
+        cpu: '1'
         memory: 1Gi
       defaultRequest:
-        cpu: "500m"
+        cpu: '500m'
         memory: 512Mi
       maxLimitRequestRatio:
-        cpu: "4"
-        memory: "4"
-    
+        cpu: '4'
+        memory: '4'
+
     # Pod Limits
     - type: Pod
       max:
-        cpu: "16"
+        cpu: '16'
         memory: 32Gi
       min:
-        cpu: "200m"
+        cpu: '200m'
         memory: 256Mi
-    
+
     # PersistentVolumeClaim Limits
     - type: PersistentVolumeClaim
       max:
@@ -125,7 +125,7 @@ spec:
   policyTypes:
     - Ingress
     - Egress
-  
+
   # Ingress Rules - Allow Traffic From Specific Sources
   ingress:
     # Allow traffic from ingress controller
@@ -135,8 +135,8 @@ spec:
               name: ingress-nginx
       ports:
         - protocol: TCP
-          port: 3002  # Gateway
-    
+          port: 3002 # Gateway
+
     # Allow internal communication between TerraFusion services
     - from:
         - podSelector:
@@ -144,14 +144,14 @@ spec:
               app.kubernetes.io/part-of: terrafusion-platform
       ports:
         - protocol: TCP
-          port: 5000  # API
+          port: 5000 # API
         - protocol: TCP
-          port: 3004  # Consciousness
+          port: 3004 # Consciousness
         - protocol: TCP
-          port: 3002  # Gateway
+          port: 3002 # Gateway
         - protocol: TCP
-          port: 5002  # Operations
-    
+          port: 5002 # Operations
+
     # Allow monitoring traffic from Prometheus
     - from:
         - namespaceSelector:
@@ -159,8 +159,8 @@ spec:
               name: monitoring
       ports:
         - protocol: TCP
-          port: 8080  # Metrics endpoint
-  
+          port: 8080 # Metrics endpoint
+
   # Egress Rules - Allow Traffic To Specific Destinations
   egress:
     # Allow DNS resolution
@@ -171,7 +171,7 @@ spec:
       ports:
         - protocol: UDP
           port: 53
-    
+
     # Allow communication to PostgreSQL
     - to:
         - podSelector:
@@ -180,7 +180,7 @@ spec:
       ports:
         - protocol: TCP
           port: 5432
-    
+
     # Allow communication to Redis
     - to:
         - podSelector:
@@ -189,7 +189,7 @@ spec:
       ports:
         - protocol: TCP
           port: 6379
-    
+
     # Allow internal service communication
     - to:
         - podSelector:
@@ -197,14 +197,14 @@ spec:
               app.kubernetes.io/part-of: terrafusion-platform
       ports:
         - protocol: TCP
-          port: 5000  # API
+          port: 5000 # API
         - protocol: TCP
-          port: 3004  # Consciousness
+          port: 3004 # Consciousness
         - protocol: TCP
-          port: 3002  # Gateway
+          port: 3002 # Gateway
         - protocol: TCP
-          port: 5002  # Operations
-    
+          port: 5002 # Operations
+
     # Allow external HTTPS for API calls (if needed)
     - to:
         - namespaceSelector: {}
@@ -240,24 +240,24 @@ metadata:
     app.kubernetes.io/component: role
 rules:
   # Allow reading ConfigMaps and Secrets
-  - apiGroups: [""]
-    resources: ["configmaps", "secrets"]
-    verbs: ["get", "list", "watch"]
-  
+  - apiGroups: ['']
+    resources: ['configmaps', 'secrets']
+    verbs: ['get', 'list', 'watch']
+
   # Allow reading Services and Endpoints for service discovery
-  - apiGroups: [""]
-    resources: ["services", "endpoints"]
-    verbs: ["get", "list", "watch"]
-  
+  - apiGroups: ['']
+    resources: ['services', 'endpoints']
+    verbs: ['get', 'list', 'watch']
+
   # Allow reading Pods for health checks
-  - apiGroups: [""]
-    resources: ["pods"]
-    verbs: ["get", "list", "watch"]
-  
+  - apiGroups: ['']
+    resources: ['pods']
+    verbs: ['get', 'list', 'watch']
+
   # Allow reading Events for troubleshooting
-  - apiGroups: [""]
-    resources: ["events"]
-    verbs: ["get", "list", "watch"]
+  - apiGroups: ['']
+    resources: ['events']
+    verbs: ['get', 'list', 'watch']
 
 ---
 # ============================================================================
@@ -315,7 +315,6 @@ spec:
   fsGroup:
     rule: 'RunAsAny'
   readOnlyRootFilesystem: false
-
 # ============================================================================
 # Apply Instructions
 # ============================================================================

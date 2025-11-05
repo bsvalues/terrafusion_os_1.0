@@ -24,11 +24,11 @@ jobs:
   prepare:
     name: Prepare Deployment
     runs-on: ubuntu-latest
-    
+
     outputs:
       environment: ${{ steps.set-env.outputs.environment }}
       version: ${{ steps.set-version.outputs.version }}
-    
+
     steps:
       - name: Set environment
         id: set-env
@@ -40,7 +40,7 @@ jobs:
           else
             echo "environment=dev" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Set version
         id: set-version
         run: |
@@ -51,34 +51,34 @@ jobs:
           else
             echo "version=latest" >> $GITHUB_OUTPUT
           fi
-  
+
   build:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     needs: prepare
-    
+
     env:
       ENVIRONMENT: ${{ needs.prepare.outputs.environment }}
       VERSION: ${{ needs.prepare.outputs.version }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
-      
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      
+
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -91,67 +91,67 @@ jobs:
             NODE_ENV=${{ env.ENVIRONMENT }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      
+
       - name: Set image URI output
         id: image-uri
         run: echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${{ env.ENVIRONMENT }}-terrafusion:${{ env.VERSION }}" >> $GITHUB_OUTPUT
-    
+
     outputs:
       image_uri: ${{ steps.image-uri.outputs.image_uri }}
-  
+
   deploy:
     name: Deploy to ${{ needs.prepare.outputs.environment }}
     runs-on: ubuntu-latest
     needs: [prepare, build]
     environment: ${{ needs.prepare.outputs.environment }}
-    
+
     env:
       ENVIRONMENT: ${{ needs.prepare.outputs.environment }}
       VERSION: ${{ needs.prepare.outputs.version }}
       IMAGE_URI: ${{ needs.build.outputs.image_uri }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'npm'
-      
+
       - name: Install AWS CLI
         run: |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           sudo ./aws/install --update
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       # Create task definition with new image
       - name: Render task definition
         id: render-task-def
         run: |
           TASK_DEF_PATH=scripts/deployment/task-definition-template.json
-          
+
           # Replace placeholders in task definition
           jq '.containerDefinitions[0].image = env.IMAGE_URI' $TASK_DEF_PATH > task-definition.json
-          
+
           echo "Task definition:"
           cat task-definition.json
-      
+
       # Use blue/green deployment
       - name: Install deployment dependencies
         run: npm install aws-sdk
-      
+
       - name: Run blue/green deployment
         run: |
           node scripts/deployment/blue_green_deploy.js \
@@ -162,7 +162,7 @@ jobs:
           AWS_REGION: ${{ vars.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      
+
       # Apply database migrations if needed
       - name: Apply database migrations
         if: ${{ env.ENVIRONMENT != 'prod' }}
@@ -171,7 +171,7 @@ jobs:
             -e ${{ env.ENVIRONMENT }} \
             -d ${{ secrets.DATABASE_URL }} \
             apply
-      
+
       # For production, run migrations with explicit approval
       - name: Apply database migrations (production)
         if: ${{ env.ENVIRONMENT == 'prod' }}
@@ -181,17 +181,17 @@ jobs:
             -d ${{ secrets.DATABASE_URL }} \
             -f \
             apply
-  
+
   notify:
     name: Notify Deployment Status
     runs-on: ubuntu-latest
     needs: [prepare, build, deploy]
     if: always()
-    
+
     env:
       ENVIRONMENT: ${{ needs.prepare.outputs.environment }}
       VERSION: ${{ needs.prepare.outputs.version }}
-    
+
     steps:
       - name: Check deployment status
         id: check_status
@@ -205,7 +205,7 @@ jobs:
             echo "color=#dc3545" >> $GITHUB_OUTPUT
             echo "message=❌ Deployment to ${{ env.ENVIRONMENT }} failed (Version: ${{ env.VERSION }})" >> $GITHUB_OUTPUT
           fi
-      
+
       # Slack notification
       - name: Send Slack notification
         uses: 8398a7/action-slack@v3
@@ -217,13 +217,13 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
-      
+
       # Teams notification
       - name: Send Microsoft Teams notification
         uses: aliencube/microsoft-teams-actions@v0.8.0
         with:
           webhook_uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          title: "TerraFusion Deployment"
+          title: 'TerraFusion Deployment'
           summary: ${{ steps.check_status.outputs.message }}
           theme_color: ${{ steps.check_status.outputs.color }}
           sections: |

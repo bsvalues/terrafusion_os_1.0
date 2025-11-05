@@ -1,20 +1,20 @@
 {
-    "file": "ggml-model-Q3_K_M.gguf",
-    "dense_file": "ggml-model-dense-layers.dat",
-    "hidden_size": 384,
-    "id2label": {
-        "0": "BUILDING_NAME",
-        "1": "CITY",
-        "2": "COUNTRY_CODE",
-        "3": "FULL_STREET_NAME",
-        "4": "HOUSE_NUMBER",
-        "5": "POSTAL",
-        "6": "REGION_ABBR",
-        "7": "STREET_NAME",
-        "8": "STREET_PREFIX_DIR",
-        "9": "STREET_PREFIX_TYPE",
-        "10": "STREET_SUFFIX_DIR",
-        "11": "STREET_SUFFIX_TYPE",
-        "12": "SUB_ADDRESS_BUILDING_UNIT"
-    }
+  "file": "ggml-model-Q3_K_M.gguf",
+  "dense_file": "ggml-model-dense-layers.dat",
+  "hidden_size": 384,
+  "id2label": {
+    "0": "BUILDING_NAME",
+    "1": "CITY",
+    "2": "COUNTRY_CODE",
+    "3": "FULL_STREET_NAME",
+    "4": "HOUSE_NUMBER",
+    "5": "POSTAL",
+    "6": "REGION_ABBR",
+    "7": "STREET_NAME",
+    "8": "STREET_PREFIX_DIR",
+    "9": "STREET_PREFIX_TYPE",
+    "10": "STREET_SUFFIX_DIR",
+    "11": "STREET_SUFFIX_TYPE",
+    "12": "SUB_ADDRESS_BUILDING_UNIT"
+  }
 }

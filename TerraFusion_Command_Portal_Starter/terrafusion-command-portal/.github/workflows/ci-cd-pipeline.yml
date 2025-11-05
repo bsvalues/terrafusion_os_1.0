@@ -5,9 +5,9 @@ name: TerraFusion CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 env:
@@ -324,15 +324,15 @@ jobs:
       - name: Deploy to Staging
         run: |
           export KUBECONFIG=kubeconfig
-          
+
           # Update image tags in k8s manifests
           sed -i "s|terrafusion-backend:latest|ghcr.io/${{ github.repository }}/terrafusion-backend:${{ github.sha }}|g" k8s/*.yaml
           sed -i "s|terrafusion-frontend:latest|ghcr.io/${{ github.repository }}/terrafusion-frontend:${{ github.sha }}|g" k8s/*.yaml
-          
+
           # Apply Kubernetes manifests
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/ -n terrafusion-staging
-          
+
           # Wait for rollout
           kubectl rollout status deployment/terrafusion-backend -n terrafusion-staging
           kubectl rollout status deployment/terrafusion-frontend -n terrafusion-staging
@@ -340,11 +340,11 @@ jobs:
       - name: Run Health Checks
         run: |
           export KUBECONFIG=kubeconfig
-          
+
           # Get service URLs
           BACKEND_URL=$(kubectl get service terrafusion-backend -n terrafusion-staging -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           FRONTEND_URL=$(kubectl get service terrafusion-frontend -n terrafusion-staging -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          
+
           # Health checks
           curl -f http://$BACKEND_URL:8787/health/live || exit 1
           curl -f http://$BACKEND_URL:8787/health/ready || exit 1
@@ -376,19 +376,19 @@ jobs:
       - name: Deploy to Production
         run: |
           export KUBECONFIG=kubeconfig
-          
+
           # Update image tags in k8s manifests
           sed -i "s|terrafusion-backend:latest|ghcr.io/${{ github.repository }}/terrafusion-backend:${{ github.sha }}|g" k8s/*.yaml
           sed -i "s|terrafusion-frontend:latest|ghcr.io/${{ github.repository }}/terrafusion-frontend:${{ github.sha }}|g" k8s/*.yaml
-          
+
           # Apply Kubernetes manifests
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/ -n terrafusion-production
-          
+
           # Rolling update with zero downtime
           kubectl set image deployment/terrafusion-backend terrafusion-backend=ghcr.io/${{ github.repository }}/terrafusion-backend:${{ github.sha }} -n terrafusion-production
           kubectl set image deployment/terrafusion-frontend terrafusion-frontend=ghcr.io/${{ github.repository }}/terrafusion-frontend:${{ github.sha }} -n terrafusion-production
-          
+
           # Wait for rollout
           kubectl rollout status deployment/terrafusion-backend -n terrafusion-production
           kubectl rollout status deployment/terrafusion-frontend -n terrafusion-production
@@ -396,11 +396,11 @@ jobs:
       - name: Production Health Verification
         run: |
           export KUBECONFIG=kubeconfig
-          
+
           # Get production URLs
           BACKEND_URL=$(kubectl get service terrafusion-backend -n terrafusion-production -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           FRONTEND_URL=$(kubectl get service terrafusion-frontend -n terrafusion-production -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          
+
           # Comprehensive health checks
           curl -f http://$BACKEND_URL:8787/health/comprehensive || exit 1
           curl -f http://$BACKEND_URL:8787/metrics || exit 1

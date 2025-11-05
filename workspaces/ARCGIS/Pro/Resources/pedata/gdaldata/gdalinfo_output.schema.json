@@ -9,7 +9,6 @@
   ],
 
   "definitions": {
-
     "arrayOfTwoIntegers": {
       "type": "array",
       "items": {
@@ -120,11 +119,7 @@
           "$ref": "#/definitions/metadata"
         }
       },
-      "required": [
-        "band",
-        "block",
-        "type"
-      ],
+      "required": ["band", "block", "type"],
       "additionalProperties": false
     },
 
@@ -209,10 +204,7 @@
           "$ref": "#/definitions/metadata"
         }
       },
-      "required": [
-        "size",
-        "bands"
-      ],
+      "required": ["size", "bands"],
       "additionalProperties": false
     },
 
@@ -262,10 +254,7 @@
           "type": "number"
         }
       },
-      "required": [
-        "wkt",
-        "dataAxisToSRSAxisMapping"
-      ],
+      "required": ["wkt", "dataAxisToSRSAxisMapping"],
       "additionalProperties": false
     },
 
@@ -282,17 +271,11 @@
       "properties": {
         "proj:epsg": {
           "title": "EPSG code",
-          "type": [
-            "integer",
-            "null"
-          ]
+          "type": ["integer", "null"]
         },
         "proj:wkt2": {
           "title": "Coordinate Reference System in WKT2 format",
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "proj:projjson": {
           "title": "Coordinate Reference System in PROJJSON format",

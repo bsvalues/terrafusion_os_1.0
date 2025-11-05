@@ -3,7 +3,7 @@ name: terrafusion-operations
 description: TerraFusion OS Operations Service - County Systems Integration
 type: application
 version: 1.0.0
-appVersion: "1.0.0"
+appVersion: '1.0.0'
 
 keywords:
   - government
@@ -27,5 +27,5 @@ annotations:
   terrafusion.io/component: operations
   terrafusion.io/tier: integration
   terrafusion.io/compliance: fisma-high
-  terrafusion.io/counties: "39-wa-state"
-  terrafusion.io/systems: "harris-pacs,tyler,aumentum"
+  terrafusion.io/counties: '39-wa-state'
+  terrafusion.io/systems: 'harris-pacs,tyler,aumentum'

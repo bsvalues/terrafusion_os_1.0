@@ -252,7 +252,8 @@ components:
         parcelCount: { type: integer }
         totalAssessedValue: { type: number }
         isActive: { type: boolean }
-      required: [id, countyId, districtCode, name, districtType, parcelCount, totalAssessedValue, isActive]
+      required:
+        [id, countyId, districtCode, name, districtType, parcelCount, totalAssessedValue, isActive]
     LevyMeasure:
       type: object
       properties:
@@ -274,8 +275,24 @@ components:
         totalAssessedValue: { type: number }
         quantumOptimized: { type: boolean }
         aiConfidenceScore: { type: number }
-        metadata: { }
-      required: [id, countyId, name, levyYear, levyType, status, targetAmount, calculatedAmount, maximumRate, calculatedRate, subjectToLimit, totalAssessedValue, quantumOptimized, aiConfidenceScore]
+        metadata: {}
+      required:
+        [
+          id,
+          countyId,
+          name,
+          levyYear,
+          levyType,
+          status,
+          targetAmount,
+          calculatedAmount,
+          maximumRate,
+          calculatedRate,
+          subjectToLimit,
+          totalAssessedValue,
+          quantumOptimized,
+          aiConfidenceScore,
+        ]
     CalculateRequest:
       type: object
       properties:
@@ -291,8 +308,16 @@ components:
         confidenceScore: { type: number }
         quantumOptimized: { type: boolean }
         recommendationReason: { type: string }
-        calculationDetails: { }
-      required: [calculatedRate, levyAmount, aiOptimalRate, confidenceScore, quantumOptimized, recommendationReason]
+        calculationDetails: {}
+      required:
+        [
+          calculatedRate,
+          levyAmount,
+          aiOptimalRate,
+          confidenceScore,
+          quantumOptimized,
+          recommendationReason,
+        ]
     ComplianceResponse:
       type: object
       properties:
@@ -307,7 +332,16 @@ components:
           type: array
           items: { type: string }
         complianceLevel: { type: string }
-      required: [isCompliant, proposedRate, maximumAllowedRate, statutoryLimit, violations, warnings, complianceLevel]
+      required:
+        [
+          isCompliant,
+          proposedRate,
+          maximumAllowedRate,
+          statutoryLimit,
+          violations,
+          warnings,
+          complianceLevel,
+        ]
     AnalyzeScenariosRequest:
       type: object
       properties:
@@ -326,8 +360,17 @@ components:
         collectionRate: { type: number }
         aiConfidenceScore: { type: number }
         riskLevel: { type: string }
-        aiInsights: { }
-      required: [scenarioName, rate, levyAmount, projectedRevenue, collectionRate, aiConfidenceScore, riskLevel]
+        aiInsights: {}
+      required:
+        [
+          scenarioName,
+          rate,
+          levyAmount,
+          projectedRevenue,
+          collectionRate,
+          aiConfidenceScore,
+          riskLevel,
+        ]
     CompareScenariosRequest:
       type: object
       properties:
@@ -347,7 +390,17 @@ components:
         averageConfidence: { type: number }
         riskLevel: { type: string }
         projectionYears: { type: integer }
-      required: [scenarioId, scenarioName, scenarioType, totalProjectedRevenue, averageGrowthRate, averageConfidence, riskLevel, projectionYears]
+      required:
+        [
+          scenarioId,
+          scenarioName,
+          scenarioType,
+          totalProjectedRevenue,
+          averageGrowthRate,
+          averageConfidence,
+          riskLevel,
+          projectionYears,
+        ]
     CompareResponse:
       type: object
       properties:
@@ -356,7 +409,7 @@ components:
           items: { $ref: '#/components/schemas/ScenarioComparison' }
         recommendedScenario: { $ref: '#/components/schemas/ScenarioComparison' }
         recommendationReason: { type: string }
-        comparisonMetrics: { }
+        comparisonMetrics: {}
         aiConfidence: { type: number }
       required: [scenarios, recommendedScenario, recommendationReason, aiConfidence]
     LevyScenario:
@@ -385,7 +438,18 @@ components:
         projectedNetRevenue: { type: number }
         growthRate: { type: number }
         confidenceLevel: { type: number }
-      required: [id, levyScenarioId, fiscalYear, projectedAssessedValue, projectedLevyAmount, projectedCollectionRate, projectedNetRevenue, growthRate, confidenceLevel]
+      required:
+        [
+          id,
+          levyScenarioId,
+          fiscalYear,
+          projectedAssessedValue,
+          projectedLevyAmount,
+          projectedCollectionRate,
+          projectedNetRevenue,
+          growthRate,
+          confidenceLevel,
+        ]
     GenerateProjectionsRequest:
       type: object
       properties:

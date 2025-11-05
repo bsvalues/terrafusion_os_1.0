@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/store
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/store
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/store
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/store
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/store
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/store
+    description: Development Environment
 paths:
   /health:
     get:
       tags:
-      - store
+        - store
       summary: Health check
       description: Health check - Store operations APIs
       operationId: get__health
       security:
-      - OAuth2:
-        - store:read
+        - OAuth2:
+            - store:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /data:
     get:
       tags:
-      - store
+        - store
       summary: Data retrieval
       description: Data retrieval - Store operations APIs
       operationId: get__data
       security:
-      - OAuth2:
-        - store:read
+        - OAuth2:
+            - store:read
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /operations:
     post:
       tags:
-      - store
+        - store
       summary: Operation execution
       description: Operation execution - Store operations APIs
       operationId: post__operations
       security:
-      - OAuth2:
-        - store:write
+        - OAuth2:
+            - store:write
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /status:
     get:
       tags:
-      - store
+        - store
       summary: Service status
       description: Service status - Store operations APIs
       operationId: get__status
       security:
-      - OAuth2:
-        - store:read
+        - OAuth2:
+            - store:read
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -206,12 +206,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - store:read
-- ApiKey: []
+  - OAuth2:
+      - store:read
+  - ApiKey: []
 tags:
-- name: store
-  description: Store operations
-  externalDocs:
-    description: Find out more about store
-    url: https://docs.terrafusion.gov/marketplace/store
+  - name: store
+    description: Store operations
+    externalDocs:
+      description: Find out more about store
+      url: https://docs.terrafusion.gov/marketplace/store

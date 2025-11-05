@@ -24,42 +24,42 @@ spec:
         version: v1.0.0
     spec:
       containers:
-      - name: terrafusion-app
-        image: terrafusion/platform:1.0.0
-        ports:
-        - containerPort: 5000
-          name: http
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-secrets
-              key: database-url
-        - name: NODE_ENV
-          value: "production"
-        - name: PORT
-          value: "5000"
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-        livenessProbe:
-          httpGet:
-            path: /api/system/health
-            port: 5000
-          initialDelaySeconds: 60
-          periodSeconds: 30
-          timeoutSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /api/system/health
-            port: 5000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
+        - name: terrafusion-app
+          image: terrafusion/platform:1.0.0
+          ports:
+            - containerPort: 5000
+              name: http
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: database-url
+            - name: NODE_ENV
+              value: 'production'
+            - name: PORT
+              value: '5000'
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '250m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
+          livenessProbe:
+            httpGet:
+              path: /api/system/health
+              port: 5000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/system/health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
 ---
 apiVersion: v1
 kind: Service
@@ -70,9 +70,9 @@ spec:
   selector:
     app: terrafusion-app
   ports:
-  - name: http
-    port: 80
-    targetPort: 5000
+    - name: http
+      port: 80
+      targetPort: 5000
   type: ClusterIP
 ---
 apiVersion: apps/v1
@@ -91,27 +91,27 @@ spec:
         app: postgres
     spec:
       containers:
-      - name: postgres
-        image: postgres:15-alpine
-        env:
-        - name: POSTGRES_DB
-          value: "terrafusion"
-        - name: POSTGRES_USER
-          value: "terrafusion"
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-secrets
-              key: postgres-password
-        ports:
-        - containerPort: 5432
-        volumeMounts:
-        - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_DB
+              value: 'terrafusion'
+            - name: POSTGRES_USER
+              value: 'terrafusion'
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: postgres-password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
       volumes:
-      - name: postgres-storage
-        persistentVolumeClaim:
-          claimName: postgres-pvc
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -122,8 +122,8 @@ spec:
   selector:
     app: postgres
   ports:
-  - port: 5432
-    targetPort: 5432
+    - port: 5432
+      targetPort: 5432
   type: ClusterIP
 ---
 apiVersion: v1
@@ -151,28 +151,28 @@ spec:
   minReplicas: 2
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 65
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 75
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 65
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 75
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 60
       policies:
-      - type: Percent
-        value: 50
-        periodSeconds: 60
+        - type: Percent
+          value: 50
+          periodSeconds: 60
     scaleDown:
       stabilizationWindowSeconds: 300
       policies:
-      - type: Percent
-        value: 25
-        periodSeconds: 60
+        - type: Percent
+          value: 25
+          periodSeconds: 60

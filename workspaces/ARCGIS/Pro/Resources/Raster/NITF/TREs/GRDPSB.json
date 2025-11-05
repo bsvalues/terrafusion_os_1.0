@@ -1,11 +1,11 @@
 {
   "TRE": "GRDPSB",
-  "Source": [ "STDI-0002-1 v2021.1, Appendix P: GEOSDE" ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix P: GEOSDE"],
   "Name": "Grid Reference Data Extension",
   "Description": "The geographic location of each pixel may be derived from a given set of location grids computed for a given elevation when the image, matrix, or raster data is not rectified. The user-defined fields of the GRDPS extension are detailed in Table P-4. A single GRDPS is placed in the Image Subheader. The coordinates expressed in the location grids refer to the absolute coordinate system defined in GEOPS (and possibly PRJPS).",
   "Size": 68,
   "Fields": {
-    "NUM_GRDS" : {
+    "NUM_GRDS": {
       "Name": "Number of Location Grids",
       "Description": "This field defines the number of location grids described in the GRDPSB extension. Usually, only one or two grids are needed.",
       "Size": 2,
@@ -17,7 +17,7 @@
           "Type": "Range",
           "Min": 1,
           "Max": 99
-        }        
+        }
       ]
     },
     "ZVL<NUM_GRDS>": {
@@ -36,78 +36,78 @@
       ]
     },
     "BAD<NUM_GRDS>": {
-        "Name": "Location Grid ID",
-        "Description": "This field shall contain the identification of the Image Segment (IID1 field) which contains the nth location grid data.",
-        "Size": 10,
-        "Format": "BCS-A",
-        "Type": "C",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-          }
-        ]
-      },
-      "LOD<NUM_GRDS>": {
-        "Name": "Data Density in Columns",
-        "Description": "This field shall contain the interval (measured in image pixels) between two consecutive elements of the nth location grid (in columns). Positive (decimal or integer) values are required.",
-        "Size": 12,
-        "Format": "BCS-N",
-        "Type": "C",
-        "Units": ["columns"],
-        "Values": [
-          {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 999999999999
-          }
-        ]
-      },
-      "LAD<NUM_GRDS>": {
-        "Name": "Data Density in Rows",
-        "Description": "This field shall contain the interval (measured in image pixels) between two consecutive elements of the nth location grid (in rows). Positive (decimal or integer) values are required.",
-        "Size": 12,
-        "Format": "BCS-N",
-        "Type": "C",
-        "Units": ["rows"],
-        "Values": [
-          {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 999999999999
-          }
-        ]
-      },
-      "LSO<NUM_GRDS>": {
-        "Name": "Origin in Columns",
-        "Description": "This field shall contain the column number of the origin of the nth location grid.",
-        "Size": 11,
-        "Format": "BCS-N",
-        "Type": "C",
-        "Units": ["columns"],
-        "Values": [
-          {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 99999999999
-          }
-        ]
-      },
-      "PSO<NUM_GRDS>": {
-        "Name": "Origin in Rows",
-        "Description": "This field shall contain the row number of the origin of the nth location grid.",
-        "Size": 11,
-        "Format": "BCS-N",
-        "Type": "C",
-        "Units": ["rows"],
-        "Values": [
-          {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 99999999999
-          }
-        ]
-      }            
+      "Name": "Location Grid ID",
+      "Description": "This field shall contain the identification of the Image Segment (IID1 field) which contains the nth location grid data.",
+      "Size": 10,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    },
+    "LOD<NUM_GRDS>": {
+      "Name": "Data Density in Columns",
+      "Description": "This field shall contain the interval (measured in image pixels) between two consecutive elements of the nth location grid (in columns). Positive (decimal or integer) values are required.",
+      "Size": 12,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["columns"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999999999999
+        }
+      ]
+    },
+    "LAD<NUM_GRDS>": {
+      "Name": "Data Density in Rows",
+      "Description": "This field shall contain the interval (measured in image pixels) between two consecutive elements of the nth location grid (in rows). Positive (decimal or integer) values are required.",
+      "Size": 12,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["rows"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999999999999
+        }
+      ]
+    },
+    "LSO<NUM_GRDS>": {
+      "Name": "Origin in Columns",
+      "Description": "This field shall contain the column number of the origin of the nth location grid.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["columns"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99999999999
+        }
+      ]
+    },
+    "PSO<NUM_GRDS>": {
+      "Name": "Origin in Rows",
+      "Description": "This field shall contain the row number of the origin of the nth location grid.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["rows"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99999999999
+        }
+      ]
     }
   }
+}

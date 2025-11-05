@@ -5,7 +5,7 @@
   "Description": "The Common Sensor Ephemeris data (CSEPHB) DES (Table M.6-6) provides chronologically-ordered platform ephemeris information needed to run the rigorous sensor model that performs geolocation and mensuration. There are two versions of the CSEPHB DES. In both versions, the ECI_ECF_EPHEM field designates whether ephemeris vectors are in ECI (value = 0) or ECF (value = 1) coordinates. In version 1, if ECI is designated, then no ECI-to-ECF transformation information is provided, the DT_EPHEM field immediately follows the ECI_ECF_EPHEM field, and MSP cannot mensurate the dataset. In version 2, however, if the ECI_ECF_EPHEM field value = 0 (i.e., ECI vectors), then a set of 32 required ECI-to-ECF transformation parameters immediately follows the ECI_ECF_EPHEM field. Reference [1] provides the equations as a function of these parameters. Although both DES versions are valid, version 2 is strongly recommended when ECI_ECF_EPHEM = 0 (ECI). If ECI_ECF_EPHEM = 1 (ECF), then the logic is the same for both DES versions 1 and 2 because ECI-to-ECF transformation parameters are not needed and thus not present in the DES. Note that the MSP GLAS/GFM model disables error propagation by setting the number of adjustable parameters to zero if QUAL_FLAG_EPH = 0 (suspect data). A value of ECI_ECF_EPHEM = 0 (ECI) in CSEPHB DES version 1 is not supported by all MSP versions that claim GLAS/GFM conformance. Data providers who use this option, and whose consumers rely on MSP for georeferencing and mensuration functions, must ensure that those consumers have access to a suitable version of MSP within their toolset.",
   "Size": 46,
   "Fields": {
-    "DE" : {
+    "DE": {
       "Name": "File Part Type",
       "Description": "This field shall contain the characters DE.",
       "Size": 2,
@@ -16,7 +16,7 @@
         {
           "Type": "Value",
           "Values": ["DE"]
-        }        
+        }
       ]
     },
     "DESID": {
@@ -147,7 +147,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -162,7 +162,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 9999          
+          "Max": 9999
         }
       ]
     },
@@ -175,7 +175,7 @@
       "Units": ["bytes"],
       "Values": [
         {
-          "Type": "Integer"                   
+          "Type": "Integer"
         }
       ]
     },
@@ -190,7 +190,6 @@
         {
           "Type": "Value",
           "Values": ["0", "1"]
-                   
         }
       ]
     },
@@ -205,7 +204,6 @@
         {
           "Type": "Value",
           "Values": ["0", "1", "2"]
-                   
         }
       ]
     },
@@ -219,7 +217,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["3", "5","7"]                   
+          "Values": ["3", "5", "7"]
         }
       ]
     },
@@ -233,7 +231,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1", "2"]                   
+          "Values": ["0", "1", "2"]
         }
       ]
     },
@@ -247,7 +245,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["0", "1"]                   
+          "Values": ["0", "1"]
         }
       ]
     },
@@ -260,7 +258,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                   
+          "Type": "DateTimeUTC"
         }
       ]
     },
@@ -274,8 +272,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                   
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -292,8 +290,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                   
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -310,8 +308,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                   
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -328,8 +326,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                   
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -346,8 +344,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                   
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -364,8 +362,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000                   
+          "Min": -1.0,
+          "Max": 1.0
         },
         {
           "Type": "Double"
@@ -381,13 +379,13 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": 0.000000,
-          "Max": 500.000000
-        }        
+          "Min": 0.0,
+          "Max": 500.0
+        }
       ]
     },
     "PJ2_POLE": {
@@ -399,12 +397,12 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": 0.000000,
-          "Max": 500.000000
+          "Min": 0.0,
+          "Max": 500.0
         }
       ]
     },
@@ -417,12 +415,12 @@
       "Units": ["arcseconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -435,12 +433,12 @@
       "Units": ["arcseconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -453,12 +451,12 @@
       "Units": ["arcseconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -471,12 +469,12 @@
       "Units": ["arcseconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -489,12 +487,12 @@
       "Units": ["arcseconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -507,12 +505,12 @@
       "Units": ["arcseconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.00000000,
-          "Max": 1.00000000
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -525,12 +523,12 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": 0.000000,
-          "Max": 500.000000
+          "Min": 0.0,
+          "Max": 500.0
         }
       ]
     },
@@ -543,12 +541,12 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": 0.000000,
-          "Max": 500.000000
+          "Min": 0.0,
+          "Max": 500.0
         }
       ]
     },
@@ -561,8 +559,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DateTimeUTC"                            
-        }        
+          "Type": "DateTimeUTC"
+        }
       ]
     },
     "I_UT": {
@@ -574,13 +572,13 @@
       "Units": ["seconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000
-        }        
+          "Min": -1.0,
+          "Max": 1.0
+        }
       ]
     },
     "J_UT": {
@@ -592,13 +590,13 @@
       "Units": ["seconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000
-        }        
+          "Min": -1.0,
+          "Max": 1.0
+        }
       ]
     },
     "KN_1": {
@@ -610,13 +608,13 @@
       "Units": ["seconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000
-        }        
+          "Min": -1.0,
+          "Max": 1.0
+        }
       ]
     },
     "KN_2": {
@@ -628,13 +626,13 @@
       "Units": ["seconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000
-        }        
+          "Min": -1.0,
+          "Max": 1.0
+        }
       ]
     },
     "KN_3": {
@@ -646,13 +644,13 @@
       "Units": ["seconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000
-        }        
+          "Min": -1.0,
+          "Max": 1.0
+        }
       ]
     },
     "KN_4": {
@@ -664,13 +662,13 @@
       "Units": ["seconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000
-        }        
+          "Min": -1.0,
+          "Max": 1.0
+        }
       ]
     },
     "LN_1": {
@@ -682,13 +680,13 @@
       "Units": ["seconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000
-        }        
+          "Min": -1.0,
+          "Max": 1.0
+        }
       ]
     },
     "LN_2": {
@@ -700,13 +698,13 @@
       "Units": ["seconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000
-        }        
+          "Min": -1.0,
+          "Max": 1.0
+        }
       ]
     },
     "LN_3": {
@@ -718,13 +716,13 @@
       "Units": ["seconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000
-        }        
+          "Min": -1.0,
+          "Max": 1.0
+        }
       ]
     },
     "LN_4": {
@@ -736,13 +734,13 @@
       "Units": ["seconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": -1.000000000,
-          "Max": 1.000000000
-        }        
+          "Min": -1.0,
+          "Max": 1.0
+        }
       ]
     },
     "PN_1": {
@@ -754,13 +752,13 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": 0.000000,
-          "Max": 500.000000
-        }        
+          "Min": 0.0,
+          "Max": 500.0
+        }
       ]
     },
     "PN_2": {
@@ -772,13 +770,13 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": 0.000000,
-          "Max": 500.000000
-        }        
+          "Min": 0.0,
+          "Max": 500.0
+        }
       ]
     },
     "PN_3": {
@@ -790,13 +788,13 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": 0.000000,
-          "Max": 500.000000
-        }        
+          "Min": 0.0,
+          "Max": 500.0
+        }
       ]
     },
     "PN_4": {
@@ -808,13 +806,13 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
-          "Min": 0.000000,
-          "Max": 500.000000
-        }        
+          "Min": 0.0,
+          "Max": 500.0
+        }
       ]
     },
     "DT_EPHEM": {
@@ -826,13 +824,13 @@
       "Units": ["seconds"],
       "Values": [
         {
-          "Type": "Double"                            
+          "Type": "Double"
         },
         {
           "Type": "Range",
           "Min": 0.000000001,
           "Max": 999.999999999
-        }        
+        }
       ]
     },
     "DATE_EPHEM": {
@@ -844,8 +842,8 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Date"                            
-        }                
+          "Type": "Date"
+        }
       ]
     },
     "T0_EPHEM": {
@@ -857,11 +855,11 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Time"                            
+          "Type": "Time"
         },
         {
           "Type": "Double"
-        }                
+        }
       ]
     },
     "NUM_EPHEM": {
@@ -875,8 +873,8 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99999                            
-        }                        
+          "Max": 99999
+        }
       ]
     },
     "EPHEM_X<NUM_EPHEM>": {
@@ -890,8 +888,8 @@
         {
           "Type": "Range",
           "Min": -99999999.99,
-          "Max": 99999999.99                            
-        }                        
+          "Max": 99999999.99
+        }
       ]
     },
     "EPHEM_Y<NUM_EPHEM>": {
@@ -905,8 +903,8 @@
         {
           "Type": "Range",
           "Min": -99999999.99,
-          "Max": 99999999.99                            
-        }                        
+          "Max": 99999999.99
+        }
       ]
     },
     "EPHEM_Z<NUM_EPHEM>": {
@@ -920,8 +918,8 @@
         {
           "Type": "Range",
           "Min": -99999999.99,
-          "Max": 99999999.99                            
-        }                        
+          "Max": 99999999.99
+        }
       ]
     },
     "RESERVED_LEN": {
@@ -933,8 +931,8 @@
       "Units": ["bytes"],
       "Values": [
         {
-          "Type": "Integer"                                      
-        }                        
+          "Type": "Integer"
+        }
       ]
     },
     "RESERVED": {
@@ -946,9 +944,9 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"                                      
-        }                        
+          "Type": "Integer"
+        }
       ]
-    }        
+    }
   }
 }

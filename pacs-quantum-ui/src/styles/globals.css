@@ -43,7 +43,9 @@
   }
   body {
     @apply bg-neural-900 text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 }
 
@@ -57,13 +59,14 @@
   }
 
   .neural-glow {
-    box-shadow: 0 0 20px rgba(0, 229, 255, 0.3),
-                0 0 40px rgba(0, 229, 255, 0.2),
-                0 0 60px rgba(0, 229, 255, 0.1);
+    box-shadow:
+      0 0 20px rgba(0, 229, 255, 0.3),
+      0 0 40px rgba(0, 229, 255, 0.2),
+      0 0 60px rgba(0, 229, 255, 0.1);
   }
 
   .quantum-gradient {
-    background: linear-gradient(135deg, #00E5FF 0%, #00B8D4 50%, #0091EA 100%);
+    background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 50%, #0091ea 100%);
     background-size: 200% 200%;
     animation: neural-flow 3s ease infinite;
   }
@@ -169,10 +172,10 @@
 
 /* Quantum computing visualization */
 .qubit-state {
-  stroke: #00E5FF;
+  stroke: #00e5ff;
   stroke-width: 2;
   fill: none;
-  filter: drop-shadow(0 0 5px #00E5FF);
+  filter: drop-shadow(0 0 5px #00e5ff);
 }
 
 .bloch-sphere {

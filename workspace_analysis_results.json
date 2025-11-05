@@ -11,9 +11,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -28,10 +26,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "3 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "3 Node.js projects"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -50,19 +45,14 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "8 valid folders",
-        "1 Node.js projects"
-      ],
+      "strengths": ["8 valid folders", "1 Node.js projects"],
       "folders": 8,
       "launch_configs": 2,
       "settings": true,
       "extensions": 6,
       "existing_folders": 8,
       "missing_folders": [],
-      "package_json_folders": [
-        "../docs/marketplace"
-      ]
+      "package_json_folders": ["../docs/marketplace"]
     },
     "master": {
       "name": "master",
@@ -70,19 +60,14 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "8 valid folders",
-        "1 Node.js projects"
-      ],
+      "strengths": ["8 valid folders", "1 Node.js projects"],
       "folders": 8,
       "launch_configs": 1,
       "settings": true,
       "extensions": 9,
       "existing_folders": 8,
       "missing_folders": [],
-      "package_json_folders": [
-        ".."
-      ]
+      "package_json_folders": [".."]
     },
     "os-platform": {
       "name": "os-platform",
@@ -90,9 +75,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -107,19 +90,14 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "4 valid folders",
-        "1 Node.js projects"
-      ],
+      "strengths": ["4 valid folders", "1 Node.js projects"],
       "folders": 4,
       "launch_configs": 1,
       "settings": true,
       "extensions": 3,
       "existing_folders": 4,
       "missing_folders": [],
-      "package_json_folders": [
-        "../terrafusion-cos"
-      ]
+      "package_json_folders": ["../terrafusion-cos"]
     },
     "citizen-services": {
       "name": "citizen-services",
@@ -127,19 +105,14 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "6 valid folders",
-        "1 Node.js projects"
-      ],
+      "strengths": ["6 valid folders", "1 Node.js projects"],
       "folders": 6,
       "launch_configs": 2,
       "settings": true,
       "extensions": 7,
       "existing_folders": 6,
       "missing_folders": [],
-      "package_json_folders": [
-        "../../tests/frontend/citizen-services"
-      ]
+      "package_json_folders": ["../../tests/frontend/citizen-services"]
     },
     "code-enforcement": {
       "name": "code-enforcement",
@@ -147,19 +120,14 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "6 valid folders",
-        "1 Node.js projects"
-      ],
+      "strengths": ["6 valid folders", "1 Node.js projects"],
       "folders": 6,
       "launch_configs": 1,
       "settings": true,
       "extensions": 4,
       "existing_folders": 6,
       "missing_folders": [],
-      "package_json_folders": [
-        "../../tests/frontend/code-enforcement"
-      ]
+      "package_json_folders": ["../../tests/frontend/code-enforcement"]
     },
     "economic-development": {
       "name": "economic-development",
@@ -167,19 +135,14 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "6 valid folders",
-        "1 Node.js projects"
-      ],
+      "strengths": ["6 valid folders", "1 Node.js projects"],
       "folders": 6,
       "launch_configs": 1,
       "settings": true,
       "extensions": 4,
       "existing_folders": 6,
       "missing_folders": [],
-      "package_json_folders": [
-        "../../tests/frontend/economic-development"
-      ]
+      "package_json_folders": ["../../tests/frontend/economic-development"]
     },
     "human-resources": {
       "name": "human-resources",
@@ -187,19 +150,14 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "6 valid folders",
-        "1 Node.js projects"
-      ],
+      "strengths": ["6 valid folders", "1 Node.js projects"],
       "folders": 6,
       "launch_configs": 1,
       "settings": true,
       "extensions": 4,
       "existing_folders": 6,
       "missing_folders": [],
-      "package_json_folders": [
-        "../../tests/frontend/human-resources"
-      ]
+      "package_json_folders": ["../../tests/frontend/human-resources"]
     },
     "legal-judicial": {
       "name": "legal-judicial",
@@ -207,19 +165,14 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "6 valid folders",
-        "1 Node.js projects"
-      ],
+      "strengths": ["6 valid folders", "1 Node.js projects"],
       "folders": 6,
       "launch_configs": 1,
       "settings": true,
       "extensions": 4,
       "existing_folders": 6,
       "missing_folders": [],
-      "package_json_folders": [
-        "../../tests/frontend/legal-judicial"
-      ]
+      "package_json_folders": ["../../tests/frontend/legal-judicial"]
     },
     "public-health": {
       "name": "public-health",
@@ -227,19 +180,14 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "6 valid folders",
-        "1 Node.js projects"
-      ],
+      "strengths": ["6 valid folders", "1 Node.js projects"],
       "folders": 6,
       "launch_configs": 1,
       "settings": true,
       "extensions": 4,
       "existing_folders": 6,
       "missing_folders": [],
-      "package_json_folders": [
-        "../../tests/frontend/public-health"
-      ]
+      "package_json_folders": ["../../tests/frontend/public-health"]
     },
     "public-works": {
       "name": "public-works",
@@ -247,19 +195,14 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "6 valid folders",
-        "1 Node.js projects"
-      ],
+      "strengths": ["6 valid folders", "1 Node.js projects"],
       "folders": 6,
       "launch_configs": 1,
       "settings": true,
       "extensions": 4,
       "existing_folders": 6,
       "missing_folders": [],
-      "package_json_folders": [
-        "../../tests/frontend/public-works"
-      ]
+      "package_json_folders": ["../../tests/frontend/public-works"]
     },
     "api": {
       "name": "api",
@@ -267,10 +210,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -288,10 +228,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "3 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "3 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -310,10 +247,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -331,10 +265,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "3 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "3 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -353,10 +284,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -374,10 +302,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -395,10 +320,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -416,10 +338,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -437,10 +356,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -458,10 +374,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -479,10 +392,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -500,10 +410,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -521,10 +428,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -542,10 +446,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "3 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "3 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -564,10 +465,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -585,10 +483,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -606,10 +501,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -627,10 +519,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -648,10 +537,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -669,10 +555,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -690,10 +573,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -711,10 +591,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -732,10 +609,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -753,10 +627,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -774,10 +645,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -795,10 +663,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -816,10 +681,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -837,10 +699,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -858,10 +717,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -879,10 +735,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -900,9 +753,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -917,10 +768,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders",
-        "2 Node.js projects"
-      ],
+      "strengths": ["5 valid folders", "2 Node.js projects"],
       "folders": 5,
       "launch_configs": 3,
       "settings": true,
@@ -938,9 +786,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -955,9 +801,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -972,9 +816,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -989,9 +831,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -1006,9 +846,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -1023,9 +861,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -1040,9 +876,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -1057,9 +891,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -1074,9 +906,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -1091,9 +921,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -1108,9 +936,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,
@@ -1125,9 +951,7 @@
       "category": "core",
       "status": "healthy",
       "issues": [],
-      "strengths": [
-        "5 valid folders"
-      ],
+      "strengths": ["5 valid folders"],
       "folders": 5,
       "launch_configs": 1,
       "settings": true,

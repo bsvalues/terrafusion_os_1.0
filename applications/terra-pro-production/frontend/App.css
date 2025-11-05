@@ -17,7 +17,7 @@
 
 /* Global Styles */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   color: var(--gray-dark);
   background-color: #f5f7fa;
@@ -211,7 +211,10 @@ input[type="checkbox"] {
   font-size: 1rem;
   line-height: 1.5;
   border-radius: 0.25rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+  transition:
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out;
   cursor: pointer;
 }
 
@@ -268,7 +271,9 @@ input[type="checkbox"] {
 }
 
 @keyframes spinner-border {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {
@@ -376,12 +381,14 @@ input[type="checkbox"] {
 }
 
 /* Lists */
-.features-list, .improvements-list {
+.features-list,
+.improvements-list {
   margin: 0.5rem 0 1rem;
   padding-left: 1.5rem;
 }
 
-.features-list li, .improvements-list li {
+.features-list li,
+.improvements-list li {
   margin-bottom: 0.25rem;
 }
 
@@ -488,9 +495,15 @@ footer p {
 
 /* Visual feedback on form submission */
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(42, 107, 184, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(42, 107, 184, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(42, 107, 184, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(42, 107, 184, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(42, 107, 184, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(42, 107, 184, 0);
+  }
 }
 
 .pulse-animation {

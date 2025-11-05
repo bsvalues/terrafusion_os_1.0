@@ -1,8 +1,6 @@
 {
   "TRE": "PIAPEA",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix C: PIAE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix C: PIAE"],
   "Name": "Profile for Imagery Access Event Extension Version A",
   "Description": "The Profile for Imagery Access Event Extension Version A (PIAPEA) TRE is designed to provide an area for specific information about an event or events that are identified in an image. This extension shall be present for each event identified in an image. There may be up to 100 of these extensions present for each data type in an NITF file.",
   "Size": 46,

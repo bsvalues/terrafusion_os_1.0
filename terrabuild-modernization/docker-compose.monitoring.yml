@@ -28,11 +28,12 @@ services:
     networks:
       - monitoring
     ports:
-      - "9090:9090"
+      - '9090:9090'
     environment:
       - TZ=UTC
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      test:
+        ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:9090/-/healthy']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -51,7 +52,7 @@ services:
     networks:
       - monitoring
     ports:
-      - "9093:9093"
+      - '9093:9093'
     environment:
       - TZ=UTC
 
@@ -66,7 +67,7 @@ services:
     networks:
       - monitoring
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
@@ -94,9 +95,10 @@ services:
     networks:
       - monitoring
     ports:
-      - "9100:9100"
+      - '9100:9100'
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9100/metrics"]
+      test:
+        ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:9100/metrics']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -114,7 +116,7 @@ services:
     networks:
       - monitoring
     ports:
-      - "8080:8080"
+      - '8080:8080'
     command:
       - '--docker_only=true'
       - '--housekeeping_interval=10s'
@@ -130,7 +132,7 @@ services:
     networks:
       - monitoring
     ports:
-      - "9187:9187"
+      - '9187:9187'
 
   loki:
     image: grafana/loki:2.8.0
@@ -142,7 +144,7 @@ services:
     networks:
       - monitoring
     ports:
-      - "3100:3100"
+      - '3100:3100'
 
   promtail:
     image: grafana/promtail:2.8.0

@@ -36,8 +36,8 @@ public class AnalysisResultRepository : IAnalysisResultRepository
     }
 
     public async Task<IEnumerable<AnalysisResult>> GetByUserIdAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         bool includeArchived = false,
         CancellationToken cancellationToken = default)
     {
@@ -56,8 +56,8 @@ public class AnalysisResultRepository : IAnalysisResultRepository
     }
 
     public async Task<IEnumerable<AnalysisResult>> GetByAnalysisTypeAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string analysisType,
         CancellationToken cancellationToken = default)
     {
@@ -82,8 +82,8 @@ public class AnalysisResultRepository : IAnalysisResultRepository
     }
 
     public async Task<IEnumerable<AnalysisResult>> GetSignificantResultsAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         double maxPValue = 0.05,
         CancellationToken cancellationToken = default)
     {
@@ -98,8 +98,8 @@ public class AnalysisResultRepository : IAnalysisResultRepository
     }
 
     public async Task<IEnumerable<AnalysisResult>> GetRecentAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         int count = 10,
         CancellationToken cancellationToken = default)
     {
@@ -114,8 +114,8 @@ public class AnalysisResultRepository : IAnalysisResultRepository
     }
 
     public async Task<IEnumerable<AnalysisResult>> GetFavoritesAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default)
     {
         return await _context.AnalysisResults
@@ -129,8 +129,8 @@ public class AnalysisResultRepository : IAnalysisResultRepository
     }
 
     public async Task<IEnumerable<AnalysisResult>> SearchAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string searchTerm,
         CancellationToken cancellationToken = default)
     {
@@ -190,8 +190,8 @@ public class AnalysisResultRepository : IAnalysisResultRepository
     }
 
     public async Task<object> GetStatisticsAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default)
     {
         var results = await _context.AnalysisResults

@@ -1,16 +1,16 @@
 {
-    "type": "simple",
-    "label": "",
-    "symbol": {
-        "type": "esriSLS",
-        "style": "esriSLSSolid",
-        "color": [76, 0, 115, 255],
-        "width": 2,
-        "outline": {
-            "type": "esriSLS",
-            "style": "esriSLSSolid",
-            "color": [218, 112, 214, 255],
-            "width": 1
-        }
+  "type": "simple",
+  "label": "",
+  "symbol": {
+    "type": "esriSLS",
+    "style": "esriSLSSolid",
+    "color": [76, 0, 115, 255],
+    "width": 2,
+    "outline": {
+      "type": "esriSLS",
+      "style": "esriSLSSolid",
+      "color": [218, 112, 214, 255],
+      "width": 1
     }
+  }
 }

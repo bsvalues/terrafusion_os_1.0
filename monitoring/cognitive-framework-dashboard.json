@@ -76,9 +76,39 @@
       "config": {
         "phases": {
           "tier1": ["UNDERSTAND", "EXECUTE", "CLOSE"],
-          "tier2": ["CLARIFY", "RESEARCH", "DESIGN", "BUILD", "VERIFY", "OPERATE"],
-          "tier3": ["DISCOVERY", "LANDSCAPE", "STRATEGIC_DESIGN", "THREAT_MODELING", "DETAILED_PLANNING", "ITERATIVE_BUILD", "STAGED_ROLLOUT", "OPTIMIZATION", "INSTITUTIONALIZATION"],
-          "tier4": ["ASSESS_CURRENT", "ENVISION_FUTURE", "MAP_JOURNEY", "SECURE_LEADERSHIP", "ARCHITECT_SOLUTION", "DESIGN_CHANGE", "PILOT_VALIDATE", "SCALE_STABILIZE", "OPTIMIZE_EMBED", "TRANSFER_OWNERSHIP", "MEASURE_SUSTAIN", "EVOLVE_INNOVATE"]
+          "tier2": [
+            "CLARIFY",
+            "RESEARCH",
+            "DESIGN",
+            "BUILD",
+            "VERIFY",
+            "OPERATE"
+          ],
+          "tier3": [
+            "DISCOVERY",
+            "LANDSCAPE",
+            "STRATEGIC_DESIGN",
+            "THREAT_MODELING",
+            "DETAILED_PLANNING",
+            "ITERATIVE_BUILD",
+            "STAGED_ROLLOUT",
+            "OPTIMIZATION",
+            "INSTITUTIONALIZATION"
+          ],
+          "tier4": [
+            "ASSESS_CURRENT",
+            "ENVISION_FUTURE",
+            "MAP_JOURNEY",
+            "SECURE_LEADERSHIP",
+            "ARCHITECT_SOLUTION",
+            "DESIGN_CHANGE",
+            "PILOT_VALIDATE",
+            "SCALE_STABILIZE",
+            "OPTIMIZE_EMBED",
+            "TRANSFER_OWNERSHIP",
+            "MEASURE_SUSTAIN",
+            "EVOLVE_INNOVATE"
+          ]
         },
         "colorCoding": {
           "active": "#00ffee",

@@ -5,15 +5,15 @@
   "Description": "This data extension segment is retired per the NITF Technical Board, and is included for documentation purposes only within ArcGIS Pro.",
   "Size": 99,
   "Fields": {
-    "ENDIAN" : {},
-    "HDR_SEC_LEN" : {},
-    "FILENAME" : {},
-    "NEW_FLAG" : {},
-    "STANDARD_NUM" : {},
-    "STANDARD_DATE" : {},
-    "CLASSIFICATION" : {},
-    "COUNTRY" : {},
-    "RELEASE" : {},
-    "LOC_SEC_LOC" : {}
+    "ENDIAN": {},
+    "HDR_SEC_LEN": {},
+    "FILENAME": {},
+    "NEW_FLAG": {},
+    "STANDARD_NUM": {},
+    "STANDARD_DATE": {},
+    "CLASSIFICATION": {},
+    "COUNTRY": {},
+    "RELEASE": {},
+    "LOC_SEC_LOC": {}
   }
 }

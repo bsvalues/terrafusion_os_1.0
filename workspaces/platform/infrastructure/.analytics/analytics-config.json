@@ -6,27 +6,15 @@
   },
   "predictive_analytics": {
     "enabled": true,
-    "features": [
-      "resource-capacity",
-      "cost-optimization",
-      "scaling-needs"
-    ],
+    "features": ["resource-capacity", "cost-optimization", "scaling-needs"],
     "prediction_window_days": 30,
     "confidence_threshold": 0.75,
     "update_frequency_hours": 24,
-    "models": [
-      "regression",
-      "clustering",
-      "anomaly"
-    ]
+    "models": ["regression", "clustering", "anomaly"]
   },
   "anomaly_detection": {
     "enabled": true,
-    "detectors": [
-      "performance-anomalies",
-      "cost-anomalies",
-      "usage-anomalies"
-    ],
+    "detectors": ["performance-anomalies", "cost-anomalies", "usage-anomalies"],
     "sensitivity": "medium",
     "real_time": false,
     "batch_window_hours": 24,
@@ -42,10 +30,7 @@
     "daily_volume_gb": 800
   },
   "ml_infrastructure": {
-    "frameworks": [
-      "scikit-learn",
-      "statsmodels"
-    ],
+    "frameworks": ["scikit-learn", "statsmodels"],
     "gpu_enabled": false,
     "distributed_training": true,
     "model_registry": "enabled",
@@ -55,11 +40,7 @@
   "optimization": {
     "auto_scaling": {
       "enabled": true,
-      "metrics": [
-        "cpu",
-        "memory",
-        "request_latency"
-      ],
+      "metrics": ["cpu", "memory", "request_latency"],
       "target_utilization": 70,
       "scale_up_threshold": 80,
       "scale_down_threshold": 30,

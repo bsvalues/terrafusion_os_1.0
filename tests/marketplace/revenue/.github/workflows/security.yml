@@ -1,45 +1,46 @@
 name: TerraFusion revenue Security Scanning
 'on':
   schedule:
-  - cron: 0 6 * * *
+    - cron: 0 6 * * *
   workflow_dispatch: {}
   push:
     branches:
-    - main
+      - main
 jobs:
   security-audit:
     name: Government Security Audit
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Dependency vulnerability scan
-      uses: ossf/scorecard-action@v2.3.1
-      with:
-        results_file: results.sarif
-        results_format: sarif
-        publish_results: true
-    - name: Upload SARIF results
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: results.sarif
-    - name: Government security compliance
-      run: echo '🔒 Government security compliance validated'
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Dependency vulnerability scan
+        uses: ossf/scorecard-action@v2.3.1
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+      - name: Government security compliance
+        run: echo '🔒 Government security compliance validated'
   container-security:
     name: Container Security Scanning
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'docker') || contains(github.event.head_commit.message,
+    if:
+      contains(github.event.head_commit.message, 'docker') || contains(github.event.head_commit.message,
       'container')
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Container image security scan
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: terrafusion/revenue:latest
-        format: sarif
-        output: trivy-results.sarif
-    - name: Upload Trivy scan results
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: trivy-results.sarif
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Container image security scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: terrafusion/revenue:latest
+          format: sarif
+          output: trivy-results.sarif
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif

@@ -4,5 +4,5 @@
   "Name": "Open Skies Digital Data Exchange Text File",
   "Description": "This data extension segment is retired per the NITF Technical Board, and is included for documentation purposes only within ArcGIS Pro.",
   "Size": 362,
-  "Fields": {}          
+  "Fields": {}
 }

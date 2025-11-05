@@ -47,15 +47,8 @@
         "security_level": "HIGH"
       }
     ],
-    "data_endpoints": [
-      "/metrics",
-      "/logs",
-      "/alerts",
-      "/dashboards"
-    ],
-    "integration_points": [
-      "/api/v1/monitoring/integration"
-    ]
+    "data_endpoints": ["/metrics", "/logs", "/alerts", "/dashboards"],
+    "integration_points": ["/api/v1/monitoring/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

@@ -3,12 +3,12 @@
   "Source": [
     "STDI-0002-1 v3.0, Appendix E: ASDE",
     "STDI-0002-1 v2021.1, Appendix E: ASDE"
-  ],  
+  ],
   "Name": "Aircraft Information Extension Format",
   "Description": "The ACFT TRE provides miscellaneous information unique to airborne sensors. The ACFT extension is required. A single ACFT extension, containing information relative to the capture of its associated image data will be placed in the respective subheader of every NITF image segment.",
   "Size": 132,
   "Fields": {
-    "AC_MSN_ID" : {
+    "AC_MSN_ID": {
       "Name": "Aircraft Mission Identification",
       "Description": "This is the name of the mission. 'NOT AVAIL' (without quotes) shall be used if a mission name is unavailable.",
       "Size": 10,
@@ -22,7 +22,7 @@
         {
           "Type": "Value",
           "Values": ["NOT AVAIL"]
-        }        
+        }
       ]
     },
     "SCTYPE": {
@@ -36,9 +36,9 @@
         {
           "Type": "Value",
           "Values": {
-            "C" : "Collection Plan",
-            "R" : "Retasked",
-            " " : "Immediate or Unplanned"
+            "C": "Collection Plan",
+            "R": "Retasked",
+            " ": "Immediate or Unplanned"
           }
         }
       ]
@@ -52,10 +52,10 @@
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 9999
-          }
+          "Type": "Range",
+          "Min": 0,
+          "Max": 9999
+        }
       ]
     },
     "SENSOR_ID": {
@@ -69,9 +69,9 @@
         {
           "Type": "Value",
           "Values": {
-            "ASR":"ASARS-2",
-            "APG":"APG-73",
-            "DST":"DarkStar"
+            "ASR": "ASARS-2",
+            "APG": "APG-73",
+            "DST": "DarkStar"
           }
         }
       ]
@@ -100,9 +100,9 @@
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 999
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999
         }
       ]
     },
@@ -119,7 +119,7 @@
         }
       ]
     },
-    "IMHOSTNO": {  
+    "IMHOSTNO": {
       "Name": "Immediate Scene Host",
       "Description": "This field, together with the immediate scene request ID field, denotes the scene that the immediate was initiated from and can be used to renumber the scene, Example: If the immediate scene was initiated from scene number 123 and this is the third request from that scene, then the scene number field will be zero, the immediate scene host field will contain 123 and the immediate scene request id will contain 00003. When the scene number is greater than 999, this field will only contain the three least significant digits of the scene number; any resulting ambiguity can be resolved by comparing collection times. Shall contain 000 for Pre-Planned scenes.",
       "Size": 3,
@@ -128,9 +128,9 @@
       "Units": [],
       "Values": [
         {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 999
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999
         }
       ]
     },
@@ -164,7 +164,7 @@
         }
       ]
     },
-    "MPLAN": {  
+    "MPLAN": {
       "Name": "Mission Plan Mode",
       "Description": "This value defines the current sensor specific collection mode.  Where the image extends along an extended path, as with SAR Search mode and EO-IR Wide Area Search modes, the entry and exit locations are the specified latitude, longitude and elevation above mean sea level (MSL) of the planned entry and exit points on the scene centerline of the area to be imaged. Where the image is confined to the area about a single reference point, as with Spot modes and Point Target modes, the entry fields contain the specified reference point latitude/longitude/elevation, and the exit fields are not used. The location may be expressed in either degrees-minutes-seconds or in decimal degrees. The format ddmmss.ssX represents degrees (00 to 89), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of latitude, with X = N for north or S for south, and dddmmss.ssY represents degrees (000 to 179), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of longitude, with Y = E for east or W for west.",
       "Size": 2,
@@ -180,21 +180,21 @@
         {
           "Type": "Value",
           "Values": {
-            "01":"Search",
-            "02":"Spot 3",
-            "04":"Spot 1",
-            "07":"Continuous Spot 3",
-            "08":"Continuous Spot 1",
-            "09":"EMTI Wide Frame Search",
-            "10":"EMTI Augmented Spot",
-            "11":"EMTI Narrow Frame Search",
-            "12":"EMTI Wide Area MTI (WAMTI)",
-            "13":"Monopulse Calibration"
+            "01": "Search",
+            "02": "Spot 3",
+            "04": "Spot 1",
+            "07": "Continuous Spot 3",
+            "08": "Continuous Spot 1",
+            "09": "EMTI Wide Frame Search",
+            "10": "EMTI Augmented Spot",
+            "11": "EMTI Narrow Frame Search",
+            "12": "EMTI Wide Area MTI (WAMTI)",
+            "13": "Monopulse Calibration"
           }
         }
       ]
     },
-    "ENTLOC": {  
+    "ENTLOC": {
       "Name": "Entry Location",
       "Description": "The version of the standard used to define this version of the ACFTA TRE provides no description for this field.",
       "Size": 21,
@@ -207,7 +207,7 @@
         }
       ]
     },
-    "ENTELV": {  
+    "ENTELV": {
       "Name": "Entry Elevation",
       "Description": "The version of the standard used to define this version of the ACFTA TRE provides no description for this field.",
       "Size": 21,
@@ -222,7 +222,7 @@
         }
       ]
     },
-    "EXITLOC": {  
+    "EXITLOC": {
       "Name": "Exit Location",
       "Description": "The version of the standard used to define this version of the ACFTA TRE provides no description for this field.",
       "Size": 21,
@@ -235,7 +235,7 @@
         }
       ]
     },
-    "EXITELV": {  
+    "EXITELV": {
       "Name": "Exit Elevation",
       "Description": "The version of the standard used to define this version of the ACFTA TRE provides no description for this field.",
       "Size": 21,
@@ -250,7 +250,7 @@
         }
       ]
     },
-    "TMAP": {  
+    "TMAP": {
       "Name": "True Map Angle",
       "Description": "The true map angle for SAR data in search modes, the true map angle is the angle between the ground projection of the line of sight from the aircraft and the scene centerline. For SAR data in Spot modes, the true map angle is the angle, measured at the central reference point, between the ground projection of the line of sight from the aircraft and a line parallel to the aircraft desired track heading. For EO-IR data, the true map angle is defined in the NED coordinate system with origin at the aircraft (aircraft local NED), as the angle between the scene entry line of sight and the instantaneous aircraft track heading vector. The aircraft trackheading vector is obtained by rotating the north unit vector of the aircraft local NED coordinate system in the aircraft local NE plane through the aircraft trackheading angle. The true map angle is measured in the slanted plane containing the scene entry line of sight and the aircraft track-heading vector. This angle is always positive. A value of 999.999 indicates the true map angle is unavailable.",
       "Size": 7,
@@ -261,15 +261,15 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 180.000
+          "Max": 180.0
         },
         {
           "Type": "Value",
           "Values": ["999.999"]
-        } 
+        }
       ]
     },
-    "RCS": {  
+    "RCS": {
       "Name": "RCS Calibration Coefficient",
       "Description": "This field describes the performance calibration value for SAR sensor equipment.",
       "Size": 3,
@@ -284,7 +284,7 @@
         }
       ]
     },
-    "ROW_SPACING": {  
+    "ROW_SPACING": {
       "Name": "Row Spacing",
       "Description": "The row spacing for SAR data represents ground plane distance between corresponding pixels of adjacent rows, measured in feet.  For EO-IR data, this value represents the angle between corresponding pixels of adjacent rows, measured in microradians at center of image.",
       "Size": 7,
@@ -297,7 +297,7 @@
         }
       ]
     },
-    "COL_SPACING": {  
+    "COL_SPACING": {
       "Name": "Column Spacing",
       "Description": "The row spacing for SAR data, this value represents ground plane distance between adjacent pixels within a row, measured in feet. For EO-IR data, this value represents angle between adjacent pixels within a row, measured in microradians at center of image.",
       "Size": 7,
@@ -310,9 +310,9 @@
         }
       ]
     },
-    "SENSERIAL": {  
+    "SENSERIAL": {
       "Name": "Sensor Vendor's serial number",
-      "Description": "This is the serial number of the line replaceable unit (LRU) containing EO-IR imaging electronics or SAR Receiver/Exciter involved in creating the imagery contained in this file.", 
+      "Description": "This is the serial number of the line replaceable unit (LRU) containing EO-IR imaging electronics or SAR Receiver/Exciter involved in creating the imagery contained in this file.",
       "Size": 4,
       "Format": "BCS-N",
       "Type": "<R>",
@@ -323,7 +323,7 @@
         }
       ]
     },
-    "ABSWVER": {  
+    "ABSWVER": {
       "Name": "Airborne Software Version",
       "Description": "This is the airborne software version (vvvv) and revision (rr) numbers.",
       "Size": 7,
@@ -335,6 +335,6 @@
           "Type": "AlphaNumeric"
         }
       ]
-    }    
+    }
   }
 }

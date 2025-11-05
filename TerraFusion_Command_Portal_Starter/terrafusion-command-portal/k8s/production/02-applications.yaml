@@ -7,23 +7,23 @@ metadata:
     app: terrafusion-frontend
     component: frontend
     environment: production
-    version: "1.0"
+    version: '1.0'
     app.kubernetes.io/name: terrafusion-frontend
     app.kubernetes.io/instance: production
-    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/version: '1.0'
     app.kubernetes.io/component: frontend
     app.kubernetes.io/part-of: terrafusion-command-portal
     app.kubernetes.io/managed-by: terrafusion
   annotations:
-    deployment.kubernetes.io/revision: "1"
-    description: "TerraFusion Frontend - React/Next.js Application"
+    deployment.kubernetes.io/revision: '1'
+    description: 'TerraFusion Frontend - React/Next.js Application'
 spec:
-  replicas: 3  # High availability with 3 replicas
+  replicas: 3 # High availability with 3 replicas
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 0  # Zero downtime deployments
+      maxUnavailable: 0 # Zero downtime deployments
   selector:
     matchLabels:
       app: terrafusion-frontend
@@ -33,17 +33,17 @@ spec:
         app: terrafusion-frontend
         component: frontend
         environment: production
-        version: "1.0"
+        version: '1.0'
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "3000"
-        prometheus.io/path: "/metrics"
-        fluentd/include: "true"
-        logging.coreos.com/enabled: "true"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3000'
+        prometheus.io/path: '/metrics'
+        fluentd/include: 'true'
+        logging.coreos.com/enabled: 'true'
     spec:
       serviceAccountName: terrafusion-service-account
       automountServiceAccountToken: true
-      
+
       # Security context for government compliance
       securityContext:
         runAsNonRoot: true
@@ -52,7 +52,7 @@ spec:
         fsGroup: 1001
         seccompProfile:
           type: RuntimeDefault
-      
+
       # Anti-affinity to spread pods across nodes
       affinity:
         podAntiAffinity:
@@ -66,12 +66,12 @@ spec:
                       values:
                         - terrafusion-frontend
                 topologyKey: kubernetes.io/hostname
-      
+
       containers:
         - name: frontend
           image: terrafusion/frontend:latest
           imagePullPolicy: Always
-          
+
           # Security context for container
           securityContext:
             allowPrivilegeEscalation: false
@@ -82,7 +82,7 @@ spec:
             capabilities:
               drop:
                 - ALL
-          
+
           ports:
             - name: http
               containerPort: 3000
@@ -90,15 +90,15 @@ spec:
             - name: metrics
               containerPort: 9090
               protocol: TCP
-          
+
           # Environment variables from ConfigMap and Secrets
           env:
             - name: NODE_ENV
-              value: "production"
+              value: 'production'
             - name: NEXT_PUBLIC_API_URL
-              value: "https://api.terrafusion.gov"
+              value: 'https://api.terrafusion.gov'
             - name: NEXT_PUBLIC_WS_URL
-              value: "wss://ws.terrafusion.gov"
+              value: 'wss://ws.terrafusion.gov'
             - name: ENVIRONMENT
               valueFrom:
                 configMapKeyRef:
@@ -109,16 +109,16 @@ spec:
                 configMapKeyRef:
                   name: terrafusion-config
                   key: log_level
-          
+
           # Resource requests and limits
           resources:
             requests:
-              cpu: "500m"      # 0.5 CPU core
-              memory: "1Gi"    # 1GB RAM
+              cpu: '500m' # 0.5 CPU core
+              memory: '1Gi' # 1GB RAM
             limits:
-              cpu: "2"         # 2 CPU cores max
-              memory: "4Gi"    # 4GB RAM max
-          
+              cpu: '2' # 2 CPU cores max
+              memory: '4Gi' # 4GB RAM max
+
           # Health checks
           livenessProbe:
             httpGet:
@@ -130,7 +130,7 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 3
             successThreshold: 1
-          
+
           readinessProbe:
             httpGet:
               path: /ready
@@ -141,7 +141,7 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 3
             successThreshold: 1
-          
+
           # Startup probe for faster deployments
           startupProbe:
             httpGet:
@@ -153,7 +153,7 @@ spec:
             timeoutSeconds: 1
             failureThreshold: 30
             successThreshold: 1
-          
+
           # Volume mounts for writable directories
           volumeMounts:
             - name: tmp-volume
@@ -162,7 +162,7 @@ spec:
               mountPath: /app/.next/cache
             - name: logs-volume
               mountPath: /app/logs
-      
+
       # Volumes for writable directories
       volumes:
         - name: tmp-volume
@@ -174,18 +174,18 @@ spec:
         - name: logs-volume
           emptyDir:
             sizeLimit: 1Gi
-      
+
       # DNS configuration for government networks
       dnsPolicy: ClusterFirst
       dnsConfig:
         options:
           - name: ndots
-            value: "2"
+            value: '2'
           - name: edns0
-      
+
       # Termination settings
       terminationGracePeriodSeconds: 30
-      
+
       # Restart policy
       restartPolicy: Always
 
@@ -200,9 +200,9 @@ metadata:
     component: frontend
     environment: production
   annotations:
-    service.description: "TerraFusion Frontend Service"
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "9090"
+    service.description: 'TerraFusion Frontend Service'
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9090'
 spec:
   type: ClusterIP
   ports:
@@ -228,17 +228,17 @@ metadata:
     app: terrafusion-backend
     component: backend
     environment: production
-    version: "1.0"
+    version: '1.0'
   annotations:
-    deployment.kubernetes.io/revision: "1"
-    description: "TerraFusion Backend - Rust API Server"
+    deployment.kubernetes.io/revision: '1'
+    description: 'TerraFusion Backend - Rust API Server'
 spec:
-  replicas: 5  # High availability with 5 replicas
+  replicas: 5 # High availability with 5 replicas
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 2
-      maxUnavailable: 1  # Allow 1 pod to be unavailable during updates
+      maxUnavailable: 1 # Allow 1 pod to be unavailable during updates
   selector:
     matchLabels:
       app: terrafusion-backend
@@ -248,15 +248,15 @@ spec:
         app: terrafusion-backend
         component: backend
         environment: production
-        version: "1.0"
+        version: '1.0'
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9090"
-        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9090'
+        prometheus.io/path: '/metrics'
     spec:
       serviceAccountName: terrafusion-service-account
       automountServiceAccountToken: true
-      
+
       # Security context for government compliance
       securityContext:
         runAsNonRoot: true
@@ -265,7 +265,7 @@ spec:
         fsGroup: 1001
         seccompProfile:
           type: RuntimeDefault
-      
+
       # Anti-affinity to spread pods across nodes
       affinity:
         podAntiAffinity:
@@ -279,12 +279,12 @@ spec:
                       values:
                         - terrafusion-backend
                 topologyKey: kubernetes.io/hostname
-      
+
       containers:
         - name: backend
           image: terrafusion/backend:latest
           imagePullPolicy: Always
-          
+
           # Security context for container
           securityContext:
             allowPrivilegeEscalation: false
@@ -295,7 +295,7 @@ spec:
             capabilities:
               drop:
                 - ALL
-          
+
           ports:
             - name: http
               containerPort: 8787
@@ -306,17 +306,17 @@ spec:
             - name: metrics
               containerPort: 9090
               protocol: TCP
-          
+
           # Environment variables from ConfigMap and Secrets
           env:
             - name: RUST_ENV
-              value: "production"
+              value: 'production'
             - name: RUST_LOG
-              value: "info"
+              value: 'info'
             - name: BIND_ADDRESS
-              value: "0.0.0.0:8787"
+              value: '0.0.0.0:8787'
             - name: WEBSOCKET_ADDRESS
-              value: "0.0.0.0:8788"
+              value: '0.0.0.0:8788'
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -337,16 +337,16 @@ spec:
                 configMapKeyRef:
                   name: terrafusion-config
                   key: counties
-          
+
           # Resource requests and limits
           resources:
             requests:
-              cpu: "1"         # 1 CPU core
-              memory: "2Gi"    # 2GB RAM
+              cpu: '1' # 1 CPU core
+              memory: '2Gi' # 2GB RAM
             limits:
-              cpu: "4"         # 4 CPU cores max
-              memory: "8Gi"    # 8GB RAM max
-          
+              cpu: '4' # 4 CPU cores max
+              memory: '8Gi' # 8GB RAM max
+
           # Health checks
           livenessProbe:
             httpGet:
@@ -358,7 +358,7 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 3
             successThreshold: 1
-          
+
           readinessProbe:
             httpGet:
               path: /ready
@@ -369,7 +369,7 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 3
             successThreshold: 1
-          
+
           # Startup probe for Rust application
           startupProbe:
             httpGet:
@@ -381,7 +381,7 @@ spec:
             timeoutSeconds: 2
             failureThreshold: 20
             successThreshold: 1
-          
+
           # Volume mounts for writable directories
           volumeMounts:
             - name: tmp-volume
@@ -390,7 +390,7 @@ spec:
               mountPath: /app/logs
             - name: cache-volume
               mountPath: /app/cache
-      
+
       # Volumes for writable directories
       volumes:
         - name: tmp-volume
@@ -402,18 +402,18 @@ spec:
         - name: cache-volume
           emptyDir:
             sizeLimit: 1Gi
-      
+
       # DNS configuration
       dnsPolicy: ClusterFirst
       dnsConfig:
         options:
           - name: ndots
-            value: "2"
+            value: '2'
           - name: edns0
-      
+
       # Termination settings
-      terminationGracePeriodSeconds: 60  # Longer for graceful shutdown
-      
+      terminationGracePeriodSeconds: 60 # Longer for graceful shutdown
+
       # Restart policy
       restartPolicy: Always
 
@@ -428,9 +428,9 @@ metadata:
     component: backend
     environment: production
   annotations:
-    service.description: "TerraFusion Backend Service"
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "9090"
+    service.description: 'TerraFusion Backend Service'
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9090'
 spec:
   type: ClusterIP
   ports:

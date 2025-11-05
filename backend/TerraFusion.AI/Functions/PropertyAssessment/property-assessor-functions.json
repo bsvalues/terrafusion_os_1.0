@@ -33,7 +33,13 @@
         "properties": {
           "propertyType": {
             "type": "string",
-            "enum": ["Residential", "Commercial", "Industrial", "Agricultural", "Vacant Land"],
+            "enum": [
+              "Residential",
+              "Commercial",
+              "Industrial",
+              "Agricultural",
+              "Vacant Land"
+            ],
             "description": "Type of property to search for"
           },
           "squareFootage": {
@@ -60,12 +66,26 @@
           },
           "quality": {
             "type": "string",
-            "enum": ["Low", "Fair", "Average", "Good", "Very Good", "Excellent"],
+            "enum": [
+              "Low",
+              "Fair",
+              "Average",
+              "Good",
+              "Very Good",
+              "Excellent"
+            ],
             "description": "Quality/grade of construction"
           },
           "condition": {
             "type": "string",
-            "enum": ["Poor", "Fair", "Average", "Good", "Very Good", "Excellent"],
+            "enum": [
+              "Poor",
+              "Fair",
+              "Average",
+              "Good",
+              "Very Good",
+              "Excellent"
+            ],
             "description": "Overall property condition"
           },
           "maxResults": {
@@ -116,7 +136,13 @@
         "properties": {
           "propertyType": {
             "type": "string",
-            "enum": ["Residential", "Commercial", "Industrial", "Agricultural", "Vacant Land"],
+            "enum": [
+              "Residential",
+              "Commercial",
+              "Industrial",
+              "Agricultural",
+              "Vacant Land"
+            ],
             "description": "Type of property to analyze"
           },
           "startDate": {

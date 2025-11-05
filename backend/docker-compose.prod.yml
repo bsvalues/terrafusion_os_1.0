@@ -54,13 +54,13 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - terrafusion-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -91,10 +91,10 @@ services:
           cpus: '2'
           memory: 2G
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "100m"
-        max-file: "10"
+        max-size: '100m'
+        max-file: '10'
 
   # ==========================================================================
   # Redis Cache - High-Performance Session & Cache Management
@@ -104,13 +104,13 @@ services:
     container_name: terrafusion-redis-prod
     restart: always
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis-data:/data
     networks:
       - terrafusion-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -131,10 +131,10 @@ services:
           cpus: '1'
           memory: 1G
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "100m"
-        max-file: "10"
+        max-size: '100m'
+        max-file: '10'
 
   # ==========================================================================
   # TerraFusion API - Core Government Services (Port 5000)
@@ -158,7 +158,7 @@ services:
       Logging__LogLevel__Microsoft: Error
       Logging__LogLevel__System: Error
     ports:
-      - "5000:5000"
+      - '5000:5000'
     depends_on:
       postgres:
         condition: service_healthy
@@ -168,7 +168,7 @@ services:
       - terrafusion-network
       - terrafusion-monitoring
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:5000/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -188,10 +188,10 @@ services:
         max_attempts: 3
         window: 120s
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "200m"
-        max-file: "10"
+        max-size: '200m'
+        max-file: '10'
 
   # ==========================================================================
   # TerraFusion Consciousness Engine - 50,000 AI Agent Swarm (Port 3004)
@@ -217,7 +217,7 @@ services:
       Logging__LogLevel__Default: Warning
       Logging__LogLevel__Microsoft: Error
     ports:
-      - "3004:3004"
+      - '3004:3004'
     depends_on:
       postgres:
         condition: service_healthy
@@ -227,7 +227,7 @@ services:
       - terrafusion-network
       - terrafusion-monitoring
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3004/health']
       interval: 15s
       timeout: 10s
       retries: 5
@@ -247,10 +247,10 @@ services:
         max_attempts: 3
         window: 120s
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "500m"
-        max-file: "10"
+        max-size: '500m'
+        max-file: '10'
 
   # ==========================================================================
   # TerraFusion Gateway - API Gateway with Ocelot (Port 3002)
@@ -276,7 +276,7 @@ services:
       RateLimiting__Window: 60
       Logging__LogLevel__Default: Warning
     ports:
-      - "3002:3002"
+      - '3002:3002'
     depends_on:
       api:
         condition: service_healthy
@@ -286,7 +286,7 @@ services:
       - terrafusion-network
       - terrafusion-monitoring
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3002/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -306,10 +306,10 @@ services:
         max_attempts: 3
         window: 120s
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "200m"
-        max-file: "10"
+        max-size: '200m'
+        max-file: '10'
 
   # ==========================================================================
   # TerraFusion Operations - County Operations & Workflow (Port 5002)
@@ -328,7 +328,7 @@ services:
       Redis__Configuration: redis:6379
       Logging__LogLevel__Default: Warning
     ports:
-      - "5002:5002"
+      - '5002:5002'
     depends_on:
       postgres:
         condition: service_healthy
@@ -338,7 +338,7 @@ services:
       - terrafusion-network
       - terrafusion-monitoring
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:5002/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -358,10 +358,10 @@ services:
         max_attempts: 3
         window: 120s
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "200m"
-        max-file: "10"
+        max-size: '200m'
+        max-file: '10'
 
   # ==========================================================================
   # Prometheus - Metrics Collection & Monitoring
@@ -371,7 +371,7 @@ services:
     container_name: terrafusion-prometheus-prod
     restart: always
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -394,10 +394,10 @@ services:
           cpus: '0.5'
           memory: 512M
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "100m"
-        max-file: "10"
+        max-size: '100m'
+        max-file: '10'
 
   # ==========================================================================
   # Grafana - Metrics Visualization & Dashboards
@@ -407,7 +407,7 @@ services:
     container_name: terrafusion-grafana-prod
     restart: always
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD must be set}
@@ -428,11 +428,10 @@ services:
           cpus: '0.25'
           memory: 256M
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "100m"
-        max-file: "10"
-
+        max-size: '100m'
+        max-file: '10'
 # ============================================================================
 # Production Usage Instructions
 # ============================================================================

@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: ZAP Scan
         uses: zaproxy/action-baseline@v0.7.0
         with:
@@ -38,7 +38,7 @@ jobs:
           rules_file_name: ${{ inputs.rules_file_path }}
           cmd_options: '-a -j'
           fail_action: ${{ inputs.fail_on_high == true }}
-      
+
       - name: Upload ZAP Scan Report
         uses: actions/upload-artifact@v3
         with:
@@ -47,13 +47,13 @@ jobs:
             zap_scan_report.html
             zap_scan_report.json
           retention-days: 30
-      
+
       - name: Generate Security Report Summary
         if: ${{ success() || failure() }}
         run: |
           echo "# TerraFusion Security Report Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ -f "zap_scan_report.json" ]; then
             echo "## ZAP Scan Results" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY

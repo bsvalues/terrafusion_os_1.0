@@ -5,8 +5,8 @@ services:
     build: .
     container_name: terra-fusion-main
     ports:
-      - "5000:5000"
-      - "8001:8001"
+      - '5000:5000'
+      - '8001:8001'
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -27,7 +27,7 @@ services:
       - POSTGRES_USER=terra_admin
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -38,8 +38,8 @@ services:
     image: nginx:alpine
     container_name: terra-fusion-nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/ssl:/etc/nginx/ssl

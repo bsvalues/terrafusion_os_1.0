@@ -5,7 +5,7 @@
   "Description": "The Cloud Cover Grid Data TRE (CSCCGA) provides support data that identifies which image segment and sensors were used to create the cloud grid. CSCCGA also geometrically registers the cloud grid to the pixel grid of one of the image segments.",
   "Size": 60,
   "Fields": {
-    "CCG_SOURCE" : {
+    "CCG_SOURCE": {
       "Name": "Cloud Cover",
       "Description": "This field shows the concatenation of all sensors used to create cloud cover grid separated by commas.",
       "Size": 18,
@@ -16,7 +16,7 @@
         {
           "Type": "Value",
           "Values": ["PAN", "MS", "CAVIS", "SWIR"]
-        }        
+        }
       ]
     },
     "REG_SENSOR": {
@@ -42,7 +42,7 @@
       "Units": ["lines"],
       "Values": [
         {
-          "Type": "Integer"          
+          "Type": "Integer"
         }
       ]
     },
@@ -55,7 +55,7 @@
       "Units": ["samples"],
       "Values": [
         {
-          "Type": "Integer"          
+          "Type": "Integer"
         }
       ]
     },
@@ -118,6 +118,6 @@
           "Max": 99999
         }
       ]
-    }    
+    }
   }
 }

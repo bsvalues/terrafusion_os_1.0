@@ -2,15 +2,15 @@ name: TerraFusion CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to deploy to'
+        description: "Environment to deploy to"
         required: true
-        default: 'dev'
+        default: "dev"
         type: choice
         options:
           - dev
@@ -18,8 +18,8 @@ on:
           - prod
 
 env:
-  NODE_VERSION: '20.x'
-  PYTHON_VERSION: '3.11'
+  NODE_VERSION: "20.x"
+  PYTHON_VERSION: "3.11"
   AWS_REGION: us-west-2
   ECR_REPOSITORY: terrafusion-${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'prod') || 'dev' }}
 
@@ -50,13 +50,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+          cache: "pip"
 
       - name: Install dependencies
         run: |
@@ -96,7 +96,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -108,9 +108,9 @@ jobs:
         uses: zaproxy/action-baseline@v0.7.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          target: 'http://localhost:5000'
-          rules_file_name: '.zap/rules.tsv'
-          cmd_options: '-a'
+          target: "http://localhost:5000"
+          rules_file_name: ".zap/rules.tsv"
+          cmd_options: "-a"
 
   build-and-push:
     name: Build and Push Docker Image
@@ -158,7 +158,7 @@ jobs:
       - name: Save image URI as artifact
         run: |
           echo "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:$(echo ${{ github.sha }} | cut -c1-7)" > image-uri.txt
-          
+
       - name: Upload image URI artifact
         uses: actions/upload-artifact@v3
         with:

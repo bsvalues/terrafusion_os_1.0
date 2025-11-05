@@ -7,42 +7,42 @@ global:
     compliance_level: government_grade
     accessibility: wcag_2_2_aa
 rule_files:
-- government_alerts.yml
-- performance_rules.yml
-- accessibility_rules.yml
-- security_rules.yml
+  - government_alerts.yml
+  - performance_rules.yml
+  - accessibility_rules.yml
+  - security_rules.yml
 scrape_configs:
-- job_name: terrafusion-marketplace
-  static_configs:
-  - targets:
-    - localhost:3000
-    - localhost:8080
-    labels:
-      service: marketplace
-      type: core
-      government: 'true'
-  scrape_interval: 5s
-  metrics_path: /metrics
-  honor_labels: true
-- job_name: marketplace-node-exporter
-  static_configs:
-  - targets:
-    - localhost:9100
-    labels:
-      service: marketplace
-      exporter: node
-- job_name: marketplace-government-metrics
-  static_configs:
-  - targets:
-    - localhost:9090
-    labels:
-      government_compliance: enabled
-      wcag_monitoring: active
-      section_508: validated
-  scrape_interval: 30s
-  metrics_path: /government/metrics
+  - job_name: terrafusion-marketplace
+    static_configs:
+      - targets:
+          - localhost:3000
+          - localhost:8080
+        labels:
+          service: marketplace
+          type: core
+          government: 'true'
+    scrape_interval: 5s
+    metrics_path: /metrics
+    honor_labels: true
+  - job_name: marketplace-node-exporter
+    static_configs:
+      - targets:
+          - localhost:9100
+        labels:
+          service: marketplace
+          exporter: node
+  - job_name: marketplace-government-metrics
+    static_configs:
+      - targets:
+          - localhost:9090
+        labels:
+          government_compliance: enabled
+          wcag_monitoring: active
+          section_508: validated
+    scrape_interval: 30s
+    metrics_path: /government/metrics
 alerting:
   alertmanagers:
-  - static_configs:
-    - targets:
-      - localhost:9093
+    - static_configs:
+        - targets:
+            - localhost:9093

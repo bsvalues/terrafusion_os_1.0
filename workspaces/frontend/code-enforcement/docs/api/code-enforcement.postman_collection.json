@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/violations",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "violations"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["violations"]
         }
       },
       "response": []
@@ -127,12 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/violations",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "violations"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["violations"]
         }
       },
       "response": []
@@ -160,13 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/inspections/{id}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "inspections",
-            "{id}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["inspections", "{id}"]
         }
       },
       "response": []
@@ -194,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/enforcement-actions",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "enforcement-actions"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["enforcement-actions"]
         }
       },
       "response": []

@@ -19,13 +19,17 @@
 .parcel:hover {
   opacity: 0.9;
   z-index: 10;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary);
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px var(--primary);
 }
 
 .parcel.selected {
   opacity: 1;
   z-index: 20;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary);
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px var(--primary);
   border-color: var(--primary);
 }
 
@@ -80,7 +84,7 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background: 
+  background:
     radial-gradient(circle at 30% 20%, rgba(var(--primary-rgb), 0.03), transparent 25%),
     radial-gradient(circle at 80% 60%, rgba(var(--primary-rgb), 0.05), transparent 30%);
 }
@@ -110,10 +114,10 @@
       0px 8.6px 17.2px -1.2px hsl(var(--shadow-color) / 0.08),
       0px 13.8px 27.6px -1.5px hsl(var(--shadow-color) / 0.08),
       0px 21px 42px -1.8px hsl(var(--shadow-color) / 0.08);
-      
+
     /* Smooth scroll behavior for landing page */
     scroll-behavior: smooth;
-    
+
     /* Topographic-inspired patterns - mimics contour lines */
     --topo-bg: repeating-linear-gradient(
       -45deg,
@@ -122,35 +126,35 @@
       transparent 1px,
       transparent 8px
     );
-    
+
     /* Grid-like pattern for spreadsheet feel - scaled for precision */
     --grid-color: rgba(0, 0, 0, 0.04);
     --grid-size: 20px;
-    --grid-pattern: 
+    --grid-pattern:
       linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
       linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
-    
+
     /* Map-inspired color palette - extending the county's existing colors */
-    --map-water: #B8D6F5;
-    --map-land: #F5F5F0;
-    --map-urban: #E6E6E6;
-    --map-park: #D9E7CA;
+    --map-water: #b8d6f5;
+    --map-land: #f5f5f0;
+    --map-urban: #e6e6e6;
+    --map-park: #d9e7ca;
     --map-highlight: rgba(255, 240, 175, 0.5);
-    
+
     /* Precision analytics colors derived from GIS systems */
-    --chart-accent-1: #3B78E7; /* Primary blue - water, hydrology */
-    --chart-accent-2: #29A369; /* Land use, vegetation */
-    --chart-accent-3: #F2B705; /* Highlighted properties */
-    --chart-accent-4: #D64242; /* Priority items, alerts */
-    --chart-accent-5: #8966B9; /* Special designations */
-    --chart-accent-6: #63A8D9; /* Secondary water/resources */
-    --chart-accent-7: #96BF7A; /* Agricultural land */
-    
+    --chart-accent-1: #3b78e7; /* Primary blue - water, hydrology */
+    --chart-accent-2: #29a369; /* Land use, vegetation */
+    --chart-accent-3: #f2b705; /* Highlighted properties */
+    --chart-accent-4: #d64242; /* Priority items, alerts */
+    --chart-accent-5: #8966b9; /* Special designations */
+    --chart-accent-6: #63a8d9; /* Secondary water/resources */
+    --chart-accent-7: #96bf7a; /* Agricultural land */
+
     /* Animation speeds - smooth and precise */
     --transition-fast: 150ms;
     --transition-medium: 250ms;
     --transition-slow: 350ms;
-    
+
     /* Custom easing functions for map-like movements */
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out-quad: cubic-bezier(0.45, 0, 0.55, 1);
@@ -163,15 +167,20 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading tracking-tight;
   }
-  
+
   h1 {
     @apply text-3xl font-bold;
   }
-  
+
   h2 {
     @apply text-2xl font-semibold;
   }
@@ -197,106 +206,106 @@
            before:absolute before:inset-0 before:rounded-lg before:shadow-[var(--shadow-elevation-low)]
            hover:before:shadow-[var(--shadow-elevation-medium)] before:transition-all;
   }
-  
+
   /* Data visualization elements */
   .data-value {
     @apply text-2xl font-bold;
   }
-  
+
   .data-label {
     @apply text-sm text-muted-foreground;
   }
-  
+
   /* Audit status badges with cleaner lines */
   .status-badge {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border;
   }
-  
+
   .status-badge.pending {
     @apply bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-800;
   }
-  
+
   .status-badge.approved {
     @apply bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800;
   }
-  
+
   .status-badge.rejected {
     @apply bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800;
   }
-  
+
   .status-badge.needs-info {
     @apply bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800;
   }
-  
+
   /* Priority indicators with better contrast */
   .priority-indicator {
     @apply inline-block w-3 h-3 rounded-full mr-2 border-2;
   }
-  
+
   .priority-indicator.urgent {
     @apply bg-red-500 border-red-300 dark:border-red-700;
   }
-  
+
   .priority-indicator.high {
     @apply bg-orange-500 border-orange-300 dark:border-orange-700;
   }
-  
+
   .priority-indicator.normal {
     @apply bg-blue-500 border-blue-300 dark:border-blue-700;
   }
-  
+
   .priority-indicator.low {
     @apply bg-green-500 border-green-300 dark:border-green-700;
   }
-  
+
   /* Console-like terminal sections */
   .console-section {
     @apply font-mono text-sm bg-slate-950 text-slate-50 p-4 rounded-md overflow-auto border border-slate-800;
   }
-  
+
   /* Interactive elements with subtle transitions */
   .hover-lift {
     @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--shadow-elevation-medium)];
   }
-  
+
   /* Improved glassmorphism for modal overlays */
   .glass-panel {
     @apply bg-background/70 backdrop-blur-sm border border-border/50 shadow-[var(--shadow-elevation-medium)]
            dark:bg-background/60 dark:backdrop-blur-md;
   }
-  
+
   /* Button enhancements */
   .btn-depth {
     @apply relative active:top-[1px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] 
            hover:shadow-[0_3px_6px_rgba(0,0,0,0.1)] transition-all duration-200;
   }
-  
+
   /* Table enhancements */
   .table-modern {
     @apply w-full border-separate border-spacing-0;
   }
-  
+
   .table-modern th {
     @apply bg-muted/50 text-muted-foreground font-medium text-sm px-4 py-3 first:rounded-tl-md last:rounded-tr-md;
   }
-  
+
   .table-modern td {
     @apply px-4 py-3 border-t border-border/60;
   }
-  
+
   .table-modern tr:hover td {
     @apply bg-muted/30;
   }
-  
+
   /* Form field enhancement */
   .form-field-group {
     @apply space-y-1.5;
   }
-  
+
   .form-label {
     @apply text-sm font-medium text-foreground/80;
   }
-  
+
   .form-description {
     @apply text-xs text-muted-foreground mt-1;
   }
@@ -319,7 +328,9 @@
 
 .landing-page-feature-card {
   @apply p-6 rounded-lg border border-border bg-card transition-colors hover:bg-card/80;
-  transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s var(--ease-out-expo);
+  transition:
+    transform 0.3s var(--ease-out-expo),
+    box-shadow 0.3s var(--ease-out-expo);
 }
 
 .landing-page-feature-card:hover {
@@ -338,7 +349,7 @@
 
 .landing-page-mockup {
   @apply relative overflow-hidden shadow-lg rounded-lg;
-  box-shadow: 
+  box-shadow:
     0 5px 15px rgba(0, 0, 0, 0.1),
     0 15px 35px rgba(0, 0, 0, 0.05);
   transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
@@ -352,21 +363,21 @@
 /* Depth effects for cards and containers */
 .card-depth {
   @apply relative overflow-hidden;
-  box-shadow: 
-    0 1px 1px rgba(0,0,0,0.01), 
-    0 2px 2px rgba(0,0,0,0.01), 
-    0 4px 4px rgba(0,0,0,0.01), 
-    0 8px 8px rgba(0,0,0,0.01);
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.01),
+    0 2px 2px rgba(0, 0, 0, 0.01),
+    0 4px 4px rgba(0, 0, 0, 0.01),
+    0 8px 8px rgba(0, 0, 0, 0.01);
   transition: box-shadow 0.3s ease-in-out;
 }
 
 .card-depth:hover {
-  box-shadow: 
-    0 1px 1px rgba(0,0,0,0.02), 
-    0 2px 2px rgba(0,0,0,0.02), 
-    0 4px 4px rgba(0,0,0,0.02), 
-    0 8px 8px rgba(0,0,0,0.02),
-    0 16px 16px rgba(0,0,0,0.02);
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.02),
+    0 2px 2px rgba(0, 0, 0, 0.02),
+    0 4px 4px rgba(0, 0, 0, 0.02),
+    0 8px 8px rgba(0, 0, 0, 0.02),
+    0 16px 16px rgba(0, 0, 0, 0.02);
 }
 
 /* Subtle border effects */
@@ -547,7 +558,15 @@
 /* Parcel/Property visualization */
 .parcel {
   @apply border-2 absolute rounded-sm transform-gpu transition-all duration-300;
-  background-image: linear-gradient(45deg, transparent 25%, var(--map-highlight) 25%, var(--map-highlight) 50%, transparent 50%, transparent 75%, var(--map-highlight) 75%);
+  background-image: linear-gradient(
+    45deg,
+    transparent 25%,
+    var(--map-highlight) 25%,
+    var(--map-highlight) 50%,
+    transparent 50%,
+    transparent 75%,
+    var(--map-highlight) 75%
+  );
   background-size: 8px 8px;
 }
 
@@ -601,11 +620,11 @@
   @apply table-modern;
 }
 
-.geo-table th[data-type="spatial"] {
+.geo-table th[data-type='spatial'] {
   @apply bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200;
 }
 
-.geo-table td[data-type="spatial"] {
+.geo-table td[data-type='spatial'] {
   @apply font-mono text-xs;
 }
 

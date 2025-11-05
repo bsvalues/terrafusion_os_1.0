@@ -12,24 +12,24 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/tax
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/tax
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/tax
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/tax
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/tax
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/tax
+    description: Development Environment
 paths:
   /properties:
     get:
       tags:
-      - terra-levy
+        - terra-levy
       summary: Property tax information
       description: Property tax information - Tax management and revenue operations
         APIs
       operationId: get__properties
       security:
-      - OAuth2:
-        - terra-levy:read
+        - OAuth2:
+            - terra-levy:read
       responses:
         '200':
           description: Successful operation
@@ -58,13 +58,13 @@ paths:
   /assessments:
     post:
       tags:
-      - terra-levy
+        - terra-levy
       summary: Tax assessments
       description: Tax assessments - Tax management and revenue operations APIs
       operationId: post__assessments
       security:
-      - OAuth2:
-        - terra-levy:write
+        - OAuth2:
+            - terra-levy:write
       responses:
         '200':
           description: Successful operation
@@ -93,14 +93,14 @@ paths:
   /payments:
     post:
       tags:
-      - terra-levy
+        - terra-levy
       summary: Tax payment processing
       description: Tax payment processing - Tax management and revenue operations
         APIs
       operationId: post__payments
       security:
-      - OAuth2:
-        - terra-levy:write
+        - OAuth2:
+            - terra-levy:write
       responses:
         '200':
           description: Successful operation
@@ -129,14 +129,14 @@ paths:
   /exemptions:
     get:
       tags:
-      - terra-levy
+        - terra-levy
       summary: Tax exemption management
       description: Tax exemption management - Tax management and revenue operations
         APIs
       operationId: get__exemptions
       security:
-      - OAuth2:
-        - terra-levy:read
+        - OAuth2:
+            - terra-levy:read
       responses:
         '200':
           description: Successful operation
@@ -167,8 +167,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -183,9 +183,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -209,12 +209,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - terra-levy:read
-- ApiKey: []
+  - OAuth2:
+      - terra-levy:read
+  - ApiKey: []
 tags:
-- name: terra-levy
-  description: Terra Levy operations
-  externalDocs:
-    description: Find out more about terra-levy
-    url: https://docs.terrafusion.gov/marketplace/terra-levy
+  - name: terra-levy
+    description: Terra Levy operations
+    externalDocs:
+      description: Find out more about terra-levy
+      url: https://docs.terrafusion.gov/marketplace/terra-levy

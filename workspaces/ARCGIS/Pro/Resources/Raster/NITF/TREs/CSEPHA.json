@@ -1,8 +1,6 @@
 {
   "TRE": "CSEPHA",
-  "Source": [
-    "STDI-0006 Apr2014, 3.4"
-  ],
+  "Source": ["STDI-0006 Apr2014, 3.4"],
   "Name": "Ephemeris Data TRE",
   "Description": "The Ephemeris Data TRE (CSEPHA) provides detailed space vehicle ephemeris information.  The CSEPHA TRE provides global information for the entire NITF dataset.  The CSEPHA can be repeated as necessary if the number of ephemeris vectors exceeds 999 in order to contain all ephemeris data.  The minimum number of ephemeris vectors is 7, 3 during the pre-imaging interval, and 3 during the post-imaging interval.  When the number of ephemeris vectors exceeds 999, the remaining vectors are recorded across multiple instances of the CSEPHA TRE in time-sequence order, and shall be treated as a set for the imaging interval.  If multiple CSEPHA TREs are required, there could exist a case where only one ephemeris vector is present in the last CSEPHA TRE.  Therefore, the range for NUM_EPHEM must be 001 to 999.",
   "Size": 257,
@@ -17,11 +15,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "COLLECT-TIME",
-            "PREDICTED",
-            "REFINED"
-          ]
+          "Values": ["COLLECT-TIME", "PREDICTED", "REFINED"]
         }
       ]
     },
@@ -31,9 +25,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "seconds"
-      ],
+      "Units": ["seconds"],
       "Values": [
         {
           "Type": "Range",
@@ -89,9 +81,7 @@
       "Size": 12,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters"
-      ],
+      "Units": ["meters"],
       "Values": [
         {
           "Type": "Range",
@@ -106,9 +96,7 @@
       "Size": 12,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters"
-      ],
+      "Units": ["meters"],
       "Values": [
         {
           "Type": "Range",
@@ -123,9 +111,7 @@
       "Size": 12,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters"
-      ],
+      "Units": ["meters"],
       "Values": [
         {
           "Type": "Range",

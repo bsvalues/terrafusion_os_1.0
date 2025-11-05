@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/autonomous-research-engine
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/autonomous-research-engine
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/autonomous-research-engine
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/autonomous-research-engine
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/autonomous-research-engine
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/autonomous-research-engine
+    description: Development Environment
 paths:
   /health:
     get:
       tags:
-      - autonomous-research-engine
+        - autonomous-research-engine
       summary: Health check
       description: Health check - Autonomous Research Engine operations APIs
       operationId: get__health
       security:
-      - OAuth2:
-        - autonomous-research-engine:read
+        - OAuth2:
+            - autonomous-research-engine:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /data:
     get:
       tags:
-      - autonomous-research-engine
+        - autonomous-research-engine
       summary: Data retrieval
       description: Data retrieval - Autonomous Research Engine operations APIs
       operationId: get__data
       security:
-      - OAuth2:
-        - autonomous-research-engine:read
+        - OAuth2:
+            - autonomous-research-engine:read
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /operations:
     post:
       tags:
-      - autonomous-research-engine
+        - autonomous-research-engine
       summary: Operation execution
       description: Operation execution - Autonomous Research Engine operations APIs
       operationId: post__operations
       security:
-      - OAuth2:
-        - autonomous-research-engine:write
+        - OAuth2:
+            - autonomous-research-engine:write
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /status:
     get:
       tags:
-      - autonomous-research-engine
+        - autonomous-research-engine
       summary: Service status
       description: Service status - Autonomous Research Engine operations APIs
       operationId: get__status
       security:
-      - OAuth2:
-        - autonomous-research-engine:read
+        - OAuth2:
+            - autonomous-research-engine:read
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -208,12 +208,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - autonomous-research-engine:read
-- ApiKey: []
+  - OAuth2:
+      - autonomous-research-engine:read
+  - ApiKey: []
 tags:
-- name: autonomous-research-engine
-  description: Autonomous Research Engine operations
-  externalDocs:
-    description: Find out more about autonomous-research-engine
-    url: https://docs.terrafusion.gov/marketplace/autonomous-research-engine
+  - name: autonomous-research-engine
+    description: Autonomous Research Engine operations
+    externalDocs:
+      description: Find out more about autonomous-research-engine
+      url: https://docs.terrafusion.gov/marketplace/autonomous-research-engine

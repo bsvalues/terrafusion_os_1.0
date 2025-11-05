@@ -4,7 +4,7 @@
     "framework": "Bootstrap 5.3.2",
     "theme": "Terrafusion Enterprise Dark",
     "description": "Complete design system for Terrafusion Platform with enterprise-grade components and unified branding",
-    
+
     "color_palette": {
       "primary": {
         "brand_blue": "#001529",
@@ -36,7 +36,7 @@
       },
       "font_sizes": {
         "h1": "2.5rem",
-        "h2": "2rem", 
+        "h2": "2rem",
         "h3": "1.75rem",
         "h4": "1.5rem",
         "h5": "1.25rem",
@@ -58,7 +58,7 @@
       "base_unit": "0.25rem",
       "scale": {
         "xs": "0.25rem",
-        "sm": "0.5rem", 
+        "sm": "0.5rem",
         "md": "1rem",
         "lg": "1.5rem",
         "xl": "3rem",
@@ -176,7 +176,7 @@
           "color": "#155724"
         },
         "warning": {
-          "class": "alert alert-warning", 
+          "class": "alert alert-warning",
           "background": "#fff3cd",
           "border": "#ffeaa7",
           "color": "#856404"
@@ -184,7 +184,7 @@
         "danger": {
           "class": "alert alert-danger",
           "background": "#f8d7da",
-          "border": "#f5c6cb", 
+          "border": "#f5c6cb",
           "color": "#721c24"
         },
         "info": {
@@ -271,7 +271,7 @@
         "charts": "col-xl-8 col-lg-12",
         "side_panel": "col-xl-4 col-lg-12"
       },
-      
+
       "two_column": {
         "container": "container-fluid",
         "main_content": "col-lg-9 col-md-8",
@@ -279,7 +279,7 @@
       },
 
       "three_column": {
-        "container": "container-fluid", 
+        "container": "container-fluid",
         "left_sidebar": "col-xl-2 col-lg-3",
         "main_content": "col-xl-8 col-lg-6",
         "right_sidebar": "col-xl-2 col-lg-3"
@@ -289,12 +289,12 @@
     "utility_classes": {
       "text_colors": {
         "brand": "text-primary",
-        "accent": "text-info", 
+        "accent": "text-info",
         "muted": "text-muted",
         "white": "text-white",
         "dark": "text-dark"
       },
-      
+
       "background_colors": {
         "brand": "bg-primary",
         "dark": "bg-dark",
@@ -328,7 +328,7 @@
           "font-size": "1.5rem",
           "color": "var(--tf-accent-cyan) !important"
         },
-        
+
         ".btn-primary": {
           "background-color": "var(--tf-accent-cyan)",
           "border-color": "var(--tf-accent-cyan)",
@@ -387,7 +387,7 @@
 
     "responsive_breakpoints": {
       "xs": "0px",
-      "sm": "576px", 
+      "sm": "576px",
       "md": "768px",
       "lg": "992px",
       "xl": "1200px",
@@ -424,7 +424,7 @@
       "cdn": "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css",
       "common_icons": {
         "dashboard": "bi-speedometer2",
-        "sync": "bi-arrow-repeat", 
+        "sync": "bi-arrow-repeat",
         "export": "bi-download",
         "settings": "bi-gear",
         "users": "bi-people",
@@ -440,7 +440,7 @@
 
     "animation_patterns": {
       "fade_in": "animate__animated animate__fadeIn",
-      "slide_in_left": "animate__animated animate__slideInLeft", 
+      "slide_in_left": "animate__animated animate__slideInLeft",
       "pulse": "animate__animated animate__pulse animate__infinite",
       "loading_spinner": "spinner-border text-primary",
       "progress_bar": "progress-bar progress-bar-striped progress-bar-animated"

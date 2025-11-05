@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health-records",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health-records"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health-records"]
         }
       },
       "response": []
@@ -127,12 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/immunizations",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "immunizations"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["immunizations"]
         }
       },
       "response": []
@@ -160,12 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health-alerts",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health-alerts"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health-alerts"]
         }
       },
       "response": []
@@ -193,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/inspections",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "inspections"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["inspections"]
         }
       },
       "response": []

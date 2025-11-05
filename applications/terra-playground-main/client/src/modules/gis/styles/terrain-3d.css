@@ -24,8 +24,12 @@
   bottom: 0;
   pointer-events: none;
   z-index: 10;
-  background: 
-    linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.2) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
   mix-blend-mode: overlay;
   border-radius: inherit;
 }
@@ -52,27 +56,30 @@
 }
 
 .terrain-z-scale-custom .ol-layer canvas {
-  filter: contrast(calc(1 + (var(--terrain-z-scale, 1.5) * 0.1))) 
-          saturate(calc(1 + (var(--terrain-z-scale, 1.5) * 0.15)));
+  filter: contrast(calc(1 + (var(--terrain-z-scale, 1.5) * 0.1)))
+    saturate(calc(1 + (var(--terrain-z-scale, 1.5) * 0.15)));
 }
 
 /* Lighting direction effects */
 .terrain-lighting-morning .ol-layer canvas {
   --light-angle: 90deg;
-  box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.1),
-              inset 5px 5px 10px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    inset -5px -5px 10px rgba(255, 255, 255, 0.1),
+    inset 5px 5px 10px rgba(0, 0, 0, 0.1);
 }
 
 .terrain-lighting-noon .ol-layer canvas {
   --light-angle: 180deg;
-  box-shadow: inset 0px -5px 10px rgba(255, 255, 255, 0.1),
-              inset 0px 5px 10px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    inset 0px -5px 10px rgba(255, 255, 255, 0.1),
+    inset 0px 5px 10px rgba(0, 0, 0, 0.1);
 }
 
 .terrain-lighting-evening .ol-layer canvas {
   --light-angle: 270deg;
-  box-shadow: inset 5px -5px 10px rgba(255, 255, 255, 0.1),
-              inset -5px 5px 10px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    inset 5px -5px 10px rgba(255, 255, 255, 0.1),
+    inset -5px 5px 10px rgba(0, 0, 0, 0.1);
 }
 
 .terrain-lighting-custom .ol-layer canvas {
@@ -83,15 +90,17 @@
 
 /* Terrain visualization enhanced effects */
 .terrain-visualization-container.enhanced {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 
-              0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.2),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .terrain-visualization-container.enhanced:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.2), 
-              0 10px 15px -6px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 15px 30px -5px rgba(0, 0, 0, 0.2),
+    0 10px 15px -6px rgba(0, 0, 0, 0.1);
 }
 
 /* Property extrusion effects */
@@ -245,25 +254,25 @@
 
 /* Property type color indicators */
 .property-type-residential {
-  color: #4285F4;
+  color: #4285f4;
 }
 
 .property-type-commercial {
-  color: #34A853;
+  color: #34a853;
 }
 
 .property-type-industrial {
-  color: #FBBC05;
+  color: #fbbc05;
 }
 
 .property-type-agricultural {
-  color: #EA4335;
+  color: #ea4335;
 }
 
 .property-type-vacant {
-  color: #673AB7;
+  color: #673ab7;
 }
 
 .property-type-mixed-use {
-  color: #3F51B5;
+  color: #3f51b5;
 }

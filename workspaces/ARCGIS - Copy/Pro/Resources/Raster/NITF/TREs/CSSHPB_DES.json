@@ -1,8 +1,6 @@
 {
   "TRE": "CSSHPB_DES",
-  "Source": [
-    "STDI-0002-2 v2021.1, Appendix D: CSSHPA and CSSHPB DES"
-  ],
+  "Source": ["STDI-0002-2 v2021.1, Appendix D: CSSHPA and CSSHPB DES"],
   "Name": "Shapefile DES Version B",
   "Description": "The Shapefile DES Version B (CSSHPB) extends the Shapefile DES Version A (CSSHPA) to allow for significantly larger shapefiles and additional metadata and information beyond what is defined in Version A.",
   "Size": 222,
@@ -48,9 +46,7 @@
         },
         {
           "Type": "Value",
-          "Values": [
-            "ALL"
-          ]
+          "Values": ["ALL"]
         }
       ]
     },
@@ -154,10 +150,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "CONFIDENCEGROUP",
-            "CONFIDENCELEVEL"
-          ]
+          "Values": ["CONFIDENCEGROUP", "CONFIDENCELEVEL"]
         }
       ]
     },
@@ -213,10 +206,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "WGS-84",
-            "LineSample"
-          ]
+          "Values": ["WGS-84", "LineSample"]
         }
       ]
     },
@@ -275,12 +265,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "PAN",
-            "MS",
-            "SWIR",
-            "CAVIS"
-          ]
+          "Values": ["PAN", "MS", "SWIR", "CAVIS"]
         }
       ]
     },
@@ -294,11 +279,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "SHP",
-            "SHX",
-            "DBF"
-          ]
+          "Values": ["SHP", "SHX", "DBF"]
         }
       ]
     },
@@ -308,9 +289,7 @@
       "Size": 9,
       "Format": "BCS-A",
       "Type": "<R>",
-      "Units": [
-        "bytes"
-      ],
+      "Units": ["bytes"],
       "Values": [
         {
           "Type": "Range",
@@ -329,11 +308,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "SHP",
-            "SHX",
-            "DBF"
-          ]
+          "Values": ["SHP", "SHX", "DBF"]
         }
       ]
     },
@@ -343,9 +318,7 @@
       "Size": 9,
       "Format": "BCS-A",
       "Type": "<R>",
-      "Units": [
-        "bytes"
-      ],
+      "Units": ["bytes"],
       "Values": [
         {
           "Type": "Range",
@@ -364,11 +337,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "SHP",
-            "SHX",
-            "DBF"
-          ]
+          "Values": ["SHP", "SHX", "DBF"]
         }
       ]
     },
@@ -378,9 +347,7 @@
       "Size": 9,
       "Format": "BCS-A",
       "Type": "<R>",
-      "Units": [
-        "bytes"
-      ],
+      "Units": ["bytes"],
       "Values": [
         {
           "Type": "Range",
@@ -410,9 +377,7 @@
       "Size": 2,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "bytes"
-      ],
+      "Units": ["bytes"],
       "Values": [
         {
           "Type": "Range",
@@ -440,9 +405,7 @@
       "Size": 9,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "bytes"
-      ],
+      "Units": ["bytes"],
       "Values": [
         {
           "Type": "Range",
@@ -457,9 +420,7 @@
       "Size": 9,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "bytes"
-      ],
+      "Units": ["bytes"],
       "Values": [
         {
           "Type": "Range",

@@ -94,8 +94,8 @@ public interface IWorkflowExecutionRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of recent executions</returns>
     Task<IEnumerable<WorkflowExecution>> GetRecentByUserAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         int count = 10,
         CancellationToken cancellationToken = default);
 
@@ -241,7 +241,7 @@ public interface IWorkflowExecutionRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Statistics across all workflows</returns>
     Task<object> GetUserStatisticsAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default);
 }

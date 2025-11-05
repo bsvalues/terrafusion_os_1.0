@@ -1,8 +1,6 @@
 {
   "TRE": "CSEXRA",
-  "Source": [
-    "STDI-0006 Apr2014, 3.5"
-  ],
+  "Source": ["STDI-0006 Apr2014, 3.5"],
   "Name": "Exploitation Reference Data",
   "Description": "The Exploitation Reference Data TRE (CSEXRA) provides exploitation support data -- acquisition, environment, and performance parameters. This TRE contains data about preprocessed imagery.",
   "Size": 132,
@@ -17,10 +15,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "PAN",
-            "MS"
-          ]
+          "Values": ["PAN", "MS"]
         }
       ]
     },
@@ -34,9 +29,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.000000
-          ,
-          "Max": 86400.000000
+          "Min": 0.0,
+          "Max": 86400.0
         }
       ]
     },
@@ -46,14 +40,12 @@
       "Size": 12,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "seconds"
-      ],
+      "Units": ["seconds"],
       "Values": [
         {
           "Type": "Range",
           "Min": -9999.999999,
-          "Max": 86400.000000
+          "Max": 86400.0
         }
       ]
     },
@@ -63,9 +55,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "inches"
-      ],
+      "Units": ["inches"],
       "Values": [
         {
           "Type": "Range",
@@ -80,9 +70,7 @@
       "Size": 5,
       "Format": "BCS-A",
       "Type": "R",
-      "Units": [
-        "inches"
-      ],
+      "Units": ["inches"],
       "Values": [
         {
           "Type": "Range",
@@ -97,9 +85,7 @@
       "Size": 5,
       "Format": "BCS-A",
       "Type": "R",
-      "Units": [
-        "inches"
-      ],
+      "Units": ["inches"],
       "Values": [
         {
           "Type": "Range",
@@ -114,9 +100,7 @@
       "Size": 5,
       "Format": "BCS-A",
       "Type": "R",
-      "Units": [
-        "inches"
-      ],
+      "Units": ["inches"],
       "Values": [
         {
           "Type": "Range",
@@ -131,9 +115,7 @@
       "Size": 5,
       "Format": "BCS-A",
       "Type": "R",
-      "Units": [
-        "inches"
-      ],
+      "Units": ["inches"],
       "Values": [
         {
           "Type": "Range",
@@ -148,9 +130,7 @@
       "Size": 5,
       "Format": "BCS-A",
       "Type": "R",
-      "Units": [
-        "inches"
-      ],
+      "Units": ["inches"],
       "Values": [
         {
           "Type": "Range",
@@ -165,9 +145,7 @@
       "Size": 5,
       "Format": "BCS-A",
       "Type": "R",
-      "Units": [
-        "inches"
-      ],
+      "Units": ["inches"],
       "Values": [
         {
           "Type": "Range",
@@ -182,9 +160,7 @@
       "Size": 5,
       "Format": "BCS-A",
       "Type": "R",
-      "Units": [
-        "inches"
-      ],
+      "Units": ["inches"],
       "Values": [
         {
           "Type": "Range",
@@ -214,9 +190,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "lines"
-      ],
+      "Units": ["lines"],
       "Values": [
         {
           "Type": "Range",
@@ -231,9 +205,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "lines"
-      ],
+      "Units": ["lines"],
       "Values": [
         {
           "Type": "Range",
@@ -263,9 +235,7 @@
       "Size": 6,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -280,9 +250,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -301,11 +269,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "1",
-            "0",
-            "9"
-          ]
+          "Values": ["1", "0", "9"]
         }
       ]
     },
@@ -319,13 +283,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "0",
-            "1",
-            "2",
-            "3",
-            "9"
-          ]
+          "Values": ["0", "1", "2", "3", "9"]
         }
       ]
     },
@@ -366,43 +324,43 @@
       "Format": "BCS-A",
       "Type": "R",
       "Units": ["NIIRS"],
-    "Values": [
-      {
-        "Type": "Range",
-        "Min": 0,
-        "Max": 9
-      }
-    ]
-  },
-  "CIRCL_ERR": {
-    "Name": "Circular Error",
-    "Description": "This is the predicted CE/90 in the geolocation in the scene.",
-    "Size": 3,
-    "Format": "BCS-N",
-    "Type": "R",
-    "Units": ["feet"],
-    "Values": [
-      {
-        "Type": "Range",
-        "Min": 0,
-        "Max": 999
-      }
-    ]
-  },
-  "LINEAR_ERR": {
-    "Name": "Linear Error",
-    "Description": "This is the predicted LE/90 in the geolocation in the scene.",
-    "Size": 3,
-    "Format": "BCS-N",
-    "Type": "R",
-    "Units": ["feet"],
-    "Values": [
-      {
-        "Type": "Range",
-        "Min": 0,
-        "Max": 999
-      }
-    ]
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 9
+        }
+      ]
+    },
+    "CIRCL_ERR": {
+      "Name": "Circular Error",
+      "Description": "This is the predicted CE/90 in the geolocation in the scene.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["feet"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999
+        }
+      ]
+    },
+    "LINEAR_ERR": {
+      "Name": "Linear Error",
+      "Description": "This is the predicted LE/90 in the geolocation in the scene.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["feet"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999
+        }
+      ]
+    }
   }
-}
 }

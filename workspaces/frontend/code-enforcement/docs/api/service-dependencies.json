@@ -63,9 +63,7 @@
       "/inspections/{id}",
       "/enforcement-actions"
     ],
-    "integration_points": [
-      "/api/v1/code-enforcement/integration"
-    ]
+    "integration_points": ["/api/v1/code-enforcement/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

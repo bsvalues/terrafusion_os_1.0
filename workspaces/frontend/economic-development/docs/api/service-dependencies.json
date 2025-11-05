@@ -63,9 +63,7 @@
       "/permits",
       "/economic-data"
     ],
-    "integration_points": [
-      "/api/v1/economic-development/integration"
-    ]
+    "integration_points": ["/api/v1/economic-development/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

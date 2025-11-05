@@ -12,23 +12,23 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1
+    description: Development Environment
 paths:
   /health:
     get:
       tags:
-      - api
+        - api
       summary: API health check
       description: API health check - Core API services and integration management
       operationId: get__health
       security:
-      - OAuth2:
-        - api:read
+        - OAuth2:
+            - api:read
       responses:
         '200':
           description: Successful operation
@@ -57,13 +57,13 @@ paths:
   /metrics:
     get:
       tags:
-      - api
+        - api
       summary: API performance metrics
       description: API performance metrics - Core API services and integration management
       operationId: get__metrics
       security:
-      - OAuth2:
-        - api:read
+        - OAuth2:
+            - api:read
       responses:
         '200':
           description: Successful operation
@@ -92,13 +92,13 @@ paths:
   /integration:
     post:
       tags:
-      - api
+        - api
       summary: Service integration
       description: Service integration - Core API services and integration management
       operationId: post__integration
       security:
-      - OAuth2:
-        - api:write
+        - OAuth2:
+            - api:write
       responses:
         '200':
           description: Successful operation
@@ -127,13 +127,13 @@ paths:
   /webhooks:
     post:
       tags:
-      - api
+        - api
       summary: Webhook management
       description: Webhook management - Core API services and integration management
       operationId: post__webhooks
       security:
-      - OAuth2:
-        - api:write
+        - OAuth2:
+            - api:write
       responses:
         '200':
           description: Successful operation
@@ -164,8 +164,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -180,9 +180,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -206,12 +206,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - api:read
-- ApiKey: []
+  - OAuth2:
+      - api:read
+  - ApiKey: []
 tags:
-- name: api
-  description: Api operations
-  externalDocs:
-    description: Find out more about api
-    url: https://docs.terrafusion.gov/marketplace/api
+  - name: api
+    description: Api operations
+    externalDocs:
+      description: Find out more about api
+      url: https://docs.terrafusion.gov/marketplace/api

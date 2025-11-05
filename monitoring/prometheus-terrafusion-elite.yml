@@ -5,9 +5,9 @@
 # ═══════════════════════════════════════════════════════════════════════
 
 global:
-  scrape_interval: 15s          # Championship-level scraping frequency
+  scrape_interval: 15s # Championship-level scraping frequency
   scrape_timeout: 10s
-  evaluation_interval: 15s      # Alert rule evaluation frequency
+  evaluation_interval: 15s # Alert rule evaluation frequency
   external_labels:
     environment: 'production'
     system: 'terrafusion-os'
@@ -169,7 +169,6 @@ alerting:
         - targets:
             - 'localhost:9093'
       timeout: 10s
-
 # ═══════════════════════════════════════════════════════════════════════
 # RECORDING RULES - Performance Aggregations
 # ═══════════════════════════════════════════════════════════════════════

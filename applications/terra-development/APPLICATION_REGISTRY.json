@@ -38,7 +38,12 @@
         "database": "terrafusionsync_real.db",
         "startup_command": "python app.py",
         "dependencies": ["PostgreSQL", "SQLite"],
-        "features": ["Orchestration Hub", "Property Workbench", "Property Record Card", "Legacy CAMA Integration"],
+        "features": [
+          "Orchestration Hub",
+          "Property Workbench",
+          "Property Record Card",
+          "Legacy CAMA Integration"
+        ],
         "tier": "core_foundation",
         "pricing": "included_in_foundation"
       },
@@ -53,7 +58,11 @@
         "database": "terrafusionsync_real.db",
         "startup_command": "integrated with TerraFusionSync",
         "dependencies": ["TerraFusionSync"],
-        "features": ["Standard Valuation", "Basic Calculations", "Simple Reports"],
+        "features": [
+          "Standard Valuation",
+          "Basic Calculations",
+          "Simple Reports"
+        ],
         "tier": "core_foundation",
         "pricing": "included_in_foundation"
       },
@@ -68,7 +77,12 @@
         "database": "multiple",
         "startup_command": "integrated with TerraFusionSync",
         "dependencies": ["TerraFusionSync", "Legacy Systems"],
-        "features": ["PACS Integration", "CAMA Connectors", "Data Migration", "Real-time Sync"],
+        "features": [
+          "PACS Integration",
+          "CAMA Connectors",
+          "Data Migration",
+          "Real-time Sync"
+        ],
         "tier": "core_foundation",
         "pricing": "included_in_foundation"
       }
@@ -85,7 +99,12 @@
         "database": "cost_models.db",
         "startup_command": "npm run dev",
         "dependencies": ["Next.js", "TypeScript", "AI Models", "ML Libraries"],
-        "features": ["AI-Native Assessment", "ML Valuation Models", "Cost Analysis", "Predictive Assessment"],
+        "features": [
+          "AI-Native Assessment",
+          "ML Valuation Models",
+          "Cost Analysis",
+          "Predictive Assessment"
+        ],
         "tier": "flagship_premium",
         "pricing": "premium_flagship",
         "marketing_position": "primary_revenue_driver"
@@ -101,7 +120,12 @@
         "database": "property_assessments.db",
         "startup_command": "python app.py",
         "dependencies": ["OpenAI", "LangChain", "Property Data"],
-        "features": ["AI Assessment", "Property Valuation", "Market Analysis", "Automated Reports"],
+        "features": [
+          "AI Assessment",
+          "Property Valuation",
+          "Market Analysis",
+          "Automated Reports"
+        ],
         "tier": "premium_addon",
         "pricing": "per_module"
       },
@@ -116,7 +140,12 @@
         "database": "permits.db",
         "startup_command": "npm run dev",
         "dependencies": ["Next.js", "TypeScript", "Prisma"],
-        "features": ["Permit Tracking", "Application Processing", "Approval Workflows", "Integration"],
+        "features": [
+          "Permit Tracking",
+          "Application Processing",
+          "Approval Workflows",
+          "Integration"
+        ],
         "tier": "premium_addon",
         "pricing": "per_module"
       },
@@ -131,7 +160,12 @@
         "database": "levy_management.db",
         "startup_command": "python app.py",
         "dependencies": ["PostgreSQL", "Tax Data"],
-        "features": ["Tax Calculation", "Levy Management", "Payment Processing", "Compliance"],
+        "features": [
+          "Tax Calculation",
+          "Levy Management",
+          "Payment Processing",
+          "Compliance"
+        ],
         "tier": "premium_addon",
         "pricing": "per_module"
       },
@@ -161,7 +195,12 @@
         "database": "gis_data.db",
         "startup_command": "python app.py",
         "dependencies": ["ArcGIS", "GDAL", "Shapely"],
-        "features": ["GIS Integration", "Spatial Analysis", "Advanced Mapping", "Geocoding"],
+        "features": [
+          "GIS Integration",
+          "Spatial Analysis",
+          "Advanced Mapping",
+          "Geocoding"
+        ],
         "tier": "premium_addon",
         "pricing": "per_module"
       },
@@ -176,7 +215,12 @@
         "database": "insights.db",
         "startup_command": "npm start",
         "dependencies": ["React", "D3", "Chart.js", "Python Analytics"],
-        "features": ["Market Analysis", "Comparative Reports", "Data Visualization", "Trend Analysis"],
+        "features": [
+          "Market Analysis",
+          "Comparative Reports",
+          "Data Visualization",
+          "Trend Analysis"
+        ],
         "tier": "premium_addon",
         "pricing": "per_module"
       }
@@ -193,7 +237,12 @@
         "database": "ai_models.db",
         "startup_command": "python app.py",
         "dependencies": ["TensorFlow", "scikit-learn", "MLOps"],
-        "features": ["ML Models", "Predictive Valuation", "Model Training", "Advanced Analytics"],
+        "features": [
+          "ML Models",
+          "Predictive Valuation",
+          "Model Training",
+          "Advanced Analytics"
+        ],
         "tier": "enterprise",
         "pricing": "enterprise_only"
       },
@@ -208,7 +257,12 @@
         "database": "data_flows.db",
         "startup_command": "python app.py",
         "dependencies": ["Apache Airflow", "Celery", "Redis"],
-        "features": ["Data Pipelines", "ETL Processing", "Workflow Management", "Enterprise Integration"],
+        "features": [
+          "Data Pipelines",
+          "ETL Processing",
+          "Workflow Management",
+          "Enterprise Integration"
+        ],
         "tier": "enterprise",
         "pricing": "enterprise_only"
       },
@@ -223,7 +277,12 @@
         "database": "inspections.db",
         "startup_command": "expo start",
         "dependencies": ["React Native", "Expo", "FastAPI"],
-        "features": ["Mobile Apps", "Field Inspection", "Photo Upload", "Offline Capability"],
+        "features": [
+          "Mobile Apps",
+          "Field Inspection",
+          "Photo Upload",
+          "Offline Capability"
+        ],
         "tier": "enterprise",
         "pricing": "enterprise_only"
       },
@@ -238,7 +297,12 @@
         "database": "reporting.db",
         "startup_command": "python reporting_app.py",
         "dependencies": ["Pandas", "Plotly", "Business Intelligence"],
-        "features": ["Custom Reports", "Advanced Analytics", "BI Dashboard", "Data Export"],
+        "features": [
+          "Custom Reports",
+          "Advanced Analytics",
+          "BI Dashboard",
+          "Data Export"
+        ],
         "tier": "enterprise",
         "pricing": "enterprise_only"
       },
@@ -253,7 +317,12 @@
         "database": "multi_county.db",
         "startup_command": "kubectl apply -f deployment.yaml",
         "dependencies": ["Kubernetes", "Docker", "Microservices"],
-        "features": ["Multi-Tenant", "Regional Management", "Centralized Admin", "Scaling"],
+        "features": [
+          "Multi-Tenant",
+          "Regional Management",
+          "Centralized Admin",
+          "Scaling"
+        ],
         "tier": "enterprise",
         "pricing": "enterprise_only"
       },
@@ -268,7 +337,12 @@
         "database": "white_label.db",
         "startup_command": "python branding_platform.py",
         "dependencies": ["Custom Branding", "DevOps", "CI/CD"],
-        "features": ["Custom Branding", "White-label Deployment", "Custom Domains", "Brand Management"],
+        "features": [
+          "Custom Branding",
+          "White-label Deployment",
+          "Custom Domains",
+          "Brand Management"
+        ],
         "tier": "enterprise",
         "pricing": "enterprise_only"
       }

@@ -43,23 +43,23 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-prod-private-key
     solvers:
-    - http01:
-        ingress:
-          class: nginx
-      selector:
-        dnsNames:
-        - "*.terrafusion.gov"
-        - "terrafusion.gov"
-    - dns01:
-        cloudflare:
-          email: dns-admin@terrafusion.gov
-          apiTokenSecretRef:
-            name: cloudflare-api-token
-            key: token
-      selector:
-        dnsNames:
-        - "*.terrafusion.gov"
-        - "terrafusion.gov"
+      - http01:
+          ingress:
+            class: nginx
+        selector:
+          dnsNames:
+            - '*.terrafusion.gov'
+            - 'terrafusion.gov'
+      - dns01:
+          cloudflare:
+            email: dns-admin@terrafusion.gov
+            apiTokenSecretRef:
+              name: cloudflare-api-token
+              key: token
+        selector:
+          dnsNames:
+            - '*.terrafusion.gov'
+            - 'terrafusion.gov'
 
 ---
 # Let's Encrypt ClusterIssuer - Staging
@@ -74,15 +74,15 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-staging-private-key
     solvers:
-    - http01:
-        ingress:
-          class: nginx
-    - dns01:
-        cloudflare:
-          email: dns-admin@terrafusion.gov
-          apiTokenSecretRef:
-            name: cloudflare-api-token
-            key: token
+      - http01:
+          ingress:
+            class: nginx
+      - dns01:
+          cloudflare:
+            email: dns-admin@terrafusion.gov
+            apiTokenSecretRef:
+              name: cloudflare-api-token
+              key: token
 
 ---
 # TerraFusion Main Certificate
@@ -97,19 +97,19 @@ spec:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-  - terrafusion.gov
-  - www.terrafusion.gov
-  - api.terrafusion.gov
-  - dashboard.terrafusion.gov
-  - vault.terrafusion.gov
-  - grafana.terrafusion.gov
-  - jaeger.terrafusion.gov
-  - marketplace.terrafusion.gov
-  - citizen.terrafusion.gov
-  - admin.terrafusion.gov
+    - terrafusion.gov
+    - www.terrafusion.gov
+    - api.terrafusion.gov
+    - dashboard.terrafusion.gov
+    - vault.terrafusion.gov
+    - grafana.terrafusion.gov
+    - jaeger.terrafusion.gov
+    - marketplace.terrafusion.gov
+    - citizen.terrafusion.gov
+    - admin.terrafusion.gov
   usages:
-  - digital signature
-  - key encipherment
+    - digital signature
+    - key encipherment
   duration: 2160h # 90 days
   renewBefore: 360h # 15 days
 
@@ -126,16 +126,16 @@ spec:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-  - "*.api.internal.terrafusion.gov"
-  - api.internal.terrafusion.gov
-  - gateway.internal.terrafusion.gov
-  - property.internal.terrafusion.gov
-  - citizen.internal.terrafusion.gov
-  - ai.internal.terrafusion.gov
-  - analytics.internal.terrafusion.gov
+    - '*.api.internal.terrafusion.gov'
+    - api.internal.terrafusion.gov
+    - gateway.internal.terrafusion.gov
+    - property.internal.terrafusion.gov
+    - citizen.internal.terrafusion.gov
+    - ai.internal.terrafusion.gov
+    - analytics.internal.terrafusion.gov
   usages:
-  - digital signature
-  - key encipherment
+    - digital signature
+    - key encipherment
   duration: 2160h
   renewBefore: 360h
 
@@ -149,69 +149,69 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
-    nginx.ingress.kubernetes.io/ssl-ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256,ECDHE-RSA-AES128-GCM-SHA256,ECDHE-ECDSA-AES256-GCM-SHA384,ECDHE-RSA-AES256-GCM-SHA384"
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/ssl-protocols: 'TLSv1.2 TLSv1.3'
+    nginx.ingress.kubernetes.io/ssl-ciphers: 'ECDHE-ECDSA-AES128-GCM-SHA256,ECDHE-RSA-AES128-GCM-SHA256,ECDHE-ECDSA-AES256-GCM-SHA384,ECDHE-RSA-AES256-GCM-SHA384'
     nginx.ingress.kubernetes.io/configuration-snippet: |
       add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
       add_header X-Frame-Options "SAMEORIGIN" always;
       add_header X-Content-Type-Options "nosniff" always;
       add_header Referrer-Policy "strict-origin-when-cross-origin" always;
       add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self' https:; frame-ancestors 'self';" always;
-    nginx.ingress.kubernetes.io/rate-limit: "100"
-    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/rate-limit: '100'
+    nginx.ingress.kubernetes.io/rate-limit-window: '1m'
 spec:
   tls:
-  - hosts:
-    - terrafusion.gov
-    - www.terrafusion.gov
-    - api.terrafusion.gov
-    - dashboard.terrafusion.gov
-    - marketplace.terrafusion.gov
-    - citizen.terrafusion.gov
-    secretName: terrafusion-tls-secret
+    - hosts:
+        - terrafusion.gov
+        - www.terrafusion.gov
+        - api.terrafusion.gov
+        - dashboard.terrafusion.gov
+        - marketplace.terrafusion.gov
+        - citizen.terrafusion.gov
+      secretName: terrafusion-tls-secret
   rules:
-  - host: api.terrafusion.gov
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-api-gateway
-            port:
-              number: 5000
-  - host: dashboard.terrafusion.gov
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-dashboard
-            port:
-              number: 3000
-  - host: marketplace.terrafusion.gov
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: marketplace-frontend
-            port:
-              number: 3002
-  - host: citizen.terrafusion.gov
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: citizen-portal
-            port:
-              number: 3004
+    - host: api.terrafusion.gov
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-api-gateway
+                port:
+                  number: 5000
+    - host: dashboard.terrafusion.gov
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-dashboard
+                port:
+                  number: 3000
+    - host: marketplace.terrafusion.gov
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: marketplace-frontend
+                port:
+                  number: 3002
+    - host: citizen.terrafusion.gov
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: citizen-portal
+                port:
+                  number: 3004
 
 ---
 # Security Policy for TLS
@@ -223,24 +223,24 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from: []
-    ports:
-    - protocol: TCP
-      port: 443
-    - protocol: TCP
-      port: 80  # Only for redirect to 443
+    - from: []
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80 # Only for redirect to 443
   egress:
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 443
-    - protocol: TCP
-      port: 53   # DNS
-    - protocol: UDP
-      port: 53   # DNS
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 53 # DNS
+        - protocol: UDP
+          port: 53 # DNS
 
 ---
 # Certificate Monitoring
@@ -254,6 +254,6 @@ spec:
     matchLabels:
       app.kubernetes.io/name: cert-manager
   endpoints:
-  - port: tcp-prometheus-servicemonitor
-    interval: 60s
-    path: /metrics
+    - port: tcp-prometheus-servicemonitor
+      interval: 60s
+      path: /metrics

@@ -31,8 +31,7 @@
               "Value": "SAR"
             }
           ],
-          "@Variables": {
-          },
+          "@Variables": {},
           "Type": "Image",
           "Key": "SAR_@{CollectorName}_GRD_@{CollectMode}_Image_$%i+1$",
           "Title": "($/Images/%i/ICAT$) $/Images/%i/IID1$ / $/Images/%i/IID2$",
@@ -55,11 +54,11 @@
               "resamplingType": "BilinearInterpolation",
               "noDataColor": {
                 "type": "CIMRGBColor",
-                "values": [0, 0, 0, 0 ]
+                "values": [0, 0, 0, 0]
               },
               "backgroundColor": {
                 "type": "CIMRGBColor",
-                "values": [0, 0, 0, 0 ]
+                "values": [0, 0, 0, 0]
               },
               "backgroundValue": 0,
               "displayBackgroundValue": true,
@@ -85,22 +84,22 @@
                 {
                   "Path": "$/Images/%i/TREs/EXPLTB/POLAR$$%b$",
                   "Map": [
-                    [ "HH0",  "HH" ],
-                    [ "HV0",  "HV" ],
-                    [ "VH0",  "VH" ],
-                    [ "VV0",  "VV" ],
-                    [ "HD0",  "HH" ],
-                    [ "HD1",  "HV" ],
-                    [ "VD0",  "VH" ],
-                    [ "VD1",  "VV" ],
-                    [ "AP0",  "HH" ],
-                    [ "AP1",  "VV" ],
-                    [ "CP0",  "CH" ],
-                    [ "CP1",  "CV" ],
-                    [ "QP0",  "HH" ],
-                    [ "QP1",  "HV" ],
-                    [ "QP2",  "VH" ],
-                    [ "QP3",  "VV" ]
+                    ["HH0", "HH"],
+                    ["HV0", "HV"],
+                    ["VH0", "VH"],
+                    ["VV0", "VV"],
+                    ["HD0", "HH"],
+                    ["HD1", "HV"],
+                    ["VD0", "VH"],
+                    ["VD1", "VV"],
+                    ["AP0", "HH"],
+                    ["AP1", "VV"],
+                    ["CP0", "CH"],
+                    ["CP1", "CV"],
+                    ["QP0", "HH"],
+                    ["QP1", "HV"],
+                    ["QP2", "VH"],
+                    ["QP3", "VV"]
                   ]
                 }
               ]
@@ -110,38 +109,38 @@
             "Mission": "@{CollectorName}",
             "SensorMode": "$/DESs/XML_DATA_CONTENT/XML/product/sourceAttributes/beamMode$"
           },
-          "Properties-" : {
-            "SAR_Product_MissionId" : "@{CollectorName}",
-            "SAR_Product_Mode" : "$/DESs/XML_DATA_CONTENT/XML/product/sourceAttributes/beamMode$",
-            "SAR_Product_ProductType" : "$/DESs/XML_DATA_CONTENT/XML/product/imageGenerationParameters/generalProcessingInformation/productType$",
-            "SAR_Product_StartTime" : "$/DESs/XML_DATA_CONTENT/XML/product/sourceAttributes/rawDataStartTime?parse=FDT$",
-            "SAR_Product_StopTime" : "",
-            "SAR_Product_Polarization" : "$/DESs/XML_DATA_CONTENT/XML/product/imageGenerationParameters/generalProcessingInformation/polarizationsInProduct$",
-            "SAR_Product_Rows" : "$Images/%i/NROWS$",
-            "SAR_Product_Cols" : "$Images/%i/NCOLS$",
-            "SAR_Product_SlantRange" : "",
-            "SAR_Product_GroundRange" : "",
-            "SAR_Product_SquintAngle" : "$Images/%i/TREs/EXPLTB/SQUINT_ANGLE$",
-            "SAR_Product_GrazeAng" : "$Images/%i/TREs/EXPLTB/GRAZE_ANG$",
-            "SAR_Product_IncidenceAng" : "",
-            "SAR_Product_TwistAng" : "",
-            "SAR_Product_SlopeAng" : "$Images/%i/TREs/EXPLTB/GRAZE_ANG$",
-            "SAR_Product_AzimAng" : "",
-            "SAR_Product_LayoverAng" : "$Images/%i/TREs/BLOCKA/LAYOVER_ANGLE$",
-            "SAR_Product_CalibrationFactor" : "",
-            "SAR_Product_IncidenceAnglePolyOrder" : "",
-            "SAR_Product_RangePixelSpacing" : "",
-            "SAR_Product_IncidenceAngleCoefficients" : "",
-            "SAR_Product_ThermalNoiseCorrectionPerformed" : "",
-            "SAR_Product_OrbitStateVectors" : "",
-            "SAR_Product_AcquisitionType" : "",
-            "SAR_Product_BeamModeMnemonic" : ""
+          "Properties-": {
+            "SAR_Product_MissionId": "@{CollectorName}",
+            "SAR_Product_Mode": "$/DESs/XML_DATA_CONTENT/XML/product/sourceAttributes/beamMode$",
+            "SAR_Product_ProductType": "$/DESs/XML_DATA_CONTENT/XML/product/imageGenerationParameters/generalProcessingInformation/productType$",
+            "SAR_Product_StartTime": "$/DESs/XML_DATA_CONTENT/XML/product/sourceAttributes/rawDataStartTime?parse=FDT$",
+            "SAR_Product_StopTime": "",
+            "SAR_Product_Polarization": "$/DESs/XML_DATA_CONTENT/XML/product/imageGenerationParameters/generalProcessingInformation/polarizationsInProduct$",
+            "SAR_Product_Rows": "$Images/%i/NROWS$",
+            "SAR_Product_Cols": "$Images/%i/NCOLS$",
+            "SAR_Product_SlantRange": "",
+            "SAR_Product_GroundRange": "",
+            "SAR_Product_SquintAngle": "$Images/%i/TREs/EXPLTB/SQUINT_ANGLE$",
+            "SAR_Product_GrazeAng": "$Images/%i/TREs/EXPLTB/GRAZE_ANG$",
+            "SAR_Product_IncidenceAng": "",
+            "SAR_Product_TwistAng": "",
+            "SAR_Product_SlopeAng": "$Images/%i/TREs/EXPLTB/GRAZE_ANG$",
+            "SAR_Product_AzimAng": "",
+            "SAR_Product_LayoverAng": "$Images/%i/TREs/BLOCKA/LAYOVER_ANGLE$",
+            "SAR_Product_CalibrationFactor": "",
+            "SAR_Product_IncidenceAnglePolyOrder": "",
+            "SAR_Product_RangePixelSpacing": "",
+            "SAR_Product_IncidenceAngleCoefficients": "",
+            "SAR_Product_ThermalNoiseCorrectionPerformed": "",
+            "SAR_Product_OrbitStateVectors": "",
+            "SAR_Product_AcquisitionType": "",
+            "SAR_Product_BeamModeMnemonic": ""
           }
         }
       ],
       "MosaicDefinitions": [
         {
-          "ItemURI": { 
+          "ItemURI": {
             "Path": "$uri.path$/$uri.profile$##Primary",
             "Key": "",
             "Tag": "SAR",
@@ -158,13 +157,11 @@
           },
           "Footprint": "",
           "ProcessingTemplate": "Default",
-          "Variables": {
-          },
+          "Variables": {},
           "Properties": {}
-        }      
+        }
       ]
     }
   ],
-  "IDs": {
-  }
+  "IDs": {}
 }

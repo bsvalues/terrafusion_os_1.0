@@ -1,45 +1,45 @@
 {
-  "SensorName" : "GeoEye-1",
-  "PanWeights" : [ 0.41, 0.16, 0.13, 0.3 ],
-  "Properties" : {
-    "BandDefinitionKeyword" : "GeoEye-1",
-    "BandDefinitionFriendlyName" : "GEOEYE-1_4BANDS",
-    "MsToPanWeightsGramSchmidt" : "0.41 0.16 0.13 0.3",
-    "MsToPanWeightsEsri" : "0.6  0.85 0.75 0.3"
+  "SensorName": "GeoEye-1",
+  "PanWeights": [0.41, 0.16, 0.13, 0.3],
+  "Properties": {
+    "BandDefinitionKeyword": "GeoEye-1",
+    "BandDefinitionFriendlyName": "GEOEYE-1_4BANDS",
+    "MsToPanWeightsGramSchmidt": "0.41 0.16 0.13 0.3",
+    "MsToPanWeightsEsri": "0.6  0.85 0.75 0.3"
   },
-  "Bands" : {
-    "Pan" : [
+  "Bands": {
+    "Pan": [
       {
-        "BandName" : "Panchromatic",
-        "SolarIrradiance" : 1617.0,
-        "WavelengthMin" : 450.0,
-        "WavelengthMax" : 800.0
+        "BandName": "Panchromatic",
+        "SolarIrradiance": 1617.0,
+        "WavelengthMin": 450.0,
+        "WavelengthMax": 800.0
       }
     ],
-    "MS" : [
+    "MS": [
       {
-        "BandName" : "Blue",
-        "SolarIrradiance" : 1960.0,
-        "WavelengthMin" : 450.0,
-        "WavelengthMax" : 510.0
+        "BandName": "Blue",
+        "SolarIrradiance": 1960.0,
+        "WavelengthMin": 450.0,
+        "WavelengthMax": 510.0
       },
       {
-        "BandName" : "Green", 
-        "SolarIrradiance" : 1853.0,
-        "WavelengthMin" : 510.0,
-        "WavelengthMax" : 580.0
+        "BandName": "Green",
+        "SolarIrradiance": 1853.0,
+        "WavelengthMin": 510.0,
+        "WavelengthMax": 580.0
       },
       {
-        "BandName" : "Red",
-        "SolarIrradiance" : 1505.0,
-        "WavelengthMin" : 655.0,
-        "WavelengthMax" : 690.0
+        "BandName": "Red",
+        "SolarIrradiance": 1505.0,
+        "WavelengthMin": 655.0,
+        "WavelengthMax": 690.0
       },
       {
-        "BandName" : "NearInfrared",
-        "SolarIrradiance" : 1039.0,
-        "WavelengthMin" : 780.0,
-        "WavelengthMax" : 920.0
+        "BandName": "NearInfrared",
+        "SolarIrradiance": 1039.0,
+        "WavelengthMin": 780.0,
+        "WavelengthMax": 920.0
       }
     ],
     "Cloud": [
@@ -48,6 +48,5 @@
       }
     ]
   },
-  "AttributeMap" : [
-  ]
+  "AttributeMap": []
 }

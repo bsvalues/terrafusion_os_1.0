@@ -1,37 +1,16 @@
 {
   "packages/api": {
-    "root": [
-      "packages/api/package.json",
-      "nx/core/package-json"
-    ],
-    "name": [
-      "packages/api/package.json",
-      "nx/core/package-json"
-    ],
-    "tags": [
-      "packages/api/package.json",
-      "nx/core/package-json"
-    ],
-    "tags.npm:public": [
-      "packages/api/package.json",
-      "nx/core/package-json"
-    ],
-    "tags.npm:api": [
-      "packages/api/package.json",
-      "nx/core/package-json"
-    ],
-    "tags.npm:gateway": [
-      "packages/api/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["packages/api/package.json", "nx/core/package-json"],
+    "name": ["packages/api/package.json", "nx/core/package-json"],
+    "tags": ["packages/api/package.json", "nx/core/package-json"],
+    "tags.npm:public": ["packages/api/package.json", "nx/core/package-json"],
+    "tags.npm:api": ["packages/api/package.json", "nx/core/package-json"],
+    "tags.npm:gateway": ["packages/api/package.json", "nx/core/package-json"],
     "tags.npm:real-estate": [
       "packages/api/package.json",
       "nx/core/package-json"
     ],
-    "tags.npm:appraisal": [
-      "packages/api/package.json",
-      "nx/core/package-json"
-    ],
+    "tags.npm:appraisal": ["packages/api/package.json", "nx/core/package-json"],
     "metadata.targetGroups": [
       "packages/api/package.json",
       "nx/core/package-json"
@@ -52,10 +31,7 @@
       "packages/api/package.json",
       "nx/core/package-json"
     ],
-    "metadata.js": [
-      "packages/api/package.json",
-      "nx/core/package-json"
-    ],
+    "metadata.js": ["packages/api/package.json", "nx/core/package-json"],
     "metadata.js.packageName": [
       "packages/api/package.json",
       "nx/core/package-json"
@@ -68,14 +44,8 @@
       "packages/api/package.json",
       "nx/core/package-json"
     ],
-    "targets": [
-      "packages/api/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.start": [
-      "packages/api/package.json",
-      "nx/core/package-json"
-    ],
+    "targets": ["packages/api/package.json", "nx/core/package-json"],
+    "targets.start": ["packages/api/package.json", "nx/core/package-json"],
     "targets.start.executor": [
       "packages/api/package.json",
       "nx/core/package-json"
@@ -100,10 +70,7 @@
       "packages/api/package.json",
       "nx/core/package-json"
     ],
-    "targets.dev": [
-      "packages/api/package.json",
-      "nx/core/package-json"
-    ],
+    "targets.dev": ["packages/api/package.json", "nx/core/package-json"],
     "targets.dev.executor": [
       "packages/api/package.json",
       "nx/core/package-json"
@@ -146,22 +113,10 @@
     ]
   },
   "packages/shared": {
-    "root": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
-    "name": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
-    "tags": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
-    "tags.npm:public": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["packages/shared/package.json", "nx/core/package-json"],
+    "name": ["packages/shared/package.json", "nx/core/package-json"],
+    "tags": ["packages/shared/package.json", "nx/core/package-json"],
+    "tags.npm:public": ["packages/shared/package.json", "nx/core/package-json"],
     "tags.npm:real-estate": [
       "packages/shared/package.json",
       "nx/core/package-json"
@@ -174,10 +129,7 @@
       "packages/shared/package.json",
       "nx/core/package-json"
     ],
-    "tags.npm:shared": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
+    "tags.npm:shared": ["packages/shared/package.json", "nx/core/package-json"],
     "metadata.targetGroups": [
       "packages/shared/package.json",
       "nx/core/package-json"
@@ -198,10 +150,7 @@
       "packages/shared/package.json",
       "nx/core/package-json"
     ],
-    "metadata.js": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
+    "metadata.js": ["packages/shared/package.json", "nx/core/package-json"],
     "metadata.js.packageName": [
       "packages/shared/package.json",
       "nx/core/package-json"
@@ -214,14 +163,8 @@
       "packages/shared/package.json",
       "nx/core/package-json"
     ],
-    "targets": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
-    "targets.db:push": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
+    "targets": ["packages/shared/package.json", "nx/core/package-json"],
+    "targets.db:push": ["packages/shared/package.json", "nx/core/package-json"],
     "targets.db:push.executor": [
       "packages/shared/package.json",
       "nx/core/package-json"
@@ -246,10 +189,7 @@
       "packages/shared/package.json",
       "nx/core/package-json"
     ],
-    "targets.test": [
-      "packages/shared/package.json",
-      "nx/core/package-json"
-    ],
+    "targets.test": ["packages/shared/package.json", "nx/core/package-json"],
     "targets.test.executor": [
       "packages/shared/package.json",
       "nx/core/package-json"
@@ -292,18 +232,9 @@
     ]
   },
   "packages/web-client": {
-    "root": [
-      "packages/web-client/package.json",
-      "nx/core/package-json"
-    ],
-    "name": [
-      "packages/web-client/package.json",
-      "nx/core/package-json"
-    ],
-    "tags": [
-      "packages/web-client/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["packages/web-client/package.json", "nx/core/package-json"],
+    "name": ["packages/web-client/package.json", "nx/core/package-json"],
+    "tags": ["packages/web-client/package.json", "nx/core/package-json"],
     "tags.npm:public": [
       "packages/web-client/package.json",
       "nx/core/package-json"
@@ -344,10 +275,7 @@
       "packages/web-client/package.json",
       "nx/core/package-json"
     ],
-    "metadata.js": [
-      "packages/web-client/package.json",
-      "nx/core/package-json"
-    ],
+    "metadata.js": ["packages/web-client/package.json", "nx/core/package-json"],
     "metadata.js.packageName": [
       "packages/web-client/package.json",
       "nx/core/package-json"
@@ -360,10 +288,7 @@
       "packages/web-client/package.json",
       "nx/core/package-json"
     ],
-    "targets": [
-      "packages/web-client/package.json",
-      "nx/core/package-json"
-    ],
+    "targets": ["packages/web-client/package.json", "nx/core/package-json"],
     "targets.start": [
       "packages/web-client/package.json",
       "nx/core/package-json"
@@ -392,10 +317,7 @@
       "packages/web-client/package.json",
       "nx/core/package-json"
     ],
-    "targets.dev": [
-      "packages/web-client/package.json",
-      "nx/core/package-json"
-    ],
+    "targets.dev": ["packages/web-client/package.json", "nx/core/package-json"],
     "targets.dev.executor": [
       "packages/web-client/package.json",
       "nx/core/package-json"
@@ -466,18 +388,9 @@
     ]
   },
   "services/analysis-service": {
-    "root": [
-      "services/analysis-service/package.json",
-      "nx/core/package-json"
-    ],
-    "name": [
-      "services/analysis-service/package.json",
-      "nx/core/package-json"
-    ],
-    "tags": [
-      "services/analysis-service/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["services/analysis-service/package.json", "nx/core/package-json"],
+    "name": ["services/analysis-service/package.json", "nx/core/package-json"],
+    "tags": ["services/analysis-service/package.json", "nx/core/package-json"],
     "tags.npm:public": [
       "services/analysis-service/package.json",
       "nx/core/package-json"
@@ -596,18 +509,9 @@
     ]
   },
   "services/form-service": {
-    "root": [
-      "services/form-service/package.json",
-      "nx/core/package-json"
-    ],
-    "name": [
-      "services/form-service/package.json",
-      "nx/core/package-json"
-    ],
-    "tags": [
-      "services/form-service/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["services/form-service/package.json", "nx/core/package-json"],
+    "name": ["services/form-service/package.json", "nx/core/package-json"],
+    "tags": ["services/form-service/package.json", "nx/core/package-json"],
     "tags.npm:public": [
       "services/form-service/package.json",
       "nx/core/package-json"
@@ -648,10 +552,7 @@
       "services/form-service/package.json",
       "nx/core/package-json"
     ],
-    "targets": [
-      "services/form-service/package.json",
-      "nx/core/package-json"
-    ],
+    "targets": ["services/form-service/package.json", "nx/core/package-json"],
     "targets.start": [
       "services/form-service/package.json",
       "nx/core/package-json"
@@ -726,18 +627,9 @@
     ]
   },
   "services/property-service": {
-    "root": [
-      "services/property-service/package.json",
-      "nx/core/package-json"
-    ],
-    "name": [
-      "services/property-service/package.json",
-      "nx/core/package-json"
-    ],
-    "tags": [
-      "services/property-service/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["services/property-service/package.json", "nx/core/package-json"],
+    "name": ["services/property-service/package.json", "nx/core/package-json"],
+    "tags": ["services/property-service/package.json", "nx/core/package-json"],
     "tags.npm:public": [
       "services/property-service/package.json",
       "nx/core/package-json"
@@ -872,18 +764,9 @@
     ]
   },
   "services/report-service": {
-    "root": [
-      "services/report-service/package.json",
-      "nx/core/package-json"
-    ],
-    "name": [
-      "services/report-service/package.json",
-      "nx/core/package-json"
-    ],
-    "tags": [
-      "services/report-service/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["services/report-service/package.json", "nx/core/package-json"],
+    "name": ["services/report-service/package.json", "nx/core/package-json"],
+    "tags": ["services/report-service/package.json", "nx/core/package-json"],
     "tags.npm:public": [
       "services/report-service/package.json",
       "nx/core/package-json"
@@ -924,10 +807,7 @@
       "services/report-service/package.json",
       "nx/core/package-json"
     ],
-    "targets": [
-      "services/report-service/package.json",
-      "nx/core/package-json"
-    ],
+    "targets": ["services/report-service/package.json", "nx/core/package-json"],
     "targets.start": [
       "services/report-service/package.json",
       "nx/core/package-json"
@@ -1002,18 +882,9 @@
     ]
   },
   "services/user-service": {
-    "root": [
-      "services/user-service/package.json",
-      "nx/core/package-json"
-    ],
-    "name": [
-      "services/user-service/package.json",
-      "nx/core/package-json"
-    ],
-    "tags": [
-      "services/user-service/package.json",
-      "nx/core/package-json"
-    ],
+    "root": ["services/user-service/package.json", "nx/core/package-json"],
+    "name": ["services/user-service/package.json", "nx/core/package-json"],
+    "tags": ["services/user-service/package.json", "nx/core/package-json"],
     "tags.npm:public": [
       "services/user-service/package.json",
       "nx/core/package-json"
@@ -1074,10 +945,7 @@
       "services/user-service/package.json",
       "nx/core/package-json"
     ],
-    "targets": [
-      "services/user-service/package.json",
-      "nx/core/package-json"
-    ],
+    "targets": ["services/user-service/package.json", "nx/core/package-json"],
     "targets.start": [
       "services/user-service/package.json",
       "nx/core/package-json"

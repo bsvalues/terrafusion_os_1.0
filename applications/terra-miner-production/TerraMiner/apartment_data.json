@@ -15,25 +15,17 @@
         "amenityGroups": [
           {
             "title": "Other",
-            "amenities": [
-              "Laundry: Shared"
-            ],
+            "amenities": ["Laundry: Shared"],
             "__typename": "AmenityGroup"
           },
           {
             "title": "Outdoor common areas",
-            "amenities": [
-              "Barbecue",
-              "Picnic Area"
-            ],
+            "amenities": ["Barbecue", "Picnic Area"],
             "__typename": "AmenityGroup"
           },
           {
             "title": "Services & facilities",
-            "amenities": [
-              "On-Site Management",
-              "Online Rent Payment"
-            ],
+            "amenities": ["On-Site Management", "Online Rent Payment"],
             "__typename": "AmenityGroup"
           }
         ],
@@ -65,26 +57,17 @@
           },
           {
             "title": "Flooring",
-            "amenities": [
-              "Carpet",
-              "Vinyl"
-            ],
+            "amenities": ["Carpet", "Vinyl"],
             "__typename": "AmenityGroup"
           },
           {
             "title": "Heating",
-            "amenities": [
-              "Electric",
-              "Gas"
-            ],
+            "amenities": ["Electric", "Gas"],
             "__typename": "AmenityGroup"
           },
           {
             "title": "Internet/Satellite",
-            "amenities": [
-              "Cable TV Ready",
-              "High-speed Internet Ready"
-            ],
+            "amenities": ["Cable TV Ready", "High-speed Internet Ready"],
             "__typename": "AmenityGroup"
           },
           {
@@ -107,9 +90,7 @@
         "amenityGroups": [
           {
             "title": "Parking",
-            "amenities": [
-              "Parking Lot"
-            ],
+            "amenities": ["Parking Lot"],
             "__typename": "AmenityGroup"
           }
         ],
@@ -151,24 +132,14 @@
         "Dishwasher",
         "GarbageDisposal"
       ],
-      "floorCoverings": [
-        "Carpet",
-        "Vinyl"
-      ],
-      "communicationTypes": [
-        "Cable",
-        "HighSpeedInternet"
-      ],
+      "floorCoverings": ["Carpet", "Vinyl"],
+      "communicationTypes": ["Cable", "HighSpeedInternet"],
       "hasCeilingFan": true,
       "hasFireplace": null,
       "hasPatioBalcony": true,
       "isFurnished": null,
-      "communityRooms": [
-        "Unknown"
-      ],
-      "sportsCourts": [
-        "Unknown"
-      ],
+      "communityRooms": ["Unknown"],
+      "sportsCourts": ["Unknown"],
       "hasBicycleStorage": null,
       "hasGuestSuite": null,
       "hasStorage": null,
@@ -181,28 +152,18 @@
       "hasPackageService": null,
       "hasValetTrash": null,
       "hasSpanishSpeakingStaff": null,
-      "securityTypes": [
-        "Unknown"
-      ],
-      "viewType": [
-        "Unknown"
-      ],
+      "securityTypes": ["Unknown"],
+      "viewType": ["Unknown"],
       "hasHotTub": null,
       "hasSauna": null,
       "hasSwimmingPool": null,
       "hasAssistedLiving": false,
       "hasDisabledAccess": null,
       "hasSharedLaundry": true,
-      "outdoorCommonAreas": [
-        "PicnicArea"
-      ],
+      "outdoorCommonAreas": ["PicnicArea"],
       "hasBarbecue": true,
       "heatingSource": "Electric",
-      "petPolicies": [
-        "Cats",
-        "SmallDogs",
-        "LargeDogs"
-      ],
+      "petPolicies": ["Cats", "SmallDogs", "LargeDogs"],
       "hasElevator": null,
       "parkingDescription": null,
       "petPolicyDescription": null,
@@ -213,15 +174,9 @@
       "depositFeeMin": null,
       "depositFeeMax": null,
       "airConditioning": "Central",
-      "leaseTerms": [
-        "OneYear"
-      ],
-      "parkingTypes": [
-        "ParkingLot"
-      ],
-      "utilitiesIncluded": [
-        "Unknown"
-      ],
+      "leaseTerms": ["OneYear"],
+      "parkingTypes": ["ParkingLot"],
+      "utilitiesIncluded": ["Unknown"],
       "detailedParkingPolicies": null,
       "detailedPetPolicy": {
         "general": null,
@@ -4053,11 +4008,7 @@
             "sqft": 1170,
             "baths": 1,
             "amenityDetails": [],
-            "allowedPets": [
-              "Cats",
-              "Dogs",
-              "Small Dogs"
-            ],
+            "allowedPets": ["Cats", "Dogs", "Small Dogs"],
             "description": "12 month lease",
             "depositsAndFees": null,
             "specialOffers": null,
@@ -4102,11 +4053,7 @@
             "sqft": 1170,
             "baths": 1,
             "amenityDetails": [],
-            "allowedPets": [
-              "Cats",
-              "Dogs",
-              "Small Dogs"
-            ],
+            "allowedPets": ["Cats", "Dogs", "Small Dogs"],
             "description": "12 month lease",
             "depositsAndFees": null,
             "specialOffers": null,
@@ -4151,11 +4098,7 @@
             "sqft": 1170,
             "baths": 1,
             "amenityDetails": [],
-            "allowedPets": [
-              "Cats",
-              "Dogs",
-              "Small Dogs"
-            ],
+            "allowedPets": ["Cats", "Dogs", "Small Dogs"],
             "description": "12 month lease",
             "depositsAndFees": null,
             "specialOffers": null,
@@ -4200,11 +4143,7 @@
             "sqft": 1170,
             "baths": 1,
             "amenityDetails": [],
-            "allowedPets": [
-              "Cats",
-              "Dogs",
-              "Small Dogs"
-            ],
+            "allowedPets": ["Cats", "Dogs", "Small Dogs"],
             "description": "12 month lease",
             "depositsAndFees": null,
             "specialOffers": null,
@@ -6641,11 +6580,7 @@
         "leaseTerm": "One Year Lease",
         "depositsAndFees": null,
         "description": "12 month lease",
-        "allowedPets": [
-          "Cats",
-          "Dogs",
-          "Small Dogs"
-        ],
+        "allowedPets": ["Cats", "Dogs", "Small Dogs"],
         "floorPlanUnitGalleryPhotos": [
           {
             "caption": null,
@@ -8498,13 +8433,9 @@
       }
     ],
     "amenitySummary": {
-      "buildingDetails": [
-        "64 units"
-      ],
+      "buildingDetails": ["64 units"],
       "__typename": "AmenitySummary",
-      "laundry": [
-        "Shared laundry"
-      ]
+      "laundry": ["Shared laundry"]
     },
     "comps": {
       "BuildingDataT": null,
@@ -9062,11 +8993,7 @@
         "Sun: Closed"
       ],
       "__typename": "AmenityDetails",
-      "pets": [
-        "Cats",
-        "Large dogs",
-        "Small dogs"
-      ],
+      "pets": ["Cats", "Large dogs", "Small dogs"],
       "petDetails": [],
       "customAmenities": {
         "rawAmenities": [
@@ -13911,9 +13838,7 @@
     "floorPlanDisclaimer": null,
     "vaLoanStatus": null,
     "engrain": null,
-    "homeTypes": [
-      "apartment"
-    ],
+    "homeTypes": ["apartment"],
     "providerInfoList": [],
     "unitOverview": null,
     "rentalCostsAndFees": {
@@ -13945,9 +13870,7 @@
       "__typename": "RentalCostsAndFees"
     },
     "zovInsight": {
-      "tags": [
-        "Picnic area"
-      ],
+      "tags": ["Picnic area"],
       "tagline": "Lunch is now al fresco",
       "description": [
         {

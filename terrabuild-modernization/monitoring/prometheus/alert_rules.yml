@@ -7,8 +7,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High memory usage detected"
-          description: "TerraBuild application is using more than 85% of available heap memory for more than 2 minutes."
+          summary: 'High memory usage detected'
+          description: 'TerraBuild application is using more than 85% of available heap memory for more than 2 minutes.'
 
       - alert: DatabaseConnectionDown
         expr: app_database_connected == 0
@@ -16,8 +16,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Database connection lost"
-          description: "TerraBuild application has lost connection to the database."
+          summary: 'Database connection lost'
+          description: 'TerraBuild application has lost connection to the database.'
 
       - alert: AgentUnhealthy
         expr: app_agent_status{agent=~".+"} == 0
@@ -25,8 +25,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "AI Agent unhealthy"
-          description: "TerraBuild AI Agent {{ $labels.agent }} is reporting unhealthy status."
+          summary: 'AI Agent unhealthy'
+          description: 'TerraBuild AI Agent {{ $labels.agent }} is reporting unhealthy status.'
 
       - alert: ApplicationDown
         expr: up{job="terrabuild"} == 0
@@ -34,5 +34,5 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Application is down"
-          description: "TerraBuild application is not responding to metrics scrape."
+          summary: 'Application is down'
+          description: 'TerraBuild application is not responding to metrics scrape.'

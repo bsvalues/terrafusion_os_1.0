@@ -1,15 +1,10 @@
 {
-    "type": "simple",
-    "label": "",
-    "symbol": {
-        "type": "esriSLS",
-        "style": "esriSLSSolid",
-        "color": [
-            223,
-            0,
-            235,
-            255
-        ],
-        "width": 4.0
-    }
+  "type": "simple",
+  "label": "",
+  "symbol": {
+    "type": "esriSLS",
+    "style": "esriSLSSolid",
+    "color": [223, 0, 235, 255],
+    "width": 4.0
+  }
 }

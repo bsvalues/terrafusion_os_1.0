@@ -1,8 +1,6 @@
 {
   "TRE": "BANDSB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix X: BANDSB"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix X: BANDSB"],
   "Name": "Band Characterization",
   "Description": "The BANDSB TRE provides spectroradiometric properties of the sensor system that collected the image in the image segment in which the BANDSB TRE occurs.  The BANDSB TRE describes the measurements and the bands in the image segment, including spatial, spectral, and temporal characteristics.",
   "Notes": "The fields APA, APR and APN should loop on <NUM_AUX_B<COUNT>> instead of solely on <NUM_AUX_B>.",
@@ -111,10 +109,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -123,9 +118,7 @@
         },
         {
           "Type": "Value",
-          "Values": [
-            "-------"
-          ]
+          "Values": ["-------"]
         }
       ]
     },
@@ -152,10 +145,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -164,9 +154,7 @@
         },
         {
           "Type": "Value",
-          "Values": [
-            "-------"
-          ]
+          "Values": ["-------"]
         }
       ]
     },
@@ -193,10 +181,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -205,9 +190,7 @@
         },
         {
           "Type": "Value",
-          "Values": [
-            "-------"
-          ]
+          "Values": ["-------"]
         }
       ]
     },
@@ -234,10 +217,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -246,9 +226,7 @@
         },
         {
           "Type": "Value",
-          "Values": [
-            "-------"
-          ]
+          "Values": ["-------"]
         }
       ]
     },
@@ -322,9 +300,7 @@
       "Size": 4,
       "Format": "IEEE 754-2008",
       "Type": "C",
-      "Units": [
-        "meters"
-      ],
+      "Units": ["meters"],
       "Values": [
         {
           "Type": "Double"
@@ -337,9 +313,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "centimeters"
-      ],
+      "Units": ["centimeters"],
       "Values": [
         {
           "Type": "Double"
@@ -399,10 +373,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "0",
-            "1"
-          ]
+          "Values": ["0", "1"]
         }
       ]
     },
@@ -427,9 +398,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "millimeters"
-      ],
+      "Units": ["millimeters"],
       "Values": [
         {
           "Type": "Range",
@@ -444,10 +413,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "micrometers",
-        "centimeters^-1"
-      ],
+      "Units": ["micrometers", "centimeters^-1"],
       "Values": [
         {
           "Type": "Range",
@@ -462,10 +428,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "micrometers",
-        "centimeters^-1"
-      ],
+      "Units": ["micrometers", "centimeters^-1"],
       "Values": [
         {
           "Type": "Range",
@@ -480,10 +443,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "micrometers",
-        "centimeters^-1"
-      ],
+      "Units": ["micrometers", "centimeters^-1"],
       "Values": [
         {
           "Type": "Range",
@@ -498,10 +458,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "micrometers",
-        "centimeters^-1"
-      ],
+      "Units": ["micrometers", "centimeters^-1"],
       "Values": [
         {
           "Type": "Range",
@@ -516,10 +473,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "micrometers",
-        "centimeters^-1"
-      ],
+      "Units": ["micrometers", "centimeters^-1"],
       "Values": [
         {
           "Type": "Range",
@@ -534,10 +488,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "micrometers",
-        "centimeters^-1"
-      ],
+      "Units": ["micrometers", "centimeters^-1"],
       "Values": [
         {
           "Type": "Range",
@@ -552,10 +503,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "micrometers",
-        "centimeters^-1"
-      ],
+      "Units": ["micrometers", "centimeters^-1"],
       "Values": [
         {
           "Type": "Range",
@@ -609,9 +557,7 @@
       "Size": 6,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "milliseconds"
-      ],
+      "Units": ["milliseconds"],
       "Values": [
         {
           "Type": "Range",
@@ -626,9 +572,7 @@
       "Size": 6,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "microwatts/(centimeter^2 sr micrometers)"
-      ],
+      "Units": ["microwatts/(centimeter^2 sr micrometers)"],
       "Values": [
         {
           "Type": "Range",
@@ -643,9 +587,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "microwatts/(centimeter^2 sr micrometers)"
-      ],
+      "Units": ["microwatts/(centimeter^2 sr micrometers)"],
       "Values": [
         {
           "Type": "Range",
@@ -660,10 +602,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -678,10 +617,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -696,10 +632,7 @@
       "Size": 1,
       "Format": "BCS-A",
       "Type": "C",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Value",
@@ -716,10 +649,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -734,10 +664,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -752,10 +679,7 @@
       "Size": 1,
       "Format": "BCS-A",
       "Type": "C",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Value",
@@ -772,9 +696,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "microwatts/(centimeter^2 sr micrometers)"
-      ],
+      "Units": ["microwatts/(centimeter^2 sr micrometers)"],
       "Values": [
         {
           "Type": "Range",
@@ -789,9 +711,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "microwatts/(centimeter^2 sr micrometers)"
-      ],
+      "Units": ["microwatts/(centimeter^2 sr micrometers)"],
       "Values": [
         {
           "Type": "Range",
@@ -806,10 +726,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -824,10 +741,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -859,10 +773,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -877,10 +788,7 @@
       "Size": 7,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "meters",
-        "microradians"
-      ],
+      "Units": ["meters", "microradians"],
       "Values": [
         {
           "Type": "Range",
@@ -899,10 +807,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "M",
-            "R"
-          ]
+          "Values": ["M", "R"]
         }
       ]
     },
@@ -998,11 +903,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "A",
-            "I",
-            "R"
-          ]
+          "Values": ["A", "I", "R"]
         }
       ]
     },
@@ -1016,11 +917,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "A",
-            "I",
-            "R"
-          ]
+          "Values": ["A", "I", "R"]
         }
       ]
     },
@@ -1030,9 +927,7 @@
       "Size": 10,
       "Format": "BCS-N",
       "Type": "C",
-      "Units": [
-        "<UBAP<NUM_AUX_B>>"
-      ],
+      "Units": ["<UBAP<NUM_AUX_B>>"],
       "Values": [
         {
           "Type": "AlphaNumeric"
@@ -1045,9 +940,7 @@
       "Size": 4,
       "Format": "IEEE 754-2008",
       "Type": "C",
-      "Units": [
-        "<UBAP<NUM_AUX_B>>"
-      ],
+      "Units": ["<UBAP<NUM_AUX_B>>"],
       "Values": [
         {
           "Type": "Double"
@@ -1060,9 +953,7 @@
       "Size": 20,
       "Format": "IEEE 754-2008",
       "Type": "C",
-      "Units": [
-        "<UBAP<NUM_AUX_B>>"
-      ],
+      "Units": ["<UBAP<NUM_AUX_B>>"],
       "Values": [
         {
           "Type": "AlphaNumeric"
@@ -1079,11 +970,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "A",
-            "I",
-            "R"
-          ]
+          "Values": ["A", "I", "R"]
         }
       ]
     },
@@ -1097,11 +984,7 @@
       "Values": [
         {
           "Type": "AlphaNumeric",
-          "Values": [
-            "A",
-            "I",
-            "R"
-          ]
+          "Values": ["A", "I", "R"]
         }
       ]
     },
@@ -1111,9 +994,7 @@
       "Size": 10,
       "Format": "BCS-A",
       "Type": "C",
-      "Units": [
-        "<UCAP<NUM_AUX_C>>"
-      ],
+      "Units": ["<UCAP<NUM_AUX_C>>"],
       "Values": [
         {
           "Type": "AlphaNumeric"
@@ -1126,9 +1007,7 @@
       "Size": 4,
       "Format": "IEEE 754-2008",
       "Type": "C",
-      "Units": [
-        "<UCAP<NUM_AUX_C>>"
-      ],
+      "Units": ["<UCAP<NUM_AUX_C>>"],
       "Values": [
         {
           "Type": "Double"
@@ -1141,9 +1020,7 @@
       "Size": 20,
       "Format": "BCS-A",
       "Type": "C",
-      "Units": [
-        "<UCAP<NUM_AUX_C>>"
-      ],
+      "Units": ["<UCAP<NUM_AUX_C>>"],
       "Values": [
         {
           "Type": "Double"

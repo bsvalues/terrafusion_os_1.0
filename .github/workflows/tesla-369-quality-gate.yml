@@ -6,12 +6,12 @@ name: Tesla 3-6-9 Quality Gate
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
-  ULTIMATE_POWER_THRESHOLD: 10.0  # Minimum score required (out of 12)
+  ULTIMATE_POWER_THRESHOLD: 10.0 # Minimum score required (out of 12)
   DOTNET_VERSION: '8.0.x'
 
 jobs:

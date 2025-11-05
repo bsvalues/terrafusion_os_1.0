@@ -47,15 +47,8 @@
         "security_level": "CRITICAL"
       }
     ],
-    "data_endpoints": [
-      "/login",
-      "/token",
-      "/authorize",
-      "/logout"
-    ],
-    "integration_points": [
-      "/api/v1/auth/integration"
-    ]
+    "data_endpoints": ["/login", "/token", "/authorize", "/logout"],
+    "integration_points": ["/api/v1/auth/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

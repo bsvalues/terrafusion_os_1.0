@@ -184,7 +184,7 @@
   .form-grid-2col {
     grid-template-columns: 1fr;
   }
-  
+
   .tabs {
     overflow-x: auto;
     white-space: nowrap;

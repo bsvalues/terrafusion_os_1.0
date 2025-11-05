@@ -16,11 +16,7 @@
   },
   "edge_ai_inference": {
     "enabled": true,
-    "model_formats": [
-      "tflite",
-      "onnx",
-      "pytorch-mobile"
-    ],
+    "model_formats": ["tflite", "onnx", "pytorch-mobile"],
     "models_supported": [
       "image-recognition",
       "object-detection",
@@ -33,11 +29,7 @@
   },
   "iot_device_management": {
     "enabled": true,
-    "device_types": [
-      "sensors",
-      "cameras",
-      "controllers"
-    ],
+    "device_types": ["sensors", "cameras", "controllers"],
     "device_provisioning": "automated",
     "device_authentication": "certificate-based",
     "firmware_updates": "over-the-air",

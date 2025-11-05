@@ -1391,11 +1391,7 @@
           "type": "double"
         }
       ],
-      "assets": [
-        "video_file",
-        "video_frames",
-        "video_metadata"
-      ]
+      "assets": ["video_file", "video_frames", "video_metadata"]
     },
     "Sentinel1": {
       "fields": [
@@ -1540,10 +1536,7 @@
           "type": "double"
         }
       ],
-      "assets": [
-        "ortho_analytic_vh",
-        "ortho_analytic_vv"
-      ]
+      "assets": ["ortho_analytic_vh", "ortho_analytic_vv"]
     },
     "MOD09GA": {
       "fields": [

@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/models",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "models"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["models"]
         }
       },
       "response": []
@@ -127,12 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/inference",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "inference"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["inference"]
         }
       },
       "response": []
@@ -160,12 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/training",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "training"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["training"]
         }
       },
       "response": []
@@ -193,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/monitoring",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "monitoring"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["monitoring"]
         }
       },
       "response": []

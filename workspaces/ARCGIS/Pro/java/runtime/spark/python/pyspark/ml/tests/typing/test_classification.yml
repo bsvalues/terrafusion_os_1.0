@@ -26,7 +26,6 @@
     OneVsRest(classifier=LogisticRegressionModel.load("/foo"))  # E: Argument "classifier" to "OneVsRest" has incompatible type "LogisticRegressionModel"; expected "Optional[Classifier[<nothing>]]"  [arg-type]
     OneVsRest(classifier="foo")  # E: Argument "classifier" to "OneVsRest" has incompatible type "str"; expected "Optional[Classifier[<nothing>]]"  [arg-type]
 
-
 - case: fitFMClassifier
   main: |
     from pyspark.sql import SparkSession

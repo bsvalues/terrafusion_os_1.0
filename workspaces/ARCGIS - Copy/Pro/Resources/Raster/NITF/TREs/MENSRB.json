@@ -5,7 +5,7 @@
   "Description": "The MENSR extension format provides the collection geometry parameters required by image mensuration programs; it is optional, but its use will allow more accurate mensuration.",
   "Size": 205,
   "Fields": {
-    "ACFT_LOC" : {
+    "ACFT_LOC": {
       "Name": "Aircraft Location",
       "Description": "This field indicates the aircraft position at the UTC of the patch.",
       "Size": 25,
@@ -21,7 +21,7 @@
         },
         {
           "Type": "Alpha"
-        }        
+        }
       ]
     },
     "ACFT_LOC_ACCY": {
@@ -63,7 +63,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "DMS"          
+          "Type": "DMS"
         },
         {
           "Type": "DD"
@@ -84,7 +84,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 999.99          
+          "Max": 999.99
         }
       ]
     },
@@ -99,7 +99,7 @@
         {
           "Type": "Range",
           "Min": -1000,
-          "Max": 30000          
+          "Max": 30000
         }
       ]
     },
@@ -114,7 +114,7 @@
         {
           "Type": "Range",
           "Min": -9999.9,
-          "Max": 9999.9          
+          "Max": 9999.9
         }
       ]
     },
@@ -129,7 +129,7 @@
         {
           "Type": "Range",
           "Min": -9999.9,
-          "Max": 9999.9          
+          "Max": 9999.9
         }
       ]
     },
@@ -144,7 +144,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 1          
+          "Max": 1
         }
       ]
     },
@@ -159,7 +159,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 3000000          
+          "Max": 3000000
         }
       ]
     },
@@ -173,7 +173,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["L", "R"]                   
+          "Values": ["L", "R"]
         }
       ]
     },
@@ -188,7 +188,7 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99999                   
+          "Max": 99999
         }
       ]
     },
@@ -203,7 +203,7 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99999                   
+          "Max": 99999
         }
       ]
     },
@@ -217,8 +217,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000,
-          "Max": 1.0000000                   
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -232,8 +232,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000,
-          "Max": 1.0000000                   
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -247,8 +247,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.0000000,
-          "Max": 1.0000000                   
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -262,8 +262,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000,
-          "Max": 1.000000                   
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -277,8 +277,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000,
-          "Max": 1.000000                   
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -292,8 +292,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000,
-          "Max": 1.000000                   
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -307,8 +307,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000,
-          "Max": 1.000000                   
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -322,8 +322,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000,
-          "Max": 1.000000                   
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -337,8 +337,8 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": -1.000000,
-          "Max": 1.000000                   
+          "Min": -1.0,
+          "Max": 1.0
         }
       ]
     },
@@ -353,7 +353,7 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 999                  
+          "Max": 999
         }
       ]
     },
@@ -368,9 +368,9 @@
         {
           "Type": "Range",
           "Min": 1,
-          "Max": 99999                  
+          "Max": 99999
         }
       ]
-    }    
+    }
   }
 }

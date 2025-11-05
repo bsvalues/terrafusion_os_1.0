@@ -1,11 +1,6 @@
 {
-    "type": "esriSLS",
-    "style": "esriSLSSolid",
-    "color": [
-        204,
-        113,
-        180,
-        255
-    ],
-    "width": 2
+  "type": "esriSLS",
+  "style": "esriSLSSolid",
+  "color": [204, 113, 180, 255],
+  "width": 2
 }

@@ -10,10 +10,10 @@ flows:
     id: property-assessment-flow
     quantum_enhanced: true
     actions:
-    - property.search
-    - property.assess
-    - property.validate
-    - property.update
+      - property.search
+      - property.assess
+      - property.validate
+      - property.update
     name: Property Assessment Workflow
   tax-calculation-flow:
     agents_required: 255
@@ -21,10 +21,10 @@ flows:
     id: tax-calculation-flow
     quantum_enhanced: true
     actions:
-    - property.assess
-    - tax.calculate
-    - tax.compliance
-    - tax.report
+      - property.assess
+      - tax.calculate
+      - tax.compliance
+      - tax.report
     name: Tax Calculation Workflow
   property-analytics-flow:
     agents_required: 100
@@ -32,9 +32,9 @@ flows:
     id: property-analytics-flow
     quantum_enhanced: true
     actions:
-    - property.search
-    - property.analytics
-    - property.export
+      - property.search
+      - property.analytics
+      - property.export
     name: Property Analytics Workflow
   emergency-response-flow:
     agents_required: 105
@@ -42,9 +42,9 @@ flows:
     id: emergency-response-flow
     quantum_enhanced: true
     actions:
-    - citizen.notification
-    - permit.track
-    - citizen.support
+      - citizen.notification
+      - permit.track
+      - citizen.support
     name: Emergency Response Workflow
   compliance-audit-flow:
     agents_required: 240
@@ -52,10 +52,10 @@ flows:
     id: compliance-audit-flow
     quantum_enhanced: true
     actions:
-    - property.validate
-    - tax.audit
-    - tax.compliance
-    - permit.review
+      - property.validate
+      - tax.audit
+      - tax.compliance
+      - permit.review
     name: Compliance Audit Workflow
   permit-inspection-flow:
     agents_required: 115
@@ -63,9 +63,9 @@ flows:
     id: permit-inspection-flow
     quantum_enhanced: true
     actions:
-    - permit.track
-    - permit.inspect
-    - permit.close
+      - permit.track
+      - permit.inspect
+      - permit.close
     name: Permit Inspection Workflow
   data-synchronization-flow:
     agents_required: 135
@@ -73,10 +73,10 @@ flows:
     id: data-synchronization-flow
     quantum_enhanced: true
     actions:
-    - property.export
-    - tax.report
-    - permit.track
-    - citizen.analytics
+      - property.export
+      - tax.report
+      - permit.track
+      - citizen.analytics
     name: Data Synchronization Workflow
   permit-processing-flow:
     agents_required: 255
@@ -84,10 +84,10 @@ flows:
     id: permit-processing-flow
     quantum_enhanced: true
     actions:
-    - permit.apply
-    - permit.review
-    - permit.inspect
-    - permit.approve
+      - permit.apply
+      - permit.review
+      - permit.inspect
+      - permit.approve
     name: Permit Processing Workflow
   citizen-support-flow:
     agents_required: 130
@@ -95,9 +95,9 @@ flows:
     id: citizen-support-flow
     quantum_enhanced: true
     actions:
-    - citizen.support
-    - citizen.feedback
-    - citizen.analytics
+      - citizen.support
+      - citizen.feedback
+      - citizen.analytics
     name: Citizen Support Workflow
   tax-appeal-flow:
     agents_required: 230
@@ -105,10 +105,10 @@ flows:
     id: tax-appeal-flow
     quantum_enhanced: true
     actions:
-    - tax.appeal
-    - property.validate
-    - tax.calculate
-    - tax.compliance
+      - tax.appeal
+      - property.validate
+      - tax.calculate
+      - tax.compliance
     name: Tax Appeal Processing Workflow
   citizen-onboarding-flow:
     agents_required: 90
@@ -116,9 +116,9 @@ flows:
     id: citizen-onboarding-flow
     quantum_enhanced: true
     actions:
-    - citizen.register
-    - citizen.portal
-    - citizen.notification
+      - citizen.register
+      - citizen.portal
+      - citizen.notification
     name: Citizen Onboarding Workflow
   tax-collection-flow:
     agents_required: 90
@@ -126,9 +126,8 @@ flows:
     id: tax-collection-flow
     quantum_enhanced: true
     actions:
-    - tax.collect
-    - citizen.notification
-    - tax.report
+      - tax.collect
+      - citizen.notification
+      - tax.report
     name: Tax Collection Workflow
 version: 1.0.0
-

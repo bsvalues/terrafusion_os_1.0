@@ -8,11 +8,11 @@ image:
   repository: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/terraminer/api-gateway
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: 'latest'
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: ''
+fullnameOverride: ''
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -22,12 +22,12 @@ serviceAccount:
     eks.amazonaws.com/role-arn: arn:aws:iam::${AWS_ACCOUNT_ID}:role/terraminer-api-gateway-role
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  name: ''
 
 podAnnotations:
-  prometheus.io/scrape: "true"
-  prometheus.io/port: "9090"
-  prometheus.io/path: "/metrics"
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '9090'
+  prometheus.io/path: '/metrics'
 
 podSecurityContext:
   fsGroup: 1000
@@ -35,7 +35,7 @@ podSecurityContext:
 securityContext:
   capabilities:
     drop:
-    - ALL
+      - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1000
@@ -48,7 +48,7 @@ service:
 
 ingress:
   enabled: true
-  className: "alb"
+  className: 'alb'
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
@@ -89,14 +89,14 @@ affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
-      - matchExpressions:
-        - key: workload-type
-          operator: In
-          values:
-          - application
+        - matchExpressions:
+            - key: workload-type
+              operator: In
+              values:
+                - application
 
 # Application configuration
-logLevel: "INFO"
+logLevel: 'INFO'
 
 database:
   enabled: true
@@ -104,23 +104,23 @@ database:
 
 vault:
   enabled: true
-  address: "http://vault.vault.svc.cluster.local:8200"
-  role: "api-gateway"
-  authPath: "auth/kubernetes/login"
+  address: 'http://vault.vault.svc.cluster.local:8200'
+  role: 'api-gateway'
+  authPath: 'auth/kubernetes/login'
 
 # Environment variables
 env:
-  ENABLE_CACHE: "true"
-  CACHE_EXPIRY: "300"
-  REQUEST_TIMEOUT: "30"
-  ENABLE_TRACING: "true"
+  ENABLE_CACHE: 'true'
+  CACHE_EXPIRY: '300'
+  REQUEST_TIMEOUT: '30'
+  ENABLE_TRACING: 'true'
 
 # Monitoring configuration
 monitoring:
   enabled: true
   serviceMonitor:
     enabled: true
-    interval: "30s"
-    scrapeTimeout: "10s"
+    interval: '30s'
+    scrapeTimeout: '10s'
     labels:
       release: prometheus

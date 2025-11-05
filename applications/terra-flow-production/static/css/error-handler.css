@@ -198,11 +198,11 @@
     width: calc(100% - 2rem);
     max-width: none;
   }
-  
+
   .tf-error-container {
     padding: 0.75rem;
   }
-  
+
   .tf-error-details {
     max-height: 150px;
   }

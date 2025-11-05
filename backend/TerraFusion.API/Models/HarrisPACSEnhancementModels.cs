@@ -360,6 +360,10 @@ namespace TerraFusion.API.Models
 
     public class ROIAnalysisResult
     {
+        public decimal InvestmentCost { get; set; }
+        public decimal AnnualSavings { get; set; }
+        public decimal ROIPercentage { get; set; }
+        public DateTime AnalysisTimestamp { get; set; }
         public decimal AnnualROIProjection { get; set; }
         public decimal CostSavingsAnnual { get; set; }
         public decimal RevenueImprovementAnnual { get; set; }
@@ -416,6 +420,8 @@ namespace TerraFusion.API.Models
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
         public string Priority { get; set; } = "";
+        public string Timeline { get; set; } = "";
+        public string ExpectedImpact { get; set; } = "";
         public TimeSpan EstimatedImplementationTime { get; set; }
         public decimal EstimatedImpact { get; set; }
         public List<string> Prerequisites { get; set; } = new List<string>();

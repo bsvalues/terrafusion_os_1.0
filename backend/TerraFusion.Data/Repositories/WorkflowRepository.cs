@@ -44,8 +44,8 @@ public class WorkflowRepository : IWorkflowRepository
     }
 
     public async Task<IEnumerable<Workflow>> GetByUserIdAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         bool includeArchived = false,
         CancellationToken cancellationToken = default)
     {
@@ -63,8 +63,8 @@ public class WorkflowRepository : IWorkflowRepository
     }
 
     public async Task<IEnumerable<Workflow>> GetByCategoryAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string category,
         CancellationToken cancellationToken = default)
     {
@@ -78,8 +78,8 @@ public class WorkflowRepository : IWorkflowRepository
     }
 
     public async Task<IEnumerable<Workflow>> GetByComplexityAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string complexity,
         CancellationToken cancellationToken = default)
     {
@@ -111,8 +111,8 @@ public class WorkflowRepository : IWorkflowRepository
 
     public async Task<IEnumerable<Workflow>> GetByTemplateIdAsync(
         int templateId,
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default)
     {
         return await _context.Workflows
@@ -125,8 +125,8 @@ public class WorkflowRepository : IWorkflowRepository
     }
 
     public async Task<IEnumerable<Workflow>> SearchAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string searchTerm,
         CancellationToken cancellationToken = default)
     {
@@ -143,8 +143,8 @@ public class WorkflowRepository : IWorkflowRepository
     }
 
     public async Task<IEnumerable<Workflow>> GetFavoritesAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default)
     {
         return await _context.Workflows
@@ -157,8 +157,8 @@ public class WorkflowRepository : IWorkflowRepository
     }
 
     public async Task<IEnumerable<Workflow>> GetMostExecutedAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         int count = 10,
         CancellationToken cancellationToken = default)
     {
@@ -172,8 +172,8 @@ public class WorkflowRepository : IWorkflowRepository
     }
 
     public async Task<IEnumerable<Workflow>> GetRecentAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         int count = 10,
         CancellationToken cancellationToken = default)
     {
@@ -198,8 +198,8 @@ public class WorkflowRepository : IWorkflowRepository
 
     public async Task<Workflow> CreateFromTemplateAsync(
         int templateId,
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string name,
         CancellationToken cancellationToken = default)
     {
@@ -273,8 +273,8 @@ public class WorkflowRepository : IWorkflowRepository
 
     public async Task<bool> HasAccessAsync(
         int workflowId,
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default)
     {
         return await _context.Workflows
@@ -285,8 +285,8 @@ public class WorkflowRepository : IWorkflowRepository
     }
 
     public async Task<object> GetStatisticsAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default)
     {
         var workflows = await _context.Workflows

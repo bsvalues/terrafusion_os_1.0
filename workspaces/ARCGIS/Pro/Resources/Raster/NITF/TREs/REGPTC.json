@@ -1,166 +1,190 @@
 {
-	"TRE": "REGPTC",
-	"Source": [
-		"STDI-0002-1 v2021.1, Appendix P: GEOSDE"
-	],
-	"Name": "Registration Points",
-	"Description": "The Registration Points (REGPTC) TRE contains registration point information which may be provided for image or map data to identify specific pixels in the data and provide spacial locations (geographic or cartographic) for these pixels.",
-	"Size": 87,
-	"Fields": {
-		"NUM_PTS" : {
-			"Name": "Number of Registration Points",
-			"Description": "This field shall contain the number of registration points to follow.",
-			"Size": 4,
-			"Format": "BCS-N",
-			"Type": "R",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "1",
-					"Max": "1075"
-				}
-			]
-		},
-		"PID<NUM_PTS>" : {
-			"Name": "nth Registration Point ID",
-			"Description": "This field shall contain a unique identifier of the nth registration point.",
-			"Size": 10,
-			"Format": "BCS-A",
-			"Type": "C",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "AlphaNumeric"
-				}
-			]
-		},
-		"LON<NUM_PTS>" : {
-			"Name": "Longitude/Easting of the nth Registration Point",
-			"Description": "This field shall contain the Easting (when the value of GEOPS.UNI is M) or longitude (otherwise) of the nth registration point in the absolute coordinate system.",
-			"Size": 15,
-			"Format": "BCS-N",
-			"Type": "C",
-			"Units": ["degrees", "meters"],
-			"Values": [
-				{
-					"Type": "Double"
-				}
-			]
-		},
-		"LAT<NUM_PTS>" : {
-			"Name": "Latitude/Northing of the nth Registration Point",
-			"Description": "This field shall contain the Northing (when the value of GEOPS.UNI is M) or the latitude (otherwise) of the nth registration point in the absolute coordinate system.",
-			"Size": 15,
-			"Format": "BCS-N",
-			"Type": "C",
-			"Units": ["degrees", "meters"],
-			"Values": [
-				{
-					"Type": "Double"
-				}
-			]
-		},
-		"ZVL<NUM_PTS>" : {
-			"Name": "Elevation of the nth Registration Point",
-			"Description": "This field can contain the elevation of the registration point in the absolute coordinate system if a vertical reference is defined (see GEOPS.VDCDVR). The default value is all BCS spaces, (0x20).",
-			"Size": 15,
-			"Format": "BCS-A",
-			"Type": "<C>",
-			"Units": ["meters"],
-			"Values": [
-				{
-					"Type": "Double"
-				}
-			]
-		},
-		"DIX<NUM_PTS>" : {
-			"Name": "Column Number of the nth Registration Point",
-			"Description": "This field shall contain the column number of the corresponding pixel.",
-			"Size": 11,
-			"Format": "BCS-N",
-			"Type": "C",
-			"Units": ["columns"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "-9999999.99",
-					"Max": "+9999999.99"
-				}
-			]
-		},
-		"DIY<NUM_PTS>" : {
-			"Name": "Row Number of the nth Registration Point",
-			"Description": "This field shall contain the row number of the corresponding pixel.",
-			"Size": 11,
-			"Format": "BCS-N",
-			"Type": "C",
-			"Units": ["rows"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "-9999999.99",
-					"Max": "+9999999.99"
-				}
-			]
-		},
-		"UNIAAH<NUM_PTS>" : {
-			"Name": "Unit of Measure for the AAHn Field",
-			"Description": "This field shall contain the units of measure (UoM) for the corresponding AAHn field or all BCS spaces (0x20) if the absolute horizontal accuracy is unknown or not applicable.",
-			"Size": 3,
-			"Format": "BCS-A",
-			"Type": "<C>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["UM", "MM", "CM", "DM", "M", "KM", "IN", "FT", "YD", "MI", "NM", "0x20"]
-				}
-			]
-		},
-		"AAH<NUM_PTS>" : {
-			"Name": "Absolute Horizontal Accuracy",
-			"Description": "This field is omitted when UNIAAHn contains all BCS spaces (0x20). Otherwise, this field shall contain the absolute horizontal accuracy for the nth registration point.",
-			"Size": 5,
-			"Format": "BCS-N",
-			"Type": "C",
-			"Units": ["<UNIAAH<NUM_PTS>>"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "00000",
-					"Max": "99999"
-				}
-			]
-		},
-		"UNIAAV<NUM_PTS>" : {
-			"Name": "Unit of Measure for the AAVn Field",
-			"Description": "This field shall contain the units of measure (UoM) for the corresponding AAVn field or all BCS spaces (0x20) if the absolute vertical accuracy is unknown or not applicable.",
-			"Size": 3,
-			"Format": "BCS-A",
-			"Type": "<C>",
-			"Units": [],
-			"Values": [
-				{
-					"Type": "Value",
-					"Values": ["UM", "MM", "CM", "DM", "M", "KM", "IN", "FT", "YD", "MI", "NM", "0x20"]
-				}
-			]
-		},
-		"AAV<NUM_PTS>" : {
-			"Name": "Absolute Vertical Accuracy",
-			"Description": "This field is omitted when UNIAAVn contains all BCS spaces (0x20). Otherwise, this field shall contain the absolute vertical accuracy for the nth registration point.",
-			"Size": 5,
-			"Format": "BCS-N",
-			"Type": "C",
-			"Units": ["<UNIAAV<NUM_PTS>>"],
-			"Values": [
-				{
-					"Type": "Range",
-					"Min": "00000",
-					"Max": "99999"
-				}
-			]
-		}
-	}
+  "TRE": "REGPTC",
+  "Source": ["STDI-0002-1 v2021.1, Appendix P: GEOSDE"],
+  "Name": "Registration Points",
+  "Description": "The Registration Points (REGPTC) TRE contains registration point information which may be provided for image or map data to identify specific pixels in the data and provide spacial locations (geographic or cartographic) for these pixels.",
+  "Size": 87,
+  "Fields": {
+    "NUM_PTS": {
+      "Name": "Number of Registration Points",
+      "Description": "This field shall contain the number of registration points to follow.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "1",
+          "Max": "1075"
+        }
+      ]
+    },
+    "PID<NUM_PTS>": {
+      "Name": "nth Registration Point ID",
+      "Description": "This field shall contain a unique identifier of the nth registration point.",
+      "Size": 10,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "LON<NUM_PTS>": {
+      "Name": "Longitude/Easting of the nth Registration Point",
+      "Description": "This field shall contain the Easting (when the value of GEOPS.UNI is M) or longitude (otherwise) of the nth registration point in the absolute coordinate system.",
+      "Size": 15,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["degrees", "meters"],
+      "Values": [
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "LAT<NUM_PTS>": {
+      "Name": "Latitude/Northing of the nth Registration Point",
+      "Description": "This field shall contain the Northing (when the value of GEOPS.UNI is M) or the latitude (otherwise) of the nth registration point in the absolute coordinate system.",
+      "Size": 15,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["degrees", "meters"],
+      "Values": [
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "ZVL<NUM_PTS>": {
+      "Name": "Elevation of the nth Registration Point",
+      "Description": "This field can contain the elevation of the registration point in the absolute coordinate system if a vertical reference is defined (see GEOPS.VDCDVR). The default value is all BCS spaces, (0x20).",
+      "Size": 15,
+      "Format": "BCS-A",
+      "Type": "<C>",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "DIX<NUM_PTS>": {
+      "Name": "Column Number of the nth Registration Point",
+      "Description": "This field shall contain the column number of the corresponding pixel.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["columns"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "-9999999.99",
+          "Max": "+9999999.99"
+        }
+      ]
+    },
+    "DIY<NUM_PTS>": {
+      "Name": "Row Number of the nth Registration Point",
+      "Description": "This field shall contain the row number of the corresponding pixel.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["rows"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "-9999999.99",
+          "Max": "+9999999.99"
+        }
+      ]
+    },
+    "UNIAAH<NUM_PTS>": {
+      "Name": "Unit of Measure for the AAHn Field",
+      "Description": "This field shall contain the units of measure (UoM) for the corresponding AAHn field or all BCS spaces (0x20) if the absolute horizontal accuracy is unknown or not applicable.",
+      "Size": 3,
+      "Format": "BCS-A",
+      "Type": "<C>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "UM",
+            "MM",
+            "CM",
+            "DM",
+            "M",
+            "KM",
+            "IN",
+            "FT",
+            "YD",
+            "MI",
+            "NM",
+            "0x20"
+          ]
+        }
+      ]
+    },
+    "AAH<NUM_PTS>": {
+      "Name": "Absolute Horizontal Accuracy",
+      "Description": "This field is omitted when UNIAAHn contains all BCS spaces (0x20). Otherwise, this field shall contain the absolute horizontal accuracy for the nth registration point.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["<UNIAAH<NUM_PTS>>"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "00000",
+          "Max": "99999"
+        }
+      ]
+    },
+    "UNIAAV<NUM_PTS>": {
+      "Name": "Unit of Measure for the AAVn Field",
+      "Description": "This field shall contain the units of measure (UoM) for the corresponding AAVn field or all BCS spaces (0x20) if the absolute vertical accuracy is unknown or not applicable.",
+      "Size": 3,
+      "Format": "BCS-A",
+      "Type": "<C>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "UM",
+            "MM",
+            "CM",
+            "DM",
+            "M",
+            "KM",
+            "IN",
+            "FT",
+            "YD",
+            "MI",
+            "NM",
+            "0x20"
+          ]
+        }
+      ]
+    },
+    "AAV<NUM_PTS>": {
+      "Name": "Absolute Vertical Accuracy",
+      "Description": "This field is omitted when UNIAAVn contains all BCS spaces (0x20). Otherwise, this field shall contain the absolute vertical accuracy for the nth registration point.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["<UNIAAV<NUM_PTS>>"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "00000",
+          "Max": "99999"
+        }
+      ]
+    }
+  }
 }

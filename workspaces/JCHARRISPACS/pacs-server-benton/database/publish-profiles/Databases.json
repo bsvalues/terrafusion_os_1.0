@@ -3,7 +3,9 @@
     { "name": "DatabaseProjectpacs_training", "database": "PACS_Training" },
     { "name": "DatabaseProjectTAAppSvr", "database": "TA_AppSvr" },
     { "name": "DatabaseProjectCIAPS", "database": "CIAPS" },
-    { "name": "DatabaseProjectweb_internet_benton", "database": "Web_Internet_Benton" }
+    {
+      "name": "DatabaseProjectweb_internet_benton",
+      "database": "Web_Internet_Benton"
+    }
   ]
 }
-

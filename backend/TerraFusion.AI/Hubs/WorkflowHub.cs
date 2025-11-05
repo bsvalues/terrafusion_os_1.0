@@ -45,7 +45,7 @@ public class WorkflowHub : Hub
     /// <summary>
     /// Subscribe to workflow execution updates
     /// </summary>
-    public async Task SubscribeToWorkflow(int workflowId, int userId, int countyId)
+    public async Task SubscribeToWorkflow(int workflowId, Guid userId, Guid countyId)
     {
         // Verify access to workflow
         var hasAccess = await _workflowRepository.HasAccessAsync(workflowId, userId, countyId);

@@ -2,47 +2,32 @@
   "advanced_orchestration": {
     "enabled": true,
     "level": "standard",
-    "cloud_providers": [
-      "aws",
-      "azure"
-    ]
+    "cloud_providers": ["aws", "azure"]
   },
   "multi_cloud_federation": {
     "enabled": true,
     "cloud_providers": {
       "aws": {
         "enabled": true,
-        "regions": [
-          "us-east-1",
-          "us-west-2"
-        ],
+        "regions": ["us-east-1", "us-west-2"],
         "service_mesh": "istio",
         "orchestration": "eks"
       },
       "azure": {
         "enabled": true,
-        "regions": [
-          "eastus",
-          "westeurope"
-        ],
+        "regions": ["eastus", "westeurope"],
         "service_mesh": "istio",
         "orchestration": "aks"
       },
       "gcp": {
         "enabled": false,
-        "regions": [
-          "us-central1",
-          "europe-west1"
-        ],
+        "regions": ["us-central1", "europe-west1"],
         "service_mesh": "istio",
         "orchestration": "gke"
       },
       "on-premises": {
         "enabled": false,
-        "regions": [
-          "datacenter-1",
-          "datacenter-2"
-        ],
+        "regions": ["datacenter-1", "datacenter-2"],
         "service_mesh": "istio",
         "orchestration": "kubernetes"
       }
@@ -55,11 +40,7 @@
   },
   "multi_region_orchestration": {
     "enabled": true,
-    "regions": [
-      "us-east",
-      "us-west",
-      "eu-central"
-    ],
+    "regions": ["us-east", "us-west", "eu-central"],
     "region_failover_strategy": "automatic",
     "region_capacity_management": "intelligent",
     "cross_region_replication": {

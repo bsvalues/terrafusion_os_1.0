@@ -1,8 +1,5 @@
 {
-  "productionFoundations": [
-    "TerraAgent_PRODUCTION",
-    "MCP_Servers_PRODUCTION"
-  ],
+  "productionFoundations": ["TerraAgent_PRODUCTION", "MCP_Servers_PRODUCTION"],
   "existingSwarmCapabilities": {
     "terraAgentProduction": {
       "status": "PRODUCTION_OPERATIONAL",

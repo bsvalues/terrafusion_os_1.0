@@ -2,10 +2,10 @@
   "TRE": "IOMAPA0",
   "Source": ["STDI-0002-1 v2021.1, Appendix F: IOMAPA"],
   "Name": "Output Amplitude Mapping Process Data",
-  "Description": "The IOMAPA tagged extension contains the data necessary to perform the output amplitude mapping process for each scan within each image frame. This post-processing is applied after the image data has undergone the data expansion process using the 12-bit JPEG/DCT algorithm. The output amplitude mapping function is generally the inverse of the input amplitude mapping function that is performed as a pre-processing step before the data compression process is executed. Note: An exception to this case is when the output of the compression is scaled by a factor (S2) to change the precision of the output product relative to the input data precision. The explanation of the input amplitude mapping is included to describe the pre-processing performed before the compression process. The pre-processing steps are shown in figure F-1 and the post processing steps are shown in figure F-2 for mapping methods 1 through 3.",  
+  "Description": "The IOMAPA tagged extension contains the data necessary to perform the output amplitude mapping process for each scan within each image frame. This post-processing is applied after the image data has undergone the data expansion process using the 12-bit JPEG/DCT algorithm. The output amplitude mapping function is generally the inverse of the input amplitude mapping function that is performed as a pre-processing step before the data compression process is executed. Note: An exception to this case is when the output of the compression is scaled by a factor (S2) to change the precision of the output product relative to the input data precision. The explanation of the input amplitude mapping is included to describe the pre-processing performed before the compression process. The pre-processing steps are shown in figure F-1 and the post processing steps are shown in figure F-2 for mapping methods 1 through 3.",
   "Size": 6,
   "Fields": {
-    "BAND_NUMBER" : {
+    "BAND_NUMBER": {
       "Name": "Band Identifier",
       "Description": "This field shall identify the type of band.",
       "Size": 3,
@@ -17,7 +17,7 @@
           "Type": "Range",
           "Min": 0,
           "Max": 999
-        }       
+        }
       ]
     },
     "MAP_SELECT": {
@@ -89,7 +89,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -102,7 +102,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -117,7 +117,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 999          
+          "Max": 999
         }
       ]
     },
@@ -132,7 +132,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 255          
+          "Max": 255
         }
       ]
     },
@@ -146,7 +146,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["3"]                  
+          "Values": ["3"]
         }
       ]
     },
@@ -161,7 +161,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 4095                  
+          "Max": 4095
         }
       ]
     },
@@ -176,7 +176,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 4095                  
+          "Max": 4095
         }
       ]
     },
@@ -191,7 +191,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -206,7 +206,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -221,7 +221,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -236,7 +236,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -251,7 +251,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -266,7 +266,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -281,7 +281,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -296,7 +296,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -311,7 +311,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -326,7 +326,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -341,7 +341,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -356,7 +356,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -371,7 +371,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -386,7 +386,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -401,7 +401,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -416,7 +416,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -431,7 +431,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
     },
@@ -446,9 +446,9 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 31                  
+          "Max": 31
         }
       ]
-    }    
+    }
   }
 }

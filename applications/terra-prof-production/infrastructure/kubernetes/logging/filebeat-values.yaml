@@ -3,7 +3,7 @@
 # DaemonSet to ensure Filebeat runs on every node
 daemonset:
   enabled: true
-  
+
 # Configuration for Filebeat
 filebeatConfig:
   filebeat.yml: |
@@ -35,7 +35,7 @@ filebeatConfig:
                         target: ''
                         fields:
                           environment: "${ENVIRONMENT}"
-    
+
     # Special handling for TerraFusionPro services
     - condition:
         contains:
@@ -65,7 +65,7 @@ filebeatConfig:
           processors:
             - add_tags:
                 tags: ["nodejs", "terrafusionpro"]
-    
+
     # Output configuration
     output.elasticsearch:
       hosts: ["${ELASTICSEARCH_HOSTS}"]
@@ -88,9 +88,9 @@ filebeatConfig:
 # Environment variables
 extraEnvs:
   - name: ELASTICSEARCH_HOSTS
-    value: "elasticsearch-master:9200"
+    value: 'elasticsearch-master:9200'
   - name: ELASTICSEARCH_USERNAME
-    value: "filebeat"
+    value: 'filebeat'
   - name: ELASTICSEARCH_PASSWORD
     valueFrom:
       secretKeyRef:
@@ -101,16 +101,16 @@ extraEnvs:
       fieldRef:
         fieldPath: spec.nodeName
   - name: ENVIRONMENT
-    value: "production"  # This can be overridden in environment-specific deployments
+    value: 'production' # This can be overridden in environment-specific deployments
 
 # Resource configuration
 resources:
   requests:
-    cpu: "100m"
-    memory: "200Mi"
+    cpu: '100m'
+    memory: '200Mi'
   limits:
-    cpu: "300m"
-    memory: "500Mi"
+    cpu: '300m'
+    memory: '500Mi'
 
 # Pod security context
 podSecurityContext:

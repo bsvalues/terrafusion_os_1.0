@@ -22,39 +22,39 @@ spec:
         app: terrafusion-api
     spec:
       containers:
-      - name: terrafusion-api
-        image: terrafusionpro/api:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 5000
-        resources:
-          limits:
-            cpu: 500m
-            memory: 512Mi
-          requests:
-            cpu: 250m
-            memory: 256Mi
-        env:
-        - name: NODE_ENV
-          value: "staging"
-        - name: PORT
-          value: "5000"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: terrafusion-db-credentials
-              key: database-url
-        readinessProbe:
-          httpGet:
-            path: /api/health
-            port: 5000
-          initialDelaySeconds: 10
-          periodSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: 5000
-          initialDelaySeconds: 20
-          periodSeconds: 15
+        - name: terrafusion-api
+          image: terrafusionpro/api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 256Mi
+          env:
+            - name: NODE_ENV
+              value: 'staging'
+            - name: PORT
+              value: '5000'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-db-credentials
+                  key: database-url
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 15
       imagePullSecrets:
-      - name: docker-registry-secret
+        - name: docker-registry-secret

@@ -9,6 +9,7 @@
  */
 
 using Microsoft.Extensions.Logging;
+using System.Linq;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 
@@ -42,8 +43,8 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
     #region Notebook Operations
 
     public async Task<QuantumNotebook> CreateNotebookAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string name,
         string language = "javascript")
     {
@@ -67,7 +68,7 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
         return created;
     }
 
-    public async Task<QuantumNotebook?> GetNotebookAsync(int notebookId, int userId, int countyId)
+    public async Task<QuantumNotebook?> GetNotebookAsync(int notebookId, Guid userId, Guid countyId)
     {
         // Verify access before returning
         var hasAccess = await _notebookRepository.HasAccessAsync(notebookId, userId, countyId);
@@ -80,12 +81,12 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
         return await _notebookRepository.GetByIdAsync(notebookId);
     }
 
-    public async Task<IEnumerable<QuantumNotebook>> GetUserNotebooksAsync(int userId, int countyId)
+    public async Task<IEnumerable<QuantumNotebook>> GetUserNotebooksAsync(Guid userId, Guid countyId)
     {
         return await _notebookRepository.GetByUserIdAsync(userId, countyId);
     }
 
-    public async Task<QuantumNotebook> UpdateNotebookAsync(QuantumNotebook notebook, int userId, int countyId)
+    public async Task<QuantumNotebook> UpdateNotebookAsync(QuantumNotebook notebook, Guid userId, Guid countyId)
     {
         // Verify access
         var hasAccess = await _notebookRepository.HasAccessAsync(notebook.Id, userId, countyId);
@@ -98,7 +99,7 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
         return await _notebookRepository.UpdateAsync(notebook);
     }
 
-    public async Task<bool> DeleteNotebookAsync(int notebookId, int userId, int countyId)
+    public async Task<bool> DeleteNotebookAsync(int notebookId, Guid userId, Guid countyId)
     {
         // Verify access
         var hasAccess = await _notebookRepository.HasAccessAsync(notebookId, userId, countyId);
@@ -112,7 +113,7 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
         return await _notebookRepository.SoftDeleteAsync(notebookId);
     }
 
-    public async Task<QuantumNotebook> ExecuteNotebookAsync(int notebookId, int userId, int countyId)
+    public async Task<QuantumNotebook> ExecuteNotebookAsync(int notebookId, Guid userId, Guid countyId)
     {
         var notebook = await GetNotebookAsync(notebookId, userId, countyId);
         if (notebook == null)
@@ -134,8 +135,8 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
     #region Analysis Operations
 
     public async Task<AnalysisResult> RunStatisticalAnalysisAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string analysisType,
         double[] data1,
         double[]? data2 = null,
@@ -176,7 +177,7 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
         return created;
     }
 
-    public async Task<AnalysisResult?> GetAnalysisResultAsync(int resultId, int userId, int countyId)
+    public async Task<AnalysisResult?> GetAnalysisResultAsync(int resultId, Guid userId, Guid countyId)
     {
         var result = await _analysisResultRepository.GetByIdAsync(resultId);
 
@@ -190,20 +191,20 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
         return result;
     }
 
-    public async Task<IEnumerable<AnalysisResult>> GetUserAnalysisResultsAsync(int userId, int countyId)
+    public async Task<IEnumerable<AnalysisResult>> GetUserAnalysisResultsAsync(Guid userId, Guid countyId)
     {
         return await _analysisResultRepository.GetByUserIdAsync(userId, countyId);
     }
 
     public async Task<IEnumerable<AnalysisResult>> GetSignificantResultsAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         double pValueThreshold = 0.05)
     {
         return await _analysisResultRepository.GetSignificantResultsAsync(userId, countyId, pValueThreshold);
     }
 
-    public async Task<object> GetAnalysisStatisticsAsync(int userId, int countyId)
+    public async Task<object> GetAnalysisStatisticsAsync(Guid userId, Guid countyId)
     {
         return await _analysisResultRepository.GetStatisticsAsync(userId, countyId);
     }
@@ -213,8 +214,8 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
     #region Workflow Operations
 
     public async Task<Workflow> CreateWorkflowAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string name,
         string category = "data-processing")
     {
@@ -241,7 +242,7 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
         return created;
     }
 
-    public async Task<Workflow?> GetWorkflowAsync(int workflowId, int userId, int countyId)
+    public async Task<Workflow?> GetWorkflowAsync(int workflowId, Guid userId, Guid countyId)
     {
         var hasAccess = await _workflowRepository.HasAccessAsync(workflowId, userId, countyId);
         if (!hasAccess)
@@ -253,15 +254,15 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
         return await _workflowRepository.GetByIdAsync(workflowId);
     }
 
-    public async Task<IEnumerable<Workflow>> GetUserWorkflowsAsync(int userId, int countyId)
+    public async Task<IEnumerable<Workflow>> GetUserWorkflowsAsync(Guid userId, Guid countyId)
     {
         return await _workflowRepository.GetByUserIdAsync(userId, countyId);
     }
 
     public async Task<Workflow> CreateWorkflowFromTemplateAsync(
         int templateId,
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string name)
     {
         _logger.LogInformation("Creating workflow from template {TemplateId} for user {UserId}", templateId, userId);
@@ -282,7 +283,7 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
 
     #region Workflow Execution Operations
 
-    public async Task<WorkflowExecution> StartWorkflowExecutionAsync(int workflowId, int userId, int countyId)
+    public async Task<WorkflowExecution> StartWorkflowExecutionAsync(int workflowId, Guid userId, Guid countyId)
     {
         // Verify access to workflow
         var hasAccess = await _workflowRepository.HasAccessAsync(workflowId, userId, countyId);
@@ -321,7 +322,7 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
         // _logger.LogInformation("Created workflow execution {ExecutionId}", created.Id);
         //
         // return created;
-        throw new NotImplementedException("StartWorkflowExecutionAsync requires Core.Entities.WorkflowExecution type mapping");
+        throw new NotImplementedException("StartWorkflowExecutionAsync requires Core.Entities.WorkflowExecution persistence implementation");
     }
 
     public async Task<bool> UpdateExecutionProgressAsync(int executionId, int nodesExecuted, int nodesFailed)
@@ -344,8 +345,8 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
 
     public async Task<IEnumerable<WorkflowExecution>> GetWorkflowExecutionHistoryAsync(
         int workflowId,
-        int userId,
-        int countyId)
+        Guid userId,
+        Guid countyId)
     {
         // Verify access to workflow
         var hasAccess = await _workflowRepository.HasAccessAsync(workflowId, userId, countyId);
@@ -356,10 +357,23 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
             return Array.Empty<WorkflowExecution>();
         }
 
-        return await _executionRepository.GetByWorkflowIdAsync(workflowId);
+        var entities = await _executionRepository.GetByWorkflowIdAsync(workflowId);
+
+        // TODO: Map Core.Entities.WorkflowExecution -> AI.Services.WorkflowExecution
+        // Placeholder mapping until Core entity properties are confirmed
+        return entities.Select(_ => new WorkflowExecution
+        {
+            ExecutionId = string.Empty,
+            WorkflowId = workflowId.ToString(),
+            CountyId = countyId.ToString(),
+            Status = "unknown",
+            StartTime = DateTime.MinValue,
+            EndTime = null,
+            Steps = new List<StepExecution>()
+        });
     }
 
-    public async Task<object> GetWorkflowExecutionStatisticsAsync(int workflowId, int userId, int countyId)
+    public async Task<object> GetWorkflowExecutionStatisticsAsync(int workflowId, Guid userId, Guid countyId)
     {
         // Verify access to workflow
         var hasAccess = await _workflowRepository.HasAccessAsync(workflowId, userId, countyId);

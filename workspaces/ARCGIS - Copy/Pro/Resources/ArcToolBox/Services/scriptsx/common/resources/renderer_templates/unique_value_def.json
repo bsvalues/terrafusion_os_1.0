@@ -1,44 +1,22 @@
 {
-    "type": "uniqueValueDef",
-    "uniqueValueFields": [
-        "BUFF_DIST"
-    ],
-    "fieldDelimiter": ",",
-    "baseSymbol": {
-        "type": "esriSFS",
-        "style": "esriSFSSolid",
-        "color": [
-            198,
-            245,
-            215,
-            255
-        ],
-        "outline": {
-            "type": "esriSLS",
-            "style": "esriSLSSolid",
-            "color": [
-                110,
-                110,
-                110,
-                255
-            ],
-            "width": 1
-        }
-    },
-    "colorRamp": {
-        "type": "algorithmic",
-        "fromColor": [
-            0,
-            255,
-            255,
-            255
-        ],
-        "toColor": [
-            0,
-            0,
-            255,
-            255
-        ],
-        "algorithm": "esriHSVAlgorithm"
+  "type": "uniqueValueDef",
+  "uniqueValueFields": ["BUFF_DIST"],
+  "fieldDelimiter": ",",
+  "baseSymbol": {
+    "type": "esriSFS",
+    "style": "esriSFSSolid",
+    "color": [198, 245, 215, 255],
+    "outline": {
+      "type": "esriSLS",
+      "style": "esriSLSSolid",
+      "color": [110, 110, 110, 255],
+      "width": 1
     }
+  },
+  "colorRamp": {
+    "type": "algorithmic",
+    "fromColor": [0, 255, 255, 255],
+    "toColor": [0, 0, 255, 255],
+    "algorithm": "esriHSVAlgorithm"
+  }
 }

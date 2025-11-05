@@ -1,11 +1,9 @@
 {
-	"TRE": "HISTOA",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix L: HISTOA"
-  ],
-	"Name": "Softcopy History version A (HISTOA)",
-	"Description": "The purpose of the HISTOA TRE, is to provide a history of the softcopy processing functions that have been applied to NITF image pixels.",
-	"Size": 5,
+  "TRE": "HISTOA",
+  "Source": ["STDI-0002-1 v2021.1, Appendix L: HISTOA"],
+  "Name": "Softcopy History version A (HISTOA)",
+  "Description": "The purpose of the HISTOA TRE, is to provide a history of the softcopy processing functions that have been applied to NITF image pixels.",
+  "Size": 5,
   "Fields": {
     "ASYM_FLAG<NEVENTS>": {
       "Name": "Asymmetric Correction",
@@ -44,7 +42,7 @@
     },
     "DISP_FLAG<NEVENTS>": {
       "Name": "Display-Ready Flag",
-      "Description": "This field indicates if the image is 'Display-Ready' or not.",      
+      "Description": "This field indicates if the image is 'Display-Ready' or not.",
       "Size": 1,
       "Format": "BCS-AN",
       "Type": "R",
@@ -101,7 +99,7 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.0000,
+          "Min": 0.0,
           "Max": 99.9999
         }
       ]
@@ -213,7 +211,6 @@
           "Type": "Range",
           "Min": 0,
           "Max": 9
-
         }
       ]
     },
@@ -293,7 +290,7 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.0000,
+          "Min": 0.0,
           "Max": 99.9999
         }
       ]
@@ -609,11 +606,11 @@
       "Size": 8,
       "Format": "BCS-AN",
       "Type": "C",
-      "Units": [ "degrees" ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.0000,
+          "Min": 0.0,
           "Max": 359.9999
         }
       ]
@@ -801,7 +798,7 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.0000,
+          "Min": 0.0,
           "Max": 99.9999
         }
       ]
@@ -816,7 +813,7 @@
       "Values": [
         {
           "Type": "Range",
-          "Min": 0.0000,
+          "Min": 0.0,
           "Max": 99.9999
         }
       ]

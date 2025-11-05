@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   prometheus:
@@ -10,11 +10,11 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--web.enable-lifecycle"
     networks:
       - monitoring-network
     restart: unless-stopped
@@ -46,10 +46,10 @@ services:
       - /sys:/host/sys:ro
       - /:/rootfs:ro
     command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+      - "--path.procfs=/host/proc"
+      - "--path.rootfs=/rootfs"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)"
     networks:
       - monitoring-network
     restart: unless-stopped
@@ -91,8 +91,8 @@ services:
       - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
       - alertmanager_data:/alertmanager
     command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--storage.path=/alertmanager"
     networks:
       - monitoring-network
     restart: unless-stopped

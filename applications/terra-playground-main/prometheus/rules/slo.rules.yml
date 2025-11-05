@@ -4,7 +4,7 @@ groups:
       #
       # Dashboard Page SLO Recording Rules
       #
-      
+
       # Dashboard-LCP-4G SLO
       - record: slo:dashboard_lcp_4g_sli:ratio
         expr: |
@@ -123,7 +123,7 @@ groups:
       #
       # Map View Page SLO Recording Rules
       #
-      
+
       # MapView-LCP-4G SLO
       - record: slo:mapview_lcp_4g_sli:ratio
         expr: |
@@ -173,7 +173,7 @@ groups:
       #
       # Property Detail Page SLO Recording Rules
       #
-      
+
       # PropertyDetails-LCP-4G SLO
       - record: slo:propertydetails_lcp_4g_sli:ratio
         expr: |
@@ -223,7 +223,7 @@ groups:
       #
       # Search Page SLO Recording Rules
       #
-      
+
       # Search-LCP-4G SLO
       - record: slo:search_lcp_4g_sli:ratio
         expr: |
@@ -284,8 +284,8 @@ groups:
           page_type: dashboard
           network: 4g
         annotations:
-          summary: "Dashboard LCP 4G SLO error budget burning too fast"
-          description: "Dashboard LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+          summary: 'Dashboard LCP 4G SLO error budget burning too fast'
+          description: 'Dashboard LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget.'
 
       - alert: SLO_DashboardLCP3G_ErrorBudgetBurn
         expr: |
@@ -298,8 +298,8 @@ groups:
           page_type: dashboard
           network: 3g
         annotations:
-          summary: "Dashboard LCP 3G SLO error budget burning too fast"
-          description: "Dashboard LCP 3G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+          summary: 'Dashboard LCP 3G SLO error budget burning too fast'
+          description: 'Dashboard LCP 3G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget.'
 
       - alert: SLO_DashboardLCP2G_ErrorBudgetBurn
         expr: |
@@ -312,8 +312,8 @@ groups:
           page_type: dashboard
           network: 2g
         annotations:
-          summary: "Dashboard LCP 2G SLO error budget burning too fast"
-          description: "Dashboard LCP 2G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+          summary: 'Dashboard LCP 2G SLO error budget burning too fast'
+          description: 'Dashboard LCP 2G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget.'
 
       # High Burn Rate Alerts (6h window)
       - alert: SLO_DashboardLCP4G_HighErrorBudgetBurn
@@ -327,8 +327,8 @@ groups:
           page_type: dashboard
           network: 4g
         annotations:
-          summary: "Dashboard LCP 4G SLO error budget burning FAST"
-          description: "Dashboard LCP 4G error budget is burning at >10% per 6 hours. Current burn rate: {{ $value | humanizePercentage }} of 6-hour budget."
+          summary: 'Dashboard LCP 4G SLO error budget burning FAST'
+          description: 'Dashboard LCP 4G error budget is burning at >10% per 6 hours. Current burn rate: {{ $value | humanizePercentage }} of 6-hour budget.'
 
       # Map View SLO Alerts
       - alert: SLO_MapViewLCP4G_ErrorBudgetBurn
@@ -342,8 +342,8 @@ groups:
           page_type: map-view
           network: 4g
         annotations:
-          summary: "Map View LCP 4G SLO error budget burning too fast"
-          description: "Map View LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+          summary: 'Map View LCP 4G SLO error budget burning too fast'
+          description: 'Map View LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget.'
 
       # Property Details SLO Alerts
       - alert: SLO_PropertyDetailsLCP4G_ErrorBudgetBurn
@@ -357,8 +357,8 @@ groups:
           page_type: property-details
           network: 4g
         annotations:
-          summary: "Property Details LCP 4G SLO error budget burning too fast"
-          description: "Property Details LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+          summary: 'Property Details LCP 4G SLO error budget burning too fast'
+          description: 'Property Details LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget.'
 
       # Search SLO Alerts
       - alert: SLO_SearchLCP4G_ErrorBudgetBurn
@@ -372,8 +372,8 @@ groups:
           page_type: search
           network: 4g
         annotations:
-          summary: "Search LCP 4G SLO error budget burning too fast"
-          description: "Search LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+          summary: 'Search LCP 4G SLO error budget burning too fast'
+          description: 'Search LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget.'
 
       # Critical Burn Rate Alerts
       - alert: SLO_CriticalErrorBudgetBurn
@@ -388,5 +388,5 @@ groups:
           severity: critical
           slo: critical_burn
         annotations:
-          summary: "CRITICAL SLO burn rate for {{ $labels.page_type }} on {{ $labels.network }}"
-          description: "Critical error budget burn detected for {{ $labels.page_type }} pages on {{ $labels.network }} network. Over 25% of requests are exceeding SLO thresholds!"
+          summary: 'CRITICAL SLO burn rate for {{ $labels.page_type }} on {{ $labels.network }}'
+          description: 'Critical error budget burn detected for {{ $labels.page_type }} pages on {{ $labels.network }} network. Over 25% of requests are exceeding SLO thresholds!'

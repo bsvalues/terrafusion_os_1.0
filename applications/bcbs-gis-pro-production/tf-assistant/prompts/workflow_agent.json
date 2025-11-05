@@ -68,11 +68,11 @@
       "Rural South District - Large agricultural operations"
     ],
     "cities": [
-      {"name": "Kennewick", "population": 83920},
-      {"name": "Richland", "population": 60560},
-      {"name": "West Richland", "population": 15875},
-      {"name": "Prosser", "population": 6062},
-      {"name": "Benton City", "population": 3548}
+      { "name": "Kennewick", "population": 83920 },
+      { "name": "Richland", "population": 60560 },
+      { "name": "West Richland", "population": 15875 },
+      { "name": "Prosser", "population": 6062 },
+      { "name": "Benton City", "population": 3548 }
     ],
     "special_considerations": [
       "Hanford Nuclear Reservation (586 square miles)",

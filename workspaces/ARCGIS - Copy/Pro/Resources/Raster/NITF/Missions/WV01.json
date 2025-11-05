@@ -1,23 +1,21 @@
 {
-  "SensorName" : "WorldView-1",
-  "PanWeights" : [ ],
-  "Properties" : {
-  },
-  "Bands" : {
-    "Pan" : [
+  "SensorName": "WorldView-1",
+  "PanWeights": [],
+  "Properties": {},
+  "Bands": {
+    "Pan": [
       {
-        "BandName" : "Panchromatic",
-        "SolarIrradiance" : 1487.92,
-        "WavelengthMin" : 400.0,
-        "WavelengthMax" : 900.0
+        "BandName": "Panchromatic",
+        "SolarIrradiance": 1487.92,
+        "WavelengthMin": 400.0,
+        "WavelengthMax": 900.0
       }
     ],
-    "Cloud" : [
+    "Cloud": [
       {
-        "BandName" : "Clouds"
+        "BandName": "Clouds"
       }
     ]
   },
-  "AttributeMap" : [
-  ]
+  "AttributeMap": []
 }

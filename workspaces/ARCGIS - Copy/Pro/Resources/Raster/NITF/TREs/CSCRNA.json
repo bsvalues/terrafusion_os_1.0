@@ -1,8 +1,6 @@
 {
   "TRE": "CSCRNA",
-  "Source": [
-    "STDI-0006 Apr2014, 3.2"
-  ],
+  "Source": ["STDI-0006 Apr2014, 3.2"],
   "Name": "Corner Footprint TRE",
   "Description": "The Corner Footprint TRE (CSCRNA) provides the geodetic latitude, longitude, and ground elevation at the four corners of the sensor (sub-image) footprint (or MBR, if the footprint is of irregular shape).  If the data for a given sensor (sub-image) spans multiple image segments, the CSCRNA TRE shall be identical in each of the image segments and shall represent the extent of the entire sub-image.",
   "Size": 109,
@@ -17,10 +15,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "Y",
-            "N"
-          ]
+          "Values": ["Y", "N"]
         }
       ]
     },
@@ -30,14 +25,12 @@
       "Size": 9,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
-          "Min": -90.00000,
-          "Max": 90.00000
+          "Min": -90.0,
+          "Max": 90.0
         }
       ]
     },
@@ -47,14 +40,12 @@
       "Size": 10,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
           "Min": -179.99999,
-          "Max": 180.00000
+          "Max": 180.0
         }
       ]
     },
@@ -64,9 +55,7 @@
       "Size": 8,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters"
-      ],
+      "Units": ["meters"],
       "Values": [
         {
           "Type": "Range",
@@ -81,14 +70,12 @@
       "Size": 9,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
-          "Min": -90.00000,
-          "Max": 90.00000
+          "Min": -90.0,
+          "Max": 90.0
         }
       ]
     },
@@ -98,14 +85,12 @@
       "Size": 10,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
           "Min": -179.99999,
-          "Max": 180.00000
+          "Max": 180.0
         }
       ]
     },
@@ -115,9 +100,7 @@
       "Size": 8,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters"
-      ],
+      "Units": ["meters"],
       "Values": [
         {
           "Type": "Range",
@@ -132,14 +115,12 @@
       "Size": 9,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
-          "Min": -90.00000,
-          "Max": 90.00000
+          "Min": -90.0,
+          "Max": 90.0
         }
       ]
     },
@@ -149,14 +130,12 @@
       "Size": 10,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
           "Min": -179.99999,
-          "Max": 180.00000
+          "Max": 180.0
         }
       ]
     },
@@ -166,9 +145,7 @@
       "Size": 8,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters"
-      ],
+      "Units": ["meters"],
       "Values": [
         {
           "Type": "Range",
@@ -183,14 +160,12 @@
       "Size": 9,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
-          "Min": -90.00000,
-          "Max": 90.00000
+          "Min": -90.0,
+          "Max": 90.0
         }
       ]
     },
@@ -200,14 +175,12 @@
       "Size": 10,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
           "Min": -179.99999,
-          "Max": 180.00000
+          "Max": 180.0
         }
       ]
     },
@@ -217,9 +190,7 @@
       "Size": 8,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters"
-      ],
+      "Units": ["meters"],
       "Values": [
         {
           "Type": "Range",

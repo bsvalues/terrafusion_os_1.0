@@ -1,8 +1,6 @@
 {
   "TRE": "USE00A",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix D: CSDE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix D: CSDE"],
   "Name": "Exploitation Usability",
   "Description": "The Exploitation Usability extension is intended to allow a user program to determine if the image is usable for the exploitation problem currently being performed. It also contains some catalogue metadata. The format and descriptions for the user-defined fields of the USE00A are detailed in table 7.4.",
   "Size": 107,
@@ -13,9 +11,7 @@
       "Size": 1,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -30,9 +26,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "inches"
-      ],
+      "Units": ["inches"],
       "Values": [
         {
           "Type": "Range",
@@ -62,9 +56,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -79,9 +71,7 @@
       "Size": 6,
       "Format": "BCS-N",
       "Type": "<R>",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -126,9 +116,7 @@
       "Size": 8,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -158,9 +146,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",
@@ -175,9 +161,7 @@
       "Size": 5,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "degrees"
-      ],
+      "Units": ["degrees"],
       "Values": [
         {
           "Type": "Range",

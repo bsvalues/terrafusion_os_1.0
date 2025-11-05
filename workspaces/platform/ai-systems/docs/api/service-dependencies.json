@@ -47,15 +47,8 @@
         "security_level": "CRITICAL"
       }
     ],
-    "data_endpoints": [
-      "/models",
-      "/inference",
-      "/training",
-      "/monitoring"
-    ],
-    "integration_points": [
-      "/api/v1/ai/integration"
-    ]
+    "data_endpoints": ["/models", "/inference", "/training", "/monitoring"],
+    "integration_points": ["/api/v1/ai/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

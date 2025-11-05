@@ -1,6 +1,12 @@
 {
   "include": ["client/src/**/*", "shared/**/*", "server/**/*"],
-  "exclude": ["node_modules", "build", "dist", "**/*.test.ts", "terrafusion/**/*"],
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist",
+    "**/*.test.ts",
+    "terrafusion/**/*"
+  ],
   "compilerOptions": {
     "incremental": true,
     "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",

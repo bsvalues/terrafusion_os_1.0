@@ -10,7 +10,7 @@ metadata:
   labels:
     app: fips-compliance-scanner
     tier: government-compliance
-    compliance-level: "fips-140-2-level-2"
+    compliance-level: 'fips-140-2-level-2'
 data:
   fips-config.yaml: |
     fips_compliance:
@@ -91,7 +91,7 @@ metadata:
   labels:
     app: wcag-compliance-scanner
     tier: accessibility-compliance
-    compliance-level: "wcag-2.1-aa"
+    compliance-level: 'wcag-2.1-aa'
 data:
   wcag-config.yaml: |
     wcag_compliance:
@@ -187,9 +187,9 @@ spec:
         app: terrafusion-compliance-scanner
         tier: compliance-validation
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8080'
+        prometheus.io/path: '/metrics'
     spec:
       serviceAccountName: terrafusion-compliance-service-account
       securityContext:
@@ -199,87 +199,87 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - name: compliance-scanner
-        image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-compliance-scanner:${IMAGE_TAG}
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-          name: http-metrics
-        - containerPort: 8081
-          name: http-api
-        env:
-        - name: ENVIRONMENT
-          value: "${ENVIRONMENT}"
-        - name: FIPS_COMPLIANCE_LEVEL
-          value: "LEVEL_2"
-        - name: WCAG_COMPLIANCE_LEVEL
-          value: "AA"
-        - name: GOVERNMENT_CLEARANCE
-          value: "${SECURITY_CLEARANCE_LEVEL}"
-        - name: QUANTUM_FACTOR
-          value: "${QUANTUM_FACTOR}"
-        - name: SACRED_MATHEMATICS_COMPLIANCE
-          value: "OPERATIONAL"
-        - name: SCANNING_FREQUENCY
-          value: "CONTINUOUS"
-        - name: COMPLIANCE_REPORTING
-          value: "REAL_TIME"
-        resources:
-          requests:
-            cpu: "200m"
-            memory: "512Mi"
-          limits:
-            cpu: "1000m"
-            memory: "2Gi"
-        livenessProbe:
-          httpGet:
-            path: /health/live
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/ready
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 2
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        volumeMounts:
-        - name: fips-config-volume
-          mountPath: /etc/compliance/fips
-          readOnly: true
-        - name: wcag-config-volume
-          mountPath: /etc/compliance/wcag
-          readOnly: true
-        - name: compliance-secrets
-          mountPath: /etc/compliance/secrets
-          readOnly: true
-        - name: tmp-volume
-          mountPath: /tmp
+        - name: compliance-scanner
+          image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-compliance-scanner:${IMAGE_TAG}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+            - containerPort: 8081
+              name: http-api
+          env:
+            - name: ENVIRONMENT
+              value: '${ENVIRONMENT}'
+            - name: FIPS_COMPLIANCE_LEVEL
+              value: 'LEVEL_2'
+            - name: WCAG_COMPLIANCE_LEVEL
+              value: 'AA'
+            - name: GOVERNMENT_CLEARANCE
+              value: '${SECURITY_CLEARANCE_LEVEL}'
+            - name: QUANTUM_FACTOR
+              value: '${QUANTUM_FACTOR}'
+            - name: SACRED_MATHEMATICS_COMPLIANCE
+              value: 'OPERATIONAL'
+            - name: SCANNING_FREQUENCY
+              value: 'CONTINUOUS'
+            - name: COMPLIANCE_REPORTING
+              value: 'REAL_TIME'
+          resources:
+            requests:
+              cpu: '200m'
+              memory: '512Mi'
+            limits:
+              cpu: '1000m'
+              memory: '2Gi'
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: fips-config-volume
+              mountPath: /etc/compliance/fips
+              readOnly: true
+            - name: wcag-config-volume
+              mountPath: /etc/compliance/wcag
+              readOnly: true
+            - name: compliance-secrets
+              mountPath: /etc/compliance/secrets
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
       volumes:
-      - name: fips-config-volume
-        configMap:
-          name: fips-compliance-scanner-config
-      - name: wcag-config-volume
-        configMap:
-          name: wcag-compliance-scanner-config
-      - name: compliance-secrets
-        secret:
-          secretName: terrafusion-compliance-secrets
-      - name: tmp-volume
-        emptyDir: {}
+        - name: fips-config-volume
+          configMap:
+            name: fips-compliance-scanner-config
+        - name: wcag-config-volume
+          configMap:
+            name: wcag-compliance-scanner-config
+        - name: compliance-secrets
+          secret:
+            secretName: terrafusion-compliance-secrets
+        - name: tmp-volume
+          emptyDir: {}
       nodeSelector:
         kubernetes.io/os: linux
-        terrafusion.io/node-type: "compliance-scanner"
+        terrafusion.io/node-type: 'compliance-scanner'
 ---
 # Security Monitoring Deployment
 apiVersion: apps/v1
@@ -306,9 +306,9 @@ spec:
         app: terrafusion-security-monitor
         tier: security-monitoring
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8080'
+        prometheus.io/path: '/metrics'
     spec:
       serviceAccountName: terrafusion-security-service-account
       securityContext:
@@ -318,98 +318,98 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - name: security-monitor
-        image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-security-monitor:${IMAGE_TAG}
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-          name: http-metrics
-        - containerPort: 8082
-          name: http-security-api
-        env:
-        - name: ENVIRONMENT
-          value: "${ENVIRONMENT}"
-        - name: SECURITY_MONITORING_LEVEL
-          value: "24x7x365"
-        - name: THREAT_DETECTION_MODE
-          value: "REAL_TIME"
-        - name: INCIDENT_RESPONSE_TIME
-          value: "IMMEDIATE"
-        - name: QUANTUM_SECURITY_FACTOR
-          value: "${QUANTUM_FACTOR}"
-        - name: GOVERNMENT_CLEARANCE_REQUIRED
-          value: "${SECURITY_CLEARANCE_LEVEL}"
-        - name: VULNERABILITY_SCANNING
-          value: "CONTINUOUS"
-        - name: PENETRATION_TESTING
-          value: "${PENETRATION_TESTING_ENABLED}"
-        resources:
-          requests:
-            cpu: "300m"
-            memory: "1Gi"
-          limits:
-            cpu: "1500m"
-            memory: "4Gi"
-        livenessProbe:
-          httpGet:
-            path: /security/health
-            port: 8080
-          initialDelaySeconds: 45
-          periodSeconds: 15
-          timeoutSeconds: 10
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /security/ready
-            port: 8080
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 5
-          failureThreshold: 2
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-            add:
-            - NET_ADMIN  # Required for network security monitoring
-        volumeMounts:
-        - name: security-config-volume
-          mountPath: /etc/security/config
-          readOnly: true
-        - name: security-rules-volume
-          mountPath: /etc/security/rules
-          readOnly: true
-        - name: security-secrets
-          mountPath: /etc/security/secrets
-          readOnly: true
-        - name: tmp-volume
-          mountPath: /tmp
-        - name: logs-volume
-          mountPath: /var/log/security
+        - name: security-monitor
+          image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-security-monitor:${IMAGE_TAG}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+            - containerPort: 8082
+              name: http-security-api
+          env:
+            - name: ENVIRONMENT
+              value: '${ENVIRONMENT}'
+            - name: SECURITY_MONITORING_LEVEL
+              value: '24x7x365'
+            - name: THREAT_DETECTION_MODE
+              value: 'REAL_TIME'
+            - name: INCIDENT_RESPONSE_TIME
+              value: 'IMMEDIATE'
+            - name: QUANTUM_SECURITY_FACTOR
+              value: '${QUANTUM_FACTOR}'
+            - name: GOVERNMENT_CLEARANCE_REQUIRED
+              value: '${SECURITY_CLEARANCE_LEVEL}'
+            - name: VULNERABILITY_SCANNING
+              value: 'CONTINUOUS'
+            - name: PENETRATION_TESTING
+              value: '${PENETRATION_TESTING_ENABLED}'
+          resources:
+            requests:
+              cpu: '300m'
+              memory: '1Gi'
+            limits:
+              cpu: '1500m'
+              memory: '4Gi'
+          livenessProbe:
+            httpGet:
+              path: /security/health
+              port: 8080
+            initialDelaySeconds: 45
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /security/ready
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_ADMIN # Required for network security monitoring
+          volumeMounts:
+            - name: security-config-volume
+              mountPath: /etc/security/config
+              readOnly: true
+            - name: security-rules-volume
+              mountPath: /etc/security/rules
+              readOnly: true
+            - name: security-secrets
+              mountPath: /etc/security/secrets
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: logs-volume
+              mountPath: /var/log/security
       volumes:
-      - name: security-config-volume
-        configMap:
-          name: terrafusion-security-config
-      - name: security-rules-volume
-        configMap:
-          name: terrafusion-security-rules
-      - name: security-secrets
-        secret:
-          secretName: terrafusion-security-secrets
-      - name: tmp-volume
-        emptyDir: {}
-      - name: logs-volume
-        emptyDir: {}
+        - name: security-config-volume
+          configMap:
+            name: terrafusion-security-config
+        - name: security-rules-volume
+          configMap:
+            name: terrafusion-security-rules
+        - name: security-secrets
+          secret:
+            secretName: terrafusion-security-secrets
+        - name: tmp-volume
+          emptyDir: {}
+        - name: logs-volume
+          emptyDir: {}
       nodeSelector:
         kubernetes.io/os: linux
-        terrafusion.io/node-type: "security-monitor"
+        terrafusion.io/node-type: 'security-monitor'
       tolerations:
-      - key: "terrafusion.io/security-monitor"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
+        - key: 'terrafusion.io/security-monitor'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoSchedule'
 ---
 # Compliance CronJob for Scheduled Scans
 apiVersion: batch/v1
@@ -421,7 +421,7 @@ metadata:
     app: terrafusion-compliance-audit
     tier: scheduled-compliance-validation
 spec:
-  schedule: "0 2 * * *"  # Daily at 2 AM UTC
+  schedule: '0 2 * * *' # Daily at 2 AM UTC
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 5
   failedJobsHistoryLimit: 3
@@ -442,50 +442,50 @@ spec:
             seccompProfile:
               type: RuntimeDefault
           containers:
-          - name: compliance-auditor
-            image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-compliance-auditor:${IMAGE_TAG}
-            imagePullPolicy: Always
-            env:
-            - name: ENVIRONMENT
-              value: "${ENVIRONMENT}"
-            - name: AUDIT_TYPE
-              value: "COMPREHENSIVE"
-            - name: COMPLIANCE_STANDARDS
-              value: "FIPS-140-2,WCAG-2.1-AA,NIST-800-53"
-            - name: QUANTUM_AUDIT_FACTOR
-              value: "${QUANTUM_FACTOR}"
-            - name: GOVERNMENT_COMPLIANCE_LEVEL
-              value: "${SECURITY_CLEARANCE_LEVEL}"
-            resources:
-              requests:
-                cpu: "500m"
-                memory: "1Gi"
-              limits:
-                cpu: "2000m"
-                memory: "8Gi"
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities:
-                drop:
-                - ALL
-            volumeMounts:
-            - name: audit-config
-              mountPath: /etc/audit/config
-              readOnly: true
-            - name: audit-results
-              mountPath: /var/audit/results
-            - name: tmp-volume
-              mountPath: /tmp
+            - name: compliance-auditor
+              image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-compliance-auditor:${IMAGE_TAG}
+              imagePullPolicy: Always
+              env:
+                - name: ENVIRONMENT
+                  value: '${ENVIRONMENT}'
+                - name: AUDIT_TYPE
+                  value: 'COMPREHENSIVE'
+                - name: COMPLIANCE_STANDARDS
+                  value: 'FIPS-140-2,WCAG-2.1-AA,NIST-800-53'
+                - name: QUANTUM_AUDIT_FACTOR
+                  value: '${QUANTUM_FACTOR}'
+                - name: GOVERNMENT_COMPLIANCE_LEVEL
+                  value: '${SECURITY_CLEARANCE_LEVEL}'
+              resources:
+                requests:
+                  cpu: '500m'
+                  memory: '1Gi'
+                limits:
+                  cpu: '2000m'
+                  memory: '8Gi'
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              volumeMounts:
+                - name: audit-config
+                  mountPath: /etc/audit/config
+                  readOnly: true
+                - name: audit-results
+                  mountPath: /var/audit/results
+                - name: tmp-volume
+                  mountPath: /tmp
           volumes:
-          - name: audit-config
-            configMap:
-              name: terrafusion-audit-config
-          - name: audit-results
-            persistentVolumeClaim:
-              claimName: compliance-audit-results-pvc
-          - name: tmp-volume
-            emptyDir: {}
+            - name: audit-config
+              configMap:
+                name: terrafusion-audit-config
+            - name: audit-results
+              persistentVolumeClaim:
+                claimName: compliance-audit-results-pvc
+            - name: tmp-volume
+              emptyDir: {}
 ---
 # Service Account for Compliance Operations
 apiVersion: v1
@@ -527,14 +527,14 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 8081
-    targetPort: 8081
-    protocol: TCP
-    name: http-api
-  - port: 8080
-    targetPort: 8080
-    protocol: TCP
-    name: http-metrics
+    - port: 8081
+      targetPort: 8081
+      protocol: TCP
+      name: http-api
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http-metrics
   selector:
     app: terrafusion-compliance-scanner
 ---
@@ -549,13 +549,13 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 8082
-    targetPort: 8082
-    protocol: TCP
-    name: http-security-api
-  - port: 8080
-    targetPort: 8080
-    protocol: TCP
-    name: http-metrics
+    - port: 8082
+      targetPort: 8082
+      protocol: TCP
+      name: http-security-api
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http-metrics
   selector:
     app: terrafusion-security-monitor

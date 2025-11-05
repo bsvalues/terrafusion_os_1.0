@@ -1,8 +1,6 @@
 {
   "TRE": "PIATGB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix C: PIAE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix C: PIAE"],
   "Name": "Profile for Imagery Access Target Version B",
   "Description": "The Profile for Imagery Access Target Version B (PIATGB) TRE is designed to accommodate more than just the essential target data. It contains descriptive data about the targets. This extension shall be present once for each target identified in the image, and there may be up to 250 of these extensions for each data type in an NITF file.",
   "Size": 117,

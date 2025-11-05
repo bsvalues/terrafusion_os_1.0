@@ -1,106 +1,76 @@
 {
-    "renderer": {
-        "type": "classBreaks",
-        "field": "SIMRANK",
-        "classificationMethod": "esriClassifyManual",
-        "minValue": 0,
-        "classBreakInfos": [
-            {
-                "symbol": {
-                    "type": "esriSLS",
-                    "style": "esriSLSSolid",
-                    "color": [
-                        168,
-                        0,
-                        0,
-                        255
-                    ],
-                    "width": 3
-                },
-                "classMaxValue": 0,
-                "label": "Reference Location",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSLS",
-                    "style": "esriSLSSolid",
-                    "color": [
-                        82,
-                        24,
-                        24,
-                        255
-                    ],
-                    "width": 3
-                },
-                "classMaxValue": 1,
-                "label": "1",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSLS",
-                    "style": "esriSLSSolid",
-                    "color": [
-                        143,
-                        80,
-                        77,
-                        255
-                    ],
-                    "width": 3
-                },
-                "classMaxValue": 2,
-                "label": "2",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSLS",
-                    "style": "esriSLSSolid",
-                    "color": [
-                        214,
-                        156,
-                        156,
-                        255
-                    ],
-                    "width": 3
-                },
-                "classMaxValue": 3,
-                "label": "3",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSLS",
-                    "style": "esriSLSSolid",
-                    "color": [
-                        227,
-                        186,
-                        186,
-                        255
-                    ],
-                    "width": 3
-                },
-                "classMaxValue": 4,
-                "label": "4",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSLS",
-                    "style": "esriSLSSolid",
-                    "color": [
-                        240,
-                        218,
-                        218,
-                        255
-                    ],
-                    "width": 3
-                },
-                "classMaxValue": 5,
-                "label": "5",
-                "description": ""
-            }
-        ]
-    }
+  "renderer": {
+    "type": "classBreaks",
+    "field": "SIMRANK",
+    "classificationMethod": "esriClassifyManual",
+    "minValue": 0,
+    "classBreakInfos": [
+      {
+        "symbol": {
+          "type": "esriSLS",
+          "style": "esriSLSSolid",
+          "color": [168, 0, 0, 255],
+          "width": 3
+        },
+        "classMaxValue": 0,
+        "label": "Reference Location",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSLS",
+          "style": "esriSLSSolid",
+          "color": [82, 24, 24, 255],
+          "width": 3
+        },
+        "classMaxValue": 1,
+        "label": "1",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSLS",
+          "style": "esriSLSSolid",
+          "color": [143, 80, 77, 255],
+          "width": 3
+        },
+        "classMaxValue": 2,
+        "label": "2",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSLS",
+          "style": "esriSLSSolid",
+          "color": [214, 156, 156, 255],
+          "width": 3
+        },
+        "classMaxValue": 3,
+        "label": "3",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSLS",
+          "style": "esriSLSSolid",
+          "color": [227, 186, 186, 255],
+          "width": 3
+        },
+        "classMaxValue": 4,
+        "label": "4",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSLS",
+          "style": "esriSLSSolid",
+          "color": [240, 218, 218, 255],
+          "width": 3
+        },
+        "classMaxValue": 5,
+        "label": "5",
+        "description": ""
+      }
+    ]
+  }
 }

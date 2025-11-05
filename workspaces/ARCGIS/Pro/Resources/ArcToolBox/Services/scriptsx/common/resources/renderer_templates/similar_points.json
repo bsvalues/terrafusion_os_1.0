@@ -1,109 +1,104 @@
 {
-    "renderer": {
-        "type": "classBreaks",
-        "field": "SIMRANK",
-        "classificationMethod": "esriClassifyManual",
-        "minValue": 0,
-        "classBreakInfos": [
-            {
-                "symbol": {
-                    "type": "esriSMS",
-                    "style": "esriSMSCircle",
-                    "color": [
-                        168,
-                        0,
-                        0,
-                        255
-                    ],
-                    "size": 8,
-                    "angle": 0,
-                    "xoffset": 0,
-                    "yoffset": 0
-                },
-                "classMaxValue": 0,
-                "label": "Reference Location",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriPMS",
-                    "url": "f4132ce594a735c060bea90da35e348f",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAZJJREFUOI2t1EFIlEEYxvE/n9u+S6MYE3atw4IH2ZMH711KKqQgCJTs7NGjnhNvBZ4Loiio8CJRJHSIrnuMZSMQ1FPKlNJIzyqfHbZd9jO/dhd6LnN4Z37zzsBMgf+UQl7hZrl8iRCuJ1A+guMEvpwZGVl7Wa9v9wRNwtBZ7x+kIdwDBlIg+VM73NlZueH9s1IIc6/gIBeahXP73n9MoZLT6EABZg/MJselShW+nQrtmz0iH2mn6NwFDzWki8DPDDTl/QRwqxvSyqBzfgxef5auZqAEZnpFWhmGK9778RBCtfNoXY90MkPOEWOcBjJQqV8IQFIFspe9CUz0gxzG2G6g847WU7jdDxSaw1YGGgzh6Q+z5cQ53wvSiJGaBPA+Az2BX9dgughvuyEpUJcQbADPMxDAG+ndZVh0zt3Pe4RHQC0EvkLDzO5KavwFAXyQlkaljfNmj4ehVHSuDXyPkWqzk10zuyPpU2vdqRvX4QXSupnNE+OUpDJw3CyxCjyUtNe5JvcbAXYlLQAL/5jTE9RXfgOYb4w3BYjzbgAAAABJRU5ErkJggg==",
-                    "contentType": "image/png",
-                    "width": 13,
-                    "height": 13,
-                    "angle": 0,
-                    "xoffset": 0,
-                    "yoffset": 0
-                },
-                "classMaxValue": 1,
-                "label": "1",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriPMS",
-                    "url": "f1c17e883f5602288691637b0e14adb5",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAdhJREFUOI2t1D9oU1EUx/Fvbl7yYtq0MRXr5B8IdJBMGToJ4qIhllBBECpWcBMc7CLW2WKXWlDcKhRFwYpLKY0GBK1rwEViNFCqdinlWUMT33l93Ocg0TxNbAL+1nvPh3sOnGvwn2K0O5gZHT3s4ZxWiqR28ZRSHwjZi1efFL50BN3NZGJOVN1GuxcDqKCnIaDAA9iJ3JkeyT6MRqKXryws1NtC98aPx+2q8RpNqs1DgyFDjVfr25lL6XRqrljcaAnZ1dgctEV+ZU/Y2D+YiJWAQ8C2D5rN5YY1+sxuSCP7emOJkaPJp4vvKqd8kKc43ynSyMH+gZOJhJW2LKv4G+qgpT+zN9ZDrVYbA5ohHQl0CSmCiEgKmloLoD6BHu4G+r5jA0T8kKLgac52A61bFsBnH2T3xh8YWxu3gspIdILYjkO+VAF44YOuz8/b09nsmAqzvNustNa8Kr/HElkFHvkggGtLS/mJE8duDPb03QwZqiXiuC4rpY88r6w5pmleEBHnLwhg5uXKVGZoaPXIQPz+gf6+SDQcBqDuuqx/3SJffMuayKZpmudE5E2jruX2L5fLj4GCaZoTQE5Ekvzc2zLwDJgVkW/NNW2/EWBTRCaByX/c6QjqKj8AMJelTDPU9DYAAAAASUVORK5CYII=",
-                    "contentType": "image/png",
-                    "width": 13,
-                    "height": 13,
-                    "angle": 0,
-                    "xoffset": 0,
-                    "yoffset": 0
-                },
-                "classMaxValue": 2,
-                "label": "2",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriPMS",
-                    "url": "95ec6840130d393fbe61da2bd3203b4c",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAd5JREFUOI2t1M9rE0EYxvHv7G6zaYkSUrAlBw20WFByqUj/BBWEgCIEam2uFeohNyv0UPDHqUotBoQVJKX2oJbUg2JzEi8e7FFTKRSNJymLmmbTWbY7HkpKtiY2AZ/rO++H94WZMfhPMVoVSpaV8JW6KDRtUPm+Ar5gGK9OZTLf24LW5+eP7HZ33/chgxC6UgqE2Ct63sO1XG4h4nnXT05OOi2hUj4f3ZXyHZBsOqYQejgUGv/peReeZrPJ8dnZH00h33UthGiONCTS03Osr7f3M3AC2A5AnyxrBLh0GFLP8f7+2M10+vndpaXzBye62i5Sz+lE4lwsFjtj2/bHRujQlQ6mLxqlWq2OAgEo3CmkaxpSyiQ0ribEN5Qa6QSqOM7+APuQUGpVwZVOoFK5DFAOQLVQKG/UavcMXY+1g2w7Do+WlwHeBqDhsbGdtVxuVNe016J+k1vEV4qFYpGvtr0JLAYggOGJiTcvpqdvDcTjt0NdXU2RHddlsVhkrlBwTdO8JqV0/4IALs/M3LmRSm2eHRp6MhCPh49GIijgd6VCqVzm8coKHzY2tkzTTEsp39f7mr7+uULhGbBqmmYWSEkpBwEFrAMvgQdSyl+NPS2/EWBLSjkFTP3jTFtQR/kDNhKlh4aUP40AAAAASUVORK5CYII=",
-                    "contentType": "image/png",
-                    "width": 13,
-                    "height": 13,
-                    "angle": 0,
-                    "xoffset": 0,
-                    "yoffset": 0
-                },
-                "classMaxValue": 3,
-                "label": "3",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriPMS",
-                    "url": "0ca324c34bb5e8f4c244a48d3448841d",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAdJJREFUOI2t1E9IVFEUx/Hv9Y1zB4ahGKWQWcwEGm4eBC2E9g8NBoIgCoymlYvciStbRIsiSCwKWwj9eTQUQaTQg7S3q7YtZaj8EyoIISPavOgOOqdN1jyayXngb3vu+dx7FufGOKDEmhXWfD8nkAe6ERHgc5tSrzOOs9YStOp5KaX1HYHLiFj1tV2R+wueV0xqfaXLcX40hb76/mHgnYjYjW5VYOl4vLBZqZx+MT5unx8d/dYQiok8FGiI1CeVTB7p6ugoAVmgEoJW5ub6BM7uh+zlWCaTvjY09PL61NRACGpT6qK0qvzOid7e/nQ6fbJcLn/8A4lSNhKNOtrZSRAEg8BfSEEi6otiloUxxoa60QRWgL4o0FYQACRCECI+cC4KVFpaAlgNQbtKPZWdnVsxy0q3gnwPAu65LsDbEJRznJ9fPG/Qsqw3ah+kVqvxeGaGhfX1ZeBZCALoyednZycnr/bkcjfi7e0NEVOt8mR6mtuuW9VaXzLGVP+BAAaGh2+OFArLp2z70fFsNnEolQJgc3ub0uIiD4pF3s/Pb2itLxhjPuz1Ndz+Cdd9PgG+1noEOGOM6QYE+AS8Au4aY7bqe5p+I8CGMWYMGPvPmZagSPkFOZqkEatWzp0AAAAASUVORK5CYII=",
-                    "contentType": "image/png",
-                    "width": 13,
-                    "height": 13,
-                    "angle": 0,
-                    "xoffset": 0,
-                    "yoffset": 0
-                },
-                "classMaxValue": 4,
-                "label": "4",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriPMS",
-                    "url": "6fc4e5ec509e66a906ec00496008c3f5",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAddJREFUOI2t1DFoU0Ecx/Hv5b30ntCQ+gZLXXzDazu9Djq0i64qKBZBKlTU2aGDm8lqareUZAvqEqsURAodFLtIkW5dGvA1NlCqgiI1+ngm5irmnFqTmpgE/K1397n//447k/8Us91AUCo5Gi4IrV2E0MDbOiwfdd0PXUFfisWYEYmk0fqmAAMArQEQWmc/FQqP+qW81T8yUm0LBZubA0Qiq4DXalchhHHEsm6Uw/D88uKid3Fq6nPrigzjQTukMfFY7Nhx2/aBE8D3JijY2hoHLndC9uM6jn0vmXx6J5U611yR1tcQolsHgJOed9a27VPlcnn9DyREx5YOZ2hwkEqlMg2sN56R1StkGgZKKQ8aWxPiHVqP9wJ9C8ODAg4gDSsCrvQCvfF9gPdNkDDN/M9qdS4ajdrdIEEYMpfNArxsguKOU/u4sTFtmObzSIfb+1Wvk8vnKe3sbAOPmyCAobGxF6tLS8nR4eGU1dfXEvlRq3F/YYG76fSelPK6UmrvLwjgzOTkbGJmZvv0xMTDUde1BuJx0JqvQUDB95nP5Xi1trYrpbyqlHq9v67l65/NZJ6QyaxIKW8Dl5RSLqCBIvAMmFdKBY1r2n4jwK5SKgEk/jGnK6in/AYguZyuULvqkwAAAABJRU5ErkJggg==",
-                    "contentType": "image/png",
-                    "width": 13,
-                    "height": 13,
-                    "angle": 0,
-                    "xoffset": 0,
-                    "yoffset": 0
-                },
-                "classMaxValue": 5,
-                "label": "5",
-                "description": ""
-            }
-        ]
-    }
+  "renderer": {
+    "type": "classBreaks",
+    "field": "SIMRANK",
+    "classificationMethod": "esriClassifyManual",
+    "minValue": 0,
+    "classBreakInfos": [
+      {
+        "symbol": {
+          "type": "esriSMS",
+          "style": "esriSMSCircle",
+          "color": [168, 0, 0, 255],
+          "size": 8,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0
+        },
+        "classMaxValue": 0,
+        "label": "Reference Location",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriPMS",
+          "url": "f4132ce594a735c060bea90da35e348f",
+          "imageData": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAZJJREFUOI2t1EFIlEEYxvE/n9u+S6MYE3atw4IH2ZMH711KKqQgCJTs7NGjnhNvBZ4Loiio8CJRJHSIrnuMZSMQ1FPKlNJIzyqfHbZd9jO/dhd6LnN4Z37zzsBMgf+UQl7hZrl8iRCuJ1A+guMEvpwZGVl7Wa9v9wRNwtBZ7x+kIdwDBlIg+VM73NlZueH9s1IIc6/gIBeahXP73n9MoZLT6EABZg/MJselShW+nQrtmz0iH2mn6NwFDzWki8DPDDTl/QRwqxvSyqBzfgxef5auZqAEZnpFWhmGK9778RBCtfNoXY90MkPOEWOcBjJQqV8IQFIFspe9CUz0gxzG2G6g847WU7jdDxSaw1YGGgzh6Q+z5cQ53wvSiJGaBPA+Az2BX9dgughvuyEpUJcQbADPMxDAG+ndZVh0zt3Pe4RHQC0EvkLDzO5KavwFAXyQlkaljfNmj4ehVHSuDXyPkWqzk10zuyPpU2vdqRvX4QXSupnNE+OUpDJw3CyxCjyUtNe5JvcbAXYlLQAL/5jTE9RXfgOYb4w3BYjzbgAAAABJRU5ErkJggg==",
+          "contentType": "image/png",
+          "width": 13,
+          "height": 13,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0
+        },
+        "classMaxValue": 1,
+        "label": "1",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriPMS",
+          "url": "f1c17e883f5602288691637b0e14adb5",
+          "imageData": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAdhJREFUOI2t1D9oU1EUx/Fvbl7yYtq0MRXr5B8IdJBMGToJ4qIhllBBECpWcBMc7CLW2WKXWlDcKhRFwYpLKY0GBK1rwEViNFCqdinlWUMT33l93Ocg0TxNbAL+1nvPh3sOnGvwn2K0O5gZHT3s4ZxWiqR28ZRSHwjZi1efFL50BN3NZGJOVN1GuxcDqKCnIaDAA9iJ3JkeyT6MRqKXryws1NtC98aPx+2q8RpNqs1DgyFDjVfr25lL6XRqrljcaAnZ1dgctEV+ZU/Y2D+YiJWAQ8C2D5rN5YY1+sxuSCP7emOJkaPJp4vvKqd8kKc43ynSyMH+gZOJhJW2LKv4G+qgpT+zN9ZDrVYbA5ohHQl0CSmCiEgKmloLoD6BHu4G+r5jA0T8kKLgac52A61bFsBnH2T3xh8YWxu3gspIdILYjkO+VAF44YOuz8/b09nsmAqzvNustNa8Kr/HElkFHvkggGtLS/mJE8duDPb03QwZqiXiuC4rpY88r6w5pmleEBHnLwhg5uXKVGZoaPXIQPz+gf6+SDQcBqDuuqx/3SJffMuayKZpmudE5E2jruX2L5fLj4GCaZoTQE5Ekvzc2zLwDJgVkW/NNW2/EWBTRCaByX/c6QjqKj8AMJelTDPU9DYAAAAASUVORK5CYII=",
+          "contentType": "image/png",
+          "width": 13,
+          "height": 13,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0
+        },
+        "classMaxValue": 2,
+        "label": "2",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriPMS",
+          "url": "95ec6840130d393fbe61da2bd3203b4c",
+          "imageData": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAd5JREFUOI2t1M9rE0EYxvHv7G6zaYkSUrAlBw20WFByqUj/BBWEgCIEam2uFeohNyv0UPDHqUotBoQVJKX2oJbUg2JzEi8e7FFTKRSNJymLmmbTWbY7HkpKtiY2AZ/rO++H94WZMfhPMVoVSpaV8JW6KDRtUPm+Ar5gGK9OZTLf24LW5+eP7HZ33/chgxC6UgqE2Ct63sO1XG4h4nnXT05OOi2hUj4f3ZXyHZBsOqYQejgUGv/peReeZrPJ8dnZH00h33UthGiONCTS03Osr7f3M3AC2A5AnyxrBLh0GFLP8f7+2M10+vndpaXzBye62i5Sz+lE4lwsFjtj2/bHRujQlQ6mLxqlWq2OAgEo3CmkaxpSyiQ0ribEN5Qa6QSqOM7+APuQUGpVwZVOoFK5DFAOQLVQKG/UavcMXY+1g2w7Do+WlwHeBqDhsbGdtVxuVNe016J+k1vEV4qFYpGvtr0JLAYggOGJiTcvpqdvDcTjt0NdXU2RHddlsVhkrlBwTdO8JqV0/4IALs/M3LmRSm2eHRp6MhCPh49GIijgd6VCqVzm8coKHzY2tkzTTEsp39f7mr7+uULhGbBqmmYWSEkpBwEFrAMvgQdSyl+NPS2/EWBLSjkFTP3jTFtQR/kDNhKlh4aUP40AAAAASUVORK5CYII=",
+          "contentType": "image/png",
+          "width": 13,
+          "height": 13,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0
+        },
+        "classMaxValue": 3,
+        "label": "3",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriPMS",
+          "url": "0ca324c34bb5e8f4c244a48d3448841d",
+          "imageData": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAdJJREFUOI2t1E9IVFEUx/Hv9Y1zB4ahGKWQWcwEGm4eBC2E9g8NBoIgCoymlYvciStbRIsiSCwKWwj9eTQUQaTQg7S3q7YtZaj8EyoIISPavOgOOqdN1jyayXngb3vu+dx7FufGOKDEmhXWfD8nkAe6ERHgc5tSrzOOs9YStOp5KaX1HYHLiFj1tV2R+wueV0xqfaXLcX40hb76/mHgnYjYjW5VYOl4vLBZqZx+MT5unx8d/dYQiok8FGiI1CeVTB7p6ugoAVmgEoJW5ub6BM7uh+zlWCaTvjY09PL61NRACGpT6qK0qvzOid7e/nQ6fbJcLn/8A4lSNhKNOtrZSRAEg8BfSEEi6otiloUxxoa60QRWgL4o0FYQACRCECI+cC4KVFpaAlgNQbtKPZWdnVsxy0q3gnwPAu65LsDbEJRznJ9fPG/Qsqw3ah+kVqvxeGaGhfX1ZeBZCALoyednZycnr/bkcjfi7e0NEVOt8mR6mtuuW9VaXzLGVP+BAAaGh2+OFArLp2z70fFsNnEolQJgc3ub0uIiD4pF3s/Pb2itLxhjPuz1Ndz+Cdd9PgG+1noEOGOM6QYE+AS8Au4aY7bqe5p+I8CGMWYMGPvPmZagSPkFOZqkEatWzp0AAAAASUVORK5CYII=",
+          "contentType": "image/png",
+          "width": 13,
+          "height": 13,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0
+        },
+        "classMaxValue": 4,
+        "label": "4",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriPMS",
+          "url": "6fc4e5ec509e66a906ec00496008c3f5",
+          "imageData": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAddJREFUOI2t1DFoU0Ecx/Hv5b30ntCQ+gZLXXzDazu9Djq0i64qKBZBKlTU2aGDm8lqareUZAvqEqsURAodFLtIkW5dGvA1NlCqgiI1+ngm5irmnFqTmpgE/K1397n//447k/8Us91AUCo5Gi4IrV2E0MDbOiwfdd0PXUFfisWYEYmk0fqmAAMArQEQWmc/FQqP+qW81T8yUm0LBZubA0Qiq4DXalchhHHEsm6Uw/D88uKid3Fq6nPrigzjQTukMfFY7Nhx2/aBE8D3JijY2hoHLndC9uM6jn0vmXx6J5U611yR1tcQolsHgJOed9a27VPlcnn9DyREx5YOZ2hwkEqlMg2sN56R1StkGgZKKQ8aWxPiHVqP9wJ9C8ODAg4gDSsCrvQCvfF9gPdNkDDN/M9qdS4ajdrdIEEYMpfNArxsguKOU/u4sTFtmObzSIfb+1Wvk8vnKe3sbAOPmyCAobGxF6tLS8nR4eGU1dfXEvlRq3F/YYG76fSelPK6UmrvLwjgzOTkbGJmZvv0xMTDUde1BuJx0JqvQUDB95nP5Xi1trYrpbyqlHq9v67l65/NZJ6QyaxIKW8Dl5RSLqCBIvAMmFdKBY1r2n4jwK5SKgEk/jGnK6in/AYguZyuULvqkwAAAABJRU5ErkJggg==",
+          "contentType": "image/png",
+          "width": 13,
+          "height": 13,
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0
+        },
+        "classMaxValue": 5,
+        "label": "5",
+        "description": ""
+      }
+    ]
+  }
 }

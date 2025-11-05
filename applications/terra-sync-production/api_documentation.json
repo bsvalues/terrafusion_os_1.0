@@ -67,7 +67,13 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": ["pending", "processing", "completed", "failed", "cancelled"]
+              "enum": [
+                "pending",
+                "processing",
+                "completed",
+                "failed",
+                "cancelled"
+              ]
             }
           },
           {
@@ -485,7 +491,13 @@
           },
           "status": {
             "type": "string",
-            "enum": ["pending", "processing", "completed", "failed", "cancelled"]
+            "enum": [
+              "pending",
+              "processing",
+              "completed",
+              "failed",
+              "cancelled"
+            ]
           },
           "created_at": {
             "type": "string",
@@ -512,7 +524,13 @@
       },
       "CreateExportJobRequest": {
         "type": "object",
-        "required": ["county_id", "username", "export_format", "area_of_interest", "layers"],
+        "required": [
+          "county_id",
+          "username",
+          "export_format",
+          "area_of_interest",
+          "layers"
+        ],
         "properties": {
           "county_id": {
             "type": "string",
@@ -662,7 +680,16 @@
       },
       "ExemptionAnalysisRequest": {
         "type": "object",
-        "required": ["parcel_id", "exemption_type", "exemption_code", "exemption_amount", "property_description", "owner_name", "assessment_year", "exemption_reason"],
+        "required": [
+          "parcel_id",
+          "exemption_type",
+          "exemption_code",
+          "exemption_amount",
+          "property_description",
+          "owner_name",
+          "assessment_year",
+          "exemption_reason"
+        ],
         "properties": {
           "parcel_id": {
             "type": "string"

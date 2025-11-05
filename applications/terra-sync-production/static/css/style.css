@@ -20,7 +20,12 @@ body {
   background-color: #f5f5f5;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
 }
 
@@ -136,7 +141,7 @@ h1, h2, h3, h4, h5, h6 {
   .metric-value {
     font-size: 1.5rem;
   }
-  
+
   .card-header h5 {
     font-size: 1rem;
   }

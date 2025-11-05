@@ -430,10 +430,10 @@ public class EliteOperationalService : IEliteOperationalService
         };
     }
 
-    private async Task<ElitePerformanceMetrics> GetElitePerformanceMetricsAsync()
+    private async Task<Models.ElitePerformanceMetrics> GetElitePerformanceMetricsAsync()
     {
         await Task.CompletedTask;
-        return new ElitePerformanceMetrics
+        return new Models.ElitePerformanceMetrics
         {
             CPUUtilization = 25.0,
             MemoryUtilization = 45.0,

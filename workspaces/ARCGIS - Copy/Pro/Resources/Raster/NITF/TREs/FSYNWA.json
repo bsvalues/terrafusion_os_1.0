@@ -5,7 +5,7 @@
   "Description": "The Frame-Synchronous Metadata Wrapper TRE allows the data producer to associate other NITF TREs to a specific frame or consecutive range of frames in a temporal block (i.e., a NITF Image Segment). It is likely that data producers will choose to make use of NITF TREs that were developed before MIE4NITF. A NITF Image Segment containing a temporal block may contain multiple instances of NITF TREs that are meant to be associated with one or more frames in the temporal block, but lack any mechanism to do so. Wrapping these TREs in their own FSYNWA TRE provides an unambiguous association between the metadata contained in those TREs and the frame(s) in the temporal block to which their metadata applies. This mechanism also allows reuse of existing TREs without any modification to their structure needed.",
   "Size": 30,
   "Fields": {
-    "START_FRAME_NUMBER" : {
+    "START_FRAME_NUMBER": {
       "Name": "First Frame Number",
       "Description": "This field shall indicate the relative frame number of the first name associated with the encapsulated TREs.",
       "Size": 9,
@@ -14,7 +14,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"         
+          "Type": "Integer"
         }
       ]
     },
@@ -27,7 +27,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"          
+          "Type": "Integer"
         }
       ]
     },
@@ -40,7 +40,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
     },
@@ -53,7 +53,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Integer"          
+          "Type": "Integer"
         }
       ]
     },
@@ -66,9 +66,9 @@
       "Units": [],
       "Values": [
         {
-          "Type": "AlphaNumeric"          
+          "Type": "AlphaNumeric"
         }
       ]
-    }    
+    }
   }
 }

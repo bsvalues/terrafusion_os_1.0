@@ -1,139 +1,89 @@
 {
-    "renderer": {
-        "type": "uniqueValue",
-        "field1": "COType",
-        "uniqueValueInfos": [
-            {
-                "symbol": {
-                    "type": "esriSFS",
-                    "style": "esriSFSSolid",
-                    "color": [
-                        240,
-                        184,
-                        177,
-                        255
-                    ],
-                    "outline": {
-                        "type": "esriSLS",
-                        "style": "esriSLSSolid",
-                        "color": [
-                            178,
-                            178,
-                            178,
-                            255
-                        ],
-                        "width": 0.375
-                    }
-                },
-                "value": "HH",
-                "label": "High-High Cluster",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSFS",
-                    "style": "esriSFSSolid",
-                    "color": [
-                        224,
-                        27,
-                        27,
-                        255
-                    ],
-                    "outline": {
-                        "type": "esriSLS",
-                        "style": "esriSLSSolid",
-                        "color": [
-                            178,
-                            178,
-                            178,
-                            255
-                        ],
-                        "width": 0.375
-                    }
-                },
-                "value": "HL",
-                "label": "High-Low Outlier",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSFS",
-                    "style": "esriSFSSolid",
-                    "color": [
-                        27,
-                        83,
-                        224,
-                        255
-                    ],
-                    "outline": {
-                        "type": "esriSLS",
-                        "style": "esriSLSSolid",
-                        "color": [
-                            178,
-                            178,
-                            178,
-                            255
-                        ],
-                        "width": 0.375
-                    }
-                },
-                "value": "LH",
-                "label": "Low-High Outlier",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSFS",
-                    "style": "esriSFSSolid",
-                    "color": [
-                        183,
-                        217,
-                        232,
-                        255
-                    ],
-                    "outline": {
-                        "type": "esriSLS",
-                        "style": "esriSLSSolid",
-                        "color": [
-                            178,
-                            178,
-                            178,
-                            255
-                        ],
-                        "width": 0.375
-                    }
-                },
-                "value": "LL",
-                "label": "Low-Low Cluster",
-                "description": ""
-            },
-            {
-                "symbol": {
-                    "type": "esriSFS",
-                    "style": "esriSFSSolid",
-                    "color": [
-                        247,
-                        247,
-                        242,
-                        255
-                    ],
-                    "outline": {
-                        "type": "esriSLS",
-                        "style": "esriSLSSolid",
-                        "color": [
-                            178,
-                            178,
-                            178,
-                            255
-                        ],
-                        "width": 0.375
-                    }
-                },
-                "value": "NS",
-                "label": "Not Significant",
-                "description": ""
-            }
-        ]
-    },
-    "transparency": 0
+  "renderer": {
+    "type": "uniqueValue",
+    "field1": "COType",
+    "uniqueValueInfos": [
+      {
+        "symbol": {
+          "type": "esriSFS",
+          "style": "esriSFSSolid",
+          "color": [240, 184, 177, 255],
+          "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [178, 178, 178, 255],
+            "width": 0.375
+          }
+        },
+        "value": "HH",
+        "label": "High-High Cluster",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSFS",
+          "style": "esriSFSSolid",
+          "color": [224, 27, 27, 255],
+          "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [178, 178, 178, 255],
+            "width": 0.375
+          }
+        },
+        "value": "HL",
+        "label": "High-Low Outlier",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSFS",
+          "style": "esriSFSSolid",
+          "color": [27, 83, 224, 255],
+          "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [178, 178, 178, 255],
+            "width": 0.375
+          }
+        },
+        "value": "LH",
+        "label": "Low-High Outlier",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSFS",
+          "style": "esriSFSSolid",
+          "color": [183, 217, 232, 255],
+          "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [178, 178, 178, 255],
+            "width": 0.375
+          }
+        },
+        "value": "LL",
+        "label": "Low-Low Cluster",
+        "description": ""
+      },
+      {
+        "symbol": {
+          "type": "esriSFS",
+          "style": "esriSFSSolid",
+          "color": [247, 247, 242, 255],
+          "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [178, 178, 178, 255],
+            "width": 0.375
+          }
+        },
+        "value": "NS",
+        "label": "Not Significant",
+        "description": ""
+      }
+    ]
+  },
+  "transparency": 0
 }

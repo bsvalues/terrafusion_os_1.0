@@ -1,8 +1,6 @@
 {
   "TRE": "PIAPRD",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix C: PIAE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix C: PIAE"],
   "Name": "Profile for Imagery Access Product Support Version D",
   "Description": "The data found in the Product Support Extension address information regarding the products derived from source imagery. This extension aligns the Standards Profile for Imagery Access (SPIA) and NITF for product information, and adds descriptive detail associated with products. This extension shall be present no more than once for each product.",
   "Size": 201,
@@ -43,7 +41,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [ "P", "F", "G", "E" ]
+          "Values": ["P", "F", "G", "E"]
         }
       ]
     },

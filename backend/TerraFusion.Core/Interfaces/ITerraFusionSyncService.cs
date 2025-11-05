@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TerraFusion.Abstractions.DTOs.Responses;
 
 namespace TerraFusion.Core.Interfaces;
 
@@ -37,28 +38,7 @@ public interface ITerraFusionSyncService
 }
 
 // Supporting data structures
-public class SyncResult
-{
-    public bool Success { get; set; }
-    public DateTime Timestamp { get; set; }
-    public int RecordsProcessed { get; set; }
-    public int RecordsUpdated { get; set; }
-    public int RecordsAdded { get; set; }
-    public int RecordsSkipped { get; set; }
-    public int ErrorCount { get; set; }
-    public List<string> Errors { get; set; } = new();
-    public TimeSpan Duration { get; set; }
-    public string? CountyName { get; set; }
-    public DateTime SyncTime { get; set; }
-
-    // Additional properties for Harris PACS integration
-    public string Message { get; set; } = string.Empty;
-    public List<string> SyncOperations { get; set; } = new();
-    public bool AITrainingDataUpdated { get; set; }
-    public int TotalRecordsSynced { get; set; }
-    public TimeSpan SyncDuration { get; set; }
-    public DateTime SyncTimestamp { get; set; }
-}
+// SyncResult is now in TerraFusion.Abstractions.DTOs.Responses (canonical type)
 
 public class SyncStatus
 {

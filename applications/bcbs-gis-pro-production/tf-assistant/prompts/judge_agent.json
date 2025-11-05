@@ -58,7 +58,7 @@
       "template": "Validate zoning compliance:\nParcel: {parcelNumber}\nZoning: {zoning}\nProposed Use: {proposedUse}\nSetbacks: {setbacks}\n\nCheck:\n1. Permitted use compliance\n2. Setback requirements\n3. Height restrictions\n4. Lot coverage limits\n5. Parking requirements\n6. Landscaping standards\n7. Special overlay districts\n\nIdentify any zoning violations or non-conforming uses.",
       "zoning_districts": [
         "R-1: Single Family Residential",
-        "R-2: Medium Density Residential", 
+        "R-2: Medium Density Residential",
         "R-3: High Density Residential",
         "C-1: Neighborhood Commercial",
         "C-2: General Commercial",
@@ -86,7 +86,7 @@
       "minimum_lot_sizes": {
         "R-1": 0.25,
         "R-2": 0.15,
-        "R-3": 0.10,
+        "R-3": 0.1,
         "RR": 5.0,
         "AG": 20.0
       },

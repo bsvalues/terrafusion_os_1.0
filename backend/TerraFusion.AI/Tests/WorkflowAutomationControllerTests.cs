@@ -558,8 +558,8 @@ namespace TerraFusion.AI.Tests
             // Assert
             if (response.IsSuccessStatusCode)
             {
-                response.Headers.Should().ContainKey("Access-Control-Allow-Origin")
-                    .Or.NotContainKey("Access-Control-Allow-Origin"); // CORS may not be configured in test
+                // CORS may or may not be configured in test environment; just ensure headers collection exists
+                response.Headers.Should().NotBeNull();
             }
         }
 

@@ -2,12 +2,7 @@
   "dashboard": {
     "id": null,
     "title": "TerraFusion submissions Government Dashboard",
-    "tags": [
-      "terrafusion",
-      "government",
-      "core",
-      "citizen-services"
-    ],
+    "tags": ["terrafusion", "government", "core", "citizen-services"],
     "timezone": "browser",
     "time": {
       "from": "now-1h",

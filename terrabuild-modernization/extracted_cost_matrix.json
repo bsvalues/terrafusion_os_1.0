@@ -704,10 +704,6 @@
       "Chelan",
       "Cherri"
     ],
-    "regions": [
-      "UNKNOWN",
-      "INDUSTRIAL",
-      "CENTRAL"
-    ]
+    "regions": ["UNKNOWN", "INDUSTRIAL", "CENTRAL"]
   }
 }

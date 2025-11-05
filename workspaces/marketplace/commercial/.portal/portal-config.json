@@ -15,12 +15,7 @@
     },
     "alertSync": {
       "enabled": true,
-      "severityLevels": [
-        "critical",
-        "high",
-        "medium",
-        "low"
-      ],
+      "severityLevels": ["critical", "high", "medium", "low"],
       "escalationEnabled": true
     },
     "webhooks": {

@@ -24,7 +24,7 @@ data:
       http_listen_port: 9080
       grpc_listen_port: 0
       log_level: info
-    
+
     # ========================================================================
     # Client Configuration (Loki connection)
     # ========================================================================
@@ -37,13 +37,13 @@ data:
           max_period: 5m
           max_retries: 10
         timeout: 10s
-    
+
     # ========================================================================
     # Positions Configuration (track read progress)
     # ========================================================================
     positions:
       filename: /run/promtail/positions.yaml
-    
+
     # ========================================================================
     # Scrape Configurations
     # ========================================================================
@@ -237,8 +237,8 @@ spec:
         app: promtail
         app.kubernetes.io/name: promtail
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9080"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9080'
     spec:
       serviceAccountName: promtail
       securityContext:
@@ -331,14 +331,14 @@ metadata:
   labels:
     app.kubernetes.io/name: promtail
 rules:
-  - apiGroups: [""]
+  - apiGroups: ['']
     resources:
       - nodes
       - nodes/proxy
       - services
       - endpoints
       - pods
-    verbs: ["get", "list", "watch"]
+    verbs: ['get', 'list', 'watch']
 
 ---
 # ============================================================================
@@ -373,71 +373,71 @@ metadata:
 data:
   queries.md: |
     # LogQL Query Examples for TerraFusion OS
-    
+
     ## Basic Queries
-    
+
     # All logs from API service
     {service="terrafusion-api"}
-    
+
     # Error logs across all services
     {namespace="terrafusion"} |= "error"
-    
+
     # Logs from specific pod
     {pod="terrafusion-api-76d5f8c9b-xk7lm"}
-    
+
     ## Advanced Filtering
-    
+
     # HTTP 5xx errors in API
     {service="terrafusion-api"} | json | status_code >= 500
-    
+
     # Slow requests (>1s duration)
     {service="terrafusion-api"} | json | duration_ms > 1000
-    
+
     # AI agent processing logs
     {service="terrafusion-consciousness"} | json | agent_type="property-valuation"
-    
+
     # County-specific logs
     {namespace="terrafusion"} | json | county_id="benton"
-    
+
     ## Trace Correlation
-    
+
     # Find logs for specific trace
     {namespace="terrafusion"} | json | trace_id="00-abc123def456-789012-01"
-    
+
     # All logs in trace timeline
     {namespace="terrafusion"} | json | trace_id!="" | line_format "{{.timestamp}} [{{.level}}] {{.message}}"
-    
+
     ## Metrics from Logs
-    
+
     # Request rate per service
     sum(rate({namespace="terrafusion"} | json | method="GET" [5m])) by (service)
-    
+
     # Error rate percentage
     sum(rate({namespace="terrafusion"} | json | level="error" [5m])) 
     / 
     sum(rate({namespace="terrafusion"} [5m]))
-    
+
     # P95 request duration
     quantile_over_time(0.95, {service="terrafusion-api"} | json | unwrap duration_ms [5m])
-    
+
     ## Pattern Matching
-    
+
     # Exception stack traces
     {namespace="terrafusion"} |~ "Exception.*at System"
-    
+
     # Authentication failures
     {service="terrafusion-api"} |= "authentication" |= "failed"
-    
+
     # Database connection errors
     {namespace="terrafusion"} |~ "database.*connection.*error"
-    
+
     ## Multi-line Log Parsing
-    
+
     # Extract JSON fields
     {service="terrafusion-api"} 
     | json timestamp, level, message, trace_id, status_code
     | line_format "{{.timestamp}} [{{.level}}] {{.message}}"
-    
+
     # Filter by multiple conditions
     {namespace="terrafusion"} 
     | json 

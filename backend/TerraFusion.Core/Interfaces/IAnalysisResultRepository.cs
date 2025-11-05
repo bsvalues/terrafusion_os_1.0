@@ -34,8 +34,8 @@ public interface IAnalysisResultRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of analysis results</returns>
     Task<IEnumerable<AnalysisResult>> GetByUserIdAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         bool includeArchived = false,
         CancellationToken cancellationToken = default);
 
@@ -48,8 +48,8 @@ public interface IAnalysisResultRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of analysis results</returns>
     Task<IEnumerable<AnalysisResult>> GetByAnalysisTypeAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string analysisType,
         CancellationToken cancellationToken = default);
 
@@ -72,8 +72,8 @@ public interface IAnalysisResultRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of significant analysis results</returns>
     Task<IEnumerable<AnalysisResult>> GetSignificantResultsAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         double maxPValue = 0.05,
         CancellationToken cancellationToken = default);
 
@@ -86,8 +86,8 @@ public interface IAnalysisResultRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of recent analysis results</returns>
     Task<IEnumerable<AnalysisResult>> GetRecentAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         int count = 10,
         CancellationToken cancellationToken = default);
 
@@ -99,8 +99,8 @@ public interface IAnalysisResultRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of favorite analysis results</returns>
     Task<IEnumerable<AnalysisResult>> GetFavoritesAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -112,8 +112,8 @@ public interface IAnalysisResultRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of matching analysis results</returns>
     Task<IEnumerable<AnalysisResult>> SearchAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string searchTerm,
         CancellationToken cancellationToken = default);
 
@@ -157,7 +157,7 @@ public interface IAnalysisResultRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Statistics (count by type, avg execution time, etc.)</returns>
     Task<object> GetStatisticsAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default);
 }

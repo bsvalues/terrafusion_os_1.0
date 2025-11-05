@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TerraFusion.API.Services;
 using TerraFusion.API.Security;
 using TerraFusion.Abstractions.Interfaces;
+using ElitePerformanceMetrics = TerraFusion.API.Services.ElitePerformanceMetrics;
 
 namespace TerraFusion.API.Controllers;
 
@@ -46,101 +47,102 @@ public class EliteDashboardController : ControllerBase
     public async Task<ActionResult<object>> GetEliteDashboardOverview()
     {
         try
-    {
-        _logger.LogInformation("Elite Dashboard overview requested");
-        await _auditLogger.LogAsync("ELITE_DASHBOARD_OVERVIEW", "Dashboard overview accessed", true);
-
-        // Gather data from all elite systems concurrently
-        var performanceTask = _performanceOptimizer.GetPerformanceMetricsAsync();
-        var securityTask = _securityHardening.GetSecurityMetricsAsync();
-        var countyTask = _countyIntegration.GetAllCountyStatusesAsync();
-        var federationTask = _countyIntegration.GenerateFederationReportAsync();
-
-        await Task.WhenAll(performanceTask, securityTask, countyTask, federationTask);
-
-        var performanceMetrics = await performanceTask;
-        var securityMetrics = await securityTask;
-        var countyStatuses = await countyTask;
-        var federationReport = await federationTask;
-
-        // Calculate elite system health score
-        var systemHealthScore = CalculateEliteSystemHealthScore(
-            performanceMetrics, securityMetrics, federationReport);
-
-        var overview = new
         {
-            eliteDashboardStatus = new
-            {
-                systemName = "TerraFusion OS 1.0",
-                systemLevel = "Elite Government Grade",
-                overallHealthScore = systemHealthScore,
-                healthRating = GetHealthRating(systemHealthScore),
-                complianceLevel = "FISMA Moderate Compliant",
-                governmentApproved = true
-            },
-            aiAgentCoordination = new
-            {
-                totalAgentsManaged = 50000,
-                activeCounties = federationReport.IntegratedCounties,
-                totalCounties = 39,
-                agentDistribution = "Washington State Multi-County Federation",
-                coordinationEfficiency = $"{performanceMetrics.OverallEfficiencyScore:F1}%",
-                quantumOptimization = performanceMetrics.QuantumOptimizationActive
-            },
-            performanceMetrics = new
-            {
-                cpuUtilization = $"{performanceMetrics.CpuUsagePercent:F1}%",
-                memoryEfficiency = $"{performanceMetrics.MemoryUsageMB:F0}MB",
-                cacheHitRatio = $"{performanceMetrics.CacheHitRate:F1}%",
-                responseTime = $"{performanceMetrics.AverageResponseTimeMs:F0}ms",
-                throughput = $"{performanceMetrics.TotalRequests} total requests",
-                eliteOptimizationActive = performanceMetrics.EliteModeEnabled
-            },
-            securityStatus = new
-            {
-                securityLevel = "Elite Government Security",
-                threatDetectionScore = $"{securityMetrics.ThreatDetectionScore:F1}%",
-                activeRateLimits = securityMetrics.ActiveRateLimits,
-                securityEvents = securityMetrics.TotalSecurityEvents,
-                fismaCompliance = securityMetrics.GovernmentGradeCompliance ? "COMPLIANT" : "NEEDS_ATTENTION",
-                governmentAccessControl = securityMetrics.EliteSecurityEnabled
-            },
-            multiCountyIntegration = new
-            {
-                washingtonStateCounties = federationReport.TotalCounties,
-                integratedCounties = federationReport.IntegratedCounties,
-                healthyCounties = federationReport.HealthyCounties,
-                totalPropertyRecords = federationReport.TotalPropertyRecords,
-                harrisPacsEnabled = federationReport.HarrisPacsEnabledCounties,
-                federationHealthScore = $"{federationReport.FederationHealthScore:F1}%",
-                integrationCoverage = $"{(double)federationReport.IntegratedCounties / federationReport.TotalCounties * 100:F1}%"
-            },
-            criticalAlerts = GenerateCriticalAlerts(performanceMetrics, securityMetrics, federationReport),
-            eliteRecommendations = GenerateEliteRecommendations(performanceMetrics, securityMetrics, federationReport),
-            systemCapabilities = new
-            {
-                realTimeMonitoring = true,
-                quantumOptimization = true,
-                eliteSecurityHardening = true,
-                multiCountyFederation = true,
-                governmentCompliance = true,
-                aiAgentOrchestration = true,
-                harrisPacsIntegration = true,
-                crossCountyPropertySearch = true
-            },
-            dashboardRefreshTime = DateTime.UtcNow,
-            timestamp = DateTime.UtcNow,
-            server = "TerraFusion OS 1.0",
-            apiVersion = "Elite Dashboard v1.0"
-        };
+            _logger.LogInformation("Elite Dashboard overview requested");
+            await _auditLogger.LogAsync("ELITE_DASHBOARD_OVERVIEW", "Dashboard overview accessed", true);
 
-        return Ok(overview);
+            // Gather data from all elite systems concurrently
+            var performanceTask = _performanceOptimizer.GetPerformanceMetricsAsync();
+            var securityTask = _securityHardening.GetSecurityMetricsAsync();
+            var countyTask = _countyIntegration.GetAllCountyStatusesAsync();
+            var federationTask = _countyIntegration.GenerateFederationReportAsync();
+
+            await Task.WhenAll(performanceTask, securityTask, countyTask, federationTask);
+
+            var performanceMetrics = await performanceTask;
+            var securityMetrics = await securityTask;
+            var countyStatuses = await countyTask;
+            var federationReport = await federationTask;
+
+            // Calculate elite system health score
+            var systemHealthScore = CalculateEliteSystemHealthScore(
+                performanceMetrics, securityMetrics, federationReport);
+
+            var overview = new
+            {
+                eliteDashboardStatus = new
+                {
+                    systemName = "TerraFusion OS 1.0",
+                    systemLevel = "Elite Government Grade",
+                    overallHealthScore = systemHealthScore,
+                    healthRating = GetHealthRating(systemHealthScore),
+                    complianceLevel = "FISMA Moderate Compliant",
+                    governmentApproved = true
+                },
+                aiAgentCoordination = new
+                {
+                    totalAgentsManaged = 50000,
+                    activeCounties = federationReport.IntegratedCounties,
+                    totalCounties = 39,
+                    agentDistribution = "Washington State Multi-County Federation",
+                    coordinationEfficiency = $"{performanceMetrics.OverallEfficiencyScore:F1}%",
+                    quantumOptimization = performanceMetrics.QuantumOptimizationActive
+                },
+                performanceMetrics = new
+                {
+                    cpuUtilization = $"{performanceMetrics.CpuUsagePercent:F1}%",
+                    memoryEfficiency = $"{performanceMetrics.MemoryUsageMB:F0}MB",
+                    cacheHitRatio = $"{performanceMetrics.CacheHitRate:F1}%",
+                    responseTime = $"{performanceMetrics.AverageResponseTimeMs:F0}ms",
+                    throughput = $"{performanceMetrics.TotalRequests} total requests",
+                    eliteOptimizationActive = performanceMetrics.EliteModeEnabled
+                },
+                securityStatus = new
+                {
+                    securityLevel = "Elite Government Security",
+                    threatDetectionScore = $"{securityMetrics.ThreatDetectionScore:F1}%",
+                    activeRateLimits = securityMetrics.ActiveRateLimits,
+                    securityEvents = securityMetrics.TotalSecurityEvents,
+                    fismaCompliance = securityMetrics.GovernmentGradeCompliance ? "COMPLIANT" : "NEEDS_ATTENTION",
+                    governmentAccessControl = securityMetrics.EliteSecurityEnabled
+                },
+                multiCountyIntegration = new
+                {
+                    washingtonStateCounties = federationReport.TotalCounties,
+                    integratedCounties = federationReport.IntegratedCounties,
+                    healthyCounties = federationReport.HealthyCounties,
+                    totalPropertyRecords = federationReport.TotalPropertyRecords,
+                    harrisPacsEnabled = federationReport.HarrisPacsEnabledCounties,
+                    federationHealthScore = $"{federationReport.FederationHealthScore:F1}%",
+                    integrationCoverage = $"{(double)federationReport.IntegratedCounties / federationReport.TotalCounties * 100:F1}%"
+                },
+                criticalAlerts = GenerateCriticalAlerts(performanceMetrics, securityMetrics, federationReport),
+                eliteRecommendations = GenerateEliteRecommendations(performanceMetrics, securityMetrics, federationReport),
+                systemCapabilities = new
+                {
+                    realTimeMonitoring = true,
+                    quantumOptimization = true,
+                    eliteSecurityHardening = true,
+                    multiCountyFederation = true,
+                    governmentCompliance = true,
+                    aiAgentOrchestration = true,
+                    harrisPacsIntegration = true,
+                    crossCountyPropertySearch = true
+                },
+                dashboardRefreshTime = DateTime.UtcNow,
+                timestamp = DateTime.UtcNow,
+                server = "TerraFusion OS 1.0",
+                apiVersion = "Elite Dashboard v1.0"
+            };
+
+            return Ok(overview);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Elite dashboard overview failed");
             await _auditLogger.LogAsync("ELITE_DASHBOARD_ERROR", $"Dashboard overview error: {ex.Message}", false);
-            return StatusCode(500, new {
+            return StatusCode(500, new
+            {
                 error = "Elite dashboard overview failed",
                 details = ex.Message,
                 timestamp = DateTime.UtcNow,
@@ -194,7 +196,8 @@ public class EliteDashboardController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Real-time metrics failed");
-            return StatusCode(500, new {
+            return StatusCode(500, new
+            {
                 error = "Real-time metrics failed",
                 details = ex.Message,
                 timestamp = DateTime.UtcNow
@@ -250,7 +253,8 @@ public class EliteDashboardController : ControllerBase
         {
             _logger.LogError(ex, "Elite system health check failed");
             await _auditLogger.LogAsync("ELITE_HEALTH_ERROR", $"Health check error: {ex.Message}", false);
-            return StatusCode(500, new {
+            return StatusCode(500, new
+            {
                 error = "Elite system health check failed",
                 details = ex.Message,
                 timestamp = DateTime.UtcNow
@@ -327,7 +331,8 @@ public class EliteDashboardController : ControllerBase
         {
             _logger.LogError(ex, "Counties dashboard failed");
             await _auditLogger.LogAsync("COUNTIES_DASHBOARD_ERROR", $"Counties dashboard error: {ex.Message}", false);
-            return StatusCode(500, new {
+            return StatusCode(500, new
+            {
                 error = "Counties dashboard failed",
                 details = ex.Message,
                 timestamp = DateTime.UtcNow

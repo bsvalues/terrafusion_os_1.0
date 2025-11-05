@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   # TerraFusionPilt Application
@@ -9,7 +9,7 @@ services:
       target: production
     container_name: terrafusion-pilt-app
     ports:
-      - "5009:5009"
+      - '5009:5009'
     environment:
       - NODE_ENV=production
       - PORT=5009
@@ -26,7 +26,7 @@ services:
       - terrafusion-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5009/api/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:5009/api/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -44,12 +44,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - terrafusion-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -62,12 +62,12 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - terrafusion-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
       interval: 10s
       timeout: 3s
       retries: 5
@@ -77,8 +77,8 @@ services:
     image: nginx:alpine
     container_name: terrafusion-pilt-proxy
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
@@ -94,17 +94,17 @@ services:
     image: prom/prometheus:latest
     container_name: terrafusion-pilt-prometheus
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/etc/prometheus/console_libraries"
-      - "--web.console.templates=/etc/prometheus/consoles"
-      - "--storage.tsdb.retention.time=200h"
-      - "--web.enable-lifecycle"
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
     networks:
       - terrafusion-network
     restart: unless-stopped
@@ -114,7 +114,7 @@ services:
     image: grafana/grafana:latest
     container_name: terrafusion-pilt-grafana
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-terrafusion_grafana_2024}
     volumes:

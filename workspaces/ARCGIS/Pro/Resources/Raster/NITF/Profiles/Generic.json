@@ -39,9 +39,7 @@
             "Tag": "Pan",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsVIS"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsVIS"]
         },
         {
           "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
@@ -49,9 +47,7 @@
             "Tag": "Pan",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsPAN"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsPAN"]
         },
         {
           "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
@@ -59,9 +55,7 @@
             "Tag": "MS",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsMS"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsMS"]
         },
         {
           "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
@@ -69,9 +63,7 @@
             "Tag": "Pansharpened",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsRGB"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsRGB"]
         },
         {
           "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
@@ -79,9 +71,7 @@
             "Tag": "CAVIS",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsCAVIS"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsCAVIS"]
         },
         {
           "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
@@ -89,20 +79,16 @@
             "Tag": "SWIR",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsSWIR"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsSWIR"]
         },
         {
           "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
           "ItemURI": {
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ICATIsNOT"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ICATIsNOT"]
         },
-        
+
         {
           "@Variables": {
             "LayerObjectType": "$%i+1$"
@@ -112,9 +98,7 @@
             "Tag": "Pan",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsVIS"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsVIS"]
         },
         {
           "@Variables": {
@@ -125,9 +109,7 @@
             "Tag": "Pan",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsPAN"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsPAN"]
         },
         {
           "@Variables": {
@@ -138,9 +120,7 @@
             "Tag": "MS",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsMS"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsMS"]
         },
         {
           "@Variables": {
@@ -151,9 +131,7 @@
             "Tag": "Pansharpened",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsRGB"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsRGB"]
         },
         {
           "@Variables": {
@@ -164,9 +142,7 @@
             "Tag": "CAVIS",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsCAVIS"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsCAVIS"]
         },
         {
           "@Variables": {
@@ -177,9 +153,7 @@
             "Tag": "SWIR",
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ImageHasICATIsSWIR"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ImageHasICATIsSWIR"]
         },
         {
           "@Variables": {
@@ -189,9 +163,7 @@
           "ItemURI": {
             "ProductName": "#/ProductName-Generic"
           },
-          "Match": [
-            "MatchRules.json#MatchRule-ICATIsNOT"
-          ]
+          "Match": ["MatchRules.json#MatchRule-ICATIsNOT"]
         }
       ],
       "Properties": "Commercial/Products.json#Properties-Base"
@@ -200,7 +172,7 @@
   "IDs": {
     "SensorNamePaths": "Commercial/Properties.json#Mission-Match-Paths",
     "MissionPaths": "Commercial/Properties.json#Mission-Match-Paths",
-    "MissionMatch": [ ],
+    "MissionMatch": [],
     "Bands-Panchromatic-Basic": [],
     "Bands-Multispectral4Bands-Basic": [],
     "Bands-Panchromatic-Geo": [],

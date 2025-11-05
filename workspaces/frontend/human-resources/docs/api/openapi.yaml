@@ -12,24 +12,24 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/hr
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/hr
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/hr
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/hr
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/hr
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/hr
+    description: Development Environment
 paths:
   /employees:
     get:
       tags:
-      - human-resources
+        - human-resources
       summary: Employee directory (authorized)
       description: Employee directory (authorized) - Employee management and HR operations
         APIs
       operationId: get__employees
       security:
-      - OAuth2:
-        - human-resources:read
+        - OAuth2:
+            - human-resources:read
       responses:
         '200':
           description: Successful operation
@@ -58,13 +58,13 @@ paths:
   /payroll:
     get:
       tags:
-      - human-resources
+        - human-resources
       summary: Payroll information
       description: Payroll information - Employee management and HR operations APIs
       operationId: get__payroll
       security:
-      - OAuth2:
-        - human-resources:read
+        - OAuth2:
+            - human-resources:read
       responses:
         '200':
           description: Successful operation
@@ -93,13 +93,13 @@ paths:
   /benefits:
     get:
       tags:
-      - human-resources
+        - human-resources
       summary: Employee benefits
       description: Employee benefits - Employee management and HR operations APIs
       operationId: get__benefits
       security:
-      - OAuth2:
-        - human-resources:read
+        - OAuth2:
+            - human-resources:read
       responses:
         '200':
           description: Successful operation
@@ -128,14 +128,14 @@ paths:
   /performance:
     post:
       tags:
-      - human-resources
+        - human-resources
       summary: Performance evaluations
       description: Performance evaluations - Employee management and HR operations
         APIs
       operationId: post__performance
       security:
-      - OAuth2:
-        - human-resources:write
+        - OAuth2:
+            - human-resources:write
       responses:
         '200':
           description: Successful operation
@@ -166,8 +166,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -182,9 +182,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -208,12 +208,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - human-resources:read
-- ApiKey: []
+  - OAuth2:
+      - human-resources:read
+  - ApiKey: []
 tags:
-- name: human-resources
-  description: Human Resources operations
-  externalDocs:
-    description: Find out more about human-resources
-    url: https://docs.terrafusion.gov/frontend/human-resources
+  - name: human-resources
+    description: Human Resources operations
+    externalDocs:
+      description: Find out more about human-resources
+      url: https://docs.terrafusion.gov/frontend/human-resources

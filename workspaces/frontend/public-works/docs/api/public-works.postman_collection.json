@@ -61,12 +61,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
       },
       "response": []
@@ -94,12 +90,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/infrastructure",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "infrastructure"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["infrastructure"]
         }
       },
       "response": []
@@ -127,12 +119,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/maintenance",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "maintenance"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["maintenance"]
         }
       },
       "response": []
@@ -160,12 +148,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/projects",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "projects"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["projects"]
         }
       },
       "response": []
@@ -193,12 +177,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/work-orders",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "work-orders"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["work-orders"]
         }
       },
       "response": []

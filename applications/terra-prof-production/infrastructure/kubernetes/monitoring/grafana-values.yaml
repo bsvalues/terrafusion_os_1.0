@@ -23,29 +23,29 @@ datasources:
   datasources.yaml:
     apiVersion: 1
     datasources:
-    - name: Prometheus
-      type: prometheus
-      url: http://prometheus-server.monitoring.svc.cluster.local
-      access: proxy
-      isDefault: true
-    - name: Loki
-      type: loki
-      url: http://loki-gateway.logging.svc.cluster.local
-      access: proxy
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.monitoring.svc.cluster.local
+        access: proxy
+        isDefault: true
+      - name: Loki
+        type: loki
+        url: http://loki-gateway.logging.svc.cluster.local
+        access: proxy
 
 # Dashboard providers
 dashboardProviders:
   dashboardproviders.yaml:
     apiVersion: 1
     providers:
-    - name: 'default'
-      orgId: 1
-      folder: 'TerraFusionPro'
-      type: file
-      disableDeletion: false
-      editable: true
-      options:
-        path: /var/lib/grafana/dashboards/default
+      - name: 'default'
+        orgId: 1
+        folder: 'TerraFusionPro'
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
 
 # Predefined dashboards
 dashboards:
@@ -102,7 +102,7 @@ ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
     cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
     - monitoring.terrafusionpro.com
@@ -113,25 +113,25 @@ ingress:
 
 # Pod annotations
 podAnnotations:
-  prometheus.io/scrape: "true"
-  prometheus.io/port: "3000"
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '3000'
 
 # Initialize Grafana with specific settings
 # These are one-time settings for Grafana at startup
 envFromSecret: grafana-secrets
 env:
-  GF_SECURITY_ALLOW_EMBEDDING: "true"
-  GF_SECURITY_COOKIE_SECURE: "true"
-  GF_SECURITY_DISABLE_GRAVATAR: "true"
-  GF_USERS_ALLOW_SIGN_UP: "false"
-  GF_USERS_AUTO_ASSIGN_ORG: "true"
-  GF_USERS_AUTO_ASSIGN_ORG_ROLE: "Viewer"
-  GF_AUTH_ANONYMOUS_ENABLED: "false"
-  GF_EXPLORE_ENABLED: "true"
-  GF_ALERTING_ENABLED: "true"
-  GF_UNIFIED_ALERTING_ENABLED: "true"
-  GF_SMTP_ENABLED: "true"
+  GF_SECURITY_ALLOW_EMBEDDING: 'true'
+  GF_SECURITY_COOKIE_SECURE: 'true'
+  GF_SECURITY_DISABLE_GRAVATAR: 'true'
+  GF_USERS_ALLOW_SIGN_UP: 'false'
+  GF_USERS_AUTO_ASSIGN_ORG: 'true'
+  GF_USERS_AUTO_ASSIGN_ORG_ROLE: 'Viewer'
+  GF_AUTH_ANONYMOUS_ENABLED: 'false'
+  GF_EXPLORE_ENABLED: 'true'
+  GF_ALERTING_ENABLED: 'true'
+  GF_UNIFIED_ALERTING_ENABLED: 'true'
+  GF_SMTP_ENABLED: 'true'
 
 # Create a custom dashboard for TerraFusionPro services
 dashboardsConfigMaps:
-  terrafusionpro: "terrafusionpro-dashboards"
+  terrafusionpro: 'terrafusionpro-dashboards'

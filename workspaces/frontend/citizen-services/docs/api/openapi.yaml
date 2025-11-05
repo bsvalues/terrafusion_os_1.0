@@ -12,24 +12,24 @@ info:
     url: https://terrafusion.gov/licenses/government-api
   termsOfService: https://terrafusion.gov/terms/api-usage
 servers:
-- url: https://api.terrafusion.gov/api/v1/citizen-services
-  description: Production TerraFusion Government API
-- url: https://staging-api.terrafusion.gov/api/v1/citizen-services
-  description: Staging Environment
-- url: https://dev-api.terrafusion.gov/api/v1/citizen-services
-  description: Development Environment
+  - url: https://api.terrafusion.gov/api/v1/citizen-services
+    description: Production TerraFusion Government API
+  - url: https://staging-api.terrafusion.gov/api/v1/citizen-services
+    description: Staging Environment
+  - url: https://dev-api.terrafusion.gov/api/v1/citizen-services
+    description: Development Environment
 paths:
   /services:
     get:
       tags:
-      - citizen-services
+        - citizen-services
       summary: List available services
       description: List available services - Citizen engagement and service delivery
         APIs
       operationId: get__services
       security:
-      - OAuth2:
-        - citizen-services:read
+        - OAuth2:
+            - citizen-services:read
       responses:
         '200':
           description: Successful operation
@@ -58,13 +58,13 @@ paths:
   /services/{id}/apply:
     post:
       tags:
-      - citizen-services
+        - citizen-services
       summary: Apply for service
       description: Apply for service - Citizen engagement and service delivery APIs
       operationId: post__services_id_apply
       security:
-      - OAuth2:
-        - citizen-services:write
+        - OAuth2:
+            - citizen-services:write
       responses:
         '200':
           description: Successful operation
@@ -93,14 +93,14 @@ paths:
   /applications/{id}:
     get:
       tags:
-      - citizen-services
+        - citizen-services
       summary: Get application status
       description: Get application status - Citizen engagement and service delivery
         APIs
       operationId: get__applications_id
       security:
-      - OAuth2:
-        - citizen-services:read
+        - OAuth2:
+            - citizen-services:read
       responses:
         '200':
           description: Successful operation
@@ -129,14 +129,14 @@ paths:
   /feedback:
     post:
       tags:
-      - citizen-services
+        - citizen-services
       summary: Submit service feedback
       description: Submit service feedback - Citizen engagement and service delivery
         APIs
       operationId: post__feedback
       security:
-      - OAuth2:
-        - citizen-services:write
+        - OAuth2:
+            - citizen-services:write
       responses:
         '200':
           description: Successful operation
@@ -167,8 +167,8 @@ components:
     Error:
       type: object
       required:
-      - code
-      - message
+        - code
+        - message
       properties:
         code:
           type: integer
@@ -183,9 +183,9 @@ components:
         status:
           type: string
           enum:
-          - healthy
-          - degraded
-          - unhealthy
+            - healthy
+            - degraded
+            - unhealthy
         timestamp:
           type: string
           format: date-time
@@ -209,12 +209,12 @@ components:
       in: header
       name: X-API-Key
 security:
-- OAuth2:
-  - citizen-services:read
-- ApiKey: []
+  - OAuth2:
+      - citizen-services:read
+  - ApiKey: []
 tags:
-- name: citizen-services
-  description: Citizen Services operations
-  externalDocs:
-    description: Find out more about citizen-services
-    url: https://docs.terrafusion.gov/frontend/citizen-services
+  - name: citizen-services
+    description: Citizen Services operations
+    externalDocs:
+      description: Find out more about citizen-services
+      url: https://docs.terrafusion.gov/frontend/citizen-services

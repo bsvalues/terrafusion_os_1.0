@@ -1,13 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --terra-cyan: #00FFFF;
-  --terra-midnight: #0A0E1A;
-  --terra-blue: #0080FF;
-  --terra-slate: #1E293B;
+  --terra-cyan: #00ffff;
+  --terra-midnight: #0a0e1a;
+  --terra-blue: #0080ff;
+  --terra-slate: #1e293b;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -30,9 +32,18 @@ body {
 }
 
 @keyframes quantum-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
-.text-terra-cyan { color: var(--terra-cyan); }
-.bg-terra-midnight { background-color: var(--terra-midnight); }
+.text-terra-cyan {
+  color: var(--terra-cyan);
+}
+.bg-terra-midnight {
+  background-color: var(--terra-midnight);
+}

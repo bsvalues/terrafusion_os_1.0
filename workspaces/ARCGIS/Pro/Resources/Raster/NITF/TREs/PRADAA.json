@@ -5,7 +5,7 @@
   "Description": "This TRE contains the DPPDB absolute product accuracy data. All accuracy data is based on 90% confidence (CE, LE, and mensuration).",
   "Size": 1,
   "Fields": {
-    "PACE" : {
+    "PACE": {
       "Name": "DPPDB Absolute CE90",
       "Description": "This field indicates the DPPDB absolute accuracy (CE90).",
       "Size": 6,
@@ -16,10 +16,10 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
-          "Type": "Double"          
+          "Type": "Double"
         }
       ]
     },
@@ -34,7 +34,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -52,7 +52,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -70,7 +70,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -88,7 +88,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -106,12 +106,12 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
         }
       ]
-    }    
+    }
   }
 }

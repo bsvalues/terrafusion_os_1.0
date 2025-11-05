@@ -4,14 +4,14 @@ metadata:
   name: terrafusion-api-prod
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2"  # Deploy after infrastructure
+    argocd.argoproj.io/sync-wave: '2' # Deploy after infrastructure
     notifications.argoproj.io/subscribe.on-deployed.slack: terrafusion-deployments
     notifications.argoproj.io/subscribe.on-health-degraded.slack: terrafusion-alerts
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: terrafusion
-  
+
   source:
     repoURL: https://github.com/terrafusion/terrafusion-os
     targetRevision: main
@@ -24,20 +24,20 @@ spec:
         - name: global.environment
           value: production
         - name: image.tag
-          value: "1.0.0"
+          value: '1.0.0'
         - name: replicaCount
-          value: "3"
+          value: '3'
         - name: autoscaling.enabled
-          value: "true"
+          value: 'true'
         - name: autoscaling.minReplicas
-          value: "3"
+          value: '3'
         - name: autoscaling.maxReplicas
-          value: "20"
-      
+          value: '20'
+
   destination:
     server: https://kubernetes.default.svc
     namespace: terrafusion
-  
+
   syncPolicy:
     automated:
       prune: true
@@ -54,7 +54,7 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
-  
+
   ignoreDifferences:
     - group: apps
       kind: Deployment
@@ -65,9 +65,9 @@ spec:
       jsonPointers:
         - /spec/minReplicas
         - /spec/maxReplicas
-  
+
   revisionHistoryLimit: 10
-  
+
   info:
     - name: 'Environment'
       value: 'Production'

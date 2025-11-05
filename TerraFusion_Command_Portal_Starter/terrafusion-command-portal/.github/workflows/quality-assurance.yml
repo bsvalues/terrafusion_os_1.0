@@ -4,9 +4,9 @@ name: TerraFusion Quality Assurance
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   schedule:
     # Run comprehensive QA every day at 2 AM
     - cron: '0 2 * * *'
@@ -14,7 +14,7 @@ on:
 env:
   NODE_VERSION: 18.x
   RUST_VERSION: 1.70.0
-  QUALITY_THRESHOLD: 95  # 95% quality threshold for government standards
+  QUALITY_THRESHOLD: 95 # 95% quality threshold for government standards
 
 jobs:
   # =====================================================================
@@ -23,74 +23,74 @@ jobs:
   code-quality:
     name: 📊 Code Quality Analysis
     runs-on: ubuntu-latest
-    
+
     outputs:
       quality-score: ${{ steps.quality-check.outputs.score }}
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for better analysis
-      
+          fetch-depth: 0 # Full history for better analysis
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      
+
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ env.RUST_VERSION }}
           components: rustfmt, clippy
-      
+
       - name: Frontend Code Quality
         run: |
           cd apps/terrafusion-web
           npm ci
-          
+
           echo "🔍 Running ESLint analysis..."
           npm run lint -- --format=json > ../../eslint-report.json || true
-          
+
           echo "🔍 Running TypeScript analysis..."
           npx tsc --noEmit --pretty false > ../../typescript-report.txt 2>&1 || true
-      
+
       - name: Backend Code Quality
         run: |
           cd backend
-          
+
           echo "🔍 Running Rust formatting check..."
           cargo fmt --all -- --check > ../rust-format-report.txt 2>&1 || true
-          
+
           echo "🔍 Running Clippy analysis..."
           cargo clippy --all-targets --all-features --message-format=json > ../clippy-report.json 2>&1 || true
-      
+
       - name: Calculate Quality Score
         id: quality-check
         run: |
           echo "📊 Calculating comprehensive quality score..."
-          
+
           # Initialize counters
           total_issues=0
           total_files=0
-          
+
           # Count TypeScript/ESLint issues
           if [ -f eslint-report.json ]; then
               eslint_issues=$(jq '[.[].messages | length] | add // 0' eslint-report.json)
               total_issues=$((total_issues + eslint_issues))
           fi
-          
+
           # Count Rust/Clippy issues
           if [ -f clippy-report.json ]; then
               clippy_issues=$(grep -c '"level":"error"' clippy-report.json || echo "0")
               total_issues=$((total_issues + clippy_issues))
           fi
-          
+
           # Count total source files
           frontend_files=$(find apps/terrafusion-web/src -name "*.ts" -o -name "*.tsx" | wc -l)
           backend_files=$(find backend/src -name "*.rs" | wc -l)
           total_files=$((frontend_files + backend_files))
-          
+
           # Calculate quality score (government standard: <0.1 issues per file)
           if [ $total_files -gt 0 ]; then
               issues_per_file=$(echo "scale=2; $total_issues / $total_files" | bc -l)
@@ -105,15 +105,15 @@ jobs:
           else
               quality_percentage=100
           fi
-          
+
           echo "📈 Quality Metrics:"
           echo "   Total Issues: $total_issues"
           echo "   Total Files: $total_files"
           echo "   Issues per File: $issues_per_file"
           echo "   Quality Score: ${quality_percentage}%"
-          
+
           echo "score=$quality_percentage" >> $GITHUB_OUTPUT
-          
+
           # Check if meets government standards
           if [ $(echo "$quality_percentage >= ${{ env.QUALITY_THRESHOLD }}" | bc -l) -eq 1 ]; then
               echo "✅ Code quality meets government standards (${quality_percentage}% >= ${{ env.QUALITY_THRESHOLD }}%)"
@@ -121,7 +121,7 @@ jobs:
               echo "❌ Code quality below government standards (${quality_percentage}% < ${{ env.QUALITY_THRESHOLD }}%)"
               exit 1
           fi
-      
+
       - name: Upload Quality Reports
         uses: actions/upload-artifact@v4
         with:
@@ -139,15 +139,15 @@ jobs:
     name: 🧪 Comprehensive Test Suite
     runs-on: ubuntu-latest
     needs: code-quality
-    
+
     strategy:
       matrix:
         test-type: [unit, integration, e2e, performance]
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-      
+
       - name: Setup Test Environment
         run: |
           echo "🔧 Setting up ${{ matrix.test-type }} test environment..."
@@ -165,99 +165,99 @@ jobs:
               echo "Performance testing environment ready"
               ;;
           esac
-      
+
       - name: Run Unit Tests
         if: matrix.test-type == 'unit'
         run: |
           echo "🧪 Running comprehensive unit tests..."
-          
+
           # Backend unit tests
           cd backend
           cargo test --all-features --verbose -- --test-threads=1 > ../backend-unit-results.txt 2>&1
           backend_exit_code=$?
-          
+
           # Frontend unit tests
           cd ../apps/terrafusion-web
           npm ci
           npm test -- --coverage --watchAll=false --verbose > ../../frontend-unit-results.txt 2>&1
           frontend_exit_code=$?
-          
+
           echo "📊 Unit Test Results:"
           echo "   Backend Tests: $(if [ $backend_exit_code -eq 0 ]; then echo "✅ PASSED"; else echo "❌ FAILED"; fi)"
           echo "   Frontend Tests: $(if [ $frontend_exit_code -eq 0 ]; then echo "✅ PASSED"; else echo "❌ FAILED"; fi)"
-          
+
           if [ $backend_exit_code -ne 0 ] || [ $frontend_exit_code -ne 0 ]; then
               exit 1
           fi
-      
+
       - name: Run Integration Tests
         if: matrix.test-type == 'integration'
         run: |
           echo "🔗 Running integration tests..."
-          
+
           # Start backend service
           cd backend
           cargo build --release
           ./target/release/tf_command_portal_api &
           backend_pid=$!
-          
+
           # Wait for service to start
           sleep 10
-          
+
           # Test federation endpoints
           echo "Testing federation API integration..."
           curl -f http://localhost:8787/health || exit 1
           curl -f http://localhost:8787/api/federation/counties || exit 1
           curl -f http://localhost:8787/api/federation/dashboard || exit 1
-          
+
           # Clean up
           kill $backend_pid
-          
+
           echo "✅ All integration tests passed"
-      
+
       - name: Run E2E Tests
         if: matrix.test-type == 'e2e'
         run: |
           echo "🌐 Running end-to-end tests..."
-          
+
           # Install Playwright for E2E testing
           cd apps/terrafusion-web
           npm ci
           npx playwright install
-          
+
           # Run E2E tests
           npm run test:e2e > ../../e2e-results.txt 2>&1 || true
-          
+
           echo "✅ E2E tests completed"
-      
+
       - name: Run Performance Tests
         if: matrix.test-type == 'performance'
         run: |
           echo "⚡ Running performance tests..."
-          
+
           # Start backend for performance testing
           cd backend
           cargo build --release
           ./target/release/tf_command_portal_api &
           backend_pid=$!
-          
+
           # Wait for service to start
           sleep 10
-          
+
           # Install K6 for performance testing
           sudo apt-get update
           sudo apt-get install -y k6
-          
+
           # Run performance tests
           cd ../tests/load
           chmod +x run-government-load-tests.sh
           ./run-government-load-tests.sh > ../../performance-results.txt 2>&1
-          
+
           # Clean up
           kill $backend_pid
-          
+
           echo "✅ Performance tests completed"
-      
+
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
@@ -273,35 +273,35 @@ jobs:
     name: 🔒 Security Testing
     runs-on: ubuntu-latest
     needs: code-quality
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-      
+
       - name: Static Security Analysis
         run: |
           echo "🔍 Running static security analysis..."
-          
+
           # Install security analysis tools
           cargo install cargo-audit
           npm install -g audit-ci
-          
+
           # Rust security audit
           cd backend
           cargo audit --format json > ../rust-security-audit.json
-          
+
           # Node.js security audit
           cd ../apps/terrafusion-web
           npm audit --format json > ../../node-security-audit.json
-      
+
       - name: Container Security Scan
         run: |
           echo "🐳 Scanning container security..."
-          
+
           # Build containers for scanning
           docker build -t terrafusion-backend ./backend
           docker build -t terrafusion-frontend ./apps/terrafusion-web
-          
+
           # Install Trivy for container scanning
           sudo apt-get update
           sudo apt-get install wget apt-transport-https gnupg lsb-release
@@ -309,19 +309,19 @@ jobs:
           echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
           sudo apt-get update
           sudo apt-get install trivy
-          
+
           # Scan images
           trivy image --format json terrafusion-backend > backend-security-scan.json
           trivy image --format json terrafusion-frontend > frontend-security-scan.json
-      
+
       - name: Infrastructure Security
         run: |
           echo "☸️ Validating infrastructure security..."
-          
+
           # Validate Kubernetes security policies
           chmod +x scripts/validate-security-compliance.sh
           ./scripts/validate-security-compliance.sh > infrastructure-security.txt
-      
+
       - name: Upload Security Results
         uses: actions/upload-artifact@v4
         with:
@@ -341,39 +341,39 @@ jobs:
     runs-on: ubuntu-latest
     needs: [code-quality, comprehensive-testing, security-testing]
     if: always()
-    
+
     steps:
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
           path: qa-results
-      
+
       - name: Generate QA Report
         run: |
           echo "📊 Generating comprehensive QA report..."
-          
+
           cat > qa-summary-report.md << EOF
           # TerraFusion Quality Assurance Report
           **Generated:** $(date)
           **Quality Score:** ${{ needs.code-quality.outputs.quality-score }}%
           **Government Standard:** ${{ env.QUALITY_THRESHOLD }}%
-          
+
           ## Quality Status
           - **Code Quality:** $(if [ "${{ needs.code-quality.outputs.quality-score }}" -ge "${{ env.QUALITY_THRESHOLD }}" ]; then echo "✅ MEETS STANDARDS"; else echo "❌ BELOW STANDARDS"; fi)
           - **Unit Testing:** $(if [ "${{ needs.comprehensive-testing.result }}" = "success" ]; then echo "✅ PASSED"; else echo "❌ FAILED"; fi)
           - **Integration Testing:** $(if [ "${{ needs.comprehensive-testing.result }}" = "success" ]; then echo "✅ PASSED"; else echo "❌ FAILED"; fi)
           - **Security Testing:** $(if [ "${{ needs.security-testing.result }}" = "success" ]; then echo "✅ PASSED"; else echo "❌ FAILED"; fi)
-          
+
           ## Government Compliance
           - **FedRAMP Ready:** $(if [ "${{ needs.code-quality.outputs.quality-score }}" -ge "95" ]; then echo "✅ YES"; else echo "❌ NO"; fi)
           - **SOC2 Compliant:** $(if [ "${{ needs.security-testing.result }}" = "success" ]; then echo "✅ YES"; else echo "❌ NO"; fi)
           - **Production Ready:** $(if [ "${{ needs.comprehensive-testing.result }}" = "success" ] && [ "${{ needs.security-testing.result }}" = "success" ]; then echo "✅ YES"; else echo "❌ NO"; fi)
-          
+
           ## Recommendations
           $(if [ "${{ needs.code-quality.outputs.quality-score }}" -lt "${{ env.QUALITY_THRESHOLD }}" ]; then echo "- Improve code quality to meet government standards"; fi)
           $(if [ "${{ needs.comprehensive-testing.result }}" != "success" ]; then echo "- Address test failures before deployment"; fi)
           $(if [ "${{ needs.security-testing.result }}" != "success" ]; then echo "- Resolve security issues before production"; fi)
-          
+
           ## THE TERRAFUSION WAY
           This system demonstrates systematic excellence in:
           - Government-grade code quality standards
@@ -381,19 +381,19 @@ jobs:
           - Enterprise security validation
           - Production deployment readiness
           EOF
-          
+
           cat qa-summary-report.md
-      
+
       - name: Upload Final QA Report
         uses: actions/upload-artifact@v4
         with:
           name: qa-summary-report
           path: qa-summary-report.md
-      
+
       - name: QA Status Check
         run: |
           quality_score=${{ needs.code-quality.outputs.quality-score }}
-          
+
           if [ "$quality_score" -ge "${{ env.QUALITY_THRESHOLD }}" ] && \
              [ "${{ needs.comprehensive-testing.result }}" = "success" ] && \
              [ "${{ needs.security-testing.result }}" = "success" ]; then

@@ -39,8 +39,8 @@ public class QuantumNotebookRepository : IQuantumNotebookRepository
     }
 
     public async Task<IEnumerable<QuantumNotebook>> GetByUserIdAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         bool includeArchived = false,
         CancellationToken cancellationToken = default)
     {
@@ -58,7 +58,7 @@ public class QuantumNotebookRepository : IQuantumNotebookRepository
     }
 
     public async Task<IEnumerable<QuantumNotebook>> GetByCountyIdAsync(
-        int countyId,
+        Guid countyId,
         bool includeArchived = false,
         CancellationToken cancellationToken = default)
     {
@@ -77,8 +77,8 @@ public class QuantumNotebookRepository : IQuantumNotebookRepository
     }
 
     public async Task<IEnumerable<QuantumNotebook>> GetByLanguageAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string language,
         CancellationToken cancellationToken = default)
     {
@@ -92,8 +92,8 @@ public class QuantumNotebookRepository : IQuantumNotebookRepository
     }
 
     public async Task<IEnumerable<QuantumNotebook>> SearchAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string searchTerm,
         CancellationToken cancellationToken = default)
     {
@@ -110,8 +110,8 @@ public class QuantumNotebookRepository : IQuantumNotebookRepository
     }
 
     public async Task<IEnumerable<QuantumNotebook>> GetFavoritesAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default)
     {
         return await _context.QuantumNotebooks
@@ -167,8 +167,8 @@ public class QuantumNotebookRepository : IQuantumNotebookRepository
 
     public async Task<bool> HasAccessAsync(
         int notebookId,
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default)
     {
         return await _context.QuantumNotebooks
@@ -179,8 +179,8 @@ public class QuantumNotebookRepository : IQuantumNotebookRepository
     }
 
     public async Task<int> GetCountAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default)
     {
         return await _context.QuantumNotebooks

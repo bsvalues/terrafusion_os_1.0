@@ -1,7 +1,6 @@
 {
   "TRE": "CSSFAA",
-  "Source": [
-  "STDI-0006 Apr2014, 3.7"],
+  "Source": ["STDI-0006 Apr2014, 3.7"],
   "Name": "Sensor Field Alignment Data TRE",
   "Description": "The Sensor Field Alignment Data TRE (CSSFAA) provides information on detectors, sensor type, and field alignment including fields for the focal length and principal point offset components. This TRE provides global information for the entire NITF dataset.",
   "Size": 107,
@@ -29,14 +28,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "M",
-            "R",
-            "G",
-            "B",
-            "N",
-            " "
-          ]
+          "Values": ["M", "R", "G", "B", "N", " "]
         }
       ]
     },

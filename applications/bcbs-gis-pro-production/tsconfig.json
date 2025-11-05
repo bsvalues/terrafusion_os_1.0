@@ -20,7 +20,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    
+
     /* Paths */
     "baseUrl": ".",
     "paths": {
@@ -29,6 +29,11 @@
       "@assets/*": ["attached_assets/*"]
     }
   },
-  "include": ["client/src/**/*.ts", "client/src/**/*.tsx", "server/**/*.ts", "shared/**/*.ts"],
+  "include": [
+    "client/src/**/*.ts",
+    "client/src/**/*.tsx",
+    "server/**/*.ts",
+    "shared/**/*.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

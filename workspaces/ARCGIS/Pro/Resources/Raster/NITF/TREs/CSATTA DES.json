@@ -5,7 +5,7 @@
   "Description": "The Attitude Data DES (CSATTA) provides sensor attitude information needed to run the rigorous math model to perform geolocation and mensuration. This DES provides global information for the entire NITF dataset. The Attitude Data DES (CSATTA) can be repeated as necessary if the number of attitude reference points exceeds 9999 in order to contain all attitude data.",
   "Size": 52,
   "Fields": {
-    "DE" : {
+    "DE": {
       "Name": "File Part Type",
       "Description": "This field shall contain the characters DE to edientify the subheader as a data extension.",
       "Size": 2,
@@ -57,7 +57,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["T", "S", "C","R","U"]
+          "Values": ["T", "S", "C", "R", "U"]
         }
       ]
     },
@@ -169,7 +169,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["S", "C","R"]
+          "Values": ["S", "C", "R"]
         }
       ]
     },
@@ -341,7 +341,7 @@
           "Values": ""
         }
       ]
-    },    
+    },
     "NUM_ATT": {
       "Name": "Number of Attitude Reference Points",
       "Description": "This field represents the number of attitude reference points throughout the scan interval.",
@@ -353,7 +353,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max":9999
+          "Max": 9999
         }
       ]
     },
@@ -366,7 +366,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                 
+          "Type": "Double"
         }
       ]
     },
@@ -379,7 +379,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                 
+          "Type": "Double"
         }
       ]
     },
@@ -392,7 +392,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                 
+          "Type": "Double"
         }
       ]
     },
@@ -405,7 +405,7 @@
       "Units": [],
       "Values": [
         {
-          "Type": "Double"                 
+          "Type": "Double"
         }
       ]
     },
@@ -420,7 +420,7 @@
         {
           "Type": "Double",
           "Values": ["IMAGE SHAPE", "CLOUD SHAPE"]
-        }  
+        }
       ]
     },
     "SHAPE_CLASS": {
@@ -434,7 +434,7 @@
         {
           "Type": "Value",
           "Values": ["POLYGON"]
-        }  
+        }
       ]
     },
     "CC_SOURCE": {
@@ -448,7 +448,7 @@
         {
           "Type": "Value",
           "Values": ["PAN", "MS", "CAVIS", "SWIR"]
-        }  
+        }
       ]
     },
     "SHAPE1_NAME": {
@@ -462,7 +462,7 @@
         {
           "Type": "Value",
           "Values": ["SHP", "SHX", "DBF"]
-        }  
+        }
       ]
     },
     "SHAPE1_START": {
@@ -476,7 +476,7 @@
         {
           "Type": "Value",
           "Values": ["."]
-        }  
+        }
       ]
     },
     "SHAPE2_NAME": {
@@ -489,8 +489,8 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": ["SHP","SHX", "DBF"]
-        }  
+          "Values": ["SHP", "SHX", "DBF"]
+        }
       ]
     },
     "SHAPE2_START": {
@@ -504,7 +504,7 @@
         {
           "Type": "Value",
           "Values": ["."]
-        }  
+        }
       ]
     },
     "SHAPE3_NAME": {
@@ -518,7 +518,7 @@
         {
           "Type": "Value",
           "Values": ["SHP", "SHX,", "DBF"]
-        }  
+        }
       ]
     },
     "SHAPE3_START": {
@@ -532,8 +532,8 @@
         {
           "Type": "Value",
           "Values": ["."]
-        }  
+        }
       ]
-    }       
+    }
   }
 }

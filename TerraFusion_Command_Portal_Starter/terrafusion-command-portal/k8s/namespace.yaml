@@ -6,15 +6,15 @@ metadata:
     name: terrafusion-system
     app.kubernetes.io/name: terrafusion
     app.kubernetes.io/part-of: terrafusion-platform
-    app.kubernetes.io/version: "1.0.0"
-    security.terrafusion.gov/compliance-level: "fedramp-moderate"
-    security.terrafusion.gov/data-classification: "cui-basic"
+    app.kubernetes.io/version: '1.0.0'
+    security.terrafusion.gov/compliance-level: 'fedramp-moderate'
+    security.terrafusion.gov/data-classification: 'cui-basic'
   annotations:
-    terrafusion.gov/environment: "production"
-    terrafusion.gov/compliance: "fedramp-moderate"
-    terrafusion.gov/audit-required: "true"
-    terrafusion.gov/retention-policy: "7-years"
-    scheduler.alpha.kubernetes.io/node-selector: "security-zone=government"
+    terrafusion.gov/environment: 'production'
+    terrafusion.gov/compliance: 'fedramp-moderate'
+    terrafusion.gov/audit-required: 'true'
+    terrafusion.gov/retention-policy: '7-years'
+    scheduler.alpha.kubernetes.io/node-selector: 'security-zone=government'
 
 ---
 # Resource Quota for Government-Grade Resource Management
@@ -25,15 +25,15 @@ metadata:
   namespace: terrafusion-system
 spec:
   hard:
-    requests.cpu: "4"
+    requests.cpu: '4'
     requests.memory: 8Gi
-    limits.cpu: "8"
+    limits.cpu: '8'
     limits.memory: 16Gi
-    persistentvolumeclaims: "10"
-    services: "20"
-    secrets: "50"
-    configmaps: "50"
-    pods: "50"
+    persistentvolumeclaims: '10'
+    services: '20'
+    secrets: '50'
+    configmaps: '50'
+    pods: '50'
 
 ---
 # Limit Range for Security and Performance
@@ -44,28 +44,28 @@ metadata:
   namespace: terrafusion-system
 spec:
   limits:
-  - type: Container
-    default:
-      cpu: "1"
-      memory: "1Gi"
-    defaultRequest:
-      cpu: "100m"
-      memory: "128Mi"
-    max:
-      cpu: "4"
-      memory: "4Gi"
-    min:
-      cpu: "50m"
-      memory: "64Mi"
-  - type: Pod
-    max:
-      cpu: "8"
-      memory: "8Gi"
-  - type: PersistentVolumeClaim
-    min:
-      storage: "1Gi"
-    max:
-      storage: "100Gi"
+    - type: Container
+      default:
+        cpu: '1'
+        memory: '1Gi'
+      defaultRequest:
+        cpu: '100m'
+        memory: '128Mi'
+      max:
+        cpu: '4'
+        memory: '4Gi'
+      min:
+        cpu: '50m'
+        memory: '64Mi'
+    - type: Pod
+      max:
+        cpu: '8'
+        memory: '8Gi'
+    - type: PersistentVolumeClaim
+      min:
+        storage: '1Gi'
+      max:
+        storage: '100Gi'
 
 ---
 # Pod Security Policy for Government Compliance
@@ -112,6 +112,6 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   # Default deny all - specific allows must be explicitly defined

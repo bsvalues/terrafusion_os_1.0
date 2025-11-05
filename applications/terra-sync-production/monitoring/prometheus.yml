@@ -3,13 +3,13 @@ global:
   evaluation_interval: 15s
 
 rule_files:
-  - "alert_rules.yml"
+  - 'alert_rules.yml'
 
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 
 scrape_configs:
   - job_name: 'terrafusion-app'

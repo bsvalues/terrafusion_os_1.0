@@ -1,8 +1,6 @@
 {
   "TRE": "PRJPSB",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix P: GEOSDE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix P: GEOSDE"],
   "Name": "Projection Parameters",
   "Description": "The Projection Parameters (PRJPSB) TRE contains the projection parameters of the absolute coordinate system when it's a cartographic (grid) coordinate system. This extension shall be present when the coordinate units (GEOPS.UNI Field) are meters (M).",
   "Size": 113,
@@ -67,9 +65,7 @@
       "Size": 15,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters"
-      ],
+      "Units": ["meters"],
       "Values": [
         {
           "Type": "Double"
@@ -82,9 +78,7 @@
       "Size": 15,
       "Format": "BCS-N",
       "Type": "R",
-      "Units": [
-        "meters"
-      ],
+      "Units": ["meters"],
       "Values": [
         {
           "Type": "Double"

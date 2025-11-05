@@ -14,7 +14,7 @@ metadata:
     app.kubernetes.io/name: postgres-backup
     app.kubernetes.io/part-of: terrafusion-os
 spec:
-  schedule: "0 */6 * * *"  # Every 6 hours to meet RPO 1h with Velero + DB every 6h
+  schedule: '0 */6 * * *' # Every 6 hours to meet RPO 1h with Velero + DB every 6h
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 3
   jobTemplate:
@@ -34,7 +34,7 @@ spec:
               envFrom:
                 - secretRef:
                     name: postgres-backup-credentials
-              command: ["/bin/bash","-lc"]
+              command: ['/bin/bash', '-lc']
               args:
                 - |
                   set -euo pipefail
@@ -50,11 +50,11 @@ spec:
                   mountPath: /backups
               resources:
                 requests:
-                  cpu: "100m"
-                  memory: "256Mi"
+                  cpu: '100m'
+                  memory: '256Mi'
                 limits:
-                  cpu: "500m"
-                  memory: "512Mi"
+                  cpu: '500m'
+                  memory: '512Mi'
           volumes:
             - name: backups
               persistentVolumeClaim:

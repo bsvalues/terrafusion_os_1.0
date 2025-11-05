@@ -6,19 +6,11 @@
   },
   "predictive_analytics": {
     "enabled": true,
-    "features": [
-      "intrusion-detection",
-      "anomalous-access",
-      "fraud-risk"
-    ],
+    "features": ["intrusion-detection", "anomalous-access", "fraud-risk"],
     "prediction_window_days": 7,
     "confidence_threshold": 0.75,
     "update_frequency_hours": 6,
-    "models": [
-      "classification",
-      "clustering",
-      "anomaly"
-    ]
+    "models": ["classification", "clustering", "anomaly"]
   },
   "anomaly_detection": {
     "enabled": true,
@@ -42,11 +34,7 @@
     "daily_volume_gb": 1200
   },
   "ml_infrastructure": {
-    "frameworks": [
-      "scikit-learn",
-      "tensorflow",
-      "isolation-forest"
-    ],
+    "frameworks": ["scikit-learn", "tensorflow", "isolation-forest"],
     "gpu_enabled": true,
     "distributed_training": true,
     "model_registry": "enabled",
@@ -56,11 +44,7 @@
   "optimization": {
     "auto_scaling": {
       "enabled": true,
-      "metrics": [
-        "cpu",
-        "memory",
-        "request_latency"
-      ],
+      "metrics": ["cpu", "memory", "request_latency"],
       "target_utilization": 70,
       "scale_up_threshold": 80,
       "scale_down_threshold": 30,

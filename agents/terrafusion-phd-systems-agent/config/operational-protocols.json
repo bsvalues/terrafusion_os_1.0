@@ -1,0 +1,244 @@
+{
+  "protocols": {
+    "problem_solving": {
+      "name": "Evidence-Based Problem Resolution Protocol",
+      "phases": [
+        {
+          "phase": "1_discovery",
+          "name": "Comprehensive Discovery",
+          "actions": [
+            "Gather all relevant context from codebase, configs, logs",
+            "Review recent changes and system state",
+            "Collect telemetry and performance metrics",
+            "Identify all integration points and dependencies",
+            "Document current state comprehensively"
+          ],
+          "completion_criteria": "Complete understanding of problem domain with evidence"
+        },
+        {
+          "phase": "2_analysis",
+          "name": "Root Cause Analysis",
+          "actions": [
+            "Analyze symptoms against architecture patterns",
+            "Trace data flows and service interactions",
+            "Review error logs and stack traces",
+            "Validate hypotheses with diagnostic tools",
+            "Identify root causes (not just symptoms)"
+          ],
+          "completion_criteria": "Root cause identified with supporting evidence"
+        },
+        {
+          "phase": "3_planning",
+          "name": "Solution Design",
+          "actions": [
+            "Design solution following TerraFusion patterns",
+            "Consider all edge cases and failure modes",
+            "Plan for county data isolation if applicable",
+            "Design verification and testing strategy",
+            "Document rationale for all design decisions"
+          ],
+          "completion_criteria": "Complete solution design with rationale documented"
+        },
+        {
+          "phase": "4_implementation",
+          "name": "Precision Implementation",
+          "actions": [
+            "Implement solution following established conventions",
+            "Add comprehensive error handling",
+            "Include structured logging and monitoring",
+            "Write unit and integration tests",
+            "Maintain code quality standards"
+          ],
+          "completion_criteria": "Solution implemented with tests and monitoring"
+        },
+        {
+          "phase": "5_verification",
+          "name": "Exhaustive Verification",
+          "actions": [
+            "Run full test suite and verify all pass",
+            "Execute compliance validation checks",
+            "Measure performance against targets",
+            "Verify county data isolation if applicable",
+            "Validate against all acceptance criteria"
+          ],
+          "completion_criteria": "All tests pass, compliance verified, performance validated"
+        },
+        {
+          "phase": "6_documentation",
+          "name": "Comprehensive Documentation",
+          "actions": [
+            "Document implementation details and rationale",
+            "Update architectural documentation",
+            "Record performance metrics and baselines",
+            "Create operational runbooks if needed",
+            "Log decision trail for future reference"
+          ],
+          "completion_criteria": "All documentation complete and up to date"
+        }
+      ]
+    },
+    "code_implementation": {
+      "name": "Quality-First Development Protocol",
+      "standards": {
+        "architecture": [
+          "Follow microservices patterns",
+          "Maintain service isolation",
+          "Use dependency injection",
+          "Implement repository patterns for data access",
+          "Apply SOLID principles"
+        ],
+        "data_access": [
+          "Always include countyCode parameter for county-specific data",
+          "Use async/await patterns consistently",
+          "Implement proper transaction management",
+          "Apply query optimization techniques",
+          "Validate data isolation in multi-tenant scenarios"
+        ],
+        "error_handling": [
+          "Use structured exception handling",
+          "Provide meaningful error messages",
+          "Log errors with full context",
+          "Implement retry logic for transient failures",
+          "Fail fast for unrecoverable errors"
+        ],
+        "logging": [
+          "Use structured logging (Serilog)",
+          "Include correlation IDs for tracing",
+          "Log at appropriate levels (Debug, Info, Warning, Error)",
+          "Include relevant context (countyId, userId, etc.)",
+          "Sanitize sensitive data"
+        ],
+        "testing": [
+          "Write unit tests for all business logic",
+          "Create integration tests for service interactions",
+          "Include performance tests for critical paths",
+          "Validate compliance requirements",
+          "Maintain >90% code coverage"
+        ]
+      }
+    },
+    "system_verification": {
+      "name": "Multi-Layer Verification Protocol",
+      "layers": [
+        {
+          "layer": "unit",
+          "checks": [
+            "All unit tests pass",
+            "Code coverage >90%",
+            "Static analysis clean",
+            "No compiler warnings"
+          ]
+        },
+        {
+          "layer": "integration",
+          "checks": [
+            "Service interactions validated",
+            "Database operations verified",
+            "API contracts satisfied",
+            "County isolation maintained"
+          ]
+        },
+        {
+          "layer": "performance",
+          "checks": [
+            "API latency <10ms P95",
+            "Memory usage within bounds",
+            "Database query optimization verified",
+            "No N+1 query patterns"
+          ]
+        },
+        {
+          "layer": "compliance",
+          "checks": [
+            "FISMA-High requirements met",
+            "Section 508 accessibility validated",
+            "Data encryption verified",
+            "Audit logging complete"
+          ]
+        },
+        {
+          "layer": "operational",
+          "checks": [
+            "Monitoring and alerting configured",
+            "Health checks implemented",
+            "Graceful degradation tested",
+            "Disaster recovery validated"
+          ]
+        }
+      ]
+    },
+    "decision_making": {
+      "name": "Evidence-Based Decision Framework",
+      "process": [
+        {
+          "step": 1,
+          "name": "Data Collection",
+          "description": "Gather all relevant data, metrics, logs, and system state"
+        },
+        {
+          "step": 2,
+          "name": "Evidence Analysis",
+          "description": "Analyze collected evidence objectively without assumptions"
+        },
+        {
+          "step": 3,
+          "name": "Option Evaluation",
+          "description": "Evaluate all viable options with pros/cons documented"
+        },
+        {
+          "step": 4,
+          "name": "Decision",
+          "description": "Make decision based on evidence and evaluation"
+        },
+        {
+          "step": 5,
+          "name": "Rationale Documentation",
+          "description": "Document decision rationale with supporting evidence"
+        },
+        {
+          "step": 6,
+          "name": "Outcome Tracking",
+          "description": "Track decision outcomes and validate against expectations"
+        }
+      ]
+    }
+  },
+  "escalation": {
+    "triggers": [
+      "Evidence contradicts multiple assumptions",
+      "System state inconsistent with documentation",
+      "Performance degradation beyond acceptable thresholds",
+      "Compliance violation detected",
+      "Data integrity issues identified"
+    ],
+    "actions": [
+      "Halt current operation if risk of data corruption",
+      "Collect comprehensive diagnostic information",
+      "Document observed issues with evidence",
+      "Escalate to appropriate team with full context",
+      "Do not proceed with assumptions - wait for clarification"
+    ]
+  },
+  "machine_mode_enforcement": {
+    "rules": [
+      "Never mark a task complete without verification",
+      "Never defer a problem that can be fixed now",
+      "Never make assumptions - always gather evidence",
+      "Never skip documentation - it's part of the solution",
+      "Never leave broken code - fix it or rollback",
+      "Never compromise on quality - do it right the first time"
+    ],
+    "verification_checklist": [
+      "✓ All tests passing",
+      "✓ Code reviewed and compliant",
+      "✓ Performance validated",
+      "✓ Documentation updated",
+      "✓ Rationale documented",
+      "✓ Monitoring configured",
+      "✓ Error handling comprehensive",
+      "✓ County isolation verified (if applicable)",
+      "✓ No technical debt introduced",
+      "✓ Ready for production deployment"
+    ]
+  }
+}

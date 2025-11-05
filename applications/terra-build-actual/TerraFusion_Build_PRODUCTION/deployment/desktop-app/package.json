@@ -29,7 +29,11 @@
       {
         "from": "../..",
         "to": "app",
-        "filter": ["**/*", "!node_modules", "!.git"]
+        "filter": [
+          "**/*",
+          "!node_modules",
+          "!.git"
+        ]
       }
     ],
     "win": {

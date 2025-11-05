@@ -6,10 +6,7 @@
     "gateway_type": "security_gateway"
   },
   "inter_workspace_communication": {
-    "protocols": [
-      "REST",
-      "gRPC"
-    ],
+    "protocols": ["REST", "gRPC"],
     "sync_frequency_ms": 500,
     "replication_target": "critical",
     "timeout_ms": 5000,

@@ -57,15 +57,8 @@
         "security_level": "CRITICAL"
       }
     ],
-    "data_endpoints": [
-      "/cases",
-      "/documents",
-      "/hearings",
-      "/judgments"
-    ],
-    "integration_points": [
-      "/api/v1/legal/integration"
-    ]
+    "data_endpoints": ["/cases", "/documents", "/hearings", "/judgments"],
+    "integration_points": ["/api/v1/legal/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

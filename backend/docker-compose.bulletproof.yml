@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 # 🛡️ BULLETPROOF TERRAFUSION OS - SERVICE MESH ARCHITECTURE
 # Championship-Level Resilience with Istio Sidecar Proxies
@@ -10,24 +10,24 @@ x-common-variables: &common-variables
   ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
 
   # Service Mesh Configuration
-  ISTIO_SIDECAR_ENABLED: "true"
-  SERVICE_MESH_NAMESPACE: "terrafusion-system"
-  MTLS_MODE: "STRICT"
+  ISTIO_SIDECAR_ENABLED: 'true'
+  SERVICE_MESH_NAMESPACE: 'terrafusion-system'
+  MTLS_MODE: 'STRICT'
 
   # Circuit Breaker Settings
-  CIRCUIT_BREAKER_ENABLED: "true"
-  CIRCUIT_BREAKER_THRESHOLD: "5"
-  CIRCUIT_BREAKER_TIMEOUT: "30s"
+  CIRCUIT_BREAKER_ENABLED: 'true'
+  CIRCUIT_BREAKER_THRESHOLD: '5'
+  CIRCUIT_BREAKER_TIMEOUT: '30s'
 
   # Retry Policy Configuration
-  RETRY_ATTEMPTS: "3"
-  RETRY_BACKOFF: "exponential"
-  RETRY_MAX_INTERVAL: "10s"
+  RETRY_ATTEMPTS: '3'
+  RETRY_BACKOFF: 'exponential'
+  RETRY_MAX_INTERVAL: '10s'
 
   # Health Check Configuration
-  HEALTH_CHECK_INTERVAL: "10s"
-  HEALTH_CHECK_TIMEOUT: "5s"
-  HEALTH_CHECK_RETRIES: "3"
+  HEALTH_CHECK_INTERVAL: '10s'
+  HEALTH_CHECK_TIMEOUT: '5s'
+  HEALTH_CHECK_RETRIES: '3'
 
   # Database Configuration (Multi-Master Setup)
   POSTGRES_PRIMARY_HOST: postgres-primary
@@ -38,14 +38,14 @@ x-common-variables: &common-variables
   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-TerraFusion2024!}
 
   # Cache Configuration (Redis Cluster)
-  REDIS_CLUSTER_ENABLED: "true"
+  REDIS_CLUSTER_ENABLED: 'true'
   REDIS_PRIMARY_HOST: redis-primary
   REDIS_REPLICA_HOST: redis-replica
   REDIS_PORT: 6379
   REDIS_PASSWORD: ${REDIS_PASSWORD:-TerraFusion2024!}
 
   # Message Broker (RabbitMQ Cluster)
-  RABBITMQ_CLUSTER_ENABLED: "true"
+  RABBITMQ_CLUSTER_ENABLED: 'true'
   RABBITMQ_PRIMARY_HOST: rabbitmq-primary
   RABBITMQ_REPLICA_HOST: rabbitmq-replica
   RABBITMQ_PORT: 5672
@@ -57,18 +57,18 @@ x-common-variables: &common-variables
   ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your-256-bit-encryption-key}
 
   # Government Compliance
-  FISMA_COMPLIANCE_LEVEL: "HIGH"
-  FEDRAMP_AUTHORIZATION: "MODERATE"
-  AUDIT_LOGGING_ENABLED: "true"
-  DATA_CLASSIFICATION: "OFFICIAL"
+  FISMA_COMPLIANCE_LEVEL: 'HIGH'
+  FEDRAMP_AUTHORIZATION: 'MODERATE'
+  AUDIT_LOGGING_ENABLED: 'true'
+  DATA_CLASSIFICATION: 'OFFICIAL'
 
 x-common-labels: &common-labels
-  - "traefik.enable=true"
-  - "terrafusion.system=bulletproof-mesh"
-  - "terrafusion.version=1.0"
-  - "government.compliance=FISMA-HIGH"
-  - "security.classification=OFFICIAL"
-  - "mesh.sidecar=istio-proxy"
+  - 'traefik.enable=true'
+  - 'terrafusion.system=bulletproof-mesh'
+  - 'terrafusion.version=1.0'
+  - 'government.compliance=FISMA-HIGH'
+  - 'security.classification=OFFICIAL'
+  - 'mesh.sidecar=istio-proxy'
 
 x-health-check: &health-check
   interval: 30s
@@ -80,10 +80,10 @@ x-resource-limits: &resource-limits
   deploy:
     resources:
       limits:
-        cpus: "1.0"
+        cpus: '1.0'
         memory: 1G
       reservations:
-        cpus: "0.25"
+        cpus: '0.25'
         memory: 256M
     restart_policy:
       condition: on-failure
@@ -95,7 +95,7 @@ networks:
   terrafusion-mesh:
     driver: overlay
     driver_opts:
-      encrypted: "true"
+      encrypted: 'true'
     ipam:
       config:
         - subnet: 172.30.0.0/16
@@ -103,7 +103,7 @@ networks:
   terrafusion-backend:
     driver: overlay
     driver_opts:
-      encrypted: "true"
+      encrypted: 'true'
     internal: true
     ipam:
       config:
@@ -132,13 +132,13 @@ services:
     networks:
       - terrafusion-mesh
     ports:
-      - "15010:15010" # gRPC
-      - "15011:15011" # HTTPS
-      - "8080:8080" # HTTP debugging
+      - '15010:15010' # gRPC
+      - '15011:15011' # HTTPS
+      - '8080:8080' # HTTP debugging
     environment:
-      PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION: "true"
-      PILOT_ENABLE_CROSS_CLUSTER_WORKLOAD_ENTRY: "true"
-      EXTERNAL_ISTIOD: "false"
+      PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION: 'true'
+      PILOT_ENABLE_CROSS_CLUSTER_WORKLOAD_ENTRY: 'true'
+      EXTERNAL_ISTIOD: 'false'
     volumes:
       - istio-certs:/etc/ssl/certs
     command: >
@@ -149,7 +149,7 @@ services:
       --keepaliveMaxServerConnectionAge=30m
     labels: *common-labels
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/ready"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/ready']
       <<: *health-check
 
   # Istio Proxy (Sidecar for services)
@@ -160,8 +160,8 @@ services:
     networks:
       - terrafusion-mesh
     environment:
-      PILOT_CERT_PROVIDER: "istiod"
-      CA_ADDR: "istio-pilot:15011"
+      PILOT_CERT_PROVIDER: 'istiod'
+      CA_ADDR: 'istio-pilot:15011'
     labels: *common-labels
 
   # ==================================================
@@ -176,7 +176,7 @@ services:
     networks:
       - terrafusion-backend
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres-primary-data:/var/lib/postgresql/data
       - ./database/init:/docker-entrypoint-initdb.d
@@ -196,7 +196,7 @@ services:
       -c shared_preload_libraries=pg_stat_statements
     labels: *common-labels
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      test: ['CMD-SHELL', 'pg_isready -U $POSTGRES_USER -d $POSTGRES_DB']
       <<: *health-check
     <<: *resource-limits
 
@@ -208,7 +208,7 @@ services:
     networks:
       - terrafusion-backend
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - postgres-replica-data:/var/lib/postgresql/data
     environment:
@@ -221,7 +221,7 @@ services:
       - postgres-primary
     labels: *common-labels
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      test: ['CMD-SHELL', 'pg_isready -U $POSTGRES_USER -d $POSTGRES_DB']
       <<: *health-check
     <<: *resource-limits
 
@@ -233,7 +233,7 @@ services:
     networks:
       - terrafusion-backend
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis-primary-data:/data
       - ./redis/redis-primary.conf:/usr/local/etc/redis/redis.conf
@@ -245,7 +245,7 @@ services:
       --replica-announce-port 6379
     labels: *common-labels
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
       <<: *health-check
     <<: *resource-limits
 
@@ -257,7 +257,7 @@ services:
     networks:
       - terrafusion-backend
     ports:
-      - "6380:6379"
+      - '6380:6379'
     volumes:
       - redis-replica-data:/data
       - ./redis/redis-replica.conf:/usr/local/etc/redis/redis.conf
@@ -270,7 +270,7 @@ services:
       - redis-primary
     labels: *common-labels
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
       <<: *health-check
     <<: *resource-limits
 
@@ -289,14 +289,14 @@ services:
       - terrafusion-mesh
       - terrafusion-backend
     ports:
-      - "5000:5000"
-      - "15090:15090" # Envoy admin
+      - '5000:5000'
+      - '15090:15090' # Envoy admin
     environment:
       <<: *common-variables
       SERVICE_NAME: gateway
       SERVICE_PORT: 5000
       OCELOT_CONFIG_PATH: /app/ocelot.bulletproof.json
-      ISTIO_SIDECAR_ENABLED: "true"
+      ISTIO_SIDECAR_ENABLED: 'true'
     depends_on:
       - istio-pilot
       - postgres-primary
@@ -305,16 +305,16 @@ services:
       - ./configs/ocelot.bulletproof.json:/app/ocelot.bulletproof.json
       - ./configs/envoy-sidecar.yaml:/etc/envoy/envoy.yaml
     labels:
-      - "traefik.enable=true"
-      - "terrafusion.system=bulletproof-mesh"
-      - "terrafusion.version=1.0"
-      - "government.compliance=FISMA-HIGH"
-      - "security.classification=OFFICIAL"
-      - "mesh.sidecar=istio-proxy"
-      - "traefik.http.routers.gateway.rule=Host(`api.terrafusion.gov`)"
-      - "traefik.http.services.gateway.loadbalancer.server.port=5000"
+      - 'traefik.enable=true'
+      - 'terrafusion.system=bulletproof-mesh'
+      - 'terrafusion.version=1.0'
+      - 'government.compliance=FISMA-HIGH'
+      - 'security.classification=OFFICIAL'
+      - 'mesh.sidecar=istio-proxy'
+      - 'traefik.http.routers.gateway.rule=Host(`api.terrafusion.gov`)'
+      - 'traefik.http.services.gateway.loadbalancer.server.port=5000'
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:5000/health']
       <<: *health-check
     <<: *resource-limits
 
@@ -329,14 +329,14 @@ services:
       - terrafusion-mesh
       - terrafusion-backend
     ports:
-      - "5001:5001"
-      - "15091:15090" # Envoy admin
+      - '5001:5001'
+      - '15091:15090' # Envoy admin
     environment:
       <<: *common-variables
       SERVICE_NAME: terrafusion-api
       SERVICE_PORT: 5001
-      CONNECTION_STRING: "Host=postgres-primary;Database=terrafusion_os;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
-      REDIS_CONNECTION: "redis-primary:6379,password=${REDIS_PASSWORD}"
+      CONNECTION_STRING: 'Host=postgres-primary;Database=terrafusion_os;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}'
+      REDIS_CONNECTION: 'redis-primary:6379,password=${REDIS_PASSWORD}'
     depends_on:
       - istio-pilot
       - postgres-primary
@@ -344,7 +344,7 @@ services:
       - terrafusion-gateway
     labels: *common-labels
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:5001/health']
       <<: *health-check
     <<: *resource-limits
 
@@ -359,21 +359,21 @@ services:
       - terrafusion-mesh
       - terrafusion-backend
     ports:
-      - "5002:5002"
-      - "15092:15090" # Envoy admin
+      - '5002:5002'
+      - '15092:15090' # Envoy admin
     environment:
       <<: *common-variables
       SERVICE_NAME: elite-operations
       SERVICE_PORT: 5002
       AI_AGENT_COUNT: 10008
-      PERFORMANCE_MONITORING: "enabled"
+      PERFORMANCE_MONITORING: 'enabled'
     depends_on:
       - istio-pilot
       - postgres-primary
       - redis-primary
     labels: *common-labels
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:5002/health']
       <<: *health-check
     <<: *resource-limits
 
@@ -388,14 +388,14 @@ services:
       - terrafusion-mesh
       - terrafusion-backend
     ports:
-      - "5003:5003"
-      - "15093:15090" # Envoy admin
+      - '5003:5003'
+      - '15093:15090' # Envoy admin
     environment:
       <<: *common-variables
       SERVICE_NAME: ai-intelligence
       SERVICE_PORT: 5003
       AI_MODEL_PATH: /app/models
-      QUANTUM_OPTIMIZATION: "enabled"
+      QUANTUM_OPTIMIZATION: 'enabled'
     depends_on:
       - istio-pilot
       - postgres-primary
@@ -404,7 +404,7 @@ services:
       - ./ai-models:/app/models:ro
     labels: *common-labels
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5003/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:5003/health']
       <<: *health-check
     <<: *resource-limits
 
@@ -420,30 +420,23 @@ services:
     networks:
       - terrafusion-mesh
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - prometheus-data:/prometheus
       - ./monitoring/prometheus-bulletproof.yml:/etc/prometheus/prometheus.yml
       - ./monitoring/rules:/etc/prometheus/rules
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--storage.tsdb.retention.time=720h"
-      - "--web.console.libraries=/etc/prometheus/console_libraries"
-      - "--web.console.templates=/etc/prometheus/consoles"
-      - "--web.enable-lifecycle"
-      - "--web.enable-admin-api"
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=720h'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
     labels: *common-labels
     healthcheck:
       test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:9090/-/healthy",
-        ]
+        ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:9090/-/healthy']
       <<: *health-check
 
   # Grafana with Bulletproof Dashboards
@@ -454,7 +447,7 @@ services:
     networks:
       - terrafusion-mesh
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - grafana-data:/var/lib/grafana
       - ./monitoring/grafana/dashboards-bulletproof:/etc/grafana/provisioning/dashboards
@@ -462,13 +455,13 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-TerraFusion2024!}
-      GF_INSTALL_PLUGINS: "grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel"
-      GF_FEATURE_TOGGLES_ENABLE: "ngalert"
+      GF_INSTALL_PLUGINS: 'grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel'
+      GF_FEATURE_TOGGLES_ENABLE: 'ngalert'
     depends_on:
       - prometheus
     labels: *common-labels
     healthcheck:
-      test: ["CMD-SHELL", "curl -f localhost:3000/api/health"]
+      test: ['CMD-SHELL', 'curl -f localhost:3000/api/health']
       <<: *health-check
 
   # Jaeger for Distributed Tracing
@@ -479,23 +472,15 @@ services:
     networks:
       - terrafusion-mesh
     ports:
-      - "16686:16686" # UI
-      - "14268:14268" # HTTP collector
-      - "14250:14250" # gRPC collector
+      - '16686:16686' # UI
+      - '14268:14268' # HTTP collector
+      - '14250:14250' # gRPC collector
     environment:
-      COLLECTOR_OTLP_ENABLED: "true"
-      COLLECTOR_ZIPKIN_HOST_PORT: ":9411"
+      COLLECTOR_OTLP_ENABLED: 'true'
+      COLLECTOR_ZIPKIN_HOST_PORT: ':9411'
     labels: *common-labels
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:16686/",
-        ]
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:16686/']
       <<: *health-check
 
 # ==================================================

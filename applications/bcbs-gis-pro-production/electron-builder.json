@@ -160,13 +160,7 @@
     "grade": "stable",
     "summary": "Enterprise GIS Platform for Civil Infrastructure",
     "description": "Terrafusion provides advanced geospatial data processing with intelligent document management for county assessor offices.",
-    "plugs": [
-      "default",
-      "network",
-      "network-bind",
-      "home",
-      "removable-media"
-    ]
+    "plugs": ["default", "network", "network-bind", "home", "removable-media"]
   },
   "publish": [
     {

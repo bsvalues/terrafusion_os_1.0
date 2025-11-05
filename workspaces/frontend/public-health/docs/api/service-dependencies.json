@@ -63,9 +63,7 @@
       "/health-alerts",
       "/inspections"
     ],
-    "integration_points": [
-      "/api/v1/public-health/integration"
-    ]
+    "integration_points": ["/api/v1/public-health/integration"]
   },
   "communication_patterns": {
     "sync_apis": true,

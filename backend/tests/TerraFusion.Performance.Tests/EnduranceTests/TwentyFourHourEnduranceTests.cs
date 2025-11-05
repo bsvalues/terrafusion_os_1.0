@@ -3,19 +3,22 @@ using FluentAssertions;
 using System.Diagnostics;
 using System.Collections.Concurrent;
 using TerraFusion.Core.Models;
+using TerraFusion.Core.Interfaces;
+// Resolve type ambiguity: Use property valuation types from interface namespace
+using PropertyValuationRequest = TerraFusion.Core.Interfaces.PropertyValuationRequest;
 
 namespace TerraFusion.Performance.Tests.EnduranceTests;
 
 /// <summary>
 /// ⏱️ 24-Hour Endurance Testing - Government. Transcended. Reliability
-/// 
+///
 /// Validates system stability and performance over extended operation periods:
 /// - 24-Hour Continuous Operation: Maintain <2s P95 latency, <5% error rate
 /// - Memory Leak Detection: <1GB memory growth over 24 hours
 /// - Resource Exhaustion Prevention: Validate proper connection/resource cleanup
 /// - Performance Degradation Monitoring: Ensure consistent performance over time
 /// - Error Rate Stability: Validate error rate remains stable (no accumulation)
-/// 
+///
 /// Endurance test simulates realistic government operations:
 /// - Continuous property valuations across multiple counties
 /// - Mixed load patterns (peak hours, off-hours)

@@ -12,11 +12,11 @@ metadata:
   name: frontend-config
   namespace: terrafusion-frontend
 data:
-  NEXT_PUBLIC_API_URL: "https://api.terrafusion.gov"
-  NEXT_PUBLIC_WS_URL: "wss://api.terrafusion.gov"
-  NEXT_PUBLIC_APP_VERSION: "2.0.0"
-  NEXT_PUBLIC_APP_NAME: "TerraFusion Platform"
-  NODE_ENV: "production"
+  NEXT_PUBLIC_API_URL: 'https://api.terrafusion.gov'
+  NEXT_PUBLIC_WS_URL: 'wss://api.terrafusion.gov'
+  NEXT_PUBLIC_APP_VERSION: '2.0.0'
+  NEXT_PUBLIC_APP_NAME: 'TerraFusion Platform'
+  NODE_ENV: 'production'
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -25,7 +25,7 @@ metadata:
   namespace: terrafusion-frontend
   labels:
     app: terrafusion-frontend
-    version: "2.0.0"
+    version: '2.0.0'
 spec:
   replicas: 3
   selector:
@@ -35,73 +35,73 @@ spec:
     metadata:
       labels:
         app: terrafusion-frontend
-        version: "2.0.0"
+        version: '2.0.0'
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "80"
-        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '80'
+        prometheus.io/path: '/metrics'
     spec:
       containers:
-      - name: terrafusion-frontend
-        image: terrafusion/frontend:2.0.0
-        ports:
-        - containerPort: 80
-          name: http
-        - containerPort: 443
-          name: https
-        env:
-        - name: NEXT_PUBLIC_API_URL
-          valueFrom:
-            configMapKeyRef:
-              name: frontend-config
-              key: NEXT_PUBLIC_API_URL
-        - name: NEXT_PUBLIC_WS_URL
-          valueFrom:
-            configMapKeyRef:
-              name: frontend-config
-              key: NEXT_PUBLIC_WS_URL
-        - name: NODE_ENV
-          valueFrom:
-            configMapKeyRef:
-              name: frontend-config
-              key: NODE_ENV
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 2
-        volumeMounts:
-        - name: nginx-config
-          mountPath: /etc/nginx/conf.d
-          readOnly: true
-        - name: ssl-certs
-          mountPath: /etc/nginx/ssl
-          readOnly: true
+        - name: terrafusion-frontend
+          image: terrafusion/frontend:2.0.0
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: NEXT_PUBLIC_API_URL
+            - name: NEXT_PUBLIC_WS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: NEXT_PUBLIC_WS_URL
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: NODE_ENV
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+            - name: ssl-certs
+              mountPath: /etc/nginx/ssl
+              readOnly: true
       volumes:
-      - name: nginx-config
-        configMap:
-          name: nginx-config
-      - name: ssl-certs
-        secret:
-          secretName: frontend-tls
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: ssl-certs
+          secret:
+            secretName: frontend-tls
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -115,14 +115,14 @@ spec:
   selector:
     app: terrafusion-frontend
   ports:
-  - name: http
-    port: 80
-    targetPort: 80
-    protocol: TCP
-  - name: https
-    port: 443
-    targetPort: 443
-    protocol: TCP
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: 443
+      protocol: TCP
   type: ClusterIP
 ---
 apiVersion: v1
@@ -135,13 +135,13 @@ data:
     upstream backend {
         server terrafusion-service.terrafusion:80;
     }
-    
+
     server {
         listen 80;
         server_name _;
         return 301 https://$host$request_uri;
     }
-    
+
     server {
         listen 443 ssl http2;
         server_name app.terrafusion.gov;
@@ -235,39 +235,39 @@ metadata:
   name: terrafusion-frontend-ingress
   namespace: terrafusion-frontend
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/rate-limit: "100"
-    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/rate-limit: '100'
+    nginx.ingress.kubernetes.io/rate-limit-window: '1m'
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
+    nginx.ingress.kubernetes.io/proxy-body-size: '50m'
 spec:
   tls:
-  - hosts:
-    - app.terrafusion.gov
-    - terrafusion.gov
-    secretName: frontend-tls
+    - hosts:
+        - app.terrafusion.gov
+        - terrafusion.gov
+      secretName: frontend-tls
   rules:
-  - host: app.terrafusion.gov
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-frontend-service
-            port:
-              number: 443
-  - host: terrafusion.gov
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: terrafusion-frontend-service
-            port:
-              number: 443
+    - host: app.terrafusion.gov
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-frontend-service
+                port:
+                  number: 443
+    - host: terrafusion.gov
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-frontend-service
+                port:
+                  number: 443
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -282,31 +282,31 @@ spec:
   minReplicas: 2
   maxReplicas: 15
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 60
       policies:
-      - type: Percent
-        value: 100
-        periodSeconds: 60
+        - type: Percent
+          value: 100
+          periodSeconds: 60
     scaleDown:
       stabilizationWindowSeconds: 300
       policies:
-      - type: Percent
-        value: 50
-        periodSeconds: 60
+        - type: Percent
+          value: 50
+          periodSeconds: 60
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget

@@ -1,762 +1,762 @@
 {
-    "multiplier": 1.0,
-    "tools": [
+  "multiplier": 1.0,
+  "tools": [
+    {
+      "name": "CreateBuffers",
+      "parameters": [
         {
-            "name": "CreateBuffers",
-            "parameters": [
-                {
-                    "name": "InputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
+          "name": "InputLayer",
+          "type": "layer"
         },
         {
-            "name": "AggregatePoints",
-            "parameters": [
-                {
-                    "name": "PointLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "PolygonLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "binType",
-                    "type": "string",
-                    "optional": true
-                },
-                {
-                    "name": "binSize",
-                    "type": "double",
-                    "optional": true
-                },
-                {
-                    "name": "binSizeUnit",
-                    "type": "string",
-                    "optional": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "aggregatepoints",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "OverlayLayers",
-            "parameters": [
-                {
-                    "name": "InputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "OverlayLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "MergeLayers",
-            "parameters": [
-                {
-                    "name": "InputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "MergeLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "MergeLayers",
-                    "type": "layer",
-                    "multivalue": true,
-                    "optional": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "ExtractData",
-            "parameters": [
-                {
-                    "name": "InputLayers",
-                    "type": "layer",
-                    "multivalue": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                },
-                {
-                    "name": "Extent",
-                    "type": "extent",
-                    "optional": true
-                }
-            ],
-            "function": "extractdata",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "DissolveBoundaries",
-            "parameters": [
-                {
-                    "name": "InputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "SummarizeWithin",
-            "parameters": [
-                {
-                    "name": "sumWithinLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "summaryLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "binType",
-                    "type": "string",
-                    "optional": true
-                },
-                {
-                    "name": "binSize",
-                    "type": "double",
-                    "optional": true
-                },
-                {
-                    "name": "binSizeUnit",
-                    "type": "string",
-                    "optional": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "summarizewithin",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "CreateDriveTimeAreas",
-            "parameters": [
-                {
-                    "name": "InputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "BreakValues",
-                    "type": "double",
-                    "optional": true,
-                    "multivalue": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "createdrivetimeareas",
-            "nolog": true,
-            "multiplier": 0.5,
-            "description": ""
-        },
-        {
-            "name": "EnrichLayer",
-            "parameters": [
-                {
-                    "name": "InputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "dataCollections",
-                    "type": "string",
-                    "multivalue": true,
-                    "optional": true
-                },
-                {
-                    "name": "analysisVariables",
-                    "type": "string",
-                    "multivalue": true,
-                    "optional": true
-                },
-                {
-                    "name": "country",
-                    "type": "string",
-                    "optional": true
-                },
-                {
-                    "name": "bufferType",
-                    "type": "string",
-                    "optional": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "enrichlayer",
-            "nolog": true,
-            "multiplier": 0.01,
-            "info": {
-                "namultiplier": 0.5
-            },
-            "description": ""
-        },
-        {
-            "name": "SummarizeNearby",
-            "parameters": [
-                {
-                    "name": "sumNearbyLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "summaryLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "nearType",
-                    "type": "string",
-                    "optional": true
-                },
-                {
-                    "name": "distances",
-                    "type": "double",
-                    "multivalue": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "summarizenearby",
-            "multiplier": 0.001,
-            "info": {
-                "namultiplier": 0.5
-            },
-            "description": ""
-        },
-        {
-            "name": "FindNearest",
-            "parameters": [
-                {
-                    "name": "analysisLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "nearLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "measurementType",
-                    "type": "string"
-                },
-                {
-                    "name": "maxCount",
-                    "type": "long",
-                    "optional": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "findnearest",
-            "multiplier": 0.001,
-            "description": "",
-            "info": {
-                "namultiplier": 0.5
-            }
-        },
-        {
-            "name": "FindHotSpots",
-            "parameters": [
-                {
-                    "name": "AnalysisLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "BoundingPolygonLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "AggregationPolygonLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "FindExistingLocations",
-            "parameters": [
-                {
-                    "name": "inputLayers",
-                    "type": "layer",
-                    "multivalue": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "DeriveNewLocations",
-            "parameters": [
-                {
-                    "name": "inputLayers",
-                    "type": "layer",
-                    "multivalue": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "FindSimilarLocations",
-            "parameters": [
-                {
-                    "name": "inputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "searchLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "InterpolatePoints",
-            "parameters": [
-                {
-                    "name": "inputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "boundingPolygonLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "predictAtPointLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "CalculateDensity",
-            "parameters": [
-                {
-                    "name": "inputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "boundingPolygonLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "FieldCalculator",
-            "parameters": [
-                {
-                    "name": "inputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "PlanRoutes",
-            "parameters": [
-                {
-                    "name": "routeCount",
-                    "type": "long"
-                }
-            ],
-            "function": "planroutes",
-            "multiplier": 1,
-            "nolog": true,
-            "description": ""
-        },
-        {
-            "name": "ConnectOriginsToDestinations",
-            "parameters": [
-                {
-                    "name": "originsLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "destinationsLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "measurementType",
-                    "type": "string"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "connectoriginstodestinations",
-            "multiplier": 0.001,
-            "description": "",
-            "info": {
-                "namultiplier": 0.005
-            }
-        },
-        {
-            "name": "CreateViewshed",
-            "parameters": [
-                {
-                    "name": "inputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "free",
-            "nolog": true,
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "CreateWatersheds",
-            "parameters": [
-                {
-                    "name": "inputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "free",
-            "nolog": true,
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "TraceDownstream",
-            "parameters": [
-                {
-                    "name": "inputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "boundingPolygonLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "free",
-            "nolog": true,
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "ChooseBestFacilities",
-            "parameters": [
-                {
-                    "name": "demandLocationsLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "choosebestfacilities",
-            "nolog": true,
-            "multiplier": 0.1,
-            "description": ""
-        },
-        {
-            "name": "JoinFeatures",
-            "parameters": [
-                {
-                    "name": "targetLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "joinLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "FindOutliers",
-            "parameters": [
-                {
-                    "name": "analysisLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "boundingPolygonLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "aggregationPolygonLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "FindCentroids",
-            "parameters": [
-                {
-                    "name": "inputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "SummarizeCenterAndDispersion",
-            "parameters": [
-                {
-                    "name": "analysisLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "FindPointClusters",
-            "parameters": [
-                {
-                    "name": "analysisLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "GenerateTessellations",
-            "parameters": [
-                {
-                    "name": "extentLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "tessellationLayer",
-                    "type": "layer",
-                    "optional": true
-                },
-                {
-                    "name": "binType",
-                    "type": "string"
-                },
-                {
-                    "name": "binSize",
-                    "type": "double",
-                    "optional": true
-                },
-                {
-                    "name": "binSizeUnit",
-                    "type": "string",
-                    "optional": true
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                },
-                {
-                    "name": "binResolution",
-                    "type": "long",
-                    "optional": true
-                }
-            ],
-            "function": "generatetessellations",
-            "multiplier": 0.001,
-            "description": ""
-        },
-        {
-            "name": "CreateThresholdAreas",
-            "parameters": [
-                {
-                    "name": "inputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "createthresholdareas",
-            "multiplier": 3.0,
-            "description": ""
-        },
-        {
-            "name": "CalculateCompositeIndex",
-            "parameters": [
-                {
-                    "name": "inputLayer",
-                    "type": "layer"
-                },
-                {
-                    "name": "Context",
-                    "type": "context",
-                    "optional": true
-                }
-            ],
-            "function": "default",
-            "multiplier": 0.001,
-            "description": ""
+          "name": "Context",
+          "type": "context",
+          "optional": true
         }
-    ]
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "AggregatePoints",
+      "parameters": [
+        {
+          "name": "PointLayer",
+          "type": "layer"
+        },
+        {
+          "name": "PolygonLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "binType",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "binSize",
+          "type": "double",
+          "optional": true
+        },
+        {
+          "name": "binSizeUnit",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "aggregatepoints",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "OverlayLayers",
+      "parameters": [
+        {
+          "name": "InputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "OverlayLayer",
+          "type": "layer"
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "MergeLayers",
+      "parameters": [
+        {
+          "name": "InputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "MergeLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "MergeLayers",
+          "type": "layer",
+          "multivalue": true,
+          "optional": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "ExtractData",
+      "parameters": [
+        {
+          "name": "InputLayers",
+          "type": "layer",
+          "multivalue": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        },
+        {
+          "name": "Extent",
+          "type": "extent",
+          "optional": true
+        }
+      ],
+      "function": "extractdata",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "DissolveBoundaries",
+      "parameters": [
+        {
+          "name": "InputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "SummarizeWithin",
+      "parameters": [
+        {
+          "name": "sumWithinLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "summaryLayer",
+          "type": "layer"
+        },
+        {
+          "name": "binType",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "binSize",
+          "type": "double",
+          "optional": true
+        },
+        {
+          "name": "binSizeUnit",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "summarizewithin",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "CreateDriveTimeAreas",
+      "parameters": [
+        {
+          "name": "InputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "BreakValues",
+          "type": "double",
+          "optional": true,
+          "multivalue": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "createdrivetimeareas",
+      "nolog": true,
+      "multiplier": 0.5,
+      "description": ""
+    },
+    {
+      "name": "EnrichLayer",
+      "parameters": [
+        {
+          "name": "InputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "dataCollections",
+          "type": "string",
+          "multivalue": true,
+          "optional": true
+        },
+        {
+          "name": "analysisVariables",
+          "type": "string",
+          "multivalue": true,
+          "optional": true
+        },
+        {
+          "name": "country",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "bufferType",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "enrichlayer",
+      "nolog": true,
+      "multiplier": 0.01,
+      "info": {
+        "namultiplier": 0.5
+      },
+      "description": ""
+    },
+    {
+      "name": "SummarizeNearby",
+      "parameters": [
+        {
+          "name": "sumNearbyLayer",
+          "type": "layer"
+        },
+        {
+          "name": "summaryLayer",
+          "type": "layer"
+        },
+        {
+          "name": "nearType",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "distances",
+          "type": "double",
+          "multivalue": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "summarizenearby",
+      "multiplier": 0.001,
+      "info": {
+        "namultiplier": 0.5
+      },
+      "description": ""
+    },
+    {
+      "name": "FindNearest",
+      "parameters": [
+        {
+          "name": "analysisLayer",
+          "type": "layer"
+        },
+        {
+          "name": "nearLayer",
+          "type": "layer"
+        },
+        {
+          "name": "measurementType",
+          "type": "string"
+        },
+        {
+          "name": "maxCount",
+          "type": "long",
+          "optional": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "findnearest",
+      "multiplier": 0.001,
+      "description": "",
+      "info": {
+        "namultiplier": 0.5
+      }
+    },
+    {
+      "name": "FindHotSpots",
+      "parameters": [
+        {
+          "name": "AnalysisLayer",
+          "type": "layer"
+        },
+        {
+          "name": "BoundingPolygonLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "AggregationPolygonLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "FindExistingLocations",
+      "parameters": [
+        {
+          "name": "inputLayers",
+          "type": "layer",
+          "multivalue": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "DeriveNewLocations",
+      "parameters": [
+        {
+          "name": "inputLayers",
+          "type": "layer",
+          "multivalue": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "FindSimilarLocations",
+      "parameters": [
+        {
+          "name": "inputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "searchLayer",
+          "type": "layer"
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "InterpolatePoints",
+      "parameters": [
+        {
+          "name": "inputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "boundingPolygonLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "predictAtPointLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "CalculateDensity",
+      "parameters": [
+        {
+          "name": "inputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "boundingPolygonLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "FieldCalculator",
+      "parameters": [
+        {
+          "name": "inputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "PlanRoutes",
+      "parameters": [
+        {
+          "name": "routeCount",
+          "type": "long"
+        }
+      ],
+      "function": "planroutes",
+      "multiplier": 1,
+      "nolog": true,
+      "description": ""
+    },
+    {
+      "name": "ConnectOriginsToDestinations",
+      "parameters": [
+        {
+          "name": "originsLayer",
+          "type": "layer"
+        },
+        {
+          "name": "destinationsLayer",
+          "type": "layer"
+        },
+        {
+          "name": "measurementType",
+          "type": "string"
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "connectoriginstodestinations",
+      "multiplier": 0.001,
+      "description": "",
+      "info": {
+        "namultiplier": 0.005
+      }
+    },
+    {
+      "name": "CreateViewshed",
+      "parameters": [
+        {
+          "name": "inputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "free",
+      "nolog": true,
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "CreateWatersheds",
+      "parameters": [
+        {
+          "name": "inputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "free",
+      "nolog": true,
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "TraceDownstream",
+      "parameters": [
+        {
+          "name": "inputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "boundingPolygonLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "free",
+      "nolog": true,
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "ChooseBestFacilities",
+      "parameters": [
+        {
+          "name": "demandLocationsLayer",
+          "type": "layer"
+        },
+        {
+          "name": "context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "choosebestfacilities",
+      "nolog": true,
+      "multiplier": 0.1,
+      "description": ""
+    },
+    {
+      "name": "JoinFeatures",
+      "parameters": [
+        {
+          "name": "targetLayer",
+          "type": "layer"
+        },
+        {
+          "name": "joinLayer",
+          "type": "layer"
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "FindOutliers",
+      "parameters": [
+        {
+          "name": "analysisLayer",
+          "type": "layer"
+        },
+        {
+          "name": "boundingPolygonLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "aggregationPolygonLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "FindCentroids",
+      "parameters": [
+        {
+          "name": "inputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "SummarizeCenterAndDispersion",
+      "parameters": [
+        {
+          "name": "analysisLayer",
+          "type": "layer"
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "FindPointClusters",
+      "parameters": [
+        {
+          "name": "analysisLayer",
+          "type": "layer"
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "GenerateTessellations",
+      "parameters": [
+        {
+          "name": "extentLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "tessellationLayer",
+          "type": "layer",
+          "optional": true
+        },
+        {
+          "name": "binType",
+          "type": "string"
+        },
+        {
+          "name": "binSize",
+          "type": "double",
+          "optional": true
+        },
+        {
+          "name": "binSizeUnit",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        },
+        {
+          "name": "binResolution",
+          "type": "long",
+          "optional": true
+        }
+      ],
+      "function": "generatetessellations",
+      "multiplier": 0.001,
+      "description": ""
+    },
+    {
+      "name": "CreateThresholdAreas",
+      "parameters": [
+        {
+          "name": "inputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "createthresholdareas",
+      "multiplier": 3.0,
+      "description": ""
+    },
+    {
+      "name": "CalculateCompositeIndex",
+      "parameters": [
+        {
+          "name": "inputLayer",
+          "type": "layer"
+        },
+        {
+          "name": "Context",
+          "type": "context",
+          "optional": true
+        }
+      ],
+      "function": "default",
+      "multiplier": 0.001,
+      "description": ""
+    }
+  ]
 }

@@ -13,12 +13,12 @@ datasources:
     isDefault: true
     editable: false
     jsonData:
-      timeInterval: "5s"
-      queryTimeout: "60s"
-      httpMethod: "POST"
-      customQueryParameters: ""
+      timeInterval: '5s'
+      queryTimeout: '60s'
+      httpMethod: 'POST'
+      customQueryParameters: ''
       manageAlerts: true
-      alertmanagerUid: "alertmanager-uid"
+      alertmanagerUid: 'alertmanager-uid'
     secureJsonData: {}
 
   # Loki - Log Aggregation
@@ -32,10 +32,10 @@ datasources:
       timeout: 60
       maxLines: 1000
       derivedFields:
-        - datasourceUid: "jaeger-uid"
+        - datasourceUid: 'jaeger-uid'
           matcherRegex: "trace_id=(\\w+)"
-          name: "TraceID"
-          url: "$${__value.raw}"
+          name: 'TraceID'
+          url: '$${__value.raw}'
 
   # Jaeger - Distributed Tracing
   - name: Jaeger
@@ -46,10 +46,10 @@ datasources:
     editable: false
     jsonData:
       tracesToMetrics:
-        datasourceUid: "prometheus-uid"
+        datasourceUid: 'prometheus-uid'
         queries:
-          - name: "Sample query"
-            query: "http_request_duration_seconds_bucket"
+          - name: 'Sample query'
+            query: 'http_request_duration_seconds_bucket'
 
   # AlertManager - Alert Management
   - name: AlertManager
@@ -59,4 +59,4 @@ datasources:
     uid: alertmanager-uid
     editable: false
     jsonData:
-      implementation: "prometheus"
+      implementation: 'prometheus'

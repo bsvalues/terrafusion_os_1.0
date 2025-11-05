@@ -42,8 +42,8 @@ public interface IWorkflowRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of workflows</returns>
     Task<IEnumerable<Workflow>> GetByUserIdAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         bool includeArchived = false,
         CancellationToken cancellationToken = default);
 
@@ -56,8 +56,8 @@ public interface IWorkflowRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of workflows</returns>
     Task<IEnumerable<Workflow>> GetByCategoryAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string category,
         CancellationToken cancellationToken = default);
 
@@ -70,8 +70,8 @@ public interface IWorkflowRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of workflows</returns>
     Task<IEnumerable<Workflow>> GetByComplexityAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string complexity,
         CancellationToken cancellationToken = default);
 
@@ -95,8 +95,8 @@ public interface IWorkflowRepository
     /// <returns>List of workflows derived from template</returns>
     Task<IEnumerable<Workflow>> GetByTemplateIdAsync(
         int templateId,
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -108,8 +108,8 @@ public interface IWorkflowRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of matching workflows</returns>
     Task<IEnumerable<Workflow>> SearchAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string searchTerm,
         CancellationToken cancellationToken = default);
 
@@ -121,8 +121,8 @@ public interface IWorkflowRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of favorite workflows</returns>
     Task<IEnumerable<Workflow>> GetFavoritesAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -134,8 +134,8 @@ public interface IWorkflowRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of most executed workflows</returns>
     Task<IEnumerable<Workflow>> GetMostExecutedAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         int count = 10,
         CancellationToken cancellationToken = default);
 
@@ -148,8 +148,8 @@ public interface IWorkflowRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of recent workflows</returns>
     Task<IEnumerable<Workflow>> GetRecentAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         int count = 10,
         CancellationToken cancellationToken = default);
 
@@ -172,8 +172,8 @@ public interface IWorkflowRepository
     /// <returns>Created workflow</returns>
     Task<Workflow> CreateFromTemplateAsync(
         int templateId,
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         string name,
         CancellationToken cancellationToken = default);
 
@@ -219,8 +219,8 @@ public interface IWorkflowRepository
     /// <returns>True if user has access</returns>
     Task<bool> HasAccessAsync(
         int workflowId,
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -231,7 +231,7 @@ public interface IWorkflowRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Statistics (count by category, total executions, etc.)</returns>
     Task<object> GetStatisticsAsync(
-        int userId,
-        int countyId,
+        Guid userId,
+        Guid countyId,
         CancellationToken cancellationToken = default);
 }

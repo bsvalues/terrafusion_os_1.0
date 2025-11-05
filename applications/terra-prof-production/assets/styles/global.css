@@ -91,7 +91,9 @@ body {
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .card:hover {
@@ -433,18 +435,18 @@ body {
   .property-grid-2col {
     grid-template-columns: 1fr;
   }
-  
+
   .navbar {
     flex-direction: column;
     padding: 1rem;
   }
-  
+
   .nav-links {
     margin-top: 1rem;
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .footer-content {
     grid-template-columns: 1fr;
   }

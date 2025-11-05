@@ -4,19 +4,19 @@ metadata:
   name: terrafusion
   namespace: argocd
   annotations:
-    terrafusion.io/platform: "complete"
-    terrafusion.io/compliance: "FISMA-High"
+    terrafusion.io/platform: 'complete'
+    terrafusion.io/compliance: 'FISMA-High'
 spec:
   description: |
     TerraFusion OS - Complete Government AI Platform
     Government. Transcended. - 50,000 AI Agents | 39 Counties
-  
+
   # Source repositories
   sourceRepos:
     - 'https://github.com/terrafusion/terrafusion-os'
     - 'https://github.com/terrafusion/terrafusion-helm-charts'
     - 'ghcr.io/terrafusion/*'
-  
+
   # Destination clusters and namespaces
   destinations:
     - namespace: 'terrafusion'
@@ -32,7 +32,7 @@ spec:
       server: 'https://kubernetes.default.svc'
     - namespace: 'logging'
       server: 'https://kubernetes.default.svc'
-  
+
   # Cluster resource allowlist
   clusterResourceWhitelist:
     - group: ''
@@ -51,12 +51,12 @@ spec:
       kind: IngressClass
     - group: 'storage.k8s.io'
       kind: StorageClass
-  
+
   # Namespace resource allowlist (all resources allowed)
   namespaceResourceWhitelist:
     - group: '*'
       kind: '*'
-  
+
   # Roles for fine-grained access control
   roles:
     - name: admin
@@ -68,7 +68,7 @@ spec:
       groups:
         - terrafusion-admins
         - platform-admins
-    
+
     - name: developer
       description: Developer access to non-production environments
       policies:
@@ -78,7 +78,7 @@ spec:
         - p, proj:terrafusion:developer, applications, override, terrafusion/*-dev, allow
       groups:
         - terrafusion-developers
-    
+
     - name: operator
       description: Operations team - can sync production
       policies:
@@ -88,7 +88,7 @@ spec:
       groups:
         - terrafusion-operators
         - sre-team
-    
+
     - name: viewer
       description: Read-only access to all environments
       policies:
@@ -97,11 +97,11 @@ spec:
       groups:
         - terrafusion-viewers
         - audit-team
-  
+
   # Sync windows - maintenance windows
   syncWindows:
     - kind: allow
-      schedule: '0 2 * * *'  # 2 AM daily
+      schedule: '0 2 * * *' # 2 AM daily
       duration: 2h
       applications:
         - '*-dev'
@@ -112,9 +112,9 @@ spec:
       clusters:
         - in-cluster
       manualSync: true
-    
+
     - kind: deny
-      schedule: '0 9-17 * * 1-5'  # Business hours (9 AM - 5 PM, Mon-Fri)
+      schedule: '0 9-17 * * 1-5' # Business hours (9 AM - 5 PM, Mon-Fri)
       duration: 8h
       applications:
         - 'terrafusion-platform-prod'
@@ -123,7 +123,7 @@ spec:
       clusters:
         - in-cluster
       manualSync: false
-  
+
   # Orphaned resources handling
   orphanedResources:
     warn: true
@@ -134,7 +134,7 @@ spec:
       - group: 'v1'
         kind: 'Secret'
         name: 'argocd-secret'
-  
+
   # Signature keys for commit verification
   signatureKeys:
-    - keyID: '4AEE18F83AFDEB23'  # TerraFusion GPG key
+    - keyID: '4AEE18F83AFDEB23' # TerraFusion GPG key

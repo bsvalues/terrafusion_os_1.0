@@ -11,7 +11,7 @@ spec:
     path: helm/data-processor
     helm:
       valueFiles:
-      - values-production.yaml
+        - values-production.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: terraminer-data
@@ -20,7 +20,7 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
     retry:
       limit: 5
       backoff:

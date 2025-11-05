@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TerraFusion.AI.Services;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Interfaces;
+using PropertyValuationRequest = TerraFusion.Core.DTOs.PropertyValuationRequest;
 using Xunit;
 using Xunit.Abstractions;
 

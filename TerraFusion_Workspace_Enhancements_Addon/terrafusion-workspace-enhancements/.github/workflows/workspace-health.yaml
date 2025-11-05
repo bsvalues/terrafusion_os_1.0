@@ -1,6 +1,6 @@
 name: workspace-health
 on:
-  schedule: [{cron: "0 14 * * 1"}] # every Monday 06:00 PT
+  schedule: [{ cron: '0 14 * * 1' }] # every Monday 06:00 PT
   workflow_dispatch: {}
 jobs:
   health:

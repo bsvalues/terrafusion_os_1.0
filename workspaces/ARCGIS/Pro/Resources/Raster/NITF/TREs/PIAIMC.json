@@ -1,11 +1,11 @@
 {
   "TRE": "PIAIMC",
-  "Source": [ "STDI-0002-1 v2021.1, Appendix C: PIAE" ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix C: PIAE"],
   "Name": "Profile for Imagery Access",
   "Description": "This support extension is designed to provide an area to place fields not currently carried in NITF, but are contained in the Standards Profile for Imagery Access (SPIA). Most imagery related information is contained in the NITF main headers and Support Data Extensions (SDEs). The purpose of this extension is to minimize redundant fields while providing space for all information. This extension shall be present no more than once for each image in the NITF file. When present, this extension shall be contained within the image extended subheader data field of the image subheader or within an overflow DES if there is insufficient room to place the entire extension within the image extended subheader data field. This extension may alternatively be placed in the file header, either the extended header or the user defined header locations, when the information it contains pertains to more than one image segment in the file.  Note: The NITFS URLs are defined in the main body of STDI-0002 Volume 1, paragraph 3.2.",
   "Size": 362,
   "Fields": {
-    "CLOUDCVR" : {
+    "CLOUDCVR": {
       "Name": "Cloud Cover",
       "Description": "This field indicates the percentage of the image that is obscured by clouds. A value of 999 indicates an unknown condition.",
       "Size": 3,
@@ -17,7 +17,7 @@
           "Type": "Range",
           "Min": 0,
           "Max": 100
-        }        
+        }
       ]
     },
     "SRP": {
@@ -35,253 +35,244 @@
       ]
     },
     "SENSMODE": {
-        "Name": "Sensor Mode",
-        "Description": "This field identifies the sensor mode used in capturing the image.",
-        "Size": 12,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["WHISKBROOM", "PUSHBROOM", "FRAMING", "SPOT", "SWATH", "*"]
-          }
-        ]
-      },
-      "SENSNAME": {
-        "Name": "Sensor Name",
-        "Description": "This field identifies the sensor name used in capturing the image.",
-        "Size": 18,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["WHISKBROOM", "PUSHBROOM", "FRAMING", "SPOT", "SWATH", "*"]
-          }
-        ]
-      },
-      "SOURCE": {
-        "Name": "Image Source",
-        "Description": "This field indicates where the image came from (e.g, magazine, trade show, etc).",
-        "Size": 255,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-          }
-        ]
-      },
-      "COMGEN": {
-        "Name": "Compression Generation",
-        "Description": "This field counts the number of lossy compressions done by the archive.",
-        "Size": 2,
-        "Format": "BCS-N",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 99
-          }
-        ]
-      },
-      "SUBQUAL": {
-        "Name": "Subjective Quality",
-        "Description": "This field indicates a subjective rating of the quality of the image.",
-        "Size": 1,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["P", "G", "E", "F"]
-          }
-        ]
-      },
-      "PIAMSNNUM": {
-        "Name": "PIA Mission Number",
-        "Description": "This field indicates the mission number assigned to the reconnaissance mission.",
-        "Size": 7,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-          }
-        ]
-      },      
-      "CAMSPECS": {
-        "Name": "Camera Specifications",
-        "Description": "This field specifies the brand name of the camera used, and the focal length of the lens.",
-        "Size": 32,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-          }
-        ]
-      },
-      "PROJID": {
-        "Name": "Project ID Code",
-        "Description": "This field identifies the collection platform project identifier code.",
-        "Size": 2,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-          }
-        ]
-      },
-      "GENERATION": {
-        "Name": "Image Generations",
-        "Description": "This field specifies the number of image generations of the product.  The number (0) is reserved for the original product.",
-        "Size": 1,
-        "Format": "BCS-N",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Range",
-            "Min": 0,
-            "Max": 9
-          }
-        ]
-      },
-      "ESD": {
-        "Name": "Exploitation Support Data",
-        "Description": "This field specifies the number of image generations of the product.  The number (0) is reserved for the original product.",
-        "Size": 1,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["Y", "N"]            
-          }
-        ]
-      },
-      "OTHERCOND": {
-        "Name": "Other Conditions",
-        "Description": "This field indicates other conditions that affect the imagery over the target.",
-        "Size": 2,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-            
-          }
-        ]
-      },
-      "MEANGSD": {
-        "Name": "Mean Ground Sample Distance",
-        "Description": "This field represents the geometric mean of the across and along scan center-to-center distance between contiguous ground samples.",
-        "Size": 7,
-        "Format": "BCS-N",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-            
-          }
-        ]
-      },
-      "IDATUM": {
-        "Name": "Image Datum",
-        "Description": "This field identifies the mathematical representation of the earth used to geo-correct/or to rectify the image. (Identifies the datum associated with IGEOLO).",
-        "Size": 3,
-        "Format": "BCS-N",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-            
-          }
-        ]
-      },
-      "IELLIP": {
-        "Name": "Image Ellipsoid",
-        "Description": "This field identifies the mathematical representation of the earth used to geo-correct/or to rectify the image. (Identifies the ellipsoid associated with IGEOLO).",
-        "Size": 3,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-            
-          }
-        ]
-      },
-      "PREPROC": {
-        "Name": "Image Processing Level Code",
-        "Description": "This field identifies the level of radiometric and geometric processing applied to the product by the commercial vendor.",
-        "Size": 2,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-            
-          }
-        ]
-      },
-      "IPROJ": {
-        "Name": "Image Projection System",
-        "Description": "This field identifies the level of radiometric and geometric processing applied to the product by the commercial vendor.",
-        "Size": 2,
-        "Format": "BCS-AN",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-            
-          }
-        ]
-      },
-      "SATTRACK": {
-        "Name": "Satellite Track",
-        "Description": "This field identifies the location of an image based on the system's Earth grid of numbered tiles, specified by combining the 4-digit path PPPP and row RRRR into an 8-digit number PPPPRRRR. The NASA LANDSATs 1, 2, & 3 use Worldwide Reference System 1 (WRS-1). LANDSAT 4, 5, 7, & 8 and Earth Observing mission 1 (EO-1) sensors Hyperion and Advanced Land Imager (ALI) use WRS-2. Satellite Pour l'Observation de la Terre (SPOT) imagery use the SPOT Grid Reference System (SGRS).",
-        "Size": 8,
-        "Format": "BCS-N",
-        "Type": "O",
-        "Units": [],
-        "Values": [
-          {
-            "Type": "Value",
-            "Values": ["*"]
-            
-          }
-        ]
-      }     
-     
-      
+      "Name": "Sensor Mode",
+      "Description": "This field identifies the sensor mode used in capturing the image.",
+      "Size": 12,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["WHISKBROOM", "PUSHBROOM", "FRAMING", "SPOT", "SWATH", "*"]
+        }
+      ]
+    },
+    "SENSNAME": {
+      "Name": "Sensor Name",
+      "Description": "This field identifies the sensor name used in capturing the image.",
+      "Size": 18,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["WHISKBROOM", "PUSHBROOM", "FRAMING", "SPOT", "SWATH", "*"]
+        }
+      ]
+    },
+    "SOURCE": {
+      "Name": "Image Source",
+      "Description": "This field indicates where the image came from (e.g, magazine, trade show, etc).",
+      "Size": 255,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    },
+    "COMGEN": {
+      "Name": "Compression Generation",
+      "Description": "This field counts the number of lossy compressions done by the archive.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        }
+      ]
+    },
+    "SUBQUAL": {
+      "Name": "Subjective Quality",
+      "Description": "This field indicates a subjective rating of the quality of the image.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["P", "G", "E", "F"]
+        }
+      ]
+    },
+    "PIAMSNNUM": {
+      "Name": "PIA Mission Number",
+      "Description": "This field indicates the mission number assigned to the reconnaissance mission.",
+      "Size": 7,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    },
+    "CAMSPECS": {
+      "Name": "Camera Specifications",
+      "Description": "This field specifies the brand name of the camera used, and the focal length of the lens.",
+      "Size": 32,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    },
+    "PROJID": {
+      "Name": "Project ID Code",
+      "Description": "This field identifies the collection platform project identifier code.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    },
+    "GENERATION": {
+      "Name": "Image Generations",
+      "Description": "This field specifies the number of image generations of the product.  The number (0) is reserved for the original product.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 9
+        }
+      ]
+    },
+    "ESD": {
+      "Name": "Exploitation Support Data",
+      "Description": "This field specifies the number of image generations of the product.  The number (0) is reserved for the original product.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]
+        }
+      ]
+    },
+    "OTHERCOND": {
+      "Name": "Other Conditions",
+      "Description": "This field indicates other conditions that affect the imagery over the target.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    },
+    "MEANGSD": {
+      "Name": "Mean Ground Sample Distance",
+      "Description": "This field represents the geometric mean of the across and along scan center-to-center distance between contiguous ground samples.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    },
+    "IDATUM": {
+      "Name": "Image Datum",
+      "Description": "This field identifies the mathematical representation of the earth used to geo-correct/or to rectify the image. (Identifies the datum associated with IGEOLO).",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    },
+    "IELLIP": {
+      "Name": "Image Ellipsoid",
+      "Description": "This field identifies the mathematical representation of the earth used to geo-correct/or to rectify the image. (Identifies the ellipsoid associated with IGEOLO).",
+      "Size": 3,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    },
+    "PREPROC": {
+      "Name": "Image Processing Level Code",
+      "Description": "This field identifies the level of radiometric and geometric processing applied to the product by the commercial vendor.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    },
+    "IPROJ": {
+      "Name": "Image Projection System",
+      "Description": "This field identifies the level of radiometric and geometric processing applied to the product by the commercial vendor.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    },
+    "SATTRACK": {
+      "Name": "Satellite Track",
+      "Description": "This field identifies the location of an image based on the system's Earth grid of numbered tiles, specified by combining the 4-digit path PPPP and row RRRR into an 8-digit number PPPPRRRR. The NASA LANDSATs 1, 2, & 3 use Worldwide Reference System 1 (WRS-1). LANDSAT 4, 5, 7, & 8 and Earth Observing mission 1 (EO-1) sensors Hyperion and Advanced Land Imager (ALI) use WRS-2. Satellite Pour l'Observation de la Terre (SPOT) imagery use the SPOT Grid Reference System (SGRS).",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["*"]
+        }
+      ]
+    }
   }
 }

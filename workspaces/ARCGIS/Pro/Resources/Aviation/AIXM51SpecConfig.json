@@ -487,7 +487,7 @@
         "/": "identifier"
       }
     },
-    "ancestor_fields": [ "contactinformation/name", "contactinformation/title" ],
+    "ancestor_fields": ["contactinformation/name", "contactinformation/title"],
     "source_id_field": ".id"
   },
   "telephonecontact": {
@@ -496,7 +496,7 @@
         "/": "identifier"
       }
     },
-    "ancestor_fields": [ "contactinformation/name", "contactinformation/title" ],
+    "ancestor_fields": ["contactinformation/name", "contactinformation/title"],
     "source_id_field": ".id"
   },
   "postaladdress": {
@@ -505,7 +505,7 @@
         "/": "identifier"
       }
     },
-    "ancestor_fields": [ "contactinformation/name", "contactinformation/title" ],
+    "ancestor_fields": ["contactinformation/name", "contactinformation/title"],
     "source_id_field": ".id"
   },
   "deicingarea": {
@@ -730,9 +730,7 @@
       "verticalstructurepart/visiblematerial",
       "verticalstructurepart/designator"
     ],
-    "referenced_by_elements": [
-      "verticalstructurepart/annotation"
-    ],
+    "referenced_by_elements": ["verticalstructurepart/annotation"],
     "source_id_field": "elevatedpoint.id"
   },
   "horizontalprojection_linearextent": {
@@ -756,9 +754,7 @@
       "verticalstructurepart/visiblematerial",
       "verticalstructurepart/designator"
     ],
-    "referenced_by_elements": [
-      "verticalstructurepart/annotation"
-    ],
+    "referenced_by_elements": ["verticalstructurepart/annotation"],
     "source_id_field": "elevatedcurve.id"
   },
   "horizontalprojection_surfaceextent": {
@@ -782,9 +778,7 @@
       "verticalstructurepart/visiblematerial",
       "verticalstructurepart/designator"
     ],
-    "referenced_by_elements": [
-      "verticalstructurepart/annotation"
-    ],
+    "referenced_by_elements": ["verticalstructurepart/annotation"],
     "source_id_field": "elevatedsurface.id"
   },
   "informationprovision": {
@@ -1157,7 +1151,10 @@
     "source_id_field": "thesegmentleg.href"
   },
   "@route": {
-    "ancestor_fields": [ "route/name", "route/designatorprefix+designatorsecondletter+designatornumber+multipleidentifier" ],
+    "ancestor_fields": [
+      "route/name",
+      "route/designatorprefix+designatorsecondletter+designatornumber+multipleidentifier"
+    ],
     "source_id_field": "identifier"
   },
   "protectedrunwaydirection": {
@@ -1360,7 +1357,12 @@
   },
   "safealtitudearea": {
     "geometry": "extent",
-    "element_names": [ "centrepoint_airportreferencepoint", "centrepoint_fixdesignatedpoint", "centrepoint_navaidsystem", "centrepoint_runwaypoint" ],
+    "element_names": [
+      "centrepoint_airportreferencepoint",
+      "centrepoint_fixdesignatedpoint",
+      "centrepoint_navaidsystem",
+      "centrepoint_runwaypoint"
+    ],
     "source_id_field": "identifier"
   },
   "safealtitudeareasector": {

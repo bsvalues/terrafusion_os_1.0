@@ -16,6 +16,7 @@ using TerraFusion.AI.Services;
 using TerraFusion.API.Interfaces; // ✅ Primary source for OptimizationRecommendation (decimal ExpectedImprovement, int Priority)
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.API.Models;
+using OptimizationRecommendation = TerraFusion.Abstractions.DTOs.Responses.OptimizationRecommendation;
 // Models.Performance namespace removed to avoid OptimizationRecommendation ambiguity
 
 namespace TerraFusion.API.Services;
@@ -1456,7 +1457,7 @@ public class PerformanceInsight
     public double ImpactScore { get; set; }
 }
 
-// ✅ OptimizationRecommendation definition removed - using TerraFusion.API.Interfaces.OptimizationRecommendation instead
+// ✅ OptimizationRecommendation definition removed - using TerraFusion.Abstractions.DTOs.Responses.OptimizationRecommendation instead
 // This eliminates duplicate class definitions and ensures type consistency across all services
 
 public class DistributionAnalysis
@@ -1511,7 +1512,8 @@ public partial class AdvancedAIAgentOrchestrator
                 Description = "Redistribute agents from over-provisioned counties to under-served areas",
                 ImpactScore = 0.85,
                 Type = "LoadBalancing",
-                Priority = 1, // High priority
+                PriorityInt = 1, // High priority
+                Priority = "High",
                 Title = "Balance County Agent Distribution",
                 EstimatedImpact = 0.15,
                 Implementation = "Move 50 agents from King to Spokane County",
@@ -1527,7 +1529,8 @@ public partial class AdvancedAIAgentOrchestrator
                 Description = "Optimize agent specialization distribution for workload patterns",
                 ImpactScore = 0.78,
                 Type = "Efficiency",
-                Priority = 2, // Medium priority
+                PriorityInt = 2,
+                Priority = "Medium", // Medium priority
                 Title = "Optimize Agent Specializations",
                 EstimatedImpact = 0.08,
                 Implementation = "Adjust agent specialization mix based on county needs",

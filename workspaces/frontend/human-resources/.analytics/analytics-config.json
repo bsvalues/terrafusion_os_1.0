@@ -6,27 +6,15 @@
   },
   "predictive_analytics": {
     "enabled": true,
-    "features": [
-      "employee-churn",
-      "performance-trends",
-      "career-path"
-    ],
+    "features": ["employee-churn", "performance-trends", "career-path"],
     "prediction_window_days": 180,
     "confidence_threshold": 0.75,
     "update_frequency_hours": 24,
-    "models": [
-      "classification",
-      "recommendation",
-      "clustering"
-    ]
+    "models": ["classification", "recommendation", "clustering"]
   },
   "anomaly_detection": {
     "enabled": true,
-    "detectors": [
-      "salary-anomalies",
-      "access-violations",
-      "policy-deviations"
-    ],
+    "detectors": ["salary-anomalies", "access-violations", "policy-deviations"],
     "sensitivity": "high",
     "real_time": false,
     "batch_window_hours": 24,
@@ -42,11 +30,7 @@
     "daily_volume_gb": 100
   },
   "ml_infrastructure": {
-    "frameworks": [
-      "scikit-learn",
-      "xgboost",
-      "lightgbm"
-    ],
+    "frameworks": ["scikit-learn", "xgboost", "lightgbm"],
     "gpu_enabled": true,
     "distributed_training": true,
     "model_registry": "enabled",
@@ -56,11 +40,7 @@
   "optimization": {
     "auto_scaling": {
       "enabled": true,
-      "metrics": [
-        "cpu",
-        "memory",
-        "request_latency"
-      ],
+      "metrics": ["cpu", "memory", "request_latency"],
       "target_utilization": 70,
       "scale_up_threshold": 80,
       "scale_down_threshold": 30,

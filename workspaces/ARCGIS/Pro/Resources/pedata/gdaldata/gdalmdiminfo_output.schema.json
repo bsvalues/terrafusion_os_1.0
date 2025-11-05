@@ -13,7 +13,6 @@
   ],
 
   "definitions": {
-
     "array": {
       "type": "object",
       "properties": {
@@ -22,9 +21,7 @@
         },
         "type": {
           "type": "string",
-          "enum": [
-            "array"
-          ]
+          "enum": ["array"]
         },
         "datatype": {
           "$ref": "#/definitions/datatype"
@@ -90,9 +87,7 @@
             },
             "type": {
               "type": "string",
-              "enum": [
-                "attribute"
-              ]
+              "enum": ["attribute"]
             },
             "datatype": {
               "$ref": "#/definitions/datatype"
@@ -129,34 +124,32 @@
 
     "compound_datatype": {
       "type": "object",
-      "properties":
-          {
-            "name": {
-              "type": "string"
-            },
-            "size": {
-              "type": "integer"
-            },
-            "components": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties":
-                    {
-                      "name": {
-                        "type": "string"
-                      },
-                      "offset": {
-                        "type": "integer"
-                      },
-                      "type": {
-                        "$ref": "#/definitions/datatype"
-                      }
-                    },
-                "additionalProperties": false
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "offset": {
+                "type": "integer"
+              },
+              "type": {
+                "$ref": "#/definitions/datatype"
               }
-            }
-          },
+            },
+            "additionalProperties": false
+          }
+        }
+      },
       "additionalProperties": false
     },
 
@@ -236,9 +229,7 @@
         },
         "type": {
           "type": "string",
-          "enum": [
-            "group"
-          ]
+          "enum": ["group"]
         },
         "dimensions": {
           "$ref": "#/definitions/dimensions"

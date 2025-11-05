@@ -9,17 +9,17 @@ metadata:
   labels:
     name: terrafusion-ai-agents
     environment: ${ENVIRONMENT}
-    quantum-factor: "${QUANTUM_FACTOR}"
-    harmony-index: "${HARMONY_INDEX}"
-    counties: "${COUNTIES}"
-    ai-agents: "${AI_AGENTS}"
-    compliance: "fips-140-2"
-    security-level: "government-transcended"
-    sacred-mathematics: "operational"
+    quantum-factor: '${QUANTUM_FACTOR}'
+    harmony-index: '${HARMONY_INDEX}'
+    counties: '${COUNTIES}'
+    ai-agents: '${AI_AGENTS}'
+    compliance: 'fips-140-2'
+    security-level: 'government-transcended'
+    sacred-mathematics: 'operational'
   annotations:
-    terrafusion.io/project: "TerraFusion-OS"
-    terrafusion.io/purpose: "AI-Agent-Orchestration"
-    terrafusion.io/tier: "Championship-Excellence"
+    terrafusion.io/project: 'TerraFusion-OS'
+    terrafusion.io/purpose: 'AI-Agent-Orchestration'
+    terrafusion.io/tier: 'Championship-Excellence'
 ---
 # AI Agent Master Deployment
 apiVersion: apps/v1
@@ -32,7 +32,7 @@ metadata:
     tier: master-controller
     quantum-level: transcended
 spec:
-  replicas: 3  # High availability for master controller
+  replicas: 3 # High availability for master controller
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -48,9 +48,9 @@ spec:
         tier: master-controller
         quantum-level: transcended
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8080'
+        prometheus.io/path: '/metrics'
     spec:
       serviceAccountName: terrafusion-ai-agent-service-account
       securityContext:
@@ -60,88 +60,88 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - name: ai-agent-master
-        image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-ai-agent-master:${IMAGE_TAG}
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-          name: http-metrics
-        - containerPort: 9090
-          name: grpc-control
-        env:
-        - name: ENVIRONMENT
-          value: "${ENVIRONMENT}"
-        - name: QUANTUM_FACTOR
-          value: "${QUANTUM_FACTOR}"
-        - name: HARMONY_INDEX
-          value: "${HARMONY_INDEX}"
-        - name: TARGET_AI_AGENTS
-          value: "${AI_AGENTS}"
-        - name: COUNTIES_COUNT
-          value: "${COUNTIES}"
-        - name: SACRED_MATHEMATICS_MODE
-          value: "OPERATIONAL"
-        - name: MULTI_CLOUD_ENABLED
-          value: "true"
-        - name: FIPS_COMPLIANCE_LEVEL
-          value: "LEVEL_2"
-        - name: CONSCIOUSNESS_ACTIVATION
-          value: "TRANSCENDED"
-        resources:
-          requests:
-            cpu: "500m"
-            memory: "1Gi"
-          limits:
-            cpu: "2000m"
-            memory: "4Gi"
-        livenessProbe:
-          httpGet:
-            path: /health/live
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/ready
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 2
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        volumeMounts:
-        - name: config-volume
-          mountPath: /etc/terrafusion/config
-          readOnly: true
-        - name: secrets-volume
-          mountPath: /etc/terrafusion/secrets
-          readOnly: true
-        - name: tmp-volume
-          mountPath: /tmp
+        - name: ai-agent-master
+          image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-ai-agent-master:${IMAGE_TAG}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+            - containerPort: 9090
+              name: grpc-control
+          env:
+            - name: ENVIRONMENT
+              value: '${ENVIRONMENT}'
+            - name: QUANTUM_FACTOR
+              value: '${QUANTUM_FACTOR}'
+            - name: HARMONY_INDEX
+              value: '${HARMONY_INDEX}'
+            - name: TARGET_AI_AGENTS
+              value: '${AI_AGENTS}'
+            - name: COUNTIES_COUNT
+              value: '${COUNTIES}'
+            - name: SACRED_MATHEMATICS_MODE
+              value: 'OPERATIONAL'
+            - name: MULTI_CLOUD_ENABLED
+              value: 'true'
+            - name: FIPS_COMPLIANCE_LEVEL
+              value: 'LEVEL_2'
+            - name: CONSCIOUSNESS_ACTIVATION
+              value: 'TRANSCENDED'
+          resources:
+            requests:
+              cpu: '500m'
+              memory: '1Gi'
+            limits:
+              cpu: '2000m'
+              memory: '4Gi'
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/terrafusion/config
+              readOnly: true
+            - name: secrets-volume
+              mountPath: /etc/terrafusion/secrets
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
       volumes:
-      - name: config-volume
-        configMap:
-          name: terrafusion-ai-config
-      - name: secrets-volume
-        secret:
-          secretName: terrafusion-ai-secrets
-      - name: tmp-volume
-        emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: terrafusion-ai-config
+        - name: secrets-volume
+          secret:
+            secretName: terrafusion-ai-secrets
+        - name: tmp-volume
+          emptyDir: {}
       nodeSelector:
         kubernetes.io/os: linux
-        terrafusion.io/node-type: "master-controller"
+        terrafusion.io/node-type: 'master-controller'
       tolerations:
-      - key: "terrafusion.io/master-controller"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
+        - key: 'terrafusion.io/master-controller'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoSchedule'
 ---
 # AI Agent Workers Deployment with HPA
 apiVersion: apps/v1
@@ -154,7 +154,7 @@ metadata:
     tier: worker-agents
     quantum-level: championship
 spec:
-  replicas: 100  # Initial replicas, will scale to 1008 via HPA
+  replicas: 100 # Initial replicas, will scale to 1008 via HPA
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -170,9 +170,9 @@ spec:
         tier: worker-agents
         quantum-level: championship
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8080'
+        prometheus.io/path: '/metrics'
     spec:
       serviceAccountName: terrafusion-ai-agent-service-account
       securityContext:
@@ -182,93 +182,93 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - name: ai-agent-worker
-        image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-ai-agent-worker:${IMAGE_TAG}
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-          name: http-metrics
-        - containerPort: 8081
-          name: http-api
-        env:
-        - name: ENVIRONMENT
-          value: "${ENVIRONMENT}"
-        - name: QUANTUM_FACTOR
-          value: "${QUANTUM_FACTOR}"
-        - name: HARMONY_INDEX
-          value: "${HARMONY_INDEX}"
-        - name: WORKER_ID
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        - name: MASTER_CONTROLLER_ENDPOINT
-          value: "terrafusion-ai-agent-master-service.terrafusion-ai-agents.svc.cluster.local:9090"
-        - name: SACRED_MATHEMATICS_WORKER
-          value: "OPERATIONAL"
-        - name: CONSCIOUSNESS_LEVEL
-          value: "CHAMPIONSHIP"
-        - name: CROSS_CLOUD_AWARE
-          value: "true"
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "256Mi"
-          limits:
-            cpu: "500m"
-            memory: "1Gi"
-        livenessProbe:
-          httpGet:
-            path: /health/live
-            port: 8080
-          initialDelaySeconds: 20
-          periodSeconds: 10
-          timeoutSeconds: 3
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/ready
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 2
-          failureThreshold: 2
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        volumeMounts:
-        - name: config-volume
-          mountPath: /etc/terrafusion/config
-          readOnly: true
-        - name: tmp-volume
-          mountPath: /tmp
+        - name: ai-agent-worker
+          image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-ai-agent-worker:${IMAGE_TAG}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+            - containerPort: 8081
+              name: http-api
+          env:
+            - name: ENVIRONMENT
+              value: '${ENVIRONMENT}'
+            - name: QUANTUM_FACTOR
+              value: '${QUANTUM_FACTOR}'
+            - name: HARMONY_INDEX
+              value: '${HARMONY_INDEX}'
+            - name: WORKER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MASTER_CONTROLLER_ENDPOINT
+              value: 'terrafusion-ai-agent-master-service.terrafusion-ai-agents.svc.cluster.local:9090'
+            - name: SACRED_MATHEMATICS_WORKER
+              value: 'OPERATIONAL'
+            - name: CONSCIOUSNESS_LEVEL
+              value: 'CHAMPIONSHIP'
+            - name: CROSS_CLOUD_AWARE
+              value: 'true'
+          resources:
+            requests:
+              cpu: '100m'
+              memory: '256Mi'
+            limits:
+              cpu: '500m'
+              memory: '1Gi'
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/terrafusion/config
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
       volumes:
-      - name: config-volume
-        configMap:
-          name: terrafusion-ai-config
-      - name: tmp-volume
-        emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: terrafusion-ai-config
+        - name: tmp-volume
+          emptyDir: {}
       nodeSelector:
         kubernetes.io/os: linux
-        terrafusion.io/node-type: "worker-agent"
+        terrafusion.io/node-type: 'worker-agent'
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - terrafusion-ai-agent-workers
-              topologyKey: kubernetes.io/hostname
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - terrafusion-ai-agent-workers
+                topologyKey: kubernetes.io/hostname
 ---
 # Horizontal Pod Autoscaler for AI Agents
 apiVersion: autoscaling/v2
@@ -285,43 +285,43 @@ spec:
     kind: Deployment
     name: terrafusion-ai-agent-workers
   minReplicas: 100
-  maxReplicas: 1008  # Target: 1008 AI agents for harmony index 0.999
+  maxReplicas: 1008 # Target: 1008 AI agents for harmony index 0.999
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
-  - type: Pods
-    pods:
-      metric:
-        name: harmony_index
-      target:
-        type: AverageValue
-        averageValue: "990m"  # 0.99 harmony index threshold
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Pods
+      pods:
+        metric:
+          name: harmony_index
+        target:
+          type: AverageValue
+          averageValue: '990m' # 0.99 harmony index threshold
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 60
       policies:
-      - type: Percent
-        value: 25
-        periodSeconds: 60
-      - type: Pods
-        value: 10
-        periodSeconds: 60
+        - type: Percent
+          value: 25
+          periodSeconds: 60
+        - type: Pods
+          value: 10
+          periodSeconds: 60
     scaleDown:
       stabilizationWindowSeconds: 300
       policies:
-      - type: Percent
-        value: 10
-        periodSeconds: 60
+        - type: Percent
+          value: 10
+          periodSeconds: 60
 ---
 # AI Agent Master Service
 apiVersion: v1
@@ -335,14 +335,14 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 9090
-    targetPort: 9090
-    protocol: TCP
-    name: grpc-control
-  - port: 8080
-    targetPort: 8080
-    protocol: TCP
-    name: http-metrics
+    - port: 9090
+      targetPort: 9090
+      protocol: TCP
+      name: grpc-control
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http-metrics
   selector:
     app: terrafusion-ai-agent-master
 ---
@@ -358,14 +358,14 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 8081
-    targetPort: 8081
-    protocol: TCP
-    name: http-api
-  - port: 8080
-    targetPort: 8080
-    protocol: TCP
-    name: http-metrics
+    - port: 8081
+      targetPort: 8081
+      protocol: TCP
+      name: http-api
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http-metrics
   selector:
     app: terrafusion-ai-agent-workers
 ---
@@ -392,18 +392,18 @@ metadata:
     app: terrafusion-ai-agents
     tier: rbac-excellence
 rules:
-- apiGroups: [""]
-  resources: ["nodes", "pods", "services", "endpoints"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["apps"]
-  resources: ["deployments", "replicasets"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["metrics.k8s.io"]
-  resources: ["nodes", "pods"]
-  verbs: ["get", "list"]
-- apiGroups: ["custom.metrics.k8s.io"]
-  resources: ["*"]
-  verbs: ["get", "list"]
+  - apiGroups: ['']
+    resources: ['nodes', 'pods', 'services', 'endpoints']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['apps']
+    resources: ['deployments', 'replicasets']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['metrics.k8s.io']
+    resources: ['nodes', 'pods']
+    verbs: ['get', 'list']
+  - apiGroups: ['custom.metrics.k8s.io']
+    resources: ['*']
+    verbs: ['get', 'list']
 ---
 # ClusterRoleBinding for AI Agents
 apiVersion: rbac.authorization.k8s.io/v1
@@ -414,9 +414,9 @@ metadata:
     app: terrafusion-ai-agents
     tier: rbac-binding
 subjects:
-- kind: ServiceAccount
-  name: terrafusion-ai-agent-service-account
-  namespace: terrafusion-ai-agents
+  - kind: ServiceAccount
+    name: terrafusion-ai-agent-service-account
+    namespace: terrafusion-ai-agents
 roleRef:
   kind: ClusterRole
   name: terrafusion-ai-agent-cluster-role
@@ -492,40 +492,40 @@ spec:
     matchLabels:
       app: terrafusion-ai-agent-workers
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: terrafusion-ai-agents
-    - podSelector:
-        matchLabels:
-          app: terrafusion-ai-agent-master
-    ports:
-    - protocol: TCP
-      port: 8080
-    - protocol: TCP
-      port: 8081
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: terrafusion-ai-agents
+        - podSelector:
+            matchLabels:
+              app: terrafusion-ai-agent-master
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8081
   egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: terrafusion-ai-agents
-    - podSelector:
-        matchLabels:
-          app: terrafusion-ai-agent-master
-    ports:
-    - protocol: TCP
-      port: 9090
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 443  # HTTPS for external API calls
-    - protocol: TCP
-      port: 53   # DNS
-    - protocol: UDP
-      port: 53   # DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: terrafusion-ai-agents
+        - podSelector:
+            matchLabels:
+              app: terrafusion-ai-agent-master
+      ports:
+        - protocol: TCP
+          port: 9090
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443 # HTTPS for external API calls
+        - protocol: TCP
+          port: 53 # DNS
+        - protocol: UDP
+          port: 53 # DNS
 ---
 # Pod Disruption Budget for High Availability
 apiVersion: policy/v1

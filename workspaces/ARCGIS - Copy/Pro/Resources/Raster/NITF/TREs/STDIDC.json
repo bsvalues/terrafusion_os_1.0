@@ -1,13 +1,11 @@
 {
   "TRE": "STDIDC",
-  "Source": [
-    "STDI-0002-1 v2021.1, Appendix D: CSDE"
-  ],
+  "Source": ["STDI-0002-1 v2021.1, Appendix D: CSDE"],
   "Name": "Standard ID TRE",
   "Description": "The Standard ID TRE (STDIDC) contains image identification data that supplements the Image Subheader. Some parameters may be used by United States Imagery and Geospatial Information Service compliant systems.",
   "Size": 89,
   "Fields": {
-    "ACQUISITION_DATE" : {
+    "ACQUISITION_DATE": {
       "Name": "Acquisition Date",
       "Description": "This field contains the date of the collection mission (date of aircraft takeoff) in the format YYYYMMDDHHMMSS, in which YYYY is the year, MM is the month (01 to 12), DD is the day of the month (01 to 31), HH is the hour (00 to 23), MM is the minute (00 to 59), and SS is the second (00 to 59).  The date changes at midnight UTC.  This field is equivalent to the IDATIM field in the image subheader.",
       "Size": 14,
@@ -117,10 +115,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            " ",
-            "_"
-          ]
+          "Values": [" ", "_"]
         }
       ]
     },
@@ -210,7 +205,7 @@
         }
       ]
     },
-     "WAC": {
+    "WAC": {
       "Name": "World Aeronautical Chart",
       "Description": "This is a four number World Aeronautical Chart for the reference point of the image segment. WAC grids the earth into regions with a 4 number ID.",
       "Size": 4,
@@ -224,8 +219,8 @@
           "Max": 1866
         }
       ]
-    },  
-     "LOCATION": {
+    },
+    "LOCATION": {
       "Name": "Location Reference",
       "Description": "This is the natural reference point of the sensor; a rough indication of geographic coverage. The format DDMMX represents degrees (00 to 89) and minutes (00 to 59) of latitude, with X = N or S for north or south, and DDMMY represents degrees (000 to 179) and minutes (00 to 59) of longitude, with Y = E or W for east or west, respectively. For SAR imagery, the reference point is normally the center of the first image block. For EO-IR imagery, the reference point for framing sensors is the center of the frame; for continuous sensors, it is the center of the first line.",
       "Size": 11,
@@ -237,7 +232,7 @@
           "Type": "AlphaNumeric"
         }
       ]
-    },  
+    },
     "RESERV01": {
       "Name": "Reserved 1",
       "Description": "This field is reserved for use in the future.",

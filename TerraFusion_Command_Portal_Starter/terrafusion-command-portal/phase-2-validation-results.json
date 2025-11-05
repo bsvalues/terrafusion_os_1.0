@@ -43,9 +43,7 @@
       "status": "failed",
       "filesPresent": 2,
       "totalFiles": 2,
-      "issues": [
-        "Test failed: npm test ActionCardRenderer"
-      ],
+      "issues": ["Test failed: npm test ActionCardRenderer"],
       "score": 60
     },
     {
@@ -96,9 +94,7 @@
       "description": "Validate security components and policies",
       "score": 99.99,
       "status": "passed",
-      "issues": [
-        "Security framework incomplete"
-      ]
+      "issues": ["Security framework incomplete"]
     },
     {
       "name": "Federation Infrastructure",
@@ -112,9 +108,7 @@
       "description": "Validate comprehensive testing capabilities",
       "score": 66.66,
       "status": "failed",
-      "issues": [
-        "Testing infrastructure needs completion"
-      ]
+      "issues": ["Testing infrastructure needs completion"]
     }
   ],
   "overallScore": 90.41499999999999,

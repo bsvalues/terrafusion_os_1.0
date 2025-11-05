@@ -5,7 +5,7 @@
   "Description": "This TRE contains the DPPDB product relative accuracy data. All accuracy data is based on 50% confidence (circular and linear error).",
   "Size": 1,
   "Fields": {
-    "PRCE0_1" : {
+    "PRCE0_1": {
       "Name": "DPPDB Relative CEP",
       "Description": "This field indicates the DPPDB relative CEP (0-1 nm) at 50% confidence.",
       "Size": 6,
@@ -16,10 +16,10 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
-          "Type": "Double"          
+          "Type": "Double"
         }
       ]
     },
@@ -34,7 +34,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -52,7 +52,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -70,7 +70,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -88,7 +88,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -106,7 +106,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -124,7 +124,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -142,7 +142,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -160,7 +160,7 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
@@ -178,12 +178,12 @@
         {
           "Type": "Range",
           "Min": 0,
-          "Max": 100.00
+          "Max": 100.0
         },
         {
           "Type": "Double"
         }
       ]
-    }    
+    }
   }
 }

@@ -12,7 +12,9 @@
   border: 1px solid var(--neutral-200);
   margin-bottom: var(--space-lg);
   overflow: hidden;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
 }
 
 .tf-card:hover {
@@ -82,7 +84,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .tf-loading-message {
@@ -313,7 +317,7 @@
   transition: transform 0.3s ease;
 }
 
-.tf-filter-toggle[aria-expanded="false"] {
+.tf-filter-toggle[aria-expanded='false'] {
   transform: rotate(180deg);
 }
 
@@ -389,18 +393,18 @@
   .tf-card {
     margin-bottom: var(--space-md);
   }
-  
+
   .tf-card-header,
   .tf-card-body,
   .tf-card-footer {
     padding: var(--space-md);
   }
-  
+
   .property-info-row {
     flex-direction: column;
     gap: var(--space-sm);
   }
-  
+
   .tf-filter-panel {
     position: fixed;
     bottom: 0;
@@ -413,11 +417,11 @@
     transform: translateY(100%);
     transition: transform 0.3s ease;
   }
-  
+
   .tf-filter-panel.open {
     transform: translateY(0);
   }
-  
+
   .tf-filter-handle {
     width: 40px;
     height: 4px;

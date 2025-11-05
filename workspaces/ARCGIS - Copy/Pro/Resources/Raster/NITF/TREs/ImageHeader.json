@@ -1,9 +1,6 @@
 {
   "TRE": "ImageHeader",
-  "Source": [
-    "MIL-STD-2500C, A.3",
-    "STDI-0006 Apr2014, 2.1.4"
-  ],
+  "Source": ["MIL-STD-2500C, A.3", "STDI-0006 Apr2014, 2.1.4"],
   "Name": "Image Segment Subheader",
   "Description": "The NITF image segment subheader defined in MIL-STD-2500C Section 5.4 and Table A-3. The fields contain information about the image structure, collection metadata, and geographic positioning.",
   "Size": 439,
@@ -18,9 +15,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "IM"
-          ]
+          "Values": ["IM"]
         }
       ]
     },
@@ -322,9 +317,7 @@
       "Values": [
         {
           "Type": "Value",
-          "Values": [
-            "0"
-          ]
+          "Values": ["0"]
         }
       ]
     },

@@ -11,8 +11,8 @@ on:
         default: 'staging'
         type: choice
         options:
-        - staging
-        - production
+          - staging
+          - production
 
 jobs:
   load-test:
@@ -20,12 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      
+
       - name: Install k6
         run: |
           sudo gpg -k
@@ -33,11 +33,11 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
           sudo apt-get update
           sudo apt-get install k6
-      
+
       - name: Run load test
         run: |
           k6 run --out json=results.json scripts/load-test.js
-      
+
       - name: Upload results
         uses: actions/upload-artifact@v3
         with:

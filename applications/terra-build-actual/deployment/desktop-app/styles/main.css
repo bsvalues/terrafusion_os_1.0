@@ -31,7 +31,12 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   background: var(--background-dark);
   color: var(--text-primary);
   line-height: 1.6;
@@ -117,8 +122,13 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* Main Content */
@@ -142,8 +152,14 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Welcome Screen */
@@ -469,7 +485,7 @@ body {
   background: rgba(0, 229, 255, 0.05);
 }
 
-.radio-option input[type="radio"] {
+.radio-option input[type='radio'] {
   display: none;
 }
 
@@ -482,11 +498,11 @@ body {
   transition: var(--transition);
 }
 
-.radio-option input[type="radio"]:checked + .radio-custom {
+.radio-option input[type='radio']:checked + .radio-custom {
   border-color: var(--primary-color);
 }
 
-.radio-option input[type="radio"]:checked + .radio-custom::after {
+.radio-option input[type='radio']:checked + .radio-custom::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -522,7 +538,7 @@ body {
   padding: 0.5rem 0;
 }
 
-.checkbox-option input[type="checkbox"] {
+.checkbox-option input[type='checkbox'] {
   display: none;
 }
 
@@ -535,12 +551,12 @@ body {
   transition: var(--transition);
 }
 
-.checkbox-option input[type="checkbox"]:checked + .checkbox-custom {
+.checkbox-option input[type='checkbox']:checked + .checkbox-custom {
   background: var(--primary-color);
   border-color: var(--primary-color);
 }
 
-.checkbox-option input[type="checkbox"]:checked + .checkbox-custom::after {
+.checkbox-option input[type='checkbox']:checked + .checkbox-custom::after {
   content: '✓';
   position: absolute;
   top: 50%;
@@ -868,29 +884,29 @@ body {
   .main-content {
     padding: 1rem;
   }
-  
+
   .welcome-content {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  
+
   .feature-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .action-buttons {
     flex-direction: column;
   }
-  
+
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .form-actions {
     flex-direction: column-reverse;
     gap: 1rem;
   }
-  
+
   .success-actions {
     flex-direction: column;
   }

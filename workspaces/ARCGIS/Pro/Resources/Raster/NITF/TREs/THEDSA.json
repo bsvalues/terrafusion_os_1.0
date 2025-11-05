@@ -4,5 +4,5 @@
   "Name": "Terrain Height Error Data (THED) from the Shuttle Radar Topography Mission (SRTM), Version A",
   "Description": "This data extension segment is retired per the NITF Technical Board, and is included for documentation purposes only within ArcGIS Pro.",
   "Size": 99,
-  "Fields" : {}        
+  "Fields": {}
 }
