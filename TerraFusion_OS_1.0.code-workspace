@@ -1,30 +1,23 @@
 {
-  "settings": {
-    "workbench.startupEditor": "readme",
-    "TerraFusion.Warning": "NOT_A_WEB_APPLICATION",
-    "TerraFusion.Status": "PRODUCTION_OPERATIONAL",
-    "TerraFusion.OS.Type": "COMPLETE_GOVERNMENT_OPERATING_SYSTEM",
-    "editor.rulers": [
-      80,
-      120
-    ],
-    "workbench.colorTheme": "Default Dark+",
-    "TerraFusion.AI.Agents": 50000,
-    "files.associations": {
-      "*.terrafusion": "json",
-      "AI_AGENT_START_HERE.md": "markdown"
-    }
-  },
-  "extensions": {
-    "recommendations": [
-      "ms-vscode.vscode-typescript-next",
-      "ms-vscode.csharp",
-      "bradlc.vscode-tailwindcss"
-    ]
-  },
   "folders": [
-    {
-      "path": "."
-    }
-  ]
+    { "path": ".", "name": "🏛️ TerraFusion OS Root" },
+    { "path": "frontend", "name": "🎨 Frontend - React PWA" },
+    { "path": "backend", "name": "⚙️ Backend - .NET Microservices" },
+    { "path": "SDK", "name": "📦 SDK - Developer Kit" },
+    { "path": "config", "name": "⚙️ Config - County Settings" },
+    { "path": "platform/design-system", "name": "�� Design System" },
+    { "path": "tests", "name": "🧪 Tests - Multi-Workspace" },
+    { "path": "docs", "name": "📚 Documentation" },
+    { "path": "monitoring", "name": "📊 Monitoring & QA" },
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/bin": true,
+      "**/obj": true,
+    },
+    "powershell.cwd": "🏛️ TerraFusion OS Root",
+    "liveServer.settings.multiRootWorkspaceName": "🏛️ TerraFusion OS Root",
+    "git.ignoreLimitWarning": true,
+  },
 }

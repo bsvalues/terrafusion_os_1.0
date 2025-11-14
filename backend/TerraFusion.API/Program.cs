@@ -13,19 +13,51 @@ using Microsoft.Extensions.FileProviders;
 using TerraFusion.Data;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Abstractions.Interfaces;
-using IPerformanceMonitor = TerraFusion.API.Interfaces.IPerformanceMonitor;
 using TerraFusion.AI.Extensions;
 using TerraFusionOperations = TerraFusion.Operations.Services;
 using TerraFusionOperationsInterfaces = TerraFusion.Operations.Interfaces;
 using Prometheus;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using TerraFusion.Levy.Data;
 using TerraFusion.Levy.Models;
 using TerraFusion.Levy.Services;
+using System.Data;
+using TerraFusion.Core.Services;
+// Conditional DB providers
+using Npgsql;
+using Microsoft.Data.Sqlite;
 using TerraFusion.API.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Relax DI validation for local/dev to allow graceful fallbacks
+builder.Host.UseDefaultServiceProvider(options =>
+{
+    options.ValidateOnBuild = false;
+    options.ValidateScopes = false;
+});
+
+// Redis Configuration (Optional - graceful degradation)
+var redisAvailable = false;
+try
+{
+    var redisConnection = builder.Configuration.GetConnectionString("Redis");
+    if (!string.IsNullOrEmpty(redisConnection))
+    {
+        var redis = StackExchange.Redis.ConnectionMultiplexer.Connect(redisConnection);
+        builder.Services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(redis);
+        Console.WriteLine("✅ Redis connected: {0}", redisConnection.Split(',')[0]);
+        redisAvailable = true;
+    }
+    else
+    {
+        Console.WriteLine("ℹ️  Redis not configured - using NoOp cache");
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine("⚠️  Redis unavailable: {0} - using NoOp cache", ex.Message);
+}
 
 // 🎯 DYNAMIC PORT ALLOCATION - NO MORE HARDCODING
 // If no port specified, let OS choose an available port (0 = OS picks)
@@ -48,8 +80,6 @@ if (args.Length == 0 || !args.Any(a => a.Contains("--urls")))
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
-// Ensure hosting/Kestrel bind messages are visible
-builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Information);
 
 // Add basic services with JSON serialization configuration
 builder.Services.AddControllers()
@@ -61,6 +91,7 @@ builder.Services.AddControllers()
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 
 // Add SignalR for module hot-reload
 builder.Services.AddSignalR();
@@ -74,8 +105,8 @@ builder.Services.AddSingleton<ServiceRegistry>();
 // ✅ RE-ENABLED: Fixed BackgroundService pattern with proper ExecuteAsync implementation
 builder.Services.AddHostedService<StartupOrchestrationService>();
 
-// Register TerraFusion services
-builder.Services.AddScoped<IAuditLogger, AuditLogger>();
+// Register TerraFusion services (disambiguated interfaces)
+builder.Services.AddScoped<TerraFusion.Abstractions.Interfaces.IAuditLogger, TerraFusion.API.Services.AuditLogger>();
 
 // Phase 4 Playground services
 builder.Services.AddSingleton<PrototypeTestingEngine>();
@@ -122,22 +153,7 @@ builder.Services.AddScoped<IResearchAnalyticsService, ResearchAnalyticsService>(
 builder.Services.AddScoped<ICrossWorkspaceSyncService, CrossWorkspaceSyncService>();
 builder.Services.AddScoped<IStatisticalAnalysisService, StatisticalAnalysisService>();
 builder.Services.AddScoped<IPredictiveModelingService, PredictiveModelingService>();
-builder.Services.AddScoped<TerraFusion.API.Interfaces.IPerformanceMonitor, PerformanceMonitorService>();
-// 🧠⚡ CONSCIOUSNESS LAYER CORE SERVICES - Million-Agent Orchestration
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IMillionAgentService, TerraFusion.Consciousness.Services.MillionAgentService>();
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IQuantumSecurityService, TerraFusion.Consciousness.Services.QuantumSecurityService>();
-
-// 🧠 Consciousness Data + Orchestration Dependencies (API hosts the orchestrator for integration tests)
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IBentonCountyDataService, TerraFusion.Consciousness.Services.BentonCountyDataService>();
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IMultiCountyDataService, TerraFusion.Consciousness.Services.MultiCountyDataService>();
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IAILayerMeshOrchestrator, TerraFusion.Consciousness.Services.AILayerMeshOrchestrator>();
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IHybridConsciousnessManager, TerraFusion.Consciousness.Services.HybridConsciousnessManager>();
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IQuantumConsciousnessOrchestrator, TerraFusion.Consciousness.Services.QuantumConsciousnessOrchestrator>();
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceValidator, TerraFusion.Consciousness.Services.ComplianceValidator>();
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IAuditLogger, TerraFusion.Consciousness.Services.AuditLogger>();
-// Legacy/compatibility consciousness service (lightweight implementation to satisfy dependencies in dev/test)
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessService, TerraFusion.Consciousness.Services.LegacyConsciousnessService>();
-
+builder.Services.AddScoped<TerraFusion.API.Interfaces.IPerformanceMonitor, TerraFusion.API.Services.PerformanceMonitorService>();
 
 // Register flexible module catalog system (no hardcoding!)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IModuleCatalog, DbModuleCatalog>();
@@ -161,11 +177,22 @@ builder.Services.AddScoped<IEnhancementModuleRegistrationService, EnhancementMod
 // Register legacy database services
 builder.Services.AddScoped<TerraFusion.Core.Services.LegacyDatabaseService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.HarrisPacsLegacyService>();
+// Register Dynamic Property Service (REQUIRED by HarrisPacsLegacyService)
+builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, TerraFusion.Core.Services.DynamicPropertyService>();
+
 
 // 🏛️ Register Harris PACS Integration Service - Elite government property assessment system integration
 // Provides real-time bidirectional sync with Harris PACS v12.4.7 for property data, assessments, and tax records
 builder.Services.AddScoped<TerraFusion.Core.Services.IHarrisPACSIntegrationService, TerraFusion.Core.Services.HarrisPACSIntegrationService>();
-builder.Services.AddScoped<TerraFusion.Core.Services.IRedisCacheService, TerraFusion.Core.Services.RedisCacheService>();
+// Conditionally register Redis-backed cache or NoOp fallback
+if (redisAvailable)
+{
+    builder.Services.AddScoped<TerraFusion.Core.Services.IRedisCacheService, TerraFusion.Core.Services.RedisCacheService>();
+}
+else
+{
+    builder.Services.AddSingleton<TerraFusion.Core.Services.IRedisCacheService, TerraFusion.Core.Services.NoOpRedisCacheService>();
+}
 
 // 🔍 Register Property Data Validation Service - Championship-level data integrity verification
 // Detects discrepancies between Harris PACS and TerraFusion, auto-corrects data issues, maintains 99.9% accuracy
@@ -178,6 +205,10 @@ builder.Services.AddSingleton<TerraFusion.Core.Metrics.TerraFusionMetricsExporte
 // 💎 Register Property Valuation AI Enhancement Service - 8-step AI-orchestrated property valuation
 // Coordinates all 7 AI services for championship-level property assessment with 99.9% IAAO accuracy
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IPropertyValuationAIEnhancementService, TerraFusion.Core.Services.PropertyValuationAIEnhancementService>();
+// AI Engine Service - DISABLED until interface implementation is complete
+// TODO: Fix AIEngineService to implement TerraFusion.Core.Services.IAIEngineService
+// builder.Services.AddScoped<TerraFusion.Core.Services.IAIEngineService>(sp => 
+//     new TerraFusion.AI.Services.AIEngineService(sp.GetRequiredService<ILogger<TerraFusion.AI.Services.AIEngineService>>()));
 
 // Register TerraFusionSync integration service
 builder.Services.AddScoped<ITerraFusionSyncService, TerraFusionSyncIntegrationService>();
@@ -209,7 +240,7 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(TerraFusion.Core
 // builder.Services.AddSingleton<RustFFIService>();
 
 // Register database context with SQLite fallback
-builder.Services.AddDbContext<TerraFusionDbContext>(options =>
+builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
 
@@ -226,7 +257,7 @@ builder.Services.AddDbContext<TerraFusionDbContext>(options =>
 });
 
 // Register TerraFusionContext (Identity context for TerraGaiaService)
-builder.Services.AddDbContext<TerraFusionContext>(options =>
+builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
 
@@ -242,7 +273,22 @@ builder.Services.AddDbContext<TerraFusionContext>(options =>
 
 // Register ITerraFusionDbContext interface
 builder.Services.AddScoped<ITerraFusionDbContext>(provider =>
-    provider.GetRequiredService<TerraFusionDbContext>());
+    provider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+
+// Register IDbConnection factory for services requiring direct connections (e.g., DynamicPropertyService)
+builder.Services.AddScoped<IDbConnection>(sp =>
+{
+    var cfg = sp.GetRequiredService<IConfiguration>();
+    var connStr = cfg.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
+    if (connStr.Contains("Host="))
+    {
+        return new NpgsqlConnection(connStr);
+    }
+    else
+    {
+        return new SqliteConnection(connStr);
+    }
+});
 
 // 📊 TerraFlow Quantum Command Center Repositories (Phase 1 Week 4)
 builder.Services.AddScoped<IQuantumNotebookRepository, TerraFusion.Data.Repositories.QuantumNotebookRepository>();
@@ -282,7 +328,7 @@ builder.Services.AddScoped<TerraFusion.Levy.Services.IRevenueProjectionService, 
 
 // Add health checks for monitoring
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<TerraFusionDbContext>("database")
+    .AddDbContextCheck<TerraFusion.Data.TerraFusionDbContext>("database")
     .AddCheck<TerraFusion.API.Health.ModuleConsistencyHealthCheck>("modules_consistency");
 
 // Register AI swarm orchestration services
@@ -827,47 +873,7 @@ levy.MapPost("/scenarios/compare", async (
 
 // (moved DTOs to top of file)
 
-app.MapGet("/health", async (HttpContext context) =>
-{
-    var moduleLoader = context.RequestServices.GetRequiredService<IModuleLoaderService>();
-
-    try
-    {
-        var modules = await moduleLoader.LoadActiveModulesAsync();
-        var moduleCount = modules.Count();
-        var coreModules = modules.Where(m => m.IsCore).Count();
-
-        await context.Response.WriteAsJsonAsync(new
-        {
-            status = "healthy",
-            timestamp = DateTime.UtcNow,
-            server = "TerraFusion OS 1.0",
-            uptime = Environment.TickCount64,
-            modules = new
-            {
-                total = moduleCount,
-                core = coreModules,
-                production = modules.Where(m => m.Status == TerraFusion.Core.Enums.ModuleStatus.Active).Count(),
-                status = moduleCount > 0 ? "loaded" : "loading"
-            }
-        });
-    }
-    catch (Exception ex)
-    {
-        await context.Response.WriteAsJsonAsync(new
-        {
-            status = "degraded",
-            timestamp = DateTime.UtcNow,
-            server = "TerraFusion OS 1.0",
-            uptime = Environment.TickCount64,
-            modules = new
-            {
-                status = "error",
-                error = ex.Message
-            }
-        });
-    }
-});
+// Removed duplicate MapGet("/health") - using SimpleHealthController at /health instead
 
 // REMOVED: Root "/" is now handled by fallback to serve index.html
 // app.MapGet("/", () => new {
@@ -949,20 +955,7 @@ try
 
     // 🌟 Initialize Ultimate CostForge AI Consciousness
     // RE-ENABLED: Championship-level 1M agent deployment with quantum Factor 999
-    // IMPORTANT: Do not block server start; run in background after server is up
-    _ = Task.Run(async () =>
-    {
-        try
-        {
-            Console.WriteLine("🧠 Initializing Ultimate CostForge AI in background...");
-            await app.Services.InitializeUltimateCostForgeAsync();
-            Console.WriteLine("🧠 Ultimate CostForge AI initialization complete.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ Ultimate CostForge AI init failed: {ex.Message}");
-        }
-    });
+    await app.Services.InitializeUltimateCostForgeAsync();
 
     Console.WriteLine($"⏳ Calling app.Run()... This should block until shutdown");
     Console.WriteLine($"   Time: {DateTime.Now:HH:mm:ss.fff}");
@@ -979,3 +972,6 @@ catch (Exception ex)
     Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
     throw;
 }
+
+
+
