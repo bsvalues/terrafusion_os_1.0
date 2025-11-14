@@ -1,0 +1,49 @@
+# TerraFusion OS Commit Template
+#
+# Format: type(scope): concise summary (≤72 chars)
+#
+# Types: feat|fix|docs|chore|test|ci|revert|ai
+# Scopes: consciousness|levy|sync|ui|api|data|config|security
+#
+# Example:
+# feat(consciousness): add mesh health monitoring dashboard
+#
+# After the summary, include:
+# - Optional detailed description
+# - Evidence block (REQUIRED)
+# - References to issues/tasks
+
+type(scope):
+
+# Detailed description (optional):
+# - What changed and why?
+# - Design decisions or context
+# - Breaking changes or migration notes
+
+Evidence:
+- Tests:
+- Logs:
+- Metrics:
+
+Refs:
+
+# Co-authored-by: [Name] <email> (if pair programming or AI assistance)
+
+# --- TerraFusion Elite Government OS Engineering Agent Standards ---
+#
+# Evidence Requirements:
+# - Tests: Command executed and results (pass/fail counts)
+# - Logs: Environment verification and error inspection
+# - Metrics: Performance, accuracy, or resource impact measurements
+#
+# Examples:
+# - Tests: dotnet test TerraFusion.Consciousness.Tests (42/42 passed)
+# - Logs: Verified mesh coordination in dev-benton environment
+# - Metrics: AI response latency P95: 45ms → 38ms improvement
+#
+# Government Standards:
+# - All changes must demonstrate FISMA-High security compliance
+# - County data isolation must be verified in testing evidence
+# - Performance impact on citizen services must be assessed
+#
+# Government. Transcended.
