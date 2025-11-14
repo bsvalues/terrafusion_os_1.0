@@ -268,7 +268,7 @@ Exercise: Design TerraFusion Module Integration
 Duration: 4 hours 
 Objective: Apply 9-phase workflow to real platform challenge
 
-Scenario: "Integrate TerraFusion with Harris PACS v12.4.7"
+Scenario: "Integrate TerraFusion with Harris PACS v9.0"
 Scope: 8 development teams, 15 affected systems, 89,247 property records
 
 Deliverables:

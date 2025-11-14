@@ -7,7 +7,7 @@ county:
 
 deployment:
   environment: "production"
-  domain: "assessor.bentoncounty.gov"
+  domain: "${TF_DOMAIN:-localhost:3000}"  # Use environment variable or default to localhost
   ssl_enabled: true
   high_availability: true
 
@@ -40,10 +40,12 @@ harris_pacs:
   timeout: 300
 
 validation:
-  property_count: 89447
+  # property_count: REMOVED - Query dynamically from data source
+  # Use: SELECT COUNT(*) FROM properties WHERE county_id = 'benton' AND status = 'active'
   sync_lag_threshold: "10 minutes"
   data_integrity_checks: true
   reconciliation_reports: true
+  dynamic_property_counting: true  # Enable real-time property counting
 
 monitoring:
   prometheus_enabled: true

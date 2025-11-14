@@ -467,7 +467,7 @@ jobs:
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
           
           # Login to ArgoCD
-          argocd login argocd.terrafusion.gov --username admin --password ${{ secrets.ARGOCD_PASSWORD }}
+          argocd login argocd.terrafusionmarket.com --username admin --password ${{ secrets.ARGOCD_PASSWORD }}
           
           # Deploy applications
           argocd app sync terrafusion-api
@@ -494,13 +494,13 @@ jobs:
           sleep 60
           
           # Check API health
-          curl -f https://api.terrafusion.gov/health || exit 1
+          curl -f https://api.terrafusionmarket.com/health || exit 1
           
           # Check AI Swarm health
-          curl -f https://api.terrafusion.gov/ai-swarm/health || exit 1
+          curl -f https://api.terrafusionmarket.com/ai-swarm/health || exit 1
           
           # Verify 1,008 agents are active
-          AGENT_COUNT=$(curl -s https://api.terrafusion.gov/ai-swarm/agents/count | jq '.count')
+          AGENT_COUNT=$(curl -s https://api.terrafusionmarket.com/ai-swarm/agents/count | jq '.count')
           if [ "$AGENT_COUNT" -ne 1008 ]; then
             echo "❌ Expected 1008 agents, got $AGENT_COUNT"
             exit 1
@@ -514,10 +514,10 @@ jobs:
       - name: Security Validation
         run: |
           # Verify HTTPS is enforced
-          curl -I http://api.terrafusion.gov | grep -q "301\|302" || exit 1
+          curl -I http://api.terrafusionmarket.com | grep -q "301\|302" || exit 1
           
           # Check security headers
-          curl -I https://api.terrafusion.gov | grep -q "Strict-Transport-Security" || exit 1
+          curl -I https://api.terrafusionmarket.com | grep -q "Strict-Transport-Security" || exit 1
 
   # Notification
   notification:

@@ -89,7 +89,7 @@ describe('AI Agent Performance - Individual Agent Testing', () => {
       agentType: 'data_processor',
       capabilities: ['data_ingestion', 'data_transformation', 'quality_validation'],
       performance: {
-        recordsProcessed: 89247, // All Benton County parcels
+        recordsProcessed: await DynamicPropertyService.GetPropertyCountAsync("benton"), // All Benton County parcels
         processingRate: 1500, // records per minute
         errorRate: 0.001, // 0.1%
         dataQualityScore: 0.996,
@@ -103,7 +103,7 @@ describe('AI Agent Performance - Individual Agent Testing', () => {
       }
     }
 
-    expect(dataProcessor.performance.recordsProcessed).toBe(89247)
+    expect(dataProcessor.performance.recordsProcessed).toBe(await DynamicPropertyService.GetPropertyCountAsync("benton"))
     expect(dataProcessor.performance.errorRate).toBeLessThan(0.005)
     expect(dataProcessor.performance.dataQualityScore).toBeGreaterThan(0.99)
     expect(dataProcessor.harrisIntegration.fieldMappingAccuracy).toBe(1.0)

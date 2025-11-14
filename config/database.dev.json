@@ -1,0 +1,11 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Database=terrafusion_dev;Username=postgres;Password=development",
+    "ConsciousnessConnection": "Host=localhost;Database=terrafusion_consciousness;Username=postgres;Password=development"
+  },
+  "Database": {
+    "Provider": "PostgreSQL",
+    "MigrationsPath": "Migrations",
+    "SeedData": true
+  }
+}

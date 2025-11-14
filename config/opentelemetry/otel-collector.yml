@@ -25,7 +25,7 @@ receivers:
         cors:
           allowed_origins:
             - "http://localhost:3000"
-            - "https://*.terrafusion.gov"
+            - "https://*.terrafusionmarket.com"
             - "https://*.benton-county.gov"
           allowed_headers:
             - Accept
@@ -297,7 +297,7 @@ exporters:
 
   # OTLP exporter for external APM systems
   otlp:
-    endpoint: https://otel.terrafusion.gov:4317
+    endpoint: https://otel.terrafusionmarket.com:4317
     tls:
       cert_file: /etc/ssl/certs/otel-client.crt
       key_file: /etc/ssl/private/otel-client.key

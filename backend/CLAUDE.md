@@ -301,7 +301,7 @@ var properties = await _context.Properties
 
 ### Harris PACS Integration
 
-Real integration with Harris PACS v12.4.7, Tyler Technologies, and Aumentum Systems. Located in `terra-fusion-sync` module. **DO NOT modify** integration code without county approval.
+Real integration with Harris PACS 9.0, Tyler Technologies, and Aumentum Systems. Located in `terra-fusion-sync` module. **DO NOT modify** integration code without county approval.
 
 ## Testing Philosophy
 

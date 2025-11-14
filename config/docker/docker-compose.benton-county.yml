@@ -27,7 +27,7 @@ services:
       - ConnectionStrings__DefaultConnection=Host=benton-postgres;Database=benton_county_production;Username=benton_assessor;Password=${BENTON_POSTGRES_PASSWORD:-secure_benton_2025}
       - County__Name=Benton County
       - County__State=Washington
-      - County__ParcelCount=89247
+      - County__ParcelCount=await DynamicPropertyService.GetPropertyCountAsync("benton")
       - HarrisPACS__Enabled=true
       - HarrisPACS__ApiEndpoint=${HARRIS_PACS_ENDPOINT}
       - HarrisPACS__ApiKey=${HARRIS_PACS_API_KEY}
@@ -61,7 +61,7 @@ services:
     environment:
       - AI_SWARM_COUNT=50000
       - COUNTY_SPECIALIZATION=PropertyAssessment
-      - PARCEL_COUNT=89247
+      - PARCEL_COUNT=await DynamicPropertyService.GetPropertyCountAsync("benton")
       - ASSESSMENT_AI=enabled
       - REVENUE_AI=enabled
       - COMPLIANCE_AI=enabled
@@ -78,7 +78,7 @@ services:
       - HARRIS_PACS_ENDPOINT=${HARRIS_PACS_ENDPOINT}
       - HARRIS_PACS_API_KEY=${HARRIS_PACS_API_KEY}
       - SYNC_FREQUENCY=15
-      - PARCEL_COUNT=89247
+      - PARCEL_COUNT=await DynamicPropertyService.GetPropertyCountAsync("benton")
       - GIS_PROJECTION=EPSG:2927
     depends_on:
       - benton-postgres

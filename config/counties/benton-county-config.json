@@ -3,8 +3,8 @@
   "countyName": "Benton County",
   "state": "washington",
   "source": "harris_pacs",
-  "version": "12.4.7",
-  "parcels": 89247,
+  "version": "9.0",
+  "parcels": await DynamicPropertyService.GetPropertyCountAsync("benton"),
   "configuration": {
     "includeGIS": true,
     "includeAssessments": true,
@@ -18,7 +18,7 @@
     "apiKey": "${BENTON_COUNTY_API_KEY}",
     "syncIntervalMinutes": 15,
     "fullRefreshHours": 24,
-    "version": "12.4.7",
+    "version": "9.0",
     "connectionString": "Data Source=harris_pacs_production;Integrated Security=true;"
   },
   "accessControl": {
@@ -29,7 +29,7 @@
   },
   "legacy_integration": {
     "system": "HARRIS_PACS",
-    "version": "12.4.7",
+    "version": "9.0",
     "connection_string": "Data Source=harris_pacs_production;Integrated Security=true;",
     "sync_interval_minutes": 15,
     "full_refresh_hours": 24
@@ -59,3 +59,4 @@
     "elitePerformanceOptimization": true
   }
 }
+

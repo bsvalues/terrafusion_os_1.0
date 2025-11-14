@@ -7,5 +7,7 @@
 			"path": "E:/Database"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"powershell.cwd": "JCHARRISPACS"
+	}
 }

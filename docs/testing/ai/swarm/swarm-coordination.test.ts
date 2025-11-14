@@ -109,9 +109,9 @@ describe('AI Swarm Coordination - 1,008 Agent Intelligence', () => {
 
   it('should optimize for Benton County property assessment workloads', async () => {
     const bentonOptimization = {
-      parcelCount: 89247,
-      assessmentTasks: 89247,
-      completedAssessments: 89247,
+      parcelCount: await DynamicPropertyService.GetPropertyCountAsync("benton"),
+      assessmentTasks: await DynamicPropertyService.GetPropertyCountAsync("benton"),
+      completedAssessments: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       averageAssessmentTime: 0.5, // seconds per parcel
       accuracyRate: 0.987, // 98.7%
       revenueIncrease: 10100000, // $10.1M
@@ -129,7 +129,7 @@ describe('AI Swarm Coordination - 1,008 Agent Intelligence', () => {
     const harrisIntegration = {
       pacsVersion: '12.4.7',
       syncFrequency: 15, // seconds
-      parcelsSynced: 89247,
+      parcelsSynced: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       syncSuccessRate: 0.999,
       dataConsistency: 0.9999,
       realTimeUpdates: true,
@@ -137,7 +137,7 @@ describe('AI Swarm Coordination - 1,008 Agent Intelligence', () => {
     }
 
     expect(harrisIntegration.pacsVersion).toBe('12.4.7')
-    expect(harrisIntegration.parcelsSynced).toBe(89247)
+    expect(harrisIntegration.parcelsSynced).toBe(await DynamicPropertyService.GetPropertyCountAsync("benton"))
     expect(harrisIntegration.syncSuccessRate).toBeGreaterThan(0.99)
     expect(harrisIntegration.dataConsistency).toBeGreaterThan(0.999)
     expect(harrisIntegration.realTimeUpdates).toBe(true)

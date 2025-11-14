@@ -7,7 +7,7 @@
         "harris_pacs": {
           "name": "Harris PACS",
           "vendor": "Harris Computer Systems", 
-          "versions": ["v12.4.7", "v12.3.x", "v11.x"],
+          "versions": ["v9.0", "v12.3.x", "v11.x"],
           "market_share": "35%",
           "detection_confidence": 95,
           "sample_counties": ["Benton County, WA", "Pierce County, WA"],
@@ -87,8 +87,8 @@
     "washington_state_county_mapping": {
       "benton_county": {
         "legacy_system": "harris_pacs",
-        "version": "v12.4.7",
-        "total_parcels": 89247,
+        "version": "v9.0",
+        "total_parcels": await DynamicPropertyService.GetPropertyCountAsync("benton"),
         "last_updated": "2025-01-01",
         "connection_type": "sql_server",
         "data_quality": "excellent"
@@ -110,7 +110,7 @@
       "spokane_county": {
         "legacy_system": "aumentum_cama",
         "version": "v8.2",
-        "total_parcels": 245000,
+        "total_parcels": 2await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         "connection_type": "mysql",
         "data_quality": "good"
       },

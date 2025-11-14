@@ -181,6 +181,7 @@
     },
     "liveServer.settings.multiRootWorkspaceName": "workspaces",
     "liveServer.settings.port": 5501,
+    "git.ignoreLimitWarning": true,
   },
   "launch": {
     "version": "0.2.0",

@@ -1,0 +1,15 @@
+name: Baseline Guard
+on:
+  pull_request: {}
+jobs:
+  guard:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Scan (fresh)
+        run: python scripts/scan_todos.py
+      - name: Compare to Baseline
+        run: python scripts/compare_baseline.py

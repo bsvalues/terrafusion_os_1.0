@@ -30,10 +30,10 @@ database_url = "${DATABASE_URL}"
 # Format: redis://host:port
 redis_url = "${REDIS_URL}"
 
-# Harris PACS v12.4.7 Integration
+# Harris PACS v9.0 Integration
 harris_pacs_endpoint = "${HARRIS_PACS_ENDPOINT}"
 harris_pacs_api_key = "${HARRIS_PACS_API_KEY}"
-harris_pacs_version = "12.4.7"
+harris_pacs_version = "9.0"
 
 # Tyler Technologies Vision Integration
 tyler_endpoint = "${TYLER_ENDPOINT}"
@@ -278,7 +278,7 @@ verbose_logging = false
 [counties.benton]
 name = "Benton County, WA"
 parcel_count = 89247
-harris_pacs_version = "12.4.7"
+harris_pacs_version = "9.0"
 enable_specialized_sync = true
 
 [counties.yakima]
@@ -290,4 +290,5 @@ enable_specialized_sync = false
 name = "Clark County, WA"
 parcel_count = 0  # To be configured
 enable_specialized_sync = false
+
 

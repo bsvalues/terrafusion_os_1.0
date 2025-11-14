@@ -33,7 +33,7 @@ describe('Synthetic Data Generation - Government Testing', () => {
       )
     }
     
-    generateHarrisPacsDataset(parcelCount: number = 89247) {
+    generateHarrisPacsDataset(parcelCount: number = await DynamicPropertyService.GetPropertyCountAsync("benton")) {
       console.log(`🏗️ Generating ${parcelCount.toLocaleString()} synthetic parcels for Benton County`)
       
       const dataset = {
@@ -175,7 +175,7 @@ describe('Synthetic Data Generation - Government Testing', () => {
   
   beforeAll(() => {
     console.log('🧪 Initializing Synthetic Data Generation Tests')
-    console.log('📊 Target: 89,247 Benton County parcels')
+    console.log('📊 Target: await DynamicPropertyService.GetPropertyCountAsync("benton") Benton County parcels')
     console.log('🤖 Target: 1,008 AI agents')
   })
 })

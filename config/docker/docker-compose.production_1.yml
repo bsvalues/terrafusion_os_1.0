@@ -31,7 +31,7 @@ services:
       - HarrisPacs__ConnectionString=${HARRIS_PACS_CONNECTION}
       - HarrisPacs__ApiEndpoint=${HARRIS_PACS_API_ENDPOINT}
       - HarrisPacs__ApiKey=${HARRIS_PACS_API_KEY}
-      - HarrisPacs__Version=${HARRIS_PACS_VERSION:-12.4.7}
+      - HarrisPacs__Version=${HARRIS_PACS_VERSION:-9.0}
 
       # AI Swarm Configuration
       - AI__SwarmSize=${AI_SWARM_SIZE:-1008}
@@ -398,3 +398,4 @@ networks:
       com.docker.network.bridge.name: terrafusion-prod
       com.docker.network.bridge.enable_icc: 'true'
       com.docker.network.bridge.enable_ip_masquerade: 'true'
+

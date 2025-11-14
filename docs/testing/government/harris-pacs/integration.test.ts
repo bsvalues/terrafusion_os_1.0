@@ -9,7 +9,7 @@ describe('Harris PACS v12.4.7 Integration', () => {
   const BENTON_COUNTY_CONFIG = {
     county: 'Benton',
     state: 'WA',
-    parcelCount: 89247,
+    parcelCount: await DynamicPropertyService.GetPropertyCountAsync("benton"),
     harrisVersion: '12.4.7',
     syncInterval: 15000 // 15 seconds
   }
@@ -25,7 +25,7 @@ describe('Harris PACS v12.4.7 Integration', () => {
     const mockConnection = {
       status: 'connected',
       version: '12.4.7',
-      endpoint: 'https://harris-pacs.benton.wa.gov/api',
+      endpoint: 'https://harris-pacs.terrafusionmarket.io/api',
       authenticated: true
     }
 
@@ -34,13 +34,13 @@ describe('Harris PACS v12.4.7 Integration', () => {
     expect(mockConnection.authenticated).toBe(true)
   })
 
-  it('should sync all 89,247 parcels from Harris PACS', async () => {
+  it('should sync all await DynamicPropertyService.GetPropertyCountAsync("benton") parcels from Harris PACS', async () => {
     const mockSyncResult = {
-      totalParcels: 89247,
-      syncedParcels: 89247,
+      totalParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
+      syncedParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       failedParcels: 0,
       syncTime: new Date().toISOString(),
-      duration: 45000 // 45 seconds
+      duration: await DynamicPropertyService.GetPropertyCountAsync(countyCode) // 45 seconds
     }
 
     expect(mockSyncResult.totalParcels).toBe(BENTON_COUNTY_CONFIG.parcelCount)

@@ -1,115 +1,101 @@
-<!-- Pull Request Template for TerraFusion OS -->
-
-## Summary
-- Briefly describe the change and which subsystem it touches (frontend / backend / AI / plugin).
-
-## Checklist (required)
-- [ ] Description and scope included
-- [ ] Tests added/updated (unit/integration). Commands to run: `npm test` (frontend) / `dotnet test` (backend)
-- [ ] EF Migration included if entities changed (include migration name)
-- [ ] Audit fields preserved (CreatedAt/UpdatedAt/CreatedBy/UpdatedBy)
-- [ ] Health check added/verified for new service (`IHealthCheck`)
-- [ ] Security/Compliance note: confirm no production county data modified; list any secret or env var changes
-- [ ] Docs updated if public/API surface changed
-- [ ] Reviewer guidance: list focused review areas (e.g., "check audit interceptor", "verify SignalR hub registration")
-
-## Local verification steps
-1. Build and run the subsystem locally (example):
-   - Frontend: `npm run dev` and validate UI flows
-   - Backend: `dotnet run --project backend/TerraFusion.API`
-2. Run tests: `npm test` / `dotnet test`
-3. If DB changed: `dotnet ef database update` (development only)
-
-## Notes for AI-swarm / production-risk changes
-- If PR touches AI swarm coordination, mark with `AI-SWARM` label and include a short safety plan for rollout and tests.
 # TerraFusion Government Service Pull Request
 
-## 🏛️ Government Compliance Checklist
+## 🏛️ Summary
 
-### Security & Compliance
-- [ ] Code follows government security standards
-- [ ] No sensitive data exposed in code
-- [ ] All dependencies scanned for vulnerabilities
-- [ ] FISMA compliance requirements met
-- [ ] Security review completed
+**What changed:**
+<!-- Describe the change and which subsystem it touches (backend / frontend / county config / AI) -->
 
-### Accessibility (WCAG 2.2 AA / Section 508)
-- [ ] Screen reader compatibility tested
+**Why:**
+<!-- Business/technical justification and government impact -->
+
+## ✅ Verification Checklist
+
+### Build & Test
+
+- [ ] Builds locally: `dotnet build` (backend) / `npm run build` (frontend)
+- [ ] `/health` responds locally or in CI
+- [ ] Tests pass: `make test` / `dotnet test` / `npm test`
+- [ ] No secrets committed
+
+### Database (if applicable)
+
+- [ ] EF migration included (name: `_______________`)
+- [ ] Audit fields preserved (CreatedAt/UpdatedAt/CreatedBy/UpdatedBy)
+- [ ] `make migrate && make seed` runs successfully
+
+### Government Compliance
+
+- [ ] FISMA-High security requirements met
+- [ ] No production county data modified
+- [ ] Section 508 accessibility validated (WCAG 2.2 AA)
+- [ ] Performance targets met (<100ms P95)
+- [ ] Security/vulnerability scan passed
+
+### Accessibility (Section 508 / WCAG 2.2 AA)
+
+- [ ] Screen reader compatible
 - [ ] Keyboard navigation functional
-- [ ] Color contrast ratios validated (4.5:1 minimum)
-- [ ] Alternative text for images provided
-- [ ] Form labels properly associated
+- [ ] Color contrast >= 4.5:1
 - [ ] Focus indicators visible
-
-### Performance & Quality
-- [ ] Performance benchmarks met (100ms response time)
-- [ ] Load testing completed (1000+ concurrent users)
-- [ ] Code coverage >= 80%
-- [ ] ESLint and Prettier rules followed
-- [ ] TypeScript compilation successful
-
-### Testing Requirements
-- [ ] Unit tests written and passing
-- [ ] Integration tests completed
-- [ ] Accessibility tests passing
-- [ ] Performance tests validated
-- [ ] Security tests executed
+- [ ] Form labels properly associated
 
 ### Documentation
-- [ ] Code documented with JSDoc/comments
+
+- [ ] Code documented (JSDoc/XML comments)
+- [ ] API docs updated if public surface changed
 - [ ] README updated if needed
-- [ ] Government compliance documentation updated
-- [ ] API documentation updated
 
-## 📋 Change Description
+## 🧪 Testing Performed
 
-### What changed?
-<!-- Describe the changes in this PR -->
+**Local Verification:**
 
-### Why was this change necessary?
-<!-- Explain the business/technical justification -->
+```bash
+make up
+make migrate && make seed
+make test
+```
 
-### Government Impact Assessment
-<!-- Describe impact on citizen services -->
+**Manual Testing:**
+<!-- Steps and expected outcomes -->
 
-### Testing Performed
-<!-- Detail all testing completed -->
+**Screenshots/URLs:**
+<!-- If UI changes -->
 
-## 🔒 Security Review
+## 🔒 Security & Risk
 
-### Security Considerations
-<!-- List any security implications -->
+**Security Considerations:**
+<!-- Any security implications -->
 
-### Data Privacy Impact
-<!-- Describe any data privacy considerations -->
+**Risk Level:** [ ] Low [ ] Medium [ ] High
 
-### Audit Trail
-<!-- Reference any audit requirements -->
+**Rollback Plan:**
 
-## 🎯 Deployment Checklist
+```bash
+make down && make clean
+# or revert to previous image tags
+```
 
-- [ ] Staging deployment successful
-- [ ] Government approval obtained
-- [ ] Audit trail documentation complete
-- [ ] Rollback plan prepared
-- [ ] Monitoring alerts configured
-
-## 📊 Performance Impact
-
-### Before/After Metrics
-<!-- Include performance benchmarks -->
-
-### Resource Usage
-<!-- Describe CPU/memory/storage impact -->
+**Secrets/Env Changes:**
+<!-- List any new environment variables or secret changes -->
 
 ## 👥 Review Requirements
 
-This PR requires approval from:
+**Focused Review Areas:**
+<!-- e.g., "check audit interceptor", "verify SignalR hub registration", "AI swarm coordination safety" -->
+
+**Approvals Required:**
+
 - [ ] Technical Lead
-- [ ] Security Team
-- [ ] Compliance Officer
-- [ ] Government Liaison (for citizen-facing changes)
+- [ ] Security Team (if Medium/High risk)
+- [ ] Compliance Officer (if government-facing)
+
+## 📊 Performance Impact
+
+**Metrics:**
+<!-- Before/after performance benchmarks, resource usage -->
 
 ---
 
-**Government Service Standards**: This change meets all federal accessibility, security, and performance requirements for citizen services.
+**AI-Swarm Changes:** If this PR touches AI coordination, add `AI-SWARM` label and include safety plan.
+
+**Government Service Standards:** This change meets federal accessibility, security, and performance requirements for citizen services.

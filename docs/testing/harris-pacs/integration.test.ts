@@ -12,7 +12,7 @@ describe('Harris PACS Integration - v12.4.7 Tests', () => {
     const pacsConnection = {
       version: '12.4.7',
       connectionStatus: 'ACTIVE',
-      apiEndpoint: 'https://harris-pacs.benton.wa.gov/api/v12',
+      apiEndpoint: 'https://harris-pacs.terrafusionmarket.io/api/v12',
       authentication: 'OAUTH2',
       sslCertificate: 'VALID',
       responseTime: 145, // milliseconds
@@ -25,10 +25,10 @@ describe('Harris PACS Integration - v12.4.7 Tests', () => {
     expect(pacsConnection.uptime).toBeGreaterThan(0.99)
   })
 
-  it('should validate 89,247 parcel synchronization', async () => {
+  it('should validate await DynamicPropertyService.GetPropertyCountAsync("benton") parcel synchronization', async () => {
     const parcelSync = {
-      totalParcels: 89247,
-      syncedParcels: 89247,
+      totalParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
+      syncedParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       failedParcels: 0,
       syncFrequency: 15, // seconds
       lastSyncTime: Date.now() - 12000, // 12 seconds ago
@@ -36,8 +36,8 @@ describe('Harris PACS Integration - v12.4.7 Tests', () => {
       syncSuccessRate: 1.0 // 100%
     }
 
-    expect(parcelSync.totalParcels).toBe(89247)
-    expect(parcelSync.syncedParcels).toBe(89247)
+    expect(parcelSync.totalParcels).toBe(await DynamicPropertyService.GetPropertyCountAsync("benton"))
+    expect(parcelSync.syncedParcels).toBe(await DynamicPropertyService.GetPropertyCountAsync("benton"))
     expect(parcelSync.failedParcels).toBe(0)
     expect(parcelSync.syncFrequency).toBeLessThanOrEqual(15)
     expect(parcelSync.dataConsistency).toBeGreaterThan(0.999)
@@ -119,7 +119,7 @@ describe('Harris PACS Integration - v12.4.7 Tests', () => {
     expect(auditCompliance.complianceScore).toBeGreaterThan(95)
   })
 
-  it('should validate performance optimization for 89,247 parcels', async () => {
+  it('should validate performance optimization for await DynamicPropertyService.GetPropertyCountAsync("benton") parcels', async () => {
     const performanceOptimization = {
       queryResponseTime: 0.23, // seconds
       bulkOperationTime: 4.7, // seconds for all parcels
@@ -139,7 +139,7 @@ describe('Harris PACS Integration - v12.4.7 Tests', () => {
   beforeAll(() => {
     console.log('🏛️ Testing Harris PACS Integration')
     console.log('📊 Version: v12.4.7')
-    console.log('🎯 89,247 Benton County parcels')
+    console.log('🎯 await DynamicPropertyService.GetPropertyCountAsync("benton") Benton County parcels')
     console.log('⚡ 15-second real-time sync')
   })
 })

@@ -100,7 +100,7 @@ optimization_factor = 949    # Used by backend, frontend, AI swarm
 
 [counties.benton]
 parcel_count = 89247        # Real production data
-harris_pacs_version = "12.4.7"
+harris_pacs_version = "9.0"
 ```
 
 ### AI Swarm Coordination Rules
@@ -131,7 +131,7 @@ var results = await _context.Properties
 ```
 
 ### Harris PACS Integration Constraints
-- **Real Integration**: Harris PACS v12.4.7, Tyler Technologies, Aumentum Systems
+- **Real Integration**: Harris PACS v9.0, Tyler Technologies, Aumentum Systems
 - **Critical Module**: `/terra-fusion-sync` - requires county approval to modify
 - **Authentication**: JWT Bearer tokens with role-based access control
 - **Audit Logging**: All operations logged to `AuditLogs` table

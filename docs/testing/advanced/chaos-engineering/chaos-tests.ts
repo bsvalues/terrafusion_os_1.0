@@ -8,7 +8,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 describe('Chaos Engineering - System Resilience', () => {
   const CHAOS_CONFIG = {
     county: 'Benton',
-    parcelCount: 89247,
+    parcelCount: await DynamicPropertyService.GetPropertyCountAsync("benton"),
     maxFailureRate: 0.05, // 5% acceptable failure rate
     recoveryTimeMs: 30000 // 30 second max recovery
   }
@@ -65,7 +65,7 @@ describe('Chaos Engineering - System Resilience', () => {
 
   it('should survive network partitions', async () => {
     const networkPartition = {
-      partitionDuration: 45000,
+      partitionDuration: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       dataConsistency: true,
       automaticReconnection: true,
       zeroDataLoss: true,

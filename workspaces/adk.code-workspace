@@ -11,6 +11,18 @@
   },
   "folders": [
     {
+      "path": "..",
+      "name": "repo-root"
+    },
+    {
+      "path": "../counties",
+      "name": "counties"
+    },
+    {
+      "path": "../.github",
+      "name": ".github"
+    },
+    {
       "path": "../../terrabuild-modernization/server/mcp",
       "name": "mcp"
     },

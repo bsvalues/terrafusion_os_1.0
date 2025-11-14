@@ -26,7 +26,7 @@ describe('Revenue Hunter - Revenue Discovery Tests', () => {
 
   it('should validate property valuation optimization', async () => {
     const valuationOptimization = {
-      parcelsAnalyzed: 89247,
+      parcelsAnalyzed: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       undervaluedProperties: 4462, // 5% of parcels
       overvaluedProperties: 892, // 1% of parcels
       accuracyImprovement: 0.234, // 23.4% more accurate
@@ -34,7 +34,7 @@ describe('Revenue Hunter - Revenue Discovery Tests', () => {
       appealReduction: 0.67 // 67% fewer appeals
     }
 
-    expect(valuationOptimization.parcelsAnalyzed).toBe(89247)
+    expect(valuationOptimization.parcelsAnalyzed).toBe(await DynamicPropertyService.GetPropertyCountAsync("benton"))
     expect(valuationOptimization.accuracyImprovement).toBeGreaterThan(0.2)
     expect(valuationOptimization.revenueIncrease).toBeGreaterThan(3000000)
     expect(valuationOptimization.appealReduction).toBeGreaterThan(0.6)
@@ -47,7 +47,7 @@ describe('Revenue Hunter - Revenue Discovery Tests', () => {
       complianceRate: 0.943, // 94.3%
       auditEfficiency: 0.78, // 78% more efficient audits
       collectionRate: 0.967, // 96.7% collection rate
-      penaltyRevenue: 450000 // $450K in penalties collected
+      penaltyRevenue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 // $450K in penalties collected
     }
 
     expect(taxOptimization.assessmentAccuracy).toBeGreaterThan(0.98)
@@ -108,6 +108,6 @@ describe('Revenue Hunter - Revenue Discovery Tests', () => {
   beforeAll(() => {
     console.log('💰 Testing Revenue Hunter Systems')
     console.log('🎯 Target: $10.1M revenue increase validation')
-    console.log('📊 89,247 Benton County parcels')
+    console.log('📊 await DynamicPropertyService.GetPropertyCountAsync("benton") Benton County parcels')
   })
 })

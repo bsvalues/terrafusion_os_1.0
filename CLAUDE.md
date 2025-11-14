@@ -191,7 +191,7 @@ var agents = await _aiCommandService.GetActiveAgentsAsync();
 
 ### 3. Harris PACS Integration
 
-**NEVER modify** Harris PACS v12.4.7 integration without county approval:
+**NEVER modify** Harris PACS 9.0 integration without county approval:
 - Real property data (89,247 Benton County parcels)
 - Tyler Technologies Vision integration
 - Aumentum Systems connectivity

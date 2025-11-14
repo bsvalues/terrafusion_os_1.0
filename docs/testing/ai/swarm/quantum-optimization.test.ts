@@ -25,7 +25,7 @@ describe('Quantum Optimization - 379M× Speedup Validation', () => {
 
   it('should optimize property valuation calculations', async () => {
     const valuationOptimization = {
-      parcelsProcessed: 89247,
+      parcelsProcessed: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       classicalTime: 44623500, // ms without quantum
       quantumTime: 118, // ms with quantum
       accuracyImprovement: 0.023, // 2.3% more accurate
@@ -55,7 +55,7 @@ describe('Quantum Optimization - 379M× Speedup Validation', () => {
 
   it('should optimize Harris PACS data synchronization', async () => {
     const syncOptimization = {
-      parcelCount: 89247,
+      parcelCount: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       syncFrequency: 15, // seconds
       quantumSyncTime: 1.2, // seconds
       classicalSyncTime: 67.8, // seconds

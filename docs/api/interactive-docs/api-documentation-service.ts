@@ -165,7 +165,7 @@ export class APIDocumentationService {
         estimatedTime: '15 minutes',
         prerequisites: ['Basic HTTP knowledge', 'API key access'],
         tags: ['properties', 'crud', 'basics'],
-        videoUrl: 'https://training.terrafusion.gov/videos/property-basics.mp4',
+        videoUrl: 'https://training.terrafusionmarket.com/videos/property-basics.mp4',
         steps: [
           {
             id: 'step-1',
@@ -181,7 +181,7 @@ const headers = {
 // Test authentication
 const response = await fetch('/api/auth/verify', { headers });
 console.log('Auth status:', response.status);`,
-            expectedResponse: { authenticated: true, user: 'demo@terrafusion.gov' },
+            expectedResponse: { authenticated: true, user: 'demo@terrafusionmarket.com' },
             notes: 'Replace YOUR_JWT_TOKEN with your actual JWT token from the login process'
           },
           {
@@ -238,7 +238,7 @@ console.log('Assessed value:', property.assessedValue);`,
         estimatedTime: '20 minutes',
         prerequisites: ['Property Management Basics', 'Admin access'],
         tags: ['ai-agents', 'monitoring', 'management'],
-        videoUrl: 'https://training.terrafusion.gov/videos/ai-agents.mp4',
+        videoUrl: 'https://training.terrafusionmarket.com/videos/ai-agents.mp4',
         steps: [
           {
             id: 'step-1',
@@ -294,7 +294,7 @@ console.log('Average response time:', performance.averageResponseTime + 'ms');`,
         estimatedTime: '30 minutes',
         prerequisites: ['API Authentication', 'Compliance Officer role'],
         tags: ['compliance', 'reporting', 'fisma', 'nist'],
-        videoUrl: 'https://training.terrafusion.gov/videos/compliance.mp4',
+        videoUrl: 'https://training.terrafusionmarket.com/videos/compliance.mp4',
         steps: [
           {
             id: 'step-1',
@@ -336,7 +336,7 @@ console.log('Compliance Score:', report.score + '%');`,
         estimatedTime: '25 minutes',
         prerequisites: ['Harris PACS access', 'Data Manager role'],
         tags: ['harris-pacs', 'integration', 'sync'],
-        videoUrl: 'https://training.terrafusion.gov/videos/harris-pacs.mp4',
+        videoUrl: 'https://training.terrafusionmarket.com/videos/harris-pacs.mp4',
         steps: [
           {
             id: 'step-1',

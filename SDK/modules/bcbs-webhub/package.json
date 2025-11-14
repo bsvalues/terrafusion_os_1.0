@@ -98,7 +98,7 @@
     "url": "https://github.com/terrafusion/terrafusion-os.git",
     "directory": "SDK/modules/bcbs-webhub"
   },
-  "homepage": "https://terrafusion.gov/modules/bcbs-webhub",
+  "homepage": "https://terrafusionmarket.com/modules/bcbs-webhub",
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"

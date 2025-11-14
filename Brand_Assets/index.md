@@ -37,19 +37,19 @@ interface BrandAssetStructure {
     typography: TypographySystem;
     spacing: SpacingSystem;
   };
-  
+
   interactive: {
     demos: InteractiveDemos[];
     presentations: PresentationAssets[];
     abTesting: ABTestingFrameworks[];
   };
-  
+
   government: {
     compliance: ComplianceAssets[];
     accessibility: AccessibilityGuidelines[];
     documentation: GovernmentBrandDocs[];
   };
-  
+
   county: {
     customizations: CountyBrandVariations[];
     templates: CountyPresentationTemplates[];
@@ -89,15 +89,15 @@ interface BrandAssetStructure {
   --tf-logo-primary: url('brand/tf-logo-primary.svg');
   --tf-logo-primary-width: 240px;
   --tf-logo-primary-height: 60px;
-  
+
   /* Government Monochrome Version */
   --tf-logo-government: url('brand/tf-logo-government-mono.svg');
   --tf-logo-government-contrast: 4.5; /* WCAG AA compliance */
-  
+
   /* Favicon and Small Format */
   --tf-favicon: url('brand/tf-favicon.ico');
   --tf-icon-sizes: '16x16 32x32 48x48 64x64 128x128';
-  
+
   /* Brand Mark (Symbol Only) */
   --tf-brandmark: url('brand/tf-brandmark.svg');
   --tf-brandmark-size: 48px;
@@ -111,12 +111,12 @@ interface BrandAssetStructure {
   --tf-gov-primary: #1E3A8A;      /* Professional Blue */
   --tf-gov-primary-light: #3B82F6; /* Accessible Light Blue */
   --tf-gov-primary-dark: #1E40AF;  /* Dark Blue for contrast */
-  
+
   /* Secondary Government Colors */
   --tf-gov-secondary: #059669;     /* Government Green */
   --tf-gov-accent: #DC2626;        /* Alert Red */
   --tf-gov-warning: #D97706;       /* Warning Orange */
-  
+
   /* Neutral Palette */
   --tf-gov-gray-50: #F9FAFB;
   --tf-gov-gray-100: #F3F4F6;
@@ -128,12 +128,12 @@ interface BrandAssetStructure {
   --tf-gov-gray-700: #374151;
   --tf-gov-gray-800: #1F2937;
   --tf-gov-gray-900: #111827;
-  
+
   /* Accessibility Compliant Colors */
   --tf-contrast-high: #000000;     /* 21:1 contrast ratio */
   --tf-contrast-medium: #4B5563;   /* 7:1 contrast ratio */
   --tf-contrast-low: #9CA3AF;      /* 4.5:1 contrast ratio */
-  
+
   /* Status Colors */
   --tf-success: #10B981;           /* Success Green */
   --tf-error: #EF4444;             /* Error Red */
@@ -153,7 +153,7 @@ interface BrandAssetStructure {
   --tf-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --tf-font-mono: 'Roboto Mono', 'SF Mono', Monaco, monospace;
   --tf-font-serif: Georgia, 'Times New Roman', serif;
-  
+
   /* Font Sizes - Government Accessibility Standards */
   --tf-text-xs: 0.75rem;    /* 12px */
   --tf-text-sm: 0.875rem;   /* 14px */
@@ -164,12 +164,12 @@ interface BrandAssetStructure {
   --tf-text-3xl: 1.875rem;  /* 30px */
   --tf-text-4xl: 2.25rem;   /* 36px */
   --tf-text-5xl: 3rem;      /* 48px */
-  
+
   /* Line Heights */
   --tf-leading-tight: 1.25;
   --tf-leading-normal: 1.5;
   --tf-leading-relaxed: 1.625;
-  
+
   /* Font Weights */
   --tf-font-light: 300;
   --tf-font-normal: 400;
@@ -200,7 +200,7 @@ interface BrandAssetStructure {
         <img src="tf-logo-primary.svg" alt="Terrafusion OS" class="tf-logo">
         <span class="tf-tagline">Government AI Platform</span>
       </div>
-      
+
       <nav class="tf-navigation">
         <a href="#overview" class="tf-nav-link">Overview</a>
         <a href="#ai-agents" class="tf-nav-link">AI Agents (1,008)</a>
@@ -208,7 +208,7 @@ interface BrandAssetStructure {
         <a href="#counties" class="tf-nav-link">Counties</a>
       </nav>
     </header>
-    
+
     <main class="tf-main-content">
       <section class="tf-hero-section">
         <div class="tf-hero-content">
@@ -216,7 +216,7 @@ interface BrandAssetStructure {
             Terrafusion OS 1.0
             <span class="tf-hero-subtitle">Complete Government AI Platform</span>
           </h1>
-          
+
           <div class="tf-hero-stats">
             <div class="tf-stat">
               <span class="tf-stat-number">1,008</span>
@@ -235,13 +235,13 @@ interface BrandAssetStructure {
               <span class="tf-stat-label">Properties</span>
             </div>
           </div>
-          
+
           <div class="tf-cta-buttons">
             <button class="tf-btn tf-btn-primary">Launch Demo</button>
             <button class="tf-btn tf-btn-secondary">View Documentation</button>
           </div>
         </div>
-        
+
         <div class="tf-hero-visual">
           <div class="tf-ai-swarm-visualization">
             <div class="tf-command-brain">Command Brain</div>
@@ -251,7 +251,7 @@ interface BrandAssetStructure {
           </div>
         </div>
       </section>
-      
+
       <section class="tf-features-grid">
         <div class="tf-feature-card">
           <div class="tf-feature-icon tf-icon-ai"></div>
@@ -260,7 +260,7 @@ interface BrandAssetStructure {
             1,008 AI agents with quantum optimization and real-time coordination
           </p>
         </div>
-        
+
         <div class="tf-feature-card">
           <div class="tf-feature-icon tf-icon-government"></div>
           <h3 class="tf-feature-title">Government Compliance</h3>
@@ -268,7 +268,7 @@ interface BrandAssetStructure {
             FISMA-ready architecture with comprehensive audit trails
           </p>
         </div>
-        
+
         <div class="tf-feature-card">
           <div class="tf-feature-icon tf-icon-performance"></div>
           <h3 class="tf-feature-title">Performance Excellence</h3>
@@ -276,7 +276,7 @@ interface BrandAssetStructure {
             6ms API response times with real-time monitoring
           </p>
         </div>
-        
+
         <div class="tf-feature-card">
           <div class="tf-feature-icon tf-icon-modules"></div>
           <h3 class="tf-feature-title">Modular Architecture</h3>
@@ -286,14 +286,14 @@ interface BrandAssetStructure {
         </div>
       </section>
     </main>
-    
+
     <footer class="tf-footer">
       <div class="tf-footer-content">
         <div class="tf-footer-brand">
           <img src="tf-logo-government-mono.svg" alt="Terrafusion OS" class="tf-footer-logo">
           <p class="tf-footer-tagline">Transforming Government Operations Through AI</p>
         </div>
-        
+
         <div class="tf-footer-links">
           <div class="tf-footer-column">
             <h4 class="tf-footer-heading">Platform</h4>
@@ -301,14 +301,14 @@ interface BrandAssetStructure {
             <a href="#" class="tf-footer-link">AI Agents</a>
             <a href="#" class="tf-footer-link">Modules</a>
           </div>
-          
+
           <div class="tf-footer-column">
             <h4 class="tf-footer-heading">Counties</h4>
             <a href="#" class="tf-footer-link">Benton County</a>
             <a href="#" class="tf-footer-link">Clark County</a>
             <a href="#" class="tf-footer-link">Cowlitz County</a>
           </div>
-          
+
           <div class="tf-footer-column">
             <h4 class="tf-footer-heading">Support</h4>
             <a href="#" class="tf-footer-link">Documentation</a>
@@ -319,7 +319,7 @@ interface BrandAssetStructure {
       </div>
     </footer>
   </div>
-  
+
   <script src="tf-brand-interactions.js"></script>
 </body>
 </html>
@@ -334,11 +334,11 @@ interface BrandAssetStructure {
   --tf-county-primary: #2D4A7B;      /* Benton County Blue */
   --tf-county-secondary: #8B4513;    /* Benton County Brown */
   --tf-county-accent: #228B22;       /* Benton County Green */
-  
+
   /* Harris PACS Integration Branding */
   --tf-harris-primary: #1E3A8A;
   --tf-harris-secondary: #F3F4F6;
-  
+
   /* County-specific typography */
   --tf-county-font: 'Inter', sans-serif;
 }
@@ -426,7 +426,7 @@ const countyConfigurations: Record<string, CountyBrandConfiguration> = {
       footerStyle: 'tf-benton-footer'
     },
     integrations: {
-      legacySystem: 'Harris PACS v12.4.7',
+      legacySystem: 'Harris PACS v9.0',
       propertyCount: 89247,
       specialFeatures: ['Real-time sync', 'Assessment automation', 'Audit trails']
     }
@@ -458,11 +458,11 @@ const countyConfigurations: Record<string, CountyBrandConfiguration> = {
   --tf-a11y-high-contrast: 7.0;      /* WCAG AAA compliance */
   --tf-a11y-medium-contrast: 4.5;    /* WCAG AA compliance */
   --tf-a11y-touch-target: 44px;      /* Minimum touch target size */
-  
+
   /* Focus Management */
   --tf-focus-outline: 2px solid var(--tf-gov-primary);
   --tf-focus-offset: 2px;
-  
+
   /* Animation Preferences */
   --tf-reduce-motion: var(--tf-no-motion, 0);
 }
@@ -472,7 +472,7 @@ const countyConfigurations: Record<string, CountyBrandConfiguration> = {
   :root {
     --tf-no-motion: 1;
   }
-  
+
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
@@ -562,7 +562,7 @@ Terrafusion OS brand implementation meets and exceeds Section 508 requirements f
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Terrafusion OS - Brand A/B Testing</title>
-  
+
   <!-- Dynamic Brand Loading -->
   <script>
     // A/B Testing Configuration
@@ -577,17 +577,17 @@ Terrafusion OS brand implementation meets and exceeds Section 508 requirements f
         'performance_score'
       ]
     };
-    
+
     // Assign user to test variation
     function assignTestVariation() {
       const userId = getUserId(); // Government user ID
       const variation = hashBasedAssignment(userId, abTestConfig.variations, abTestConfig.trafficSplit);
-      
+
       document.documentElement.setAttribute('data-ab-test', variation);
-      
+
       // Load variation-specific assets
       loadBrandVariation(variation);
-      
+
       // Track assignment
       trackEvent('ab_test_assignment', {
         testId: abTestConfig.testId,
@@ -596,7 +596,7 @@ Terrafusion OS brand implementation meets and exceeds Section 508 requirements f
         timestamp: new Date().toISOString()
       });
     }
-    
+
     function loadBrandVariation(variation) {
       const brandAssets = {
         control: {
@@ -615,18 +615,18 @@ Terrafusion OS brand implementation meets and exceeds Section 508 requirements f
           theme: 'government-minimal'
         }
       };
-      
+
       const assets = brandAssets[variation];
-      
+
       // Load CSS
       const linkElement = document.createElement('link');
       linkElement.rel = 'stylesheet';
       linkElement.href = assets.css;
       document.head.appendChild(linkElement);
-      
+
       // Set theme class
       document.body.className = `tf-theme-${assets.theme}`;
-      
+
       // Update logo sources
       document.querySelectorAll('.tf-logo').forEach(logo => {
         logo.src = assets.logo;
@@ -643,24 +643,24 @@ Terrafusion OS brand implementation meets and exceeds Section 508 requirements f
         Government AI Platform - Testing optimal brand presentation
       </p>
     </header>
-    
+
     <section class="tf-test-metrics">
       <div class="tf-metric-card" data-metric="engagement">
         <h3>User Engagement</h3>
         <div class="tf-metric-value" id="engagement-score">--</div>
       </div>
-      
+
       <div class="tf-metric-card" data-metric="accessibility">
         <h3>Accessibility Score</h3>
         <div class="tf-metric-value" id="accessibility-score">--</div>
       </div>
-      
+
       <div class="tf-metric-card" data-metric="performance">
         <h3>Performance Score</h3>
         <div class="tf-metric-value" id="performance-score">--</div>
       </div>
     </section>
-    
+
     <section class="tf-interactive-demo">
       <div class="tf-demo-controls">
         <button class="tf-btn" onclick="simulateUserAction('navigation')">Test Navigation</button>
@@ -669,17 +669,17 @@ Terrafusion OS brand implementation meets and exceeds Section 508 requirements f
       </div>
     </section>
   </div>
-  
+
   <script>
     // Initialize A/B testing
     document.addEventListener('DOMContentLoaded', function() {
       assignTestVariation();
       initializeMetricsTracking();
     });
-    
+
     function simulateUserAction(actionType) {
       const startTime = performance.now();
-      
+
       // Simulate government user interaction
       switch(actionType) {
         case 'navigation':
@@ -692,16 +692,16 @@ Terrafusion OS brand implementation meets and exceeds Section 508 requirements f
           trackEngagement('ai_dashboard_access', 3);
           break;
       }
-      
+
       const endTime = performance.now();
       trackPerformance(actionType, endTime - startTime);
     }
-    
+
     function trackEngagement(action, weight) {
       const currentScore = parseInt(document.getElementById('engagement-score').textContent) || 0;
       const newScore = currentScore + weight;
       document.getElementById('engagement-score').textContent = newScore;
-      
+
       // Send to analytics
       trackEvent('user_engagement', {
         action: action,
@@ -750,14 +750,14 @@ interface BrandAssetCDN {
     dynamicContent: 'Short-term caching for frequently updated content';
     geoDistribution: 'Multi-region CDN for government deployments';
   };
-  
+
   cacheHeaders: {
     images: 'Cache-Control: public, max-age=31536000, immutable';
     css: 'Cache-Control: public, max-age=31536000, immutable';
     fonts: 'Cache-Control: public, max-age=31536000, crossorigin';
     html: 'Cache-Control: public, max-age=300, must-revalidate';
   };
-  
+
   optimization: {
     compression: 'Gzip and Brotli compression enabled';
     http2: 'HTTP/2 server push for critical resources';

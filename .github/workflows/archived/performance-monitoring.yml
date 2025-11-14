@@ -74,7 +74,7 @@ jobs:
         run: |
           echo "🚀 Validating API Performance"
           
-          PROD_URL="https://terrafusion.gov"
+          PROD_URL="https://terrafusionmarket.com"
           TEST_ITERATIONS=10
           TOTAL_TIME=0
           
@@ -105,7 +105,7 @@ jobs:
         run: |
           echo "⚡ Validating Negative Cache Effectiveness"
           
-          PROD_URL="https://terrafusion.gov"
+          PROD_URL="https://terrafusionmarket.com"
           
           # Generate unique test property IDs
           TEST_PROPERTY_PREFIX="perf-test-$(date +%s)"
@@ -160,7 +160,7 @@ jobs:
         run: |
           echo "🗄️ Validating Database Performance"
           
-          PROD_URL="https://terrafusion.gov"
+          PROD_URL="https://terrafusionmarket.com"
           
           # Test database query performance through API
           echo "Testing database-heavy operations..."
@@ -243,7 +243,7 @@ jobs:
         run: |
           echo "🚨 Validating Error Rate"
           
-          PROD_URL="https://terrafusion.gov"
+          PROD_URL="https://terrafusionmarket.com"
           
           # Test various endpoints to check error rate
           TEST_ENDPOINTS=(
@@ -368,7 +368,7 @@ jobs:
         run: |
           echo "🚀 High-Load API Testing"
           
-          TARGET_URL="https://${{ github.event.inputs.environment == 'production' && 'terrafusion.gov' || 'staging.terrafusion.gov' }}"
+          TARGET_URL="https://${{ github.event.inputs.environment == 'production' && 'terrafusionmarket.com' || 'staging.terrafusionmarket.com' }}"
           DURATION="${{ github.event.inputs.test_duration }}m"
           
           # High-concurrency load test
@@ -378,7 +378,7 @@ jobs:
         run: |
           echo "⚡ Negative Cache Stress Testing"
           
-          TARGET_URL="https://${{ github.event.inputs.environment == 'production' && 'terrafusion.gov' || 'staging.terrafusion.gov' }}"
+          TARGET_URL="https://${{ github.event.inputs.environment == 'production' && 'terrafusionmarket.com' || 'staging.terrafusionmarket.com' }}"
           
           # Generate many non-existent property requests to test negative caching
           for batch in {1..10}; do
@@ -399,7 +399,7 @@ jobs:
         run: |
           echo "🗄️ Database Connection Pool Stress Testing"
           
-          TARGET_URL="https://${{ github.event.inputs.environment == 'production' && 'terrafusion.gov' || 'staging.terrafusion.gov' }}"
+          TARGET_URL="https://${{ github.event.inputs.environment == 'production' && 'terrafusionmarket.com' || 'staging.terrafusionmarket.com' }}"
           
           # Simultaneous database-heavy requests
           ab -n 1000 -c 20 "${TARGET_URL}/api/properties/search?stress=true"
@@ -427,7 +427,7 @@ jobs:
         run: |
           echo "📊 TerraFusion OS Staging Performance Validation"
           
-          STAGING_URL="https://staging.terrafusion.gov"
+          STAGING_URL="https://staging.terrafusionmarket.com"
           
           # Basic performance validation
           RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' "$STAGING_URL/health")

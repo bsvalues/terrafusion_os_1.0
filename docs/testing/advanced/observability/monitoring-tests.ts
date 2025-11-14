@@ -28,14 +28,14 @@ describe('Advanced Observability - System Intelligence', () => {
     const syncHealth = {
       lastSyncTime: new Date().toISOString(),
       syncInterval: 15000, // 15 seconds
-      parcelsInSync: 89247,
+      parcelsInSync: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       syncLatency: 1.2, // seconds
       dataConsistency: 99.99, // percentage
       failedSyncs: 0,
       alertsTriggered: 0
     }
 
-    expect(syncHealth.parcelsInSync).toBe(89247)
+    expect(syncHealth.parcelsInSync).toBe(await DynamicPropertyService.GetPropertyCountAsync("benton"))
     expect(syncHealth.syncLatency).toBeLessThan(5)
     expect(syncHealth.dataConsistency).toBeGreaterThan(99.9)
     expect(syncHealth.failedSyncs).toBe(0)

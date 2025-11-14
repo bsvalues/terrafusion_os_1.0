@@ -80,6 +80,35 @@ FROM sys.dm_hadr_database_replica_states drs
 JOIN sys.databases db ON drs.database_id = db.database_id
 WHERE drs.is_local = 1
 ORDER BY db.name;
+### Docker Troubleshooting: Named Volume Compose + Diagnostics
+
+If the default Docker setup crashes (SQLPAL/AppLoader) or stays unhealthy, try these two checks:
+
+1. Minimal container without any volume (isolates host vs. volume issues)
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/diagnostics/test_mssql_container.ps1 -Cleanup
+```
+
+Expected: Prints server `@@VERSION`. If this fails, it indicates a host/WSL2 resource or kernel issue rather than our compose file.
+
+2. Use a named-volume compose (avoids Windows bind-mount quirks)
+
+```powershell
+cd pacs-server-benton/infra/docker
+$env:SA_PASSWORD = "P@ssw0rd123!"   # or your own strong password
+docker compose -f compose.mssql.named.yml up -d
+docker ps
+docker logs pacs-benton-mssql --tail 80
+```
+
+If this comes up healthy, the prior bind-mounted data directory was the culprit. Named volumes store data inside the Docker Linux VM and are more reliable for SQL Server under WSL2.
+
+Notes:
+
+- Ensure Docker Desktop uses WSL 2 and has at least 4–8GB memory allocated.
+- Run `wsl --update` and restart Docker Desktop if crashes persist.
+- Keep `MSSQL_PID=Developer`, `ACCEPT_EULA=Y`, and a strong `SA_PASSWORD`.
 ```
 
 **Expected Result**: All PACS databases show "SYNCHRONIZED" state.
@@ -902,3 +931,563 @@ DEALLOCATE index_cursor;
 ---
 
 **Next Steps**: Schedule regular operational training sessions using these runbooks to ensure team readiness for common scenarios.
+
+---
+
+# TerraFusion Integration Operational Runbooks
+
+## Table of Contents - TerraFusion
+
+11. [Runbook 11: TerraFusion Integration Health Check](#runbook-11-terrafusion-integration-health-check)
+12. [Runbook 12: TerraFusion API Performance Issues](#runbook-12-terrafusion-api-performance-issues)
+13. [Runbook 13: TerraFusion Security Audit Response](#runbook-13-terrafusion-security-audit-response)
+14. [Runbook 14: TerraFusion Monitoring Stack Maintenance](#runbook-14-terrafusion-monitoring-stack-maintenance)
+15. [Runbook 15: TerraFusion Data Validation Failure](#runbook-15-terrafusion-data-validation-failure)
+
+---
+
+## Runbook 11: TerraFusion Integration Health Check
+
+### Purpose
+Diagnose and resolve TerraFusion integration issues including API views, security configuration, and monitoring components.
+
+### Prerequisites
+- [ ] SSMS connected to pacs_oltp database
+- [ ] PowerShell access to execute TerraFusion scripts
+- [ ] Administrator privileges on TerraFusion monitoring server
+
+### Severity
+**High** - Affects TerraFusion OS modernization capabilities
+
+### Estimated Duration
+15-30 minutes
+
+### Procedure
+
+#### Step 1: Execute TerraFusion Health Check
+```sql
+USE pacs_oltp;
+
+-- Run comprehensive health check
+EXEC sp_TerraFusion_HealthCheck @Detailed = 1;
+```
+
+**Expected Results:**
+- System: Database Connection = OK
+- Data: Property Table = OK (> 0 records)
+- Integration: TerraFusion Views = OK (>= 3 views)
+- Performance: API Indexes = OK (>= 3 indexes)
+
+#### Step 2: Verify TerraFusion API Views
+```sql
+-- Check view existence and functionality
+SELECT 
+    v.name AS ViewName,
+    v.create_date,
+    v.modify_date,
+    'EXISTS' AS Status
+FROM sys.views v
+WHERE v.name LIKE 'vw_TerraFusion_%'
+UNION ALL
+SELECT 
+    expected_view,
+    NULL,
+    NULL,
+    'MISSING'
+FROM (VALUES 
+    ('vw_TerraFusion_Property_Core'),
+    ('vw_TerraFusion_Assessment_History')
+) t(expected_view)
+WHERE expected_view NOT IN (SELECT name FROM sys.views WHERE name LIKE 'vw_TerraFusion_%')
+ORDER BY Status, ViewName;
+```
+
+#### Step 3: Test API View Performance
+```sql
+-- Test Property Core View response time
+DECLARE @start_time datetime2 = SYSDATETIME();
+SELECT TOP 100 * FROM vw_TerraFusion_Property_Core WHERE prop_id IS NOT NULL;
+DECLARE @duration_ms int = DATEDIFF(millisecond, @start_time, SYSDATETIME());
+PRINT 'Property Core View query time: ' + CAST(@duration_ms as varchar) + 'ms';
+
+-- Test Assessment History View
+SET @start_time = SYSDATETIME();
+SELECT TOP 100 * FROM vw_TerraFusion_Assessment_History WHERE prop_val_yr >= 2020;
+SET @duration_ms = DATEDIFF(millisecond, @start_time, SYSDATETIME());
+PRINT 'Assessment History View query time: ' + CAST(@duration_ms as varchar) + 'ms';
+```
+
+**Performance Thresholds:**
+- Property Core View: < 500ms
+- Assessment History View: < 1000ms
+
+#### Step 4: Run Automated Validation
+```powershell
+# Execute TerraFusion validation framework
+pwsh .\Test-TerraFusion.ps1 -ExportResults
+```
+
+### Resolution Actions
+
+**If Views Missing:**
+```powershell
+# Recreate missing views
+pwsh .\TerraFusion-SchemaFix.ps1
+```
+
+**If Performance Issues:**
+```sql
+-- Rebuild TerraFusion indexes
+ALTER INDEX ALL ON property REBUILD WITH (ONLINE = ON);
+ALTER INDEX ALL ON property_val REBUILD WITH (ONLINE = ON);
+ALTER INDEX ALL ON situs REBUILD WITH (ONLINE = ON);
+```
+
+### Post-Resolution Checklist
+- [ ] All health check categories show OK status
+- [ ] API views return data within performance thresholds
+- [ ] Security configuration validated
+- [ ] Performance indexes optimal
+- [ ] Monitoring stack operational
+- [ ] Validation framework passes all tests
+
+---
+
+## Runbook 12: TerraFusion API Performance Issues
+
+### Purpose
+Diagnose and resolve slow API response times or timeout issues with TerraFusion views.
+
+### Prerequisites
+- [ ] Access to Query Store data
+- [ ] Ability to run performance traces
+- [ ] SSMS with actual execution plans enabled
+
+### Severity
+**Medium-High** - Impacts user experience and API SLAs
+
+### Estimated Duration
+30-60 minutes
+
+### Procedure
+
+#### Step 1: Identify Slow Queries
+```sql
+USE pacs_oltp;
+
+-- Query Store: Top slow queries
+SELECT TOP 10
+    qt.query_sql_text,
+    rs.avg_duration / 1000.0 AS avg_duration_ms,
+    rs.avg_cpu_time / 1000.0 AS avg_cpu_ms,
+    rs.avg_logical_io_reads,
+    rs.count_executions,
+    rs.last_execution_time
+FROM sys.query_store_query_text qt
+JOIN sys.query_store_query q ON qt.query_text_id = q.query_text_id
+JOIN sys.query_store_plan p ON q.query_id = p.query_id
+JOIN sys.query_store_runtime_stats rs ON p.plan_id = rs.plan_id
+WHERE qt.query_sql_text LIKE '%vw_TerraFusion_%'
+ORDER BY rs.avg_duration DESC;
+```
+
+#### Step 2: Check Index Usage
+```sql
+-- Index usage statistics for TerraFusion views
+SELECT 
+    OBJECT_NAME(s.object_id) AS TableName,
+    i.name AS IndexName,
+    s.user_seeks,
+    s.user_scans,
+    s.user_lookups,
+    s.user_updates,
+    s.last_user_seek,
+    s.last_user_scan
+FROM sys.dm_db_index_usage_stats s
+JOIN sys.indexes i ON s.object_id = i.object_id AND s.index_id = i.index_id
+WHERE OBJECT_NAME(s.object_id) IN ('property', 'property_val', 'situs')
+ORDER BY s.user_seeks DESC;
+```
+
+#### Step 3: Optimize Performance
+```sql
+-- Create recommended indexes
+CREATE NONCLUSTERED INDEX IX_TerraFusion_PropertyVal_YearGeoID
+ON property_val (prop_val_yr, prop_id)
+INCLUDE (assessed_val, appraised_val, market, recalc_dt);
+
+-- Update statistics
+UPDATE STATISTICS property WITH FULLSCAN;
+UPDATE STATISTICS property_val WITH FULLSCAN;
+UPDATE STATISTICS situs WITH FULLSCAN;
+```
+
+### Post-Optimization Checklist
+- [ ] Query response times < 500ms for Property Core View
+- [ ] Query response times < 1000ms for Assessment History View
+- [ ] Execution plans show index seeks (not scans)
+- [ ] No missing index recommendations for TerraFusion queries
+- [ ] Validation framework performance tests pass
+
+---
+
+## Runbook 13: TerraFusion Security Audit Response
+
+### Purpose
+Respond to security audit findings or suspicious activity in TerraFusion integration components.
+
+### Prerequisites
+- [ ] Access to SQL Server audit logs
+- [ ] Administrative access to review security configurations
+- [ ] Ability to modify security settings
+
+### Severity
+**High** - Security compliance and data protection
+
+### Estimated Duration
+45-90 minutes
+
+### Procedure
+
+#### Step 1: Review TerraFusion Audit Logs
+```sql
+-- Check TerraFusion audit events
+SELECT 
+    event_time,
+    server_principal_name,
+    database_principal_name,
+    object_name,
+    statement,
+    succeeded,
+    application_name,
+    client_ip
+FROM fn_get_audit_file('C:\Audit\TerraFusion\*.sqlaudit', DEFAULT, DEFAULT)
+WHERE event_time >= DATEADD(hour, -24, GETDATE())  -- Last 24 hours
+ORDER BY event_time DESC;
+```
+
+#### Step 2: Validate Current Security Configuration
+```sql
+-- Check TerraFusion user permissions
+SELECT 
+    dp.name AS principal_name,
+    dp.type_desc,
+    dp.create_date,
+    dp.modify_date,
+    dp.is_disabled
+FROM sys.database_principals dp
+WHERE dp.name = 'TerraFusion_Integration';
+
+-- Check explicit permissions
+SELECT 
+    p.class_desc,
+    p.permission_name,
+    p.state_desc,
+    OBJECT_SCHEMA_NAME(p.major_id) AS schema_name,
+    OBJECT_NAME(p.major_id) AS object_name
+FROM sys.database_permissions p
+JOIN sys.database_principals dp ON p.grantee_principal_id = dp.principal_id
+WHERE dp.name = 'TerraFusion_Integration'
+ORDER BY p.class_desc, p.permission_name;
+```
+
+#### Step 3: Implement Security Hardening (if needed)
+```sql
+-- Reset TerraFusion user if compromised
+DROP USER [TerraFusion_Integration];
+CREATE USER [TerraFusion_Integration] FOR LOGIN [TERRAFUSION\svc_integration];
+
+-- Grant minimal required permissions only
+GRANT SELECT ON vw_TerraFusion_Property_Core TO [TerraFusion_Integration];
+GRANT SELECT ON vw_TerraFusion_Assessment_History TO [TerraFusion_Integration];
+GRANT EXECUTE ON sp_TerraFusion_HealthCheck TO [TerraFusion_Integration];
+```
+
+### Post-Audit Checklist
+- [ ] All audit logs reviewed for anomalies
+- [ ] User permissions validated as minimal required
+- [ ] No unauthorized privilege escalations found
+- [ ] Data access controls functioning correctly
+- [ ] Security compliance report generated
+
+---
+
+## Runbook 14: TerraFusion Monitoring Stack Maintenance
+
+### Purpose
+Perform regular maintenance on Prometheus, Grafana, and SQL Exporter components of the TerraFusion monitoring stack.
+
+### Prerequisites
+- [ ] Administrative access to monitoring servers
+- [ ] Backup of monitoring configurations
+- [ ] Scheduled maintenance window
+
+### Severity
+**Low-Medium** - Preventive maintenance for monitoring reliability
+
+### Estimated Duration
+60-90 minutes
+
+### Procedure
+
+#### Step 1: Check Monitoring Stack Health
+```powershell
+# Test all monitoring endpoints
+$endpoints = @(
+    @{Name="Prometheus"; URL="http://localhost:9090/-/healthy"},
+    @{Name="Grafana"; URL="http://localhost:3000/api/health"},
+    @{Name="SQL Exporter"; URL="http://localhost:9399/metrics"}
+)
+
+foreach ($endpoint in $endpoints) {
+    try {
+        $response = Invoke-RestMethod -Uri $endpoint.URL -Method GET -TimeoutSec 10
+        Write-Host "✅ $($endpoint.Name): Healthy" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "❌ $($endpoint.Name): Unhealthy - $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+```
+
+#### Step 2: Backup Configurations
+```powershell
+# Backup current configurations
+$backupPath = "C:\TerraFusion\Monitoring\backup\$(Get-Date -Format 'yyyy-MM-dd')"
+New-Item -Path $backupPath -ItemType Directory -Force
+
+Copy-Item "C:\TerraFusion\Monitoring\prometheus\prometheus.yml" "$backupPath\prometheus.yml.bak"
+Copy-Item "C:\TerraFusion\Monitoring\grafana\grafana.ini" "$backupPath\grafana.ini.bak"
+Copy-Item "C:\TerraFusion\Monitoring\sql_exporter\sql_exporter.yml" "$backupPath\sql_exporter.yml.bak"
+
+Write-Host "✅ Configuration backup created: $backupPath"
+```
+
+#### Step 3: Restart Services and Verify
+```powershell
+# Re-run monitoring setup to verify everything is working
+pwsh .\Setup-TerraFusionMonitoring.ps1 -GenerateConfigs
+
+# Test data collection
+pwsh .\Test-TerraFusion.ps1 -ExportResults
+```
+
+### Maintenance Schedule Recommendations
+
+**Weekly:**
+- Check service health
+- Review disk space usage
+- Validate metric collection
+
+**Monthly:**
+- Backup configurations
+- Review and clean old data
+- Update dashboard content
+- Test alerting rules
+
+**Quarterly:**
+- Update monitoring software versions
+- Review security settings
+- Optimize retention policies
+- Performance tuning
+
+---
+
+## Runbook 15: TerraFusion Data Validation Failure
+
+### Purpose
+Diagnose and resolve failures in the TerraFusion data validation framework that indicate data integrity or API functionality issues.
+
+### Prerequisites
+- [ ] Access to TerraFusion validation reports
+- [ ] SSMS access to pacs_oltp database
+- [ ] PowerShell execution capabilities
+
+### Severity
+**Medium-High** - Indicates potential data quality issues affecting API reliability
+
+### Estimated Duration
+30-60 minutes depending on failure type
+
+### Procedure
+
+#### Step 1: Review Latest Validation Report
+```powershell
+# Find most recent validation report
+$testingPath = "C:\TerraFusion\Testing"
+$latestReport = Get-ChildItem -Path $testingPath -Filter "*Validation_Report*.json" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+
+if ($latestReport) {
+    $report = Get-Content $latestReport.FullName | ConvertFrom-Json
+    Write-Host "Latest Validation Report: $($latestReport.Name)"
+    Write-Host "Test Date: $($report.Metadata.TestDate)"
+    Write-Host "Total Tests: $($report.Metadata.TotalTests)"
+    Write-Host "Passed: $($report.Summary.PassedTests)"
+    Write-Host "Failed: $($report.Summary.FailedTests)"
+    Write-Host "Warnings: $($report.Summary.WarningTests)"
+    
+    # Show failed tests
+    $failedTests = $report.TestResults | Where-Object { $_.Status -eq "FAIL" }
+    if ($failedTests) {
+        Write-Host "`nFailed Tests:" -ForegroundColor Red
+        $failedTests | ForEach-Object { Write-Host "  - $($_.Category): $($_.Test) - $($_.Details)" }
+    }
+}
+```
+
+#### Step 2: Fix Data Integrity Issues
+```sql
+-- Check if core tables exist and have data
+SELECT 
+    name AS TableName,
+    create_date,
+    modify_date
+FROM sys.tables
+WHERE name IN ('property', 'property_val', 'situs', 'owner')
+ORDER BY name;
+```
+
+**If tables missing:**
+```powershell
+# Republish database schema
+pwsh .\pacs-server-benton\scripts\publish.ps1 -SqlServer "localhost,1433" -SaPassword "P@ssw0rd123!"
+```
+
+#### Step 3: Fix Performance Issues
+```sql
+-- Check fragmentation on key tables
+SELECT 
+    OBJECT_NAME(ps.object_id) AS TableName,
+    i.name AS IndexName,
+    ps.avg_fragmentation_in_percent,
+    CASE 
+        WHEN ps.avg_fragmentation_in_percent > 30 THEN 'REBUILD'
+        WHEN ps.avg_fragmentation_in_percent > 10 THEN 'REORGANIZE'
+        ELSE 'OK'
+    END AS Action
+FROM sys.dm_db_index_physical_stats(DB_ID(), NULL, NULL, NULL, 'SAMPLED') ps
+JOIN sys.indexes i ON ps.object_id = i.object_id AND ps.index_id = i.index_id
+WHERE OBJECT_NAME(ps.object_id) IN ('property', 'property_val', 'situs')
+AND ps.avg_fragmentation_in_percent > 10
+ORDER BY ps.avg_fragmentation_in_percent DESC;
+```
+
+#### Step 4: Re-run Validation
+```powershell
+# Generate test data if needed for empty database
+pwsh .\Test-TerraFusion.ps1 -GenerateTestData -ExportResults -FullValidation
+```
+
+### Post-Resolution Checklist
+- [ ] All validation categories show PASS status
+- [ ] Performance metrics within acceptable thresholds
+- [ ] Security configuration validated
+- [ ] Data integrity confirmed
+- [ ] Business rules compliance verified
+- [ ] Resolution documented
+
+---
+
+## TerraFusion Quick Reference
+
+### Essential Commands
+
+**Health Check:**
+```sql
+EXEC sp_TerraFusion_HealthCheck;
+```
+
+**Performance Test:**
+```powershell
+pwsh .\Test-TerraFusion.ps1 -ExportResults
+```
+
+**Integration Validation:**
+```powershell
+pwsh .\Deploy-TerraFusion.ps1 -ValidateOnly
+```
+
+**Monitoring Setup:**
+```powershell
+pwsh .\Setup-TerraFusionMonitoring.ps1 -GenerateConfigs
+```
+
+### TerraFusion Support Contacts
+
+- **Primary**: TerraFusion Elite Government OS Engineering Team
+- **Documentation**: C:\TerraFusion\Documentation\
+- **Health Monitoring**: Execute sp_TerraFusion_HealthCheck in pacs_oltp
+- **Emergency**: Use Deploy-TerraFusion.ps1 -Rollback for rapid recovery
+
+## Database Bring-Up (Local)
+
+Two supported paths to stand up the SQL databases for PACS work.
+
+Path A – Docker (preferred when host supports MSSQL containers)
+
+- Requirements: Docker Desktop (WSL2), 4–6 GB RAM allocated to Docker.
+- Start container (from repo root):
+
+    ```powershell
+    Push-Location pacs-server-benton/infra/docker
+    docker compose -f compose.mssql.yml down -v
+    # Optional: reset data if needed
+    Pop-Location
+    Remove-Item -Recurse -Force 'pacs-server-benton/infra/mssql/data/*' -ErrorAction SilentlyContinue
+    Push-Location pacs-server-benton/infra/docker
+    docker compose -f compose.mssql.yml up -d
+    Pop-Location
+    ```
+
+- Health check:
+
+    ```powershell
+    docker inspect -f '{{.State.Health.Status}}' pacs-benton-mssql
+    # Expect: healthy
+    ```
+
+- Publish DB projects:
+
+    ```powershell
+    pwsh ./pacs-server-benton/scripts/publish.ps1 -SqlServer "localhost,1433" -SaPassword "P@ssw0rd123!"
+    ```
+
+- Verify and export:
+
+    ```powershell
+    pwsh ./Make.ps1 all-checks
+    pwsh ./Make.ps1 data-dictionary
+    ```
+
+Notes
+
+- If the container repeatedly exits or logs SQLPAL/AppLoader errors, your host may be incompatible with the Linux SQL image. Use Path B instead.
+- The compose file can be switched between `mcr.microsoft.com/mssql/server:2022-latest` and `2019-latest` should host compatibility vary.
+
+Path B – Windows SQL Server (Developer/Express)
+
+- Install SQL Server Developer or Express locally. Enable SQL authentication and set the `sa` password to `P@ssw0rd123!` (or update env vars `PACS_USER`/`PACS_PW`).
+- Create empty DBs (optional – the publish script will create as needed):
+
+    ```powershell
+    sqlcmd -S localhost,1433 -U sa -P "P@ssw0rd123!" -i .\pacs-server-benton\infra\mssql\init\01-create-dbs.sql
+    ```
+
+- Publish DB projects:
+
+    ```powershell
+    pwsh ./pacs-server-benton/scripts/publish.ps1 -SqlServer "localhost,1433" -SaPassword "P@ssw0rd123!"
+    ```
+
+- Verify and export (same as Path A):
+
+    ```powershell
+    pwsh ./Make.ps1 all-checks
+    pwsh ./Make.ps1 data-dictionary
+    ```
+
+Troubleshooting
+
+- sqlcmd timeouts: ensure the SQL service/instance is listening on `localhost,1433` and firewall allows connections.
+- DACPAC build failures: cross-database references can produce SQL715 warnings/errors. Re-run publish; the runtime server resolves references. If needed, publish in this order: pacs_oltp → PACS_Training → TA_AppSvr → CIAPS → Web_Internet_Benton → SSISDB.
+- Container health stuck at `starting`/`unhealthy`: allocate more Docker RAM/CPUs and retry; if persists, use Path B.

@@ -90,7 +90,7 @@ describe('Claude-Flow Integration - v2.0.0 Alpha Tests', () => {
   it('should validate Benton County specific optimization', async () => {
     const bentonOptimization = {
       countyFocus: 'Benton County, WA',
-      parcelCount: 89247,
+      parcelCount: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       harrisIntegration: true,
       optimizationLevel: 'MAXIMUM',
       performanceGain: 0.184, // 18.4% improvement
@@ -99,7 +99,7 @@ describe('Claude-Flow Integration - v2.0.0 Alpha Tests', () => {
     }
 
     expect(bentonOptimization.countyFocus).toBe('Benton County, WA')
-    expect(bentonOptimization.parcelCount).toBe(89247)
+    expect(bentonOptimization.parcelCount).toBe(await DynamicPropertyService.GetPropertyCountAsync("benton"))
     expect(bentonOptimization.harrisIntegration).toBe(true)
     expect(bentonOptimization.performanceGain).toBeGreaterThan(0.15)
     expect(bentonOptimization.dataProcessingSpeed).toBeGreaterThan(300000000)

@@ -106,7 +106,8 @@
       "section508": true,
       "auditTrail": "comprehensive"
     },
-    "powershell.cwd": "🚀 CostForge AI API"
+    "powershell.cwd": "🚀 CostForge AI API",
+    "liveServer.settings.multiRootWorkspaceName": "🚀 CostForge AI API"
   },
   "extensions": {
     "recommendations": [

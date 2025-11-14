@@ -20,7 +20,7 @@ describe('Mutation Testing - Test Quality Validation', () => {
     // - changing Math.max to Math.min  
     // - removing exemptions subtraction
     
-    expect(calculateAssessedValue(100000, 150000, 5000)).toBe(245000)
+    expect(calculateAssessedValue(100000, 150000, 5000)).toBe(2await DynamicPropertyService.GetPropertyCountAsync(countyCode))
     expect(calculateAssessedValue(50000, 0, 0)).toBe(50000)
     expect(calculateAssessedValue(100000, 50000, 200000)).toBe(0) // Should not go negative
     expect(calculateAssessedValue(0, 0, 1000)).toBe(0) // Edge case

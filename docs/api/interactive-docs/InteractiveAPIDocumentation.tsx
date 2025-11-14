@@ -66,7 +66,7 @@ const InteractiveAPIDocumentation: React.FC = () => {
   const [testResponse, setTestResponse] = useState<any>(null);
   const [isTestingAPI, setIsTestingAPI] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
-  const [apiEndpoint, setApiEndpoint] = useState('https://api.terrafusion.gov');
+  const [apiEndpoint, setApiEndpoint] = useState('https://api.terrafusionmarket.com');
 
   const apiService = new APIDocumentationService();
 
@@ -148,7 +148,8 @@ const InteractiveAPIDocumentation: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', p: 2 }}><>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', p: 2 }}>
+<>
 
         <Typography variant="h4" gutterBottom>
           Terrafusion OS API Documentation
@@ -158,7 +159,8 @@ const InteractiveAPIDocumentation: React.FC = () => {
 
 variant="subtitle1" color="text.secondary">
           Interactive documentation with live examples, tutorials, and video training
-        </Typography><>
+        </Typography>
+<>
 
         <TextField
           label="API Endpoint"
@@ -186,7 +188,8 @@ value={currentTab} onChange={handleTabChange}>
           <CardContent>
             <Typography variant="h6" gutterBottom>OpenAPI Specification</Typography>
             {swaggerSpec ? (
-              <Box><>
+              <Box>
+<>
 
                 <Alert severity="info" sx={{ mb: 2 }}>
                   OpenAPI specification loaded successfully. Interactive Swagger UI would be rendered here.
@@ -211,7 +214,8 @@ style={{ backgroundColor: '#f5f5f5', padding: '16px', borderRadius: '4px' }}>
           {tutorials.map((tutorial) => (
             <Grid item xs={12} md={6} key={tutorial.id}>
               <Card>
-                <CardContent><>
+                <CardContent>
+<>
 
                   <Typography variant="h6">{tutorial.title}</Typography>
                   <Typography
@@ -221,7 +225,8 @@ variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                     {tutorial.description}
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                    <Chip label={tutorial.difficulty} size="small" /><>
+                    <Chip label={tutorial.difficulty} size="small" />
+<>
 
                     <Chip label={tutorial.estimatedTime} variant="outlined" size="small" />
                   </Box>
@@ -243,7 +248,8 @@ variant="contained" startIcon={<PlayArrow />}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
             <Card>
-              <CardContent><>
+              <CardContent>
+<>
 
                 <Typography variant="h6" gutterBottom>Generate Examples</Typography>
                 <TextField
@@ -255,7 +261,8 @@ variant="contained" startIcon={<PlayArrow />}>
                   onChange={(e) => setApiTestRequest(prev => ({ ...prev, endpoint: e.target.value }))}
                   sx={{ mb: 2 }}
                 />
-                <FormControl fullWidth sx={{ mb: 2 }}><>
+                <FormControl fullWidth sx={{ mb: 2 }}>
+<>
 
                   <InputLabel>Method</InputLabel>
                   <Select
@@ -263,13 +270,15 @@ variant="contained" startIcon={<PlayArrow />}>
 
                     value={apiTestRequest.method}
                     onChange={(e) => setApiTestRequest(prev => ({ ...prev, method: e.target.value }))}
-                  ><>
+                  >
+<>
 
                     <MenuItem value="GET">GET</MenuItem>
                     <MenuItem
 </>
 
-value="POST">POST</MenuItem><>
+value="POST">POST</MenuItem>
+<>
 
                     <MenuItem value="PUT">PUT</MenuItem>
                     <MenuItem
@@ -289,7 +298,8 @@ value="DELETE">DELETE</MenuItem>
             </Card>
           </Grid>
           <Grid item xs={12} md={8}>
-            <FormControl sx={{ mb: 2, minWidth: 200 }}><>
+            <FormControl sx={{ mb: 2, minWidth: 200 }}>
+<>
 
               <InputLabel>Language</InputLabel>
               <Select
@@ -297,13 +307,15 @@ value="DELETE">DELETE</MenuItem>
 
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
-              ><>
+              >
+<>
 
                 <MenuItem value="javascript">JavaScript</MenuItem>
                 <MenuItem
 </>
 
-value="python">Python</MenuItem><>
+value="python">Python</MenuItem>
+<>
 
                 <MenuItem value="curl">cURL</MenuItem>
                 <MenuItem
@@ -314,7 +326,8 @@ value="csharp">C#</MenuItem>
             </FormControl>
             <Card>
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}><>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+<>
 
                   <Typography variant="h6">{selectedLanguage.toUpperCase()}</Typography>
                   <IconButton
@@ -341,7 +354,8 @@ value="csharp">C#</MenuItem>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Card>
-              <CardContent><>
+              <CardContent>
+<>
 
                 <Typography variant="h6" gutterBottom>Request</Typography>
                 <TextField
@@ -353,7 +367,8 @@ value="csharp">C#</MenuItem>
                   onChange={(e) => setApiTestRequest(prev => ({ ...prev, endpoint: e.target.value }))}
                   sx={{ mb: 2 }}
                 />
-                <FormControl fullWidth sx={{ mb: 2 }}><>
+                <FormControl fullWidth sx={{ mb: 2 }}>
+<>
 
                   <InputLabel>Method</InputLabel>
                   <Select
@@ -361,13 +376,15 @@ value="csharp">C#</MenuItem>
 
                     value={apiTestRequest.method}
                     onChange={(e) => setApiTestRequest(prev => ({ ...prev, method: e.target.value }))}
-                  ><>
+                  >
+<>
 
                     <MenuItem value="GET">GET</MenuItem>
                     <MenuItem
 </>
 
-value="POST">POST</MenuItem><>
+value="POST">POST</MenuItem>
+<>
 
                     <MenuItem value="PUT">PUT</MenuItem>
                     <MenuItem
@@ -393,7 +410,8 @@ value="DELETE">DELETE</MenuItem>
               <CardContent>
                 <Typography variant="h6" gutterBottom>Response</Typography>
                 {testResponse ? (
-                  <Box><>
+                  <Box>
+<>
 
                     <Alert severity={testResponse.error ? 'error' : 'success'} sx={{ mb: 2 }}>
                       {testResponse.error || `Status: ${testResponse.status}`}
@@ -443,7 +461,8 @@ style={{ fontSize: '12px', overflow: 'auto' }}>
                     <PlayArrow sx={{ color: 'white', fontSize: 40 }} />
                   </Box>
                 </Box>
-                <CardContent><>
+                <CardContent>
+<>
 
                   <Typography variant="h6">{video.title}</Typography>
                   <Typography
@@ -453,7 +472,8 @@ variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                     {video.description}
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                    <Chip label={video.difficulty} size="small" /><>
+                    <Chip label={video.difficulty} size="small" />
+<>
 
                     <Chip label={video.duration} variant="outlined" size="small" />
                   </Box>

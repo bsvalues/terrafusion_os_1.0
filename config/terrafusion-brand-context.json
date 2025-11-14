@@ -149,9 +149,9 @@
     "Continuous improvement through metrics and feedback loops"
   ],
   "harris_pacs_integration": {
-    "version": "v12.4.7",
+    "version": "v9.0",
     "sync_frequency": "15-second real-time synchronization",
-    "parcel_count": "89,247 parcels (Benton County)",
+    "parcel_count": "await DynamicPropertyService.GetPropertyCountAsync("benton") parcels (Benton County)",
     "field_mapping": {
       "PARID": "TF_PARCEL_UUID",
       "PROPADDR": "TF_PROPERTY_ADDRESS",
@@ -213,3 +213,4 @@
     "Update regularly to reflect product evolution and new capabilities"
   ]
 }
+

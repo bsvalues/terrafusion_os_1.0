@@ -121,7 +121,8 @@
       "incidentIsolation": true,
       "threatMitigation": "automated",
       "securityOverride": "emergency-only"
-    }
+    },
+    "liveServer.settings.multiRootWorkspaceName": "⚡ Rapid Deployment Engine"
   },
   "extensions": {
     "recommendations": [

@@ -543,7 +543,7 @@ jobs:
     
     environment:
       name: staging
-      url: https://staging.terrafusion.gov
+      url: https://staging.terrafusionmarket.com
       
     steps:
       - name: Checkout Code
@@ -578,7 +578,7 @@ jobs:
           kubectl wait --for=condition=ready pod -l app=terrafusion-api --timeout=300s
           
           # Health check
-          STAGING_URL="https://staging.terrafusion.gov"
+          STAGING_URL="https://staging.terrafusionmarket.com"
           curl -f "$STAGING_URL/health" || exit 1
           
           echo "✅ Staging deployment health check passed"
@@ -588,12 +588,12 @@ jobs:
           echo "📊 Validating Staging Performance"
           
           # Basic performance check
-          RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' https://staging.terrafusion.gov/health)
+          RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' https://staging.terrafusionmarket.com/health)
           echo "Staging Response Time: ${RESPONSE_TIME}s"
           
           # Negative caching validation
-          curl -s https://staging.terrafusion.gov/api/properties/staging-test-negative-cache > /dev/null
-          curl -s https://staging.terrafusion.gov/api/properties/staging-test-negative-cache > /dev/null
+          curl -s https://staging.terrafusionmarket.com/api/properties/staging-test-negative-cache > /dev/null
+          curl -s https://staging.terrafusionmarket.com/api/properties/staging-test-negative-cache > /dev/null
           
           echo "✅ Staging performance validation passed"
 
@@ -608,7 +608,7 @@ jobs:
     
     environment:
       name: production
-      url: https://terrafusion.gov
+      url: https://terrafusionmarket.com
       
     steps:
       - name: Checkout Code
@@ -654,7 +654,7 @@ jobs:
           echo "🧪 Running Production Smoke Tests"
           
           # Test green environment
-          GREEN_URL="https://green.terrafusion.gov"
+          GREEN_URL="https://green.terrafusionmarket.com"
           
           # Health check
           curl -f "$GREEN_URL/health" || exit 1
@@ -672,7 +672,7 @@ jobs:
           echo "🔄 Switching Production Traffic to Green Environment"
           
           # Update ingress to point to green
-          kubectl patch ingress terrafusion-ingress -p '{"spec":{"rules":[{"host":"terrafusion.gov","http":{"paths":[{"path":"/","pathType":"Prefix","backend":{"service":{"name":"terrafusion-green","port":{"number":80}}}}]}}]}}'
+          kubectl patch ingress terrafusion-ingress -p '{"spec":{"rules":[{"host":"terrafusionmarket.com","http":{"paths":[{"path":"/","pathType":"Prefix","backend":{"service":{"name":"terrafusion-green","port":{"number":80}}}}]}}]}}'
           
           # Wait for propagation
           sleep 30
@@ -682,10 +682,10 @@ jobs:
           echo "🏥 Final Production Health Validation"
           
           # Validate production endpoint
-          curl -f "https://terrafusion.gov/health" || exit 1
+          curl -f "https://terrafusionmarket.com/health" || exit 1
           
           # Performance check
-          RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' https://terrafusion.gov/health)
+          RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' https://terrafusionmarket.com/health)
           echo "Production Response Time: ${RESPONSE_TIME}s"
           
           echo "✅ Production deployment completed successfully"
@@ -699,9 +699,9 @@ jobs:
           echo "🔒 FISMA Compliance: VALIDATED"
           echo "⚡ Performance Targets: MET"
           echo ""
-          echo "Production URL: https://terrafusion.gov"
-          echo "Monitoring: https://grafana.terrafusion.gov"
-          echo "Compliance Dashboard: https://compliance.terrafusion.gov"
+          echo "Production URL: https://terrafusionmarket.com"
+          echo "Monitoring: https://grafana.terrafusionmarket.com"
+          echo "Compliance Dashboard: https://compliance.terrafusionmarket.com"
 
   # ===========================================================================
   # POST-DEPLOYMENT VALIDATION
@@ -718,7 +718,7 @@ jobs:
           echo "🔍 Running End-to-End Production Validation"
           
           # Comprehensive production validation
-          PROD_URL="https://terrafusion.gov"
+          PROD_URL="https://terrafusionmarket.com"
           
           # API Health
           curl -f "$PROD_URL/health" || exit 1

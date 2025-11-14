@@ -679,7 +679,7 @@ jobs:
     if: github.ref == 'refs/heads/develop' || github.event.inputs.environment == 'staging'
     environment: 
       name: staging
-      url: https://staging.terrafusion.gov
+      url: https://staging.terrafusionmarket.com
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -711,7 +711,7 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
     environment:
       name: production
-      url: https://terrafusion.gov
+      url: https://terrafusionmarket.com
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -753,13 +753,13 @@ jobs:
           echo "🏥 Performing post-deployment health checks..."
           
           # Production health check
-          curl -f https://terrafusion.gov/health || exit 1
+          curl -f https://terrafusionmarket.com/health || exit 1
           
           # Harris PACS connectivity check
-          curl -f https://terrafusion.gov/api/harris-pacs/status || exit 1
+          curl -f https://terrafusionmarket.com/api/harris-pacs/status || exit 1
           
           # AI Swarm status check  
-          curl -f https://terrafusion.gov/api/ai-swarm/status || exit 1
+          curl -f https://terrafusionmarket.com/api/ai-swarm/status || exit 1
           
           echo "✅ All post-deployment health checks passed"
           
@@ -769,7 +769,7 @@ jobs:
           
           # Load test production endpoint
           curl -w "Response time: %{time_total}s\n" \
-            https://terrafusion.gov/api/properties/1 || exit 1
+            https://terrafusionmarket.com/api/properties/1 || exit 1
           
           echo "🎯 Performance validation completed"
           

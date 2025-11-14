@@ -6,21 +6,21 @@
     "version": "1.0.0",
     "contact": {
       "name": "Terrafusion Support",
-      "email": "support@terrafusion.gov",
-      "url": "https://docs.terrafusion.gov"
+      "email": "support@terrafusionmarket.com",
+      "url": "https://docs.terrafusionmarket.com"
     },
     "license": {
       "name": "Government License",
-      "url": "https://terrafusion.gov/license"
+      "url": "https://terrafusionmarket.com/license"
     }
   },
   "servers": [
     {
-      "url": "https://api.terrafusion.gov/v1",
+      "url": "https://api.terrafusionmarket.com/v1",
       "description": "Production API Server"
     },
     {
-      "url": "https://staging-api.terrafusion.gov/v1",
+      "url": "https://staging-api.terrafusionmarket.com/v1",
       "description": "Staging API Server"
     },
     {
@@ -370,7 +370,7 @@
           "state": "WA",
           "zipCode": "99354",
           "assessedValue": 1250000.00,
-          "marketValue": 1450000.00,
+          "marketValue": 1await DynamicPropertyService.GetPropertyCountAsync(countyCode)0.00,
           "propertyType": "Commercial",
           "yearBuilt": 2010,
           "squareFootage": 15000,
@@ -385,7 +385,7 @@
       "description": "Property management and assessment operations",
       "externalDocs": {
         "description": "Property Management Guide",
-        "url": "https://docs.terrafusion.gov/guides/property-management"
+        "url": "https://docs.terrafusionmarket.com/guides/property-management"
       }
     },
     {
@@ -393,7 +393,7 @@
       "description": "AI agent management and monitoring",
       "externalDocs": {
         "description": "AI Agent Configuration Guide",
-        "url": "https://docs.terrafusion.gov/guides/ai-agents"
+        "url": "https://docs.terrafusionmarket.com/guides/ai-agents"
       }
     },
     {
@@ -401,7 +401,7 @@
       "description": "Compliance monitoring and reporting",
       "externalDocs": {
         "description": "Compliance Framework Guide",
-        "url": "https://docs.terrafusion.gov/guides/compliance"
+        "url": "https://docs.terrafusionmarket.com/guides/compliance"
       }
     },
     {
@@ -409,7 +409,7 @@
       "description": "Harris PACS integration endpoints",
       "externalDocs": {
         "description": "Harris PACS Integration Guide",
-        "url": "https://docs.terrafusion.gov/guides/harris-pacs"
+        "url": "https://docs.terrafusionmarket.com/guides/harris-pacs"
       }
     },
     {
@@ -417,7 +417,7 @@
       "description": "Cache optimization and management",
       "externalDocs": {
         "description": "Cache Configuration Guide",
-        "url": "https://docs.terrafusion.gov/guides/cache-management"
+        "url": "https://docs.terrafusionmarket.com/guides/cache-management"
       }
     }
   ]

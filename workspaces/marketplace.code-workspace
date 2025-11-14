@@ -86,7 +86,8 @@
       "fismaMode": "MODERATE",
       "nist80053": true,
       "auditTrail": "comprehensive"
-    }
+    },
+    "liveServer.settings.multiRootWorkspaceName": "🎨 Marketplace Frontend"
   },
   "extensions": {
     "recommendations": [

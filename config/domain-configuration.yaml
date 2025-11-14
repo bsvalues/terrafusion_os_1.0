@@ -1,0 +1,94 @@
+# ========================================================================
+# TerraFusion OS Domain Configuration Strategy
+# ========================================================================
+# Using REAL domains only - no fictional domains allowed
+# Available domains: terrafusionmarket.io, terrafusionmarket.com, terrafusionmarket.net
+# ========================================================================
+
+environments:
+  development:
+    primary_domain: "localhost:3000"
+    api_domain: "localhost:5000"
+    ssl_enabled: false
+    description: "Local development environment"
+    
+  staging:
+    primary_domain: "staging.terrafusionmarket.io"
+    api_domain: "api-staging.terrafusionmarket.io"
+    ssl_enabled: true
+    description: "Staging environment for testing"
+    
+  production:
+    primary_domain: "terrafusionmarket.io"
+    api_domain: "api.terrafusionmarket.io"
+    ssl_enabled: true
+    description: "Production environment"
+    
+  county_demo:
+    primary_domain: "demo.terrafusionmarket.com"
+    api_domain: "api-demo.terrafusionmarket.com"
+    ssl_enabled: true
+    description: "County demonstration environment"
+
+# County-specific subdomains (if needed for production)
+county_subdomains:
+  benton:
+    primary: "benton.terrafusionmarket.io"
+    api: "api-benton.terrafusionmarket.io"
+    enabled: false  # Enable only if county requests custom domain
+    
+  # Add other counties only when they request custom domains
+  # Do not create fictional county domains
+
+# Domain validation rules
+validation:
+  allowed_domains:
+    - "localhost"
+    - "127.0.0.1" 
+    - "terrafusionmarket.io"
+    - "terrafusionmarket.com"
+    - "terrafusionmarket.net"
+    - "*.terrafusionmarket.io"
+    - "*.terrafusionmarket.com" 
+    - "*.terrafusionmarket.net"
+    
+  forbidden_domains:
+    - "*.terrafusionmarket.io"  # Fictional - we don't own this
+    - "*.gov"  # We don't own government domains
+    - "assessor.*"  # Don't create fictional assessor domains
+    
+  domain_ownership_verification: true
+  ssl_certificate_validation: true
+
+# DNS configuration (when deploying to real domains)
+dns_records:
+  terrafusionmarket.io:
+    type: "A"
+    value: "${PRODUCTION_IP_ADDRESS}"
+    ttl: 300
+    
+  api.terrafusionmarket.io:
+    type: "CNAME"
+    value: "terrafusionmarket.io"
+    ttl: 300
+    
+  staging.terrafusionmarket.io:
+    type: "A"
+    value: "${STAGING_IP_ADDRESS}"
+    ttl: 300
+
+# SSL Certificate configuration
+ssl_certificates:
+  production:
+    domains:
+      - "terrafusionmarket.io"
+      - "*.terrafusionmarket.io"
+    provider: "letsencrypt"
+    auto_renewal: true
+    
+  staging:
+    domains:
+      - "staging.terrafusionmarket.io"
+      - "*.staging.terrafusionmarket.io"
+    provider: "letsencrypt"
+    auto_renewal: true

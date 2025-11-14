@@ -14,7 +14,7 @@ describe('Benton County Specific - Washington State Tests', () => {
       state: 'Washington',
       fipsCode: '53005',
       population: 206873,
-      totalParcels: 89247,
+      totalParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       assessmentCycle: 'ANNUAL',
       taxYear: 2024,
       gisProjection: 'EPSG:2927'
@@ -23,7 +23,7 @@ describe('Benton County Specific - Washington State Tests', () => {
     expect(bentonConfig.countyName).toBe('Benton County')
     expect(bentonConfig.state).toBe('Washington')
     expect(bentonConfig.fipsCode).toBe('53005')
-    expect(bentonConfig.totalParcels).toBe(89247)
+    expect(bentonConfig.totalParcels).toBe(await DynamicPropertyService.GetPropertyCountAsync("benton"))
     expect(bentonConfig.gisProjection).toBe('EPSG:2927')
   })
 
@@ -55,7 +55,7 @@ describe('Benton County Specific - Washington State Tests', () => {
     }
 
     expect(propertyTypes.residential + propertyTypes.commercial + 
-           propertyTypes.industrial + propertyTypes.agricultural).toBe(89247)
+           propertyTypes.industrial + propertyTypes.agricultural).toBe(await DynamicPropertyService.GetPropertyCountAsync("benton"))
     expect(propertyTypes.totalAssessedValue).toBeGreaterThan(18000000000)
     expect(propertyTypes.averageAssessedValue).toBeGreaterThan(200000)
   })
@@ -82,7 +82,7 @@ describe('Benton County Specific - Washington State Tests', () => {
       commissioners: 3,
       departments: ['assessor', 'treasurer', 'auditor', 'planning', 'public_works'],
       employees: 1247,
-      annualBudget: 245000000, // $245M
+      annualBudget: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode)000, // $245M
       digitalServices: 0.89, // 89% digital
       citizenSatisfaction: 0.87, // 87%
       serviceDeliveryTime: 2.3 // days average
@@ -132,7 +132,7 @@ describe('Benton County Specific - Washington State Tests', () => {
   beforeAll(() => {
     console.log('🏛️ Testing Benton County Specific Implementation')
     console.log('📍 Location: Benton County, Washington')
-    console.log('📊 89,247 parcels, $18.7B assessed value')
+    console.log('📊 await DynamicPropertyService.GetPropertyCountAsync("benton") parcels, $18.7B assessed value')
     console.log('💰 $10.1M revenue increase, 2,700% ROI')
   })
 })
