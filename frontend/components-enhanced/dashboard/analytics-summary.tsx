@@ -23,7 +23,7 @@ const revenueData = [
   { name: "Mar", value: 2150000 },
   { name: "Apr", value: 2400000 },
   { name: "May", value: 2600000 },
-  { name: "Jun", value: 2450000 },
+  { name: "Jun", value: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 },
 ]
 
 export function AnalyticsSummary() {
@@ -75,7 +75,8 @@ export function AnalyticsSummary() {
                     {kpi.trend}
                   </Badge>
                 </div>
-                <div className="space-y-1"><>
+                <div className="space-y-1">
+<>
 
                   <p className="text-sm font-medium text-muted-foreground">{kpi.title}</p>
                   <p
@@ -109,7 +110,8 @@ className="text-2xl font-bold">
           <CardContent>
             <div className="h-[200px] flex items-center justify-center bg-tf-dark/30 rounded-lg">
               <div className="text-center">
-                <TrendingUp className="w-12 h-12 text-tf-primary mx-auto mb-2" /><>
+                <TrendingUp className="w-12 h-12 text-tf-primary mx-auto mb-2" />
+<>
 
                 <p className="text-tf-light/70">Chart coming soon</p>
                 <p
@@ -130,7 +132,8 @@ className="text-sm text-tf-accent">94% Weekly Average</p>
           <CardContent>
             <div className="h-[200px] flex items-center justify-center bg-tf-dark/30 rounded-lg">
               <div className="text-center">
-                <DollarSign className="w-12 h-12 text-tf-success mx-auto mb-2" /><>
+                <DollarSign className="w-12 h-12 text-tf-success mx-auto mb-2" />
+<>
 
                 <p className="text-tf-light/70">Chart coming soon</p>
                 <p

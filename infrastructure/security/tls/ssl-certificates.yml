@@ -39,7 +39,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: security@terrafusion.gov
+    email: security@terrafusionmarket.com
     privateKeySecretRef:
       name: letsencrypt-prod-private-key
     solvers:
@@ -48,18 +48,18 @@ spec:
             class: nginx
         selector:
           dnsNames:
-            - '*.terrafusion.gov'
-            - 'terrafusion.gov'
+            - '*.terrafusionmarket.com'
+            - 'terrafusionmarket.com'
       - dns01:
           cloudflare:
-            email: dns-admin@terrafusion.gov
+            email: dns-admin@terrafusionmarket.com
             apiTokenSecretRef:
               name: cloudflare-api-token
               key: token
         selector:
           dnsNames:
-            - '*.terrafusion.gov'
-            - 'terrafusion.gov'
+            - '*.terrafusionmarket.com'
+            - 'terrafusionmarket.com'
 
 ---
 # Let's Encrypt ClusterIssuer - Staging
@@ -70,7 +70,7 @@ metadata:
 spec:
   acme:
     server: https://acme-staging-v02.api.letsencrypt.org/directory
-    email: security@terrafusion.gov
+    email: security@terrafusionmarket.com
     privateKeySecretRef:
       name: letsencrypt-staging-private-key
     solvers:
@@ -79,7 +79,7 @@ spec:
             class: nginx
       - dns01:
           cloudflare:
-            email: dns-admin@terrafusion.gov
+            email: dns-admin@terrafusionmarket.com
             apiTokenSecretRef:
               name: cloudflare-api-token
               key: token
@@ -97,16 +97,16 @@ spec:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - terrafusion.gov
-    - www.terrafusion.gov
-    - api.terrafusion.gov
-    - dashboard.terrafusion.gov
-    - vault.terrafusion.gov
-    - grafana.terrafusion.gov
-    - jaeger.terrafusion.gov
-    - marketplace.terrafusion.gov
-    - citizen.terrafusion.gov
-    - admin.terrafusion.gov
+    - terrafusionmarket.com
+    - www.terrafusionmarket.com
+    - api.terrafusionmarket.com
+    - dashboard.terrafusionmarket.com
+    - vault.terrafusionmarket.com
+    - grafana.terrafusionmarket.com
+    - jaeger.terrafusionmarket.com
+    - marketplace.terrafusionmarket.com
+    - citizen.terrafusionmarket.com
+    - admin.terrafusionmarket.com
   usages:
     - digital signature
     - key encipherment
@@ -126,13 +126,13 @@ spec:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - '*.api.internal.terrafusion.gov'
-    - api.internal.terrafusion.gov
-    - gateway.internal.terrafusion.gov
-    - property.internal.terrafusion.gov
-    - citizen.internal.terrafusion.gov
-    - ai.internal.terrafusion.gov
-    - analytics.internal.terrafusion.gov
+    - '*.api.internal.terrafusionmarket.com'
+    - api.internal.terrafusionmarket.com
+    - gateway.internal.terrafusionmarket.com
+    - property.internal.terrafusionmarket.com
+    - citizen.internal.terrafusionmarket.com
+    - ai.internal.terrafusionmarket.com
+    - analytics.internal.terrafusionmarket.com
   usages:
     - digital signature
     - key encipherment
@@ -164,15 +164,15 @@ metadata:
 spec:
   tls:
     - hosts:
-        - terrafusion.gov
-        - www.terrafusion.gov
-        - api.terrafusion.gov
-        - dashboard.terrafusion.gov
-        - marketplace.terrafusion.gov
-        - citizen.terrafusion.gov
+        - terrafusionmarket.com
+        - www.terrafusionmarket.com
+        - api.terrafusionmarket.com
+        - dashboard.terrafusionmarket.com
+        - marketplace.terrafusionmarket.com
+        - citizen.terrafusionmarket.com
       secretName: terrafusion-tls-secret
   rules:
-    - host: api.terrafusion.gov
+    - host: api.terrafusionmarket.com
       http:
         paths:
           - path: /
@@ -182,7 +182,7 @@ spec:
                 name: terrafusion-api-gateway
                 port:
                   number: 5000
-    - host: dashboard.terrafusion.gov
+    - host: dashboard.terrafusionmarket.com
       http:
         paths:
           - path: /
@@ -192,7 +192,7 @@ spec:
                 name: terrafusion-dashboard
                 port:
                   number: 3000
-    - host: marketplace.terrafusion.gov
+    - host: marketplace.terrafusionmarket.com
       http:
         paths:
           - path: /
@@ -202,7 +202,7 @@ spec:
                 name: marketplace-frontend
                 port:
                   number: 3002
-    - host: citizen.terrafusion.gov
+    - host: citizen.terrafusionmarket.com
       http:
         paths:
           - path: /

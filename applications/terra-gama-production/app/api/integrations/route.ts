@@ -91,7 +91,7 @@ class IntegrationManager {
         zestimate: 567000 + Math.floor(Math.random() * 100000),
         rent_estimate: 2800 + Math.floor(Math.random() * 500),
         price_history: [
-          { date: "2023-12-01", price: 545000 },
+          { date: "2023-12-01", price: 5await DynamicPropertyService.GetPropertyCountAsync(countyCode) },
           { date: "2023-06-01", price: 520000 },
           { date: "2023-01-01", price: 495000 },
         ],
@@ -113,7 +113,7 @@ class IntegrationManager {
     return {
       source: "US Census Bureau",
       data: {
-        population: 45000 + Math.floor(Math.random() * 20000),
+        population: await DynamicPropertyService.GetPropertyCountAsync(countyCode) + Math.floor(Math.random() * 20000),
         median_income: 65000 + Math.floor(Math.random() * 30000),
         median_age: 35 + Math.floor(Math.random() * 15),
         education_level: {

@@ -1,0 +1,191 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-os-core
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-os-core
+    tier: core
+    version: v1.0.0
+    gov.terrafusion/service: os-core
+    gov.terrafusion/compliance: fisma-high
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: terrafusion-os-core
+  template:
+    metadata:
+      labels:
+        app: terrafusion-os-core
+        tier: core
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8000'
+        prometheus.io/path: '/metrics'
+    spec:
+      serviceAccountName: terrafusion-os-core
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      containers:
+        - name: os-core
+          image: terrafusion.azurecr.io/os-core:1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+              protocol: TCP
+          env:
+            - name: TERRAFUSION_ENV
+              value: 'production'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-database
+                  key: connection-string
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-auth
+                  key: jwt-secret
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-crypto
+                  key: encryption-key
+            - name: FISMA_MODE
+              value: 'true'
+            - name: AUDIT_LOGGING
+              value: 'true'
+            - name: MFA_REQUIRED
+              value: 'true'
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '500m'
+            limits:
+              memory: '1Gi'
+              cpu: '1000m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: terrafusion-os-core-config
+      nodeSelector:
+        gov.terrafusion/node-type: 'core'
+        kubernetes.io/arch: 'amd64'
+      tolerations:
+        - key: 'gov.terrafusion/core-workload'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoSchedule'
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - terrafusion-os-core
+                topologyKey: kubernetes.io/hostname
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-os-core
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-os-core
+    tier: core
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
+      name: http
+  selector:
+    app: terrafusion-os-core
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: terrafusion-os-core
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-os-core
+    tier: core
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: terrafusion-os-core-config
+  namespace: terrafusion-system
+  labels:
+    app: terrafusion-os-core
+    tier: core
+data:
+  application.toml: |
+    [server]
+    host = "0.0.0.0"
+    port = 8000
+
+    [government]
+    compliance_level = "FISMA-HIGH"
+    audit_retention_days = 2555
+    county_isolation_enabled = true
+
+    [ai]
+    coordination_endpoint = "http://terrafusion-consciousness:3004"
+    max_agents_per_county = 1000
+
+    [security]
+    fisma_mode = true
+    audit_logging = true
+    mfa_required = true
+
+    [performance]
+    sla_availability = 0.999
+    sla_response_p95_ms = 150
+    sla_accuracy = 0.999

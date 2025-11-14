@@ -1,8 +1,0 @@
-{
-    "set": [
-        "merge lines",
-        "parcel fabric",
-        "sequenced lines",
-        "simplify lines"
-    ]
-}

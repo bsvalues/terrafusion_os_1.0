@@ -1,0 +1,115 @@
+# Harris PACS Bridge Configuration for Benton County, Washington
+# TerraFusion OS 1.0 - Government. Transcended.
+
+# Service configuration
+host = "0.0.0.0"
+port = 8084
+environment = "Development"
+
+# Required URL field for service
+url = "http://0.0.0.0:8084"
+
+# Direct field mappings (compatibility)
+[field_mappings]
+parcel_number = "parcel_id"
+owner = "owner_name"
+situs_address = "property_address"
+assessed_val = "assessed_value"
+market_val = "market_value"
+land_value = "land_value"
+improvement_value = "improvement_value"
+tax_year = "tax_year"
+assessment_date = "assessment_date"
+property_type = "property_type_code"
+property_class = "property_class"
+square_footage = "building_square_feet"
+lot_size = "lot_size_acres"
+year_built = "year_built"
+neighborhood_code = "neighborhood_code"
+zoning = "zoning_code"
+sale_date = "sale_date"
+sale_price = "sale_price"
+deed_type = "deed_type"
+verification_code = "verification_code"
+
+[harris]
+version = "9.0"
+database_url = "Server=pacs-benton-mssql,1433;Database=HarrisPACS;User Id=sa;Password=HarrisP4cs2024!;TrustServerCertificate=true"
+api_base_url = "https://pacs-benton.wa.gov/api"
+api_version = "9.0"
+batch_size = 100
+timeout_seconds = 30
+retry_attempts = 3
+connection_pool_size = 10
+
+[harris.auth]
+database_username = "sa"
+database_password_env = "HARRIS_DB_PASSWORD"
+
+[harris.schema_mappings]
+property_table = "properties"
+owner_table = "owners"
+assessment_table = "assessments"
+tax_table = "taxes"
+sale_table = "sales"
+
+[harris.schema_mappings.field_mappings]
+parcel_number = "parcel_id"
+owner = "owner_name"
+situs_address = "property_address"
+assessed_val = "assessed_value"
+market_val = "market_value"
+
+[counties.benton]
+county_id = "benton"
+county_name = "Benton County"
+state = "Washington"
+fips_code = "53005"
+jurisdiction_code = "BENTON_WA"
+sync_enabled = true
+sync_interval_minutes = 15
+batch_size = 100
+
+[counties.benton.validation_rules]
+require_owner_name = true
+require_property_address = true
+valid_tax_years = [2020, 2021, 2022, 2023, 2024, 2025]
+
+[counties.benton.contact_info]
+assessor_name = "Benton County Assessor"
+
+[database]
+url = "postgresql://terrafusion:championship_secure_2024!@benton-postgres:5432/terrafusion_benton"
+max_connections = 20
+min_connections = 5
+connection_timeout_seconds = 10
+idle_timeout_seconds = 300
+auto_migrate = true
+migration_path = "./migrations"
+
+[security]
+jwt_secret_env = "JWT_SECRET"
+jwt_expiration_hours = 24
+rate_limit_requests_per_minute = 100
+rate_limit_burst = 20
+require_https = false
+encrypt_county_data = true
+
+[sync]
+default_sync_interval_minutes = 15
+max_concurrent_syncs = 3
+sync_retry_attempts = 3
+sync_timeout_minutes = 30
+bulk_insert_batch_size = 500
+property_fetch_batch_size = 100
+max_errors_per_sync = 10
+error_notification_threshold = 5
+enable_real_time_sync = false
+real_time_sync_interval_seconds = 60
+
+[logging]
+level = "info"
+harris_pacs_log_level = "debug"
+log_to_file = false
+enable_audit_log = true
+log_sync_performance = true

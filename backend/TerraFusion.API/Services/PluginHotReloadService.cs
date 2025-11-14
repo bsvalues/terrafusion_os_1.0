@@ -19,16 +19,18 @@ namespace TerraFusion.API.Services
             _hubContext = hubContext;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             // Watch the modules directory where our 15 production modules are located
             var modulesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "modules");
             var absoluteModulesPath = Path.GetFullPath(modulesPath);
-            
+
             if (!Directory.Exists(absoluteModulesPath))
             {
-                _logger.LogWarning("Modules directory not found: {Path}", absoluteModulesPath);
-                return Task.CompletedTask;
+                _logger.LogWarning("Modules directory not found: {Path}. Service will continue running but won't monitor changes.", absoluteModulesPath);
+                // Keep service alive even if directory doesn't exist - prevents premature shutdown
+                await Task.Delay(Timeout.Infinite, stoppingToken);
+                return;
             }
 
             _watcher = new FileSystemWatcher
@@ -44,12 +46,12 @@ namespace TerraFusion.API.Services
             _watcher.Deleted += async (sender, e) => await HandlePluginChange(e.FullPath, "deleted");
 
             _watcher.EnableRaisingEvents = true;
-            
+
             _logger.LogInformation("Module hot-reload service started, watching: {Path}", absoluteModulesPath);
             _logger.LogInformation("Entering infinite delay to keep service alive...");
-            
+
             // Keep the service running until cancellation is requested
-            return Task.Delay(Timeout.Infinite, stoppingToken);
+            await Task.Delay(Timeout.Infinite, stoppingToken);
         }
 
         private async Task HandlePluginChange(string filePath, string changeType)

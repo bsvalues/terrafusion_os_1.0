@@ -6,7 +6,7 @@
 global:
   environment: production
   region: us-west-2
-  domain: terrafusion.gov
+  domain: terrafusionmarket.com
 
 replicaCount: 3
 
@@ -62,20 +62,20 @@ ingress:
     nginx.ingress.kubernetes.io/rate-limit: '1000'
     nginx.ingress.kubernetes.io/rate-limit-burst: '2000'
     nginx.ingress.kubernetes.io/enable-cors: 'true'
-    nginx.ingress.kubernetes.io/cors-allow-origin: 'https://terrafusion.gov,https://*.terrafusion.gov'
+    nginx.ingress.kubernetes.io/cors-allow-origin: 'https://terrafusionmarket.com,https://*.terrafusionmarket.com'
     nginx.ingress.kubernetes.io/cors-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS'
     nginx.ingress.kubernetes.io/cors-allow-headers: 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization'
     nginx.ingress.kubernetes.io/ssl-redirect: 'true'
     nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
   hosts:
-    - host: gateway.terrafusion.gov
+    - host: gateway.terrafusionmarket.com
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: terrafusion-gateway-tls
       hosts:
-        - gateway.terrafusion.gov
+        - gateway.terrafusionmarket.com
 
 resources:
   limits:
@@ -130,7 +130,7 @@ affinity:
 # Ocelot Gateway Configuration
 ocelot:
   globalConfiguration:
-    baseUrl: https://gateway.terrafusion.gov
+    baseUrl: https://gateway.terrafusionmarket.com
     requestIdKey: TerraFusion-Request-Id
     rateLimitOptions:
       disableRateLimitHeaders: false
@@ -216,7 +216,7 @@ ocelot:
       qosOptions:
         exceptionsAllowedBeforeBreaking: 3
         durationOfBreak: 30000
-        timeoutValue: 45000 # County sync operations
+        timeoutValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode) # County sync operations
 
 # Health checks
 healthChecks:
@@ -259,8 +259,8 @@ logging:
 cors:
   enabled: true
   allowedOrigins:
-    - https://terrafusion.gov
-    - https://*.terrafusion.gov
+    - https://terrafusionmarket.com
+    - https://*.terrafusionmarket.com
     - https://localhost:5173 # Vite dev server
   allowedMethods:
     - GET

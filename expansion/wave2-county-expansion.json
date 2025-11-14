@@ -133,7 +133,7 @@
       "state": "OH",
       "priority": "MEDIUM",
       "population": 1264000,
-      "parcels": 450000,
+      "parcels": await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       "strategic_value": "Cleveland metro, industrial property focus, revitalization",
       "revenue_monthly": 619,
       "approach_strategy": "Industrial property expertise and urban revitalization"

@@ -300,7 +300,7 @@ services:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD_FILE=/run/secrets/grafana_admin_password
-      - GF_SERVER_ROOT_URL=https://monitoring.terrafusion.gov
+      - GF_SERVER_ROOT_URL=https://monitoring.terrafusionmarket.com
       - GF_SECURITY_SECRET_KEY_FILE=/run/secrets/grafana_secret_key
       - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
       - GF_ALERTING_ENABLED=true

@@ -1,5 +1,0 @@
-<DataType Name="DEBimFileWorkspace">
-  <DisplayName>BIM File Workspace</DisplayName>
-  <Description>Spatial data in Revit file format.</Description>
-</DataType>
-

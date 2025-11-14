@@ -13,7 +13,7 @@ test.describe('Property Assessment Workflow', () => {
     
     // Login as assessor
     await page.goto('/login');
-    await page.fill('[data-testid="username"]', 'assessor@bentoncounty.gov');
+    await page.fill('[data-testid="username"]', 'assessor@terrafusionmarket.io');
     await page.fill('[data-testid="password"]', 'test-password');
     await page.click('[data-testid="login-button"]');
     

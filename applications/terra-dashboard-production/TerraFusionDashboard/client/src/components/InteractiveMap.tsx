@@ -51,7 +51,7 @@ export default function InteractiveMap({ selectedProperty, onPropertyClick }: Ma
         case 'parcels':
           // Load parcel boundaries
           setParcels([
-            { id: 'parcel-1', coordinates: bentonCountyBounds.center, value: 450000 },
+            { id: 'parcel-1', coordinates: bentonCountyBounds.center, value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 },
             { id: 'parcel-2', coordinates: { lat: 46.24, lon: -119.28 }, value: 320000 },
             { id: 'parcel-3', coordinates: { lat: 46.23, lon: -119.27 }, value: 680000 }
           ]);

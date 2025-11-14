@@ -43,7 +43,7 @@ interface QuantumCoordinationEvent {
   status: 'success' | 'error' | 'pending';
 }
 
-const ELITE_API_BASE = 'http://localhost:5010';
+const ELITE_API_BASE = '/api';
 const CONSCIOUSNESS_API_BASE = 'http://localhost:3004';
 
 export const TerraFusionCrossServiceCoordination: React.FC = () => {
@@ -244,7 +244,7 @@ export const TerraFusionCrossServiceCoordination: React.FC = () => {
               </div>
               <div>
                 <span className='text-terra-cyan'>Port:</span>
-                <div className='text-white font-mono'>5010</div>
+                <div className='text-white font-mono'>5000</div>
               </div>
               <div>
                 <span className='text-terra-cyan'>Active Experiments:</span>

@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Migrates an object ID-based relationship class to a global ID-based relationship class.",
-        "in_relationship_class.descr": "<xdoc><p>An object ID-based relationship class that will be migrated to a global ID-based relationship class. The origin and destination feature classes or tables must have an existing <span class=\"esri_fieldname\">GlobalID</span> field.</p></xdoc>",
-        "in_relationship_class.title": "Input Relationship Class",
-        "out_relationship_class.title": "Migrated Relationship Class",
-        "title": "Migrate Relationship Class"
-    }
-}

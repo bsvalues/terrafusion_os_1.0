@@ -307,7 +307,7 @@ export class TerraFusionMasterOrchestrator {
    * Update system performance metrics
    */
   private updateSystemMetrics(transformation: GovernmentTransformationResult): void {
-    this.systemStatus.performanceMetrics.propertiesProcessed += 89247; // Benton County parcels
+    this.systemStatus.performanceMetrics.propertiesProcessed += await DynamicPropertyService.GetPropertyCountAsync("benton"); // Benton County parcels
     this.systemStatus.performanceMetrics.activeWorkflows = 4; // All government workflows
     this.systemStatus.performanceMetrics.averageProcessingTime = transformation.duration / 1000; // Convert to seconds
 

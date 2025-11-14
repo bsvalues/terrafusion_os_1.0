@@ -1,8 +1,0 @@
-{
-    "map": {
-        "description": "Get all the diagram template names defined in a utility network",
-        "in_utility_network.title": "Input Network",
-        "out_template_names.title": "Output Diagram Template Names",
-        "title": "Get Diagram Template Names"
-    }
-}

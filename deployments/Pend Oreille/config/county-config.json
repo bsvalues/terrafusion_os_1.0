@@ -9,7 +9,7 @@
     "terra-dashboard-production",
     "bcbs-webhub-production"
   ],
-  "api_endpoint": "https://api.terrafusion.wa.gov/pend oreille",
+  "api_endpoint": "https://api.terrafusionmarket.io/pend oreille",
   "priority": "LOW",
   "deployment_date": "2025-11-04",
   "tier": "Rural",

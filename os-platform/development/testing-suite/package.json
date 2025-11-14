@@ -84,7 +84,7 @@
   "bugs": {
     "url": "https://github.com/terrafusion/ultimate-testing-suite/issues"
   },
-  "homepage": "https://terrafusion.gov/testing",
+  "homepage": "https://terrafusionmarket.com/testing",
   "config": {
     "testing": {
       "aiEnabled": true,
@@ -194,7 +194,7 @@
       },
       "aiSwarm": {
         "count": 67,
-        "timeout": 45000,
+        "timeout": await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         "agents": 1008
       }
     },

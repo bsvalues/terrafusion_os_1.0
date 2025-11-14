@@ -47,7 +47,8 @@ export default function UpdateEmailForm() {
 
   return (
     <Card className="w-full max-w-md">
-      <CardHeader><>
+      <CardHeader>
+<>
 
         <CardTitle>Update Email Address</CardTitle>
         <CardDescription
@@ -72,15 +73,17 @@ export default function UpdateEmailForm() {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem><>
+                <FormItem>
+<>
 
                   <FormLabel>Email Address</FormLabel>
                   <FormControl
 </>
 
-</>><>
+</>>
+<>
 
-                    <Input placeholder="your.email@bentoncounty.gov" {...field} />
+                    <Input placeholder="your.email@terrafusionmarket.io" {...field} />
                   </FormControl>
                   <FormDescription
 </>

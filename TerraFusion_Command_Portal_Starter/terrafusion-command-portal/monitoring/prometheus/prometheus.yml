@@ -83,7 +83,7 @@ scrape_configs:
   # County Endpoints Monitoring
   - job_name: 'benton-county'
     static_configs:
-      - targets: ['benton.terrafusion.gov:443']
+      - targets: ['benton.terrafusionmarket.com:443']
     scrape_interval: 30s
     metrics_path: /api/health/metrics
     scheme: https
@@ -93,7 +93,7 @@ scrape_configs:
 
   - job_name: 'franklin-county'
     static_configs:
-      - targets: ['franklin.terrafusion.gov:443']
+      - targets: ['franklin.terrafusionmarket.com:443']
     scrape_interval: 30s
     metrics_path: /api/health/metrics
     scheme: https
@@ -103,7 +103,7 @@ scrape_configs:
 
   - job_name: 'yakima-county'
     static_configs:
-      - targets: ['yakima.terrafusion.gov:443']
+      - targets: ['yakima.terrafusionmarket.com:443']
     scrape_interval: 30s
     metrics_path: /api/health/metrics
     scheme: https

@@ -1,5 +1,0 @@
-<DataType Name="GPSAWeightedSum">
-  <DisplayName>Weighted Sum</DisplayName>
-  <Description>Specifies data for overlaying several rasters, each multiplied by their given weight and summed.</Description>
-</DataType>
-

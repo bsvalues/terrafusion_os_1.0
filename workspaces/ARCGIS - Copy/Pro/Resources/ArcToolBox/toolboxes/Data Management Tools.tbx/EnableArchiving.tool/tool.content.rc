@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Enables archiving on a table, feature class, or feature dataset.",
-        "in_dataset.descr": "The name of the dataset on which archiving will be enabled.",
-        "in_dataset.title": "Input Dataset",
-        "out_dataset.title": "Updated Dataset",
-        "title": "Enable Archiving"
-    }
-}

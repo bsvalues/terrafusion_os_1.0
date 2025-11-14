@@ -47,7 +47,7 @@ app.MapGet("/api/ide/status", () => Results.Ok(new
     Capabilities = new[]
     {
         "SQLite Database Access (32 databases)",
-        "Benton County Property Data (89,247 parcels)",
+        "Benton County Property Data (await DynamicPropertyService.GetPropertyCountAsync("benton") parcels)",
         "Code Execution & Compilation",
         "AI-Powered Development with 1,008 agents",
         "Government Compliance Tools"

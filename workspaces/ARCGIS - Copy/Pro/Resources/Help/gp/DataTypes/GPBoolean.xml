@@ -1,5 +1,0 @@
-<DataType Name="GPBoolean">
-  <DisplayName>Boolean</DisplayName>
-  <Description>A Boolean value.</Description>
-</DataType>
-

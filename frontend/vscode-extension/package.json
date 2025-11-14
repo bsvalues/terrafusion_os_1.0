@@ -98,7 +98,7 @@
           "when": "terrafusion.projectDetected"
         },
         {
-          "id": "terrafusion.governmentCompliance",
+          "id": "terrafusionmarket.comernmentCompliance",
           "name": "📋 Government Compliance (FISMA)",
           "when": "terrafusion.projectDetected"
         },
@@ -141,7 +141,7 @@
           "default": 0.999,
           "description": "Minimum harmony index for agent coordination"
         },
-        "terrafusion.governmentCompliance": {
+        "terrafusionmarket.comernmentCompliance": {
           "type": "string",
           "default": "FISMA_HIGH",
           "enum": [

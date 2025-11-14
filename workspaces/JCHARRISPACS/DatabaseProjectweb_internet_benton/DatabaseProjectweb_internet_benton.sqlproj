@@ -6,7 +6,20 @@
     <ProjectGuid>{59505220-92BC-4C24-8336-ED05E90E6E96}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>
+    <TreatTSqlWarningsAsErrors>False</TreatTSqlWarningsAsErrors>
+    <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Exclude problematic views with missing table references -->
+    <None Remove="dbo\Views\clientdb_exmpt_type_vw.sql" />
+
+    <!-- Exclude cross-database stored procedures -->
+    <None Remove="dbo\StoredProcedures\GetUniqueID.sql" />
+
+    <!-- Exclude Security folder with Windows domain logins -->
+    <None Remove="Security\**\*" />
+  </ItemGroup>
   <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
   </Target>

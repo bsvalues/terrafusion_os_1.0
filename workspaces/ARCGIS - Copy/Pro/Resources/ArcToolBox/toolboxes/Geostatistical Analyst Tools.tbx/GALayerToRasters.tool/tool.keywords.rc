@@ -1,9 +1,0 @@
-{
-    "set": [
-        "export",
-        "ga layer to grid",
-        "geostatistical",
-        "kriging",
-        "raster"
-    ]
-}

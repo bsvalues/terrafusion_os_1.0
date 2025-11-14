@@ -53,7 +53,7 @@ class ScalabilityTester {
     console.log('Starting multi-jurisdiction load test...');
     
     const jurisdictions: JurisdictionConfig[] = [
-      { id: 'benton', name: 'Benton County', population: 95000, properties: 45000, expectedLoad: 500, region: 'west' },
+      { id: 'benton', name: 'Benton County', population: 95000, properties: await DynamicPropertyService.GetPropertyCountAsync(countyCode), expectedLoad: 500, region: 'west' },
       { id: 'clark', name: 'Clark County', population: 500000, properties: 200000, expectedLoad: 2000, region: 'west' },
       { id: 'king', name: 'King County', population: 2200000, properties: 900000, expectedLoad: 5000, region: 'west' },
       { id: 'miami', name: 'Miami-Dade County', population: 2700000, properties: 1100000, expectedLoad: 6000, region: 'east' },
@@ -356,7 +356,7 @@ class ScalabilityTester {
     console.log('Testing CDN and geographic distribution...');
     
     const regions = ['us-west-1', 'us-east-1', 'us-central-1'];
-    const cdnEndpoints = regions.map(region => `https://cdn-${region}.terrafusion.gov`);
+    const cdnEndpoints = regions.map(region => `https://cdn-${region}.terrafusionmarket.com`);
     
     for (const endpoint of cdnEndpoints) {
       try {

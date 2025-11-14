@@ -89,7 +89,7 @@ export default function WestCoastExpansionDashboard() {
       tier: "Tier 3 - Small",
       population: 58639,
       parcels: 28000,
-      contractValue: 450000,
+      contractValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       probability: 85,
       status: "planning",
       targetDate: "Jul 2026",

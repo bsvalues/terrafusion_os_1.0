@@ -1,9 +1,0 @@
-{
-    "set": [
-        "annulus",
-        "circle",
-        "neighborhood",
-        "rectangle",
-        "wedge"
-    ]
-}

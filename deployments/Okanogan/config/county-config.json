@@ -9,7 +9,7 @@
     "terra-dashboard-production",
     "bcbs-webhub-production"
   ],
-  "api_endpoint": "https://api.terrafusion.wa.gov/okanogan",
+  "api_endpoint": "https://api.terrafusionmarket.io/okanogan",
   "priority": "MEDIUM",
   "deployment_date": "2025-11-04",
   "tier": "Rural",

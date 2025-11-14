@@ -133,7 +133,7 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
               await valueHistoryService.generateMockValueHistory(
                 propertyId,
                 type,
-                450000,
+                await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
                 36,
                 0.01
               );
@@ -233,7 +233,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
   if (!valueSummary || !selectedSeries) {
     return (
       <View style={[styles.container, { width, height }]}>
-        <MaterialCommunityIcons name="chart-line-variant" size={48} color="#bdc3c7" /><>
+        <MaterialCommunityIcons name="chart-line-variant" size={48} color="#bdc3c7" />
+<>
 
         <Text style={styles.noDataText}>No value history available</Text>
         <TouchableOpacity
@@ -260,7 +261,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
       {/* Header */}
       {showHeader && (
         <View style={styles.header}>
-          <View style={styles.headerLeft}><>
+          <View style={styles.headerLeft}>
+<>
 
             <Text style={styles.headerTitle}>Property Value Trend</Text>
             <Text
@@ -287,12 +289,14 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
       )}
 
       {/* Current Value */}
-      <View style={styles.valueContainer}><>
+      <View style={styles.valueContainer}>
+<>
 
         <Text style={styles.valueLabel}>Current Value</Text>
         <Text
 </> style={styles.valueAmount}>{formatCurrency(valueSummary.currentValue)}</Text>
-        <View style={styles.changeContainer}><>
+        <View style={styles.changeContainer}>
+<>
 
           <Text
             style={[styles.changeValue, { color: getChangeColor(valueSummary.historicalChange) }]}
@@ -355,7 +359,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
         />
 
         {/* X-axis labels */}
-        <View style={styles.timeLabels}><>
+        <View style={styles.timeLabels}>
+<>
 
           <Text style={styles.timeLabel}>
             {selectedSeries.dataPoints.length > 0
@@ -388,7 +393,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <View style={styles.modalHeader}><>
+            <View style={styles.modalHeader}>
+<>
 
               <Text style={styles.modalTitle}>Value History</Text>
               <TouchableOpacity
@@ -399,7 +405,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
 
             <ScrollView style={styles.modalBody}>
               {/* Overview */}
-              <View style={styles.modalSection}><>
+              <View style={styles.modalSection}>
+<>
 
                 <Text style={styles.modalSectionTitle}>Current Value</Text>
                 <Text
@@ -408,7 +415,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
                 </Text>
 
                 <View style={styles.statsRow}>
-                  <View style={styles.statItem}><>
+                  <View style={styles.statItem}>
+<>
 
                     <Text style={styles.statLabel}>Historical Change</Text>
                     <Text
@@ -423,7 +431,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
                   </View>
 
                   {valueSummary.forecastedChange !== 0 && (
-                    <View style={styles.statItem}><>
+                    <View style={styles.statItem}>
+<>
 
                       <Text style={styles.statLabel}>Forecast Change</Text>
                       <Text
@@ -438,7 +447,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
                     </View>
                   )}
 
-                  <View style={styles.statItem}><>
+                  <View style={styles.statItem}>
+<>
 
                     <Text style={styles.statLabel}>Confidence</Text>
                     <Text
@@ -455,7 +465,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
 
                 {valueSummary.series.map((series) => (
                   <View key={series.id} style={styles.seriesChart}>
-                    <View style={styles.seriesChartHeader}><>
+                    <View style={styles.seriesChartHeader}>
+<>
 
                       <Text style={styles.seriesChartTitle}>{series.name}</Text>
                       <View
@@ -479,7 +490,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
                     />
 
                     <View style={styles.seriesStats}>
-                      <View style={styles.seriesStat}><>
+                      <View style={styles.seriesStat}>
+<>
 
                         <Text style={styles.seriesStatLabel}>Min</Text>
                         <Text
@@ -488,7 +500,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
                         </Text>
                       </View>
 
-                      <View style={styles.seriesStat}><>
+                      <View style={styles.seriesStat}>
+<>
 
                         <Text style={styles.seriesStatLabel}>Max</Text>
                         <Text
@@ -497,7 +510,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
                         </Text>
                       </View>
 
-                      <View style={styles.seriesStat}><>
+                      <View style={styles.seriesStat}>
+<>
 
                         <Text style={styles.seriesStatLabel}>Change</Text>
                         <Text
@@ -512,7 +526,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
                       </View>
                     </View>
 
-                    <View style={styles.dataPoints}><>
+                    <View style={styles.dataPoints}>
+<>
 
                       <Text style={styles.dataPointsTitle}>Data Points</Text>
                       <FlatList
@@ -520,7 +535,8 @@ const PropertyValueTrend: React.FC<PropertyValueTrendProps> = ({
                         data={series.dataPoints.slice().reverse()}
                         keyExtractor={(item /* , index */) => `${item.date}-${index}`}
                         renderItem={({ item }) => (
-                          <View style={styles.dataPoint}><>
+                          <View style={styles.dataPoint}>
+<>
 
                             <Text style={styles.dataPointDate}>{item.date}</Text>
                             <Text

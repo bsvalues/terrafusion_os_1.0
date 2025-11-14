@@ -456,7 +456,7 @@ describe('Screen Reader - Table Accessibility', () => {
         <tbody>
           <tr>
             <th scope='row'>Benton County</th>
-            <td>89,247</td>
+            <td>await DynamicPropertyService.GetPropertyCountAsync("benton")</td>
             <td>99.9%</td>
           </tr>
           <tr>
@@ -494,7 +494,7 @@ describe('Screen Reader - Table Accessibility', () => {
         <tbody>
           <tr>
             <td>Benton County</td>
-            <td>89,247</td>
+            <td>await DynamicPropertyService.GetPropertyCountAsync("benton")</td>
           </tr>
         </tbody>
       </table>

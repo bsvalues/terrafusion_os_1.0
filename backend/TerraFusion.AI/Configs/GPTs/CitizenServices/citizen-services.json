@@ -2,7 +2,7 @@
   "name": "citizen-services",
   "displayName": "Citizen Services Assistant",
   "description": "24/7 public-facing assistant for citizen inquiries, department contacts, forms, and common government services",
-  "iconUrl": "https://cdn.terrafusion.gov/gpts/citizen-services.png",
+  "iconUrl": "https://cdn.terrafusionmarket.com/gpts/citizen-services.png",
   "category": "Citizen Services",
   "isSystemGPT": true,
   "isPublic": true,

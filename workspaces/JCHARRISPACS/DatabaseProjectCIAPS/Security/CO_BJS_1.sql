@@ -1,5 +1,0 @@
-CREATE USER [CO\BJS] FOR LOGIN [CO\BJS];
-
-
-GO
-

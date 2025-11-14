@@ -50,6 +50,8 @@
       "**/dist": true,
       "**/.git": false,
     },
+    "liveServer.settings.multiRootWorkspaceName": "🏛️ CostForge AI - Root",
+    "powershell.cwd": "🏛️ CostForge AI - Root",
   },
   "extensions": {
     "recommendations": [

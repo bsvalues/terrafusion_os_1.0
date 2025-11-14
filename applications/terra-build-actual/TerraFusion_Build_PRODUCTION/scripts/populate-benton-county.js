@@ -21,7 +21,7 @@ async function populateBentonCountyProperties() {
     { 
       name: 'Kennewick', 
       properties: 35142, 
-      baseValue: 445000, 
+      baseValue: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode), 
       zipCodes: ['99336', '99337', '99338'],
       neighborhoods: ['Desert Hills', 'Canyon Lakes', 'Clearwater', 'Southridge', 'West Kennewick', 'Downtown']
     },
@@ -270,7 +270,7 @@ function calculateAssessedValue(municipality, propertyType, squareFootage, yearB
   const depreciation = Math.min(age / 50, 0.6);
   
   // Market adjustment
-  const adjustedCost = replacementCost * (1 - depreciation) * (municipality.baseValue / 450000);
+  const adjustedCost = replacementCost * (1 - depreciation) * (municipality.baseValue / await DynamicPropertyService.GetPropertyCountAsync(countyCode)0);
   
   // Random variation
   const variation = 0.9 + Math.random() * 0.2;

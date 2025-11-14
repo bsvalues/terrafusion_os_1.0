@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: TerraFusionIDE-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/marketplace/TerraFusionIDE
+    email: TerraFusionIDE-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/marketplace/TerraFusionIDE
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/TerraFusionIDE
+  - url: https://api.terrafusionmarket.com/api/v1/TerraFusionIDE
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/TerraFusionIDE
+  - url: https://staging-api.terrafusionmarket.com/api/v1/TerraFusionIDE
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/TerraFusionIDE
+  - url: https://dev-api.terrafusionmarket.com/api/v1/TerraFusionIDE
     description: Development Environment
 paths:
   /health:
@@ -195,8 +195,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             TerraFusionIDE:read: Read access to TerraFusionIDE resources
             TerraFusionIDE:write: Write access to TerraFusionIDE resources
@@ -214,4 +214,4 @@ tags:
     description: Terrafusionide operations
     externalDocs:
       description: Find out more about TerraFusionIDE
-      url: https://docs.terrafusion.gov/marketplace/TerraFusionIDE
+      url: https://docs.terrafusionmarket.com/marketplace/TerraFusionIDE

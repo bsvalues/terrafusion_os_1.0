@@ -490,9 +490,9 @@ data:
       primary: harris-pacs
       secondary: tyler-vision
     endpoints:
-      property_api: https://api.benton.terrafusion.gov/v1/properties
-      assessment_api: https://api.benton.terrafusion.gov/v1/assessments
-      citizen_api: https://api.benton.terrafusion.gov/v1/citizens
+      property_api: https://api.benton.terrafusionmarket.com/v1/properties
+      assessment_api: https://api.benton.terrafusionmarket.com/v1/assessments
+      citizen_api: https://api.benton.terrafusionmarket.com/v1/citizens
     security:
       authentication: mutual_tls
       certificates:
@@ -514,8 +514,8 @@ data:
       primary: tyler-vision
       secondary: cama-plus
     endpoints:
-      property_api: https://api.spokane.terrafusion.gov/v1/properties
-      assessment_api: https://api.spokane.terrafusion.gov/v1/assessments
+      property_api: https://api.spokane.terrafusionmarket.com/v1/properties
+      assessment_api: https://api.spokane.terrafusionmarket.com/v1/assessments
     federation:
       enabled: true
       trust_level: high
@@ -531,8 +531,8 @@ data:
       primary: aumentum
       secondary: harris-pacs
     endpoints:
-      property_api: https://api.yakima.terrafusion.gov/v1/properties
-      assessment_api: https://api.yakima.terrafusion.gov/v1/assessments
+      property_api: https://api.yakima.terrafusionmarket.com/v1/properties
+      assessment_api: https://api.yakima.terrafusionmarket.com/v1/assessments
     federation:
       enabled: true
       trust_level: medium
@@ -557,15 +557,15 @@ spec:
       mode: SIMPLE
       credentialName: terrafusion-tls-secret
     hosts:
-    - api.terrafusion.gov
-    - integration.terrafusion.gov
+    - api.terrafusionmarket.com
+    - integration.terrafusionmarket.com
   - port:
       number: 80
       name: http
       protocol: HTTP
     hosts:
-    - api.terrafusion.gov
-    - integration.terrafusion.gov
+    - api.terrafusionmarket.com
+    - integration.terrafusionmarket.com
     tls:
       httpsRedirect: true
 
@@ -578,8 +578,8 @@ metadata:
   namespace: terrafusion-integration
 spec:
   hosts:
-  - api.terrafusion.gov
-  - integration.terrafusion.gov
+  - api.terrafusionmarket.com
+  - integration.terrafusionmarket.com
   gateways:
   - terrafusion-integration-gateway
   http:

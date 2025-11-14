@@ -1,0 +1,25 @@
+{
+  "name": "terrafusion-os-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TerraFusion OS - Government AI Operating System Monorepo",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "echo 'Building championship services...' && cargo build --release",
+    "dev": "echo 'Starting development environment...'",
+    "test": "echo 'Running championship tests...' && cargo test",
+    "start": "echo 'Starting TerraFusion OS...'",
+    "championship": "npm run build && npm run test && npm run start"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "PROPRIETARY",
+  "author": "TerraFusion Elite Government OS Team"
+}

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Market - Government Property Intelligence Platform</title>
+    <meta name="description" content="Advanced government property assessment and valuation platform powered by AI and quantum computing">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="icon" href="assets/favicon.ico">
+    
+    <!-- Progressive Web App -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a365d">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="TerraFusion Market - Government Property Intelligence">
+    <meta property="og:description" content="Revolutionary AI-powered property assessment platform for government agencies">
+    <meta property="og:image" content="https://terrafusionmarket.io/assets/og-image.jpg">
+    <meta property="og:url" content="https://terrafusionmarket.io">
+    
+    <!-- Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="quantum-loader">
+            <div class="quantum-particle"></div>
+            <div class="quantum-particle"></div>
+            <div class="quantum-particle"></div>
+        </div>
+        <h2>Initializing TerraFusion Market</h2>
+        <p>Quantum AI Processing...</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="assets/logo.svg" alt="TerraFusion Market" class="logo">
+                <span class="brand-text">TerraFusion Market</span>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <a href="#hero" class="nav-link">Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#demo" class="nav-link">Live Demo</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="#portal" class="nav-link nav-cta">Portal Login</a>
+            </div>
+            
+            <div class="hamburger" id="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Government Property Intelligence
+                    <span class="gradient-text">Revolutionized</span>
+                </h1>
+                <p class="hero-subtitle">
+                    AI-powered property assessment platform delivering 914x faster valuations 
+                    with 99.97% accuracy for government agencies worldwide.
+                </p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" onclick="startDemo()">
+                        <span>Start Live Demo</span>
+                        <i class="icon-rocket"></i>
+                    </button>
+                    <button class="btn btn-secondary" onclick="requestQuote()">
+                        Request Quote
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">914x</span>
+                        <span class="stat-label">Faster Processing</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">99.97%</span>
+                        <span class="stat-label">Accuracy Rate</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">1,008</span>
+                        <span class="stat-label">AI Agents</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="quantum-visualization" id="quantum-viz">
+                    <!-- Dynamic quantum visualization will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Platform Capabilities</h2>
+                <p>Advanced AI-driven property intelligence with government-grade security</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up">
+                    <div class="feature-icon">
+                        <i class="icon-brain"></i>
+                    </div>
+                    <h3>AI Swarm Intelligence</h3>
+                    <p>1,008 specialized AI agents coordinate to deliver unprecedented property analysis accuracy and speed.</p>
+                    <ul class="feature-list">
+                        <li>Real-time market analysis</li>
+                        <li>Predictive valuation models</li>
+                        <li>Automated compliance checking</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon">
+                        <i class="icon-quantum"></i>
+                    </div>
+                    <h3>Quantum Processing</h3>
+                    <p>Quantum-enhanced algorithms provide 914x performance improvement over traditional systems.</p>
+                    <ul class="feature-list">
+                        <li>Sub-second property valuations</li>
+                        <li>Complex scenario modeling</li>
+                        <li>Infinite scalability</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon">
+                        <i class="icon-shield"></i>
+                    </div>
+                    <h3>Government Security</h3>
+                    <p>FISMA, NIST, and SOC2 compliant with zero-trust architecture and quantum encryption.</p>
+                    <ul class="feature-list">
+                        <li>End-to-end encryption</li>
+                        <li>Audit trail compliance</li>
+                        <li>Multi-factor authentication</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon">
+                        <i class="icon-analytics"></i>
+                    </div>
+                    <h3>Advanced Analytics</h3>
+                    <p>Comprehensive reporting and insights dashboard with real-time market intelligence.</p>
+                    <ul class="feature-list">
+                        <li>Interactive dashboards</li>
+                        <li>Custom report generation</li>
+                        <li>Trend analysis</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-icon">
+                        <i class="icon-integration"></i>
+                    </div>
+                    <h3>System Integration</h3>
+                    <p>Seamless integration with existing government systems and databases.</p>
+                    <ul class="feature-list">
+                        <li>API-first architecture</li>
+                        <li>Legacy system support</li>
+                        <li>Data migration tools</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+                    <div class="feature-icon">
+                        <i class="icon-mobile"></i>
+                    </div>
+                    <h3>Mobile Access</h3>
+                    <p>Full-featured mobile application for field assessments and remote access.</p>
+                    <ul class="feature-list">
+                        <li>Offline capability</li>
+                        <li>GPS integration</li>
+                        <li>Photo documentation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section id="demo" class="demo-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Experience TerraFusion Market</h2>
+                <p>Interactive demonstration of our property assessment capabilities</p>
+            </div>
+            
+            <div class="demo-container">
+                <div class="demo-controls">
+                    <h3>Property Assessment Demo</h3>
+                    <form id="demo-form" class="demo-form">
+                        <div class="form-group">
+                            <label for="property-address">Property Address</label>
+                            <input type="text" id="property-address" placeholder="Enter property address" required>
+                            <button type="button" id="detect-location" class="btn-icon">
+                                <i class="icon-location"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="assessment-type">Assessment Type</label>
+                            <select id="assessment-type" required>
+                                <option value="">Select type</option>
+                                <option value="residential">Residential Property</option>
+                                <option value="commercial">Commercial Property</option>
+                                <option value="industrial">Industrial Property</option>
+                                <option value="agricultural">Agricultural Land</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="county-select">County</label>
+                            <select id="county-select" required>
+                                <option value="">Select county</option>
+                                <option value="yakima">Yakima County, WA</option>
+                                <option value="benton">Benton County, WA</option>
+                                <option value="spokane">Spokane County, WA</option>
+                                <option value="clark">Clark County, WA</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <span>Generate Assessment</span>
+                            <i class="icon-lightning"></i>
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="demo-results" id="demo-results">
+                    <div class="demo-placeholder">
+                        <i class="icon-search"></i>
+                        <p>Enter property details to see AI-powered assessment</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <div class="section-header">
+                <h2>Flexible Pricing Plans</h2>
+                <p>Choose the plan that fits your government agency's needs</p>
+            </div>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Starter</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">2,500</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="icon-check"></i> Up to 1,000 assessments/month</li>
+                        <li><i class="icon-check"></i> Basic AI analysis</li>
+                        <li><i class="icon-check"></i> Standard reporting</li>
+                        <li><i class="icon-check"></i> Email support</li>
+                        <li><i class="icon-check"></i> Government compliance</li>
+                    </ul>
+                    <button class="btn btn-outline">Contact Sales</button>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Professional</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">7,500</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="icon-check"></i> Up to 10,000 assessments/month</li>
+                        <li><i class="icon-check"></i> Full AI swarm intelligence</li>
+                        <li><i class="icon-check"></i> Advanced analytics</li>
+                        <li><i class="icon-check"></i> Priority support</li>
+                        <li><i class="icon-check"></i> Custom integrations</li>
+                        <li><i class="icon-check"></i> Mobile application</li>
+                    </ul>
+                    <button class="btn btn-primary">Start Free Trial</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Enterprise</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">25,000</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="icon-check"></i> Unlimited assessments</li>
+                        <li><i class="icon-check"></i> Quantum processing</li>
+                        <li><i class="icon-check"></i> White-label solution</li>
+                        <li><i class="icon-check"></i> Dedicated support</li>
+                        <li><i class="icon-check"></i> On-premise deployment</li>
+                        <li><i class="icon-check"></i> Custom development</li>
+                    </ul>
+                    <button class="btn btn-outline">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h2>Get Started Today</h2>
+                    <p>Ready to revolutionize your property assessment process? Contact our team for a personalized demonstration.</p>
+                    
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <i class="icon-phone"></i>
+                            <div>
+                                <h4>Phone</h4>
+                                <p>1-800-TERRAFUSION</p>
+                            </div>
+                        </div>
+                        <div class="contact-method">
+                            <i class="icon-email"></i>
+                            <div>
+                                <h4>Email</h4>
+                                <p>sales@terrafusionmarket.io</p>
+                            </div>
+                        </div>
+                        <div class="contact-method">
+                            <i class="icon-location"></i>
+                            <div>
+                                <h4>Address</h4>
+                                <p>Seattle, WA<br>Government Technology Hub</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form-container">
+                    <form id="contact-form" class="contact-form">
+                        <h3>Request Information</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="first-name">First Name *</label>
+                                <input type="text" id="first-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="last-name">Last Name *</label>
+                                <input type="text" id="last-name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="organization">Organization</label>
+                            <input type="text" id="organization" placeholder="Government agency or organization">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="interest">Area of Interest</label>
+                            <select id="interest">
+                                <option value="">Select area</option>
+                                <option value="property-assessment">Property Assessment</option>
+                                <option value="ai-analytics">AI Analytics</option>
+                                <option value="government-compliance">Government Compliance</option>
+                                <option value="integration">System Integration</option>
+                                <option value="training">Training & Support</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" rows="4" placeholder="Tell us about your needs..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <img src="assets/logo.svg" alt="TerraFusion Market" class="footer-logo">
+                    <p>Revolutionizing government property intelligence with AI-powered assessment technology.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="LinkedIn"><i class="icon-linkedin"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="icon-twitter"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="icon-github"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#demo">Demo</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="/api-docs">API Documentation</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/careers">Careers</a></li>
+                        <li><a href="/news">News</a></li>
+                        <li><a href="/partners">Partners</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="/help">Help Center</a></li>
+                        <li><a href="/contact">Contact Support</a></li>
+                        <li><a href="/status">System Status</a></li>
+                        <li><a href="/security">Security</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/compliance">Compliance</a></li>
+                        <li><a href="/cookies">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 TerraFusion Market. All rights reserved.</p>
+                <p>Government-grade property intelligence platform</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Portal Login -->
+    <div id="portal-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Portal Login</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remember">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Login</button>
+                </form>
+                <div class="modal-footer">
+                    <a href="/forgot-password">Forgot password?</a>
+                    <a href="/register">Create account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/demo.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/quantum-viz.js"></script>
+    
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+</body>
+</html>

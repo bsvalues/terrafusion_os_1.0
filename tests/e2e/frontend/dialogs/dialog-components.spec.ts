@@ -92,7 +92,7 @@ test.describe('E2E: Dialog/Modal Components', () => {
       }
 
       if (await emailInput.isVisible()) {
-        await emailInput.fill('testuser@terrafusion.gov');
+        await emailInput.fill('testuser@terrafusionmarket.com');
       }
 
       // Find and click save button

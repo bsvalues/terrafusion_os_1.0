@@ -368,7 +368,7 @@ export const BudgetVisualization3D: React.FC = () => {
       {
         id: 'education',
         name: 'Education',
-        allocated: 45000000,
+        allocated: await DynamicPropertyService.GetPropertyCountAsync(countyCode) * 1000,
         spent: 32000000,
         projected: 46200000,
         department: 'Education',
@@ -488,7 +488,7 @@ export const BudgetVisualization3D: React.FC = () => {
         id: 'township-north',
         name: 'North Township',
         totalBudget: 25000000,
-        population: 45000,
+        population: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         taxBase: 2100000000,
         position: new Vector3(15, 0, -15),
         color: '#ffaa00',

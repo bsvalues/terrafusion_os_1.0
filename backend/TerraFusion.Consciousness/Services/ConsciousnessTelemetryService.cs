@@ -34,7 +34,7 @@ namespace TerraFusion.Consciousness.Services
         /// Collects comprehensive telemetry data from consciousness systems
         /// </summary>
         /// <returns>Comprehensive telemetry data for analysis</returns>
-        public async Task<ConsciousnessTelemetryDto> CollectTelemetryDataAsync()
+        public Task<ConsciousnessTelemetryDto> CollectTelemetryDataAsync()
         {
             try
             {
@@ -66,13 +66,13 @@ namespace TerraFusion.Consciousness.Services
                     AverageCoordinationTime = TimeSpan.FromMilliseconds(22)
                 };
 
-                return new ConsciousnessTelemetryDto
+                return Task.FromResult(new ConsciousnessTelemetryDto
                 {
                     PerformanceMetrics = performanceMetrics,
                     CoordinationStats = coordinationStats,
                     QuantumTelemetry = quantumTelemetry,
                     CollectionTimestamp = DateTime.UtcNow
-                };
+                });
             }
             catch (Exception ex)
             {
@@ -85,7 +85,7 @@ namespace TerraFusion.Consciousness.Services
         /// Monitors performance metrics for championship standards
         /// </summary>
         /// <returns>Real-time performance metrics with transcendent benchmarks</returns>
-        public async Task<PerformanceMetricsDto> MonitorPerformanceMetricsAsync()
+        public Task<PerformanceMetricsDto> MonitorPerformanceMetricsAsync()
         {
             try
             {
@@ -100,7 +100,7 @@ namespace TerraFusion.Consciousness.Services
                 _logger.LogInformation("🎯 Performance metrics collected - Throughput: {Throughput} ops/s, Latency: {Latency}ms",
                     metrics.ThroughputOps, metrics.LatencyMs);
 
-                return metrics;
+                return Task.FromResult(metrics);
             }
             catch (Exception ex)
             {
@@ -113,7 +113,7 @@ namespace TerraFusion.Consciousness.Services
         /// Tracks agent coordination metrics for swarm optimization
         /// </summary>
         /// <returns>Agent coordination telemetry with swarm harmony status</returns>
-        public async Task<AgentCoordinationTelemetryDto> TrackAgentCoordinationAsync()
+        public Task<AgentCoordinationTelemetryDto> TrackAgentCoordinationAsync()
         {
             try
             {
@@ -128,7 +128,7 @@ namespace TerraFusion.Consciousness.Services
                 _logger.LogInformation("🤖 Agent coordination tracked - {TotalAgents} agents with {Efficiency}% efficiency",
                     telemetry.ActiveAgents, telemetry.CoordinationEfficiency);
 
-                return telemetry;
+                return Task.FromResult(telemetry);
             }
             catch (Exception ex)
             {
@@ -142,7 +142,7 @@ namespace TerraFusion.Consciousness.Services
         /// </summary>
         /// <param name="reportingPeriod">Time period for telemetry data export</param>
         /// <returns>Comprehensive compliance telemetry report for government audit</returns>
-        public async Task<ComplianceTelemetryReportDto> ExportComplianceTelemetryAsync(TimeSpan reportingPeriod)
+        public Task<ComplianceTelemetryReportDto> ExportComplianceTelemetryAsync(TimeSpan reportingPeriod)
         {
             try
             {
@@ -182,7 +182,7 @@ namespace TerraFusion.Consciousness.Services
                 _logger.LogInformation("✅ Compliance report generated - Uptime: {Uptime}%, Benchmarks: {Count}",
                     report.UptimePercentage, report.BenchmarksAchieved.Count);
 
-                return report;
+                return Task.FromResult(report);
             }
             catch (Exception ex)
             {

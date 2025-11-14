@@ -1,8 +1,0 @@
-{
-    "set": [
-        "diagram layout",
-        "network diagram",
-        "partial overlapping edges",
-        "refinement layout"
-    ]
-}

@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Uses the Data Reference Workbook from the Data Loading Workspace to load data from a source to a target dataset.",
-        "in_workbook.descr": "The path to the Data Reference Workbook defining the data source, target, and mapping workbook paths.",
-        "in_workbook.title": "Data Reference Workbook",
-        "out_datasets.title": "Output Datasets",
-        "title": "Load Data Using Workspace"
-    }
-}

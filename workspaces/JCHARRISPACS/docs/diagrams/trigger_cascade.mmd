@@ -1,0 +1,54 @@
+%% Benton County PACS - Trigger Cascade Visualization
+%% 9-trigger cascade on property_val UPDATE (root cause of performance degradation)
+%% Validated: 2025-11-05 snapshot
+%% NOTE: When GetMachineLogChanges() disables audit for bulk ops, TRIGGER4 (ChangeLog) and inserts are skipped
+
+flowchart TD
+    START([User/App executes:<br/>UPDATE property_val<br/>SET appraised_val = 450000<br/>WHERE prop_id = 12345]) --> TRIGGER1
+    
+    TRIGGER1[Trigger 1:<br/>tr_property_val_update_eff_acreage]
+    TRIGGER1 --> T1_CHECK{Has land_area or<br/>ag_use_val changed?}
+    T1_CHECK -->|Yes| T1_CALC["Calculate effective_acreage:<br/>UPDATE property_val<br/>SET eff_acreage = <br/>land_area * (ag_use_val / market)"]
+    T1_CHECK -->|No| TRIGGER2
+    T1_CALC --> T1_RECURSIVE["RECURSIVE UPDATE<br/>(triggers fire again!)"]
+    T1_RECURSIVE --> TRIGGER2
+    
+    TRIGGER2[Trigger 2:<br/>tr_property_val_update_PrevSupNum]
+    TRIGGER2 --> T2_CHECK{Is this a new supplement?<br/>sup_num changed?}
+    T2_CHECK -->|Yes| T2_UPDATE["Update supplement chain:<br/>UPDATE property_val<br/>SET next_sup_num = NEW.sup_num<br/>WHERE prop_id = NEW.prop_id<br/>AND sup_num = NEW.prev_sup_num"]
+    T2_CHECK -->|No| TRIGGER3
+    T2_UPDATE --> T2_RECURSIVE["RECURSIVE UPDATE<br/>(triggers fire again!)"]
+    T2_RECURSIVE --> TRIGGER3
+    
+    TRIGGER3[Trigger 3:<br/>tr_property_val_update_udi]
+    TRIGGER3 --> T3_CALC["Update UDI fields:<br/>user_defined_info1 = computed<br/>user_defined_info2 = computed<br/>user_defined_info3 = computed"]
+    T3_CALC --> BULK_CHECK
+    
+    BULK_CHECK{Bulk mode enabled?<br/>GetMachineLogChanges<br/>session context flag}
+    BULK_CHECK -->|Yes - SKIP AUDIT| COMPLETE
+    BULK_CHECK -->|No - NORMAL MODE| TRIGGER4
+    
+    TRIGGER4[Trigger 4-9:<br/>tr_property_val_update_ChangeLog]
+    TRIGGER4 --> T4_CURSOR["OPEN CURSOR:<br/>For each of 300+ columns<br/>in property_val table..."]
+    
+    T4_CURSOR --> T4_LOOP{More columns<br/>to check?}
+    T4_LOOP -->|Yes| T4_COMPARE["Compare OLD vs NEW value:<br/>IF OLD.appraised_val != NEW.appraised_val"]
+    T4_COMPARE --> T4_INSERT["INSERT INTO change_log<br/>(lPacsUserID, szSQLAccount,<br/>szMachineName, dtChange,<br/>szChangeType, iTableID,<br/>iColumnID, szOldValue,<br/>szNewValue, szRefID)<br/>VALUES (...)"]
+    T4_INSERT --> T4_INCREMENT["Increment change_log.lChangeID<br/>(IDENTITY column)"]
+    T4_INCREMENT --> T4_LOOP
+    T4_LOOP -->|No| T4_CLOSE["CLOSE CURSOR"]
+    T4_CLOSE --> COMPLETE
+    
+    COMPLETE([UPDATE Complete<br/>Total Operations:<br/>- 1 original UPDATE<br/>- 9 trigger executions<br/>- 2-4 recursive UPDATEs<br/>- 50+ change_log INSERTs<br/>Total: 50-100 I/O operations])
+    
+    %% Complexity Annotations
+    T1_RECURSIVE -.->|"Cascade Amplification"| TRIGGER1
+    T2_RECURSIVE -.->|"Cascade Amplification"| TRIGGER2
+    
+    style START fill:#e1f5e1,stroke:#4caf50,stroke-width:3px
+    style COMPLETE fill:#e1f5e1,stroke:#4caf50,stroke-width:3px
+    style BULK_CHECK fill:#e3f2fd,stroke:#2196f3,stroke-width:3px
+    style T1_RECURSIVE fill:#ffebee,stroke:#f44336,stroke-width:3px
+    style T2_RECURSIVE fill:#ffebee,stroke:#f44336,stroke-width:3px
+    style T4_INSERT fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    style T4_CURSOR fill:#fff3e0,stroke:#ff9800,stroke-width:2px

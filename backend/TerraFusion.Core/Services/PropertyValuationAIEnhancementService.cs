@@ -9,18 +9,18 @@ using TerraFusion.Core.Models;
 using TerraFusion.Core.Metrics;
 using TerraFusion.Abstractions.Interfaces;
 // Resolve type ambiguity: Use all property valuation types from interface namespace
-using PropertyValuationRequest = TerraFusion.Core.Interfaces.PropertyValuationRequest;
-using PropertyValuationResult = TerraFusion.Core.Interfaces.PropertyValuationResult;
-using PropertyDataIngestionResult = TerraFusion.Core.Interfaces.PropertyDataIngestionResult;
-using MultiSystemValidationResult = TerraFusion.Core.Interfaces.MultiSystemValidationResult;
-using AISwarmAnalysisResult = TerraFusion.Core.Interfaces.AISwarmAnalysisResult;
-using CostForgeValuationResult = TerraFusion.Core.Interfaces.CostForgeValuationResult;
-using TerraGaiaVerificationResult = TerraFusion.Core.Interfaces.TerraGaiaVerificationResult;
-using IAAOComplianceResult = TerraFusion.Core.Interfaces.IAAOComplianceResult;
-using AssessmentReportResult = TerraFusion.Core.Interfaces.AssessmentReportResult;
-using PropertyData = TerraFusion.Core.Interfaces.PropertyData;
-using ValuationPerformanceMetrics = TerraFusion.Core.Interfaces.ValuationPerformanceMetrics;
-using AIServiceHealthStatus = TerraFusion.Core.Interfaces.AIServiceHealthStatus;
+using PropertyValuationRequest = TerraFusion.Core.Models.PropertyValuationRequest;
+using PropertyValuationResult = TerraFusion.Core.Models.PropertyValuationResult;
+using PropertyDataIngestionResult = TerraFusion.Core.Models.PropertyDataIngestionResult;
+using MultiSystemValidationResult = TerraFusion.Core.Models.MultiSystemValidationResult;
+using AISwarmAnalysisResult = TerraFusion.Core.Models.AISwarmAnalysisResult;
+using CostForgeValuationResult = TerraFusion.Core.Models.CostForgeValuationResult;
+using TerraGaiaVerificationResult = TerraFusion.Core.Models.TerraGaiaVerificationResult;
+using IAAOComplianceResult = TerraFusion.Core.Models.IAAOComplianceResult;
+using AssessmentReportResult = TerraFusion.Core.Models.AssessmentReportResult;
+using PropertyData = TerraFusion.Core.Models.PropertyData;
+using ValuationPerformanceMetrics = TerraFusion.Core.Models.ValuationPerformanceMetrics;
+using AIServiceHealthStatus = TerraFusion.Core.Models.AIServiceHealthStatus;
 
 namespace TerraFusion.Core.Services
 {
@@ -66,7 +66,7 @@ namespace TerraFusion.Core.Services
         /// <summary>
         /// Execute complete 8-step AI-enhanced property valuation workflow
         /// </summary>
-        public async Task<TerraFusion.Core.Interfaces.PropertyValuationResult> ExecuteAIEnhancedValuationAsync(TerraFusion.Core.Interfaces.PropertyValuationRequest request)
+        public async Task<TerraFusion.Core.Models.PropertyValuationResult> ExecuteAIEnhancedValuationAsync(TerraFusion.Core.Models.PropertyValuationRequest request)
         {
             var overallStopwatch = Stopwatch.StartNew();
             using var activity = _performanceMonitor.StartActivity("PropertyValuation.Complete", request.CountyCode);

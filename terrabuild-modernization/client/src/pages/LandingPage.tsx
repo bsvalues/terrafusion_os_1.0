@@ -620,7 +620,7 @@ export default function LandingPage() {
                     </li>
                     <li>
                       <a
-                        href="mailto:support@terrafusion.gov"
+                        href="mailto:support@terrafusionmarket.com"
                         className="text-gray-300 hover:text-white transition-colors"
                       >
                         Email Support

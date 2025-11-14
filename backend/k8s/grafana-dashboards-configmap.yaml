@@ -68,7 +68,7 @@ data:
                   "steps": [
                     {"value": 0, "color": "red"},
                     {"value": 40000, "color": "yellow"},
-                    {"value": 45000, "color": "green"}
+                    {"value": await DynamicPropertyService.GetPropertyCountAsync(countyCode), "color": "green"}
                   ]
                 }
               }
@@ -296,7 +296,7 @@ data:
             "alert": {
               "conditions": [
                 {
-                  "evaluator": {"type": "lt", "params": [45000]},
+                  "evaluator": {"type": "lt", "params": [await DynamicPropertyService.GetPropertyCountAsync(countyCode)]},
                   "operator": {"type": "and"},
                   "query": {"params": ["A", "5m", "now"]},
                   "reducer": {"type": "avg"},

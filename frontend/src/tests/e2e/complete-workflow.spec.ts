@@ -17,7 +17,7 @@ test.use({
 // Helper functions
 async function loginAsAssessor(page: Page) {
   await page.goto('/login');
-  await page.fill('[name="username"]', 'test.assessor@bentoncounty.gov');
+  await page.fill('[name="username"]', 'test.assessor@terrafusionmarket.io');
   await page.fill('[name="password"]', 'TestPassword123!');
   await page.click('button[type="submit"]');
   await page.waitForURL('/workspace');

@@ -1,8 +1,0 @@
-{
-    "map": {
-        "descr": "The Territory Design toolbox provides a set of tools to build,\nedit, balance, and maintain territories for point and polygon\ndatasets.",
-        "title": "Territory Design Tools",
-        "toolset1.name": "Analysis",
-        "toolset2.name": "Territory Solution"
-    }
-}

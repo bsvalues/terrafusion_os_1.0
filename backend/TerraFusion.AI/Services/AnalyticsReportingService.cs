@@ -88,8 +88,8 @@ namespace TerraFusion.AI.Services
             {
                 TotalCounties = 10,
                 ActiveCounties = 10,
-                TotalProperties = 389247,
-                PropertiesAssessed = 389247,
+                TotalProperties = 89247, // Benton County property count
+                PropertiesAssessed = 89247, // Benton County property count
                 AverageProcessingTime = 125.4,
                 ComplianceRate = 99.2
             };
@@ -359,7 +359,7 @@ namespace TerraFusion.AI.Services
                 NewUsers = 234,
                 TopUsers = new List<UserActivity>
                 {
-                    new() { UserName = "admin@bentoncounty.gov", SessionCount = 156, TotalDuration = 450.5, LastActive = DateTime.UtcNow },
+                    new() { UserName = "admin@terrafusionmarket.io", SessionCount = 156, TotalDuration = 450.5, LastActive = DateTime.UtcNow },
                     new() { UserName = "assessor@yakimacounty.gov", SessionCount = 142, TotalDuration = 420.3, LastActive = DateTime.UtcNow.AddHours(-1) },
                     new() { UserName = "clerk@kingcounty.gov", SessionCount = 134, TotalDuration = 380.2, LastActive = DateTime.UtcNow.AddHours(-2) }
                 },
@@ -558,7 +558,7 @@ namespace TerraFusion.AI.Services
         {
             return new List<DataAggregation>
             {
-                new() { GroupName = "Benton County", Value = 89247, Percentage = 22.9 },
+                new() { GroupName = "Benton County", Value = 89247, Percentage = 22.9 }, // Benton County property count
                 new() { GroupName = "King County", Value = 156789, Percentage = 40.3 },
                 new() { GroupName = "Yakima County", Value = 67890, Percentage = 17.4 },
                 new() { GroupName = "Others", Value = 75321, Percentage = 19.4 }

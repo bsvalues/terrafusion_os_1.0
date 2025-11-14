@@ -504,7 +504,7 @@ namespace TerraFusion.Sync.Services
                 {
                     TestName = "Cross-System Data Consistency",
                     ValidationAccuracy = 0.998,
-                    RecordsValidated = consolidatedResults.TotalRecordsProcessed,
+                    RecordsValidated = (int)consolidatedResults.TotalRecordsProcessed,
                     InconsistenciesFound = GenerateRandomErrorCount() * 2,
                     QuantumEnhanced = true
                 },
@@ -528,7 +528,7 @@ namespace TerraFusion.Sync.Services
                 {
                     TestName = "Temporal Data Synchronization",
                     ValidationAccuracy = 0.999,
-                    RecordsValidated = consolidatedResults.TotalRecordsProcessed,
+                    RecordsValidated = (int)consolidatedResults.TotalRecordsProcessed,
                     InconsistenciesFound = GenerateRandomErrorCount() / 2,
                     QuantumEnhanced = true
                 }

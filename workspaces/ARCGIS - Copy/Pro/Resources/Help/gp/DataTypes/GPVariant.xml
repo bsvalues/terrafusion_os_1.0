@@ -1,5 +1,0 @@
-<DataType Name="GPVariant">
-  <DisplayName>Variant</DisplayName>
-  <Description>A data value that can contain any basic type: Boolean, date, double, long, and string.</Description>
-</DataType>
-

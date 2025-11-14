@@ -1,0 +1,58 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "build/**", "target/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "outputs": ["coverage/**"]
+    },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "outputs": ["test-results/**"]
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "outputs": ["eslint-report.json"]
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
+    },
+    "government:compliance": {
+      "dependsOn": ["lint", "accessibility:test", "security:scan"],
+      "outputs": ["compliance-report.json"]
+    },
+    "accessibility:test": {
+      "dependsOn": ["build"],
+      "outputs": ["a11y-report.json"]
+    },
+    "security:scan": {
+      "dependsOn": ["build"],
+      "outputs": ["security-report.json"]
+    }
+  },
+  "globalEnv": [
+    "NODE_ENV",
+    "TERRAFUSION_ENV",
+    "DATABASE_URL",
+    "JWT_SECRET",
+    "ENCRYPTION_KEY",
+    "FISMA_MODE",
+    "AUDIT_LOGGING",
+    "MFA_REQUIRED",
+    "AI_SWARM_SIZE",
+    "CONSCIOUSNESS_LEVEL",
+    "QUANTUM_OPTIMIZATION"
+  ]
+}

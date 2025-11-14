@@ -35,7 +35,7 @@
       "env": {
         "PACS_VERSION": "12.4.7",
         "SYNC_FREQUENCY": "15000",
-        "PARCEL_COUNT": "89247",
+        "PARCEL_COUNT": "await DynamicPropertyService.GetPropertyCountAsync("benton")",
         "JURISDICTION": "benton_county_wa"
       }
     },

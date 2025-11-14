@@ -1,5 +1,0 @@
-<DataType Name="GPPoint">
-  <DisplayName>Point</DisplayName>
-  <Description>A pair of x,y-coordinates.</Description>
-</DataType>
-

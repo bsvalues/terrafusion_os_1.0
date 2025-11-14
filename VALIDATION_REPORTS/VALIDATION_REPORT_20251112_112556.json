@@ -1,0 +1,250 @@
+{
+  "AISystems": {
+    "Validated": 5,
+    "Passed": [
+      {
+        "Path": ".ai",
+        "Name": ".ai (Core AI Development)",
+        "FileCount": 9,
+        "Status": "PASS"
+      },
+      {
+        "Path": "ai-workspace-companion",
+        "Name": "AI Workspace Companion",
+        "FileCount": 15,
+        "Status": "PASS"
+      },
+      {
+        "Path": "backend\\ai-models",
+        "Name": "Backend AI Models",
+        "FileCount": 114,
+        "Status": "PASS"
+      },
+      {
+        "Path": "backend\\ai-swarm",
+        "Name": "Backend AI Swarm",
+        "FileCount": 27,
+        "Status": "PASS"
+      },
+      {
+        "Path": "backend\\ai-swarm-service",
+        "Name": "Backend AI Swarm Service",
+        "FileCount": 2,
+        "Status": "PASS"
+      }
+    ],
+    "Failed": [
+      {
+        "Path": "ai-swarm-supreme-commander",
+        "Name": "AI Swarm Supreme Commander",
+        "Issues": [
+          "AI system not found"
+        ],
+        "Status": "FAIL"
+      },
+      {
+        "Path": "ai-agent-training-config-v2.json",
+        "Name": "AI Agent Training Config v2",
+        "Issues": [
+          "AI system not found"
+        ],
+        "Status": "FAIL"
+      },
+      {
+        "Path": "ai-swarm-config.json",
+        "Name": "AI Swarm Config",
+        "Issues": [
+          "AI system not found"
+        ],
+        "Status": "FAIL"
+      }
+    ],
+    "Warnings": [],
+    "Total": 8
+  },
+  "Recommendations": [
+    {
+      "Priority": "HIGH",
+      "Modules": [
+        "TerraFusion Dashboard",
+        "TerraFusion GIS",
+        "TerraFusion v0 Demo",
+        "AI Command Brain",
+        "TerraFusion Prime View",
+        "TerraFusion Pro Plus"
+      ],
+      "Category": "Hot-Swappable Modules",
+      "Issue": "6 module(s) failed validation",
+      "Action": "Review failed modules and run 'npm install' in their directories"
+    },
+    {
+      "Priority": "LOW",
+      "Category": "AI Systems",
+      "Issue": "3 AI system(s) not found",
+      "Action": "Verify AI system paths and restore if needed"
+    }
+  ],
+  "Timestamp": "2025-11-12 11:25:56",
+  "HotSwappableModules": {
+    "Validated": 0,
+    "Passed": [],
+    "Failed": [
+      {
+        "Path": "src\\terrafusion-dashboard\\TerraFusionDashboard",
+        "Name": "TerraFusion Dashboard",
+        "Issues": [
+          "Module directory not found"
+        ],
+        "Status": "FAIL"
+      },
+      {
+        "Path": "src\\terrafusion-gis",
+        "Name": "TerraFusion GIS",
+        "Issues": [
+          "Module directory not found"
+        ],
+        "Status": "FAIL"
+      },
+      {
+        "Path": "src\\terrafusion-v0-demo",
+        "Name": "TerraFusion v0 Demo",
+        "Issues": [
+          "Module directory not found"
+        ],
+        "Status": "FAIL"
+      },
+      {
+        "Path": "src\\modules\\ai-command-brain",
+        "Name": "AI Command Brain",
+        "Issues": [
+          "Module directory not found"
+        ],
+        "Status": "FAIL"
+      },
+      {
+        "Path": "src\\terrafusion-prime-view",
+        "Name": "TerraFusion Prime View",
+        "Issues": [
+          "Module directory not found"
+        ],
+        "Status": "FAIL"
+      },
+      {
+        "Path": "src\\terrafusion-pro-plus",
+        "Name": "TerraFusion Pro Plus",
+        "Issues": [
+          "Module directory not found"
+        ],
+        "Status": "FAIL"
+      }
+    ],
+    "Warnings": [],
+    "Total": 6
+  },
+  "MCPServers": {
+    "Validated": 2,
+    "Passed": [
+      {
+        "HasStartScript": true,
+        "Issues": [],
+        "HasPackageJson": true,
+        "Name": "mcp-core",
+        "HasNodeModules": true,
+        "Status": "PASS",
+        "HasTestScript": true,
+        "HasBuildScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\mcp-core"
+      }
+    ],
+    "Failed": [],
+    "Warnings": [
+      {
+        "HasStartScript": true,
+        "Issues": [
+          "Missing node_modules (run npm install)"
+        ],
+        "HasPackageJson": true,
+        "Name": "mcp-servers",
+        "HasNodeModules": false,
+        "Status": "WARN",
+        "HasTestScript": false,
+        "HasBuildScript": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\mcp-servers"
+      }
+    ],
+    "Total": 2
+  },
+  "Backend": {
+    "Projects": [
+      {
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\TerraFusion.sln",
+        "Name": "TerraFusion.sln",
+        "Status": "PASS"
+      },
+      {
+        "HasProjectFile": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\api-unified",
+        "Name": "api-unified",
+        "CanBuild": false,
+        "Status": "WARN",
+        "Issues": [
+          "Build may have issues (run 'dotnet build' for details)"
+        ]
+      },
+      {
+        "HasProjectFile": true,
+        "Path": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\TerraFusion.API",
+        "Name": "TerraFusion.API",
+        "CanBuild": false,
+        "Status": "WARN",
+        "Issues": [
+          "Build may have issues (run 'dotnet build' for details)"
+        ]
+      }
+    ],
+    "BuildStatus": [],
+    "Issues": []
+  },
+  "Summary": {
+    "Failed": 9,
+    "Passed": 16,
+    "Warnings": 7,
+    "TotalTests": 32
+  },
+  "Configuration": {
+    "EnvFiles": [],
+    "ConfigFiles": [
+      {
+        "Path": "package.json",
+        "Name": "package.json",
+        "Status": "PASS"
+      },
+      {
+        "Path": ".gitignore",
+        "Name": ".gitignore",
+        "Status": "PASS"
+      },
+      {
+        "Path": "README.md",
+        "Name": "README.md",
+        "Status": "PASS"
+      },
+      {
+        "Path": ".workspace-map.json",
+        "Name": ".workspace-map.json",
+        "Status": "PASS"
+      }
+    ],
+    "Issues": [
+      "Missing: benton-county-config.json"
+    ]
+  },
+  "Packages": {
+    "Warnings": [],
+    "Total": 0,
+    "Passed": [],
+    "Validated": 0,
+    "Failed": []
+  },
+  "WorkspaceRoot": "C:\\Users\\bsval\\terrafusion_os_1.0"
+}

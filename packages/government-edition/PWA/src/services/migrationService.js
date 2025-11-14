@@ -403,7 +403,7 @@ class MigrationService {
       whatcom: 95000,
       cowlitz: 52000,
       island: 48000,
-      grant: 45000,
+      grant: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       franklin: 32000,
       stevens: 28000,
       sanjuan: 15000

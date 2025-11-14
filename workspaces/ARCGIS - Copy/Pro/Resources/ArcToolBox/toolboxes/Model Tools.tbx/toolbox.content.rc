@@ -1,8 +1,0 @@
-{
-    "map": {
-        "descr": "ModelBuilder contains a collection of utility tools that support building flexible and powerful models.",
-        "title": "Model Tools",
-        "toolset1.name": "Model Only",
-        "toolset2.name": "Iterator"
-    }
-}

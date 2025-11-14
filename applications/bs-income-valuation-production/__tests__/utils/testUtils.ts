@@ -202,7 +202,7 @@ export function getMockMetrics() {
 export function getMockScenarios(count: number = 3) {
   const names = ['Current Property', 'Alternative Property', 'Investment Opportunity'];
   const locations = ['Kennewick, WA', 'Richland, WA', 'Pasco, WA'];
-  const prices = [450000, 380000, 325000];
+  const prices = [await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, 380000, 325000];
   const metrics = [
     { capRate: 4.2, cashOnCash: 6.8, roi: 8.5, valuation: 510000 },
     { capRate: 5.1, cashOnCash: 7.2, roi: 9.3, valuation: 420000 },

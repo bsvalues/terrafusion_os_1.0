@@ -1,8 +1,0 @@
-{
-    "map": {
-        "cluster_tolerance.title": "Default XY Tolerance",
-        "description": "Calculates the default xy tolerance.",
-        "in_features.title": "Input Features",
-        "title": "Calculate Default XY Tolerance"
-    }
-}

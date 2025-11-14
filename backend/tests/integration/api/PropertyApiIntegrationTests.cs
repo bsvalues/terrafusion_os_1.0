@@ -71,7 +71,7 @@ public class PropertyApiIntegrationTests : TerraFusionTestBase
             new Property 
             { 
                 Address = "100 Court St", City = "Prosser", County = "Benton County", State = "WA", 
-                ZipCode = "99350", AssessedValue = 450000, PropertyType = PropertyType.Government 
+                ZipCode = "99350", AssessedValue = await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, PropertyType = PropertyType.Government 
             },
             new Property 
             { 

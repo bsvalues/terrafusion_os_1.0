@@ -1,5 +1,0 @@
-<DataType Name="GPRasterBuilder">
-  <DisplayName>Raster Type</DisplayName>
-  <Description>Raster data is added to a mosaic dataset by specifying a raster type. The raster type identifies metadata, such as georeferencing, acquisition date, and sensor type, with a raster format.</Description>
-</DataType>
-

@@ -1,6 +1,0 @@
-{
-    "map": {
-        "descr": "Organizations that collect data about linear features, such as highways, city streets, railroads, rivers, pipelines, and water and sewer networks often use linear referencing systems to store data. A linear reference system stores data using a relative position along existing line features. That is, location is given in terms of a known linear feature and a position, or measure, along it. For example, route I-10, mile 23.2, uniquely identifies a position in geographic space, and can be used instead of an x,y coordinate.",
-        "title": "Linear Referencing Tools"
-    }
-}

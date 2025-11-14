@@ -1,5 +1,0 @@
-<DataType Name="DEFile">
-  <DisplayName>File</DisplayName>
-  <Description>A file on disk.</Description>
-</DataType>
-

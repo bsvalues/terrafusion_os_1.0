@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: citizen-services-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/frontend/citizen-services
+    email: citizen-services-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/frontend/citizen-services
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/citizen-services
+  - url: https://api.terrafusionmarket.com/api/v1/citizen-services
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/citizen-services
+  - url: https://staging-api.terrafusionmarket.com/api/v1/citizen-services
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/citizen-services
+  - url: https://dev-api.terrafusionmarket.com/api/v1/citizen-services
     description: Development Environment
 paths:
   /services:
@@ -198,8 +198,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             citizen-services:read: Read access to citizen-services resources
             citizen-services:write: Write access to citizen-services resources
@@ -217,4 +217,4 @@ tags:
     description: Citizen Services operations
     externalDocs:
       description: Find out more about citizen-services
-      url: https://docs.terrafusion.gov/frontend/citizen-services
+      url: https://docs.terrafusionmarket.com/frontend/citizen-services

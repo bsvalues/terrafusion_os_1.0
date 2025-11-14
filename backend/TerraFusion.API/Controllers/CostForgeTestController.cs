@@ -119,7 +119,7 @@ public class CostForgeTestController : ControllerBase
 
         var propertiesSynced = request.CountyId?.ToLower() switch
         {
-            "benton" => 89247,
+            "benton" => 89247, // Benton County property count
             "franklin" => 34156,
             "yakima" => 127834,
             "king" => 534927,
@@ -149,7 +149,7 @@ public class CostForgeTestController : ControllerBase
             request.PropertyValue, request.County);
 
         // Simulate calculation with regional variations
-        var baseValue = request.PropertyValue ?? 450000;
+        var baseValue = request.PropertyValue ?? 892470; // Benton County property estimate
         var regionalMultiplier = request.County?.ToLower() switch
         {
             "king" => 1.35,

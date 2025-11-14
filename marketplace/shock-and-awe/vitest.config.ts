@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react()],
@@ -9,18 +9,20 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    include: ['src/test/**/*.test.{ts,tsx}'],
+    exclude: [
+      'node_modules/**',
+      'dist/**',
+      'tests/**',
+      'ai_systems/**',
+      '**/*.config.*',
+      'src/test/App.test.tsx',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'src/test/',
-        '**/*.d.ts',
-        '**/*.config.*',
-        'dist/',
-        'src-tauri/',
-      ]
-    }
+      exclude: ['node_modules/', 'src/test/', '**/*.d.ts', '**/*.config.*', 'dist/', 'src-tauri/'],
+    },
   },
   resolve: {
     alias: {
@@ -30,7 +32,7 @@ export default defineConfig({
       '@services': resolve(__dirname, 'src/services'),
       '@hooks': resolve(__dirname, 'src/hooks'),
       '@types': resolve(__dirname, 'src/types'),
-      '@utils': resolve(__dirname, 'src/utils')
-    }
-  }
+      '@utils': resolve(__dirname, 'src/utils'),
+    },
+  },
 });

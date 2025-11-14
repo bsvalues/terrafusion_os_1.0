@@ -1,5 +1,0 @@
-<DataType Name="GPCellSizeXY">
-  <DisplayName>Cell Size XY</DisplayName>
-  <Description>Defines the two sides of a raster cell.</Description>
-</DataType>
-

@@ -1,0 +1,90 @@
+# TerraFusion OS Core Service
+# Multi-stage Docker build for production Rust service
+
+# Build stage
+FROM rust:1.75-slim as builder
+
+# Install dependencies for building
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app user
+RUN useradd -m -u 1001 terrafusion
+
+WORKDIR /app
+
+# Copy Cargo files for dependency caching
+COPY services/os-core/Cargo.toml services/os-core/Cargo.lock ./
+
+# Build dependencies (cache layer)
+RUN mkdir src && \
+    echo "fn main() {}" > src/main.rs && \
+    cargo build --release && \
+    rm -f target/release/deps/terrafusion_os_core*
+
+# Copy source code
+COPY services/os-core/src ./src
+
+# Build application
+RUN cargo build --release
+
+# Runtime stage
+FROM debian:bookworm-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app user
+RUN useradd -m -u 1001 terrafusion
+
+# Create app directory
+WORKDIR /app
+
+# Copy built binary from builder stage
+COPY --from=builder /app/target/release/terrafusion-os-core /app/terrafusion-os-core
+
+# Copy configuration templates
+COPY ops/config/os-core.toml /app/config/default.toml
+
+# Set ownership
+RUN chown -R terrafusion:terrafusion /app
+
+# Switch to non-root user
+USER terrafusion
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Expose port
+EXPOSE 8000
+
+# Environment variables
+ENV RUST_LOG=info
+ENV TERRAFUSION_HOST=0.0.0.0
+ENV TERRAFUSION_PORT=8000
+
+# Labels for government compliance
+LABEL maintainer="TerraFusion Elite Government OS Team <elite@terrafusion.gov>"
+LABEL version="1.0.0"
+LABEL description="TerraFusion OS Core Service - Government Operating System Kernel"
+LABEL org.opencontainers.image.title="TerraFusion OS Core"
+LABEL org.opencontainers.image.description="Government Operating System Kernel with FISMA-HIGH compliance"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.vendor="TerraFusion Elite Government OS"
+LABEL org.opencontainers.image.licenses="PROPRIETARY"
+LABEL gov.terrafusion.service="os-core"
+LABEL gov.terrafusion.tier="core"
+LABEL gov.terrafusion.compliance="FISMA-HIGH"
+
+# Run the application
+CMD ["./terrafusion-os-core"]

@@ -14,11 +14,11 @@ metadata:
   name: terrafusion-citizen-priority-routing
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/routing-type: 'citizen-priority'
-    terrafusion.gov/quantum-enhanced: 'true'
+    terrafusionmarket.com/routing-type: 'citizen-priority'
+    terrafusionmarket.com/quantum-enhanced: 'true'
 spec:
   hosts:
-    - api.terrafusion.gov
+    - api.terrafusionmarket.com
   gateways:
     - terrafusion-gateway
   http:
@@ -137,7 +137,7 @@ metadata:
   name: terrafusion-quantum-load-balancing
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/load-balancing: 'quantum-enhanced'
+    terrafusionmarket.com/load-balancing: 'quantum-enhanced'
 spec:
   host: '*.terrafusion-microservices.svc.cluster.local'
   trafficPolicy:
@@ -209,8 +209,8 @@ metadata:
   name: terrafusion-quantum-ai-canary
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/deployment-strategy: 'canary'
-    terrafusion.gov/feature: 'quantum-ai'
+    terrafusionmarket.com/deployment-strategy: 'canary'
+    terrafusionmarket.com/feature: 'quantum-ai'
 spec:
   hosts:
     - terrafusion-ai-service.terrafusion-microservices.svc.cluster.local
@@ -248,7 +248,7 @@ metadata:
   name: terrafusion-rate-limiting
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/rate-limiting: 'government-sla'
+    terrafusionmarket.com/rate-limiting: 'government-sla'
 spec:
   configPatches:
     - applyTo: HTTP_FILTER
@@ -317,8 +317,8 @@ metadata:
   name: terrafusion-fault-injection
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/testing: 'chaos-engineering'
-    terrafusion.gov/environment: 'testing'
+    terrafusionmarket.com/testing: 'chaos-engineering'
+    terrafusionmarket.com/environment: 'testing'
 spec:
   hosts:
     - terrafusion-testing-service
@@ -347,7 +347,7 @@ metadata:
   name: terrafusion-timeout-policies
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/sla: 'timeout-management'
+    terrafusionmarket.com/sla: 'timeout-management'
 spec:
   configPatches:
     - applyTo: HTTP_ROUTE
@@ -368,10 +368,10 @@ metadata:
   name: terrafusion-department-routing
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/routing: 'department-based'
+    terrafusionmarket.com/routing: 'department-based'
 spec:
   hosts:
-    - api.terrafusion.gov
+    - api.terrafusionmarket.com
   gateways:
     - terrafusion-gateway
   http:
@@ -429,10 +429,10 @@ metadata:
   name: terrafusion-geographic-routing
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/routing: 'geographic'
+    terrafusionmarket.com/routing: 'geographic'
 spec:
   hosts:
-    - api.terrafusion.gov
+    - api.terrafusionmarket.com
   gateways:
     - terrafusion-gateway
   http:

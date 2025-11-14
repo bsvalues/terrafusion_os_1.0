@@ -1,0 +1,27 @@
+# Benton County local environment
+.env
+.env.local
+
+# Artifacts
+_artifacts/
+*.svg
+*.png
+*.pdf
+
+# Backups
+backups/*.sql
+backups/*.dump
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

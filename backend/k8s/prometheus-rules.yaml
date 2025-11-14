@@ -100,7 +100,7 @@ data:
             annotations:
               summary: "TerraFusion API is down"
               description: "TerraFusion API service has been down for more than 1 minute. Pod: {{ $labels.pod }}, Namespace: {{ $labels.namespace }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/api-down"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/api-down"
           
           # Consciousness Service Down
           - alert: TerraFusionConsciousnessDown
@@ -113,7 +113,7 @@ data:
             annotations:
               summary: "TerraFusion Consciousness Engine is down"
               description: "Consciousness Engine (50,000 AI agents) has been down for more than 1 minute. Pod: {{ $labels.pod }}, Namespace: {{ $labels.namespace }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/consciousness-down"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/consciousness-down"
           
           # Gateway Service Down
           - alert: TerraFusionGatewayDown
@@ -126,7 +126,7 @@ data:
             annotations:
               summary: "TerraFusion Gateway is down"
               description: "API Gateway has been down for more than 1 minute. Pod: {{ $labels.pod }}, Namespace: {{ $labels.namespace }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/gateway-down"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/gateway-down"
           
           # Operations Service Down
           - alert: TerraFusionOperationsDown
@@ -139,7 +139,7 @@ data:
             annotations:
               summary: "TerraFusion Operations Service is down"
               description: "Operations Service has been down for more than 1 minute. Pod: {{ $labels.pod }}, Namespace: {{ $labels.namespace }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/operations-down"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/operations-down"
       
       # ======================================================================
       # Performance Alerts
@@ -158,7 +158,7 @@ data:
             annotations:
               summary: "High API response time detected"
               description: "API P95 response time is {{ $value }}s (threshold: 100ms). Pod: {{ $labels.pod }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/high-latency"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/high-latency"
           
           # Very High API Response Time (P95 > 500ms)
           - alert: VeryHighAPIResponseTime
@@ -171,7 +171,7 @@ data:
             annotations:
               summary: "Very high API response time detected"
               description: "API P95 response time is {{ $value }}s (threshold: 500ms). Immediate action required. Pod: {{ $labels.pod }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/very-high-latency"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/very-high-latency"
           
           # High Error Rate (>1% errors)
           - alert: HighAPIErrorRate
@@ -184,7 +184,7 @@ data:
             annotations:
               summary: "High API error rate detected"
               description: "API error rate is {{ $value | humanizePercentage }} (threshold: 1%). Pod: {{ $labels.pod }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/high-error-rate"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/high-error-rate"
           
           # Very High Error Rate (>5% errors)
           - alert: VeryHighAPIErrorRate
@@ -197,7 +197,7 @@ data:
             annotations:
               summary: "Very high API error rate detected"
               description: "API error rate is {{ $value | humanizePercentage }} (threshold: 5%). Immediate action required. Pod: {{ $labels.pod }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/very-high-error-rate"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/very-high-error-rate"
       
       # ======================================================================
       # AI Agent Alerts (Consciousness Engine)
@@ -207,7 +207,7 @@ data:
         rules:
           # AI Agent Count Below Threshold (<45,000 of 50,000)
           - alert: LowAIAgentCount
-            expr: terrafusion_ai_agent_count{job="terrafusion-consciousness"} < 45000
+            expr: terrafusion_ai_agent_count{job="terrafusion-consciousness"} < await DynamicPropertyService.GetPropertyCountAsync(countyCode)
             for: 5m
             labels:
               severity: warning
@@ -216,7 +216,7 @@ data:
             annotations:
               summary: "AI agent count below threshold"
               description: "Only {{ $value }} AI agents active (threshold: 45,000 of 50,000). Pod: {{ $labels.pod }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/low-agent-count"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/low-agent-count"
           
           # AI Agent Count Critically Low (<40,000 of 50,000)
           - alert: CriticallyLowAIAgentCount
@@ -229,7 +229,7 @@ data:
             annotations:
               summary: "AI agent count critically low"
               description: "Only {{ $value }} AI agents active (threshold: 40,000 of 50,000). Immediate action required. Pod: {{ $labels.pod }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/critically-low-agent-count"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/critically-low-agent-count"
           
           # Quantum Factor Degradation
           - alert: QuantumFactorDegradation
@@ -242,7 +242,7 @@ data:
             annotations:
               summary: "Quantum optimization factor degraded"
               description: "Quantum factor is {{ $value }} (expected: 949). Performance may be impacted. Pod: {{ $labels.pod }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/quantum-degradation"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/quantum-degradation"
           
           # High AI Agent Memory Usage (>90%)
           - alert: HighAIAgentMemoryUsage
@@ -255,7 +255,7 @@ data:
             annotations:
               summary: "High AI agent memory usage"
               description: "AI agent memory usage is {{ $value | humanizePercentage }} (threshold: 90%). Pod: {{ $labels.pod }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/high-memory-usage"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/high-memory-usage"
       
       # ======================================================================
       # Resource Alerts
@@ -274,7 +274,7 @@ data:
             annotations:
               summary: "High CPU usage detected"
               description: "Pod {{ $labels.pod }} CPU usage is {{ $value | humanizePercentage }} (threshold: 80%)"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/high-cpu-usage"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/high-cpu-usage"
           
           # Very High CPU Usage (>95%)
           - alert: VeryHighCPUUsage
@@ -287,7 +287,7 @@ data:
             annotations:
               summary: "Very high CPU usage detected"
               description: "Pod {{ $labels.pod }} CPU usage is {{ $value | humanizePercentage }} (threshold: 95%). Immediate action required."
-              runbook_url: "https://docs.terrafusion.gov/runbooks/very-high-cpu-usage"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/very-high-cpu-usage"
           
           # High Memory Usage (>85%)
           - alert: HighMemoryUsage
@@ -300,7 +300,7 @@ data:
             annotations:
               summary: "High memory usage detected"
               description: "Pod {{ $labels.pod }} memory usage is {{ $value | humanizePercentage }} (threshold: 85%)"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/high-memory-usage"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/high-memory-usage"
           
           # Very High Memory Usage (>95%)
           - alert: VeryHighMemoryUsage
@@ -313,7 +313,7 @@ data:
             annotations:
               summary: "Very high memory usage detected"
               description: "Pod {{ $labels.pod }} memory usage is {{ $value | humanizePercentage }} (threshold: 95%). Immediate action required."
-              runbook_url: "https://docs.terrafusion.gov/runbooks/very-high-memory-usage"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/very-high-memory-usage"
           
           # Pod Restart Loop
           - alert: PodRestartLoop
@@ -326,7 +326,7 @@ data:
             annotations:
               summary: "Pod restart loop detected"
               description: "Pod {{ $labels.pod }} is restarting frequently ({{ $value }} restarts/min)"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/pod-restart-loop"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/pod-restart-loop"
       
       # ======================================================================
       # Database Alerts
@@ -345,7 +345,7 @@ data:
             annotations:
               summary: "Database connection pool near exhaustion"
               description: "PostgreSQL connection usage is {{ $value | humanizePercentage }} (threshold: 90%)"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/db-connection-exhaustion"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/db-connection-exhaustion"
           
           # Slow Database Queries
           - alert: SlowDatabaseQueries
@@ -358,7 +358,7 @@ data:
             annotations:
               summary: "Slow database queries detected"
               description: "Average query execution time is {{ $value }}ms (threshold: 1000ms)"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/slow-queries"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/slow-queries"
       
       # ======================================================================
       # Government Compliance Alerts
@@ -377,7 +377,7 @@ data:
             annotations:
               summary: "Audit log ingestion failure detected"
               description: "Audit logs are failing to ingest. FISMA-High compliance at risk. Error rate: {{ $value }} errors/min"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/audit-log-failure"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/audit-log-failure"
           
           # County Data Isolation Breach Attempt
           - alert: CountyDataIsolationBreachAttempt
@@ -390,7 +390,7 @@ data:
             annotations:
               summary: "County data isolation breach attempt detected"
               description: "Attempted cross-county data access detected. Violation count: {{ $value }}"
-              runbook_url: "https://docs.terrafusion.gov/runbooks/isolation-breach"
+              runbook_url: "https://docs.terrafusionmarket.com/runbooks/isolation-breach"
 
 ---
 # ============================================================================
@@ -473,7 +473,7 @@ data:
       
       - name: 'compliance-team'
         email_configs:
-          - to: 'compliance@terrafusion.gov'
+          - to: 'compliance@terrafusionmarket.com'
             subject: '🔒 COMPLIANCE ALERT: {{ .GroupLabels.alertname }}'
             body: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}{{ end }}'
         slack_configs:
@@ -497,7 +497,7 @@ data:
 #
 # Test alert firing:
 #   # Simulate high error rate
-#   for i in {1..1000}; do curl http://api.terrafusion.gov/error; done
+#   for i in {1..1000}; do curl http://api.terrafusionmarket.com/error; done
 #
 # View Alertmanager:
 #   kubectl port-forward -n monitoring svc/alertmanager 9093:9093

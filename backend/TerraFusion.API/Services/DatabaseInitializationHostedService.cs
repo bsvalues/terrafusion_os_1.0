@@ -20,16 +20,16 @@ public class DatabaseInitializationHostedService : BackgroundService
     {
         // Wait a short time for server to start up before initializing database
         await Task.Delay(2000, stoppingToken);
-        
+
         try
         {
             _logger.LogInformation("Background database initialization starting...");
-            
+
             using var scope = _serviceScopeFactory.CreateScope();
             var databaseService = scope.ServiceProvider.GetRequiredService<IDatabaseInitializationService>();
-            
+
             await databaseService.InitializeAsync();
-            
+
             _logger.LogInformation("Background database initialization completed successfully");
         }
         catch (Exception ex)
@@ -37,5 +37,10 @@ public class DatabaseInitializationHostedService : BackgroundService
             _logger.LogError(ex, "Background database initialization failed: {Error}", ex.Message);
             // Don't throw - let the server continue running even if DB init fails
         }
+
+        // Keep the service alive after initialization to prevent shutdown
+        // This service runs once at startup but remains active for proper lifecycle management
+        _logger.LogInformation("Database initialization service entering monitoring mode...");
+        await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 }

@@ -52,7 +52,7 @@ const DeploymentModeSelector: React.FC = () => {
   ];
 
   const availableCounties = [
-    { id: 'benton', name: 'Benton County', parcels: '89,247', system: 'Harris PACS v12.4.7', status: 'Production Ready' },
+    { id: 'benton', name: 'Benton County', parcels: 'await DynamicPropertyService.GetPropertyCountAsync("benton")', system: 'Harris PACS v12.4.7', status: 'Production Ready' },
     { id: 'pierce', name: 'Pierce County', parcels: '385,000', system: 'ArcGIS Open Data', status: 'Live API' },
     { id: 'king', name: 'King County', parcels: '750,000', system: 'Enterprise GIS', status: 'Microservices' },
     { id: 'yakima', name: 'Yakima County', parcels: '125,000', system: 'Open Data Portal', status: 'Multi-format' },

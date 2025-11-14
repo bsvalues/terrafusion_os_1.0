@@ -1,7 +1,0 @@
-{
-    "set": [
-        "arcgis runtime",
-        "mobile",
-        "sqlite"
-    ]
-}

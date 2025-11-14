@@ -1,8 +1,0 @@
-{
-    "map": {
-        "descr": "The Oriented Imagery toolbox contains tools to create, manage, and maintain oriented imagery datasets and layers.",
-        "title": "Oriented Imagery Tools",
-        "toolset1.name": "Authoring",
-        "toolset2.name": "Manage"
-    }
-}

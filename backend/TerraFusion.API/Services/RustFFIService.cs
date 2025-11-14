@@ -59,22 +59,22 @@ public class RustFFIService
             {
                 var json = JsonSerializer.Serialize(request);
                 var jsonPtr = Marshal.StringToHGlobalAnsi(json);
-                
+
                 var resultPtr = process_valuation(jsonPtr);
                 Marshal.FreeHGlobal(jsonPtr);
-                
+
                 if (resultPtr != IntPtr.Zero)
                 {
                     var resultJson = Marshal.PtrToStringAnsi(resultPtr);
                     free_string(resultPtr);
-                    
+
                     if (!string.IsNullOrEmpty(resultJson))
                     {
-                        return JsonSerializer.Deserialize<ValuationResult>(resultJson) 
+                        return JsonSerializer.Deserialize<ValuationResult>(resultJson)
                             ?? new ValuationResult { Success = false };
                     }
                 }
-                
+
                 return new ValuationResult { Success = false, Error = "No response from Rust engine" };
             }
             catch (Exception ex)
@@ -93,22 +93,22 @@ public class RustFFIService
             {
                 var json = JsonSerializer.Serialize(request);
                 var jsonPtr = Marshal.StringToHGlobalAnsi(json);
-                
+
                 var resultPtr = coordinate_agents(jsonPtr);
                 Marshal.FreeHGlobal(jsonPtr);
-                
+
                 if (resultPtr != IntPtr.Zero)
                 {
                     var resultJson = Marshal.PtrToStringAnsi(resultPtr);
                     free_string(resultPtr);
-                    
+
                     if (!string.IsNullOrEmpty(resultJson))
                     {
                         return JsonSerializer.Deserialize<AgentCoordinationResult>(resultJson)
                             ?? new AgentCoordinationResult { Success = false };
                     }
                 }
-                
+
                 return new AgentCoordinationResult { Success = false };
             }
             catch (Exception ex)

@@ -1,9 +1,0 @@
-{
-    "set": [
-        "choropleth",
-        "classification",
-        "consumer",
-        "demographic",
-        "variables"
-    ]
-}

@@ -1,9 +1,0 @@
-{
-    "set": [
-        "block adjust",
-        "bundle adjust",
-        "interior orientation",
-        "mosaic dataset",
-        "exterior orientation"
-    ]
-}

@@ -37,7 +37,7 @@ export async function populateFullBentonCountyDataset(): Promise<void> {
   
   const municipalities = [
     { name: 'Richland', properties: 28500, baseValue: 520000, premium: 1.08 },
-    { name: 'Kennewick', properties: 35200, baseValue: 445000, premium: 1.02 },
+    { name: 'Kennewick', properties: 35200, baseValue: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode), premium: 1.02 },
     { name: 'Pasco', properties: 22800, baseValue: 385000, premium: 0.94 },
     { name: 'West Richland', properties: 8900, baseValue: 465000, premium: 1.06 },
     { name: 'Benton City', properties: 1200, baseValue: 285000, premium: 0.88 },

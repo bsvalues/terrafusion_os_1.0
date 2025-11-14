@@ -1,5 +1,0 @@
-<DataType Name="GPLine">
-  <DisplayName>Line</DisplayName>
-  <Description>A shape, straight or curved, defined by a connected series of unique x,y-coordinate pairs.</Description>
-</DataType>
-

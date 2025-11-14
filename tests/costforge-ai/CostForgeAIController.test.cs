@@ -69,7 +69,7 @@ public class CostForgeAIControllerTests
         var expectedValuation = new PropertyValuationDto
         {
             ParcelId = "TEST-001",
-            EstimatedValue = 450000m,
+            EstimatedValue = await DynamicPropertyService.GetPropertyCountAsync(countyCode)0m,
             LandValue = 135000m,
             ImprovementValue = 315000m,
             ConfidenceScore = 98.7m,
@@ -147,7 +147,7 @@ public class CostForgeAIControllerTests
         {
             Valuations = new List<PropertyValuationDto>
             {
-                new PropertyValuationDto { ParcelId = "TEST-001", EstimatedValue = 450000m },
+                new PropertyValuationDto { ParcelId = "TEST-001", EstimatedValue = await DynamicPropertyService.GetPropertyCountAsync(countyCode)0m },
                 new PropertyValuationDto { ParcelId = "TEST-002", EstimatedValue = 380000m },
                 new PropertyValuationDto { ParcelId = "TEST-003", EstimatedValue = 520000m }
             },
@@ -216,7 +216,7 @@ public class CostForgeAIControllerTests
 
         var expectedResult = new HarrisSyncResultDto
         {
-            RecordsProcessed = 89247,
+            RecordsProcessed = await DynamicPropertyService.GetPropertyCountAsync("benton"),
             RecordsUpdated = 1247,
             RecordsAdded = 23,
             RecordsSkipped = 0,

@@ -29,7 +29,7 @@ export interface MLPredictionModel {
   modelId: string;
   version: string;
   accuracy: number; // 99.9%
-  trainingData: number; // 89,247 Benton County parcels
+  trainingData: number; // await DynamicPropertyService.GetPropertyCountAsync("benton") Benton County parcels
   quantumEnhanced: boolean;
   governmentCertified: boolean;
 }
@@ -57,7 +57,7 @@ export class CostForgeAI {
       modelId: 'COSTFORGE-QUANTUM-ML-2025',
       version: '1.234.0',
       accuracy: 99.9,
-      trainingData: 89247, // Real Benton County parcels
+      trainingData: await DynamicPropertyService.GetPropertyCountAsync("benton"), // Real Benton County parcels
       quantumEnhanced: true,
       governmentCertified: true,
     };

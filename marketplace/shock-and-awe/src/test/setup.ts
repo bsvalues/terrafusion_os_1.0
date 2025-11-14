@@ -1,16 +1,8 @@
+import '@testing-library/jest-dom/vitest';
 import { beforeAll, vi } from 'vitest';
 
-// Mock Tauri API for testing
+// Test environment shims
 beforeAll(() => {
-  // Mock window.__TAURI__ for non-Tauri environments
-  if (typeof window !== 'undefined') {
-    (window as any).__TAURI__ = {
-      invoke: vi.fn(),
-      listen: vi.fn(),
-      emit: vi.fn(),
-    };
-  }
-
   // Mock Three.js WebGL context for headless testing
   const mockCanvas = {
     getContext: vi.fn(() => ({

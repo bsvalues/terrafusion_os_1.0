@@ -1,9 +1,0 @@
-{
-    "set": [
-        "clean",
-        "generalize",
-        "image processing",
-        "simplify",
-        "smooth"
-    ]
-}

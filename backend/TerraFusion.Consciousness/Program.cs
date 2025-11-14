@@ -18,15 +18,6 @@ var builder = WebApplication.CreateBuilder(args);
 Console.WriteLine("🧠⚡🔐 TerraFusion Consciousness Microservice Starting...");
 Console.WriteLine("🎯 Quantum Consciousness Orchestration Layer");
 
-// Relax service provider validation for test environments to avoid eager DI validation
-// The API integration tests may trigger host creation for this project via WebApplicationFactory
-// Even when services are not used directly. Disabling validation prevents false-positive startup failures.
-builder.Host.UseDefaultServiceProvider(options =>
-{
-  options.ValidateOnBuild = false;
-  options.ValidateScopes = false;
-});
-
 // Configure Serilog for structured logging
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
@@ -104,49 +95,13 @@ builder.Services.AddMemoryCache();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var healthChecks = builder.Services.AddHealthChecks();
 
-// Allow explicit opt-out of DB health via config or env
-var skipDbHealthByConfig = builder.Configuration.GetValue<bool>("HealthChecks:SkipDb");
-var skipDbHealthByEnv = string.Equals(
-  Environment.GetEnvironmentVariable("TF_SKIP_DB_HEALTH"),
-  "true",
-  StringComparison.OrdinalIgnoreCase);
-var skipDbHealth = skipDbHealthByConfig || skipDbHealthByEnv;
-
-// Track whether DB health is actually enabled (for status endpoint)
-var databaseHealthEnabled = false;
-
 // TODO: Add DbContext health check once interfaces are resolved
 // .AddDbContextCheck<TerraFusionContext>();
 
 // Only add PostgreSQL health check if connection string is configured
-// Skip health check if connection string is empty (development without database),
-// explicitly disabled via config/env, or if we can't verify PostgreSQL is accessible (fallback)
-bool addDatabaseHealthCheck = !string.IsNullOrEmpty(connectionString) && !skipDbHealth;
-
-if (addDatabaseHealthCheck)
+if (!string.IsNullOrEmpty(connectionString))
 {
-  // Test if PostgreSQL is accessible before adding health check
-  try
-  {
-    using var testConnection = new Npgsql.NpgsqlConnection(connectionString);
-    testConnection.Open();
-    testConnection.Close();
-    healthChecks.AddNpgSql(connectionString);
-    databaseHealthEnabled = true;
-    Console.WriteLine("✅ Database: ENABLED with health monitoring");
-  }
-  catch (Exception ex)
-  {
-    Console.WriteLine($"⚠️  Database: CONNECTION FAILED - Running without database health check");
-    Console.WriteLine($"    Error: {ex.Message}");
-    Console.WriteLine($"    Service will start in degraded mode without database dependency");
-  }
-}
-else
-{
-  Console.WriteLine(skipDbHealth
-    ? "⚠️  Database: HEALTH CHECKS DISABLED by configuration/env (TF_SKIP_DB_HEALTH)"
-    : "⚠️  Database: DISABLED (No connection string configured)");
+  healthChecks.AddNpgSql(connectionString);
 }
 
 // Note: Redis health check requires additional package - comment out for now
@@ -156,26 +111,21 @@ else
 // Register quantum consciousness orchestration and elite performance monitoring
 
 // Core quantum consciousness services
-builder.Services.AddScoped<IMillionAgentService, MillionAgentService>();
-builder.Services.AddScoped<IQuantumSecurityService, QuantumSecurityService>();
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IQuantumConsciousnessOrchestrator, QuantumConsciousnessOrchestrator>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IMillionAgentService, MillionAgentService>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IQuantumSecurityService, QuantumSecurityService>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IBentonCountyDataService, BentonCountyDataService>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IHybridConsciousnessManager, HybridConsciousnessManager>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceValidator, ComplianceValidator>();
 builder.Services.AddScoped<IElitePerformanceMonitor, ElitePerformanceMonitor>();
 builder.Services.AddScoped<IStatisticalAnalysisEngine, StatisticalAnalysisEngine>();
 builder.Services.AddScoped<ICrossWorkspaceSync, CrossWorkspaceSync>();
 
-// Data + orchestration dependencies required by orchestrator
-builder.Services.AddScoped<IBentonCountyDataService, BentonCountyDataService>();
-builder.Services.AddScoped<IMultiCountyDataService, MultiCountyDataService>();
-builder.Services.AddScoped<IAILayerMeshOrchestrator, AILayerMeshOrchestrator>();
-builder.Services.AddScoped<IHybridConsciousnessManager, HybridConsciousnessManager>();
-builder.Services.AddScoped<IComplianceValidator, ComplianceValidator>();
-builder.Services.AddScoped<IAuditLogger, AuditLogger>();
-// Lightweight legacy implementation to satisfy IConsciousnessService during tests
-builder.Services.AddScoped<IConsciousnessService, LegacyConsciousnessService>();
-
-// TODO: Register additional services when implementations are ready
-// builder.Services.AddScoped<IAuditLogger, AuditLogger>();
-// builder.Services.AddScoped<IComplianceValidator, ComplianceValidator>();
+// Additional service registrations for DI validation
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IAuditLogger, AuditLogger>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessService, ConsciousnessService>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IAILayerMeshOrchestrator, AILayerMeshOrchestrator>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IMultiCountyDataService, MultiCountyDataService>();
 
 // Add AutoMapper for DTO mapping
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
@@ -215,16 +165,6 @@ app.UseRouting();
 app.MapControllers();
 app.MapHealthChecks("/health");
 // app.MapMetrics(); // Prometheus metrics endpoint
-
-// Lightweight JSON status endpoint exposing degraded mode info
-app.MapGet("/health/status", () => new
-{
-  service = "TerraFusion.Consciousness",
-  status = "healthy",
-  databaseHealthEnabled,
-  degraded = !databaseHealthEnabled,
-  timestamp = DateTime.UtcNow
-});
 
 // Map SignalR hubs - TODO: Implement when hubs are ready
 // app.MapHub<ConsciousnessHub>("/hubs/consciousness");

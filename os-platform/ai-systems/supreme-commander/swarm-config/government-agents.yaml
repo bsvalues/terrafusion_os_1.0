@@ -3,7 +3,7 @@
 # Last Updated: August 2025
 # Total Agents: 1,008 (1 Supreme Commander + 7 Field Generals + 1,000 Operational Agents)
 
-apiVersion: terrafusion.gov/v1
+apiVersion: terrafusionmarket.com/v1
 kind: AISwarmConfiguration
 metadata:
   name: government-ai-swarm
@@ -14,7 +14,7 @@ metadata:
     clearance: MULTI_LEVEL
   annotations:
     deployment.kubernetes.io/revision: "1"
-    terrafusion.gov/government-grade: "true"
+    terrafusionmarket.com/government-grade: "true"
     
 spec:
   swarmSize: 50000
@@ -658,7 +658,7 @@ spec:
       
 ---
 # Agent Role Definitions
-apiVersion: terrafusion.gov/v1
+apiVersion: terrafusionmarket.com/v1
 kind: AgentRoleDefinition
 
 metadata:
@@ -685,7 +685,7 @@ spec:
     - Handle emergency situations and failover scenarios
     
 ---
-apiVersion: terrafusion.gov/v1
+apiVersion: terrafusionmarket.com/v1
 kind: AgentRoleDefinition
 
 metadata:
@@ -712,7 +712,7 @@ spec:
     - Report to Supreme Commander
     
 ---
-apiVersion: terrafusion.gov/v1
+apiVersion: terrafusionmarket.com/v1
 kind: AgentRoleDefinition
 
 metadata:

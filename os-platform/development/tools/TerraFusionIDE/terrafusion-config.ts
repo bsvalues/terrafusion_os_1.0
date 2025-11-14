@@ -192,7 +192,7 @@ export class TerraFusionConfiguration {
     return this.county || {
       name: 'BENTON',
       state: 'WASHINGTON',
-      parcelsCount: 89247,
+      parcelsCount: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       legacySystem: 'HARRIS_PACS',
       legacyVersion: '12.4.7',
       dataSync: 'REAL_TIME'
@@ -271,7 +271,7 @@ export class TerraFusionConfiguration {
     
     return {
       baseUrl: this.environment === 'production' 
-        ? 'https://api.terrafusion.gov'
+        ? 'https://api.terrafusionmarket.com'
         : `http://localhost:${this.environment === 'staging' ? 5001 : 5000}`,
       timeout: 30000,
       rateLimiting: this.environment === 'production',
@@ -366,7 +366,7 @@ export class TerraFusionConfigUtils {
     return {
       name: 'BENTON',
       state: 'WASHINGTON', 
-      parcelsCount: 89247,
+      parcelsCount: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       legacySystem: 'HARRIS_PACS',
       legacyVersion: '12.4.7',
       dataSync: 'REAL_TIME'

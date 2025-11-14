@@ -1,9 +1,0 @@
-{
-    "set": [
-        "closed multipatch",
-        "multipatch",
-        "point cloud",
-        "solids",
-        "volumetric analysis"
-    ]
-}

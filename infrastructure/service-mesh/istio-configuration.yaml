@@ -16,8 +16,8 @@ metadata:
   labels:
     name: terrafusion-system
     istio-injection: enabled
-    terrafusion.gov/security-level: 'FISMA-HIGH'
-    terrafusion.gov/compliance: 'NIST-800-53'
+    terrafusionmarket.com/security-level: 'FISMA-HIGH'
+    terrafusionmarket.com/compliance: 'NIST-800-53'
 ---
 # Main Application Namespace
 apiVersion: v1
@@ -27,8 +27,8 @@ metadata:
   labels:
     name: terrafusion-microservices
     istio-injection: enabled
-    terrafusion.gov/security-level: 'FISMA-HIGH'
-    terrafusion.gov/compliance: 'NIST-800-53'
+    terrafusionmarket.com/security-level: 'FISMA-HIGH'
+    terrafusionmarket.com/compliance: 'NIST-800-53'
 ---
 # Gateway Configuration
 apiVersion: networking.istio.io/v1beta1
@@ -39,7 +39,7 @@ metadata:
   labels:
     app: terrafusion-gateway
     version: v1.0.0
-    terrafusion.gov/service-type: 'government-portal'
+    terrafusionmarket.com/service-type: 'government-portal'
 spec:
   selector:
     istio: ingressgateway
@@ -49,9 +49,9 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - api.terrafusion.gov
-        - portal.terrafusion.gov
-        - '*.terrafusion.gov'
+        - api.terrafusionmarket.com
+        - portal.terrafusionmarket.com
+        - '*.terrafusionmarket.com'
       tls:
         httpsRedirect: true
     - port:
@@ -59,9 +59,9 @@ spec:
         name: https
         protocol: HTTPS
       hosts:
-        - api.terrafusion.gov
-        - portal.terrafusion.gov
-        - '*.terrafusion.gov'
+        - api.terrafusionmarket.com
+        - portal.terrafusionmarket.com
+        - '*.terrafusionmarket.com'
       tls:
         mode: SIMPLE
         credentialName: terrafusion-tls-secret
@@ -74,10 +74,10 @@ metadata:
   namespace: terrafusion-microservices
   labels:
     app: api-gateway
-    terrafusion.gov/quantum-enhanced: 'true'
+    terrafusionmarket.com/quantum-enhanced: 'true'
 spec:
   hosts:
-    - api.terrafusion.gov
+    - api.terrafusionmarket.com
   gateways:
     - terrafusion-gateway
   http:
@@ -114,7 +114,7 @@ metadata:
   name: terrafusion-circuit-breaker
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/pattern: 'circuit-breaker'
+    terrafusionmarket.com/pattern: 'circuit-breaker'
 spec:
   host: '*.terrafusion-microservices.svc.cluster.local'
   trafficPolicy:
@@ -158,7 +158,7 @@ metadata:
   name: terrafusion-mtls
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/security: 'zero-trust'
+    terrafusionmarket.com/security: 'zero-trust'
 spec:
   mtls:
     mode: STRICT
@@ -170,7 +170,7 @@ metadata:
   name: terrafusion-authorization
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/compliance: 'fisma-high'
+    terrafusionmarket.com/compliance: 'fisma-high'
 spec:
   rules:
     - from:
@@ -199,7 +199,7 @@ metadata:
   name: terrafusion-telemetry
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/observability: 'comprehensive'
+    terrafusionmarket.com/observability: 'comprehensive'
 spec:
   metrics:
     - providers:
@@ -228,7 +228,7 @@ metadata:
   name: terrafusion-service-monitor
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/monitoring: 'prometheus'
+    terrafusionmarket.com/monitoring: 'prometheus'
 spec:
   selector:
     matchLabels:
@@ -246,7 +246,7 @@ metadata:
   name: terrafusion-zero-trust
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/security: 'zero-trust'
+    terrafusionmarket.com/security: 'zero-trust'
 spec:
   podSelector: {}
   policyTypes:
@@ -288,7 +288,7 @@ metadata:
   name: terrafusion-headers
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/customization: 'headers'
+    terrafusionmarket.com/customization: 'headers'
 spec:
   configPatches:
     - applyTo: HTTP_FILTER
@@ -342,17 +342,17 @@ metadata:
   name: terrafusion-jwt
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/auth: 'jwt'
+    terrafusionmarket.com/auth: 'jwt'
 spec:
   selector:
     matchLabels:
       app: terrafusion-gateway
   jwtRules:
-    - issuer: 'https://auth.terrafusion.gov'
-      jwksUri: 'https://auth.terrafusion.gov/.well-known/jwks.json'
+    - issuer: 'https://auth.terrafusionmarket.com'
+      jwksUri: 'https://auth.terrafusionmarket.com/.well-known/jwks.json'
       audiences:
-        - 'api.terrafusion.gov'
-        - 'portal.terrafusion.gov'
+        - 'api.terrafusionmarket.com'
+        - 'portal.terrafusionmarket.com'
       forwardOriginalToken: true
 ---
 # Workload Entry for External Services
@@ -363,7 +363,7 @@ metadata:
   namespace: terrafusion-microservices
   labels:
     app: harris-pacs
-    terrafusion.gov/external-service: 'true'
+    terrafusionmarket.com/external-service: 'true'
 spec:
   address: harris-pacs.county.gov
   ports:
@@ -379,7 +379,7 @@ metadata:
   name: terrafusion-external-services
   namespace: terrafusion-microservices
   labels:
-    terrafusion.gov/external: 'true'
+    terrafusionmarket.com/external: 'true'
 spec:
   hosts:
     - harris-pacs.county.gov

@@ -1,5 +1,0 @@
-<DataType Name="GPNAHierarchySettings">
-  <DisplayName>Network Analyst Hierarchy Settings</DisplayName>
-  <Description>A hierarchy attribute that divides hierarchy values of a network dataset into three groups using two integers. The first integer sets the ending value of the first group; the second number sets the beginning value of the third group.</Description>
-</DataType>
-

@@ -155,7 +155,7 @@ server.get('/workflows', async (request, reply) => {
       {
         id: 'benton_harris_sync',
         name: 'Benton County Harris PACS Synchronization',
-        description: 'Automated sync of 89,247 parcels with Harris PACS v12.4.7',
+        description: 'Automated sync of await DynamicPropertyService.GetPropertyCountAsync("benton") parcels with Harris PACS v12.4.7',
         county: 'benton'
       },
       {
@@ -192,7 +192,7 @@ server.post('/workflows/:workflowId/execute', async (request, reply) => {
     workflowName,
     status: 'completed',
     results: {
-      processed_parcels: workflowId === 'benton_harris_sync' ? 89247 : undefined,
+      processed_parcels: workflowId === 'benton_harris_sync' ? await DynamicPropertyService.GetPropertyCountAsync("benton") : undefined,
       performance_improvement: workflowId === 'quantum_optimization' ? '3.5x' : undefined,
       compliance_validated: true,
       audit_trail: `audit_${workflowId}_${Date.now()}`

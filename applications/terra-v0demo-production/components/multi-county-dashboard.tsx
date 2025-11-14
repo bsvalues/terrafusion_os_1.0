@@ -64,7 +64,7 @@ export default function MultiCountyDashboard() {
         state: "WA",
         status: "active",
         assessor: "Jennifer Martinez",
-        totalParcels: 89247,
+        totalParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
         assessedValue: 12847392000,
         goLiveDate: "2025-01-15",
         implementation: {
@@ -196,14 +196,16 @@ export default function MultiCountyDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <div><>
+        <div>
+<>
 
           <h1 className="text-3xl font-bold">TerraFusionAssessor Multi-County Dashboard</h1>
           <p
 </> className="text-gray-600">National property assessment platform management</p>
         </div>
         <div className="flex items-center gap-4">
-          <Badge className="bg-blue-100 text-blue-800"><>
+          <Badge className="bg-blue-100 text-blue-800">
+<>
 
             <Globe className="h-4 w-4 mr-1" />
             {counties.filter((c) => c.status === "active").length} Counties Live
@@ -219,7 +221,8 @@ export default function MultiCountyDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <Building className="h-8 w-8 text-blue-600" />
-              <div className="text-right"><>
+              <div className="text-right">
+<>
 
                 <div className="text-2xl font-bold">{metrics.totalCounties}</div>
                 <div
@@ -233,7 +236,8 @@ export default function MultiCountyDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <MapPin className="h-8 w-8 text-green-600" />
-              <div className="text-right"><>
+              <div className="text-right">
+<>
 
                 <div className="text-2xl font-bold">{(metrics.totalParcels / 1000000).toFixed(1)}M</div>
                 <div
@@ -247,7 +251,8 @@ export default function MultiCountyDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <DollarSign className="h-8 w-8 text-purple-600" />
-              <div className="text-right"><>
+              <div className="text-right">
+<>
 
                 <div className="text-2xl font-bold">${(metrics.totalAssessedValue / 1000000000).toFixed(0)}B</div>
                 <div
@@ -261,7 +266,8 @@ export default function MultiCountyDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <Users className="h-8 w-8 text-orange-600" />
-              <div className="text-right"><>
+              <div className="text-right">
+<>
 
                 <div className="text-2xl font-bold">{metrics.activeUsers}</div>
                 <div
@@ -274,7 +280,8 @@ export default function MultiCountyDashboard() {
 
       {/* County Filter */}
       <Card>
-        <CardHeader><>
+        <CardHeader>
+<>
 
           <CardTitle>County Selection</CardTitle>
           <CardDescription
@@ -282,7 +289,8 @@ export default function MultiCountyDashboard() {
         </CardHeader>
         <CardContent>
           <Select value={selectedCounty} onValueChange={setSelectedCounty}>
-            <SelectTrigger className="w-64"><>
+            <SelectTrigger className="w-64">
+<>
 
               <SelectValue placeholder="Select a county" />
             </SelectTrigger>
@@ -300,11 +308,13 @@ export default function MultiCountyDashboard() {
       </Card>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4"><>
+        <TabsList className="grid w-full grid-cols-4">
+<>
 
           <TabsTrigger value="overview">County Overview</TabsTrigger>
           <TabsTrigger
-</> value="implementation">Implementation Status</TabsTrigger><>
+</> value="implementation">Implementation Status</TabsTrigger>
+<>
 
           <TabsTrigger value="performance">System Performance</TabsTrigger>
           <TabsTrigger
@@ -317,7 +327,8 @@ export default function MultiCountyDashboard() {
               <Card key={county.id}>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-3"><>
+                    <div className="flex items-center gap-3">
+<>
 
                       <Building className="h-6 w-6" />
                       {county.name}, {county.state}
@@ -333,13 +344,15 @@ export default function MultiCountyDashboard() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div><>
+                      <div>
+<>
 
                         <div className="font-medium">Total Parcels</div>
                         <div
 </> className="text-2xl font-bold">{county.totalParcels.toLocaleString()}</div>
                       </div>
-                      <div><>
+                      <div>
+<>
 
                         <div className="font-medium">Assessed Value</div>
                         <div
@@ -348,7 +361,8 @@ export default function MultiCountyDashboard() {
                     </div>
 
                     <div className="space-y-2">
-                      <div className="flex justify-between text-sm"><>
+                      <div className="flex justify-between text-sm">
+<>
 
                         <span>Implementation Progress</span>
                         <span
@@ -358,7 +372,8 @@ export default function MultiCountyDashboard() {
                       <div className="text-xs text-gray-600">Current Phase: {county.implementation.phase}</div>
                     </div>
 
-                    <div className="text-sm"><>
+                    <div className="text-sm">
+<>
 
                       <div className="font-medium">Next Milestone:</div>
                       <div
@@ -366,7 +381,8 @@ export default function MultiCountyDashboard() {
                     </div>
 
                     {county.status === "active" && (
-                      <div className="flex gap-2"><>
+                      <div className="flex gap-2">
+<>
 
                         <Button size="sm" variant="outline">
                           View Dashboard
@@ -386,7 +402,8 @@ export default function MultiCountyDashboard() {
 
         <TabsContent value="implementation" className="space-y-4">
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Implementation Pipeline</CardTitle>
               <CardDescription
@@ -397,7 +414,8 @@ export default function MultiCountyDashboard() {
                 {counties.map((county) => (
                   <div key={county.id} className="border rounded-lg p-4">
                     <div className="flex justify-between items-start mb-3">
-                      <div><>
+                      <div>
+<>
 
                         <h4 className="font-semibold">
                           {county.name}, {county.state}
@@ -409,19 +427,22 @@ export default function MultiCountyDashboard() {
                     </div>
 
                     <div className="space-y-2">
-                      <div className="flex justify-between text-sm"><>
+                      <div className="flex justify-between text-sm">
+<>
 
                         <span>Progress: {county.implementation.phase}</span>
                         <span
 </>>{county.implementation.progress}%</span>
-                      </div><>
+                      </div>
+<>
 
                       <Progress value={county.implementation.progress} />
                     </div>
 
                     <div
 </> className="mt-3 text-sm">
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span>Go-Live Date:</span>
                         <span
@@ -429,7 +450,8 @@ export default function MultiCountyDashboard() {
                           {county.goLiveDate === "TBD" ? "To Be Determined" : county.goLiveDate}
                         </span>
                       </div>
-                      <div className="flex justify-between mt-1"><>
+                      <div className="flex justify-between mt-1">
+<>
 
                         <span>Next Milestone:</span>
                         <span
@@ -454,25 +476,29 @@ export default function MultiCountyDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center"><>
+                  <div className="flex justify-between items-center">
+<>
 
                     <span>System Uptime</span>
                     <span
 </> className="font-bold text-green-600">{metrics.systemUptime}%</span>
                   </div>
-                  <div className="flex justify-between items-center"><>
+                  <div className="flex justify-between items-center">
+<>
 
                     <span>Average Response Time</span>
                     <span
 </> className="font-bold">{metrics.avgResponseTime}ms</span>
                   </div>
-                  <div className="flex justify-between items-center"><>
+                  <div className="flex justify-between items-center">
+<>
 
                     <span>Active Users</span>
                     <span
 </> className="font-bold">{metrics.activeUsers}</span>
                   </div>
-                  <div className="flex justify-between items-center"><>
+                  <div className="flex justify-between items-center">
+<>
 
                     <span>Data Processing Rate</span>
                     <span
@@ -510,7 +536,8 @@ export default function MultiCountyDashboard() {
                       color: "text-purple-600",
                     },
                   ].map((item) => (
-                    <div key={item.status} className="flex justify-between items-center"><>
+                    <div key={item.status} className="flex justify-between items-center">
+<>
 
                       <span className="capitalize">{item.status}</span>
                       <span
@@ -525,7 +552,8 @@ export default function MultiCountyDashboard() {
 
         <TabsContent value="expansion" className="space-y-4">
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Expansion Strategy</CardTitle>
               <CardDescription
@@ -533,35 +561,42 @@ export default function MultiCountyDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <div><>
+                <div>
+<>
 
                   <h4 className="font-semibold mb-3">Phase 1: Washington State Completion (2025)</h4>
                   <div
 </> className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2"><>
+                    <div className="space-y-2">
+<>
 
                       <div className="text-sm font-medium">Target Counties:</div>
                       <ul
-</> className="text-sm text-gray-600 space-y-1"><>
+</> className="text-sm text-gray-600 space-y-1">
+<>
 
                         <li>• Yakima County (In Progress)</li>
                             <li
-</>>• Franklin County (Planning)</li><>
+</>>• Franklin County (Planning)</li>
+<>
 
                         <li>• Walla Walla County (Q2 2025)</li>
                             <li
 </>>• Spokane County (Q3 2025)</li>
                       </ul>
                     </div>
-                    <div className="space-y-2"><>
+                    <div className="space-y-2">
+<>
 
                       <div className="text-sm font-medium">Expected Impact:</div>
                       <ul
-</> className="text-sm text-gray-600 space-y-1"><>
+</> className="text-sm text-gray-600 space-y-1">
+<>
 
                         <li>• 500,000+ additional parcels</li>
                             <li
-</>>• $75B+ assessed value</li><>
+</>>• $75B+ assessed value</li>
+<>
 
                         <li>• 60+ new users</li>
                             <li
@@ -571,16 +606,19 @@ export default function MultiCountyDashboard() {
                   </div>
                 </div>
 
-                <div><>
+                <div>
+<>
 
                   <h4 className="font-semibold mb-3">Phase 2: West Coast Expansion (2025-2026)</h4>
                   <div
 </> className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2"><>
+                    <div className="space-y-2">
+<>
 
                       <div className="text-sm font-medium">Target States:</div>
                       <ul
-</> className="text-sm text-gray-600 space-y-1"><>
+</> className="text-sm text-gray-600 space-y-1">
+<>
 
                         <li>• California (Orange, Riverside Counties)</li>
                             <li
@@ -588,15 +626,18 @@ export default function MultiCountyDashboard() {
                         <li>• Nevada (Clark, Washoe Counties)</li>
                       </ul>
                     </div>
-                    <div className="space-y-2"><>
+                    <div className="space-y-2">
+<>
 
                       <div className="text-sm font-medium">Market Opportunity:</div>
                       <ul
-</> className="text-sm text-gray-600 space-y-1"><>
+</> className="text-sm text-gray-600 space-y-1">
+<>
 
                         <li>• 2M+ parcels potential</li>
                             <li
-</>>• $500B+ assessed value</li><>
+</>>• $500B+ assessed value</li>
+<>
 
                         <li>• High-value property markets</li>
                             <li
@@ -606,7 +647,8 @@ export default function MultiCountyDashboard() {
                   </div>
                 </div>
 
-                <div><>
+                <div>
+<>
 
                   <h4 className="font-semibold mb-3">Phase 3: National Rollout (2026+)</h4>
                   <div

@@ -1,0 +1,161 @@
+%% Benton County PACS - Core Database ERD
+%% 20 essential tables with relationships
+%% Validated: 2025-11-05 snapshot
+%% NOTE: Year 0 pattern - prop_val_yr=0 resolves to pacs_system.future_yr (current working year)
+
+erDiagram
+    property ||--o{ property_val : "has valuations"
+    property ||--o{ situs : "has addresses"
+    property ||--o{ owner_prop_assoc : "has owners"
+    property ||--o{ improvement : "has improvements"
+    property ||--o{ prop_building_permit_assoc : "has permits"
+    property }o--|| property_type : "is type"
+    property }o--|| state_code : "in state"
+    
+    property_val }o--|| property : "values property"
+    property_val }o--|| appr_company : "appraised by"
+    property_val }o--|| neighborhood : "in neighborhood"
+    property_val }o--|| property_use : "has use code"
+    property_val }o--|| abs_subdv : "in subdivision"
+    
+    situs }o--|| property : "addresses property"
+    situs }o--|| zip : "has zip code"
+    situs }o--|| tax_code_area : "in TCA"
+    
+    owner_prop_assoc }o--|| property : "owns property"
+    owner_prop_assoc }o--|| owner : "is owner"
+    owner_prop_assoc }o--|| owner_type : "has type"
+    
+    improvement }o--|| property : "improves property"
+    improvement }o--|| improvement_type : "is type"
+    improvement }o--|| imprv_condition : "has condition"
+    
+    account }o--|| property : "bills property"
+    account ||--o{ bill : "has bills"
+    
+    bill ||--o{ transaction : "has transactions"
+    bill }o--|| trans_group : "in group"
+    
+    transaction }o--|| bill : "pays bill"
+    transaction }o--|| trans_type : "is type"
+    transaction }o--|| trans_status : "has status"
+    
+    property {
+        int prop_id PK
+        varchar parcel_num UK "Official parcel number"
+        int prop_type_cd FK "Residential, Commercial, etc."
+        char state_cd FK "WA, OR"
+        decimal latitude "GIS coordinate"
+        decimal longitude "GIS coordinate"
+        int simple_geo_id "Spatial reference"
+        datetime create_dt "Record creation"
+        datetime col_owner_update_dt "Last owner change"
+    }
+    
+    property_val {
+        int prop_id PK,FK
+        int prop_val_yr PK "Tax year (0 = current)"
+        int sup_num PK "Supplement number (versioning)"
+        decimal appraised_val "Total appraised value"
+        decimal assessed_val "Total assessed value"
+        decimal land_hstd_val "Homestead land value"
+        decimal imprv_hstd_val "Homestead improvement value"
+        decimal ag_use_val "Agricultural use value"
+        decimal freeze_ceiling "Homestead freeze ceiling"
+        int freeze_yr "Year freeze established"
+        decimal mktappr_val "Market approach value"
+        decimal cost_value "Cost approach value"
+        decimal income_value "Income approach value"
+        int prev_sup_num "Previous supplement (linked list)"
+        int next_sup_num "Next supplement (linked list)"
+        char recalc_flag "Needs recalculation"
+        char vit_flag "Unknown semantic (TRIBAL KNOWLEDGE)"
+    }
+    
+    situs {
+        int situs_id PK
+        int prop_id FK
+        varchar house_num "Street number"
+        varchar street_name "Street name"
+        varchar city "City name"
+        char zip_cd FK "Zip code"
+        int tax_code_area_id FK "Tax district"
+        char situs_type "Primary, Secondary, etc."
+    }
+    
+    owner {
+        int owner_id PK
+        varchar owner_name "Owner full name"
+        varchar addr_line_1 "Mailing address"
+        varchar city "Mailing city"
+        char state "Mailing state"
+        varchar zip "Mailing zip"
+        char owner_type_cd FK "Individual, Corporate, Gov"
+        datetime create_dt "Record creation"
+    }
+    
+    owner_prop_assoc {
+        int owner_prop_assoc_id PK
+        int prop_id FK
+        int owner_id FK
+        int owner_yr "Ownership year"
+        char owner_type_cd FK "Primary, Secondary"
+        decimal ownership_pct "% ownership"
+        datetime effective_dt "Ownership start"
+    }
+    
+    improvement {
+        int imprv_id PK
+        int prop_id FK
+        int imprv_type_cd FK "Residential, Commercial, Ag"
+        int year_built "Construction year"
+        int effective_age "Adjusted age"
+        decimal gross_area "Square footage"
+        decimal net_area "Finished area"
+        int imprv_condition_cd FK "Excellent, Good, Fair, Poor"
+        decimal replacement_cost "Rebuild cost"
+    }
+    
+    account {
+        int acct_id PK
+        int prop_id FK
+        int acct_yr "Billing year"
+        decimal total_tax "Total tax due"
+        decimal total_paid "Total paid"
+        decimal balance "Outstanding balance"
+        char acct_status "Active, Paid, Delinquent"
+    }
+    
+    bill {
+        int bill_id PK
+        int acct_id FK
+        int trans_group_id FK
+        decimal tax_amt "Tax amount"
+        datetime due_dt "Payment due date"
+        datetime paid_dt "Payment date"
+        char bill_status "Paid, Unpaid, Partial"
+    }
+    
+    transaction {
+        int trans_id PK
+        int bill_id FK
+        int trans_type_cd FK "Payment, Refund, Adjustment"
+        int trans_status_cd FK "Posted, Void, Pending"
+        decimal trans_amt "Transaction amount"
+        datetime trans_dt "Transaction date"
+        varchar receipt_num "Receipt number"
+    }
+    
+    change_log {
+        bigint lChangeID PK "IDENTITY - approaching 2.1B limit"
+        int lPacsUserID FK "PACS user who made change"
+        varchar szSQLAccount "SQL login name"
+        varchar szMachineName "Workstation name"
+        datetime dtChange "Timestamp"
+        char szChangeType "I=Insert, U=Update, D=Delete"
+        int iTableID "Table identifier"
+        int iColumnID "Column identifier"
+        varchar szOldValue "Before value"
+        varchar szNewValue "After value"
+        varchar szRefID "Business key reference"
+    }

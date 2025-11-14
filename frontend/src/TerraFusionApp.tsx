@@ -2,7 +2,10 @@
 // THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
 
 import { TerraGaiaDashboard } from '@/components/dashboards/TerraGaiaDashboard';
+import APIConnectionTest from '@/components/test/APIConnectionTest';
+import { Store } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import './styles/terrafusion-brand.css';
 
 // TerraFusion Quantum Logo Component
@@ -178,8 +181,9 @@ export default function TerraFusionApp() {
       </div>
 
       {/* Main Application Area */}
-      <div className='pt-8 pb-8 min-h-screen flex relative z-10'>
+      <div className='pt-8 pb-8 min-h-screen flex flex-col relative z-10'>
         <QuantumConsciousnessDashboard />
+        <APIConnectionTest />
       </div>
 
       {/* Quantum System Status Overlay */}

@@ -288,7 +288,7 @@ export class MlsService {
         bathrooms: 2,
         squareFeet: 1500,
         yearBuilt: 2010,
-        listPrice: 450000,
+        listPrice: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
         status: "Active",
         rawData: {
           // Additional MLS-specific fields would be here

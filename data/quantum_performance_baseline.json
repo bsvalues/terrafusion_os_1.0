@@ -7,7 +7,7 @@
     "cost_reduction": "97.0%"
   },
   "benton_county_specifics": {
-    "total_parcels": 89247,
+    "total_parcels": await DynamicPropertyService.GetPropertyCountAsync("benton"),
     "assessed_properties": 10,
     "ai_processed": 8,
     "human_verified": 2,

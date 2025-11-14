@@ -51,7 +51,7 @@ const EnhancedApp: React.FC = () => {
       const devUser: User = {
         id: 'dev-001',
         name: 'Dev User',
-        email: 'dev@terrafusion.gov',
+        email: 'dev@terrafusionmarket.com',
         type: 'government',
         permissions: ['admin', 'dev', 'approve']
       };
@@ -187,7 +187,8 @@ const EnhancedApp: React.FC = () => {
     <header className="bg-gradient-to-r from-blue-900 to-purple-900 text-white">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4"><>
+          <div className="flex items-center gap-4">
+<>
 
             <h1 
               className="text-2xl font-bold cursor-pointer"
@@ -197,7 +198,8 @@ const EnhancedApp: React.FC = () => {
             </h1>
             <nav
 </>
-className="hidden md:flex gap-4"><>
+className="hidden md:flex gap-4">
+<>
 
               <button
                 onClick={() => setCurrentView('home')}
@@ -233,7 +235,8 @@ className="hidden md:flex gap-4"><>
             {user ? (
                 <button className="relative p-2">
                   <Bell className="w-5 h-5" />
-                  {notifications.filter(n => n.unread).length > 0 && (<>
+                  {notifications.filter(n => n.unread).length > 0 && (
+<>
 
                     <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
                   )}
@@ -275,7 +278,8 @@ className="flex items-center gap-2">
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-12"
-      ><>
+      >
+<>
 
         <h1 className="text-5xl font-bold text-gray-900 mb-4">
           Benton County Public Records
@@ -330,21 +334,24 @@ className="text-xl text-gray-600">
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto mt-12">
-        <div className="text-center"><>
+        <div className="text-center">
+<>
 
           <div className="text-3xl font-bold text-purple-600">0.001s</div>
           <div
 </>
 className="text-gray-600">Search Speed</div>
         </div>
-        <div className="text-center"><>
+        <div className="text-center">
+<>
 
           <div className="text-3xl font-bold text-purple-600">379M×</div>
           <div
 </>
 className="text-gray-600">Faster</div>
         </div>
-        <div className="text-center"><>
+        <div className="text-center">
+<>
 
           <div className="text-3xl font-bold text-purple-600">$0</div>
           <div
@@ -367,7 +374,8 @@ className="text-gray-600">Setup Cost</div>
           { label: 'Approved', value: applications.filter(a => a.status === 'approved').length, color: 'green' },
           { label: 'Total Fees', value: `$${applications.reduce((sum, a) => sum + a.fee, 0)}`, color: 'purple' }
         ].map((stat, i) => (
-          <div key={i} className={`bg-${stat.color}-50 p-6 rounded-xl`}><>
+          <div key={i} className={`bg-${stat.color}-50 p-6 rounded-xl`}>
+<>
 
             <p className={`text-${stat.color}-900 font-semibold`}>{stat.label}</p>
             <p
@@ -378,7 +386,8 @@ className={`text-3xl font-bold text-${stat.color}-600 mt-2`}>{stat.value}</p>
       </div>
 
       {/* Applications List */}
-      <div className="bg-white rounded-xl shadow-lg p-6"><>
+      <div className="bg-white rounded-xl shadow-lg p-6">
+<>
 
         <h3 className="text-xl font-semibold text-gray-900 mb-4">My Applications</h3>
         <div
@@ -387,7 +396,8 @@ className="space-y-4">
           {applications.map((app) => (
             <div key={app.id} className="border rounded-lg p-4">
               <div className="flex items-center justify-between">
-                <div><>
+                <div>
+<>
 
                   <p className="font-semibold text-gray-900">{app.type}</p>
                   <p
@@ -396,7 +406,8 @@ className="text-sm text-gray-600">
                     {app.address} • {app.date.toLocaleDateString()}
                   </p>
                 </div>
-                <div className="text-right"><>
+                <div className="text-right">
+<>
 
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                     app.status === 'approved' ? 'bg-green-100 text-green-700' :
@@ -455,7 +466,8 @@ className="text-sm text-gray-600 mt-1">${app.fee}</p>
 
         <div className="bg-white rounded-xl shadow-lg p-8">
           {step === 1 && (
-            <div><>
+            <div>
+<>
 
               <h3 className="text-xl font-semibold mb-6">Select Permit Type</h3>
               <div
@@ -474,7 +486,8 @@ className="space-y-3">
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span className="font-semibold">{permit.name}</span>
                       <span
@@ -495,13 +508,15 @@ className="text-gray-600">${permit.fee}</span>
           )}
 
           {step === 2 && (
-            <div><>
+            <div>
+<>
 
               <h3 className="text-xl font-semibold mb-6">Property Information</h3>
               <div
 </>
 className="space-y-4">
-                <div><>
+                <div>
+<>
 
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Property Address
@@ -516,7 +531,8 @@ className="space-y-4">
                     placeholder="123 Main St, Kennewick, WA"
                   />
                 </div>
-                <div><>
+                <div>
+<>
 
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Project Description
@@ -531,7 +547,8 @@ className="space-y-4">
                     placeholder="Describe your project..."
                   />
                 </div>
-                <div><>
+                <div>
+<>
 
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Estimated Project Value
@@ -547,7 +564,8 @@ className="space-y-4">
                   />
                 </div>
               </div>
-              <div className="flex gap-4 mt-6"><>
+              <div className="flex gap-4 mt-6">
+<>
 
                 <button
                   onClick={() => setStep(1)}
@@ -569,34 +587,39 @@ className="space-y-4">
           )}
 
           {step === 3 && (
-            <div><>
+            <div>
+<>
 
               <h3 className="text-xl font-semibold mb-6">Review & Submit</h3>
               <div
 </>
 className="bg-gray-50 rounded-lg p-6 space-y-3">
-                <div className="flex justify-between"><>
+                <div className="flex justify-between">
+<>
 
                   <span className="text-gray-600">Permit Type:</span>
                   <span
 </>
 className="font-semibold">{formData.permitType}</span>
                 </div>
-                <div className="flex justify-between"><>
+                <div className="flex justify-between">
+<>
 
                   <span className="text-gray-600">Property:</span>
                   <span
 </>
 className="font-semibold">{formData.address}</span>
                 </div>
-                <div className="flex justify-between"><>
+                <div className="flex justify-between">
+<>
 
                   <span className="text-gray-600">Project Value:</span>
                   <span
 </>
 className="font-semibold">${formData.value}</span>
                 </div>
-                <div className="flex justify-between pt-3 border-t"><>
+                <div className="flex justify-between pt-3 border-t">
+<>
 
                   <span className="text-gray-600">Permit Fee:</span>
                   <span
@@ -604,7 +627,8 @@ className="font-semibold">${formData.value}</span>
 className="font-bold text-lg">${calculatePermitFee(formData.permitType)}</span>
                 </div>
               </div>
-              <div className="flex gap-4 mt-6"><>
+              <div className="flex gap-4 mt-6">
+<>
 
                 <button
                   onClick={() => setStep(2)}
@@ -645,7 +669,8 @@ className="font-bold text-lg">${calculatePermitFee(formData.permitType)}</span>
               className="bg-white rounded-lg shadow-lg p-6"
             >
               <div className="flex items-start justify-between">
-                <div><>
+                <div>
+<>
 
                   <h3 className="text-xl font-semibold text-gray-900">{result.title}</h3>
                   <p
@@ -684,7 +709,8 @@ className="text-gray-600 mt-1">{result.description}</p>
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             className="bg-white rounded-xl p-8 max-w-md w-full"
-          ><>
+          >
+<>
 
             <h2 className="text-2xl font-bold mb-6">Sign In</h2>
             <div
@@ -699,7 +725,8 @@ className="space-y-4">
                 type="password"
                 placeholder="Password"
                 className="w-full px-4 py-3 border rounded-lg"
-              /><>
+              />
+<>
 
               <button
                 onClick={() => {
@@ -746,13 +773,15 @@ className="space-y-4">
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             className="bg-white rounded-xl p-8 max-w-md w-full"
-          ><>
+          >
+<>
 
             <h2 className="text-2xl font-bold mb-6">Payment</h2>
             <div
 </>
 className="space-y-4">
-              <div className="bg-gray-50 p-4 rounded-lg"><>
+              <div className="bg-gray-50 p-4 rounded-lg">
+<>
 
                 <p className="text-gray-600">Amount Due:</p>
                 <p
@@ -771,7 +800,8 @@ className="text-3xl font-bold text-gray-900">
                   type="text"
                   placeholder="MM/YY"
                   className="px-4 py-3 border rounded-lg"
-                /><>
+                />
+<>
 
                 <input
                   type="text"
@@ -839,7 +869,8 @@ className="text-3xl font-bold text-gray-900">
             style={{ top: `${80 + i * 70}px` }}
           >
             <div className="flex items-center gap-3">
-              <CheckCircle className="w-5 h-5 text-green-500" /><>
+              <CheckCircle className="w-5 h-5 text-green-500" />
+<>
 
               <p className="text-sm">{notif.message}</p>
               <button

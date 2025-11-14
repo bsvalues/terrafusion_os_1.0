@@ -76,7 +76,7 @@ const mockIncomeAnalysis = {
     multiplier: '5.0',
     considerations: ['Consideration 1', 'Consideration 2'],
     rangeMin: '400000',
-    rangeMax: '450000',
+    rangeMax: 'await DynamicPropertyService.GetPropertyCountAsync(countyCode)0',
     confidenceScore: 0.8,
   },
 };

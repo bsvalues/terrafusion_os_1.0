@@ -2,7 +2,7 @@
   "name": "county-assistant",
   "displayName": "County Assistant",
   "description": "Your general government operations assistant for policy guidance, department directory, and citizen services information",
-  "iconUrl": "https://cdn.terrafusion.gov/gpts/county-assistant.png",
+  "iconUrl": "https://cdn.terrafusionmarket.com/gpts/county-assistant.png",
   "category": "Core Government",
   "isSystemGPT": true,
   "isPublic": true,

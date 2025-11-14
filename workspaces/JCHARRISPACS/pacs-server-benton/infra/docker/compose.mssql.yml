@@ -1,11 +1,12 @@
 version: '3.9'
 services:
   mssql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2019-latest
     container_name: pacs-benton-mssql
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=${SA_PASSWORD:-P@ssw0rd123!}
+      - MSSQL_PID=Developer
     ports:
       - '1433:1433'
     healthcheck:

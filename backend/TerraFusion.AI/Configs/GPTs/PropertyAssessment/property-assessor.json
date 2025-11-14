@@ -2,7 +2,7 @@
   "name": "property-assessor",
   "displayName": "Property Assessor",
   "description": "Expert assistant for property assessment methodology, valuation guidance, and comparable sales analysis",
-  "iconUrl": "https://cdn.terrafusion.gov/gpts/property-assessor.png",
+  "iconUrl": "https://cdn.terrafusionmarket.com/gpts/property-assessor.png",
   "category": "Property Assessment",
   "isSystemGPT": true,
   "isPublic": false,

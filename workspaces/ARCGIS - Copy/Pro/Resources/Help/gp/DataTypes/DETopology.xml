@@ -1,5 +1,0 @@
-<DataType Name="DETopology">
-  <DisplayName>Topology</DisplayName>
-  <Description>A topology that defines and enforces data integrity rules for spatial data.</Description>
-</DataType>
-

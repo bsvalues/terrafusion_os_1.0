@@ -64,7 +64,7 @@ export default function MultiCountyDashboard() {
         state: "WA",
         status: "active",
         assessor: "Jennifer Martinez",
-        totalParcels: 89247,
+        totalParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
         assessedValue: 12847392000,
         goLiveDate: "2025-01-15",
         implementation: {

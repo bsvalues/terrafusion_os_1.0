@@ -1,5 +1,0 @@
-<DataType Name="GPSAGDBEnvStatistics">
-  <DisplayName>Raster Statistics</DisplayName>
-  <Description>Specifies if raster statistics build.</Description>
-</DataType>
-

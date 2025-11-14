@@ -15,15 +15,17 @@ namespace TerraFusion.Core.Services
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<TylerTechLegacyService> _logger;
+        private readonly IDynamicPropertyService _dynamicPropertyService;
 
         public string SystemType => "TYLER_TECH";
         public string SystemVersion => "v2024.1";
         public string Jurisdiction { get; private set; }
 
-        public TylerTechLegacyService(IConfiguration configuration, ILogger<TylerTechLegacyService> logger)
+        public TylerTechLegacyService(IConfiguration configuration, ILogger<TylerTechLegacyService> logger, IDynamicPropertyService dynamicPropertyService)
         {
             _configuration = configuration;
             _logger = logger;
+            _dynamicPropertyService = dynamicPropertyService;
             Jurisdiction = _configuration["County:Name"] ?? "Unknown County";
         }
 
@@ -52,7 +54,7 @@ namespace TerraFusion.Core.Services
 
             await Task.Delay(800);
 
-            result.RecordsProcessed = 45000;
+            result.RecordsProcessed = await _dynamicPropertyService.GetActivePropertyCountAsync(Jurisdiction);
             result.RecordsUpdated = 890;
             result.RecordsAdded = 23;
             result.RecordsSkipped = 7;
@@ -64,7 +66,7 @@ namespace TerraFusion.Core.Services
         public async Task<LegacyPropertyRecord> GetPropertyByParcelIdAsync(string parcelId)
         {
             await Task.Delay(75);
-            
+
             return new LegacyPropertyRecord
             {
                 ParcelId = parcelId,
@@ -89,7 +91,7 @@ namespace TerraFusion.Core.Services
         {
             await Task.Delay(1500);
             var properties = new List<LegacyPropertyRecord>();
-            
+
             for (int i = 1; i <= 50; i++)
             {
                 properties.Add(new LegacyPropertyRecord
@@ -105,7 +107,7 @@ namespace TerraFusion.Core.Services
                     BuildingCount = 1
                 });
             }
-            
+
             return properties;
         }
 
@@ -118,7 +120,7 @@ namespace TerraFusion.Core.Services
         public async Task<LegacySystemHealth> GetSystemHealthAsync()
         {
             await Task.Delay(120);
-            
+
             return new LegacySystemHealth
             {
                 IsOnline = true,
@@ -130,7 +132,7 @@ namespace TerraFusion.Core.Services
                 {
                     ["Version"] = SystemVersion,
                     ["DatabaseSize"] = "1.8 GB",
-                    ["TotalParcels"] = 45000
+                    ["TotalParcels"] = await _dynamicPropertyService.GetActivePropertyCountAsync(Jurisdiction)
                 }
             };
         }
@@ -138,7 +140,7 @@ namespace TerraFusion.Core.Services
         public async Task<IEnumerable<LegacyAuditRecord>> GetAuditTrailAsync(string parcelId, DateTime? fromDate = null)
         {
             await Task.Delay(100);
-            
+
             return new List<LegacyAuditRecord>
             {
                 new LegacyAuditRecord

@@ -71,7 +71,7 @@ class TerraFusionDemo {
                 type: 'agricultural',
                 county: 'clark',
                 baseValue: 850000,
-                sqft: 45000,
+                sqft: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
                 yearBuilt: 1995,
                 lotSize: 25.0,
                 features: ['irrigation', 'barn', 'equipment_shed'],

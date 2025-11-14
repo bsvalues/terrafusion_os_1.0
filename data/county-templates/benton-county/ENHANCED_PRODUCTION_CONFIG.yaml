@@ -633,13 +633,13 @@ enhanced_monitoring:
     channels:
       email:
         enabled: true
-        smtp_server: "smtp.bentoncounty.gov"
+        smtp_server: "smtp.terrafusionmarket.io"
         smtp_port: 587
         encryption: "starttls"
         recipients:
-          - "ai-team@bentoncounty.gov"
-          - "it-alerts@bentoncounty.gov"
-          - "security@bentoncounty.gov"
+          - "ai-team@terrafusionmarket.io"
+          - "it-alerts@terrafusionmarket.io"
+          - "security@terrafusionmarket.io"
       
       slack:
         enabled: true
@@ -723,7 +723,7 @@ enhanced_backup:
         
       manual:
         escalation_time: 15  # minutes
-        contact_list: ["admin@bentoncounty.gov", "emergency@bentoncounty.gov"]
+        contact_list: ["admin@terrafusionmarket.io", "emergency@terrafusionmarket.io"]
 
 # Enhanced Integration Configuration
 enhanced_integration:

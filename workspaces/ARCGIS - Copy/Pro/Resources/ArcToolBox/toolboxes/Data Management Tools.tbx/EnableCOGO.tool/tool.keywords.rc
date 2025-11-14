@@ -1,9 +1,0 @@
-{
-    "set": [
-        "cogo",
-        "dimensions",
-        "fields",
-        "lines",
-        "traverse"
-    ]
-}

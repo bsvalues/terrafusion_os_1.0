@@ -1,9 +1,0 @@
-{
-    "set": [
-        "pixel",
-        "properties",
-        "query",
-        "retrieve",
-        "value"
-    ]
-}

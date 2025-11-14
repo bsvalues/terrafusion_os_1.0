@@ -29,13 +29,13 @@ const demoReports = [
       assessor: {
         name: "Sarah Johnson",
         department: "Benton County Assessor's Office",
-        contact: "sjohnson@bentoncounty.gov"
+        contact: "sjohnson@terrafusionmarket.io"
       },
       assessment: {
         date: "2025-02-28T09:00:00Z",
         land_value: 120000,
         improvement_value: 330000,
-        total_value: 450000,
+        total_value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
         previous_value: 425000,
         change_percent: 5.88
       },
@@ -52,10 +52,10 @@ const demoReports = [
           { year: 2022, value: 400000 },
           { year: 2023, value: 415000 },
           { year: 2024, value: 425000 },
-          { year: 2025, value: 450000 }
+          { year: 2025, value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 }
         ],
         comparable_properties: [
-          { name: 'Subject Property', value: 450000 },
+          { name: 'Subject Property', value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 },
           { name: 'Comp 1', value: 442000 },
           { name: 'Comp 2', value: 465000 },
           { name: 'Comp 3', value: 428000 },
@@ -86,7 +86,7 @@ const demoReports = [
       assessor: {
         name: "Michael Roberts",
         department: "Benton County Assessor's Office",
-        contact: "mroberts@bentoncounty.gov"
+        contact: "mroberts@terrafusionmarket.io"
       },
       assessment: {
         date: "2025-03-01T10:30:00Z",

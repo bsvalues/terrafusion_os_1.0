@@ -45,10 +45,7 @@ namespace TerraFusion.API.Controllers
                     Types = string.IsNullOrEmpty(types) ? new List<string>() : types.Split(',').ToList(),
                     Difficulty = string.IsNullOrEmpty(difficulty) ? new List<string>() : difficulty.Split(',').ToList(),
                     Tags = string.IsNullOrEmpty(tags) ? new List<string>() : tags.Split(',').ToList(),
-                    DateRange = new DateRangeDto { 
-                        Start = dateStart ?? DateTime.MinValue, 
-                        End = dateEnd ?? DateTime.MaxValue 
-                    }
+                    DateRange = new DateRangeDto { Start = dateStart?.ToUniversalTime() ?? DateTime.UtcNow, End = dateEnd?.ToUniversalTime() ?? DateTime.UtcNow }
                 };
 
                 var result = await _knowledgeBaseService.SearchAsync(q, filters, page, limit);
@@ -299,10 +296,7 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
-                var dateRange = new DateRangeDto { 
-                    Start = start ?? DateTime.MinValue, 
-                    End = end ?? DateTime.MaxValue 
-                };
+                var dateRange = new DateRangeDto { Start = start?.ToUniversalTime() ?? DateTime.UtcNow, End = end?.ToUniversalTime() ?? DateTime.UtcNow };
                 var analytics = await _knowledgeBaseService.GetSearchAnalyticsAsync(dateRange);
                 return Ok(analytics);
             }

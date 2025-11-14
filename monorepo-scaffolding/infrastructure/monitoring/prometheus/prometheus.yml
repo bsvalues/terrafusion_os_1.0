@@ -1,0 +1,99 @@
+# TerraFusion OS - Elite Government Prometheus Configuration
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'terrafusion-os'
+    environment: 'production'
+
+# Alerting configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Load rules
+rule_files:
+  - '/etc/prometheus/rules/*.yml'
+
+# Service discovery and scraping
+scrape_configs:
+  # TerraFusion OS Core
+  - job_name: 'os-core'
+    static_configs:
+      - targets: ['os-core:8080']
+        labels:
+          service: 'os-core'
+          tier: 'kernel'
+
+  # TerraFusion OS Consciousness
+  - job_name: 'os-consciousness'
+    static_configs:
+      - targets: ['os-consciousness:8081']
+        labels:
+          service: 'os-consciousness'
+          tier: 'ai-coordination'
+
+  # Government Compliance
+  - job_name: 'government-compliance'
+    static_configs:
+      - targets: ['government-compliance:8082']
+        labels:
+          service: 'government-compliance'
+          tier: 'security'
+
+  # County Isolation
+  - job_name: 'county-isolation'
+    static_configs:
+      - targets: ['county-isolation:8083']
+        labels:
+          service: 'county-isolation'
+          tier: 'data-sovereignty'
+
+  # Harris PACS Bridge
+  - job_name: 'harris-pacs-bridge'
+    static_configs:
+      - targets: ['harris-pacs-bridge:8084']
+        labels:
+          service: 'harris-pacs-bridge'
+          tier: 'legacy-integration'
+
+  # Quantum Optimizer
+  - job_name: 'quantum-optimizer'
+    static_configs:
+      - targets: ['quantum-optimizer:8085']
+        labels:
+          service: 'quantum-optimizer'
+          tier: 'performance'
+
+  # API Gateway
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:8086']
+        labels:
+          service: 'api-gateway'
+          tier: 'routing'
+
+  # PostgreSQL Exporter (if deployed)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+        labels:
+          service: 'postgres'
+          tier: 'database'
+
+  # Redis Exporter (if deployed)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+        labels:
+          service: 'redis'
+          tier: 'cache'
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+          tier: 'monitoring'

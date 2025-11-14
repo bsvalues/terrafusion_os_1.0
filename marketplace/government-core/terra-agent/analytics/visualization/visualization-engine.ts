@@ -862,7 +862,7 @@ export class VisualizationEngine {
         datasets: [
           {
             label: 'Historical Prices',
-            data: [400000, 420000, 415000, 435000, 450000, 465000],
+            data: [400000, 420000, 415000, 435000, await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, 465000],
             backgroundColor: 'transparent',
             borderColor: '#3498db',
             borderWidth: 3,

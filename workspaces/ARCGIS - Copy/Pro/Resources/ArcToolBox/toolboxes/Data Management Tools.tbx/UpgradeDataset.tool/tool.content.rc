@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Upgrades the schema of a mosaic dataset, network dataset, annotation dataset, dimension dataset, parcel fabric, trace network, utility network, or 3D object feature class to the current ArcGIS release. Upgrading a dataset enables it to use new functionality in the current software release.",
-        "in_dataset.descr": "The dataset that will be upgraded to the current ArcGIS client release.",
-        "in_dataset.title": "Dataset to upgrade",
-        "out_dataset.title": "Upgraded Dataset",
-        "title": "Upgrade Dataset"
-    }
-}

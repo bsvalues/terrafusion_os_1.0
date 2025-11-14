@@ -134,7 +134,7 @@ builder.Services.AddSwaggerGen(c =>
         Contact = new OpenApiContact
         {
             Name = "TerraFusion Elite Engineering Team",
-            Email = "engineering@terrafusion.gov"
+            Email = "engineering@terrafusionmarket.com"
         }
     });
 

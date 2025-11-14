@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Disables attachments on a geodatabase feature class or table. The tool deletes the attachment relationship class and attachment table.",
-        "in_dataset.descr": "The geodatabase table or feature class for which attachments will be disabled. The input must be in a version 10 or later geodatabase.",
-        "in_dataset.title": "Input Dataset",
-        "out_dataset.title": "Updated Input Dataset",
-        "title": "Disable Attachments"
-    }
-}

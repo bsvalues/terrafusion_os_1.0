@@ -40,7 +40,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 app.use((req, res, next) => {
     res.setHeader('X-Terrafusion-Demo', 'Benton County Government OS');
     res.setHeader('X-Terrafusion-Version', '1.0.0');
-    res.setHeader('X-Terrafusion-Properties', '89247');
+    res.setHeader('X-Terrafusion-Properties', 'await DynamicPropertyService.GetPropertyCountAsync("benton")');
     res.setHeader('X-Terrafusion-AI-Agents', '1008');
     res.setHeader('X-Terrafusion-Performance', '949x');
     next();
@@ -456,7 +456,7 @@ app.get('/api/demo/info', (req, res) => {
             
             key_features: [
                 'Real-time property assessment (3 seconds vs 30 minutes)',
-                '89,247 Benton County properties with real data',
+                'await DynamicPropertyService.GetPropertyCountAsync("benton") Benton County properties with real data',
                 '1,008 AI agents working 24/7',
                 '949x performance improvement validated',
                 '33 active government modules',
@@ -465,7 +465,7 @@ app.get('/api/demo/info', (req, res) => {
             ],
             
             technical_specs: {
-                properties: 89247,
+                properties: await DynamicPropertyService.GetPropertyCountAsync("benton"),
                 ai_agents: 1008,
                 modules: 33,
                 performance_improvement: '949x',

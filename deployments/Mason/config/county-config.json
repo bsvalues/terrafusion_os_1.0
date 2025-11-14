@@ -9,7 +9,7 @@
     "terra-dashboard-production",
     "bcbs-webhub-production"
   ],
-  "api_endpoint": "https://api.terrafusion.wa.gov/mason",
+  "api_endpoint": "https://api.terrafusionmarket.io/mason",
   "priority": "MEDIUM",
   "deployment_date": "2025-11-04",
   "tier": "Rural",

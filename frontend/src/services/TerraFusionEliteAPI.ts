@@ -63,7 +63,7 @@ class TerraFusionEliteAPIService {
       // Try multiple backend endpoints in priority order
       const healthEndpoints = [
         'http://localhost:5000/health',
-        'http://localhost:5010/api/health',
+        '/api/health',
         'http://localhost:3004/health',
       ];
 
@@ -250,34 +250,55 @@ class TerraFusionEliteAPIService {
   }
 
   /**
-   * Specialized Government Service Calls
+   * Specialized Government Service Calls - Updated to match actual backend endpoints
    */
   async getGovernmentMetrics() {
-    return this.makeEliteAPICall<GovernmentMetrics>('/api/government/metrics');
+    return this.makeEliteAPICall<GovernmentMetrics>(
+      'http://localhost:5000/api/government/excellence'
+    );
   }
 
   async getPropertyAssessmentData() {
-    return this.makeEliteAPICall('/api/government/property-assessment');
+    return this.makeEliteAPICall('http://localhost:5000/api/government/excellence');
   }
 
   async getCitizenServicesData() {
-    return this.makeEliteAPICall('/api/government/citizen-services');
+    return this.makeEliteAPICall('http://localhost:5000/api/government/excellence');
   }
 
   async getBudgetAnalysisData() {
-    return this.makeEliteAPICall('/api/government/budget-analysis');
+    return this.makeEliteAPICall('http://localhost:5000/api/government/excellence');
   }
 
   async getComplianceReportingData() {
-    return this.makeEliteAPICall('/api/government/compliance-reporting');
+    return this.makeEliteAPICall('http://localhost:5000/api/government/excellence');
   }
 
   async getEmergencyResponseData() {
-    return this.makeEliteAPICall('/api/government/emergency-response');
+    return this.makeEliteAPICall('http://localhost:5000/api/government/excellence');
   }
 
   async getSystemHealth() {
-    return this.makeEliteAPICall('/api/health');
+    return this.makeEliteAPICall('http://localhost:5000/health');
+  }
+
+  /**
+   * AI Consciousness API Calls - New methods for consciousness endpoints
+   */
+  async getConsciousnessData() {
+    return this.makeEliteAPICall('http://localhost:5000/api/ai/consciousness');
+  }
+
+  async getConsciousnessStatus() {
+    return this.makeEliteAPICall('http://localhost:5000/api/ai/consciousness');
+  }
+
+  async getEnhancedConsciousnessData() {
+    return this.makeEliteAPICall('http://localhost:5000/api/ai/consciousness/enhanced');
+  }
+
+  async getTerraGaiaConsciousnessStatus() {
+    return this.makeEliteAPICall('http://localhost:5000/api/ai/consciousness/status');
   }
 
   /**

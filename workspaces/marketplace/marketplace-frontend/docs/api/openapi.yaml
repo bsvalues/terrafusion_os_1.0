@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: marketplace-frontend-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/marketplace/marketplace-frontend
+    email: marketplace-frontend-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/marketplace/marketplace-frontend
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/marketplace-frontend
+  - url: https://api.terrafusionmarket.com/api/v1/marketplace-frontend
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/marketplace-frontend
+  - url: https://staging-api.terrafusionmarket.com/api/v1/marketplace-frontend
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/marketplace-frontend
+  - url: https://dev-api.terrafusionmarket.com/api/v1/marketplace-frontend
     description: Development Environment
 paths:
   /health:
@@ -195,8 +195,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             marketplace-frontend:read: Read access to marketplace-frontend resources
             marketplace-frontend:write: Write access to marketplace-frontend resources
@@ -214,4 +214,4 @@ tags:
     description: Marketplace Frontend operations
     externalDocs:
       description: Find out more about marketplace-frontend
-      url: https://docs.terrafusion.gov/marketplace/marketplace-frontend
+      url: https://docs.terrafusionmarket.com/marketplace/marketplace-frontend

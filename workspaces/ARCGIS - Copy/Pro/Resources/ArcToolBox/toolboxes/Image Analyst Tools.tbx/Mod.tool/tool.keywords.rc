@@ -1,7 +1,0 @@
-{
-    "set": [
-        "division",
-        "modulus",
-        "remainder"
-    ]
-}

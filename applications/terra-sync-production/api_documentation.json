@@ -6,7 +6,7 @@
     "version": "2.0.0",
     "contact": {
       "name": "Terrafusion Support",
-      "email": "support@terrafusion.gov"
+      "email": "support@terrafusionmarket.com"
     },
     "license": {
       "name": "Government Open Source",
@@ -15,7 +15,7 @@
   },
   "servers": [
     {
-      "url": "https://api.terrafusion.gov/v1",
+      "url": "https://api.terrafusionmarket.com/v1",
       "description": "Production server"
     },
     {

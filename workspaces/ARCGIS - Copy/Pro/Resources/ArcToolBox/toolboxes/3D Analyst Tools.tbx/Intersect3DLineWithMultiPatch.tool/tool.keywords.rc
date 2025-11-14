@@ -1,9 +1,0 @@
-{
-    "set": [
-        "3d analysis",
-        "3d geometry",
-        "3d intersect",
-        "3d spatial relationship",
-        "common"
-    ]
-}

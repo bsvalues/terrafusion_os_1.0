@@ -1,8 +1,0 @@
-{
-    "set": [
-        "diagnostic",
-        "error",
-        "estimate",
-        "predict"
-    ]
-}

@@ -17,7 +17,7 @@
       "localStorage": [
         {
           "name": "user",
-          "value": "{\"id\":\"u-admin\",\"name\":\"System Administrator\",\"role\":\"admin\",\"permissions\":[\"read\",\"write\",\"delete\",\"export\"],\"email\":\"admin@terrafusion.gov\"}"
+          "value": "{\"id\":\"u-admin\",\"name\":\"System Administrator\",\"role\":\"admin\",\"permissions\":[\"read\",\"write\",\"delete\",\"export\"],\"email\":\"admin@terrafusionmarket.com\"}"
         },
         {
           "name": "auth_expires",

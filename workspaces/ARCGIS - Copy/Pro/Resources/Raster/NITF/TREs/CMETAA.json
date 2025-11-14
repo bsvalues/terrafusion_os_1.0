@@ -1,8 +1,0 @@
-{
-  "TRE": "CMETAA",
-  "Source": ["STDI-0002-1 v2021.1, Appendix M: Retired"],
-  "Name": "Complex Metadata Tagged Record Extension, Version A",
-  "Description": "This data extension segment is retired per the NITF Technical Board, and is included for documentation purposes only within ArcGIS Pro.",
-  "Size": 99,
-  "Fields": {}
-}

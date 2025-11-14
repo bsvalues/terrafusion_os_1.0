@@ -1,9 +1,0 @@
-{
-    "set": [
-        "generate lrs data",
-        "input route features",
-        "integrity",
-        "pipeline",
-        "transform lrs data"
-    ]
-}

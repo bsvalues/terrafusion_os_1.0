@@ -1,8 +1,0 @@
-{
-    "map": {
-        "descr": "The Indoor Positioning toolbox contains tools to create an ArcGIS IPS Information Model, which enables indoor surveys with the ArcGIS IPS Setup app, processing of survey data, and indoor positioning. The toolbox also includes the Quality Assessment toolset that contains tools to evaluate the performance of an ArcGIS IPS deployment.",
-        "title": "Indoor Positioning Tools",
-        "toolset1.name": "Quality Assessment",
-        "toolset2.name": "Classic"
-    }
-}

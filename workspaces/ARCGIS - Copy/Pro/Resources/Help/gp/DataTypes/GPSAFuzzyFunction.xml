@@ -1,5 +1,0 @@
-<DataType Name="GPSAFuzzyFunction">
-  <DisplayName>Fuzzy function</DisplayName>
-  <Description>Specifies the algorithm used in fuzzification of an input raster.</Description>
-</DataType>
-

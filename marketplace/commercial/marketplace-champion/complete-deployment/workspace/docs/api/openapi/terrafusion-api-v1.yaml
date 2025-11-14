@@ -15,15 +15,15 @@ info:
   version: 3.0.0
   contact:
     name: TerraFusion Support
-    email: support@terrafusion.gov
+    email: support@terrafusionmarket.com
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: https://api.terrafusion.gov/v1
+  - url: https://api.terrafusionmarket.com/v1
     description: Production server
-  - url: https://staging-api.terrafusion.gov/v1
+  - url: https://staging-api.terrafusionmarket.com/v1
     description: Staging server
   - url: http://localhost:3000/v1
     description: Development server
@@ -298,8 +298,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             read: Read access
             write: Write access

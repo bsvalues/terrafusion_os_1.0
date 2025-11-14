@@ -11,13 +11,13 @@ version: 1.0.0
 appVersion: "1.0.0"
 
 # Project information
-home: https://terrafusion.gov/consciousness
+home: https://terrafusionmarket.com/consciousness
 sources:
   - https://github.com/terrafusion/terrafusion-os
 
 maintainers:
   - name: TerraFusion Platform Team
-    email: platform@terrafusion.gov
+    email: platform@terrafusionmarket.com
 
 # Chart keywords for discoverability
 keywords:
@@ -32,7 +32,7 @@ keywords:
   - washington-state
 
 # Chart icon
-icon: https://terrafusion.gov/assets/consciousness-logo.png
+icon: https://terrafusionmarket.com/assets/consciousness-logo.png
 
 # Dependencies (empty for independent deployment)
 dependencies: []

@@ -144,7 +144,7 @@ export class QuantumPerformanceEngine {
         impact: 300, // 300× speed improvement
         complexity: 'high',
         implementation: 'Global CDN with 379 edge locations for sub-10ms latency',
-        resourceCost: 450000
+        resourceCost: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0
       },
       {
         technique: 'Memory Optimization',

@@ -339,7 +339,7 @@ export class BuildAutomationAgent extends BaseDevOpsAgent {
   private async analyzePerformance(params: any): Promise<any> {
     console.log('   Analyzing build performance...');
     
-    await this.simulateWork(45000); // 45 seconds
+    await this.simulateWork(await DynamicPropertyService.GetPropertyCountAsync(countyCode)); // 45 seconds
     
     return {
       success: true,
@@ -721,7 +721,7 @@ export class DeploymentAutomationAgent extends BaseDevOpsAgent {
           name: 'canary_releases',
           description: 'Progressive canary release management',
           resourceRequirement: 'medium',
-          executionTime: 450000,
+          executionTime: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
           successRate: 0.96
         },
         {
@@ -806,7 +806,7 @@ export class DeploymentAutomationAgent extends BaseDevOpsAgent {
   private async canaryRelease(params: any): Promise<any> {
     console.log('   Executing canary release...');
     
-    await this.simulateWork(450000); // 7.5 minutes
+    await this.simulateWork(await DynamicPropertyService.GetPropertyCountAsync(countyCode)0); // 7.5 minutes
     
     return {
       success: true,

@@ -69,7 +69,7 @@ app.MapGet("/health", () => new
 });
 
 // Elite API endpoints
-app.MapPost("/api/experiments/{experimentId}/elite-runs", async (string experimentId) =>
+app.MapPost("/api/experiments/{experimentId}/elite-runs", (string experimentId) =>
 {
     var runId = Guid.NewGuid().ToString();
     return Results.Ok(new
@@ -91,7 +91,7 @@ app.MapPost("/api/experiments/{experimentId}/elite-runs", async (string experime
     });
 });
 
-app.MapGet("/api/experiments/{experimentId}/elite-runs", async (string experimentId) =>
+app.MapGet("/api/experiments/{experimentId}/elite-runs", (string experimentId) =>
 {
     var runs = Enumerable.Range(1, 5).Select(i => new
     {
@@ -114,7 +114,7 @@ app.MapGet("/api/experiments/{experimentId}/elite-runs", async (string experimen
     return Results.Ok(runs);
 });
 
-app.MapGet("/api/experiments/{experimentId}/elite-runs/{runId}", async (string experimentId, string runId) =>
+app.MapGet("/api/experiments/{experimentId}/elite-runs/{runId}", (string experimentId, string runId) =>
 {
     return Results.Ok(new
     {
@@ -135,7 +135,7 @@ app.MapGet("/api/experiments/{experimentId}/elite-runs/{runId}", async (string e
     });
 });
 
-app.MapGet("/api/experiments/{experimentId}/elite-runs/{runId}/consciousness-visualization", async (string experimentId, string runId) =>
+app.MapGet("/api/experiments/{experimentId}/elite-runs/{runId}/consciousness-visualization", (string experimentId, string runId) =>
 {
     var nodes = Enumerable.Range(1, 50).Select(i => new
     {
@@ -161,7 +161,7 @@ app.MapGet("/api/experiments/{experimentId}/elite-runs/{runId}/consciousness-vis
     });
 });
 
-app.MapPost("/api/experiments/{experimentId}/elite-runs/{runId}/complete", async (string experimentId, string runId) =>
+app.MapPost("/api/experiments/{experimentId}/elite-runs/{runId}/complete", (string experimentId, string runId) =>
 {
     return Results.Ok(new
     {

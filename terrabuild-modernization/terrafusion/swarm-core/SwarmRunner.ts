@@ -332,7 +332,7 @@ export class SwarmRunner {
         quality: 'good',
         condition: 'good',
         region: 'BENTON',
-        totalValue: 450000,
+        totalValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
         landValue: 100000,
         improvementValue: 350000,
         assessmentDate: new Date(),
@@ -740,7 +740,7 @@ export class SwarmRunner {
         quality: "mid-range",
         description: "Full kitchen remodel with new cabinets, countertops, and appliances",
         size: 180, // Square feet
-        cost: 45000
+        cost: await DynamicPropertyService.GetPropertyCountAsync(countyCode)
       },
       {
         type: "energy",

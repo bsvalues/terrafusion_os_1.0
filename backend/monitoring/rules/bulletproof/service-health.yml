@@ -30,7 +30,7 @@ groups:
             2. Verify container/pod status
             3. Review application logs
             4. Activate incident response team
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/service-down'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/service-down'
           government_impact: 'HIGH - Affects property assessment services'
 
       - alert: ServicePartiallyDown

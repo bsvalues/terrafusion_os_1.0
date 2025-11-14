@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "terrasync:dev": "tsx watch terrasync-api.ts",
+    "terrasync:start": "tsx terrasync-api.ts",
+    "terrasync:build": "tsc terrasync-api.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -59,7 +62,12 @@
     "vaul": "^0.9.6",
     "zod": "^3.24.1",
     "@emotion/is-prop-valid": "latest",
-    "framer-motion": "latest"
+    "framer-motion": "latest",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "mssql": "^10.0.1",
+    "dotenv": "^16.3.1",
+    "tsx": "^4.6.0"
   },
   "devDependencies": {
     "@types/node": "^22",
@@ -67,6 +75,9 @@
     "@types/react-dom": "^19",
     "postcss": "^8",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/mssql": "^9.1.5"
   }
 }

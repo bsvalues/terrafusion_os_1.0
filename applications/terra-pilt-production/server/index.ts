@@ -233,7 +233,7 @@ app.get('/report/test/:year', async (req, res) => {
 
     const sampleDistributions = [
       { district: 'Finley School District', amount: 25000, percentage: 16.67, levy_rate: 0.015, assessed_value: 1200000, district_name: 'Finley School District' },
-      { district: 'Kennewick School District', amount: 45000, percentage: 30.00, levy_rate: 0.017, assessed_value: 2500000, district_name: 'Kennewick School District' },
+      { district: 'Kennewick School District', amount: await DynamicPropertyService.GetPropertyCountAsync(countyCode), percentage: 30.00, levy_rate: 0.017, assessed_value: 2500000, district_name: 'Kennewick School District' },
       { district: 'Kiona-Benton City School District', amount: 20000, percentage: 13.33, levy_rate: 0.014, assessed_value: 1000000, district_name: 'Kiona-Benton City School District' },
       { district: 'Pasco School District', amount: 35000, percentage: 23.33, levy_rate: 0.016, assessed_value: 2000000, district_name: 'Pasco School District' },
       { district: 'Richland School District', amount: 25000, percentage: 16.67, levy_rate: 0.015, assessed_value: 1676820, district_name: 'Richland School District' }
@@ -315,7 +315,8 @@ function generateReportHTML(year: string, totalAssessedValue: number, distributi
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<>
 
   <title>Assessor Letter to Department of Education - ${year}</title>
   <style
@@ -342,7 +343,8 @@ function generateReportHTML(year: string, totalAssessedValue: number, distributi
 </head>
 <body>
   <div class="letter-header">
-    <div class="county-letterhead"><>
+    <div class="county-letterhead">
+<>
 
       <h1>BENTON COUNTY</h1>
       <h2
@@ -363,7 +365,8 @@ function generateReportHTML(year: string, totalAssessedValue: number, distributi
     <p><strong>RE: Payment in Lieu of Taxes (PILT) Distribution - ${year}</strong></p>
   </div>
 
-  <div class="letter-body"><>
+  <div class="letter-body">
+<>
 
     <p>Dear ${contact},</p>
     
@@ -372,7 +375,8 @@ function generateReportHTML(year: string, totalAssessedValue: number, distributi
     
     <p>The total PILT amount received by Benton County for ${year} will be distributed among the eligible school districts within our county in accordance with RCW 84.12.270 and established procedures.</p>
     
-    ${customMessage ? `<p>${customMessage}</p>` : ''}<>
+    ${customMessage ? `<p>${customMessage}</p>` : ''}
+<>
 
     
     <h2 style="color: #005f73; text-align: center; margin: 30px 0;">BENTON COUNTY TOTAL ASSESSED VALUE USED FOR THE ${year} TAX BILL</h2>
@@ -380,7 +384,8 @@ function generateReportHTML(year: string, totalAssessedValue: number, distributi
     <div
 </> style="text-align: center; margin: 20px 0; font-size: 18px; font-weight: bold; color: #005f73;">
       Calculation Method: ${parseInt(year) >= 2019 ? 'Open Space/Current Use Valuation' : 'Market Valuation'}
-    </div><>
+    </div>
+<>
 
     
     <div style="text-align: center; margin: 20px 0; font-size: 16px; font-weight: bold; color: #005f73;">
@@ -392,11 +397,13 @@ function generateReportHTML(year: string, totalAssessedValue: number, distributi
     
     <table>
       <thead>
-        <tr><>
+        <tr>
+<>
 
           <th>District</th>
           <th
-</> style="text-align: right;">Assessed Value</th><>
+</> style="text-align: right;">Assessed Value</th>
+<>
 
           <th style="text-align: right;">Levy Rate*</th>
           <th
@@ -409,11 +416,13 @@ function generateReportHTML(year: string, totalAssessedValue: number, distributi
     const assessedVal = dist.assessed_value || 0;
     const levyRate = parseFloat(dist.levy_rate) || 0;
     return `
-            <tr><>
+            <tr>
+<>
 
               <td style="font-weight: bold;">${dist.district}</td>
               <td
-</> style="text-align: right;">$${assessedVal.toLocaleString()}</td><>
+</> style="text-align: right;">$${assessedVal.toLocaleString()}</td>
+<>
 
               <td style="text-align: right;">${levyRate.toFixed(7)}</td>
               <td
@@ -422,11 +431,13 @@ function generateReportHTML(year: string, totalAssessedValue: number, distributi
             </tr>
           `;
   }).join('')}
-        <tr class="total-row"><>
+        <tr class="total-row">
+<>
 
           <td>TOTAL PILT DUE</td>
           <td
-</>></td><>
+</>></td>
+<>
 
           <td></td>
           <td
@@ -434,7 +445,8 @@ function generateReportHTML(year: string, totalAssessedValue: number, distributi
           <td style="text-align: right; color: #005f73;">$${totalPiltDue.toLocaleString()}</td>
         </tr>
       </tbody>
-    </table><>
+    </table>
+<>
 
     
     <div class="total-pilt">
@@ -445,7 +457,8 @@ function generateReportHTML(year: string, totalAssessedValue: number, distributi
 </> style="margin: 20px 0; font-size: 12px;">
       <p><strong>*Levy rate is per $1,000 of value</strong></p>
       <p><strong># PL 81-874 payments received and/or pending since the date of the last billing have been deducted from PILT payments per the 12-9-96 Settlement Agreement between the U.S. Department of Energy and Benton County</strong></p>
-    </div><>
+    </div>
+<>
 
     
     <p>If you require any additional information or documentation regarding this distribution, please do not hesitate to contact our office.</p>

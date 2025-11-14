@@ -1,0 +1,100 @@
+%% Benton County PACS - WCF Service Architecture & NHibernate Integration
+%% 6-tier WCF service architecture (netTcpBinding)
+%% Validated: 2025-11-05 snapshot
+%% NOTE: Rhino ESB is legacy; event bridge candidate → Azure Service Bus / RabbitMQ
+
+graph TB
+    subgraph "Client Tier (WinForms .NET 4.8)"
+        CLIENT["PACS.NET.exe<br/>(Desktop Client)<br/>DevExpress UI Controls"]
+        ADMIN["PACS.ADMIN.exe<br/>(Admin Console)"]
+        QUERY["PACS.QUERY.exe<br/>(Query Tool)"]
+    end
+    
+    subgraph "WCF Service Layer (netTcpBinding)"
+        PACS_SVC["PACSService<br/>net.tcp://localhost:8001/PACSService<br/>(Core CRUD operations)"]
+        TASK_SVC["TaskService<br/>net.tcp://localhost:8002/TaskService<br/>(Workflow tasks)"]
+        SEC_SVC["SecurityService<br/>net.tcp://localhost:8003/SecurityService<br/>(Authentication)"]
+        WORKFLOW_SVC["WorkflowService<br/>net.tcp://localhost:8004/WorkflowService<br/>(Business processes)"]
+        DOC_SVC["DocumentManagementService<br/>net.tcp://localhost:8005/DocumentService<br/>(File attachments)"]
+        QUERY_SVC["QueryService<br/>net.tcp://localhost:8006/QueryService<br/>(Dynamic queries)"]
+    end
+    
+    subgraph "NHibernate ORM Layer (Multi-Session Factory)"
+        NH_PACS["NHibernate<br/>SessionFactory 1<br/>(pacs_oltp)"]
+        NH_CIAPS["NHibernate<br/>SessionFactory 2<br/>(CIAPS)"]
+        NH_TA["NHibernate<br/>SessionFactory 3<br/>(TA_AppSvr)"]
+        NH_WEB["NHibernate<br/>SessionFactory 4<br/>(web_internet_benton)"]
+        NH_REPORT["NHibernate<br/>SessionFactory 5<br/>(ReportServer)"]
+        NH_TRAIN["NHibernate<br/>SessionFactory 6<br/>(pacs_training)"]
+    end
+    
+    subgraph "Database Tier"
+        DB_PACS[(pacs_oltp)]
+        DB_CIAPS[(CIAPS)]
+        DB_TA[(TA_AppSvr)]
+        DB_WEB[(web_internet_benton)]
+        DB_REPORT[(ReportServer)]
+        DB_TRAIN[(pacs_training)]
+    end
+    
+    subgraph "Message Bus (Rhino ESB - LEGACY)"
+        ESB["Rhino ESB<br/>Port 22022<br/>(Async messaging)<br/>⚠️ Deprecated (2015)"]
+    end
+    
+    subgraph "Dependency Injection (Castle Windsor)"
+        DI["Windsor Container<br/>(Service resolution)"]
+    end
+    
+    %% Client → WCF Connections
+    CLIENT --> PACS_SVC
+    CLIENT --> TASK_SVC
+    CLIENT --> WORKFLOW_SVC
+    CLIENT --> DOC_SVC
+    CLIENT --> QUERY_SVC
+    ADMIN --> SEC_SVC
+    ADMIN --> PACS_SVC
+    QUERY --> QUERY_SVC
+    
+    %% WCF → NHibernate Connections
+    PACS_SVC --> NH_PACS
+    PACS_SVC --> NH_CIAPS
+    TASK_SVC --> NH_PACS
+    WORKFLOW_SVC --> NH_PACS
+    WORKFLOW_SVC --> NH_TA
+    DOC_SVC --> NH_PACS
+    QUERY_SVC --> NH_PACS
+    QUERY_SVC --> NH_TRAIN
+    SEC_SVC --> NH_PACS
+    
+    %% NHibernate → Database Connections
+    NH_PACS --> DB_PACS
+    NH_CIAPS --> DB_CIAPS
+    NH_TA --> DB_TA
+    NH_WEB --> DB_WEB
+    NH_REPORT --> DB_REPORT
+    NH_TRAIN --> DB_TRAIN
+    
+    %% Message Bus Connections
+    PACS_SVC -.->|"Async events"| ESB
+    TASK_SVC -.->|"Task notifications"| ESB
+    WORKFLOW_SVC -.->|"Process events"| ESB
+    ESB -.->|"Event consumers"| PACS_SVC
+    
+    %% Dependency Injection
+    DI -.->|"Inject dependencies"| PACS_SVC
+    DI -.->|"Inject dependencies"| TASK_SVC
+    DI -.->|"Inject dependencies"| SEC_SVC
+    DI -.->|"Inject dependencies"| WORKFLOW_SVC
+    
+    %% Styling
+    classDef client fill:#e1f5e1,stroke:#4caf50,stroke-width:3px
+    classDef service fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+    classDef orm fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    classDef database fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    classDef infra fill:#fce4ec,stroke:#e91e63,stroke-width:2px
+    
+    class CLIENT,ADMIN,QUERY client
+    class PACS_SVC,TASK_SVC,SEC_SVC,WORKFLOW_SVC,DOC_SVC,QUERY_SVC service
+    class NH_PACS,NH_CIAPS,NH_TA,NH_WEB,NH_REPORT,NH_TRAIN orm
+    class DB_PACS,DB_CIAPS,DB_TA,DB_WEB,DB_REPORT,DB_TRAIN database
+    class ESB,DI infra

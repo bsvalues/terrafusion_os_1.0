@@ -1,9 +1,0 @@
-{
-    "set": [
-        "add geodatabase",
-        "db2",
-        "geodatabase administration",
-        "informix",
-        "sap hana"
-    ]
-}

@@ -6,7 +6,7 @@
 global:
   environment: production
   region: us-west-2
-  domain: terrafusion.gov
+  domain: terrafusionmarket.com
 
 replicaCount: 3
 
@@ -60,14 +60,14 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"  # 5 min for sync operations
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
   hosts:
-    - host: operations.terrafusion.gov
+    - host: operations.terrafusionmarket.com
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: terrafusion-operations-tls
       hosts:
-        - operations.terrafusion.gov
+        - operations.terrafusionmarket.com
 
 resources:
   limits:
@@ -125,7 +125,7 @@ counties:
       harrisPACS:
         enabled: true
         jurisdiction: "KING_WA"
-        version: "12.4.7"
+        version: "9.0"
       tyler:
         enabled: true
       aumentum:
@@ -234,14 +234,14 @@ counties:
     enabled: true
     name: "Benton County"
     population: 210000
-    parcels: 89247
+    parcels: await DynamicPropertyService.GetPropertyCountAsync("benton")
     syncInterval: 900
     priority: medium
     systems:
       harrisPACS:
         enabled: true
         jurisdiction: "BENTON_WA"
-        version: "12.4.7"
+        version: "9.0"
       tyler:
         enabled: true
       aumentum:
@@ -323,7 +323,7 @@ counties:
 # Harris PACS Integration
 harrisPACS:
   enabled: true
-  version: "12.4.7"
+  version: "9.0"
   baseUrl: "https://harris-pacs.vendor.com/api"
   timeout: 60000  # milliseconds
   batchSize: 1000
@@ -335,14 +335,14 @@ tylerTechnologies:
   enabled: true
   product: "Vision"
   baseUrl: "https://tyler-vision.vendor.com/api"
-  timeout: 45000
+  timeout: await DynamicPropertyService.GetPropertyCountAsync(countyCode)
   batchSize: 500
 
 # Aumentum Systems Integration
 aumentumSystems:
   enabled: true
   baseUrl: "https://aumentum.vendor.com/api"
-  timeout: 45000
+  timeout: await DynamicPropertyService.GetPropertyCountAsync(countyCode)
   batchSize: 750
 
 # Data Sync Configuration
@@ -420,3 +420,4 @@ serviceMonitor:
   enabled: true
   interval: 30s
   scrapeTimeout: 15s
+

@@ -218,7 +218,7 @@ function generateSampleNeighborhoodPrices(): NeighborhoodPriceDataPoint[] {
     { name: 'Pacific Heights', medianPrice: 2850000, pricePerSqft: 1450 },
     { name: 'Noe Valley', medianPrice: 2150000, pricePerSqft: 1350 },
     { name: 'Mission District', medianPrice: 1580000, pricePerSqft: 1180 },
-    { name: 'Sunset District', medianPrice: 1450000, pricePerSqft: 950 },
+    { name: 'Sunset District', medianPrice: 1await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, pricePerSqft: 950 },
     { name: 'Richmond District', medianPrice: 1630000, pricePerSqft: 1050 },
     { name: 'SOMA', medianPrice: 1250000, pricePerSqft: 1100 },
     { name: 'Potrero Hill', medianPrice: 1780000, pricePerSqft: 1150 },

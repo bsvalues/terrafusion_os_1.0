@@ -1,0 +1,332 @@
+/* TerraFusion Brand System v4.1 - MACHINE PRECISION STYLES */
+
+.tf-main-container {
+  min-height: 100vh;
+  background-color: #0a0e1a;
+  color: #00ffff;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+/* Header Styles */
+.tf-header {
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  background-color: #0a0e1a;
+}
+
+.tf-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.tf-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tf-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #00ffff;
+  margin: 0;
+}
+
+.tf-subtitle {
+  font-size: 0.875rem;
+  color: rgba(0, 255, 255, 0.8);
+}
+
+.tf-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tf-button {
+  background-color: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  color: #00ffff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tf-status {
+  color: #00ffff;
+}
+
+/* Content Wrapper */
+.tf-content-wrapper {
+  display: flex;
+  height: calc(100vh - 80px);
+}
+
+/* Sidebar Styles */
+.tf-sidebar {
+  width: 16rem;
+  border-right: 1px solid rgba(0, 255, 255, 0.2);
+  background-color: #0a0e1a;
+}
+
+.tf-sidebar-nav {
+  padding: 1rem;
+}
+
+.tf-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin: 0.25rem 0;
+}
+
+.tf-nav-active {
+  background-color: rgba(0, 255, 255, 0.1);
+}
+
+.tf-nav-text {
+  font-size: 0.875rem;
+  color: #00ffff;
+}
+
+.tf-quick-actions {
+  padding: 1rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.tf-quick-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  color: #00ffff;
+}
+
+.tf-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tf-action-button {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  color: #00ffff;
+  cursor: pointer;
+}
+
+/* Main Content */
+.tf-main {
+  flex: 1;
+  overflow: hidden;
+}
+
+.tf-main-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tf-main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.tf-section-title {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #00ffff;
+  margin: 0;
+}
+
+/* Dashboard Grid */
+.tf-dashboard-grid {
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tf-stat-card {
+  padding: 1rem;
+  border-radius: 4px;
+  background-color: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.tf-stat-label {
+  font-size: 0.875rem;
+  color: rgba(0, 255, 255, 0.8);
+}
+
+.tf-stat-value {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #00ffff;
+}
+
+.tf-stat-desc {
+  font-size: 0.75rem;
+  color: rgba(0, 255, 255, 0.6);
+}
+
+/* Agent Section */
+.tf-agent-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.tf-agent-card {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.tf-agent-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.tf-agent-main {
+  flex: 1;
+}
+
+.tf-agent-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.tf-terrasphere {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #00ffff 0deg,
+    transparent 90deg,
+    #00ffff 180deg,
+    transparent 270deg,
+    #00ffff 360deg
+  );
+  margin-right: 1rem;
+  position: relative;
+}
+
+.tf-terrasphere::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  background-color: #0a0e1a;
+}
+
+.tf-agent-name {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #00ffff;
+  margin: 0;
+}
+
+.tf-agent-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tf-stat-item {
+  display: block;
+}
+
+.tf-capabilities {
+  margin-bottom: 1rem;
+}
+
+.tf-cap-label {
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  color: rgba(0, 255, 255, 0.8);
+}
+
+.tf-cap-list {
+  display: block;
+}
+
+.tf-cap-item {
+  font-size: 0.875rem;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+.tf-agent-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tf-risk-level {
+  font-size: 0.875rem;
+  color: #00ffff;
+}
+
+.tf-agent-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: rgba(0, 255, 255, 0.6);
+  margin-top: 1rem;
+}
+
+/* Footer */
+.tf-footer {
+  border-top: 1px solid rgba(0, 255, 255, 0.2);
+  padding: 0.75rem;
+  background-color: #0a0e1a;
+}
+
+.tf-footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.tf-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.tf-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.tf-footer-left span,
+.tf-footer-right span {
+  color: #00ffff;
+}

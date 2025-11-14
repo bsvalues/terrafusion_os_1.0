@@ -54,8 +54,8 @@ async function deployBentonCountyProduction() {
 
   console.log("\n📊 Data Migration Status:")
   const dataMigration = {
-    totalParcels: 89247,
-    migratedParcels: 89247,
+    totalParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
+    migratedParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
     assessments2025: 85623,
     pendingAppeals: 127,
     activeExemptions: 3456,
@@ -144,7 +144,7 @@ async function deployBentonCountyProduction() {
 
   console.log("\n✅ DEPLOYMENT SUCCESSFUL!")
   console.log("🎉 TerraFusionAssessor-1 is now live for Benton County, WA")
-  console.log("📊 Serving 89,247 parcels with enterprise-grade reliability")
+  console.log("📊 Serving await DynamicPropertyService.GetPropertyCountAsync("benton") parcels with enterprise-grade reliability")
   console.log("🏆 Ready to revolutionize county assessment operations")
 
   return {

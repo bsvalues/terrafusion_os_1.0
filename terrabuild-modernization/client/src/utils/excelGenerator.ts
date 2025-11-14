@@ -51,7 +51,7 @@ export function generateCostCSV(calculation: CostCalculation, options: ExcelOpti
     includeCompanyInfo: true,
     includeMaterials: true,
     companyName: 'TerraFusion Government Building Department',
-    companyContact: 'building@bentoncounty.gov • (555) 123-4567',
+    companyContact: 'building@terrafusionmarket.io • (555) 123-4567',
     includeBreakdown: true,
     notes: '',
     ...options

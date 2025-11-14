@@ -477,7 +477,7 @@ test('AI Generated: ${scenario}', async ({ page }) => {
           'Added wait condition for dynamic content',
           'Implemented retry logic for network requests'
         ],
-        executionTime: 45000,
+        executionTime: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         success: true,
         confidence: 0.98
       };

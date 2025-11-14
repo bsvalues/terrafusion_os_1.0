@@ -1,9 +1,0 @@
-{
-    "set": [
-        "coordinate",
-        "sample",
-        "select",
-        "subset",
-        "xy"
-    ]
-}

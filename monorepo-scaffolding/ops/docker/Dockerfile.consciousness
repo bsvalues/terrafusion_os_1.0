@@ -1,0 +1,98 @@
+# TerraFusion OS Consciousness Service
+# Multi-stage Docker build for AI swarm coordination
+
+# Build stage
+FROM rust:1.75-slim as builder
+
+# Install dependencies for building
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    libpq-dev \
+    curl \
+    build-essential \
+    libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app user
+RUN useradd -m -u 1002 consciousness
+
+WORKDIR /app
+
+# Copy Cargo files for dependency caching
+COPY services/os-consciousness/Cargo.toml services/os-consciousness/Cargo.lock ./
+
+# Build dependencies (cache layer)
+RUN mkdir src && \
+    echo "fn main() {}" > src/main.rs && \
+    cargo build --release && \
+    rm -f target/release/deps/terrafusion_os_consciousness*
+
+# Copy source code
+COPY services/os-consciousness/src ./src
+
+# Build application with AI/ML optimizations
+ENV RUSTFLAGS="-C target-cpu=native"
+RUN cargo build --release
+
+# Runtime stage
+FROM nvidia/cuda:12.2-runtime-ubuntu22.04
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    libpq5 \
+    curl \
+    redis-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app user
+RUN useradd -m -u 1002 consciousness
+
+# Create app directory
+WORKDIR /app
+
+# Copy built binary from builder stage
+COPY --from=builder /app/target/release/terrafusion-os-consciousness /app/terrafusion-os-consciousness
+
+# Copy configuration templates
+COPY ops/config/consciousness.toml /app/config/default.toml
+
+# Set ownership
+RUN chown -R consciousness:consciousness /app
+
+# Switch to non-root user
+USER consciousness
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=15s --start-period=120s --retries=3 \
+    CMD curl -f http://localhost:3004/swarm/status || exit 1
+
+# Expose port
+EXPOSE 3004
+
+# Environment variables for AI optimization
+ENV RUST_LOG=info
+ENV TERRAFUSION_HOST=0.0.0.0
+ENV TERRAFUSION_PORT=3004
+ENV CUDA_VISIBLE_DEVICES=all
+ENV OMP_NUM_THREADS=8
+
+# Labels for government compliance
+LABEL maintainer="TerraFusion Elite AI Team <ai@terrafusion.gov>"
+LABEL version="1.0.0"
+LABEL description="TerraFusion OS Consciousness - AI Swarm Coordination Engine"
+LABEL org.opencontainers.image.title="TerraFusion OS Consciousness"
+LABEL org.opencontainers.image.description="AI Swarm Coordination Engine - 50,000+ Agent Orchestration"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.vendor="TerraFusion Elite Government OS"
+LABEL org.opencontainers.image.licenses="PROPRIETARY"
+LABEL gov.terrafusion.service="consciousness"
+LABEL gov.terrafusion.tier="ai-coordination"
+LABEL gov.terrafusion.compliance="FISMA-HIGH"
+LABEL gov.terrafusion.ai-enabled="true"
+LABEL gov.terrafusion.quantum-optimization="true"
+
+# Run the application
+CMD ["./terrafusion-os-consciousness"]

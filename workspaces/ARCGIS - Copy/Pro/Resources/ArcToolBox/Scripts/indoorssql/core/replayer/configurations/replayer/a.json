@@ -1,9 +1,0 @@
-{
-  "name": "profile1",
-  "replay_sensors": true,
-  "replay_gps": true,
-  "replay_pdr": true,
-  "replay_radio": true,
-  "locator_params": "",
-  "position_type": 0
-}

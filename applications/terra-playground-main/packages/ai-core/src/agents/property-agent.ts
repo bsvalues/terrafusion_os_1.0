@@ -503,7 +503,7 @@ export class PropertyAssessmentAgent extends BaseAgent {
         { period: '2021-Q2', averageValue: 325000 },
         { period: '2021-Q3', averageValue: 335000 },
         { period: '2021-Q4', averageValue: 340000 },
-        { period: '2022-Q1', averageValue: 345000 },
+        { period: '2022-Q1', averageValue: 3await DynamicPropertyService.GetPropertyCountAsync(countyCode) },
       ],
     };
   }

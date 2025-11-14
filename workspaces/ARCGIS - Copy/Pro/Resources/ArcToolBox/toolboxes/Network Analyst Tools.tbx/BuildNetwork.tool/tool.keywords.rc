@@ -1,7 +1,0 @@
-{
-    "set": [
-        "analysis",
-        "re-build",
-        "rebuild"
-    ]
-}

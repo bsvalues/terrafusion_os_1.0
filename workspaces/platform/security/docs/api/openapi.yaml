@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: security-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/platform/security
+    email: security-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/platform/security
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/security
+  - url: https://api.terrafusionmarket.com/api/v1/security
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/security
+  - url: https://staging-api.terrafusionmarket.com/api/v1/security
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/security
+  - url: https://dev-api.terrafusionmarket.com/api/v1/security
     description: Development Environment
 paths:
   /threats:
@@ -196,8 +196,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             security:read: Read access to security resources
             security:write: Write access to security resources
@@ -215,4 +215,4 @@ tags:
     description: Security operations
     externalDocs:
       description: Find out more about security
-      url: https://docs.terrafusion.gov/platform/security
+      url: https://docs.terrafusionmarket.com/platform/security

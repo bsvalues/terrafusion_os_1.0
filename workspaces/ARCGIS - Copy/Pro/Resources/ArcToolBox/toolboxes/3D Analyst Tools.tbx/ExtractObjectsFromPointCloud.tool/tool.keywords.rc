@@ -1,8 +1,0 @@
-{
-    "set": [
-        "point cloud",
-        "feature extraction",
-        "lidar cartographic representation",
-        "object identification"
-    ]
-}

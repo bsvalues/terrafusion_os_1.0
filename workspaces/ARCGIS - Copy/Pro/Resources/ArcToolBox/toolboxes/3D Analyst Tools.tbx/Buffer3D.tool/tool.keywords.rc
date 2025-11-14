@@ -1,9 +1,0 @@
-{
-    "set": [
-        "3d analysis",
-        "3d geometry",
-        "closed multipatch",
-        "multipatch",
-        "solids"
-    ]
-}

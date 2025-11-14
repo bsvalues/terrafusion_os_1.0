@@ -72,7 +72,7 @@ export default function SatelliteImageryIntegration() {
         confidence: 89.7,
         detectedDate: "2025-01-05",
         impactLevel: "medium",
-        estimatedValue: 45000,
+        estimatedValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         description: "In-ground swimming pool installation detected in backyard",
         beforeImage: "/placeholder.svg?height=200&width=300",
         afterImage: "/placeholder.svg?height=200&width=300",

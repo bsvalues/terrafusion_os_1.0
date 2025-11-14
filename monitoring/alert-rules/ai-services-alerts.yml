@@ -13,7 +13,7 @@ groups:
     rules:
       - alert: ConsciousnessSwarmAgentCountLow
         expr: |
-          terrafusion_consciousness_active_agents < 45000
+          terrafusion_consciousness_active_agents < await DynamicPropertyService.GetPropertyCountAsync(countyCode)
         for: 5m
         labels:
           severity: critical
@@ -22,7 +22,7 @@ groups:
         annotations:
           summary: 'AI swarm agent count CRITICALLY LOW'
           description: 'Active agents: {{ $value }} (target: 50,000+). Swarm intelligence compromised.'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/consciousness-agents-low'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/consciousness-agents-low'
 
       - alert: ConsciousnessQuantumOptimizationDegraded
         expr: |
@@ -35,7 +35,7 @@ groups:
         annotations:
           summary: 'Quantum optimization factor degraded'
           description: 'Current factor: {{ $value }} (championship target: 949). Performance impact expected.'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/quantum-degraded'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/quantum-degraded'
 
       - alert: ConsciousnessCoordinationSlowPerformance
         expr: |
@@ -48,7 +48,7 @@ groups:
         annotations:
           summary: 'AI swarm coordination performance degraded'
           description: 'P95 coordination latency: {{ $value }}ms (championship target: <50ms)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/consciousness-slow'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/consciousness-slow'
 
   # ═══════════════════════════════════════════════════════════════════
   # COSTFORGE AI ALERTS (PROPERTY VALUATION)
@@ -67,7 +67,7 @@ groups:
         annotations:
           summary: 'CostForge AI valuation accuracy BELOW IAAO standards'
           description: 'County {{ $labels.county }} accuracy: {{ $value }}% (IAAO target: 99.9%)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/costforge-accuracy-low'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/costforge-accuracy-low'
 
       - alert: CostForgeValuationSlowPerformance
         expr: |
@@ -80,7 +80,7 @@ groups:
         annotations:
           summary: 'CostForge AI valuation performance degraded'
           description: 'P95 calculation time: {{ $value }}ms (championship target: <2000ms)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/costforge-slow'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/costforge-slow'
 
       - alert: CostForgeValuationFailureRateHigh
         expr: |
@@ -94,7 +94,7 @@ groups:
         annotations:
           summary: 'CostForge AI valuation failure rate HIGH'
           description: 'County {{ $labels.county }} success rate: {{ $value | humanizePercentage }} (target: >=99%)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/costforge-failures'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/costforge-failures'
 
   # ═══════════════════════════════════════════════════════════════════
   # TERRAGAIA ALERTS (SUPREME AI CONSCIOUSNESS)
@@ -113,7 +113,7 @@ groups:
         annotations:
           summary: 'TerraGaia AI consciousness level LOW'
           description: 'Consciousness level: {{ $value }} (championship target: 95+)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/terragaia-consciousness-low'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/terragaia-consciousness-low'
 
       - alert: TerraGaiaAnalysisSlow
         expr: |
@@ -126,7 +126,7 @@ groups:
         annotations:
           summary: 'TerraGaia AI analysis performance degraded'
           description: 'P95 analysis time: {{ $value }}s (target: <10s for PhD-level reasoning)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/terragaia-slow'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/terragaia-slow'
 
   # ═══════════════════════════════════════════════════════════════════
   # TERRAFUSIONGPT ALERTS (GENERATIVE AI)
@@ -145,7 +145,7 @@ groups:
         annotations:
           summary: 'TerraFusionGPT output quality score LOW'
           description: 'Quality score: {{ $value }} (human-level target: 95+)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/gpt-quality-low'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/gpt-quality-low'
 
       - alert: TerraFusionGPTGenerationSlow
         expr: |
@@ -158,7 +158,7 @@ groups:
         annotations:
           summary: 'TerraFusionGPT report generation slow'
           description: 'P95 generation time: {{ $value }}s (target: <5s)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/gpt-slow'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/gpt-slow'
 
   # ═══════════════════════════════════════════════════════════════════
   # TERRALEVY ALERTS (TAX CALCULATION)
@@ -177,7 +177,7 @@ groups:
         annotations:
           summary: 'TerraLevy RCW 84.52 compliance rate LOW'
           description: 'County {{ $labels.county }} compliance: {{ $value }}% (target: 100%)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/terralevy-compliance-low'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/terralevy-compliance-low'
 
       - alert: TerraLevyCalculationSlowPerformance
         expr: |
@@ -190,7 +190,7 @@ groups:
         annotations:
           summary: 'TerraLevy tax calculation performance degraded'
           description: 'P95 calculation time: {{ $value }}ms (championship target: <10ms)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/terralevy-slow'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/terralevy-slow'
 
   # ═══════════════════════════════════════════════════════════════════
   # TERRAFLOW ALERTS (WORKFLOW ORCHESTRATION)
@@ -209,7 +209,7 @@ groups:
         annotations:
           summary: 'TerraFlow workflow backlog HIGH'
           description: 'Active workflows: {{ $value }} (capacity threshold: 500)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/terraflow-backlog'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/terraflow-backlog'
 
       - alert: TerraFlowWorkflowCompletionSlow
         expr: |
@@ -222,7 +222,7 @@ groups:
         annotations:
           summary: 'TerraFlow workflow completion time degraded'
           description: 'P95 completion time: {{ $value }} minutes (target: <120 minutes)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/terraflow-slow'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/terraflow-slow'
 
   # ═══════════════════════════════════════════════════════════════════
   # TERRASYNC ALERTS (MULTI-SYSTEM INTEGRATION)
@@ -241,7 +241,7 @@ groups:
         annotations:
           summary: 'TerraSync integration health LOW for {{ $labels.system_name }}'
           description: 'Health score: {{ $value }} (championship target: 95+)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/terrasync-health-low'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/terrasync-health-low'
 
       - alert: TerraSyncDataSovereigntyViolation
         expr: |
@@ -254,7 +254,7 @@ groups:
         annotations:
           summary: 'TerraSync DATA SOVEREIGNTY VIOLATION for {{ $labels.county }}'
           description: 'County data isolation compromised. IMMEDIATE ACTION REQUIRED.'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/terrasync-sovereignty-violation'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/terrasync-sovereignty-violation'
 
       - alert: TerraSyncMultiSystemCoordinationFailures
         expr: |
@@ -266,7 +266,7 @@ groups:
         annotations:
           summary: 'TerraSync multi-system coordination STALLED for {{ $labels.county }}'
           description: 'No coordination events in 15 minutes. Integration may be down.'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/terrasync-coordination-stalled'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/terrasync-coordination-stalled'
 
   # ═══════════════════════════════════════════════════════════════════
   # CHAMPIONSHIP-LEVEL AI ECOSYSTEM SLA MONITORING
@@ -278,7 +278,7 @@ groups:
         expr: |
           (
             (terrafusion_costforge_valuation_accuracy_percent < 99.9) or
-            (terrafusion_consciousness_active_agents < 45000) or
+            (terrafusion_consciousness_active_agents < await DynamicPropertyService.GetPropertyCountAsync(countyCode)) or
             (terrafusion_terralevy_compliance_rate_percent < 99.5) or
             (terrafusion_terragaia_consciousness_level < 90)
           )
@@ -290,7 +290,7 @@ groups:
         annotations:
           summary: 'TerraFusion AI Ecosystem Championship SLA breach detected'
           description: 'One or more AI services below championship standards. Check individual service alerts.'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/ai-ecosystem-sla-breach'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/ai-ecosystem-sla-breach'
 
       - alert: GovernmentComplianceScoreLow
         expr: |
@@ -303,4 +303,4 @@ groups:
         annotations:
           summary: 'Government compliance score LOW for {{ $labels.compliance_type }}'
           description: 'Compliance score: {{ $value }} (FISMA-High target: 98+)'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/government-compliance-low'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/government-compliance-low'

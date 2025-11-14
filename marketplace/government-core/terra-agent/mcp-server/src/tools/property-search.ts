@@ -294,7 +294,7 @@ export class PropertySearchTool implements MCPTool {
           },
           lastSale: {
             saleDate: new Date('2023-06-15'),
-            salePrice: 450000,
+            salePrice: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
             pricePerSqFt: 187.50,
           },
         },

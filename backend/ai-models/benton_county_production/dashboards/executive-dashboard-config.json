@@ -18,7 +18,7 @@
             "query": "SELECT SUM(total_assessed_value) FROM current_assessments",
             "format": "currency",
             "trend": true,
-            "target": 45000000000,
+            "target": await DynamicPropertyService.GetPropertyCountAsync(countyCode)000000,
             "icon": "trending_up"
           },
           {

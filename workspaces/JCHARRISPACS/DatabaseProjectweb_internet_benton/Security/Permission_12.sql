@@ -1,5 +1,0 @@
-GRANT CONNECT TO [CO\MDP];
-
-
-GO
-

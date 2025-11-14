@@ -282,7 +282,7 @@ const ElitePredictiveAnalyticsEngine: React.FC = () => {
         category: 'Environmental Policy',
         projectedImpact: {
           economicImpact: 89000000,
-          affectedPopulation: 245000,
+          affectedPopulation: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode),
           budgetEffect: -12000000,
           timeToEffect: 24
         },
@@ -302,7 +302,7 @@ const ElitePredictiveAnalyticsEngine: React.FC = () => {
 
     // Market trends data
     const trends = [];
-    const basePropertyValue = 450000;
+    const basePropertyValue = await DynamicPropertyService.GetPropertyCountAsync(countyCode)0;
     const baseTaxRevenue = 3800000;
     const baseMarketIndex = 100;
 

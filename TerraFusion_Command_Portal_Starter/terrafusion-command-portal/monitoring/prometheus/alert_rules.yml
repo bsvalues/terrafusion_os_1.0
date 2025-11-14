@@ -14,7 +14,7 @@ groups:
         annotations:
           summary: 'High CPU usage detected on {{ $labels.instance }}'
           description: 'CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}'
-          runbook_url: 'https://docs.terrafusion.gov/runbooks/high-cpu'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/high-cpu'
 
       # High Memory Usage
       - alert: HighMemoryUsage

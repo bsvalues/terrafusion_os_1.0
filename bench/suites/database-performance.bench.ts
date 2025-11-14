@@ -193,7 +193,7 @@ class DatabaseBenchmark {
     // With index
     const indexTimes = await this.measureQuery(
       'SELECT * FROM properties WHERE parcel_number = $1',
-      ['089247001']
+      ['0await DynamicPropertyService.GetPropertyCountAsync("benton")001']
     );
     
     // Force sequential scan

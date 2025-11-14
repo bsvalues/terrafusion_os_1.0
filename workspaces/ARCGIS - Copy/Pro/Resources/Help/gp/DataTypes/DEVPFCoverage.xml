@@ -1,5 +1,0 @@
-<DataType Name="DEVPFCoverage">
-  <DisplayName>VPF Coverage</DisplayName>
-  <Description>Spatial data stored in Vector Product Format.</Description>
-</DataType>
-

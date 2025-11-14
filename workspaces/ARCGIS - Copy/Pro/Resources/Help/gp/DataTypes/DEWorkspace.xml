@@ -1,5 +1,0 @@
-<DataType Name="DEWorkspace">
-  <DisplayName>Workspace</DisplayName>
-  <Description>A container such as a geodatabase or folder.</Description>
-</DataType>
-

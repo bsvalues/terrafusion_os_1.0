@@ -24,10 +24,10 @@ export class EmailService {
       port: parseInt(process.env.EMAIL_PORT || '587'), // Standard secure SMTP port
       secure: process.env.EMAIL_SECURE === 'true',
       auth: {
-        user: process.env.EMAIL_USER || 'notifications@bentoncounty.gov',
+        user: process.env.EMAIL_USER || 'notifications@terrafusionmarket.io',
         pass: process.env.EMAIL_PASSWORD || '',
       },
-      from: process.env.EMAIL_FROM || 'County Audit Hub <no-reply@bentoncounty.gov>',
+      from: process.env.EMAIL_FROM || 'County Audit Hub <no-reply@terrafusionmarket.io>',
     };
 
     // Only initialize if we have credentials
@@ -130,7 +130,7 @@ Benton County Assessor's Office
 
       const result = await this.transporter.sendMail({
         from: this.fromAddress,
-        to: `${user.fullName} <${user.username}@bentoncounty.gov>`, // Assuming county email based on username
+        to: `${user.fullName} <${user.username}@terrafusionmarket.io>`, // Assuming county email based on username
         subject,
         text,
         html,
@@ -223,7 +223,7 @@ Benton County Assessor's Office
 
       const result = await this.transporter.sendMail({
         from: this.fromAddress,
-        to: `${user.fullName} <${user.username}@bentoncounty.gov>`, // Assuming county email based on username
+        to: `${user.fullName} <${user.username}@terrafusionmarket.io>`, // Assuming county email based on username
         subject,
         text,
         html,

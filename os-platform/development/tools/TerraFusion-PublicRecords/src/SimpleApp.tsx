@@ -12,7 +12,7 @@ const SimpleApp: React.FC = () => {
       const devUser = {
         id: 'dev-user',
         name: 'Dev User',
-        email: 'dev@terrafusion.gov',
+        email: 'dev@terrafusionmarket.com',
         type: 'government',
         permissions: ['admin', 'dev']
       };
@@ -29,7 +29,8 @@ const SimpleApp: React.FC = () => {
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="flex justify-between items-center mb-8"><>
+            <div className="flex justify-between items-center mb-8">
+<>
 
               <h1 className="text-3xl font-bold">User Dashboard</h1>
               <button
@@ -42,21 +43,24 @@ const SimpleApp: React.FC = () => {
               </button>
             </div>
             <div className="grid grid-cols-3 gap-6">
-              <div className="bg-blue-50 p-6 rounded-lg"><>
+              <div className="bg-blue-50 p-6 rounded-lg">
+<>
 
                 <h3 className="text-lg font-semibold text-blue-900">Applications</h3>
                 <p
 </>
 className="text-3xl font-bold text-blue-600 mt-2">5</p>
               </div>
-              <div className="bg-green-50 p-6 rounded-lg"><>
+              <div className="bg-green-50 p-6 rounded-lg">
+<>
 
                 <h3 className="text-lg font-semibold text-green-900">Payments</h3>
                 <p
 </>
 className="text-3xl font-bold text-green-600 mt-2">$1,825</p>
               </div>
-              <div className="bg-purple-50 p-6 rounded-lg"><>
+              <div className="bg-purple-50 p-6 rounded-lg">
+<>
 
                 <h3 className="text-lg font-semibold text-purple-900">Documents</h3>
                 <p
@@ -110,7 +114,8 @@ className="text-3xl font-bold text-purple-600 mt-2">12</p>
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
-        ><>
+        >
+<>
 
           <h1 className="text-6xl font-bold text-white mb-4">
             Terrafusion Public Records
@@ -141,7 +146,8 @@ className="text-2xl text-purple-200">
           <motion.div
             whileHover={{ scale: 1.05 }}
             className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white"
-          ><>
+          >
+<>
 
             <h3 className="text-xl font-bold mb-2">📝 Permit Applications</h3>
             <p
@@ -155,7 +161,8 @@ className="text-white/80">Apply for permits online with our 5-step wizard</p>
           <motion.div
             whileHover={{ scale: 1.05 }}
             className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white"
-          ><>
+          >
+<>
 
             <h3 className="text-xl font-bold mb-2">💳 Payment Processing</h3>
             <p
@@ -169,7 +176,8 @@ className="text-white/80">Secure online payments for all fees and services</p>
           <motion.div
             whileHover={{ scale: 1.05 }}
             className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white"
-          ><>
+          >
+<>
 
             <h3 className="text-xl font-bold mb-2">📄 Document Viewer</h3>
             <p
@@ -183,21 +191,24 @@ className="text-white/80">View documents with AI-powered OCR extraction</p>
 
         {/* Stats */}
         <div className="flex justify-center gap-8 mt-12">
-          <div className="text-center"><>
+          <div className="text-center">
+<>
 
             <div className="text-3xl font-bold text-white">0.001s</div>
             <div
 </>
 className="text-sm text-purple-200">Search Speed</div>
           </div>
-          <div className="text-center"><>
+          <div className="text-center">
+<>
 
             <div className="text-3xl font-bold text-white">379M×</div>
             <div
 </>
 className="text-sm text-purple-200">Faster than Legacy</div>
           </div>
-          <div className="text-center"><>
+          <div className="text-center">
+<>
 
             <div className="text-3xl font-bold text-white">$0</div>
             <div
@@ -208,7 +219,8 @@ className="text-sm text-purple-200">Installation Cost</div>
       </div>
 
       {/* Footer */}
-      <footer className="text-center py-12 text-purple-200"><>
+      <footer className="text-center py-12 text-purple-200">
+<>
 
         <p className="text-2xl mb-2">Your competitors are still writing RFPs.</p>
         <p

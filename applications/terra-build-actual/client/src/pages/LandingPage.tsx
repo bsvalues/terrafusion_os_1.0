@@ -665,7 +665,7 @@ className="space-y-2">
 </>
 className="space-y-2">
                   <li><a href="https://www.co.benton.wa.us" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">County Website</a></li>
-                  <li><a href="mailto:support@bentoncounty.gov" className="text-gray-300 hover:text-white transition-colors">Email Support</a></li>
+                  <li><a href="mailto:support@terrafusionmarket.io" className="text-gray-300 hover:text-white transition-colors">Email Support</a></li>
                   <li><span className="text-gray-300">(509) 736-3086</span></li>
                 </ul>
               </div>

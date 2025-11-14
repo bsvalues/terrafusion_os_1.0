@@ -1,8 +1,0 @@
-{
-    "set": [
-        "file geodatabase",
-        "geodatabase",
-        "license",
-        "lock"
-    ]
-}

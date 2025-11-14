@@ -11,7 +11,7 @@ namespace TerraFusion.Security.Middleware;
 
 /// <summary>
 /// REVOLUTIONARY: Advanced Security Middleware Pipeline
-/// 
+///
 /// This comprehensive middleware suite provides world-class security protection
 /// for TerraFusion OS with government-grade threat detection, rate limiting,
 /// compliance enforcement, and real-time security monitoring.
@@ -44,19 +44,19 @@ public class SecurityHeadersMiddleware
     private void AddSecurityHeaders(HttpResponse response)
     {
         // Prevent clickjacking attacks
-        response.Headers.Add("X-Frame-Options", "DENY");
+        response.Headers.Append("X-Frame-Options", "DENY");
 
         // Prevent MIME type sniffing
-        response.Headers.Add("X-Content-Type-Options", "nosniff");
+        response.Headers.Append("X-Content-Type-Options", "nosniff");
 
         // XSS protection
-        response.Headers.Add("X-XSS-Protection", "1; mode=block");
+        response.Headers.Append("X-XSS-Protection", "1; mode=block");
 
         // Referrer policy
-        response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
+        response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
 
         // Content Security Policy (government-grade)
-        response.Headers.Add("Content-Security-Policy",
+        response.Headers.Append("Content-Security-Policy",
             "default-src 'self'; " +
             "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
             "style-src 'self' 'unsafe-inline'; " +
@@ -68,21 +68,21 @@ public class SecurityHeadersMiddleware
             "form-action 'self'");
 
         // Permissions Policy
-        response.Headers.Add("Permissions-Policy",
+        response.Headers.Append("Permissions-Policy",
             "geolocation=(), microphone=(), camera=(), payment=(), usb=()");
 
         // HSTS (HTTP Strict Transport Security)
-        response.Headers.Add("Strict-Transport-Security",
+        response.Headers.Append("Strict-Transport-Security",
             "max-age=31536000; includeSubDomains; preload");
 
         // Government identification
-        response.Headers.Add("X-Government-System", "TerraFusion-OS");
-        response.Headers.Add("X-Compliance-Level", "FISMA-HIGH");
-        response.Headers.Add("X-Security-Classification", "UNCLASSIFIED");
+        response.Headers.Append("X-Government-System", "TerraFusion-OS");
+        response.Headers.Append("X-Compliance-Level", "FISMA-HIGH");
+        response.Headers.Append("X-Security-Classification", "UNCLASSIFIED");
 
         // Remove server information
         response.Headers.Remove("Server");
-        response.Headers.Add("Server", "TerraFusion/1.0");
+        response.Headers.Append("Server", "TerraFusion/1.0");
 
         // Remove .NET headers
         response.Headers.Remove("X-Powered-By");
@@ -120,19 +120,19 @@ public class RateLimitingMiddleware
                 clientIP, endpoint, rateLimitResult.Limit, rateLimitResult.Current);
 
             context.Response.StatusCode = 429; // Too Many Requests
-            context.Response.Headers.Add("Retry-After", rateLimitResult.RetryAfter.ToString());
-            context.Response.Headers.Add("X-RateLimit-Limit", rateLimitResult.Limit.ToString());
-            context.Response.Headers.Add("X-RateLimit-Remaining", rateLimitResult.Remaining.ToString());
-            context.Response.Headers.Add("X-RateLimit-Reset", rateLimitResult.ResetTime.ToString());
+            context.Response.Headers.Append("Retry-After", rateLimitResult.RetryAfter.ToString());
+            context.Response.Headers.Append("X-RateLimit-Limit", rateLimitResult.Limit.ToString());
+            context.Response.Headers.Append("X-RateLimit-Remaining", rateLimitResult.Remaining.ToString());
+            context.Response.Headers.Append("X-RateLimit-Reset", rateLimitResult.ResetTime.ToString());
 
             await context.Response.WriteAsync("Rate limit exceeded. Please try again later.");
             return;
         }
 
         // Add rate limit headers for monitoring
-        context.Response.Headers.Add("X-RateLimit-Limit", rateLimitResult.Limit.ToString());
-        context.Response.Headers.Add("X-RateLimit-Remaining", rateLimitResult.Remaining.ToString());
-        context.Response.Headers.Add("X-RateLimit-Reset", rateLimitResult.ResetTime.ToString());
+        context.Response.Headers.Append("X-RateLimit-Limit", rateLimitResult.Limit.ToString());
+        context.Response.Headers.Append("X-RateLimit-Remaining", rateLimitResult.Remaining.ToString());
+        context.Response.Headers.Append("X-RateLimit-Reset", rateLimitResult.ResetTime.ToString());
 
         await _next(context);
     }

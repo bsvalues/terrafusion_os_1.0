@@ -70,7 +70,7 @@ export const TerraFusionEliteIntegrationNexus: React.FC = () => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-        const experimentsResponse = await fetch('http://localhost:5010/api/health', {
+        const experimentsResponse = await fetch('/api/health', {
           method: 'GET',
           signal: controller.signal,
           headers: { Accept: 'application/json' },
@@ -159,7 +159,7 @@ export const TerraFusionEliteIntegrationNexus: React.FC = () => {
             >
               {systemStatus.experimentsAPI ? 'ONLINE' : 'OFFLINE'}
             </Badge>
-            <div className='text-sm text-terra-blue'>Port: 5010 | Elite Research Management</div>
+            <div className='text-sm text-terra-blue'>Port: 5000 | Elite Research Management</div>
           </CardBody>
         </Card>
 

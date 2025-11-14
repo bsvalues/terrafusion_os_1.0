@@ -23,8 +23,8 @@ spec:
         mode: SIMPLE
         credentialName: terrafusion-tls-secret
       hosts:
-        - 'ai-agents.terrafusion.gov'
-        - 'quantum.terrafusion.gov'
+        - 'ai-agents.terrafusionmarket.com'
+        - 'quantum.terrafusionmarket.com'
 
 ---
 # Elite Virtual Service for AI Agent Load Balancing
@@ -38,8 +38,8 @@ metadata:
     tier: load-balancing-excellence
 spec:
   hosts:
-    - 'ai-agents.terrafusion.gov'
-    - 'quantum.terrafusion.gov'
+    - 'ai-agents.terrafusionmarket.com'
+    - 'quantum.terrafusionmarket.com'
   gateways:
     - terrafusion-ai-gateway
   http:

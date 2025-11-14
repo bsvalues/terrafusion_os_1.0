@@ -1,5 +1,0 @@
-<DataType Name="GPGALayer">
-  <DisplayName>Geostatistical Layer</DisplayName>
-  <Description>A reference to a geostatistical data source, including symbology and rendering properties.</Description>
-</DataType>
-

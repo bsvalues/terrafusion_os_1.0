@@ -1,5 +1,0 @@
-<DataType Name="GPRasterFormulated">
-  <DisplayName>Formulated Raster</DisplayName>
-  <Description>A raster surface whose cell values are represented by a formula or constant.</Description>
-</DataType>
-

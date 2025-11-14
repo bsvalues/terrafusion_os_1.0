@@ -11,7 +11,7 @@ const mockUser: User = {
   username: "demo_user",
   password: "password123",
   fullName: "Demo User",
-  email: "demo@bentoncounty.gov",
+  email: "demo@terrafusionmarket.io",
   department: "GIS Department",
   isAdmin: true,
   createdAt: new Date().toISOString() as unknown as Date 

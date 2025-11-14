@@ -48,7 +48,7 @@ interface RecentActivity {
 
 export default function CountyAssessorDashboard() {
   const [metrics, setMetrics] = useState<AssessmentMetrics>({
-    totalParcels: 89247,
+    totalParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
     totalAssessedValue: 12847392000,
     averageAssessedValue: 143890,
     pendingAppeals: 127,
@@ -159,13 +159,15 @@ export default function CountyAssessorDashboard() {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <div><>
+          <div>
+<>
 
             <h1 className="text-3xl font-bold text-gray-900">Benton County Assessor Dashboard</h1>
             <p
 </> className="text-gray-600">Property Assessment & Tax Administration</p>
           </div>
-          <div className="flex items-center gap-4"><>
+          <div className="flex items-center gap-4">
+<>
 
             <Badge className="bg-green-100 text-green-800">Assessment Progress: {metrics.assessmentProgress}%</Badge>
             <Badge
@@ -184,7 +186,8 @@ export default function CountyAssessorDashboard() {
               .map((alert) => (
                 <Alert key={alert.id} className="border-l-4 border-red-500 bg-red-50">
                   <Warning className="h-4 w-4" />
-                  <AlertTitle className="flex justify-between items-center"><>
+                  <AlertTitle className="flex justify-between items-center">
+<>
 
                     <span>High Priority: {alert.type.toUpperCase()}</span>
                     <Badge
@@ -207,7 +210,8 @@ export default function CountyAssessorDashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <Building className="h-8 w-8 text-blue-600" />
-                <div className="text-right"><>
+                <div className="text-right">
+<>
 
                   <div className="text-2xl font-bold">{metrics.totalParcels.toLocaleString()}</div>
                   <div
@@ -221,7 +225,8 @@ export default function CountyAssessorDashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <DollarSign className="h-8 w-8 text-green-600" />
-                <div className="text-right"><>
+                <div className="text-right">
+<>
 
                   <div className="text-2xl font-bold">{formatCurrency(metrics.totalAssessedValue / 1000000)}M</div>
                   <div
@@ -235,7 +240,8 @@ export default function CountyAssessorDashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <Calculator className="h-8 w-8 text-purple-600" />
-                <div className="text-right"><>
+                <div className="text-right">
+<>
 
                   <div className="text-2xl font-bold">{formatCurrency(metrics.averageAssessedValue)}</div>
                   <div
@@ -249,7 +255,8 @@ export default function CountyAssessorDashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <FileText className="h-8 w-8 text-orange-600" />
-                <div className="text-right"><>
+                <div className="text-right">
+<>
 
                   <div className="text-2xl font-bold">{metrics.pendingAppeals}</div>
                   <div
@@ -263,7 +270,8 @@ export default function CountyAssessorDashboard() {
         {/* Assessment Progress */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><>
+            <CardTitle className="flex items-center gap-2">
+<>
 
               <TrendingUp className="h-5 w-5" />
               2025 Assessment Progress
@@ -273,7 +281,8 @@ export default function CountyAssessorDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex justify-between items-center"><>
+              <div className="flex justify-between items-center">
+<>
 
                 <span className="text-sm font-medium">Completed Assessments</span>
                 <span
@@ -283,7 +292,8 @@ export default function CountyAssessorDashboard() {
               </div>
               <Progress value={metrics.assessmentProgress} className="h-3" />
               <div className="grid grid-cols-3 gap-4 text-sm">
-                <div className="text-center"><>
+                <div className="text-center">
+<>
 
                   <div className="font-bold text-green-600">
                     {((metrics.completedAssessments / metrics.totalParcels) * 100).toFixed(1)}%
@@ -291,13 +301,15 @@ export default function CountyAssessorDashboard() {
                   <div
 </> className="text-gray-600">Residential</div>
                 </div>
-                <div className="text-center"><>
+                <div className="text-center">
+<>
 
                   <div className="font-bold text-blue-600">94.2%</div>
                   <div
 </> className="text-gray-600">Commercial</div>
                 </div>
-                <div className="text-center"><>
+                <div className="text-center">
+<>
 
                   <div className="font-bold text-purple-600">97.8%</div>
                   <div
@@ -310,11 +322,13 @@ export default function CountyAssessorDashboard() {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4"><>
+          <TabsList className="grid w-full grid-cols-4">
+<>
 
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger
-</> value="assessments">Assessments</TabsTrigger><>
+</> value="assessments">Assessments</TabsTrigger>
+<>
 
             <TabsTrigger value="appeals">Appeals & Exemptions</TabsTrigger>
             <TabsTrigger
@@ -324,7 +338,8 @@ export default function CountyAssessorDashboard() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
-                <CardHeader><>
+                <CardHeader>
+<>
 
                   <CardTitle>Recent Activity</CardTitle>
                   <CardDescription
@@ -333,11 +348,13 @@ export default function CountyAssessorDashboard() {
                 <CardContent>
                   <div className="space-y-3">
                     {recentActivity.map((activity) => (
-                      <div key={activity.id} className="flex items-start gap-3 p-3 border rounded-lg"><>
+                      <div key={activity.id} className="flex items-start gap-3 p-3 border rounded-lg">
+<>
 
                         <div className="mt-1">{getActivityIcon(activity.type)}</div>
                         <div
-</> className="flex-1"><>
+</> className="flex-1">
+<>
 
                           <div className="text-sm font-medium">{activity.description}</div>
                           <div
@@ -352,7 +369,8 @@ export default function CountyAssessorDashboard() {
               </Card>
 
               <Card>
-                <CardHeader><>
+                <CardHeader>
+<>
 
                   <CardTitle>Upcoming Deadlines</CardTitle>
                   <CardDescription
@@ -361,13 +379,15 @@ export default function CountyAssessorDashboard() {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center p-3 border rounded-lg">
-                      <div><>
+                      <div>
+<>
 
                         <div className="font-medium">Tax Roll Certification</div>
                         <div
 </> className="text-sm text-gray-600">Submit final tax roll to state</div>
                       </div>
-                      <div className="text-right"><>
+                      <div className="text-right">
+<>
 
                         <div className="font-bold">May 31, 2025</div>
                         <div
@@ -375,13 +395,15 @@ export default function CountyAssessorDashboard() {
                       </div>
                     </div>
                     <div className="flex justify-between items-center p-3 border rounded-lg">
-                      <div><>
+                      <div>
+<>
 
                         <div className="font-medium">Appeal Hearing Period</div>
                         <div
 </> className="text-sm text-gray-600">Board of Equalization hearings</div>
                       </div>
-                      <div className="text-right"><>
+                      <div className="text-right">
+<>
 
                         <div className="font-bold">July 1-15, 2025</div>
                         <div
@@ -389,13 +411,15 @@ export default function CountyAssessorDashboard() {
                       </div>
                     </div>
                     <div className="flex justify-between items-center p-3 border rounded-lg">
-                      <div><>
+                      <div>
+<>
 
                         <div className="font-medium">Agricultural Land Review</div>
                         <div
 </> className="text-sm text-gray-600">Annual agricultural classification review</div>
                       </div>
-                      <div className="text-right"><>
+                      <div className="text-right">
+<>
 
                         <div className="font-bold">March 1, 2025</div>
                         <div
@@ -419,19 +443,22 @@ export default function CountyAssessorDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span>Total Parcels</span>
                       <span
 </> className="font-bold">67,845</span>
                     </div>
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span>Avg. Assessment</span>
                       <span
 </> className="font-bold">$285,400</span>
                     </div>
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span>Completed</span>
                       <span
@@ -451,19 +478,22 @@ export default function CountyAssessorDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span>Total Parcels</span>
                       <span
 </> className="font-bold">12,847</span>
                     </div>
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span>Avg. Assessment</span>
                       <span
 </> className="font-bold">$485,200</span>
                     </div>
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span>Completed</span>
                       <span
@@ -483,19 +513,22 @@ export default function CountyAssessorDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span>Total Parcels</span>
                       <span
 </> className="font-bold">8,555</span>
                     </div>
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span>Avg. Assessment</span>
                       <span
 </> className="font-bold">$125,800</span>
                     </div>
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span>Completed</span>
                       <span
@@ -510,7 +543,8 @@ export default function CountyAssessorDashboard() {
 
           <TabsContent value="appeals" className="space-y-4">
             <Card>
-              <CardHeader><>
+              <CardHeader>
+<>
 
                 <CardTitle>Active Appeals & Exemptions</CardTitle>
                 <CardDescription
@@ -520,13 +554,15 @@ export default function CountyAssessorDashboard() {
                 <div className="space-y-3">
                   {alerts.map((alert) => (
                     <div key={alert.id} className="flex justify-between items-center p-4 border rounded-lg">
-                      <div><>
+                      <div>
+<>
 
                         <div className="font-medium">Parcel {alert.parcelId}</div>
                         <div
 </> className="text-sm text-gray-600">{alert.message}</div>
                       </div>
-                      <div className="text-right"><>
+                      <div className="text-right">
+<>
 
                         <Badge className={getPriorityColor(alert.priority)}>{alert.priority.toUpperCase()}</Badge>
                         <div
@@ -544,7 +580,8 @@ export default function CountyAssessorDashboard() {
           <TabsContent value="analytics" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
-                <CardHeader><>
+                <CardHeader>
+<>
 
                   <CardTitle>Market Trends</CardTitle>
                   <CardDescription
@@ -552,25 +589,29 @@ export default function CountyAssessorDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center"><>
+                    <div className="flex justify-between items-center">
+<>
 
                       <span>Median Home Value</span>
                       <span
 </> className="font-bold text-green-600">$425,000 (+8.2%)</span>
                     </div>
-                    <div className="flex justify-between items-center"><>
+                    <div className="flex justify-between items-center">
+<>
 
                       <span>Commercial Sq Ft Value</span>
                       <span
 </> className="font-bold text-blue-600">$185/sq ft (+5.1%)</span>
                     </div>
-                    <div className="flex justify-between items-center"><>
+                    <div className="flex justify-between items-center">
+<>
 
                       <span>Agricultural Land Value</span>
                       <span
 </> className="font-bold text-purple-600">$12,500/acre (+3.8%)</span>
                     </div>
-                    <div className="flex justify-between items-center"><>
+                    <div className="flex justify-between items-center">
+<>
 
                       <span>Sales Volume (YTD)</span>
                       <span
@@ -581,7 +622,8 @@ export default function CountyAssessorDashboard() {
               </Card>
 
               <Card>
-                <CardHeader><>
+                <CardHeader>
+<>
 
                   <CardTitle>Assessment Accuracy</CardTitle>
                   <CardDescription
@@ -589,19 +631,22 @@ export default function CountyAssessorDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center"><>
+                    <div className="flex justify-between items-center">
+<>
 
                       <span>Assessment Ratio</span>
                       <span
 </> className="font-bold text-green-600">98.7%</span>
                     </div>
-                    <div className="flex justify-between items-center"><>
+                    <div className="flex justify-between items-center">
+<>
 
                       <span>Coefficient of Dispersion</span>
                       <span
 </> className="font-bold text-green-600">8.2%</span>
                     </div>
-                    <div className="flex justify-between items-center"><>
+                    <div className="flex justify-between items-center">
+<>
 
                       <span>Price-Related Differential</span>
                       <span

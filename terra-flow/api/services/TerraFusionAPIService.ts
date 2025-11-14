@@ -501,7 +501,7 @@ export class TerraFusionAPIService {
         `[${new Date().toLocaleTimeString()}] Swarm consciousness matrix re-calibrated.`,
         `[${new Date(Date.now() - 15000).toLocaleTimeString()}] Agent 723 achieved local optima.`,
         `[${new Date(Date.now() - 32000).toLocaleTimeString()}] Quantum entanglement bridge established.`,
-        `[${new Date(Date.now() - 45000).toLocaleTimeString()}] System integrity scan complete: 99.998% coherence.`
+        `[${new Date(Date.now() - await DynamicPropertyService.GetPropertyCountAsync(countyCode)).toLocaleTimeString()}] System integrity scan complete: 99.998% coherence.`
       ]
     };
   }

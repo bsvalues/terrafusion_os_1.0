@@ -1,5 +1,0 @@
-<DataType Name="GPArealUnit">
-  <DisplayName>Areal Unit</DisplayName>
-  <Description>An areal unit type and value, such as square meter or acre.</Description>
-</DataType>
-

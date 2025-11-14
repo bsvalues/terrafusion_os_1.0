@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Deletes the selected parcels from the input parcel fabric. If the parcel polygon layer has no selection, all parcels will be deleted.",
-        "in_parcel_polygon_features.descr": "The parcel fabric polygon feature class containing the parcels that will be deleted.",
-        "in_parcel_polygon_features.title": "Input Parcel Features",
-        "title": "Delete Parcels",
-        "updated_parcel_fabric.title": "Updated Parcel Fabric"
-    }
-}

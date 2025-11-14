@@ -138,7 +138,7 @@ const mockCircuitBreakers = [
     },
     config: {
       failureThreshold: 4,
-      resetTimeout: 45000,
+      resetTimeout: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       timeout: 7000
     }
   }
@@ -273,7 +273,8 @@ export default function MCPCircuitBreakerPanel() {
   
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between"><>
+      <div className="flex items-center justify-between">
+<>
 
         <h2 className="text-xl font-semibold">Circuit Breaker Management</h2>
         <Button
@@ -287,7 +288,8 @@ export default function MCPCircuitBreakerPanel() {
         {/* Circuit Breakers Overview */}
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-lg"><>
+            <CardTitle className="flex items-center text-lg">
+<>
 
               <Activity className="h-5 w-5 mr-2" />
               Circuit Breakers
@@ -324,7 +326,8 @@ export default function MCPCircuitBreakerPanel() {
                         }}
                       >
                         <div className="flex items-center gap-2">
-                          {getStateIcon(circuit.state)}<>
+                          {getStateIcon(circuit.state)}
+<>
 
                           <span className="font-medium">{circuit.serviceName}</span>
                           <Badge
@@ -349,37 +352,43 @@ export default function MCPCircuitBreakerPanel() {
                     <CollapsibleContent>
                       <div className="pt-3 mt-3 border-t">
                         <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4">
-                          <div><>
+                          <div>
+<>
 
                             <span className="text-sm text-gray-500">Total Requests:</span>
                             <span
 </> className="text-sm ml-2 font-medium">{circuit.metrics.totalRequests}</span>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <span className="text-sm text-gray-500">Successful:</span>
                             <span
 </> className="text-sm ml-2 font-medium">{circuit.metrics.successfulRequests}</span>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <span className="text-sm text-gray-500">Failed:</span>
                             <span
 </> className="text-sm ml-2 font-medium">{circuit.metrics.failedRequests}</span>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <span className="text-sm text-gray-500">Timeouts:</span>
                             <span
 </> className="text-sm ml-2 font-medium">{circuit.metrics.timeouts}</span>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <span className="text-sm text-gray-500">Avg Response Time:</span>
                             <span
 </> className="text-sm ml-2 font-medium">{circuit.metrics.averageResponseTime}ms</span>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <span className="text-sm text-gray-500">Last State Change:</span>
                             <span
@@ -391,7 +400,8 @@ export default function MCPCircuitBreakerPanel() {
                             variant="outline" 
                             size="sm"
                             onClick={() => handleResetCircuit(circuit.id)}
-                          ><>
+                          >
+<>
 
                             <Refresh className="h-3.5 w-3.5 mr-1" />
                             Reset
@@ -401,7 +411,8 @@ export default function MCPCircuitBreakerPanel() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleForceOpen(circuit.id)}
-                          ><>
+                          >
+<>
 
                             <CircleOff className="h-3.5 w-3.5 mr-1" />
                             Force Open
@@ -434,7 +445,8 @@ export default function MCPCircuitBreakerPanel() {
         {/* Metrics Overview */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-lg"><>
+            <CardTitle className="flex items-center text-lg">
+<>
 
               <Gauge className="h-5 w-5 mr-2" />
               Performance Metrics
@@ -442,12 +454,14 @@ export default function MCPCircuitBreakerPanel() {
             <div
 </> className="flex items-center">
               <Select value={selectedMetricView} onValueChange={setSelectedMetricView}>
-                <SelectTrigger className="w-[180px]"><>
+                <SelectTrigger className="w-[180px]">
+<>
 
                   <SelectValue placeholder="Select metric view" />
                 </SelectTrigger>
                 <SelectContent
-</>><>
+</>>
+<>
 
                   <SelectItem value="responseTime">Response Time</SelectItem>
                   <SelectItem
@@ -459,7 +473,8 @@ export default function MCPCircuitBreakerPanel() {
           </CardHeader>
           <CardContent>
             {selectedMetricView === 'responseTime' && (
-              <div><>
+              <div>
+<>
 
                 <h3 className="text-sm font-medium mb-2">Response Time (ms)</h3>
                 <div
@@ -482,7 +497,8 @@ export default function MCPCircuitBreakerPanel() {
             )}
             
             {selectedMetricView === 'successRate' && (
-              <div><>
+              <div>
+<>
 
                 <h3 className="text-sm font-medium mb-2">Success Rate (%)</h3>
                 <div
@@ -501,7 +517,8 @@ export default function MCPCircuitBreakerPanel() {
             )}
             
             {selectedMetricView === 'totalRequests' && (
-              <div><>
+              <div>
+<>
 
                 <h3 className="text-sm font-medium mb-2">Request Volume</h3>
                 <div

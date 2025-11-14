@@ -76,7 +76,7 @@ namespace TerraFusion.Core.Services.Predictive
 
             // Select optimal model ensemble for prediction
             var selectedModels = SelectOptimalModels(request);
-            
+
             // Execute prediction across multiple models in parallel
             var modelResults = await Task.WhenAll(
                 selectedModels.Select(model => ExecuteModelPrediction(model, request))
@@ -137,7 +137,7 @@ namespace TerraFusion.Core.Services.Predictive
 
             try
             {
-                var trainingTasks = _models.Values.Select(model => 
+                var trainingTasks = _models.Values.Select(model =>
                     TrainIndividualModel(model, dataset));
 
                 await Task.WhenAll(trainingTasks);
@@ -318,7 +318,7 @@ namespace TerraFusion.Core.Services.Predictive
         private async Task<ModelPredictionResult> ExecuteModelPrediction(PredictiveModel model, PredictionRequest request)
         {
             // Simulate model execution time based on complexity
-            var executionTime = model.QuantumEnhanced ? 
+            var executionTime = model.QuantumEnhanced ?
                 10 + (_random.NextDouble() * 20) : // 10-30ms for quantum
                 30 + (_random.NextDouble() * 50);  // 30-80ms for classical
 
@@ -446,7 +446,7 @@ namespace TerraFusion.Core.Services.Predictive
 
         private async Task TrainIndividualModel(PredictiveModel model, TrainingDataset dataset)
         {
-            var trainingTime = model.QuantumEnhanced ? 
+            var trainingTime = model.QuantumEnhanced ?
                 TimeSpan.FromMinutes(5 + (_random.NextDouble() * 10)) : // 5-15 min quantum
                 TimeSpan.FromMinutes(30 + (_random.NextDouble() * 60)); // 30-90 min classical
 

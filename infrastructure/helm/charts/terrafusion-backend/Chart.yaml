@@ -14,7 +14,7 @@ keywords:
 
 maintainers:
   - name: TerraFusion DevOps Team
-    email: devops@terrafusion.gov
+    email: devops@terrafusionmarket.com
 
 dependencies:
   - name: postgresql

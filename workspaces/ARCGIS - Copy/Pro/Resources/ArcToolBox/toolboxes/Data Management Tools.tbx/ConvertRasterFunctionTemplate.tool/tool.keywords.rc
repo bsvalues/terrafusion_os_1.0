@@ -1,9 +1,0 @@
-{
-    "set": [
-        "json format",
-        "raster function template",
-        "xml format",
-        "binary format",
-        "rft"
-    ]
-}

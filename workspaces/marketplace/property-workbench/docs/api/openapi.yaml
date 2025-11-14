@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: property-workbench-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/marketplace/property-workbench
+    email: property-workbench-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/marketplace/property-workbench
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/property
+  - url: https://api.terrafusionmarket.com/api/v1/property
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/property
+  - url: https://staging-api.terrafusionmarket.com/api/v1/property
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/property
+  - url: https://dev-api.terrafusionmarket.com/api/v1/property
     description: Development Environment
 paths:
   /properties:
@@ -197,8 +197,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             property-workbench:read: Read access to property-workbench resources
             property-workbench:write: Write access to property-workbench resources
@@ -216,4 +216,4 @@ tags:
     description: Property Workbench operations
     externalDocs:
       description: Find out more about property-workbench
-      url: https://docs.terrafusion.gov/marketplace/property-workbench
+      url: https://docs.terrafusionmarket.com/marketplace/property-workbench

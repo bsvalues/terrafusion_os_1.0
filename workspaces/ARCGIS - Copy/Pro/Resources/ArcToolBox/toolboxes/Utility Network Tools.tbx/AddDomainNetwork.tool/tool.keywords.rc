@@ -1,9 +1,0 @@
-{
-    "set": [
-        "add",
-        "administration",
-        "domain",
-        "network",
-        "utility network"
-    ]
-}

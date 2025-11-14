@@ -1,6 +1,0 @@
-{
-    "set": [
-        "if selection exists",
-        "selectionexistsifthenelse"
-    ]
-}

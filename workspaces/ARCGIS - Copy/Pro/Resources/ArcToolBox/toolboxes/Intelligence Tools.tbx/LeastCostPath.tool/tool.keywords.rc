@@ -1,9 +1,0 @@
-{
-    "set": [
-        "ccm",
-        "cross-country",
-        "mobility",
-        "off-road",
-        "shortest path"
-    ]
-}

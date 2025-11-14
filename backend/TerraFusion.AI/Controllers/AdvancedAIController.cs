@@ -364,11 +364,11 @@ namespace TerraFusion.AI.Controllers
                 Response = response.Response,
                 Confidence = response.Confidence,
                 ProcessingTime = response.ProcessingTime,
-                // Explanation = response.Explanation, // TODO: Fix DecisionExplanation type mapping
+                // Explanation = response.Explanation, // TODO: Type mismatch - needs DecisionExplanation object
                 QuantumResponse = response.QuantumResponse,
                 EmergentBehaviors = response.EmergentBehaviors,
                 EmergentPatterns = response.EmergentPatterns,
-                // EthicalValidation = response.EthicalValidation, // TODO: Fix EthicalValidation type mapping
+                // EthicalValidation = response.EthicalValidation, // TODO: Type mismatch - needs EthicalValidation object
                 Sources = response.Sources,
                 QualityMetrics = response.QualityMetrics,
                 ModelUsed = response.ModelUsed,

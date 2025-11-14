@@ -1,9 +1,0 @@
-{
-    "set": [
-        "arc",
-        "inverse",
-        "math",
-        "tangent",
-        "trig"
-    ]
-}

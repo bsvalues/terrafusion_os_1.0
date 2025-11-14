@@ -8,7 +8,7 @@ const allProperties: any[] = [
     property_address: "123 Main St, Kennewick, WA 99336",
     owner_name: "SMITH, JOHN & MARY",
     land_value: 85000,
-    improvement_value: 245000,
+    improvement_value: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode),
     assessed_value: 330000,
     property_type: "Residential",
     year_built: 2005,

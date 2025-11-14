@@ -1,7 +1,7 @@
 {
     "county": "Island",
     "extraction_date": "2025-08-12",
-    "properties_analyzed": 45000,
+    "properties_analyzed": await DynamicPropertyService.GetPropertyCountAsync(countyCode),
     "portfolio_value": "18B",
     "extraction_time": "37.5 hours",
     "their_time": "127 months",

@@ -17,15 +17,15 @@ keywords:
 
 maintainers:
   - name: TerraFusion Engineering
-    email: engineering@terrafusion.gov
-    url: https://terrafusion.gov
+    email: engineering@terrafusionmarket.com
+    url: https://terrafusionmarket.com
 
 sources:
   - https://github.com/terrafusion/terrafusion-os
 
-home: https://terrafusion.gov
+home: https://terrafusionmarket.com
 
-icon: https://terrafusion.gov/assets/terrafusion-icon.svg
+icon: https://terrafusionmarket.com/assets/terrafusion-icon.svg
 
 annotations:
   terrafusion.io/platform: "complete"

@@ -306,7 +306,7 @@ spec:
         - name: ENVIRONMENT
           value: "production"
         - name: API_GATEWAY_URL
-          value: "https://api.terrafusion.gov"
+          value: "https://api.terrafusionmarket.com"
         - name: CITIZEN_API_URL
           value: "https://citizen-api.terrafusion-citizen-services"
         - name: AI_ASSISTANT_ENDPOINT

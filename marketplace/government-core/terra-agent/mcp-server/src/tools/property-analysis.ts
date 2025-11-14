@@ -158,11 +158,11 @@ export class PropertyAnalysisTool implements MCPTool {
         totalValue: 425000,
         landValue: 125000,
         improvementValue: 300000,
-        marketValue: 450000,
+        marketValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       },
       lastSale: {
         saleDate: new Date('2023-06-15'),
-        salePrice: 450000,
+        salePrice: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
         pricePerSqFt: 187.50,
         saleType: 'arms_length',
         verified: true,

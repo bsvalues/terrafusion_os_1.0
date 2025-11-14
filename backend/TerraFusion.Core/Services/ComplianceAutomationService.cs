@@ -169,7 +169,7 @@ namespace TerraFusion.Core.Services
                     ComplianceScore = complianceScore,
                     TotalControls = controls.Count,
                     ImplementedControls = implementedControls,
-                    ViolationCount = violations.Count(v => v.Status != ComplianceControlStatus.Resolved),
+                    ViolationCount = violations.Count,
                     LastAssessment = DateTime.UtcNow,
                     Status = complianceScore >= 95 ? "Compliant" : complianceScore >= 80 ? "Partially Compliant" : "Non-Compliant"
                 };

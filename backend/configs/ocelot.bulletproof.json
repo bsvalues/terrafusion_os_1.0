@@ -51,7 +51,7 @@
       "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 3,
-        "DurationOfBreak": 45000,
+        "DurationOfBreak": await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         "TimeoutValue": 15000
       },
       "LoadBalancerOptions": {

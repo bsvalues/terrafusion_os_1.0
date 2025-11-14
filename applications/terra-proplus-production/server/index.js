@@ -72,7 +72,7 @@ const marketData = [
   {
     id: 1,
     zipCode: "78701",
-    averagePrice: 450000,
+    averagePrice: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
     medianPrice: 425000,
     salesVolume: 145,
     period: "2024-Q1"

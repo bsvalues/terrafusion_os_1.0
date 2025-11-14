@@ -14,7 +14,7 @@ global:
   environment: production
   
   # TerraFusion domain
-  domain: terrafusion.gov
+  domain: terrafusionmarket.com
   
   # Image registry
   imageRegistry: ghcr.io/terrafusion
@@ -54,14 +54,14 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     nginx.ingress.kubernetes.io/rate-limit: "100"
   hosts:
-    - host: api.terrafusion.gov
+    - host: api.terrafusionmarket.com
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: terrafusion-api-tls
       hosts:
-        - api.terrafusion.gov
+        - api.terrafusionmarket.com
 
 # Resource limits (FISMA-High compliant)
 resources:
@@ -384,7 +384,7 @@ networkPolicy:
 # resources.requests.cpu: 100m
 # resources.requests.memory: 256Mi
 # autoscaling.enabled: false
-# ingress.hosts[0].host: api-dev.terrafusion.gov
+# ingress.hosts[0].host: api-dev.terrafusionmarket.com
 
 # Staging environment values (values-staging.yaml)
 # replicaCount: 2
@@ -392,7 +392,7 @@ networkPolicy:
 # resources.requests.memory: 512Mi
 # autoscaling.minReplicas: 2
 # autoscaling.maxReplicas: 10
-# ingress.hosts[0].host: api-staging.terrafusion.gov
+# ingress.hosts[0].host: api-staging.terrafusionmarket.com
 
 # Production environment values (values-production.yaml)
 # (Use defaults from this file)

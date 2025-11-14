@@ -50,7 +50,7 @@ interface EliteExperimentRun {
 }
 
 // API Configuration
-const ELITE_API_BASE = 'http://localhost:5010';
+const ELITE_API_BASE = '/api';
 const CONSCIOUSNESS_API_BASE = 'http://localhost:3004';
 const ELITE_HUB_URL = `${ELITE_API_BASE}/hubs/elite-experiments`;
 
@@ -683,7 +683,7 @@ const EliteExperimentalResearchInterface: React.FC = () => {
             <div className='text-center'>
               <div className='text-terra-cyan font-semibold'>Experiments API</div>
               <Badge variant={apiStatus.experiments ? 'default' : 'destructive'}>
-                {apiStatus.experiments ? 'Port 5010 ✅' : 'Offline ❌'}
+                {apiStatus.experiments ? 'Port 5000 ✅' : 'Offline ❌'}
               </Badge>
             </div>
             <div className='text-center'>

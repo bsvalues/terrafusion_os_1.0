@@ -313,7 +313,7 @@
     "channels": {
       "email": {
         "enabled": true,
-        "recipients": ["deployment-team@terrafusion.gov"]
+        "recipients": ["deployment-team@terrafusionmarket.com"]
       },
       "slack": {
         "enabled": true,
@@ -321,7 +321,7 @@
       },
       "webhook": {
         "enabled": true,
-        "url": "https://monitoring.terrafusion.gov/webhooks/deployment"
+        "url": "https://monitoring.terrafusionmarket.com/webhooks/deployment"
       }
     }
   }

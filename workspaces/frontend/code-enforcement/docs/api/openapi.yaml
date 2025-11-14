@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: code-enforcement-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/frontend/code-enforcement
+    email: code-enforcement-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/frontend/code-enforcement
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/code-enforcement
+  - url: https://api.terrafusionmarket.com/api/v1/code-enforcement
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/code-enforcement
+  - url: https://staging-api.terrafusionmarket.com/api/v1/code-enforcement
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/code-enforcement
+  - url: https://dev-api.terrafusionmarket.com/api/v1/code-enforcement
     description: Development Environment
 paths:
   /violations:
@@ -197,8 +197,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             code-enforcement:read: Read access to code-enforcement resources
             code-enforcement:write: Write access to code-enforcement resources
@@ -216,4 +216,4 @@ tags:
     description: Code Enforcement operations
     externalDocs:
       description: Find out more about code-enforcement
-      url: https://docs.terrafusion.gov/frontend/code-enforcement
+      url: https://docs.terrafusionmarket.com/frontend/code-enforcement

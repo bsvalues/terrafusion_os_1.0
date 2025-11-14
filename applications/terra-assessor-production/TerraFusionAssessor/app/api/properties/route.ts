@@ -24,7 +24,7 @@ const sampleProperties: Property[] = [
     address: "123 Main St, Kennewick, WA 99336",
     owner: "SMITH, JOHN & MARY",
     landValue: 85000,
-    improvementValue: 245000,
+    improvementValue: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode),
     totalValue: 330000,
     propertyType: "Residential",
     yearBuilt: 2005,

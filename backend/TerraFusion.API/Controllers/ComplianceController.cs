@@ -2,13 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Services;
-using TerraFusion.Core.Entities;
 using TerraFusion.Abstractions.DTOs;
-using ComplianceViolation = TerraFusion.Abstractions.DTOs.ComplianceViolation;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-
+using ComplianceViolation = TerraFusion.Abstractions.DTOs.ComplianceViolation;
 namespace TerraFusion.API.Controllers
 {
     [ApiController]
@@ -56,10 +53,10 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var report = await _complianceService.GenerateComplianceReportAsync(
-                    request.Framework,
-                    request.StartDate,
+                    request.Framework, 
+                    request.StartDate, 
                     request.EndDate);
-
+                
                 return Ok(report);
             }
             catch (Exception ex)
@@ -77,7 +74,7 @@ namespace TerraFusion.API.Controllers
         public async Task<ActionResult<List<AuditTrail>>> GetAuditTrail(
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null,
-            [FromQuery] string? userId = null)
+            [FromQuery] string userId = null)
         {
             try
             {
@@ -100,13 +97,13 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
-                var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("id")?.Value ?? "ANONYMOUS";
+                var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("id")?.Value;
                 var auditTrail = await _complianceService.CreateAuditTrailAsync(
-                    request.Action,
-                    userId,
-                    request.Data,
+                    request.Action, 
+                    userId, 
+                    request.Data, 
                     request.EntityType);
-
+                
                 return Ok(auditTrail);
             }
             catch (Exception ex)
@@ -164,12 +161,12 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
-                var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("id")?.Value ?? "ANONYMOUS";
+                var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("id")?.Value;
                 var success = await _complianceService.RemediateViolationAsync(
-                    violationId,
-                    request.RemediationAction,
+                    violationId, 
+                    request.RemediationAction, 
                     userId);
-
+                
                 if (success)
                 {
                     return Ok(new { message = "Violation remediated successfully" });
@@ -215,10 +212,10 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var success = await _complianceService.UpdateComplianceControlAsync(
-                    controlId,
-                    request.Status,
+                    controlId, 
+                    request.Status, 
                     request.Evidence);
-
+                
                 if (success)
                 {
                     return Ok(new { message = "Control updated successfully" });
@@ -245,7 +242,7 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var success = await _complianceService.ScheduleComplianceReportAsync(schedule);
-
+                
                 if (success)
                 {
                     return Ok(new { message = "Report scheduled successfully" });
@@ -273,19 +270,24 @@ namespace TerraFusion.API.Controllers
 
     public class CreateAuditTrailRequest
     {
-        public required string Action { get; set; }
-        public required object Data { get; set; }
-        public required string EntityType { get; set; }
+        public string Action { get; set; }
+        public object Data { get; set; }
+        public string EntityType { get; set; }
     }
 
     public class RemediateViolationRequest
     {
-        public required string RemediationAction { get; set; }
+        public string RemediationAction { get; set; }
     }
 
     public class UpdateControlRequest
     {
         public ComplianceControlStatus Status { get; set; }
-        public required string Evidence { get; set; }
+        public string Evidence { get; set; }
     }
 }
+
+
+
+
+

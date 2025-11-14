@@ -15,17 +15,20 @@ BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 NC='\033[0m'
 
-# Configuration
-FTP_HOST="82.198.236.1"
-FTP_USER="u240968583.terrafusionmarket.io"
-LOCAL_DIR="dist"
-DOMAIN="terrafusionmarket.io"
+# Configuration (override via env)
+FTP_HOST="${FTP_HOST:-82.198.236.1}"
+FTP_USER="${FTP_USER:-u240968583.terrafusionmarket.io}"
+LOCAL_DIR="${LOCAL_DIR:-dist}"
+DOMAIN="${DOMAIN:-terrafusionmarket.io}"
+# Hostinger remote base under account root; allow override and fallback
+FTP_REMOTE_BASE="${FTP_REMOTE_BASE:-/public_html}"
 
 echo -e "${BLUE}🚀 TERRAFUSION MARKET - DIRECT FTP DEPLOYMENT${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════${NC}"
 echo -e "📦 Host: ${FTP_HOST}"
 echo -e "👤 User: ${FTP_USER}"
 echo -e "🌐 Domain: https://${DOMAIN}"
+echo -e "📂 Remote Base: ${FTP_REMOTE_BASE}"
 echo ""
 
 # Get FTP password
@@ -59,6 +62,23 @@ else
     exit 1
 fi
 
+# Probe remote base, fallback to Hostinger domains/ path if needed
+probe_remote() {
+    local base="$1"
+    curl -s -u "${FTP_USER}:${FTP_PASS}" "ftp://${FTP_HOST}${base}/" > /dev/null 2>&1
+}
+
+if ! probe_remote "${FTP_REMOTE_BASE}"; then
+    fallback="/domains/${DOMAIN}/public_html"
+    echo -e "${YELLOW}⚠️ Remote base '${FTP_REMOTE_BASE}' not accessible. Trying '${fallback}'...${NC}"
+    if probe_remote "${fallback}"; then
+        FTP_REMOTE_BASE="${fallback}"
+        echo -e "${YELLOW}Using remote base: ${FTP_REMOTE_BASE}${NC}"
+    else
+        echo -e "${YELLOW}Proceeding without confirming remote base; uploads may fail with 550.${NC}"
+    fi
+fi
+
 # Upload files
 echo -e "${YELLOW}📤 Uploading files to Hostinger...${NC}"
 echo ""
@@ -67,11 +87,11 @@ upload_file() {
     local file=$1
     local remote_path=$2
     local filename=$(basename "$file")
-    
+
     echo -n "  📄 Uploading $filename... "
-    
-    curl -T "$file" -u "${FTP_USER}:${FTP_PASS}" "ftp://${FTP_HOST}/public_html/${remote_path}" > /dev/null 2>&1
-    
+
+    curl -T "$file" -u "${FTP_USER}:${FTP_PASS}" "ftp://${FTP_HOST}${FTP_REMOTE_BASE}/${remote_path}" > /dev/null 2>&1
+
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✅${NC}"
         return 0
@@ -83,8 +103,8 @@ upload_file() {
 
 # Create remote directories first
 echo -e "${BLUE}📁 Creating remote directories...${NC}"
-for dir in "js" "styles"; do
-    curl -u "${FTP_USER}:${FTP_PASS}" "ftp://${FTP_HOST}/public_html/" -Q "MKD ${dir}" > /dev/null 2>&1 || true
+for dir in "assets" "js" "styles"; do
+    curl -u "${FTP_USER}:${FTP_PASS}" "ftp://${FTP_HOST}${FTP_REMOTE_BASE}/" -Q "MKD ${dir}" > /dev/null 2>&1 || true
 done
 
 # Upload main files
@@ -116,6 +136,15 @@ for file in $LOCAL_DIR/js/*.js; do
     if [ -f "$file" ]; then
         filename=$(basename "$file")
         upload_file "$file" "js/$filename"
+    fi
+done
+
+# Upload assets
+echo -e "${BLUE}📤 Uploading assets...${NC}"
+for file in $LOCAL_DIR/assets/*; do
+    if [ -f "$file" ]; then
+        filename=$(basename "$file")
+        upload_file "$file" "assets/$filename"
     fi
 done
 

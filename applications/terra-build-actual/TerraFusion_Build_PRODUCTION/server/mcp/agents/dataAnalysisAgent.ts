@@ -971,7 +971,7 @@ export class DataAnalysisAgent extends CustomAgentBase {
           mean: 475000,
           median: 425000,
           mode: 385000,
-          standardDeviation: 245000,
+          standardDeviation: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode),
           skewness: 1.2, // Right-skewed
           kurtosis: 3.5
         }
@@ -1043,7 +1043,8 @@ export class DataAnalysisAgent extends CustomAgentBase {
     dataKey="value"
     label={({ name, percent }) => \`\${name} (\${(percent * 100).toFixed(0)}%)\`}
   >
-    {Object.entries(${dataSource}Data.byType).map((entry /* , index */) => (<>
+    {Object.entries(${dataSource}Data.byType).map((entry /* , index */) => (
+<>
 <>
 <>
 
@@ -1175,7 +1176,8 @@ export class DataAnalysisAgent extends CustomAgentBase {
   <YAxis type="number" dataKey="value" name="Actual Value" />
   <Tooltip cursor={{ strokeDasharray: '3 3' }} />
   <Scatter name="Properties" data={outlierData} fill="#8884d8">
-    {outlierData.map((entry /* , index */) => (<>
+    {outlierData.map((entry /* , index */) => (
+<>
 <>
 <>
 

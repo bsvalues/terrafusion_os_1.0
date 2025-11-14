@@ -49,7 +49,7 @@ const NewHomePage = () => {
       setTimeout(() => {
         const analysisResult = {
           property: propertyData,
-          estimatedValue: 345000,
+          estimatedValue: 3await DynamicPropertyService.GetPropertyCountAsync(countyCode),
           confidenceLevel: "Medium",
           valueRange: {
             min: 330000,
@@ -101,7 +101,8 @@ const NewHomePage = () => {
   };
 
   return (
-    <div className="container py-10"><>
+    <div className="container py-10">
+<>
 
       <h1 className="text-3xl font-bold mb-6 text-center">Terrafusion Property Analysis System</h1>
 
@@ -110,7 +111,8 @@ const NewHomePage = () => {
         {/* Property Data Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><>
+            <CardTitle className="flex items-center gap-2">
+<>
 
               <Home className="h-5 w-5" />
               406 Stardust Ct
@@ -121,13 +123,15 @@ const NewHomePage = () => {
           <CardContent>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
-                <div><>
+                <div>
+<>
 
                   <span className="text-sm text-muted-foreground">Property Type</span>
                   <p
 </> className="font-medium">{propertyData.propertyType}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <span className="text-sm text-muted-foreground">Condition</span>
                   <p
@@ -136,25 +140,29 @@ const NewHomePage = () => {
               </div>
 
               <div className="grid grid-cols-4 gap-3">
-                <div><>
+                <div>
+<>
 
                   <span className="text-sm text-muted-foreground">Beds</span>
                   <p
 </> className="font-medium">{propertyData.bedrooms}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <span className="text-sm text-muted-foreground">Baths</span>
                   <p
 </> className="font-medium">{propertyData.bathrooms}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <span className="text-sm text-muted-foreground">Sq Ft</span>
                   <p
 </> className="font-medium">{propertyData.squareFeet}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <span className="text-sm text-muted-foreground">Year Built</span>
                   <p
@@ -162,14 +170,16 @@ const NewHomePage = () => {
                 </div>
               </div>
 
-              <div><>
+              <div>
+<>
 
                 <span className="text-sm text-muted-foreground">Lot Size</span>
                 <p
 </> className="font-medium">{propertyData.lotSize} acres</p>
               </div>
 
-              <div><>
+              <div>
+<>
 
                 <span className="text-sm text-muted-foreground">Features</span>
                 <div
@@ -207,7 +217,8 @@ const NewHomePage = () => {
         {/* Valuation Results Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><>
+            <CardTitle className="flex items-center gap-2">
+<>
 
               <DollarSign className="h-5 w-5" />
               Property Valuation
@@ -225,7 +236,8 @@ const NewHomePage = () => {
               </div>
             ) : result ? (
               <div className="space-y-6">
-                <div className="text-center"><>
+                <div className="text-center">
+<>
 
                   <h3 className="text-xl font-medium mb-1">Estimated Value</h3>
                   <div
@@ -238,14 +250,16 @@ const NewHomePage = () => {
                   </p>
                 </div>
 
-                <div><>
+                <div>
+<>
 
                   <h3 className="text-lg font-medium mb-2">Value Adjustments</h3>
                   <div
 </> className="space-y-2">
                     {result.adjustments.map((adjustment /* , index */) => (
                       <div key={index} className="flex justify-between border-b pb-2">
-                        <div><>
+                        <div>
+<>
 
                           <p className="font-medium">{adjustment.factor}</p>
                           <p
@@ -260,14 +274,16 @@ const NewHomePage = () => {
                   </div>
                 </div>
 
-                <div><>
+                <div>
+<>
 
                   <h3 className="text-lg font-medium mb-2">Market Analysis</h3>
                   <p
 </> className="text-sm">{result.marketAnalysis}</p>
                 </div>
 
-                <div><>
+                <div>
+<>
 
                   <h3 className="text-lg font-medium mb-2">Comparable Analysis</h3>
                   <p

@@ -320,7 +320,7 @@ export class MultiCountyOrchestrator {
 
   private async createSecureConnection(primary: CountyConfiguration, secondary: CountyConfiguration): Promise<WebSocket> {
     // Implementation would create encrypted WebSocket with mutual TLS
-    const wsUrl = `wss://secure-bridge.${primary.id}-${secondary.id}.terrafusion.gov`;
+    const wsUrl = `wss://secure-bridge.${primary.id}-${secondary.id}.terrafusionmarket.com`;
     return new WebSocket(wsUrl);
   }
 

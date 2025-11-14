@@ -1,8 +1,0 @@
-{
-    "map": {
-        "descr": "The ArcGIS Data Reviewer extension adds a data quality control framework to ArcGIS.  Data Reviewer validates data using different checks, contained in batch jobs, that test spatial relationships and integrity. It also provides tools to correct errors found during validation.",
-        "title": "Data Reviewer Tools",
-        "toolset1.name": "Result Management",
-        "toolset2.name": "Data Validation"
-    }
-}

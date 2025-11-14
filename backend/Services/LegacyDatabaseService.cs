@@ -18,16 +18,19 @@ public class LegacyDatabaseService
 {
     private readonly ILogger<LegacyDatabaseService> _logger;
     private readonly IConfiguration _configuration;
+    private readonly IDynamicPropertyService _dynamicPropertyService;
     private readonly Dictionary<string, ILegacyDatabaseAdapter> _adapters;
 
     public LegacyDatabaseService(
         ILogger<LegacyDatabaseService> logger,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IDynamicPropertyService dynamicPropertyService)
     {
         _logger = logger;
         _configuration = configuration;
+        _dynamicPropertyService = dynamicPropertyService;
         _adapters = new Dictionary<string, ILegacyDatabaseAdapter>();
-        
+
         InitializeAdapters();
     }
 
@@ -43,7 +46,7 @@ public class LegacyDatabaseService
         _adapters["vision_appraisal"] = new VisionAppraisalAdapter(_logger, _configuration);
         _adapters["generic_sql"] = new GenericSqlAdapter(_logger, _configuration);
         _adapters["csv_import"] = new CsvImportAdapter(_logger, _configuration);
-        
+
         _logger.LogInformation("Initialized {AdapterCount} legacy database adapters", _adapters.Count);
     }
 
@@ -66,7 +69,7 @@ public class LegacyDatabaseService
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("Error detecting compatibility for {Adapter}: {Error}", 
+                _logger.LogWarning("Error detecting compatibility for {Adapter}: {Error}",
                     adapter.Key, ex.Message);
             }
         }
@@ -79,16 +82,16 @@ public class LegacyDatabaseService
     /// <summary>
     /// Import property data from legacy database
     /// </summary>
-    public async Task<LegacyImportResult> ImportPropertyData(string countyName, 
+    public async Task<LegacyImportResult> ImportPropertyData(string countyName,
         LegacyImportOptions options = null)
     {
         options ??= new LegacyImportOptions();
-        
+
         _logger.LogInformation("Starting legacy database import for {County}", countyName);
 
         var legacyConfig = GetLegacyConfiguration(countyName);
         var adapterType = await DetectLegacyDatabaseType(legacyConfig.ConnectionString);
-        
+
         if (!_adapters.TryGetValue(adapterType, out var adapter))
         {
             throw new NotSupportedException($"Legacy database type '{adapterType}' not supported");
@@ -108,21 +111,21 @@ public class LegacyDatabaseService
 
             // Import properties
             result.Properties = await adapter.ImportPropertiesAsync(options);
-            
+
             // Import assessments
             result.Assessments = await adapter.ImportAssessmentsAsync(options);
-            
+
             // Import ownership data
             result.Owners = await adapter.ImportOwnersAsync(options);
-            
+
             // Import sales data if available
             result.Sales = await adapter.ImportSalesAsync(options);
 
             result.Success = true;
             result.EndTime = DateTime.UtcNow;
-            
+
             _logger.LogInformation("Legacy import completed successfully for {County}. " +
-                "Properties: {PropertyCount}, Assessments: {AssessmentCount}", 
+                "Properties: {PropertyCount}, Assessments: {AssessmentCount}",
                 countyName, result.Properties.Count, result.Assessments.Count);
 
             return result;
@@ -132,7 +135,7 @@ public class LegacyDatabaseService
             result.Success = false;
             result.Error = ex.Message;
             result.EndTime = DateTime.UtcNow;
-            
+
             _logger.LogError(ex, "Legacy database import failed for {County}", countyName);
             throw;
         }
@@ -145,7 +148,7 @@ public class LegacyDatabaseService
     {
         var configSection = $"LegacyDatabases:{countyName}";
         var config = _configuration.GetSection(configSection).Get<LegacyDatabaseConfiguration>();
-        
+
         if (config == null)
         {
             // Use default/sample configuration
@@ -203,15 +206,15 @@ public class LegacyDatabaseService
 
         validation.PropertyCount = importResult.Properties.Count;
         validation.AssessmentCount = importResult.Assessments.Count;
-        validation.CoveragePercentage = importResult.Properties.Count > 0 
+        validation.CoveragePercentage = importResult.Properties.Count > 0
             ? (double)propertiesWithAssessments / importResult.Properties.Count * 100
             : 0;
 
         validation.IsValid = validation.Errors.Count == 0;
-        
+
         _logger.LogInformation("Validation completed for {County}. Valid: {IsValid}, " +
-            "Errors: {ErrorCount}, Warnings: {WarningCount}", 
-            importResult.CountyName, validation.IsValid, 
+            "Errors: {ErrorCount}, Warnings: {WarningCount}",
+            importResult.CountyName, validation.IsValid,
             validation.Errors.Count, validation.Warnings.Count);
 
         return validation;
@@ -278,9 +281,9 @@ public class HarrisPacsAdapter : ILegacyDatabaseAdapter
     {
         // Harris PACS specific property import logic
         var properties = new List<PropertyRecord>();
-        
+
         // Sample implementation - would be actual Harris PACS query
-        for (int i = 1; i <= 89247; i++)
+        for (int i = 1; i <= await _dynamicPropertyService.GetActivePropertyCountAsync("benton"); i++)
         {
             properties.Add(new PropertyRecord
             {
@@ -291,7 +294,7 @@ public class HarrisPacsAdapter : ILegacyDatabaseAdapter
                 AssessedValue = 350000 + (i * 1000),
                 PropertyType = i % 5 == 0 ? "Commercial" : "Residential"
             });
-            
+
             if (i % 1000 == 0)
             {
                 _logger.LogInformation("Imported {Count} Harris PACS properties...", i);
@@ -366,23 +369,23 @@ public class GenericSqlAdapter : ILegacyDatabaseAdapter
 }
 
 // Additional adapter stubs for Tyler, Aumentum, Vision, etc.
-public class TylerIasWorldAdapter : GenericSqlAdapter 
-{ 
+public class TylerIasWorldAdapter : GenericSqlAdapter
+{
     public TylerIasWorldAdapter(ILogger logger, IConfiguration configuration) : base(logger, configuration) { }
 }
 
-public class AumentumCamaAdapter : GenericSqlAdapter 
-{ 
+public class AumentumCamaAdapter : GenericSqlAdapter
+{
     public AumentumCamaAdapter(ILogger logger, IConfiguration configuration) : base(logger, configuration) { }
 }
 
-public class VisionAppraisalAdapter : GenericSqlAdapter 
-{ 
+public class VisionAppraisalAdapter : GenericSqlAdapter
+{
     public VisionAppraisalAdapter(ILogger logger, IConfiguration configuration) : base(logger, configuration) { }
 }
 
-public class CsvImportAdapter : GenericSqlAdapter 
-{ 
+public class CsvImportAdapter : GenericSqlAdapter
+{
     public CsvImportAdapter(ILogger logger, IConfiguration configuration) : base(logger, configuration) { }
 }
 

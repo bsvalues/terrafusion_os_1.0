@@ -1,0 +1,200 @@
+# TerraFusion Ingress - Production Traffic Routing
+# Handles SSL termination, rate limiting, and proper routing
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: terrafusion-api-ingress
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+  annotations:
+    # Nginx Ingress Controller settings
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+
+    # Security headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+      more_set_headers "Strict-Transport-Security: max-age=31536000; includeSubDomains";
+      more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
+
+    # Rate limiting (adjust based on your needs)
+    nginx.ingress.kubernetes.io/rate-limit-rps: '100'
+    nginx.ingress.kubernetes.io/rate-limit-connections: '50'
+
+    # CORS for API endpoints
+    nginx.ingress.kubernetes.io/cors-allow-origin: 'https://your-frontend-domain.com,https://admin.your-domain.com'
+    nginx.ingress.kubernetes.io/cors-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS'
+    nginx.ingress.kubernetes.io/cors-allow-headers: 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization'
+
+    # Client body size for file uploads
+    nginx.ingress.kubernetes.io/proxy-body-size: '10m'
+
+    # Timeouts
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '60'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '60'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '60'
+
+    # SSL certificate management (cert-manager)
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
+
+    # Health check exclusions (don't expose to public)
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location /healthz {
+        deny all;
+        return 403;
+      }
+      location /ready {
+        deny all;
+        return 403;
+      }
+      location /metrics {
+        deny all;
+        return 403;
+      }
+
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - api.terrafusionmarket.com # Replace with your domain
+        - terrafusionmarket.com
+      secretName: terrafusion-tls-secret
+
+  rules:
+    - host: api.terrafusionmarket.com # Replace with your API domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-api-service
+                port:
+                  number: 80
+
+          # Specific API routes with enhanced security
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-api-service
+                port:
+                  number: 80
+
+          # SignalR hubs
+          - path: /hubs
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-api-service
+                port:
+                  number: 80
+
+    # Optional: Separate domain for admin interface
+    - host: admin.terrafusionmarket.com # Replace with your admin domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: terrafusion-admin-service # If you have separate admin service
+                port:
+                  number: 80
+
+---
+# Network Policy to allow ingress traffic only from ingress controller
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: terrafusion-ingress-netpol
+  namespace: terrafusion
+spec:
+  podSelector:
+    matchLabels:
+      app: terrafusion-api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx # Adjust based on your ingress namespace
+      ports:
+        - protocol: TCP
+          port: 5000
+
+---
+# Internal service for health checks (cluster-only access)
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-api-internal
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+    component: backend
+  annotations:
+    # Internal service only - no external load balancer
+    service.beta.kubernetes.io/aws-load-balancer-internal: 'true'
+    # Prometheus monitoring
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '5000'
+    prometheus.io/path: '/metrics'
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+      name: health
+  selector:
+    app: terrafusion-api
+
+---
+# Ingress for internal health monitoring (if needed)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: terrafusion-health-ingress
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # Restrict access to monitoring network
+    nginx.ingress.kubernetes.io/whitelist-source-range: '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16'
+    # No SSL required for internal
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: health.internal.terrafusion.local # Internal domain
+      http:
+        paths:
+          - path: /healthz
+            pathType: Exact
+            backend:
+              service:
+                name: terrafusion-api-internal
+                port:
+                  number: 5000
+          - path: /ready
+            pathType: Exact
+            backend:
+              service:
+                name: terrafusion-api-internal
+                port:
+                  number: 5000
+          - path: /metrics
+            pathType: Exact
+            backend:
+              service:
+                name: terrafusion-api-internal
+                port:
+                  number: 5000

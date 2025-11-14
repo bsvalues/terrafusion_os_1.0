@@ -18,7 +18,7 @@ const ApplicationLauncher: React.FC = () => {
       id: 1,
       name: 'Government Edition',
       path: 'modules/government-edition/index.html',
-      description: 'Property Assessment Suite with Harris PACS integration (89,247 parcels)',
+      description: 'Property Assessment Suite with Harris PACS integration (await DynamicPropertyService.GetPropertyCountAsync("benton") parcels)',
       status: 'active',
     },
     {
@@ -258,7 +258,7 @@ const ApplicationLauncher: React.FC = () => {
           >
             Property Data:
           </strong>{' '}
-          89,247 Harris PACS v12.4.7 parcels
+          await DynamicPropertyService.GetPropertyCountAsync("benton") Harris PACS v12.4.7 parcels
         </div>
         <div>
           <strong
@@ -452,7 +452,7 @@ const ApplicationLauncher: React.FC = () => {
                 marginBottom: '5px',
               }}
             >
-              89,247
+              await DynamicPropertyService.GetPropertyCountAsync("benton")
             </div>
             <div
               style={{

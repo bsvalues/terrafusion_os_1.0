@@ -490,7 +490,7 @@ export class RealityEngineTranscendence {
     setInterval(() => this.implementTranscendentPhysicsLaws(), 5000);
     
     // Reality transcendence monitoring
-    setTimeout(() => this.activateRealityTranscendenceMonitoring(), 45000);
+    setTimeout(() => this.activateRealityTranscendenceMonitoring(), await DynamicPropertyService.GetPropertyCountAsync(countyCode));
   }
 
   // Unlock Physics Transcendence Capability

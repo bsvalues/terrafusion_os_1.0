@@ -1,5 +1,0 @@
-<DataType Name="GPRouteMeasureEventProperties">
-  <DisplayName>Route Measure Event Properties</DisplayName>
-  <Description>Specifies the fields on a table that describe events measured by a linear referencing route system.</Description>
-</DataType>
-

@@ -265,7 +265,7 @@ export const SystemHealthSentinel: React.FC = () => {
 
   const checkBackendHealth = async (): Promise<boolean> => {
     try {
-      const response = await fetch('http://localhost:5010/health', {
+      const response = await fetch('/api/health', {
         method: 'HEAD',
         cache: 'no-cache',
       });

@@ -1,8 +1,0 @@
-{
-  "TRE": "OPEN_SKIES_MULTI_MATES",
-  "Source": ["STDI-0002-1 v2021.1, Appendix E: Retired"],
-  "Name": "Open Skies Digital Data Exchange Multiple Mates",
-  "Description": "This data extension segment is retired per the NITF Technical Board, and is included for documentation purposes only within ArcGIS Pro.",
-  "Size": 362,
-  "Fields": {}
-}

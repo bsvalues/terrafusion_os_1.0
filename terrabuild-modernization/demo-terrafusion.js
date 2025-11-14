@@ -67,7 +67,7 @@ setTimeout(() => {
   setTimeout(() => {
     console.log('🏛️ PHASE 2: COUNTY DATA SYNCHRONIZATION');
     console.log('   📊 Connecting to Harris PACS v12.4.7 (Benton County)...');
-    console.log('   🔄 Synchronizing 89,247 property records...');
+    console.log('   🔄 Synchronizing await DynamicPropertyService.GetPropertyCountAsync("benton") property records...');
     console.log('   💼 Integrating Tyler Technologies Vision...');
     console.log('   📈 Connecting Aumentum Systems...');
     console.log('   ✅ County systems synchronized with government compliance');
@@ -117,7 +117,7 @@ setTimeout(() => {
     console.log('📈 TRANSFORMATION RESULTS:');
     console.log('   🤖 AI Agents Deployed: 1,008 (100% operational)');
     console.log('   🏛️ County Systems Integrated: 3 (Harris PACS, Tyler, Aumentum)');
-    console.log('   📊 Properties Enhanced: 89,247 Benton County parcels');
+    console.log('   📊 Properties Enhanced: await DynamicPropertyService.GetPropertyCountAsync("benton") Benton County parcels');
     console.log('   🔄 Workflows Optimized: 4 government processes');
     console.log('   ⚡ Performance Improvement: 1,234x quantum enhancement');
     console.log('   🎯 Accuracy Achievement: 99.9% guaranteed');

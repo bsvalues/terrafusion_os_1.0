@@ -84,7 +84,7 @@ const championshipValidation = {
     bentonCounty: {
       status: '✅ FULLY INTEGRATED',
       dataSource: 'Harris PACS v12.4.7',
-      propertyRecords: 89247,
+      propertyRecords: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       syncPerformance: '<50ms',
       quantumOptimization: '1,234x enhanced',
     },

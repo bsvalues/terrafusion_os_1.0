@@ -56,7 +56,7 @@ export default function PredictiveAnalytics() {
         confidence: 87.5,
         predictedDate: "2025-01-25",
         impact: "high",
-        costSavings: 45000,
+        costSavings: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         description: "Primary water pump showing signs of bearing wear and increased vibration",
         recommendedAction: "Schedule preventive maintenance within 14 days",
       },

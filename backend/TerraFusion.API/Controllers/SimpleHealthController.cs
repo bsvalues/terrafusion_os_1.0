@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace TerraFusion.API.Controllers;
 
 [ApiController]
-[Route("api/simple-health")]
+[Route("health")]
 public class SimpleHealthController : ControllerBase
 {
     private readonly ILogger<SimpleHealthController> _logger;

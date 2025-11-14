@@ -1,0 +1,89 @@
+# Benton County PACS - Git Ignore Rules
+
+# Generated documentation artifacts
+_artifacts/
+*.svg
+*.png
+
+# Build outputs
+bin/
+obj/
+*.dacpac
+*.publish.xml
+
+# SQL Server data files
+*.mdf
+*.ldf
+*.bak
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# NuGet
+packages/
+*.nupkg
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Node modules (if using mermaid-cli locally)
+node_modules/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Sensitive configuration
+*.config.local
+secrets.json
+appsettings.*.json
+!appsettings.json
+
+# Database connection strings
+connectionStrings.config
+
+# Environment-specific
+.env
+.env.local
+
+# IDE
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*~
+*.bak
+*.backup
+
+# SQL Server temporary files
+*.jfm
+*.chk
+*.jrs
+edb*.log

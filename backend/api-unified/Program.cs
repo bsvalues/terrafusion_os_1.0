@@ -178,7 +178,7 @@ app.MapPost("/api/costforge/valuate", (object propertyData) =>
 {
     // Bridge to CostForge AI Tauri app
     return new { 
-        valuation = 450000,
+        valuation = await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         processing_time = "0.47ms",
         standard = "379M× faster",
         confidence = 0.94

@@ -55,9 +55,9 @@ static_resources:
                       # CORS configuration for government web applications
                       cors:
                         allow_origin_string_match:
-                          - prefix: 'https://terrafusion.gov'
-                          - prefix: 'https://portal.terrafusion.gov'
-                          - prefix: 'https://api.terrafusion.gov'
+                          - prefix: 'https://terrafusionmarket.com'
+                          - prefix: 'https://portal.terrafusionmarket.com'
+                          - prefix: 'https://api.terrafusionmarket.com'
                         allow_methods: 'GET, POST, PUT, DELETE, OPTIONS'
                         allow_headers: 'Authorization, Content-Type, X-Requested-With, TerraFusion-Client-ID'
                         allow_credentials: true
@@ -171,14 +171,14 @@ static_resources:
                       '@type': type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
                       providers:
                         terrafusion_jwt:
-                          issuer: 'https://auth.terrafusion.gov'
+                          issuer: 'https://auth.terrafusionmarket.com'
                           audiences:
                             - 'terrafusion-api'
                             - 'elite-operations'
                             - 'ai-intelligence'
                           remote_jwks:
                             http_uri:
-                              uri: 'https://auth.terrafusion.gov/.well-known/jwks.json'
+                              uri: 'https://auth.terrafusionmarket.com/.well-known/jwks.json'
                               cluster: jwt_cluster
                               timeout: 5s
                             cache_duration: 300s
@@ -372,14 +372,14 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: auth.terrafusion.gov
+                      address: auth.terrafusionmarket.com
                       port_value: 443
 
       transport_socket:
         name: envoy.transport_sockets.tls
         typed_config:
           '@type': type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-          sni: auth.terrafusion.gov
+          sni: auth.terrafusionmarket.com
 
     # Local service for stats
     - name: local_service

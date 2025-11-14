@@ -2,7 +2,7 @@
 # Multi-stage build for security and optimization
 
 # Build stage
-FROM rust:1.75.0-slim as builder
+FROM rust:1.83.0-slim as builder
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -18,8 +18,8 @@ RUN adduser --disabled-password --gecos '' --shell /bin/bash --home /app appuser
 # Set working directory
 WORKDIR /app
 
-# Copy manifests
-COPY Cargo.toml Cargo.lock ./
+# Copy manifest (Cargo.lock may be absent in repo)
+COPY Cargo.toml ./
 
 # Create dummy main.rs to build dependencies
 RUN mkdir src && echo "fn main() {}" > src/main.rs
@@ -32,7 +32,7 @@ RUN rm src/main.rs
 COPY src ./src
 
 # Build application
-RUN cargo build --release --bin tf_command_portal_api
+RUN cargo build --release --bin terrafusion_developer_platform
 
 # Runtime stage
 FROM debian:bookworm-slim
@@ -52,8 +52,8 @@ RUN adduser --disabled-password --gecos '' --shell /bin/bash --home /app appuser
 RUN mkdir -p /app/data && chown -R appuser:appuser /app
 
 # Copy binary from builder
-COPY --from=builder /app/target/release/tf_command_portal_api /app/tf_command_portal_api
-RUN chown appuser:appuser /app/tf_command_portal_api && chmod +x /app/tf_command_portal_api
+COPY --from=builder /app/target/release/terrafusion_developer_platform /app/terrafusion_developer_platform
+RUN chown appuser:appuser /app/terrafusion_developer_platform && chmod +x /app/terrafusion_developer_platform
 
 # Security configurations
 USER appuser
@@ -71,4 +71,4 @@ ENV RUST_LOG=info
 ENV REPO_ROOT=/app/data
 
 # Run application
-CMD ["./tf_command_portal_api"]
+CMD ["./terrafusion_developer_platform"]

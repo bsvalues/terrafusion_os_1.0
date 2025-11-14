@@ -146,7 +146,7 @@ export const TerraFusionEliteRealtimeDashboard: React.FC = () => {
   const checkExperimentsAPI = async () => {
     try {
       const startTime = Date.now();
-      const response = await fetch('http://localhost:5010/health', {
+      const response = await fetch('/api/health', {
         method: 'GET',
         cache: 'no-cache',
         signal: AbortSignal.timeout(3000)
@@ -157,7 +157,7 @@ export const TerraFusionEliteRealtimeDashboard: React.FC = () => {
         const data = await response.json();
         
         // Try to get experiment runs
-        const runsResponse = await fetch('http://localhost:5010/api/experiments/quantum-consciousness-research/elite-runs', {
+        const runsResponse = await fetch('/api/experiments/quantum-consciousness-research/elite-runs', {
           method: 'GET',
           cache: 'no-cache',
           signal: AbortSignal.timeout(3000)
@@ -386,7 +386,7 @@ export const TerraFusionEliteRealtimeDashboard: React.FC = () => {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span>Port:</span>
-                <span className="text-terra-cyan font-mono">5010</span>
+                <span className="text-terra-cyan font-mono">5000</span>
               </div>
               <div className="flex justify-between">
                 <span>Response Time:</span>

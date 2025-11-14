@@ -84,7 +84,7 @@ export default function MetaInfrastructurePage() {
           zipCode: predictionInput.zipCode,
           features: {
             averageGLA: 1850,
-            medianPrice: 450000,
+            medianPrice: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
             salesVolume: 75,
             daysOnMarket: 28,
             pricePerSqft: 280,
@@ -132,7 +132,7 @@ export default function MetaInfrastructurePage() {
         body: JSON.stringify({
           ownerAddress: "0x742d35Cc6634C0532925a3b8D93Adc9F84C823d5",
           address: "123 Main St",
-          salePrice: 450000,
+          salePrice: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
           gla: 1850,
           zipCode: predictionInput.zipCode,
           county: "Los Angeles",
@@ -167,7 +167,8 @@ export default function MetaInfrastructurePage() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="mb-8"><>
+      <div className="mb-8">
+<>
 
         <h1 className="text-3xl font-bold mb-2">Terrafusion Meta-Infrastructure</h1>
         <p
@@ -193,21 +194,24 @@ export default function MetaInfrastructurePage() {
           ) : systemStatus ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="flex items-center justify-between p-4 rounded-lg border">
-                <div><>
+                <div>
+<>
 
                   <p className="text-sm font-medium">NFT System</p>
                   <p
 </> className="text-2xl font-bold">
                     {systemStatus.nft.configured ? "Ready" : "Demo"}
                   </p>
-                </div><>
+                </div>
+<>
 
                 <Coins className="h-8 w-8 text-blue-500" />
               </div>
 
               <div
 </> className="flex items-center justify-between p-4 rounded-lg border">
-                <div><>
+                <div>
+<>
 
                   <p className="text-sm font-medium">Active Drones</p>
                   <p
@@ -215,14 +219,16 @@ export default function MetaInfrastructurePage() {
                   <p className="text-xs text-muted-foreground">
                     of {systemStatus.drones.totalDrones} total
                   </p>
-                </div><>
+                </div>
+<>
 
                 <Plane className="h-8 w-8 text-green-500" />
               </div>
 
               <div
 </> className="flex items-center justify-between p-4 rounded-lg border">
-                <div><>
+                <div>
+<>
 
                   <p className="text-sm font-medium">Federation Peers</p>
                   <p
@@ -230,14 +236,16 @@ export default function MetaInfrastructurePage() {
                   <p className="text-xs text-muted-foreground">
                     of {systemStatus.federation.totalPeers} connected
                   </p>
-                </div><>
+                </div>
+<>
 
                 <Globe className="h-8 w-8 text-purple-500" />
               </div>
 
               <div
 </> className="flex items-center justify-between p-4 rounded-lg border">
-                <div><>
+                <div>
+<>
 
                   <p className="text-sm font-medium">Prediction Engine</p>
                   <p
@@ -259,11 +267,13 @@ export default function MetaInfrastructurePage() {
       </Card>
 
       <Tabs defaultValue="prediction" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4"><>
+        <TabsList className="grid w-full grid-cols-4">
+<>
 
           <TabsTrigger value="prediction">AI Prediction</TabsTrigger>
           <TabsTrigger
-</> value="drones">Drone Fleet</TabsTrigger><>
+</> value="drones">Drone Fleet</TabsTrigger>
+<>
 
           <TabsTrigger value="nft">NFT Minting</TabsTrigger>
           <TabsTrigger
@@ -274,7 +284,8 @@ export default function MetaInfrastructurePage() {
         <TabsContent value="prediction">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><>
+              <CardTitle className="flex items-center gap-2">
+<>
 
                 <TrendingUp className="h-5 w-5" />
                 Predictive Price Modeling
@@ -286,7 +297,8 @@ export default function MetaInfrastructurePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex gap-4 items-end">
-                <div className="flex-1"><>
+                <div className="flex-1">
+<>
 
                   <Label htmlFor="zipCode">ZIP Code</Label>
                   <Input
@@ -312,7 +324,8 @@ export default function MetaInfrastructurePage() {
               {prediction && (
                 <div className="mt-6 p-4 border rounded-lg space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="text-center"><>
+                    <div className="text-center">
+<>
 
                       <p className="text-sm text-muted-foreground">Predicted Price/sqft</p>
                       <p
@@ -322,7 +335,8 @@ export default function MetaInfrastructurePage() {
                         {prediction.confidenceInterval.upper}
                       </p>
                     </div>
-                    <div className="text-center"><>
+                    <div className="text-center">
+<>
 
                       <p className="text-sm text-muted-foreground">Market Trend</p>
                       <p
@@ -332,7 +346,8 @@ export default function MetaInfrastructurePage() {
                         {prediction.trend}
                       </p>
                     </div>
-                    <div className="text-center"><>
+                    <div className="text-center">
+<>
 
                       <p className="text-sm text-muted-foreground">Risk Score</p>
                       <p
@@ -345,17 +360,20 @@ export default function MetaInfrastructurePage() {
 
                   <Separator />
 
-                  <div><>
+                  <div>
+<>
 
                     <h4 className="font-semibold mb-2">Key Factors</h4>
                     <div
 </> className="space-y-2">
                       {prediction.factors.map((factor /* , index */) => (
-                        <div key={index} className="flex justify-between items-center"><>
+                        <div key={index} className="flex justify-between items-center">
+<>
 
                           <span className="text-sm">{factor.name}</span>
                           <div
-</> className="flex items-center gap-2"><>
+</> className="flex items-center gap-2">
+<>
 
                             <span
                               className={`text-sm ${factor.impact > 0 ? "text-green-600" : "text-red-600"}`}
@@ -382,7 +400,8 @@ export default function MetaInfrastructurePage() {
         <TabsContent value="drones">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><>
+              <CardTitle className="flex items-center gap-2">
+<>
 
                 <Plane className="h-5 w-5" />
                 Autonomous Drone Fleet
@@ -406,7 +425,8 @@ export default function MetaInfrastructurePage() {
               </div>
 
               {droneJobId && (
-                <div className="p-4 border rounded-lg"><>
+                <div className="p-4 border rounded-lg">
+<>
 
                   <h4 className="font-semibold mb-2">Drone Job Created</h4>
                   <p
@@ -419,24 +439,28 @@ export default function MetaInfrastructurePage() {
 
               {systemStatus && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 border rounded-lg"><>
+                  <div className="p-4 border rounded-lg">
+<>
 
                     <h4 className="font-semibold mb-2">Fleet Status</h4>
                     <div
 </> className="space-y-2">
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span>Total Drones:</span>
                         <span
 </>>{systemStatus.drones.totalDrones}</span>
                       </div>
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span>Active Missions:</span>
                         <span
 </>>{systemStatus.drones.activeJobs}</span>
                       </div>
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span>Pending Jobs:</span>
                         <span
@@ -445,15 +469,18 @@ export default function MetaInfrastructurePage() {
                     </div>
                   </div>
 
-                  <div className="p-4 border rounded-lg"><>
+                  <div className="p-4 border rounded-lg">
+<>
 
                     <h4 className="font-semibold mb-2">Capabilities</h4>
                     <div
-</> className="space-y-2"><>
+</> className="space-y-2">
+<>
 
                       <Badge variant="outline">OCR Document Scanning</Badge>
                       <Badge
-</> variant="outline">LiDAR Measurements</Badge><>
+</> variant="outline">LiDAR Measurements</Badge>
+<>
 
                       <Badge variant="outline">GPS Navigation</Badge>
                       <Badge
@@ -470,7 +497,8 @@ export default function MetaInfrastructurePage() {
         <TabsContent value="nft">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><>
+              <CardTitle className="flex items-center gap-2">
+<>
 
                 <Coins className="h-5 w-5" />
                 Comp NFT Minting
@@ -481,7 +509,8 @@ export default function MetaInfrastructurePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 border rounded-lg bg-muted/50"><>
+              <div className="p-4 border rounded-lg bg-muted/50">
+<>
 
                 <h4 className="font-semibold mb-2">Demo NFT Minting</h4>
                 <p
@@ -502,18 +531,21 @@ export default function MetaInfrastructurePage() {
               </div>
 
               {nftResult && (
-                <div className="p-4 border rounded-lg"><>
+                <div className="p-4 border rounded-lg">
+<>
 
                   <h4 className="font-semibold mb-2">NFT Minted Successfully</h4>
                   <div
 </> className="space-y-2">
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span>Token ID:</span>
                       <span
 </> className="font-mono">{nftResult.tokenId}</span>
                     </div>
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span>Transaction:</span>
                       <span
@@ -533,7 +565,8 @@ export default function MetaInfrastructurePage() {
         <TabsContent value="federation">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><>
+              <CardTitle className="flex items-center gap-2">
+<>
 
                 <Shield className="h-5 w-5" />
                 Zero-Trust Mesh Federation
@@ -546,24 +579,28 @@ export default function MetaInfrastructurePage() {
             <CardContent className="space-y-4">
               {systemStatus && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 border rounded-lg"><>
+                  <div className="p-4 border rounded-lg">
+<>
 
                     <h4 className="font-semibold mb-2">Node Information</h4>
                     <div
 </> className="space-y-2">
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span>Node ID:</span>
                         <span
 </> className="font-mono text-xs">{systemStatus.federation.nodeId}</span>
                       </div>
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span>Online Peers:</span>
                         <span
 </>>{systemStatus.federation.onlinePeers}</span>
                       </div>
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span>Total Peers:</span>
                         <span
@@ -572,15 +609,18 @@ export default function MetaInfrastructurePage() {
                     </div>
                   </div>
 
-                  <div className="p-4 border rounded-lg"><>
+                  <div className="p-4 border rounded-lg">
+<>
 
                     <h4 className="font-semibold mb-2">Security Features</h4>
                     <div
-</> className="space-y-2"><>
+</> className="space-y-2">
+<>
 
                       <Badge variant="outline">mTLS Authentication</Badge>
                       <Badge
-</> variant="outline">AES256-GCM Encryption</Badge><>
+</> variant="outline">AES256-GCM Encryption</Badge>
+<>
 
                       <Badge variant="outline">RSA Signatures</Badge>
                       <Badge

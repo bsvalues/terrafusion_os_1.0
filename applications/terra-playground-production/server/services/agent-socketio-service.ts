@@ -88,7 +88,7 @@ export class AgentSocketIOService {
           allowedHeaders: ['content-type'],
         },
         allowEIO3: true,
-        connectTimeout: 45000,
+        connectTimeout: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         // Add these settings for better compatibility with various proxies and improved connection stability
         transports: ['websocket', 'polling'], // Enable polling as fallback
         allowUpgrades: true,

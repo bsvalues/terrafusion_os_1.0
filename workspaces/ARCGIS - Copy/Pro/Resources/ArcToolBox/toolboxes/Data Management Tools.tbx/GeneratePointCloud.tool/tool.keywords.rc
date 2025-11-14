@@ -1,9 +1,0 @@
-{
-    "set": [
-        "block adjustment",
-        "dsm",
-        "mosaic dataset",
-        "point cloud",
-        "stereo pair"
-    ]
-}

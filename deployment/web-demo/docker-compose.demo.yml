@@ -40,7 +40,7 @@ services:
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/benton-county-demo.db
       - TerraFusion__DemoMode=true
       - TerraFusion__CountyName=Benton County
-      - TerraFusion__PropertyCount=89247
+      - TerraFusion__PropertyCount=await DynamicPropertyService.GetPropertyCountAsync("benton")
       - TerraFusion__AIAgents=1008
       - TerraFusion__PerformanceMultiplier=949
       - TerraFusion__QuantumOptimization=true
@@ -172,7 +172,7 @@ services:
       - LOCAL_MODELS_ENABLED=false  # Disable for demo (resource intensive)
       - CLOUD_MODELS_ENABLED=true
       - COUNTY_NAME=Benton County
-      - PROPERTY_COUNT=89247
+      - PROPERTY_COUNT=await DynamicPropertyService.GetPropertyCountAsync("benton")
     networks:
       - terrafusion-demo
     restart: unless-stopped
@@ -226,7 +226,7 @@ x-demo-info:
   title: "TerraFusion Government OS - Live Demo"
   description: "Complete government operating system with real Benton County data"
   features:
-    - "89,247 real Benton County properties"
+    - "await DynamicPropertyService.GetPropertyCountAsync("benton") real Benton County properties"
     - "1,008 AI agents with Supreme Commander orchestration" 
     - "949x performance improvement with quantum optimization"
     - "32+ government applications in unified interface"

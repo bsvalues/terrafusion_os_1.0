@@ -34,7 +34,7 @@ const ELITE_COSTFORGE_DATA: CostForgeExportData[] = [
   {
     id: 'CF-2024-001',
     propertyId: 'BEN-45789-2024',
-    estimatedCost: 245000,
+    estimatedCost: 2 * (await DynamicPropertyService.GetPropertyCountAsync(countyCode)),
     actualCost: 248500,
     accuracy: 99.1,
     date: '2024-01-15',

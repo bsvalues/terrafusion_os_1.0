@@ -22,7 +22,7 @@ namespace TerraFusion.Modules.Sync
     /// Component Count: 150 specialized components
     /// 
     /// Real-time synchronization engine for:
-    /// - Harris PACS v12.4.7 (89,247 Benton County parcels)
+    /// - Harris PACS v12.4.7 (await DynamicPropertyService.GetPropertyCountAsync("benton") Benton County parcels)
     /// - Tyler Technologies Vision
     /// - Aumentum systems
     /// - Legacy CAMA systems
@@ -309,7 +309,7 @@ namespace TerraFusion.Modules.Sync
             
             try
             {
-                // Harris PACS v12.4.7 Connector (Primary - 89,247 parcels)
+                // Harris PACS v12.4.7 Connector (Primary - await DynamicPropertyService.GetPropertyCountAsync("benton") parcels)
                 var harrisPacsConnector = new HarrisPACSConnector(
                     _configuration.GetConnectionString("HarrisPACS"),
                     _logger,
@@ -362,7 +362,7 @@ namespace TerraFusion.Modules.Sync
         
         /// <summary>
         /// Specialized Harris PACS v12.4.7 integration for Benton County
-        /// Handles 89,247 parcel records with real-time synchronization
+        /// Handles await DynamicPropertyService.GetPropertyCountAsync("benton") parcel records with real-time synchronization
         /// </summary>
         public async Task<HarrisPACSIntegrationResult> SyncHarrisPACSData()
         {

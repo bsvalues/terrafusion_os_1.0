@@ -73,8 +73,8 @@ const SAMPLE_PROPERTIES: Property[] = [
     id: '1',
     parcelId: 'BN-001-2024',
     address: '123 Government Way, Prosser, WA',
-    currentValue: 450000,
-    assessedValue: 445000,
+    currentValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
+    assessedValue: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode),
     lastAssessment: new Date('2024-01-15'),
     status: 'current',
     assessor: 'AI Agent #447',
@@ -110,8 +110,8 @@ const SAMPLE_PROPERTIES: Property[] = [
 const VALUE_TREND_DATA = [
   { month: 'Jan', avgValue: 420000, aiProcessed: 380000 },
   { month: 'Feb', avgValue: 435000, aiProcessed: 415000 },
-  { month: 'Mar', avgValue: 445000, aiProcessed: 428000 },
-  { month: 'Apr', avgValue: 458000, aiProcessed: 445000 },
+  { month: 'Mar', avgValue: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode), aiProcessed: 428000 },
+  { month: 'Apr', avgValue: 458000, aiProcessed: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode) },
   { month: 'May', avgValue: 462000, aiProcessed: 458000 },
   { month: 'Jun', avgValue: 475000, aiProcessed: 472000 },
 ];

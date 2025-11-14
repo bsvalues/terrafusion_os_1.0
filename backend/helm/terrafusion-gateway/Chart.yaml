@@ -15,12 +15,12 @@ keywords:
   - microservices
   - load-balancing
 
-home: https://terrafusion.gov
+home: https://terrafusionmarket.com
 sources:
   - https://github.com/terrafusion/terrafusion-os
 maintainers:
   - name: TerraFusion Engineering
-    email: engineering@terrafusion.gov
+    email: engineering@terrafusionmarket.com
 
 annotations:
   terrafusion.io/component: gateway

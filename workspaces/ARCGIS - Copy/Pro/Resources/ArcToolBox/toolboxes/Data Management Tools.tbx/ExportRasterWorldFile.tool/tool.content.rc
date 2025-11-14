@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Creates a world file based on the pixel size and the location of the upper left pixel.",
-        "in_raster_dataset.descr": "The raster dataset from which you want to create the world file.",
-        "in_raster_dataset.title": "Input Raster Dataset",
-        "out_raster_dataset.title": "Updated Input Raster Dataset",
-        "title": "Export Raster World File"
-    }
-}

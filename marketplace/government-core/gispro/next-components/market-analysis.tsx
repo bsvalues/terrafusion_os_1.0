@@ -53,7 +53,7 @@ export function MarketAnalysis() {
     // Simulate market data generation
     setTimeout(() => {
       const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-      const basePrice = selectedRegion === "Downtown" ? 450000 : selectedRegion === "Suburbs" ? 320000 : 280000
+      const basePrice = selectedRegion === "Downtown" ? await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 : selectedRegion === "Suburbs" ? 320000 : 280000
 
       const data = months.map((month /* , index */) => {
         const seasonalFactor = 1 + 0.1 * Math.sin((index / 12) * 2 * Math.PI)
@@ -95,7 +95,8 @@ export function MarketAnalysis() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><>
+          <CardTitle className="flex items-center gap-2">
+<>
 
             <Activity className="h-5 w-5 text-green-600" />
             Real-time Market Analysis
@@ -108,7 +109,8 @@ export function MarketAnalysis() {
         </CardHeader>
         <CardContent>
           {/* Region Selection */}
-          <div className="mb-6"><>
+          <div className="mb-6">
+<>
 
             <h3 className="font-medium mb-3">Select Market Region</h3>
             <div
@@ -143,7 +145,8 @@ className="flex gap-2">
                       <div className="flex items-center gap-2 mb-1">
                         <DollarSign className="h-4 w-4 text-green-600" />
                         <span className="text-xs text-gray-600">Avg Price</span>
-                      </div><>
+                      </div>
+<>
 
                       <div className="font-bold text-lg">${(metrics.averagePrice / 1000).toFixed(0)}K</div>
                       <div
@@ -168,7 +171,8 @@ className="flex gap-2">
                       <div className="flex items-center gap-2 mb-1">
                         <Activity className="h-4 w-4 text-blue-600" />
                         <span className="text-xs text-gray-600">Market Energy</span>
-                      </div><>
+                      </div>
+<>
 
                       <div className="font-bold text-lg">{metrics.marketEnergy}</div>
                       <Progress
@@ -182,7 +186,8 @@ value={metrics.marketEnergy} className="h-1" />
                       <div className="flex items-center gap-2 mb-1">
                         <Users className="h-4 w-4 text-purple-600" />
                         <span className="text-xs text-gray-600">Active Listings</span>
-                      </div><>
+                      </div>
+<>
 
                       <div className="font-bold text-lg">{metrics.activeListings}</div>
                       <div
@@ -192,7 +197,8 @@ className="text-xs text-gray-500">properties</div>
                   </Card>
 
                   <Card>
-                    <CardContent className="pt-4"><>
+                    <CardContent className="pt-4">
+<>
 
                       <div className="text-xs text-gray-600 mb-1">Days on Market</div>
                       <div
@@ -203,7 +209,8 @@ className="font-bold text-lg">{metrics.daysOnMarket}</div>
                   </Card>
 
                   <Card>
-                    <CardContent className="pt-4"><>
+                    <CardContent className="pt-4">
+<>
 
                       <div className="text-xs text-gray-600 mb-1">Absorption Rate</div>
                       <div
@@ -214,7 +221,8 @@ className="font-bold text-lg">{metrics.absorption}%</div>
                   </Card>
 
                   <Card>
-                    <CardContent className="pt-4"><>
+                    <CardContent className="pt-4">
+<>
 
                       <div className="text-xs text-gray-600 mb-1">Market Status</div>
                       <Badge
@@ -290,12 +298,14 @@ variant={metrics.marketEnergy > 75 ? "default" : "secondary"}>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      <div className="flex items-start gap-2"><>
+                      <div className="flex items-start gap-2">
+<>
 
                         <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                         <div
 </>
-</>><>
+</>>
+<>
 
                           <div className="font-medium text-sm">Strong Buyer Demand</div>
                           <div
@@ -306,12 +316,14 @@ className="text-xs text-gray-600">
                         </div>
                       </div>
 
-                      <div className="flex items-start gap-2"><>
+                      <div className="flex items-start gap-2">
+<>
 
                         <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                         <div
 </>
-</>><>
+</>>
+<>
 
                           <div className="font-medium text-sm">Price Appreciation</div>
                           <div
@@ -320,12 +332,14 @@ className="text-xs text-gray-600">Consistent upward trend in property values</di
                         </div>
                       </div>
 
-                      <div className="flex items-start gap-2"><>
+                      <div className="flex items-start gap-2">
+<>
 
                         <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
                         <div
 </>
-</>><>
+</>>
+<>
 
                           <div className="font-medium text-sm">Inventory Levels</div>
                           <div
@@ -336,12 +350,14 @@ className="text-xs text-gray-600">
                         </div>
                       </div>
 
-                      <div className="flex items-start gap-2"><>
+                      <div className="flex items-start gap-2">
+<>
 
                         <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
                         <div
 </>
-</>><>
+</>>
+<>
 
                           <div className="font-medium text-sm">Investment Opportunity</div>
                           <div

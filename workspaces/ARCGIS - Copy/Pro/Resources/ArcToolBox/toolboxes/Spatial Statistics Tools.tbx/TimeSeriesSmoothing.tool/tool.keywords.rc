@@ -1,8 +1,0 @@
-{
-    "set": [
-        "average",
-        "moving",
-        "trend",
-        "window"
-    ]
-}

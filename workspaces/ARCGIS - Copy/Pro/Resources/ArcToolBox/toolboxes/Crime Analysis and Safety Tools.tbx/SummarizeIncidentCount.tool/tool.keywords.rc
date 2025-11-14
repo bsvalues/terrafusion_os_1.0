@@ -1,9 +1,0 @@
-{
-    "set": [
-        "aggregate",
-        "count incidents",
-        "crime",
-        "incident count",
-        "military"
-    ]
-}

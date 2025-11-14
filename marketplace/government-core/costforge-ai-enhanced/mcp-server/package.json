@@ -46,7 +46,7 @@
   "bugs": {
     "url": "https://github.com/terrafusion/costforge-ai-enhanced/issues"
   },
-  "homepage": "https://terrafusion.gov/costforge-ai",
+  "homepage": "https://terrafusionmarket.com/costforge-ai",
   "mcpServer": {
     "command": "python",
     "args": ["index.py"],

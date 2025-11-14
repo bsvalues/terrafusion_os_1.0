@@ -191,9 +191,9 @@ alerting:
     email:
       enabled: true
       recipients:
-        - "security-team@terrafusion.gov"
-        - "devops-team@terrafusion.gov"
-        - "management@terrafusion.gov"
+        - "security-team@terrafusionmarket.com"
+        - "devops-team@terrafusionmarket.com"
+        - "management@terrafusionmarket.com"
       
     slack:
       enabled: true

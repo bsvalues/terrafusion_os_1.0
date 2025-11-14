@@ -1,0 +1,74 @@
+[package]
+name = "terrafusion-quantum-optimizer"
+version = "1.0.0"
+edition = "2021"
+description = "TerraFusion Quantum Optimizer - Performance Enhancement Engine"
+authors = ["TerraFusion Elite Government OS Team"]
+license = "PROPRIETARY"
+
+[dependencies]
+# Web framework
+axum = "0.7"
+tokio = { version = "1.0", features = ["full"] }
+tower = "0.5"
+tower-http = { version = "0.5", features = ["cors", "trace", "compression-br"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Configuration
+config = "0.14"
+dotenvy = "0.15"
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono"] }
+uuid = { version = "1.0", features = ["serde", "v4"] }
+
+# Quantum computing simulation
+nalgebra = "0.33"
+ndarray = "0.16"
+num-complex = "0.4"
+# quantum-sim = { path = "../../../lib/quantum-sim" }
+# qiskit-interface = { path = "../../../lib/qiskit-interface" }
+
+# Mathematical optimization
+# Custom optimization implementations
+rand = "0.8"
+# optimization-engine = "0.9"
+
+# Machine learning for optimization
+# candle-core = "0.7"
+# candle-nn = "0.7"
+# linfa = "0.7"
+
+# Performance monitoring
+metrics = "0.23"
+prometheus = "0.13"
+
+# Logging & Telemetry
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+opentelemetry = "0.23"
+
+# HTTP client
+reqwest = { version = "0.12", features = ["json"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Concurrency
+futures = "0.3"
+async-trait = "0.1"
+rayon = "1.8"
+
+# API documentation
+utoipa = { version = "4.0", features = ["axum_extras", "chrono", "uuid"] }
+utoipa-swagger-ui = { version = "7.0", features = ["axum"] }
+
+[dev-dependencies]
+tokio-test = "0.4"

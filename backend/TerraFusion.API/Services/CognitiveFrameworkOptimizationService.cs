@@ -6,8 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using TerraFusion.API.Services;
 using TerraFusion.Abstractions.Interfaces;
-using TerraFusion.API.Interfaces; // ✅ Added for OptimizationRecommendation and performance monitoring types
-using OptimizationRecommendation = TerraFusion.Abstractions.DTOs.Responses.OptimizationRecommendation;
+using TerraFusion.API.Interfaces; // ✅ Added for TerraFusion.API.Interfaces.OptimizationRecommendation and performance monitoring types
 
 namespace TerraFusion.API.Services
 {
@@ -19,8 +18,8 @@ namespace TerraFusion.API.Services
     public interface ICognitiveFrameworkOptimizationService
     {
         Task<FrameworkOptimizationReport> AnalyzeFrameworkPerformanceAsync();
-        Task<List<OptimizationRecommendation>> GenerateOptimizationRecommendationsAsync();
-        Task<bool> ApplyAutonomousOptimizationsAsync(List<OptimizationRecommendation> recommendations);
+        Task<List<TerraFusion.API.Interfaces.OptimizationRecommendation>> GenerateOptimizationRecommendationsAsync();
+        Task<bool> ApplyAutonomousOptimizationsAsync(List<TerraFusion.API.Interfaces.OptimizationRecommendation> recommendations);
         Task<CognitiveFrameworkEvolution> PredictFrameworkEvolutionAsync();
     }
 
@@ -141,23 +140,22 @@ namespace TerraFusion.API.Services
         /// Generate AI-powered optimization recommendations
         /// Uses machine learning to identify improvement opportunities
         /// </summary>
-        public async Task<List<OptimizationRecommendation>> GenerateOptimizationRecommendationsAsync()
+        public async Task<List<TerraFusion.API.Interfaces.OptimizationRecommendation>> GenerateOptimizationRecommendationsAsync()
         {
             _logger.LogInformation("Generating AI-powered optimization recommendations");
 
             try
             {
                 var performanceReport = await AnalyzeFrameworkPerformanceAsync();
-                var recommendations = new List<OptimizationRecommendation>();
+                var recommendations = new List<TerraFusion.API.Interfaces.OptimizationRecommendation>();
 
                 // Classification Algorithm Optimizations
                 if (performanceReport.ClassificationAccuracy < 98.0m)
                 {
-                    recommendations.Add(new OptimizationRecommendation
+                    recommendations.Add(new TerraFusion.API.Interfaces.OptimizationRecommendation
                     {
                         Type = OptimizationType.ClassificationAlgorithm.ToString(),
-                        PriorityInt = (int)OptimizationPriority.High,
-                        Priority = OptimizationPriority.High.ToString(),
+                        Priority = (int)OptimizationPriority.High,
                         Title = "Improve Task Classification Accuracy",
                         Description = $"Current accuracy: {performanceReport.ClassificationAccuracy:F1}%. Recommend refining classification thresholds based on misclassification patterns.",
                         EstimatedImpact = Convert.ToDouble(CalculateClassificationImprovementImpact(performanceReport)),
@@ -169,11 +167,10 @@ namespace TerraFusion.API.Services
                 // Cognitive Load Optimizations
                 if (performanceReport.MillersLawViolations > 5) // More than 5% violations
                 {
-                    recommendations.Add(new OptimizationRecommendation
+                    recommendations.Add(new TerraFusion.API.Interfaces.OptimizationRecommendation
                     {
                         Type = OptimizationType.CognitiveLoadBalancing.ToString(),
-                        PriorityInt = (int)OptimizationPriority.Medium,
-                        Priority = OptimizationPriority.Medium.ToString(),
+                        Priority = (int)OptimizationPriority.Medium,
                         Title = "Optimize Cognitive Load Distribution",
                         Description = $"Detected {performanceReport.MillersLawViolations} violations of Miller's Law (7±2). Recommend task decomposition improvements.",
                         EstimatedImpact = Convert.ToDouble(CalculateCognitiveLoadImprovementImpact(performanceReport)),
@@ -216,7 +213,7 @@ namespace TerraFusion.API.Services
         /// Apply autonomous optimizations that have been auto-approved
         /// Implements safe, validated improvements without human intervention
         /// </summary>
-        public async Task<bool> ApplyAutonomousOptimizationsAsync(List<OptimizationRecommendation> recommendations)
+        public async Task<bool> ApplyAutonomousOptimizationsAsync(List<TerraFusion.API.Interfaces.OptimizationRecommendation> recommendations)
         {
             _logger.LogInformation("Applying autonomous optimizations to cognitive framework");
 
@@ -435,22 +432,22 @@ namespace TerraFusion.API.Services
         private List<string> IdentifyCriticalImprovementAreas(List<CognitiveMetrics> metrics) => new();
 
         // Optimization generation methods
-        private Task<List<OptimizationRecommendation>> GeneratePhaseTimingOptimizations(FrameworkOptimizationReport report) => Task.FromResult(new List<OptimizationRecommendation>());
-        private Task<List<OptimizationRecommendation>> GenerateConfidenceGateOptimizations(FrameworkOptimizationReport report) => Task.FromResult(new List<OptimizationRecommendation>());
-        private Task<List<OptimizationRecommendation>> GenerateAISwarmOptimizations(FrameworkOptimizationReport report) => Task.FromResult(new List<OptimizationRecommendation>());
-        private Task<List<OptimizationRecommendation>> GenerateCountyOptimizations(FrameworkOptimizationReport report) => Task.FromResult(new List<OptimizationRecommendation>());
+        private Task<List<TerraFusion.API.Interfaces.OptimizationRecommendation>> GeneratePhaseTimingOptimizations(FrameworkOptimizationReport report) => Task.FromResult(new List<TerraFusion.API.Interfaces.OptimizationRecommendation>());
+        private Task<List<TerraFusion.API.Interfaces.OptimizationRecommendation>> GenerateConfidenceGateOptimizations(FrameworkOptimizationReport report) => Task.FromResult(new List<TerraFusion.API.Interfaces.OptimizationRecommendation>());
+        private Task<List<TerraFusion.API.Interfaces.OptimizationRecommendation>> GenerateAISwarmOptimizations(FrameworkOptimizationReport report) => Task.FromResult(new List<TerraFusion.API.Interfaces.OptimizationRecommendation>());
+        private Task<List<TerraFusion.API.Interfaces.OptimizationRecommendation>> GenerateCountyOptimizations(FrameworkOptimizationReport report) => Task.FromResult(new List<TerraFusion.API.Interfaces.OptimizationRecommendation>());
 
         // Impact calculation methods
         private decimal CalculateClassificationImprovementImpact(FrameworkOptimizationReport report) => 0.85m;
         private decimal CalculateCognitiveLoadImprovementImpact(FrameworkOptimizationReport report) => 0.72m;
 
         // Optimization application methods
-        private Task<bool> ApplyClassificationOptimization(OptimizationRecommendation recommendation) => Task.FromResult(true);
-        private Task<bool> ApplyCognitiveLoadOptimization(OptimizationRecommendation recommendation) => Task.FromResult(true);
-        private Task<bool> ApplyPhaseTimingOptimization(OptimizationRecommendation recommendation) => Task.FromResult(true);
-        private Task<bool> ApplyConfidenceGateOptimization(OptimizationRecommendation recommendation) => Task.FromResult(true);
-        private Task<bool> ApplyAIAgentOptimization(OptimizationRecommendation recommendation) => Task.FromResult(true);
-        private Task<bool> ApplyCountyOptimization(OptimizationRecommendation recommendation) => Task.FromResult(true);
+        private Task<bool> ApplyClassificationOptimization(TerraFusion.API.Interfaces.OptimizationRecommendation recommendation) => Task.FromResult(true);
+        private Task<bool> ApplyCognitiveLoadOptimization(TerraFusion.API.Interfaces.OptimizationRecommendation recommendation) => Task.FromResult(true);
+        private Task<bool> ApplyPhaseTimingOptimization(TerraFusion.API.Interfaces.OptimizationRecommendation recommendation) => Task.FromResult(true);
+        private Task<bool> ApplyConfidenceGateOptimization(TerraFusion.API.Interfaces.OptimizationRecommendation recommendation) => Task.FromResult(true);
+        private Task<bool> ApplyAIAgentOptimization(TerraFusion.API.Interfaces.OptimizationRecommendation recommendation) => Task.FromResult(true);
+        private Task<bool> ApplyCountyOptimization(TerraFusion.API.Interfaces.OptimizationRecommendation recommendation) => Task.FromResult(true);
 
         // Evolution prediction methods
         private object PredictTaskComplexityEvolution() => new { TrendDirection = "Increasing", ComplexityGrowthRate = 0.15 };

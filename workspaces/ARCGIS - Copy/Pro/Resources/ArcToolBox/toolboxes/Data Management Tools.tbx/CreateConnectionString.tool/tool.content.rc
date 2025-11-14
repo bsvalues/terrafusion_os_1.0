@@ -1,9 +1,0 @@
-{
-    "map": {
-        "data_type.title": "Data Type",
-        "description": "Create a connection string",
-        "in_data.title": "Input Data Element",
-        "out_connection_string.title": "CIMDATA Connection String",
-        "title": "Create Connection String"
-    }
-}

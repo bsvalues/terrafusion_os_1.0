@@ -356,7 +356,7 @@ class CountyDataService {
             id: "KC002", 
             address: "456 Market Ave, Bellevue, WA 98004",
             type: "Commercial",
-            value: 2450000,
+            value: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
             sqft: 8500,
             yearBuilt: 2008,
             details: "Office complex, premium location",

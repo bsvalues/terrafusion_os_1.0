@@ -1,0 +1,282 @@
+# TerraFusion API - Kubernetes Production Deployment
+# Complete production-ready K8s manifests with HPA, PDB, and proper probes
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-api
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+    version: v1
+    component: backend
+    tier: api
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: terrafusion-api
+  template:
+    metadata:
+      labels:
+        app: terrafusion-api
+        version: v1
+        component: backend
+        tier: api
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '5000'
+        prometheus.io/path: '/metrics'
+    spec:
+      serviceAccountName: terrafusion-api
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      containers:
+        - name: api
+          image: ghcr.io/yourorg/terrafusion-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+              name: http
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: 'Production'
+            - name: ASPNETCORE_HTTP_PORTS
+              value: '5000'
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-db-secret
+                  key: connection-string
+            - name: ConnectionStrings__Redis
+              value: 'terrafusion-redis:6379'
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-redis-secret
+                  key: password
+            - name: Features__DatabaseRequired
+              value: 'true'
+            - name: TF_ELITE_MODE
+              value: 'true'
+            - name: GIT_SHA
+              value: 'GIT_SHA_PLACEHOLDER' # Replaced by CI/CD
+            - name: BUILD_NUMBER
+              value: 'BUILD_NUMBER_PLACEHOLDER' # Replaced by CI/CD
+            - name: IMAGE_TAG
+              value: 'IMAGE_TAG_PLACEHOLDER' # Replaced by CI/CD
+            # Graceful shutdown
+            - name: DOTNET_SHUTDOWNTIMEOUTSECONDS
+              value: '20'
+            - name: ASPNETCORE_SHUTDOWNTIMEOUTSECONDS
+              value: '20'
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 5000
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          lifecycle:
+            preStop:
+              httpGet:
+                path: /healthz
+                port: 5000
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 1
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: app-tmp
+              mountPath: /app/tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: app-tmp
+          emptyDir: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - terrafusion-api
+                topologyKey: kubernetes.io/hostname
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-api-service
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+    component: backend
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '5000'
+    prometheus.io/path: '/metrics'
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 5000
+      protocol: TCP
+      name: http
+  selector:
+    app: terrafusion-api
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: terrafusion-api-hpa
+  namespace: terrafusion
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: terrafusion-api
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+        - type: Pods
+          value: 4
+          periodSeconds: 15
+      selectPolicy: Max
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-api-pdb
+  namespace: terrafusion
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: terrafusion-api
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: terrafusion-api
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: terrafusion-api-netpol
+  namespace: terrafusion
+spec:
+  podSelector:
+    matchLabels:
+      app: terrafusion-api
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-system
+        - podSelector:
+            matchLabels:
+              app: terrafusion-frontend
+      ports:
+        - protocol: TCP
+          port: 5000
+  egress:
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow access to PostgreSQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgresql
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow access to Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow HTTPS out for external APIs
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443

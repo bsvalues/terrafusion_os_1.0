@@ -71,7 +71,7 @@ app.MapGet("/api/ide/status", () => new
     Capabilities = new[]
     {
         "SQLite Database Access (32 databases)",
-        "Benton County Property Data (89,247 parcels)",
+        "Benton County Property Data (await DynamicPropertyService.GetPropertyCountAsync("benton") parcels)",
         "Code Execution & Compilation",
         "AI-Powered Development with 1,008 agents",
         "Government Compliance Tools"
@@ -89,8 +89,8 @@ app.MapGet("/api/databases", () =>
         {
             Databases = new[]
             {
-                new { Name = "benton_county_parcels", Type = "SQLite", Tables = 12, Records = 89247 },
-                new { Name = "property_valuations", Type = "SQLite", Tables = 8, Records = 45000 },
+                new { Name = "benton_county_parcels", Type = "SQLite", Tables = 12, Records = await DynamicPropertyService.GetPropertyCountAsync("benton") },
+                new { Name = "property_valuations", Type = "SQLite", Tables = 8, Records = await DynamicPropertyService.GetPropertyCountAsync(countyCode) },
                 new { Name = "tax_levies", Type = "SQLite", Tables = 5, Records = 12000 }
             },
             Message = "Demo data - databases directory not found at: " + dbPath

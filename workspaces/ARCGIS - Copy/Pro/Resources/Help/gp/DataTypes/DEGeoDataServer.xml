@@ -1,5 +1,0 @@
-<DataType Name="DEGeoDataServer">
-  <DisplayName>GeoDataServer</DisplayName>
-  <Description>A coarse-grained object that references a geodatabase.</Description>
-</DataType>
-

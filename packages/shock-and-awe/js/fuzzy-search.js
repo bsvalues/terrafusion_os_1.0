@@ -149,7 +149,7 @@ class FuzzyAddressSearch {
                 bathrooms: 2.5,
                 yearBuilt: 2013,
                 lotSize: "0.28 acres",
-                assessedValue: 445000,
+                assessedValue: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode),
                 county: "Benton"
             },
             {

@@ -12,7 +12,7 @@ const MOCK_REPORTS = [
     status: 'Completed',
     assignedTo: 'John Appraiser',
     completedDate: '2023-04-18T15:30:00Z',
-    value: 450000
+    value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0
   },
   {
     id: 'rpt-2023-0002',

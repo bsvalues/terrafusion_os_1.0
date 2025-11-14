@@ -554,11 +554,11 @@ className="mt-2 text-blue-300">
 
 className="mt-2 text-blue-300">
                       Technical Support:<br />
-                      <span className="text-blue-100">support@bcbs.bentoncounty.gov</span>
+                      <span className="text-blue-100">support@bcbs.terrafusionmarket.io</span>
                     </p>
                     <p className="mt-2 text-blue-300">
                       Training Requests:<br />
-                      <span className="text-blue-100">training@bcbs.bentoncounty.gov</span>
+                      <span className="text-blue-100">training@bcbs.terrafusionmarket.io</span>
                     </p>
                   </div>
                 </div>

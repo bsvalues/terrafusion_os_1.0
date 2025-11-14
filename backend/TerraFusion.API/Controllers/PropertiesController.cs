@@ -25,11 +25,11 @@ public class PropertiesController : ControllerBase
         [FromQuery] int page = 1, 
         [FromQuery] int pageSize = 50,
         [FromQuery] string? search = null,
-        [FromQuery] int? countyId = null)
+        [FromQuery] Guid? countyId = null)
     {
         try
         {
-            var properties = await _propertyService.GetPropertiesAsync(page, pageSize, search, countyId.HasValue ? new Guid(countyId.Value.ToString().PadLeft(32, '0')) : null);
+            var properties = await _propertyService.GetPropertiesAsync(page, pageSize, search, countyId);
             return Ok(properties);
         }
         catch (Exception ex)
@@ -77,11 +77,11 @@ public class PropertiesController : ControllerBase
     }
 
     [HttpGet("{id}/valuations")]
-    public async Task<ActionResult<IEnumerable<ValuationDto>>> GetPropertyValuations(int id)
+    public async Task<ActionResult<IEnumerable<ValuationDto>>> GetPropertyValuations(Guid id)
     {
         try
         {
-            var valuations = await _propertyService.GetPropertyValuationsAsync(new Guid(id.ToString().PadLeft(32, '0')));
+            var valuations = await _propertyService.GetPropertyValuationsAsync(id);
             return Ok(valuations);
         }
         catch (Exception ex)

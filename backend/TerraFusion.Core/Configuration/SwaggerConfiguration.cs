@@ -59,15 +59,15 @@ All endpoints require JWT Bearer token authentication except for health checks a
                 Contact = new OpenApiContact
                 {
                     Name = "TerraFusion OS Support",
-                    Email = "support@terrafusion.gov",
-                    Url = new Uri("https://terrafusion.gov/support")
+                    Email = "support@terrafusionmarket.com",
+                    Url = new Uri("https://terrafusionmarket.com/support")
                 },
                 License = new OpenApiLicense
                 {
                     Name = "Government License",
-                    Url = new Uri("https://terrafusion.gov/license")
+                    Url = new Uri("https://terrafusionmarket.com/license")
                 },
-                TermsOfService = new Uri("https://terrafusion.gov/terms")
+                TermsOfService = new Uri("https://terrafusionmarket.com/terms")
             });
 
             // Security Definitions

@@ -1,0 +1,74 @@
+{
+  "name": "@terrafusion/ai",
+  "version": "1.0.0",
+  "description": "TerraFusion AI Framework - 50,000+ Agent Coordination",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "ai:train": "node dist/training/run.js",
+    "ai:deploy": "node dist/deployment/deploy.js",
+    "swarm:test": "node dist/swarm/test.js",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "terrafusion",
+    "ai",
+    "artificial-intelligence",
+    "swarm",
+    "agents",
+    "consciousness",
+    "quantum",
+    "government",
+    "machine-learning"
+  ],
+  "author": "TerraFusion Elite Government OS Team",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "@tensorflow/tfjs": "^4.15.0",
+    "@tensorflow/tfjs-node": "^4.15.0",
+    "openai": "^4.20.0",
+    "langchain": "^0.0.208",
+    "anthropic": "^0.7.0",
+    "axios": "^1.6.0",
+    "uuid": "^9.0.0",
+    "rxjs": "^7.8.0",
+    "ws": "^8.14.0",
+    "eventemitter3": "^5.0.0",
+    "p-queue": "^8.0.0",
+    "date-fns": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "rollup": "^4.0.0",
+    "jest": "^29.5.0",
+    "rimraf": "^5.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  }
+}

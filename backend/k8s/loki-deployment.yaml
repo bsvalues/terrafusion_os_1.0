@@ -284,10 +284,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - loki.terrafusion.gov
+        - loki.terrafusionmarket.com
       secretName: loki-tls
   rules:
-    - host: loki.terrafusion.gov
+    - host: loki.terrafusionmarket.com
       http:
         paths:
           - path: /

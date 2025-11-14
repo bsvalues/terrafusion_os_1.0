@@ -1,5 +1,0 @@
-<DataType Name="GPLayer">
-  <DisplayName>Layer</DisplayName>
-  <Description>A reference to a data source, such as a shapefile, coverage, geodatabase feature class, or raster, including symbology and rendering properties.</Description>
-</DataType>
-

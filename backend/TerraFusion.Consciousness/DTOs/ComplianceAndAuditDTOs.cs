@@ -98,6 +98,12 @@ namespace TerraFusion.Consciousness.DTOs
         public int QuantumAgentsActive { get; set; }
         public bool SystemReady { get; set; }
         public List<string> ComponentsInitialized { get; set; } = new();
+
+        // Benton County-specific elite optimization properties
+        public string? CountySpecific { get; set; }
+        public int? ParcelCount { get; set; }
+        public string? HarrisPACSVersion { get; set; }
+        public string? OptimizationLevel { get; set; }
     }
 
     /// <summary>

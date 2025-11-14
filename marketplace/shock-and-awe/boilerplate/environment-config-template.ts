@@ -301,7 +301,7 @@ export class ConfigManager {
       ...this.createDevelopmentConfig(),
       environment: 'staging',
       port: parseInt(process.env.PORT || '5000'),
-      baseUrl: process.env.BASE_URL || 'https://staging.terrafusion.gov',
+      baseUrl: process.env.BASE_URL || 'https://staging.terrafusionmarket.com',
 
       database: {
         ...this.createDevelopmentConfig().database,
@@ -328,7 +328,7 @@ export class ConfigManager {
       security: {
         ...this.createDevelopmentConfig().security,
         jwtSecret: process.env.JWT_SECRET || '',
-        corsOrigins: ['https://staging.terrafusion.gov'],
+        corsOrigins: ['https://staging.terrafusionmarket.com'],
         requireHttps: true
       },
 
@@ -368,7 +368,7 @@ export class ConfigManager {
     return {
       ...this.createStagingConfig(),
       environment: 'production',
-      baseUrl: process.env.BASE_URL || 'https://terrafusion.gov',
+      baseUrl: process.env.BASE_URL || 'https://terrafusionmarket.com',
 
       database: {
         host: process.env.DB_HOST || '',

@@ -6783,7 +6783,7 @@
     "Source": "📦_DEPLOYMENT_PART_2_KUBERNETES_TERRAFORM_CLOUD.md",
     "Type": "TimelineEvent",
     "Date": "Phase 3.5",
-    "Context": "duction)\r\n- **Benton County flagship:** 89,247 parcels, 15-20 min deployment, 50,000 AI agents\r\n- **Phase 3.5 POC validated:** 500K agents, 100M txns/day, 2-100 pod autoscaling\r\n- **Championship-level infrastr"
+    "Context": "duction)\r\n- **Benton County flagship:** await DynamicPropertyService.GetPropertyCountAsync("benton") parcels, 15-20 min deployment, 50,000 AI agents\r\n- **Phase 3.5 POC validated:** 500K agents, 100M txns/day, 2-100 pod autoscaling\r\n- **Championship-level infrastr"
   },
   {
     "Source": "📦_DEPLOYMENT_PART_2_KUBERNETES_TERRAFORM_CLOUD.md",
@@ -18825,7 +18825,7 @@
     "Source": "PHASE_4_WEEK_3.5_DAY_6_OBSERVABILITY_DR.md",
     "Type": "TimelineEvent",
     "Date": "Day 5",
-    "Context": "ocking mode enabled\r\n- ✅ Auth endpoint rate limiting\r\n- ✅ Minimal JWT claims\r\n\r\n**Service Dry Runs (Day 5 Part 3):**\r\n- ✅ Property valuation: 89,247 parcels processed\r\n- ✅ Citizen portal: 10K concurrent us"
+    "Context": "ocking mode enabled\r\n- ✅ Auth endpoint rate limiting\r\n- ✅ Minimal JWT claims\r\n\r\n**Service Dry Runs (Day 5 Part 3):**\r\n- ✅ Property valuation: await DynamicPropertyService.GetPropertyCountAsync("benton") parcels processed\r\n- ✅ Citizen portal: 10K concurrent us"
   },
   {
     "Source": "PHASE_4_WEEK_3.5_DAY_6_OBSERVABILITY_DR.md",

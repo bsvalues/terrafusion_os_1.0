@@ -5,7 +5,7 @@
     "description": "Advanced GIS workflow solution for county assessor offices",
     "repository": "https://github.com/your-org/terrafusion-gis.git",
     "license": "MIT",
-    "homepage": "https://terrafusion.gov"
+    "homepage": "https://terrafusionmarket.com"
   },
   "architecture": {
     "type": "fullstack",
@@ -275,9 +275,9 @@
       "troubleshooting": "docs/troubleshooting/"
     },
     "contact": {
-      "technical_support": "support@terrafusion.gov",
-      "security_issues": "security@terrafusion.gov",
-      "general_inquiries": "info@terrafusion.gov"
+      "technical_support": "support@terrafusionmarket.com",
+      "security_issues": "security@terrafusionmarket.com",
+      "general_inquiries": "info@terrafusionmarket.com"
     }
   },
   "roadmap": {

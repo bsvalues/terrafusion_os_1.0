@@ -14,11 +14,11 @@ data:
     password: $email-password
     host: smtp.gmail.com
     port: 465
-    from: argocd@terrafusion.gov
+    from: argocd@terrafusionmarket.com
 
   # Webhook integration
   service.webhook.terrafusion: |
-    url: https://hooks.terrafusion.gov/argocd
+    url: https://hooks.terrafusionmarket.com/argocd
     headers:
     - name: Authorization
       value: Bearer $webhook-token
@@ -200,8 +200,8 @@ data:
 
     # Email notifications for production failures
     - recipients:
-      - email:platform-team@terrafusion.gov
-      - email:sre-team@terrafusion.gov
+      - email:platform-team@terrafusionmarket.com
+      - email:sre-team@terrafusionmarket.com
       triggers:
       - on-health-degraded
       - on-sync-failed

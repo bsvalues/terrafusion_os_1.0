@@ -105,7 +105,7 @@ export const TerraLiveTelemetry: React.FC = () => {
     },
     {
       id: '2',
-      timestamp: Date.now() - 45000,
+      timestamp: Date.now() - await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       type: 'info',
       source: 'GIS Engine',
       message: 'Spatial data synchronization in progress',

@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Adds global IDs to a list of geodatabase feature classes, tables, and feature datasets.",
-        "in_datasets.descr": "A list of geodatabase classes, tables, and feature datasets to which global IDs will be added.",
-        "in_datasets.title": "Input Datasets",
-        "out_datasets.title": "Updated Datasets",
-        "title": "Add Global IDs"
-    }
-}

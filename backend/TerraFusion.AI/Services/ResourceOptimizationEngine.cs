@@ -772,48 +772,48 @@ namespace TerraFusion.AI.Services
         public int FailedOptimizations { get; set; }
         public double AverageROI { get; set; }
         public double AveragePaybackPeriodMonths { get; set; }
-        public Dictionary<string, int> OpportunitiesByType { get; set; }
-        public Dictionary<string, int> OpportunitiesByPriority { get; set; }
-        public List<ResourceOptimizationOpportunity> TopOpportunities { get; set; }
+        public Dictionary<string, int> OpportunitiesByType { get; set; } = new();
+        public Dictionary<string, int> OpportunitiesByPriority { get; set; } = new();
+        public List<ResourceOptimizationOpportunity> TopOpportunities { get; set; } = new();
         public double CurrentMonthlyWaste { get; set; }
         public double WasteReductionTarget { get; set; }
     }
 
     public class ResourceMetrics
     {
-        public string SubsystemId { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
         public double AverageCpuUtilization { get; set; }
         public double PeakCpuUtilization { get; set; }
         public double AverageMemoryUtilization { get; set; }
         public double PeakMemoryUtilization { get; set; }
         public int AverageDiskIOPS { get; set; }
         public double NetworkThroughputMbps { get; set; }
-        public string CurrentInstanceType { get; set; }
+        public string CurrentInstanceType { get; set; } = string.Empty;
         public int CurrentInstanceCount { get; set; }
         public double MonthlyCost { get; set; }
-        public string UtilizationTrend { get; set; }
+        public string UtilizationTrend { get; set; } = string.Empty;
         public double WastePercentage { get; set; }
         public DateTime LastAnalyzed { get; set; }
     }
 
     public class ResourceOptimizationOpportunity
     {
-        public string OpportunityId { get; set; }
-        public string Type { get; set; }
-        public string SubsystemId { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string CurrentConfiguration { get; set; }
-        public string RecommendedConfiguration { get; set; }
+        public string OpportunityId { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string SubsystemId { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string CurrentConfiguration { get; set; } = string.Empty;
+        public string RecommendedConfiguration { get; set; } = string.Empty;
         public double CurrentMonthlyCost { get; set; }
         public double OptimizedMonthlyCost { get; set; }
         public double MonthlySavings { get; set; }
         public double AnnualSavings { get; set; }
-        public string ImplementationEffort { get; set; }
-        public string Risk { get; set; }
+        public string ImplementationEffort { get; set; } = string.Empty;
+        public string Risk { get; set; } = string.Empty;
         public double Confidence { get; set; }
-        public string PerformanceImpact { get; set; }
-        public string Priority { get; set; }
+        public string PerformanceImpact { get; set; } = string.Empty;
+        public string Priority { get; set; } = string.Empty;
     }
 
     public class RightSizingAnalysis
@@ -822,9 +822,9 @@ namespace TerraFusion.AI.Services
         public int TotalSubsystemsAnalyzed { get; set; }
         public int SubsystemsWithOpportunities { get; set; }
         public double TotalAnnualSavings { get; set; }
-        public List<ResourceOptimizationOpportunity> Opportunities { get; set; }
-        public UtilizationDistribution UtilizationDistribution { get; set; }
-        public RightSizingSummary RecommendationSummary { get; set; }
+        public List<ResourceOptimizationOpportunity> Opportunities { get; set; } = new();
+        public UtilizationDistribution UtilizationDistribution { get; set; } = new();
+        public RightSizingSummary RecommendationSummary { get; set; } = new();
     }
 
     public class UtilizationDistribution
@@ -846,54 +846,54 @@ namespace TerraFusion.AI.Services
     {
         public DateTime PlanGeneratedAt { get; set; }
         public int PlanningHorizonMonths { get; set; }
-        public List<ResourceReservedInstanceRecommendation> RecommendedPurchases { get; set; }
+        public List<ResourceReservedInstanceRecommendation> RecommendedPurchases { get; set; } = new();
         public double TotalUpfrontInvestment { get; set; }
         public double TotalMonthlySavings { get; set; }
         public double TotalAnnualSavings { get; set; }
         public double ROI { get; set; }
         public double BreakevenMonths { get; set; }
-        public string RiskAssessment { get; set; }
+        public string RiskAssessment { get; set; } = string.Empty;
     }
 
     public class ResourceReservedInstanceRecommendation
     {
-        public string SubsystemId { get; set; }
-        public string InstanceType { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public string InstanceType { get; set; } = string.Empty;
         public int RecommendedCount { get; set; }
-        public string Term { get; set; }
-        public string PaymentOption { get; set; }
+        public string Term { get; set; } = string.Empty;
+        public string PaymentOption { get; set; } = string.Empty;
         public double EstimatedMonthlySavings { get; set; }
         public double EstimatedAnnualSavings { get; set; }
         public double UpfrontCost { get; set; }
         public double PaybackMonths { get; set; }
-        public string Priority { get; set; }
+        public string Priority { get; set; } = string.Empty;
         public double Confidence { get; set; }
     }
 
     public class SpotInstanceRecommendation
     {
         public DateTime GeneratedAt { get; set; }
-        public List<SpotWorkloadRecommendation> EligibleWorkloads { get; set; }
+        public List<SpotWorkloadRecommendation> EligibleWorkloads { get; set; } = new();
         public double TotalMonthlySavings { get; set; }
         public double TotalAnnualSavings { get; set; }
         public double AverageSavingsPercent { get; set; }
-        public List<string> RiskMitigation { get; set; }
-        public List<string> BestPractices { get; set; }
+        public List<string> RiskMitigation { get; set; } = new();
+        public List<string> BestPractices { get; set; } = new();
     }
 
     public class SpotWorkloadRecommendation
     {
-        public string WorkloadType { get; set; }
-        public string SubsystemId { get; set; }
-        public string CurrentConfiguration { get; set; }
-        public string RecommendedSpotMix { get; set; }
-        public string InterruptionTolerance { get; set; }
+        public string WorkloadType { get; set; } = string.Empty;
+        public string SubsystemId { get; set; } = string.Empty;
+        public string CurrentConfiguration { get; set; } = string.Empty;
+        public string RecommendedSpotMix { get; set; } = string.Empty;
+        public string InterruptionTolerance { get; set; } = string.Empty;
         public double EstimatedInterruptionRate { get; set; }
-        public string FallbackStrategy { get; set; }
+        public string FallbackStrategy { get; set; } = string.Empty;
         public double MonthlySavings { get; set; }
         public double AnnualSavings { get; set; }
-        public string ImplementationComplexity { get; set; }
-        public string Priority { get; set; }
+        public string ImplementationComplexity { get; set; } = string.Empty;
+        public string Priority { get; set; } = string.Empty;
     }
 
     public class WasteAnalysisReport
@@ -901,68 +901,68 @@ namespace TerraFusion.AI.Services
         public DateTime AnalysisTimestamp { get; set; }
         public double TotalMonthlyWaste { get; set; }
         public double TotalAnnualWaste { get; set; }
-        public List<WasteSource> WasteSources { get; set; }
-        public List<SubsystemWaste> WasteBySubsystem { get; set; }
-        public List<string> QuickWins { get; set; }
-        public List<string> RecommendedActions { get; set; }
+        public List<WasteSource> WasteSources { get; set; } = new();
+        public List<SubsystemWaste> WasteBySubsystem { get; set; } = new();
+        public List<string> QuickWins { get; set; } = new();
+        public List<string> RecommendedActions { get; set; } = new();
     }
 
     public class WasteSource
     {
-        public string Category { get; set; }
-        public string Description { get; set; }
+        public string Category { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public double MonthlyWaste { get; set; }
         public double AnnualWaste { get; set; }
         public int AffectedResources { get; set; }
-        public string RemediationDifficulty { get; set; }
+        public string RemediationDifficulty { get; set; } = string.Empty;
     }
 
     public class SubsystemWaste
     {
-        public string SubsystemId { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
         public double MonthlyWaste { get; set; }
         public double WastePercentage { get; set; }
-        public string PrimaryWasteCategory { get; set; }
+        public string PrimaryWasteCategory { get; set; } = string.Empty;
     }
 
     public class OptimizationAction
     {
-        public string OpportunityId { get; set; }
-        public string ActionType { get; set; }
+        public string OpportunityId { get; set; } = string.Empty;
+        public string ActionType { get; set; } = string.Empty;
         public bool ApproveExecution { get; set; }
     }
 
     public class OptimizationResult
     {
-        public string ExecutionId { get; set; }
-        public string Status { get; set; }
-        public string OpportunityId { get; set; }
-        public string OptimizationType { get; set; }
-        public string SubsystemId { get; set; }
-        public List<string> ExecutionSteps { get; set; }
+        public string ExecutionId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string OpportunityId { get; set; } = string.Empty;
+        public string OptimizationType { get; set; } = string.Empty;
+        public string SubsystemId { get; set; } = string.Empty;
+        public List<string> ExecutionSteps { get; set; } = new();
         public double EstimatedMonthlySavings { get; set; }
         public double EstimatedAnnualSavings { get; set; }
         public DateTime ActualSavingsWillBeRealized { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public DateTime CompletedAt { get; set; }
     }
 
     public class CostPerformanceMatrix
     {
         public DateTime GeneratedAt { get; set; }
-        public List<SubsystemCostPerformance> Subsystems { get; set; }
-        public string OptimalQuadrant { get; set; }
+        public List<SubsystemCostPerformance> Subsystems { get; set; } = new();
+        public string OptimalQuadrant { get; set; } = string.Empty;
         public double AverageCostEfficiency { get; set; }
     }
 
     public class SubsystemCostPerformance
     {
-        public string SubsystemId { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
         public double MonthlyCost { get; set; }
         public double PerformanceScore { get; set; }
         public double CostEfficiency { get; set; }
-        public string Quadrant { get; set; }
-        public string Recommendation { get; set; }
+        public string Quadrant { get; set; } = string.Empty;
+        public string Recommendation { get; set; } = string.Empty;
     }
 
     public class CapacityPlan
@@ -970,9 +970,9 @@ namespace TerraFusion.AI.Services
         public DateTime GeneratedAt { get; set; }
         public int PlanningHorizonMonths { get; set; }
         public double BusinessGrowthAssumption { get; set; }
-        public List<MonthlyCapacityForecast> MonthlyForecasts { get; set; }
-        public List<string> RecommendedActions { get; set; }
-        public BudgetProjection BudgetProjection { get; set; }
+        public List<MonthlyCapacityForecast> MonthlyForecasts { get; set; } = new();
+        public List<string> RecommendedActions { get; set; } = new();
+        public BudgetProjection BudgetProjection { get; set; } = new();
     }
 
     public class MonthlyCapacityForecast
@@ -994,8 +994,8 @@ namespace TerraFusion.AI.Services
 
     public class OptimizationExecution
     {
-        public string ExecutionId { get; set; }
-        public string OpportunityId { get; set; }
+        public string ExecutionId { get; set; } = string.Empty;
+        public string OpportunityId { get; set; } = string.Empty;
         public DateTime Timestamp { get; set; }
         public bool Success { get; set; }
     }

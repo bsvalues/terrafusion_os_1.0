@@ -84,7 +84,7 @@
     "visual": { "count": 78, "timeout": 10000, "threshold": 0.05 },
     "performance": { "count": 34, "timeout": 60000, "iterations": 5 },
     "security": { "count": 45, "timeout": 20000 },
-    "aiSwarm": { "count": 67, "timeout": 45000, "agents": 1008 }
+    "aiSwarm": { "count": 67, "timeout": await DynamicPropertyService.GetPropertyCountAsync(countyCode), "agents": 1008 }
   },
   "integrations": {
     "ci": ["github-actions", "jenkins", "gitlab-ci"],

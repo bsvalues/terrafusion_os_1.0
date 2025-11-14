@@ -1,9 +1,0 @@
-{
-    "set": [
-        "integrity",
-        "order",
-        "pipeline",
-        "reverse",
-        "routes"
-    ]
-}

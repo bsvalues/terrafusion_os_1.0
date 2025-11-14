@@ -1,5 +1,0 @@
-<DataType Name="GPSARadius">
-  <DisplayName>Radius</DisplayName>
-  <Description>Specifies which surrounding points are used for interpolation.</Description>
-</DataType>
-

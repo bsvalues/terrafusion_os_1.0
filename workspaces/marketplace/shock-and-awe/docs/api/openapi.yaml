@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: shock-and-awe-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/marketplace/shock-and-awe
+    email: shock-and-awe-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/marketplace/shock-and-awe
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/shock-and-awe
+  - url: https://api.terrafusionmarket.com/api/v1/shock-and-awe
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/shock-and-awe
+  - url: https://staging-api.terrafusionmarket.com/api/v1/shock-and-awe
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/shock-and-awe
+  - url: https://dev-api.terrafusionmarket.com/api/v1/shock-and-awe
     description: Development Environment
 paths:
   /health:
@@ -195,8 +195,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             shock-and-awe:read: Read access to shock-and-awe resources
             shock-and-awe:write: Write access to shock-and-awe resources
@@ -214,4 +214,4 @@ tags:
     description: Shock And Awe operations
     externalDocs:
       description: Find out more about shock-and-awe
-      url: https://docs.terrafusion.gov/marketplace/shock-and-awe
+      url: https://docs.terrafusionmarket.com/marketplace/shock-and-awe

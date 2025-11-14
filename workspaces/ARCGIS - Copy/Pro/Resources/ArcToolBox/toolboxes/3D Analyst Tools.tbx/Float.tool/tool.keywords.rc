@@ -1,9 +1,0 @@
-{
-    "set": [
-        "convert",
-        "decimal",
-        "floating point",
-        "integer",
-        "math"
-    ]
-}

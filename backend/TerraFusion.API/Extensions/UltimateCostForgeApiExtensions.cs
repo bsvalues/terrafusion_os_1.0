@@ -42,7 +42,7 @@ namespace TerraFusion.API.Extensions
                     Contact = new Microsoft.OpenApi.Models.OpenApiContact
                     {
                         Name = "TerraFusion OS Team",
-                        Email = "dev@terrafusion.gov"
+                        Email = "dev@terrafusionmarket.com"
                     }
                 });
 

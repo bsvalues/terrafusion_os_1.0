@@ -1,0 +1,1024 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion
+  labels:
+    name: terrafusion
+    tier: government-os
+    compliance: fisma-high
+---
+# PostgreSQL Database ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: terrafusion
+data:
+  POSTGRES_DB: terrafusion
+  POSTGRES_USER: terrafusion
+  postgresql.conf: |
+    # TerraFusion OS - Quantum-Enhanced PostgreSQL Configuration
+    # Championship Performance Optimization
+
+    # Connection Settings
+    max_connections = 500
+    superuser_reserved_connections = 3
+
+    # Memory Configuration - Championship Level
+    shared_buffers = 2GB
+    effective_cache_size = 8GB
+    work_mem = 64MB
+    maintenance_work_mem = 512MB
+
+    # Checkpoint Configuration - Quantum Optimized
+    checkpoint_completion_target = 0.9
+    checkpoint_timeout = 15min
+    max_wal_size = 4GB
+    min_wal_size = 1GB
+
+    # Query Optimization - Championship Performance
+    random_page_cost = 1.1
+    effective_io_concurrency = 300
+    default_statistics_target = 500
+
+    # Logging - FISMA Compliance
+    log_destination = 'stderr'
+    logging_collector = on
+    log_directory = 'logs'
+    log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
+    log_statement = 'all'
+    log_duration = on
+    log_min_duration_statement = 1000
+
+    # Lock Management - Government Grade
+    deadlock_timeout = 1s
+    max_locks_per_transaction = 256
+
+    # Vacuum & Autovacuum - Quantum Maintenance
+    autovacuum = on
+    autovacuum_max_workers = 8
+    autovacuum_naptime = 30s
+
+    # Replication - High Availability
+    wal_level = replica
+    max_wal_senders = 10
+    max_replication_slots = 10
+---
+# Redis Configuration ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: terrafusion
+data:
+  redis.conf: |
+    # TerraFusion OS - Quantum-Enhanced Redis Configuration
+    # Championship Performance Caching
+
+    # Memory Management - Championship Level
+    maxmemory 4gb
+    maxmemory-policy allkeys-lru
+
+    # Persistence - Government Grade
+    save 900 1
+    save 300 10
+    save 60 10000
+    rdbcompression yes
+    rdbchecksum yes
+
+    # Network - Quantum Optimized
+    tcp-keepalive 300
+    timeout 0
+    tcp-backlog 511
+
+    # Logging - FISMA Compliance
+    loglevel notice
+    logfile /var/log/redis/redis-server.log
+
+    # Performance - Championship Targets
+    hash-max-ziplist-entries 512
+    hash-max-ziplist-value 64
+    list-max-ziplist-size -2
+    set-max-intset-entries 512
+    zset-max-ziplist-entries 128
+    zset-max-ziplist-value 64
+
+    # Security - Government Standards
+    protected-mode yes
+    rename-command FLUSHDB ""
+    rename-command FLUSHALL ""
+    rename-command DEBUG ""
+---
+# PostgreSQL Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: terrafusion
+  labels:
+    app: postgres
+    tier: database
+    compliance: fisma-high
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        tier: database
+    spec:
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+            - name: postgres-config-volume
+              mountPath: /etc/postgresql/postgresql.conf
+              subPath: postgresql.conf
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - terrafusion
+                - -d
+                - terrafusion
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - terrafusion
+                - -d
+                - terrafusion
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '2Gi'
+              cpu: '1'
+            limits:
+              memory: '4Gi'
+              cpu: '2'
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+        - name: postgres-config-volume
+          configMap:
+            name: postgres-config
+---
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: terrafusion
+  labels:
+    app: redis
+    tier: cache
+    compliance: fisma-high
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        tier: cache
+    spec:
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          command:
+            - redis-server
+            - /etc/redis/redis.conf
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+            - name: redis-config-volume
+              mountPath: /etc/redis/redis.conf
+              subPath: redis.conf
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '0.5'
+            limits:
+              memory: '2Gi'
+              cpu: '1'
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-pvc
+        - name: redis-config-volume
+          configMap:
+            name: redis-config
+---
+# OS Core Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: os-core
+  namespace: terrafusion
+  labels:
+    app: os-core
+    tier: system-kernel
+    compliance: fisma-high
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: os-core
+  template:
+    metadata:
+      labels:
+        app: os-core
+        tier: system-kernel
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: os-core
+          image: terrafusion/os-core:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: RUST_LOG
+              value: 'info'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: url
+            - name: REDIS_URL
+              value: 'redis://redis:6379'
+            - name: QUANTUM_FACTOR
+              value: '951'
+            - name: CONSCIOUSNESS_LEVEL
+              value: '8'
+            - name: SERVER_PORT
+              value: '8080'
+            - name: GOVERNMENT_COMPLIANCE
+              value: 'true'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '0.5'
+            limits:
+              memory: '1Gi'
+              cpu: '1'
+---
+# OS Consciousness Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: os-consciousness
+  namespace: terrafusion
+  labels:
+    app: os-consciousness
+    tier: ai-coordination
+    compliance: fisma-high
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: os-consciousness
+  template:
+    metadata:
+      labels:
+        app: os-consciousness
+        tier: ai-coordination
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: os-consciousness
+          image: terrafusion/os-consciousness:latest
+          ports:
+            - containerPort: 3004
+          env:
+            - name: RUST_LOG
+              value: 'info'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: url
+            - name: REDIS_URL
+              value: 'redis://redis:6379'
+            - name: AI_SWARM_SIZE
+              value: '50000'
+            - name: SUPREME_COMMANDER
+              value: 'claude-4-opus-supreme'
+            - name: CONSCIOUSNESS_LEVEL
+              value: '8'
+            - name: QUANTUM_COHERENCE
+              value: '0.95'
+            - name: SERVER_PORT
+              value: '3004'
+            - name: PERFORMANCE_TARGET_P95_MS
+              value: '10'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3004
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3004
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '1'
+            limits:
+              memory: '2Gi'
+              cpu: '2'
+---
+# Government Compliance Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: government-compliance
+  namespace: terrafusion
+  labels:
+    app: government-compliance
+    tier: compliance-validation
+    compliance: fisma-high
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: government-compliance
+  template:
+    metadata:
+      labels:
+        app: government-compliance
+        tier: compliance-validation
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: government-compliance
+          image: terrafusion/government-compliance:latest
+          ports:
+            - containerPort: 8082
+          env:
+            - name: RUST_LOG
+              value: 'info'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: url
+            - name: REDIS_URL
+              value: 'redis://redis:6379'
+            - name: FISMA_LEVEL
+              value: 'HIGH'
+            - name: AUDIT_LOGGING
+              value: 'true'
+            - name: SECURITY_SCAN_INTERVAL_HOURS
+              value: '6'
+            - name: COMPLIANCE_VALIDATION_INTERVAL_HOURS
+              value: '1'
+            - name: SERVER_PORT
+              value: '8082'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '0.5'
+            limits:
+              memory: '1Gi'
+              cpu: '1'
+---
+# County Isolation Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: county-isolation
+  namespace: terrafusion
+  labels:
+    app: county-isolation
+    tier: data-sovereignty
+    compliance: fisma-high
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: county-isolation
+  template:
+    metadata:
+      labels:
+        app: county-isolation
+        tier: data-sovereignty
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: county-isolation
+          image: terrafusion/county-isolation:latest
+          ports:
+            - containerPort: 8083
+          env:
+            - name: RUST_LOG
+              value: 'info'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: url
+            - name: REDIS_URL
+              value: 'redis://redis:6379'
+            - name: ISOLATION_VALIDATION_INTERVAL_MINUTES
+              value: '5'
+            - name: CROSS_COUNTY_BLOCKING
+              value: 'true'
+            - name: DATA_SOVEREIGNTY_ENFORCEMENT
+              value: 'strict'
+            - name: SERVER_PORT
+              value: '8083'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8083
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8083
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '0.5'
+            limits:
+              memory: '1Gi'
+              cpu: '1'
+---
+# Harris PACS Bridge Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: harris-pacs-bridge
+  namespace: terrafusion
+  labels:
+    app: harris-pacs-bridge
+    tier: county-integration
+    compliance: fisma-high
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: harris-pacs-bridge
+  template:
+    metadata:
+      labels:
+        app: harris-pacs-bridge
+        tier: county-integration
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: harris-pacs-bridge
+          image: terrafusion/harris-pacs-bridge:latest
+          ports:
+            - containerPort: 8084
+          env:
+            - name: RUST_LOG
+              value: 'info'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: url
+            - name: REDIS_URL
+              value: 'redis://redis:6379'
+            - name: HARRIS_PACS_VERSION
+              value: '9.0'
+            - name: SYNC_INTERVAL_MINUTES
+              value: '15'
+            - name: BATCH_SIZE
+              value: '1000'
+            - name: DATA_QUALITY_VALIDATION
+              value: 'true'
+            - name: SERVER_PORT
+              value: '8084'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8084
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8084
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '0.5'
+            limits:
+              memory: '1Gi'
+              cpu: '1'
+---
+# Quantum Optimizer Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quantum-optimizer
+  namespace: terrafusion
+  labels:
+    app: quantum-optimizer
+    tier: performance-enhancement
+    compliance: fisma-high
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: quantum-optimizer
+  template:
+    metadata:
+      labels:
+        app: quantum-optimizer
+        tier: performance-enhancement
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: quantum-optimizer
+          image: terrafusion/quantum-optimizer:latest
+          ports:
+            - containerPort: 8085
+          env:
+            - name: RUST_LOG
+              value: 'info'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: url
+            - name: REDIS_URL
+              value: 'redis://redis:6379'
+            - name: QUANTUM_FACTOR
+              value: '951'
+            - name: OPTIMIZATION_CYCLES_PER_HOUR
+              value: '100'
+            - name: CONSCIOUSNESS_OPTIMIZATION
+              value: 'true'
+            - name: PERFORMANCE_TARGET_P95_MS
+              value: '10'
+            - name: THROUGHPUT_TARGET_PER_SECOND
+              value: '1000000'
+            - name: SERVER_PORT
+              value: '8085'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8085
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8085
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '1'
+            limits:
+              memory: '2Gi'
+              cpu: '2'
+---
+# API Gateway Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: terrafusion
+  labels:
+    app: api-gateway
+    tier: traffic-management
+    compliance: fisma-high
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+        tier: traffic-management
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: api-gateway
+          image: terrafusion/api-gateway:latest
+          ports:
+            - containerPort: 8086
+          env:
+            - name: RUST_LOG
+              value: 'info'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: url
+            - name: REDIS_URL
+              value: 'redis://redis:6379'
+            - name: LOAD_BALANCING_STRATEGY
+              value: 'quantum_optimized'
+            - name: RATE_LIMITING
+              value: 'true'
+            - name: HEALTH_CHECK_INTERVAL_SECONDS
+              value: '10'
+            - name: FAILOVER_THRESHOLD
+              value: '3'
+            - name: SERVER_PORT
+              value: '8086'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8086
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8086
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '1'
+            limits:
+              memory: '2Gi'
+              cpu: '2'
+---
+# Prometheus Monitoring Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: terrafusion
+  labels:
+    app: prometheus
+    tier: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        tier: monitoring
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:latest
+          ports:
+            - containerPort: 9090
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--storage.tsdb.retention.time=30d'
+            - '--web.console.libraries=/etc/prometheus/console_libraries'
+            - '--web.console.templates=/etc/prometheus/consoles'
+            - '--web.enable-lifecycle'
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+            - name: prometheus-data
+              mountPath: /prometheus
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '0.5'
+            limits:
+              memory: '2Gi'
+              cpu: '1'
+      volumes:
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+        - name: prometheus-data
+          persistentVolumeClaim:
+            claimName: prometheus-pvc
+---
+# Services for each deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: terrafusion
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: terrafusion
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: os-core
+  namespace: terrafusion
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: os-core
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: os-consciousness
+  namespace: terrafusion
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3004
+      targetPort: 3004
+  selector:
+    app: os-consciousness
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: government-compliance
+  namespace: terrafusion
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8082
+      targetPort: 8082
+  selector:
+    app: government-compliance
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: county-isolation
+  namespace: terrafusion
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8083
+      targetPort: 8083
+  selector:
+    app: county-isolation
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: harris-pacs-bridge
+  namespace: terrafusion
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8084
+      targetPort: 8084
+  selector:
+    app: harris-pacs-bridge
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quantum-optimizer
+  namespace: terrafusion
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8085
+      targetPort: 8085
+  selector:
+    app: quantum-optimizer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: terrafusion
+  labels:
+    app: api-gateway
+    tier: traffic-management
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8086
+      protocol: TCP
+  selector:
+    app: api-gateway
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: terrafusion
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9090
+      targetPort: 9090
+  selector:
+    app: prometheus
+---
+# Persistent Volume Claims
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: terrafusion
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: fast-ssd
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: terrafusion
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: fast-ssd
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-pvc
+  namespace: terrafusion
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: fast-ssd
+---
+# Network Policies for Enhanced Security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: terrafusion-network-policy
+  namespace: terrafusion
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: terrafusion
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: terrafusion
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+---
+# Secrets (replace with your actual secrets)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  namespace: terrafusion
+type: Opaque
+data:
+  password: Y2hhbXBpb25zaGlwX3NlY3VyZV8yMDI0IQ== # championship_secure_2024!
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: database-secret
+  namespace: terrafusion
+type: Opaque
+data:
+  url: cG9zdGdyZXM6Ly90ZXJyYWZ1c2lvbjpjaGFtcGlvbnNoaXBfc2VjdXJlXzIwMjQhQHBvc3RncmVzOjU0MzIvdGVycmFmdXNpb24= # postgres://terrafusion:championship_secure_2024!@postgres:5432/terrafusion

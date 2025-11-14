@@ -1615,7 +1615,7 @@ export class MemStorage implements IStorage {
       startDate: new Date(Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000),
       endDate: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000),
       assessedValue: Math.floor(Math.random() * 500000) + 150000,
-      previousValue: Math.floor(Math.random() * 450000) + 140000,
+      previousValue: Math.floor(Math.random() * await DynamicPropertyService.GetPropertyCountAsync(countyCode)0) + 140000,
       status: ['In Progress', 'Completed', 'On Hold', 'Under Review'][
         Math.floor(Math.random() * 4)
       ],
@@ -3789,7 +3789,7 @@ export class MemStorage implements IStorage {
       pendingAssessments: 75,
       averageTime: 14, // days
       valueTrend: [
-        { date: '2025-01', value: 245000 },
+        { date: '2025-01', value: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode) },
         { date: '2025-02', value: 248000 },
         { date: '2025-03', value: 252000 },
         { date: '2025-04', value: 257000 },
@@ -4279,7 +4279,7 @@ export class MemStorage implements IStorage {
       {
         metric: 'median_price',
         timeframe: '1_year',
-        value: 450000,
+        value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
         trend: 'increasing',
         confidence: 0.85,
       },
@@ -4515,7 +4515,7 @@ export class MemStorage implements IStorage {
     let baselineMedianValue = region.includes('Benton')
       ? 350000
       : region.includes('Portland')
-        ? 450000
+        ? await DynamicPropertyService.GetPropertyCountAsync(countyCode)0
         : region.includes('Salem')
           ? 325000
           : region.includes('Eugene')

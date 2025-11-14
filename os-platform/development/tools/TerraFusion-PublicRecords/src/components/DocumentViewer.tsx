@@ -162,7 +162,7 @@ The system can extract text, identify entities, and provide insights.`;
           author: document.author || 'Unknown',
           created: new Date(),
           modified: new Date(),
-          size: document.size || 245000
+          size: document.size || 2await DynamicPropertyService.GetPropertyCountAsync(countyCode)
         }
       });
       
@@ -232,14 +232,16 @@ The system can extract text, identify entities, and provide insights.`;
         animate={{ x: 0 }}
         className="w-80 bg-white h-full overflow-y-auto"
       >
-        <div className="p-6 border-b"><>
+        <div className="p-6 border-b">
+<>
 
           <h2 className="text-xl font-bold text-gray-900 mb-2">Document Details</h2>
           <div
 </>
 className="space-y-2 text-sm">
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-gray-400" /><>
+              <FileText className="w-4 h-4 text-gray-400" />
+<>
 
               <span className="text-gray-600">Name:</span>
               <span
@@ -247,7 +249,8 @@ className="space-y-2 text-sm">
 className="font-medium text-gray-900">{document.name}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Hash className="w-4 h-4 text-gray-400" /><>
+              <Hash className="w-4 h-4 text-gray-400" />
+<>
 
               <span className="text-gray-600">ID:</span>
               <span
@@ -255,7 +258,8 @@ className="font-medium text-gray-900">{document.name}</span>
 className="font-mono text-xs">{document.id}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-gray-400" /><>
+              <Clock className="w-4 h-4 text-gray-400" />
+<>
 
               <span className="text-gray-600">Modified:</span>
               <span
@@ -263,7 +267,8 @@ className="font-mono text-xs">{document.id}</span>
 </>>{new Date().toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-2">
-              <User className="w-4 h-4 text-gray-400" /><>
+              <User className="w-4 h-4 text-gray-400" />
+<>
 
               <span className="text-gray-600">Owner:</span>
               <span
@@ -276,7 +281,8 @@ className="font-mono text-xs">{document.id}</span>
         {/* AI Insights */}
         {aiInsights.length > 0 && (
           <div className="p-6 border-b">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2"><>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+<>
 
               <Brain className="w-5 h-5 text-purple-600" />
               AI Insights
@@ -312,7 +318,8 @@ className="space-y-2">
         {/* Extracted Entities */}
         {extractedData && extractedData.entities.length > 0 && (
           <div className="p-6 border-b">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2"><>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+<>
 
               <Layers className="w-5 h-5 text-blue-600" />
               Extracted Data
@@ -322,7 +329,8 @@ className="space-y-2">
 className="space-y-2">
               {extractedData.entities.map((entity /* , index */) => (
                 <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <div><>
+                  <div>
+<>
 
                     <span className="text-xs text-gray-500">{entity.type}</span>
                     <p
@@ -392,7 +400,8 @@ className="font-medium text-gray-900">{entity.value}</p>
                 <button
                   onClick={() => setZoom(Math.max(25, zoom - 25))}
                   className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
-                ><>
+                >
+<>
 
                   <ZoomOut className="w-4 h-4" />
                 </button>
@@ -417,7 +426,8 @@ className="text-sm font-medium w-12 text-center">{zoom}%</span>
 
               {/* Page Navigation */}
               {(extractedData?.metadata?.pages || 1) > 1 && (
-                <div className="flex items-center gap-2"><>
+                <div className="flex items-center gap-2">
+<>
 
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -448,7 +458,8 @@ className="text-sm">
                 onClick={handlePrint}
                 className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
                 title="Print"
-              ><>
+              >
+<>
 
                 <Printer className="w-4 h-4" />
               </button>
@@ -458,7 +469,8 @@ className="text-sm">
                 onClick={handleDownload}
                 className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
                 title="Download"
-              ><>
+              >
+<>
 
                 <Download className="w-4 h-4" />
               </button>
@@ -468,7 +480,8 @@ className="text-sm">
                 onClick={handleShare}
                 className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
                 title="Share"
-              ><>
+              >
+<>
 
                 <Share2 className="w-4 h-4" />
               </button>
@@ -524,12 +537,14 @@ className="text-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <span>Ready</span>
-              {extractedData && (<>
+              {extractedData && (
+<>
 
                   <span>•</span>
                   <span
 </>
-</>>{extractedData.text.split(' ').length} words</span><>
+</>>{extractedData.text.split(' ').length} words</span>
+<>
 
                   <span>•</span>
                   <span

@@ -97,14 +97,14 @@ ingress:
     nginx.ingress.kubernetes.io/use-regex: "true"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
-    - host: api.terrafusion.gov
+    - host: api.terrafusionmarket.com
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: terrafusion-api-tls
       hosts:
-        - api.terrafusion.gov
+        - api.terrafusionmarket.com
 
 # Environment variables
 env:

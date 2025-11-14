@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: government-edition-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/marketplace/government-edition
+    email: government-edition-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/marketplace/government-edition
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/government-edition
+  - url: https://api.terrafusionmarket.com/api/v1/government-edition
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/government-edition
+  - url: https://staging-api.terrafusionmarket.com/api/v1/government-edition
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/government-edition
+  - url: https://dev-api.terrafusionmarket.com/api/v1/government-edition
     description: Development Environment
 paths:
   /health:
@@ -195,8 +195,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             government-edition:read: Read access to government-edition resources
             government-edition:write: Write access to government-edition resources
@@ -214,4 +214,4 @@ tags:
     description: Government Edition operations
     externalDocs:
       description: Find out more about government-edition
-      url: https://docs.terrafusion.gov/marketplace/government-edition
+      url: https://docs.terrafusionmarket.com/marketplace/government-edition

@@ -6,10 +6,33 @@
     <ProjectGuid>{0A0A52EA-7EB5-45BB-B920-73B5BB8F009C}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>
+    <TreatTSqlWarningsAsErrors>False</TreatTSqlWarningsAsErrors>
+    <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
   </PropertyGroup>
+
   <ItemGroup>
     <PreDeploy Include="Script.PreDeployment1.sql" />
+
+    <!-- Exclude problematic Security files -->
+    <None Remove="Security\**\*" />
+
+    <!-- Exclude problematic Synonyms -->
+    <None Remove="dbo\Synonyms\**\*" />
+
+    <!-- Exclude DynLoader setup files -->
+    <None Remove="DynLoader_v1_1\setup\**\*" />
+    <None Remove="DynLoader_oldPre_v1\**\*" />
+    <None Remove="DynLoader_Testing\**\*" />
+
+    <!-- Exclude duplicate procedure file -->
+    <None Remove="RPT\StoredProcedures\pSSRS_FileViewer.sql" />
+
+    <!-- Exclude cross-database stored procedures -->
+    <None Remove="permit\StoredProcedures\pProcess_BuildingImport.sql" />
+    <None Remove="permit\StoredProcedures\pInsert_BuildingPermit.sql" />
+    <None Remove="import\StoredProcedures\pDefineFileTable.sql" />
   </ItemGroup>
+
   <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
   </Target>

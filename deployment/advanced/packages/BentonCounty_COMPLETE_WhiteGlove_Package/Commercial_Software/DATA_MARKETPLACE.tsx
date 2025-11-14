@@ -84,7 +84,7 @@ export const DataMarketplace: React.FC = () => {
         countyId: 'wa-franklin',
         countyName: 'Franklin',
         state: 'WA',
-        propertyCount: 45000,
+        propertyCount: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         dataType: 'public',
         lastUpdated: '2025-01-09',
         price: {
@@ -224,7 +224,8 @@ export const DataMarketplace: React.FC = () => {
   return (
     <div className="data-marketplace">
       {/* Header */}
-      <div className="marketplace-header"><>
+      <div className="marketplace-header">
+<>
 
         <h1>Terrafusion Data Marketplace</h1>
         <p
@@ -233,7 +234,8 @@ export const DataMarketplace: React.FC = () => {
 </>>Expand your coverage with additional county data packages</p>
         
         <div className="license-info">
-          <Shield className="icon" /><>
+          <Shield className="icon" />
+<>
 
           <span>
             {userLicense?.type === 'government' ? 'Government License' : `Commercial ${userLicense?.tier} License`}
@@ -242,7 +244,8 @@ export const DataMarketplace: React.FC = () => {
 </>
 
 className="separator">|</span>
-          <Database className="icon" /><>
+          <Database className="icon" />
+<>
 
           <span>{userLicense?.ownedCounties.length} Counties Owned</span>
           <span
@@ -268,13 +271,15 @@ className="separator">|</span>
           value={filterState} 
           onChange={(e) => setFilterState(e.target.value)}
           className="state-filter"
-        ><>
+        >
+<>
 
           <option value="all">All States</option>
           <option
 </>
 
-value="WA">Washington</option><>
+value="WA">Washington</option>
+<>
 
           <option value="OR">Oregon</option>
           <option
@@ -284,7 +289,8 @@ value="CA">California</option>
           <option value="ID">Idaho</option>
         </select>
         
-        <div className="view-toggle"><>
+        <div className="view-toggle">
+<>
 
           <button 
             className={selectedView === 'grid' ? 'active' : ''}
@@ -333,7 +339,8 @@ value="CA">California</option>
                 </div>
               </div>
               
-              <div className="package-features"><>
+              <div className="package-features">
+<>
 
                 <h4>Includes:</h4>
                 <ul
@@ -347,7 +354,8 @@ value="CA">California</option>
               </div>
               
               <div className="package-pricing">
-                <div className="price-option"><>
+                <div className="price-option">
+<>
 
                   <span className="label">Annual</span>
                   <span
@@ -356,7 +364,8 @@ value="CA">California</option>
 className="price">${pkg.price.annual.toLocaleString()}</span>
                   <span className="period">/year</span>
                 </div>
-                <div className="price-option"><>
+                <div className="price-option">
+<>
 
                   <span className="label">Monthly</span>
                   <span
@@ -373,7 +382,8 @@ className="price">${pkg.price.monthly.toLocaleString()}</span>
                     <Download className="icon" />
                     Download Latest
                   </button>
-                ) : (<>
+                ) : (
+<>
 
                     <button 
                       className="btn-sample"
@@ -400,7 +410,8 @@ className="price">${pkg.price.monthly.toLocaleString()}</span>
         {/* Shopping Cart */}
         {cart.length > 0 && (
           <div className="shopping-cart">
-            <h3><>
+            <h3>
+<>
 
               <ShoppingCart className="icon" />
               Shopping Cart ({cart.length})
@@ -411,7 +422,8 @@ className="price">${pkg.price.monthly.toLocaleString()}</span>
 
 className="cart-items">
               {cart.map(pkg => (
-                <div key={pkg.countyId} className="cart-item"><>
+                <div key={pkg.countyId} className="cart-item">
+<>
 
                   <span>{pkg.countyName}, {pkg.state}</span>
                   <span
@@ -423,7 +435,8 @@ className="cart-items">
               ))}
             </div>
             
-            <div className="cart-total"><>
+            <div className="cart-total">
+<>
 
               <span>Total (Annual):</span>
               <span

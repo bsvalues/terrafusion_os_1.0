@@ -616,7 +616,7 @@ export default function LandingPage() {
                     </li>
                     <li>
                       <a
-                        href="mailto:support@bentoncounty.gov"
+                        href="mailto:support@terrafusionmarket.io"
                         className="text-gray-300 hover:text-white transition-colors"
                       >
                         Email Support

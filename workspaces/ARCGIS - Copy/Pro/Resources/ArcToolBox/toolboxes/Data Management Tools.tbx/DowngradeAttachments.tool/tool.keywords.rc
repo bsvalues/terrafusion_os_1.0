@@ -1,9 +1,0 @@
-{
-    "set": [
-        "attach",
-        "attachments",
-        "connect",
-        "file",
-        "remove"
-    ]
-}

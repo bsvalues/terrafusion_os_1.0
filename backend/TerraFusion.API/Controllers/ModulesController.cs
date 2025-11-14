@@ -1,180 +1,204 @@
 using Microsoft.AspNetCore.Mvc;
-using TerraFusion.API.Services;
-using TerraFusion.Core.Entities;
+using Microsoft.AspNetCore.Authorization;
+using TerraFusion.Core.Services;
+using TerraFusion.Core.DTOs;
 
 namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ModulesController : ControllerBase
 {
-    private readonly IModuleLoaderService _moduleLoader;
+    private readonly IModuleService _moduleService;
     private readonly ILogger<ModulesController> _logger;
 
-    public ModulesController(IModuleLoaderService moduleLoader, ILogger<ModulesController> logger)
+    public ModulesController(IModuleService moduleService, ILogger<ModulesController> logger)
     {
-        _moduleLoader = moduleLoader;
+        _moduleService = moduleService;
         _logger = logger;
     }
 
     [HttpGet]
-    public async Task<ActionResult<object>> GetModules()
+    public async Task<ActionResult<IEnumerable<ModuleDto>>> GetModules()
     {
         try
         {
-            var modules = await _moduleLoader.LoadActiveModulesAsync();
-            var moduleDtos = modules.Select(m => new
-            {
-                Id = 0, // No DB ID for file-based modules
-                Name = m.Name,
-                DisplayName = m.DisplayName,
-                Description = m.Description,
-                Version = m.Version,
-                Status = m.Status.ToString(),
-                Tier = m.Tier.ToString(),
-                IsCore = m.IsCore,
-                Priority = m.Priority,
-                LaunchPath = m.LaunchPath,
-                LastLaunchedAt = m.LastLaunchedAt,
-                CreatedAt = m.CreatedAt,
-                UpdatedAt = m.UpdatedAt
-            });
-
-            return Ok(new
-            {
-                modules = moduleDtos,
-                count = moduleDtos.Count(),
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            var modules = await _moduleService.GetAllModulesAsync();
+            return Ok(modules);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving modules");
-            return StatusCode(500, new { error = "Failed to retrieve modules", message = ex.Message });
+            return StatusCode(500, "Internal server error");
         }
     }
 
-    [HttpGet("{name}")]
-    public async Task<ActionResult<object>> GetModule(string name)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ModuleDto>> GetModule(int id)
     {
         try
         {
-            var module = await _moduleLoader.LoadModuleAsync(name);
+            var module = await _moduleService.GetModuleByIdAsync(id);
             if (module == null)
-                return NotFound(new { error = "Module not found", name });
+                return NotFound();
 
-            var isAvailable = await _moduleLoader.IsModuleAvailableAsync(name);
+            return Ok(module);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving module {ModuleId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 
-            return Ok(new
-            {
-                Name = module.Name,
-                DisplayName = module.DisplayName,
-                Description = module.Description,
-                Version = module.Version,
-                Status = module.Status.ToString(),
-                Tier = module.Tier.ToString(),
-                IsCore = module.IsCore,
-                Priority = module.Priority,
-                LaunchPath = module.LaunchPath,
-                IsAvailable = isAvailable,
-                LastLaunchedAt = module.LastLaunchedAt,
-                CheckedAt = DateTime.UtcNow
-            });
+    [HttpGet("by-name/{name}")]
+    public async Task<ActionResult<ModuleDto>> GetModuleByName(string name)
+    {
+        try
+        {
+            var module = await _moduleService.GetModuleByNameAsync(name);
+            if (module == null)
+                return NotFound();
+
+            return Ok(module);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving module {ModuleName}", name);
-            return StatusCode(500, new { error = "Failed to retrieve module", message = ex.Message });
+            return StatusCode(500, "Internal server error");
         }
     }
 
-
-    [HttpGet("{name}/status")]
-    public async Task<ActionResult<object>> GetModuleStatus(string name)
+    [HttpGet("tier/{tier}")]
+    public async Task<ActionResult<IEnumerable<ModuleDto>>> GetModulesByTier(string tier)
     {
         try
         {
-            var module = await _moduleLoader.LoadModuleAsync(name);
-            if (module == null)
-                return NotFound(new { error = "Module not found", name });
-
-            var isAvailable = await _moduleLoader.IsModuleAvailableAsync(name);
-
-            return Ok(new
-            {
-                Name = module.Name,
-                DisplayName = module.DisplayName,
-                Status = module.Status.ToString(),
-                IsAvailable = isAvailable,
-                Version = module.Version,
-                Tier = module.Tier.ToString(),
-                IsCore = module.IsCore,
-                Priority = module.Priority,
-                LaunchPath = module.LaunchPath,
-                LastLaunchedAt = module.LastLaunchedAt,
-                CheckedAt = DateTime.UtcNow
-            });
+            var modules = await _moduleService.GetModulesByTierAsync(tier);
+            return Ok(modules);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving module status for {ModuleName}", name);
-            return StatusCode(500, new { error = "Failed to retrieve module status", message = ex.Message });
-        }
-    }
-
-    [HttpPost("refresh")]
-    public async Task<ActionResult> RefreshModules()
-    {
-        try
-        {
-            await _moduleLoader.RefreshModulesAsync();
-            var modules = await _moduleLoader.LoadActiveModulesAsync();
-
-            return Ok(new
-            {
-                message = "Modules cache refreshed successfully",
-                count = modules.Count(),
-                refreshedAt = DateTime.UtcNow
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error refreshing modules cache");
-            return StatusCode(500, new { error = "Failed to refresh modules", message = ex.Message });
+            _logger.LogError(ex, "Error retrieving modules by tier {Tier}", tier);
+            return StatusCode(500, "Internal server error");
         }
     }
 
     [HttpGet("active")]
-    public async Task<ActionResult<object>> GetActiveModules()
+    public async Task<ActionResult<IEnumerable<ModuleDto>>> GetActiveModules()
     {
         try
         {
-            var modules = await _moduleLoader.LoadActiveModulesAsync();
-            var moduleDtos = modules.Select(m => new
-            {
-                Name = m.Name,
-                DisplayName = m.DisplayName,
-                Description = m.Description,
-                Version = m.Version,
-                Status = m.Status.ToString(),
-                Tier = m.Tier.ToString(),
-                IsCore = m.IsCore,
-                Priority = m.Priority,
-                LaunchPath = m.LaunchPath
-            });
-
-            return Ok(new
-            {
-                modules = moduleDtos,
-                count = moduleDtos.Count(),
-                timestamp = DateTime.UtcNow
-            });
+            var modules = await _moduleService.GetActiveModulesAsync();
+            return Ok(modules);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving active modules");
-            return StatusCode(500, new { error = "Failed to retrieve active modules", message = ex.Message });
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ModuleDto>> CreateModule(CreateModuleDto createDto)
+    {
+        try
+        {
+            var module = await _moduleService.CreateModuleAsync(createDto);
+            return CreatedAtAction(nameof(GetModule), new { id = module.Id }, module);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating module");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ModuleDto>> UpdateModule(int id, UpdateModuleDto updateDto)
+    {
+        try
+        {
+            var module = await _moduleService.UpdateModuleAsync(id, updateDto);
+            if (module == null)
+                return NotFound();
+
+            return Ok(module);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating module {ModuleId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteModule(int id)
+    {
+        try
+        {
+            var result = await _moduleService.DeleteModuleAsync(id);
+            if (!result)
+                return NotFound();
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting module {ModuleId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpPost("{id}/launch")]
+    public async Task<ActionResult> LaunchModule(int id)
+    {
+        try
+        {
+            var result = await _moduleService.LaunchModuleAsync(id);
+            if (!result)
+                return BadRequest("Failed to launch module");
+
+            return Ok(new { message = "Module launched successfully" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error launching module {ModuleId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpPost("{id}/stop")]
+    public async Task<ActionResult> StopModule(int id)
+    {
+        try
+        {
+            var result = await _moduleService.StopModuleAsync(id);
+            if (!result)
+                return BadRequest("Failed to stop module");
+
+            return Ok(new { message = "Module stopped successfully" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error stopping module {ModuleId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("{id}/health")]
+    public async Task<ActionResult<ModuleHealthDto>> GetModuleHealth(int id)
+    {
+        try
+        {
+            var health = await _moduleService.GetModuleHealthAsync(id);
+            return Ok(health);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving module health {ModuleId}", id);
+            return StatusCode(500, "Internal server error");
         }
     }
 }

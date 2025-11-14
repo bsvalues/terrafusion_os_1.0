@@ -1,9 +1,0 @@
-{
-    "set": [
-        "change",
-        "convert",
-        "export",
-        "import",
-        "vectorize"
-    ]
-}

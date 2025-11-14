@@ -45,7 +45,7 @@ namespace TerraFusion.Core.Services
         private readonly HashSet<string> _governmentDomains = new()
         {
             ".gov", ".mil", ".state.", ".county.", ".city.",
-            "@terrafusion.gov", "@dhs.gov", "@fema.gov", "@treasury.gov",
+            "@terrafusionmarket.com", "@dhs.gov", "@fema.gov", "@treasury.gov",
             "@irs.gov", "@usda.gov", "@hud.gov", "@census.gov"
         };
 
@@ -168,7 +168,7 @@ namespace TerraFusion.Core.Services
                     // For demo: accept specific test accounts
                     var testAccounts = new Dictionary<string, string>
                     {
-                        { "admin@terrafusion.gov", HashPassword("Admin123!@#") },
+                        { "admin@terrafusionmarket.com", HashPassword("Admin123!@#") },
                         { "assessor@benton.county.gov", HashPassword("Assessor123!") },
                         { "auditor@washington.state.gov", HashPassword("Auditor123!") }
                     };
@@ -233,7 +233,7 @@ namespace TerraFusion.Core.Services
                 }
 
                 // Check for special permissions
-                if (email.EndsWith("@terrafusion.gov"))
+                if (email.EndsWith("@terrafusionmarket.com"))
                 {
                     roles.Add("SystemAdministrator");
                     roles.Add("AIModuleAccess");

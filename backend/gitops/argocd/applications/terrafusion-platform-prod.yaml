@@ -25,7 +25,7 @@ spec:
         - name: global.environment
           value: production
         - name: global.domain
-          value: terrafusion.gov
+          value: terrafusionmarket.com
         - name: global.imageRegistry
           value: ghcr.io/terrafusion
         - name: api.enabled

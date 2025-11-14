@@ -1,7 +1,0 @@
-{
-    "map": {
-        "descr": "The ArcGIS Indoors toolbox contains tools for adding datasets, feature classes, tables, and configurations to host ArcGIS Indoors data in a geodatabase.",
-        "title": "Indoors Tools",
-        "toolset1.name": "Indoors Network"
-    }
-}

@@ -1,0 +1,77 @@
+openapi: 3.0.3
+info:
+  title: TerraFusion StatisticalEngine API
+  version: 0.1.0
+servers:
+  - url: http://localhost:5000
+paths:
+  /api/statistics/iaao/ratio-study:
+    post:
+      summary: Compute IAAO ratio study metrics
+      operationId: ratioStudy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RatioStudyRequest'
+            examples:
+              BentonRequest:
+                summary: Benton County residential cohort (trim 5%/95%)
+                value:
+                  countyId: "benton"
+                  cohortId: "residential-2024"
+                  trims: { low: 0.05, high: 0.95 }
+      responses:
+        '200':
+          description: Ratio study result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RatioStudyResult'
+              examples:
+                BentonResult:
+                  summary: Benton County 2024 Residential Study
+                  value:
+                    median: 0.98
+                    cod: 0.11
+                    prd: 1.01
+                    subgroups:
+                      - { name: "SFH Urban", median: 0.99, cod: 0.10, prd: 1.00 }
+                      - { name: "SFH Rural", median: 0.97, cod: 0.12, prd: 1.02 }
+                      - { name: "Condo", median: 1.00, cod: 0.09, prd: 0.99 }
+components:
+  schemas:
+    RatioStudyRequest:
+      type: object
+      required: [countyId, cohortId]
+      properties:
+        countyId:
+          type: string
+        cohortId:
+          type: string
+        trims:
+          type: object
+          properties:
+            low:
+              type: number
+              format: float
+            high:
+              type: number
+              format: float
+    SubgroupMetric:
+      type: object
+      properties:
+        name: { type: string }
+        median: { type: number, format: float }
+        cod: { type: number, format: float }
+        prd: { type: number, format: float }
+    RatioStudyResult:
+      type: object
+      properties:
+        median: { type: number, format: float }
+        cod: { type: number, format: float }
+        prd: { type: number, format: float }
+        subgroups:
+          type: array
+          items: { $ref: '#/components/schemas/SubgroupMetric' }

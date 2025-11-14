@@ -1,5 +1,0 @@
-<DataType Name="GPFieldInfo">
-  <DisplayName>Field Info</DisplayName>
-  <Description>The details about a field in a FieldMap.</Description>
-</DataType>
-

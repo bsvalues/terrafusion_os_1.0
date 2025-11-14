@@ -17,7 +17,7 @@
       "localStorage": [
         {
           "name": "user",
-          "value": "{\"id\":\"u-assessor\",\"name\":\"County Assessor\",\"role\":\"assessor\",\"permissions\":[\"read\",\"write\",\"approve\"],\"email\":\"assessor@bentoncounty.gov\"}"
+          "value": "{\"id\":\"u-assessor\",\"name\":\"County Assessor\",\"role\":\"assessor\",\"permissions\":[\"read\",\"write\",\"approve\"],\"email\":\"assessor@terrafusionmarket.io\"}"
         },
         {
           "name": "auth_expires",

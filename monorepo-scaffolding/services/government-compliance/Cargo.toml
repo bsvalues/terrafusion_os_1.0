@@ -1,0 +1,73 @@
+[package]
+name = "terrafusion-government-compliance"
+version = "1.0.0"
+edition = "2021"
+description = "TerraFusion Government Compliance Service - FISMA-HIGH Validation"
+authors = ["TerraFusion Elite Government OS Team"]
+license = "PROPRIETARY"
+
+[[bin]]
+name = "terrafusion-government-compliance"
+path = "src/main.rs"
+
+[dependencies]
+# Web framework
+axum = "0.7"
+tokio = { version = "1.0", features = ["full"] }
+tower = "0.5"
+tower-http = { version = "0.5", features = ["cors", "trace", "compression-br"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Configuration
+config = "0.14"
+dotenvy = "0.15"
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono"] }
+uuid = { version = "1.0", features = ["serde", "v4"] }
+
+# Security and compliance
+ring = "0.17"
+aes = "0.8"
+sha2 = "0.10"
+hmac = "0.12"
+jsonwebtoken = "9.0"
+bcrypt = "0.15"
+
+# FISMA compliance libraries
+# Custom government audit implementation
+# audit-compliance = { path = "../../../lib/audit-compliance" }
+# fisma-logger = { path = "../../../lib/fisma-logger" }
+
+# Logging & Telemetry
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+opentelemetry = "0.23"
+metrics = "0.23"
+
+# HTTP client
+reqwest = { version = "0.12", features = ["json"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Validation
+validator = "0.18"
+
+# API documentation
+utoipa = { version = "4.0", features = ["axum_extras", "chrono", "uuid"] }
+utoipa-swagger-ui = { version = "7.0", features = ["axum"] }
+
+# Government standards (custom implementations)
+# nist-security = { path = "../../../lib/nist-security" }
+# fedramp-compliance = { path = "../../../lib/fedramp-compliance" }
+
+[dev-dependencies]
+tokio-test = "0.4"

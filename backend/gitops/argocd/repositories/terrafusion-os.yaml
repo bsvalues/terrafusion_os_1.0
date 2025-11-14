@@ -40,7 +40,7 @@ type: Opaque
 stringData:
   type: helm
   name: terrafusion-charts
-  url: https://charts.terrafusion.gov
+  url: https://charts.terrafusionmarket.com
   username: terrafusion-bot
   password: ${HELM_REGISTRY_PASSWORD}
   project: terrafusion

@@ -14,6 +14,7 @@ import AuthPage from '@/pages/auth-page';
 import DashboardPage from '@/pages/DashboardPage';
 import EnhancedCalculatorPage from '@/pages/EnhancedCalculatorPage';
 import UsersPage from '@/pages/users-page';
+import QuantumAnalyticsPage from '@/pages/QuantumAnalyticsPage';
 // Use the newly renamed file to avoid casing conflicts
 import DocumentationPage from '@/pages/documentation';
 import FAQPage from '@/pages/faq';
@@ -272,6 +273,11 @@ function Router() {
       <Route path="/insights" component={CostForgeAIApp} />
       <Route path="/settings" component={CostForgeAIApp} />
       <Route path="/models" component={CostForgeAIApp} />
+
+      {/* TerraFusion Elite Quantum Workspace - Immersive Analytics */}
+      <Route path="/quantum-workspace" component={QuantumAnalyticsPage} />
+      <Route path="/mass-appraisal" component={QuantumAnalyticsPage} />
+      <Route path="/gis-analysis" component={QuantumAnalyticsPage} />
 
       {/* TerraFusion Quantum Routes - Pure Proprietary Technology */}
       {/* Legacy routes eliminated - TerraFusion operates with 100% proprietary quantum technology */}

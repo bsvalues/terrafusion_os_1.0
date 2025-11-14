@@ -1,5 +1,0 @@
-ALTER ROLE [db_datareader] ADD MEMBER [pacsnonprivy];
-
-
-GO
-

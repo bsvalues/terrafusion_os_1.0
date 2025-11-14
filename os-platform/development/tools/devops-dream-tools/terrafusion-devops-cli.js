@@ -253,7 +253,7 @@ Would you like me to implement these optimizations?
   📍 County: ${countyName}
   🏢 Properties: ${propertyCount}
   💰 Annual Revenue: $${this.calculateRevenue(propertyCount)}
-  🚀 URL: https://${countyName.toLowerCase()}.terrafusion.gov
+  🚀 URL: https://${countyName.toLowerCase()}.terrafusionmarket.com
   📧 Admin: admin@${countyName.toLowerCase()}.gov
         `));
     }
@@ -388,8 +388,8 @@ Would you like me to implement these optimizations?
      • Risk analysis
      • Recommendations
   
-  📧 Sent to: executives@terrafusion.gov
-  🔗 View online: https://reports.terrafusion.gov/latest
+  📧 Sent to: executives@terrafusionmarket.com
+  🔗 View online: https://reports.terrafusionmarket.com/latest
         `));
     }
 

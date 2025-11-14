@@ -1,8 +1,0 @@
-{
-    "set": [
-        "input database path",
-        "replication",
-        "repository url",
-        "workflow manager"
-    ]
-}

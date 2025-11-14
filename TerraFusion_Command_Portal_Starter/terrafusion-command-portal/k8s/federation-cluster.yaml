@@ -14,8 +14,8 @@ data:
         - name: "benton"
           display_name: "Benton County"
           endpoints:
-            - "https://benton.terrafusion.gov/api/federation"
-            - "wss://benton.terrafusion.gov/ws/federation"
+            - "https://benton.terrafusionmarket.com/api/federation"
+            - "wss://benton.terrafusionmarket.com/ws/federation"
           public_key: "benton_federation_public_key_base64"
           capabilities:
             - "records_sharing"
@@ -26,8 +26,8 @@ data:
         - name: "franklin"
           display_name: "Franklin County" 
           endpoints:
-            - "https://franklin.terrafusion.gov/api/federation"
-            - "wss://franklin.terrafusion.gov/ws/federation"
+            - "https://franklin.terrafusionmarket.com/api/federation"
+            - "wss://franklin.terrafusionmarket.com/ws/federation"
           public_key: "franklin_federation_public_key_base64"
           capabilities:
             - "records_sharing"
@@ -38,8 +38,8 @@ data:
         - name: "yakima"
           display_name: "Yakima County"
           endpoints:
-            - "https://yakima.terrafusion.gov/api/federation"
-            - "wss://yakima.terrafusion.gov/ws/federation"
+            - "https://yakima.terrafusionmarket.com/api/federation"
+            - "wss://yakima.terrafusionmarket.com/ws/federation"
           public_key: "yakima_federation_public_key_base64"
           capabilities:
             - "records_sharing"
@@ -138,7 +138,7 @@ spec:
             - name: COUNTY_NAME
               valueFrom:
                 fieldRef:
-                  fieldPath: metadata.annotations['county.terrafusion.gov/name']
+                  fieldPath: metadata.annotations['county.terrafusionmarket.com/name']
             - name: CLUSTER_ID
               value: 'terrafusion-pilot'
             - name: LOG_LEVEL

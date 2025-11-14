@@ -1,5 +1,0 @@
-<DataType Name="Field">
-  <DisplayName>Field</DisplayName>
-  <Description>A column in a table that stores the values for a single attribute.</Description>
-</DataType>
-

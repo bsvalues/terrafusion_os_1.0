@@ -1,5 +1,0 @@
-<DataType Name="GPDate">
-  <DisplayName>Date</DisplayName>
-  <Description>A date value.</Description>
-</DataType>
-

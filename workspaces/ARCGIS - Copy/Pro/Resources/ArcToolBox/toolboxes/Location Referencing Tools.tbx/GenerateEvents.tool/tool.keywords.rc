@@ -1,9 +1,0 @@
-{
-    "set": [
-        "generate event",
-        "integrity",
-        "pipeline",
-        "regenerate event",
-        "update event"
-    ]
-}

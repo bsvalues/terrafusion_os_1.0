@@ -63,13 +63,13 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
   const getStatusMessage = () => {
     switch (status.operationalMode) {
       case 'BACKEND_CONNECTED':
-        return 'GOVERNMENT SERVICES ONLINE';
+        return 'BENTON COUNTY LIVE';
       case 'ELITE_CACHE':
-        return 'ELITE CACHE ACTIVE';
+        return 'BENTON COUNTY CACHE';
       case 'QUANTUM_SIMULATION':
-        return 'QUANTUM EXCELLENCE SIMULATION';
+        return 'BENTON COUNTY DEMO';
       default:
-        return 'SYSTEM INITIALIZING';
+        return 'BENTON INITIALIZING';
     }
   };
 
@@ -83,7 +83,7 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
           <div className='text-2xl'>{getStatusIcon()}</div>
           <div>
             <div className={`text-sm font-bold ${getStatusColor()}`}>{getStatusMessage()}</div>
-            <div className='text-xs text-slate-400'>TerraFusion Elite API Service</div>
+            <div className='text-xs text-slate-400'>Benton County Assessment System</div>
           </div>
         </div>
 

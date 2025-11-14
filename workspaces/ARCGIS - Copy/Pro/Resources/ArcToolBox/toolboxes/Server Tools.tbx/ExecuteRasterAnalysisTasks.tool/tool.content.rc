@@ -1,8 +1,0 @@
-{
-    "map": {
-        "description": "Execute Raster Analysis Tasks",
-        "in_tasks.title": "Input Raster Analysis Tasks",
-        "out_results.title": "Output Raster Analysis Results",
-        "title": "Execute Raster Analysis Tasks"
-    }
-}

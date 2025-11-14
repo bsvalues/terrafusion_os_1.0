@@ -77,7 +77,7 @@ const AgentImplementation = () => {
         const comparables = [
           { address: "1423 Oak Ridge Dr", salePrice: 465000, saleDate: "2024-03-15", similarity: 0.92 },
           { address: "1427 Oak Ridge Dr", salePrice: 478000, saleDate: "2024-02-20", similarity: 0.89 },
-          { address: "1420 Maple St", salePrice: 445000, saleDate: "2024-04-10", similarity: 0.85 }
+          { address: "1420 Maple St", salePrice: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode), saleDate: "2024-04-10", similarity: 0.85 }
         ];
         
         return {
@@ -156,7 +156,8 @@ const AgentImplementation = () => {
         {agentImplementations.map((agent) => (
           <Card key={agent.name} className="bg-white/5 border-white/10">
             <CardHeader>
-              <CardTitle className="text-white flex items-center"><>
+              <CardTitle className="text-white flex items-center">
+<>
 
                 <Bot className="w-5 h-5 mr-2 text-cyan-400" />
                 {agent.name}
@@ -167,14 +168,16 @@ const AgentImplementation = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="text-sm"><>
+              <div className="text-sm">
+<>
 
                 <span className="text-slate-300">Endpoint: </span>
                 <span
 </> className="text-cyan-400 font-mono">{agent.endpoint}</span>
               </div>
               
-              <div className="space-y-2"><>
+              <div className="space-y-2">
+<>
 
                 <span className="text-slate-300 text-sm">Task Types:</span>
                 <div
@@ -209,7 +212,8 @@ const AgentImplementation = () => {
       {/* Execution Results */}
       {executions.length > 0 && (
         <Card className="bg-white/5 border-white/10">
-          <CardHeader><>
+          <CardHeader>
+<>
 
             <CardTitle className="text-white">Live Execution Results</CardTitle>
             <CardDescription
@@ -224,7 +228,8 @@ const AgentImplementation = () => {
                   <div key={execution.id} className="p-3 bg-white/5 rounded-lg border border-white/10">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
-                        {getStatusIcon(execution.status)}<>
+                        {getStatusIcon(execution.status)}
+<>
 
                         <span className="text-white font-medium">{execution.agentName}</span>
                         <Badge

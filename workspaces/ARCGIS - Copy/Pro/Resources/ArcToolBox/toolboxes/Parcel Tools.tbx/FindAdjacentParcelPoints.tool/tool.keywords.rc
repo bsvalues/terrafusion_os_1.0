@@ -1,9 +1,0 @@
-{
-    "set": [
-        "adjacent",
-        "coincident",
-        "duplicate",
-        "overlap",
-        "stacked"
-    ]
-}

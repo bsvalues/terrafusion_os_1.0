@@ -76,11 +76,11 @@ aiSwarmSupremeCommander:
   
   # Node Configuration
   nodeSelector:
-    terrafusion.gov/node-type: "supreme-commander"
+    terrafusionmarket.com/node-type: "supreme-commander"
     kubernetes.io/arch: "amd64"
   
   tolerations:
-    - key: "terrafusion.gov/supreme-commander"
+    - key: "terrafusionmarket.com/supreme-commander"
       operator: "Equal"
       value: "true"
       effect: "NoSchedule"
@@ -604,7 +604,7 @@ ingress:
   # Main Application Ingress
   main:
     enabled: true
-    host: "terrafusion.gov"
+    host: "terrafusionmarket.com"
     tls:
       enabled: true
       secretName: "terrafusion-tls"
@@ -616,7 +616,7 @@ ingress:
   # API Ingress
   api:
     enabled: true
-    host: "api.terrafusion.gov"
+    host: "api.terrafusionmarket.com"
     path: "/api"
     tls:
       enabled: true
@@ -625,7 +625,7 @@ ingress:
   # AI Swarm Supreme Commander Ingress
   supremeCommander:
     enabled: true
-    host: "supreme-commander.terrafusion.gov"
+    host: "supreme-commander.terrafusionmarket.com"
     path: "/supreme-commander"
     tls:
       enabled: true

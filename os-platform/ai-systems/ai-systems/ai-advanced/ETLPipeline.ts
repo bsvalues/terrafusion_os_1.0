@@ -788,7 +788,7 @@ export class ETLPipeline extends EventEmitter {
           deed_number: `D${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`,
           address: `${300 + i} File Rd`,
           city: 'Pasco',
-          sale_price: 180000 + Math.floor(Math.random() * 450000),
+          sale_price: 180000 + Math.floor(Math.random() * await DynamicPropertyService.GetPropertyCountAsync(countyCode)0),
           sale_date: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString(),
           buyer: `Buyer ${i}`,
           seller: `Seller ${i}`

@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen(c =>
         Contact = new Microsoft.OpenApi.Models.OpenApiContact
         {
             Name = "TerraFusion Government Technologies",
-            Email = "elite-operations@terrafusion.gov"
+            Email = "elite-operations@terrafusionmarket.com"
         }
     });
 

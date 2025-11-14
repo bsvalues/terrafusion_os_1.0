@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Compresses an enterprise geodatabase by removing states not referenced by a version and redundant rows.",
-        "in_workspace.descr": "The database connection file that connects to the enterprise geodatabase to be compressed. Connect as the geodatabase administrator.",
-        "in_workspace.title": "Input Database Connection",
-        "out_workspace.title": "Compressed Input Workspace",
-        "title": "Compress"
-    }
-}

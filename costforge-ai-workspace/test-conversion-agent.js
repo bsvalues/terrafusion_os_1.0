@@ -122,7 +122,7 @@ const reportData = {
     buildingType: 'C4',
     region: 'West Benton',
     costSummary: {
-      totalCost: 2345000,
+      totalCost: 23await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       costPerSqft: 156.33
     }
   }

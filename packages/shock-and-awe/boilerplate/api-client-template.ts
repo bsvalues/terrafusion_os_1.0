@@ -302,14 +302,14 @@ export const createDefaultClient = (baseURL: string, authToken?: string): TerraF
 // Usage Examples:
 /*
 // Basic usage
-const api = createDefaultClient('https://api.terrafusion.gov');
+const api = createDefaultClient('https://api.terrafusionmarket.com');
 
 // With authentication
-const api = createDefaultClient('https://api.terrafusion.gov', 'your-jwt-token');
+const api = createDefaultClient('https://api.terrafusionmarket.com', 'your-jwt-token');
 
 // Custom configuration
 const api = createAPIClient({
-  baseURL: 'https://api.terrafusion.gov',
+  baseURL: 'https://api.terrafusionmarket.com',
   timeout: 60000,
   retryAttempts: 5,
   enableCache: false

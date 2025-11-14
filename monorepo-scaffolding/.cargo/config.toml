@@ -1,0 +1,14 @@
+[build]
+# Pin to Rust 2021 edition until upstream crates stabilize edition2024
+# This prevents transitive dependencies from requiring nightly Cargo features
+
+[profile.release]
+# Championship-level optimization for government services
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[net]
+# Use sparse registry protocol for faster dependency resolution
+git-fetch-with-cli = false

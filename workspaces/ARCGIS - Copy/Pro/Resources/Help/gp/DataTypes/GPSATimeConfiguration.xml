@@ -1,5 +1,0 @@
-<DataType Name="GPSATimeConfiguration">
-  <DisplayName>Time configuration</DisplayName>
-  <Description>Specifies the time periods used for calculating solar radiation at specific locations.</Description>
-</DataType>
-

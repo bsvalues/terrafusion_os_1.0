@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: costforge-ai-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/marketplace/costforge-ai
+    email: costforge-ai-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/marketplace/costforge-ai
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/cost-analysis
+  - url: https://api.terrafusionmarket.com/api/v1/cost-analysis
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/cost-analysis
+  - url: https://staging-api.terrafusionmarket.com/api/v1/cost-analysis
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/cost-analysis
+  - url: https://dev-api.terrafusionmarket.com/api/v1/cost-analysis
     description: Development Environment
 paths:
   /cost-analysis:
@@ -198,8 +198,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             costforge-ai:read: Read access to costforge-ai resources
             costforge-ai:write: Write access to costforge-ai resources
@@ -217,4 +217,4 @@ tags:
     description: Costforge Ai operations
     externalDocs:
       description: Find out more about costforge-ai
-      url: https://docs.terrafusion.gov/marketplace/costforge-ai
+      url: https://docs.terrafusionmarket.com/marketplace/costforge-ai

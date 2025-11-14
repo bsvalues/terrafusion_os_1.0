@@ -24,7 +24,7 @@ export const CostForgeAIPlugin = () => {
             <h3 className="tf-text-xl tf-font-bold tf-text-primary">System Overview</h3>
             <ul className="tf-list-disc tf-ml-6 tf-mt-2 tf-text-secondary">
               <li>
-                Total Parcels: <b>89,247</b>
+                Total Parcels: <b>await DynamicPropertyService.GetPropertyCountAsync("benton")</b>
               </li>
               <li>
                 Valuation Engines Active: <b>4</b>

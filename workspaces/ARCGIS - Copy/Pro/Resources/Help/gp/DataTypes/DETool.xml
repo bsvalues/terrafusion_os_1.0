@@ -1,5 +1,0 @@
-<DataType Name="DETool">
-  <DisplayName>Tool</DisplayName>
-  <Description>A geoprocessing tool.</Description>
-</DataType>
-

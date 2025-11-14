@@ -1,5 +1,0 @@
-<DataType Name="GPSQLExpression">
-  <DisplayName>SQL Expression</DisplayName>
-  <Description>A syntax for defining and manipulating data from a relational database.</Description>
-</DataType>
-

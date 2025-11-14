@@ -1,0 +1,91 @@
+[workspace]
+members = [
+  "services/os-core",
+  "services/os-consciousness",
+  "services/county-isolation",
+  "services/harris-pacs-bridge",
+  "services/government-compliance",
+  "services/quantum-optimizer",
+]
+resolver = "2"
+
+# Shared dependencies for all workspace members
+[workspace.dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+thiserror = "=1.0.69"  # Pin to prevent edition2024 upgrade to 2.x
+tracing = "0.1"
+uuid = { version = "1.0", features = ["serde", "v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+# Web framework stack
+axum = "0.7"
+tower = "0.5"
+tower-http = { version = "0.5", features = ["cors", "trace", "compression"] }
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono"] }
+
+# Configuration
+config = "0.14"
+dotenvy = "0.15"
+
+# Authentication & Security
+jsonwebtoken = "9.0"
+bcrypt = "0.15"
+
+# HTTP client
+reqwest = { version = "0.12", features = ["json"] }
+
+# API documentation
+utoipa = { version = "4.0", features = ["axum_extras", "chrono", "uuid"] }
+utoipa-swagger-ui = { version = "7.0", features = ["axum"] }
+
+# Logging & Telemetry
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+opentelemetry = "0.23"
+metrics = "0.23"
+
+# ==============================================================================
+# CRITICAL: Edition2024 Prevention - Explicit Version Pins
+# ==============================================================================
+# These dependencies must be pinned to prevent edition2024 conflicts
+base64ct = "=1.7.2"      # 1.8.0+ requires edition2024
+home = "=0.5.11"          # 0.5.12+ pulls edition2024 transitive deps
+
+[profile.release]
+# Optimization for production government services
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[profile.dev]
+# Fast development builds
+opt-level = 0
+debug = true
+overflow-checks = true
+
+[profile.test]
+# Test optimization
+opt-level = 1
+debug = true
+
+# Government compliance and security settings
+[workspace.metadata.terrafusion]
+compliance_level = "FISMA-HIGH"
+security_scan = true
+audit_logging = true
+county_isolation = true
+government_edition = true
+
+# Build metadata
+version = "1.0.0"
+edition = "2021"
+license = "PROPRIETARY"
+authors = ["TerraFusion Elite Government OS Team"]
+repository = "https://github.com/terrafusion/os"
+documentation = "https://docs.terrafusion.gov"

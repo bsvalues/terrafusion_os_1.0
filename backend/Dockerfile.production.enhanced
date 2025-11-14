@@ -1,0 +1,64 @@
+# TerraFusion API Production Dockerfile
+# Multi-stage build for optimal production image
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+WORKDIR /source
+
+# Copy solution file and package references first (for better caching)
+COPY *.sln Directory.Packages.props ./
+COPY */*.csproj ./temp/
+RUN for file in $(ls temp/*.csproj); do mkdir -p ${file%/*} && mv $file ${file%/*}/; done
+
+# Restore dependencies (this layer is cached if project files don't change)
+RUN dotnet restore TerraFusion.sln
+
+# Copy source code
+COPY . .
+
+# Build and publish
+RUN dotnet publish TerraFusion.API/TerraFusion.API.csproj \
+    -c Release \
+    -o /app/publish \
+    --no-restore \
+    --runtime linux-x64 \
+    --self-contained false
+
+# Production runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
+
+# Security: Create non-root user
+RUN addgroup -g 1001 -S terrafusion && \
+    adduser -S -D -H -u 1001 -h /app -s /sbin/nologin -G terrafusion terrafusion
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+WORKDIR /app
+
+# Copy published app from build stage
+COPY --from=build /app/publish .
+RUN chown -R terrafusion:terrafusion /app
+
+# Switch to non-root user
+USER terrafusion
+
+# Health check endpoint
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:5000/healthz || exit 1
+
+# Labels for container metadata
+LABEL maintainer="TerraFusion Development Team" \
+      version="1.0" \
+      description="TerraFusion OS API - Government AI Platform" \
+      org.opencontainers.image.title="TerraFusion API" \
+      org.opencontainers.image.description="Production-grade AI coordination platform for government services" \
+      org.opencontainers.image.vendor="TerraFusion"
+
+# Environment variables for production
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    DOTNET_USE_POLLING_FILE_WATCHER=true \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    ASPNETCORE_HTTP_PORTS=5000
+
+EXPOSE 5000
+
+ENTRYPOINT ["dotnet", "TerraFusion.API.dll"]

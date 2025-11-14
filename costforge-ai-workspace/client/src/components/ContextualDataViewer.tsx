@@ -83,7 +83,7 @@ const ContextualDataViewer: React.FC<ContextualDataViewerProps> = ({
   const costData = [
     {
       label: "Base Cost",
-      value: 245000,
+      value: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       format: 'currency' as const,
       context: "Base construction cost without adjustments",
       explanation: "This is the starting point for cost calculations based on square footage and building type.",
@@ -138,7 +138,7 @@ const ContextualDataViewer: React.FC<ContextualDataViewerProps> = ({
       context: "Final adjusted cost",
       explanation: "This is the final cost after all adjustments have been applied to the base cost.",
       breakdownData: [
-        { label: "Base", value: 245000, percentage: 80 },
+        { label: "Base", value: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode), percentage: 80 },
         { label: "Regional", value: 61250, percentage: 20 },
         { label: "Quality", value: 32000, percentage: 10 },
         { label: "Depreciation", value: -32000, percentage: -10 }
@@ -159,7 +159,7 @@ const ContextualDataViewer: React.FC<ContextualDataViewerProps> = ({
         { date: "Tue", value: 195000 },
         { date: "Wed", value: 210000 },
         { date: "Thu", value: 230000 },
-        { date: "Fri", value: 245000 },
+        { date: "Fri", value: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode) },
         { date: "Sat", value: 90000 },
         { date: "Sun", value: 100423 }
       ],

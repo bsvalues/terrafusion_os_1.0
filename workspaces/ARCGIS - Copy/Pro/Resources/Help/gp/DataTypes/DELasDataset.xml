@@ -1,5 +1,0 @@
-<DataType Name="DELasDataset">
-  <DisplayName>LAS Dataset</DisplayName>
-  <Description>A LAS dataset stores reference to one or more LAS files on disk as well as to additional surface features. A LAS file is a binary file that stores airborne lidar data.</Description>
-</DataType>
-

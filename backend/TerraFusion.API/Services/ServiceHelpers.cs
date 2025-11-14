@@ -528,12 +528,12 @@ public class HealthPrediction
     public TimeSpan TimeHorizon { get; set; }
 }
 
-public class SystemMetrics
-{
-    public double CpuUsage { get; set; }
-    public double MemoryUsage { get; set; }
-    public int ActiveConnections { get; set; }
-}
+// public class SystemMetrics
+// {
+//     public double CpuUsage { get; set; }
+//     public double MemoryUsage { get; set; }
+//     public int ActiveConnections { get; set; }
+// }
 
 public class MigrationRiskAssessment
 {

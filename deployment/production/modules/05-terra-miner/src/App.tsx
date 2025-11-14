@@ -132,7 +132,7 @@ function App() {
         type: 'value-analysis',
         status: 'running',
         progress: 75,
-        data_points: 45000,
+        data_points: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         insights: 12,
         started_at: '2024-01-01T10:00:00Z'
       },
@@ -278,7 +278,8 @@ function App() {
 
   const renderMiningTab = () => (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 rounded-lg"><>
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 rounded-lg">
+<>
 
         <h2 className="text-2xl font-bold mb-2">Data Mining Operations</h2>
         <p
@@ -291,14 +292,16 @@ className="opacity-90">Advanced pattern recognition and machine learning insight
       {systemMetrics && (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg shadow-lg p-4">
-            <div className="flex items-center justify-between mb-2"><>
+            <div className="flex items-center justify-between mb-2">
+<>
 
               <span className="text-sm font-medium text-gray-600">CPU Usage</span>
               <Cpu
 </>
 
 className="h-4 w-4 text-blue-600" />
-            </div><>
+            </div>
+<>
 
             <div className="text-2xl font-bold text-blue-600">
               {systemMetrics.cpu_usage.toFixed(1)}%
@@ -315,14 +318,16 @@ className="w-full bg-gray-200 rounded-full h-2 mt-2">
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-4">
-            <div className="flex items-center justify-between mb-2"><>
+            <div className="flex items-center justify-between mb-2">
+<>
 
               <span className="text-sm font-medium text-gray-600">Memory</span>
               <HardDrive
 </>
 
 className="h-4 w-4 text-green-600" />
-            </div><>
+            </div>
+<>
 
             <div className="text-2xl font-bold text-green-600">
               {systemMetrics.memory_usage.toFixed(1)}%
@@ -339,14 +344,16 @@ className="w-full bg-gray-200 rounded-full h-2 mt-2">
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-4">
-            <div className="flex items-center justify-between mb-2"><>
+            <div className="flex items-center justify-between mb-2">
+<>
 
               <span className="text-sm font-medium text-gray-600">Processing Rate</span>
               <Activity
 </>
 
 className="h-4 w-4 text-purple-600" />
-            </div><>
+            </div>
+<>
 
             <div className="text-2xl font-bold text-purple-600">
               {systemMetrics.processing_rate.toFixed(0)}
@@ -358,14 +365,16 @@ className="text-xs text-gray-500">records/min</div>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-4">
-            <div className="flex items-center justify-between mb-2"><>
+            <div className="flex items-center justify-between mb-2">
+<>
 
               <span className="text-sm font-medium text-gray-600">Active Jobs</span>
               <Network
 </>
 
 className="h-4 w-4 text-orange-600" />
-            </div><>
+            </div>
+<>
 
             <div className="text-2xl font-bold text-orange-600">
               {systemMetrics.active_jobs}
@@ -381,7 +390,8 @@ className="text-xs text-gray-500">running</div>
       {/* Mining Jobs */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold flex items-center"><>
+          <h3 className="text-xl font-semibold flex items-center">
+<>
 
             <Database className="h-5 w-5 mr-2 text-blue-600" />
             Mining Jobs
@@ -401,7 +411,8 @@ className="text-xs text-gray-500">running</div>
           {miningJobs.map((job) => (
             <div key={job.id} className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
-                <div><>
+                <div>
+<>
 
                   <h4 className="font-semibold text-lg">{job.name}</h4>
                   <p
@@ -428,7 +439,8 @@ className="text-sm text-gray-600 capitalize">{job.type.replace('-', ' ')}</p>
                       <button
                         onClick={() => pauseJob(job.id)}
                         className="p-1 text-yellow-600 hover:bg-yellow-100 rounded"
-                      ><>
+                      >
+<>
 
                         <PauseCircle className="h-4 w-4" />
                       </button>
@@ -447,7 +459,8 @@ className="text-sm text-gray-600 capitalize">{job.type.replace('-', ' ')}</p>
 
               {job.status === 'running' && (
                 <div className="mb-3">
-                  <div className="flex justify-between text-sm text-gray-600 mb-1"><>
+                  <div className="flex justify-between text-sm text-gray-600 mb-1">
+<>
 
                     <span>Progress</span>
                     <span
@@ -465,7 +478,8 @@ className="text-sm text-gray-600 capitalize">{job.type.replace('-', ' ')}</p>
               )}
 
               <div className="grid grid-cols-3 gap-4 text-sm">
-                <div><>
+                <div>
+<>
 
                   <span className="text-gray-600">Data Points:</span>
                   <div
@@ -473,7 +487,8 @@ className="text-sm text-gray-600 capitalize">{job.type.replace('-', ' ')}</p>
 
 className="font-semibold">{job.data_points.toLocaleString()}</div>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <span className="text-gray-600">Insights:</span>
                   <div
@@ -481,7 +496,8 @@ className="font-semibold">{job.data_points.toLocaleString()}</div>
 
 className="font-semibold">{job.insights}</div>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <span className="text-gray-600">
                     {job.completed_at ? 'Completed:' : job.started_at ? 'Started:' : 'Scheduled:'}
@@ -508,7 +524,8 @@ className="font-semibold text-xs">
 
   const renderInsightsTab = () => (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-green-600 to-teal-600 text-white p-6 rounded-lg"><>
+      <div className="bg-gradient-to-r from-green-600 to-teal-600 text-white p-6 rounded-lg">
+<>
 
         <h2 className="text-2xl font-bold mb-2">AI-Generated Insights</h2>
         <p
@@ -523,7 +540,8 @@ className="opacity-90">Machine learning insights and pattern discoveries</p>
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center">
                 <Brain className="h-6 w-6 text-blue-600 mr-2" />
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold text-lg">{insight.title}</h3>
                   <p
@@ -539,7 +557,8 @@ className="text-sm text-gray-600 capitalize">{insight.type.replace('-', ' ')}</p
               }`}>
                 {insight.impact} impact
               </div>
-            </div><>
+            </div>
+<>
 
             <p className="text-gray-700 mb-4">{insight.description}</p>
 
@@ -547,7 +566,8 @@ className="text-sm text-gray-600 capitalize">{insight.type.replace('-', ' ')}</p
 </>
 
 className="grid grid-cols-2 gap-4 mb-4">
-              <div className="text-center p-3 bg-gray-50 rounded"><>
+              <div className="text-center p-3 bg-gray-50 rounded">
+<>
 
                 <div className="text-2xl font-bold text-blue-600">
                   {(insight.confidence * 100).toFixed(1)}%
@@ -558,7 +578,8 @@ className="grid grid-cols-2 gap-4 mb-4">
 className="text-sm text-gray-600">Confidence</div>
               </div>
               {insight.metrics && (
-                <div className="text-center p-3 bg-gray-50 rounded"><>
+                <div className="text-center p-3 bg-gray-50 rounded">
+<>
 
                   <div className="text-2xl font-bold text-green-600">
                     {insight.metrics.sample_size.toLocaleString()}
@@ -573,7 +594,8 @@ className="text-sm text-gray-600">Sample Size</div>
 
             {insight.metrics && (
               <div className="space-y-2">
-                <div className="flex justify-between text-sm"><>
+                <div className="flex justify-between text-sm">
+<>
 
                   <span>Correlation:</span>
                   <span
@@ -581,7 +603,8 @@ className="text-sm text-gray-600">Sample Size</div>
 
 className="font-semibold">{(insight.metrics.correlation * 100).toFixed(1)}%</span>
                 </div>
-                <div className="flex justify-between text-sm"><>
+                <div className="flex justify-between text-sm">
+<>
 
                   <span>Statistical Significance:</span>
                   <span
@@ -603,7 +626,8 @@ className="font-semibold">{(insight.metrics.significance * 100).toFixed(1)}%</sp
 
   const renderPatternsTab = () => (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-orange-600 to-red-600 text-white p-6 rounded-lg"><>
+      <div className="bg-gradient-to-r from-orange-600 to-red-600 text-white p-6 rounded-lg">
+<>
 
         <h2 className="text-2xl font-bold mb-2">Pattern Analysis</h2>
         <p
@@ -614,7 +638,8 @@ className="opacity-90">Advanced pattern recognition and trend analysis</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-xl font-semibold mb-4 flex items-center"><>
+          <h3 className="text-xl font-semibold mb-4 flex items-center">
+<>
 
             <Search className="h-5 w-5 mr-2 text-orange-600" />
             Discovered Patterns
@@ -626,7 +651,8 @@ className="opacity-90">Advanced pattern recognition and trend analysis</p>
 className="space-y-4">
             {patterns.map((pattern /* , index */) => (
               <div key={index} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2"><>
+                <div className="flex items-center justify-between mb-2">
+<>
 
                   <h4 className="font-semibold capitalize">
                     {pattern.pattern_type.replace('_', ' ')}
@@ -644,7 +670,8 @@ className={`px-2 py-1 rounded text-xs font-medium ${
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 mb-3">
-                  <div><>
+                  <div>
+<>
 
                     <span className="text-sm text-gray-600">Frequency:</span>
                     <div
@@ -652,7 +679,8 @@ className={`px-2 py-1 rounded text-xs font-medium ${
 
 className="font-semibold">{pattern.frequency.toFixed(1)}%</div>
                   </div>
-                  <div><>
+                  <div>
+<>
 
                     <span className="text-sm text-gray-600">Strength:</span>
                     <div
@@ -676,7 +704,8 @@ className="font-semibold">{(pattern.strength * 100).toFixed(1)}%</div>
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-xl font-semibold mb-4 flex items-center"><>
+          <h3 className="text-xl font-semibold mb-4 flex items-center">
+<>
 
             <Eye className="h-5 w-5 mr-2 text-purple-600" />
             Pattern Visualization
@@ -713,7 +742,8 @@ className="h-64 mb-4">
 
   const renderAnalyticsTab = () => (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 rounded-lg"><>
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 rounded-lg">
+<>
 
         <h2 className="text-2xl font-bold mb-2">Analytics Dashboard</h2>
         <p
@@ -724,7 +754,8 @@ className="opacity-90">Comprehensive performance metrics and visualizations</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-xl font-semibold mb-4 flex items-center"><>
+          <h3 className="text-xl font-semibold mb-4 flex items-center">
+<>
 
             <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
             Processing Performance
@@ -759,7 +790,8 @@ className="h-64">
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-xl font-semibold mb-4 flex items-center"><>
+          <h3 className="text-xl font-semibold mb-4 flex items-center">
+<>
 
             <BarChart3 className="h-5 w-5 mr-2 text-green-600" />
             Insight Distribution
@@ -781,7 +813,8 @@ className="h-64">
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {insightDistribution.map((entry /* , index */) => (<>
+                  {insightDistribution.map((entry /* , index */) => (
+<>
 
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
@@ -796,7 +829,8 @@ className="h-64">
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-xl font-semibold mb-4 flex items-center"><>
+          <h3 className="text-xl font-semibold mb-4 flex items-center">
+<>
 
             <Target className="h-5 w-5 mr-2 text-purple-600" />
             Data Processing Volume
@@ -819,7 +853,8 @@ className="h-64">
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-xl font-semibold mb-4 flex items-center"><>
+          <h3 className="text-xl font-semibold mb-4 flex items-center">
+<>
 
             <Zap className="h-5 w-5 mr-2 text-yellow-600" />
             Key Performance Indicators
@@ -829,7 +864,8 @@ className="h-64">
 </>
 
 className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+<>
 
               <span className="font-medium">Total Records Processed</span>
               <span
@@ -837,7 +873,8 @@ className="space-y-4">
 
 className="text-xl font-bold text-blue-600">2.4M</span>
             </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+<>
 
               <span className="font-medium">Insights Generated</span>
               <span
@@ -845,7 +882,8 @@ className="text-xl font-bold text-blue-600">2.4M</span>
 
 className="text-xl font-bold text-green-600">1,247</span>
             </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+<>
 
               <span className="font-medium">Pattern Accuracy</span>
               <span
@@ -853,7 +891,8 @@ className="text-xl font-bold text-green-600">1,247</span>
 
 className="text-xl font-bold text-purple-600">94.2%</span>
             </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded"><>
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+<>
 
               <span className="font-medium">Processing Speed</span>
               <span
@@ -875,7 +914,8 @@ className="text-xl font-bold text-orange-600">2.3k/min</span>
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
               <Database className="h-8 w-8 text-purple-600 mr-3" />
-              <div><>
+              <div>
+<>
 
                 <h1 className="text-2xl font-bold text-gray-900">TerraMiner</h1>
                 <p
@@ -884,7 +924,8 @@ className="text-xl font-bold text-orange-600">2.3k/min</span>
 className="text-sm text-gray-600">Advanced Data Mining & Analytics</p>
               </div>
             </div>
-            <div className="flex items-center space-x-2"><>
+            <div className="flex items-center space-x-2">
+<>
 
               <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
                 v1.8.0

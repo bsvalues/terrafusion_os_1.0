@@ -63,7 +63,7 @@ async function generateComprehensivePropertyDataset(): Promise<void> {
   // Benton County municipalities with actual property counts
   const municipalities = [
     { name: 'Richland', properties: 28247, baseValue: 520000, zipCodes: ['99352', '99354'] },
-    { name: 'Kennewick', properties: 35142, baseValue: 445000, zipCodes: ['99336', '99337', '99338'] },
+    { name: 'Kennewick', properties: 35142, baseValue: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode), zipCodes: ['99336', '99337', '99338'] },
     { name: 'Pasco', properties: 22856, baseValue: 385000, zipCodes: ['99301'] },
     { name: 'West Richland', properties: 8934, baseValue: 465000, zipCodes: ['99353'] },
     { name: 'Benton City', properties: 1247, baseValue: 285000, zipCodes: ['99320'] },
@@ -377,7 +377,7 @@ function calculateRealisticAssessedValue(municipality: any, propertyType: string
   const depreciation = Math.min(age / 50, 0.65);
   
   // Apply municipality premium and market factors
-  const adjustedValue = replacementCost * (1 - depreciation) * (municipality.baseValue / 450000);
+  const adjustedValue = replacementCost * (1 - depreciation) * (municipality.baseValue / await DynamicPropertyService.GetPropertyCountAsync(countyCode)0);
   
   // Random market variation
   const variation = 0.85 + Math.random() * 0.30;

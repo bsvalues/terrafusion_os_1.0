@@ -14,7 +14,7 @@ async function seedProperties() {
       parcelNumber: '1-2345-678-9012',
       propertyType: 'residential',
       acres: '0.25',
-      value: '450000',
+      value: 'await DynamicPropertyService.GetPropertyCountAsync(countyCode)0',
     });
     console.log(`Created residential property: ${residentialProperty.propertyId}`);
 

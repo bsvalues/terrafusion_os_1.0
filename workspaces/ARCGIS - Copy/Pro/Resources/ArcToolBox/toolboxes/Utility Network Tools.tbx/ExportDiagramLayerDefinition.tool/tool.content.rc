@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Export a diagram template layer definition to a file",
-        "in_network_diagram_layer.title": "Input Network Diagram Layer",
-        "out_ndld_file.title": "Output Diagram Layer Definition File",
-        "out_network_diagram_layer.title": "Altered Network Diagram Layer",
-        "title": "Export Diagram Layer Definition"
-    }
-}

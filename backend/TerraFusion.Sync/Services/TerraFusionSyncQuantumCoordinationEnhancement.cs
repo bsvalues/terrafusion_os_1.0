@@ -6,6 +6,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
+using TerraFusion.Sync.Models;
 
 namespace TerraFusion.Sync.Services
 {
@@ -79,17 +81,17 @@ namespace TerraFusion.Sync.Services
             // Initialize all county quantum states
             var counties = GetWashingtonStateCounties();
 
-            foreach (var county in counties)
+            foreach (var countyCode in counties)
             {
-                _countyQuantumStates[county.CountyCode] = new CountyQuantumState
+                _countyQuantumStates[countyCode] = new CountyQuantumState
                 {
-                    CountyCode = county.CountyCode,
-                    CountyName = county.CountyName,
-                    ActiveAIAgents = CalculateCountyAIAgentAllocation(county),
+                    CountyCode = countyCode,
+                    CountyName = GetCountyDisplayName(countyCode),
+                    ActiveAIAgents = CalculateCountyAIAgentAllocation(countyCode),
                     QuantumConsciousnessLevel = 0.75, // Starting level
                     CoordinationEfficiency = 0.80, // Starting efficiency
                     PropertyAssessmentAccuracy = 0.995, // Current accuracy
-                    LegacySystemsIntegrated = GetCountyLegacySystems(county),
+                    LegacySystemsIntegrated = GetCountyLegacySystems(countyCode),
                     LastQuantumSync = DateTime.UtcNow,
                     CoordinationStatus = "INITIALIZING"
                 };
@@ -322,7 +324,7 @@ namespace TerraFusion.Sync.Services
             await Task.CompletedTask; // Placeholder for multi-county sync
 
             // Calculate synchronization matrices
-            var syncMatrix = CalculateQuantumSynchronizationMatrix(consciousnessResults);
+            var syncMatrix = await CalculateQuantumSynchronizationMatrix(consciousnessResults);
             var coherenceStability = AssessQuantumCoherenceStability(syncMatrix);
             var crossCountyCoordination = EvaluateCrossCountyCoordination(syncMatrix);
 
@@ -337,11 +339,11 @@ namespace TerraFusion.Sync.Services
                 CrossCountyCoordinationEfficiency = crossCountyCoordination,
                 EntanglementResults = entanglementResults,
                 CountiesSuccessfullySynchronized = syncMatrix.Count(m => m.SyncSuccess),
-                TotalCountiesInSync = syncMatrix.Count,
+                TotalCountiesInSync = syncMatrix.Count(),
                 GlobalQuantumCoherence = syncMatrix.Average(m => m.QuantumCoherence),
                 TerraFusionSyncCapacityUtilization = CalculateTerraFusionSyncCapacityUtilization(syncMatrix),
                 PropertyAssessmentCoordinationAchieved = syncMatrix.All(m => m.PropertyAssessmentReady),
-                MultiCountyOptimizationRecommendations = GenerateMultiCountyOptimizationRecommendations(syncMatrix)
+                MultiCountyOptimizationRecommendations = GenerateMultiCountyOptimizationRecommendations(syncMatrix).ToArray()
             };
         }
 
@@ -412,8 +414,8 @@ namespace TerraFusion.Sync.Services
                 EliteTargetAchievementRate = (double)countiesAtEliteTarget / validationResults.Count,
                 AverageAccuracyAchieved = averageAccuracy,
                 AccuracyImprovementFromOptimization = accuracyImprovement,
-                QuantumEnhancementContribution = CalculateQuantumEnhancementContribution(validationResults),
-                TerraFusionSyncContribution = CalculateTerraFusionSyncContribution(validationResults, optimizationResults),
+                QuantumEnhancementContribution = CalculateQuantumEnhancementContribution(optimizationResults),
+                TerraFusionSyncContribution = CalculateTerraFusionSyncContribution(optimizationResults),
                 PropertyAssessmentExcellenceAchieved = countiesAtEliteTarget >= (_countyQuantumStates.Count * 0.8), // 80% of counties
                 ChampionshipLevelValidated = averageAccuracy >= ELITE_ACCURACY_TARGET
             };
@@ -513,21 +515,36 @@ namespace TerraFusion.Sync.Services
             };
         }
 
-        private int CalculateCountyAIAgentAllocation(WashingtonStateCounty county)
+        private int CalculateCountyAIAgentAllocation(string countyCode)
         {
             // Simplified allocation based on county population and property count
             var baseAllocation = CURRENT_AI_AGENT_COUNT / 39; // Even distribution initially
-            var populationFactor = GetCountyPopulationFactor(county.CountyCode);
+            var populationFactor = GetCountyPopulationFactor(countyCode);
             return (int)(baseAllocation * populationFactor);
         }
 
-        private List<string> GetCountyLegacySystems(WashingtonStateCounty county)
+        private List<string> GetCountyLegacySystems(string countyCode)
         {
             var systems = new List<string>();
-            if (county.HasHarrisPACS) systems.Add("Harris PACS v12.4.7");
-            if (county.HasTyler) systems.Add("Tyler Technologies");
-            if (county.HasAumentum) systems.Add("Aumentum Systems");
+            // Simplified logic based on county code
+            if (new[] { "BENTON", "KING", "PIERCE", "SNOHOMISH" }.Contains(countyCode))
+                systems.Add("Harris PACS v12.4.7");
+            if (new[] { "YAKIMA", "SPOKANE", "CLARK", "THURSTON" }.Contains(countyCode))
+                systems.Add("Tyler Technologies");
+            if (new[] { "WHATCOM", "SKAGIT", "LEWIS", "MASON" }.Contains(countyCode))
+                systems.Add("Aumentum Systems");
             return systems;
+        }
+
+        private string GetCountyDisplayName(string countyCode)
+        {
+            return countyCode switch
+            {
+                "SAN_JUAN" => "San Juan County",
+                "PEND" => "Pend Oreille County",
+                "WALLA" => "Walla Walla County",
+                _ => countyCode.Replace("_", " ") + " County"
+            };
         }
 
         private double GetCountyPopulationFactor(string countyCode)
@@ -711,6 +728,59 @@ namespace TerraFusion.Sync.Services
             };
         }
 
+        // Missing helper methods for quantum coordination
+        private double CalculateTerraFusionSyncCapacityUtilization(QuantumSynchronizationMatrix[] syncMatrix)
+        {
+            if (syncMatrix.Length == 0) return 0.0;
+            var totalCapacity = syncMatrix.Sum(m => m.MaxCapacity);
+            var usedCapacity = syncMatrix.Sum(m => m.CurrentLoad);
+            return usedCapacity / totalCapacity;
+        }
+
+        private List<string> GenerateMultiCountyOptimizationRecommendations(QuantumSynchronizationMatrix[] syncMatrix)
+        {
+            var recommendations = new List<string>();
+
+            var lowPerformanceCounties = syncMatrix.Where(m => m.QuantumCoherence < 0.85).ToList();
+            if (lowPerformanceCounties.Any())
+            {
+                recommendations.Add($"Enhance quantum coherence for {lowPerformanceCounties.Count} counties");
+            }
+
+            var highLoadCounties = syncMatrix.Where(m => m.CurrentLoad > m.MaxCapacity * 0.9).ToList();
+            if (highLoadCounties.Any())
+            {
+                recommendations.Add($"Scale AI agents for {highLoadCounties.Count} high-load counties");
+            }
+
+            if (recommendations.Count == 0)
+            {
+                recommendations.Add("All counties operating within optimal parameters");
+            }
+
+            return recommendations;
+        }
+
+        private double CalculateOverallSyncImprovement(LegacySystemOptimization legacy, QuantumDataFlowOptimization quantum, MultiSystemOptimization multi)
+        {
+            return (legacy.PerformanceImprovement + quantum.EfficiencyGain + multi.CoordinationImprovement) / 3.0;
+        }
+
+        private double CalculatePropertyWorkbenchPerformanceBoost(LegacySystemOptimization legacy, QuantumDataFlowOptimization quantum, MultiSystemOptimization multi)
+        {
+            return legacy.PerformanceImprovement * 1.2; // Property workbench specific boost
+        }
+
+        private double CalculateQuantumEnhancementContribution(TerraFusionSyncOptimizationResults optimization)
+        {
+            return optimization.DataFlowOptimization.QuantumEnhancementFactor;
+        }
+
+        private double CalculateTerraFusionSyncContribution(TerraFusionSyncOptimizationResults optimization)
+        {
+            return optimization.MultiSystemOptimization.TerraFusionSyncContribution;
+        }
+
         #endregion
     }
 
@@ -823,71 +893,6 @@ namespace TerraFusion.Sync.Services
         public double TerraFusionSyncCapacityUtilization { get; set; }
         public bool PropertyAssessmentCoordinationAchieved { get; set; }
         public string[] MultiCountyOptimizationRecommendations { get; set; } = Array.Empty<string>();
-    }
-
-    public class TerraFusionSyncOptimizationResults
-    {
-        public DateTime OptimizationTimestamp { get; set; }
-        public LegacySystemOptimization LegacySystemOptimization { get; set; } = new();
-        public QuantumDataFlowOptimization QuantumDataFlowOptimization { get; set; } = new();
-        public MultiSystemOptimization MultiSystemSynchronizationOptimization { get; set; } = new();
-        public double OverallTerraFusionSyncImprovement { get; set; }
-        public double HarrisPACSOptimizationGain { get; set; }
-        public double TylerOptimizationGain { get; set; }
-        public double AumentumOptimizationGain { get; set; }
-        public bool QuantumSyncAccelerationAchieved { get; set; }
-        public double PropertyWorkbenchPerformanceBoost { get; set; }
-    }
-
-    public class EliteAccuracyValidationResults
-    {
-        public DateTime ValidationTimestamp { get; set; }
-        public List<CountyAccuracyValidation> CountyValidations { get; set; } = new();
-        public int CountiesAtEliteTarget { get; set; }
-        public int TotalCountiesValidated { get; set; }
-        public double EliteTargetAchievementRate { get; set; }
-        public double AverageAccuracyAchieved { get; set; }
-        public double AccuracyImprovementFromOptimization { get; set; }
-        public double QuantumEnhancementContribution { get; set; }
-        public double TerraFusionSyncContribution { get; set; }
-        public bool PropertyAssessmentExcellenceAchieved { get; set; }
-        public bool ChampionshipLevelValidated { get; set; }
-    }
-
-    // Placeholder classes for complex data structures
-    public class QuantumSynchronizationMatrix
-    {
-        public bool SyncSuccess { get; set; }
-        public double QuantumCoherence { get; set; }
-        public bool PropertyAssessmentReady { get; set; }
-    }
-
-    public class QuantumEntanglementResults { }
-    public class LegacySystemOptimization
-    {
-        public double HarrisOptimization { get; set; }
-        public double TylerOptimization { get; set; }
-        public double AumentumOptimization { get; set; }
-    }
-
-    public class QuantumDataFlowOptimization
-    {
-        public double AccelerationFactor { get; set; }
-    }
-
-    public class MultiSystemOptimization { }
-
-    public class CountyAccuracyValidation
-    {
-        public string CountyCode { get; set; } = "";
-        public double ValidatedAccuracy { get; set; }
-        public bool EliteTargetAchieved { get; set; }
-    }
-
-    public class QuantumEnhancementRecommendations
-    {
-        public string NextPriorityAction { get; set; } = "";
-        public bool PropertyWorkbenchOptimizationReady { get; set; }
     }
 
     #endregion

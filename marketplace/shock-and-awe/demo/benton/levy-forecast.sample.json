@@ -1,0 +1,17 @@
+{
+  "districtId": "benton-sd",
+  "forecast": {
+    "expected": 154000000,
+    "lower": 147000000,
+    "upper": 161000000,
+    "assumptions": {
+      "baseRoll": 12300000000,
+      "growthRate": 0.032,
+      "capApplied": true,
+      "exemptionUptake": {
+        "seniors": 0.18,
+        "veterans": 0.07
+      }
+    }
+  }
+}

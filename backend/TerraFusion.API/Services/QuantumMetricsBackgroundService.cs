@@ -149,7 +149,7 @@ public class QuantumMetricsBackgroundService : BackgroundService
             var systemMetrics = await GetSystemPerformanceMetrics();
 
             // Get AI agent status (skip if service unavailable)
-            var agentStatus = aiCommandService != null 
+            var agentStatus = aiCommandService != null
                 ? await GetAIAgentHealthStatus(aiCommandService)
                 : new { Status = "Unavailable" };
 

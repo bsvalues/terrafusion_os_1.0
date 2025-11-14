@@ -1,5 +1,0 @@
-<DataType Name="DEWMSMap">
-  <DisplayName>WMS Map</DisplayName>
-  <Description>A WMS map.</Description>
-</DataType>
-

@@ -633,9 +633,9 @@ spec:
 - AI Swarm Health: \`GET /health/swarm\`
 
 ### Monitoring Dashboards
-- Grafana: http://monitoring.terrafusion.gov:3000
-- Prometheus: http://monitoring.terrafusion.gov:9090
-- AI Swarm Dashboard: http://ai.terrafusion.gov:8001/dashboard
+- Grafana: http://monitoring.terrafusionmarket.com:3000
+- Prometheus: http://monitoring.terrafusionmarket.com:9090
+- AI Swarm Dashboard: http://ai.terrafusionmarket.com:8001/dashboard
 
 ### Log Aggregation
 - Application logs: \`kubectl logs -f deployment/terrafusion-api\`

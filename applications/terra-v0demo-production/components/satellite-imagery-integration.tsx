@@ -72,7 +72,7 @@ export default function SatelliteImageryIntegration() {
         confidence: 89.7,
         detectedDate: "2025-01-05",
         impactLevel: "medium",
-        estimatedValue: 45000,
+        estimatedValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         description: "In-ground swimming pool installation detected in backyard",
         beforeImage: "/placeholder.svg?height=200&width=300",
         afterImage: "/placeholder.svg?height=200&width=300",
@@ -190,14 +190,16 @@ export default function SatelliteImageryIntegration() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <div><>
+        <div>
+<>
 
           <h1 className="text-3xl font-bold">Satellite Imagery Integration</h1>
           <p
 </> className="text-gray-600">Real-time property change detection from space</p>
         </div>
         <div className="flex items-center gap-4">
-          <Badge className="bg-green-100 text-green-800"><>
+          <Badge className="bg-green-100 text-green-800">
+<>
 
             <Satellite className="h-4 w-4 mr-1" />
             Live Monitoring: ACTIVE
@@ -217,7 +219,8 @@ export default function SatelliteImageryIntegration() {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Satellite className="h-6 w-6 text-green-600 animate-pulse" />
-                <div><>
+                <div>
+<>
 
                   <div className="font-medium">Satellite Analysis in Progress</div>
                   <div
@@ -225,11 +228,13 @@ export default function SatelliteImageryIntegration() {
                 </div>
               </div>
               <Progress value={scanProgress} className="w-full" />
-              <div className="grid grid-cols-4 gap-4 text-sm"><>
+              <div className="grid grid-cols-4 gap-4 text-sm">
+<>
 
                 <div className={scanProgress >= 25 ? "text-green-600" : "text-gray-400"}>✓ Image acquisition</div>
                 <div
-</> className={scanProgress >= 50 ? "text-green-600" : "text-gray-400"}>✓ Change detection</div><>
+</> className={scanProgress >= 50 ? "text-green-600" : "text-gray-400"}>✓ Change detection</div>
+<>
 
                 <div className={scanProgress >= 75 ? "text-green-600" : "text-gray-400"}>✓ Impact analysis</div>
                 <div
@@ -241,11 +246,13 @@ export default function SatelliteImageryIntegration() {
       )}
 
       <Tabs defaultValue="detections" className="w-full">
-        <TabsList className="grid w-full grid-cols-4"><>
+        <TabsList className="grid w-full grid-cols-4">
+<>
 
           <TabsTrigger value="detections">Change Detections</TabsTrigger>
           <TabsTrigger
-</> value="monitoring">Live Monitoring</TabsTrigger><>
+</> value="monitoring">Live Monitoring</TabsTrigger>
+<>
 
           <TabsTrigger value="sources">Data Sources</TabsTrigger>
           <TabsTrigger
@@ -259,7 +266,8 @@ export default function SatelliteImageryIntegration() {
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {getChangeTypeIcon(detection.changeType)}
-                    <div><>
+                    <div>
+<>
 
                       <div>{detection.changeType.charAt(0).toUpperCase() + detection.changeType.slice(1)} Detected</div>
                       <div
@@ -269,7 +277,8 @@ export default function SatelliteImageryIntegration() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2"><>
+                  <div className="flex items-center gap-2">
+<>
 
                     <Badge className={getImpactColor(detection.impactLevel)}>
                       {detection.impactLevel.toUpperCase()}
@@ -287,7 +296,8 @@ export default function SatelliteImageryIntegration() {
                   {/* Before/After Images */}
                   <div className="lg:col-span-2 space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div><>
+                      <div>
+<>
 
                         <div className="text-sm font-medium mb-2">Before</div>
                         <img
@@ -297,7 +307,8 @@ export default function SatelliteImageryIntegration() {
                           className="w-full h-32 object-cover rounded-lg border"
                         />
                       </div>
-                      <div><>
+                      <div>
+<>
 
                         <div className="text-sm font-medium mb-2">After</div>
                         <img
@@ -313,7 +324,8 @@ export default function SatelliteImageryIntegration() {
 
                   {/* Detection Details */}
                   <div className="space-y-4">
-                    <div className="text-center p-4 border rounded-lg"><>
+                    <div className="text-center p-4 border rounded-lg">
+<>
 
                       <div className="text-2xl font-bold text-green-600">
                         ${detection.estimatedValue.toLocaleString()}
@@ -323,7 +335,8 @@ export default function SatelliteImageryIntegration() {
                     </div>
 
                     <div className="space-y-3 text-sm">
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span>Coordinates:</span>
                         <span
@@ -331,13 +344,15 @@ export default function SatelliteImageryIntegration() {
                           {detection.coordinates.lat.toFixed(4)}, {detection.coordinates.lng.toFixed(4)}
                         </span>
                       </div>
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span>Detection Date:</span>
                         <span
 </>>{new Date(detection.detectedDate).toLocaleDateString()}</span>
                       </div>
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span>Confidence:</span>
                         <span
@@ -346,13 +361,15 @@ export default function SatelliteImageryIntegration() {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                      <Button size="sm"><>
+                      <Button size="sm">
+<>
 
                         <Calendar className="h-4 w-4 mr-2" />
                         Schedule Inspection
                       </Button>
                       <Button
-</> size="sm" variant="outline"><>
+</> size="sm" variant="outline">
+<>
 
                         <TrendingUp className="h-4 w-4 mr-2" />
                         Update Assessment
@@ -378,20 +395,23 @@ export default function SatelliteImageryIntegration() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="text-center"><>
+                  <div className="text-center">
+<>
 
                     <div className="text-3xl font-bold text-green-600">2,847</div>
                     <div
 </> className="text-sm text-gray-600">Properties Monitored</div>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="text-center p-2 border rounded"><>
+                    <div className="text-center p-2 border rounded">
+<>
 
                       <div className="font-bold text-blue-600">23</div>
                       <div
 </> className="text-gray-600">Changes Today</div>
                     </div>
-                    <div className="text-center p-2 border rounded"><>
+                    <div className="text-center p-2 border rounded">
+<>
 
                       <div className="font-bold text-orange-600">156</div>
                       <div
@@ -433,29 +453,34 @@ export default function SatelliteImageryIntegration() {
               <CardContent>
                 <div className="space-y-4">
                   <div>
-                    <div className="flex justify-between text-sm mb-1"><>
+                    <div className="flex justify-between text-sm mb-1">
+<>
 
                       <span>Benton County</span>
                       <span
 </>>100%</span>
-                    </div><>
+                    </div>
+<>
 
                     <Progress value={100} />
                   </div>
                   <div
 </>>
-                    <div className="flex justify-between text-sm mb-1"><>
+                    <div className="flex justify-between text-sm mb-1">
+<>
 
                       <span>Yakima County</span>
                       <span
 </>>87%</span>
-                    </div><>
+                    </div>
+<>
 
                     <Progress value={87} />
                   </div>
                   <div
 </>>
-                    <div className="flex justify-between text-sm mb-1"><>
+                    <div className="flex justify-between text-sm mb-1">
+<>
 
                       <span>Walla Walla County</span>
                       <span
@@ -469,7 +494,8 @@ export default function SatelliteImageryIntegration() {
           </div>
 
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Real-time Monitoring Dashboard</CardTitle>
               <CardDescription
@@ -477,7 +503,8 @@ export default function SatelliteImageryIntegration() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-4"><>
+                <div className="space-y-4">
+<>
 
                   <h4 className="font-semibold">Recent Activity</h4>
                   <div
@@ -488,7 +515,8 @@ export default function SatelliteImageryIntegration() {
                       { time: "12:18", event: "Building addition verified - Parcel 362301-150067" },
                       { time: "11:52", event: "Landscaping change detected - Parcel 362301-300045" },
                     ].map((activity /* , index */) => (
-                      <div key={index} className="flex gap-3 p-2 border rounded text-sm"><>
+                      <div key={index} className="flex gap-3 p-2 border rounded text-sm">
+<>
 
                         <span className="text-gray-500 font-mono">{activity.time}</span>
                         <span
@@ -498,30 +526,35 @@ export default function SatelliteImageryIntegration() {
                   </div>
                 </div>
 
-                <div className="space-y-4"><>
+                <div className="space-y-4">
+<>
 
                   <h4 className="font-semibold">System Status</h4>
                   <div
 </> className="space-y-3">
-                    <div className="flex justify-between items-center"><>
+                    <div className="flex justify-between items-center">
+<>
 
                       <span className="text-sm">Satellite Connection</span>
                       <Badge
 </> className="bg-green-100 text-green-800">ONLINE</Badge>
                     </div>
-                    <div className="flex justify-between items-center"><>
+                    <div className="flex justify-between items-center">
+<>
 
                       <span className="text-sm">Change Detection AI</span>
                       <Badge
 </> className="bg-green-100 text-green-800">ACTIVE</Badge>
                     </div>
-                    <div className="flex justify-between items-center"><>
+                    <div className="flex justify-between items-center">
+<>
 
                       <span className="text-sm">Data Processing</span>
                       <Badge
 </> className="bg-blue-100 text-blue-800">PROCESSING</Badge>
                     </div>
-                    <div className="flex justify-between items-center"><>
+                    <div className="flex justify-between items-center">
+<>
 
                       <span className="text-sm">Alert System</span>
                       <Badge
@@ -537,7 +570,8 @@ export default function SatelliteImageryIntegration() {
         <TabsContent value="sources" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
-              <CardHeader><>
+              <CardHeader>
+<>
 
                 <CardTitle>Satellite Data Providers</CardTitle>
                 <CardDescription
@@ -547,7 +581,8 @@ export default function SatelliteImageryIntegration() {
                 <div className="space-y-4">
                   {satelliteData.map((source /* , index */) => (
                     <div key={index} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2"><>
+                      <div className="flex justify-between items-start mb-2">
+<>
 
                         <div className="font-medium">{source.provider}</div>
                         <Badge
@@ -556,13 +591,15 @@ export default function SatelliteImageryIntegration() {
                         </Badge>
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div><>
+                        <div>
+<>
 
                           <span className="text-gray-600">Resolution:</span>
                           <div
 </> className="font-medium">{source.resolution}</div>
                         </div>
-                        <div><>
+                        <div>
+<>
 
                           <span className="text-gray-600">Capture Date:</span>
                           <div
@@ -570,7 +607,8 @@ export default function SatelliteImageryIntegration() {
                         </div>
                       </div>
                       <div className="mt-2">
-                        <div className="flex justify-between text-sm mb-1"><>
+                        <div className="flex justify-between text-sm mb-1">
+<>
 
                           <span className="text-gray-600">Cloud Cover</span>
                           <span
@@ -585,7 +623,8 @@ export default function SatelliteImageryIntegration() {
             </Card>
 
             <Card>
-              <CardHeader><>
+              <CardHeader>
+<>
 
                 <CardTitle>Data Acquisition Schedule</CardTitle>
                 <CardDescription
@@ -600,7 +639,8 @@ export default function SatelliteImageryIntegration() {
                     { date: "2025-01-22", provider: "Maxar WorldView-3", coverage: "Full County" },
                   ].map((schedule /* , index */) => (
                     <div key={index} className="flex justify-between items-center p-3 border rounded-lg">
-                      <div><>
+                      <div>
+<>
 
                         <div className="font-medium">{new Date(schedule.date).toLocaleDateString()}</div>
                         <div
@@ -624,7 +664,8 @@ export default function SatelliteImageryIntegration() {
                 <CardTitle className="text-lg">Detection Accuracy</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center"><>
+                <div className="text-center">
+<>
 
                   <div className="text-3xl font-bold text-green-600">94.7%</div>
                   <div
@@ -639,7 +680,8 @@ export default function SatelliteImageryIntegration() {
                 <CardTitle className="text-lg">Value Impact</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center"><>
+                <div className="text-center">
+<>
 
                   <div className="text-3xl font-bold text-blue-600">$2.1M</div>
                   <div
@@ -654,7 +696,8 @@ export default function SatelliteImageryIntegration() {
                 <CardTitle className="text-lg">Response Time</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center"><>
+                <div className="text-center">
+<>
 
                   <div className="text-3xl font-bold text-purple-600">2.3</div>
                   <div
@@ -666,7 +709,8 @@ export default function SatelliteImageryIntegration() {
           </div>
 
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Monthly Trends</CardTitle>
               <CardDescription
@@ -674,7 +718,8 @@ export default function SatelliteImageryIntegration() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div><>
+                <div>
+<>
 
                   <h4 className="font-semibold mb-3">Change Types by Month</h4>
                   <div
@@ -683,30 +728,35 @@ export default function SatelliteImageryIntegration() {
                       { month: "December", construction: 12, additions: 8, pools: 2, landscaping: 15 },
                       { month: "January", construction: 18, additions: 12, pools: 1, landscaping: 8 },
                     ].map((month /* , index */) => (
-                      <div key={index} className="border rounded p-3"><>
+                      <div key={index} className="border rounded p-3">
+<>
 
                         <div className="font-medium mb-2">{month.month}</div>
                         <div
 </> className="grid grid-cols-4 gap-2 text-xs">
-                          <div className="text-center"><>
+                          <div className="text-center">
+<>
 
                             <div className="font-bold">{month.construction}</div>
                             <div
 </> className="text-gray-600">Construction</div>
                           </div>
-                          <div className="text-center"><>
+                          <div className="text-center">
+<>
 
                             <div className="font-bold">{month.additions}</div>
                             <div
 </> className="text-gray-600">Additions</div>
                           </div>
-                          <div className="text-center"><>
+                          <div className="text-center">
+<>
 
                             <div className="font-bold">{month.pools}</div>
                             <div
 </> className="text-gray-600">Pools</div>
                           </div>
-                          <div className="text-center"><>
+                          <div className="text-center">
+<>
 
                             <div className="font-bold">{month.landscaping}</div>
                             <div
@@ -718,35 +768,41 @@ export default function SatelliteImageryIntegration() {
                   </div>
                 </div>
 
-                <div><>
+                <div>
+<>
 
                   <h4 className="font-semibold mb-3">Performance Metrics</h4>
                   <div
 </> className="space-y-3">
                     <div>
-                      <div className="flex justify-between text-sm mb-1"><>
+                      <div className="flex justify-between text-sm mb-1">
+<>
 
                         <span>Detection Rate</span>
                         <span
 </>>96.2%</span>
-                      </div><>
+                      </div>
+<>
 
                       <Progress value={96.2} />
                     </div>
                     <div
 </>>
-                      <div className="flex justify-between text-sm mb-1"><>
+                      <div className="flex justify-between text-sm mb-1">
+<>
 
                         <span>False Positives</span>
                         <span
 </>>3.1%</span>
-                      </div><>
+                      </div>
+<>
 
                       <Progress value={3.1} />
                     </div>
                     <div
 </>>
-                      <div className="flex justify-between text-sm mb-1"><>
+                      <div className="flex justify-between text-sm mb-1">
+<>
 
                         <span>Processing Speed</span>
                         <span

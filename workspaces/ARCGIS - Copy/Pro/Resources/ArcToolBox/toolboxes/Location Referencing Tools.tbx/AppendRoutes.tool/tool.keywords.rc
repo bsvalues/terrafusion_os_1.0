@@ -1,9 +1,0 @@
-{
-    "set": [
-        "append route",
-        "integrity",
-        "load route",
-        "pipeline",
-        "route load"
-    ]
-}

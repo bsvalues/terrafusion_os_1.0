@@ -1,6 +1,0 @@
-from typing import Any
-
-arcobject_to_python_class_mapping: dict[str, Any]
-
-def initialize_conversion_mapping() -> None: ...
-def convertArcObjectToPythonObject(obj: Any) -> Any: ...

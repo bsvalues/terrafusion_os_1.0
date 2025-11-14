@@ -1,9 +1,0 @@
-{
-    "set": [
-        "combine",
-        "exclusive or",
-        "false",
-        "math",
-        "true"
-    ]
-}

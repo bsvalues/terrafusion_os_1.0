@@ -7,13 +7,13 @@ metadata:
     app.kubernetes.io/name: terrafusion
     app.kubernetes.io/part-of: terrafusion-platform
     app.kubernetes.io/version: '1.0.0'
-    security.terrafusion.gov/compliance-level: 'fedramp-moderate'
-    security.terrafusion.gov/data-classification: 'cui-basic'
+    security.terrafusionmarket.com/compliance-level: 'fedramp-moderate'
+    security.terrafusionmarket.com/data-classification: 'cui-basic'
   annotations:
-    terrafusion.gov/environment: 'production'
-    terrafusion.gov/compliance: 'fedramp-moderate'
-    terrafusion.gov/audit-required: 'true'
-    terrafusion.gov/retention-policy: '7-years'
+    terrafusionmarket.com/environment: 'production'
+    terrafusionmarket.com/compliance: 'fedramp-moderate'
+    terrafusionmarket.com/audit-required: 'true'
+    terrafusionmarket.com/retention-policy: '7-years'
     scheduler.alpha.kubernetes.io/node-selector: 'security-zone=government'
 
 ---

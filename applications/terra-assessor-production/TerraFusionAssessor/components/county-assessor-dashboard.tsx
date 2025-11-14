@@ -48,7 +48,7 @@ interface RecentActivity {
 
 export default function CountyAssessorDashboard() {
   const [metrics, setMetrics] = useState<AssessmentMetrics>({
-    totalParcels: 89247,
+    totalParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
     totalAssessedValue: 12847392000,
     averageAssessedValue: 143890,
     pendingAppeals: 127,

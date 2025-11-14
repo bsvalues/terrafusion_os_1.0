@@ -27,8 +27,8 @@ spec:
         component: supreme-commander
         tier: command-control
       annotations:
-        quantum.terrafusion.gov/optimization-level: "maximum"
-        consciousness.terrafusion.gov/awareness-level: "transcendent"
+        quantum.terrafusionmarket.com/optimization-level: "maximum"
+        consciousness.terrafusionmarket.com/awareness-level: "transcendent"
         prometheus.io/scrape: "true"
         prometheus.io/port: "9090"
         prometheus.io/path: "/metrics"
@@ -126,7 +126,7 @@ spec:
         
         # AI Model Configuration
         - name: AI_MODEL_REGISTRY_URL
-          value: "https://models.terrafusion.gov"
+          value: "https://models.terrafusionmarket.com"
         - name: ML_MODEL_CACHE_SIZE_GB
           value: "32"
         - name: AI_TRAINING_MODE
@@ -269,11 +269,11 @@ spec:
           claimName: ai-model-cache-pvc
       
       nodeSelector:
-        terrafusion.gov/node-type: "supreme-commander"
+        terrafusionmarket.com/node-type: "supreme-commander"
         kubernetes.io/arch: "amd64"
       
       tolerations:
-      - key: "terrafusion.gov/supreme-commander"
+      - key: "terrafusionmarket.com/supreme-commander"
         operator: "Equal"
         value: "true"
         effect: "NoSchedule"
@@ -283,7 +283,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: "terrafusion.gov/compute-class"
+              - key: "terrafusionmarket.com/compute-class"
                 operator: In
                 values: ["high-performance"]
         podAntiAffinity:

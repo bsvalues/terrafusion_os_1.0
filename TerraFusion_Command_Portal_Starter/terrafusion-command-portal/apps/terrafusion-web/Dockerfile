@@ -18,7 +18,7 @@ COPY tailwind.config.ts ./
 COPY postcss.config.mjs ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm install --omit=dev --legacy-peer-deps
 
 # Copy source code
 COPY src ./src
@@ -28,6 +28,7 @@ COPY public ./public
 # Build application
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NPM_CONFIG_LEGACY_PEER_DEPS=true
 RUN npm run build
 
 # Runtime stage
@@ -46,7 +47,7 @@ WORKDIR /app
 # Set environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=5177
+ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Copy built application
@@ -62,10 +63,10 @@ USER nextjs
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5177/ || exit 1
+    CMD curl -f http://localhost:3000/ || exit 1
 
 # Expose port
-EXPOSE 5177
+EXPOSE 3000
 
 # Run application with proper signal handling
 ENTRYPOINT ["dumb-init", "--"]

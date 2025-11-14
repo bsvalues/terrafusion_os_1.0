@@ -1,0 +1,75 @@
+openapi: 3.0.3
+info:
+  title: TerraFusion Finance/Levy API
+  version: 0.1.0
+servers:
+  - url: http://localhost:5000
+paths:
+  /api/finance/levy/forecast:
+    post:
+      summary: Run levy forecast for a district
+      operationId: levyForecast
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LevyScenarioRequest'
+            examples:
+              BentonSchoolDistrict:
+                summary: Benton SD levy at 1.25% with caps and exemptions
+                value:
+                  districtId: "benton-sd"
+                  rate: 0.0125
+                  caps: { senior: 0.50 }
+                  exemptions: { veterans: 0.10 }
+      responses:
+        '200':
+          description: Levy forecast result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LevyForecast'
+              examples:
+                BentonSDResult:
+                  summary: Forecast with uncertainty bands
+                  value:
+                    districtId: "benton-sd"
+                    expected: 154_000_000
+                    lower: 147_000_000
+                    upper: 161_000_000
+                    assumptions:
+                      baseRoll: 12_300_000_000
+                      growthRate: 0.032
+                      capApplied: true
+                      exemptionUptake: {
+                        seniors: 0.18,
+                        veterans: 0.07
+                      }
+components:
+  schemas:
+    LevyScenarioRequest:
+      type: object
+      required: [districtId, rate]
+      properties:
+        districtId: { type: string }
+        rate: { type: number, format: float }
+        caps:
+          type: object
+          additionalProperties:
+            type: number
+        exemptions:
+          type: object
+          additionalProperties:
+            type: number
+    LevyForecast:
+      type: object
+      required: [districtId, expected, lower, upper]
+      properties:
+        districtId: { type: string }
+        expected: { type: number, format: float }
+        lower: { type: number, format: float }
+        upper: { type: number, format: float }
+        assumptions:
+          type: object
+          additionalProperties: {}

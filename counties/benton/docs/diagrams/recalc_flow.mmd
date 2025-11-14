@@ -1,0 +1,10 @@
+sequenceDiagram
+  participant U as User
+  participant A as API
+  participant Q as Queue
+  participant W as Worker
+  U->>A: Trigger Recalc
+  A->>Q: Enqueue
+  W->>DB: Update Values
+  W-->>A: Done
+  A-->>U: Acknowledged

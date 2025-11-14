@@ -1,179 +1,193 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TerraFusion.API.Security;
-using TerraFusion.Abstractions.Interfaces;
+using Microsoft.AspNetCore.RateLimiting;
+using TerraFusion.Core.Services;
+using TerraFusion.Core.DTOs;
 
-namespace TerraFusion.API.Controllers
+namespace TerraFusion.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[EnableRateLimiting("ApiPolicy")]
+public class AuthController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    private readonly IAuthenticationService _authService;
+    private readonly ISecurityService _securityService;
+    private readonly ILogger<AuthController> _logger;
+
+    public AuthController(
+        IAuthenticationService authService,
+        ISecurityService securityService,
+        ILogger<AuthController> logger)
     {
-        private readonly IJwtAuthService _jwtAuthService;
-        private readonly ILogger<AuthController> _logger;
-        private readonly IAuditLogger _auditLogger;
+        _authService = authService;
+        _securityService = securityService;
+        _logger = logger;
+    }
 
-        public AuthController(IJwtAuthService jwtAuthService, ILogger<AuthController> logger, IAuditLogger auditLogger)
+    [HttpPost("login")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        try
         {
-            _jwtAuthService = jwtAuthService;
-            _logger = logger;
-            _auditLogger = auditLogger;
-        }
-
-        [HttpPost("login")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
-        {
-            _logger.LogInformation($"Login attempt for user: {request.Username}");
-
-            var (isValid, userId, email, roles) = await ValidateCredentials(request.Username, request.Password);
-
-            if (!isValid)
+            // Validate government user
+            if (!await _securityService.IsValidGovernmentUserAsync(request.Email))
             {
-                _logger.LogWarning($"Failed login attempt for user: {request.Username}");
-                return Unauthorized(new { message = "Invalid username or password" });
+                await _securityService.LogSecurityEventAsync("INVALID_LOGIN_ATTEMPT", 
+                    $"Non-government user attempted login: {request.Email}");
+                return Unauthorized(new { message = "Invalid credentials" });
             }
 
-            var token = _jwtAuthService.GenerateToken(userId, email, roles);
-            var refreshToken = GenerateRefreshToken();
+            // In production, validate against government directory (Active Directory, LDAP, etc.)
+            var isValidCredentials = await ValidateUserCredentials(request.Email, request.Password);
+            
+            if (!isValidCredentials)
+            {
+                await _securityService.LogSecurityEventAsync("FAILED_LOGIN_ATTEMPT", 
+                    $"Failed login attempt for user: {request.Email}");
+                return Unauthorized(new { message = "Invalid credentials" });
+            }
 
-            _logger.LogInformation($"Successful login for user: {request.Username}");
+            // Generate JWT token
+            var roles = await GetUserRoles(request.Email);
+            var token = await _authService.GenerateJwtTokenAsync(
+                Guid.NewGuid().ToString(), 
+                request.Email, 
+                roles);
+
+            await _securityService.LogSecurityEventAsync("SUCCESSFUL_LOGIN", 
+                $"User successfully logged in: {request.Email}");
 
             return Ok(new LoginResponse
             {
                 Token = token,
-                RefreshToken = refreshToken,
-                ExpiresIn = 3600,
-                UserId = userId,
-                Email = email,
-                Roles = roles
+                Email = request.Email,
+                Roles = roles.ToArray(),
+                ExpiresAt = DateTime.UtcNow.AddHours(8)
             });
         }
-
-        [HttpPost("refresh")]
-        [AllowAnonymous]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+        catch (Exception ex)
         {
-            var principal = _jwtAuthService.ValidateToken(request.Token);
+            _logger.LogError(ex, "Error during login for user {Email}", request.Email);
+            await _securityService.LogSecurityEventAsync("LOGIN_ERROR", 
+                $"Error during login for user: {request.Email}", ex.Message);
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
 
+    [HttpPost("refresh")]
+    [Authorize]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+    {
+        try
+        {
+            var principal = await _authService.ValidateTokenAsync(request.Token);
             if (principal == null)
             {
-                // Log failed refresh attempt for security monitoring
-                await _auditLogger.LogSecurityEventAsync("REFRESH_TOKEN_FAILED", "Invalid token provided", "ANONYMOUS");
                 return Unauthorized(new { message = "Invalid token" });
             }
 
-            var userId = principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            var email = principal.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-            var roles = new List<string> { "Admin" };
+            var email = principal.FindFirst("email")?.Value;
+            var userId = principal.FindFirst("sub")?.Value;
 
-            var newToken = _jwtAuthService.GenerateToken(userId ?? "", email ?? "", roles);
-            var newRefreshToken = GenerateRefreshToken();
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "Invalid token claims" });
+            }
 
-            // Log successful token refresh for audit compliance
-            await _auditLogger.LogAuthenticationAsync(userId ?? "UNKNOWN", true, "Token refreshed successfully");
+            var roles = await GetUserRoles(email);
+            var newToken = await _authService.GenerateJwtTokenAsync(userId, email, roles);
+
+            await _securityService.LogSecurityEventAsync("TOKEN_REFRESH", 
+                $"Token refreshed for user: {email}");
 
             return Ok(new LoginResponse
             {
                 Token = newToken,
-                RefreshToken = newRefreshToken,
-                ExpiresIn = 3600,
-                UserId = userId ?? "",
-                Email = email ?? "",
-                Roles = roles
+                Email = email,
+                Roles = roles.ToArray(),
+                ExpiresAt = DateTime.UtcNow.AddHours(8)
             });
         }
-
-        [HttpPost("validate")]
-        [Authorize]
-        public async Task<IActionResult> ValidateToken()
+        catch (Exception ex)
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-
-            // Log token validation for FISMA audit compliance
-            await _auditLogger.LogAuthenticationAsync(userId ?? "UNKNOWN", true, "Token validation successful");
-
-            return Ok(new
-            {
-                valid = true,
-                userId,
-                email,
-                timestamp = DateTime.UtcNow
-            });
+            _logger.LogError(ex, "Error during token refresh");
+            return StatusCode(500, new { message = "Internal server error" });
         }
+    }
 
-        [HttpPost("logout")]
-        [Authorize]
-        public async Task<IActionResult> Logout()
+    [HttpPost("logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        try
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-            // FISMA compliance: Log logout event with audit trail
-            await _auditLogger.LogUserActionAsync("LOGOUT", userId ?? "UNKNOWN", "User session terminated");
-            _logger.LogInformation($"User logged out: {userId}");
+            var email = User.FindFirst("email")?.Value;
+            
+            // In production, invalidate the token by adding to blacklist
+            await _securityService.LogSecurityEventAsync("USER_LOGOUT", 
+                $"User logged out: {email}");
 
             return Ok(new { message = "Logged out successfully" });
         }
-
-        private async Task<(bool isValid, string userId, string email, List<string> roles)> ValidateCredentials(string username, string password)
+        catch (Exception ex)
         {
-            await Task.Delay(100);
-
-            if (username == "admin" && password == "TerraFusion2025!")
-            {
-                return (true, "admin-001", "admin@terrafusion.gov", new List<string> { "Admin", "SystemAdmin" });
-            }
-            else if (username == "assessor" && password == "Assessor2025!")
-            {
-                return (true, "assessor-001", "assessor@bentoncounty.gov", new List<string> { "Assessor", "User" });
-            }
-            else if (username == "demo" && password == "Demo2025!")
-            {
-                return (true, "demo-001", "demo@terrafusion.com", new List<string> { "User" });
-            }
-
-            return (false, "", "", new List<string>());
-        }
-
-        private string GenerateRefreshToken()
-        {
-            return Convert.ToBase64String(Guid.NewGuid().ToByteArray())
-                .Replace("/", "_")
-                .Replace("+", "-")
-                .Replace("=", "");
+            _logger.LogError(ex, "Error during logout");
+            return StatusCode(500, new { message = "Internal server error" });
         }
     }
 
-    public class LoginRequest
+    [HttpGet("profile")]
+    [Authorize]
+    public async Task<IActionResult> GetProfile()
     {
-        [Required]
-        public required string Username { get; set; }
+        try
+        {
+            var email = User.FindFirst("email")?.Value;
+            var roles = User.FindAll("role").Select(c => c.Value).ToArray();
 
-        [Required]
-        public required string Password { get; set; }
+            return Ok(new UserProfile
+            {
+                Email = email!,
+                Roles = roles,
+                LastLogin = DateTime.UtcNow // In production, get from database
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving user profile");
+            return StatusCode(500, new { message = "Internal server error" });
+        }
     }
 
-    public class RefreshTokenRequest
+    private async Task<bool> ValidateUserCredentials(string email, string password)
     {
-        [Required]
-        public required string Token { get; set; }
-
-        [Required]
-        public required string RefreshToken { get; set; }
+        // In production, integrate with government authentication systems
+        // For demo purposes, use simple validation
+        await Task.Delay(100); // Simulate authentication delay
+        
+        // Government users with @gov., @state., @county. domains
+        return email.EndsWith("@gov.") || 
+               email.EndsWith("@state.") || 
+               email.EndsWith("@county.") ||
+               email.EndsWith("@terrafusionmarket.com");
     }
 
-    public class LoginResponse
+    private async Task<IEnumerable<string>> GetUserRoles(string email)
     {
-        public required string Token { get; set; }
-        public required string RefreshToken { get; set; }
-        public int ExpiresIn { get; set; }
-        public required string UserId { get; set; }
-        public required string Email { get; set; }
-        public required List<string> Roles { get; set; }
+        // In production, get from government directory or database
+        await Task.Delay(50);
+        
+        var roles = new List<string> { "GovernmentUser" };
+        
+        if (email.Contains("admin"))
+            roles.Add("Administrator");
+        if (email.Contains("assessor"))
+            roles.Add("PropertyAssessor");
+        if (email.Contains("auditor"))
+            roles.Add("CountyAuditor");
+        
+        return roles;
     }
 }

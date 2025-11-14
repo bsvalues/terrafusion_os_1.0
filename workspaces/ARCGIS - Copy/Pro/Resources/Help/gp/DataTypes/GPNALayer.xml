@@ -1,5 +1,0 @@
-<DataType Name="GPNALayer">
-  <DisplayName>Network Analyst Layer</DisplayName>
-  <Description>A special group layer used to express and solve network routing problems. Each sublayer held in memory in a Network Analyst layer represents some aspect of the routing problem and the routing solution.</Description>
-</DataType>
-

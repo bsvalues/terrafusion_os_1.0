@@ -301,7 +301,7 @@ function loadDemoProperties(map, markerCluster) {
             assessed_value: 5250000,
             lot_size: 87120, // 2 acres
             year_built: 1968,
-            building_area: 45000,
+            building_area: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
             lat: 46.2082,
             lng: -119.1359,
             zoning: 'P',
@@ -873,7 +873,7 @@ function loadDemoHeatmap(map) {
         { lat: 46.2789, lng: -119.2871, assessed_value: 385000 },
         { lat: 46.3025, lng: -119.3628, assessed_value: 520000 },
         { lat: 46.1982, lng: -119.1825, assessed_value: 320000 },
-        { lat: 46.2156, lng: -119.1432, assessed_value: 450000 },
+        { lat: 46.2156, lng: -119.1432, assessed_value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 },
         { lat: 46.2899, lng: -119.2999, assessed_value: 580000 },
         { lat: 46.2452, lng: -119.2233, assessed_value: 390000 },
         
@@ -887,7 +887,7 @@ function loadDemoHeatmap(map) {
         // Agricultural properties
         { lat: 46.1653, lng: -119.1703, assessed_value: 1250000 },
         { lat: 46.2608, lng: -119.4714, assessed_value: 975000 },
-        { lat: 46.1789, lng: -119.3212, assessed_value: 1450000 },
+        { lat: 46.1789, lng: -119.3212, assessed_value: 1await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 },
         
         // Public properties
         { lat: 46.2082, lng: -119.1359, assessed_value: 5250000 },

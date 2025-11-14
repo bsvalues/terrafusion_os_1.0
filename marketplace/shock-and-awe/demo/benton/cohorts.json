@@ -1,0 +1,8 @@
+{
+  "countyId": "benton",
+  "cohorts": [
+    { "id": "residential-2024", "name": "Residential 2024", "size": 89247 },
+    { "id": "commercial-2024", "name": "Commercial 2024", "size": 12345 },
+    { "id": "condo-2024", "name": "Condominiums 2024", "size": 3421 }
+  ]
+}

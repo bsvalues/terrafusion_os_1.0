@@ -132,16 +132,16 @@ public static class CorsConfiguration
             {
                 "production" => new[]
                 {
-                    "https://terrafusion.gov",
-                    "https://www.terrafusion.gov",
-                    "https://api.terrafusion.gov",
-                    "https://admin.terrafusion.gov"
+                    "https://terrafusionmarket.com",
+                    "https://www.terrafusionmarket.com",
+                    "https://api.terrafusionmarket.com",
+                    "https://admin.terrafusionmarket.com"
                 },
                 "staging" => new[]
                 {
-                    "https://staging.terrafusion.gov",
-                    "https://test.terrafusion.gov",
-                    "https://demo.terrafusion.gov"
+                    "https://staging.terrafusionmarket.com",
+                    "https://test.terrafusionmarket.com",
+                    "https://demo.terrafusionmarket.com"
                 },
                 _ => new[]
                 {
@@ -166,7 +166,7 @@ public static class CorsConfiguration
             {
                 "https://county.gov",
                 "https://state.gov",
-                "https://terrafusion.gov",
+                "https://terrafusionmarket.com",
                 "https://*.county.gov", // Wildcard for county subdomains
                 "https://*.state.gov"   // Wildcard for state subdomains
             };

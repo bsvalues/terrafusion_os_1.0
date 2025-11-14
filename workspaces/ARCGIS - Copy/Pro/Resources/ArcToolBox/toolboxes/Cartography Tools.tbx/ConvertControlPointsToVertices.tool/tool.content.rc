@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Converts control points in a line or polygon feature layer to vertices.",
-        "in_features.descr": "The line or polygon input features containing control point geometry that will be converted to vertices.",
-        "in_features.title": "Input Features",
-        "title": "Convert Control Points To Vertices",
-        "updated_features.title": "Updated Features"
-    }
-}

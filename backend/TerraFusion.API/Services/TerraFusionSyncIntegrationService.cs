@@ -386,7 +386,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
             SuccessfulSyncs = 147, // Simulated
             FailedSyncs = 3, // Simulated
             AverageResponseTime = 1250.5, // Simulated milliseconds
-            TotalRecordsProcessed = 89247,
+            TotalRecordsProcessed = 89247, // Benton County property count
             CountyMetrics = _configuredCounties.ToDictionary(
                 c => c.Key,
                 c => c.Value.TotalParcels

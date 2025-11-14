@@ -7,14 +7,14 @@ export const fixtures = {
       roles: ["EnterpriseAdmin"], 
       permissions: ["read","write","delete","export"],
       name: "System Administrator",
-      email: "admin@terrafusion.gov"
+      email: "admin@terrafusionmarket.com"
     },
     assessor: { 
       id: "u-assessor", 
       roles: ["Assessor"], 
       permissions: ["read","write","approve"],
       name: "County Assessor",
-      email: "assessor@bentoncounty.gov"
+      email: "assessor@terrafusionmarket.io"
     },
     viewer: { 
       id: "u-viewer", 
@@ -108,7 +108,7 @@ export const fixtures = {
       lotSize: 2.5,
       yearBuilt: 1995,
       assessedValue: 2400000,
-      marketValue: 2450000,
+      marketValue: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       taxableValue: 2400000,
       zoning: 'C-2',
       tenants: ['Tech Corp', 'Local Restaurant'],
@@ -188,7 +188,7 @@ export const fixtures = {
       cpu: 23,
       memory: 1.2,
       networkLatency: 0.8,
-      diskIOPS: 45000
+      diskIOPS: await DynamicPropertyService.GetPropertyCountAsync(countyCode)
     }
   },
 

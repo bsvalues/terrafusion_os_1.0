@@ -126,7 +126,7 @@ const taskTemplates: Record<string, string> = {
       quality: 'good',
       condition: 'good',
       region: 'BENTON',
-      totalValue: 450000,
+      totalValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       landValue: 100000,
       improvementValue: 350000,
       assessmentDate: new Date().toISOString(),

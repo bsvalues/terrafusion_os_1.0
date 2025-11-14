@@ -3927,13 +3927,13 @@
     "Source": "🚀_CI_CD_PIPELINES_COMPLETE.md",
     "Type": "Component",
     "Name": "argocd",
-    "Context": "# Login to ArgoCD\r\n    argocd login argocd.terrafusion.gov"
+    "Context": "# Login to ArgoCD\r\n    argocd login argocd.terrafusionmarket.com"
   },
   {
     "Source": "🚀_CI_CD_PIPELINES_COMPLETE.md",
     "Type": "Component",
     "Name": "argocd",
-    "Context": "n to ArgoCD\r\n    argocd login argocd.terrafusion.gov --username ad"
+    "Context": "n to ArgoCD\r\n    argocd login argocd.terrafusionmarket.com --username ad"
   },
   {
     "Source": "🚀_CI_CD_PIPELINES_COMPLETE.md",
@@ -3951,7 +3951,7 @@
     "Source": "🚀_CI_CD_PIPELINES_COMPLETE.md",
     "Type": "Component",
     "Name": "argocd",
-    "Context": "}\r\n```\r\n\r\n**ArgoCD Server:** `argocd.terrafusion.gov`  \r\n**Authent"
+    "Context": "}\r\n```\r\n\r\n**ArgoCD Server:** `argocd.terrafusionmarket.com`  \r\n**Authent"
   },
   {
     "Source": "🚀_CI_CD_PIPELINES_COMPLETE.md",

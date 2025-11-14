@@ -36,7 +36,7 @@ const DatabaseStatus: React.FC = () => {
           lastUpdate: response.database?.lastUpdate ?? new Date().toISOString(),
           harrisSync: {
             status: response.database?.harrisSync?.status ?? 'active',
-            parcels: response.database?.harrisSync?.parcels ?? 89247,
+            parcels: response.database?.harrisSync?.parcels ?? await DynamicPropertyService.GetPropertyCountAsync("benton"),
             lastSync: response.database?.harrisSync?.lastSync ?? new Date().toISOString()
           },
           performance: {

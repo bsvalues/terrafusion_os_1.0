@@ -34,7 +34,7 @@ export const TerraFusionEliteServiceOrchestrator: React.FC = () => {
   const [services, setServices] = useState<ServiceStatus[]>([
     {
       name: 'Elite Experiments API',
-      port: 5010,
+      port: 5000,
       status: 'offline',
       lastCheck: new Date().toISOString(),
       uptime: '00:00:00',

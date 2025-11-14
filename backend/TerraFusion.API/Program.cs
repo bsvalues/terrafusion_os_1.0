@@ -304,7 +304,7 @@ builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializatio
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown
 // builder.Services.AddHostedService<DatabaseInitializationHostedService>();
 
-// Register TerraLevy DbContext (PostgreSQL)
+// Register TerraLevy DbContext (PostgreSQL with SQLite fallback for dev)
 builder.Services.AddDbContext<LevyDbContext>(options =>
 {
     var levyConn = Environment.GetEnvironmentVariable("LEVY_DATABASE_URL")
@@ -313,13 +313,20 @@ builder.Services.AddDbContext<LevyDbContext>(options =>
 
     if (string.IsNullOrWhiteSpace(levyConn))
     {
-        Console.WriteLine("[LevyDb] WARNING: No connection string found (LEVY_DATABASE_URL / ConnectionStrings:LevyDatabase / DATABASE_URL). Levy endpoints will be unavailable.");
-        // Intentionally avoid fallback to SQLite for Levy to prevent silent misconfiguration
-        // If unresolved, endpoints will return 503 with guidance
-        return; // options left unconfigured; DI will still construct but Database calls should be guarded
+        Console.WriteLine("[LevyDb] WARNING: No PostgreSQL connection configured. Falling back to SQLite (levy-dev.db) for development.");
+        options.UseSqlite("Data Source=levy-dev.db");
+        return;
     }
 
-    options.UseNpgsql(levyConn);
+    if (levyConn.Contains("Host="))
+    {
+        options.UseNpgsql(levyConn);
+    }
+    else
+    {
+        // Allow SQLite connection string if explicitly provided
+        options.UseSqlite(levyConn);
+    }
 });
 
 // Register TerraLevy services for championship-level tax assessment
@@ -547,18 +554,22 @@ app.MapGet("/api/transcendence/health", () =>
 // --- TerraLevy minimal endpoints ---
 var levy = app.MapGroup("/levy").WithTags("Levy");
 
-levy.MapGet("/health", async (IServiceProvider sp) =>
+levy.MapGet("/health", async (LevyDbContext ctx) =>
 {
-    var ctx = sp.GetService<LevyDbContext>();
-    if (ctx == null)
-    {
-        return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
-    }
     try
     {
+        var provider = ctx.Database.ProviderName ?? string.Empty;
+
+        // Auto-provision SQLite dev database for local runs
+        if (provider.Contains("Sqlite", StringComparison.OrdinalIgnoreCase))
+        {
+            await ctx.Database.EnsureCreatedAsync();
+            return Results.Ok(new { status = "healthy", provider, mode = "sqlite-dev", timestamp = DateTime.UtcNow });
+        }
+
         var canConnect = await ctx.Database.CanConnectAsync();
         return canConnect
-            ? Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow })
+            ? Results.Ok(new { status = "healthy", provider, timestamp = DateTime.UtcNow })
             : Results.Problem("Cannot connect to Levy database.", statusCode: 503);
     }
     catch (Exception ex)

@@ -26,7 +26,7 @@ router.post("/nft/mint/:jobId", async (req, res) => {
     const compData = {
       jobId,
       address: req.body.address || "123 Main St",
-      salePrice: req.body.salePrice || 450000,
+      salePrice: req.body.salePrice || await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       gla: req.body.gla || 1850,
       zipCode: req.body.zipCode || "90210",
       county: req.body.county || "Los Angeles",

@@ -372,7 +372,7 @@ data:
               - alertmanager.monitoring.svc.cluster.local:9093
     
     remote_write:
-      - url: "https://prometheus-remote-storage.terrafusion.gov/api/v1/write"
+      - url: "https://prometheus-remote-storage.terrafusionmarket.com/api/v1/write"
         basic_auth:
           username: "terrafusion-prometheus"
           password_file: "/etc/prometheus/secrets/remote-write-password"

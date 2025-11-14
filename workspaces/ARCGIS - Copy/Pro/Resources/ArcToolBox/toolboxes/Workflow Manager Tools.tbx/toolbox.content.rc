@@ -1,8 +1,0 @@
-{
-    "map": {
-        "descr": "The Workflow Manager toolbox provides tools for working with distributed Workflow Manager (Classic) repositories as well as tools that retrieve job-specific information useful for other data processing tasks.  With the tools in this toolbox, you can retrieve job version, job's data workspace, replicate/synchronize Workflow Manager (Classic) repositories, and get a job's area of interest.",
-        "title": "Workflow Manager (Classic) Tools",
-        "toolset1.name": "Configuration",
-        "toolset2.name": "Jobs"
-    }
-}

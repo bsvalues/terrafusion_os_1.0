@@ -1,5 +1,0 @@
-<DataType Name="GPFeatureRecordSetLayer">
-  <DisplayName>Feature Set</DisplayName>
-  <Description>Interactive features that draw the features when the tool is run.</Description>
-</DataType>
-

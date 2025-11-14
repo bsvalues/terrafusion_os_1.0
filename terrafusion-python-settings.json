@@ -1,0 +1,29 @@
+{
+  "python.defaultInterpreterPath": "./costforge-ai-workspace/client/.venv/Scripts/python.exe",
+  "python.terminal.activateEnvironment": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.autoTestDiscoverOnSaveEnabled": true,
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.formatting.provider": "black",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "files.associations": {
+    "*.py": "python",
+    "*.pyi": "python",
+    "*.ipynb": "jupyter-notebook"
+  },
+  "debug.console.fontSize": 12,
+  "debug.console.wordWrap": false,
+  "debug.toolBarLocation": "docked",
+  "terminal.integrated.env.windows": {
+    "TERRAFUSION_ENV": "development",
+    "CHAMPIONSHIP_MODE": "true",
+    "PYTHONPATH": "${workspaceFolder}"
+  }
+}

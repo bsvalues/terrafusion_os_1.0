@@ -677,7 +677,7 @@
         "jurisdiction": "county-a",
         "version": "1.2.3",
         "capabilities": ["workflow_execution", "coordination"],
-        "endpoint": "https://county-a.terrafusion.gov/agents/coordinator"
+        "endpoint": "https://county-a.terrafusionmarket.com/agents/coordinator"
       },
       "target_agent": {
         "agent_id": "comp-agent-county-b",
@@ -686,7 +686,7 @@
         "jurisdiction": "county-b",
         "version": "1.1.0",
         "capabilities": ["compliance_checking"],
-        "endpoint": "https://county-b.terrafusion.gov/agents/compliance"
+        "endpoint": "https://county-b.terrafusionmarket.com/agents/compliance"
       },
       "security_context": {
         "classification": "cui",

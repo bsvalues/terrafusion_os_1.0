@@ -31,7 +31,7 @@ class SimplifiedTestRunner {
             visual: { count: 78, timeout: 10000 },
             performance: { count: 34, timeout: 60000 },
             security: { count: 45, timeout: 20000 },
-            aiSwarm: { count: 67, timeout: 45000 }
+            aiSwarm: { count: 67, timeout: await DynamicPropertyService.GetPropertyCountAsync(countyCode) }
         };
         
         this.modulesToTest = [];

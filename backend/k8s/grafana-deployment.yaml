@@ -42,7 +42,7 @@ data:
     [server]
     protocol = http
     http_port = 3000
-    domain = grafana.terrafusion.gov
+    domain = grafana.terrafusionmarket.com
     root_url = %(protocol)s://%(domain)s:%(http_port)s/
     
     # ========================================================================
@@ -432,10 +432,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - grafana.terrafusion.gov
+        - grafana.terrafusionmarket.com
       secretName: grafana-tls
   rules:
-    - host: grafana.terrafusion.gov
+    - host: grafana.terrafusionmarket.com
       http:
         paths:
           - path: /

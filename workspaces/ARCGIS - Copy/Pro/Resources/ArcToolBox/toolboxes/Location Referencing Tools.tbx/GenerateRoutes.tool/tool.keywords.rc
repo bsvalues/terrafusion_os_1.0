@@ -1,9 +1,0 @@
-{
-    "set": [
-        "generate route",
-        "integrity",
-        "pipeline",
-        "regenerate route",
-        "update route"
-    ]
-}

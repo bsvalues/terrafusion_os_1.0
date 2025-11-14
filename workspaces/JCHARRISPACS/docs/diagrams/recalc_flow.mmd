@@ -1,0 +1,65 @@
+%% Benton County PACS - Property Recalculation Data Flow
+%% End-to-end sequence: User click → Database update → UI refresh
+%% Validated: 2025-11-05 snapshot
+%% FINDING: Plaintext password passed in xp_RecalcProperty90 parameter (PCI-DSS violation)
+
+sequenceDiagram
+    autonumber
+    actor User
+    participant UI as PACS.NET Client<br/>(WinForms)
+    participant WCF as PACSService<br/>(WCF Service)
+    participant NH as NHibernate<br/>(ORM Layer)
+    participant SP as Stored Procedure<br/>(RecalcProperty.sql)
+    participant XSP as Extended SP<br/>(xp_RecalcProperty90)
+    participant DLL as XSP_PACS.dll<br/>(C++/C# Engine)
+    participant DB as pacs_oltp<br/>(Database)
+    participant TRIGGER as Trigger Stack<br/>(9 triggers)
+    participant AUDIT as change_log<br/>(Audit Table)
+    
+    User->>UI: Click "Recalculate"<br/>on Property 12345
+    UI->>UI: Validate form inputs<br/>(prop_id, prop_val_yr, sup_num)
+    UI->>WCF: RecalculateProperty(12345, 2025, 0)
+    Note over WCF: Service method:<br/>IPropertyService.Recalculate()
+    
+    WCF->>NH: session.CreateSQLQuery()<br/>("EXEC RecalcProperty @prop_id=12345")
+    NH->>SP: Execute stored procedure
+    Note over SP: 1. Read property_val<br/>2. Get xsp_pacs_config params<br/>3. Build parameter string
+    
+    SP->>XSP: EXEC xp_RecalcProperty90<br/>@prop_id=12345, @prop_val_yr=2025,<br/>@sup_num=0, @calc_mode='FULL',<br/>@username='sa', @password='P@ssw0rd123!'
+    Note over XSP: Extended SP wrapper<br/>(calls C++ DLL)<br/>⚠️ PLAINTEXT PASSWORD
+    
+    XSP->>DLL: LoadLibrary("XSP_PACS.dll")<br/>Call RecalcEngine()
+    Note over DLL: C++/C# valuation engine<br/>- Cost Approach<br/>- Income Approach<br/>- Market Approach<br/>- Reconciliation
+    
+    DLL->>DB: SELECT improvement, situs,<br/>property_use, neighborhood,<br/>abs_subdv, sales_comparison
+    DB-->>DLL: Return property details
+    
+    DLL->>DLL: Calculate:<br/>- Land value (by parcel area)<br/>- Improvement value (by sq ft)<br/>- Depreciation (by age)<br/>- Market adjustments<br/>- Final reconciled value
+    
+    DLL-->>XSP: Return calculated values:<br/>appraised_val=450000,<br/>assessed_val=445000,<br/>land_hstd_val=180000,<br/>imprv_hstd_val=270000
+    
+    XSP-->>SP: Return result code (0=success)
+    
+    SP->>DB: UPDATE property_val<br/>SET appraised_val=450000,<br/>assessed_val=445000,<br/>recalc_flag='N'<br/>WHERE prop_id=12345<br/>AND prop_val_yr=2025<br/>AND sup_num=0
+    
+    DB->>TRIGGER: Fire tr_property_val_update
+    Note over TRIGGER: Trigger cascade begins:<br/>9 triggers execute sequentially
+    
+    TRIGGER->>TRIGGER: 1. tr_property_val_update_eff_acreage<br/>(recalculate effective acres)
+    TRIGGER->>TRIGGER: 2. tr_property_val_update_PrevSupNum<br/>(update supplement chain)
+    TRIGGER->>TRIGGER: 3. tr_property_val_update_udi<br/>(update UDI fields)
+    TRIGGER->>TRIGGER: 4-9. tr_property_val_update_ChangeLog<br/>(audit trail - 300+ columns checked)
+    
+    TRIGGER->>AUDIT: INSERT INTO change_log<br/>(szChangeType='U',<br/>iTableID=property_val,<br/>szOldValue='440000',<br/>szNewValue='450000',<br/>dtChange=GETDATE())
+    Note over AUDIT: ~50+ INSERT statements<br/>(one per changed column)
+    
+    AUDIT-->>TRIGGER: Insert complete
+    TRIGGER-->>DB: Trigger stack complete
+    DB-->>SP: UPDATE successful (1 row)
+    SP-->>NH: Return success
+    NH-->>WCF: Session.Commit()
+    WCF-->>UI: RecalculateResult(success=true)
+    UI->>UI: Refresh property form<br/>(reload from database)
+    UI-->>User: Show success message:<br/>"Property recalculated successfully"
+    
+    Note over User,AUDIT: Total elapsed time: 3-8 seconds<br/>(depends on trigger cascade complexity)

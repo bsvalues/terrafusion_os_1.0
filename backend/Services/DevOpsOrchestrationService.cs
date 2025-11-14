@@ -309,7 +309,7 @@ namespace TerraFusion.API.Services
                 {
                     connection_test = true,
                     data_sync_test = true,
-                    parcel_count_validation = 89247,
+                    parcel_count_validation = await DynamicPropertyService.GetPropertyCountAsync("benton"),
                     sync_performance = "15_seconds",
                     version_compatibility = "v12.4.7"
                 };
@@ -321,7 +321,7 @@ namespace TerraFusion.API.Services
                 return new HarrisPACSResult
                 {
                     Success = true,
-                    ParcelCount = 89247,
+                    ParcelCount = await DynamicPropertyService.GetPropertyCountAsync("benton"),
                     SyncTime = TimeSpan.FromSeconds(15),
                     Version = "v12.4.7"
                 };

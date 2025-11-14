@@ -1,0 +1,189 @@
+# TerraFusion Production Stack - API + PostgreSQL + Redis + PgAdmin
+# Complete production-ready environment with monitoring and observability
+# Usage: docker compose -f compose.production.yml up -d
+
+version: '3.8'
+
+services:
+  # PostgreSQL Production Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres-prod
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-terrafusion_prod}
+      POSTGRES_USER: ${POSTGRES_USER:-terrafusion_prod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-terrafusion_prod} -d ${POSTGRES_DB:-terrafusion_prod}',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - terrafusion-net
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: terrafusion-redis-prod
+    command: redis-server --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required} --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - redis_prod_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - terrafusion-net
+
+  # TerraFusion API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.production.enhanced
+      args:
+        - GIT_SHA=${GIT_SHA:-unknown}
+        - BUILD_NUMBER=${BUILD_NUMBER:-local}
+    container_name: terrafusion-api-prod
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=5000
+      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=${POSTGRES_DB:-terrafusion_prod};User Id=${POSTGRES_USER:-terrafusion_prod};Password=${POSTGRES_PASSWORD};
+      - ConnectionStrings__Redis=redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - Features__DatabaseRequired=true
+      - TF_ELITE_MODE=true
+      - GIT_SHA=${GIT_SHA:-unknown}
+      - BUILD_NUMBER=${BUILD_NUMBER:-local}
+      - IMAGE_TAG=${IMAGE_TAG:-latest}
+      # Graceful shutdown configuration
+      - DOTNET_SHUTDOWNTIMEOUTSECONDS=20
+      - ASPNETCORE_SHUTDOWNTIMEOUTSECONDS=20
+    ports:
+      - '${API_PORT:-5000}:5000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5000/healthz']
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - terrafusion-net
+    # Resource limits for production
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 256M
+
+  # PgAdmin for database management (optional in production)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: terrafusion-pgadmin-prod
+    profiles:
+      - admin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@terrafusion.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:?PGADMIN_PASSWORD is required}
+      PGADMIN_CONFIG_SERVER_MODE: 'True'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'True'
+    ports:
+      - '${PGADMIN_PORT:-8080}:80'
+    volumes:
+      - pgadmin_prod_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - terrafusion-net
+
+  # Prometheus for metrics collection (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: terrafusion-prometheus
+    profiles:
+      - monitoring
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    ports:
+      - '${PROMETHEUS_PORT:-9090}:9090'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    restart: unless-stopped
+    networks:
+      - terrafusion-net
+
+volumes:
+  postgres_prod_data:
+    driver: local
+  redis_prod_data:
+    driver: local
+  pgladmin_prod_data:
+    driver: local
+  prometheus_data:
+    driver: local
+
+networks:
+  terrafusion-net:
+    driver: bridge
+# Usage Instructions:
+#
+# 1. Production Start (minimal):
+#    docker compose -f compose.production.yml up -d
+#
+# 2. With Admin Tools:
+#    docker compose -f compose.production.yml --profile admin up -d
+#
+# 3. With Full Monitoring:
+#    docker compose -f compose.production.yml --profile admin --profile monitoring up -d
+#
+# 4. Environment Variables (.env file):
+#    POSTGRES_PASSWORD=your_secure_password_here
+#    REDIS_PASSWORD=your_redis_password_here
+#    PGLADMIN_PASSWORD=your_admin_password_here
+#    GIT_SHA=commit_hash_from_ci
+#    BUILD_NUMBER=ci_build_number
+#    IMAGE_TAG=v1.0.0
+#
+# 5. Health Checks:
+#    curl http://localhost:5000/healthz    # Liveness (process alive)
+#    curl http://localhost:5000/ready     # Readiness (dependencies healthy)
+#    curl http://localhost:5000/api/version # Version & deployment info
+#    curl http://localhost:5000/metrics   # Prometheus metrics
+#
+# 6. Stop:
+#    docker compose -f compose.production.yml down
+#
+# 7. Full Reset (DANGER - deletes data):
+#    docker compose -f compose.production.yml down -v

@@ -353,7 +353,7 @@ export class HarrisPACSIntegrationCoordinator extends EventEmitter {
         harrisVersion: '2024.1.0',
         connectionString: `Host=postgres;Database=harris_pacs_${env};Username=harris;Password=pacs_${env}_2024`,
         apiEndpoints: {
-          base: `https://harris-pacs-${env}.terrafusion.gov`,
+          base: `https://harris-pacs-${env}.terrafusionmarket.com`,
           auth: '/api/auth/token',
           health: '/api/health',
           ...Object.entries(this.HARRIS_MODULES).reduce((acc, [module, config]) => {

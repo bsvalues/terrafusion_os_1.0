@@ -145,9 +145,9 @@ const testData = {
 
 // Environment configuration
 const config = {
-  baseUrl: __ENV.BASE_URL || 'https://terrafusion.gov',
-  apiUrl: __ENV.API_URL || 'https://api.terrafusion.gov',
-  federationUrl: __ENV.FEDERATION_URL || 'https://federation.terrafusion.gov',
+  baseUrl: __ENV.BASE_URL || 'https://terrafusionmarket.com',
+  apiUrl: __ENV.API_URL || 'https://api.terrafusionmarket.com',
+  federationUrl: __ENV.FEDERATION_URL || 'https://federation.terrafusionmarket.com',
   authToken: __ENV.AUTH_TOKEN || 'test-token-12345',
   testEnvironment: __ENV.TEST_ENV || 'staging',
 };

@@ -1,9 +1,0 @@
-{
-    "set": [
-        "administration",
-        "category",
-        "delete",
-        "network",
-        "utility network"
-    ]
-}

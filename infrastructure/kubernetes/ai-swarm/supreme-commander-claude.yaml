@@ -380,12 +380,12 @@ data:
         fips_code: "53005"
         deployment_type: "PRODUCTION"
         agent_allocation: 20000
-        properties: 89247
+        properties: await DynamicPropertyService.GetPropertyCountAsync("benton")
     
     quantum_engine:
       gauge_group: "SU(3)_Government"
       coupling_constant: 0.379
-      vacuum_expectation: 89247
+      vacuum_expectation: await DynamicPropertyService.GetPropertyCountAsync("benton")
       topological_invariants: true
       quantum_tunneling: true
     

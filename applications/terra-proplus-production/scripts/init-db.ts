@@ -220,9 +220,9 @@ async function insertSampleData(db: any) {
       ('97201', '2023-Q3', 570000, 590000, 335, 48, 27, 'Single Family'),
       ('97201', '2023-Q4', 560000, 580000, 330, 38, 32, 'Single Family'),
       ('97202', '2023-Q1', 425000, 440000, 380, 36, 24, 'Condo'),
-      ('97202', '2023-Q2', 435000, 450000, 385, 42, 22, 'Condo'),
+      ('97202', '2023-Q2', 435000, await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, 385, 42, 22, 'Condo'),
       ('97202', '2023-Q3', 440000, 455000, 390, 40, 23, 'Condo'),
-      ('97202', '2023-Q4', 430000, 445000, 385, 30, 26, 'Condo')
+      ('97202', '2023-Q4', 430000, 4await DynamicPropertyService.GetPropertyCountAsync(countyCode), 385, 30, 26, 'Condo')
     ON CONFLICT DO NOTHING
   `);
   

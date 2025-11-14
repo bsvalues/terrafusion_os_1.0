@@ -266,13 +266,13 @@
       "monthly": "1st of month 08:00 PST"
     },
     "recipients": [
-      "development-team@terrafusion.gov",
+      "development-team@terrafusionmarket.com",
       "county-coordinators@washington.gov",
-      "ai-operations@terrafusion.gov"
+      "ai-operations@terrafusionmarket.com"
     ]
   },
   "apiEndpoints": {
-    "baseUrl": "https://api.terrafusion.gov/v1",
+    "baseUrl": "https://api.terrafusionmarket.com/v1",
     "authentication": "jwt-bearer",
     "rateLimit": "1000/hour",
     "endpoints": [

@@ -971,7 +971,7 @@ export class DataAnalysisAgent extends CustomAgentBase {
           mean: 475000,
           median: 425000,
           mode: 385000,
-          standardDeviation: 245000,
+          standardDeviation: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode),
           skewness: 1.2, // Right-skewed
           kurtosis: 3.5
         }

@@ -1,9 +1,0 @@
-{
-    "map": {
-        "delete_succeeded.title": "Delete Succeeded",
-        "description": "Deletes a network analysis layer and its analysis data.",
-        "in_network_analysis_layers.descr": "The network analysis layer or layers to delete.",
-        "in_network_analysis_layers.title": "Input Network Analysis Layers",
-        "title": "Delete Network Analysis Layer"
-    }
-}

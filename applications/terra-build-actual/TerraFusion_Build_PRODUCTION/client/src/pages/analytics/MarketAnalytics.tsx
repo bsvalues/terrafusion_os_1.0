@@ -151,7 +151,7 @@ export default function MarketAnalytics() {
       sector: 'Retail/Services',
       percentage: 14.3,
       growth: 2.1,
-      avgSalary: 45000,
+      avgSalary: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       stability: 'Medium'
     },
     {

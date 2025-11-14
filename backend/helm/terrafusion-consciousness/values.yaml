@@ -8,7 +8,7 @@
 # ============================================================================
 global:
   environment: production
-  domain: terrafusion.gov
+  domain: terrafusionmarket.com
   imageRegistry: ghcr.io/terrafusion
   imagePullSecrets:
     - name: terrafusion-registry-secret
@@ -51,14 +51,14 @@ ingress:
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection "upgrade";
   hosts:
-    - host: consciousness.terrafusion.gov
+    - host: consciousness.terrafusionmarket.com
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: terrafusion-consciousness-tls
       hosts:
-        - consciousness.terrafusion.gov
+        - consciousness.terrafusionmarket.com
 
 # Resource limits (optimized for 50,000 AI agents)
 resources:
@@ -250,7 +250,7 @@ mlModels:
   # Model registry
   registry:
     enabled: true
-    url: "https://models.terrafusion.gov"
+    url: "https://models.terrafusionmarket.com"
   
   # AutoML configuration
   automl:

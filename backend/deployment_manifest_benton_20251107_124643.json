@@ -1,0 +1,61 @@
+﻿{
+    "deployment_target":  "Benton County, WA - Production",
+    "harris_pacs_version":  "v9.0",
+    "parcel_count":  89447,
+    "timestamp":  "2025-11-07T12:46:42Z",
+    "components":  {
+                       "core_models":  {
+                                           "audit_entities":  false,
+                                           "terrafusion_data":  true,
+                                           "property_entities":  true,
+                                           "harris_pacs_models":  false
+                                       },
+                       "ai_components":  {
+                                             "hybrid_consciousness":  false,
+                                             "quantum_agents":  false,
+                                             "ai_service":  true,
+                                             "consciousness_service":  true
+                                         },
+                       "plugin_systems":  {
+                                              "frontend_plugins":  [
+                                                                       "cama-core",
+                                                                       "costforge-ai",
+                                                                       "gis-core",
+                                                                       "harris-pacs",
+                                                                       "levy-core",
+                                                                       "valuation-tools"
+                                                                   ],
+                                              "sdk_modules":  [
+                                                                  "bcbs-webhub",
+                                                                  "costforge-ai",
+                                                                  "terra-agent",
+                                                                  "terra-dashboard",
+                                                                  "terra-fusion-permit",
+                                                                  "terra-levy",
+                                                                  "terra-pilt",
+                                                                  "terra-playground"
+                                                              ],
+                                              "critical_plugins_present":  false
+                                          },
+                       "compliance":  {
+                                          "security_service":  true,
+                                          "government_services":  false,
+                                          "audit_logging":  false,
+                                          "fisma_compliance":  false
+                                      },
+                       "feature_dependencies":  {
+                                                    "ai_swarm_config":  true,
+                                                    "harris_pacs_config":  false,
+                                                    "benton_county_config":  true,
+                                                    "redis_cache":  true
+                                                }
+                   },
+    "readiness_score":  52.6,
+    "recommendations":  [
+
+                        ],
+    "ai_agent_count":  89447,
+    "critical_issues":  [
+
+                        ]
+}

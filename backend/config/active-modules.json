@@ -14,7 +14,7 @@
           "path": "modules/government-edition/",
           "status": "production",
           "features": ["Property valuation", "Assessment tracking", "Harris PACS integration"],
-          "database": "PostgreSQL with 89,247 parcel records",
+          "database": "PostgreSQL with await DynamicPropertyService.GetPropertyCountAsync("benton") parcel records",
           "priority": 1
         },
         {
@@ -183,7 +183,7 @@
     "total_modules": 15,
     "active_in_production": 15,
     "ai_agents": 1008,
-    "database_records": 89247,
+    "database_records": await DynamicPropertyService.GetPropertyCountAsync("benton"),
     "test_coverage": "94.7%",
     "performance": "379M× quantum optimization",
     "roi": "47,231% demonstrated"

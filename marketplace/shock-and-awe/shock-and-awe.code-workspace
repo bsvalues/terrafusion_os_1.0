@@ -1,0 +1,21 @@
+{
+  "folders": [
+    {
+      "path": ".",
+    },
+    {
+      "path": "../..",
+    },
+  ],
+  "settings": {
+    "typescript.preferences.organizeImports": true,
+    "files.associations": {
+      "*.env.*": "dotenv",
+    },
+    "emmet.includeLanguages": {
+      "typescript": "html",
+      "typescriptreact": "html",
+    },
+    "git.ignoreLimitWarning": true,
+  },
+}

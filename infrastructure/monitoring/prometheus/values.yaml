@@ -104,7 +104,7 @@ prometheus:
     
     # Remote write configuration for long-term storage
     remoteWrite:
-      - url: "https://prometheus-remote-write.terrafusion.gov/api/v1/write"
+      - url: "https://prometheus-remote-write.terrafusionmarket.com/api/v1/write"
         name: "terrafusion-remote-storage"
         writeRelabelConfigs:
           - sourceLabels: [__name__]
@@ -147,7 +147,7 @@ grafana:
   # Grafana configuration
   grafana.ini:
     server:
-      root_url: https://monitoring.terrafusion.gov/grafana
+      root_url: https://monitoring.terrafusionmarket.com/grafana
       serve_from_sub_path: true
     security:
       cookie_secure: true
@@ -282,7 +282,7 @@ alertmanager:
     configSecret: alertmanager-config
     
     # External URL
-    externalUrl: https://monitoring.terrafusion.gov/alertmanager
+    externalUrl: https://monitoring.terrafusionmarket.com/alertmanager
     
     # Security context
     securityContext:

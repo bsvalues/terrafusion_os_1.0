@@ -212,7 +212,7 @@ export default function AIValuationPage() {
 
       // Provide a fallback response for 406 Stardust Ct
       const fallbackResult: ValuationResult = {
-        estimatedValue: 345000,
+        estimatedValue: 3await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         confidenceLevel: "medium",
         valueRange: {
           min: 330000,
@@ -276,7 +276,8 @@ export default function AIValuationPage() {
   };
 
   return (
-    <div className="container py-10"><>
+    <div className="container py-10">
+<>
 
       <h1 className="text-3xl font-bold mb-6">Terrafusion AI Property Valuation</h1>
 
@@ -285,7 +286,8 @@ export default function AIValuationPage() {
         {/* Property Data Form */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><>
+            <CardTitle className="flex items-center gap-2">
+<>
 
               <Home className="h-5 w-5" />
               Property Information
@@ -297,12 +299,14 @@ export default function AIValuationPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="space-y-2"><>
+              <div className="space-y-2">
+<>
 
                 <h3 className="text-sm font-medium">Property Address</h3>
                 <div
 </> className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="space-y-1"><>
+                  <div className="space-y-1">
+<>
 
                     <Label htmlFor="address.street">Street</Label>
                     <Input
@@ -313,7 +317,8 @@ export default function AIValuationPage() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="space-y-1"><>
+                  <div className="space-y-1">
+<>
 
                     <Label htmlFor="address.city">City</Label>
                     <Input
@@ -326,7 +331,8 @@ export default function AIValuationPage() {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="space-y-1"><>
+                  <div className="space-y-1">
+<>
 
                     <Label htmlFor="address.state">State</Label>
                     <Input
@@ -337,7 +343,8 @@ export default function AIValuationPage() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="space-y-1"><>
+                  <div className="space-y-1">
+<>
 
                     <Label htmlFor="address.zipCode">Zip Code</Label>
                     <Input
@@ -351,12 +358,14 @@ export default function AIValuationPage() {
                 </div>
               </div>
 
-              <div className="space-y-2"><>
+              <div className="space-y-2">
+<>
 
                 <h3 className="text-sm font-medium">Property Details</h3>
                 <div
 </> className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="space-y-1"><>
+                  <div className="space-y-1">
+<>
 
                     <Label htmlFor="propertyType">Property Type</Label>
                     <Input
@@ -367,7 +376,8 @@ export default function AIValuationPage() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="space-y-1"><>
+                  <div className="space-y-1">
+<>
 
                     <Label htmlFor="condition">Condition</Label>
                     <Input
@@ -380,7 +390,8 @@ export default function AIValuationPage() {
                   </div>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="space-y-1"><>
+                  <div className="space-y-1">
+<>
 
                     <Label htmlFor="bedrooms">Bedrooms</Label>
                     <Input
@@ -392,7 +403,8 @@ export default function AIValuationPage() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="space-y-1"><>
+                  <div className="space-y-1">
+<>
 
                     <Label htmlFor="bathrooms">Bathrooms</Label>
                     <Input
@@ -405,7 +417,8 @@ export default function AIValuationPage() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="space-y-1"><>
+                  <div className="space-y-1">
+<>
 
                     <Label htmlFor="squareFeet">Sq Ft</Label>
                     <Input
@@ -417,7 +430,8 @@ export default function AIValuationPage() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="space-y-1"><>
+                  <div className="space-y-1">
+<>
 
                     <Label htmlFor="yearBuilt">Year Built</Label>
                     <Input
@@ -430,7 +444,8 @@ export default function AIValuationPage() {
                     />
                   </div>
                 </div>
-                <div className="space-y-1"><>
+                <div className="space-y-1">
+<>
 
                   <Label htmlFor="lotSize">Lot Size (acres)</Label>
                   <Input
@@ -446,7 +461,8 @@ export default function AIValuationPage() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex justify-between items-center"><>
+                <div className="flex justify-between items-center">
+<>
 
                   <Label>Features</Label>
                   <Button
@@ -496,7 +512,8 @@ export default function AIValuationPage() {
         {/* Valuation Results */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><>
+            <CardTitle className="flex items-center gap-2">
+<>
 
               <DollarSign className="h-5 w-5" />
               Property Valuation
@@ -516,14 +533,16 @@ export default function AIValuationPage() {
               </div>
             ) : result ? (
               <div className="space-y-6">
-                <div className="text-center"><>
+                <div className="text-center">
+<>
 
                   <h3 className="text-xl font-medium mb-1">Estimated Value</h3>
                   <div
 </> className="text-4xl font-bold text-primary">
                     {formatCurrency(result.estimatedValue)}
                   </div>
-                  <div className="flex items-center justify-center gap-2 mt-2"><>
+                  <div className="flex items-center justify-center gap-2 mt-2">
+<>
 
                     <Badge variant={getConfidenceBadgeVariant(result.confidenceLevel)}>
                       {result.confidenceLevel.charAt(0).toUpperCase() +
@@ -541,7 +560,8 @@ export default function AIValuationPage() {
                 <Separator />
 
                 <div>
-                  <h3 className="text-lg font-medium mb-3 flex items-center gap-2"><>
+                  <h3 className="text-lg font-medium mb-3 flex items-center gap-2">
+<>
 
                     <BarChart3 className="h-4 w-4" />
                     Adjustments
@@ -550,7 +570,8 @@ export default function AIValuationPage() {
 </> className="space-y-3">
                     {result.adjustments.map((adj /* , index */) => (
                       <div key={index} className="border rounded-lg p-3">
-                        <div className="flex justify-between items-center"><>
+                        <div className="flex justify-between items-center">
+<>
 
                           <h4 className="font-medium">{adj.factor}</h4>
                           <span
@@ -560,7 +581,8 @@ export default function AIValuationPage() {
                             {adj.amount >= 0 ? "+" : ""}
                             {formatCurrency(adj.amount)}
                           </span>
-                        </div><>
+                        </div>
+<>
 
                         <p className="text-sm text-muted-foreground mt-1">{adj.description}</p>
                         <p
@@ -573,7 +595,8 @@ export default function AIValuationPage() {
                 <Separator />
 
                 <div>
-                  <h3 className="text-lg font-medium mb-2 flex items-center gap-2"><>
+                  <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
+<>
 
                     <PieChart className="h-4 w-4" />
                     Market Analysis
@@ -584,7 +607,8 @@ export default function AIValuationPage() {
 
                 <Separator />
 
-                <div><>
+                <div>
+<>
 
                   <h3 className="text-lg font-medium mb-2">Comparable Analysis</h3>
                   <p
@@ -593,7 +617,8 @@ export default function AIValuationPage() {
 
                 <Separator />
 
-                <div><>
+                <div>
+<>
 
                   <h3 className="text-lg font-medium mb-2">Valuation Methodology</h3>
                   <p
@@ -602,7 +627,8 @@ export default function AIValuationPage() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-[400px] text-center">
-                <Home className="h-12 w-12 text-muted-foreground mb-4" /><>
+                <Home className="h-12 w-12 text-muted-foreground mb-4" />
+<>
 
                 <h3 className="text-lg font-medium">No Valuation Yet</h3>
                 <p

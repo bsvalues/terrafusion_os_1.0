@@ -20,7 +20,7 @@ describe('ComparisonChart Component', () => {
           location: 'Kennewick, WA'
         },
         financing: {
-          purchasePrice: 450000
+          purchasePrice: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0
         }
       },
       analysis: {

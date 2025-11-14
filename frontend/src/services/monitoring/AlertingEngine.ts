@@ -676,8 +676,8 @@ export const DEFAULT_NOTIFICATION_CONFIG: NotificationConfig = {
     enabled: false,
     smtpHost: 'smtp.gmail.com',
     smtpPort: 587,
-    from: 'alerts@terrafusion.gov',
-    recipients: ['ops@terrafusion.gov'],
+    from: 'alerts@terrafusionmarket.com',
+    recipients: ['ops@terrafusionmarket.com'],
   },
   slack: {
     enabled: true,
@@ -691,7 +691,7 @@ export const DEFAULT_NOTIFICATION_CONFIG: NotificationConfig = {
   },
   webhook: {
     enabled: false,
-    url: 'https://api.terrafusion.gov/webhooks/alerts',
+    url: 'https://api.terrafusionmarket.com/webhooks/alerts',
   },
 };
 

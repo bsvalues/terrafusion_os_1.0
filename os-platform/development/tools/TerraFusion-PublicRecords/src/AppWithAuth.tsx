@@ -48,7 +48,7 @@ const AppWithAuth: React.FC = () => {
       // Auto-create dev user
       const devUser = {
         id: 'dev-user-001',
-        email: 'dev@terrafusion.gov',
+        email: 'dev@terrafusionmarket.com',
         name: 'Dev User',
         type: 'government', // Give dev user government access
         address: '123 Dev Street, Kennewick, WA',
@@ -149,7 +149,8 @@ const AppWithAuth: React.FC = () => {
       <div>
         {/* Add back button to main app */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3">
-          <div className="container mx-auto px-4 flex items-center justify-between"><>
+          <div className="container mx-auto px-4 flex items-center justify-between">
+<>
 
             <button
               onClick={() => setShowDashboard(false)}
@@ -252,12 +253,14 @@ className="text-sm">Dev Mode Active</span>
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Left side - Logo and View Switcher */}
-            <div className="flex items-center gap-6"><>
+            <div className="flex items-center gap-6">
+<>
 
               <h1 className="text-xl font-bold text-white">Terrafusion</h1>
               <div
 </>
-className="hidden md:flex items-center gap-2"><>
+className="hidden md:flex items-center gap-2">
+<>
 
                 <button
                   onClick={() => setViewMode('government')}
@@ -300,7 +303,8 @@ className="hidden md:flex items-center gap-2"><>
                   <button
                     onClick={() => setShowPermitApp(true)}
                     className="hidden md:flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                  ><>
+                  >
+<>
 
                     <FileText className="w-4 h-4" />
                     Apply for Permit
@@ -354,7 +358,8 @@ className="hidden md:flex items-center gap-2"><>
                 exit={{ opacity: 0, height: 0 }}
                 className="md:hidden py-4 border-t border-white/10"
               >
-                <div className="flex flex-col gap-2"><>
+                <div className="flex flex-col gap-2">
+<>
 
                   <button
                     onClick={() => { setViewMode('public'); setMobileMenuOpen(false); }}
@@ -414,7 +419,7 @@ className="hidden md:flex items-center gap-2"><>
               id: 'DOC-001', 
               name: 'Sample Building Permit.pdf', 
               type: 'permit',
-              size: 245000 
+              size: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode) 
             })}
             className="underline hover:no-underline ml-2"
           >
@@ -449,7 +454,8 @@ className="hidden md:flex items-center gap-2"><>
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-gradient-to-r from-green-600 to-green-700 text-white p-3 text-center"
-        ><>
+        >
+<>
 
           <span>Welcome back, {currentUser.name}! </span>
           <button
@@ -470,7 +476,8 @@ className="hidden md:flex items-center gap-2"><>
         className="bg-gradient-to-r from-red-600 to-orange-600 text-white p-4 text-center"
       >
         <div className="flex items-center justify-center gap-3">
-          <Zap className="w-6 h-6 animate-pulse" /><>
+          <Zap className="w-6 h-6 animate-pulse" />
+<>
 
           <span className="text-lg font-bold">
             BENTON COUNTY, WA IS ALREADY INDEXED • {countyStatus?.indexed.toLocaleString()} RECORDS READY • 
@@ -489,7 +496,8 @@ className="w-6 h-6 animate-pulse" />
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
           className="text-center"
-        ><>
+        >
+<>
 
           <h1 className="text-6xl font-bold text-white mb-4 tracking-tight">
             Terrafusion Public Records - Benton County
@@ -503,7 +511,8 @@ className="text-2xl text-purple-200">
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3"
-            ><>
+            >
+<>
 
               <div className="text-3xl font-bold text-white">0.001s</div>
               <div
@@ -513,7 +522,8 @@ className="text-sm text-purple-200">Search Speed</div>
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3"
-            ><>
+            >
+<>
 
               <div className="text-3xl font-bold text-white">379M×</div>
               <div
@@ -523,7 +533,8 @@ className="text-sm text-purple-200">Faster than Legacy</div>
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3"
-            ><>
+            >
+<>
 
               <div className="text-3xl font-bold text-white">$0</div>
               <div
@@ -541,7 +552,8 @@ className="text-sm text-purple-200">Installation Cost</div>
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white/10 backdrop-blur-sm rounded-xl p-6"
-          ><>
+          >
+<>
 
             <h3 className="text-xl font-bold text-white mb-4">Quick Actions</h3>
             <div
@@ -595,7 +607,8 @@ className="grid grid-cols-2 md:grid-cols-4 gap-4">
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3"><>
+            <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<>
 
               <Brain className="w-8 h-8 text-purple-400" />
               AI Already Found These Issues
@@ -614,7 +627,8 @@ discoveries={aiDiscoveries} />
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3"><>
+          <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<>
 
             <Globe className="w-8 h-8 text-blue-400" />
             Your County's Real-Time Pulse
@@ -633,7 +647,8 @@ discoveries={aiDiscoveries} />
           transition={{ delay: 0.5 }}
           className="bg-gradient-to-r from-red-900/50 to-orange-900/50 rounded-xl p-8 backdrop-blur-sm"
         >
-          <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3"><>
+          <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<>
 
             <Warning className="w-8 h-8 text-yellow-400" />
             Migrate from Legacy CAMA Systems Now
@@ -721,7 +736,8 @@ className="text-xl text-white/80 mb-6">
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7 }}
-        ><>
+        >
+<>
 
           <p className="text-2xl text-purple-200 mb-4">
             Your competitors are still writing RFPs.

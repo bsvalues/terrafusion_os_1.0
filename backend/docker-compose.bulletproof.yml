@@ -311,7 +311,7 @@ services:
       - 'government.compliance=FISMA-HIGH'
       - 'security.classification=OFFICIAL'
       - 'mesh.sidecar=istio-proxy'
-      - 'traefik.http.routers.gateway.rule=Host(`api.terrafusion.gov`)'
+      - 'traefik.http.routers.gateway.rule=Host(`api.terrafusionmarket.com`)'
       - 'traefik.http.services.gateway.loadbalancer.server.port=5000'
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:5000/health']

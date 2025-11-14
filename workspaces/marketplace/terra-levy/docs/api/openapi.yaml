@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: terra-levy-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/marketplace/terra-levy
+    email: terra-levy-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/marketplace/terra-levy
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/tax
+  - url: https://api.terrafusionmarket.com/api/v1/tax
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/tax
+  - url: https://staging-api.terrafusionmarket.com/api/v1/tax
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/tax
+  - url: https://dev-api.terrafusionmarket.com/api/v1/tax
     description: Development Environment
 paths:
   /properties:
@@ -198,8 +198,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             terra-levy:read: Read access to terra-levy resources
             terra-levy:write: Write access to terra-levy resources
@@ -217,4 +217,4 @@ tags:
     description: Terra Levy operations
     externalDocs:
       description: Find out more about terra-levy
-      url: https://docs.terrafusion.gov/marketplace/terra-levy
+      url: https://docs.terrafusionmarket.com/marketplace/terra-levy

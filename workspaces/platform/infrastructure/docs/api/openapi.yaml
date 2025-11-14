@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: infrastructure-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/platform/infrastructure
+    email: infrastructure-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/platform/infrastructure
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/infrastructure
+  - url: https://api.terrafusionmarket.com/api/v1/infrastructure
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/infrastructure
+  - url: https://staging-api.terrafusionmarket.com/api/v1/infrastructure
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/infrastructure
+  - url: https://dev-api.terrafusionmarket.com/api/v1/infrastructure
     description: Development Environment
 paths:
   /health:
@@ -195,8 +195,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             infrastructure:read: Read access to infrastructure resources
             infrastructure:write: Write access to infrastructure resources
@@ -214,4 +214,4 @@ tags:
     description: Infrastructure operations
     externalDocs:
       description: Find out more about infrastructure
-      url: https://docs.terrafusion.gov/platform/infrastructure
+      url: https://docs.terrafusionmarket.com/platform/infrastructure

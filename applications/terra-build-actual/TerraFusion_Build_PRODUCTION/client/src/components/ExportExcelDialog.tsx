@@ -21,7 +21,7 @@ const ExportExcelDialog = ({ calculation, trigger }: ExportExcelDialogProps) => 
   const [includeCompanyInfo, setIncludeCompanyInfo] = useState(true);
   const [includeMaterials, setIncludeMaterials] = useState(true);
   const [companyName, setCompanyName] = useState('Benton County Building Department');
-  const [companyContact, setCompanyContact] = useState('building@bentoncounty.gov • (555) 123-4567');
+  const [companyContact, setCompanyContact] = useState('building@terrafusionmarket.io • (555) 123-4567');
   const [includeBreakdown, setIncludeBreakdown] = useState(true);
   const [includeNotes, setIncludeNotes] = useState(false);
   const [notes, setNotes] = useState('');

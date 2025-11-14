@@ -55,7 +55,7 @@ scrape_configs:
         labels:
           service: 'harris-pacs-sync'
           component: 'legacy-integration'
-          pacs_version: 'v12.4.7'
+          pacs_version: 'v9.0'
     metrics_path: '/metrics/harris-pacs'
     scheme: 'http'
 

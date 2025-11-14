@@ -306,7 +306,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment:
       name: staging
-      url: https://staging.terrafusion.gov
+      url: https://staging.terrafusionmarket.com
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -358,7 +358,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment:
       name: production
-      url: https://terrafusion.gov
+      url: https://terrafusionmarket.com
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -409,8 +409,8 @@ jobs:
       - name: Notify Deployment Success
         run: |
           echo "🚀 TerraFusion Command Portal successfully deployed to production!"
-          echo "Backend: https://api.terrafusion.gov"
-          echo "Frontend: https://terrafusion.gov"
+          echo "Backend: https://api.terrafusionmarket.com"
+          echo "Frontend: https://terrafusionmarket.com"
           echo "Deployment SHA: ${{ github.sha }}"
 
   # Cleanup and Notifications

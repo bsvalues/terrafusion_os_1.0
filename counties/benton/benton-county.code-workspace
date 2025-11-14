@@ -1,0 +1,124 @@
+{
+  "folders": [
+    {
+      "name": "🏛️ Benton County Cockpit",
+      "path": ".",
+    },
+    {
+      "name": "⚙️ Backend Services",
+      "path": "../../backend",
+    },
+    {
+      "name": "🎨 Frontend UI",
+      "path": "../../frontend",
+    },
+    {
+      "name": "📋 Configuration",
+      "path": "../../config",
+    },
+    {
+      "name": "🔧 SDK & Tools",
+      "path": "../../SDK",
+    },
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/bin": true,
+      "**/obj": true,
+      "**/.vs": true,
+      "**/dist": true,
+      "**/.next": true,
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.next": true,
+    },
+    "terminal.integrated.cwd": "${workspaceFolder:🏛️ Benton County Cockpit}",
+    "terminal.integrated.env.windows": {
+      "COUNTY_NAME": "benton",
+      "COMPOSE_FILE": "docker-compose.county.yml",
+    },
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-dotnettools.csharp",
+      "ms-dotnettools.csdevkit",
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "ms-azuretools.vscode-docker",
+      "github.copilot",
+    ],
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Benton: Start Stack",
+        "type": "shell",
+        "command": "make up",
+        "options": {
+          "cwd": "${workspaceFolder:🏛️ Benton County Cockpit}",
+        },
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new",
+        },
+      },
+      {
+        "label": "Benton: Stop Stack",
+        "type": "shell",
+        "command": "make down",
+        "options": {
+          "cwd": "${workspaceFolder:🏛️ Benton County Cockpit}",
+        },
+      },
+      {
+        "label": "Benton: Run Migrations",
+        "type": "shell",
+        "command": "make migrate",
+        "options": {
+          "cwd": "${workspaceFolder:🏛️ Benton County Cockpit}",
+        },
+        "group": "build",
+      },
+      {
+        "label": "Benton: Seed Database",
+        "type": "shell",
+        "command": "make seed",
+        "options": {
+          "cwd": "${workspaceFolder:🏛️ Benton County Cockpit}",
+        },
+      },
+      {
+        "label": "Benton: Run Smoke Tests",
+        "type": "shell",
+        "command": "make test",
+        "options": {
+          "cwd": "${workspaceFolder:🏛️ Benton County Cockpit}",
+        },
+        "group": "test",
+      },
+      {
+        "label": "Benton: View Logs",
+        "type": "shell",
+        "command": "make logs",
+        "options": {
+          "cwd": "${workspaceFolder:🏛️ Benton County Cockpit}",
+        },
+      },
+      {
+        "label": "Benton: Full Rebuild",
+        "type": "shell",
+        "command": "make down && make up && make migrate && make seed && make test",
+        "options": {
+          "cwd": "${workspaceFolder:🏛️ Benton County Cockpit}",
+        },
+        "group": "build",
+        "dependsOrder": "sequence",
+      },
+    ],
+  },
+}

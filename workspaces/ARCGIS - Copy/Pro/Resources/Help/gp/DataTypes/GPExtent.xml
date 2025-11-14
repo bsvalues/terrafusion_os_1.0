@@ -1,5 +1,0 @@
-<DataType Name="GPExtent">
-  <DisplayName>Extent</DisplayName>
-  <Description>Specifies the coordinate pairs that define the minimum bounding rectangle (xmin, ymin and xmax, ymax) of a data source. All coordinates for the data source fall in this boundary.</Description>
-</DataType>
-

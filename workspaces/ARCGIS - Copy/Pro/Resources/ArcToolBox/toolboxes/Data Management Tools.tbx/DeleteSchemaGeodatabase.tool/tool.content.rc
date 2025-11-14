@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Deletes a geodatabase from a user's schema in Oracle.",
-        "input_database.descr": "The database connection file (.sde) of the user-schema geodatabase to be deleted. You must connect as the schema owner.",
-        "input_database.title": "Input Database Connection",
-        "out_workspace.title": "Updated Input Workspace",
-        "title": "Delete Schema Geodatabase"
-    }
-}

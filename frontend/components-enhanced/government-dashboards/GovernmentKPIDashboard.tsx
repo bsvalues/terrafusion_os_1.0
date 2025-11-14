@@ -159,12 +159,12 @@ const GovernmentKPIDashboard: React.FC = () => {
 
     // Initialize Revenue Data
     const mockRevenueData: RevenueData[] = [
-      { month: 'Jan', propertyTax: 2100000, businessLicenses: 450000, permits: 320000, fines: 180000, total: 3050000, aiOptimized: 250000, traditional: 2800000 },
+      { month: 'Jan', propertyTax: 2100000, businessLicenses: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, permits: 320000, fines: 180000, total: 3050000, aiOptimized: 250000, traditional: 2800000 },
       { month: 'Feb', propertyTax: 2200000, businessLicenses: 480000, permits: 340000, fines: 195000, total: 3215000, aiOptimized: 315000, traditional: 2900000 },
       { month: 'Mar', propertyTax: 2350000, businessLicenses: 520000, permits: 380000, fines: 210000, total: 3460000, aiOptimized: 460000, traditional: 3000000 },
       { month: 'Apr', propertyTax: 2400000, businessLicenses: 550000, permits: 400000, fines: 225000, total: 3575000, aiOptimized: 575000, traditional: 3000000 },
       { month: 'May', propertyTax: 2500000, businessLicenses: 580000, permits: 420000, fines: 240000, total: 3740000, aiOptimized: 740000, traditional: 3000000 },
-      { month: 'Jun', propertyTax: 2600000, businessLicenses: 610000, permits: 450000, fines: 255000, total: 3915000, aiOptimized: 915000, traditional: 3000000 }
+      { month: 'Jun', propertyTax: 2600000, businessLicenses: 610000, permits: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, fines: 255000, total: 3915000, aiOptimized: 915000, traditional: 3000000 }
     ];
 
     // Initialize AI Performance Data
@@ -233,7 +233,8 @@ const GovernmentKPIDashboard: React.FC = () => {
   return (
     <Box sx={{ p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}><>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+<>
 
         <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
           🏛️ Terrafusion Government KPI Dashboard
@@ -268,7 +269,8 @@ sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Grid item xs={12} sm={6} md={4} lg={2} key={metric.id}>
             <Card sx={{ height: '100%', position: 'relative', overflow: 'visible' }}>
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}><>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+<>
 
                   <Chip
                     label={metric.category}
@@ -286,7 +288,8 @@ sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
 </>
 variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
                   {formatValue(metric.value, metric.unit)}
-                </Typography><>
+                </Typography>
+<>
 
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
                   {metric.title}
@@ -307,7 +310,8 @@ variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
                   }}
                 />
                 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}><>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+<>
 
                   <Typography variant="caption" color="textSecondary">
                     Target: {formatValue(metric.target, metric.unit)}
@@ -335,7 +339,8 @@ variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
         <Grid item xs={12} lg={8}>
           <Card>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}><>
+              <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+<>
 
                 <AccountBalance sx={{ mr: 1 }} />
                 Revenue Trends & AI Optimization Impact
@@ -358,7 +363,8 @@ width="100%" height={300}>
         
         <Grid item xs={12} lg={4}>
           <Card>
-            <CardContent><>
+            <CardContent>
+<>
 
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Revenue Sources Distribution
@@ -371,7 +377,7 @@ width="100%" height={300}>
                     data={[
                       { name: 'Property Tax', value: 2600000, color: COLORS[0] },
                       { name: 'Business Licenses', value: 610000, color: COLORS[1] },
-                      { name: 'Permits', value: 450000, color: COLORS[2] },
+                      { name: 'Permits', value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, color: COLORS[2] },
                       { name: 'Fines', value: 255000, color: COLORS[3] }
                     ]}
                     cx="50%"
@@ -383,7 +389,8 @@ width="100%" height={300}>
                   >
                     {revenueData[0] && Object.entries(revenueData[revenueData.length - 1])
                       .filter(([key]) => !['month', 'total', 'aiOptimized', 'traditional'].includes(key))
-                      .map(([key, value] /* , index */) => (<>
+                      .map(([key, value] /* , index */) => (
+<>
 
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
@@ -403,7 +410,8 @@ formatter={(value: number) => [`$${(value / 1000000).toFixed(2)}M`, '']} />
         <Grid item xs={12} lg={6}>
           <Card>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}><>
+              <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+<>
 
                 <Speed sx={{ mr: 1 }} />
                 AI Swarm Performance
@@ -428,7 +436,8 @@ width="100%" height={250}>
         <Grid item xs={12} lg={6}>
           <Card>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}><>
+              <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+<>
 
                 <Assessment sx={{ mr: 1 }} />
                 Revenue Discovery Performance

@@ -1,0 +1,126 @@
+# ══════════════════════════════════════════════════════════════════
+# TerraFusion Elite Government OS — Benton County (.NET 8 Stack)
+# NETWORKING: Host mode for external browser connectivity
+# ══════════════════════════════════════════════════════════════════
+
+version: '3.8'
+
+networks:
+  benton-county-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+
+volumes:
+  postgres_data:
+  redis_data:
+
+services:
+  # ──── PostgreSQL 15 Database ────────────────────────────────────
+  benton-postgres:
+    image: postgres:15-alpine
+    container_name: benton-postgres
+    environment:
+      POSTGRES_DB: terrafusion_benton
+      POSTGRES_USER: terrafusion
+      POSTGRES_PASSWORD: TerraFusion2024!
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=en_US.utf8'
+    ports:
+      - '15432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      benton-county-network:
+        ipv4_address: 172.25.0.10
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U terrafusion -d terrafusion_benton']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    restart: unless-stopped
+
+  # ──── Redis 7 Cache ─────────────────────────────────────────────
+  benton-redis:
+    image: redis:7-alpine
+    container_name: benton-redis
+    command: redis-server --appendonly yes --bind 0.0.0.0
+    ports:
+      - '16379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      benton-county-network:
+        ipv4_address: 172.25.0.20
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  # ──── TerraFusion .NET 8 API (HOST NETWORK MODE) ────────────────
+  benton-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: benton-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=localhost;Port=15432;Database=terrafusion_benton;Username=terrafusion;Password=TerraFusion2024!
+      - Redis__ConnectionString=localhost:16379
+      - TF_COUNTY_CODE=benton
+      - TF_ELITE_MODE=true
+      - TF_CONSCIOUSNESS_PORT=3004
+      - ASPNETCORE_URLS=http://0.0.0.0:5000;https://0.0.0.0:5001
+      - ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.Mvc.Testing
+    network_mode: 'host'
+    depends_on:
+      benton-postgres:
+        condition: service_healthy
+      benton-redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ──── React Frontend (Bridge Network) ───────────────────────────
+  benton-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: benton-frontend
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+      - REACT_APP_COUNTY_NAME=Benton County
+      - REACT_APP_COUNTY_CODE=benton
+      - WDS_SOCKET_PORT=0
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - '13000:3000'
+    networks:
+      benton-county-network:
+        ipv4_address: 172.25.0.30
+    depends_on:
+      benton-postgres:
+        condition: service_healthy
+      benton-redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ──── Performance Monitor (Host Network) ────────────────────────
+  benton-monitor:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: benton-monitor
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - TF_ELITE_MODE=true
+      - TF_COUNTY_CODE=benton
+      - TF_MONITOR_ONLY=true
+      - ASPNETCORE_URLS=http://0.0.0.0:5010
+    network_mode: 'host'
+    command: ['dotnet', 'TerraFusion.API.dll', '--monitor-only']
+    depends_on:
+      - benton-api
+    restart: unless-stopped

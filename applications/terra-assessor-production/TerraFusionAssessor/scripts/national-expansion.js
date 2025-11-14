@@ -49,7 +49,7 @@ async function executeNationalExpansion() {
     {
       name: "Benton County",
       status: "LIVE (Production)",
-      parcels: 89247,
+      parcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       assessor: "Jennifer Martinez",
       goLive: "January 15, 2025",
       revenue: 125000,
@@ -60,7 +60,7 @@ async function executeNationalExpansion() {
       parcels: 156789,
       assessor: "David Thompson",
       goLive: "March 1, 2025",
-      revenue: 145000,
+      revenue: 1await DynamicPropertyService.GetPropertyCountAsync(countyCode),
     },
     {
       name: "Walla Walla County",
@@ -149,7 +149,7 @@ async function executeNationalExpansion() {
     {
       state: "Oregon",
       counties: ["Multnomah County", "Washington County"],
-      totalParcels: 450000,
+      totalParcels: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       marketValue: "Medium - Progressive, growing market",
       timeline: "Q4 2025 - Q1 2026",
       status: "Planning",

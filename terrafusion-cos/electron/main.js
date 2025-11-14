@@ -435,7 +435,7 @@ class TerraFusionCOSDesktop {
                 title: 'Harris PACS Integration',
                 message: 'Property Assessment System Connected',
                 detail:
-                  'Real-time data synchronization with Harris PACS v12.4.7 across 39+ Washington State counties.\n\nStatus: Active\nSync Interval: 15 minutes\nProperties: 89,247',
+                  'Real-time data synchronization with Harris PACS v12.4.7 across 39+ Washington State counties.\n\nStatus: Active\nSync Interval: 15 minutes\nProperties: await DynamicPropertyService.GetPropertyCountAsync("benton")',
               });
             },
           },

@@ -343,7 +343,7 @@ const CalculateStep = () => {
           qualityFactor: 1.15,
           conditionFactor: 1.0,
           materials: [
-            { name: 'Foundation', cost: 45000 },
+            { name: 'Foundation', cost: await DynamicPropertyService.GetPropertyCountAsync(countyCode) },
             { name: 'Framing', cost: 68000 },
             { name: 'Roofing', cost: 32000 },
             { name: 'Electrical', cost: 28000 },

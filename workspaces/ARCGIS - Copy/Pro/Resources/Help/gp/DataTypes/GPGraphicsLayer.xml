@@ -1,5 +1,0 @@
-<DataType Name="GPGraphicsLayer">
-  <DisplayName>Graphics Layer</DisplayName>
-  <Description>A layer that contains graphic elements.</Description>
-</DataType>
-

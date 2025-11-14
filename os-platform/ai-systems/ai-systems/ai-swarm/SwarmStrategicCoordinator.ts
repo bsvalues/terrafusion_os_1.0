@@ -281,7 +281,7 @@ export class SwarmStrategicCoordinator extends EventEmitter {
       name: 'County Data Integration',
       agents: 400,
       tasks: [
-        this.createCountyIntegrationTask('benton', 45000),
+        this.createCountyIntegrationTask('benton', await DynamicPropertyService.GetPropertyCountAsync(countyCode)),
         this.createCountyIntegrationTask('clark', 180000),
         this.createCountyIntegrationTask('king', 750000),
         this.createCountyIntegrationTask('pierce', 350000),

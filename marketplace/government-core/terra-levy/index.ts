@@ -990,7 +990,7 @@ ${this.getConsciousnessDescription(target_consciousness_level)}
   }
 
   private generateValuationResults(propertyInfo: any, method: string, marketConditions: string) {
-    const baseValue = 450000 + Math.random() * 200000;
+    const baseValue = await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 + Math.random() * 200000;
     
     return {
       marketValue: Math.round(baseValue),

@@ -129,7 +129,7 @@
     {
       "id": "1d1a4241-3213-4c00-869b-453ad24d08b9",
       "address": "1009 Main St",
-      "assessed_value": 145000,
+      "assessed_value": 1await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       "owner": "Property Owner 10",
       "property_type": "Residential",
       "square_footage": 1950,
@@ -167,7 +167,7 @@
       "property_type": "Residential",
       "square_footage": 2100,
       "year_built": 1992,
-      "lot_size": 1.4500000000000002,
+      "lot_size": 1.await DynamicPropertyService.GetPropertyCountAsync(countyCode)00000000002,
       "zoning": "R-1"
     },
     {
@@ -349,7 +349,7 @@
     {
       "id": "fb1ad298-0641-4afd-964e-0038f96b10ed",
       "address": "1029 Main St",
-      "assessed_value": 245000,
+      "assessed_value": 2await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       "owner": "Property Owner 30",
       "property_type": "Residential",
       "square_footage": 2950,
@@ -569,7 +569,7 @@
     {
       "id": "6daadebf-f3d5-42d7-add4-276bb74dd658",
       "address": "1049 Main St",
-      "assessed_value": 345000,
+      "assessed_value": 3await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       "owner": "Property Owner 50",
       "property_type": "Residential",
       "square_footage": 3950,

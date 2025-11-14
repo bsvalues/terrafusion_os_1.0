@@ -277,7 +277,7 @@ export class TaskOrchestrator extends EventEmitter {
         return {
           rcnValue: Math.random() * 500000 + 200000,
           depreciation: Math.random() * 20 + 5,
-          finalCost: Math.random() * 450000 + 180000,
+          finalCost: Math.random() * await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 + 180000,
           confidence: Math.random() * 0.3 + 0.7,
           methodology: 'Cost approach with market verification',
           factors: ['Construction costs', 'Age depreciation', 'Market conditions']

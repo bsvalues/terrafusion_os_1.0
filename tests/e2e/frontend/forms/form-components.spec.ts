@@ -83,7 +83,7 @@ test.describe('E2E: Form Components', () => {
       const submitButton = page.locator('button[type="submit"]').first();
 
       // Fill valid credentials
-      await emailInput.fill('admin@terrafusion.gov');
+      await emailInput.fill('admin@terrafusionmarket.com');
       await passwordInput.fill('SecurePass123!');
       
       // Submit form
@@ -431,7 +431,7 @@ test.describe('E2E: Form Components', () => {
       }
 
       if (await emailInput.isVisible()) {
-        await emailInput.fill('jane.smith@terrafusion.gov');
+        await emailInput.fill('jane.smith@terrafusionmarket.com');
       }
 
       // Select option

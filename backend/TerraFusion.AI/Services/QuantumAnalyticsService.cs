@@ -356,21 +356,21 @@ public class QuantumAnalyticsService : IQuantumAnalyticsService
                 userId, workflowId);
             return Array.Empty<WorkflowExecution>();
         }
-
         var entities = await _executionRepository.GetByWorkflowIdAsync(workflowId);
 
-        // TODO: Map Core.Entities.WorkflowExecution -> AI.Services.WorkflowExecution
-        // Placeholder mapping until Core entity properties are confirmed
-        return entities.Select(_ => new WorkflowExecution
+        // Map Core.Entities.WorkflowExecution to AI.Services.WorkflowExecution DTO
+        var results = entities.Select(e => new WorkflowExecution
         {
-            ExecutionId = string.Empty,
-            WorkflowId = workflowId.ToString(),
-            CountyId = countyId.ToString(),
-            Status = "unknown",
-            StartTime = DateTime.MinValue,
-            EndTime = null,
+            ExecutionId = e.Id.ToString(),
+            WorkflowId = e.WorkflowId.ToString(),
+            CountyId = e.CountyId.ToString(),
+            Status = e.Status,
+            StartTime = e.StartedAt,
+            EndTime = e.CompletedAt,
             Steps = new List<StepExecution>()
         });
+
+        return results;
     }
 
     public async Task<object> GetWorkflowExecutionStatisticsAsync(int workflowId, Guid userId, Guid countyId)

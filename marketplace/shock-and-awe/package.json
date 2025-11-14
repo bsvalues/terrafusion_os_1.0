@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "description": "TerraFusion Shock & Awe - Revolutionary AI Government Demonstrations",
   "main": "src/main.tsx",
-  "homepage": "https://shock-and-awe.terrafusion.gov",
+  "homepage": "https://shock-and-awe.terrafusionmarket.com",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:production": "node scripts/build-static.cjs",
+    "package:deployment": "tar -czf terrafusion-deployment.tar.gz -C dist .",
     "preview": "vite preview",
-    "tauri": "tauri",
-    "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build",
-    "tauri:bundle": "tauri build --bundles all",
+    "deploy:hostinger:ps": "pwsh -ExecutionPolicy Bypass -File ./deploy-hostinger.ps1",
+    "validate:deployment": "pwsh -ExecutionPolicy Bypass -File ./scripts/validate-deployment.ps1",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
@@ -21,8 +21,8 @@
     "format": "prettier --write src tests",
     "format:check": "prettier --check src tests",
     "validate": "npm run type-check && npm run lint && npm run test && npm run build",
-    "clean": "rimraf dist && rimraf src-tauri/target",
-    "postinstall": "npm run tauri info || echo 'Tauri CLI not available'",
+    "clean": "rimraf dist",
+    "cleanup:tauri": "rimraf src-tauri && rimraf src/hooks/useTauriCommands.ts",
     "quality": "npm run lint && npm run format:check",
     "quality:fix": "npm run lint:fix && npm run format",
     "government:compliance": "npm run lint -- --rule 'jsx-a11y/*: error' --rule 'security/*: error'",
@@ -35,14 +35,12 @@
     "@mui/material": "^5.14.17",
     "@react-three/drei": "^9.88.17",
     "@react-three/fiber": "^8.15.11",
-    "@tauri-apps/api": "^1.5.1",
     "@types/three": "^0.158.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "three": "^0.158.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.5.6",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -51,8 +49,8 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-react": "^4.1.1",
-    "@vitest/coverage-v8": "^0.34.6",
-    "@vitest/ui": "^0.34.6",
+    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/ui": "^1.6.0",
     "cssnano": "^7.1.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
@@ -67,7 +65,7 @@
     "rimraf": "^5.0.5",
     "typescript": "^5.2.2",
     "vite": "^4.5.0",
-    "vitest": "^0.34.6"
+    "vitest": "^1.6.0"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -80,11 +78,10 @@
     "quantum-processing",
     "consciousness-evolution",
     "government-ai",
-    "tauri",
     "react",
     "typescript",
     "three-js",
-    "desktop-application"
+    "static-web"
   ],
   "author": "TerraFusion Shock & Awe Team",
   "license": "MIT",
@@ -97,14 +94,14 @@
   },
   "terrafusion": {
     "module": true,
-    "category": "desktop-application",
+    "category": "web-static",
     "ai-agents": 50247,
     "quantum-processing": true,
     "consciousness-evolution": true,
     "government-compliant": true,
     "production-ready": true,
-    "tauri-enabled": true,
-    "deployment-target": "desktop-native"
+    "tauri-enabled": false,
+    "deployment-target": "hostinger-static"
   },
   "browserslist": [
     "last 2 Chrome versions",

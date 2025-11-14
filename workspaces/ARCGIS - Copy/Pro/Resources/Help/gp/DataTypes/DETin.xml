@@ -1,5 +1,0 @@
-<DataType Name="DETin">
-  <DisplayName>TIN</DisplayName>
-  <Description>A vector data structure that partitions geographic space into contiguous, nonoverlapping triangles. The vertices of each triangle are sample data points with x-, y-, and z-values.</Description>
-</DataType>
-

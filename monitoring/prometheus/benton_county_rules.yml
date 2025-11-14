@@ -14,9 +14,9 @@ groups:
           county: benton
           system: harris-pacs
         annotations:
-          summary: "Harris PACS v12.4.7 integration is down"
-          description: "Harris PACS integration has been down for {{ $value }} minutes. 89,247 parcels may be affected."
-          runbook_url: "https://docs.terrafusion.gov/runbooks/harris-pacs-recovery"
+          summary: "Harris PACS v9.0 integration is down"
+          description: "Harris PACS integration has been down for {{ $value }} minutes. await DynamicPropertyService.GetPropertyCountAsync("benton") parcels may be affected."
+          runbook_url: "https://docs.terrafusionmarket.com/runbooks/harris-pacs-recovery"
 
       # AI Swarm Critical Alerts
       - alert: AISwarmAgentsLow

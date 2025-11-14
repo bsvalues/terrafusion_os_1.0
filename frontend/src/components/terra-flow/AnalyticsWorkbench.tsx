@@ -55,7 +55,7 @@ export function AnalyticsWorkbench() {
       id: '2',
       type: 'code',
       content: '// Phase 1 Example: Fetch property data\nconst response = await fetch(\'/api/properties?county=benton\');\nconst properties = await response.json();\nconsole.log(`Loaded ${properties.length} properties`);',
-      output: 'Loaded 89,247 properties',
+      output: 'Loaded await DynamicPropertyService.GetPropertyCountAsync("benton") properties',
       executionTime: 124,
       status: 'completed'
     },

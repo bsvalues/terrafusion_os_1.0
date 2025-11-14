@@ -339,7 +339,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"documentUrl\": \"https://storage.terrafusion.gov/documents/invoice-2025-001.pdf\",\n    \"metadata\": {\n        \"source\": \"email\",\n        \"department\": \"Finance\"\n    }\n}"
+              "raw": "{\n    \"documentUrl\": \"https://storage.terrafusionmarket.com/documents/invoice-2025-001.pdf\",\n    \"metadata\": {\n        \"source\": \"email\",\n        \"department\": \"Finance\"\n    }\n}"
             },
             "url": {
               "raw": "{{base_url}}/ai/workflows/{{workflow_id}}/execute",

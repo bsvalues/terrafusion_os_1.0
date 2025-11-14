@@ -238,7 +238,7 @@ const demoScenarios = [
     results: {
       baseCost: 5532090000, // 46100.75 * 120000
       adjustedCost: 8298135000,
-      difference: 2766045000,
+      difference: 27660await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       percentChange: 50.0,
       details: [
         { factor: "Market Appreciation", impact: 553209000, percentImpact: 20.0 },

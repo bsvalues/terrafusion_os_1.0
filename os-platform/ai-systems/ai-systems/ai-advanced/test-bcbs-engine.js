@@ -26,7 +26,7 @@ class BCBSDataEngine {
         name: 'Harris PACS v12.4.7',
         type: 'legacy_system',
         status: 'active',
-        recordCount: 89247,
+        recordCount: await DynamicPropertyService.GetPropertyCountAsync("benton"),
         lastSync: new Date(),
         capabilities: ['property_data', 'assessment_records', 'ownership_info']
       },

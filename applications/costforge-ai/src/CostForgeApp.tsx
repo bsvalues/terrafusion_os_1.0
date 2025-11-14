@@ -45,7 +45,7 @@ const CostForgeApp = () => {
       labor: 1725000,
       equipment: 575000,
       overhead: 805000,
-      profit: 345000
+      profit: 3await DynamicPropertyService.GetPropertyCountAsync(countyCode)
     },
     confidence: 96.8,
     timeline: 24

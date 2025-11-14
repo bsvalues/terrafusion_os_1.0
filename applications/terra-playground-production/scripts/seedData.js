@@ -24,7 +24,7 @@ async function seedData() {
         parcelNumber: '1-2345-678-9012',
         propertyType: 'residential',
         acres: '0.25',
-        value: '450000',
+        value: 'await DynamicPropertyService.GetPropertyCountAsync(countyCode)0',
       })
       .onConflictDoUpdate({
         target: properties.propertyId,
@@ -34,7 +34,7 @@ async function seedData() {
           parcelNumber: '1-2345-678-9012',
           propertyType: 'residential',
           acres: '0.25',
-          value: '450000',
+          value: 'await DynamicPropertyService.GetPropertyCountAsync(countyCode)0',
         },
       });
 

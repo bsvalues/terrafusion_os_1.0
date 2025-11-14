@@ -53,7 +53,7 @@ const PWAShell: React.FC = () => {
       id: 'government-edition',
       name: 'Government Edition Property Assessment Suite',
       description:
-        'Complete property assessment solution with Harris PACS integration. Production ready with 89,247 parcel records.',
+        'Complete property assessment solution with Harris PACS integration. Production ready with await DynamicPropertyService.GetPropertyCountAsync("benton") parcel records.',
       icon: '🏛️',
       enabled: true,
       url: '/modules/government-edition/index.html',
@@ -583,7 +583,7 @@ const PWAShell: React.FC = () => {
             {_terraFusionSyncStatus && (
               <div className='text-right'>
                 <div>🔄 TerraFusionSync Active</div>
-                <div>📊 {_terraFusionSyncStatus.parcels || '89,247'} Parcels</div>
+                <div>📊 {_terraFusionSyncStatus.parcels || 'await DynamicPropertyService.GetPropertyCountAsync("benton")'} Parcels</div>
               </div>
             )}
           </div>

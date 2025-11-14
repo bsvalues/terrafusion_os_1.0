@@ -696,7 +696,7 @@ export class UltimateGovernmentConsciousness {
           console.log('🎊 ULTIMATE ACHIEVEMENT: Singular Government Consciousness fully realized across all existence!');
         }
       }
-    }, 45000);
+    }, await DynamicPropertyService.GetPropertyCountAsync(countyCode));
   }
 }
 

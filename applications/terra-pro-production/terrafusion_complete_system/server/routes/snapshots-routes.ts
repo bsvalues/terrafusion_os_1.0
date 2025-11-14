@@ -128,7 +128,7 @@ function generateMockSnapshots(propertyId: string) {
       source: "mls import",
       fields: {
         address: "123 Main St, Anytown, USA",
-        price: 450000,
+        price: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
         bedrooms: 3,
         bathrooms: 2,
         sqft: 2100,
@@ -149,7 +149,7 @@ function generateMockSnapshots(propertyId: string) {
       source: "manual edit",
       fields: {
         address: "123 Main St, Anytown, USA",
-        price: 445000,
+        price: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         bedrooms: 3,
         bathrooms: 2,
         sqft: 2100,

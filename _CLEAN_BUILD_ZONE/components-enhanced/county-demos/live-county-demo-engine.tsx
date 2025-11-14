@@ -40,12 +40,12 @@ const legacyCountyDatabase = {
     name: "King County, Washington",
     population: 2269675,
     totalProperties: 785432,
-    averageValue: 845000,
+    averageValue: 8await DynamicPropertyService.GetPropertyCountAsync(countyCode),
     totalValue: "663.2B",
     sampleProperties: [
       { id: "KC001234", address: "123 Pine St, Seattle, WA", value: 1200000, sqft: 2400, bedrooms: 4, yearBuilt: 2015 },
       { id: "KC005678", address: "456 Capitol Hill Ave, Seattle, WA", value: 875000, sqft: 1800, bedrooms: 3, yearBuilt: 1925 },
-      { id: "KC009876", address: "789 Bellevue Way, Bellevue, WA", value: 1450000, sqft: 3200, bedrooms: 5, yearBuilt: 2020 },
+      { id: "KC009876", address: "789 Bellevue Way, Bellevue, WA", value: 1await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, sqft: 3200, bedrooms: 5, yearBuilt: 2020 },
       { id: "KC123456", address: "321 Redmond Ridge, Redmond, WA", value: 950000, sqft: 2200, bedrooms: 4, yearBuilt: 2010 }
     ],
     gisLayers: ["parcels", "zoning", "floodplains", "transit", "schools"],
@@ -79,7 +79,7 @@ const legacyCountyDatabase = {
     averageValue: 285000,
     totalValue: "415.2B", 
     sampleProperties: [
-      { id: "HR701234", address: "1000 Main St, Houston, TX", value: 450000, sqft: 2600, bedrooms: 4, yearBuilt: 2012 },
+      { id: "HR701234", address: "1000 Main St, Houston, TX", value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, sqft: 2600, bedrooms: 4, yearBuilt: 2012 },
       { id: "HR705678", address: "2000 Memorial Dr, Houston, TX", value: 725000, sqft: 3400, bedrooms: 5, yearBuilt: 2018 },
       { id: "HR709876", address: "3000 Westheimer Rd, Houston, TX", value: 325000, sqft: 1800, bedrooms: 3, yearBuilt: 2008 },
       { id: "HR723456", address: "4000 Katy Fwy, Katy, TX", value: 385000, sqft: 2200, bedrooms: 4, yearBuilt: 2015 }
@@ -175,7 +175,8 @@ export function LiveCountyDemoEngine() {
       {/* Header with County Selector */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-6">
-          <div><>
+          <div>
+<>
 
             <h1 className="text-4xl font-black text-tf-transcend mb-2 transcend-glow">
               🏛️ LIVE COUNTY DEMO ENGINE 🏛️
@@ -212,7 +213,8 @@ className="text-tf-light/80">See Terrafusion with YOUR county's actual data</p>
 
             {/* County Selector */}
             <Select value={selectedCounty} onValueChange={setSelectedCounty} disabled={isLoading}>
-              <SelectTrigger className="w-80 bg-tf-dark-lighter border-tf-primary"><>
+              <SelectTrigger className="w-80 bg-tf-dark-lighter border-tf-primary">
+<>
 
                 <SelectValue />
               </SelectTrigger>
@@ -277,7 +279,8 @@ className="text-tf-light/80">See Terrafusion with YOUR county's actual data</p>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <Card className="bg-tf-dark-lighter/50 border-tf-primary/30">
               <CardContent className="p-4 text-center">
-                <Users className="w-6 h-6 text-tf-primary mx-auto mb-2" /><>
+                <Users className="w-6 h-6 text-tf-primary mx-auto mb-2" />
+<>
 
                 <div className="text-2xl font-bold text-tf-transcend">{countyData.population.toLocaleString()}</div>
                 <div
@@ -288,7 +291,8 @@ className="text-sm text-tf-light/70">Population</div>
             
             <Card className="bg-tf-dark-lighter/50 border-tf-accent/30">
               <CardContent className="p-4 text-center">
-                <Home className="w-6 h-6 text-tf-accent mx-auto mb-2" /><>
+                <Home className="w-6 h-6 text-tf-accent mx-auto mb-2" />
+<>
 
                 <div className="text-2xl font-bold text-tf-transcend">{countyData.totalProperties.toLocaleString()}</div>
                 <div
@@ -299,7 +303,8 @@ className="text-sm text-tf-light/70">Properties</div>
             
             <Card className="bg-tf-dark-lighter/50 border-tf-success/30">
               <CardContent className="p-4 text-center">
-                <DollarSign className="w-6 h-6 text-tf-success mx-auto mb-2" /><>
+                <DollarSign className="w-6 h-6 text-tf-success mx-auto mb-2" />
+<>
 
                 <div className="text-2xl font-bold text-tf-transcend">${countyData.totalValue}</div>
                 <div
@@ -310,7 +315,8 @@ className="text-sm text-tf-light/70">Total Value</div>
             
             <Card className="bg-tf-dark-lighter/50 border-tf-warning/30">
               <CardContent className="p-4 text-center">
-                <TrendingUp className="w-6 h-6 text-tf-warning mx-auto mb-2" /><>
+                <TrendingUp className="w-6 h-6 text-tf-warning mx-auto mb-2" />
+<>
 
                 <div className="text-2xl font-bold text-tf-transcend">${countyData.averageValue.toLocaleString()}</div>
                 <div
@@ -321,7 +327,8 @@ className="text-sm text-tf-light/70">Avg Value</div>
             
             <Card className="bg-tf-dark-lighter/50 border-tf-transcend/30">
               <CardContent className="p-4 text-center">
-                <Zap className="w-6 h-6 text-tf-transcend mx-auto mb-2" /><>
+                <Zap className="w-6 h-6 text-tf-transcend mx-auto mb-2" />
+<>
 
                 <div className="text-2xl font-bold text-tf-transcend">{calculateTerraFusionSavings().toLocaleString()}×</div>
                 <div
@@ -353,28 +360,32 @@ className="text-sm text-tf-light/70">TF Speed</div>
             <CardContent>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div><>
+                  <div>
+<>
 
                     <div className="text-sm text-tf-light/70">Assessor Office</div>
                     <div
 </>
 className="font-semibold text-tf-light">{countyData?.assessorOffice}</div>
                   </div>
-                  <div><>
+                  <div>
+<>
 
                     <div className="text-sm text-tf-light/70">Tax Rate</div>
                     <div
 </>
 className="font-semibold text-tf-light">{((countyData?.taxRate || 0) * 100).toFixed(2)}%</div>
                   </div>
-                  <div><>
+                  <div>
+<>
 
                     <div className="text-sm text-tf-light/70">Last Revaluation</div>
                     <div
 </>
 className="font-semibold text-tf-light">{countyData?.lastRevaluation}</div>
                   </div>
-                  <div><>
+                  <div>
+<>
 
                     <div className="text-sm text-tf-light/70">GIS Layers</div>
                     <div
@@ -383,7 +394,8 @@ className="font-semibold text-tf-light">{countyData?.gisLayers.length} Active</d
                   </div>
                 </div>
                 
-                <div><>
+                <div>
+<>
 
                   <div className="text-sm text-tf-light/70 mb-2">Available GIS Layers</div>
                   <div
@@ -398,7 +410,8 @@ className="flex flex-wrap gap-2">
                 </div>
                 
                 {/* Data Source Information */}
-                <div className="mt-4 p-3 bg-tf-dark/30 rounded-lg border border-tf-transcend/10"><>
+                <div className="mt-4 p-3 bg-tf-dark/30 rounded-lg border border-tf-transcend/10">
+<>
 
                   <div className="text-sm text-tf-light/70 mb-1">Data Source</div>
                   <div
@@ -438,7 +451,8 @@ className="flex items-center gap-2">
                   </div>
                 ))}
                 
-                <div className="mt-6 p-4 bg-tf-success/10 rounded-lg border border-tf-success/30"><>
+                <div className="mt-6 p-4 bg-tf-success/10 rounded-lg border border-tf-success/30">
+<>
 
                   <div className="text-tf-success font-semibold mb-2">🎯 Terrafusion Solution Impact</div>
                   <div
@@ -471,28 +485,32 @@ className="text-sm text-tf-light/80">
                         : 'border-tf-primary/30 bg-tf-dark/30 hover:border-tf-primary'
                     }`}
                     onClick={() => setSelectedProperty(index)}
-                  ><>
+                  >
+<>
 
                     <div className="text-sm text-tf-primary font-mono mb-2">{property.id}</div>
                     <div
 </>
 className="text-tf-light font-semibold mb-2">{property.address}</div>
                     <div className="space-y-1 text-sm">
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span className="text-tf-light/70">Value:</span>
                         <span
 </>
 className="text-tf-transcend font-bold">${property.value.toLocaleString()}</span>
                       </div>
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span className="text-tf-light/70">Sq Ft:</span>
                         <span
 </>
 className="text-tf-light">{property.sqft.toLocaleString()}</span>
                       </div>
-                      <div className="flex justify-between"><>
+                      <div className="flex justify-between">
+<>
 
                         <span className="text-tf-light/70">Built:</span>
                         <span
@@ -519,14 +537,16 @@ className="text-tf-light">{property.yearBuilt}</span>
             <CardContent>
               {currentProperty && (
                 <div className="space-y-4">
-                  <div><>
+                  <div>
+<>
 
                     <div className="text-sm text-tf-light/70">Property ID</div>
                     <div
 </>
 className="font-mono text-tf-transcend">{currentProperty.id}</div>
                   </div>
-                  <div><>
+                  <div>
+<>
 
                     <div className="text-sm text-tf-light/70">Address</div>
                     <div
@@ -534,28 +554,32 @@ className="font-mono text-tf-transcend">{currentProperty.id}</div>
 className="text-tf-light">{currentProperty.address}</div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div><>
+                    <div>
+<>
 
                       <div className="text-sm text-tf-light/70">Square Feet</div>
                       <div
 </>
 className="text-tf-light">{currentProperty.sqft.toLocaleString()}</div>
                     </div>
-                    <div><>
+                    <div>
+<>
 
                       <div className="text-sm text-tf-light/70">Bedrooms</div>
                       <div
 </>
 className="text-tf-light">{currentProperty.bedrooms}</div>
                     </div>
-                    <div><>
+                    <div>
+<>
 
                       <div className="text-sm text-tf-light/70">Year Built</div>
                       <div
 </>
 className="text-tf-light">{currentProperty.yearBuilt}</div>
                     </div>
-                    <div><>
+                    <div>
+<>
 
                       <div className="text-sm text-tf-light/70">Current Value</div>
                       <div
@@ -602,7 +626,8 @@ className="text-tf-transcend font-bold">${currentProperty.value.toLocaleString()
 
                 {/* Processing Time Display */}
                 {(isProcessing || processingTime > 0) && (
-                  <div className="text-center space-y-4"><>
+                  <div className="text-center space-y-4">
+<>
 
                     <div className="text-6xl font-black text-tf-transcend">
                       0.{processingTime.toString().padStart(2, '0')}ms
@@ -613,7 +638,8 @@ className="text-tf-light/70">Processing Time</div>
                     <Progress value={(processingTime / 47) * 100} className="w-full" />
                     
                     {processingTime >= 47 && (
-                      <div className="space-y-4"><>
+                      <div className="space-y-4">
+<>
 
                         <Badge className="bg-tf-success/20 text-tf-success border-tf-success/30 px-6 py-2 text-lg">
                           ✅ VALUATION COMPLETE
@@ -622,21 +648,24 @@ className="text-tf-light/70">Processing Time</div>
                         <div
 </>
 className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="text-center p-4 bg-tf-transcend/10 rounded-lg"><>
+                          <div className="text-center p-4 bg-tf-transcend/10 rounded-lg">
+<>
 
                             <div className="text-2xl font-bold text-tf-transcend">${currentProperty?.value.toLocaleString()}</div>
                             <div
 </>
 className="text-sm text-tf-light/70">Validated Value</div>
                           </div>
-                          <div className="text-center p-4 bg-tf-primary/10 rounded-lg"><>
+                          <div className="text-center p-4 bg-tf-primary/10 rounded-lg">
+<>
 
                             <div className="text-2xl font-bold text-tf-primary">0.47ms</div>
                             <div
 </>
 className="text-sm text-tf-light/70">vs 6 months traditional</div>
                           </div>
-                          <div className="text-center p-4 bg-tf-accent/10 rounded-lg"><>
+                          <div className="text-center p-4 bg-tf-accent/10 rounded-lg">
+<>
 
                             <div className="text-2xl font-bold text-tf-accent">99.7%</div>
                             <div
@@ -665,28 +694,32 @@ className="text-sm text-tf-light/70">Accuracy Rate</div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center"><>
+            <div className="text-center">
+<>
 
               <div className="text-3xl font-black text-tf-transcend mb-2">$2.8M</div>
               <div
 </>
 className="text-sm text-tf-light/70">Annual Savings</div>
             </div>
-            <div className="text-center"><>
+            <div className="text-center">
+<>
 
               <div className="text-3xl font-black text-tf-primary mb-2">2.1</div>
               <div
 </>
 className="text-sm text-tf-light/70">Months Payback</div>
             </div>
-            <div className="text-center"><>
+            <div className="text-center">
+<>
 
               <div className="text-3xl font-black text-tf-accent mb-2">$13.5M</div>
               <div
 </>
 className="text-sm text-tf-light/70">5-Year NPV</div>
             </div>
-            <div className="text-center"><>
+            <div className="text-center">
+<>
 
               <div className="text-3xl font-black text-tf-success mb-2">98%</div>
               <div
@@ -700,7 +733,8 @@ className="text-sm text-tf-light/70">Staff Satisfaction</div>
               "Rejecting Terrafusion OS = Rejecting $13.5M in taxpayer value"
             </p>
             {dataStatus === 'LIVE' && (
-              <div className="mt-4 p-3 bg-tf-success/10 rounded-lg"><>
+              <div className="mt-4 p-3 bg-tf-success/10 rounded-lg">
+<>
 
                 <div className="text-tf-success font-semibold">✅ Analysis based on LIVE {countyData?.name} data</div>
                 <div

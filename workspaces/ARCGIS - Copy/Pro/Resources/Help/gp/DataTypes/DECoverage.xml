@@ -1,5 +1,0 @@
-<DataType Name="DECoverage">
-  <DisplayName>Coverage</DisplayName>
-  <Description>A coverage dataset, a proprietary data model for storing geographic features as points, arcs, and polygons with associated feature attribute tables.</Description>
-</DataType>
-

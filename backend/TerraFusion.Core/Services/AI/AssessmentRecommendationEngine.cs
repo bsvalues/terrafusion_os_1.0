@@ -61,7 +61,7 @@ public class AssessmentRecommendationEngine : IAssessmentRecommendationEngine
         {
             _structuredLogger.LogAIEvent("AssessmentRecommendationStarted",
                 $"Starting assessment recommendation generation for property {request.PropertyId}",
-                context: new { 
+                context: new {
                     ReportId = reportId,
                     PropertyId = request.PropertyId,
                     AssessmentType = request.AssessmentType,
@@ -134,7 +134,7 @@ public class AssessmentRecommendationEngine : IAssessmentRecommendationEngine
 
             _structuredLogger.LogAIEvent("AssessmentRecommendationCompleted",
                 $"Assessment recommendation generation completed successfully",
-                context: new { 
+                context: new {
                     ReportId = reportId,
                     ProcessingTime = stopwatch.ElapsedMilliseconds,
                     RecommendationCount = improvementRecommendations.Recommendations.Count,
@@ -833,7 +833,7 @@ Provide strategic insights on:
     private async Task<MarketData> GetMarketDataAsync(string propertyId) { await Task.Delay(5); return new MarketData(); }
     private async Task<PropertyTaxData> GetPropertyTaxDataAsync(string propertyId) { await Task.Delay(5); return new PropertyTaxData(); }
     private async Task<List<RegulatoryRequirement>> GetRegulatoryRequirementsAsync(string jurisdiction) { await Task.Delay(5); return new List<RegulatoryRequirement>(); }
-    
+
     // Calculation and analysis methods (placeholder implementations)
     private double CalculateOverallConfidence(AssessmentAccuracyAnalysis accuracy, AssessmentRiskAnalysis risk) => 0.85;
     private string DetermineRecommendationPriority(AssessmentRiskAnalysis risk, PropertyImprovementRecommendations improvements) => "High";

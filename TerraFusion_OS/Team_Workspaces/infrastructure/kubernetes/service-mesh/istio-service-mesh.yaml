@@ -22,13 +22,13 @@ spec:
         mode: TERMINATE
         credentialName: terrafusion-ai-tls-cert
       hosts:
-        - 'ai-agents.${ENVIRONMENT}.terrafusion.gov'
+        - 'ai-agents.${ENVIRONMENT}.terrafusionmarket.com'
     - port:
         number: 80
         name: http
         protocol: HTTP
       hosts:
-        - 'ai-agents.${ENVIRONMENT}.terrafusion.gov'
+        - 'ai-agents.${ENVIRONMENT}.terrafusionmarket.com'
       tls:
         httpsRedirect: true
 ---
@@ -43,7 +43,7 @@ metadata:
     tier: traffic-management
 spec:
   hosts:
-    - 'ai-agents.${ENVIRONMENT}.terrafusion.gov'
+    - 'ai-agents.${ENVIRONMENT}.terrafusionmarket.com'
   gateways:
     - terrafusion-ai-agents-gateway
   http:

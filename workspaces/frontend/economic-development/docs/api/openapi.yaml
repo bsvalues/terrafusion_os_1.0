@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: economic-development-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/frontend/economic-development
+    email: economic-development-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/frontend/economic-development
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/economic-development
+  - url: https://api.terrafusionmarket.com/api/v1/economic-development
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/economic-development
+  - url: https://staging-api.terrafusionmarket.com/api/v1/economic-development
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/economic-development
+  - url: https://dev-api.terrafusionmarket.com/api/v1/economic-development
     description: Development Environment
 paths:
   /businesses:
@@ -199,8 +199,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             economic-development:read: Read access to economic-development resources
             economic-development:write: Write access to economic-development resources
@@ -218,4 +218,4 @@ tags:
     description: Economic Development operations
     externalDocs:
       description: Find out more about economic-development
-      url: https://docs.terrafusion.gov/frontend/economic-development
+      url: https://docs.terrafusionmarket.com/frontend/economic-development

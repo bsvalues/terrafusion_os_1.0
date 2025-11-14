@@ -12,7 +12,7 @@ export function TerraFusionSystemCheck() {
   const systemMetrics = useMemo(
     () => ({
       frontend: { status: 'ONLINE', health: 69, port: 5174 },
-      experimentsAPI: { status: 'ONLINE', health: 100, port: 5010 },
+      experimentsAPI: { status: 'ONLINE', health: 100, port: 5000 },
       consciousnessEngine: { status: 'STARTING', health: 85, port: 3004 },
       quantumCoherence: 96.4,
       aiAgents: 995677,

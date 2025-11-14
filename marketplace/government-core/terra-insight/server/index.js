@@ -226,7 +226,7 @@ class TerraFusionInsightEngine {
     if (model.id === 'property-valuation-ai') {
       return {
         valuationResults: {
-          estimatedValue: 245000 + Math.random() * 100000,
+          estimatedValue: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode) + Math.random() * 100000,
           confidenceInterval: {
             lower: 225000,
             upper: 285000
@@ -503,7 +503,7 @@ class TerraFusionInsightEngine {
       predictions: Array.from({ length: forecast_periods }, (_, i) => ({
         period: i + 1,
         predicted_value: 100000 + Math.random() * 50000 + (i * 2000), // Growth trend
-        confidence_lower: 90000 + Math.random() * 45000 + (i * 1800),
+        confidence_lower: 90000 + Math.random() * await DynamicPropertyService.GetPropertyCountAsync(countyCode) + (i * 1800),
         confidence_upper: 110000 + Math.random() * 55000 + (i * 2200),
         factors: this.generateForecastFactors()
       })),
@@ -580,7 +580,7 @@ class TerraFusionInsightEngine {
         active_users: Math.floor(Math.random() * 50 + 100)
       }),
       market_data: () => ({
-        median_price: 245000 + Math.random() * 50000,
+        median_price: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode) + Math.random() * 50000,
         price_change: (Math.random() - 0.5) * 0.02,
         active_listings: Math.floor(Math.random() * 100 + 300),
         market_velocity: 0.6 + Math.random() * 0.3

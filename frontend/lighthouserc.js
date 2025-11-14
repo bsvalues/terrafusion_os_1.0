@@ -120,7 +120,7 @@ module.exports = {
 
       // Alternative: Self-hosted Lighthouse CI server
       // target: 'lhci',
-      // serverBaseUrl: 'https://lighthouse.terrafusion.gov',
+      // serverBaseUrl: 'https://lighthouse.terrafusionmarket.com',
       // token: process.env.LHCI_TOKEN
     },
 

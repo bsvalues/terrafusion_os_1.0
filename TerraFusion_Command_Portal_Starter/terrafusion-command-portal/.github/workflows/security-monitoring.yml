@@ -159,9 +159,9 @@ jobs:
 
           # Health check endpoints
           endpoints=(
-              "https://terrafusion.gov/health"
-              "https://terrafusion.gov/api/federation/counties"
-              "https://terrafusion.gov/api/federation/dashboard"
+              "https://terrafusionmarket.com/health"
+              "https://terrafusionmarket.com/api/federation/counties"
+              "https://terrafusionmarket.com/api/federation/dashboard"
           )
 
           for endpoint in "${endpoints[@]}"; do
@@ -179,7 +179,7 @@ jobs:
           echo "🏛️ Validating federation system across all counties..."
 
           # Check all 3 counties are connected
-          response=$(curl -s https://terrafusion.gov/api/federation/counties)
+          response=$(curl -s https://terrafusionmarket.com/api/federation/counties)
           county_count=$(echo "$response" | jq length)
 
           if [ "$county_count" -eq 3 ]; then
@@ -195,7 +195,7 @@ jobs:
 
           # Response time check
           start_time=$(date +%s%N)
-          curl -f -s https://terrafusion.gov/api/federation/dashboard > /dev/null
+          curl -f -s https://terrafusionmarket.com/api/federation/dashboard > /dev/null
           end_time=$(date +%s%N)
           response_time=$((($end_time - $start_time) / 1000000))
 

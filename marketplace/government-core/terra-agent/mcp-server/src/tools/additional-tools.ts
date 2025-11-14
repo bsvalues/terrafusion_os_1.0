@@ -60,7 +60,7 @@ export class MarketAnalysisTool implements MCPTool {
         area: args.zipCode || args.municipality,
         timeframe: args.timeframe || '6months',
         metrics: {
-          avgSalePrice: 445000,
+          avgSalePrice: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode),
           medianSalePrice: 425000,
           avgDaysOnMarket: 35,
           saleVolume: 45,
@@ -96,7 +96,7 @@ export class ComparativeAnalysisTool implements MCPTool {
       comparativeAnalysis: {
         subjectProperty: args.subjectProperty,
         comparables: [],
-        analysis: { estimatedValue: 445000, confidenceLevel: 0.85 },
+        analysis: { estimatedValue: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode), confidenceLevel: 0.85 },
       },
     };
   }
@@ -124,7 +124,7 @@ export class PropertyValuationTool implements MCPTool {
     return {
       success: true,
       valuation: {
-        estimatedValue: 445000,
+        estimatedValue: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         confidence: 0.85,
         valueRange: { low: 415000, high: 475000 },
         methods: ['sales_comparison', 'automated_valuation'],
@@ -158,7 +158,7 @@ export class NeighborhoodAnalysisTool implements MCPTool {
       neighborhoodAnalysis: {
         demographics: { medianIncome: 65000, medianAge: 42 },
         amenities: { schools: [], shopping: [], recreation: [] },
-        marketMetrics: { avgSalePrice: 445000, appreciation: 4.2 },
+        marketMetrics: { avgSalePrice: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode), appreciation: 4.2 },
       },
     };
   }

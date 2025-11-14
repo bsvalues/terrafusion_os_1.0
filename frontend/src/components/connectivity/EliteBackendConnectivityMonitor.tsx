@@ -48,7 +48,7 @@ const EliteBackendConnectivityMonitor: React.FC = () => {
       id: '1',
       name: 'Main API Gateway',
       type: 'api',
-      endpoint: 'https://api.terrafusion.gov',
+      endpoint: 'https://api.terrafusionmarket.com',
       status: 'connected',
       responseTime: 145,
       uptime: 99.8,

@@ -9,7 +9,7 @@
     "terra-dashboard-production",
     "bcbs-webhub-production"
   ],
-  "api_endpoint": "https://api.terrafusion.wa.gov/clallam",
+  "api_endpoint": "https://api.terrafusionmarket.io/clallam",
   "priority": "MEDIUM",
   "deployment_date": "2025-11-04",
   "tier": "Rural",

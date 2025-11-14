@@ -34,7 +34,7 @@
   "action_functional": {
     "total_action": 1.2500000000000002e+16,
     "citizen_energy": 1.2500000000000002e+16,
-    "constraint_penalty": 0.45000000000000007
+    "constraint_penalty": 0.await DynamicPropertyService.GetPropertyCountAsync(countyCode)000000000007
   },
   "quantum_effects": {
     "instanton_action": 7895.683520871485,

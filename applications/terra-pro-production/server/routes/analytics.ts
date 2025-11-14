@@ -69,7 +69,7 @@ router.get("/summary", async (req: Request, res: Response) => {
     // Return mock summary data for demo purposes
     const mockSummary = {
       totalProperties: 378,
-      totalValue: 218450000,
+      totalValue: 218await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       avgPrice: 578000,
       medianGLA: 1925,
     };

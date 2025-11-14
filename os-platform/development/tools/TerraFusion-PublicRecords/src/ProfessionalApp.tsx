@@ -32,7 +32,7 @@ const ProfessionalApp: React.FC = () => {
   const [showPayment, setShowPayment] = useState(false);
   const [user] = useState<User>({
     name: 'John Doe',
-    email: 'john.doe@bentoncounty.gov',
+    email: 'john.doe@terrafusionmarket.io',
     role: 'Staff'
   });
   const [notifications] = useState(2);
@@ -77,7 +77,8 @@ const ProfessionalApp: React.FC = () => {
               <span className="text-white font-bold text-sm">TF</span>
             </div>
             <h1 className="text-xl font-bold">Terrafusion</h1>
-          </div><>
+          </div>
+<>
 
           <p className="text-sm text-blue-200">Public Records System</p>
           <p
@@ -112,13 +113,15 @@ className="text-xs text-blue-300 mt-1">Benton County, WA</p>
 
         <div className="mt-auto p-4 border-t border-blue-700">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center"><>
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+<>
 
               <Users size={16} className="text-white" />
             </div>
             <div
 </>
-className="flex-1"><>
+className="flex-1">
+<>
 
               <p className="text-sm font-medium text-white">{user.name}</p>
               <p
@@ -127,13 +130,15 @@ className="text-xs text-blue-200">{user.role}</p>
             </div>
           </div>
           <div className="flex gap-2">
-            <button className="flex-1 p-2 text-blue-200 hover:bg-white/10 rounded-lg transition-colors"><>
+            <button className="flex-1 p-2 text-blue-200 hover:bg-white/10 rounded-lg transition-colors">
+<>
 
               <Settings size={16} />
             </button>
             <button
 </>
-className="flex-1 p-2 text-blue-200 hover:bg-white/10 rounded-lg transition-colors"><>
+className="flex-1 p-2 text-blue-200 hover:bg-white/10 rounded-lg transition-colors">
+<>
 
               <Bell size={16} />
             </button>
@@ -151,7 +156,8 @@ className="flex-1 p-2 text-blue-200 hover:bg-white/10 rounded-lg transition-colo
         {/* Header */}
         <header className="bg-gradient-to-r from-white to-blue-50 border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
-            <div><>
+            <div>
+<>
 
               <h2 className="text-2xl font-semibold text-gray-900">
                 {navigationItems.find(item => item.id === activeView)?.label}
@@ -164,7 +170,8 @@ className="text-sm text-gray-600 mt-1">
             </div>
             <div className="flex items-center gap-6">
               <div className="text-sm">
-                <span className="text-gray-500">Properties:</span>{' '}<>
+                <span className="text-gray-500">Properties:</span>{' '}
+<>
 
                 <span className="font-semibold text-blue-700">{BentonCountyData.statistics.totalParcels.toLocaleString()}</span>
                 <span
@@ -173,7 +180,8 @@ className="text-gray-400 mx-2">|</span>
                 <span className="text-gray-500">Citizens:</span>{' '}
                 <span className="font-semibold text-blue-700">{BentonCountyData.county.population.toLocaleString()}</span>
               </div>
-              <div className="flex items-center gap-2"><>
+              <div className="flex items-center gap-2">
+<>
 
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span
@@ -192,13 +200,15 @@ className="text-xs text-gray-600">System Online</span>
               {/* Terrafusion Search Card */}
               <div className="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg border border-blue-100 p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center"><>
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+<>
 
                     <Search className="text-white" size={20} />
                   </div>
                   <div
 </>
-</>><>
+</>>
+<>
 
                     <h3 className="text-lg font-bold text-gray-900">Terrafusion Instant Search</h3>
                     <p
@@ -218,7 +228,8 @@ className="text-xs text-gray-600">AI-Powered Property Intelligence</p>
                   <div className="flex items-center justify-between mb-2">
                     <Building className="text-blue-600" size={20} />
                     <span className="text-xs text-green-600 font-semibold">LIVE</span>
-                  </div><>
+                  </div>
+<>
 
                   <div className="text-sm text-gray-600">Total Parcels</div>
                   <div
@@ -231,7 +242,8 @@ className="text-2xl font-bold text-blue-900 mt-1">
                   <div className="flex items-center justify-between mb-2">
                     <DollarSign className="text-green-600" size={20} />
                     <span className="text-xs text-green-600 font-semibold">2024</span>
-                  </div><>
+                  </div>
+<>
 
                   <div className="text-sm text-gray-600">Total Value</div>
                   <div
@@ -244,7 +256,8 @@ className="text-2xl font-bold text-blue-900 mt-1">
                   <div className="flex items-center justify-between mb-2">
                     <Home className="text-purple-600" size={20} />
                     <span className="text-xs text-blue-600 font-semibold">AVG</span>
-                  </div><>
+                  </div>
+<>
 
                   <div className="text-sm text-gray-600">Property Value</div>
                   <div
@@ -257,7 +270,8 @@ className="text-2xl font-bold text-blue-900 mt-1">
                   <div className="flex items-center justify-between mb-2">
                     <FileText className="text-orange-600" size={20} />
                     <span className="text-xs text-orange-600 font-semibold">INDEXED</span>
-                  </div><>
+                  </div>
+<>
 
                   <div className="text-sm text-gray-600">Documents</div>
                   <div
@@ -275,13 +289,15 @@ className="text-2xl font-bold text-blue-900 mt-1">
             <div className="space-y-6">
               <div className="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg border border-blue-100 p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center"><>
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+<>
 
                     <FileText className="text-white" size={20} />
                   </div>
                   <div
 </>
-</>><>
+</>>
+<>
 
                     <h3 className="text-lg font-bold text-gray-900">Terrafusion Document Archive</h3>
                     <p
@@ -298,7 +314,8 @@ className="text-xs text-gray-600">Recent Documents & Records</p>
                     >
                       <div className="flex items-center gap-3">
                         <FileText className="text-gray-400" size={20} />
-                        <div><>
+                        <div>
+<>
 
                           <p className="font-medium text-gray-900">{doc.name}</p>
                           <p
@@ -314,7 +331,8 @@ className="text-sm text-gray-600">{doc.date} • {doc.size}</p>
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="bg-white rounded-lg shadow-md border border-blue-100 hover:shadow-lg transition-shadow p-4">
-                  <FileText className="text-blue-600 mb-2" size={24} /><>
+                  <FileText className="text-blue-600 mb-2" size={24} />
+<>
 
                   <div className="text-lg font-semibold text-gray-900">Property Deeds</div>
                   <div
@@ -322,7 +340,8 @@ className="text-sm text-gray-600">{doc.date} • {doc.size}</p>
 className="text-sm text-gray-600 mt-1">342 documents</div>
                 </div>
                 <div className="bg-white rounded-lg shadow-md border border-blue-100 hover:shadow-lg transition-shadow p-4">
-                  <Building className="text-green-600 mb-2" size={24} /><>
+                  <Building className="text-green-600 mb-2" size={24} />
+<>
 
                   <div className="text-lg font-semibold text-gray-900">Building Permits</div>
                   <div
@@ -330,7 +349,8 @@ className="text-sm text-gray-600 mt-1">342 documents</div>
 className="text-sm text-gray-600 mt-1">89 active permits</div>
                 </div>
                 <div className="bg-white rounded-lg shadow-md border border-blue-100 hover:shadow-lg transition-shadow p-4">
-                  <DollarSign className="text-purple-600 mb-2" size={24} /><>
+                  <DollarSign className="text-purple-600 mb-2" size={24} />
+<>
 
                   <div className="text-lg font-semibold text-gray-900">Tax Records</div>
                   <div
@@ -347,13 +367,15 @@ className="text-sm text-gray-600 mt-1">1,847 assessments</div>
               <div className="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg border border-blue-100 p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center"><>
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+<>
 
                       <Building className="text-white" size={20} />
                     </div>
                     <div
 </>
-</>><>
+</>>
+<>
 
                       <h3 className="text-lg font-bold text-gray-900">Terrafusion Permit System</h3>
                       <p
@@ -374,14 +396,16 @@ className="text-xs text-gray-600">Digital Permit Applications</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white rounded-lg shadow-md border border-blue-100 hover:shadow-lg transition-shadow p-4"><>
+                <div className="bg-white rounded-lg shadow-md border border-blue-100 hover:shadow-lg transition-shadow p-4">
+<>
 
                   <div className="text-sm text-gray-600">Active Permits</div>
                   <div
 </>
 className="text-2xl font-semibold text-gray-900 mt-1">23</div>
                 </div>
-                <div className="bg-white rounded-lg shadow-md border border-blue-100 hover:shadow-lg transition-shadow p-4"><>
+                <div className="bg-white rounded-lg shadow-md border border-blue-100 hover:shadow-lg transition-shadow p-4">
+<>
 
                   <div className="text-sm text-gray-600">Pending Review</div>
                   <div
@@ -401,20 +425,23 @@ className="text-2xl font-semibold text-gray-900 mt-1">7</div>
           {activeView === 'payments' && (
             <div className="bg-gradient-to-br from-white to-green-50 rounded-xl shadow-lg border border-green-100 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center"><>
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+<>
 
                   <DollarSign className="text-white" size={20} />
                 </div>
                 <div
 </>
-</>><>
+</>>
+<>
 
                   <h3 className="text-lg font-bold text-gray-900">Terrafusion Payment Center</h3>
                   <p
 </>
 className="text-xs text-gray-600">Secure Online Payment Processing</p>
                 </div>
-              </div><>
+              </div>
+<>
 
               <p className="text-gray-600 mb-4">
                 Pay for permits, licenses, and other county services online.
@@ -443,7 +470,8 @@ className="text-xs text-gray-600">Secure Online Payment Processing</p>
               </div>
               <span className="text-blue-200">Government Edition v2.0</span>
             </div>
-            <div className="flex items-center gap-6 text-blue-200"><>
+            <div className="flex items-center gap-6 text-blue-200">
+<>
 
               <span>© 2024 Terrafusion</span>
               <span

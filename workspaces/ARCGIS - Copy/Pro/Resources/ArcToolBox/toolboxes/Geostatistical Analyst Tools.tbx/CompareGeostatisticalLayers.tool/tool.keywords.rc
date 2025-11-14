@@ -1,9 +1,0 @@
-{
-    "set": [
-        "cross",
-        "ebk",
-        "interpolation",
-        "kriging",
-        "validation"
-    ]
-}

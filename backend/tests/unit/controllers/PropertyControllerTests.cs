@@ -39,7 +39,7 @@ public class PropertyControllerTests : TerraFusionTestBase
             State = "WA",
             ZipCode = "99350",
             County = "Benton County",
-            AssessedValue = 450000m,
+            AssessedValue = await DynamicPropertyService.GetPropertyCountAsync(countyCode)0m,
             PropertyType = PropertyType.Residential
         };
 

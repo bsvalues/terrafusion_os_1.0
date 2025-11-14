@@ -225,7 +225,7 @@
       "building_type": "commercial",
       "subtype": "hotel",
       "year_built": 2005,
-      "total_area": 45000,
+      "total_area": await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       "construction_type": "concrete",
       "quality_class": "good",
       "condition": "average",
@@ -235,7 +235,7 @@
       "features": [
         {
           "type": "hvac",
-          "area_covered": 45000
+          "area_covered": await DynamicPropertyService.GetPropertyCountAsync(countyCode)
         },
         {
           "type": "pool",

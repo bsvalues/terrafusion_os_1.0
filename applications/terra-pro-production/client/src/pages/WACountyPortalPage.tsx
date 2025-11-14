@@ -99,7 +99,7 @@ export default function WACountyPortalPage() {
       status: "Queued",
       appraisers: 12,
       monthlyReports: 180,
-      averageValue: 245000,
+      averageValue: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       complianceScore: 94.2,
     },
     {
@@ -127,7 +127,7 @@ export default function WACountyPortalPage() {
       status: "Queued",
       appraisers: 38,
       monthlyReports: 420,
-      averageValue: 445000,
+      averageValue: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       complianceScore: 94.7,
     },
     {
@@ -233,7 +233,8 @@ export default function WACountyPortalPage() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <div><>
+        <div>
+<>
 
           <h1 className="text-3xl font-bold">Washington State County Portal</h1>
           <p
@@ -247,7 +248,8 @@ export default function WACountyPortalPage() {
 
       {/* County Selector */}
       <Card>
-        <CardHeader><>
+        <CardHeader>
+<>
 
           <CardTitle>County Node Selection</CardTitle>
           <CardDescription
@@ -257,7 +259,8 @@ export default function WACountyPortalPage() {
         </CardHeader>
         <CardContent>
           <Select value={selectedCounty} onValueChange={setSelectedCounty}>
-            <SelectTrigger className="w-64"><>
+            <SelectTrigger className="w-64">
+<>
 
               <SelectValue placeholder="Select County" />
             </SelectTrigger>
@@ -282,13 +285,15 @@ export default function WACountyPortalPage() {
           >
             <CardHeader>
               <div className="flex items-start justify-between">
-                <div><>
+                <div>
+<>
 
                   <CardTitle className="text-lg">{county.name} County</CardTitle>
                   <CardDescription
 </>>{county.appraisers} active appraisers</CardDescription>
                 </div>
-                <div className="text-right"><>
+                <div className="text-right">
+<>
 
                   <Badge className={getStatusColor(county.status)}>{county.status}</Badge>
                   <div
@@ -302,19 +307,22 @@ export default function WACountyPortalPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="flex justify-between text-sm"><>
+                <div className="flex justify-between text-sm">
+<>
 
                   <span className="text-muted-foreground">Monthly Reports:</span>
                   <span
 </> className="font-medium">{county.monthlyReports.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-sm"><>
+                <div className="flex justify-between text-sm">
+<>
 
                   <span className="text-muted-foreground">Avg Value:</span>
                   <span
 </> className="font-medium">${county.averageValue.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-sm"><>
+                <div className="flex justify-between text-sm">
+<>
 
                   <span className="text-muted-foreground">Compliance:</span>
                   <span
@@ -337,11 +345,13 @@ export default function WACountyPortalPage() {
       {/* Detailed County View */}
       {countyStats && (
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList><>
+          <TabsList>
+<>
 
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger
-</> value="appraisers">Appraisers</TabsTrigger><>
+</> value="appraisers">Appraisers</TabsTrigger>
+<>
 
             <TabsTrigger value="compliance">Compliance</TabsTrigger>
             <TabsTrigger
@@ -351,13 +361,15 @@ export default function WACountyPortalPage() {
           <TabsContent value="overview" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
                   <CardTitle className="text-sm font-medium">Total Properties</CardTitle>
                   <FileText
 </> className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
-                <CardContent><>
+                <CardContent>
+<>
 
                   <div className="text-2xl font-bold">
                     {countyStats.totalProperties.toLocaleString()}
@@ -368,13 +380,15 @@ export default function WACountyPortalPage() {
               </Card>
 
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
                   <CardTitle className="text-sm font-medium">Total Value</CardTitle>
                   <TrendingUp
 </> className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
-                <CardContent><>
+                <CardContent>
+<>
 
                   <div className="text-2xl font-bold">
                     ${(countyStats.totalValue / 1000000000).toFixed(1)}B
@@ -385,13 +399,15 @@ export default function WACountyPortalPage() {
               </Card>
 
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
                   <CardTitle className="text-sm font-medium">Processing Time</CardTitle>
                   <Activity
 </> className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
-                <CardContent><>
+                <CardContent>
+<>
 
                   <div className="text-2xl font-bold">{countyStats.averageProcessingTime}</div>
                   <p
@@ -400,13 +416,15 @@ export default function WACountyPortalPage() {
               </Card>
 
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
                   <CardTitle className="text-sm font-medium">NFTs Minted</CardTitle>
                   <Shield
 </> className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
-                <CardContent><>
+                <CardContent>
+<>
 
                   <div className="text-2xl font-bold">
                     {countyStats.nftsMinted.toLocaleString()}
@@ -420,7 +438,8 @@ export default function WACountyPortalPage() {
 
           <TabsContent value="appraisers" className="space-y-4">
             <Card>
-              <CardHeader><>
+              <CardHeader>
+<>
 
                 <CardTitle>Active Appraisers - {selectedCounty} County</CardTitle>
                 <CardDescription
@@ -429,7 +448,8 @@ export default function WACountyPortalPage() {
               <CardContent>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-4 text-center">
-                    <div><>
+                    <div>
+<>
 
                       <div className="text-2xl font-bold text-blue-600">
                         {waCounties.find((c) => c.name === selectedCounty)?.appraisers}
@@ -437,13 +457,15 @@ export default function WACountyPortalPage() {
                       <p
 </> className="text-sm text-muted-foreground">Total Active</p>
                     </div>
-                    <div><>
+                    <div>
+<>
 
                       <div className="text-2xl font-bold text-green-600">96%</div>
                       <p
 </> className="text-sm text-muted-foreground">Adoption Rate</p>
                     </div>
-                    <div><>
+                    <div>
+<>
 
                       <div className="text-2xl font-bold text-purple-600">4.8</div>
                       <p
@@ -457,7 +479,8 @@ export default function WACountyPortalPage() {
 
           <TabsContent value="compliance" className="space-y-4">
             <Card>
-              <CardHeader><>
+              <CardHeader>
+<>
 
                 <CardTitle>USPAP & UCDP Compliance</CardTitle>
                 <CardDescription
@@ -465,19 +488,22 @@ export default function WACountyPortalPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center"><>
+                  <div className="flex justify-between items-center">
+<>
 
                     <span>USPAP Compliance</span>
                     <Badge
 </> className="bg-green-100 text-green-800">98.2%</Badge>
                   </div>
-                  <div className="flex justify-between items-center"><>
+                  <div className="flex justify-between items-center">
+<>
 
                     <span>UCDP Requirements</span>
                     <Badge
 </> className="bg-green-100 text-green-800">97.8%</Badge>
                   </div>
-                  <div className="flex justify-between items-center"><>
+                  <div className="flex justify-between items-center">
+<>
 
                     <span>State Regulations</span>
                     <Badge
@@ -490,7 +516,8 @@ export default function WACountyPortalPage() {
 
           <TabsContent value="federation" className="space-y-4">
             <Card>
-              <CardHeader><>
+              <CardHeader>
+<>
 
                 <CardTitle>County Federation Status</CardTitle>
                 <CardDescription
@@ -498,19 +525,22 @@ export default function WACountyPortalPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center"><>
+                  <div className="flex justify-between items-center">
+<>
 
                     <span>Mesh Connectivity</span>
                     <Badge
 </> className="bg-green-100 text-green-800">Online</Badge>
                   </div>
-                  <div className="flex justify-between items-center"><>
+                  <div className="flex justify-between items-center">
+<>
 
                     <span>Data Sync Status</span>
                     <Badge
 </> className="bg-green-100 text-green-800">Real-time</Badge>
                   </div>
-                  <div className="flex justify-between items-center"><>
+                  <div className="flex justify-between items-center">
+<>
 
                     <span>Cross-County Comps</span>
                     <Badge
@@ -525,7 +555,8 @@ export default function WACountyPortalPage() {
 
       {/* Action Controls */}
       <Card>
-        <CardHeader><>
+        <CardHeader>
+<>
 
           <CardTitle>County Operations</CardTitle>
           <CardDescription
@@ -553,13 +584,15 @@ export default function WACountyPortalPage() {
                 </>
               )}
             </Button>
-            <Button variant="outline"><>
+            <Button variant="outline">
+<>
 
               <MapPin className="w-4 h-4 mr-2" />
               Configure Zoning AI
             </Button>
             <Button
-</> variant="outline"><>
+</> variant="outline">
+<>
 
               <FileText className="w-4 h-4 mr-2" />
               Export County Report
@@ -575,7 +608,8 @@ export default function WACountyPortalPage() {
           <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-start space-x-3">
               <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
-              <div><>
+              <div>
+<>
 
                 <h4 className="font-medium text-green-900">Phase 2 Deployment Active</h4>
                 <p
@@ -583,11 +617,13 @@ export default function WACountyPortalPage() {
                   King, Pierce, and Snohomish counties are live with unified Terrafusion platform.
                   Real-time mesh connectivity enabled for cross-county comparable sharing.
                 </p>
-                <div className="mt-2 flex items-center space-x-4 text-xs text-green-600"><>
+                <div className="mt-2 flex items-center space-x-4 text-xs text-green-600">
+<>
 
                   <span>• 357 active appraisers</span>
                   <span
-</>>• 4,750 monthly reports</span><>
+</>>• 4,750 monthly reports</span>
+<>
 
                   <span>• 98.2% USPAP compliance</span>
                   <span

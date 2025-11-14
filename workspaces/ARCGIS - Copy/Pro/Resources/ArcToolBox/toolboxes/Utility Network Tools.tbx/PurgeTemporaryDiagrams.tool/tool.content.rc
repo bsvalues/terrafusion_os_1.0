@@ -1,9 +1,0 @@
-{
-    "map": {
-        "created_before.title": "Created Before",
-        "description": "Purge the temporary diagrams",
-        "in_utility_network.title": "Input Network",
-        "out_utility_network.title": "Output Network",
-        "title": "Purge Temporary Diagrams"
-    }
-}

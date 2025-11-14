@@ -1,0 +1,1 @@
+CREATE USER [pacsnonprivy] WITHOUT LOGIN;

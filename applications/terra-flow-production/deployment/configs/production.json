@@ -48,9 +48,9 @@
     "data_quality_checks": true
   },
   "security": {
-    "allowed_hosts": ["geoassessmentpro.bentoncounty.gov", "bentoncounty.gov"],
-    "cors_origins": ["https://geoassessmentpro.bentoncounty.gov"],
-    "content_security_policy": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self' https://*.bentoncounty.gov; upgrade-insecure-requests; block-all-mixed-content;"
+    "allowed_hosts": ["geoassessmentpro.terrafusionmarket.io", "terrafusionmarket.io"],
+    "cors_origins": ["https://geoassessmentpro.terrafusionmarket.io"],
+    "content_security_policy": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self' https://*.terrafusionmarket.io; upgrade-insecure-requests; block-all-mixed-content;"
   },
   "caching": {
     "enabled": true,

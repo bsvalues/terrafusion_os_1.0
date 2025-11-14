@@ -1,5 +1,0 @@
-<DataType Name="GPGroupLayer">
-  <DisplayName>Group Layer</DisplayName>
-  <Description>A collection of layers that appear and act as a single layer. Group layers make it easier to organize a map, assign advanced drawing order options, and share layers for use in other maps.</Description>
-</DataType>
-

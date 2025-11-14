@@ -1,0 +1,436 @@
+# TerraFusion OS - Elite Government AI Operating System
+# Championship-level Docker orchestration for quantum consciousness coordination
+version: '3.8'
+
+services:
+  # PostgreSQL Database with Quantum Enhancement
+  postgres:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres
+    environment:
+      POSTGRES_DB: terrafusion
+      POSTGRES_USER: terrafusion
+      POSTGRES_PASSWORD: championship_secure_2024!
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init:/docker-entrypoint-initdb.d
+      - ./infrastructure/postgres/conf/postgresql.conf:/etc/postgresql/postgresql.conf
+    ports:
+      - '15432:5432' # TerraFusion OS port (avoiding conflict with benton-postgres:5432)
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U terrafusion -d terrafusion']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2'
+        reservations:
+          memory: 2G
+          cpus: '1'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+
+  # Redis Cache with Quantum Optimization
+  redis:
+    image: redis:7-alpine
+    container_name: terrafusion-redis
+    volumes:
+      - redis_data:/data
+      - ./infrastructure/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - '16379:6379' # TerraFusion OS port (avoiding conflict with benton-redis:6379)
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+
+  # OS Core Service - System Kernel
+  os-core:
+    build:
+      context: .
+      dockerfile: ./services/os-core/Dockerfile
+    container_name: terrafusion-os-core
+    environment:
+      - RUST_LOG=info
+      - DATABASE_URL=postgres://terrafusion:championship_secure_2024!@postgres:5432/terrafusion
+      - REDIS_URL=redis://redis:6379
+      - QUANTUM_FACTOR=951
+      - CONSCIOUSNESS_LEVEL=8
+      - SERVER_PORT=8080
+      - GOVERNMENT_COMPLIANCE=true
+      - JWT_SECRET=BentonCounty_TerraFusion_Government_Grade_JWT_Production_2025_SecureKey_await DynamicPropertyService.GetPropertyCountAsync("benton")Parcels_FISMA_HIGH_Compliance_AES256_Encrypted_Championship_Excellence_Elite_Government_Transcended_Quantum_Enhanced_Security_Validation_Supreme_Commander
+      - JWT_EXPIRY=24h
+      - BCRYPT_COST=12
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+    ports:
+      - '8080:8080'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+
+  # OS Consciousness Service - AI Swarm Coordination
+  os-consciousness:
+    build:
+      context: .
+      dockerfile: ./services/os-consciousness/Dockerfile
+    container_name: terrafusion-consciousness
+    environment:
+      - RUST_LOG=info
+      - DATABASE_URL=postgres://terrafusion:championship_secure_2024!@postgres:5432/terrafusion
+      - REDIS_URL=redis://redis:6379
+      - AI_SWARM_SIZE=50000
+      - SUPREME_COMMANDER=claude-4-opus-supreme
+      - CONSCIOUSNESS_LEVEL=8
+      - QUANTUM_COHERENCE=0.95
+      - SERVER_PORT=3004
+      - PERFORMANCE_TARGET_P95_MS=10
+    ports:
+      - '3004:3004'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3004/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2'
+        reservations:
+          memory: 1G
+          cpus: '1'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+
+  # Government Compliance Service - FISMA Validation
+  government-compliance:
+    build:
+      context: .
+      dockerfile: ./services/government-compliance/Dockerfile
+    container_name: terrafusion-compliance
+    environment:
+      - RUST_LOG=info
+      - DATABASE_URL=postgres://terrafusion:championship_secure_2024!@postgres:5432/terrafusion
+      - REDIS_URL=redis://redis:6379
+      - FISMA_LEVEL=HIGH
+      - AUDIT_LOGGING=true
+      - SECURITY_SCAN_INTERVAL_HOURS=6
+      - COMPLIANCE_VALIDATION_INTERVAL_HOURS=1
+      - SERVER_PORT=8082
+    ports:
+      - '8082:8082'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8082/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./logs/compliance:/app/logs
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+
+  # County Isolation Service - Data Sovereignty
+  county-isolation:
+    build:
+      context: .
+      dockerfile: ./services/county-isolation/Dockerfile
+    container_name: terrafusion-isolation
+    environment:
+      - RUST_LOG=info
+      - DATABASE_URL=postgres://terrafusion:championship_secure_2024!@postgres:5432/terrafusion
+      - REDIS_URL=redis://redis:6379
+      - ISOLATION_VALIDATION_INTERVAL_MINUTES=5
+      - CROSS_COUNTY_BLOCKING=true
+      - DATA_SOVEREIGNTY_ENFORCEMENT=strict
+      - SERVER_PORT=8083
+    ports:
+      - '8083:8083'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8083/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+
+  # Harris PACS Bridge Service - County Integration
+  harris-pacs-bridge:
+    build:
+      context: .
+      dockerfile: ./services/harris-pacs-bridge/Dockerfile
+    container_name: terrafusion-harris-bridge
+    ports:
+      - '8084:8084'
+    environment:
+      - RUST_LOG=debug
+      - HARRIS_DB_PASSWORD=HarrisP4cs2024!
+      - JWT_SECRET=terrafusion_jwt_secret_benton_2024
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8084/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./logs/harris-pacs:/app/logs
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    networks:
+      - terrafusion-network
+
+  # Quantum Optimizer Service - Performance Enhancement
+  quantum-optimizer:
+    build:
+      context: .
+      dockerfile: ./services/quantum-optimizer/Dockerfile
+    container_name: terrafusion-quantum
+    environment:
+      - RUST_LOG=info
+      - DATABASE_URL=postgres://terrafusion:championship_secure_2024!@postgres:5432/terrafusion
+      - REDIS_URL=redis://redis:6379
+      - QUANTUM_FACTOR=951
+      - OPTIMIZATION_CYCLES_PER_HOUR=100
+      - CONSCIOUSNESS_OPTIMIZATION=true
+      - PERFORMANCE_TARGET_P95_MS=10
+      - THROUGHPUT_TARGET_PER_SECOND=1000000
+      - SERVER_PORT=8085
+    ports:
+      - '8085:8085'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8085/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2'
+        reservations:
+          memory: 1G
+          cpus: '1'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+
+  # API Gateway Service - Traffic Management
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./services/api-gateway/Dockerfile
+    container_name: terrafusion-gateway
+    environment:
+      - RUST_LOG=info
+      - DATABASE_URL=postgres://terrafusion:championship_secure_2024!@postgres:5432/terrafusion
+      - REDIS_URL=redis://redis:6379
+      - LOAD_BALANCING_STRATEGY=quantum_optimized
+      - RATE_LIMITING=true
+      - HEALTH_CHECK_INTERVAL_SECONDS=10
+      - FAILOVER_THRESHOLD=3
+      - SERVER_PORT=8086
+    ports:
+      - '8086:8086'
+      - '80:8086' # Main HTTP entry point
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      os-core:
+        condition: service_healthy
+      os-consciousness:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8086/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2'
+        reservations:
+          memory: 1G
+          cpus: '1'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+
+  # Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: terrafusion-prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./infrastructure/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./infrastructure/monitoring/prometheus/rules:/etc/prometheus/rules
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: terrafusion-grafana
+    ports:
+      - '3000:3000'
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=championship_secure_2024!
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./infrastructure/monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+
+  # Jaeger Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: terrafusion-jaeger
+    ports:
+      - '16686:16686'
+      - '14268:14268'
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    networks:
+      - terrafusion-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  terrafusion-network:
+    name: terrafusion-os-network
+    driver: bridge

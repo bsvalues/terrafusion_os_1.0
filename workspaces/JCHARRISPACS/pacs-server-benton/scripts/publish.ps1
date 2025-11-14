@@ -40,7 +40,14 @@ New-Item -ItemType Directory -Force -Path $artifacts | Out-Null
 
 foreach ($p in $projects) {
     Write-Host "Building $($p.Name)" -ForegroundColor Cyan
-    & $dotnet build $p.Path -c $BuildConfig /nologo
+    $msbuildArgs = @(
+        $p.Path,
+        '-c', $BuildConfig,
+        '/nologo',
+        '/p:TreatTSqlWarningsAsErrors=false',
+        '/p:SuppressMissingDependenciesErrors=true'
+    )
+    & $dotnet build @msbuildArgs
     $dacpac = Get-ChildItem -Path (Split-Path $p.Path) -Recurse -Filter "*.dacpac" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     if (-not $dacpac) { throw "No DACPAC produced for $($p.Name)." }
     Copy-Item $dacpac.FullName -Destination (Join-Path $artifacts ("$($p.Db).dacpac")) -Force

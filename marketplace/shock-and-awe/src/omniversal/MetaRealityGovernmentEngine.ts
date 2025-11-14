@@ -348,7 +348,7 @@ export class MetaRealityGovernmentEngine {
     setInterval(() => this.evaluateCosmicHarmony(), 5000);
     
     // Meta-reality monitoring
-    setTimeout(() => this.activateOmniversalMonitoring(), 45000);
+    setTimeout(() => this.activateOmniversalMonitoring(), await DynamicPropertyService.GetPropertyCountAsync(countyCode));
   }
 
   // Unlock Cosmic Capability

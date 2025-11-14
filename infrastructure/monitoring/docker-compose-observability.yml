@@ -216,8 +216,8 @@ services:
       - GF_SECURITY_STRICT_TRANSPORT_SECURITY=true
       
       # Server configuration
-      - GF_SERVER_DOMAIN=grafana.terrafusion.gov
-      - GF_SERVER_ROOT_URL=https://grafana.terrafusion.gov/grafana
+      - GF_SERVER_DOMAIN=grafana.terrafusionmarket.com
+      - GF_SERVER_ROOT_URL=https://grafana.terrafusionmarket.com/grafana
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
       - GF_SERVER_PROTOCOL=https
       - GF_SERVER_CERT_FILE=/etc/ssl/certs/grafana.crt
@@ -377,7 +377,7 @@ services:
     restart: unless-stopped
     
     environment:
-      - SERVERNAME=kibana.terrafusion.gov
+      - SERVERNAME=kibana.terrafusionmarket.com
       - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=TF_Kibana_ES_2025_Secure!
@@ -385,7 +385,7 @@ services:
       - SERVER_SSL_ENABLED=true
       - SERVER_SSL_CERTIFICATE=/usr/share/kibana/config/certs/kibana.crt
       - SERVER_SSL_KEY=/usr/share/kibana/config/certs/kibana.key
-      - SERVER_PUBLICBASEURL=https://kibana.terrafusion.gov
+      - SERVER_PUBLICBASEURL=https://kibana.terrafusionmarket.com
       - XPACK_SECURITY_ENABLED=true
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=TF_Kibana_Encryption_2025_Very_Long_Random_Key_32_Chars_Plus!
       - XPACK_REPORTING_ENCRYPTIONKEY=TF_Kibana_Reporting_2025_Very_Long_Random_Key_32_Chars_Plus!

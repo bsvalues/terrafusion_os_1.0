@@ -57,13 +57,13 @@ export const TerraFusionAutomatedDeploymentOrchestrator: React.FC = () => {
     },
     {
       name: 'Elite Experiments API',
-      command: 'dotnet run --project TerraFusion.EliteExperiments --urls http://localhost:5010',
-      port: 5010,
+      command: 'dotnet run --project TerraFusion.EliteExperiments --urls /api',
+      port: 5000,
       workingDirectory: '../../backend',
       status: 'stopped',
       uptime: '00:00:00',
       restartCount: 0,
-      healthCheckUrl: 'http://localhost:5010/health',
+      healthCheckUrl: '/api/health',
     },
     {
       name: 'Frontend PWA',

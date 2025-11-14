@@ -159,7 +159,7 @@ export const TerraForgeDashboard: React.FC = () => {
       propertyType: 'residential',
       subType: 'multi_family',
       specifications: {
-        squareFootage: 45000,
+        squareFootage: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         stories: 3,
         foundationType: 'basement',
         roofType: 'hip',

@@ -75,7 +75,7 @@ function App() {
         id: "P002",
         address: "456 Oak Avenue, Springfield, IL 62702",
         parcel_id: "14-28-401-017",
-        current_value: 450000,
+        current_value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
         assessed_value: 405000,
         assessment_year: 2024,
         property_type: "Single Family Residential",
@@ -179,12 +179,14 @@ function App() {
 
   return (
     <div className="assessor-container">
-      <header className="assessor-header"><>
+      <header className="assessor-header">
+<>
 
         <h1>Terrafusion Property Assessor</h1>
         <div
 </>
-className="nav-tabs"><>
+className="nav-tabs">
+<>
 
           <button 
             className={currentView === 'search' ? 'tab-active' : 'tab'} 
@@ -199,7 +201,8 @@ className="nav-tabs"><>
             onClick={() => setCurrentView('assess')}
           >
             Assessment Tools
-          </button><>
+          </button>
+<>
 
           <button 
             className={currentView === 'results' ? 'tab-active' : 'tab'} 
@@ -221,7 +224,8 @@ className="nav-tabs"><>
       <div className="assessor-content">
         {currentView === 'search' && (
           <section className="search-panel">
-            <div className="search-controls"><>
+            <div className="search-controls">
+<>
 
               <h2>Property Search</h2>
               <div
@@ -243,7 +247,8 @@ className="search-bar">
             <div className="properties-grid">
               {properties.map(property => (
                 <div key={property.id} className="property-card" onClick={() => setSelectedProperty(property)}>
-                  <div className="property-header"><>
+                  <div className="property-header">
+<>
 
                     <h3>{property.address}</h3>
                     <span
@@ -253,28 +258,32 @@ className="tax-status" style={{ color: getStatusColor(property.tax_status) }}>
                     </span>
                   </div>
                   <div className="property-details">
-                    <div className="detail-row"><>
+                    <div className="detail-row">
+<>
 
                       <span>Parcel ID:</span>
                       <span
 </>
 </>>{property.parcel_id}</span>
                     </div>
-                    <div className="detail-row"><>
+                    <div className="detail-row">
+<>
 
                       <span>Current Value:</span>
                       <span
 </>
 className="value-highlight">{formatCurrency(property.current_value)}</span>
                     </div>
-                    <div className="detail-row"><>
+                    <div className="detail-row">
+<>
 
                       <span>Assessed Value:</span>
                       <span
 </>
 </>>{formatCurrency(property.assessed_value)}</span>
                     </div>
-                    <div className="detail-row"><>
+                    <div className="detail-row">
+<>
 
                       <span>Type:</span>
                       <span
@@ -290,13 +299,15 @@ className="value-highlight">{formatCurrency(property.current_value)}</span>
 
         {currentView === 'assess' && selectedProperty && (
           <section className="assessment-panel">
-            <div className="selected-property"><>
+            <div className="selected-property">
+<>
 
               <h2>Assessment Tools - {selectedProperty.address}</h2>
               <div
 </>
 className="property-summary">
-                <div className="summary-card"><>
+                <div className="summary-card">
+<>
 
                   <h4>Property Details</h4>
                   <div
@@ -307,12 +318,14 @@ className="property-summary">
                   {selectedProperty.bathrooms && <div>Bathrooms: {selectedProperty.bathrooms}</div>}
                   {selectedProperty.year_built && <div>Year Built: {selectedProperty.year_built}</div>}
                 </div>
-                <div className="summary-card"><>
+                <div className="summary-card">
+<>
 
                   <h4>Current Valuation</h4>
                   <div
 </>
-</>>Current Value: {formatCurrency(selectedProperty.current_value)}</div><>
+</>>Current Value: {formatCurrency(selectedProperty.current_value)}</div>
+<>
 
                   <div>Assessed Value: {formatCurrency(selectedProperty.assessed_value)}</div>
                   <div
@@ -323,13 +336,15 @@ className="property-summary">
               </div>
             </div>
             
-            <div className="assessment-methods"><>
+            <div className="assessment-methods">
+<>
 
               <h3>Assessment Methods</h3>
               <div
 </>
 className="method-grid">
-                <div className="method-card"><>
+                <div className="method-card">
+<>
 
                   <h4>Market Value Assessment</h4>
                   <p
@@ -342,7 +357,8 @@ className="method-grid">
                     Run Market Assessment
                   </button>
                 </div>
-                <div className="method-card"><>
+                <div className="method-card">
+<>
 
                   <h4>Cost Approach</h4>
                   <p
@@ -355,7 +371,8 @@ className="method-grid">
                     Run Cost Assessment
                   </button>
                 </div>
-                <div className="method-card"><>
+                <div className="method-card">
+<>
 
                   <h4>Income Approach</h4>
                   <p
@@ -368,7 +385,8 @@ className="method-grid">
                     Run Income Assessment
                   </button>
                 </div>
-                <div className="method-card"><>
+                <div className="method-card">
+<>
 
                   <h4>AI/ML Assessment</h4>
                   <p
@@ -387,7 +405,8 @@ className="method-grid">
         )}
 
         {currentView === 'results' && (
-          <section className="results-panel"><>
+          <section className="results-panel">
+<>
 
             <h2>Assessment Results</h2>
             <div
@@ -397,7 +416,8 @@ className="results-grid">
                 const property = properties.find(p => p.id === result.property_id);
                 return (
                   <div key={index} className="result-card">
-                    <div className="result-header"><>
+                    <div className="result-header">
+<>
 
                       <h3>{property?.address || result.property_id}</h3>
                       <div
@@ -407,21 +427,24 @@ className="confidence-score">
                       </div>
                     </div>
                     <div className="result-details">
-                      <div className="detail-row"><>
+                      <div className="detail-row">
+<>
 
                         <span>Assessed Value:</span>
                         <span
 </>
 className="value-highlight">{formatCurrency(result.assessed_value)}</span>
                       </div>
-                      <div className="detail-row"><>
+                      <div className="detail-row">
+<>
 
                         <span>Methodology:</span>
                         <span
 </>
 </>>{result.methodology_used.replace('_', ' ')}</span>
                       </div>
-                      <div className="detail-row"><>
+                      <div className="detail-row">
+<>
 
                         <span>Assessment Date:</span>
                         <span
@@ -432,7 +455,8 @@ className="value-highlight">{formatCurrency(result.assessed_value)}</span>
                     <div className="assessment-factors">
                       <h4>Assessment Factors</h4>
                       {Object.entries(result.assessment_factors).map(([factor, score]) => (
-                        <div key={factor} className="factor-row"><>
+                        <div key={factor} className="factor-row">
+<>
 
                           <span>{factor.replace('_', ' ')}:</span>
                           <span
@@ -441,7 +465,8 @@ className="value-highlight">{formatCurrency(result.assessed_value)}</span>
                         </div>
                       ))}
                     </div>
-                    <div className="result-actions"><>
+                    <div className="result-actions">
+<>
 
                       <button className="action-btn">View Full Report</button>
                       <button
@@ -457,17 +482,20 @@ className="action-btn">📧 Email Report</button>
         )}
 
         {currentView === 'reports' && (
-          <section className="reports-panel"><>
+          <section className="reports-panel">
+<>
 
             <h2>Assessment Reports</h2>
             <div
 </>
-className="reports-controls"><>
+className="reports-controls">
+<>
 
               <button className="report-btn">Generate Summary Report</button>
               <button
 </>
-className="report-btn">📈 Market Trend Report</button><>
+className="report-btn">📈 Market Trend Report</button>
+<>
 
               <button className="report-btn">Neighborhood Analysis</button>
               <button
@@ -476,7 +504,8 @@ className="report-btn">Assessment Queue</button>
             </div>
             <div className="reports-list">
               <div className="report-item">
-                <div className="report-info"><>
+                <div className="report-info">
+<>
 
                   <h4>Monthly Assessment Summary - November 2024</h4>
                   <p
@@ -484,7 +513,8 @@ className="report-btn">Assessment Queue</button>
 </>>Comprehensive report of all assessments completed this month</p>
                   <span className="report-date">Generated: Nov 30, 2024</span>
                 </div>
-                <div className="report-actions"><>
+                <div className="report-actions">
+<>
 
                   <button className="action-btn">Download PDF</button>
                   <button
@@ -493,7 +523,8 @@ className="action-btn">Preview</button>
                 </div>
               </div>
               <div className="report-item">
-                <div className="report-info"><>
+                <div className="report-info">
+<>
 
                   <h4>Market Trend Analysis - Q4 2024</h4>
                   <p
@@ -501,7 +532,8 @@ className="action-btn">Preview</button>
 </>>Quarterly market analysis with property value trends</p>
                   <span className="report-date">Generated: Dec 1, 2024</span>
                 </div>
-                <div className="report-actions"><>
+                <div className="report-actions">
+<>
 
                   <button className="action-btn">Download PDF</button>
                   <button

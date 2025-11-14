@@ -1093,68 +1093,68 @@ namespace TerraFusion.AI.Services
         public int RolledBackRecoveries { get; set; }
         public double SuccessRate { get; set; }
         public double AverageRecoveryTime { get; set; }
-        public List<RecoveryExecution> ActiveRecoveries { get; set; }
-        public List<RecoveryPlaybook> AvailablePlaybooks { get; set; }
-        public List<RecoveryHistory> RecentRecoveries { get; set; }
-        public List<SelfHealingRecoveryTrend> RecoveryTrends { get; set; }
-        public List<SubsystemHealthStatus> SubsystemHealthStatus { get; set; }
+        public List<RecoveryExecution> ActiveRecoveries { get; set; } = new();
+        public List<RecoveryPlaybook> AvailablePlaybooks { get; set; } = new();
+        public List<RecoveryHistory> RecentRecoveries { get; set; } = new();
+        public List<SelfHealingRecoveryTrend> RecoveryTrends { get; set; } = new();
+        public List<SubsystemHealthStatus> SubsystemHealthStatus { get; set; } = new();
     }
 
     public class RecoveryRequest
     {
-        public string SubsystemId { get; set; }
-        public string FailureType { get; set; }
-        public string Severity { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public string FailureType { get; set; } = string.Empty;
+        public string Severity { get; set; } = string.Empty;
         public bool AutoTrigger { get; set; }
-        public Dictionary<string, object> Context { get; set; }
+        public Dictionary<string, object> Context { get; set; } = new();
     }
 
     public class SelfHealingRecoveryResult
     {
-        public string RecoveryId { get; set; }
-        public string Status { get; set; }
-        public string SubsystemId { get; set; }
-        public string FailureType { get; set; }
-        public string PlaybookUsed { get; set; }
-        public List<ExecutedRecoveryStep> ExecutedSteps { get; set; }
+        public string RecoveryId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string SubsystemId { get; set; } = string.Empty;
+        public string FailureType { get; set; } = string.Empty;
+        public string PlaybookUsed { get; set; } = string.Empty;
+        public List<ExecutedRecoveryStep> ExecutedSteps { get; set; } = new();
         public double PreRecoveryHealth { get; set; }
         public double PostRecoveryHealth { get; set; }
         public double HealthImprovement { get; set; }
         public double TotalDuration { get; set; }
-        public string AutomationLevel { get; set; }
-        public string Message { get; set; }
+        public string AutomationLevel { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
         public DateTime CompletedAt { get; set; }
     }
 
     public class RecoveryPlaybook
     {
-        public string PlaybookId { get; set; }
-        public string FailureType { get; set; }
-        public string Severity { get; set; }
+        public string PlaybookId { get; set; } = string.Empty;
+        public string FailureType { get; set; } = string.Empty;
+        public string Severity { get; set; } = string.Empty;
         public double EstimatedRecoveryTime { get; set; }
         public double SuccessRate { get; set; }
-        public List<SelfHealingRecoveryStep> Steps { get; set; }
-        public List<string> DecisionCriteria { get; set; }
-        public string RollbackStrategy { get; set; }
+        public List<SelfHealingRecoveryStep> Steps { get; set; } = new();
+        public List<string> DecisionCriteria { get; set; } = new();
+        public string RollbackStrategy { get; set; } = string.Empty;
     }
 
     public class SelfHealingRecoveryStep
     {
         public int StepNumber { get; set; }
-        public string Action { get; set; }
-        public string Type { get; set; }
+        public string Action { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
         public double Duration { get; set; }
-        public List<string> Prerequisites { get; set; }
-        public string RollbackProcedure { get; set; }
-        public string ValidationCriteria { get; set; }
-        public string Status { get; set; }
+        public List<string> Prerequisites { get; set; } = new();
+        public string RollbackProcedure { get; set; } = string.Empty;
+        public string ValidationCriteria { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
     }
 
     public class ExecutedRecoveryStep
     {
         public int StepNumber { get; set; }
-        public string Action { get; set; }
-        public string Status { get; set; }
+        public string Action { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public double Duration { get; set; }
         public bool ValidationResult { get; set; }
         public DateTime Timestamp { get; set; }
@@ -1162,114 +1162,114 @@ namespace TerraFusion.AI.Services
 
     public class RecoveryExecution
     {
-        public string RecoveryId { get; set; }
-        public string SubsystemId { get; set; }
-        public string FailureType { get; set; }
-        public string PlaybookId { get; set; }
+        public string RecoveryId { get; set; } = string.Empty;
+        public string SubsystemId { get; set; } = string.Empty;
+        public string FailureType { get; set; } = string.Empty;
+        public string PlaybookId { get; set; } = string.Empty;
         public DateTime StartTime { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public int CurrentStep { get; set; }
         public int TotalSteps { get; set; }
-        public SubsystemState PreRecoveryState { get; set; }
+        public SubsystemState PreRecoveryState { get; set; } = new();
     }
 
     public class SubsystemState
     {
-        public string SubsystemId { get; set; }
-        public string Status { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public double HealthScore { get; set; }
         public DateTime LastHealthCheck { get; set; }
-        public Dictionary<string, object> StateSnapshot { get; set; }
-        public string ConfigurationChecksum { get; set; }
+        public Dictionary<string, object> StateSnapshot { get; set; } = new();
+        public string ConfigurationChecksum { get; set; } = string.Empty;
     }
 
     public class SelfHealingRollbackResult
     {
-        public string RollbackId { get; set; }
-        public string RecoveryId { get; set; }
-        public string Status { get; set; }
-        public List<RollbackStep> RollbackSteps { get; set; }
+        public string RollbackId { get; set; } = string.Empty;
+        public string RecoveryId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public List<RollbackStep> RollbackSteps { get; set; } = new();
         public double PreRollbackHealth { get; set; }
         public double PostRollbackHealth { get; set; }
         public double TotalDuration { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public DateTime CompletedAt { get; set; }
     }
 
     public class RollbackStep
     {
         public int StepNumber { get; set; }
-        public string OriginalAction { get; set; }
-        public string RollbackAction { get; set; }
-        public string Status { get; set; }
+        public string OriginalAction { get; set; } = string.Empty;
+        public string RollbackAction { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public double Duration { get; set; }
     }
 
     public class RecoveryValidationResult
     {
-        public string SubsystemId { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
         public bool IsValid { get; set; }
         public double HealthScore { get; set; }
-        public List<SelfHealingValidationCheck> ValidationChecks { get; set; }
-        public string Message { get; set; }
+        public List<SelfHealingValidationCheck> ValidationChecks { get; set; } = new();
+        public string Message { get; set; } = string.Empty;
         public DateTime ValidatedAt { get; set; }
     }
 
     public class SelfHealingValidationCheck
     {
-        public string CheckName { get; set; }
-        public string Expected { get; set; }
-        public string Actual { get; set; }
+        public string CheckName { get; set; } = string.Empty;
+        public string Expected { get; set; } = string.Empty;
+        public string Actual { get; set; } = string.Empty;
         public bool Passed { get; set; }
-        public string Severity { get; set; }
+        public string Severity { get; set; } = string.Empty;
     }
 
     public class RecoveryDecisionTree
     {
-        public string FailureType { get; set; }
-        public DecisionNode RootNode { get; set; }
+        public string FailureType { get; set; } = string.Empty;
+        public DecisionNode RootNode { get; set; } = new();
     }
 
     public class DecisionNode
     {
-        public string NodeId { get; set; }
-        public string Condition { get; set; }
-        public string Decision { get; set; }
-        public string PlaybookReference { get; set; }
-        public List<DecisionNode> Children { get; set; }
+        public string NodeId { get; set; } = string.Empty;
+        public string Condition { get; set; } = string.Empty;
+        public string Decision { get; set; } = string.Empty;
+        public string PlaybookReference { get; set; } = string.Empty;
+        public List<DecisionNode> Children { get; set; } = new();
     }
 
     public class HistoricalRecoveryPattern
     {
-        public string SubsystemId { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
         public int TotalRecoveries { get; set; }
         public int SuccessfulRecoveries { get; set; }
         public int FailedRecoveries { get; set; }
         public double AverageRecoveryTime { get; set; }
-        public string MostCommonFailureType { get; set; }
-        public string MostEffectivePlaybook { get; set; }
-        public string SelfHealingRecoveryTrend { get; set; }
+        public string MostCommonFailureType { get; set; } = string.Empty;
+        public string MostEffectivePlaybook { get; set; } = string.Empty;
+        public string SelfHealingRecoveryTrend { get; set; } = string.Empty;
         public DateTime? LastRecovery { get; set; }
         public double AverageHealthImprovement { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 
     public class RecoveryHistory
     {
-        public string RecoveryId { get; set; }
-        public string SubsystemId { get; set; }
-        public string FailureType { get; set; }
+        public string RecoveryId { get; set; } = string.Empty;
+        public string SubsystemId { get; set; } = string.Empty;
+        public string FailureType { get; set; } = string.Empty;
         public DateTime RecoveryTimestamp { get; set; }
         public bool Success { get; set; }
         public double RecoveryDuration { get; set; }
-        public string PlaybookUsed { get; set; }
+        public string PlaybookUsed { get; set; } = string.Empty;
         public double PreRecoveryHealth { get; set; }
         public double PostRecoveryHealth { get; set; }
     }
 
     public class SelfHealingRecoveryTrend
     {
-        public string Period { get; set; }
+        public string Period { get; set; } = string.Empty;
         public int RecoveryAttempts { get; set; }
         public int SuccessfulRecoveries { get; set; }
         public double SuccessRate { get; set; }
@@ -1278,8 +1278,8 @@ namespace TerraFusion.AI.Services
 
     public class SubsystemHealthStatus
     {
-        public string SubsystemId { get; set; }
-        public string Status { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public double HealthScore { get; set; }
         public DateTime? LastRecovery { get; set; }
         public int RecoveryHistory { get; set; }
@@ -1290,12 +1290,12 @@ namespace TerraFusion.AI.Services
     /// </summary>
     public class RecoveryEvent
     {
-        public string EventId { get; set; }
-        public string SubsystemId { get; set; }
-        public string EventType { get; set; }
+        public string EventId { get; set; } = string.Empty;
+        public string SubsystemId { get; set; } = string.Empty;
+        public string EventType { get; set; } = string.Empty;
         public DateTime Timestamp { get; set; }
-        public string Status { get; set; }
-        public string Message { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
     }
 }
 

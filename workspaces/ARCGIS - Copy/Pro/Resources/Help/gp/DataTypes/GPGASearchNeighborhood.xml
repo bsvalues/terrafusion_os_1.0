@@ -1,5 +1,0 @@
-<DataType Name="GPGASearchNeighborhood">
-  <DisplayName>Geostatistical Search Neighborhood</DisplayName>
-  <Description>Defines the searching neighborhood parameters for a geostatistical layer.</Description>
-</DataType>
-

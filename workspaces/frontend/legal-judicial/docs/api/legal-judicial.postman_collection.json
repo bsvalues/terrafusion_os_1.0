@@ -10,12 +10,12 @@
     "oauth2": [
       {
         "key": "tokenUrl",
-        "value": "https://auth.terrafusion.gov/oauth/token",
+        "value": "https://auth.terrafusionmarket.com/oauth/token",
         "type": "string"
       },
       {
         "key": "authUrl",
-        "value": "https://auth.terrafusion.gov/oauth/authorize",
+        "value": "https://auth.terrafusionmarket.com/oauth/authorize",
         "type": "string"
       },
       {
@@ -28,7 +28,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "https://api.terrafusion.gov/api/v1/legal",
+      "value": "https://api.terrafusionmarket.com/api/v1/legal",
       "type": "string"
     },
     {

@@ -1,5 +1,0 @@
-<DataType Name="DENetworkDataset">
-  <DisplayName>Network Dataset</DisplayName>
-  <Description>A collection of topologically connected network elements (edges, junctions, and turns), derived from network sources and associated with a collection of network attributes.</Description>
-</DataType>
-

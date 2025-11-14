@@ -2,7 +2,8 @@
 # TerraFusion OS 1.0 - Deployment Readiness Validation
 # Validates system readiness for production deployment
 
-set -e
+# Don't exit on first error - we want to run all validation checks
+set +e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BACKEND_DIR="$(dirname "$SCRIPT_DIR")"
@@ -47,27 +48,42 @@ print_result() {
 # Test 1: Backend Build
 echo -e "${BLUE}[1/10]${NC} Testing backend build..."
 cd "$BACKEND_DIR"
-if dotnet build TerraFusion.sln -v q > /dev/null 2>&1; then
-    BUILD_OUTPUT=$(dotnet build TerraFusion.sln -v q 2>&1)
-    if echo "$BUILD_OUTPUT" | grep -q "Build succeeded"; then
-        ERROR_COUNT=$(echo "$BUILD_OUTPUT" | grep -oP '\d+(?= Error\(s\))' || echo "0")
-        WARNING_COUNT=$(echo "$BUILD_OUTPUT" | grep -oP '\d+(?= Warning\(s\))' || echo "0")
 
-        if [ "$ERROR_COUNT" -eq 0 ]; then
-            print_result "Backend Build" "PASS" "0 errors, $WARNING_COUNT warnings"
+# Use a clean OutDir to bypass any locked project bins and ensure consistent results
+OUTDIR="$BACKEND_DIR/tmp/ValidationBuild"
+mkdir -p "$OUTDIR"
+
+# Ensure restore runs before build (avoids missing assets if obj was cleaned)
+if ! dotnet restore TerraFusion.sln > /dev/null 2>&1; then
+    print_result "Backend Build" "FAIL" "NuGet restore failed"
+else
+    if BUILD_OUTPUT=$(dotnet build TerraFusion.sln -v minimal -p:OutDir="$OUTDIR" 2>&1); then
+        if echo "$BUILD_OUTPUT" | grep -q "Build succeeded"; then
+            ERROR_COUNT=$(echo "$BUILD_OUTPUT" | grep -oP '\\d+(?= Error\(s\))' || echo "0")
+            WARNING_COUNT=$(echo "$BUILD_OUTPUT" | grep -oP '\\d+(?= Warning\(s\))' || echo "0")
+
+            if [ "$ERROR_COUNT" -eq 0 ]; then
+                print_result "Backend Build" "PASS" "0 errors, $WARNING_COUNT warnings"
+            else
+                print_result "Backend Build" "FAIL" "$ERROR_COUNT compilation errors"
+            fi
         else
-            print_result "Backend Build" "FAIL" "$ERROR_COUNT compilation errors"
+            print_result "Backend Build" "FAIL" "Build failed"
         fi
     else
-        print_result "Backend Build" "FAIL" "Build failed"
+        print_result "Backend Build" "FAIL" "Build command failed"
     fi
-else
-    print_result "Backend Build" "FAIL" "Build command failed"
 fi
 
 # Test 2: Integration Tests
 echo -e "${BLUE}[2/10]${NC} Running integration tests..."
-cd "$BACKEND_DIR/tests/TerraFusion.Integration.Tests"
+# Prefer specific integration tests project if present, else fall back to tests root
+if [ -d "$BACKEND_DIR/tests/TerraFusion.Integration.Tests" ]; then
+    cd "$BACKEND_DIR/tests/TerraFusion.Integration.Tests"
+else
+    cd "$BACKEND_DIR/tests"
+fi
+
 if dotnet test --no-build --verbosity quiet > /tmp/test_output.txt 2>&1; then
     TEST_OUTPUT=$(cat /tmp/test_output.txt)
     PASSED_TESTS=$(echo "$TEST_OUTPUT" | grep -oP 'Passed:\s+\K\d+' || echo "0")

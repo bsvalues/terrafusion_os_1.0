@@ -16,9 +16,9 @@ metadata:
     app: terrafusion-gateway
     version: v1.0.0
     component: api-gateway
-    terrafusion.gov/service-type: 'government-portal'
-    terrafusion.gov/quantum-enhanced: 'true'
-    terrafusion.gov/security-level: 'FISMA-HIGH'
+    terrafusionmarket.com/service-type: 'government-portal'
+    terrafusionmarket.com/quantum-enhanced: 'true'
+    terrafusionmarket.com/security-level: 'FISMA-HIGH'
 spec:
   replicas: 3
   strategy:
@@ -36,8 +36,8 @@ spec:
         app: terrafusion-gateway
         version: v1.0.0
         component: api-gateway
-        terrafusion.gov/service-type: 'government-portal'
-        terrafusion.gov/quantum-enhanced: 'true'
+        terrafusionmarket.com/service-type: 'government-portal'
+        terrafusionmarket.com/quantum-enhanced: 'true'
       annotations:
         sidecar.istio.io/inject: 'true'
         sidecar.istio.io/proxyCPU: '100m'
@@ -172,7 +172,7 @@ spec:
       nodeSelector:
         kubernetes.io/os: linux
       tolerations:
-        - key: 'terrafusion.gov/government-workload'
+        - key: 'terrafusionmarket.com/government-workload'
           operator: 'Equal'
           value: 'true'
           effect: 'NoSchedule'
@@ -197,7 +197,7 @@ metadata:
   labels:
     app: terrafusion-gateway
     service: terrafusion-gateway
-    terrafusion.gov/service-type: 'government-portal'
+    terrafusionmarket.com/service-type: 'government-portal'
   annotations:
     prometheus.io/scrape: 'true'
     prometheus.io/port: '5000'
@@ -224,7 +224,7 @@ metadata:
   namespace: terrafusion-microservices
   labels:
     app: terrafusion-gateway
-    terrafusion.gov/service-type: 'government-portal'
+    terrafusionmarket.com/service-type: 'government-portal'
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -233,7 +233,7 @@ metadata:
   namespace: terrafusion-microservices
   labels:
     app: terrafusion-gateway
-    terrafusion.gov/config-type: 'application'
+    terrafusionmarket.com/config-type: 'application'
 data:
   appsettings.json: |
     {
@@ -365,7 +365,7 @@ data:
         }
       ],
       "GlobalConfiguration": {
-        "BaseUrl": "https://api.terrafusion.gov",
+        "BaseUrl": "https://api.terrafusionmarket.com",
         "ServiceDiscoveryProvider": {
           "Host": "consul.terrafusion-system.svc.cluster.local",
           "Port": 8500,
@@ -392,7 +392,7 @@ metadata:
   namespace: terrafusion-microservices
   labels:
     app: terrafusion-gateway
-    terrafusion.gov/secret-type: 'database'
+    terrafusionmarket.com/secret-type: 'database'
 type: Opaque
 data:
   username: dGVycmFmdXNpb24= # terrafusion (base64)
@@ -405,7 +405,7 @@ metadata:
   namespace: terrafusion-microservices
   labels:
     app: terrafusion-gateway
-    terrafusion.gov/secret-type: 'authentication'
+    terrafusionmarket.com/secret-type: 'authentication'
 type: Opaque
 data:
   jwt-secret: eW91ci1zdXBlci1zZWNyZXQtand0LWtleS1mb3ItcHJvZHVjdGlvbi1nb3Zlcm5tZW50LXNlcnZpY2U= # base64 encoded JWT secret
@@ -428,7 +428,7 @@ metadata:
   namespace: terrafusion-microservices
   labels:
     app: terrafusion-gateway
-    terrafusion.gov/scaling: 'auto'
+    terrafusionmarket.com/scaling: 'auto'
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

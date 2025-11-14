@@ -1,5 +1,0 @@
-<DataType Name="GPEncryptedString">
-  <DisplayName>Encrypted String</DisplayName>
-  <Description>Encrypted string for passwords.</Description>
-</DataType>
-

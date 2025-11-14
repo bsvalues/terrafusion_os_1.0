@@ -61,13 +61,13 @@ export default function WashingtonExpansionDashboard() {
         status: "live",
         progress: 100,
         population: 205700,
-        parcels: 89247,
+        parcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
         assessedValue: 12847392000,
         goLiveDate: "2025-01-15",
         assessor: "Jennifer Martinez",
         keyFeatures: ["Flagship implementation", "Tri-Cities metro area", "Mixed urban/agricultural"],
         challenges: ["First implementation", "Data migration complexity", "Staff training"],
-        contractValue: 450000,
+        contractValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
         annualRevenue: 125000,
         teamMembers: 5,
         nextMilestone: {
@@ -88,7 +88,7 @@ export default function WashingtonExpansionDashboard() {
         keyFeatures: ["Agricultural focus", "Large parcel volume", "Hop farming valuation"],
         challenges: ["Complex agricultural valuations", "GIS integration", "Seasonal workforce"],
         contractValue: 525000,
-        annualRevenue: 145000,
+        annualRevenue: 1await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         teamMembers: 5,
         nextMilestone: {
           name: "Data Migration Completion",
@@ -182,7 +182,7 @@ export default function WashingtonExpansionDashboard() {
         progress: 3,
         population: 110730,
         parcels: 58750,
-        assessedValue: 12450000000,
+        assessedValue: 12await DynamicPropertyService.GetPropertyCountAsync(countyCode)0000,
         goLiveDate: "2025-06-15",
         assessor: "Thomas Wilson",
         keyFeatures: ["Industrial properties", "Timber lands", "Port properties"],
@@ -314,14 +314,16 @@ export default function WashingtonExpansionDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <div><>
+        <div>
+<>
 
           <h1 className="text-3xl font-bold">Washington State Expansion</h1>
           <p
 </> className="text-gray-600">TerraFusionAssessor-1 Washington County Implementation Dashboard</p>
         </div>
         <div className="flex items-center gap-4">
-          <Badge className="bg-blue-100 text-blue-800"><>
+          <Badge className="bg-blue-100 text-blue-800">
+<>
 
             <MapPin className="h-4 w-4 mr-1" />
             Washington Phase 1
@@ -340,7 +342,8 @@ export default function WashingtonExpansionDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <Building className="h-8 w-8 text-blue-600" />
-              <div className="text-right"><>
+              <div className="text-right">
+<>
 
                 <div className="text-2xl font-bold">{totalMetrics.totalCounties}</div>
                 <div
@@ -354,7 +357,8 @@ export default function WashingtonExpansionDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <MapPin className="h-8 w-8 text-green-600" />
-              <div className="text-right"><>
+              <div className="text-right">
+<>
 
                 <div className="text-2xl font-bold">{(totalMetrics.totalParcels / 1000).toFixed(1)}K</div>
                 <div
@@ -368,7 +372,8 @@ export default function WashingtonExpansionDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <DollarSign className="h-8 w-8 text-purple-600" />
-              <div className="text-right"><>
+              <div className="text-right">
+<>
 
                 <div className="text-2xl font-bold">${(totalMetrics.totalAssessedValue / 1000000000).toFixed(1)}B</div>
                 <div
@@ -382,7 +387,8 @@ export default function WashingtonExpansionDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <TrendingUp className="h-8 w-8 text-orange-600" />
-              <div className="text-right"><>
+              <div className="text-right">
+<>
 
                 <div className="text-2xl font-bold">${(totalMetrics.totalContractValue / 1000000).toFixed(2)}M</div>
                 <div
@@ -396,7 +402,8 @@ export default function WashingtonExpansionDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <Calendar className="h-8 w-8 text-red-600" />
-              <div className="text-right"><>
+              <div className="text-right">
+<>
 
                 <div className="text-2xl font-bold">${(totalMetrics.totalAnnualRevenue / 1000000).toFixed(2)}M</div>
                 <div
@@ -409,35 +416,41 @@ export default function WashingtonExpansionDashboard() {
 
       {/* Implementation Timeline */}
       <Card>
-        <CardHeader><>
+        <CardHeader>
+<>
 
           <CardTitle>Implementation Timeline</CardTitle>
           <CardDescription
 </>>Washington counties go-live schedule</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="relative"><>
+          <div className="relative">
+<>
 
             <div className="absolute top-0 bottom-0 left-[7.5%] w-0.5 bg-gray-200"></div>
 
             <div
 </> className="space-y-8 relative">
               {/* January */}
-              <div className="flex"><>
+              <div className="flex">
+<>
 
                 <div className="flex-none w-[15%] pt-1 font-medium">January 2025</div>
                 <div
-</> className="flex-grow pl-8 relative"><>
+</> className="flex-grow pl-8 relative">
+<>
 
                   <div className="absolute left-0 top-2 w-3 h-3 rounded-full bg-blue-600"></div>
                   <div
-</> className="border rounded-lg p-3"><>
+</> className="border rounded-lg p-3">
+<>
 
                     <div className="font-medium">Benton County Go-Live (Jan 15)</div>
                     <div
 </> className="text-sm text-gray-600">First production deployment</div>
                   </div>
-                  <div className="mt-4 border rounded-lg p-3"><>
+                  <div className="mt-4 border rounded-lg p-3">
+<>
 
                     <div className="font-medium">Walla Walla County Contract Signed (Jan 15)</div>
                     <div
@@ -447,21 +460,25 @@ export default function WashingtonExpansionDashboard() {
               </div>
 
               {/* February */}
-              <div className="flex"><>
+              <div className="flex">
+<>
 
                 <div className="flex-none w-[15%] pt-1 font-medium">February 2025</div>
                 <div
-</> className="flex-grow pl-8 relative"><>
+</> className="flex-grow pl-8 relative">
+<>
 
                   <div className="absolute left-0 top-2 w-3 h-3 rounded-full bg-blue-600"></div>
                   <div
-</> className="border rounded-lg p-3"><>
+</> className="border rounded-lg p-3">
+<>
 
                     <div className="font-medium">Asotin County Contract Signing (Feb 1)</div>
                     <div
 </> className="text-sm text-gray-600">Small county implementation begins</div>
                   </div>
-                  <div className="mt-4 border rounded-lg p-3"><>
+                  <div className="mt-4 border rounded-lg p-3">
+<>
 
                     <div className="font-medium">Klickitat County Contract Signing (Feb 15)</div>
                     <div
@@ -471,21 +488,25 @@ export default function WashingtonExpansionDashboard() {
               </div>
 
               {/* March */}
-              <div className="flex"><>
+              <div className="flex">
+<>
 
                 <div className="flex-none w-[15%] pt-1 font-medium">March 2025</div>
                 <div
-</> className="flex-grow pl-8 relative"><>
+</> className="flex-grow pl-8 relative">
+<>
 
                   <div className="absolute left-0 top-2 w-3 h-3 rounded-full bg-green-600"></div>
                   <div
-</> className="border rounded-lg p-3 border-green-200 bg-green-50"><>
+</> className="border rounded-lg p-3 border-green-200 bg-green-50">
+<>
 
                     <div className="font-medium">Yakima County Go-Live (Mar 1)</div>
                     <div
 </> className="text-sm text-gray-600">Second county production deployment</div>
                   </div>
-                  <div className="mt-4 border rounded-lg p-3"><>
+                  <div className="mt-4 border rounded-lg p-3">
+<>
 
                     <div className="font-medium">Grant & Cowlitz Counties Contract Signing</div>
                     <div
@@ -495,21 +516,25 @@ export default function WashingtonExpansionDashboard() {
               </div>
 
               {/* April */}
-              <div className="flex"><>
+              <div className="flex">
+<>
 
                 <div className="flex-none w-[15%] pt-1 font-medium">April 2025</div>
                 <div
-</> className="flex-grow pl-8 relative"><>
+</> className="flex-grow pl-8 relative">
+<>
 
                   <div className="absolute left-0 top-2 w-3 h-3 rounded-full bg-green-600"></div>
                   <div
-</> className="border rounded-lg p-3 border-green-200 bg-green-50"><>
+</> className="border rounded-lg p-3 border-green-200 bg-green-50">
+<>
 
                     <div className="font-medium">Walla Walla County Go-Live (Apr 15)</div>
                     <div
 </> className="text-sm text-gray-600">Wine country implementation complete</div>
                   </div>
-                  <div className="mt-4 border rounded-lg p-3"><>
+                  <div className="mt-4 border rounded-lg p-3">
+<>
 
                     <div className="font-medium">San Juan & Island Counties Contract Signing</div>
                     <div
@@ -519,21 +544,25 @@ export default function WashingtonExpansionDashboard() {
               </div>
 
               {/* May */}
-              <div className="flex"><>
+              <div className="flex">
+<>
 
                 <div className="flex-none w-[15%] pt-1 font-medium">May 2025</div>
                 <div
-</> className="flex-grow pl-8 relative"><>
+</> className="flex-grow pl-8 relative">
+<>
 
                   <div className="absolute left-0 top-2 w-3 h-3 rounded-full bg-green-600"></div>
                   <div
-</> className="border rounded-lg p-3 border-green-200 bg-green-50"><>
+</> className="border rounded-lg p-3 border-green-200 bg-green-50">
+<>
 
                     <div className="font-medium">Asotin County Go-Live (May 1)</div>
                     <div
 </> className="text-sm text-gray-600">Small county implementation complete</div>
                   </div>
-                  <div className="mt-4 border rounded-lg p-3 border-green-200 bg-green-50"><>
+                  <div className="mt-4 border rounded-lg p-3 border-green-200 bg-green-50">
+<>
 
                     <div className="font-medium">Klickitat County Go-Live (May 15)</div>
                     <div
@@ -543,21 +572,25 @@ export default function WashingtonExpansionDashboard() {
               </div>
 
               {/* June */}
-              <div className="flex"><>
+              <div className="flex">
+<>
 
                 <div className="flex-none w-[15%] pt-1 font-medium">June 2025</div>
                 <div
-</> className="flex-grow pl-8 relative"><>
+</> className="flex-grow pl-8 relative">
+<>
 
                   <div className="absolute left-0 top-2 w-3 h-3 rounded-full bg-green-600"></div>
                   <div
-</> className="border rounded-lg p-3 border-green-200 bg-green-50"><>
+</> className="border rounded-lg p-3 border-green-200 bg-green-50">
+<>
 
                     <div className="font-medium">Grant County Go-Live (Jun 1)</div>
                     <div
 </> className="text-sm text-gray-600">Agricultural implementation complete</div>
                   </div>
-                  <div className="mt-4 border rounded-lg p-3 border-green-200 bg-green-50"><>
+                  <div className="mt-4 border rounded-lg p-3 border-green-200 bg-green-50">
+<>
 
                     <div className="font-medium">Cowlitz County Go-Live (Jun 15)</div>
                     <div
@@ -567,21 +600,25 @@ export default function WashingtonExpansionDashboard() {
               </div>
 
               {/* July */}
-              <div className="flex"><>
+              <div className="flex">
+<>
 
                 <div className="flex-none w-[15%] pt-1 font-medium">July 2025</div>
                 <div
-</> className="flex-grow pl-8 relative"><>
+</> className="flex-grow pl-8 relative">
+<>
 
                   <div className="absolute left-0 top-2 w-3 h-3 rounded-full bg-green-600"></div>
                   <div
-</> className="border rounded-lg p-3 border-green-200 bg-green-50"><>
+</> className="border rounded-lg p-3 border-green-200 bg-green-50">
+<>
 
                     <div className="font-medium">San Juan County Go-Live (Jul 1)</div>
                     <div
 </> className="text-sm text-gray-600">Island properties implementation complete</div>
                   </div>
-                  <div className="mt-4 border rounded-lg p-3 border-green-200 bg-green-50"><>
+                  <div className="mt-4 border rounded-lg p-3 border-green-200 bg-green-50">
+<>
 
                     <div className="font-medium">Island County Go-Live (Jul 15)</div>
                     <div
@@ -596,7 +633,8 @@ export default function WashingtonExpansionDashboard() {
 
       {/* County Status Table */}
       <Card>
-        <CardHeader><>
+        <CardHeader>
+<>
 
           <CardTitle>County Implementation Status</CardTitle>
           <CardDescription
@@ -605,15 +643,18 @@ export default function WashingtonExpansionDashboard() {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow><>
+              <TableRow>
+<>
 
                 <TableHead>County</TableHead>
                 <TableHead
-</>>Status</TableHead><>
+</>>Status</TableHead>
+<>
 
                 <TableHead>Progress</TableHead>
                 <TableHead
-</>>Parcels</TableHead><>
+</>>Parcels</TableHead>
+<>
 
                 <TableHead>Go-Live Date</TableHead>
                 <TableHead
@@ -623,7 +664,8 @@ export default function WashingtonExpansionDashboard() {
             </TableHeader>
             <TableBody>
               {counties.map((county) => (
-                <TableRow key={county.id}><>
+                <TableRow key={county.id}>
+<>
 
                   <TableCell className="font-medium">{county.name}</TableCell>
                   <TableCell
@@ -638,7 +680,8 @@ export default function WashingtonExpansionDashboard() {
                       <Progress value={county.progress} className="w-24" />
                       <span className="text-sm">{county.progress}%</span>
                     </div>
-                  </TableCell><>
+                  </TableCell>
+<>
 
                   <TableCell>{county.parcels.toLocaleString()}</TableCell>
                   <TableCell
@@ -658,7 +701,8 @@ export default function WashingtonExpansionDashboard() {
       </Card>
 
       <Tabs defaultValue="resources" className="w-full">
-        <TabsList className="grid w-full grid-cols-3"><>
+        <TabsList className="grid w-full grid-cols-3">
+<>
 
           <TabsTrigger value="resources">Resource Allocation</TabsTrigger>
           <TabsTrigger
@@ -668,7 +712,8 @@ export default function WashingtonExpansionDashboard() {
 
         <TabsContent value="resources" className="space-y-4">
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Resource Allocation</CardTitle>
               <CardDescription
@@ -676,29 +721,34 @@ export default function WashingtonExpansionDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <div><>
+                <div>
+<>
 
                   <h4 className="font-semibold mb-3">Project Management Team</h4>
                   <div
 </> className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="border rounded-lg p-4"><>
+                    <div className="border rounded-lg p-4">
+<>
 
                       <div className="font-medium">Jessica Martinez</div>
                       <div
 </> className="text-sm text-gray-600">Senior Project Manager</div>
-                      <div className="mt-2 text-sm"><>
+                      <div className="mt-2 text-sm">
+<>
 
                         <div>Primary: Yakima, Walla Walla Counties</div>
                         <div
 </>>Secondary: Asotin, Klickitat Counties</div>
                       </div>
                     </div>
-                    <div className="border rounded-lg p-4"><>
+                    <div className="border rounded-lg p-4">
+<>
 
                       <div className="font-medium">Michael Brown</div>
                       <div
 </> className="text-sm text-gray-600">Senior Project Manager</div>
-                      <div className="mt-2 text-sm"><>
+                      <div className="mt-2 text-sm">
+<>
 
                         <div>Primary: Grant, Cowlitz Counties</div>
                         <div
@@ -708,41 +758,48 @@ export default function WashingtonExpansionDashboard() {
                   </div>
                 </div>
 
-                <div><>
+                <div>
+<>
 
                   <h4 className="font-semibold mb-3">Technical Implementation Team</h4>
                   <div
 </> className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="border rounded-lg p-4"><>
+                    <div className="border rounded-lg p-4">
+<>
 
                       <div className="font-medium">David Chen</div>
                       <div
 </> className="text-sm text-gray-600">Data Migration Specialist</div>
-                      <div className="mt-2 text-sm"><>
+                      <div className="mt-2 text-sm">
+<>
 
                         <div>Current: Yakima County</div>
                         <div
 </>>Next: Walla Walla County</div>
                       </div>
                     </div>
-                    <div className="border rounded-lg p-4"><>
+                    <div className="border rounded-lg p-4">
+<>
 
                       <div className="font-medium">Alex Thompson</div>
                       <div
 </> className="text-sm text-gray-600">Data Migration Specialist</div>
-                      <div className="mt-2 text-sm"><>
+                      <div className="mt-2 text-sm">
+<>
 
                         <div>Current: Walla Walla County</div>
                         <div
 </>>Next: Asotin County</div>
                       </div>
                     </div>
-                    <div className="border rounded-lg p-4"><>
+                    <div className="border rounded-lg p-4">
+<>
 
                       <div className="font-medium">Samantha Wilson</div>
                       <div
 </> className="text-sm text-gray-600">Configuration Specialist</div>
-                      <div className="mt-2 text-sm"><>
+                      <div className="mt-2 text-sm">
+<>
 
                         <div>Current: Yakima County</div>
                         <div
@@ -752,29 +809,34 @@ export default function WashingtonExpansionDashboard() {
                   </div>
                 </div>
 
-                <div><>
+                <div>
+<>
 
                   <h4 className="font-semibold mb-3">Training & Support Team</h4>
                   <div
 </> className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="border rounded-lg p-4"><>
+                    <div className="border rounded-lg p-4">
+<>
 
                       <div className="font-medium">Robert Johnson</div>
                       <div
 </> className="text-sm text-gray-600">Lead Trainer</div>
-                      <div className="mt-2 text-sm"><>
+                      <div className="mt-2 text-sm">
+<>
 
                         <div>Current: Yakima County</div>
                         <div
 </>>Next: Walla Walla County</div>
                       </div>
                     </div>
-                    <div className="border rounded-lg p-4 border-yellow-100 bg-yellow-50"><>
+                    <div className="border rounded-lg p-4 border-yellow-100 bg-yellow-50">
+<>
 
                       <div className="font-medium">OPEN POSITION</div>
                       <div
 </> className="text-sm text-yellow-600">Support Specialist</div>
-                      <div className="mt-2 text-sm"><>
+                      <div className="mt-2 text-sm">
+<>
 
                         <div>Needed by: February 15, 2025</div>
                         <div
@@ -790,7 +852,8 @@ export default function WashingtonExpansionDashboard() {
 
         <TabsContent value="risks" className="space-y-4">
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Implementation Risks & Mitigations</CardTitle>
               <CardDescription
@@ -799,18 +862,21 @@ export default function WashingtonExpansionDashboard() {
             <CardContent>
               <div className="space-y-4">
                 <div className="border rounded-lg p-4 border-red-100 bg-red-50">
-                  <div className="flex justify-between"><>
+                  <div className="flex justify-between">
+<>
 
                     <div className="font-medium">Resource Constraints</div>
                     <Badge
 </> className="bg-red-100 text-red-800">HIGH</Badge>
-                  </div><>
+                  </div>
+<>
 
                   <div className="text-sm mt-1">
                     Parallel implementation of 8 counties will strain existing staff resources.
                   </div>
                   <div
-</> className="mt-2"><>
+</> className="mt-2">
+<>
 
                     <div className="text-sm font-medium">Mitigation:</div>
                     <div
@@ -824,7 +890,8 @@ export default function WashingtonExpansionDashboard() {
                 </div>
 
                 <div className="border rounded-lg p-4 border-yellow-100 bg-yellow-50">
-                  <div className="flex justify-between"><>
+                  <div className="flex justify-between">
+<>
 
                     <div className="font-medium">Data Migration Complexity</div>
                     <Badge

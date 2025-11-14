@@ -40,7 +40,7 @@ describe('ProFormaWorksheet Component', () => {
       otherExpenses: 600
     },
     financing: {
-      purchasePrice: 450000,
+      purchasePrice: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       downPayment: 90000,
       loanAmount: 360000,
       interestRate: 4.5,

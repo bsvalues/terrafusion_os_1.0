@@ -56,7 +56,7 @@ export default function PredictiveAnalytics() {
         confidence: 87.5,
         predictedDate: "2025-01-25",
         impact: "high",
-        costSavings: 45000,
+        costSavings: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         description: "Primary water pump showing signs of bearing wear and increased vibration",
         recommendedAction: "Schedule preventive maintenance within 14 days",
       },
@@ -151,7 +151,8 @@ export default function PredictiveAnalytics() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <div><>
+        <div>
+<>
 
           <h1 className="text-3xl font-bold">Predictive Analytics</h1>
           <p
@@ -170,7 +171,8 @@ export default function PredictiveAnalytics() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <metric.icon className="h-8 w-8 text-blue-600" />
-                <div className="text-right"><>
+                <div className="text-right">
+<>
 
                   <div className="text-2xl font-bold">{metric.value}</div>
                   <div
@@ -187,7 +189,8 @@ export default function PredictiveAnalytics() {
       </div>
 
       <Tabs defaultValue="predictions" className="w-full">
-        <TabsList className="grid w-full grid-cols-3"><>
+        <TabsList className="grid w-full grid-cols-3">
+<>
 
           <TabsTrigger value="predictions">Active Predictions</TabsTrigger>
           <TabsTrigger
@@ -200,7 +203,8 @@ export default function PredictiveAnalytics() {
             {predictions.map((prediction) => (
               <Card key={prediction.id}>
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between"><>
+                  <CardTitle className="flex items-center justify-between">
+<>
 
                     <div className="flex items-center gap-3">
                       {getSystemIcon(prediction.systemType)}
@@ -214,16 +218,19 @@ export default function PredictiveAnalytics() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div><>
+                      <div>
+<>
 
                         <div className="font-medium">Confidence</div>
                         <div
-</> className="text-2xl font-bold text-blue-600">{prediction.confidence}%</div><>
+</> className="text-2xl font-bold text-blue-600">{prediction.confidence}%</div>
+<>
 
                         <Progress value={prediction.confidence} className="mt-1" />
                       </div>
                       <div
-</>><>
+</>>
+<>
 
                         <div className="font-medium">Predicted Date</div>
                         <div
@@ -234,7 +241,8 @@ export default function PredictiveAnalytics() {
                       </div>
                     </div>
 
-                    <div><>
+                    <div>
+<>
 
                       <div className="font-medium text-sm mb-1">Description</div>
                       <p
@@ -242,7 +250,8 @@ export default function PredictiveAnalytics() {
                     </div>
 
                     <Alert>
-                      <Warning className="h-4 w-4" /><>
+                      <Warning className="h-4 w-4" />
+<>
 
                       <AlertTitle>Recommended Action</AlertTitle>
                       <AlertDescription
@@ -250,7 +259,8 @@ export default function PredictiveAnalytics() {
                     </Alert>
 
                     <div className="flex justify-between items-center pt-2 border-t">
-                      <div className="text-sm"><>
+                      <div className="text-sm">
+<>
 
                         <span className="font-medium">Potential Savings: </span>
                         <span
@@ -267,7 +277,8 @@ export default function PredictiveAnalytics() {
 
         <TabsContent value="trends" className="space-y-4">
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Infrastructure Performance Trends</CardTitle>
               <CardDescription
@@ -284,7 +295,8 @@ export default function PredictiveAnalytics() {
                     { system: "Emergency Services", efficiency: 98.7, trend: "stable", change: 0.1 },
                   ].map((item /* , index */) => (
                     <div key={index} className="flex justify-between items-center p-3 border rounded-lg">
-                      <div><>
+                      <div>
+<>
 
                         <div className="font-medium">{item.system}</div>
                         <div
@@ -301,24 +313,28 @@ export default function PredictiveAnalytics() {
                   ))}
                 </div>
 
-                <div className="space-y-4"><>
+                <div className="space-y-4">
+<>
 
                   <h4 className="font-semibold">Maintenance Predictions</h4>
                   <div
 </> className="space-y-2">
-                    <div className="text-center p-4 border rounded-lg"><>
+                    <div className="text-center p-4 border rounded-lg">
+<>
 
                       <div className="text-2xl font-bold text-blue-600">14</div>
                       <div
 </> className="text-sm text-gray-600">Days Average Lead Time</div>
                     </div>
-                    <div className="text-center p-4 border rounded-lg"><>
+                    <div className="text-center p-4 border rounded-lg">
+<>
 
                       <div className="text-2xl font-bold text-green-600">87%</div>
                       <div
 </> className="text-sm text-gray-600">Prediction Accuracy</div>
                     </div>
-                    <div className="text-center p-4 border rounded-lg"><>
+                    <div className="text-center p-4 border rounded-lg">
+<>
 
                       <div className="text-2xl font-bold text-purple-600">$2.1M</div>
                       <div
@@ -333,7 +349,8 @@ export default function PredictiveAnalytics() {
 
         <TabsContent value="optimization" className="space-y-4">
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>System Optimization Opportunities</CardTitle>
               <CardDescription
@@ -366,25 +383,29 @@ export default function PredictiveAnalytics() {
                 ].map((opportunity /* , index */) => (
                   <Alert key={index}>
                     <TrendingUp className="h-4 w-4" />
-                    <AlertTitle className="flex justify-between items-center"><>
+                    <AlertTitle className="flex justify-between items-center">
+<>
 
                       <span>{opportunity.title}</span>
                       <Badge
 </> variant="outline">{opportunity.effort} Effort</Badge>
                     </AlertTitle>
                     <AlertDescription>
-                      <div className="mt-2"><>
+                      <div className="mt-2">
+<>
 
                         <p>{opportunity.description}</p>
                         <div
 </> className="grid grid-cols-2 gap-4 mt-3 text-sm">
-                          <div><>
+                          <div>
+<>
 
                             <span className="font-medium">Impact: </span>
                             <span
 </> className="text-blue-600">{opportunity.impact}</span>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <span className="font-medium">Savings: </span>
                             <span

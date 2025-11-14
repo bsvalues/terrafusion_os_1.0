@@ -202,7 +202,7 @@ export default function EnhancedPropertyDetail({ property, onClose }: Props) {
       {
         address: "5678 Desert Hills Dr, Kennewick, WA",
         distance: 0.8,
-        soldPrice: 445000,
+        soldPrice: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         soldDate: "2024-11-28",
         adjustedPrice: 451000,
         similarity: 0.87,

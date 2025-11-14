@@ -25,7 +25,7 @@ const MOCK_PROPERTY = {
     floodZone: 'X'
   },
   valuation: {
-    estimatedValue: 450000,
+    estimatedValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
     lastAppraisalDate: '2023-03-10T00:00:00Z',
     comparables: [
       { id: 'prop-958', address: '456 Main Street', salePrice: 425000, saleDate: '2023-01-15T00:00:00Z' },

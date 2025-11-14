@@ -86,9 +86,9 @@ spec:
   # Custom health checks
   info:
     - name: API Health
-      value: https://api.terrafusion.gov/health
+      value: https://api.terrafusionmarket.com/health
     - name: Metrics
-      value: https://api.terrafusion.gov/metrics
+      value: https://api.terrafusionmarket.com/metrics
     - name: AI Agents
       value: "1008 active agents"
     - name: Modules

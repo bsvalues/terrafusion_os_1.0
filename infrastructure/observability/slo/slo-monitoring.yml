@@ -191,7 +191,7 @@ spec:
               The error rate for TerraFusion API is burning through the error budget too fast.
               Current error rate: {{ $value | humanizePercentage }}
               This will exhaust the monthly error budget in {{ with printf "vector(%.2f)" (1 / $value * 24) | query }}{{ . | first | value | humanizeDuration }}{{ end }}.
-            runbook_url: 'https://docs.terrafusion.gov/runbooks/api-availability'
+            runbook_url: 'https://docs.terrafusionmarket.com/runbooks/api-availability'
 
         - alert: TerraFusionAPISlowBurn
           expr: |
@@ -333,7 +333,7 @@ data:
         
       email:
         smtp_server: "${SMTP_SERVER}"
-        recipients: ["ops@terrafusion.gov", "sre@terrafusion.gov"]
+        recipients: ["ops@terrafusionmarket.com", "sre@terrafusionmarket.com"]
 
 ---
 # Grafana Dashboard for SLO Monitoring

@@ -420,7 +420,7 @@ export class TerraFusionValuationEngine {
       FL: 380000,
       WA: 520000,
       MA: 610000,
-      CO: 450000,
+      CO: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       NC: 290000,
     };
 

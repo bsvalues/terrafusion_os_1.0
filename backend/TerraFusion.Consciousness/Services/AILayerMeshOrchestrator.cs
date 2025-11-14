@@ -18,7 +18,7 @@ namespace TerraFusion.Consciousness.Services
         private readonly ILogger<AILayerMeshOrchestrator> _logger;
         private readonly IConfiguration _configuration;
         private readonly IMultiCountyDataService _multiCountyDataService;
-        private readonly IQuantumConsciousnessOrchestrator _quantumOrchestrator;
+        // private readonly IQuantumConsciousnessOrchestrator _quantumOrchestrator; // TEMP COMMENTED OUT TO BREAK CIRCULAR DEPENDENCY
 
         private readonly string _natsJetStreamEndpoint;
         private readonly string _mcpGatewayEndpoint;
@@ -36,13 +36,13 @@ namespace TerraFusion.Consciousness.Services
         public AILayerMeshOrchestrator(
             ILogger<AILayerMeshOrchestrator> logger,
             IConfiguration configuration,
-            IMultiCountyDataService multiCountyDataService,
-            IQuantumConsciousnessOrchestrator quantumOrchestrator)
+            IMultiCountyDataService multiCountyDataService
+            /* IQuantumConsciousnessOrchestrator quantumOrchestrator - TEMP REMOVED TO BREAK CIRCULAR DEPENDENCY */)
         {
             _logger = logger;
             _configuration = configuration;
             _multiCountyDataService = multiCountyDataService;
-            _quantumOrchestrator = quantumOrchestrator;
+            // _quantumOrchestrator = quantumOrchestrator; // TEMP COMMENTED OUT TO BREAK CIRCULAR DEPENDENCY
 
             _natsJetStreamEndpoint = _configuration.GetValue<string>("AILayerMesh:NATSJetStream",
                 "nats://mesh.terrafusion.gov:4222") ?? "nats://mesh.terrafusion.gov:4222";
@@ -887,8 +887,8 @@ namespace TerraFusion.Consciousness.Services
                 // Initialize performance tracking
                 await _performanceTracker.InitializeAsync();
 
-                // Initialize quantum consciousness integration
-                await _quantumOrchestrator.InitializeAsync();
+                // Initialize quantum consciousness integration - TEMP DISABLED DUE TO CIRCULAR DEPENDENCY
+                // await _quantumOrchestrator.InitializeAsync();
 
                 _isInitialized = true;
 

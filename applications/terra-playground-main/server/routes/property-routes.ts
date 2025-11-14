@@ -26,7 +26,7 @@ export function createPropertyRoutes(router: Router) {
           parcelNumber: '11223344',
           propertyType: 'Residential',
           acres: '0.25',
-          value: '450000',
+          value: 'await DynamicPropertyService.GetPropertyCountAsync(countyCode)0',
           status: 'active',
           extraFields: {
             yearBuilt: 1998,

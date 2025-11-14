@@ -133,7 +133,7 @@ function App() {
         type: 'value-analysis',
         status: 'running',
         progress: 75,
-        data_points: 45000,
+        data_points: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         insights: 12,
         started_at: '2024-01-01T10:00:00Z'
       },

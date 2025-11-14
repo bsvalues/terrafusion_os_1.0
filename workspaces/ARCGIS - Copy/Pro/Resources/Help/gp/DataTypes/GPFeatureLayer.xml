@@ -1,5 +1,0 @@
-<DataType Name="GPFeatureLayer">
-  <DisplayName>Feature Layer</DisplayName>
-  <Description>A reference to a feature class, including symbology and rendering properties.</Description>
-</DataType>
-

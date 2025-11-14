@@ -61,7 +61,7 @@ class MarketAnalysisEngine {
   private getBasePriceForRegion(region: string): number {
     const basePrices = {
       Downtown: 650000,
-      Suburbs: 450000,
+      Suburbs: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       Waterfront: 850000,
       "Historic District": 550000,
       "Tech Corridor": 750000,

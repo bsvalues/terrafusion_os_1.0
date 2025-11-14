@@ -53,7 +53,7 @@ export function MarketAnalysis() {
     // Simulate market data generation
     setTimeout(() => {
       const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-      const basePrice = selectedRegion === "Downtown" ? 450000 : selectedRegion === "Suburbs" ? 320000 : 280000
+      const basePrice = selectedRegion === "Downtown" ? await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 : selectedRegion === "Suburbs" ? 320000 : 280000
 
       const data = months.map((month /* , index */) => {
         const seasonalFactor = 1 + 0.1 * Math.sin((index / 12) * 2 * Math.PI)

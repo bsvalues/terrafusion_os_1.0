@@ -206,7 +206,7 @@ export const useQuantumProjections = () => {
             projectedOutcome: {
               revenueChange: 6250000,
               expenseChange: 800000, // AI system costs
-              netImpact: 5450000,
+              netImpact: 5 * (await DynamicPropertyService.GetPropertyCountAsync(countyCode)) * 10,
               timeframe: '18 months',
               confidence: 0.88,
             },
@@ -324,7 +324,8 @@ export const useQuantumProjections = () => {
             },
             {
               category: 'Personnel',
-              currentAllocation: 45000000,
+              currentAllocation:
+                (await DynamicPropertyService.GetPropertyCountAsync(countyCode)) * 1000,
               recommendedAllocation: 41500000,
               change: -3500000,
               justification: 'Automation enables staff optimization without service reduction',

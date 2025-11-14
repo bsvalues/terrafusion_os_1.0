@@ -1,7 +1,0 @@
-{
-    "set": [
-        "modify z",
-        "surface",
-        "update z"
-    ]
-}

@@ -64,7 +64,7 @@ public class Program
                 Contact = new Microsoft.OpenApi.Models.OpenApiContact
                 {
                     Name = "TerraFusion Elite Engineering Team",
-                    Email = "engineering@terrafusion.gov"
+                    Email = "engineering@terrafusionmarket.com"
                 }
             });
 

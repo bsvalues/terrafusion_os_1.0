@@ -1,0 +1,112 @@
+{
+  "Failed": 1,
+  "Passed": 13,
+  "Details": [
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:41.4823956-08:00",
+      "Test": "Container-api",
+      "Details": "",
+      "Message": "Container healthy and running"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:41.4834065-08:00",
+      "Test": "Container-frontend",
+      "Details": "",
+      "Message": "Container healthy and running"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:41.4859945-08:00",
+      "Test": "Container-postgres",
+      "Details": "",
+      "Message": "Container healthy and running"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:41.4870673-08:00",
+      "Test": "Container-redis",
+      "Details": "",
+      "Message": "Container healthy and running"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:41.4891935-08:00",
+      "Test": "Essential-api",
+      "Details": "",
+      "Message": "Required service operational"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:41.4901207-08:00",
+      "Test": "Essential-postgres",
+      "Details": "",
+      "Message": "Required service operational"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:41.4908384-08:00",
+      "Test": "Essential-redis",
+      "Details": "",
+      "Message": "Required service operational"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:41.7491454-08:00",
+      "Test": "API-Health Check",
+      "Details": "",
+      "Message": "Endpoint responding correctly"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:42.0703698-08:00",
+      "Test": "API-API Test",
+      "Details": "",
+      "Message": "Endpoint responding correctly"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:42.3879147-08:00",
+      "Test": "API-Database Status",
+      "Details": "",
+      "Message": "Endpoint responding correctly"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:42.7256586-08:00",
+      "Test": "API-AI Swarm Status",
+      "Details": "",
+      "Message": "Endpoint responding correctly"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:43.0354323-08:00",
+      "Test": "API-Module Listing",
+      "Details": "",
+      "Message": "Endpoint responding correctly"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T01:05:47.115581-08:00",
+      "Test": "API-Elite Mission Report",
+      "Details": "",
+      "Message": "Endpoint responding correctly"
+    },
+    {
+      "Status": "FAIL",
+      "Timestamp": "2025-11-07T01:05:47.2341523-08:00",
+      "Test": "Database Tests",
+      "Details": "",
+      "Message": "Database validation failed: Could not find a part of the path 'C:\\dev\\null'."
+    },
+    {
+      "Status": "WARN",
+      "Timestamp": "2025-11-07T01:05:47.2409063-08:00",
+      "Test": "Elite-Features",
+      "Details": "",
+      "Message": "Elite feature testing failed: Could not find a part of the path 'C:\\dev\\null'."
+    }
+  ],
+  "Warnings": 1
+}

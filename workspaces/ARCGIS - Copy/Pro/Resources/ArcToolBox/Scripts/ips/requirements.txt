@@ -1,9 +1,0 @@
-#packages in Scripts dir used for ips tool
-# indoorsprotocol
-git+ssh://git@bitbucket.org/indoors/indoors-protocol.git@5.0.0#subdirectory=py
-# indoorsdatapy
-git+ssh://git@bitbucket.org/indoors/indoorsdatapy.git@6.2.0
-# indoorssql
-git+ssh://git@bitbucket.org/indoors/indoors-sql.git@4.19.0
-# slam
-git+ssh://git@bitbucket.org/indoors/slam.git@4.19.0

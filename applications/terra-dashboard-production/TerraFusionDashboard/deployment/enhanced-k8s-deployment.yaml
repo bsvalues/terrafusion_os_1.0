@@ -331,11 +331,11 @@ metadata:
 spec:
   tls:
     - hosts:
-        - terrafusion.gov
-        - api.terrafusion.gov
+        - terrafusionmarket.com
+        - api.terrafusionmarket.com
       secretName: terrafusion-tls
   rules:
-    - host: terrafusion.gov
+    - host: terrafusionmarket.com
       http:
         paths:
           - path: /
@@ -345,7 +345,7 @@ spec:
                 name: terrafusion-service
                 port:
                   number: 80
-    - host: api.terrafusion.gov
+    - host: api.terrafusionmarket.com
       http:
         paths:
           - path: /

@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: auth-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/platform/auth
+    email: auth-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/platform/auth
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/auth
+  - url: https://api.terrafusionmarket.com/api/v1/auth
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/auth
+  - url: https://staging-api.terrafusionmarket.com/api/v1/auth
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/auth
+  - url: https://dev-api.terrafusionmarket.com/api/v1/auth
     description: Development Environment
 paths:
   /login:
@@ -195,8 +195,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             auth:read: Read access to auth resources
             auth:write: Write access to auth resources
@@ -214,4 +214,4 @@ tags:
     description: Auth operations
     externalDocs:
       description: Find out more about auth
-      url: https://docs.terrafusion.gov/platform/auth
+      url: https://docs.terrafusionmarket.com/platform/auth

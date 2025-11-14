@@ -1,9 +1,0 @@
-{
-    "set": [
-        "append",
-        "external",
-        "parcel fabric",
-        "submission",
-        "transfer"
-    ]
-}

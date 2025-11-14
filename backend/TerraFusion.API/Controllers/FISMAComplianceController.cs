@@ -49,7 +49,7 @@ namespace TerraFusion.API.Controllers
             {
                 _logger.LogInformation("Starting FISMA compliance assessment");
                 var report = await _complianceService.RunComplianceAssessmentAsync();
-
+                
                 _logger.LogInformation($"Assessment completed: {report.CompliancePercentage}% compliant");
                 return Ok(report);
             }
@@ -87,7 +87,7 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var success = await _complianceService.ImplementControlAsync(controlId);
-
+                
                 if (success)
                 {
                     _logger.LogInformation($"Successfully implemented control: {controlId}");
@@ -110,7 +110,7 @@ namespace TerraFusion.API.Controllers
         /// Get detailed compliance metrics by control family
         /// </summary>
         [HttpGet("metrics")]
-        public async Task<ActionResult<TerraFusion.Abstractions.DTOs.ComplianceMetrics>> GetComplianceMetrics()
+        public async Task<ActionResult<FISMAComplianceMetrics>> GetComplianceMetrics()
         {
             try
             {
@@ -285,3 +285,4 @@ namespace TerraFusion.API.Controllers
         }
     }
 }
+

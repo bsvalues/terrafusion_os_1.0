@@ -1,8 +1,0 @@
-{
-    "map": {
-        "descr": "The Network Diagram toolbox provides various tools to manage diagrams and configure diagram templates.",
-        "title": "Network Diagram Tools",
-        "toolset1.name": "Configuration",
-        "toolset2.name": "Layout"
-    }
-}

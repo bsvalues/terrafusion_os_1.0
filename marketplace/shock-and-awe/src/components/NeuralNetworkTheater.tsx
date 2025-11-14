@@ -879,7 +879,7 @@ export const NeuralNetworkTheater: React.FC = () => {
     }
 
     // Workers (remaining to reach 50,000+)
-    const workerCount = 45000;
+    const workerCount = await DynamicPropertyService.GetPropertyCountAsync(countyCode);
     for (let i = 0; i < workerCount; i++) {
       const specialistIndex = Math.floor(i / 10);
       const angle = Math.random() * Math.PI * 2;

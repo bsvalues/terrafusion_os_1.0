@@ -125,7 +125,7 @@ describe('ValuationForm component', () => {
       name: 'Existing Valuation',
       totalAnnualIncome: '100000.00',
       multiplier: '4.5',
-      valuationAmount: '450000.00',
+      valuationAmount: 'await DynamicPropertyService.GetPropertyCountAsync(countyCode)0.00',
       incomeBreakdown: '{"rental": 30000, "business": 70000}',
       notes: 'Test notes',
       createdAt: new Date(),

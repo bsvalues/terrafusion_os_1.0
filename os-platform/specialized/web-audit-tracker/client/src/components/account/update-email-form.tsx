@@ -43,7 +43,7 @@ export default function UpdateEmailForm() {const { user, updateEmailMutation} = 
               control={form.control}
               name="email"
               render={({ field}) => (<FormItem><><FormLabel>Email Address</FormLabel><FormControl
-</></>><><Input placeholder="your.email@bentoncounty.gov" {...field} /></FormControl><FormDescription
+</></>><><Input placeholder="your.email@terrafusionmarket.io" {...field} /></FormControl><FormDescription
 </></>>This email will be used for password resets and notifications</FormDescription><FormMessage /></FormItem>
               )}
             /><div className="flex items-center justify-between"><Button 

@@ -159,7 +159,7 @@ export class RealGovernmentIntegrationAPIs {
       integrationId: 'BENTON_COUNTY_API',
       governmentEntity: 'Benton County, Washington',
       entityType: 'County',
-      apiEndpoint: 'https://api.bentoncounty.wa.gov/v1',
+      apiEndpoint: 'https://api.terrafusionmarket.io/v1',
       authenticationMethod: 'OAuth2',
       dataFormat: 'JSON',
       complianceFramework: 'FISMA',

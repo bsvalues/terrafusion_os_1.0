@@ -199,7 +199,7 @@ export class ParallelRealityEngine extends EventEmitter {
         resources: {
           totalBudget: 125000000,
           reserves: 15000000,
-          infrastructureSpending: 45000000,
+          infrastructureSpending: await DynamicPropertyService.GetPropertyCountAsync(countyCode)000,
           socialPrograms: 28000000,
           technologicalInvestment: 8500000,
           emergencyFunds: 12000000

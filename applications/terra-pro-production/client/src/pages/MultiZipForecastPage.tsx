@@ -84,7 +84,7 @@ export default function MultiZipForecastPage() {
       county: "Franklin",
       currentDevelopmentScore: 78.9,
       forecastAccuracy: 89.3,
-      infrastructureInvestment: { year1: 45000000, year3: 120000000, year5: 210000000 },
+      infrastructureInvestment: { year1: await DynamicPropertyService.GetPropertyCountAsync(countyCode)000, year3: 120000000, year5: 210000000 },
       developmentProbability: { year1: 72.1, year3: 84.6, year5: 89.2 },
       landLiftForecast: { year1: 8.7, year3: 19.4, year5: 31.2 },
       keyFactors: [
@@ -101,7 +101,7 @@ export default function MultiZipForecastPage() {
       county: "King",
       currentDevelopmentScore: 88.7,
       forecastAccuracy: 91.8,
-      infrastructureInvestment: { year1: 89000000, year3: 245000000, year5: 420000000 },
+      infrastructureInvestment: { year1: 89000000, year3: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode)000, year5: 420000000 },
       developmentProbability: { year1: 81.4, year3: 88.9, year5: 92.3 },
       landLiftForecast: { year1: 9.8, year3: 22.1, year5: 36.4 },
       keyFactors: [
@@ -206,7 +206,8 @@ export default function MultiZipForecastPage() {
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex items-center space-x-4">
         <MapPin className="w-8 h-8 text-blue-600" />
-        <div><>
+        <div>
+<>
 
           <h1 className="text-3xl font-bold text-gray-900">
             Multi-Zip Development Forecast Mesh (MZDF)
@@ -221,13 +222,15 @@ export default function MultiZipForecastPage() {
       {/* System Overview */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
             <CardTitle className="text-sm font-medium">ZIP Codes</CardTitle>
             <MapPin
 </> className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent><>
+          <CardContent>
+<>
 
             <div className="text-2xl font-bold text-blue-600">
               {systemMetrics.totalZipsMonitored}
@@ -238,13 +241,15 @@ export default function MultiZipForecastPage() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
             <CardTitle className="text-sm font-medium">Forecast Accuracy</CardTitle>
             <TrendingUp
 </> className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent><>
+          <CardContent>
+<>
 
             <div className="text-2xl font-bold text-green-600">
               {formatPercentage(systemMetrics.forecastAccuracy)}
@@ -255,13 +260,15 @@ export default function MultiZipForecastPage() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
             <CardTitle className="text-sm font-medium">Update Frequency</CardTitle>
             <Refresh
 </> className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent><>
+          <CardContent>
+<>
 
             <div className="text-2xl font-bold text-purple-600">
               {systemMetrics.avgUpdateFrequency}
@@ -272,13 +279,15 @@ export default function MultiZipForecastPage() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
             <CardTitle className="text-sm font-medium">Data Sources</CardTitle>
             <BarChart3
 </> className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent><>
+          <CardContent>
+<>
 
             <div className="text-2xl font-bold text-orange-600">
               {systemMetrics.dataSourcesIntegrated}
@@ -289,13 +298,15 @@ export default function MultiZipForecastPage() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
             <CardTitle className="text-sm font-medium">Last Update</CardTitle>
             <Calendar
 </> className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent><>
+          <CardContent>
+<>
 
             <div className="text-2xl font-bold text-indigo-600">12:30</div>
             <p
@@ -307,16 +318,19 @@ export default function MultiZipForecastPage() {
       {/* Filters */}
       <div className="flex items-center space-x-4">
         <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-          <SelectTrigger className="w-64"><>
+          <SelectTrigger className="w-64">
+<>
 
             <SelectValue placeholder="Select region" />
           </SelectTrigger>
           <SelectContent
-</>><>
+</>>
+<>
 
             <SelectItem value="all">All Regions</SelectItem>
             <SelectItem
-</> value="puget">Puget Sound Metro</SelectItem><>
+</> value="puget">Puget Sound Metro</SelectItem>
+<>
 
             <SelectItem value="eastern">Eastern Washington</SelectItem>
             <SelectItem
@@ -326,12 +340,14 @@ export default function MultiZipForecastPage() {
         </Select>
 
         <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-          <SelectTrigger className="w-48"><>
+          <SelectTrigger className="w-48">
+<>
 
             <SelectValue placeholder="Select timeframe" />
           </SelectTrigger>
           <SelectContent
-</>><>
+</>>
+<>
 
             <SelectItem value="1year">1 Year Forecast</SelectItem>
             <SelectItem
@@ -348,7 +364,8 @@ export default function MultiZipForecastPage() {
 
       {/* Main Content */}
       <Tabs defaultValue="forecasts" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3"><>
+        <TabsList className="grid w-full grid-cols-3">
+<>
 
           <TabsTrigger value="forecasts">ZIP Forecasts</TabsTrigger>
           <TabsTrigger
@@ -358,7 +375,8 @@ export default function MultiZipForecastPage() {
 
         <TabsContent value="forecasts" className="space-y-4">
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Top Development Forecast ZIPs</CardTitle>
               <CardDescription
@@ -372,7 +390,8 @@ export default function MultiZipForecastPage() {
                   <div key={forecast.zipCode} className="p-4 border rounded-lg">
                     <div className="flex items-start justify-between">
                       <div className="space-y-3">
-                        <div className="flex items-center space-x-3"><>
+                        <div className="flex items-center space-x-3">
+<>
 
                           <div className="font-medium text-lg">{forecast.zipCode}</div>
                           <div
@@ -385,14 +404,16 @@ export default function MultiZipForecastPage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div><>
+                          <div>
+<>
 
                             <div className="text-sm font-medium text-gray-700 mb-2">
                               Development Probability
                             </div>
                             <div
 </> className="space-y-1">
-                              <div className="flex justify-between text-sm"><>
+                              <div className="flex justify-between text-sm">
+<>
 
                                 <span>1 Year:</span>
                                 <span
@@ -400,7 +421,8 @@ export default function MultiZipForecastPage() {
                                   {formatPercentage(forecast.developmentProbability.year1)}
                                 </span>
                               </div>
-                              <div className="flex justify-between text-sm"><>
+                              <div className="flex justify-between text-sm">
+<>
 
                                 <span>3 Year:</span>
                                 <span
@@ -408,7 +430,8 @@ export default function MultiZipForecastPage() {
                                   {formatPercentage(forecast.developmentProbability.year3)}
                                 </span>
                               </div>
-                              <div className="flex justify-between text-sm"><>
+                              <div className="flex justify-between text-sm">
+<>
 
                                 <span>5 Year:</span>
                                 <span
@@ -419,14 +442,16 @@ export default function MultiZipForecastPage() {
                             </div>
                           </div>
 
-                          <div><>
+                          <div>
+<>
 
                             <div className="text-sm font-medium text-gray-700 mb-2">
                               Infrastructure Investment
                             </div>
                             <div
 </> className="space-y-1">
-                              <div className="flex justify-between text-sm"><>
+                              <div className="flex justify-between text-sm">
+<>
 
                                 <span>1 Year:</span>
                                 <span
@@ -434,7 +459,8 @@ export default function MultiZipForecastPage() {
                                   {formatCurrency(forecast.infrastructureInvestment.year1)}
                                 </span>
                               </div>
-                              <div className="flex justify-between text-sm"><>
+                              <div className="flex justify-between text-sm">
+<>
 
                                 <span>3 Year:</span>
                                 <span
@@ -442,7 +468,8 @@ export default function MultiZipForecastPage() {
                                   {formatCurrency(forecast.infrastructureInvestment.year3)}
                                 </span>
                               </div>
-                              <div className="flex justify-between text-sm"><>
+                              <div className="flex justify-between text-sm">
+<>
 
                                 <span>5 Year:</span>
                                 <span
@@ -453,14 +480,16 @@ export default function MultiZipForecastPage() {
                             </div>
                           </div>
 
-                          <div><>
+                          <div>
+<>
 
                             <div className="text-sm font-medium text-gray-700 mb-2">
                               Land Lift Forecast
                             </div>
                             <div
 </> className="space-y-1">
-                              <div className="flex justify-between text-sm"><>
+                              <div className="flex justify-between text-sm">
+<>
 
                                 <span>1 Year:</span>
                                 <span
@@ -468,7 +497,8 @@ export default function MultiZipForecastPage() {
                                   +{formatPercentage(forecast.landLiftForecast.year1)}
                                 </span>
                               </div>
-                              <div className="flex justify-between text-sm"><>
+                              <div className="flex justify-between text-sm">
+<>
 
                                 <span>3 Year:</span>
                                 <span
@@ -476,7 +506,8 @@ export default function MultiZipForecastPage() {
                                   +{formatPercentage(forecast.landLiftForecast.year3)}
                                 </span>
                               </div>
-                              <div className="flex justify-between text-sm"><>
+                              <div className="flex justify-between text-sm">
+<>
 
                                 <span>5 Year:</span>
                                 <span
@@ -488,7 +519,8 @@ export default function MultiZipForecastPage() {
                           </div>
                         </div>
 
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-sm font-medium text-gray-700 mb-2">
                             Key Development Factors
@@ -503,7 +535,8 @@ export default function MultiZipForecastPage() {
                           </div>
                         </div>
 
-                        <div className="flex items-center space-x-4 text-sm text-gray-600"><>
+                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+<>
 
                           <span>
                             Forecast Accuracy: {formatPercentage(forecast.forecastAccuracy)}
@@ -524,7 +557,8 @@ export default function MultiZipForecastPage() {
 
         <TabsContent value="regional" className="space-y-4">
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Regional Development Metrics</CardTitle>
               <CardDescription
@@ -537,19 +571,22 @@ export default function MultiZipForecastPage() {
                 {regionalMetrics.map((region) => (
                   <div key={region.region} className="p-4 border rounded-lg">
                     <div className="flex items-start justify-between">
-                      <div className="space-y-3"><>
+                      <div className="space-y-3">
+<>
 
                         <div className="font-medium text-lg">{region.region}</div>
 
                         <div
 </> className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                          <div><>
+                          <div>
+<>
 
                             <div className="text-sm text-gray-600">Total ZIPs</div>
                             <div
 </> className="text-xl font-bold">{region.totalZips}</div>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <div className="text-sm text-gray-600">Avg Dev Score</div>
                             <div
@@ -557,7 +594,8 @@ export default function MultiZipForecastPage() {
                               {formatPercentage(region.avgDevelopmentScore)}
                             </div>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <div className="text-sm text-gray-600">High Probability</div>
                             <div
@@ -565,7 +603,8 @@ export default function MultiZipForecastPage() {
                               {region.highProbabilityZips}
                             </div>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <div className="text-sm text-gray-600">Investment Forecast</div>
                             <div
@@ -573,7 +612,8 @@ export default function MultiZipForecastPage() {
                               {formatCurrency(region.totalInvestmentForecast)}
                             </div>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <div className="text-sm text-gray-600">Avg Land Lift</div>
                             <div
@@ -584,7 +624,8 @@ export default function MultiZipForecastPage() {
                         </div>
 
                         <div className="space-y-2">
-                          <div className="flex justify-between text-sm"><>
+                          <div className="flex justify-between text-sm">
+<>
 
                             <span>Development Score</span>
                             <span
@@ -604,44 +645,51 @@ export default function MultiZipForecastPage() {
         <TabsContent value="factors" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
-              <CardHeader><>
+              <CardHeader>
+<>
 
                 <CardTitle>Data Input Sources</CardTitle>
                 <CardDescription
 </>>Real-time feeds integrated into forecasting model</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex justify-between items-center"><>
+                <div className="flex justify-between items-center">
+<>
 
                   <span className="text-sm">Zoning History Database</span>
                   <Badge
 </> variant="outline">Active</Badge>
                 </div>
-                <div className="flex justify-between items-center"><>
+                <div className="flex justify-between items-center">
+<>
 
                   <span className="text-sm">Municipal Budget Cycles</span>
                   <Badge
 </> variant="outline">Active</Badge>
                 </div>
-                <div className="flex justify-between items-center"><>
+                <div className="flex justify-between items-center">
+<>
 
                   <span className="text-sm">Political Mapping Data</span>
                   <Badge
 </> variant="outline">Active</Badge>
                 </div>
-                <div className="flex justify-between items-center"><>
+                <div className="flex justify-between items-center">
+<>
 
                   <span className="text-sm">Land Sales Records</span>
                   <Badge
 </> variant="outline">Active</Badge>
                 </div>
-                <div className="flex justify-between items-center"><>
+                <div className="flex justify-between items-center">
+<>
 
                   <span className="text-sm">Building Permit Signals</span>
                   <Badge
 </> variant="outline">Active</Badge>
                 </div>
-                <div className="flex justify-between items-center"><>
+                <div className="flex justify-between items-center">
+<>
 
                   <span className="text-sm">Infrastructure Change Feed</span>
                   <Badge
@@ -651,7 +699,8 @@ export default function MultiZipForecastPage() {
             </Card>
 
             <Card>
-              <CardHeader><>
+              <CardHeader>
+<>
 
                 <CardTitle>System Performance</CardTitle>
                 <CardDescription
@@ -659,40 +708,47 @@ export default function MultiZipForecastPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm"><>
+                  <div className="flex justify-between text-sm">
+<>
 
                     <span>Forecast Accuracy</span>
                     <span
 </>>{formatPercentage(systemMetrics.forecastAccuracy)}</span>
-                  </div><>
+                  </div>
+<>
 
                   <Progress value={systemMetrics.forecastAccuracy} className="h-2" />
                 </div>
                 <div
 </> className="space-y-2">
-                  <div className="flex justify-between text-sm"><>
+                  <div className="flex justify-between text-sm">
+<>
 
                     <span>Data Freshness</span>
                     <span
 </>>97.8%</span>
-                  </div><>
+                  </div>
+<>
 
                   <Progress value={97.8} className="h-2" />
                 </div>
                 <div
 </> className="space-y-2">
-                  <div className="flex justify-between text-sm"><>
+                  <div className="flex justify-between text-sm">
+<>
 
                     <span>Processing Speed</span>
                     <span
 </>>94.2%</span>
-                  </div><>
+                  </div>
+<>
 
                   <Progress value={94.2} className="h-2" />
                 </div>
                 <div
 </> className="space-y-2">
-                  <div className="flex justify-between text-sm"><>
+                  <div className="flex justify-between text-sm">
+<>
 
                     <span>Model Coherence</span>
                     <span

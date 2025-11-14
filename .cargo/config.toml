@@ -1,0 +1,57 @@
+# TerraFusion OS Elite Rust Build Configuration
+# Government-Grade Deterministic Builds - Rust 1.83 Stable
+# Prevents edition2024 dependency creep while ecosystem stabilizes
+
+[build]
+rustc-wrapper = ""
+target-dir = "target"
+
+[term]
+verbose = false
+
+# ==============================================================================
+# CRITICAL: Dependency Version Resolution Overrides
+# ==============================================================================
+# Workspace-level dependency resolution to prevent edition2024 conflicts
+# NOTE: Registry patches fail due to manifest parsing before patch application
+
+# ==============================================================================
+# Network & Reliability Configuration
+# ==============================================================================
+# Enhanced CI/CD reliability for government infrastructure
+
+[net]
+git-fetch-with-cli = true  # Use git CLI for better corporate proxy support
+retry = 3                   # Retry network operations for transient failures
+
+# ==============================================================================
+# Optional: Vendor Configuration (Uncomment for Airgap Deployments)
+# ==============================================================================
+# For FISMA-High airgap environments, enable vendored dependencies
+# Run: cargo vendor vendor
+# Then uncomment:
+# [source.crates-io]
+# replace-with = "vendored-sources"
+#
+# [source.vendored-sources]
+# directory = "vendor"
+
+# ==============================================================================
+# TerraFusion Release Optimization Profile
+# ==============================================================================
+# Championship-level binary optimization for production deployments
+
+[profile.release]
+opt-level = 3           # Maximum optimization
+lto = true              # Link-Time Optimization for smaller binaries
+codegen-units = 1       # Single codegen unit for better optimization
+strip = true            # Strip debug symbols for production
+panic = "abort"         # Abort on panic (no unwinding overhead)
+
+[profile.dev]
+opt-level = 0           # Fast compilation for development
+debug = true            # Full debug info for troubleshooting
+
+# ==============================================================================
+# Championship Execution: "Government. Transcended."
+# ==============================================================================

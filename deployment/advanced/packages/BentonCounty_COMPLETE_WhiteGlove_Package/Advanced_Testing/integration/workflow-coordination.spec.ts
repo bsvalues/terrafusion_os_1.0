@@ -66,7 +66,7 @@ const TEST_WORKFLOWS: TestWorkflow[] = [
         appId: 'costforge-ai',
         action: 'estimate-value',
         input: { propertyId: 'PROP001', location: 'analyzed' },
-        expectedOutput: { estimatedValue: 450000, confidence: 0.85 },
+        expectedOutput: { estimatedValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, confidence: 0.85 },
         dependencies: ['step-1', 'step-2']
       },
       {
@@ -262,7 +262,7 @@ describe('Workflow Coordination Integration Tests', () => {
           break;
         case 'costforge-ai':
           if (dataType === 'valuation') {
-            return { estimatedValue: 450000, confidence: 0.85, factors: ['location', 'size', 'condition'] };
+            return { estimatedValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, confidence: 0.85, factors: ['location', 'size', 'condition'] };
           }
           break;
       }
@@ -305,7 +305,7 @@ describe('Workflow Coordination Integration Tests', () => {
         
       case 'costforge-ai':
         if (action === 'estimate-value') {
-          return { estimatedValue: 450000, confidence: 0.85, methodology: 'AI-ML' };
+          return { estimatedValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, confidence: 0.85, methodology: 'AI-ML' };
         }
         break;
         

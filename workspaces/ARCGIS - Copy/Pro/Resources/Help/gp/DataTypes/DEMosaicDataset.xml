@@ -1,5 +1,0 @@
-<DataType Name="DEMosaicDataset">
-  <DisplayName>Mosaic Dataset</DisplayName>
-  <Description>A collection of raster and image data that allows you to store, view, and query the data. It is a data model in the geodatabase used to manage a collection of raster datasets (images) stored as a catalog and viewed as a mosaicked image.</Description>
-</DataType>
-

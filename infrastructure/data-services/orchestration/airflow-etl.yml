@@ -277,7 +277,7 @@ data:
     default_hive_mapred_queue = 
     
     [webserver]
-    base_url = https://airflow.terrafusion.gov
+    base_url = https://airflow.terrafusionmarket.com
     web_server_host = 0.0.0.0
     web_server_port = 8080
     web_server_ssl_cert = /etc/ssl/certs/airflow.crt
@@ -305,11 +305,11 @@ data:
     email_backend = airflow.utils.email.send_email_smtp
     
     [smtp]
-    smtp_host = smtp.terrafusion.gov
+    smtp_host = smtp.terrafusionmarket.com
     smtp_starttls = True
     smtp_ssl = False
     smtp_port = 587
-    smtp_mail_from = airflow@terrafusion.gov
+    smtp_mail_from = airflow@terrafusionmarket.com
     
     [celery]
     celery_app_name = airflow.executors.celery_executor

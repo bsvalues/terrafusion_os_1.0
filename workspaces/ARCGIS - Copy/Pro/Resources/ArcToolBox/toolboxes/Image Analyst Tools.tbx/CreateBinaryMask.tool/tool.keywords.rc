@@ -1,9 +1,0 @@
-{
-    "set": [
-        "background value",
-        "flood fill",
-        "mask",
-        "postprocessing",
-        "preprocessing"
-    ]
-}

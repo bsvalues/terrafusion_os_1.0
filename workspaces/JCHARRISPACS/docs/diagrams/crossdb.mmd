@@ -1,0 +1,67 @@
+%% Benton County PACS - Cross-Database Integration Architecture
+%% 6 databases with synonyms, cross-DB queries, and ETL flows
+%% Validated: 2025-11-05 snapshot
+%% 🔗 = Synonym reference; → = Direct query; ⇒ = ETL process
+
+graph TB
+    subgraph "Production Environment"
+        PACS_OLTP[(pacs_oltp<br/>2,090 tables<br/>2,086 SPs<br/>1,687 views)]
+        PACS_TRAIN[(pacs_training<br/>2,090 tables<br/>2,086 SPs<br/>1,687 views<br/><b>IDENTICAL TWIN</b>)]
+    end
+    
+    subgraph "Third-Party Add-Ons"
+        CIAPS[(CIAPS<br/>Building Permits<br/>Permit schema)]
+        TA_APP[(TA_AppSvr<br/>Tax Assessor<br/>18 tables)]
+    end
+    
+    subgraph "Public Portal"
+        WEB_INTERNET[(web_internet_benton<br/>468 tables<br/>Public property search)]
+    end
+    
+    subgraph "Reporting Infrastructure"
+        REPORT_SVR[(ReportServer<br/>SSRS Catalog<br/>312 SPs)]
+    end
+    
+    subgraph "External Data Sources"
+        BUILDING_IMPORT[("\\\\JCHARRISPACS\\<br/>BuildingPermit_Import<br/>(CSV files)")]
+        MATIX_GIS[("Benton_spatial_data<br/>(GIS parcels)")]
+    end
+    
+    %% Cross-Database Synonyms (CIAPS → PACS_OLTP)
+    CIAPS -.->|"🔗 SYNONYM:<br/>building_permit"| PACS_OLTP
+    CIAPS -.->|"🔗 SYNONYM:<br/>property"| PACS_OLTP
+    CIAPS -.->|"🔗 SYNONYM:<br/>property_val"| PACS_OLTP
+    CIAPS -.->|"🔗 SYNONYM:<br/>prop_building_permit_assoc"| PACS_OLTP
+    
+    %% Cross-Database Queries
+    CIAPS -->|"JOIN:<br/>pacs_oltp.dbo.situs<br/>(address matching)"| PACS_OLTP
+    PACS_TRAIN -->|"QUERY:<br/>pacs_oltp.dbo.pacs_system<br/>(future_yr lookup)"| PACS_OLTP
+    WEB_INTERNET -->|"QUERY:<br/>pacs_oltp.dbo.*<br/>(public data extract)"| PACS_OLTP
+    
+    %% ETL Processes
+    BUILDING_IMPORT ==>|"BuildingPermitLoader.ps1<br/>BULK INSERT"| CIAPS
+    CIAPS ==>|"pProcess_BuildingImport<br/>SP (nightly)"| PACS_OLTP
+    PACS_OLTP ==>|"Web export SPs<br/>(scheduled)"| WEB_INTERNET
+    
+    %% Reporting
+    PACS_OLTP -->|"SSRS Reports<br/>(312 SPs)"| REPORT_SVR
+    PACS_TRAIN -->|"Training Reports"| REPORT_SVR
+    
+    %% GIS Integration
+    MATIX_GIS -.->|"Spatial queries<br/>(ArcGIS Runtime)"| PACS_OLTP
+    
+    %% Extended SP Dependencies
+    PACS_OLTP -->|"XSP_PACS.dll<br/>(RecalcProperty)"| TA_APP
+    
+    %% Legend Styling
+    classDef production fill:#e1f5e1,stroke:#4caf50,stroke-width:3px
+    classDef thirdparty fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    classDef web fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+    classDef reporting fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    classDef external fill:#fce4ec,stroke:#e91e63,stroke-width:2px
+    
+    class PACS_OLTP,PACS_TRAIN production
+    class CIAPS,TA_APP thirdparty
+    class WEB_INTERNET web
+    class REPORT_SVR reporting
+    class BUILDING_IMPORT,MATIX_GIS external

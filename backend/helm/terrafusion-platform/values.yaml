@@ -7,7 +7,7 @@
 global:
   # Environment configuration
   environment: production  # development | staging | production
-  domain: terrafusion.gov
+  domain: terrafusionmarket.com
   
   # Container registry
   imageRegistry: ghcr.io/terrafusion
@@ -114,14 +114,14 @@ terrafusion-api:
     enabled: true
     className: nginx
     hosts:
-      - host: api.terrafusion.gov
+      - host: api.terrafusionmarket.com
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: api-terrafusion-gov-tls
         hosts:
-          - api.terrafusion.gov
+          - api.terrafusionmarket.com
           
   monitoring:
     prometheus:
@@ -180,14 +180,14 @@ terrafusion-consciousness:
     enabled: true
     className: nginx
     hosts:
-      - host: consciousness.terrafusion.gov
+      - host: consciousness.terrafusionmarket.com
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: consciousness-terrafusion-gov-tls
         hosts:
-          - consciousness.terrafusion.gov
+          - consciousness.terrafusionmarket.com
 
 # ============================================================================
 # TerraFusion Gateway Configuration Overrides
@@ -223,14 +223,14 @@ terrafusion-gateway:
     enabled: true
     className: nginx
     hosts:
-      - host: gateway.terrafusion.gov
+      - host: gateway.terrafusionmarket.com
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: gateway-terrafusion-gov-tls
         hosts:
-          - gateway.terrafusion.gov
+          - gateway.terrafusionmarket.com
 
 # ============================================================================
 # TerraFusion Operations Configuration Overrides
@@ -276,11 +276,11 @@ terrafusion-operations:
     enabled: true
     className: nginx
     hosts:
-      - host: operations.terrafusion.gov
+      - host: operations.terrafusionmarket.com
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: operations-terrafusion-gov-tls
         hosts:
-          - operations.terrafusion.gov
+          - operations.terrafusionmarket.com

@@ -4,13 +4,3 @@ CREATE TABLE [dbo].[user_input_query] (
     CONSTRAINT [CPK_user_input_query] PRIMARY KEY CLUSTERED ([query_id] ASC) WITH (FILLFACTOR = 100)
 );
 
-
-GO
-
-GRANT INSERT
-    ON OBJECT::[dbo].[user_input_query] TO [pacsnonprivy]
-    AS [dbo];
-
-
-GO
-

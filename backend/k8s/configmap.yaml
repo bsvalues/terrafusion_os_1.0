@@ -65,7 +65,7 @@ data:
   Gateway__RateLimiting__Enabled: "true"
   Gateway__RateLimiting__PermitLimit: "1000"
   Gateway__RateLimiting__Window: "60"
-  Gateway__Cors__AllowedOrigins: "https://terrafusion.gov,https://app.terrafusion.gov"
+  Gateway__Cors__AllowedOrigins: "https://terrafusionmarket.com,https://app.terrafusionmarket.com"
   Gateway__Cors__AllowedMethods: "GET,POST,PUT,DELETE,OPTIONS"
   Gateway__Cors__AllowedHeaders: "Authorization,Content-Type,X-County-Id"
   
@@ -180,9 +180,9 @@ stringData:
   # ============================================================================
   Smtp__Host: "smtp.office365.com"
   Smtp__Port: "587"
-  Smtp__Username: "notifications@terrafusion.gov"
+  Smtp__Username: "notifications@terrafusionmarket.com"
   Smtp__Password: "REPLACE_WITH_SMTP_PASSWORD"
-  Smtp__FromEmail: "notifications@terrafusion.gov"
+  Smtp__FromEmail: "notifications@terrafusionmarket.com"
   Smtp__FromName: "TerraFusion OS"
 
 ---

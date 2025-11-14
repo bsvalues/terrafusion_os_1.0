@@ -1,5 +1,0 @@
-<DataType Name="Index">
-  <DisplayName>Index</DisplayName>
-  <Description>A data structure used to speed the search for records in geographic datasets and databases.</Description>
-</DataType>
-

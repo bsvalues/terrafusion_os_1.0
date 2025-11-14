@@ -1,9 +1,0 @@
-{
-    "set": [
-        "corrupted",
-        "file geodatabase",
-        "geodatabase",
-        "recover",
-        "restore"
-    ]
-}

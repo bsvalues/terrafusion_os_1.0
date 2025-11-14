@@ -1,9 +1,0 @@
-{
-    "set": [
-        "arrests",
-        "crime",
-        "join",
-        "polygon fields to points",
-        "precincts"
-    ]
-}

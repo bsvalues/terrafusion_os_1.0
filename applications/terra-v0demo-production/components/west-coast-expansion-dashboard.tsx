@@ -89,7 +89,7 @@ export default function WestCoastExpansionDashboard() {
       tier: "Tier 3 - Small",
       population: 58639,
       parcels: 28000,
-      contractValue: 450000,
+      contractValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       probability: 85,
       status: "planning",
       targetDate: "Jul 2026",
@@ -133,7 +133,8 @@ export default function WestCoastExpansionDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center space-y-4"><>
+        <div className="text-center space-y-4">
+<>
 
           <h1 className="text-4xl font-bold text-gray-900">🌊 TerraFusionAssessor-1: West Coast Expansion</h1>
           <p
@@ -143,13 +144,15 @@ export default function WestCoastExpansionDashboard() {
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
               <CardTitle className="text-sm font-medium">Target Counties</CardTitle>
               <MapPin
 </> className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent><>
+            <CardContent>
+<>
 
               <div className="text-2xl font-bold">{allTargets.length}</div>
               <p
@@ -158,13 +161,15 @@ export default function WestCoastExpansionDashboard() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
               <CardTitle className="text-sm font-medium">Total Contract Value</CardTitle>
               <DollarSign
 </> className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent><>
+            <CardContent>
+<>
 
               <div className="text-2xl font-bold">${(totalContractValue / 1000000).toFixed(1)}M</div>
               <p
@@ -173,13 +178,15 @@ export default function WestCoastExpansionDashboard() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
               <CardTitle className="text-sm font-medium">Weighted Value</CardTitle>
               <TrendingUp
 </> className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent><>
+            <CardContent>
+<>
 
               <div className="text-2xl font-bold">${(weightedValue / 1000000).toFixed(1)}M</div>
               <p
@@ -188,13 +195,15 @@ export default function WestCoastExpansionDashboard() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<>
 
               <CardTitle className="text-sm font-medium">Avg Win Rate</CardTitle>
               <Target
 </> className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent><>
+            <CardContent>
+<>
 
               <div className="text-2xl font-bold">
                 {Math.round(allTargets.reduce((sum, county) => sum + county.probability, 0) / allTargets.length)}%
@@ -207,11 +216,13 @@ export default function WestCoastExpansionDashboard() {
 
         {/* State Tabs */}
         <Tabs defaultValue="california" className="w-full">
-          <TabsList className="grid w-full grid-cols-4"><>
+          <TabsList className="grid w-full grid-cols-4">
+<>
 
             <TabsTrigger value="california">🏛️ California</TabsTrigger>
             <TabsTrigger
-</> value="oregon">🌲 Oregon</TabsTrigger><>
+</> value="oregon">🌲 Oregon</TabsTrigger>
+<>
 
             <TabsTrigger value="nevada">🎰 Nevada</TabsTrigger>
             <TabsTrigger
@@ -221,7 +232,8 @@ export default function WestCoastExpansionDashboard() {
           <TabsContent value="california" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2"><>
+                <CardTitle className="flex items-center gap-2">
+<>
 
                   <Building2 className="h-5 w-5" />
                   California Targets - $6.8M Total Value
@@ -233,11 +245,13 @@ export default function WestCoastExpansionDashboard() {
                 <div className="grid gap-4">
                   {californiaTargets.map((county) => (
                     <div key={county.name} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex items-center justify-between"><>
+                      <div className="flex items-center justify-between">
+<>
 
                         <h3 className="font-semibold text-lg">{county.name}</h3>
                         <div
-</> className="flex gap-2"><>
+</> className="flex gap-2">
+<>
 
                           <Badge className={getTierColor(county.tier)}>{county.tier}</Badge>
                           <Badge
@@ -246,25 +260,29 @@ export default function WestCoastExpansionDashboard() {
                       </div>
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Population</div>
                           <div
 </> className="font-medium">{county.population.toLocaleString()}</div>
                         </div>
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Parcels</div>
                           <div
 </> className="font-medium">{county.parcels.toLocaleString()}</div>
                         </div>
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Contract Value</div>
                           <div
 </> className="font-medium">${(county.contractValue / 1000000).toFixed(1)}M</div>
                         </div>
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Target Date</div>
                           <div
@@ -273,7 +291,8 @@ export default function WestCoastExpansionDashboard() {
                       </div>
 
                       <div className="space-y-2">
-                        <div className="flex justify-between text-sm"><>
+                        <div className="flex justify-between text-sm">
+<>
 
                           <span>Win Probability</span>
                           <span
@@ -291,7 +310,8 @@ export default function WestCoastExpansionDashboard() {
           <TabsContent value="oregon" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2"><>
+                <CardTitle className="flex items-center gap-2">
+<>
 
                   <Building2 className="h-5 w-5" />
                   Oregon Targets - $3.6M Total Value
@@ -303,11 +323,13 @@ export default function WestCoastExpansionDashboard() {
                 <div className="grid gap-4">
                   {oregonTargets.map((county) => (
                     <div key={county.name} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex items-center justify-between"><>
+                      <div className="flex items-center justify-between">
+<>
 
                         <h3 className="font-semibold text-lg">{county.name}</h3>
                         <div
-</> className="flex gap-2"><>
+</> className="flex gap-2">
+<>
 
                           <Badge className={getTierColor(county.tier)}>{county.tier}</Badge>
                           <Badge
@@ -316,25 +338,29 @@ export default function WestCoastExpansionDashboard() {
                       </div>
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Population</div>
                           <div
 </> className="font-medium">{county.population.toLocaleString()}</div>
                         </div>
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Parcels</div>
                           <div
 </> className="font-medium">{county.parcels.toLocaleString()}</div>
                         </div>
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Contract Value</div>
                           <div
 </> className="font-medium">${(county.contractValue / 1000000).toFixed(1)}M</div>
                         </div>
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Target Date</div>
                           <div
@@ -343,7 +369,8 @@ export default function WestCoastExpansionDashboard() {
                       </div>
 
                       <div className="space-y-2">
-                        <div className="flex justify-between text-sm"><>
+                        <div className="flex justify-between text-sm">
+<>
 
                           <span>Win Probability</span>
                           <span
@@ -361,7 +388,8 @@ export default function WestCoastExpansionDashboard() {
           <TabsContent value="nevada" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2"><>
+                <CardTitle className="flex items-center gap-2">
+<>
 
                   <Building2 className="h-5 w-5" />
                   Nevada Targets - $950K Total Value
@@ -373,11 +401,13 @@ export default function WestCoastExpansionDashboard() {
                 <div className="grid gap-4">
                   {nevadaTargets.map((county) => (
                     <div key={county.name} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex items-center justify-between"><>
+                      <div className="flex items-center justify-between">
+<>
 
                         <h3 className="font-semibold text-lg">{county.name}</h3>
                         <div
-</> className="flex gap-2"><>
+</> className="flex gap-2">
+<>
 
                           <Badge className={getTierColor(county.tier)}>{county.tier}</Badge>
                           <Badge
@@ -386,25 +416,29 @@ export default function WestCoastExpansionDashboard() {
                       </div>
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Population</div>
                           <div
 </> className="font-medium">{county.population.toLocaleString()}</div>
                         </div>
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Parcels</div>
                           <div
 </> className="font-medium">{county.parcels.toLocaleString()}</div>
                         </div>
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Contract Value</div>
                           <div
 </> className="font-medium">${(county.contractValue / 1000000).toFixed(1)}M</div>
                         </div>
-                        <div><>
+                        <div>
+<>
 
                           <div className="text-muted-foreground">Target Date</div>
                           <div
@@ -413,7 +447,8 @@ export default function WestCoastExpansionDashboard() {
                       </div>
 
                       <div className="space-y-2">
-                        <div className="flex justify-between text-sm"><>
+                        <div className="flex justify-between text-sm">
+<>
 
                           <span>Win Probability</span>
                           <span
@@ -431,7 +466,8 @@ export default function WestCoastExpansionDashboard() {
           <TabsContent value="timeline" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2"><>
+                <CardTitle className="flex items-center gap-2">
+<>
 
                   <Calendar className="h-5 w-5" />
                   West Coast Expansion Timeline
@@ -441,15 +477,18 @@ export default function WestCoastExpansionDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  <div className="border-l-4 border-blue-500 pl-4"><>
+                  <div className="border-l-4 border-blue-500 pl-4">
+<>
 
                     <h3 className="font-semibold text-blue-700">Q3 2025 - Market Entry</h3>
                     <ul
-</> className="mt-2 space-y-1 text-sm text-gray-600"><>
+</> className="mt-2 space-y-1 text-sm text-gray-600">
+<>
 
                       <li>• Establish California sales office</li>
                             <li
-</>>• Hire West Coast sales team (3 reps)</li><>
+</>>• Hire West Coast sales team (3 reps)</li>
+<>
 
                       <li>• Begin relationship building campaigns</li>
                             <li
@@ -457,15 +496,18 @@ export default function WestCoastExpansionDashboard() {
                     </ul>
                   </div>
 
-                  <div className="border-l-4 border-orange-500 pl-4"><>
+                  <div className="border-l-4 border-orange-500 pl-4">
+<>
 
                     <h3 className="font-semibold text-orange-700">Q4 2025 - Contract Negotiations</h3>
                     <ul
-</> className="mt-2 space-y-1 text-sm text-gray-600"><>
+</> className="mt-2 space-y-1 text-sm text-gray-600">
+<>
 
                       <li>• Riverside County RFP response</li>
                             <li
-</>>• Fresno County competitive bidding</li><>
+</>>• Fresno County competitive bidding</li>
+<>
 
                       <li>• Carson City direct negotiation</li>
                             <li
@@ -473,15 +515,18 @@ export default function WestCoastExpansionDashboard() {
                     </ul>
                   </div>
 
-                  <div className="border-l-4 border-green-500 pl-4"><>
+                  <div className="border-l-4 border-green-500 pl-4">
+<>
 
                     <h3 className="font-semibold text-green-700">Q1 2026 - Implementation Wave 1</h3>
                     <ul
-</> className="mt-2 space-y-1 text-sm text-gray-600"><>
+</> className="mt-2 space-y-1 text-sm text-gray-600">
+<>
 
                       <li>• Riverside County project kickoff</li>
                             <li
-</>>• Fresno County data migration start</li><>
+</>>• Fresno County data migration start</li>
+<>
 
                       <li>• Kern County planning phase</li>
                             <li
@@ -489,15 +534,18 @@ export default function WestCoastExpansionDashboard() {
                     </ul>
                   </div>
 
-                  <div className="border-l-4 border-purple-500 pl-4"><>
+                  <div className="border-l-4 border-purple-500 pl-4">
+<>
 
                     <h3 className="font-semibold text-purple-700">Q2-Q3 2026 - Full Deployment</h3>
                     <ul
-</> className="mt-2 space-y-1 text-sm text-gray-600"><>
+</> className="mt-2 space-y-1 text-sm text-gray-600">
+<>
 
                       <li>• All 9 counties in active implementation</li>
                             <li
-</>>• Regional support centers operational</li><>
+</>>• Regional support centers operational</li>
+<>
 
                       <li>• Parallel project management</li>
                             <li
@@ -520,19 +568,22 @@ export default function WestCoastExpansionDashboard() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center"><>
+              <div className="text-center">
+<>
 
                 <div className="text-3xl font-bold text-green-600">70%+</div>
                 <div
 </> className="text-sm text-muted-foreground">Target Win Rate</div>
               </div>
-              <div className="text-center"><>
+              <div className="text-center">
+<>
 
                 <div className="text-3xl font-bold text-blue-600">$8M+</div>
                 <div
 </> className="text-sm text-muted-foreground">New Contract Value</div>
               </div>
-              <div className="text-center"><>
+              <div className="text-center">
+<>
 
                 <div className="text-3xl font-bold text-purple-600">340%</div>
                 <div

@@ -287,10 +287,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - jaeger.terrafusion.gov
+        - jaeger.terrafusionmarket.com
       secretName: jaeger-tls
   rules:
-    - host: jaeger.terrafusion.gov
+    - host: jaeger.terrafusionmarket.com
       http:
         paths:
           - path: /

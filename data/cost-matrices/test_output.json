@@ -4260,7 +4260,7 @@
       "matrixYear": 2025,
       "baseCost": 5000.0,
       "minCost": 0.0,
-      "maxCost": 45000.0,
+      "maxCost": await DynamicPropertyService.GetPropertyCountAsync(countyCode).0,
       "dataPoints": 9,
       "adjustmentFactors": {
         "complexity": 1.0,
@@ -9751,7 +9751,7 @@
       "matrixYear": 2025,
       "baseCost": 19222.222222222223,
       "minCost": 0.0,
-      "maxCost": 45000.0,
+      "maxCost": await DynamicPropertyService.GetPropertyCountAsync(countyCode).0,
       "dataPoints": 9,
       "adjustmentFactors": {
         "complexity": 1.0,

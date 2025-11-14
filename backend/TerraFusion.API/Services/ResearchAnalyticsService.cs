@@ -35,7 +35,7 @@ public class ResearchAnalyticsService : IResearchAnalyticsService
         ResearchAnalysisRequest request,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Performing research analysis for researcher {ResearcherId} on dataset {DatasetId}", 
+        _logger.LogInformation("Performing research analysis for researcher {ResearcherId} on dataset {DatasetId}",
             request.ResearcherId, request.DatasetId);
 
         await Task.Delay(200, cancellationToken); // Simulate comprehensive analysis
@@ -65,8 +65,8 @@ public class ResearchAnalyticsService : IResearchAnalyticsService
                 "Prepare manuscript for publication in top-tier academic journals",
                 "Consider quantum enhancement for next phase of research"
             },
-            ConfidenceScore = request.Parameters.CustomParameters.ContainsKey("confidence_target") 
-                ? Convert.ToDecimal(request.Parameters.CustomParameters["confidence_target"]) 
+            ConfidenceScore = request.Parameters.CustomParameters.ContainsKey("confidence_target")
+                ? Convert.ToDecimal(request.Parameters.CustomParameters["confidence_target"])
                 : 0.999m,
             StatisticallySignificant = true
         };
@@ -97,7 +97,7 @@ public class ResearchAnalyticsService : IResearchAnalyticsService
 
         _analysisResults[result.AnalysisId] = result;
 
-        _logger.LogInformation("Research analysis completed successfully - Analysis ID: {AnalysisId}, Confidence: {ConfidenceScore}", 
+        _logger.LogInformation("Research analysis completed successfully - Analysis ID: {AnalysisId}, Confidence: {ConfidenceScore}",
             result.AnalysisId, insights.ConfidenceScore);
 
         return result;
@@ -111,7 +111,7 @@ public class ResearchAnalyticsService : IResearchAnalyticsService
         InsightParameters parameters,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Generating research insights for analysis {AnalysisId} with focus area: {FocusArea}", 
+        _logger.LogInformation("Generating research insights for analysis {AnalysisId} with focus area: {FocusArea}",
             analysisId, parameters.FocusArea);
 
         await Task.Delay(150, cancellationToken); // Simulate insight generation
@@ -146,7 +146,7 @@ public class ResearchAnalyticsService : IResearchAnalyticsService
         enhancedInsights.StatisticalMetrics[$"{parameters.FocusArea}_optimization_score"] = 0.95m;
         enhancedInsights.StatisticalMetrics[$"{parameters.FocusArea}_quantum_enhancement"] = 949m;
 
-        _logger.LogInformation("Research insights generated - Focus: {FocusArea}, Insights: {InsightCount}", 
+        _logger.LogInformation("Research insights generated - Focus: {FocusArea}, Insights: {InsightCount}",
             parameters.FocusArea, enhancedInsights.KeyFindings.Count);
 
         return enhancedInsights;
@@ -231,7 +231,7 @@ public class ResearchAnalyticsService : IResearchAnalyticsService
             GovernmentGradeCompliant = complianceScore >= 0.9m
         };
 
-        _logger.LogInformation("Methodology validation completed - Valid: {IsValid}, Score: {ComplianceScore:P2}", 
+        _logger.LogInformation("Methodology validation completed - Valid: {IsValid}, Score: {ComplianceScore:P2}",
             result.IsValid, result.ComplianceScore);
 
         return result;
@@ -245,7 +245,7 @@ public class ResearchAnalyticsService : IResearchAnalyticsService
         ExportFormat format,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Exporting research analytics for analysis {AnalysisId} in format {Format}", 
+        _logger.LogInformation("Exporting research analytics for analysis {AnalysisId} in format {Format}",
             analysisId, format);
 
         await Task.Delay(75, cancellationToken); // Simulate export generation
@@ -275,7 +275,7 @@ public class ResearchAnalyticsService : IResearchAnalyticsService
             ExportSuccessful = true
         };
 
-        _logger.LogInformation("Research analytics exported successfully - Export ID: {ExportId}, Format: {Format}", 
+        _logger.LogInformation("Research analytics exported successfully - Export ID: {ExportId}, Format: {Format}",
             result.ExportId, format);
 
         return result;

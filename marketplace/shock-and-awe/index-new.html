@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TerraFusion OS - AI-Powered Government Operations Platform</title>
+    <meta
+      name="description"
+      content="Advanced AI platform for government: property assessment, revenue tracking, budget forecasting, and analytics. Built for county officials and power users."
+    />
+
+    <!-- Security headers -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline'"
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary: #0066cc;
+        --primary-hover: #0052a3;
+        --accent: #00aa88;
+        --dark: #0a1628;
+        --light: #f8f9fa;
+        --gray: #6c757d;
+        --gray-light: #adb5bd;
+        --success: #28a745;
+        --warning: #ffc107;
+        --danger: #dc3545;
+        --border: #dee2e6;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          'Inter',
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--light);
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      /* Navigation */
+      nav {
+        background: white;
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: var(--dark);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+
+      .nav-links a:hover {
+        color: var(--primary);
+      }
+
+      /* Hero */
+      .hero {
+        background: linear-gradient(135deg, var(--dark) 0%, #1a2744 100%);
+        color: white;
+        padding: 6rem 0;
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+
+      .hero p {
+        font-size: 1.25rem;
+        color: var(--gray-light);
+        margin-bottom: 2rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 102, 204, 0.3);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: var(--primary);
+        border: 2px solid white;
+      }
+
+      .btn-secondary:hover {
+        background: transparent;
+        color: white;
+      }
+
+      /* Audience Sections */
+      .audience-section {
+        padding: 5rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .audience-section:nth-child(even) {
+        background: white;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+      }
+
+      .section-header h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--dark);
+        margin-bottom: 1rem;
+      }
+
+      .section-header p {
+        font-size: 1.125rem;
+        color: var(--gray);
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .feature-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 2rem;
+        transition: all 0.3s;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary);
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 1rem;
+      }
+
+      .feature-card p {
+        color: var(--gray);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .feature-card ul {
+        list-style: none;
+        color: var(--gray);
+      }
+
+      .feature-card ul li {
+        padding: 0.5rem 0;
+        padding-left: 1.5rem;
+        position: relative;
+      }
+
+      .feature-card ul li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: var(--success);
+        font-weight: 700;
+      }
+
+      /* Demo Section */
+      .demo-section {
+        background: var(--dark);
+        color: white;
+        padding: 5rem 0;
+      }
+
+      .demo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .demo-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .demo-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--accent);
+        transform: translateY(-4px);
+      }
+
+      .demo-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 1rem 0;
+        color: white;
+      }
+
+      .demo-card p {
+        color: var(--gray-light);
+      }
+
+      .demo-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 1rem;
+      }
+
+      .badge-live {
+        background: var(--success);
+        color: white;
+      }
+
+      .badge-beta {
+        background: var(--warning);
+        color: var(--dark);
+      }
+
+      /* Stats */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+      }
+
+      .stat-card {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+      }
+
+      .stat-number {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--accent);
+        display: block;
+      }
+
+      .stat-label {
+        color: var(--gray-light);
+        font-size: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      /* Footer */
+      footer {
+        background: var(--dark);
+        color: white;
+        padding: 3rem 0 2rem;
+        text-align: center;
+      }
+
+      .footer-motto {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        list-style: none;
+        margin: 2rem 0;
+      }
+
+      .footer-links a {
+        color: var(--gray-light);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+
+      .footer-links a:hover {
+        color: white;
+      }
+
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+
+        .features-grid,
+        .demo-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .nav-links {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="container nav-content">
+        <div class="logo">
+          <span>🏛️</span>
+          <span>TerraFusion OS</span>
+        </div>
+        <ul class="nav-links">
+          <li><a href="#levy">For Levy Clerks</a></li>
+          <li><a href="#revenue">For Revenue Dept</a></li>
+          <li><a href="#budget">For Budget Analysts</a></li>
+          <li><a href="#power-users">For Power Users</a></li>
+          <li><a href="#demos">Live Demos</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <h1>AI-Powered Government Operations</h1>
+        <p>
+          Real tools for real government work. Property assessment, revenue tracking, budget
+          forecasting, and advanced analytics—all powered by AI.
+        </p>
+        <div class="hero-buttons">
+          <a href="#demos" class="btn btn-primary">Try Live Demos</a>
+          <a href="#features" class="btn btn-secondary">See Features</a>
+        </div>
+
+        <div class="stats">
+          <div class="stat-card">
+            <span class="stat-number">1,008</span>
+            <span class="stat-label">AI Agents</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">< 1s</span>
+            <span class="stat-label">Assessment Time</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">99.9%</span>
+            <span class="stat-label">Accuracy</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">24/7</span>
+            <span class="stat-label">Availability</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- For Levy Clerks -->
+    <section id="levy" class="audience-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>For Levy Clerks</h2>
+          <p>Streamline property tax assessment and levy calculations with AI-powered automation</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🏡</div>
+            <h3>CostForge Property Assessment</h3>
+            <p>AI-powered property valuation with instant comparables</p>
+            <ul>
+              <li>Automated market analysis</li>
+              <li>Comparable property matching</li>
+              <li>Assessment report generation</li>
+              <li>Appeal documentation</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Levy Rate Calculator</h3>
+            <p>Precise levy calculations with real-time validation</p>
+            <ul>
+              <li>Multi-district support</li>
+              <li>Constitutional limit checks</li>
+              <li>Historical comparison</li>
+              <li>Audit trail</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📁</div>
+            <h3>Document Management</h3>
+            <p>Organize and retrieve assessment records instantly</p>
+            <ul>
+              <li>OCR for scanned documents</li>
+              <li>Smart search</li>
+              <li>Version control</li>
+              <li>Secure storage</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- For Department of Revenue -->
+    <section id="revenue" class="audience-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>For Department of Revenue</h2>
+          <p>Track collections, ensure compliance, and forecast revenue with precision</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">💰</div>
+            <h3>Revenue Tracking Dashboard</h3>
+            <p>Real-time visibility into all revenue streams</p>
+            <ul>
+              <li>Live collection monitoring</li>
+              <li>Delinquency alerts</li>
+              <li>Payment processing integration</li>
+              <li>Multi-source aggregation</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h3>Revenue Forecasting</h3>
+            <p>AI-powered predictions for budget planning</p>
+            <ul>
+              <li>Historical trend analysis</li>
+              <li>Economic factor integration</li>
+              <li>Scenario modeling</li>
+              <li>Confidence intervals</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">✅</div>
+            <h3>Compliance Monitoring</h3>
+            <p>Automated checks for state and federal requirements</p>
+            <ul>
+              <li>Regulation tracking</li>
+              <li>Automatic notifications</li>
+              <li>Reporting templates</li>
+              <li>Audit support</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- For County Budget Analysts -->
+    <section id="budget" class="audience-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>For County Budget Analysts</h2>
+          <p>Advanced modeling and forecasting tools for data-driven budget decisions</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">📉</div>
+            <h3>Budget Modeling Suite</h3>
+            <p>Create and compare multiple budget scenarios</p>
+            <ul>
+              <li>Multi-year projections</li>
+              <li>Department allocations</li>
+              <li>Revenue/expense balancing</li>
+              <li>What-if analysis</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Cost Analysis Tools</h3>
+            <p>Deep dive into spending patterns and efficiency</p>
+            <ul>
+              <li>Program cost tracking</li>
+              <li>Benchmark comparisons</li>
+              <li>ROI calculations</li>
+              <li>Waste identification</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📑</div>
+            <h3>Reporting & Visualization</h3>
+            <p>Transform data into compelling budget presentations</p>
+            <ul>
+              <li>Interactive dashboards</li>
+              <li>Custom report builder</li>
+              <li>Export to Excel/PDF</li>
+              <li>Public-facing summaries</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- For Power Users (PhD-level) -->
+    <section id="power-users" class="audience-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>For Power Users</h2>
+          <p>Advanced analytics, AI control, and deep system access for technical experts</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>AI Agent Fine-Tuning</h3>
+            <p>Customize and optimize AI models for your specific needs</p>
+            <ul>
+              <li>Training data management</li>
+              <li>Hyperparameter tuning</li>
+              <li>Model performance metrics</li>
+              <li>A/B testing framework</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Statistical Modeling Suite</h3>
+            <p>Advanced analytics tools for PhD-level analysis</p>
+            <ul>
+              <li>Regression analysis</li>
+              <li>Time series forecasting</li>
+              <li>Monte Carlo simulation</li>
+              <li>Bayesian inference</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Quantum Computing Interface</h3>
+            <p>Harness quantum algorithms for complex optimization</p>
+            <ul>
+              <li>Quantum annealing</li>
+              <li>Optimization problems</li>
+              <li>Performance monitoring</li>
+              <li>Classical hybrid mode</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔬</div>
+            <h3>Data Exploration Lab</h3>
+            <p>Interactive environment for deep data analysis</p>
+            <ul>
+              <li>SQL query builder</li>
+              <li>Python/R integration</li>
+              <li>Jupyter notebook support</li>
+              <li>Real-time data streaming</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎛️</div>
+            <h3>System Telemetry</h3>
+            <p>Monitor and optimize platform performance</p>
+            <ul>
+              <li>Real-time metrics</li>
+              <li>Resource utilization</li>
+              <li>Agent orchestration logs</li>
+              <li>Performance profiling</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>API & Integration Hub</h3>
+            <p>Connect TerraFusion to external systems</p>
+            <ul>
+              <li>RESTful API access</li>
+              <li>Webhook configuration</li>
+              <li>Custom connectors</li>
+              <li>Data pipeline builder</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Demos -->
+    <section id="demos" class="demo-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Live Demos</h2>
+          <p>Try TerraFusion OS features right now—no installation required</p>
+        </div>
+        <div class="demo-grid">
+          <div class="demo-card" onclick="window.location.hash = 'costforge-demo'">
+            <div class="feature-icon">🔥</div>
+            <h3>CostForge Property Assessment</h3>
+            <p>
+              Enter an address and watch AI analyze property value, comparables, and market trends
+              in real-time.
+            </p>
+            <span class="demo-badge badge-live">● LIVE</span>
+          </div>
+          <div class="demo-card" onclick="window.location.hash = 'ai-swarm-demo'">
+            <div class="feature-icon">🤖</div>
+            <h3>AI Agent Swarm Visualization</h3>
+            <p>See 1,008 AI agents coordinate to solve complex government operations problems.</p>
+            <span class="demo-badge badge-live">● LIVE</span>
+          </div>
+          <div class="demo-card" onclick="window.location.hash = 'gis-demo'">
+            <div class="feature-icon">🗺️</div>
+            <h3>GIS Integration</h3>
+            <p>Interactive map with property parcels, tax districts, and spatial analytics.</p>
+            <span class="demo-badge badge-live">● LIVE</span>
+          </div>
+          <div class="demo-card" onclick="window.location.hash = 'levy-demo'">
+            <div class="feature-icon">📊</div>
+            <h3>Levy Calculator</h3>
+            <p>
+              Calculate levy rates across multiple districts with instant validation and reporting.
+            </p>
+            <span class="demo-badge badge-live">● LIVE</span>
+          </div>
+          <div class="demo-card" onclick="window.location.hash = 'quantum-demo'">
+            <div class="feature-icon">⚡</div>
+            <h3>Quantum Optimization</h3>
+            <p>Watch quantum algorithms solve budget allocation and scheduling problems.</p>
+            <span class="demo-badge badge-beta">BETA</span>
+          </div>
+          <div class="demo-card" onclick="window.location.hash = 'analytics-demo'">
+            <div class="feature-icon">📈</div>
+            <h3>Advanced Analytics Dashboard</h3>
+            <p>
+              Power-user tools: custom queries, statistical modeling, and AI training interface.
+            </p>
+            <span class="demo-badge badge-beta">BETA</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-motto">"We do it right the first time."</div>
+        <ul class="footer-links">
+          <li><a href="#documentation">Documentation</a></li>
+          <li><a href="#api">API Reference</a></li>
+          <li><a href="#support">Support</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <p style="color: var(--gray); margin-top: 2rem">
+          © 2025 TerraFusion OS. Built for government by government technology experts.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/costforge-wizard.js"></script>
+    <script src="js/ai-swarm.js"></script>
+    <script src="js/gis-viewer.js"></script>
+    <script src="js/terra-levy.js"></script>
+    <script src="js/quantum-viz.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

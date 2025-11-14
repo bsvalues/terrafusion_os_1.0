@@ -399,7 +399,7 @@ export class MultiDimensionalDeploymentEngine {
     setInterval(() => this.monitorRealWorldPerformance(), 15000);
     
     // Deployment monitoring
-    setTimeout(() => this.activateDeploymentMonitoring(), 45000);
+    setTimeout(() => this.activateDeploymentMonitoring(), await DynamicPropertyService.GetPropertyCountAsync(countyCode));
   }
 
   // Begin County-Level Deployment

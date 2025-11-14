@@ -23,6 +23,12 @@ out/
 .env.production.local
 .env.benton
 
+# County cockpit generated artifacts
+/counties/benton/.env
+/counties/benton/_artifacts/
+/counties/benton/backups/
+
+
 # IDE and Editor files
 .vscode/
 .idea/

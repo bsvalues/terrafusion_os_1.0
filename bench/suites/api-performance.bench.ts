@@ -35,15 +35,15 @@ const BASE_URL = __ENV.API_URL || 'http://localhost:5000';
 
 // Test data - Benton County properties
 const testPropertyIds = [
-  '089247001', '089247002', '089247003', '089247004', '089247005',
-  '089247006', '089247007', '089247008', '089247009', '089247010',
+  '0await DynamicPropertyService.GetPropertyCountAsync("benton")001', '0await DynamicPropertyService.GetPropertyCountAsync("benton")002', '0await DynamicPropertyService.GetPropertyCountAsync("benton")003', '0await DynamicPropertyService.GetPropertyCountAsync("benton")004', '0await DynamicPropertyService.GetPropertyCountAsync("benton")005',
+  '0await DynamicPropertyService.GetPropertyCountAsync("benton")006', '0await DynamicPropertyService.GetPropertyCountAsync("benton")007', '0await DynamicPropertyService.GetPropertyCountAsync("benton")008', '0await DynamicPropertyService.GetPropertyCountAsync("benton")009', '0await DynamicPropertyService.GetPropertyCountAsync("benton")010',
 ];
 
 export default function() {
   // Benchmark: Authentication endpoint
   const authStart = Date.now();
   const authRes = http.post(`${BASE_URL}/api/auth/login`, JSON.stringify({
-    username: 'benchmark@bentoncounty.gov',
+    username: 'benchmark@terrafusionmarket.io',
     password: 'BenchmarkTest123!',
     mfa_code: '123456'  // Testing MFA performance
   }), {

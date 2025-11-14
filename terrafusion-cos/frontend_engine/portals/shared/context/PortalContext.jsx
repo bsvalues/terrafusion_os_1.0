@@ -24,7 +24,7 @@ export const PortalProvider = ({ children, portalName, portalConfig = {} }) => {
         const mockUser = {
           id: 1,
           name: 'Benton County Admin',
-          email: 'admin@bentoncounty.gov',
+          email: 'admin@terrafusionmarket.io',
           role: 'administrator',
           avatar: null,
           department: portalName,

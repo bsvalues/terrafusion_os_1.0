@@ -1,5 +1,0 @@
-<DataType Name="GPZDomain">
-  <DisplayName>Z Domain</DisplayName>
-  <Description>A range of lowest and highest possible values for z-coordinates.</Description>
-</DataType>
-

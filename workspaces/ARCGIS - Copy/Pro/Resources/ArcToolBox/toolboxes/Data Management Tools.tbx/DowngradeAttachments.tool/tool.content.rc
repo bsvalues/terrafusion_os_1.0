@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Downgrades the attachments functionality of a feature class or table.",
-        "in_dataset.descr": "The feature class or table that will have its attachments functionality downgraded.",
-        "in_dataset.title": "Input Dataset",
-        "out_dataset.title": "Output Dataset",
-        "title": "Downgrade Attachments"
-    }
-}

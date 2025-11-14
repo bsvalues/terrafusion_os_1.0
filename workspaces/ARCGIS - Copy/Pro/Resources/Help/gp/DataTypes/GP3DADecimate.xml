@@ -1,5 +1,0 @@
-<DataType Name="GP3DADecimate">
-  <DisplayName>Decimate</DisplayName>
-  <Description>Specifies a subset of nodes of a TIN to create a generalized version of that TIN.</Description>
-</DataType>
-

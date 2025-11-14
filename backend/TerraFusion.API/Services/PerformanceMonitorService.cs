@@ -295,9 +295,9 @@ public class PerformanceMonitorService : IPerformanceMonitor
     public IDisposable StartActivity(string activityName, string? context = null)
     {
         var activityId = Guid.NewGuid().ToString();
-        _logger.LogDebug("Starting performance activity {ActivityName} with ID {ActivityId} and context {Context}", 
+        _logger.LogDebug("Starting performance activity {ActivityName} with ID {ActivityId} and context {Context}",
             activityName, activityId, context ?? "none");
-        
+
         return new PerformanceActivity(activityName, activityId, context, _logger);
     }
 
@@ -405,7 +405,7 @@ public class PerformanceActivity : IDisposable
         if (!_disposed)
         {
             var duration = DateTime.UtcNow - _startTime;
-            _logger.LogDebug("Completed performance activity {ActivityName} with ID {ActivityId} in {Duration}ms", 
+            _logger.LogDebug("Completed performance activity {ActivityName} with ID {ActivityId} in {Duration}ms",
                 _activityName, _activityId, duration.TotalMilliseconds);
             _disposed = true;
         }

@@ -9,7 +9,7 @@
     "terra-dashboard-production",
     "bcbs-webhub-production"
   ],
-  "api_endpoint": "https://api.terrafusion.wa.gov/thurston",
+  "api_endpoint": "https://api.terrafusionmarket.io/thurston",
   "priority": "HIGH",
   "deployment_date": "2025-11-04",
   "tier": "Urban",

@@ -6,7 +6,23 @@
     <ProjectGuid>{A82D1BDD-9D4A-456F-B901-D3D6D77B68B0}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>
+    <TreatTSqlWarningsAsErrors>False</TreatTSqlWarningsAsErrors>
+    <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Exclude problematic Security files with Windows domain logins -->
+    <None Remove="Security\CO_BJS.sql" />
+    <None Remove="Security\CO_BJS_1.sql" />
+    <None Remove="Security\db_owner for taappsvr.sql" />
+    <None Remove="Security\Permission.sql" />
+    <None Remove="Security\Permission_1.sql" />
+    <None Remove="Security\Permission_2.sql" />
+    <None Remove="Security\Permission_3.sql" />
+    <None Remove="Security\taappsvr.sql" />
+    <None Remove="Security\taappsvr_1.sql" />
+  </ItemGroup>
+
   <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
   </Target>

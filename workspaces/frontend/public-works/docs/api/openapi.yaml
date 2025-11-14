@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: public-works-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/frontend/public-works
+    email: public-works-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/frontend/public-works
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/public-works
+  - url: https://api.terrafusionmarket.com/api/v1/public-works
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/public-works
+  - url: https://staging-api.terrafusionmarket.com/api/v1/public-works
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/public-works
+  - url: https://dev-api.terrafusionmarket.com/api/v1/public-works
     description: Development Environment
 paths:
   /infrastructure:
@@ -199,8 +199,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             public-works:read: Read access to public-works resources
             public-works:write: Write access to public-works resources
@@ -218,4 +218,4 @@ tags:
     description: Public Works operations
     externalDocs:
       description: Find out more about public-works
-      url: https://docs.terrafusion.gov/frontend/public-works
+      url: https://docs.terrafusionmarket.com/frontend/public-works

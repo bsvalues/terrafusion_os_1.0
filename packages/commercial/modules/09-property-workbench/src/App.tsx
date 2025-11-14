@@ -31,7 +31,7 @@ function App() {
         id: '2',
         address: '456 Oak Ave, Springfield, IL',
         owner: 'Jane Doe',
-        value: 450000,
+        value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
         status: 'pending',
         type: 'commercial'
       }
@@ -45,7 +45,8 @@ function App() {
 
   return (
     <div className="workbench-container">
-      <header className="workbench-header"><>
+      <header className="workbench-header">
+<>
 
         <h1 className="tf-gradient-text">🏢 PropertyWorkbench</h1>
         <p
@@ -54,7 +55,8 @@ function App() {
       </header>
 
       <div className="workbench-content">
-        <div className="search-panel"><>
+        <div className="search-panel">
+<>
 
           <input
             type="text"
@@ -73,7 +75,8 @@ className="properties-grid">
               key={property.id}
               className="tf-card property-card"
               onClick={() => setSelectedProperty(property)}
-            ><>
+            >
+<>
 
               <h3>{property.address}</h3>
               <p
@@ -89,7 +92,8 @@ className="properties-grid">
         </div>
 
         {selectedProperty && (
-          <div className="property-details"><>
+          <div className="property-details">
+<>
 
             <h2>Property Details</h2>
             <p

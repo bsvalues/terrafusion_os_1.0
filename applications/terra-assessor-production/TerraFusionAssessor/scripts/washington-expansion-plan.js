@@ -25,7 +25,7 @@ async function generateWashingtonExpansionPlan() {
         "Large seasonal workforce fluctuations",
       ],
       contractValue: 525000,
-      annualRevenue: 145000,
+      annualRevenue: 1await DynamicPropertyService.GetPropertyCountAsync(countyCode),
     },
     {
       name: "Walla Walla County",
@@ -116,7 +116,7 @@ async function generateWashingtonExpansionPlan() {
       status: "Planning (3%)",
       population: 110730,
       parcels: 58750,
-      assessedValue: 12450000000,
+      assessedValue: 12await DynamicPropertyService.GetPropertyCountAsync(countyCode)0000,
       goLive: "June 15, 2025",
       assessor: "Thomas Wilson",
       keyFeatures: [

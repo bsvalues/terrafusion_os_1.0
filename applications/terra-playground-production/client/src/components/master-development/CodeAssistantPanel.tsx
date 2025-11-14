@@ -994,43 +994,50 @@ export const ParcelViewer = () => {
           <CardContent>
             {selectedParcel ? (
               <div className="space-y-4">
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Property ID</h3>
                   <p
 </>>{selectedParcel?.property_id}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Owner</h3>
                   <p
 </>>{selectedParcel?.owner_name}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Address</h3>
                   <p
 </>>{selectedParcel?.site_address}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Zoning</h3>
                   <p
 </>>{selectedParcel?.zoning}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Assessed Value</h3>
                   <p
 </>>${selectedParcel?.assessed_value?.toLocaleString()}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Land Area</h3>
                   <p
 </>>{selectedParcel?.acres.toFixed(2)} acres</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Tax Status</h3>
                   <p
@@ -1184,7 +1191,8 @@ export const SalesRatioMap = () => {
       <div className="w-full md:w-3/5 h-full relative">
         <div className="absolute top-2 left-2 z-10 bg-white p-2 rounded shadow-md">
           <Select value={selectedYear.toString()} onValueChange={value => setSelectedYear(parseInt(value))}>
-            <SelectTrigger className="w-[180px]"><>
+            <SelectTrigger className="w-[180px]">
+<>
 
               <SelectValue placeholder="Select Year" />
             </SelectTrigger>
@@ -1255,14 +1263,16 @@ export const SalesRatioMap = () => {
           </Source>
         </Map>
         
-        <div className="absolute bottom-2 left-2 bg-white p-2 rounded shadow-md"><>
+        <div className="absolute bottom-2 left-2 bg-white p-2 rounded shadow-md">
+<>
 
           <div className="text-xs">Assessment to Sale Price Ratio</div>
           <div
 </> className="flex items-center mt-1">
             <div className="w-full h-4 bg-gradient-to-r from-[#d73027] via-[#ffffbf] to-[#4575b4]"></div>
           </div>
-          <div className="flex justify-between text-xs"><>
+          <div className="flex justify-between text-xs">
+<>
 
             <span>0.85</span>
             <span
@@ -1280,7 +1290,8 @@ export const SalesRatioMap = () => {
           <CardContent>
             {selectedNeighborhood ? (
               <div className="space-y-4">
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold text-lg">{selectedNeighborhood.name}</h3>
                   <p
@@ -1288,13 +1299,15 @@ export const SalesRatioMap = () => {
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-100 p-3 rounded"><>
+                  <div className="bg-gray-100 p-3 rounded">
+<>
 
                     <div className="text-sm text-gray-500">Sales Count</div>
                     <div
 </> className="text-xl font-bold">{selectedNeighborhood.sales_count}</div>
                   </div>
-                  <div className="bg-gray-100 p-3 rounded"><>
+                  <div className="bg-gray-100 p-3 rounded">
+<>
 
                     <div className="text-sm text-gray-500">Median Ratio</div>
                     <div
@@ -1302,7 +1315,8 @@ export const SalesRatioMap = () => {
                   </div>
                 </div>
                 
-                <div className="mt-4"><>
+                <div className="mt-4">
+<>
 
                   <h4 className="font-medium mb-2">Ratio Distribution</h4>
                   <ResponsiveContainer
@@ -1694,7 +1708,8 @@ export const ${className}: React.FC = () => {
                 className="px-2 py-1 border rounded-md"
                 value={searchType}
                 onChange={(e) => setSearchType(e.target.value as any)}
-              ><>
+              >
+<>
 
                 <option value="address">Address</option>
                 <option
@@ -1710,14 +1725,16 @@ export const ${className}: React.FC = () => {
           {isLoading && <p className="text-sm text-gray-500">Searching property records...</p>}
           
           {results.length > 0 && (
-            <div className="mt-4"><>
+            <div className="mt-4">
+<>
 
               <h3 className="text-lg font-medium mb-2">Search Results</h3>
               <div
 </> className="border rounded-md overflow-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
-                    <tr><>
+                    <tr>
+<>
 
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Property ID
@@ -1725,7 +1742,8 @@ export const ${className}: React.FC = () => {
                       <th
 </> className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Address
-                      </th><>
+                      </th>
+<>
 
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Owner
@@ -1738,7 +1756,8 @@ export const ${className}: React.FC = () => {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {results.map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => setPropertyData(item)}><>
+                      <tr key={item.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => setPropertyData(item)}>
+<>
 
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {item?.propertyId}
@@ -1746,7 +1765,8 @@ export const ${className}: React.FC = () => {
                         <td
 </> className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {item?.address}
-                        </td><>
+                        </td>
+<>
 
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {item?.ownerName}
@@ -1901,30 +1921,35 @@ export const ${className}: React.FC<{ propertyId: string }> = ({ propertyId }) =
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div><>
+            <div>
+<>
 
               <h3 className="text-lg font-medium mb-3">Property Information</h3>
               <div
 </> className="space-y-2">
-                <div className="flex justify-between"><>
+                <div className="flex justify-between">
+<>
 
                   <span className="text-gray-500">Property ID:</span>
                   <span
 </> className="font-medium">{propertyData.propertyId}</span>
                 </div>
-                <div className="flex justify-between"><>
+                <div className="flex justify-between">
+<>
 
                   <span className="text-gray-500">Tax Lot:</span>
                   <span
 </> className="font-medium">{propertyData.taxLot}</span>
                 </div>
-                <div className="flex justify-between"><>
+                <div className="flex justify-between">
+<>
 
                   <span className="text-gray-500">Zoning:</span>
                   <span
 </> className="font-medium">{propertyData.zoning}</span>
                 </div>
-                <div className="flex justify-between"><>
+                <div className="flex justify-between">
+<>
 
                   <span className="text-gray-500">Land Area:</span>
                   <span
@@ -1933,24 +1958,28 @@ export const ${className}: React.FC<{ propertyId: string }> = ({ propertyId }) =
               </div>
             </div>
             
-            <div><>
+            <div>
+<>
 
               <h3 className="text-lg font-medium mb-3">Assessment Information</h3>
               <div
 </> className="space-y-2">
-                <div className="flex justify-between"><>
+                <div className="flex justify-between">
+<>
 
                   <span className="text-gray-500">Assessed Value:</span>
                   <span
 </> className="font-medium">${propertyData?.assessedValue?.toLocaleString() || 'N/A'}</span>
                 </div>
-                <div className="flex justify-between"><>
+                <div className="flex justify-between">
+<>
 
                   <span className="text-gray-500">Land Value:</span>
                   <span
 </> className="font-medium">${propertyData?.landValue?.toLocaleString() || 'N/A'}</span>
                 </div>
-                <div className="flex justify-between"><>
+                <div className="flex justify-between">
+<>
 
                   <span className="text-gray-500">Improvement Value:</span>
                   <span
@@ -1960,7 +1989,8 @@ export const ${className}: React.FC<{ propertyId: string }> = ({ propertyId }) =
                       : 'N/A'
                   }</span>
                 </div>
-                <div className="flex justify-between"><>
+                <div className="flex justify-between">
+<>
 
                   <span className="text-gray-500">Last Assessment:</span>
                   <span
@@ -1972,7 +2002,8 @@ export const ${className}: React.FC<{ propertyId: string }> = ({ propertyId }) =
           </div>
           
           <Tabs defaultValue="ownership" className="mt-6">
-            <TabsList><>
+            <TabsList>
+<>
 
               <TabsTrigger value="ownership">Ownership</TabsTrigger>
               <TabsTrigger
@@ -1987,19 +2018,22 @@ export const ${className}: React.FC<{ propertyId: string }> = ({ propertyId }) =
                 </div>
                 <div className="border rounded-md p-4">
                   <div className="space-y-2">
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span className="text-gray-500">Name:</span>
                       <span
 </> className="font-medium">{propertyData?.ownerName || 'N/A'}</span>
                     </div>
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span className="text-gray-500">Owner Since:</span>
                       <span
 </> className="font-medium">{propertyData?.ownerSince || 'N/A'}</span>
                     </div>
-                    <div className="flex justify-between"><>
+                    <div className="flex justify-between">
+<>
 
                       <span className="text-gray-500">Mailing Address:</span>
                       <span
@@ -2016,26 +2050,30 @@ export const ${className}: React.FC<{ propertyId: string }> = ({ propertyId }) =
                   {propertyData.improvements.map((improvement /* , index */) => (
                     <Card key={index}>
                       <CardContent className="pt-4">
-                        <div className="flex justify-between items-center mb-2"><>
+                        <div className="flex justify-between items-center mb-2">
+<>
 
                           <h4 className="font-medium">{improvement?.type || 'Unknown'}</h4>
                           <span
 </> className="text-sm text-gray-500">Built {improvement?.yearBuilt || 'N/A'}</span>
                         </div>
                         <div className="space-y-1 text-sm">
-                          <div className="flex justify-between"><>
+                          <div className="flex justify-between">
+<>
 
                             <span className="text-gray-500">Square Feet:</span>
                             <span
 </>>{improvement?.squareFeet || 'N/A'}</span>
                           </div>
-                          <div className="flex justify-between"><>
+                          <div className="flex justify-between">
+<>
 
                             <span className="text-gray-500">Value:</span>
                             <span
 </>>${improvement?.value?.toLocaleString() || 'N/A'}</span>
                           </div>
-                          <div className="flex justify-between"><>
+                          <div className="flex justify-between">
+<>
 
                             <span className="text-gray-500">Condition:</span>
                             <span
@@ -2055,11 +2093,13 @@ export const ${className}: React.FC<{ propertyId: string }> = ({ propertyId }) =
               <div className="border rounded-md overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
-                    <tr><>
+                    <tr>
+<>
 
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
                       <th
-</> className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th><>
+</> className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th>
+<>
 
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Land Value</th>
                       <th
@@ -2069,11 +2109,13 @@ export const ${className}: React.FC<{ propertyId: string }> = ({ propertyId }) =
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {propertyData.assessmentHistory?.map((assessment /* , index */) => (
-                      <tr key={index}><>
+                      <tr key={index}>
+<>
 
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{assessment?.year || 'N/A'}</td>
                         <td
-</> className="px-6 py-4 whitespace-nowrap text-sm">${assessment?.value?.toLocaleString() || 'N/A'}</td><>
+</> className="px-6 py-4 whitespace-nowrap text-sm">${assessment?.value?.toLocaleString() || 'N/A'}</td>
+<>
 
                         <td className="px-6 py-4 whitespace-nowrap text-sm">${assessment?.value ? (assessment.value * 0.4).toLocaleString() : 'N/A'}</td>
                         <td
@@ -2244,7 +2286,8 @@ export const ${className}: React.FC = () => {
         </div>
         
         <div className="absolute top-2 right-2 z-10">
-          <div className="bg-white p-2 rounded shadow-md flex space-x-2"><>
+          <div className="bg-white p-2 rounded shadow-md flex space-x-2">
+<>
 
             <Button 
               size="sm" 
@@ -2317,43 +2360,50 @@ export const ${className}: React.FC = () => {
           <CardContent>
             {selectedParcelDetails ? (
               <div className="space-y-4">
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Property ID</h3>
                   <p
 </>>{selectedParcelDetails?.property_id}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Owner</h3>
                   <p
 </>>{selectedParcelDetails?.owner_name}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Address</h3>
                   <p
 </>>{selectedParcelDetails?.site_address}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Zoning</h3>
                   <p
 </>>{selectedParcelDetails?.zoning}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Assessed Value</h3>
                   <p
 </>>\${selectedParcelDetails?.assessed_value?.toLocaleString()}</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Land Area</h3>
                   <p
 </>>{selectedParcelDetails?.acres?.toFixed(2)} acres</p>
                 </div>
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold">Tax Status</h3>
                   <p
@@ -2420,7 +2470,7 @@ export const ${className}: React.FC = () => {
   
   // Sample data for demonstration - would be replaced with real data
   const yearlyValueTrends = [
-    { year: '2020', residentialValue: 2450000000, commercialValue: 980000000, agriculturalValue: 340000000 },
+    { year: '2020', residentialValue: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode)0000, commercialValue: 980000000, agriculturalValue: 340000000 },
     { year: '2021', residentialValue: 2650000000, commercialValue: 1020000000, agriculturalValue: 360000000 },
     { year: '2022', residentialValue: 2900000000, commercialValue: 1080000000, agriculturalValue: 380000000 },
     { year: '2023', residentialValue: 3100000000, commercialValue: 1150000000, agriculturalValue: 395000000 },
@@ -2440,7 +2490,7 @@ export const ${className}: React.FC = () => {
     { district: 'North', value: 425000 },
     { district: 'South', value: 380000 },
     { district: 'East', value: 410000 },
-    { district: 'West', value: 450000 },
+    { district: 'West', value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 },
     { district: 'Central', value: 490000 },
   ];
   
@@ -2457,7 +2507,8 @@ export const ${className}: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div><>
+        <div>
+<>
 
           <h1 className="text-2xl font-bold">${context.county} Assessment Dashboard</h1>
           <p
@@ -2466,7 +2517,8 @@ export const ${className}: React.FC = () => {
         
         <div className="flex gap-3">
           <Select value={selectedYear} onValueChange={setSelectedYear}>
-            <SelectTrigger className="w-[100px]"><>
+            <SelectTrigger className="w-[100px]">
+<>
 
               <SelectValue placeholder="Year" />
             </SelectTrigger>
@@ -2479,20 +2531,24 @@ export const ${className}: React.FC = () => {
           </Select>
           
           <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
-            <SelectTrigger className="w-[150px]"><>
+            <SelectTrigger className="w-[150px]">
+<>
 
               <SelectValue placeholder="District" />
             </SelectTrigger>
             <SelectContent
-</>><>
+</>>
+<>
 
               <SelectItem value="all">All Districts</SelectItem>
               <SelectItem
-</> value="north">North District</SelectItem><>
+</> value="north">North District</SelectItem>
+<>
 
               <SelectItem value="south">South District</SelectItem>
               <SelectItem
-</> value="east">East District</SelectItem><>
+</> value="east">East District</SelectItem>
+<>
 
               <SelectItem value="west">West District</SelectItem>
               <SelectItem
@@ -2509,7 +2565,8 @@ export const ${className}: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center"><>
+            <div className="text-center">
+<>
 
               <p className="text-sm font-medium text-gray-500 mb-1">Total Assessed Value</p>
               <p
@@ -2521,7 +2578,8 @@ export const ${className}: React.FC = () => {
         
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center"><>
+            <div className="text-center">
+<>
 
               <p className="text-sm font-medium text-gray-500 mb-1">Properties Assessed</p>
               <p
@@ -2533,7 +2591,8 @@ export const ${className}: React.FC = () => {
         
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center"><>
+            <div className="text-center">
+<>
 
               <p className="text-sm font-medium text-gray-500 mb-1">Median Property Value</p>
               <p
@@ -2545,7 +2604,8 @@ export const ${className}: React.FC = () => {
         
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center"><>
+            <div className="text-center">
+<>
 
               <p className="text-sm font-medium text-gray-500 mb-1">Appeals Rate</p>
               <p
@@ -2558,19 +2618,22 @@ export const ${className}: React.FC = () => {
       
       <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="overview" className="flex items-center"><>
+          <TabsTrigger value="overview" className="flex items-center">
+<>
 
             <BarChart2 className="h-4 w-4 mr-2" />
             Value Trends
           </TabsTrigger>
           <TabsTrigger
-</> value="district" className="flex items-center"><>
+</> value="district" className="flex items-center">
+<>
 
             <MapPin className="h-4 w-4 mr-2" />
             District Analysis
           </TabsTrigger>
           <TabsTrigger
-</> value="property-types" className="flex items-center"><>
+</> value="property-types" className="flex items-center">
+<>
 
             <PieChart className="h-4 w-4 mr-2" />
             Property Types
@@ -2584,7 +2647,8 @@ export const ${className}: React.FC = () => {
         
         <TabsContent value="overview" className="pt-6">
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Total Assessed Value Trends by Property Type</CardTitle>
               <CardDescription
@@ -2614,7 +2678,8 @@ export const ${className}: React.FC = () => {
         
         <TabsContent value="district" className="pt-6">
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Median Property Values by District</CardTitle>
               <CardDescription
@@ -2643,7 +2708,8 @@ export const ${className}: React.FC = () => {
         <TabsContent value="property-types" className="pt-6">
           {/* Property type distribution visualization would go here */}
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Property Type Distribution</CardTitle>
               <CardDescription
@@ -2656,7 +2722,8 @@ export const ${className}: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-6 w-full">
                     {propertyTypeDistribution.map((item) => (
                       <Card key={item.name}>
-                        <CardContent className="p-4 text-center"><>
+                        <CardContent className="p-4 text-center">
+<>
 
                           <div className="text-3xl font-bold">{item.value}%</div>
                           <div
@@ -2673,7 +2740,8 @@ export const ${className}: React.FC = () => {
         
         <TabsContent value="market-trends" className="pt-6">
           <Card>
-            <CardHeader><>
+            <CardHeader>
+<>
 
               <CardTitle>Market Value to Assessed Value Ratio</CardTitle>
               <CardDescription
@@ -2964,7 +3032,8 @@ export const ${className}: React.FC = () => {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center"><>
+              <CardTitle className="flex items-center">
+<>
 
                 <Calculator className="mr-2 h-5 w-5 text-amber-500" />
                 Property Assessment Calculator
@@ -2977,7 +3046,8 @@ export const ${className}: React.FC = () => {
             <CardContent>
               <Tabs defaultValue="residential" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="mb-6">
-                  <TabsTrigger value="residential" className="flex items-center"><>
+                  <TabsTrigger value="residential" className="flex items-center">
+<>
 
                     <Home className="mr-2 h-4 w-4" />
                     Residential
@@ -2991,13 +3061,15 @@ export const ${className}: React.FC = () => {
 
                 <TabsContent value="residential">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div><>
+                    <div>
+<>
 
                       <h3 className="text-lg font-medium mb-4">Property Characteristics</h3>
                       <div
 </> className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">
                               Land Area (sq ft)
@@ -3014,7 +3086,8 @@ export const ${className}: React.FC = () => {
                               }
                             />
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">
                               Land Value (per sq ft)
@@ -3034,7 +3107,8 @@ export const ${className}: React.FC = () => {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">
                               Building Area (sq ft)
@@ -3051,7 +3125,8 @@ export const ${className}: React.FC = () => {
                               }
                             />
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">Year Built</label>
                             <Input
@@ -3069,7 +3144,8 @@ export const ${className}: React.FC = () => {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">Quality</label>
                             <Select
@@ -3082,20 +3158,24 @@ export const ${className}: React.FC = () => {
                                 })
                               }
                             >
-                              <SelectTrigger><>
+                              <SelectTrigger>
+<>
 
                                 <SelectValue placeholder="Select quality" />
                               </SelectTrigger>
                               <SelectContent
-</>><>
+</>>
+<>
 
                                 <SelectItem value="low">Low</SelectItem>
                                 <SelectItem
-</> value="below-average">Below Average</SelectItem><>
+</> value="below-average">Below Average</SelectItem>
+<>
 
                                 <SelectItem value="average">Average</SelectItem>
                                 <SelectItem
-</> value="above-average">Above Average</SelectItem><>
+</> value="above-average">Above Average</SelectItem>
+<>
 
                                 <SelectItem value="high">High</SelectItem>
                                 <SelectItem
@@ -3103,7 +3183,8 @@ export const ${className}: React.FC = () => {
                               </SelectContent>
                             </Select>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">
                               Neighborhood
@@ -3118,16 +3199,19 @@ export const ${className}: React.FC = () => {
                                 })
                               }
                             >
-                              <SelectTrigger><>
+                              <SelectTrigger>
+<>
 
                                 <SelectValue placeholder="Select neighborhood" />
                               </SelectTrigger>
                               <SelectContent
-</>><>
+</>>
+<>
 
                                 <SelectItem value="low">Low Value Area</SelectItem>
                                 <SelectItem
-</> value="below-average">Below Average Area</SelectItem><>
+</> value="below-average">Below Average Area</SelectItem>
+<>
 
                                 <SelectItem value="average">Average Area</SelectItem>
                                 <SelectItem
@@ -3139,7 +3223,8 @@ export const ${className}: React.FC = () => {
                         </div>
 
                         <div className="grid grid-cols-3 gap-4">
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">Bedrooms</label>
                             <Input
@@ -3154,7 +3239,8 @@ export const ${className}: React.FC = () => {
                               }
                             />
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">Bathrooms</label>
                             <Input
@@ -3170,7 +3256,8 @@ export const ${className}: React.FC = () => {
                               }
                             />
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">Stories</label>
                             <Input
@@ -3238,13 +3325,15 @@ export const ${className}: React.FC = () => {
 
                 <TabsContent value="commercial">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div><>
+                    <div>
+<>
 
                       <h3 className="text-lg font-medium mb-4">Property Characteristics</h3>
                       <div
 </> className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">
                               Land Area (sq ft)
@@ -3261,7 +3350,8 @@ export const ${className}: React.FC = () => {
                               }
                             />
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">
                               Land Value (per sq ft)
@@ -3281,7 +3371,8 @@ export const ${className}: React.FC = () => {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">
                               Building Area (sq ft)
@@ -3298,7 +3389,8 @@ export const ${className}: React.FC = () => {
                               }
                             />
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">Year Built</label>
                             <Input
@@ -3316,7 +3408,8 @@ export const ${className}: React.FC = () => {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">
                               Building Type
@@ -3331,16 +3424,19 @@ export const ${className}: React.FC = () => {
                                 })
                               }
                             >
-                              <SelectTrigger><>
+                              <SelectTrigger>
+<>
 
                                 <SelectValue placeholder="Select type" />
                               </SelectTrigger>
                               <SelectContent
-</>><>
+</>>
+<>
 
                                 <SelectItem value="retail">Retail</SelectItem>
                                 <SelectItem
-</> value="office">Office</SelectItem><>
+</> value="office">Office</SelectItem>
+<>
 
                                 <SelectItem value="industrial">Industrial</SelectItem>
                                 <SelectItem
@@ -3349,7 +3445,8 @@ export const ${className}: React.FC = () => {
                               </SelectContent>
                             </Select>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">Condition</label>
                             <Select
@@ -3362,16 +3459,19 @@ export const ${className}: React.FC = () => {
                                 })
                               }
                             >
-                              <SelectTrigger><>
+                              <SelectTrigger>
+<>
 
                                 <SelectValue placeholder="Select condition" />
                               </SelectTrigger>
                               <SelectContent
-</>><>
+</>>
+<>
 
                                 <SelectItem value="poor">Poor</SelectItem>
                                 <SelectItem
-</> value="fair">Fair</SelectItem><>
+</> value="fair">Fair</SelectItem>
+<>
 
                                 <SelectItem value="average">Average</SelectItem>
                                 <SelectItem
@@ -3383,7 +3483,8 @@ export const ${className}: React.FC = () => {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">Location</label>
                             <Select
@@ -3396,16 +3497,19 @@ export const ${className}: React.FC = () => {
                                 })
                               }
                             >
-                              <SelectTrigger><>
+                              <SelectTrigger>
+<>
 
                                 <SelectValue placeholder="Select location" />
                               </SelectTrigger>
                               <SelectContent
-</>><>
+</>>
+<>
 
                                 <SelectItem value="rural">Rural</SelectItem>
                                 <SelectItem
-</> value="suburban">Suburban</SelectItem><>
+</> value="suburban">Suburban</SelectItem>
+<>
 
                                 <SelectItem value="urban">Urban</SelectItem>
                                 <SelectItem
@@ -3413,7 +3517,8 @@ export const ${className}: React.FC = () => {
                               </SelectContent>
                             </Select>
                           </div>
-                          <div><>
+                          <div>
+<>
 
                             <label className="text-sm font-medium text-gray-700">Stories</label>
                             <Input
@@ -3477,7 +3582,8 @@ export const ${className}: React.FC = () => {
 
           {calculationResults && (
             <Card>
-              <CardHeader><>
+              <CardHeader>
+<>
 
                 <CardTitle>Calculation Results</CardTitle>
                 <CardDescription
@@ -3489,7 +3595,8 @@ export const ${className}: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Card>
                     <CardContent className="pt-6">
-                      <div className="text-center"><>
+                      <div className="text-center">
+<>
 
                         <p className="text-sm font-medium text-gray-500 mb-1">Land Value</p>
                         <p
@@ -3502,7 +3609,8 @@ export const ${className}: React.FC = () => {
 
                   <Card>
                     <CardContent className="pt-6">
-                      <div className="text-center"><>
+                      <div className="text-center">
+<>
 
                         <p className="text-sm font-medium text-gray-500 mb-1">Improvements Value</p>
                         <p
@@ -3515,7 +3623,8 @@ export const ${className}: React.FC = () => {
 
                   <Card>
                     <CardContent className="pt-6">
-                      <div className="text-center"><>
+                      <div className="text-center">
+<>
 
                         <p className="text-sm font-medium text-gray-500 mb-1">
                           Total Assessed Value
@@ -3529,14 +3638,16 @@ export const ${className}: React.FC = () => {
                   </Card>
                 </div>
 
-                <div className="mt-6"><>
+                <div className="mt-6">
+<>
 
                   <h3 className="font-medium text-lg mb-4">Calculation Breakdown</h3>
                   <div
 </> className="space-y-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {Object.entries(calculationResults.details).map(([key, value]) => (
-                        <div key={key} className="p-3 bg-gray-50 rounded-md"><>
+                        <div key={key} className="p-3 bg-gray-50 rounded-md">
+<>
 
                           <div className="text-sm text-gray-500">
                             {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
@@ -3684,7 +3795,8 @@ export const ${className}: React.FC = () => {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <div><>
+          <div>
+<>
 
             <h2 className="text-2xl font-bold">Benton County Code Assistant</h2>
             <p
@@ -3696,31 +3808,36 @@ export const ${className}: React.FC = () => {
 
         <Tabs defaultValue="assistant" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-6 mb-6">
-            <TabsTrigger value="assistant" className="flex items-center"><>
+            <TabsTrigger value="assistant" className="flex items-center">
+<>
 
               <Brain className="mr-2 h-4 w-4" />
               AI Assistant
             </TabsTrigger>
             <TabsTrigger
-</> value="templates"><>
+</> value="templates">
+<>
 
               <FileCode className="mr-2 h-4 w-4" />
               Templates
             </TabsTrigger>
             <TabsTrigger
-</> value="snippets"><>
+</> value="snippets">
+<>
 
               <Code className="mr-2 h-4 w-4" />
               Snippets
             </TabsTrigger>
             <TabsTrigger
-</> value="models"><>
+</> value="models">
+<>
 
               <Database className="mr-2 h-4 w-4" />
               Data Models
             </TabsTrigger>
             <TabsTrigger
-</> value="generator"><>
+</> value="generator">
+<>
 
               <Sparkles className="mr-2 h-4 w-4" />
               App Generator
@@ -3737,7 +3854,8 @@ export const ${className}: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
               <Card className="lg:col-span-3">
                 <CardHeader>
-                  <CardTitle className="flex items-center"><>
+                  <CardTitle className="flex items-center">
+<>
 
                     <Brain className="h-5 w-5 mr-2 text-primary" />
                     Property Assessment Code Assistant
@@ -3753,7 +3871,8 @@ export const ${className}: React.FC = () => {
                       <div className="space-y-4">
                         {assistantHistory.length === 0 && (
                           <div className="text-center py-8 text-gray-500">
-                            <Lightbulb className="h-12 w-12 mx-auto mb-2 opacity-50" /><>
+                            <Lightbulb className="h-12 w-12 mx-auto mb-2 opacity-50" />
+<>
 
                             <p className="text-lg font-medium">How can I help you?</p>
                             <p
@@ -3769,7 +3888,8 @@ export const ${className}: React.FC = () => {
                                     'Create a property search component with address autocomplete'
                                   )
                                 }
-                              ><>
+                              >
+<>
 
                                 <Search className="h-4 w-4 mr-2" />
                                 Property search component
@@ -3779,7 +3899,8 @@ export const ${className}: React.FC = () => {
                                 variant="outline"
                                 className="text-sm justify-start"
                                 onClick={() => setInputValue('Build a PACS data import utility')}
-                              ><>
+                              >
+<>
 
                                 <Upload className="h-4 w-4 mr-2" />
                                 PACS data import utility
@@ -3791,7 +3912,8 @@ export const ${className}: React.FC = () => {
                                 onClick={() =>
                                   setInputValue('Generate a tax lot mapping component')
                                 }
-                              ><>
+                              >
+<>
 
                                 <Map className="h-4 w-4 mr-2" />
                                 Tax lot mapping component
@@ -3827,7 +3949,8 @@ export const ${className}: React.FC = () => {
                               }
                             >
                               {message.role === 'user' ? (
-                                <div className="flex items-start"><>
+                                <div className="flex items-start">
+<>
 
                                   <div className="mr-2 mt-0.5 h-6 w-6 rounded-full bg-primary-foreground/20 flex items-center justify-center text-xs font-semibold">
                                     Y
@@ -3839,7 +3962,8 @@ export const ${className}: React.FC = () => {
                                 </div>
                               ) : (
                                 <div className="flex items-start">
-                                  <div className="mr-2 mt-0.5 h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center"><>
+                                  <div className="mr-2 mt-0.5 h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
+<>
 
                                     <Brain className="h-3.5 w-3.5 text-primary" />
                                   </div>
@@ -3888,7 +4012,8 @@ export const ${className}: React.FC = () => {
               </Card>
 
               <Card className="lg:col-span-2">
-                <CardHeader><>
+                <CardHeader>
+<>
 
                   <CardTitle>Code Editor</CardTitle>
                   <CardDescription
@@ -3937,7 +4062,8 @@ export const ${className}: React.FC = () => {
                     )}
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm"><>
+                    <Button variant="outline" size="sm">
+<>
 
                       <TerminalSquare className="h-4 w-4 mr-2" />
                       Test
@@ -3964,7 +4090,8 @@ export const ${className}: React.FC = () => {
                         <Layout className="h-4 w-4 mr-2 text-primary" />
                       ) : template.category === 'Business Logic' ? (
                         <Cpu className="h-4 w-4 mr-2 text-primary" />
-                      ) : (<>
+                      ) : (
+<>
 
                         <FileCode className="h-4 w-4 mr-2 text-primary" />
                       )}
@@ -3974,7 +4101,8 @@ export const ${className}: React.FC = () => {
 </> className="text-xs">{template.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="pb-2">
-                    <div className="mb-3 flex flex-wrap gap-1"><>
+                    <div className="mb-3 flex flex-wrap gap-1">
+<>
 
                       <Badge variant="outline" className="text-xs">
                         {template.language}
@@ -4017,7 +4145,8 @@ export const ${className}: React.FC = () => {
               {codeSnippets.map(snippet => (
                 <Card key={snippet.id}>
                   <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start"><>
+                    <div className="flex justify-between items-start">
+<>
 
                       <CardTitle className="text-base">{snippet.title}</CardTitle>
                       <Badge
@@ -4039,7 +4168,8 @@ export const ${className}: React.FC = () => {
                       ))}
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-between"><>
+                  <CardFooter className="flex justify-between">
+<>
 
                     <div className="text-xs text-gray-500">Used {snippet.usageCount} times</div>
                     <Button
@@ -4057,7 +4187,8 @@ export const ${className}: React.FC = () => {
           <TabsContent value="models">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card className="lg:col-span-1">
-                <CardHeader><>
+                <CardHeader>
+<>
 
                   <CardTitle>Benton County Data Models</CardTitle>
                   <CardDescription
@@ -4093,7 +4224,8 @@ export const ${className}: React.FC = () => {
                             >
                               <Code className="h-4 w-4" />
                             </Button>
-                          </div><>
+                          </div>
+<>
 
                           <p className="mt-1 text-sm text-gray-500">{model.description}</p>
                           <div
@@ -4109,7 +4241,8 @@ export const ${className}: React.FC = () => {
               </Card>
 
               <Card className="lg:col-span-2">
-                <CardHeader><>
+                <CardHeader>
+<>
 
                   <CardTitle>Model Details</CardTitle>
                   <CardDescription
@@ -4122,14 +4255,16 @@ export const ${className}: React.FC = () => {
                 <CardContent>
                   {selectedModel ? (
                     <div className="space-y-6">
-                      <div><>
+                      <div>
+<>
 
                         <h3 className="text-sm font-medium mb-2">Fields</h3>
                         <div
 </> className="bg-gray-50 dark:bg-gray-900 rounded border">
                           <table className="min-w-full divide-y divide-gray-200">
                             <thead>
-                              <tr className="bg-gray-50 dark:bg-gray-900"><>
+                              <tr className="bg-gray-50 dark:bg-gray-900">
+<>
 
                                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                   Name
@@ -4137,7 +4272,8 @@ export const ${className}: React.FC = () => {
                                 <th
 </> className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                   Type
-                                </th><>
+                                </th>
+<>
 
                                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                   Description
@@ -4153,7 +4289,8 @@ export const ${className}: React.FC = () => {
                                 <tr
                                   key={index}
                                   className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                                ><>
+                                >
+<>
 
                                   <td className="px-3 py-2 text-sm font-medium">{field.name}</td>
                                   <td
@@ -4161,7 +4298,8 @@ export const ${className}: React.FC = () => {
                                     <Badge variant="outline" className="font-mono text-xs">
                                       {field.type}
                                     </Badge>
-                                  </td><>
+                                  </td>
+<>
 
                                   <td className="px-3 py-2 text-sm text-gray-500">
                                     {field.description}
@@ -4177,7 +4315,8 @@ export const ${className}: React.FC = () => {
                         </div>
                       </div>
 
-                      <div><>
+                      <div>
+<>
 
                         <h3 className="text-sm font-medium mb-2">Relationships</h3>
                         <div
@@ -4204,7 +4343,8 @@ export const ${className}: React.FC = () => {
                                   </Badge>
                                 )}
                               </div>
-                              <div><>
+                              <div>
+<>
 
                                 <div className="font-medium text-sm">{rel.relatedModel}</div>
                                 <div
@@ -4217,7 +4357,8 @@ export const ${className}: React.FC = () => {
                         </div>
                       </div>
 
-                      <div><>
+                      <div>
+<>
 
                         <h3 className="text-sm font-medium mb-2">Generated Type</h3>
                         <div
@@ -4228,7 +4369,8 @@ export const ${className}: React.FC = () => {
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center h-[400px] text-center">
-                      <Database className="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" /><>
+                      <Database className="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
+<>
 
                       <h3 className="text-xl font-medium mb-2">No Model Selected</h3>
                       <p
@@ -4251,7 +4393,8 @@ export const ${className}: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
               <div className="lg:col-span-2 space-y-4">
                 <Card>
-                  <CardHeader><>
+                  <CardHeader>
+<>
 
                     <CardTitle>Application Builder</CardTitle>
                     <CardDescription
@@ -4261,21 +4404,25 @@ export const ${className}: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="space-y-2"><>
+                      <div className="space-y-2">
+<>
 
                         <Label>Application Type</Label>
                         <Select
 </> defaultValue="property-assessment">
-                          <SelectTrigger><>
+                          <SelectTrigger>
+<>
 
                             <SelectValue placeholder="Select application type" />
                           </SelectTrigger>
                           <SelectContent
-</>><>
+</>>
+<>
 
                             <SelectItem value="property-assessment">Property Assessment</SelectItem>
                             <SelectItem
-</> value="tax-collection">Tax Collection</SelectItem><>
+</> value="tax-collection">Tax Collection</SelectItem>
+<>
 
                             <SelectItem value="appeals-management">Appeals Management</SelectItem>
                             <SelectItem
@@ -4284,24 +4431,28 @@ export const ${className}: React.FC = () => {
                         </Select>
                       </div>
 
-                      <div className="space-y-2"><>
+                      <div className="space-y-2">
+<>
 
                         <Label>Target Users</Label>
                         <div
 </> className="flex flex-wrap gap-2">
-                          <Badge variant="outline"><>
+                          <Badge variant="outline">
+<>
 
                             <User className="h-3 w-3 mr-1" />
                             Assessors
                           </Badge>
                           <Badge
-</> variant="outline"><>
+</> variant="outline">
+<>
 
                             <User className="h-3 w-3 mr-1" />
                             Administrators
                           </Badge>
                           <Badge
-</> variant="secondary"><>
+</> variant="secondary">
+<>
 
                             <User className="h-3 w-3 mr-1" />
                             Public
@@ -4314,7 +4465,8 @@ export const ${className}: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="space-y-2"><>
+                      <div className="space-y-2">
+<>
 
                         <Label>Required Features</Label>
                         <div
@@ -4342,7 +4494,8 @@ export const ${className}: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="space-y-2"><>
+                      <div className="space-y-2">
+<>
 
                         <Label>Integrations</Label>
                         <div
@@ -4378,7 +4531,8 @@ export const ${className}: React.FC = () => {
 
               <div className="lg:col-span-5 space-y-6">
                 <Card>
-                  <CardHeader><>
+                  <CardHeader>
+<>
 
                     <CardTitle>Application Structure</CardTitle>
                     <CardDescription
@@ -4407,21 +4561,24 @@ export const ${className}: React.FC = () => {
                                   <Map className="h-5 w-5 text-green-500" />
                                 ) : index === 4 ? (
                                   <ListFilter className="h-5 w-5 text-blue-500" />
-                                ) : (<>
+                                ) : (
+<>
 
                                   <FileText className="h-5 w-5 text-red-500" />
                                 )}
                               </div>
                               <div
 </> className="space-y-1 flex-1">
-                                <div className="flex items-center justify-between"><>
+                                <div className="flex items-center justify-between">
+<>
 
                                   <h4 className="font-medium">{part}</h4>
                                   <Button
 </> variant="ghost" size="sm" className="h-7 px-2">
                                     <Download className="h-3 w-3" />
                                   </Button>
-                                </div><>
+                                </div>
+<>
 
                                 <p className="text-xs text-gray-500">
                                   {index === 0
@@ -4437,7 +4594,8 @@ export const ${className}: React.FC = () => {
                                             : 'Export property data in various formats'}
                                 </p>
                                 <div
-</> className="flex mt-1"><>
+</> className="flex mt-1">
+<>
 
                                   <Badge variant="outline" className="mr-1 text-xs">
                                     React
@@ -4464,7 +4622,8 @@ export const ${className}: React.FC = () => {
                       </div>
                     ) : (
                       <div className="flex flex-col items-center justify-center py-16 text-center">
-                        <Archive className="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" /><>
+                        <Archive className="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
+<>
 
                         <h3 className="text-xl font-medium mb-2">No Application Generated</h3>
                         <p
@@ -4483,7 +4642,8 @@ export const ${className}: React.FC = () => {
 
                 {applicationParts.length > 0 && (
                   <Card>
-                    <CardHeader className="pb-2"><>
+                    <CardHeader className="pb-2">
+<>
 
                       <CardTitle>Project Architecture</CardTitle>
                       <CardDescription
@@ -4495,7 +4655,8 @@ export const ${className}: React.FC = () => {
                       <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border p-6">
                         <div className="flex flex-col items-center">
                           <div className="w-40 h-20 border-2 border-primary rounded-lg flex items-center justify-center mb-4">
-                            <div className="text-center"><>
+                            <div className="text-center">
+<>
 
                               <div className="font-bold text-sm">App Entry</div>
                               <div
@@ -4506,13 +4667,15 @@ export const ${className}: React.FC = () => {
                           <Workflow className="h-6 w-6 my-2 text-gray-400" />
 
                           <div className="grid grid-cols-3 gap-4 w-full mb-4">
-                            <div className="col-span-2 border-2 border-blue-500 rounded-lg p-2 text-center"><>
+                            <div className="col-span-2 border-2 border-blue-500 rounded-lg p-2 text-center">
+<>
 
                               <div className="font-bold text-sm">Main Dashboard</div>
                               <div
 </> className="text-xs text-gray-500">User Portal</div>
                             </div>
-                            <div className="border-2 border-purple-500 rounded-lg p-2 text-center"><>
+                            <div className="border-2 border-purple-500 rounded-lg p-2 text-center">
+<>
 
                               <div className="font-bold text-sm">Admin Panel</div>
                               <div
@@ -4523,19 +4686,22 @@ export const ${className}: React.FC = () => {
                           <Workflow className="h-6 w-6 my-2 text-gray-400" />
 
                           <div className="grid grid-cols-3 gap-4 w-full mb-6">
-                            <div className="border-2 border-green-500 rounded-lg p-2 text-center h-20 flex flex-col items-center justify-center"><>
+                            <div className="border-2 border-green-500 rounded-lg p-2 text-center h-20 flex flex-col items-center justify-center">
+<>
 
                               <div className="font-bold text-sm">Property Search</div>
                               <div
 </> className="text-xs text-gray-500">Lookup Module</div>
                             </div>
-                            <div className="border-2 border-amber-500 rounded-lg p-2 text-center h-20 flex flex-col items-center justify-center"><>
+                            <div className="border-2 border-amber-500 rounded-lg p-2 text-center h-20 flex flex-col items-center justify-center">
+<>
 
                               <div className="font-bold text-sm">Assessment View</div>
                               <div
 </> className="text-xs text-gray-500">Details & History</div>
                             </div>
-                            <div className="border-2 border-red-500 rounded-lg p-2 text-center h-20 flex flex-col items-center justify-center"><>
+                            <div className="border-2 border-red-500 rounded-lg p-2 text-center h-20 flex flex-col items-center justify-center">
+<>
 
                               <div className="font-bold text-sm">GIS Mapping</div>
                               <div
@@ -4545,26 +4711,30 @@ export const ${className}: React.FC = () => {
 
                           <div className="flex items-center justify-center w-full">
                             <div className="h-px bg-gray-300 dark:bg-gray-700 w-full" />
-                            <Layers className="h-6 w-6 mx-4 text-gray-400" /><>
+                            <Layers className="h-6 w-6 mx-4 text-gray-400" />
+<>
 
                             <div className="h-px bg-gray-300 dark:bg-gray-700 w-full" />
                           </div>
 
                           <div
 </> className="grid grid-cols-3 gap-4 w-full mt-6">
-                            <div className="border-2 border-indigo-500 rounded-lg p-2 text-center h-16 flex flex-col items-center justify-center"><>
+                            <div className="border-2 border-indigo-500 rounded-lg p-2 text-center h-16 flex flex-col items-center justify-center">
+<>
 
                               <div className="font-bold text-sm">PACS API</div>
                               <div
 </> className="text-xs text-gray-500">Data Source</div>
                             </div>
-                            <div className="border-2 border-cyan-500 rounded-lg p-2 text-center h-16 flex flex-col items-center justify-center"><>
+                            <div className="border-2 border-cyan-500 rounded-lg p-2 text-center h-16 flex flex-col items-center justify-center">
+<>
 
                               <div className="font-bold text-sm">Database</div>
                               <div
 </> className="text-xs text-gray-500">PostgreSQL</div>
                             </div>
-                            <div className="border-2 border-emerald-500 rounded-lg p-2 text-center h-16 flex flex-col items-center justify-center"><>
+                            <div className="border-2 border-emerald-500 rounded-lg p-2 text-center h-16 flex flex-col items-center justify-center">
+<>
 
                               <div className="font-bold text-sm">GIS Server</div>
                               <div
@@ -4575,7 +4745,8 @@ export const ${className}: React.FC = () => {
                       </div>
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                      <Button variant="outline" size="sm"><>
+                      <Button variant="outline" size="sm">
+<>
 
                         <GitBranch className="h-4 w-4 mr-2" />
                         Export Architecture
@@ -4597,7 +4768,8 @@ export const ${className}: React.FC = () => {
             <div className="grid grid-cols-1 gap-4">
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center"><>
+                  <CardTitle className="flex items-center">
+<>
 
                     <Cpu className="h-5 w-5 mr-2 text-amber-500" />
                     BCBS GeoAssessment Developer Tools
@@ -4614,25 +4786,29 @@ export const ${className}: React.FC = () => {
                     onValueChange={setActiveDeveloperTab}
                   >
                     <TabsList className="grid grid-cols-5 mb-6">
-                      <TabsTrigger value="ai-pair" className="flex items-center"><>
+                      <TabsTrigger value="ai-pair" className="flex items-center">
+<>
 
                         <Brain className="mr-2 h-4 w-4" />
                         AI Pair Programming
                       </TabsTrigger>
                       <TabsTrigger
-</> value="cama-playground" className="flex items-center"><>
+</> value="cama-playground" className="flex items-center">
+<>
 
                         <Calculator className="mr-2 h-4 w-4" />
                         CAMA Playground
                       </TabsTrigger>
                       <TabsTrigger
-</> value="regulation-checker" className="flex items-center"><>
+</> value="regulation-checker" className="flex items-center">
+<>
 
                         <FileText className="mr-2 h-4 w-4" />
                         Regulation Checker
                       </TabsTrigger>
                       <TabsTrigger
-</> value="data-modeler" className="flex items-center"><>
+</> value="data-modeler" className="flex items-center">
+<>
 
                         <Database className="mr-2 h-4 w-4" />
                         Data Modeler
@@ -4648,7 +4824,8 @@ export const ${className}: React.FC = () => {
                     <TabsContent value="ai-pair">
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <Card className="lg:col-span-1">
-                          <CardHeader><>
+                          <CardHeader>
+<>
 
                             <CardTitle className="text-base">
                               Property Assessment Pair Programming
@@ -4660,7 +4837,8 @@ export const ${className}: React.FC = () => {
                           </CardHeader>
                           <CardContent>
                             <div className="space-y-4">
-                              <div><>
+                              <div>
+<>
 
                                 <h3 className="text-sm font-medium mb-2">Specialized Context</h3>
                                 <div
@@ -4686,7 +4864,8 @@ export const ${className}: React.FC = () => {
                                 </div>
                               </div>
 
-                              <div><>
+                              <div>
+<>
 
                                 <h3 className="text-sm font-medium mb-2">Common Tasks</h3>
                                 <div
@@ -4695,7 +4874,8 @@ export const ${className}: React.FC = () => {
                                     variant="outline"
                                     size="sm"
                                     className="w-full justify-start"
-                                  ><>
+                                  >
+<>
 
                                     <FileCode className="mr-2 h-4 w-4" />
                                     Property Lookup Component
@@ -4705,7 +4885,8 @@ export const ${className}: React.FC = () => {
                                     variant="outline"
                                     size="sm"
                                     className="w-full justify-start"
-                                  ><>
+                                  >
+<>
 
                                     <Calculator className="mr-2 h-4 w-4" />
                                     CAMA Value Calculator
@@ -4715,7 +4896,8 @@ export const ${className}: React.FC = () => {
                                     variant="outline"
                                     size="sm"
                                     className="w-full justify-start"
-                                  ><>
+                                  >
+<>
 
                                     <Map className="mr-2 h-4 w-4" />
                                     Parcel Map Integration
@@ -4736,7 +4918,8 @@ export const ${className}: React.FC = () => {
                         </Card>
 
                         <Card className="lg:col-span-2">
-                          <CardHeader><>
+                          <CardHeader>
+<>
 
                             <CardTitle className="text-base">Code Workspace</CardTitle>
                             <CardDescription
@@ -4754,16 +4937,19 @@ export const ${className}: React.FC = () => {
                               <div className="flex justify-between">
                                 <div className="flex space-x-2">
                                   <Select defaultValue="typescript">
-                                    <SelectTrigger className="w-[140px]"><>
+                                    <SelectTrigger className="w-[140px]">
+<>
 
                                       <SelectValue placeholder="Language" />
                                     </SelectTrigger>
                                     <SelectContent
-</>><>
+</>>
+<>
 
                                       <SelectItem value="typescript">TypeScript</SelectItem>
                                       <SelectItem
-</> value="javascript">JavaScript</SelectItem><>
+</> value="javascript">JavaScript</SelectItem>
+<>
 
                                       <SelectItem value="python">Python</SelectItem>
                                       <SelectItem
@@ -4772,16 +4958,19 @@ export const ${className}: React.FC = () => {
                                   </Select>
 
                                   <Select defaultValue="component">
-                                    <SelectTrigger className="w-[140px]"><>
+                                    <SelectTrigger className="w-[140px]">
+<>
 
                                       <SelectValue placeholder="Type" />
                                     </SelectTrigger>
                                     <SelectContent
-</>><>
+</>>
+<>
 
                                       <SelectItem value="component">UI Component</SelectItem>
                                       <SelectItem
-</> value="calculation">Calculation</SelectItem><>
+</> value="calculation">Calculation</SelectItem>
+<>
 
                                       <SelectItem value="data">Data Model</SelectItem>
                                       <SelectItem
@@ -4805,7 +4994,8 @@ export const ${className}: React.FC = () => {
                     <TabsContent value="cama-playground">
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <Card className="lg:col-span-1">
-                          <CardHeader><>
+                          <CardHeader>
+<>
 
                             <CardTitle className="text-base">CAMA Models</CardTitle>
                             <CardDescription
@@ -4847,7 +5037,8 @@ export const ${className}: React.FC = () => {
                         </Card>
 
                         <Card className="lg:col-span-2">
-                          <CardHeader><>
+                          <CardHeader>
+<>
 
                             <CardTitle className="text-base">Model Playground</CardTitle>
                             <CardDescription
@@ -4865,16 +5056,19 @@ export const ${className}: React.FC = () => {
                               <div className="flex justify-between">
                                 <div>
                                   <Select defaultValue="residential">
-                                    <SelectTrigger className="w-[160px]"><>
+                                    <SelectTrigger className="w-[160px]">
+<>
 
                                       <SelectValue placeholder="Property Type" />
                                     </SelectTrigger>
                                     <SelectContent
-</>><>
+</>>
+<>
 
                                       <SelectItem value="residential">Residential</SelectItem>
                                       <SelectItem
-</> value="commercial">Commercial</SelectItem><>
+</> value="commercial">Commercial</SelectItem>
+<>
 
                                       <SelectItem value="agricultural">Agricultural</SelectItem>
                                       <SelectItem
@@ -4884,7 +5078,8 @@ export const ${className}: React.FC = () => {
                                 </div>
 
                                 <div className="flex space-x-2">
-                                  <Button variant="outline"><>
+                                  <Button variant="outline">
+<>
 
                                     <FileText className="mr-2 h-4 w-4" />
                                     Load Sample
@@ -4906,7 +5101,8 @@ export const ${className}: React.FC = () => {
                     <TabsContent value="regulation-checker">
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <Card className="lg:col-span-1">
-                          <CardHeader><>
+                          <CardHeader>
+<>
 
                             <CardTitle className="text-base">Regulation Rules</CardTitle>
                             <CardDescription
@@ -4952,7 +5148,8 @@ export const ${className}: React.FC = () => {
                         </Card>
 
                         <Card className="lg:col-span-2">
-                          <CardHeader><>
+                          <CardHeader>
+<>
 
                             <CardTitle className="text-base">Code Compliance Checker</CardTitle>
                             <CardDescription
@@ -5000,7 +5197,8 @@ export const ${className}: React.FC = () => {
                     <TabsContent value="data-modeler">
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <Card className="lg:col-span-1">
-                          <CardHeader><>
+                          <CardHeader>
+<>
 
                             <CardTitle className="text-base">Property Models</CardTitle>
                             <CardDescription
@@ -5042,7 +5240,8 @@ export const ${className}: React.FC = () => {
                         </Card>
 
                         <Card className="lg:col-span-2">
-                          <CardHeader><>
+                          <CardHeader>
+<>
 
                             <CardTitle className="text-base">Visual Model Designer</CardTitle>
                             <CardDescription
@@ -5068,7 +5267,8 @@ export const ${className}: React.FC = () => {
 
                               <div className="flex justify-between">
                                 <div className="flex space-x-2">
-                                  <Button variant="outline" size="sm"><>
+                                  <Button variant="outline" size="sm">
+<>
 
                                     <Download className="mr-2 h-4 w-4" />
                                     Export Schema
@@ -5095,7 +5295,8 @@ export const ${className}: React.FC = () => {
                     <TabsContent value="gis-tools">
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <Card className="lg:col-span-1">
-                          <CardHeader><>
+                          <CardHeader>
+<>
 
                             <CardTitle className="text-base">GIS Templates</CardTitle>
                             <CardDescription
@@ -5137,7 +5338,8 @@ export const ${className}: React.FC = () => {
                         </Card>
 
                         <Card className="lg:col-span-2">
-                          <CardHeader><>
+                          <CardHeader>
+<>
 
                             <CardTitle className="text-base">Map Component Builder</CardTitle>
                             <CardDescription
@@ -5166,16 +5368,19 @@ export const ${className}: React.FC = () => {
                               <div className="flex justify-between">
                                 <div className="flex space-x-2">
                                   <Select defaultValue="parcel">
-                                    <SelectTrigger className="w-[160px]"><>
+                                    <SelectTrigger className="w-[160px]">
+<>
 
                                       <SelectValue placeholder="Map Type" />
                                     </SelectTrigger>
                                     <SelectContent
-</>><>
+</>>
+<>
 
                                       <SelectItem value="parcel">Parcel Map</SelectItem>
                                       <SelectItem
-</> value="zoning">Zoning Map</SelectItem><>
+</> value="zoning">Zoning Map</SelectItem>
+<>
 
                                       <SelectItem value="district">District Map</SelectItem>
                                       <SelectItem
@@ -5185,7 +5390,8 @@ export const ${className}: React.FC = () => {
                                 </div>
 
                                 <div className="flex space-x-2">
-                                  <Button variant="outline" size="sm"><>
+                                  <Button variant="outline" size="sm">
+<>
 
                                     <FileText className="mr-2 h-4 w-4" />
                                     Preview
@@ -5217,7 +5423,8 @@ export const ${className}: React.FC = () => {
               size="icon"
               className="h-8 w-8 rounded-full"
               title="Context Panel"
-            ><>
+            >
+<>
 
               <ChevronsLeft className="h-4 w-4" />
             </Button>
@@ -5228,7 +5435,8 @@ export const ${className}: React.FC = () => {
               size="icon"
               className="h-8 w-8 rounded-full"
               title="Documentation"
-            ><>
+            >
+<>
 
               <Book className="h-4 w-4" />
             </Button>
@@ -5238,7 +5446,8 @@ export const ${className}: React.FC = () => {
               size="icon"
               className="h-8 w-8 rounded-full"
               title="Backend API"
-            ><>
+            >
+<>
 
               <Server className="h-4 w-4" />
             </Button>
@@ -5248,7 +5457,8 @@ export const ${className}: React.FC = () => {
               size="icon"
               className="h-8 w-8 rounded-full"
               title="Code Templates"
-            ><>
+            >
+<>
 
               <FileCode className="h-4 w-4" />
             </Button>
@@ -5258,7 +5468,8 @@ export const ${className}: React.FC = () => {
               size="icon"
               className="h-8 w-8 rounded-full"
               title="AI Assistant"
-            ><>
+            >
+<>
 
               <Brain className="h-4 w-4" />
             </Button>

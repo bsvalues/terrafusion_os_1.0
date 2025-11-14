@@ -1,0 +1,77 @@
+{
+  "compliance_standards": [
+    "FISMA-HIGH",
+    "NIST-800-53",
+    "FedRAMP"
+  ],
+  "manifest_version": "1.0",
+  "components": {
+    "plugin_systems": {
+      "frontend_plugins": [
+        "cama-core",
+        "costforge-ai",
+        "gis-core",
+        "harris-pacs",
+        "levy-core",
+        "valuation-tools"
+      ],
+      "sdk_modules": [
+        "bcbs-webhub",
+        "costforge-ai",
+        "terra-agent",
+        "terra-dashboard",
+        "terra-fusion-permit",
+        "terra-levy",
+        "terra-pilt",
+        "terra-playground"
+      ]
+    },
+    "feature_dependencies": {
+      "benton_tenant_config": true,
+      "redis_cache": false,
+      "benton_county_config": true,
+      "ai_swarm_config": false,
+      "harris_pacs_config": false
+    },
+    "compliance_components": {
+      "gov_service_definitions": false,
+      "fisma_compliance": true,
+      "security_service": true,
+      "audit_logging": true
+    },
+    "core_models": {
+      "harris_pacs_models": [
+        "PACSProperty",
+        "PACSAssessment",
+        "PACSOwner",
+        "PACSTaxRecord",
+        "PACSPermit"
+      ],
+      "data_entities": [
+        "AuditLog",
+        "Experiment",
+        "ExperimentRun",
+        "LevyCalculationRecord",
+        "PluginAuditEvent",
+        "PropertyAssessment",
+        "QuantumConsciousnessLog"
+      ],
+      "harris_models_missing": true,
+      "harris_integration_service": true
+    },
+    "ai_components": {
+      "quantum_agent_config": false,
+      "consciousness_build": true,
+      "ai_service": true,
+      "hybrid_consciousness": false,
+      "consciousness_service": true
+    }
+  },
+  "deployment_date": "2025-11-07 12:43:27 UTC",
+  "target_parcels": 89447,
+  "critical_issues": [],
+  "harris_pacs_version": "9.0",
+  "deployment_status": "PRODUCTION_READY",
+  "target_county": "Benton County, Washington",
+  "readiness_score": 76.9
+}

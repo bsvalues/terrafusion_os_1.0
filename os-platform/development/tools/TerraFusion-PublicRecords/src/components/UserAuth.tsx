@@ -63,7 +63,8 @@ export const UserAuth: React.FC<UserAuthProps> = ({ onLogin, onClose }) => {
         className="bg-white rounded-2xl max-w-md w-full p-8"
       >
         {/* Header */}
-        <div className="text-center mb-6"><>
+        <div className="text-center mb-6">
+<>
 
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             {mode === 'login' ? 'Welcome Back' : mode === 'register' ? 'Create Account' : 'Government Access'}
@@ -97,7 +98,8 @@ className="text-gray-600">
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'register' && (
-            <div><>
+            <div>
+<>
 
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Full Name
@@ -118,7 +120,8 @@ className="relative">
             </div>
           )}
 
-          <div><>
+          <div>
+<>
 
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email Address
@@ -132,13 +135,14 @@ className="relative">
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder={mode === 'gov' ? 'john.doe@bentoncounty.gov' : 'john@example.com'}
+                placeholder={mode === 'gov' ? 'john.doe@terrafusionmarket.io' : 'john@example.com'}
                 required
               />
             </div>
           </div>
 
-          <div><>
+          <div>
+<>
 
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password
@@ -159,7 +163,8 @@ className="relative">
           </div>
 
           {mode === 'gov' && (
-            <div><>
+            <div>
+<>
 
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Employee ID / PIV Card
@@ -181,7 +186,8 @@ className="relative">
           )}
 
           {mode === 'register' && (
-              <div><>
+              <div>
+<>
 
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Address (for location-based services)
@@ -196,7 +202,8 @@ className="relative">
                   placeholder="123 Main St, Kennewick, WA"
                 />
               </div>
-              <div><>
+              <div>
+<>
 
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Phone (for SMS notifications)

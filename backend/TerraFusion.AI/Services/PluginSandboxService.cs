@@ -15,7 +15,7 @@ namespace TerraFusion.AI.Services
             _logger = logger;
         }
 
-        public async System.Threading.Tasks.Task<(bool Success, string Output)> ExecutePluginAsync(byte[] wasmModule, string functionName, object[] parameters)
+        public System.Threading.Tasks.Task<(bool Success, string Output)> ExecutePluginAsync(byte[] wasmModule, string functionName, object[] parameters)
         {
             try
             {
@@ -30,19 +30,19 @@ namespace TerraFusion.AI.Services
                 {
                     var message = $"Function '{functionName}' not found in the WASM module.";
                     _logger.LogWarning(message);
-                    return (false, message);
+                    return System.Threading.Tasks.Task.FromResult((false, message));
                 }
 
                 _logger.LogInformation("Executing function '{functionName}' in WASM sandbox.", functionName);
                 var result = function.Invoke(); // Invoke without parameters for now
 
                 var output = result?.ToString() ?? "(no output)";
-                return (true, output);
+                return System.Threading.Tasks.Task.FromResult((true, output));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while executing the plugin in the WASM sandbox.");
-                return (false, ex.Message);
+                return System.Threading.Tasks.Task.FromResult((false, ex.Message));
             }
         }
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.DTOs;
 using TerraFusion.API.Security;
+using TerraFusion.API.Models;
 using TerraFusion.Abstractions.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
@@ -377,7 +378,7 @@ public class CostForgeController : ControllerBase
     /// </summary>
     [HttpGet("metrics")]
     [RequiresPermission("read:performance-metrics")]
-    public async Task<ActionResult<PerformanceMetricsDto>> GetPerformanceMetrics()
+    public async Task<ActionResult<CostForgePerformanceMetricsDto>> GetPerformanceMetrics()
     {
         try
         {
@@ -512,14 +513,7 @@ public class AgentGroupStatusDto
     public double PerformanceScore { get; set; }
 }
 
-public class PerformanceMetricsDto
-{
-    public double AverageResponseTime { get; set; }
-    public int RequestsPerSecond { get; set; }
-    public double AccuracyRate { get; set; }
-    public int TotalCalculations { get; set; }
-    public Dictionary<string, double> DetailedMetrics { get; set; } = new();
-}
+// PerformanceMetricsDto moved to SharedDTOs.cs as CostForgePerformanceMetricsDto
 
 public class HarrisSyncRequestDto
 {

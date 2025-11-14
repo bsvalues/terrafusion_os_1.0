@@ -50,7 +50,7 @@ namespace TerraFusion.Consciousness.Services
             IMillionAgentService millionAgentService,
             IQuantumSecurityService quantumSecurityService,
             IBentonCountyDataService bentonCountyDataService,
-            IHybridConsciousnessManager hybridConsciousnessManager,
+            // IHybridConsciousnessManager hybridConsciousnessManager, // Temporarily removed to break circular dependency
             // Temporarily disabled until AI dependencies resolved
             // IAIOrchestrationService aiOrchestrationService,
             IComplianceValidator complianceValidator,
@@ -61,7 +61,7 @@ namespace TerraFusion.Consciousness.Services
             _millionAgentService = millionAgentService;
             _quantumSecurityService = quantumSecurityService;
             _bentonCountyDataService = bentonCountyDataService;
-            _hybridConsciousnessManager = hybridConsciousnessManager;
+            // _hybridConsciousnessManager = hybridConsciousnessManager; // Temporarily removed to break circular dependency
             // Temporarily disabled until AI dependencies resolved
             // _aiOrchestrationService = aiOrchestrationService;
             _complianceValidator = complianceValidator;

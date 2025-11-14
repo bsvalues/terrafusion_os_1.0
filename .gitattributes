@@ -1,29 +1,139 @@
-# Auto text normalization
+# --- TerraFusion OS Git Attributes ---
+# Line endings and diff behavior for government-grade monorepo
+
+# --- Default text handling ---
 * text=auto
 
-# Windows shells keep CRLF
+# --- Platform-specific scripts ---
+# Windows shells and PowerShell (keep CRLF)
 *.cmd text eol=crlf
 *.bat text eol=crlf
 *.ps1 text eol=crlf
+*.psm1 text eol=crlf
 
-# Unix scripts keep LF
+# Unix/Linux shells (keep LF)
 *.sh text eol=lf
 
-# Treat common binaries as binary
+# --- Source code (explicit text classification) ---
+# .NET Backend
+*.cs text
+*.csproj text
+*.sln text
+*.fs text
+*.config text
+
+# Frontend (TypeScript/JavaScript/React)
+*.ts text
+*.tsx text
+*.js text
+*.jsx text
+*.vue text
+
+# Configuration and data files
+*.json text
+*.yml text
+*.yaml text
+*.toml text
+*.xml text
+*.env text
+*.env.* text
+
+# Database and SQL
+*.sql text
+
+# Documentation
+*.md text
+*.txt text
+*.adoc text
+
+# Web assets
+*.html text
+*.css text
+*.scss text
+*.sass text
+*.less text
+
+# Python (AI agents and scripts)
+*.py text
+*.pyx text
+*.pyi text
+
+# Rust (performance-critical components)
+*.rs text
+
+# --- Binary assets ---
 *.png binary
 *.jpg binary
 *.jpeg binary
 *.gif binary
 *.ico binary
+*.bmp binary
+*.svg+xml binary
+
+# Documents and archives
 *.pdf binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.zip binary
+*.7z binary
+*.tar binary
+*.gz binary
+*.rar binary
 
-# Text-based assets
-*.svg text
+# Media files
+*.mp4 binary
+*.mp3 binary
+*.wav binary
+*.avi binary
 
-# Linguist hints
+# --- Font files ---
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.ttf binary
+*.otf binary
+
+# --- GitHub Linguist configuration ---
+# Documentation directories
 /docs/** linguist-documentation
-/artifacts/** linguist-generated
+**/docs/** linguist-documentation
+**/documentation/** linguist-documentation
+
+# Generated or build artifacts
+**/dist/** linguist-generated
+**/build/** linguist-generated
+**/bin/** linguist-generated
+**/obj/** linguist-generated
+**/target/** linguist-generated
+**/artifacts/** linguist-generated
 /testing/artifacts/** linguist-generated
 
-# Preserve .gitattributes itself
+# Vendor/third-party code
+**/node_modules/** linguist-vendored
+**/packages/** linguist-vendored=false
+**/vendor/** linguist-vendored
+
+# AI and ML model files
+*.pkl binary
+*.joblib binary
+*.h5 binary
+*.pb binary
+
+# Database files
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+
+# Log files (treat as text but don't count toward language stats)
+*.log text linguist-generated
+
+# Configuration files specific to TerraFusion
+*.terrafusion text
+.terrafusion* text
+
+# Preserve critical config files as LF
 .gitattributes text eol=lf
+.gitignore text eol=lf
+.gitmessage text eol=lf

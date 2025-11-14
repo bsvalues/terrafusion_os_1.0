@@ -39,7 +39,7 @@ class CountyInfiltrationSwarm extends EventEmitter {
             island: {
                 name: 'Island',
                 endpoint: 'https://data-islandcountygis.opendata.arcgis.com',
-                expectedProperties: 45000,
+                expectedProperties: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
                 portfolioValue: 18000000000
             },
             snohomish: {

@@ -11,8 +11,8 @@ export class TestHelpers {
    */
   static async loginAs(page: Page, role: 'admin' | 'assessor' | 'viewer' = 'admin') {
     const credentials = {
-      admin: { username: 'admin@terrafusion.gov', password: 'admin-test-pass' },
-      assessor: { username: 'assessor@bentoncounty.gov', password: 'assessor-test-pass' },
+      admin: { username: 'admin@terrafusionmarket.com', password: 'admin-test-pass' },
+      assessor: { username: 'assessor@terrafusionmarket.io', password: 'assessor-test-pass' },
       viewer: { username: 'viewer@example.com', password: 'viewer-test-pass' }
     };
 

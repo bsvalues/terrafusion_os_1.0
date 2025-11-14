@@ -783,7 +783,7 @@ export const useTerraFusionWebSocket = (config: WebSocketConfig): UseTerraFusion
 // ============================================================================
 
 export const DEFAULT_WEBSOCKET_CONFIG: WebSocketConfig = {
-    baseUrl: 'wss://api.terrafusion.gov/realtime',
+    baseUrl: 'wss://api.terrafusionmarket.com/realtime',
     channels: [
         'quantum-metrics',
         'consciousness-data',

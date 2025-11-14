@@ -323,9 +323,9 @@ data:
   security_mode: 'strict'
 
   # Federation configuration
-  alameda_county_endpoint: 'https://alameda.terrafusion.gov/api'
-  contra_costa_county_endpoint: 'https://contra-costa.terrafusion.gov/api'
-  solano_county_endpoint: 'https://solano.terrafusion.gov/api'
+  alameda_county_endpoint: 'https://alameda.terrafusionmarket.com/api'
+  contra_costa_county_endpoint: 'https://contra-costa.terrafusionmarket.com/api'
+  solano_county_endpoint: 'https://solano.terrafusionmarket.com/api'
 
   # Security configuration
   tls_version: '1.3'

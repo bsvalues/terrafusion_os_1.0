@@ -1,0 +1,59 @@
+# TerraFusion Development Database Setup
+# Run with: docker compose -f compose.dev.yml up -d
+# Stop with: docker compose -f compose.dev.yml down
+
+version: '3.8'
+
+services:
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres-dev
+    environment:
+      POSTGRES_DB: terrafusion_dev
+      POSTGRES_USER: terrafusion_dev
+      POSTGRES_PASSWORD: dev_password_123
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U terrafusion_dev -d terrafusion_dev']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  pgadmin-dev:
+    image: dpage/pgadmin4:latest
+    container_name: terrafusion-pgadmin-dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: dev@terrafusion.local
+      PGADMIN_DEFAULT_PASSWORD: dev_admin_123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - '8080:80'
+    volumes:
+      - pgadmin_dev_data:/var/lib/pgadmin
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_dev_data:
+    driver: local
+  pgadmin_dev_data:
+    driver: local
+# Usage Instructions:
+# 1. Start: docker compose -f compose.dev.yml up -d
+# 2. Check status: docker compose -f compose.dev.yml ps
+# 3. View logs: docker compose -f compose.dev.yml logs -f postgres-dev
+# 4. Access pgAdmin: http://localhost:8080 (dev@terrafusion.local / dev_admin_123)
+# 5. Stop: docker compose -f compose.dev.yml down
+# 6. Reset data: docker compose -f compose.dev.yml down -v
+#
+# Connection String: Server=localhost;Port=5432;Database=terrafusion_dev;User Id=terrafusion_dev;Password=dev_password_123;

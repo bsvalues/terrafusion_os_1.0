@@ -84,7 +84,7 @@ export const DataMarketplace: React.FC = () => {
         countyId: 'wa-franklin',
         countyName: 'Franklin',
         state: 'WA',
-        propertyCount: 45000,
+        propertyCount: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         dataType: 'public',
         lastUpdated: '2025-01-09',
         price: {

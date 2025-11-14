@@ -1,8 +1,0 @@
-{
-    "map": {
-        "description": "Exports changes in a check-out replica geodatabase to a delta file.",
-        "dest_delta_database.title": "Export to Delta Database",
-        "in_workspace.title": "Export from Check-out Workspace",
-        "title": "Export To Delta"
-    }
-}

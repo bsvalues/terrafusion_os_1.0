@@ -5,7 +5,7 @@
 
 global:
   environment: staging
-  domain: staging.terrafusion.gov
+  domain: staging.terrafusionmarket.com
   imageRegistry: ghcr.io/terrafusion
   imagePullPolicy: IfNotPresent
   
@@ -63,14 +63,14 @@ terrafusion-api:
     enabled: true
     className: nginx
     hosts:
-      - host: api.staging.terrafusion.gov
+      - host: api.staging.terrafusionmarket.com
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: api-staging-terrafusion-gov-tls
         hosts:
-          - api.staging.terrafusion.gov
+          - api.staging.terrafusionmarket.com
 
 # TerraFusion Consciousness - Staging
 terrafusion-consciousness:
@@ -108,14 +108,14 @@ terrafusion-consciousness:
     enabled: true
     className: nginx
     hosts:
-      - host: consciousness.staging.terrafusion.gov
+      - host: consciousness.staging.terrafusionmarket.com
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: consciousness-staging-terrafusion-gov-tls
         hosts:
-          - consciousness.staging.terrafusion.gov
+          - consciousness.staging.terrafusionmarket.com
 
 # TerraFusion Gateway - Staging
 terrafusion-gateway:
@@ -148,14 +148,14 @@ terrafusion-gateway:
     enabled: true
     className: nginx
     hosts:
-      - host: gateway.staging.terrafusion.gov
+      - host: gateway.staging.terrafusionmarket.com
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: gateway-staging-terrafusion-gov-tls
         hosts:
-          - gateway.staging.terrafusion.gov
+          - gateway.staging.terrafusionmarket.com
 
 # TerraFusion Operations - Staging
 terrafusion-operations:
@@ -197,11 +197,11 @@ terrafusion-operations:
     enabled: true
     className: nginx
     hosts:
-      - host: operations.staging.terrafusion.gov
+      - host: operations.staging.terrafusionmarket.com
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: operations-staging-terrafusion-gov-tls
         hosts:
-          - operations.staging.terrafusion.gov
+          - operations.staging.terrafusionmarket.com

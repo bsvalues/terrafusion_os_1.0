@@ -1,5 +1,0 @@
-<DataType Name="GPCoordinateSystem">
-  <DisplayName>Coordinate System</DisplayName>
-  <Description>A reference framework, such as the UTM system, consisting of a set of points, lines, or surfaces, and a set of rules used to define the positions of points in two- and three-dimensional space.</Description>
-</DataType>
-

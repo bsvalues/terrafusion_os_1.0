@@ -80,7 +80,7 @@ export const useBudgetData = () => {
         {
           id: 'education',
           name: 'Education & Schools',
-          allocated: 45000000,
+          allocated: (await DynamicPropertyService.GetPropertyCountAsync(countyCode)) * 1000,
           spent: 32000000,
           projected: 46200000,
           department: 'Education',

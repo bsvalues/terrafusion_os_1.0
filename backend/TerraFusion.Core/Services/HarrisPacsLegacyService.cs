@@ -16,6 +16,7 @@ namespace TerraFusion.Core.Services
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<HarrisPacsLegacyService> _logger;
+        private readonly IDynamicPropertyService _dynamicPropertyService;
         private readonly string _connectionString;
         private readonly string _apiEndpoint;
         private readonly string _apiKey;
@@ -24,10 +25,11 @@ namespace TerraFusion.Core.Services
         public string SystemVersion => "v12.4.7";
         public string Jurisdiction { get; private set; }
 
-        public HarrisPacsLegacyService(IConfiguration configuration, ILogger<HarrisPacsLegacyService> logger)
+        public HarrisPacsLegacyService(IConfiguration configuration, ILogger<HarrisPacsLegacyService> logger, IDynamicPropertyService dynamicPropertyService)
         {
             _configuration = configuration;
             _logger = logger;
+            _dynamicPropertyService = dynamicPropertyService;
             _connectionString = _configuration.GetConnectionString("HarrisPacs") ?? string.Empty;
             _apiEndpoint = _configuration["HarrisPacs:ApiEndpoint"] ?? string.Empty;
             _apiKey = _configuration["HarrisPacs:ApiKey"] ?? string.Empty;
@@ -39,13 +41,13 @@ namespace TerraFusion.Core.Services
             try
             {
                 _logger.LogInformation("Testing connection to Harris PACS system for {Jurisdiction}", Jurisdiction);
-                
+
                 // Implementation would test actual Harris PACS connection
                 // For now, simulate connection test
                 await Task.Delay(100);
-                
+
                 var isConnected = !string.IsNullOrEmpty(_apiKey) && _apiKey != "PRODUCTION_KEY_REQUIRED_FOR_DEPLOYMENT";
-                
+
                 _logger.LogInformation("Harris PACS connection test result: {Result}", isConnected ? "Success" : "Failed");
                 return isConnected;
             }
@@ -71,10 +73,10 @@ namespace TerraFusion.Core.Services
                 // Simulate Harris PACS specific sync logic
                 await Task.Delay(1000);
 
-                // For Benton County, we know there are 89,247 parcels
+                // For Benton County, we know there are await DynamicPropertyService.GetPropertyCountAsync("benton") parcels
                 if (Jurisdiction.Contains("Benton"))
                 {
-                    result.RecordsProcessed = 89247;
+                    result.RecordsProcessed = await _dynamicPropertyService.GetActivePropertyCountAsync("benton");
                     result.RecordsUpdated = 1250;
                     result.RecordsAdded = 45;
                     result.RecordsSkipped = 12;
@@ -91,7 +93,7 @@ namespace TerraFusion.Core.Services
                 result.Success = true;
                 result.SyncEndTime = DateTime.UtcNow;
 
-                _logger.LogInformation("Harris PACS sync completed successfully. Processed: {Processed}, Updated: {Updated}", 
+                _logger.LogInformation("Harris PACS sync completed successfully. Processed: {Processed}, Updated: {Updated}",
                     result.RecordsProcessed, result.RecordsUpdated);
             }
             catch (Exception ex)
@@ -152,10 +154,10 @@ namespace TerraFusion.Core.Services
                 await Task.Delay(2000);
 
                 var properties = new List<LegacyPropertyRecord>();
-                
-                // For Benton County, simulate 89,247 parcels
-                int parcelCount = Jurisdiction.Contains("Benton") ? 89247 : 50000;
-                
+
+                // For Benton County, simulate await DynamicPropertyService.GetPropertyCountAsync("benton") parcels
+                int parcelCount = Jurisdiction.Contains("Benton") ? await _dynamicPropertyService.GetActivePropertyCountAsync("benton") : 50000;
+
                 for (int i = 1; i <= Math.Min(parcelCount, 100); i++) // Return first 100 for demo
                 {
                     properties.Add(new LegacyPropertyRecord
@@ -178,9 +180,9 @@ namespace TerraFusion.Core.Services
                     });
                 }
 
-                _logger.LogInformation("Retrieved {Count} Harris PACS properties (sample of {Total})", 
+                _logger.LogInformation("Retrieved {Count} Harris PACS properties (sample of {Total})",
                     properties.Count, parcelCount);
-                
+
                 return properties;
             }
             catch (Exception ex)
@@ -214,10 +216,10 @@ namespace TerraFusion.Core.Services
             try
             {
                 var startTime = DateTime.UtcNow;
-                
+
                 // Simulate Harris PACS health check
                 await Task.Delay(100);
-                
+
                 var endTime = DateTime.UtcNow;
                 var responseTime = endTime - startTime;
 
@@ -233,7 +235,7 @@ namespace TerraFusion.Core.Services
                         ["Version"] = SystemVersion,
                         ["DatabaseSize"] = "2.4 GB",
                         ["LastBackup"] = DateTime.UtcNow.AddHours(-6),
-                        ["TotalParcels"] = Jurisdiction.Contains("Benton") ? 89247 : 50000,
+                        ["TotalParcels"] = Jurisdiction.Contains("Benton") ? await _dynamicPropertyService.GetActivePropertyCountAsync("benton") : 50000,
                         ["SystemLoad"] = "Normal"
                     }
                 };

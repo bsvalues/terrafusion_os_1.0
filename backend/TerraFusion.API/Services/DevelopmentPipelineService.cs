@@ -75,7 +75,9 @@ public class DevelopmentPipelineService : BackgroundService
         if (isDisabled)
         {
             _logger.LogInformation("🧪 Development Pipeline disabled via TF_DISABLE_DEV_PIPELINE - service idle");
-            return; // Do not run pipeline cycles; keep host running
+            // Keep service alive even when disabled to prevent shutdown
+            await Task.Delay(Timeout.Infinite, stoppingToken);
+            return;
         }
 
         _logger.LogInformation("🚀 TerraFusion Development Pipeline ACTIVATED - Elite Military-Grade Operations");

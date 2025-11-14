@@ -1,5 +1,0 @@
-<DataType Name="GPPolygon">
-  <DisplayName>Polygon</DisplayName>
-  <Description>A connected sequence of x,y-coordinate pairs, where the first and last coordinate pair are the same.</Description>
-</DataType>
-

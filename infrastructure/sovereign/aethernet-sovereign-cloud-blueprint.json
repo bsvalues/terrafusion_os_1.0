@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schemas.terrafusion.gov/v1.0/sovereign-cloud-blueprint.json",
+  "$schema": "https://schemas.terrafusionmarket.com/v1.0/sovereign-cloud-blueprint.json",
   "version": "1.0.0-SOVEREIGNTY",
   "metadata": {
     "_generator": {

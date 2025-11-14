@@ -1,17 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.API.Services;
-using TerraFusion.Core.Interfaces;
-using TerraFusion.Abstractions.Interfaces;
-using System.ComponentModel.DataAnnotations;
 
 namespace TerraFusion.API.Controllers;
 
-/// <summary>
-/// TerraFusion Elite AI Modules Controller
-/// Enterprise-grade AI Agent orchestration for 50,000+ agents across 39 counties
-/// Government FISMA Moderate compliance with real-time swarm coordination
-/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Policy = "OSCoreAccess")]
@@ -19,416 +11,215 @@ public class AIModulesController : ControllerBase
 {
     private readonly IAIModuleOrchestrator _aiOrchestrator;
     private readonly ILogger<AIModulesController> _logger;
-    private readonly IAuditLogger _auditLogger;
 
     public AIModulesController(
         IAIModuleOrchestrator aiOrchestrator,
-        ILogger<AIModulesController> logger,
-        IAuditLogger auditLogger)
+        ILogger<AIModulesController> logger)
     {
         _aiOrchestrator = aiOrchestrator;
         _logger = logger;
-        _auditLogger = auditLogger;
     }
 
     /// <summary>
-    /// Get comprehensive AI swarm status including all 50,000+ agents across 39 Washington State counties
+    /// Get overall AI swarm status including all 1,008 agents
     /// </summary>
     [HttpGet("status")]
-    public async Task<ActionResult<object>> GetAISwarmStatus()
+    public async Task<ActionResult<AIModuleStatus>> GetAISwarmStatus()
     {
         try
         {
-            _logger.LogInformation("AI Swarm status requested - Enterprise scale monitoring");
-            await _auditLogger.LogAsync("AI_SWARM_STATUS", "Elite AI swarm status check requested", true);
-
+            _logger.LogInformation("Getting AI swarm status");
             var status = await _aiOrchestrator.GetAISwarmStatusAsync();
-
-            var eliteResponse = new
-            {
-                swarmStatus = status,
-                eliteMetrics = new
-                {
-                    totalCountiesServed = 39,
-                    washingtonStateDeployment = true,
-                    governmentGrade = "FISMA Moderate",
-                    quantumOptimization = "Active",
-                    supremeCommander = "Claude-3.5-Sonnet",
-                    productionReadiness = "Champion Level"
-                },
-                data = status,
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0",
-                apiVersion = "Elite Government Edition"
-            };
-
-            return Ok(eliteResponse);
+            return Ok(status);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting AI swarm status - Elite monitoring failed");
-            await _auditLogger.LogAsync("AI_SWARM_ERROR", $"Swarm status error: {ex.Message}", false);
-            return StatusCode(500, new {
-                error = "Failed to get AI swarm status",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            _logger.LogError(ex, "Error getting AI swarm status");
+            return StatusCode(500, new { error = "Failed to get AI swarm status", details = ex.Message });
         }
     }
 
     /// <summary>
-    /// Get all active AI modules with enterprise-grade health monitoring
-    /// Command Brain, Swarm Orchestrator, Enhanced Revenue Hunter
+    /// Get all active AI modules (Command Brain, Swarm Orchestrator, Revenue Hunter)
     /// </summary>
     [HttpGet("modules")]
-    public async Task<ActionResult<object>> GetActiveModules()
+    public async Task<ActionResult<IEnumerable<AIModule>>> GetActiveModules()
     {
         try
         {
-            _logger.LogInformation("Getting active AI modules - Elite deployment status");
-            await _auditLogger.LogAsync("AI_MODULES_LIST", "Active AI modules requested", true);
-
+            _logger.LogInformation("Getting active AI modules");
             var modules = await _aiOrchestrator.GetActiveModulesAsync();
-
-            return Ok(new
-            {
-                modules = modules,
-                count = modules.Count(),
-                eliteClassification = new
-                {
-                    tier = "Elite Government AI",
-                    compliance = "FISMA Moderate",
-                    encryption = "AES-256",
-                    auditLogging = "Enabled - 7 Year Retention"
-                },
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            return Ok(modules);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting active AI modules");
-            await _auditLogger.LogAsync("AI_MODULES_ERROR", $"Modules list error: {ex.Message}", false);
-            return StatusCode(500, new {
-                error = "Failed to get AI modules",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            return StatusCode(500, new { error = "Failed to get AI modules", details = ex.Message });
         }
     }
 
     /// <summary>
-    /// Execute elite AI command on specific module with government-grade audit logging
-    /// Modules: ai-command-brain, ai-swarm, ai-advanced
+    /// Execute AI command on specific module (ai-command-brain, ai-swarm, ai-advanced)
     /// </summary>
     [HttpPost("execute")]
-    public async Task<ActionResult<object>> ExecuteAICommand([FromBody] EliteAICommandRequest request)
+    public async Task<ActionResult<AICommandResult>> ExecuteAICommand([FromBody] AICommandRequest request)
     {
         try
         {
             if (string.IsNullOrEmpty(request.Module) || string.IsNullOrEmpty(request.Command))
             {
-                await _auditLogger.LogAsync("AI_COMMAND_VALIDATION", "Invalid AI command request - missing module or command", false);
-                return BadRequest(new {
-                    error = "Module and Command are required",
-                    timestamp = DateTime.UtcNow,
-                    server = "TerraFusion OS 1.0"
-                });
+                return BadRequest(new { error = "Module and Command are required" });
             }
 
-            _logger.LogInformation("Executing elite AI command {Command} on module {Module}",
+            _logger.LogInformation("Executing AI command {Command} on module {Module}", 
                 request.Command, request.Module);
 
-            await _auditLogger.LogAsync("AI_COMMAND_EXECUTE",
-                $"Elite AI command execution: {request.Command} on {request.Module}", true);
-
             var result = await _aiOrchestrator.ExecuteAICommandAsync(
-                request.Module,
-                request.Command,
+                request.Module, 
+                request.Command, 
                 request.Parameters ?? new object());
 
             if (result.Success)
             {
-                await _auditLogger.LogAsync("AI_COMMAND_SUCCESS",
-                    $"AI command {request.Command} completed successfully", true);
-
-                return Ok(new
-                {
-                    success = true,
-                    result = result,
-                    eliteExecution = new
-                    {
-                        governmentGrade = true,
-                        auditCompliant = true,
-                        fismaApproved = true
-                    },
-                    timestamp = DateTime.UtcNow,
-                    server = "TerraFusion OS 1.0"
-                });
+                return Ok(result);
             }
             else
             {
-                await _auditLogger.LogAsync("AI_COMMAND_FAILURE",
-                    $"AI command {request.Command} failed: {result.ErrorMessage}", false);
-                return BadRequest(new
-                {
-                    success = false,
-                    result = result,
-                    timestamp = DateTime.UtcNow,
-                    server = "TerraFusion OS 1.0"
-                });
+                return BadRequest(result);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing AI command");
-            await _auditLogger.LogAsync("AI_COMMAND_ERROR", $"AI command execution error: {ex.Message}", false);
-            return StatusCode(500, new {
-                error = "Failed to execute AI command",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            return StatusCode(500, new { error = "Failed to execute AI command", details = ex.Message });
         }
     }
 
     /// <summary>
-    /// Start specific AI module with elite orchestration
+    /// Start specific AI module
     /// </summary>
     [HttpPost("{moduleName}/start")]
-    public async Task<ActionResult<object>> StartAIModule(string moduleName)
+    public async Task<ActionResult> StartAIModule(string moduleName)
     {
         try
         {
-            _logger.LogInformation("Starting elite AI module {ModuleName}", moduleName);
-            await _auditLogger.LogAsync("AI_MODULE_START", $"Starting AI module: {moduleName}", true);
-
+            _logger.LogInformation("Starting AI module {ModuleName}", moduleName);
             var success = await _aiOrchestrator.StartAIModuleAsync(moduleName);
-
+            
             if (success)
             {
-                await _auditLogger.LogAsync("AI_MODULE_START_SUCCESS", $"AI module {moduleName} started successfully", true);
-                return Ok(new {
-                    message = $"Elite AI module {moduleName} started successfully",
-                    status = "operational",
-                    governmentGrade = true,
-                    timestamp = DateTime.UtcNow,
-                    server = "TerraFusion OS 1.0"
-                });
+                return Ok(new { message = $"AI module {moduleName} started successfully" });
             }
             else
             {
-                await _auditLogger.LogAsync("AI_MODULE_START_FAILURE", $"Failed to start AI module: {moduleName}", false);
-                return BadRequest(new {
-                    error = $"Failed to start elite AI module {moduleName}",
-                    timestamp = DateTime.UtcNow,
-                    server = "TerraFusion OS 1.0"
-                });
+                return BadRequest(new { error = $"Failed to start AI module {moduleName}" });
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error starting AI module {ModuleName}", moduleName);
-            await _auditLogger.LogAsync("AI_MODULE_START_ERROR", $"Error starting {moduleName}: {ex.Message}", false);
-            return StatusCode(500, new {
-                error = "Failed to start AI module",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            return StatusCode(500, new { error = "Failed to start AI module", details = ex.Message });
         }
     }
 
     /// <summary>
-    /// Stop specific AI module with graceful government-grade shutdown
+    /// Stop specific AI module
     /// </summary>
     [HttpPost("{moduleName}/stop")]
-    public async Task<ActionResult<object>> StopAIModule(string moduleName)
+    public async Task<ActionResult> StopAIModule(string moduleName)
     {
         try
         {
-            _logger.LogInformation("Stopping elite AI module {ModuleName}", moduleName);
-            await _auditLogger.LogAsync("AI_MODULE_STOP", $"Stopping AI module: {moduleName}", true);
-
+            _logger.LogInformation("Stopping AI module {ModuleName}", moduleName);
             var success = await _aiOrchestrator.StopAIModuleAsync(moduleName);
-
+            
             if (success)
             {
-                await _auditLogger.LogAsync("AI_MODULE_STOP_SUCCESS", $"AI module {moduleName} stopped successfully", true);
-                return Ok(new {
-                    message = $"Elite AI module {moduleName} stopped successfully",
-                    status = "shutdown_complete",
-                    governmentGrade = true,
-                    timestamp = DateTime.UtcNow,
-                    server = "TerraFusion OS 1.0"
-                });
+                return Ok(new { message = $"AI module {moduleName} stopped successfully" });
             }
             else
             {
-                await _auditLogger.LogAsync("AI_MODULE_STOP_FAILURE", $"Failed to stop AI module: {moduleName}", false);
-                return BadRequest(new {
-                    error = $"Failed to stop elite AI module {moduleName}",
-                    timestamp = DateTime.UtcNow,
-                    server = "TerraFusion OS 1.0"
-                });
+                return BadRequest(new { error = $"Failed to stop AI module {moduleName}" });
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error stopping AI module {ModuleName}", moduleName);
-            await _auditLogger.LogAsync("AI_MODULE_STOP_ERROR", $"Error stopping {moduleName}: {ex.Message}", false);
-            return StatusCode(500, new {
-                error = "Failed to stop AI module",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            return StatusCode(500, new { error = "Failed to stop AI module", details = ex.Message });
         }
     }
 
     /// <summary>
-    /// Execute elite revenue hunting operation with Enhanced Revenue Hunter
-    /// Government-grade property tax optimization across 39 Washington State counties
+    /// Execute revenue hunting operation with Enhanced Revenue Hunter
     /// </summary>
     [HttpPost("revenue/hunt")]
-    public async Task<ActionResult<object>> ExecuteRevenueHunt([FromBody] EliteRevenueHuntRequest request)
+    public async Task<ActionResult<AICommandResult>> ExecuteRevenueHunt([FromBody] RevenueHuntRequest request)
     {
         try
         {
-            _logger.LogInformation("Executing elite revenue hunt for county {CountyId}", request.CountyId);
-            await _auditLogger.LogAsync("AI_REVENUE_HUNT", $"Revenue hunt initiated for county: {request.CountyId}", true);
-
+            _logger.LogInformation("Executing revenue hunt for county {CountyId}", request.CountyId);
+            
             var result = await _aiOrchestrator.ExecuteAICommandAsync(
                 "ai-advanced",
                 "revenue/hunt",
-                new
-                {
+                new 
+                { 
                     countyId = request.CountyId,
                     scope = request.Scope ?? "full",
                     priority = request.Priority ?? "high",
-                    targetROI = request.TargetROI ?? 47231,
-                    governmentGrade = true,
-                    fismaCompliant = true,
-                    washingtonState = true
+                    targetROI = request.TargetROI ?? 47231
                 });
 
-            if (result.Success)
-            {
-                await _auditLogger.LogAsync("AI_REVENUE_SUCCESS", $"Revenue hunt completed for {request.CountyId}", true);
-            }
-            else
-            {
-                await _auditLogger.LogAsync("AI_REVENUE_FAILURE", $"Revenue hunt failed for {request.CountyId}: {result.ErrorMessage}", false);
-            }
-
-            return Ok(new
-            {
-                success = result.Success,
-                result = result,
-                eliteRevenuePlatform = new
-                {
-                    targetROI = "47,231%",
-                    governmentOptimized = true,
-                    countyDeployment = request.CountyId,
-                    washingtonStateApproved = true
-                },
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            return Ok(result);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing revenue hunt");
-            await _auditLogger.LogAsync("AI_REVENUE_ERROR", $"Revenue hunt error: {ex.Message}", false);
-            return StatusCode(500, new {
-                error = "Failed to execute revenue hunt",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            return StatusCode(500, new { error = "Failed to execute revenue hunt", details = ex.Message });
         }
     }
 
     /// <summary>
-    /// Execute elite MCP orchestration with multi-model coordination
-    /// Supreme Commander Claude + specialized AI agents
+    /// Execute MCP orchestration with multi-model coordination
     /// </summary>
     [HttpPost("mcp/orchestrate")]
-    public async Task<ActionResult<object>> ExecuteMCPOrchestration([FromBody] EliteMCPOrchestrationRequest request)
+    public async Task<ActionResult<AICommandResult>> ExecuteMCPOrchestration([FromBody] MCPOrchestrationRequest request)
     {
         try
         {
-            _logger.LogInformation("Executing elite MCP orchestration with {ModelCount} models",
+            _logger.LogInformation("Executing MCP orchestration with {ModelCount} models", 
                 request.Models?.Length ?? 0);
-
-            await _auditLogger.LogAsync("AI_MCP_ORCHESTRATE",
-                $"MCP orchestration initiated with {request.Models?.Length ?? 0} models", true);
-
+            
             var result = await _aiOrchestrator.ExecuteAICommandAsync(
                 "ai-advanced",
                 "mcp/orchestrate",
-                new
-                {
-                    models = request.Models ?? new[] { "claude-3.5-sonnet", "gpt-4", "llama-3.1" },
+                new 
+                { 
+                    models = request.Models ?? new[] { "claude", "gpt", "llama" },
                     task = request.Task,
                     priority = request.Priority ?? "normal",
-                    timeout = request.TimeoutSeconds ?? 300,
-                    governmentGrade = true,
-                    supremeCommander = "Claude-3.5-Sonnet",
-                    eliteOrchestration = true
+                    timeout = request.TimeoutSeconds ?? 300
                 });
 
-            if (result.Success)
-            {
-                await _auditLogger.LogAsync("AI_MCP_SUCCESS", "MCP orchestration completed successfully", true);
-            }
-            else
-            {
-                await _auditLogger.LogAsync("AI_MCP_FAILURE", $"MCP orchestration failed: {result.ErrorMessage}", false);
-            }
-
-            return Ok(new
-            {
-                success = result.Success,
-                result = result,
-                eliteMCPOrchestration = new
-                {
-                    supremeCommander = "Claude-3.5-Sonnet",
-                    multiModelCoordination = true,
-                    governmentGrade = true,
-                    mcpToolsIntegrated = 87
-                },
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            return Ok(result);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing MCP orchestration");
-            await _auditLogger.LogAsync("AI_MCP_ERROR", $"MCP orchestration error: {ex.Message}", false);
-            return StatusCode(500, new {
-                error = "Failed to execute MCP orchestration",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            return StatusCode(500, new { error = "Failed to execute MCP orchestration", details = ex.Message });
         }
     }
 
     /// <summary>
-    /// Get comprehensive AI performance metrics from all modules
-    /// Elite government-grade monitoring and analytics
+    /// Get AI performance metrics from all modules
     /// </summary>
     [HttpGet("metrics")]
-    public async Task<ActionResult<object>> GetAIPerformanceMetrics()
+    public async Task<ActionResult<AIPerformanceMetrics>> GetAIPerformanceMetrics()
     {
         try
         {
-            _logger.LogInformation("Getting elite AI performance metrics");
-            await _auditLogger.LogAsync("AI_METRICS_REQUEST", "Elite AI performance metrics requested", true);
-
+            _logger.LogInformation("Getting AI performance metrics");
+            
             var status = await _aiOrchestrator.GetAISwarmStatusAsync();
             var modules = await _aiOrchestrator.GetActiveModulesAsync();
 
@@ -451,83 +242,41 @@ public class AIModulesController : ControllerBase
                 Timestamp = DateTime.UtcNow
             };
 
-            return Ok(new
-            {
-                metrics = metrics,
-                eliteGovernmentMetrics = new
-                {
-                    washingtonStateCounties = 39,
-                    totalCountyDeployments = "39/39 Active",
-                    governmentCompliance = "FISMA Moderate",
-                    auditRetention = "2555 days (7 years)",
-                    encryptionStandard = "AES-256",
-                    productionReadiness = "Champion Level"
-                },
-                data = metrics,
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            return Ok(metrics);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting AI performance metrics");
-            await _auditLogger.LogAsync("AI_METRICS_ERROR", $"AI metrics error: {ex.Message}", false);
-            return StatusCode(500, new {
-                error = "Failed to get AI metrics",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow,
-                server = "TerraFusion OS 1.0"
-            });
+            return StatusCode(500, new { error = "Failed to get AI metrics", details = ex.Message });
         }
     }
 }
 
-// Elite Request DTOs with validation
-public class EliteAICommandRequest
+// Request DTOs
+public class AICommandRequest
 {
-    [Required]
-    [StringLength(50, MinimumLength = 1)]
     public string Module { get; set; } = string.Empty;
-
-    [Required]
-    [StringLength(100, MinimumLength = 1)]
     public string Command { get; set; } = string.Empty;
-
     public object? Parameters { get; set; }
 }
 
-public class EliteRevenueHuntRequest
+public class RevenueHuntRequest
 {
-    [Required]
-    [StringLength(50, MinimumLength = 1)]
     public string CountyId { get; set; } = string.Empty;
-
-    [StringLength(20)]
     public string? Scope { get; set; }
-
-    [StringLength(10)]
     public string? Priority { get; set; }
-
-    [Range(0, 1000000)]
     public decimal? TargetROI { get; set; }
 }
 
-public class EliteMCPOrchestrationRequest
+public class MCPOrchestrationRequest
 {
     public string[]? Models { get; set; }
-
-    [Required]
-    [StringLength(500, MinimumLength = 1)]
     public string Task { get; set; } = string.Empty;
-
-    [StringLength(10)]
     public string? Priority { get; set; }
-
-    [Range(1, 3600)]
     public int? TimeoutSeconds { get; set; }
 }
 
-// Elite Response DTOs
+// Response DTOs
 public class AIPerformanceMetrics
 {
     public int TotalAgents { get; set; }

@@ -264,7 +264,7 @@ async function insertSampleData() {
       appraiserId: appraiser1.id,
       status: 'In Progress',
       purpose: 'Refinance',
-      marketValue: 450000,
+      marketValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       clientName: 'Wells Fargo',
       clientEmail: 'loans@wellsfargo.com',
       clientPhone: '555-123-4567',
@@ -295,7 +295,7 @@ async function insertSampleData() {
       city: 'Austin',
       state: 'TX',
       zipCode: '78701',
-      salePrice: 445000,
+      salePrice: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       saleDate: new Date('2023-01-15'),
       squareFeet: 2400,
       bedrooms: 4,
@@ -349,7 +349,7 @@ async function insertSampleData() {
       location: 'Austin, TX',
       dataType: 'Median Home Price',
       time: '2023-Q1',
-      value: 450000,
+      value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       comparisonValue: 420000,
       percentChange: 7.14,
       source: 'MLS'
@@ -360,7 +360,7 @@ async function insertSampleData() {
       dataType: 'Median Home Price',
       time: '2023-Q2',
       value: 455000,
-      comparisonValue: 450000,
+      comparisonValue: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       percentChange: 1.11,
       source: 'MLS'
     });

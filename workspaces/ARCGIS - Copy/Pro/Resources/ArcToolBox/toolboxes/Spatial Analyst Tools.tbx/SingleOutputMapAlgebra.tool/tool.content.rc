@@ -1,9 +1,0 @@
-{
-    "map": {
-        "description": "Execute a Grid's map algebra statement to produce a raster.",
-        "expression_string.title": "expression_string",
-        "in_data.title": "in_data",
-        "out_raster.title": "out_raster",
-        "title": "Single Output Map Algebra"
-    }
-}

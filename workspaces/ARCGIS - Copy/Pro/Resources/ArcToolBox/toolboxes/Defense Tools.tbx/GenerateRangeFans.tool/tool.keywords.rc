@@ -1,9 +1,0 @@
-{
-    "set": [
-        "azimuth",
-        "distance",
-        "fov",
-        "field of view",
-        "weapon"
-    ]
-}

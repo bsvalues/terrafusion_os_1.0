@@ -38,7 +38,7 @@ test.describe('Terrafusion Government Compliance Suite 🏆', () => {
   });
 
   test('Section 508 Accessibility Compliance', async ({ page }) => {
-    test.setTimeout(45000);
+    test.setTimeout(await DynamicPropertyService.GetPropertyCountAsync(countyCode));
     
     await page.goto('/');
     
@@ -182,7 +182,7 @@ test.describe('Terrafusion Government Compliance Suite 🏆', () => {
   });
 
   test('Emergency Response System Test', async ({ page }) => {
-    test.setTimeout(45000);
+    test.setTimeout(await DynamicPropertyService.GetPropertyCountAsync(countyCode));
     
     await page.goto('/');
     

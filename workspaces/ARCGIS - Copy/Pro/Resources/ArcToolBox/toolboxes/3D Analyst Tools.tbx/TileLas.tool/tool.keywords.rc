@@ -1,9 +1,0 @@
-{
-    "set": [
-        "grid",
-        "lidar",
-        "optimize",
-        "point cloud",
-        "tile"
-    ]
-}

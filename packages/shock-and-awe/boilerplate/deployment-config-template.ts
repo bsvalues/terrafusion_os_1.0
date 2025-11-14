@@ -333,10 +333,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - terrafusion.gov
+    - terrafusionmarket.com
     secretName: terrafusion-tls
   rules:
-  - host: terrafusion.gov
+  - host: terrafusionmarket.com
     http:
       paths:
       - path: /

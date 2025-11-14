@@ -819,7 +819,7 @@ export class BSArmyAgentManager extends EventEmitter {
       status: 'opportunities_found',
       opportunities: {
         str_violations: { count: 23, estimatedRevenue: 127500 },
-        business_license_gaps: { count: 15, estimatedRevenue: 45000 },
+        business_license_gaps: { count: 15, estimatedRevenue: await DynamicPropertyService.GetPropertyCountAsync(countyCode) },
         permit_violations: { count: 8, estimatedRevenue: 32000 }
       },
       totalEstimatedRevenue: 204500,

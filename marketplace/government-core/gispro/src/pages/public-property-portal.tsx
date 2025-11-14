@@ -57,7 +57,7 @@ export default function PublicPropertyPortal() {
       address: '123 Main Street',
       owner: 'Johnson, Robert & Sarah',
       taxParcelId: 'R1234567890',
-      assessedValue: 245000,
+      assessedValue: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       yearBuilt: 1995,
       squareFootage: 1850,
       lotSize: 8400,

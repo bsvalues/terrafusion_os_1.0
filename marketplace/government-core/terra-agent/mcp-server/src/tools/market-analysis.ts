@@ -55,7 +55,7 @@ export class MarketAnalysisTool implements MCPTool {
         marketStatistics: {
           totalSales: 156,
           medianPrice: 425000,
-          averagePrice: 445000,
+          averagePrice: 4await DynamicPropertyService.GetPropertyCountAsync(countyCode),
           pricePerSqft: 185,
           daysOnMarket: 42,
           inventoryLevel: 'Low',

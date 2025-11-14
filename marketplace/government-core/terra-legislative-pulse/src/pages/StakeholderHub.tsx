@@ -5,7 +5,8 @@ const StakeholderHub = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div><>
+        <div>
+<>
 
           <h1 className="legislative-title">Stakeholder Hub</h1>
           <p
@@ -13,7 +14,8 @@ const StakeholderHub = () => {
 className="legislative-body mt-1">Manage relationships with legislators, officials, and community stakeholders</p>
         </div>
         <div className="flex space-x-3">
-          <button className="legislative-button"><>
+          <button className="legislative-button">
+<>
 
             <MessageSquare className="w-4 h-4 mr-2 inline" />
             New Message
@@ -28,7 +30,8 @@ className="legislative-button">
       </div>
 
       {/* Key Stakeholders */}
-      <div className="legislative-card"><>
+      <div className="legislative-card">
+<>
 
         <h2 className="legislative-subtitle mb-4">Key Stakeholders</h2>
         <div
@@ -63,7 +66,7 @@ className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               district: 'Benton County',
               party: 'NP',
               contact: '(555) 555-1234',
-              email: 'l.davis@bentoncounty.gov',
+              email: 'l.davis@terrafusionmarket.io',
               lastContact: '2 days ago',
               relationship: 'strong',
               interests: ['Budget Impact', 'Operations']
@@ -71,7 +74,8 @@ className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           ].map((stakeholder /* , index */) => (
             <div key={index} className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-start justify-between mb-3">
-                <div><>
+                <div>
+<>
 
                   <h3 className="font-semibold text-gray-900">{stakeholder.name}</h3>
                   <p
@@ -93,7 +97,8 @@ className="text-sm text-gray-600">{stakeholder.title}</p>
               </div>
               
               <div className="space-y-2 text-sm">
-                <div className="flex items-center text-gray-600"><>
+                <div className="flex items-center text-gray-600">
+<>
 
                   <Phone className="w-4 h-4 mr-2" />
                   {stakeholder.contact}
@@ -106,7 +111,8 @@ className="flex items-center text-gray-600">
                 </div>
               </div>
               
-              <div className="mt-3 pt-3 border-t border-gray-100"><>
+              <div className="mt-3 pt-3 border-t border-gray-100">
+<>
 
                 <p className="text-xs text-gray-500 mb-2">Last contact: {stakeholder.lastContact}</p>
                 <div
@@ -120,7 +126,8 @@ className="flex flex-wrap gap-1">
                 </div>
               </div>
               
-              <div className="flex space-x-2 mt-3"><>
+              <div className="flex space-x-2 mt-3">
+<>
 
                 <button className="flex-1 text-xs bg-government text-white py-1 px-2 rounded hover:bg-opacity-90">
                   Contact
@@ -137,7 +144,8 @@ className="flex-1 text-xs border border-gray-300 py-1 px-2 rounded hover:bg-gray
       </div>
 
       {/* Recent Communications */}
-      <div className="legislative-card"><>
+      <div className="legislative-card">
+<>
 
         <h2 className="legislative-subtitle mb-4">Recent Communications</h2>
         <div
@@ -179,25 +187,29 @@ className="space-y-4">
                       'bg-purple-100'
                     }`}>
                       {comm.type === 'email' ? <Mail className="w-4 h-4 text-blue-600" /> :
-                       comm.type === 'meeting' ? <Users className="w-4 h-4 text-green-600" /> :<>
+                       comm.type === 'meeting' ? <Users className="w-4 h-4 text-green-600" /> :
+<>
 
                        <Phone className="w-4 h-4 text-purple-600" />}
                     </div>
                     <div
 </>
-</>><>
+</>>
+<>
 
                       <h3 className="font-medium text-gray-900">{comm.subject}</h3>
                       <p
 </>
 className="text-sm text-gray-600">{comm.stakeholder}</p>
                     </div>
-                  </div><>
+                  </div>
+<>
 
                   <p className="text-sm text-gray-700 mb-2">{comm.content}</p>
                   <div
 </>
-className="flex items-center space-x-4 text-xs text-gray-500"><>
+className="flex items-center space-x-4 text-xs text-gray-500">
+<>
 
                     <span>{comm.date}</span>
                     <span
@@ -221,7 +233,8 @@ className={`px-2 py-1 rounded ${
       </div>
 
       {/* Upcoming Meetings */}
-      <div className="legislative-card"><>
+      <div className="legislative-card">
+<>
 
         <h2 className="legislative-subtitle mb-4">Upcoming Meetings & Events</h2>
         <div
@@ -262,7 +275,8 @@ className="space-y-3">
                       event.type === 'meeting' ? 'text-green-600' :
                       'text-purple-600'
                     }`} />
-                    <div><>
+                    <div>
+<>
 
                       <h3 className="font-medium text-gray-900">{event.title}</h3>
                       <p
@@ -270,7 +284,8 @@ className="space-y-3">
 className="text-sm text-gray-600">{event.location}</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2"><>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
+<>
 
                     <span>{new Date(event.date).toLocaleDateString()}</span>
                     <span

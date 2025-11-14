@@ -76,4 +76,4 @@ spec:
     - name: 'Port'
       value: '5000'
     - name: 'Documentation'
-      value: 'https://docs.terrafusion.gov/api'
+      value: 'https://docs.terrafusionmarket.com/api'

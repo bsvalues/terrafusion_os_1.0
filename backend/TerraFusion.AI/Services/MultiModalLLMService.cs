@@ -599,18 +599,18 @@ namespace TerraFusion.AI.Services
         {
             public ModelTier TargetTier { get; set; }
             public int ComplexityScore { get; set; }
-            public string ReasoningPath { get; set; }
+            public string ReasoningPath { get; set; } = string.Empty;
             public TimeSpan EstimatedProcessingTime { get; set; }
-            public string RecommendedModel { get; set; }
+            public string RecommendedModel { get; set; } = string.Empty;
         }
 
         public class ProcessedInputs
         {
-            public string ProcessedText { get; set; }
-            public object ProcessedImage { get; set; }
-            public object ProcessedAudio { get; set; }
-            public object ProcessedSpatial { get; set; }
-            public List<string> ComponentTypes { get; set; }
+            public string ProcessedText { get; set; } = string.Empty;
+            public object ProcessedImage { get; set; } = new();
+            public object ProcessedAudio { get; set; } = new();
+            public object ProcessedSpatial { get; set; } = new();
+            public List<string> ComponentTypes { get; set; } = new();
         }
 
         public class ModelConfig
@@ -620,22 +620,22 @@ namespace TerraFusion.AI.Services
             public double TopP { get; set; }
             public double FrequencyPenalty { get; set; }
             public double PresencePenalty { get; set; }
-            public string Specialization { get; set; }
-            public string DomainKnowledge { get; set; }
+            public string Specialization { get; set; } = string.Empty;
+            public string DomainKnowledge { get; set; } = string.Empty;
             public int AgentCount { get; set; }
-            public string OperationalTier { get; set; }
+            public string OperationalTier { get; set; } = string.Empty;
         }
 
         public class ModelResponse
         {
-            public string TextContent { get; set; }
+            public string TextContent { get; set; } = string.Empty;
             public double ConfidenceScore { get; set; }
-            public List<string> Sources { get; set; }
+            public List<string> Sources { get; set; } = new();
         }
 
         public class EnhancedResponse
         {
-            public string TextContent { get; set; }
+            public string TextContent { get; set; } = string.Empty;
         }
 
         // Interface implementations
@@ -647,7 +647,7 @@ namespace TerraFusion.AI.Services
 
         public class LanguageModelImpl : ILanguageModel
         {
-            public string ModelId { get; private set; }
+            public string ModelId { get; private set; } = string.Empty;
             public bool IsAvailable { get; private set; }
 
             public LanguageModelImpl(string modelId, ModelType type, ModelConfig config)

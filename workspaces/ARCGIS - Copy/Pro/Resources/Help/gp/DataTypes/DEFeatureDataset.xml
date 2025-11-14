@@ -1,5 +1,0 @@
-<DataType Name="DEFeatureDataset">
-  <DisplayName>Feature Dataset</DisplayName>
-  <Description>A collection of feature classes that share a common geographic area and the same spatial reference system.</Description>
-</DataType>
-

@@ -381,7 +381,7 @@ jobs:
         run: |
           # Wait for deployment and run smoke tests
           sleep 30
-          curl -f https://staging.terrafusion.gov/health || exit 1
+          curl -f https://staging.terrafusionmarket.com/health || exit 1
 
   # =====================================================================
   # PRODUCTION DEPLOYMENT
@@ -426,8 +426,8 @@ jobs:
         run: |
           # Comprehensive production health verification
           sleep 60  # Allow full startup
-          curl -f https://terrafusion.gov/health || exit 1
-          curl -f https://terrafusion.gov/api/federation/counties || exit 1
+          curl -f https://terrafusionmarket.com/health || exit 1
+          curl -f https://terrafusionmarket.com/api/federation/counties || exit 1
 
       - name: Government Compliance Verification
         run: |

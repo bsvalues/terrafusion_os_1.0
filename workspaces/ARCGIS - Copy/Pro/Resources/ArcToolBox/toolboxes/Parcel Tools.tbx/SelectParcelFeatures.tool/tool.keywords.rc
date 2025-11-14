@@ -1,7 +1,0 @@
-{
-    "set": [
-        "parcel fabric",
-        "select parcel lines",
-        "select parcel points"
-    ]
-}

@@ -2,26 +2,29 @@
   "folders": [
     {
       "name": "🚀 TerraFusion IDE (Complete)",
-      "path": "./os-platform/development/tools/TerraFusionIDE",
+      "path": "./os-platform/development/tools/TerraFusionIDE"
     },
     {
       "name": "📦 Platform SDK",
-      "path": "./SDK",
+      "path": "./SDK"
     },
     {
       "name": "🔧 Configuration",
-      "path": "./config",
+      "path": "./config"
     },
     {
       "name": "📚 Documentation",
-      "path": "./docs",
+      "path": "./docs"
     },
     {
-      "path": "workspaces/marketplace/TerraFusionIDE/TERRAFUSION BRAND CODEX - The Divine Design System",
+      "path": "workspaces/marketplace/TerraFusionIDE/TERRAFUSION BRAND CODEX - The Divine Design System"
     },
     {
-      "path": "workspaces/marketplace/TerraFusionIDE",
+      "path": "workspaces/marketplace/TerraFusionIDE"
     },
+    {
+      "path": "workspaces"
+    }
   ],
   "settings": {
     "files.exclude": {
@@ -41,6 +44,7 @@
       "source.organizeImports": "explicit",
       "source.fixAll": "explicit",
     },
+    "liveServer.settings.multiRootWorkspaceName": "🚀 TerraFusion IDE (Complete)",
   },
   "launch": {
     "version": "0.2.0",

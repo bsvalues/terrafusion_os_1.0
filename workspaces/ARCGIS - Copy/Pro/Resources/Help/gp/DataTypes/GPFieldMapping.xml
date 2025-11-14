@@ -1,5 +1,0 @@
-<DataType Name="GPFieldMapping">
-  <DisplayName>Field Mappings</DisplayName>
-  <Description>A collection of fields in one or more input tables.</Description>
-</DataType>
-

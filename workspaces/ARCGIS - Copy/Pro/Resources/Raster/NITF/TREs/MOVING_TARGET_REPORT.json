@@ -1,8 +1,0 @@
-{
-  "TRE": "MOVING TARGET REPORT",
-  "Source": ["STDI-0002-1 v2021.1, Appendix G: Retired"],
-  "Name": "Moving Target Report",
-  "Description": "This data extension segment is retired per the NITF Technical Board, and is included for documentation purposes only within ArcGIS Pro.",
-  "Size": 362,
-  "Fields": {}
-}

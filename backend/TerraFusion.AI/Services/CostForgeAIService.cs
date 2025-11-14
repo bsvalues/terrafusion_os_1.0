@@ -382,7 +382,7 @@ public class CostForgeAIService : ICostForgeAIService
 
     return new HarrisSyncResultDto
     {
-      RecordsProcessed = 89247,
+      RecordsProcessed = 89247, // Benton County property count
       RecordsUpdated = 1247,
       RecordsAdded = 23,
       RecordsSkipped = 0,

@@ -1,9 +1,0 @@
-{
-    "set": [
-        "create geostatistical layer",
-        "geostatistical model",
-        "model parameter",
-        "model source",
-        "xml"
-    ]
-}

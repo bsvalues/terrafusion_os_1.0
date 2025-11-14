@@ -1,8 +1,0 @@
-{
-    "set": [
-        "base 10",
-        "exponential",
-        "power",
-        "raise"
-    ]
-}

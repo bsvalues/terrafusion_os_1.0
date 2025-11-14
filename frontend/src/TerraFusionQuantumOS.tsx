@@ -24,11 +24,8 @@ import TerraFusionEliteIntegrationNexus from './components/nexus/TerraFusionElit
 import TerraFusionEliteServiceOrchestrator from './components/orchestrator/TerraFusionEliteServiceOrchestrator';
 import EliteQuantumDashboard from './components/performance/EliteQuantumDashboard';
 import TerraFusionQuantumComputing from './components/quantum/TerraFusionQuantumComputing';
-import EliteSystemStatusDashboard from './components/status/EliteSystemStatusDashboard';
 import { GovernmentExcellenceStatus } from './components/status/GovernmentExcellenceStatus';
-import { TerraFusionSystemCheck } from './components/testing/TerraFusionSystemCheck';
 import EliteSystemValidator from './components/validation/EliteSystemValidator';
-import LayoutValidator from './components/validation/LayoutValidator';
 import TerraFusionExcellenceProvider from './providers/TerraFusionExcellenceProvider.tsx';
 import { QuantumDesktopShell } from './shell/QuantumDesktopShell';
 
@@ -730,61 +727,328 @@ export function TerraFusionQuantumOS() {
 
   return (
     <TerraFusionExcellenceProvider>
-      <div className='terrafusion-quantum-os'>
-        {/* Elite View Mode Toggle Button */}
-        <div className='fixed top-4 right-4'>
-          <button
-            onClick={() => setViewMode(getNextViewMode())}
-            className='terrafusion-view-toggle px-6 py-3 bg-gradient-to-r from-terra-cyan via-blue-400 to-green-400
-                       text-terra-midnight font-bold rounded-full shadow-lg hover:shadow-xl
-                       border border-terra-cyan/30'
-            title={`Switch to ${getViewModeTitle()}`}
+      <div
+        className='terrafusion-os-container'
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(135deg, #0a0e1a 0%, #1a202c 50%, #0f172a 100%)',
+          color: '#00ffff',
+          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* TerraFusion OS Elite Header */}
+        <header
+          className='terrafusion-os-header'
+          style={{
+            height: '80px',
+            background: 'rgba(0, 255, 255, 0.08)',
+            backdropFilter: 'blur(20px)',
+            borderBottom: '2px solid rgba(0, 255, 255, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 2rem',
+            position: 'relative',
+            zIndex: 100,
+          }}
+        >
+          {/* OS Branding */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div
+              style={{
+                width: '48px',
+                height: '48px',
+                background: 'linear-gradient(135deg, #00ffff, #0099ff)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: '#0a0e1a',
+                boxShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
+              }}
+            >
+              T
+            </div>
+            <div>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: '1.8rem',
+                  fontWeight: '700',
+                  background: 'linear-gradient(135deg, #00ffff, #ffffff)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                }}
+              >
+                BENTON COUNTY TERRAFUSION
+              </h1>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: '0.9rem',
+                  opacity: 0.8,
+                  color: '#00ffaa',
+                }}
+              >
+                Benton County, WA • await DynamicPropertyService.GetPropertyCountAsync("benton") Parcels • Harris PACS v12.4.7 Integration
+              </p>
+            </div>
+          </div>
+
+          {/* System Status Indicators */}
+          <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#00ffaa' }}>
+                Parcels Synced
+              </div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#00ffff' }}>await DynamicPropertyService.GetPropertyCountAsync("benton")</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#00ffaa' }}>PACS Version</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#00ffff' }}>
+                v12.4.7
+              </div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#00ffaa' }}>Sync Status</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#00ff88' }}>LIVE</div>
+            </div>
+
+            {/* Government Excellence Status */}
+            <GovernmentExcellenceStatus />
+          </div>
+        </header>
+
+        {/* Main OS Workspace */}
+        <main
+          className='terrafusion-os-workspace'
+          style={{
+            flex: 1,
+            display: 'flex',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Left Navigation Sidebar */}
+          <nav
+            className='terrafusion-os-navigation'
+            style={{
+              width: '280px',
+              background: 'rgba(0, 255, 255, 0.05)',
+              borderRight: '2px solid rgba(0, 255, 255, 0.2)',
+              padding: '2rem 1rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+              overflowY: 'auto',
+            }}
           >
-            {getViewModeTitle()}
-          </button>
+            <h3
+              style={{
+                margin: '0 0 1rem 0',
+                fontSize: '1.1rem',
+                color: '#00ffaa',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+              }}
+            >
+              System Modules
+            </h3>
+
+            {/* Module Navigation Buttons */}
+            {[
+              { mode: 'ELITE_NEXUS', icon: '🏛️', label: 'Elite Integration Nexus' },
+              { mode: 'AI_CONSCIOUSNESS_NETWORK', icon: '🧠', label: 'AI Consciousness Network' },
+              { mode: 'QUANTUM_COMPUTING', icon: '⚛️', label: 'Quantum Computing' },
+              { mode: 'ML_INTELLIGENCE_HUB', icon: '🤖', label: 'ML Intelligence Hub' },
+              { mode: 'BLOCKCHAIN_LEDGER', icon: '⛓️', label: 'Blockchain Ledger' },
+              { mode: 'ADVANCED_ANALYTICS', icon: '📊', label: 'Advanced Analytics' },
+              { mode: 'EDGE_COORDINATION', icon: '🌐', label: 'Edge Coordination' },
+              { mode: 'SYSTEM_INTEGRATION', icon: '🔗', label: 'System Integration' },
+              { mode: 'ELITE_COMMAND_CENTER', icon: '🎖️', label: 'Elite Command Center' },
+              { mode: 'MODULE_HUB', icon: '🏛️', label: 'Government Module Hub' },
+            ].map((item) => (
+              <button
+                key={item.mode}
+                onClick={() => setViewMode(item.mode as OSViewMode)}
+                style={{
+                  padding: '1rem',
+                  background:
+                    viewMode === item.mode
+                      ? 'linear-gradient(135deg, #00ffff, #0099ff)'
+                      : 'rgba(0, 255, 255, 0.1)',
+                  color: viewMode === item.mode ? '#0a0e1a' : '#00ffff',
+                  border: `1px solid ${viewMode === item.mode ? '#00ffff' : 'rgba(0, 255, 255, 0.3)'}`,
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: viewMode === item.mode ? 'bold' : 'normal',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  fontSize: '0.9rem',
+                  transition: 'all 0.3s ease',
+                  textAlign: 'left',
+                }}
+                onMouseEnter={(e) => {
+                  if (viewMode !== item.mode) {
+                    e.currentTarget.style.background = 'rgba(0, 255, 255, 0.2)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (viewMode !== item.mode) {
+                    e.currentTarget.style.background = 'rgba(0, 255, 255, 0.1)';
+                  }
+                }}
+              >
+                <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </nav>
+
+          {/* Main Content Area */}
+          <section
+            className='terrafusion-os-content'
+            style={{
+              flex: 1,
+              padding: '2rem',
+              overflow: 'auto',
+              background: 'rgba(0, 0, 0, 0.2)',
+              position: 'relative',
+            }}
+          >
+            {/* Current Module View */}
+            <div className='terrafusion-module-container'>
+              {viewMode === 'ELITE_NEXUS' && <TerraFusionEliteIntegrationNexus />}
+              {viewMode === 'AI_CONSCIOUSNESS_NETWORK' && <TerraFusionAIConsciousnessNetwork />}
+              {viewMode === 'QUANTUM_COMPUTING' && <TerraFusionQuantumComputing />}
+              {viewMode === 'ML_INTELLIGENCE_HUB' && <TerraFusionMLIntelligenceHub />}
+              {viewMode === 'BLOCKCHAIN_LEDGER' && <TerraFusionBlockchainLedger />}
+              {viewMode === 'ADVANCED_ANALYTICS' && <TerraFusionAdvancedAnalytics />}
+              {viewMode === 'EDGE_COORDINATION' && <TerraFusionEdgeCoordination />}
+              {viewMode === 'SYSTEM_INTEGRATION' && <TerraFusionSystemIntegration />}
+              {viewMode === 'ELITE_COMMAND_CENTER' && <TerraFusionEliteCommandCenter />}
+              {viewMode === 'REALTIME_DASHBOARD' && <TerraFusionEliteRealtimeDashboard />}
+              {viewMode === 'SERVICE_ORCHESTRATOR' && <TerraFusionEliteServiceOrchestrator />}
+              {viewMode === 'DEPLOYMENT_ORCHESTRATOR' && (
+                <TerraFusionAutomatedDeploymentOrchestrator />
+              )}
+              {viewMode === 'ELITE_PERFORMANCE_ANALYTICS' && (
+                <TerraFusionElitePerformanceAnalytics />
+              )}
+              {viewMode === 'QUANTUM_ANALYTICS' && renderQuantumAnalytics()}
+              {viewMode === 'DESKTOP' && <QuantumDesktopShell />}
+              {viewMode === 'ELITE_DASHBOARD' && <EliteQuantumDashboard />}
+              {viewMode === 'SYSTEM_VALIDATOR' && <EliteSystemValidator />}
+              {viewMode === 'MODULE_HUB' && <GovernmentModuleHub />}
+            </div>
+          </section>
+        </main>
+
+        {/* OS Footer Taskbar */}
+        <footer
+          className='terrafusion-os-taskbar'
+          style={{
+            height: '60px',
+            background: 'rgba(0, 255, 255, 0.08)',
+            backdropFilter: 'blur(20px)',
+            borderTop: '2px solid rgba(0, 255, 255, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 2rem',
+            position: 'relative',
+            zIndex: 100,
+          }}
+        >
+          {/* Quick Actions */}
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button
+              onClick={() => setShowEliteToolset(!showEliteToolset)}
+              style={{
+                padding: '0.5rem 1rem',
+                background: showEliteToolset
+                  ? 'linear-gradient(135deg, #00ffff, #0099ff)'
+                  : 'rgba(0, 255, 255, 0.1)',
+                color: showEliteToolset ? '#0a0e1a' : '#00ffff',
+                border: '1px solid rgba(0, 255, 255, 0.3)',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                fontWeight: 'bold',
+              }}
+            >
+              📊 Analytics Suite
+            </button>
+            <button
+              style={{
+                padding: '0.5rem 1rem',
+                background: 'rgba(0, 255, 136, 0.1)',
+                color: '#00ff88',
+                border: '1px solid rgba(0, 255, 136, 0.3)',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                fontWeight: 'bold',
+              }}
+            >
+              ⚡ Quantum Mode
+            </button>
+          </div>
+
+          {/* System Tray */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+            {/* Active Service Indicators */}
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: '#00ff88',
+                    boxShadow: '0 0 10px rgba(0, 255, 136, 0.6)',
+                  }}
+                ></div>
+                <span style={{ fontSize: '0.8rem', color: '#00ff88' }}>API Active</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: '#00ffff',
+                    boxShadow: '0 0 10px rgba(0, 255, 255, 0.6)',
+                  }}
+                ></div>
+                <span style={{ fontSize: '0.8rem', color: '#00ffff' }}>AI Conscious</span>
+              </div>
+            </div>
+
+            {/* System Info */}
+            <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#00ffaa' }}>
+              Benton County Assessment System • TerraFusion OS v1.0 • Government. Transcended.
+            </div>
+          </div>
+        </footer>
+
+        {/* ATLAS Cognitive Assistant - Floating */}
+        <div style={{ position: 'fixed', bottom: '80px', right: '20px', zIndex: 200 }}>
+          <ATLAS />
         </div>
 
-        {/* Government Excellence Status - Top Left */}
-        <div className='fixed top-4 left-4'>
-          <GovernmentExcellenceStatus />
-        </div>
-
-        {/* Main Content Container */}
-        <div className='terrafusion-main-content'>
-          {/* Render appropriate view */}
-          {viewMode === 'ELITE_NEXUS' && <TerraFusionEliteIntegrationNexus />}
-          {viewMode === 'AI_CONSCIOUSNESS_NETWORK' && <TerraFusionAIConsciousnessNetwork />}
-          {viewMode === 'QUANTUM_COMPUTING' && <TerraFusionQuantumComputing />}
-          {viewMode === 'ML_INTELLIGENCE_HUB' && <TerraFusionMLIntelligenceHub />}
-          {viewMode === 'BLOCKCHAIN_LEDGER' && <TerraFusionBlockchainLedger />}
-          {viewMode === 'ADVANCED_ANALYTICS' && <TerraFusionAdvancedAnalytics />}
-          {viewMode === 'EDGE_COORDINATION' && <TerraFusionEdgeCoordination />}
-          {viewMode === 'SYSTEM_INTEGRATION' && <TerraFusionSystemIntegration />}
-          {viewMode === 'ELITE_COMMAND_CENTER' && <TerraFusionEliteCommandCenter />}
-          {viewMode === 'REALTIME_DASHBOARD' && <TerraFusionEliteRealtimeDashboard />}
-          {viewMode === 'SERVICE_ORCHESTRATOR' && <TerraFusionEliteServiceOrchestrator />}
-          {viewMode === 'DEPLOYMENT_ORCHESTRATOR' && <TerraFusionAutomatedDeploymentOrchestrator />}
-          {viewMode === 'ELITE_PERFORMANCE_ANALYTICS' && <TerraFusionElitePerformanceAnalytics />}
-          {viewMode === 'QUANTUM_ANALYTICS' && renderQuantumAnalytics()}
-          {viewMode === 'DESKTOP' && <QuantumDesktopShell />}
-          {viewMode === 'ELITE_DASHBOARD' && <EliteQuantumDashboard />}
-          {viewMode === 'SYSTEM_VALIDATOR' && <EliteSystemValidator />}
-          {viewMode === 'MODULE_HUB' && <GovernmentModuleHub />}
-        </div>
-
-        {/* ATLAS - Always available cognitive interface */}
-        <ATLAS />
-
-        {/* Elite System Status Dashboard - Bottom Right */}
-        <EliteSystemStatusDashboard />
-
-        {/* TerraFusion System Check - Top Right (Temporary) */}
-        <TerraFusionSystemCheck />
-
-        {/* Layout Validator - Development Tool */}
-        <LayoutValidator />
-
-        {/* Elite Analytics Toolset - Conditional Overlay */}
+        {/* Elite Analytics Overlay */}
         {showEliteToolset && (
           <div
             style={{
@@ -795,32 +1059,57 @@ export function TerraFusionQuantumOS() {
               bottom: '0',
               zIndex: 1000,
               background: 'rgba(0, 0, 0, 0.9)',
+              backdropFilter: 'blur(10px)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              padding: '2rem',
             }}
             onClick={() => setShowEliteToolset(false)}
           >
             <div
               style={{
+                background: 'linear-gradient(135deg, #0a0e1a 0%, #1a202c 100%)',
+                border: '2px solid rgba(0, 255, 255, 0.3)',
+                borderRadius: '16px',
+                padding: '2rem',
                 maxWidth: '95vw',
-                maxHeight: '95vh',
+                maxHeight: '90vh',
                 overflow: 'auto',
+                position: 'relative',
               }}
               onClick={(e) => e.stopPropagation()}
             >
+              <button
+                onClick={() => setShowEliteToolset(false)}
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '1rem',
+                  background: 'rgba(255, 0, 0, 0.2)',
+                  color: '#ff6b6b',
+                  border: '1px solid rgba(255, 0, 0, 0.3)',
+                  borderRadius: '50%',
+                  width: '40px',
+                  height: '40px',
+                  cursor: 'pointer',
+                  fontSize: '1.2rem',
+                }}
+              >
+                ×
+              </button>
               <EliteAnalyticsToolset />
             </div>
           </div>
         )}
 
-        {/* TerraFusion Brand Enhancement System */}
+        {/* Background Enhancement System */}
         <TerraFusionBrandEnhancementSystem
           enableQuantumAnimations={true}
           enableGlassmorphism={true}
-          enableQuantumParticles={true}
+          enableQuantumParticles={false}
           enableBrandConsistency={true}
-          performanceMode='enhanced'
+          performanceMode='optimized'
         />
       </div>
     </TerraFusionExcellenceProvider>

@@ -2420,7 +2420,7 @@ export const ${className}: React.FC = () => {
   
   // Sample data for demonstration - would be replaced with real data
   const yearlyValueTrends = [
-    { year: '2020', residentialValue: 2450000000, commercialValue: 980000000, agriculturalValue: 340000000 },
+    { year: '2020', residentialValue: 2await DynamicPropertyService.GetPropertyCountAsync(countyCode)0000, commercialValue: 980000000, agriculturalValue: 340000000 },
     { year: '2021', residentialValue: 2650000000, commercialValue: 1020000000, agriculturalValue: 360000000 },
     { year: '2022', residentialValue: 2900000000, commercialValue: 1080000000, agriculturalValue: 380000000 },
     { year: '2023', residentialValue: 3100000000, commercialValue: 1150000000, agriculturalValue: 395000000 },
@@ -2440,7 +2440,7 @@ export const ${className}: React.FC = () => {
     { district: 'North', value: 425000 },
     { district: 'South', value: 380000 },
     { district: 'East', value: 410000 },
-    { district: 'West', value: 450000 },
+    { district: 'West', value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 },
     { district: 'Central', value: 490000 },
   ];
   

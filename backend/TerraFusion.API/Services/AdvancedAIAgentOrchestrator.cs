@@ -13,11 +13,10 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using TerraFusion.Core.Services;
 using TerraFusion.AI.Services;
-using TerraFusion.API.Interfaces; // ✅ Primary source for OptimizationRecommendation (decimal ExpectedImprovement, int Priority)
+using TerraFusion.API.Interfaces; // ✅ Primary source for TerraFusion.API.Interfaces.OptimizationRecommendation (decimal ExpectedImprovement, int Priority)
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.API.Models;
-using OptimizationRecommendation = TerraFusion.Abstractions.DTOs.Responses.OptimizationRecommendation;
-// Models.Performance namespace removed to avoid OptimizationRecommendation ambiguity
+// Models.Performance namespace removed to avoid TerraFusion.API.Interfaces.OptimizationRecommendation ambiguity
 
 namespace TerraFusion.API.Services;
 
@@ -1433,7 +1432,7 @@ public class PerformanceAnalyticsResult
     public string Message { get; set; } = string.Empty;
     public PerformanceAnalyticsData? AnalyticsData { get; set; }
     public List<PerformanceInsight> PerformanceInsights { get; set; } = new();
-    public List<OptimizationRecommendation> OptimizationRecommendations { get; set; } = new();
+    public List<TerraFusion.API.Interfaces.OptimizationRecommendation> OptimizationRecommendations { get; set; } = new();
     public DateTime AnalyticsTimestamp { get; set; }
     public double DataCoveragePercentage { get; set; }
     public DateTime Timestamp { get; set; }
@@ -1457,7 +1456,7 @@ public class PerformanceInsight
     public double ImpactScore { get; set; }
 }
 
-// ✅ OptimizationRecommendation definition removed - using TerraFusion.Abstractions.DTOs.Responses.OptimizationRecommendation instead
+// ✅ TerraFusion.API.Interfaces.OptimizationRecommendation definition removed - using TerraFusion.API.Interfaces.OptimizationRecommendation instead
 // This eliminates duplicate class definitions and ensures type consistency across all services
 
 public class DistributionAnalysis
@@ -1498,22 +1497,21 @@ public partial class AdvancedAIAgentOrchestrator
         };
     }
 
-    private async Task<List<OptimizationRecommendation>> GenerateDistributionOptimizationsAsync(DistributionAnalysis analysis)
+    private async Task<List<TerraFusion.API.Interfaces.OptimizationRecommendation>> GenerateDistributionOptimizationsAsync(DistributionAnalysis analysis)
     {
         await Task.Delay(30);
 
-        var recommendations = new List<OptimizationRecommendation>();
+        var recommendations = new List<TerraFusion.API.Interfaces.OptimizationRecommendation>();
 
         if (analysis.LoadBalanceScore < 0.9)
         {
-            recommendations.Add(new OptimizationRecommendation
+            recommendations.Add(new TerraFusion.API.Interfaces.OptimizationRecommendation
             {
                 RecommendationType = "LoadBalancing",
                 Description = "Redistribute agents from over-provisioned counties to under-served areas",
                 ImpactScore = 0.85,
                 Type = "LoadBalancing",
-                PriorityInt = 1, // High priority
-                Priority = "High",
+                Priority = 1, // High priority
                 Title = "Balance County Agent Distribution",
                 EstimatedImpact = 0.15,
                 Implementation = "Move 50 agents from King to Spokane County",
@@ -1523,14 +1521,13 @@ public partial class AdvancedAIAgentOrchestrator
 
         if (analysis.EfficiencyScore < 0.95)
         {
-            recommendations.Add(new OptimizationRecommendation
+            recommendations.Add(new TerraFusion.API.Interfaces.OptimizationRecommendation
             {
                 RecommendationType = "Efficiency",
                 Description = "Optimize agent specialization distribution for workload patterns",
                 ImpactScore = 0.78,
                 Type = "Efficiency",
-                PriorityInt = 2,
-                Priority = "Medium", // Medium priority
+                Priority = 2, // Medium priority
                 Title = "Optimize Agent Specializations",
                 EstimatedImpact = 0.08,
                 Implementation = "Adjust agent specialization mix based on county needs",
@@ -1541,7 +1538,7 @@ public partial class AdvancedAIAgentOrchestrator
         return recommendations;
     }
 
-    private async Task<AgentRedistributionAction> ExecuteAgentRedistributionAsync(OptimizationRecommendation recommendation)
+    private async Task<AgentRedistributionAction> ExecuteAgentRedistributionAsync(TerraFusion.API.Interfaces.OptimizationRecommendation recommendation)
     {
         await Task.Delay(100); // Simulate redistribution execution
 
@@ -1653,13 +1650,13 @@ public partial class AdvancedAIAgentOrchestrator
         };
     }
 
-    private List<OptimizationRecommendation> GenerateOptimizationRecommendations(
+    private List<TerraFusion.API.Interfaces.OptimizationRecommendation> GenerateOptimizationRecommendations(
         PerformanceAnalyticsData data,
         List<PerformanceInsight> insights)
     {
-        return new List<OptimizationRecommendation>
+        return new List<TerraFusion.API.Interfaces.OptimizationRecommendation>
         {
-            new OptimizationRecommendation
+            new TerraFusion.API.Interfaces.OptimizationRecommendation
             {
                 RecommendationType = "Scaling",
                 Description = "Consider scaling up for peak hours",

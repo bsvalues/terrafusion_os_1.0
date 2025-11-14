@@ -1,9 +1,0 @@
-{
-    "set": [
-        "airspace",
-        "data",
-        "generate",
-        "lines",
-        "management"
-    ]
-}

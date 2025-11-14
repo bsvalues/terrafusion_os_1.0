@@ -45,7 +45,7 @@ const CountyGovernmentSystem: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User>({
     id: 'usr-001',
     name: 'Sarah Johnson',
-    email: 'sjohnson@bentoncounty.gov',
+    email: 'sjohnson@terrafusionmarket.io',
     role: 'assessor',
     department: 'Assessor Office',
     permissions: ['view_all', 'edit_assessments', 'generate_reports']
@@ -160,7 +160,8 @@ const CountyGovernmentSystem: React.FC = () => {
     return (
       <div>
         {/* Welcome Header */}
-        <div className="mb-6"><>
+        <div className="mb-6">
+<>
 
           <h1 className="text-3xl font-bold text-gray-900">
             Welcome back, {currentUser.name}
@@ -182,7 +183,8 @@ className="text-gray-600 mt-1">
                 className={`bg-white rounded-lg shadow-md p-6 border-t-4 border-${stat.color}-500`}
               >
                 <div className="flex items-center justify-between">
-                  <div><>
+                  <div>
+<>
 
                     <p className="text-sm text-gray-600">{stat.label}</p>
                     <p
@@ -200,7 +202,8 @@ className={`text-3xl font-bold text-${stat.color}-600 mt-2`}>
 
         {/* Work Queue */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex items-center justify-between mb-4"><>
+          <div className="flex items-center justify-between mb-4">
+<>
 
             <h2 className="text-xl font-semibold text-gray-900">My Work Queue</h2>
             <button
@@ -218,7 +221,8 @@ className="text-sm text-blue-600 hover:underline">View All</button>
                     item.priority === 'high' ? 'bg-red-500' :
                     item.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
                   }`} />
-                  <div><>
+                  <div>
+<>
 
                     <p className="font-medium text-gray-900">{item.subject}</p>
                     <p
@@ -228,7 +232,8 @@ className="text-sm text-gray-600">
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3"><>
+                <div className="flex items-center gap-3">
+<>
 
                   <span className={`px-3 py-1 text-xs font-medium rounded-full ${
                     item.status === 'new' ? 'bg-blue-100 text-blue-700' :
@@ -255,7 +260,8 @@ className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
             onClick={() => setActiveView('properties')}
             className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 text-left hover:from-blue-600 hover:to-blue-700 transition-all transform hover:-translate-y-1"
           >
-            <Building className="w-8 h-8 mb-3" /><>
+            <Building className="w-8 h-8 mb-3" />
+<>
 
             <h3 className="font-semibold text-lg">Property Search</h3>
             <p
@@ -267,7 +273,8 @@ className="text-blue-100 text-sm mt-1">Access 94,149 property records</p>
             onClick={() => alert('Opening GIS Map...')}
             className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-6 text-left hover:from-green-600 hover:to-green-700 transition-all transform hover:-translate-y-1"
           >
-            <MapPin className="w-8 h-8 mb-3" /><>
+            <MapPin className="w-8 h-8 mb-3" />
+<>
 
             <h3 className="font-semibold text-lg">GIS Mapping</h3>
             <p
@@ -279,7 +286,8 @@ className="text-green-100 text-sm mt-1">Interactive parcel maps</p>
             onClick={() => setActiveView('reports')}
             className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg p-6 text-left hover:from-purple-600 hover:to-purple-700 transition-all transform hover:-translate-y-1"
           >
-            <BarChart3 className="w-8 h-8 mb-3" /><>
+            <BarChart3 className="w-8 h-8 mb-3" />
+<>
 
             <h3 className="font-semibold text-lg">Generate Reports</h3>
             <p
@@ -294,7 +302,8 @@ className="text-purple-100 text-sm mt-1">Analytics & insights</p>
   // Property Management View (for Assessors)
   const PropertyManagementView = () => (
     <div>
-      <div className="mb-6"><>
+      <div className="mb-6">
+<>
 
         <h1 className="text-3xl font-bold text-gray-900">Property Management</h1>
         <p
@@ -311,7 +320,8 @@ className="text-gray-600 mt-1">Manage assessments, valuations, and property reco
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by parcel ID, address, or owner name..."
             className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          /><>
+          />
+<>
 
           <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
             Search
@@ -332,7 +342,8 @@ className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
-              <tr><>
+              <tr>
+<>
 
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Parcel ID
@@ -341,7 +352,8 @@ className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-
 </>
 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Address
-                </th><>
+                </th>
+<>
 
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Owner
@@ -350,7 +362,8 @@ className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase track
 </>
 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Assessed Value
-                </th><>
+                </th>
+<>
 
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -364,7 +377,8 @@ className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase track
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {recentProperties.map((property) => (
-                <tr key={property.parcelId} className="hover:bg-gray-50"><>
+                <tr key={property.parcelId} className="hover:bg-gray-50">
+<>
 
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {property.parcelId}
@@ -373,7 +387,8 @@ className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase track
 </>
 className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {property.address}
-                  </td><>
+                  </td>
+<>
 
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {property.owner}
@@ -392,7 +407,8 @@ className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {property.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium"><>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+<>
 
                     <button
                       onClick={() => setSelectedProperty(property)}
@@ -428,7 +444,8 @@ className="text-green-600 hover:text-green-900 mr-3">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
                 <Shield className="w-8 h-8 text-blue-600" />
-                <div><>
+                <div>
+<>
 
                   <h1 className="text-xl font-bold text-gray-900">
                     Benton County Government
@@ -470,14 +487,16 @@ className="text-xs text-gray-600">Public Records Management System</p>
 
               {/* User Menu */}
               <div className="flex items-center gap-3 pl-4 border-l">
-                <div className="text-right"><>
+                <div className="text-right">
+<>
 
                   <p className="text-sm font-medium text-gray-900">{currentUser.name}</p>
                   <p
 </>
 className="text-xs text-gray-600">{currentUser.department}</p>
                 </div>
-                <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"><>
+                <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+<>
 
                   <Settings className="w-5 h-5" />
                 </button>
@@ -526,7 +545,8 @@ className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
           {activeView === 'dashboard' && <DashboardView />}
           {activeView === 'properties' && <PropertyManagementView />}
           {activeView === 'permits' && (
-            <div className="bg-white rounded-lg shadow-md p-6"><>
+            <div className="bg-white rounded-lg shadow-md p-6">
+<>
 
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Permit Management</h2>
               <p
@@ -535,7 +555,8 @@ className="text-gray-600">Process building permits, inspections, and application
             </div>
           )}
           {activeView === 'documents' && (
-            <div className="bg-white rounded-lg shadow-md p-6"><>
+            <div className="bg-white rounded-lg shadow-md p-6">
+<>
 
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Document Management</h2>
               <p
@@ -544,7 +565,8 @@ className="text-gray-600">Manage public records, deeds, and official documents</
             </div>
           )}
           {activeView === 'reports' && (
-            <div className="bg-white rounded-lg shadow-md p-6"><>
+            <div className="bg-white rounded-lg shadow-md p-6">
+<>
 
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Reports & Analytics</h2>
               <p
@@ -553,7 +575,8 @@ className="text-gray-600">Generate reports, analytics, and insights</p>
             </div>
           )}
           {activeView === 'public' && (
-            <div className="bg-white rounded-lg shadow-md p-6"><>
+            <div className="bg-white rounded-lg shadow-md p-6">
+<>
 
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Public Portal</h2>
               <p
@@ -568,14 +591,16 @@ className="text-gray-600">Configure and manage the public-facing records portal<
       <footer className="fixed bottom-0 left-0 right-0 bg-gray-900 text-white px-6 py-2">
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2"><>
+            <span className="flex items-center gap-2">
+<>
 
               <Database className="w-4 h-4 text-green-400" />
               94,149 Properties Indexed
             </span>
             <span
 </>
-className="flex items-center gap-2"><>
+className="flex items-center gap-2">
+<>
 
               <Users className="w-4 h-4 text-blue-400" />
               47 Active Users

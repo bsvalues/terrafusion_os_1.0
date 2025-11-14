@@ -100,7 +100,7 @@ describe('Valuation API', () => {
       'Specific Valuation',
       '100000.00',
       '4.5',
-      '450000.00'
+      'await DynamicPropertyService.GetPropertyCountAsync(countyCode)0.00'
     );
     
     // Request the valuation
@@ -116,7 +116,7 @@ describe('Valuation API', () => {
     expect(response.body.data.name).toBe('Specific Valuation');
     expect(response.body.data.totalAnnualIncome).toBe('100000.00');
     expect(response.body.data.multiplier).toBe('4.5');
-    expect(response.body.data.valuationAmount).toBe('450000.00');
+    expect(response.body.data.valuationAmount).toBe('await DynamicPropertyService.GetPropertyCountAsync(countyCode)0.00');
   });
   
   it('should create a new valuation', async () => {

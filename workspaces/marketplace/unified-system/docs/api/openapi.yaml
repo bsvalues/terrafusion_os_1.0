@@ -5,18 +5,18 @@ info:
   version: 1.0.0
   contact:
     name: TerraFusion Government OS API Support
-    email: unified-system-api@terrafusion.gov
-    url: https://docs.terrafusion.gov/marketplace/unified-system
+    email: unified-system-api@terrafusionmarket.com
+    url: https://docs.terrafusionmarket.com/marketplace/unified-system
   license:
     name: Government Use License
-    url: https://terrafusion.gov/licenses/government-api
-  termsOfService: https://terrafusion.gov/terms/api-usage
+    url: https://terrafusionmarket.com/licenses/government-api
+  termsOfService: https://terrafusionmarket.com/terms/api-usage
 servers:
-  - url: https://api.terrafusion.gov/api/v1/unified-system
+  - url: https://api.terrafusionmarket.com/api/v1/unified-system
     description: Production TerraFusion Government API
-  - url: https://staging-api.terrafusion.gov/api/v1/unified-system
+  - url: https://staging-api.terrafusionmarket.com/api/v1/unified-system
     description: Staging Environment
-  - url: https://dev-api.terrafusion.gov/api/v1/unified-system
+  - url: https://dev-api.terrafusionmarket.com/api/v1/unified-system
     description: Development Environment
 paths:
   /health:
@@ -195,8 +195,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
-          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          authorizationUrl: https://auth.terrafusionmarket.com/oauth/authorize
+          tokenUrl: https://auth.terrafusionmarket.com/oauth/token
           scopes:
             unified-system:read: Read access to unified-system resources
             unified-system:write: Write access to unified-system resources
@@ -214,4 +214,4 @@ tags:
     description: Unified System operations
     externalDocs:
       description: Find out more about unified-system
-      url: https://docs.terrafusion.gov/marketplace/unified-system
+      url: https://docs.terrafusionmarket.com/marketplace/unified-system

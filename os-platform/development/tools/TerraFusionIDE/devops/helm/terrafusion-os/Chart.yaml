@@ -4,14 +4,14 @@ description: TerraFusion OS 1.0 - Complete Government AI Operating System with A
 type: application
 version: 1.0.0
 appVersion: "1.0.0"
-home: https://terrafusion.gov
+home: https://terrafusionmarket.com
 sources:
   - https://github.com/terrafusion/terrafusion-os
 maintainers:
   - name: TerraFusion AI Engineering Team
-    email: engineering@terrafusion.gov
+    email: engineering@terrafusionmarket.com
   - name: Government AI Operations Team
-    email: operations@terrafusion.gov
+    email: operations@terrafusionmarket.com
 keywords:
   - government
   - ai-swarm
@@ -22,11 +22,11 @@ keywords:
 annotations:
   category: Government AI Platform
   licenses: Government License
-  terrafusion.gov/ai-agents: "50000"
-  terrafusion.gov/quantum-optimization: "enabled"
-  terrafusion.gov/consciousness-layer: "enabled"
-  terrafusion.gov/compliance: "FISMA,Section508"
-  terrafusion.gov/performance-target: "6ms-api,99.7%-efficiency"
+  terrafusionmarket.com/ai-agents: "50000"
+  terrafusionmarket.com/quantum-optimization: "enabled"
+  terrafusionmarket.com/consciousness-layer: "enabled"
+  terrafusionmarket.com/compliance: "FISMA,Section508"
+  terrafusionmarket.com/performance-target: "6ms-api,99.7%-efficiency"
 dependencies:
   - name: postgresql
     version: "12.10.0"

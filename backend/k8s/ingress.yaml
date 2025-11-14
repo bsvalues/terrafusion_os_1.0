@@ -30,7 +30,7 @@ metadata:
 
     # CORS Configuration
     nginx.ingress.kubernetes.io/enable-cors: 'true'
-    nginx.ingress.kubernetes.io/cors-allow-origin: 'https://terrafusion.gov,https://app.terrafusion.gov'
+    nginx.ingress.kubernetes.io/cors-allow-origin: 'https://terrafusionmarket.com,https://app.terrafusionmarket.com'
     nginx.ingress.kubernetes.io/cors-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS'
     nginx.ingress.kubernetes.io/cors-allow-headers: 'Authorization,Content-Type,X-County-Id,X-Request-ID'
     nginx.ingress.kubernetes.io/cors-allow-credentials: 'true'
@@ -64,7 +64,7 @@ metadata:
       more_set_headers "X-XSS-Protection: 1; mode=block";
       more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
       more_set_headers "Permissions-Policy: geolocation=(), microphone=(), camera=()";
-      more_set_headers "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.terrafusion.gov;";
+      more_set_headers "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.terrafusionmarket.com;";
 
     # Monitoring
     nginx.ingress.kubernetes.io/enable-access-log: 'true'
@@ -73,16 +73,16 @@ metadata:
 spec:
   tls:
     - hosts:
-        - api.terrafusion.gov
-        - app.terrafusion.gov
-        - terrafusion.gov
+        - api.terrafusionmarket.com
+        - app.terrafusionmarket.com
+        - terrafusionmarket.com
       secretName: terrafusion-tls-secret
 
   rules:
     # ========================================================================
     # Gateway - Primary Entry Point
     # ========================================================================
-    - host: api.terrafusion.gov
+    - host: api.terrafusionmarket.com
       http:
         paths:
           # Health check endpoint
@@ -124,7 +124,7 @@ spec:
     # ========================================================================
     # Application Domain (Frontend)
     # ========================================================================
-    - host: app.terrafusion.gov
+    - host: app.terrafusionmarket.com
       http:
         paths:
           # Frontend application (if hosted in cluster)
@@ -139,7 +139,7 @@ spec:
     # ========================================================================
     # Root Domain (Marketing/Documentation Site)
     # ========================================================================
-    - host: terrafusion.gov
+    - host: terrafusionmarket.com
       http:
         paths:
           # Main website
@@ -165,7 +165,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: admin@terrafusion.gov
+    email: admin@terrafusionmarket.com
     privateKeySecretRef:
       name: letsencrypt-prod-key
     solvers:
@@ -187,7 +187,7 @@ metadata:
 spec:
   acme:
     server: https://acme-staging-v02.api.letsencrypt.org/directory
-    email: admin@terrafusion.gov
+    email: admin@terrafusionmarket.com
     privateKeySecretRef:
       name: letsencrypt-staging-key
     solvers:
@@ -286,16 +286,16 @@ data:
 #   kubectl describe certificate terrafusion-tls-secret -n terrafusion
 #
 # Test HTTPS endpoints:
-#   curl -v https://api.terrafusion.gov/health
-#   curl -v https://api.terrafusion.gov/api/health
-#   curl -v https://api.terrafusion.gov/consciousness/health
+#   curl -v https://api.terrafusionmarket.com/health
+#   curl -v https://api.terrafusionmarket.com/api/health
+#   curl -v https://api.terrafusionmarket.com/consciousness/health
 #
 # View NGINX Ingress Controller logs:
 #   kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx
 #
 # Test TLS configuration:
-#   openssl s_client -connect api.terrafusion.gov:443 -showcerts
-#   nmap --script ssl-enum-ciphers -p 443 api.terrafusion.gov
+#   openssl s_client -connect api.terrafusionmarket.com:443 -showcerts
+#   nmap --script ssl-enum-ciphers -p 443 api.terrafusionmarket.com
 #
 # Force certificate renewal (cert-manager):
 #   kubectl delete certificate terrafusion-tls-secret -n terrafusion

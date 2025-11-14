@@ -201,7 +201,7 @@ export function LoginForm() {
             <div className="pt-4 border-t border-slate-700">
               <p className="text-xs text-slate-500 mb-2">Demo Credentials:</p>
               <div className="text-xs text-slate-400 space-y-1">
-                <div>Email: admin@terrafusion.gov</div>
+                <div>Email: admin@terrafusionmarket.com</div>
                 <div>Password: admin123</div>
                 <div className="text-green-400">MFA Code: 123456 (optional)</div>
               </div>

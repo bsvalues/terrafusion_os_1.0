@@ -120,7 +120,7 @@ describe('Security - XSS Prevention', () => {
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https:",
       "font-src 'self'",
-      "connect-src 'self' https://api.terrafusion.gov",
+      "connect-src 'self' https://api.terrafusionmarket.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -182,12 +182,12 @@ describe('Security - CSRF Protection', () => {
 
   test('should validate origin for state-changing requests', () => {
     const allowedOrigins = [
-      'https://terrafusion.gov',
-      'https://research.terrafusion.gov',
+      'https://terrafusionmarket.com',
+      'https://research.terrafusionmarket.com',
       'https://localhost:5173', // Dev only
     ];
 
-    const requestOrigin = 'https://terrafusion.gov';
+    const requestOrigin = 'https://terrafusionmarket.com';
     expect(allowedOrigins).toContain(requestOrigin);
   });
 });
@@ -355,7 +355,7 @@ describe('Security - JWT Token Security', () => {
 describe('Security - Secure Data Transmission', () => {
   test('should enforce HTTPS in production', () => {
     const isProduction = process.env.NODE_ENV === 'production';
-    const apiUrl = 'https://api.terrafusion.gov';
+    const apiUrl = 'https://api.terrafusionmarket.com';
 
     if (isProduction) {
       expect(apiUrl).toMatch(/^https:\/\//);

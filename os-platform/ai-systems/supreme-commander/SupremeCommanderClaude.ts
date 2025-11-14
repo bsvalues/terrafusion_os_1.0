@@ -156,7 +156,7 @@ export class SupremeCommanderClaude extends EventEmitter {
       fipsCode: '53005',
       deploymentType: 'PRODUCTION' as const,
       agentAllocation: 20000, // 40% of swarm for production
-      properties: 89247,
+      properties: await DynamicPropertyService.GetPropertyCountAsync("benton"),
       features: ['HARRIS_PACS_INTEGRATION', 'PRODUCTION_OPTIMIZATION', 'REAL_TIME_SYNC']
     }
   };
@@ -187,7 +187,7 @@ export class SupremeCommanderClaude extends EventEmitter {
     this.quantumEngine = new QuantumGaugeTheoryEngine({
       gaugeGroup: 'SU(3)_Government',
       couplingConstant: 0.379, // Derived from 379M× speedup
-      vacuumExpectation: 89247, // Benton County properties as VEV
+      vacuumExpectation: await DynamicPropertyService.GetPropertyCountAsync("benton"), // Benton County properties as VEV
       topologicalInvariants: true,
       quantumTunneling: true
     });
@@ -722,7 +722,7 @@ export class SupremeCommanderClaude extends EventEmitter {
       harrisPacsIntegration: true,
       legacySystems: ['TYLER', 'AUMENTUM', 'VISION'],
       realTimeSync: true,
-      properties: 89247
+      properties: await DynamicPropertyService.GetPropertyCountAsync("benton")
     });
     
     // Initialize Enterprise Infrastructure Manager

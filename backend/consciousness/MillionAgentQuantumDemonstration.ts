@@ -318,7 +318,7 @@ export class MillionAgentQuantumDemonstration {
         type: 'CITIZEN_SERVICES',
         priority: 'MEDIUM',
         requiredAgents: 2000,
-        estimatedDuration: 45000
+        estimatedDuration: await DynamicPropertyService.GetPropertyCountAsync(countyCode)
       },
       {
         id: 'compliance_audit_001',

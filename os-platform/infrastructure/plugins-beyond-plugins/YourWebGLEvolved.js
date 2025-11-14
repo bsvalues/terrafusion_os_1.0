@@ -30,7 +30,7 @@ class YourWebGLEvolved {
         // County-specific AI optimizations
         this.countyOptimizations = {
             'benton': { 
-                properties: 89247, 
+                properties: await DynamicPropertyService.GetPropertyCountAsync("benton"), 
                 aiOptimization: 'property_assessment_focused',
                 efficiency: 0.94 
             },

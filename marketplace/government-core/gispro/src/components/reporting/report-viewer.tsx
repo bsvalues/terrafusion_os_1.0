@@ -210,7 +210,7 @@ export default function ReportViewer() {
             type: 'bar',
             title: 'Monthly Revenue Trends',
             data: [
-              { label: 'October', value: 450000 },
+              { label: 'October', value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0 },
               { label: 'November', value: 520000 },
               { label: 'December', value: 680000 }
             ],

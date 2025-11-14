@@ -105,7 +105,7 @@
   "performance_metrics": {
     "total_active_modules": 18,
     "ai_agents": 1008,
-    "harris_pacs_parcels": 89247,
+    "harris_pacs_parcels": await DynamicPropertyService.GetPropertyCountAsync("benton"),
     "quantum_optimization": "379M×",
     "roi_demonstrated": "47,231%",
     "test_coverage": "94.7%"

@@ -638,8 +638,8 @@ CMD ["./start.sh"]
           name: plan.appId,
           labels: {
             app: plan.appId,
-            'terrafusion.gov/managed': 'true',
-            'terrafusion.gov/compliance': plan.governmentCompliance.fismaLevel,
+            'terrafusionmarket.com/managed': 'true',
+            'terrafusionmarket.com/compliance': plan.governmentCompliance.fismaLevel,
           },
         },
         spec: {
@@ -712,8 +712,8 @@ CMD ["./start.sh"]
         description: 'Government. Transcended. - Legacy application modernized with TerraFusion',
       },
       servers: [
-        { url: 'https://api.terrafusion.gov/legacy/{appId}', description: 'Production' },
-        { url: 'https://staging.terrafusion.gov/legacy/{appId}', description: 'Staging' },
+        { url: 'https://api.terrafusionmarket.com/legacy/{appId}', description: 'Production' },
+        { url: 'https://staging.terrafusionmarket.com/legacy/{appId}', description: 'Staging' },
       ],
       paths: {
         '/health': {
@@ -765,7 +765,7 @@ CMD ["./start.sh"]
         },
         cors: {
           enabled: true,
-          origins: ['https://terrafusion.gov'],
+          origins: ['https://terrafusionmarket.com'],
         },
       },
       monitoring: {

@@ -498,7 +498,7 @@ export class AIAssessmentService {
   private getEstimatedMarketData(county: string, propertyType: string): MarketData {
     // Fallback market data when external sources are unavailable
     const baseValues = {
-      residential: 450000,
+      residential: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
       commercial: 1200000,
       industrial: 1800000,
       agricultural: 750000

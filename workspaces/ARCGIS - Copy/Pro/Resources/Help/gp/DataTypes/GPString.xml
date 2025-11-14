@@ -1,5 +1,0 @@
-<DataType Name="GPString">
-  <DisplayName>String</DisplayName>
-  <Description>A text value.</Description>
-</DataType>
-

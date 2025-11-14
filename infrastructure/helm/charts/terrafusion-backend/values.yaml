@@ -38,16 +38,16 @@ ingress:
     alb.ingress.kubernetes.io/ssl-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
     alb.ingress.kubernetes.io/healthcheck-path: "/health"
     alb.ingress.kubernetes.io/success-codes: "200,404"
-    external-dns.alpha.kubernetes.io/hostname: api.terrafusion.gov
+    external-dns.alpha.kubernetes.io/hostname: api.terrafusionmarket.com
   hosts:
-    - host: api.terrafusion.gov
+    - host: api.terrafusionmarket.com
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: terrafusion-tls
       hosts:
-        - api.terrafusion.gov
+        - api.terrafusionmarket.com
 
 # Resource limits and requests
 resources:

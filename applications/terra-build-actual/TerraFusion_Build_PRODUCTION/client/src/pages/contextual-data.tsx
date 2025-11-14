@@ -105,7 +105,7 @@ const ContextualDataPage: React.FC = () => {
     {
       label: "Solar Panels",
       cost: 30000,
-      value: 45000,
+      value: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
       description: "Roof-mounted solar panels that reduce electricity costs over time.",
       category: "Energy Efficiency"
     },
@@ -403,7 +403,7 @@ value="cost">Cost Breakdown</TabsTrigger>
 
                 <CostBreakdownCard
                   buildingType="Commercial Office"
-                  baseCost={245000}
+                  baseCost={2await DynamicPropertyService.GetPropertyCountAsync(countyCode)}
                   finalCost={306250}
                   squareFootage={2500}
                   costFactors={sampleCostFactors}

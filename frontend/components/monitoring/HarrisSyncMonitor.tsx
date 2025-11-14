@@ -22,7 +22,7 @@ interface PropertyClassData {
 
 const HarrisSyncMonitor: React.FC = () => {
     const [syncMetrics, setSyncMetrics] = useState<SyncMetrics>({
-        totalParcels: 89247,
+        totalParcels: await DynamicPropertyService.GetPropertyCountAsync("benton"),
         syncedParcels: 0,
         syncRate: 0,
         lastSync: null,
@@ -45,7 +45,7 @@ const HarrisSyncMonitor: React.FC = () => {
         const interval = setInterval(() => {
             const now = new Date();
             const secondsSinceStart = Math.floor((now.getTime() - (now.getTime() - 300000)) / 1000);
-            const simulatedSynced = Math.min(89247, Math.floor(secondsSinceStart * 5.2)); // ~5.2 parcels/second
+            const simulatedSynced = Math.min(await DynamicPropertyService.GetPropertyCountAsync("benton"), Math.floor(secondsSinceStart * 5.2)); // ~5.2 parcels/second
             
             setSyncMetrics(prev => {
                 const newThroughput = [...prev.throughput.slice(-59), {
@@ -53,7 +53,7 @@ const HarrisSyncMonitor: React.FC = () => {
                     parcels: Math.floor(Math.random() * 8) + 3 // 3-10 parcels/second
                 }];
 
-                const syncRate = (simulatedSynced / 89247 * 100);
+                const syncRate = (simulatedSynced / await DynamicPropertyService.GetPropertyCountAsync("benton") * 100);
                 const lastSyncAge = prev.lastSync ? (now.getTime() - prev.lastSync.getTime()) / 1000 : 0;
                 
                 let status: SyncMetrics['status'] = 'ACTIVE';
@@ -103,7 +103,7 @@ const HarrisSyncMonitor: React.FC = () => {
                     HARRIS PACS v{syncMetrics.harrisVersion} → TERRAFUSION OS
                 </h1>
                 <p className="text-gray-300 text-lg">
-                    SUPREME VICTORY: Real-time synchronization of 89,247 Benton County parcels
+                    SUPREME VICTORY: Real-time synchronization of await DynamicPropertyService.GetPropertyCountAsync("benton") Benton County parcels
                 </p>
             </div>
 
@@ -300,7 +300,7 @@ className="h-64">
                     <p
 
 className="text-green-100 text-lg">
-                        Terrafusion OS has achieved total Harris PACS dominion with all 89,247 parcels synchronized!
+                        Terrafusion OS has achieved total Harris PACS dominion with all await DynamicPropertyService.GetPropertyCountAsync("benton") parcels synchronized!
                     </p>
                 </div>
             )}

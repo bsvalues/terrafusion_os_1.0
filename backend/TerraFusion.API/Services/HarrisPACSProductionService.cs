@@ -19,7 +19,8 @@ using TerraFusion.API.Interfaces;
 using CorePerformanceMetrics = TerraFusion.Core.DTOs.PerformanceMetrics;
 using SyncResult = TerraFusion.Abstractions.DTOs.Responses.SyncResult;
 
-namespace TerraFusion.API.Services;
+
+
 
 /// <summary>
 /// Production Harris PACS Integration Service
@@ -47,7 +48,7 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
     private readonly ILogger<HarrisPACSProductionService> _logger;
     private readonly IConfiguration _configuration;
     private readonly TerraFusion.AI.Services.IAICommandService _aiCommandService;
-    private readonly IAdvancedAIAgentOrchestrator _aiOrchestrator;
+    private readonly IAdvancedAIOrchestrator _aiOrchestrator;
 
     // Real Benton County Connection Strings
     private readonly string _ciapsConnectionString;
@@ -75,7 +76,7 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
         ILogger<HarrisPACSProductionService> logger,
         IConfiguration configuration,
         TerraFusion.AI.Services.IAICommandService aiCommandService,
-        IAdvancedAIAgentOrchestrator aiOrchestrator)
+        IAdvancedAIOrchestrator aiOrchestrator)
     {
         _logger = logger;
         _configuration = configuration;
@@ -464,7 +465,7 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
             dynamic datasets = trainingDatasets;
 
             // Initialize AI agent training coordination
-            var trainingCoordination = await _aiOrchestrator.InitializeAgentSwarmAsync();
+            var trainingCoordination = await _aiOrchestrator.ActivateEnhancementSwarmAsync(new AISwarmConfig { Mode = "PropertyEnhancement", AgentCount = 1008, CountyId = "Benton" });
             dynamic coordination = trainingCoordination;
 
             if (!trainingCoordination.Success)
@@ -1345,7 +1346,7 @@ public class PerformanceMonitor
         return new { };
     }
 
-    // Missing initialization methods for government-grade integration  
+    // Missing initialization methods for government-grade integration
     private async Task<object> LoadHistoricalArchiveDataAsync(int year)
     {
         return await Task.FromResult(new { Year = year, RecordsLoaded = 25000 });

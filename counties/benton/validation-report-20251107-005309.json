@@ -1,0 +1,119 @@
+{
+  "Failed": 4,
+  "Passed": 7,
+  "Details": [
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T00:53:08.6068447-08:00",
+      "Test": "Container-api",
+      "Details": "",
+      "Message": "Container healthy and running"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T00:53:08.6090782-08:00",
+      "Test": "Container-frontend",
+      "Details": "",
+      "Message": "Container healthy and running"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T00:53:08.6100728-08:00",
+      "Test": "Container-postgres",
+      "Details": "",
+      "Message": "Container healthy and running"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T00:53:08.6110385-08:00",
+      "Test": "Container-redis",
+      "Details": "",
+      "Message": "Container healthy and running"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T00:53:08.6374602-08:00",
+      "Test": "Essential-api",
+      "Details": "",
+      "Message": "Required service operational"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T00:53:08.638645-08:00",
+      "Test": "Essential-postgres",
+      "Details": "",
+      "Message": "Required service operational"
+    },
+    {
+      "Status": "PASS",
+      "Timestamp": "2025-11-07T00:53:08.6399321-08:00",
+      "Test": "Essential-redis",
+      "Details": "",
+      "Message": "Required service operational"
+    },
+    {
+      "Status": "FAIL",
+      "Timestamp": "2025-11-07T00:53:08.6637931-08:00",
+      "Test": "API-Health Check",
+      "Details": "",
+      "Message": "Test execution failed: Could not find a part of the path 'C:\\dev\\null'."
+    },
+    {
+      "Status": "FAIL",
+      "Timestamp": "2025-11-07T00:53:08.7776516-08:00",
+      "Test": "API-API Test",
+      "Details": "",
+      "Message": "Test execution failed: Could not find a part of the path 'C:\\dev\\null'."
+    },
+    {
+      "Status": "FAIL",
+      "Timestamp": "2025-11-07T00:53:08.8960036-08:00",
+      "Test": "API-Database Status",
+      "Details": "",
+      "Message": "Test execution failed: Could not find a part of the path 'C:\\dev\\null'."
+    },
+    {
+      "Status": "WARN",
+      "Timestamp": "2025-11-07T00:53:09.0117134-08:00",
+      "Test": "API-AI Swarm Status",
+      "Details": "",
+      "Message": "Test execution failed: Could not find a part of the path 'C:\\dev\\null'."
+    },
+    {
+      "Status": "WARN",
+      "Timestamp": "2025-11-07T00:53:09.1282352-08:00",
+      "Test": "API-Module Listing",
+      "Details": "",
+      "Message": "Test execution failed: Could not find a part of the path 'C:\\dev\\null'."
+    },
+    {
+      "Status": "WARN",
+      "Timestamp": "2025-11-07T00:53:09.245717-08:00",
+      "Test": "API-Elite Mission Report",
+      "Details": "",
+      "Message": "Test execution failed: Could not find a part of the path 'C:\\dev\\null'."
+    },
+    {
+      "Status": "FAIL",
+      "Timestamp": "2025-11-07T00:53:09.3627394-08:00",
+      "Test": "Database Tests",
+      "Details": "",
+      "Message": "Database validation failed: Could not find a part of the path 'C:\\dev\\null'."
+    },
+    {
+      "Status": "WARN",
+      "Timestamp": "2025-11-07T00:53:09.3700582-08:00",
+      "Test": "Elite-Features",
+      "Details": "",
+      "Message": "Elite feature testing failed: Could not find a part of the path 'C:\\dev\\null'."
+    },
+    {
+      "Status": "WARN",
+      "Timestamp": "2025-11-07T00:53:09.427082-08:00",
+      "Test": "Performance-Tests",
+      "Details": "",
+      "Message": "Performance testing failed: Could not find a part of the path 'C:\\dev\\null'."
+    }
+  ],
+  "Warnings": 5
+}

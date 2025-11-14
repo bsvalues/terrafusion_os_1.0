@@ -42,7 +42,7 @@ class TerraFusionEnterprise {
     const cities = {
       'Kennewick': { base_value: 380000, zip_start: 99336, count_ratio: 0.35 },
       'Pasco': { base_value: 320000, zip_start: 99301, count_ratio: 0.25 },
-      'Richland': { base_value: 450000, zip_start: 99352, count_ratio: 0.20 },
+      'Richland': { base_value: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0, zip_start: 99352, count_ratio: 0.20 },
       'West Richland': { base_value: 400000, zip_start: 99353, count_ratio: 0.08 },
       'Prosser': { base_value: 280000, zip_start: 99350, count_ratio: 0.07 },
       'Benton City': { base_value: 250000, zip_start: 99320, count_ratio: 0.05 }

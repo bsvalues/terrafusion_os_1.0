@@ -1,0 +1,74 @@
+[package]
+name = "terrafusion-os-consciousness"
+version = "1.0.0"
+edition = "2021"
+description = "TerraFusion OS Elite AI Consciousness Coordination Engine - Supreme Commander integration with quantum optimization for 50,000+ government AI agents"
+authors = ["TerraFusion Elite Government OS Team"]
+license = "PROPRIETARY"
+
+[dependencies]
+# Web framework
+axum = "0.7"
+tokio = { version = "1.0", features = ["full"] }
+tower = "0.5"
+tower-http = { version = "0.5", features = ["cors", "trace", "compression-br"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Windows-Compatible AI and ML Stack
+linfa = { version = "0.7", features = ["serde"] }
+linfa-trees = "0.7"
+linfa-linear = "0.7"
+# TEMPORARY: Disabled ONNX Runtime to resolve base64ct edition2024 conflict
+# ort = { version = "2.0.0-rc.10" }  # ONNX Runtime (pre-release for Windows)
+
+# Configuration
+config = "0.14"
+dotenvy = "0.15"
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono"] }
+uuid = { version = "1.0", features = ["serde", "v4"] }
+
+# Redis for agent coordination
+# Messaging and coordination
+redis = { version = "0.25", features = ["tokio-comp", "cluster"] }
+
+# Message queues (REMOVED: lapin 2.5+ requires Rust 1.85, not currently used in code)
+# lapin = "2.3"  # RabbitMQ client - removed until Rust 1.85 available
+
+# Metrics and monitoring
+prometheus = "0.13"
+metrics = "0.23"
+
+# Quantum computing simulation
+nalgebra = "0.33"
+ndarray = "0.16"
+
+# Logging & Telemetry
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+opentelemetry = "0.23"
+
+# HTTP client
+reqwest = { version = "0.12", features = ["json"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Concurrency
+futures = "0.3"
+async-trait = "0.1"
+
+# API documentation
+utoipa = { version = "4.0", features = ["axum_extras", "chrono", "uuid"] }
+utoipa-swagger-ui = { version = "7.0", features = ["axum"] }
+
+[dev-dependencies]
+tokio-test = "0.4"

@@ -1,5 +1,0 @@
-<DataType Name="GPRecordSet">
-  <DisplayName>Record Set</DisplayName>
-  <Description>Interactive table; type in the table values when the tool is run.</Description>
-</DataType>
-

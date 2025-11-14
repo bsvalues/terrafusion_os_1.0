@@ -45,7 +45,7 @@ const MarketData = () => {
     trends: [
       {
         period: '2020',
-        medianSalePrice: 450000,
+        medianSalePrice: await DynamicPropertyService.GetPropertyCountAsync(countyCode)0,
         averageDaysOnMarket: 35,
         totalSales: 245,
         pricePerSquareFoot: 275,
@@ -90,7 +90,7 @@ const MarketData = () => {
         totalSales: 260,
         pricePerSquareFoot: 372,
         priceChange: {
-          amount: 45000,
+          amount: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
           percentage: 8.18
         }
       },
@@ -154,7 +154,8 @@ const MarketData = () => {
   
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center"><>
+      <div className="flex justify-between items-center">
+<>
 
         <h1 className="text-2xl font-bold tracking-tight">Market Data Analysis</h1>
         <button
@@ -167,7 +168,8 @@ const MarketData = () => {
       {/* Search and filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" /><>
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+<>
 
           <input
             type="text"
@@ -184,7 +186,8 @@ const MarketData = () => {
             className="px-4 py-2 border rounded-md w-full sm:w-auto appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-primary/50"
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
-          ><>
+          >
+<>
 
             <option value="monthly">Monthly</option>
             <option
@@ -198,7 +201,8 @@ const MarketData = () => {
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
-            <div className="space-y-1"><>
+            <div className="space-y-1">
+<>
 
               <p className="text-sm text-muted-foreground">Average Annual Growth</p>
               <p
@@ -218,7 +222,8 @@ const MarketData = () => {
         
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
-            <div className="space-y-1"><>
+            <div className="space-y-1">
+<>
 
               <p className="text-sm text-muted-foreground">Sales Volume Trend</p>
               <p
@@ -238,7 +243,8 @@ const MarketData = () => {
         
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
-            <div className="space-y-1"><>
+            <div className="space-y-1">
+<>
 
               <p className="text-sm text-muted-foreground">Days on Market</p>
               <p
@@ -259,7 +265,8 @@ const MarketData = () => {
       
       {/* Price trend chart */}
       <div className="rounded-lg border bg-card p-6">
-        <div className="mb-6"><>
+        <div className="mb-6">
+<>
 
           <h2 className="text-lg font-semibold">Price Trend for ZIP Code {zipCode}</h2>
           <p
@@ -296,15 +303,18 @@ const MarketData = () => {
         <div className="p-0">
           <table className="w-full data-grid">
             <thead>
-              <tr><>
+              <tr>
+<>
 
                 <th>Period</th>
                 <th
-</>>Median Price</th><>
+</>>Median Price</th>
+<>
 
                 <th>Price Change</th>
                 <th
-</>>$/Sq.Ft</th><>
+</>>$/Sq.Ft</th>
+<>
 
                 <th>Days on Market</th>
                 <th
@@ -313,7 +323,8 @@ const MarketData = () => {
             </thead>
             <tbody>
               {mockData.trends.map((data /* , index */) => (
-                <tr key={index}><>
+                <tr key={index}>
+<>
 
                   <td>{data.period}</td>
                   <td
@@ -324,7 +335,8 @@ const MarketData = () => {
                         {formatPercentage(data.priceChange.percentage)}
                       </span>
                     ) : 'N/A'}
-                  </td><>
+                  </td>
+<>
 
                   <td>${data.pricePerSquareFoot}</td>
                   <td
@@ -339,7 +351,8 @@ const MarketData = () => {
       
       {/* Zip code comparison section */}
       <div className="rounded-lg border bg-card p-6">
-        <div className="mb-6"><>
+        <div className="mb-6">
+<>
 
           <h2 className="text-lg font-semibold">Compare Multiple ZIP Codes</h2>
           <p
@@ -350,7 +363,8 @@ const MarketData = () => {
         
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" /><>
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+<>
 
             <input
               type="text"
