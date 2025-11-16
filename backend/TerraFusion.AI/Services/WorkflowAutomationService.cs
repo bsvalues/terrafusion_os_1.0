@@ -12,27 +12,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TerraFusion.AI.Interfaces;
+using TerraFusion.AI.DTOs;
 using TerraFusion.Consciousness.Interfaces;
 
 namespace TerraFusion.AI.Services
 {
-    // TODO: Move to DTOs folder and implement proper properties
-    public class WorkflowExecutionResult
-    {
-        public string ExecutionId { get; set; } = string.Empty;
-        public string WorkflowId { get; set; } = string.Empty;
-        public string CountyId { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
-        public double TotalDuration { get; set; }
-        public bool Success { get; set; }
-        public List<object> Steps { get; set; } = new List<object>();
-    }
+    // ✅ Moved to DTOs folder - WorkflowExecutionResult now properly organized
 
     public interface IWorkflowAutomationService
     {
-        Task<WorkflowExecutionResult> ExecuteWorkflowAsync(string workflowId, string countyId);
+        Task<TerraFusion.AI.DTOs.WorkflowExecutionResult> ExecuteWorkflowAsync(string workflowId, string countyId);
         Task<List<WorkflowDefinition>> GetAvailableWorkflowsAsync(string department);
         Task<WorkflowStatus> GetWorkflowStatusAsync(string workflowId, string executionId);
         Task<WorkflowOptimizationSuggestion> AnalyzeWorkflowEfficiencyAsync(string workflowId, string countyId);
@@ -59,7 +48,7 @@ namespace TerraFusion.AI.Services
             _activeExecutions = new Dictionary<string, WorkflowExecution>();
         }
 
-        public async Task<WorkflowExecutionResult> ExecuteWorkflowAsync(string workflowId, string countyId)
+        public async Task<TerraFusion.AI.DTOs.WorkflowExecutionResult> ExecuteWorkflowAsync(string workflowId, string countyId)
         {
             _logger.LogInformation(
                 "Executing workflow {WorkflowId} for county {CountyId}",
@@ -88,11 +77,28 @@ namespace TerraFusion.AI.Services
                 _activeExecutions[executionId] = execution;
 
                 // Execute workflow steps
-                var results = new List<object>();
+                var results = new List<WorkflowStepResult>();
                 foreach (var step in workflow.Steps)
                 {
                     var stepResult = await ExecuteStepAsync(step, countyId, execution);
-                    results.Add(stepResult);
+
+                    // Convert StepResult to WorkflowStepResult
+                    var workflowStepResult = new TerraFusion.AI.DTOs.WorkflowStepResult
+                    {
+                        StepId = step.Id,
+                        StepName = step.Name,
+                        Status = stepResult.Success ? "completed" : "failed",
+                        StartTime = DateTime.UtcNow.AddMilliseconds(-100), // Approximate start time
+                        EndTime = DateTime.UtcNow,
+                        Duration = 0.1, // Approximate duration
+                        Success = stepResult.Success,
+                        ErrorMessage = stepResult.Error ?? string.Empty,
+                        OutputData = stepResult.Result != null ?
+                            new Dictionary<string, object> { ["result"] = stepResult.Result } :
+                            new Dictionary<string, object>()
+                    };
+
+                    results.Add(workflowStepResult);
 
                     if (!stepResult.Success)
                     {
@@ -109,7 +115,7 @@ namespace TerraFusion.AI.Services
                 execution.Status = execution.Status == "running" ? "completed" : execution.Status;
                 execution.EndTime = endTime;
 
-                return new WorkflowExecutionResult
+                return new TerraFusion.AI.DTOs.WorkflowExecutionResult
                 {
                     ExecutionId = executionId,
                     WorkflowId = workflowId,

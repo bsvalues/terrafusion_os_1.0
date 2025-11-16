@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+
+import chalk from 'chalk';
+import { Command } from 'commander';
+import { aiCommand } from './commands/ai';
+import { debugCommand } from './commands/debug';
+import { launchCommand } from './commands/launch-backend';
+import { statusCommand } from './commands/status';
+import { workspaceCommand } from './commands/workspace';
+
+const program = new Command();
+
+program
+  .name('tdc')
+  .description('🏛️ TerraFusion Developer Console - Government OS Entry Point')
+  .version('0.1.0');
+
+// Global banner
+program.addHelpText(
+  'beforeAll',
+  `
+${chalk.cyan('🏛️ TerraFusion OS - Government. Transcended.')}
+${chalk.gray('Elite Developer Console for 50,000+ AI Agent Orchestration')}
+`
+);
+
+// Register commands
+program.addCommand(statusCommand);
+program.addCommand(launchCommand);
+program.addCommand(workspaceCommand);
+program.addCommand(debugCommand);
+program.addCommand(aiCommand);
+
+// Default action - show help
+program.action(() => {
+  program.help();
+});
+
+// Enhanced error handling
+program.exitOverride(err => {
+  if (err.code === 'commander.help') {
+    process.exit(0);
+  }
+  if (err.code === 'commander.version') {
+    process.exit(0);
+  }
+  console.error(chalk.red('❌ TDC Error:'), err.message);
+  process.exit(1);
+});
+
+// Parse commands
+program.parseAsync(process.argv).catch(error => {
+  console.error(chalk.red('❌ TDC Fatal Error:'), error.message);
+  process.exit(1);
+});

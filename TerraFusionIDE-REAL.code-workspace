@@ -45,6 +45,7 @@
       "source.fixAll": "explicit",
     },
     "liveServer.settings.multiRootWorkspaceName": "🚀 TerraFusion IDE (Complete)",
+    "powershell.cwd": "🚀 TerraFusion IDE (Complete)",
   },
   "launch": {
     "version": "0.2.0",

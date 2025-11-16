@@ -1,6 +1,6 @@
 # 🌍 TerraFusion OS 1.0
 
-> **THE MOST ADVANCED MULTI-TENANT GOVERNMENT OPERATING SYSTEM**  
+> **THE MOST ADVANCED MULTI-TENANT GOVERNMENT OPERATING SYSTEM**
 > Enterprise-grade, AI-powered, production-ready platform serving 39+ counties across Washington State
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
@@ -14,6 +14,28 @@
 
 ## 🚀 Quick Start
 
+**📖 For step-by-step daily development: See [`DAILY_DEV_RUNBOOK.md`](./DAILY_DEV_RUNBOOK.md)**
+
+**VS Code Workspace Development**:
+```bash
+# 1. Open appropriate workspace
+code workspaces/backend.code-workspace   # Backend development
+code workspaces/frontend.code-workspace  # Frontend development
+code workspaces/master.code-workspace    # Full-system view
+
+# 2. Install dependencies (in workspace)
+dotnet restore  # Backend
+npm install     # Frontend
+
+# 3. Launch via VS Code tasks
+# Ctrl+Shift+P → Tasks: Run Task → "Build TerraFusion Elite Government OS"
+# Ctrl+Shift+P → Tasks: Run Task → "Launch Core Services (Degraded)"
+
+# 4. Check service health
+./scripts/health-check.sh
+```
+
+**Legacy Docker Method** (use workspace method above instead):
 ```bash
 # 1. Install dependencies
 npm install
@@ -705,10 +727,10 @@ npm run build
 
 ## 🎯 Project Status
 
-**Current Version**: 1.0 (Production)  
-**Active Deployments**: 39+ counties  
-**Lines of Code**: 500,000+  
-**Test Coverage**: 85%+  
+**Current Version**: 1.0 (Production)
+**Active Deployments**: 39+ counties
+**Lines of Code**: 500,000+
+**Test Coverage**: 85%+
 **Uptime**: 99.9%
 
 ### Recent Milestones
@@ -730,8 +752,8 @@ See [WHAT_TO_DO_NEXT.md](./WHAT_TO_DO_NEXT.md) for detailed next steps.
 
 ## 👥 Team
 
-**Architect & Lead Developer**: Benjamin S. Valenta  
-**Organization**: BS Values  
+**Architect & Lead Developer**: Benjamin S. Valenta
+**Organization**: BS Values
 **Location**: Washington State, USA
 
 ### Contributors
@@ -741,7 +763,7 @@ See [CONTRIBUTORS.md](CONTRIBUTORS.md) for full list.
 
 ## 📜 License
 
-**Proprietary Software**  
+**Proprietary Software**
 Copyright © 2025 BS Values. All rights reserved.
 
 This software is proprietary and confidential. Unauthorized copying, distribution, or use is strictly prohibited.
@@ -762,10 +784,10 @@ For licensing inquiries: licensing@terrafusion.gov
 
 ## 📞 Contact
 
-**Website**: https://terrafusion.gov  
-**Email**: info@terrafusion.gov  
-**GitHub**: https://github.com/bsvalues/terrafusion_os_1.0  
-**LinkedIn**: https://linkedin.com/company/terrafusion  
+**Website**: https://terrafusion.gov
+**Email**: info@terrafusion.gov
+**GitHub**: https://github.com/bsvalues/terrafusion_os_1.0
+**LinkedIn**: https://linkedin.com/company/terrafusion
 **Twitter**: @TerraFusionOS
 
 ---

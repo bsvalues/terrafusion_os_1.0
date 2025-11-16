@@ -332,31 +332,31 @@ curl -X POST http://localhost:5000/api/codex/collaboration/teams/test \
 
 ### Pre-Deployment
 
-- [ ] ✅ Database migration applied (NotificationPreferences table created)
-- [ ] ✅ Redis cache server running and accessible
-- [ ] ✅ SMTP server credentials configured
-- [ ] ✅ Slack incoming webhooks created and tested
-- [ ] ✅ Teams incoming webhooks created and tested
-- [ ] ✅ Environment variables set (or appsettings.Production.json configured)
-- [ ] ✅ Service registration added to Program.cs
-- [ ] ✅ All integration tests passing (24/24)
-- [ ] ✅ Frontend built to ../native-shell/ui
-- [ ] ✅ Frontend route `/codex/preferences` accessible
-- [ ] ✅ Background notification service enabled
+- [x] ✅ Database migration applied (NotificationPreferences table created)
+- [x] ✅ Redis cache server running and accessible
+- [x] ✅ SMTP server credentials configured
+- [x] ✅ Slack incoming webhooks created and tested
+- [x] ✅ Teams incoming webhooks created and tested
+- [x] ✅ Environment variables set (or appsettings.Production.json configured)
+- [x] ✅ Service registration added to Program.cs
+- [x] ✅ All integration tests passing (24/24)
+- [x] ✅ Frontend built to ../native-shell/ui
+- [x] ✅ Frontend route `/codex/preferences` accessible
+- [x] ✅ Background notification service enabled
 
 ### Post-Deployment Verification
 
-- [ ] ✅ API health endpoint returns 200 OK
-- [ ] ✅ Collaboration health endpoint shows all platforms configured
-- [ ] ✅ Cache hit rate > 80% after warm-up
-- [ ] ✅ Test email notification delivered
-- [ ] ✅ Test Slack notification appears in channel
-- [ ] ✅ Test Teams notification appears in channel
-- [ ] ✅ Daily summary scheduled correctly
-- [ ] ✅ Alert notifications working (create test alert)
-- [ ] ✅ User notification preferences UI functional
-- [ ] ✅ Performance metrics dashboard showing data
-- [ ] ✅ Executive reports generating correctly
+- [x] ✅ API health endpoint returns 200 OK
+- [x] ✅ Collaboration health endpoint shows all platforms configured
+- [x] ✅ Cache hit rate > 80% after warm-up
+- [x] ✅ Test email notification delivered
+- [x] ✅ Test Slack notification appears in channel
+- [x] ✅ Test Teams notification appears in channel
+- [x] ✅ Daily summary scheduled correctly
+- [x] ✅ Alert notifications working (create test alert)
+- [x] ✅ User notification preferences UI functional
+- [x] ✅ Performance metrics dashboard showing data
+- [x] ✅ Executive reports generating correctly
 
 ---
 

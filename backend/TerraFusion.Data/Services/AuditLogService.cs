@@ -9,8 +9,11 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using System.Data;
 using TerraFusion.Core.Models;
+using TerraFusion.Data;
 
 namespace TerraFusion.Data.Services;
 
@@ -33,12 +36,15 @@ public class AuditLogService : IAuditLogService
 {
     private readonly ILogger<AuditLogService> _logger;
     private readonly string _connectionString;
+    private readonly TerraFusionDbContext _context;
 
     public AuditLogService(
         ILogger<AuditLogService> logger,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        TerraFusionDbContext context)
     {
         this._logger = logger;
+        this._context = context;
         _connectionString = configuration.GetConnectionString("TerraFusionDb")
             ?? throw new InvalidOperationException("Database connection string not configured");
     }
@@ -56,12 +62,20 @@ public class AuditLogService : IAuditLogService
                 entry.UserId,
                 entry.Resource);
 
-            // TODO: Implement PostgreSQL insert
-            // INSERT INTO audit_logs (user_id, user_email, timestamp, action, resource, ...)
-            // VALUES (@UserId, @UserEmail, @Timestamp, @Action, @Resource, ...)
+            // ✅ PostgreSQL audit log implementation  
+            var sql = @"
+                INSERT INTO audit_logs (user_id, timestamp, action, resource, result, details)
+                VALUES (@UserId, @Timestamp, @Action, @Resource, @Result, @Details)";
 
-            // For now, log to console (production: database insert)
-            await Task.CompletedTask;
+            await _context.Database.ExecuteSqlRawAsync(sql,
+                new[] {
+                    new NpgsqlParameter("@UserId", entry.UserId?.ToString() ?? (object)DBNull.Value),
+                    new NpgsqlParameter("@Timestamp", entry.Timestamp),
+                    new NpgsqlParameter("@Action", entry.Action ?? (object)DBNull.Value),
+                    new NpgsqlParameter("@Resource", entry.Resource ?? (object)DBNull.Value),
+                    new NpgsqlParameter("@Result", entry.Result ?? (object)DBNull.Value),
+                    new NpgsqlParameter("@Details", entry.Details ?? (object)DBNull.Value)
+                });
 
             _logger.LogInformation(
                 "✅ Audit log recorded: {Action} on {Resource} by {UserId} - Result: {Result}",
@@ -95,15 +109,38 @@ public class AuditLogService : IAuditLogService
                 startDate,
                 endDate);
 
-            // TODO: Implement PostgreSQL query
-            // SELECT * FROM audit_logs
-            // WHERE user_id = @UserId
-            //   AND timestamp BETWEEN @StartDate AND @EndDate
-            // ORDER BY timestamp DESC
+            // ✅ PostgreSQL audit log query implementation
+            var sql = @"
+                SELECT user_id, timestamp, action, resource, result, details
+                FROM audit_logs
+                WHERE user_id = @UserId
+                  AND timestamp BETWEEN @StartDate AND @EndDate
+                ORDER BY timestamp DESC";
 
-            // For now, return empty list (production: database query)
-            await Task.CompletedTask;
-            return new List<AuditLogEntry>();
+            var auditLogs = new List<AuditLogEntry>();
+            using var command = _context.Database.GetDbConnection().CreateCommand();
+            command.CommandText = sql;
+            command.Parameters.Add(new NpgsqlParameter("@UserId", userId));
+            command.Parameters.Add(new NpgsqlParameter("@StartDate", startDate));
+            command.Parameters.Add(new NpgsqlParameter("@EndDate", endDate));
+
+            await _context.Database.OpenConnectionAsync();
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                auditLogs.Add(new AuditLogEntry
+                {
+                    UserId = reader["user_id"]?.ToString() ?? string.Empty,
+                    Timestamp = (DateTime)reader["timestamp"],
+                    Action = reader["action"]?.ToString() ?? string.Empty,
+                    Resource = reader["resource"]?.ToString() ?? string.Empty,
+                    Result = reader["result"]?.ToString() ?? string.Empty,
+                    Details = reader["details"]?.ToString() ?? string.Empty
+                });
+            }
+
+            return auditLogs;
         }
         catch (Exception ex)
         {
@@ -128,15 +165,38 @@ public class AuditLogService : IAuditLogService
                 startDate,
                 endDate);
 
-            // TODO: Implement PostgreSQL query
-            // SELECT * FROM audit_logs
-            // WHERE resource = @Resource
-            //   AND timestamp BETWEEN @StartDate AND @EndDate
-            // ORDER BY timestamp DESC
+            // ✅ PostgreSQL resource audit log query implementation
+            var sql = @"
+                SELECT user_id, timestamp, action, resource, result, details
+                FROM audit_logs
+                WHERE resource = @Resource
+                  AND timestamp BETWEEN @StartDate AND @EndDate
+                ORDER BY timestamp DESC";
 
-            // For now, return empty list (production: database query)
-            await Task.CompletedTask;
-            return new List<AuditLogEntry>();
+            var auditLogs = new List<AuditLogEntry>();
+            using var command = _context.Database.GetDbConnection().CreateCommand();
+            command.CommandText = sql;
+            command.Parameters.Add(new NpgsqlParameter("@Resource", resource));
+            command.Parameters.Add(new NpgsqlParameter("@StartDate", startDate));
+            command.Parameters.Add(new NpgsqlParameter("@EndDate", endDate));
+
+            await _context.Database.OpenConnectionAsync();
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                auditLogs.Add(new AuditLogEntry
+                {
+                    UserId = reader["user_id"]?.ToString() ?? string.Empty,
+                    Timestamp = (DateTime)reader["timestamp"],
+                    Action = reader["action"]?.ToString() ?? string.Empty,
+                    Resource = reader["resource"]?.ToString() ?? string.Empty,
+                    Result = reader["result"]?.ToString() ?? string.Empty,
+                    Details = reader["details"]?.ToString() ?? string.Empty
+                });
+            }
+
+            return auditLogs;
         }
         catch (Exception ex)
         {
@@ -159,15 +219,37 @@ public class AuditLogService : IAuditLogService
                 startDate,
                 endDate);
 
-            // TODO: Implement PostgreSQL query
-            // SELECT * FROM audit_logs
-            // WHERE result = 'Failed'
-            //   AND timestamp BETWEEN @StartDate AND @EndDate
-            // ORDER BY timestamp DESC
+            // ✅ PostgreSQL failed operations security query implementation
+            var sql = @"
+                SELECT user_id, timestamp, action, resource, result, details
+                FROM audit_logs
+                WHERE result = 'Failed'
+                  AND timestamp BETWEEN @StartDate AND @EndDate
+                ORDER BY timestamp DESC";
 
-            // For now, return empty list (production: database query)
-            await Task.CompletedTask;
-            return new List<AuditLogEntry>();
+            var auditLogs = new List<AuditLogEntry>();
+            using var command = _context.Database.GetDbConnection().CreateCommand();
+            command.CommandText = sql;
+            command.Parameters.Add(new NpgsqlParameter("@StartDate", startDate));
+            command.Parameters.Add(new NpgsqlParameter("@EndDate", endDate));
+
+            await _context.Database.OpenConnectionAsync();
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                auditLogs.Add(new AuditLogEntry
+                {
+                    UserId = reader["user_id"]?.ToString() ?? string.Empty,
+                    Timestamp = (DateTime)reader["timestamp"],
+                    Action = reader["action"]?.ToString() ?? string.Empty,
+                    Resource = reader["resource"]?.ToString() ?? string.Empty,
+                    Result = reader["result"]?.ToString() ?? string.Empty,
+                    Details = reader["details"]?.ToString() ?? string.Empty
+                });
+            }
+
+            return auditLogs;
         }
         catch (Exception ex)
         {

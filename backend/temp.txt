@@ -1,1 +1,1 @@
-        var hasAccess = await _notebookRepository.HasAccessAsync(new Guid(), new Guid(), new Guid()) // TODO: Fix parameter types
+        var hasAccess = await _notebookRepository.HasAccessAsync(userId, notebookId, countyId); // ✅ Fixed parameter types

@@ -1,0 +1,130 @@
+{
+  "scan_time": "2025-11-15T05:42:01.934608",
+  "total_workspaces": 126,
+  "oversized_workspaces": [],
+  "empty_workspaces": [
+    {
+      "file": "workspaces/development.code-workspace",
+      "folder_count": 2,
+      "size_kb": 0.25
+    },
+    {
+      "file": "workspaces/monitoring.code-workspace",
+      "folder_count": 2,
+      "size_kb": 0.27
+    },
+    {
+      "file": "workspaces/pacs-server-benton.code-workspace",
+      "folder_count": 2,
+      "size_kb": 0.14
+    },
+    {
+      "file": "workspaces/performance.code-workspace",
+      "folder_count": 2,
+      "size_kb": 0.29
+    },
+    {
+      "file": "workspaces/research-development.code-workspace",
+      "folder_count": 2,
+      "size_kb": 0.28
+    },
+    {
+      "file": "workspaces/security.code-workspace",
+      "folder_count": 2,
+      "size_kb": 0.34
+    },
+    {
+      "file": "workspaces/TFMarket.code-workspace",
+      "folder_count": 1,
+      "size_kb": 0.06
+    },
+    {
+      "file": "workspaces/AIDATACONNECT/AIDataConnect.code-workspace",
+      "folder_count": 1,
+      "size_kb": 0.07
+    },
+    {
+      "file": "workspaces/ARCGIS/ARCGIS.code-workspace",
+      "folder_count": 1,
+      "size_kb": 0.04
+    },
+    {
+      "file": "workspaces/JCHARRISPACS/DatabaseProjectSyncService/DatabaseProjectSyncService.code-workspace",
+      "folder_count": 2,
+      "size_kb": 0.11
+    },
+    {
+      "file": "workspaces/PACS/Other Files for Review/code-workspace.code-workspace",
+      "folder_count": 3,
+      "size_kb": 0.22
+    },
+    {
+      "file": "workspaces/PACS/Other Files for Review/OneDrive.code-workspace",
+      "folder_count": 1,
+      "size_kb": 0.1
+    },
+    {
+      "file": "workspaces/PACS/Other Files for Review/PACS (1).code-workspace",
+      "folder_count": 1,
+      "size_kb": 0.07
+    },
+    {
+      "file": "workspaces/PACS/TADownloads/TADownloads.code-workspace",
+      "folder_count": 1,
+      "size_kb": 0.06
+    },
+    {
+      "file": "workspaces/PACS/JCHARRISPACS/DatabaseProjectSyncService/DatabaseProjectSyncService.code-workspace",
+      "folder_count": 2,
+      "size_kb": 0.11
+    },
+    {
+      "file": "workspaces/PACS/JCHARRISPACS/DatabaseProjectCIAPS/RPT/StoredProcedures/Projects.code-workspace",
+      "folder_count": 2,
+      "size_kb": 0.14
+    },
+    {
+      "file": "workspaces/PACS/TADownloads/TA XML/SimpleWorkflow/Models/TA XML.code-workspace",
+      "folder_count": 1,
+      "size_kb": 0.06
+    }
+  ],
+  "duplicate_paths": {
+    "../../SDK": 14,
+    "../SDK": 44,
+    "../backend": 42,
+    "../config": 45,
+    ".": 8,
+    "../../platform/design-system": 39,
+    "../../platform/sdk": 39,
+    "../../docs/portals": 7,
+    "../../config": 19,
+    "../../tests": 12,
+    "../../docs/architecture": 12
+  },
+  "folder_distribution": {
+    "6": 10,
+    "3": 8,
+    "12": 11,
+    "11": 13,
+    "5": 45,
+    "14": 5,
+    "13": 2,
+    "2": 12,
+    "10": 4,
+    "9": 5,
+    "7": 2,
+    "20": 1,
+    "15": 1,
+    "1": 7
+  },
+  "size_analysis": {
+    "total_size_kb": 483.97,
+    "average_size_kb": 3.84,
+    "largest_workspaces": []
+  },
+  "recommendations": [
+    "\ud83d\uddd1\ufe0f  17 empty/minimal workspace files found. Consider removing incomplete workspace configurations.",
+    "\ud83d\udd04 Found duplicate path references. '../config' is referenced 45 times across workspaces. Consider consolidation."
+  ]
+}

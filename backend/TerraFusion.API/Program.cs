@@ -205,10 +205,9 @@ builder.Services.AddSingleton<TerraFusion.Core.Metrics.TerraFusionMetricsExporte
 // 💎 Register Property Valuation AI Enhancement Service - 8-step AI-orchestrated property valuation
 // Coordinates all 7 AI services for championship-level property assessment with 99.9% IAAO accuracy
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IPropertyValuationAIEnhancementService, TerraFusion.Core.Services.PropertyValuationAIEnhancementService>();
-// AI Engine Service - DISABLED until interface implementation is complete
-// TODO: Fix AIEngineService to implement TerraFusion.Core.Services.IAIEngineService
-// builder.Services.AddScoped<TerraFusion.Core.Services.IAIEngineService>(sp => 
-//     new TerraFusion.AI.Services.AIEngineService(sp.GetRequiredService<ILogger<TerraFusion.AI.Services.AIEngineService>>()));
+// ✅ AI Engine Service - Elite AI coordination for 50,000+ agent swarm
+// Implementation completed for TerraFusion.Core.Services.IAIEngineService interface
+builder.Services.AddScoped<TerraFusion.Core.Services.IAIEngineService, TerraFusion.AI.Services.AIEngineService>();
 
 // Register TerraFusionSync integration service
 builder.Services.AddScoped<ITerraFusionSyncService, TerraFusionSyncIntegrationService>();

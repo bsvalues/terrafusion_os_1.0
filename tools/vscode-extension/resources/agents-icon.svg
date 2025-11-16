@@ -1,0 +1,13 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- AI Agents Icon - Swarm Pattern -->
+  <circle cx="8" cy="8" r="2.5" stroke="#00FFFF" stroke-width="1.5" fill="none" opacity="0.8"/>
+  <circle cx="16" cy="8" r="2.5" stroke="#00FFFF" stroke-width="1.5" fill="none" opacity="0.8"/>
+  <circle cx="8" cy="16" r="2.5" stroke="#00FFFF" stroke-width="1.5" fill="none" opacity="0.8"/>
+  <circle cx="16" cy="16" r="2.5" stroke="#00FFFF" stroke-width="1.5" fill="none" opacity="0.8"/>
+  <circle cx="12" cy="12" r="3" stroke="#00FFFF" stroke-width="2" fill="#00FFFF" opacity="0.3"/>
+
+  <line x1="10.5" y1="9.5" x2="8" y2="8" stroke="#00FFFF" stroke-width="0.8" opacity="0.3"/>
+  <line x1="13.5" y1="9.5" x2="16" y2="8" stroke="#00FFFF" stroke-width="0.8" opacity="0.3"/>
+  <line x1="10.5" y1="14.5" x2="8" y2="16" stroke="#00FFFF" stroke-width="0.8" opacity="0.3"/>
+  <line x1="13.5" y1="14.5" x2="16" y2="16" stroke="#00FFFF" stroke-width="0.8" opacity="0.3"/>
+</svg>

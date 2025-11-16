@@ -42,6 +42,9 @@
     ]
   },
   "scripts": {
+    "tf": "node tools/tf.js",
+    "tdc": "node tools/tf.js",
+    "console": "node tools/tf.js",
     "ai-agent-info": "echo 'TERRAFUSION OS - Complete Government Operating System with 50,000+ AI Agents. NOT a web app. Read AI_AGENT_START_HERE.md first!'",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "dotnet watch run --project backend/Terrafusion.API/Terrafusion.API.csproj",

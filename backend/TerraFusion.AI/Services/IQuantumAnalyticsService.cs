@@ -47,9 +47,9 @@ public interface IQuantumAnalyticsService
     Task<IEnumerable<Workflow>> GetWorkflowTemplatesAsync(string? category = null);
 
     // Workflow Execution Operations
-    Task<WorkflowExecution> StartWorkflowExecutionAsync(int workflowId, Guid userId, Guid countyId);
+    Task<TerraFusion.Core.Entities.WorkflowExecution> StartWorkflowExecutionAsync(int workflowId, Guid userId, Guid countyId);
     Task<bool> UpdateExecutionProgressAsync(int executionId, int nodesExecuted, int nodesFailed);
     Task<bool> CompleteWorkflowExecutionAsync(int executionId, string status, string? errorMessage = null);
-    Task<IEnumerable<WorkflowExecution>> GetWorkflowExecutionHistoryAsync(int workflowId, Guid userId, Guid countyId);
+    Task<IEnumerable<TerraFusion.Core.Entities.WorkflowExecution>> GetWorkflowExecutionHistoryAsync(int workflowId, Guid userId, Guid countyId);
     Task<object> GetWorkflowExecutionStatisticsAsync(int workflowId, Guid userId, Guid countyId);
 }

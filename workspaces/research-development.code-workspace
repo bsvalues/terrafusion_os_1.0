@@ -1,15 +1,1 @@
-{
-  "name": "TerraFusion Research Innovation",
-  "folders": [
-    {
-      "path": "../docs/research"
-    },
-    {
-      "path": "../SDK/experimental"
-    }
-  ],
-  "settings": {
-    "terrafusion.role": "research_innovation",
-    "terrafusion.innovation": "cutting_edge_government_tech"
-  }
-}
+{   "name": "TerraFusion Research Innovation",   "folders": [     {       "path": "../docs/research"     },     {       "path": "../SDK/experimental"     }   ],   "settings": {     "terrafusion.role": "research_innovation",     "terrafusion.innovation": "cutting_edge_government_tech"   } }

@@ -1,0 +1,10 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Terra-Cyan Quantum Logo -->
+  <circle cx="12" cy="12" r="10" stroke="#00FFFF" stroke-width="1.5" fill="none" opacity="0.3"/>
+  <circle cx="12" cy="12" r="6" stroke="#00FFFF" stroke-width="2" fill="none"/>
+  <circle cx="12" cy="12" r="2" fill="#00FFFF"/>
+
+  <!-- Orbital Lines -->
+  <path d="M 12 2 Q 22 12 12 22 Q 2 12 12 2" stroke="#00FFFF" stroke-width="1" fill="none" opacity="0.5"/>
+  <path d="M 2 12 Q 12 2 22 12 Q 12 22 2 12" stroke="#00FFFF" stroke-width="1" fill="none" opacity="0.5"/>
+</svg>

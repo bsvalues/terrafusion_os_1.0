@@ -1,0 +1,204 @@
+{
+  "name": "terrafusion-os",
+  "displayName": "TerraFusion OS",
+  "description": "Government-grade AI Operating System workspace integration for VS Code",
+  "version": "1.0.0",
+  "publisher": "terrafusion",
+  "icon": "media/icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization",
+    "Debuggers"
+  ],
+  "keywords": [
+    "terrafusion",
+    "government",
+    "ai",
+    "workspace",
+    "transparency"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:terrafusion.explorer",
+    "onCommand:terrafusion.openPortal",
+    "onCommand:terrafusion.cycleTransparency"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "terrafusion",
+          "title": "TerraFusion OS",
+          "icon": "resources/terrafusion-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "terrafusion": [
+        {
+          "id": "terrafusion.explorer",
+          "name": "Workspaces",
+          "icon": "resources/terrafusion-icon.svg",
+          "contextualTitle": "TerraFusion Workspaces"
+        },
+        {
+          "id": "terrafusion.services",
+          "name": "Services",
+          "icon": "resources/services-icon.svg",
+          "contextualTitle": "System Services"
+        },
+        {
+          "id": "terrafusion.agents",
+          "name": "AI Agents",
+          "icon": "resources/agents-icon.svg",
+          "contextualTitle": "Agent Activity"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "terrafusion.openPortal",
+        "title": "Open Portal UI",
+        "category": "TerraFusion",
+        "icon": "$(browser)"
+      },
+      {
+        "command": "terrafusion.cycleTransparency",
+        "title": "Cycle Transparency Layer",
+        "category": "TerraFusion",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "terrafusion.refreshWorkspaces",
+        "title": "Refresh Workspaces",
+        "category": "TerraFusion",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "terrafusion.openWorkspace",
+        "title": "Open Workspace",
+        "category": "TerraFusion",
+        "icon": "$(folder-opened)"
+      },
+      {
+        "command": "terrafusion.launchBackend",
+        "title": "Launch Backend Services",
+        "category": "TerraFusion",
+        "icon": "$(server)"
+      },
+      {
+        "command": "terrafusion.launchPortal",
+        "title": "Launch Portal",
+        "category": "TerraFusion",
+        "icon": "$(rocket)"
+      },
+      {
+        "command": "terrafusion.status",
+        "title": "Show System Status",
+        "category": "TerraFusion",
+        "icon": "$(pulse)"
+      },
+      {
+        "command": "terrafusion.aiTrace",
+        "title": "Trace AI Agent Activity",
+        "category": "TerraFusion",
+        "icon": "$(symbol-event)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "terrafusion.refreshWorkspaces",
+          "when": "view == terrafusion.explorer",
+          "group": "navigation"
+        },
+        {
+          "command": "terrafusion.openPortal",
+          "when": "view == terrafusion.explorer",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "terrafusion.openPortal"
+        },
+        {
+          "command": "terrafusion.cycleTransparency"
+        },
+        {
+          "command": "terrafusion.launchBackend"
+        },
+        {
+          "command": "terrafusion.launchPortal"
+        },
+        {
+          "command": "terrafusion.status"
+        },
+        {
+          "command": "terrafusion.aiTrace"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "TerraFusion OS",
+      "properties": {
+        "terrafusion.portalUrl": {
+          "type": "string",
+          "default": "http://localhost:5174",
+          "description": "Portal UI URL"
+        },
+        "terrafusion.transparencyEngineUrl": {
+          "type": "string",
+          "default": "ws://localhost:8788",
+          "description": "Transparency Engine WebSocket URL"
+        },
+        "terrafusion.defaultTransparencyLayer": {
+          "type": "string",
+          "enum": [
+            "surface",
+            "hint",
+            "depth",
+            "expert"
+          ],
+          "default": "hint",
+          "description": "Default transparency disclosure layer"
+        },
+        "terrafusion.autoConnectTransparency": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically connect to Transparency Engine on startup"
+        },
+        "terrafusion.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show TerraFusion status in status bar"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@types/ws": "^8.5.10",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3",
+    "@vscode/vsce": "^2.22.0"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
+}

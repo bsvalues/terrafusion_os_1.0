@@ -440,3 +440,49 @@ keyvault-config.json
 
 *storybook.log
 storybook-static
+
+
+# Workspace cleanup patterns
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.vscode/settings.json
+
+# Workspace file cleanup patterns
+*.code-workspace.backup
+*.code-workspace.copy
+*.code-workspace.old
+*.code-workspace.temp
+*-backup.code-workspace
+*-copy.code-workspace
+*-old.code-workspace
+*-temp.code-workspace
+.env.*.local
+
+# Workspace cleanup artifacts
+workspace-cleanup-report-*.txt
+workspace-audit-*.json
+workspace-size-report-*.txt
+workspaces/**/.DS_Store
+workspaces/**/Thumbs.db
+workspaces/**/*.log
+workspaces/**/*.tmp
+workspaces/**/*.temp
+
+# VS Code workspace user settings
+workspaces/**/.vscode/settings.json
+**/workspace-settings-backup*.json
+
+# Workspace development artifacts
+workspaces/**/node_modules/
+workspaces/**/dist/
+workspaces/**/build/
+workspaces/**/out/
+workspaces/**/.next/
+workspaces/**/coverage/
+workspaces/**/.nyc_output/
+workspaces/**/*.tsbuildinfo
+
+# Empty workspace placeholder directories (keep structure)
+!workspaces/*/.gitkeep

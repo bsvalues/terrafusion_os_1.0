@@ -59,7 +59,7 @@ SELECT
    on le.year = fy_le.year
  and le.tax_district_id = fy_le.tax_district_id
  and le.levy_cd = fy_le.levy_cd
- and le.exmpt_type_cd = fy_le.exmpt_type_cd
+ and le.exmpt_type_cd = fy_le.exmpt_type_cd
   where le.year = @lInputFromYear
  and fy_le.year is null -- only return those not already inserted
 

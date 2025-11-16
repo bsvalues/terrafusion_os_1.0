@@ -2,10 +2,12 @@
 
 import React, { useState } from 'react';
 import { IDELayout } from './components/ide/IDELayout';
+import { WorkspaceDashboard } from './components/WorkspaceDashboard';
 
 // App Component
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
+  const [useWorkspaceDashboard, setUseWorkspaceDashboard] = useState(true); // Toggle for Phase 4 Portal
 
   // Splash screen timeout
   React.useEffect(() => {
@@ -108,7 +110,7 @@ const App = () => {
     );
   }
 
-  return <IDELayout />;
+  return useWorkspaceDashboard ? <WorkspaceDashboard /> : <IDELayout />;
 };
 
 export default App;

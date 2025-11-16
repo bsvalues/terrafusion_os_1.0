@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TerraFusion.AI.Services;
+using TerraFusion.AI.DTOs;
 
 namespace TerraFusion.API.Controllers
 {
@@ -36,7 +37,7 @@ namespace TerraFusion.API.Controllers
         /// Execute a workflow with AI optimization
         /// </summary>
         [HttpPost("execute")]
-        [ProducesResponseType(typeof(WorkflowExecutionResult), 200)]
+        [ProducesResponseType(typeof(TerraFusion.AI.DTOs.WorkflowExecutionResult), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         public async Task<IActionResult> ExecuteWorkflow([FromBody] ExecuteWorkflowRequest request)

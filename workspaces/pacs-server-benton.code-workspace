@@ -1,13 +1,1 @@
-{
-	"folders": [
-		{
-			"path": "JCHARRISPACS"
-		},
-		{
-			"path": "E:/Database"
-		}
-	],
-	"settings": {
-		"powershell.cwd": "JCHARRISPACS"
-	}
-}
+{  "folders": [   {    "path": "JCHARRISPACS"   },   {    "path": "E:/Database"   }  ],  "settings": {   "powershell.cwd": "JCHARRISPACS"  } }

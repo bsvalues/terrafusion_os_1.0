@@ -2,51 +2,51 @@
   "folders": [
     {
       "path": "../marketplace/autonomous-research-engine/core-engine",
-      "name": "🧠 Research Core Engine"
+      "name": "\ud83e\udde0 Research Core Engine"
     },
     {
       "path": "../marketplace/autonomous-research-engine/data-mining",
-      "name": "⛏️ Data Mining"
+      "name": "\u26cf\ufe0f Data Mining"
     },
     {
       "path": "../marketplace/autonomous-research-engine/ai-analysis",
-      "name": "🤖 AI Analysis"
+      "name": "\ud83e\udd16 AI Analysis"
     },
     {
       "path": "../marketplace/autonomous-research-engine/knowledge-graph",
-      "name": "🕸️ Knowledge Graph"
+      "name": "\ud83d\udd78\ufe0f Knowledge Graph"
     },
     {
       "path": "../marketplace/autonomous-research-engine/report-generation",
-      "name": "📄 Report Generation"
+      "name": "\ud83d\udcc4 Report Generation"
     },
     {
       "path": "../marketplace/autonomous-research-engine/research-apis",
-      "name": "🔗 Research APIs"
+      "name": "\ud83d\udd17 Research APIs"
     },
     {
       "path": "../marketplace/autonomous-research-engine/testing",
-      "name": "🧪 Research Tests"
+      "name": "\ud83e\uddea Research Tests"
     },
     {
       "path": "../SDK",
-      "name": "📦 Platform SDK (read-only)"
+      "name": "\ud83d\udce6 Platform SDK (read-only)"
     },
     {
       "path": "../backend",
-      "name": "🔧 Shared Backend (read-only)"
+      "name": "\ud83d\udd27 Shared Backend (read-only)"
     },
     {
       "path": "../docs/autonomous-research",
-      "name": "📚 Research Docs"
+      "name": "\ud83d\udcda Research Docs"
     },
     {
       "path": "../config",
-      "name": "⚙️ Config (shared)"
+      "name": "\u2699\ufe0f Config (shared)"
     },
     {
       "path": "../docs/autonomous_research_engine",
-      "name": "📚 Autonomous-Research-Engine Docs"
+      "name": "\ud83d\udcda Autonomous-Research-Engine Docs"
     }
   ],
   "settings": {

@@ -2,47 +2,47 @@
   "folders": [
     {
       "path": "../marketplace/RAGPanel/rag-engine",
-      "name": "🧠 RAG Engine Core"
+      "name": "\ud83e\udde0 RAG Engine Core"
     },
     {
       "path": "../marketplace/RAGPanel/document-processing",
-      "name": "📄 Document Processing"
+      "name": "\ud83d\udcc4 Document Processing"
     },
     {
       "path": "../marketplace/RAGPanel/knowledge-base",
-      "name": "📚 Knowledge Base"
+      "name": "\ud83d\udcda Knowledge Base"
     },
     {
       "path": "../marketplace/RAGPanel/vector-database",
-      "name": "🔍 Vector Database"
+      "name": "\ud83d\udd0d Vector Database"
     },
     {
       "path": "../marketplace/RAGPanel/ai-search",
-      "name": "🤖 AI-Powered Search"
+      "name": "\ud83e\udd16 AI-Powered Search"
     },
     {
       "path": "../marketplace/RAGPanel/embedding-service",
-      "name": "🎯 Embedding Service"
+      "name": "\ud83c\udfaf Embedding Service"
     },
     {
       "path": "../marketplace/RAGPanel/testing",
-      "name": "🧪 RAG Tests"
+      "name": "\ud83e\uddea RAG Tests"
     },
     {
       "path": "../SDK",
-      "name": "📦 Platform SDK (read-only)"
+      "name": "\ud83d\udce6 Platform SDK (read-only)"
     },
     {
       "path": "../backend",
-      "name": "🔧 Shared Backend (read-only)"
+      "name": "\ud83d\udd27 Shared Backend (read-only)"
     },
     {
       "path": "../docs/ragpanel",
-      "name": "📚 RAG Docs"
+      "name": "\ud83d\udcda RAG Docs"
     },
     {
       "path": "../config",
-      "name": "⚙️ Config (shared)"
+      "name": "\u2699\ufe0f Config (shared)"
     }
   ],
   "settings": {

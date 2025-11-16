@@ -1,0 +1,100 @@
+{
+  "folders": [
+    {
+      "name": "🎨 Command Portal",
+      "path": "../TerraFusion_Command_Portal_Starter/terrafusion-command-portal",
+    },
+    {
+      "name": "🔧 TDC Console",
+      "path": "../tools/tdc",
+    },
+    {
+      "name": "⚙️ Backend Services",
+      "path": "../backend",
+    },
+    {
+      "name": "📦 Config",
+      "path": "../config",
+    },
+    {
+      "name": "📚 Docs",
+      "path": "../docs",
+    },
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.git": true,
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/target": true,
+    },
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "rust-lang.rust-analyzer",
+      "ms-dotnettools.csharp",
+      "ms-vscode.vscode-typescript-next",
+    ],
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🚀 Launch Portal Full Stack",
+        "type": "shell",
+        "command": "npm run tdc portal:launch",
+        "options": {
+          "cwd": "${workspaceFolder:🔧 TDC Console}",
+        },
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true,
+        },
+      },
+      {
+        "label": "📊 Portal Status",
+        "type": "shell",
+        "command": "npm run tdc portal:status",
+        "options": {
+          "cwd": "${workspaceFolder:🔧 TDC Console}",
+        },
+        "problemMatcher": [],
+      },
+      {
+        "label": "🔧 Build TDC",
+        "type": "shell",
+        "command": "npm run build",
+        "options": {
+          "cwd": "${workspaceFolder:🔧 TDC Console}",
+        },
+        "problemMatcher": ["$tsc"],
+      },
+      {
+        "label": "⚡ Launch Backend Services",
+        "type": "shell",
+        "command": "npm run tdc launch:backend -- --degraded",
+        "options": {
+          "cwd": "${workspaceFolder:🔧 TDC Console}",
+        },
+        "problemMatcher": [],
+        "isBackground": true,
+      },
+      {
+        "label": "🤖 AI Activity Trace",
+        "type": "shell",
+        "command": "npm run tdc ai:trace",
+        "options": {
+          "cwd": "${workspaceFolder:🔧 TDC Console}",
+        },
+        "problemMatcher": [],
+      },
+    ],
+  },
+}

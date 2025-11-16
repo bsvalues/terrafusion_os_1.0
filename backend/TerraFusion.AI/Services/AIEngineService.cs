@@ -5,7 +5,7 @@ using TerraFusion.Core.Enums;
 
 namespace TerraFusion.AI.Services
 {
-    public class AIEngineService
+    public class AIEngineService : TerraFusion.Core.Services.IAIEngineService
     {
         private readonly ILogger<AIEngineService> _logger;
         private readonly string _modelVersion = "CostForge-AI-v2.1";
@@ -23,13 +23,13 @@ namespace TerraFusion.AI.Services
             _logger = logger;
         }
 
-        public async System.Threading.Tasks.Task<MarketTrendResult> AnalyzeMarketTrendsAsync(string region)
+        public async System.Threading.Tasks.Task<MarketTrendResult> AnalyzeMarketTrendsAsync(MarketTrendRequest request)
         {
             await Task.Delay(100);
 
             return new MarketTrendResult
             {
-                Region = region,
+                Region = request.Region,
                 TrendDirection = "Upward",
                 Confidence = 0.88m,
                 PredictedGrowth = 0.12m,
@@ -388,31 +388,6 @@ namespace TerraFusion.AI.Services
             return metrics;
         }
 
-        // Missing interface implementation
-        public async System.Threading.Tasks.Task<TerraFusion.AI.DTOs.MarketTrendAnalysis> AnalyzeMarketTrendsAsync(MarketTrendRequest request)
-        {
-            _logger.LogInformation($"Analyzing market trends for region: {request.Region}");
-            await Task.Delay(150); // Simulate analysis
-
-            return new TerraFusion.AI.DTOs.MarketTrendAnalysis
-            {
-                Region = request.Region,
-                TrendDirection = TerraFusion.AI.DTOs.TrendDirection.Upward,
-                ConfidenceScore = 0.87,
-                PriceGrowthRate = 0.045,
-                VolatilityIndex = 0.23,
-                MarketHealth = TerraFusion.AI.DTOs.MarketHealthStatus.Strong,
-                KeyInsights = new List<string>
-                {
-                    "Strong buyer demand in the region",
-                    "Limited inventory driving prices up",
-                    "New construction activity increasing",
-                    "Interest rate impact minimal"
-                },
-                GeneratedAt = DateTime.UtcNow
-            };
-        }
-
         public async System.Threading.Tasks.Task<object> ProcessRequestAsync(object request)
         {
             _logger.LogInformation("🤖 Processing AI request");
@@ -434,20 +409,9 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<object> AnalyzeMarketTrendsAsync(object parameters)
         {
-            _logger.LogInformation("📈 Analyzing market trends");
+            _logger.LogInformation("📈 Analyzing market trends from object parameters");
             await Task.Delay(50);
-            return new TerraFusion.AI.DTOs.MarketTrendsResult
-            {
-                Region = "Benton County",
-                Confidence = 0.87,
-                PredictedGrowth = 0.125,
-                MarketFactors = new List<string>
-                {
-                    "Housing inventory increasing",
-                    "Interest rates stabilizing",
-                    "Population growth steady"
-                }
-            };
+            return new { Region = "Default", TrendDirection = "Upward", Confidence = 0.85 };
         }
     }
 }

@@ -60,7 +60,7 @@ SELECT
    on f.year = fy_f.year
  and f.tax_district_id = fy_f.tax_district_id
  and f.levy_cd = fy_f.levy_cd
- and f.fund_id = fy_f.fund_id
+ and f.fund_id = fy_f.fund_id
   where f.year = @lInputFromYear
     and fy_f.year is null -- only return those not already inserted
     and ISNULL(YEAR(f.end_date),@lCopyToYear) >= @lCopyToYear
