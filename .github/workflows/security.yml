@@ -25,13 +25,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Verify package-lock.json
         run: |
           if [[ -f package-lock.json ]]; then
@@ -40,7 +40,7 @@ jobs:
             echo "⚠️ package-lock.json missing - generating from package.json"
             npm install --package-lock-only
           fi
-      
+
       - name: Create .env from secrets
         run: |
           cat > .env <<EOF
@@ -51,7 +51,7 @@ jobs:
           GOVERNMENT_DB_PORT=5432
           GOVERNMENT_DB_NAME=benton_county_test
           EOF
-      
+
       - name: Dependency vulnerability scan
         uses: ossf/scorecard-action@v2.3.1
         with:
@@ -60,67 +60,67 @@ jobs:
           publish_results: true
         env:
           COSIGN_EXPERIMENTAL: '1'
-      
+
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
-      
+
       - name: Government security compliance check
         run: |
           echo "🔒 Checking government security compliance..."
-          
+
           # Check for required security documentation
           if [[ ! -f docs/SECURITY.md ]]; then
             echo "⚠️ SECURITY.md not found - creating minimal template"
             mkdir -p docs
             cat > docs/SECURITY.md <<'SECURITY'
           # Security Policy
-          
+
           ## Supported Versions
-          
+
           TerraFusion OS maintains security updates for the current major version.
-          
+
           ## Reporting a Vulnerability
-          
+
           Please report security vulnerabilities to: security@terrafusion.gov
-          
+
           ## Government Compliance
-          
+
           - FISMA-High certified
           - NIST 800-53 controls
           - FedRAMP authorized
           SECURITY
           fi
-          
+
           if [[ ! -f docs/COMPLIANCE.md ]]; then
             echo "⚠️ COMPLIANCE.md not found - creating minimal template"
             mkdir -p docs
             cat > docs/COMPLIANCE.md <<'COMPLIANCE'
           # Compliance Statement
-          
+
           ## Government Standards
-          
+
           TerraFusion OS complies with:
           - FISMA-High requirements
           - NIST 800-53 security controls
           - FedRAMP authorization requirements
           - GDPR data protection principles
-          
+
           ## County Data Isolation
-          
+
           All county data is sovereign and isolated using tenant-based configuration.
           COMPLIANCE
           fi
-          
+
           if [[ ! -f docs/PRIVACY.md ]]; then
             echo "⚠️ PRIVACY.md not found - creating minimal template"
             mkdir -p docs
             cat > docs/PRIVACY.md <<'PRIVACY'
           # Privacy Policy
-          
+
           ## Government Data Protection
-          
+
           TerraFusion OS implements government-grade data protection:
           - County data sovereignty
           - FISMA-High encryption standards
@@ -128,9 +128,9 @@ jobs:
           - Comprehensive audit logging
           PRIVACY
           fi
-          
+
           echo "✅ Government security compliance validated"
-  
+
   secrets-scanning:
     name: Secrets Detection
     runs-on: ubuntu-latest
@@ -143,7 +143,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      
+
       - name: TruffleHog secrets scan
         uses: trufflesecurity/trufflehog@main
         with:
@@ -151,7 +151,7 @@ jobs:
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
           extra_args: --only-verified
-  
+
   container-security:
     name: Container Security Scanning
     runs-on: ubuntu-latest
@@ -161,13 +161,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Build Docker image with fallback detection
         run: |
           DOCKERFILE=""
           CONTEXT="."
           IMAGE_TAG="terrafusion-security-scan:latest"
-          
+
           # Try common Dockerfile locations
           if [[ -f "./Dockerfile" ]]; then
             DOCKERFILE="./Dockerfile"
@@ -190,11 +190,11 @@ jobs:
             echo "SKIP_SCAN=true" >> $GITHUB_ENV
             exit 0
           fi
-          
+
           echo "Building Docker image from $DOCKERFILE with context $CONTEXT"
           docker build -f "$DOCKERFILE" -t "$IMAGE_TAG" "$CONTEXT"
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
-      
+
       - name: Trivy filesystem scan
         if: env.SKIP_SCAN != 'true'
         uses: aquasecurity/trivy-action@master
@@ -204,7 +204,7 @@ jobs:
           format: 'sarif'
           output: 'trivy-fs-results.sarif'
           severity: 'HIGH,CRITICAL'
-      
+
       - name: Trivy container scan
         if: env.SKIP_SCAN != 'true'
         uses: aquasecurity/trivy-action@master
@@ -214,19 +214,19 @@ jobs:
           format: 'sarif'
           output: 'trivy-image-results.sarif'
           severity: 'HIGH,CRITICAL'
-      
+
       - name: Upload Trivy scan results
         if: env.SKIP_SCAN != 'true'
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-fs-results.sarif'
-      
+
       - name: Upload Trivy image results
         if: env.SKIP_SCAN != 'true'
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-image-results.sarif'
-  
+
   codeql-analysis:
     name: CodeQL SAST Analysis
     runs-on: ubuntu-latest
@@ -239,18 +239,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-      
+
       - name: Setup .NET (for C#)
         if: matrix.language == 'csharp'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      
+
       - name: Build C# projects
         if: matrix.language == 'csharp'
         run: |
@@ -259,8 +259,8 @@ jobs:
           else
             echo "⚠️ No .sln file found - using autobuild"
           fi
-      
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{ matrix.language }}"
+          category: '/language:${{ matrix.language }}'
