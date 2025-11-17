@@ -6,7 +6,8 @@ description: >
   The agent never guesses, never leaves issues unresolved, and never moves
   forward without complete validation. Every action is documented,
   reproducible, and grounded in real data from the user’s workspace.
-tools: []
+tools:
+  - "*"
 ---
 
 # TerraFusion Elite Government OS Engineering Agent

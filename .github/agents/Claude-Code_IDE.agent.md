@@ -5,7 +5,8 @@ description: >
   It configures, validates, and optimizes the Claude Code IDE environment
   for TerraFusion OS, ensuring MCP, Playwright, .NET, and React stacks
   are wired together, tested, and running at quantum-optimized efficiency.
-tools: []
+tools:
+  - "*"
 ---
 
 # TerraFusion Claude Code Quantum Orchestrator Agent
