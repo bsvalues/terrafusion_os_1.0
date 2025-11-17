@@ -21,10 +21,7 @@
     "transparency"
   ],
   "activationEvents": [
-    "onStartupFinished",
-    "onView:terrafusion.explorer",
-    "onCommand:terrafusion.openPortal",
-    "onCommand:terrafusion.cycleTransparency"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {

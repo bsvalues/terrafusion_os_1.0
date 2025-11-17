@@ -19,6 +19,6 @@
     "powershell.cwd": "🏛️ TerraFusion OS Root",
     "liveServer.settings.multiRootWorkspaceName": "🏛️ TerraFusion OS Root",
     "git.ignoreLimitWarning": true,
-    "todo-tree.tree.scanMode": "workspace",
+    "todo-tree.tree.scanMode": "workspace only",
   },
 }
