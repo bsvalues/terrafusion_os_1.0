@@ -76,7 +76,7 @@ services:
     environment:
       - POSTGRES_DB=benton_county_test
       - POSTGRES_USER=benton_assessor
-      - POSTGRES_PASSWORD=test_assessor_2024
+      - POSTGRES_PASSWORD=${TEST_POSTGRES_PASSWORD}
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
     networks:
       - harris-pacs-test
@@ -110,7 +110,7 @@ services:
       - ./integration-testers/harris-pacs/config:/app/config:ro
     environment:
       - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
-      - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
+      - GOVERNMENT_DB_CONNECTION=postgresql://${GOVERNMENT_DB_USER}:${TEST_POSTGRES_PASSWORD}@${GOVERNMENT_DB_HOST}:${GOVERNMENT_DB_PORT}/${GOVERNMENT_DB_NAME}
       - BENTON_COUNTY_TEST_MODE=true
       - AI_AGENT_COUNT=90
       - TEST_EXECUTION_PARALLEL_LIMIT=10
@@ -174,7 +174,7 @@ services:
       - test-results-data:/app/test-results
     environment:
       - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
-      - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
+      - GOVERNMENT_DB_CONNECTION=postgresql://${GOVERNMENT_DB_USER}:${TEST_POSTGRES_PASSWORD}@${GOVERNMENT_DB_HOST}:${GOVERNMENT_DB_PORT}/${GOVERNMENT_DB_NAME}
       - AGENT_COUNT=20
       - SPECIALIZATION=data-sync
       - TEST_SCENARIOS=bidirectional_sync,data_integrity,conflict_resolution,batch_processing
@@ -231,7 +231,7 @@ services:
       - test-results-data:/app/test-results
     environment:
       - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
-      - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
+      - GOVERNMENT_DB_CONNECTION=postgresql://${GOVERNMENT_DB_USER}:${TEST_POSTGRES_PASSWORD}@${GOVERNMENT_DB_HOST}:${GOVERNMENT_DB_PORT}/${GOVERNMENT_DB_NAME}
       - AGENT_COUNT=12
       - SPECIALIZATION=compliance-validation
       - TEST_SCENARIOS=fisma_controls,audit_logging,data_encryption,access_control
@@ -260,7 +260,7 @@ services:
       - test-results-data:/app/test-results
     environment:
       - HARRIS_PACS_ENDPOINT=http://harris-pacs-mock:8080
-      - GOVERNMENT_DB_CONNECTION=postgresql://benton_assessor:test_assessor_2024@government-db-mock:5432/benton_county_test
+      - GOVERNMENT_DB_CONNECTION=postgresql://${GOVERNMENT_DB_USER}:${TEST_POSTGRES_PASSWORD}@${GOVERNMENT_DB_HOST}:${GOVERNMENT_DB_PORT}/${GOVERNMENT_DB_NAME}
       - AGENT_COUNT=15
       - SPECIALIZATION=integration-testing
       - TEST_SCENARIOS=end_to_end_workflows,error_handling,rollback_procedures,disaster_recovery

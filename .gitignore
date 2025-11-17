@@ -486,3 +486,6 @@ workspaces/**/*.tsbuildinfo
 
 # Empty workspace placeholder directories (keep structure)
 !workspaces/*/.gitkeep
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.cursor\rules\snyk_rules.mdc
