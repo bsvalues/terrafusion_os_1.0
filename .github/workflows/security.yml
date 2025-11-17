@@ -6,19 +6,33 @@ name: TerraFusion master Security Scanning
   push:
     branches:
       - main
+
+permissions:
+  contents: read
+  security-events: write
+  id-token: write
+
 jobs:
   security-audit:
     name: Government Security Audit
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Dependency vulnerability scan
         uses: ossf/scorecard-action@v2.3.1
         with:
           results_file: results.sarif
           results_format: sarif
           publish_results: true
+        env:
+          COSIGN_EXPERIMENTAL: '1'
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
         with:
@@ -28,6 +42,9 @@ jobs:
   container-security:
     name: Container Security Scanning
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     if:
       contains(github.event.head_commit.message, 'docker') || contains(github.event.head_commit.message,
       'container')
