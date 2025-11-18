@@ -1,1 +1,284 @@
-{   "settings": {     "workbench.iconTheme": "terrafusion-icons",     "editor.codeActionsOnSave": {       "source.fixAll": "explicit"     },     "editor.formatOnSave": true,     "terrafusion.focus": "Software Development Kit for TerraFusion Applications",     "terrafusion.team": "SDK Team",     "workbench.colorTheme": "TerraFusion Dark"   },   "folders": [     {       "path": "../../SDK",       "name": "SDK"     },     {       "path": "../../tools",       "name": "tools"     },     {       "path": "../../templates",       "name": "templates"     }   ],   "extensions": {     "recommendations": [       "ms-vscode.vscode-typescript-next",       "bradlc.vscode-tailwindcss",       "ms-dotnettools.csharp",       "ms-python.python",       "ms-vscode.powershell",       "GitHub.copilot",       "terrafusion.ai-agent-tools"     ]   } } 
+{
+  "folders": [
+    { "path": "../SDK", "name": "📦 TerraFusion SDK" },
+    { "path": "../SDK/modules", "name": "🏛️ Government Modules" },
+    { "path": "../SDK/scripts", "name": "🔧 Development Scripts" },
+    { "path": "../SDK/tools", "name": "⚙️ SDK Tools" },
+    { "path": "../config", "name": "⚙️ Configuration" },
+    { "path": "../tests", "name": "🧪 SDK Tests" },
+    { "path": "../docs", "name": "📚 SDK Documentation" }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#FF6F00",
+      "titleBar.activeForeground": "#FFFFFF"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/backend": true,
+      "**/frontend": true,
+      "**/marketplace": true,
+      "**/monitoring": true
+    },
+    "search.exclude": {
+      "**/backend": true,
+      "**/frontend": true,
+      "**/node_modules": true
+    },
+    "typescript.preferences.preferTypeOnlyAutoImports": true,
+    "terrafusion.role": "sdk_development",
+    "terrafusion.responsibility": "module_plugin_architecture"
+  },
+  "extensions": {
+    "recommendations": [
+      // === TypeScript & JavaScript - 12 extensions ===
+      "ms-vscode.vscode-typescript-next",
+      "pmneo.tsimporter",
+      "steoates.autoimport",
+      "xabikos.javascriptsnippets",
+      "chakrounanas.turbo-console-log",
+      "yoavbls.pretty-ts-errors",
+      "ms-vscode.vscode-typescript-tslint-plugin",
+      "rbbit.typescript-hero",
+      "stringham.move-ts",
+      "mike-co.import-sorter",
+      "oouo-diogo-perdigao.docthis",
+      "quicktype.quicktype",
+
+      // === Module Development - 8 extensions ===
+      "bradlc.vscode-tailwindcss",
+      "ms-dotnettools.csharp",
+      "dsznajder.es7-react-js-snippets",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "styled-components.vscode-styled-components",
+      "wix.vscode-import-cost",
+      "formulahendry.auto-rename-tag",
+
+      // === API & Documentation - 8 extensions ===
+      "humao.rest-client",
+      "42crunch.vscode-openapi",
+      "swagger-viewer.swagger-viewer",
+      "yzhang.markdown-all-in-one",
+      "bierner.markdown-mermaid",
+      "shd101wyy.markdown-preview-enhanced",
+      "davidanson.vscode-markdownlint",
+      "jebbs.plantuml",
+
+      // === Testing & Quality - 10 extensions ===
+      "orta.vscode-jest",
+      "hbenl.vscode-test-explorer",
+      "vitest.explorer",
+      "ryanluker.vscode-coverage-gutters",
+      "sonarsource.sonarlint-vscode",
+      "streetsidesoftware.code-spell-checker",
+      "editorconfig.editorconfig",
+      "usernamehw.errorlens",
+      "timonwong.shellcheck",
+      "foxundermoon.shell-format",
+
+      // === Git & Version Control - 7 extensions ===
+      "gruntfuggly.todo-tree",
+      "eamodio.gitlens",
+      "donjayamanne.githistory",
+      "github.vscode-pull-request-github",
+      "mhutchie.git-graph",
+      "adam-bender.commit-message-editor",
+      "github.vscode-github-actions",
+
+      // === Data & Config - 7 extensions ===
+      "ms-vscode.vscode-json",
+      "redhat.vscode-yaml",
+      "tamasfe.even-better-toml",
+      "dotenv.dotenv-vscode",
+      "mechatroner.rainbow-csv",
+      "mikestead.dotenv",
+      "redhat.vscode-xml",
+
+      // === Productivity & Utilities - 8 extensions ===
+      "christian-kohler.path-intellisense",
+      "aaron-bond.better-comments",
+      "wayou.vscode-todo-highlight",
+      "alefragnani.bookmarks",
+      "hediet.vscode-drawio",
+      "earshinov.sort-lines-by-selection",
+      "ms-vsliveshare.vsliveshare",
+      "visualstudioexptteam.vscodeintellicode",
+
+      // === AI & Copilot - 2 extensions ===
+      "github.copilot",
+      "github.copilot-chat"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🔧 Build: All SDK Modules",
+        "type": "shell",
+        "command": "npm run build",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": { "kind": "build", "isDefault": true },
+        "problemMatcher": "$tsc"
+      },
+      {
+        "label": "🧪 Test: All Modules",
+        "type": "shell",
+        "command": "./scripts/test-integration.sh",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": { "kind": "test", "isDefault": true }
+      },
+      {
+        "label": "🧪 Test: Module (Prompt)",
+        "type": "shell",
+        "command": "./tools/test-module.sh --module=${input:moduleName}",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "test"
+      },
+      {
+        "label": "🔍 Validate: Module Manifest",
+        "type": "shell",
+        "command": "./tools/validate-manifest.sh --module=${input:moduleName}",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "test"
+      },
+      {
+        "label": "🔍 Validate: All Manifests",
+        "type": "shell",
+        "command": "find modules -name 'manifest.json' -exec ./tools/validate-manifest.sh --file={} \\;",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "test"
+      },
+      {
+        "label": "🚀 Create: New Module",
+        "type": "shell",
+        "command": "./scripts/create-module.sh --name=${input:moduleName} --type=${input:moduleType}",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "none"
+      },
+      {
+        "label": "🚀 Create: New AI Agent",
+        "type": "shell",
+        "command": "./scripts/create-ai-agent.sh --name=${input:agentName} --swarm=custom",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "none"
+      },
+      {
+        "label": "📦 Deploy: Module Locally",
+        "type": "shell",
+        "command": "./tools/deploy-local.sh --module=${input:moduleName}",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "none"
+      },
+      {
+        "label": "🔒 Security: Scan Module",
+        "type": "shell",
+        "command": "./tools/security-scan.sh --module=${input:moduleName}",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "test"
+      },
+      {
+        "label": "📊 Benchmark: Module Performance",
+        "type": "shell",
+        "command": "./tools/benchmark-module.sh --module=${input:moduleName}",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "test"
+      },
+      {
+        "label": "🧹 Clean: Build Artifacts",
+        "type": "shell",
+        "command": "rm -rf modules/*/dist modules/*/node_modules/.cache",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "none"
+      },
+      {
+        "label": "📦 Install: All Dependencies",
+        "type": "shell",
+        "command": "npm install",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "none"
+      },
+      {
+        "label": "📚 Docs: Generate Module Docs",
+        "type": "shell",
+        "command": "npm run docs:generate",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "none"
+      },
+      {
+        "label": "🛡️ Compliance: Government Standards",
+        "type": "shell",
+        "command": "./tools/validate-government-compliance.sh --module=${input:moduleName}",
+        "options": { "cwd": "${workspaceFolder}/SDK" },
+        "group": "test"
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug: Test SDK Module",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/SDK/scripts/test-module.js",
+        "args": ["--module=${input:moduleName}"],
+        "cwd": "${workspaceFolder}/SDK",
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Debug: Module Entry Point",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/SDK/modules/${input:moduleName}/index.ts",
+        "cwd": "${workspaceFolder}/SDK",
+        "outFiles": ["${workspaceFolder}/SDK/modules/${input:moduleName}/dist/**/*.js"],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Debug: Create Module Script",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/SDK/scripts/create-module.sh",
+        "cwd": "${workspaceFolder}/SDK",
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Attach: Node Process",
+        "type": "node",
+        "request": "attach",
+        "port": 9229,
+        "skipFiles": ["<node_internals>/**"],
+        "restart": true
+      },
+      {
+        "name": "Debug: Jest Tests",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "test", "--", "--runInBand"],
+        "cwd": "${workspaceFolder}/SDK",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "id": "moduleName",
+      "type": "promptString",
+      "description": "Module name (e.g., terra-levy, costforge-ai)"
+    },
+    {
+      "id": "moduleType",
+      "type": "pickString",
+      "description": "Module type",
+      "options": ["government", "commercial", "core"],
+      "default": "government"
+    },
+    {
+      "id": "agentName",
+      "type": "promptString",
+      "description": "AI Agent name"
+    }
+  ]
+}

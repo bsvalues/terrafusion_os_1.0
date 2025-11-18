@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
-import { visualizer } from 'rollup-plugin-visualizer';
 import path from 'path';
+import { visualizer } from 'rollup-plugin-visualizer';
+import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -39,7 +39,7 @@ export default defineConfig(({ mode }) => ({
       template: 'treemap', // 'sunburst', 'treemap', 'network'
     }),
   ].filter(Boolean),
-  
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -51,16 +51,16 @@ export default defineConfig(({ mode }) => ({
       '@terrafusion/shared': path.resolve(__dirname, '../terrafusion-shared/dist/index.js'),
     }
   },
-  
+
   build: {
     // Build directly to native shell UI directory!
     outDir: '../native-shell/ui',
     emptyOutDir: true,
-    
+
     // Optimize for production
     minify: 'terser',
     sourcemap: true,
-    
+
     rollupOptions: {
       output: {
         manualChunks: {
@@ -68,20 +68,32 @@ export default defineConfig(({ mode }) => ({
           'ui': ['@mui/material', '@mui/icons-material'],
           'charts': ['recharts'],
           '3d': ['three'],
-        }
+          'platform-design-system': ['../platform/design-system'],
+        },
+        // Platform-specific naming for cache busting
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
+      },
+      // External dependencies for platform modules
+      external: [],
+      treeshake: {
+        moduleSideEffects: false,
+        propertyReadSideEffects: false,
+        tryCatchDeoptimization: false
       }
     },
-    
+
     // Performance
     chunkSizeWarningLimit: 1000,
     reportCompressedSize: true,
   },
-  
+
   server: {
     port: parseInt(process.env.VITE_PORT || '3000'),
     host: true,
     strictPort: false,
-    
+
     // Proxy API calls to .NET backend
     proxy: {
       '/api': {
@@ -92,16 +104,16 @@ export default defineConfig(({ mode }) => ({
       }
     }
   },
-  
+
   preview: {
     port: parseInt(process.env.VITE_PORT || '3000'),
     strictPort: false,
   },
-  
+
   optimizeDeps: {
     include: ['react', 'react-dom', '@mui/material', 'recharts'],
   },
-  
+
   define: {
     // Environment variables available in app
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),

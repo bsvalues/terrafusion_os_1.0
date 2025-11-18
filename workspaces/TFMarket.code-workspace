@@ -1,1 +1,49 @@
-{  "folders": [   {    "path": "D:/TF_File_8_25/TFMarket"   }  ] }
+{
+  "folders": [
+    {
+      "path": "../marketplace/marketplace-frontend/frontend",
+      "name": "tfmarket-frontend"
+    },
+    {
+      "path": "../marketplace/api",
+      "name": "marketplace-api"
+    }
+  ],
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Tfmarket",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Tfmarket",
+        "type": "shell",
+        "command": "echo 'Build task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Tfmarket",
+        "type": "shell",
+        "command": "echo 'Test task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

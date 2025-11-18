@@ -7,7 +7,6 @@
  */
 
 import fs from 'fs';
-import path from 'path';
 
 class PublicHealthAITraining {
     constructor() {
@@ -35,7 +34,7 @@ class PublicHealthAITraining {
 
     async validateDomainKnowledge() {
         console.log('📚 Step 1: Domain Knowledge Validation');
-        
+
         const domainQuestions = [
             {
                 question: "What is the primary domain of public-health?",
@@ -43,7 +42,7 @@ class PublicHealthAITraining {
                 critical: true
             },
             {
-                question: "What is the risk level for public-health?", 
+                question: "What is the risk level for public-health?",
                 expected: "critical",
                 critical: true
             },
@@ -70,12 +69,12 @@ class PublicHealthAITraining {
 
     async trainProtectionSystems() {
         console.log('🛡️ Step 2: PUBLIC-HEALTH Protection System Training');
-        
+
         console.log('   🔒 Protection Priorities for public-health:');
         this.protectionPriorities.forEach(priority => {
             console.log(`      - ${priority}`);
         });
-        
+
         console.log('');
         console.log('   🎯 Specialized Protection Training:');
         console.log(`      - health_services threat modeling`);
@@ -86,7 +85,7 @@ class PublicHealthAITraining {
 
     async validateWorkspaceSpecificCapabilities() {
         console.log('⚡ Step 3: PUBLIC-HEALTH Capability Validation');
-        
+
         const capabilities = [
             `${this.domain} domain expertise`,
             `${this.riskLevel} security controls`,
@@ -103,7 +102,7 @@ class PublicHealthAITraining {
 
     async generateTrainingReport() {
         console.log('📊 Step 4: Training Report Generation');
-        
+
         const report = {
             timestamp: new Date().toISOString(),
             workspace: this.workspaceName,
@@ -121,7 +120,7 @@ class PublicHealthAITraining {
 
         const reportPath = '.terrafusion/public-health-training-report.json';
         fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-        
+
         console.log('   ✅ Training completed for public-health');
         console.log(`   📄 Report saved: ${reportPath}`);
         console.log('');

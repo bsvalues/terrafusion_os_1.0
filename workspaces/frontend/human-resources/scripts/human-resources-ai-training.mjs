@@ -7,7 +7,6 @@
  */
 
 import fs from 'fs';
-import path from 'path';
 
 class HumanResourcesAITraining {
     constructor() {
@@ -35,7 +34,7 @@ class HumanResourcesAITraining {
 
     async validateDomainKnowledge() {
         console.log('📚 Step 1: Domain Knowledge Validation');
-        
+
         const domainQuestions = [
             {
                 question: "What is the primary domain of human-resources?",
@@ -43,7 +42,7 @@ class HumanResourcesAITraining {
                 critical: true
             },
             {
-                question: "What is the risk level for human-resources?", 
+                question: "What is the risk level for human-resources?",
                 expected: "critical",
                 critical: true
             },
@@ -70,12 +69,12 @@ class HumanResourcesAITraining {
 
     async trainProtectionSystems() {
         console.log('🛡️ Step 2: HUMAN-RESOURCES Protection System Training');
-        
+
         console.log('   🔒 Protection Priorities for human-resources:');
         this.protectionPriorities.forEach(priority => {
             console.log(`      - ${priority}`);
         });
-        
+
         console.log('');
         console.log('   🎯 Specialized Protection Training:');
         console.log(`      - employee_management threat modeling`);
@@ -86,7 +85,7 @@ class HumanResourcesAITraining {
 
     async validateWorkspaceSpecificCapabilities() {
         console.log('⚡ Step 3: HUMAN-RESOURCES Capability Validation');
-        
+
         const capabilities = [
             `${this.domain} domain expertise`,
             `${this.riskLevel} security controls`,
@@ -103,7 +102,7 @@ class HumanResourcesAITraining {
 
     async generateTrainingReport() {
         console.log('📊 Step 4: Training Report Generation');
-        
+
         const report = {
             timestamp: new Date().toISOString(),
             workspace: this.workspaceName,
@@ -121,7 +120,7 @@ class HumanResourcesAITraining {
 
         const reportPath = '.terrafusion/human-resources-training-report.json';
         fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-        
+
         console.log('   ✅ Training completed for human-resources');
         console.log(`   📄 Report saved: ${reportPath}`);
         console.log('');

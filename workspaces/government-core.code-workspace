@@ -1,1 +1,62 @@
-{   "name": "TerraFusion Government Core",   "folders": [     {       "path": "../backend/TerraFusion.API"     },     {       "path": "../frontend/src/components/government"     },     {       "path": "../config/counties"     }   ],   "settings": {     "azureML.showWelcomePage": false,     "azureML.enableWorkspaceCompletions": false,     "python.defaultInterpreterPath": "./venv/Scripts/python.exe",     "terrafusion.quantum_factor": 949,     "terrafusion.target_score": 12.0,     "terrafusion.sacred_mathematics": "OPERATIONAL",     "terrafusion.role": "government_services",     "terrafusion.citizens": 975000,     "terrafusion.counties": 39   } }
+{
+  "name": "TerraFusion Government Core",
+  "folders": [
+    {
+      "path": "../backend/TerraFusion.API"
+    },
+    {
+      "path": "../frontend/src/components/government"
+    },
+    {
+      "path": "../config/counties"
+    }
+  ],
+  "settings": {
+    "azureML.showWelcomePage": false,
+    "azureML.enableWorkspaceCompletions": false,
+    "python.defaultInterpreterPath": "./venv/Scripts/python.exe",
+    "terrafusion.quantum_factor": 949,
+    "terrafusion.target_score": 12.0,
+    "terrafusion.sacred_mathematics": "OPERATIONAL",
+    "terrafusion.role": "government_services",
+    "terrafusion.citizens": 975000,
+    "terrafusion.counties": 39
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Government Core",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Government Core",
+        "type": "shell",
+        "command": "echo 'Build task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Government Core",
+        "type": "shell",
+        "command": "echo 'Test task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

@@ -1,37 +1,43 @@
 {
   "folders": [
     {
-      "name": "🎨 Command Portal",
-      "path": "../TerraFusion_Command_Portal_Starter/terrafusion-command-portal",
+      "name": "🎨 Portal Web App",
+      "path": "portal/apps/terrafusion-web"
     },
     {
-      "name": "🔧 TDC Console",
-      "path": "../tools/tdc",
+      "name": "🔧 Portal Backend",
+      "path": "portal/backend"
+    },
+    {
+      "name": "🎨 Portal Frontend",
+      "path": "portal/frontend"
     },
     {
       "name": "⚙️ Backend Services",
-      "path": "../backend",
+      "path": "../backend"
     },
     {
       "name": "📦 Config",
-      "path": "../config",
+      "path": "../config"
     },
     {
       "name": "📚 Docs",
-      "path": "../docs",
-    },
+      "path": "../docs"
+    }
   ],
   "settings": {
     "files.exclude": {
       "**/node_modules": true,
       "**/dist": true,
-      "**/.git": true,
+      "**/.git": true
     },
     "search.exclude": {
       "**/node_modules": true,
       "**/dist": true,
-      "**/target": true,
+      "**/target": true
     },
+    "todo-tree.tree.scanMode": "workspace",
+    "liveServer.settings.multiRootWorkspaceName": "🎨 Portal Web App"
   },
   "extensions": {
     "recommendations": [
@@ -39,8 +45,8 @@
       "esbenp.prettier-vscode",
       "rust-lang.rust-analyzer",
       "ms-dotnettools.csharp",
-      "ms-vscode.vscode-typescript-next",
-    ],
+      "ms-vscode.vscode-typescript-next"
+    ]
   },
   "tasks": {
     "version": "2.0.0",
@@ -50,51 +56,65 @@
         "type": "shell",
         "command": "npm run tdc portal:launch",
         "options": {
-          "cwd": "${workspaceFolder:🔧 TDC Console}",
+          "cwd": "${workspaceFolder}"
         },
         "problemMatcher": [],
         "group": {
           "kind": "build",
-          "isDefault": true,
-        },
+          "isDefault": true
+        }
       },
       {
         "label": "📊 Portal Status",
         "type": "shell",
         "command": "npm run tdc portal:status",
         "options": {
-          "cwd": "${workspaceFolder:🔧 TDC Console}",
+          "cwd": "${workspaceFolder}"
         },
-        "problemMatcher": [],
+        "problemMatcher": []
       },
       {
         "label": "🔧 Build TDC",
         "type": "shell",
         "command": "npm run build",
         "options": {
-          "cwd": "${workspaceFolder:🔧 TDC Console}",
+          "cwd": "${workspaceFolder}"
         },
-        "problemMatcher": ["$tsc"],
+        "problemMatcher": [
+          "$tsc"
+        ]
       },
       {
         "label": "⚡ Launch Backend Services",
         "type": "shell",
         "command": "npm run tdc launch:backend -- --degraded",
         "options": {
-          "cwd": "${workspaceFolder:🔧 TDC Console}",
+          "cwd": "${workspaceFolder}"
         },
         "problemMatcher": [],
-        "isBackground": true,
+        "isBackground": true
       },
       {
         "label": "🤖 AI Activity Trace",
         "type": "shell",
         "command": "npm run tdc ai:trace",
         "options": {
-          "cwd": "${workspaceFolder:🔧 TDC Console}",
+          "cwd": "${workspaceFolder}"
         },
-        "problemMatcher": [],
-      },
-    ],
+        "problemMatcher": []
+      }
+    ]
   },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Portal",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  }
 }

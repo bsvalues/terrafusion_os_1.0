@@ -4,6 +4,22 @@
 
 ---
 
+## 🚀 New Here? Start With These
+
+**For AI Agents & New Developers**:
+- 📖 **[QUICKSTART.md](./QUICKSTART.md)** - 5-minute quick start guide with essential patterns
+- 🤖 **[.github/copilot-instructions.md](./.github/copilot-instructions.md)** - Complete AI agent instructions (1245 lines)
+- 🏛️ **[COUNTY_ISOLATION_QUICK_REF.md](./COUNTY_ISOLATION_QUICK_REF.md)** - Mandatory data isolation patterns
+
+**Jump to Section**:
+- [Quick Start](#quick-start) - Build & run commands
+- [Architecture](#architecture) - System structure
+- [County Data Isolation](#county-data-isolation) - Critical compliance pattern
+- [Testing](#testing) - Test tiers and commands
+- [VS Code Tasks](#vs-code-tasks) - Integrated development workflows
+
+---
+
 ## Quick Start
 
 ### Build & Run

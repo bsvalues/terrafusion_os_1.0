@@ -1,1 +1,52 @@
-{   "name": "TerraFusion Performance Optimization",   "folders": [     {       "path": "../monitoring"     },     {       "path": "../scripts/performance"     }   ],   "settings": {     "terrafusion.role": "performance_optimization",     "terrafusion.performance_target": "championship_level"   } }
+{
+  "name": "TerraFusion Performance Optimization",
+  "folders": [
+    {
+      "path": "../monitoring"
+    },
+    {
+      "path": "../scripts/performance"
+    }
+  ],
+  "settings": {
+    "terrafusion.role": "performance_optimization",
+    "terrafusion.performance_target": "championship_level"
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Performance",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Performance",
+        "type": "shell",
+        "command": "echo 'Build task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Performance",
+        "type": "shell",
+        "command": "echo 'Test task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

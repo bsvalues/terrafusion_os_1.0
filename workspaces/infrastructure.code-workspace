@@ -1,1 +1,81 @@
-{   "name": "TerraFusion Infrastructure",   "folders": [     {       "path": "../infrastructure"     },     {       "path": "../backend/TerraFusion.Data"     }   ],   "settings": {     "azureML.showWelcomePage": false,     "azureML.enableWorkspaceCompletions": false,     "python.defaultInterpreterPath": "./venv/Scripts/python.exe",     "terrafusion.quantum_factor": 949,     "terrafusion.target_score": 12.0,     "terrafusion.sacred_mathematics": "OPERATIONAL",     "terrafusion.role": "infrastructure_excellence",     "terrafusion.scalability": "infinite"   } }
+{
+  "folders": [
+    {
+      "path": "../infrastructure",
+      "name": "🏗️ Infrastructure & DevOps"
+    },
+    {
+      "path": "../deployment",
+      "name": "🚀 Deployment"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Infrastructure Configuration"
+    },
+    {
+      "path": "../monitoring",
+      "name": "📊 Monitoring & QA"
+    },
+    {
+      "path": "../docs",
+      "name": "📚 Infrastructure Documentation"
+    }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#FF5722",
+      "titleBar.activeForeground": "#FFFFFF"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/frontend": true,
+      "**/marketplace": true
+    },
+    "terrafusion.role": "infrastructure_devops",
+    "terrafusion.responsibility": "deployment_monitoring"
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-azuretools.vscode-docker",
+      "ms-kubernetes-tools.vscode-kubernetes-tools",
+      "hashicorp.terraform"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Infrastructure",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Infrastructure",
+        "type": "shell",
+        "command": "echo 'Build task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Infrastructure",
+        "type": "shell",
+        "command": "echo 'Test task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

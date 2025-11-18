@@ -7,7 +7,6 @@
  */
 
 import fs from 'fs';
-import path from 'path';
 
 class CitizenServicesAITraining {
     constructor() {
@@ -35,7 +34,7 @@ class CitizenServicesAITraining {
 
     async validateDomainKnowledge() {
         console.log('📚 Step 1: Domain Knowledge Validation');
-        
+
         const domainQuestions = [
             {
                 question: "What is the primary domain of citizen-services?",
@@ -43,7 +42,7 @@ class CitizenServicesAITraining {
                 critical: true
             },
             {
-                question: "What is the risk level for citizen-services?", 
+                question: "What is the risk level for citizen-services?",
                 expected: "high",
                 critical: true
             },
@@ -70,12 +69,12 @@ class CitizenServicesAITraining {
 
     async trainProtectionSystems() {
         console.log('🛡️ Step 2: CITIZEN-SERVICES Protection System Training');
-        
+
         console.log('   🔒 Protection Priorities for citizen-services:');
         this.protectionPriorities.forEach(priority => {
             console.log(`      - ${priority}`);
         });
-        
+
         console.log('');
         console.log('   🎯 Specialized Protection Training:');
         console.log(`      - citizen_engagement threat modeling`);
@@ -86,7 +85,7 @@ class CitizenServicesAITraining {
 
     async validateWorkspaceSpecificCapabilities() {
         console.log('⚡ Step 3: CITIZEN-SERVICES Capability Validation');
-        
+
         const capabilities = [
             `${this.domain} domain expertise`,
             `${this.riskLevel} security controls`,
@@ -103,7 +102,7 @@ class CitizenServicesAITraining {
 
     async generateTrainingReport() {
         console.log('📊 Step 4: Training Report Generation');
-        
+
         const report = {
             timestamp: new Date().toISOString(),
             workspace: this.workspaceName,
@@ -121,7 +120,7 @@ class CitizenServicesAITraining {
 
         const reportPath = '.terrafusion/citizen-services-training-report.json';
         fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-        
+
         console.log('   ✅ Training completed for citizen-services');
         console.log(`   📄 Report saved: ${reportPath}`);
         console.log('');

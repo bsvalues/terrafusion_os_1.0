@@ -10,21 +10,52 @@ import sys
 from pathlib import Path
 from typing import List, Tuple, Dict
 
+def _strip_line_comments_safely(jsonc: str) -> str:
+    """Remove // comments only when not inside JSON strings."""
+    result = []
+    in_string = False
+    escape = False
+    i = 0
+    length = len(jsonc)
+    while i < length:
+        ch = jsonc[i]
+        nxt = jsonc[i + 1] if i + 1 < length else ''
+
+        if in_string:
+            result.append(ch)
+            if escape:
+                escape = False
+            elif ch == '\\':
+                escape = True
+            elif ch == '"':
+                in_string = False
+            i += 1
+            continue
+
+        # Not in string: detect // line comment
+        if ch == '"':
+            in_string = True
+            result.append(ch)
+            i += 1
+            continue
+        if ch == '/' and nxt == '/':
+            # skip until end of line
+            while i < length and jsonc[i] != '\n':
+                i += 1
+            continue
+        result.append(ch)
+        i += 1
+    return ''.join(result)
+
 def validate_json_syntax(file_path: Path) -> Tuple[bool, str]:
     """Validate JSON syntax of a workspace file."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-            # Remove JSONC comments for validation
-            lines = content.split('\n')
-            clean_lines = []
-            for line in lines:
-                # Remove comments but preserve structure
-                if '//' in line:
-                    comment_start = line.find('//')
-                    line = line[:comment_start].rstrip()
-                clean_lines.append(line)
-            clean_content = '\n'.join(clean_lines)
+            # Remove potential UTF-8 BOM and strip line comments safely
+            if content and content[0] == '\ufeff':
+                content = content.lstrip('\ufeff')
+            clean_content = _strip_line_comments_safely(content).strip()
 
         json.loads(clean_content)
         return True, "✅ Valid JSON"
@@ -37,7 +68,9 @@ def validate_paths(workspace_path: Path) -> List[Tuple[str, bool, str]]:
     """Validate that all folder paths in workspace file exist."""
     try:
         with open(workspace_path, 'r', encoding='utf-8') as f:
-            data = json.loads(f.read())
+            raw = f.read()
+            clean = _strip_line_comments_safely(raw)
+            data = json.loads(clean)
 
         folders = data.get('folders', [])
         results = []

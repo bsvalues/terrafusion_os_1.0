@@ -1,1 +1,86 @@
-{   "settings": {     "workbench.iconTheme": "terrafusion-icons",     "editor.codeActionsOnSave": {       "source.fixAll": "explicit"     },     "editor.formatOnSave": true,     "terrafusion.focus": "Agent Development Kit for AI Agent Creation",     "terrafusion.team": "ADK Team",     "workbench.colorTheme": "TerraFusion Dark"   },   "folders": [     {       "path": "..",       "name": "repo-root"     },     {       "path": "../counties",       "name": "counties"     },     {       "path": "../.github",       "name": ".github"     },     {       "path": "../../terrabuild-modernization/server/mcp",       "name": "mcp"     },     {       "path": "../../ai-systems",       "name": "ai-systems"     },     {       "path": "../../SDK",       "name": "SDK"     }   ],   "extensions": {     "recommendations": [       "ms-vscode.vscode-typescript-next",       "bradlc.vscode-tailwindcss",       "ms-dotnettools.csharp",       "ms-python.python",       "ms-vscode.powershell",       "GitHub.copilot",       "terrafusion.ai-agent-tools"     ]   } } 
+{
+  "settings": {
+    "workbench.iconTheme": "terrafusion-icons",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    },
+    "editor.formatOnSave": true,
+    "terrafusion.focus": "Agent Development Kit for AI Agent Creation",
+    "terrafusion.team": "ADK Team",
+    "workbench.colorTheme": "TerraFusion Dark"
+  },
+  "folders": [
+    {
+      "path": "..",
+      "name": "repo-root"
+    },
+    {
+      "path": "../counties",
+      "name": "counties"
+    },
+    {
+      "path": "../.github",
+      "name": ".github"
+    },
+    {
+      "path": "../terrabuild-modernization/server/mcp",
+      "name": "mcp"
+    },
+    {
+      "path": "../ai-systems",
+      "name": "ai-systems"
+    },
+    {
+      "path": "../SDK",
+      "name": "SDK"
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.vscode-typescript-next",
+      "bradlc.vscode-tailwindcss",
+      "ms-dotnettools.csharp",
+      "ms-python.python",
+      "ms-vscode.powershell",
+      "GitHub.copilot",
+      "terrafusion.ai-agent-tools"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Adk",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Adk",
+        "type": "shell",
+        "command": "echo 'Build task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Adk",
+        "type": "shell",
+        "command": "echo 'Test task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

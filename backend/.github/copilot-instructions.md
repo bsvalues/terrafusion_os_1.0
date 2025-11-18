@@ -389,6 +389,1280 @@ dotnet ef database update --project TerraFusion.Data --context PropertyAssessmen
 ./SDK/tools/compliance-check.sh --service=property-workbench --iaao-standards
 ```
 
+---
+
+## 📋 Detailed Development Workflows
+
+### Workflow 1: Complete Feature Development (County-Isolated)
+
+**Scenario**: Add new property assessment feature with county isolation
+
+**Step 1: Plan & Validate Requirements**
+```bash
+# Navigate to backend workspace
+cd backend/
+
+# Create feature branch
+git checkout -b feature/assessment-enhancement-iaao
+
+# Review county isolation requirements
+cat COUNTY_ISOLATION_QUICK_REF.md
+```
+
+**Step 2: Implement Repository Layer (County-Scoped)**
+```csharp
+// File: TerraFusion.Data/Repositories/PropertyAssessmentRepository.cs
+public class PropertyAssessmentRepository : IPropertyAssessmentRepository
+{
+    // ✅ CORRECT: County isolation mandatory
+    public async Task<Assessment> GetAssessmentAsync(Guid countyCode, Guid assessmentId)
+    {
+        return await _context.Assessments
+            .Where(a => a.CountyId == countyCode && a.Id == assessmentId)
+            .Include(a => a.Property)
+            .SingleOrDefaultAsync();
+    }
+
+    // ✅ CORRECT: All queries scoped to county
+    public async Task<List<Assessment>> GetByPropertyAsync(Guid countyCode, Guid propertyId)
+    {
+        return await _context.Assessments
+            .Where(a => a.CountyId == countyCode && a.PropertyId == propertyId)
+            .OrderByDescending(a => a.AssessmentDate)
+            .ToListAsync();
+    }
+}
+```
+
+**Step 3: Add Service Layer with Business Logic**
+```csharp
+// File: TerraFusion.API/Services/PropertyAssessmentService.cs
+public class PropertyAssessmentService : IPropertyAssessmentService
+{
+    private readonly IPropertyAssessmentRepository _repository;
+    private readonly IIAAOComplianceValidator _iaaOValidator;
+    private readonly IAIOrchestrator _aiOrchestrator;
+
+    public async Task<AssessmentResult> PerformAssessmentAsync(
+        Guid countyCode, 
+        Guid propertyId,
+        AssessmentParameters parameters)
+    {
+        // Validate county configuration
+        var config = await _configService.GetCountyConfigAsync(countyCode.ToString());
+        
+        // Get property with county isolation
+        var property = await _propertyRepository.GetByIdAsync(countyCode, propertyId);
+        if (property == null)
+            throw new NotFoundException($"Property not found in county {countyCode}");
+
+        // AI-enhanced assessment (if enabled)
+        AssessmentResult result;
+        if (config.FeatureFlags.AiSwarmEnabled)
+        {
+            result = await _aiOrchestrator.CoordinateSwarmAssessmentAsync(
+                countyCode, property, parameters);
+        }
+        else
+        {
+            result = await PerformStandardAssessmentAsync(property, parameters);
+        }
+
+        // Validate IAAO compliance
+        var complianceCheck = await _iaaOValidator.ValidateAsync(result, config.AccuracyTarget);
+        if (!complianceCheck.IsCompliant)
+        {
+            throw new ComplianceException(
+                $"Assessment does not meet IAAO standards: {complianceCheck.Issues}");
+        }
+
+        return result;
+    }
+}
+```
+
+**Step 4: Add API Controller Endpoint**
+```csharp
+// File: TerraFusion.API/Controllers/AssessmentsController.cs
+[ApiController]
+[Route("api/counties/{countyCode}/assessments")]
+public class AssessmentsController : ControllerBase
+{
+    private readonly IPropertyAssessmentService _service;
+
+    [HttpPost("property/{propertyId}")]
+    [ProducesResponseType(typeof(AssessmentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateAssessment(
+        [FromRoute] Guid countyCode,
+        [FromRoute] Guid propertyId,
+        [FromBody] AssessmentParameters parameters)
+    {
+        try
+        {
+            var result = await _service.PerformAssessmentAsync(
+                countyCode, propertyId, parameters);
+            return Ok(result);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (ComplianceException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+}
+```
+
+**Step 5: Add Integration Test (County Isolation Validation)**
+```csharp
+// File: tests/TerraFusion.Integration.Tests/AssessmentWorkflowTests.cs
+public class AssessmentWorkflowTests : IntegrationTestBase
+{
+    [Fact]
+    public async Task CreateAssessment_WithValidCounty_ReturnsResult()
+    {
+        // Arrange
+        var countyId = await CreateTestCountyAsync("TEST_COUNTY");
+        var propertyId = await CreateTestPropertyAsync(countyId);
+        var parameters = new AssessmentParameters
+        {
+            AssessmentType = "Annual",
+            TargetAccuracy = 0.999m
+        };
+
+        // Act
+        var result = await _client.PostAsync(
+            $"/api/counties/{countyId}/assessments/property/{propertyId}",
+            JsonContent.Create(parameters));
+
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        var assessment = await result.Content.ReadFromJsonAsync<AssessmentResult>();
+        assessment.Should().NotBeNull();
+        assessment!.IAAOCompliant.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CreateAssessment_DifferentCounty_DoesNotAccessData()
+    {
+        // Arrange: Create data in County A
+        var countyA = await CreateTestCountyAsync("COUNTY_A");
+        var propertyA = await CreateTestPropertyAsync(countyA);
+
+        var countyB = await CreateTestCountyAsync("COUNTY_B");
+
+        // Act: Try to access County A property from County B endpoint
+        var result = await _client.PostAsync(
+            $"/api/counties/{countyB}/assessments/property/{propertyA}",
+            JsonContent.Create(new AssessmentParameters()));
+
+        // Assert: Should return 404, not cross-county data
+        result.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+}
+```
+
+**Step 6: Build & Test**
+```bash
+# Build solution
+dotnet build TerraFusion.sln --configuration Release
+
+# Run unit tests
+cd tests/TerraFusion.Tests
+dotnet test --nologo
+
+# Run integration tests (includes county isolation validation)
+cd ../TerraFusion.Integration.Tests
+dotnet test --nologo --verbosity normal
+
+# Expected output:
+# ✅ Passed: CreateAssessment_WithValidCounty_ReturnsResult
+# ✅ Passed: CreateAssessment_DifferentCounty_DoesNotAccessData
+# ✅ Passed: All 6 county isolation tests
+```
+
+**Step 7: Run Services Locally**
+```bash
+# Terminal 1: Start API
+dotnet run --project TerraFusion.API --urls "http://localhost:5001"
+
+# Terminal 2: Start Consciousness Engine (AI coordination)
+dotnet run --project TerraFusion.Consciousness --urls "http://localhost:3004"
+
+# Terminal 3: Test endpoint
+curl -X POST http://localhost:5001/api/counties/{countyId}/assessments/property/{propertyId} \
+  -H "Content-Type: application/json" \
+  -d '{"assessmentType":"Annual","targetAccuracy":0.999}'
+```
+
+**Step 8: Database Migration (if schema changes)**
+```bash
+# Add migration
+dotnet ef migrations add AddAssessmentEnhancement \
+  --project TerraFusion.Data \
+  --startup-project TerraFusion.API \
+  --context TerraFusionDbContext
+
+# Review migration file
+cat TerraFusion.Data/Migrations/*_AddAssessmentEnhancement.cs
+
+# Apply migration to dev database
+dotnet ef database update \
+  --project TerraFusion.Data \
+  --startup-project TerraFusion.API
+```
+
+**Step 9: Commit with Evidence**
+```bash
+git add .
+git commit -m "feat: Add county-isolated property assessment enhancement
+
+- Implements IPropertyAssessmentRepository with county isolation
+- Adds PropertyAssessmentService with AI swarm coordination
+- Creates AssessmentsController with county-scoped routes
+- Adds 2 integration tests validating county isolation
+- Includes IAAO compliance validation (99.9% accuracy target)
+
+Test Evidence:
+- Unit tests: 23/23 passing
+- Integration tests: 8/8 passing (includes 6 county isolation tests)
+- IAAO compliance: Validated
+- County isolation: Enforced in all repository methods
+
+Breaking Changes: None
+Migration Required: Yes (AddAssessmentEnhancement)"
+```
+
+---
+
+### Workflow 2: County Onboarding (End-to-End)
+
+**Scenario**: Onboard new county ("Clallam County") to TerraFusion OS
+
+**Phase 1: Configuration (Day 1)**
+
+```bash
+# Step 1: Create county configuration
+cd config/
+cp tenant.benton.yaml tenant.clallam.yaml
+
+# Step 2: Edit configuration
+code tenant.clallam.yaml
+```
+
+```yaml
+# config/tenant.clallam.yaml
+countyId: "clallam"
+displayName: "Clallam County, WA"
+population: 77155
+fipsCode: "53009"
+
+harris_pacs:
+  jurisdiction: "CLALLAM_WA"
+  connection_string: "${CLALLAM_HARRIS_PACS_CONNECTION}"
+  sync_interval_minutes: 15
+  batch_size: 500
+
+sla_targets:
+  availability: 0.999              # 99.9% uptime
+  response_time_p95_ms: 150       # <150ms P95 latency
+  accuracy_target: 0.999          # 99.9% assessment accuracy
+  sync_success_rate: 0.995        # 99.5% sync success
+
+feature_flags:
+  ai_swarm_enabled: true
+  quantum_optimization: false     # Disable initially, enable after validation
+  real_time_sync: true
+  ml_model_training: true
+
+security:
+  sso_provider: "AzureAD"
+  tenant_id: "${CLALLAM_AZURE_TENANT_ID}"
+  mfa_required: true
+  audit_logging: true
+  data_encryption: true
+
+ai_swarm:
+  agent_count: 500                # Start conservative, scale up
+  coordination_level: "standard"
+  consciousness_factor: 1.0
+```
+
+```bash
+# Step 3: Validate configuration
+python ../SDK/tools/validate_tenant_config.py --county=clallam
+
+# Expected output:
+# ✅ County ID valid: clallam
+# ✅ Harris PACS configuration valid
+# ✅ SLA targets within acceptable ranges
+# ✅ Security settings meet FISMA-High requirements
+# ✅ Configuration valid
+
+# Step 4: Security audit
+python ../SDK/tools/security_audit_config.py --county=clallam --fisma-high
+
+# Expected output:
+# ✅ SSO configured (AzureAD)
+# ✅ MFA required: true
+# ✅ Audit logging: enabled
+# ✅ Data encryption: enabled
+# ✅ FISMA-High compliance: PASSED
+```
+
+**Phase 2: Database Setup (Day 1)**
+
+```bash
+cd ../backend
+
+# Step 1: Add county to seed data
+code TerraFusion.Data/Seed/CountySeedData.cs
+```
+
+```csharp
+// Add to CountySeedData.cs
+new County
+{
+    Id = Guid.Parse("clallam-county-guid-here"),
+    CountyCode = "clallam",
+    Name = "Clallam County",
+    State = "WA",
+    FipsCode = "53009",
+    Population = 77155,
+    IsActive = true,
+    CreatedAt = DateTime.UtcNow
+}
+```
+
+```bash
+# Step 2: Create migration
+dotnet ef migrations add AddClallamCounty \
+  --project TerraFusion.Data \
+  --startup-project TerraFusion.API
+
+# Step 3: Apply migration
+dotnet ef database update \
+  --project TerraFusion.Data \
+  --startup-project TerraFusion.API
+
+# Step 4: Verify county in database
+psql -h localhost -U terrafusion_user -d terrafusion_db -c \
+  "SELECT id, county_code, name, is_active FROM counties WHERE county_code = 'clallam';"
+
+# Expected output:
+#                   id                  | county_code |      name       | is_active
+# --------------------------------------+-------------+-----------------+-----------
+#  clallam-county-guid-here             | clallam     | Clallam County  | t
+```
+
+**Phase 3: Harris PACS Integration (Days 2-3)**
+
+```bash
+# Step 1: Set environment variables (Azure Key Vault in production)
+export CLALLAM_HARRIS_PACS_CONNECTION="Server=harris-pacs.clallam.wa.gov;Database=PACS;User Id=terrafusion;Password=***"
+export CLALLAM_AZURE_TENANT_ID="tenant-id-here"
+
+# Step 2: Test Harris PACS connection
+dotnet run --project TerraFusion.API -- test-harris-connection --county=clallam
+
+# Expected output:
+# ✅ Connecting to Harris PACS (CLALLAM_WA)...
+# ✅ Connection successful
+# ✅ Retrieved 89,247 parcels
+# ✅ Sample parcel: 123456789 (123 Main St, Port Angeles)
+
+# Step 3: Initial data sync (full import)
+dotnet run --project TerraFusion.API -- sync-county-data \
+  --county=clallam \
+  --mode=full-import \
+  --batch-size=500
+
+# Expected output:
+# 🔄 Starting full import for Clallam County...
+# 📊 Progress: 10,000 / 89,247 parcels (11.2%) - ETA: 45 minutes
+# 📊 Progress: 50,000 / 89,247 parcels (56.0%) - ETA: 15 minutes
+# ✅ Import complete: 89,247 parcels imported
+# ✅ Validation: 89,247 / 89,247 records validated (100%)
+# ✅ Duration: 1 hour 23 minutes
+
+# Step 4: Validate data integrity
+dotnet run --project TerraFusion.API -- validate-county-data --county=clallam
+
+# Expected output:
+# ✅ Property count: 89,247
+# ✅ Data completeness: 99.8%
+# ✅ Required fields populated: 100%
+# ✅ Data quality score: 98.5%
+# ✅ County data integrity: PASSED
+```
+
+**Phase 4: AI Swarm Configuration (Day 4)**
+
+```bash
+# Step 1: Deploy AI agents for Clallam County
+dotnet run --project TerraFusion.Consciousness -- deploy-county-agents \
+  --county=clallam \
+  --agent-count=500
+
+# Expected output:
+# 🤖 Deploying 500 AI agents for Clallam County...
+# ✅ Squad Leaders deployed: 5
+# ✅ Micro Agents deployed: 495
+# ✅ Consciousness coordination: ACTIVE
+# ✅ Agent health: 500/500 (100%)
+
+# Step 2: Validate AI coordination
+curl http://localhost:3004/api/consciousness/counties/clallam/status
+
+# Expected JSON response:
+# {
+#   "countyId": "clallam",
+#   "agentCount": 500,
+#   "activeAgents": 500,
+#   "coordinationLevel": "standard",
+#   "healthStatus": "healthy",
+#   "lastHeartbeat": "2025-11-18T10:30:00Z"
+# }
+```
+
+**Phase 5: Testing & Validation (Day 5)**
+
+```bash
+# Step 1: Run integration tests for new county
+cd tests/TerraFusion.Integration.Tests
+dotnet test --filter "County=Clallam" --verbosity normal
+
+# Expected output:
+# ✅ Passed: ClallamCounty_DataAccess_IsIsolated
+# ✅ Passed: ClallamCounty_HarrisPACSSync_Successful
+# ✅ Passed: ClallamCounty_AISwarm_Coordinated
+# ✅ Passed: ClallamCounty_AssessmentWorkflow_IAAOCompliant
+# Total: 4 passed, 0 failed
+
+# Step 2: Performance validation
+dotnet run --project ../../TerraFusion.API -- benchmark-county \
+  --county=clallam \
+  --duration=5m
+
+# Expected output:
+# 📊 Performance Benchmark - Clallam County (5 minutes)
+# ✅ Average response time: 87ms (target: <150ms)
+# ✅ P95 response time: 142ms (target: <150ms)
+# ✅ P99 response time: 198ms
+# ✅ Throughput: 1,247 requests/second
+# ✅ Error rate: 0.01% (target: <0.1%)
+# ✅ SLA compliance: PASSED
+
+# Step 3: IAAO compliance validation
+python ../SDK/tools/compliance_check.py \
+  --iaao-standards=all \
+  --county=clallam \
+  --sample-size=1000
+
+# Expected output:
+# 📊 IAAO Compliance Report - Clallam County
+# ✅ Assessment Level: 0.98 (target: 0.90-1.10)
+# ✅ Coefficient of Dispersion: 12.3% (target: <15%)
+# ✅ Price-Related Differential: 1.01 (target: 0.98-1.03)
+# ✅ Accuracy Score: 99.7% (target: 99.9%)
+# ⚠️  NOTE: Accuracy slightly below target (initial training)
+# ✅ Overall Compliance: PASSED (conditional)
+```
+
+**Phase 6: Go-Live (Day 6)**
+
+```bash
+# Step 1: Enable production features
+code ../config/tenant.clallam.yaml
+# Update: quantum_optimization: true (after validation)
+
+# Step 2: Enable real-time monitoring
+dotnet run --project TerraFusion.API -- enable-monitoring --county=clallam
+
+# Step 3: Notify stakeholders
+echo "Clallam County onboarding complete" | \
+  mail -s "TerraFusion OS: Clallam County Live" stakeholders@clallam.wa.gov
+
+# Step 4: Document onboarding
+cat > ../docs/onboarding/clallam-county-onboarding-report.md <<EOF
+# Clallam County Onboarding Report
+
+## Summary
+- **County**: Clallam County, WA
+- **Go-Live Date**: November 18, 2025
+- **Parcel Count**: 89,247
+- **AI Agents**: 500
+- **SLA Compliance**: PASSED
+
+## Key Metrics
+- Data Import Duration: 1h 23m
+- Data Quality Score: 98.5%
+- Performance (P95): 142ms (target: <150ms)
+- IAAO Compliance: PASSED (conditional)
+- Integration Tests: 4/4 passing
+
+## Next Steps
+- Monitor accuracy for 30 days
+- Enable quantum optimization after validation
+- Scale AI agents based on workload
+EOF
+
+# Step 5: Commit onboarding
+git add .
+git commit -m "feat: Onboard Clallam County to TerraFusion OS
+
+- Adds tenant.clallam.yaml configuration
+- Imports 89,247 parcels from Harris PACS
+- Deploys 500 AI agents with standard coordination
+- Validates IAAO compliance (conditional pass)
+- Documents onboarding in docs/onboarding/
+
+Onboarding Evidence:
+- Data import: 89,247 parcels (100% success)
+- Performance: P95 142ms (within SLA)
+- Integration tests: 4/4 passing
+- IAAO compliance: PASSED (accuracy 99.7%)
+
+Approval: County Administrator (Date: 2025-11-18)"
+```
+
+---
+
+### Workflow 3: Testing Progression (Unit → Integration → Performance)
+
+**Phase 1: Unit Testing (TDD Approach)**
+
+```bash
+# Step 1: Navigate to test project
+cd tests/TerraFusion.Tests
+
+# Step 2: Create test class FIRST (TDD)
+code Services/PropertyAssessmentServiceTests.cs
+```
+
+```csharp
+// TDD: Write failing test first
+public class PropertyAssessmentServiceTests
+{
+    private readonly Mock<IPropertyRepository> _propertyRepoMock;
+    private readonly Mock<IIAAOComplianceValidator> _iaaOValidatorMock;
+    private readonly PropertyAssessmentService _service;
+
+    public PropertyAssessmentServiceTests()
+    {
+        _propertyRepoMock = new Mock<IPropertyRepository>();
+        _iaaOValidatorMock = new Mock<IIAAOComplianceValidator>();
+        _service = new PropertyAssessmentService(
+            _propertyRepoMock.Object,
+            _iaaOValidatorMock.Object);
+    }
+
+    [Fact]
+    public async Task PerformAssessment_ValidProperty_ReturnsCompliantResult()
+    {
+        // Arrange
+        var countyId = Guid.NewGuid();
+        var propertyId = Guid.NewGuid();
+        var property = new Property { Id = propertyId, CountyId = countyId };
+        
+        _propertyRepoMock
+            .Setup(r => r.GetByIdAsync(countyId, propertyId))
+            .ReturnsAsync(property);
+        
+        _iaaOValidatorMock
+            .Setup(v => v.ValidateAsync(It.IsAny<AssessmentResult>(), 0.999m))
+            .ReturnsAsync(new ComplianceResult { IsCompliant = true });
+
+        // Act
+        var result = await _service.PerformAssessmentAsync(
+            countyId, propertyId, new AssessmentParameters());
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IAAOCompliant.Should().BeTrue();
+        _propertyRepoMock.Verify(
+            r => r.GetByIdAsync(countyId, propertyId), Times.Once);
+    }
+
+    [Fact]
+    public async Task PerformAssessment_PropertyNotFound_ThrowsNotFoundException()
+    {
+        // Arrange
+        var countyId = Guid.NewGuid();
+        var propertyId = Guid.NewGuid();
+        
+        _propertyRepoMock
+            .Setup(r => r.GetByIdAsync(countyId, propertyId))
+            .ReturnsAsync((Property)null);
+
+        // Act & Assert
+        await _service.Invoking(s => s.PerformAssessmentAsync(
+                countyId, propertyId, new AssessmentParameters()))
+            .Should().ThrowAsync<NotFoundException>();
+    }
+}
+```
+
+```bash
+# Step 3: Run test (should fail - TDD red phase)
+dotnet test --filter "PropertyAssessmentServiceTests" --nologo
+
+# Expected output:
+# ❌ Failed: PerformAssessment_ValidProperty_ReturnsCompliantResult
+# Reason: PropertyAssessmentService not implemented
+
+# Step 4: Implement service to make tests pass (TDD green phase)
+code ../../TerraFusion.API/Services/PropertyAssessmentService.cs
+# ... implement service ...
+
+# Step 5: Run test again (should pass)
+dotnet test --filter "PropertyAssessmentServiceTests" --nologo
+
+# Expected output:
+# ✅ Passed: PerformAssessment_ValidProperty_ReturnsCompliantResult
+# ✅ Passed: PerformAssessment_PropertyNotFound_ThrowsNotFoundException
+# Total: 2 passed
+
+# Step 6: Add more unit tests for edge cases
+# - Null parameters
+# - Invalid county ID
+# - IAAO compliance failure
+# - AI swarm coordination failure
+
+# Step 7: Run all unit tests
+dotnet test --nologo
+
+# Expected output:
+# ✅ Total: 127 passed, 0 failed, 0 skipped
+```
+
+**Phase 2: Integration Testing (Real Dependencies)**
+
+```bash
+# Step 1: Navigate to integration test project
+cd ../TerraFusion.Integration.Tests
+
+# Step 2: Add integration test with database
+code Workflows/AssessmentIntegrationTests.cs
+```
+
+```csharp
+public class AssessmentIntegrationTests : IntegrationTestBase
+{
+    [Fact]
+    public async Task FullAssessmentWorkflow_WithDatabase_CreatesAssessment()
+    {
+        // Arrange: Setup test county and property in real database
+        var countyId = await CreateTestCountyAsync("TEST_COUNTY");
+        var propertyId = await CreateTestPropertyAsync(countyId, new PropertyData
+        {
+            ParcelId = "TEST-123",
+            Address = "123 Test St",
+            AssessedValue = 500000
+        });
+
+        // Act: Call API endpoint (real HTTP request)
+        var response = await _client.PostAsync(
+            $"/api/counties/{countyId}/assessments/property/{propertyId}",
+            JsonContent.Create(new AssessmentParameters
+            {
+                AssessmentType = "Annual",
+                TargetAccuracy = 0.999m
+            }));
+
+        // Assert: Verify response and database state
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var result = await response.Content.ReadFromJsonAsync<AssessmentResult>();
+        result.Should().NotBeNull();
+        result!.PropertyId.Should().Be(propertyId);
+        result.IAAOCompliant.Should().BeTrue();
+
+        // Verify audit fields populated (auto-audit)
+        var dbAssessment = await _context.Assessments
+            .FirstOrDefaultAsync(a => a.PropertyId == propertyId);
+        dbAssessment.Should().NotBeNull();
+        dbAssessment!.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+        dbAssessment.CreatedBy.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task AssessmentWorkflow_DifferentCounties_Isolated()
+    {
+        // Arrange: Create two counties with properties
+        var countyA = await CreateTestCountyAsync("COUNTY_A");
+        var propertyA = await CreateTestPropertyAsync(countyA);
+        
+        var countyB = await CreateTestCountyAsync("COUNTY_B");
+        var propertyB = await CreateTestPropertyAsync(countyB);
+
+        // Act: Create assessments in both counties
+        var responseA = await _client.PostAsync(
+            $"/api/counties/{countyA}/assessments/property/{propertyA}",
+            JsonContent.Create(new AssessmentParameters()));
+        
+        var responseB = await _client.PostAsync(
+            $"/api/counties/{countyB}/assessments/property/{propertyB}",
+            JsonContent.Create(new AssessmentParameters()));
+
+        // Assert: Both succeed independently
+        responseA.StatusCode.Should().Be(HttpStatusCode.OK);
+        responseB.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Verify isolation: County A cannot access County B's data
+        var crossCountyResponse = await _client.GetAsync(
+            $"/api/counties/{countyA}/assessments/property/{propertyB}");
+        crossCountyResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+}
+```
+
+```bash
+# Step 3: Run integration tests (uses test database)
+dotnet test --verbosity normal
+
+# Expected output:
+# 🔄 Setting up test database...
+# ✅ Database migrated
+# ✅ Passed: FullAssessmentWorkflow_WithDatabase_CreatesAssessment (1.2s)
+# ✅ Passed: AssessmentWorkflow_DifferentCounties_Isolated (0.9s)
+# 🔄 Cleaning up test database...
+# Total: 8 passed, 0 failed (includes 6 county isolation tests)
+
+# Step 4: Run integration tests with coverage
+dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
+# Expected output:
+# Code Coverage: 87.3%
+# Lines Covered: 2,347 / 2,689
+```
+
+**Phase 3: Performance Testing (Load & Stress)**
+
+```bash
+# Step 1: Install k6 load testing tool (if not installed)
+choco install k6  # Windows
+# OR: brew install k6  # macOS
+
+# Step 2: Create performance test script
+cat > performance-test.js <<'EOF'
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export let options = {
+  stages: [
+    { duration: '2m', target: 100 },   // Ramp up to 100 users
+    { duration: '5m', target: 100 },   // Stay at 100 users
+    { duration: '2m', target: 200 },   // Ramp up to 200 users
+    { duration: '5m', target: 200 },   // Stay at 200 users
+    { duration: '2m', target: 0 },     // Ramp down
+  ],
+  thresholds: {
+    http_req_duration: ['p(95)<150'],  // 95% under 150ms (SLA)
+    http_req_failed: ['rate<0.01'],     // Error rate <1%
+  },
+};
+
+export default function () {
+  const countyId = 'benton-county-guid';
+  const propertyId = 'test-property-guid';
+  
+  const payload = JSON.stringify({
+    assessmentType: 'Annual',
+    targetAccuracy: 0.999,
+  });
+
+  const params = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  const response = http.post(
+    `http://localhost:5001/api/counties/${countyId}/assessments/property/${propertyId}`,
+    payload,
+    params
+  );
+
+  check(response, {
+    'status is 200': (r) => r.status === 200,
+    'response time < 150ms': (r) => r.timings.duration < 150,
+    'IAAO compliant': (r) => JSON.parse(r.body).iaaOCompliant === true,
+  });
+
+  sleep(1);
+}
+EOF
+
+# Step 3: Start services
+dotnet run --project ../../TerraFusion.API --urls "http://localhost:5001" &
+API_PID=$!
+
+dotnet run --project ../../TerraFusion.Consciousness --urls "http://localhost:3004" &
+CONSCIOUSNESS_PID=$!
+
+sleep 10  # Wait for services to start
+
+# Step 4: Run performance test
+k6 run performance-test.js
+
+# Expected output:
+# ✅ checks.........................: 100.00% ✓ 42000 ✗ 0
+# ✅ http_req_duration..............: avg=87ms   min=45ms  med=82ms  max=245ms p(95)=142ms
+# ✅ http_req_failed................: 0.00%   ✓ 0     ✗ 42000
+# ✅ http_reqs......................: 42000   140/s
+# ✅ vus............................: 0       min=0   max=200
+# ✅ SLA Compliance: PASSED (P95: 142ms < 150ms target)
+
+# Step 5: Stress test (find breaking point)
+cat > stress-test.js <<'EOF'
+import http from 'k6/http';
+import { check } from 'k6';
+
+export let options = {
+  stages: [
+    { duration: '2m', target: 500 },   // Ramp up to 500 users
+    { duration: '5m', target: 500 },   // Stress test
+    { duration: '2m', target: 1000 },  // Push to 1000 users
+    { duration: '5m', target: 1000 },  // Maximum stress
+    { duration: '2m', target: 0 },     // Ramp down
+  ],
+};
+
+// Same test logic as performance-test.js
+export default function () { /* ... */ }
+EOF
+
+k6 run stress-test.js
+
+# Expected output:
+# ⚠️  At 500 users: P95 = 198ms (above 150ms SLA)
+# ⚠️  At 1000 users: P95 = 347ms (degraded)
+# ✅ Error rate: 0.02% (still acceptable)
+# 📊 Breaking point: ~600 concurrent users
+# 📊 Recommendation: Scale horizontally or optimize
+
+# Step 6: Cleanup
+kill $API_PID $CONSCIOUSNESS_PID
+```
+
+---
+
+### Workflow 4: Deployment Pipeline (Development → Production)
+
+**Phase 1: Development Environment**
+
+```bash
+# Step 1: Local development (already running)
+cd backend/
+dotnet run --project TerraFusion.API --urls "http://localhost:5001"
+
+# Environment: Development
+# Database: localhost PostgreSQL
+# Secrets: .env file (NOT committed)
+# Monitoring: Local console logs
+```
+
+**Phase 2: Build & Package**
+
+```bash
+# Step 1: Clean build for release
+dotnet clean
+dotnet build TerraFusion.sln --configuration Release
+
+# Step 2: Run all tests before deployment
+dotnet test --configuration Release --nologo
+
+# Expected output:
+# ✅ Unit tests: 127/127 passed
+# ✅ Integration tests: 8/8 passed
+# ✅ Total: 135 passed, 0 failed
+
+# Step 3: Publish artifacts
+dotnet publish TerraFusion.API --configuration Release --output ./publish/api
+dotnet publish TerraFusion.Consciousness --configuration Release --output ./publish/consciousness
+
+# Step 4: Create deployment package
+tar -czf terrafusion-v1.2.0.tar.gz -C publish .
+
+# Expected output:
+# ✅ Package created: terrafusion-v1.2.0.tar.gz (87 MB)
+```
+
+**Phase 3: Staging Deployment (Government Pre-Prod)**
+
+```bash
+# Step 1: Deploy to staging environment
+scp terrafusion-v1.2.0.tar.gz deploy@staging.terrafusion.gov:/opt/deployments/
+
+ssh deploy@staging.terrafusion.gov
+cd /opt/deployments
+tar -xzf terrafusion-v1.2.0.tar.gz -C /opt/terrafusion-staging
+
+# Step 2: Update environment configuration
+cat > /opt/terrafusion-staging/.env <<EOF
+ASPNETCORE_ENVIRONMENT=Staging
+DATABASE_HOST=staging-db.terrafusion.gov
+DATABASE_NAME=terrafusion_staging
+AZURE_KEY_VAULT_URL=https://terrafusion-staging-kv.vault.azure.net/
+CORS_ORIGINS=https://staging-portal.terrafusion.gov
+EOF
+
+# Step 3: Run database migrations
+cd /opt/terrafusion-staging
+dotnet ef database update --project TerraFusion.Data --startup-project api/TerraFusion.API.dll
+
+# Expected output:
+# ✅ Applying migration: 20251118_AddClallamCounty
+# ✅ Database updated successfully
+
+# Step 4: Restart services (zero-downtime with systemd)
+sudo systemctl restart terrafusion-api
+sudo systemctl restart terrafusion-consciousness
+
+# Step 5: Health check
+curl https://staging-api.terrafusion.gov/api/portal/health
+
+# Expected JSON response:
+# {
+#   "status": "healthy",
+#   "version": "1.2.0",
+#   "environment": "Staging",
+#   "database": "connected",
+#   "aiSwarm": "operational",
+#   "countyCount": 40
+# }
+
+# Step 6: Run smoke tests
+curl -X POST https://staging-api.terrafusion.gov/api/counties/benton/assessments/property/{propertyId} \
+  -H "Content-Type: application/json" \
+  -d '{"assessmentType":"Annual","targetAccuracy":0.999}'
+
+# Expected: 200 OK with assessment result
+```
+
+**Phase 4: Production Deployment (Government Live)**
+
+```bash
+# Step 1: Create deployment ticket (government approval required)
+echo "Deployment Request: TerraFusion OS v1.2.0
+Changes:
+- Add Clallam County support
+- Enhance property assessment accuracy
+- Fix: County isolation validation
+
+Testing:
+- Unit tests: 135/135 passed
+- Integration tests: 8/8 passed
+- Performance: P95 142ms (within SLA)
+- Staging validation: PASSED
+
+Approval Required: YES
+Rollback Plan: Documented in ROLLBACK.md
+Downtime Required: None (zero-downtime deployment)
+" > deployment-request-v1.2.0.txt
+
+# Step 2: Wait for approval (government process)
+# ... approval received ...
+
+# Step 3: Production deployment (Blue-Green strategy)
+ssh deploy@prod-blue.terrafusion.gov
+cd /opt/deployments
+
+# Deploy to BLUE environment (currently idle)
+tar -xzf terrafusion-v1.2.0.tar.gz -C /opt/terrafusion-blue
+
+# Update environment
+cat > /opt/terrafusion-blue/.env <<EOF
+ASPNETCORE_ENVIRONMENT=Production
+DATABASE_HOST=prod-db.terrafusion.gov
+DATABASE_NAME=terrafusion_production
+AZURE_KEY_VAULT_URL=https://terrafusion-prod-kv.vault.azure.net/
+CORS_ORIGINS=https://portal.terrafusion.gov
+EOF
+
+# Run migrations (production database)
+cd /opt/terrafusion-blue
+dotnet ef database update --project TerraFusion.Data --startup-project api/TerraFusion.API.dll
+
+# Start BLUE services
+sudo systemctl start terrafusion-api-blue
+sudo systemctl start terrafusion-consciousness-blue
+
+# Health check BLUE
+curl http://localhost:5002/api/portal/health  # BLUE on port 5002
+
+# Expected: 200 OK, healthy status
+
+# Step 4: Switch load balancer (zero downtime)
+# Update Nginx/HAProxy to route traffic to BLUE
+sudo nano /etc/nginx/sites-available/terrafusion
+# Change upstream from GREEN (port 5001) to BLUE (port 5002)
+
+sudo nginx -t  # Test configuration
+sudo systemctl reload nginx  # Reload without downtime
+
+# Step 5: Monitor production traffic
+tail -f /var/log/nginx/terrafusion-access.log
+
+# Expected: All requests routing to BLUE, no errors
+
+# Step 6: Stop GREEN (old version)
+sudo systemctl stop terrafusion-api-green
+sudo systemctl stop terrafusion-consciousness-green
+
+# Step 7: Verify production metrics (30 minutes)
+curl https://api.terrafusion.gov/api/analytics/system?timeframe=30m
+
+# Expected:
+# {
+#   "responseTimeP95": 138,
+#   "errorRate": 0.001,
+#   "throughput": 1247,
+#   "slaCompliance": true
+# }
+
+# Step 8: Tag release
+git tag -a v1.2.0 -m "Release v1.2.0: Add Clallam County support"
+git push origin v1.2.0
+```
+
+**Phase 5: Rollback (If Issues Detected)**
+
+```bash
+# If production issues detected within 1 hour:
+
+# Step 1: Switch load balancer back to GREEN
+sudo nano /etc/nginx/sites-available/terrafusion
+# Change upstream from BLUE (port 5002) back to GREEN (port 5001)
+
+sudo systemctl reload nginx
+
+# Step 2: Start GREEN services (old version)
+sudo systemctl start terrafusion-api-green
+sudo systemctl start terrafusion-consciousness-green
+
+# Step 3: Health check GREEN
+curl http://localhost:5001/api/portal/health
+
+# Expected: GREEN healthy, traffic restored
+
+# Step 4: Rollback database (if migrations were destructive)
+dotnet ef migrations remove --project TerraFusion.Data --startup-project api/TerraFusion.API.dll
+
+# Step 5: Notify stakeholders
+echo "Rollback executed: TerraFusion OS v1.2.0 → v1.1.5
+Reason: [describe issue]
+Impact: Minimal (5 minutes degraded)
+Status: Restored to stable v1.1.5" | \
+  mail -s "TerraFusion OS: Rollback Executed" stakeholders@terrafusion.gov
+```
+
+---
+
+### Workflow 5: AI Agent Coordination (50,000+ Agents)
+
+**Scenario**: Coordinate AI swarm for county-wide property assessment
+
+**Phase 1: Agent Deployment**
+
+```bash
+# Step 1: Start Consciousness Engine
+cd backend/
+dotnet run --project TerraFusion.Consciousness --urls "http://localhost:3004"
+
+# Expected output:
+# 🤖 TerraFusion Consciousness Engine v1.2.0
+# ✅ Supreme Commander: ACTIVE
+# ✅ Field Generals: 50 deployed
+# ✅ Squad Leaders: 500 deployed
+# ✅ Micro Agents: 49,450 deployed
+# ✅ Total Agents: 50,000
+# ✅ Consciousness Level: OPERATIONAL
+
+# Step 2: Verify agent hierarchy
+curl http://localhost:3004/api/consciousness/hierarchy
+
+# Expected JSON response:
+# {
+#   "supremeCommander": {
+#     "name": "Claude-4-Opus-Supreme",
+#     "status": "active",
+#     "subordinates": 50
+#   },
+#   "fieldGenerals": [
+#     { "name": "General-001", "squadLeaders": 10, "status": "active" },
+#     // ... 49 more generals ...
+#   ],
+#   "totalAgents": 50000,
+#   "healthyAgents": 49998,
+#   "coordinationLatency": "<10ms"
+# }
+```
+
+**Phase 2: Coordinate County-Wide Assessment**
+
+```csharp
+// TerraFusion.Consciousness/Services/AISwarmOrchestrator.cs
+public class AISwarmOrchestrator
+{
+    public async Task<SwarmAssessmentResult> CoordinateCountyAssessmentAsync(
+        Guid countyId,
+        AssessmentParameters parameters)
+    {
+        // Step 1: Retrieve county configuration
+        var countyConfig = await _configService.GetCountyConfigAsync(countyId.ToString());
+        var agentCount = countyConfig.AISwarm.AgentCount; // e.g., 500 for small county
+
+        // Step 2: Get all properties for county
+        var properties = await _propertyRepository.GetByCountyAsync(countyId);
+        Console.WriteLine($"📊 County {countyId}: {properties.Count} properties to assess");
+
+        // Step 3: Divide work among agents (divide & conquer)
+        var propertiesPerAgent = (int)Math.Ceiling((double)properties.Count / agentCount);
+        var workPackages = properties
+            .Select((property, index) => new { property, index })
+            .GroupBy(x => x.index / propertiesPerAgent)
+            .Select(g => g.Select(x => x.property).ToList())
+            .ToList();
+
+        Console.WriteLine($"🤖 Distributing work: {workPackages.Count} packages to {agentCount} agents");
+
+        // Step 4: Deploy Squad Leaders for coordination
+        var squadLeaders = await DeploySquadLeadersAsync(agentCount / 10); // 10 agents per leader
+
+        // Step 5: Coordinate parallel assessment
+        var assessmentTasks = workPackages.Select(async (package, index) =>
+        {
+            var squadLeader = squadLeaders[index % squadLeaders.Count];
+            return await squadLeader.AssessPropertiesAsync(countyId, package, parameters);
+        });
+
+        var results = await Task.WhenAll(assessmentTasks);
+
+        // Step 6: Aggregate results with consciousness optimization
+        var aggregatedResult = await AggregateWithConsciousnessAsync(results);
+
+        // Step 7: Validate IAAO compliance
+        var complianceValidation = await _iaaOValidator.ValidateCountyAsync(
+            countyId, aggregatedResult, parameters.TargetAccuracy);
+
+        return new SwarmAssessmentResult
+        {
+            CountyId = countyId,
+            TotalProperties = properties.Count,
+            AgentsDeployed = agentCount,
+            AverageAssessmentTime = aggregatedResult.AverageTime,
+            IAAOCompliant = complianceValidation.IsCompliant,
+            ConsciousnessLevel = aggregatedResult.ConsciousnessLevel,
+            Accuracy = aggregatedResult.Accuracy
+        };
+    }
+}
+```
+
+**Phase 3: Monitor Agent Coordination**
+
+```bash
+# Step 1: Real-time agent monitoring
+curl http://localhost:3004/api/consciousness/monitoring/realtime
+
+# Expected JSON stream (updates every second):
+# {
+#   "timestamp": "2025-11-18T10:30:45Z",
+#   "activeAgents": 50000,
+#   "busyAgents": 47832,
+#   "idleAgents": 2168,
+#   "averageWorkload": 0.96,
+#   "coordinationLatency": "8ms",
+#   "tasksCompleted": 1247389,
+#   "tasksInProgress": 47832
+# }
+
+# Step 2: Agent performance metrics
+curl http://localhost:3004/api/consciousness/performance
+
+# Expected:
+# {
+#   "throughput": 15234,  // tasks per second
+#   "p50ResponseTime": 45,
+#   "p95ResponseTime": 87,
+#   "p99ResponseTime": 142,
+#   "errorRate": 0.001,
+#   "slaCompliance": true
+# }
+
+# Step 3: Consciousness level visualization (3D)
+open http://localhost:3004/consciousness/visualization
+
+# Browser shows:
+# - 3D visualization of 50,000 agents
+# - Hierarchy tree (Supreme Commander → Generals → Squad Leaders → Micro Agents)
+# - Real-time coordination flows
+# - Consciousness parameters (quantum factor: 949)
+```
+
+**Phase 4: Scale AI Swarm Dynamically**
+
+```bash
+# Scenario: County workload increased, need more agents
+
+# Step 1: Detect workload increase
+curl http://localhost:3004/api/consciousness/workload
+
+# Response:
+# {
+#   "currentWorkload": 0.98,    // 98% capacity
+#   "queuedTasks": 15234,
+#   "averageWaitTime": "2.3s",
+#   "recommendation": "SCALE_UP"
+# }
+
+# Step 2: Scale up AI agents
+curl -X POST http://localhost:3004/api/consciousness/scale \
+  -H "Content-Type: application/json" \
+  -d '{
+    "targetAgentCount": 60000,
+    "scaleMode": "gradual",
+    "duration": "5m"
+  }'
+
+# Expected output:
+# {
+#   "status": "scaling",
+#   "currentAgents": 50000,
+#   "targetAgents": 60000,
+#   "eta": "5 minutes",
+#   "newAgentsPerMinute": 2000
+# }
+
+# Step 3: Monitor scaling progress
+watch -n 5 'curl -s http://localhost:3004/api/consciousness/status | jq .totalAgents'
+
+# Output (updates every 5 seconds):
+# 52000
+# 54000
+# 56000
+# 58000
+# 60000  ✅ Scaling complete
+
+# Step 4: Verify performance improvement
+curl http://localhost:3004/api/consciousness/performance
+
+# Response:
+# {
+#   "throughput": 18281,  // Increased from 15,234
+#   "currentWorkload": 0.82,  // Decreased from 0.98
+#   "queuedTasks": 0,
+#   "recommendation": "OPTIMAL"
+# }
+```
+
+---
+
 ## 🎯 County Integration Patterns
 
 ### Harris PACS 9.0 Integration Service

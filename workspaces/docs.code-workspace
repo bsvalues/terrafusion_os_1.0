@@ -1,0 +1,52 @@
+{
+  "folders": [
+    { "path": "../docs", "name": "📚 TerraFusion Documentation" }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#0A0E1A",
+      "titleBar.activeForeground": "#00FFFF"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": true
+    },
+    "markdownlint.config": {
+      "default": true,
+      "MD013": false
+    },
+    "terrafusion.role": "documentation",
+    "terrafusion.responsibility": "standards_and_guides"
+  },
+  "extensions": {
+    "recommendations": [
+      "davidanson.vscode-markdownlint",
+      "yzhang.markdown-all-in-one",
+      "bierner.markdown-mermaid",
+      "streetsidesoftware.code-spell-checker",
+      "jebbs.plantuml",
+      "andrejunges.handlebars",
+      "eamodio.gitlens"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Docs: Lint Markdown",
+        "type": "shell",
+        "command": "npx --yes markdownlint \"**/*.md\" || true",
+        "options": { "cwd": "${workspaceFolder}/../docs" },
+        "group": { "kind": "test", "isDefault": true }
+      },
+      {
+        "label": "Docs: Spell Check (quick)",
+        "type": "shell",
+        "command": "echo 'Use Code Spell Checker extension for interactive checks'",
+        "options": { "cwd": "${workspaceFolder}/../docs" },
+        "group": "none"
+      }
+    ]
+  },
+  "launch": { "version": "0.2.0", "configurations": [] }
+}

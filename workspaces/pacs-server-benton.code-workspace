@@ -1,1 +1,51 @@
-{  "folders": [   {    "path": "JCHARRISPACS"   },   {    "path": "E:/Database"   }  ],  "settings": {   "powershell.cwd": "JCHARRISPACS"  } }
+{
+  "folders": [
+    {
+      "path": "JCHARRISPACS"
+    },
+    {
+      "path": "../database",
+      "name": "database (local dev)"
+    }
+  ],
+  "settings": {
+    "powershell.cwd": "JCHARRISPACS"
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Pacs Server Benton",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Pacs Server Benton",
+        "type": "shell",
+        "command": "echo 'Build task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Pacs Server Benton",
+        "type": "shell",
+        "command": "echo 'Test task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

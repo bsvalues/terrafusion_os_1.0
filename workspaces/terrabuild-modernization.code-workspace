@@ -1,1 +1,141 @@
-{   "folders": [     {       "path": "../terrabuild-modernization",       "name": "🏛️ TerraBuild BCBS (Source)"     },     {       "path": "../terrabuild-modernization/client",       "name": "⚛️ React Frontend"     },     {       "path": "../terrabuild-modernization/server",       "name": "🔧 Backend API"     },     {       "path": "../terrabuild-modernization/shared",       "name": "📚 Shared Components"     },     {       "path": "../terrabuild-modernization/terraform",       "name": "🏗️ Infrastructure (Terraform)"     },     {       "path": "../terrabuild-modernization/terrafusion-devops-kit",       "name": "🚀 DevOps Kit"     },     {       "path": "../terrabuild-modernization/docs",       "name": "📖 Documentation"     },     {       "path": "../terrabuild-modernization/tests",       "name": "🧪 Testing Suite"     },     {       "path": "../backend",       "name": "🔧 TerraFusion Backend (Integration Target)"     },     {       "path": "../os-platform/ai-systems",       "name": "🤖 AI Agent Swarm (Target Architecture)"     },     {       "path": "../marketplace",       "name": "🏪 TerraFusion Marketplace (Publishing Target)"     },     {       "path": "../config",       "name": "⚙️ TerraFusion Config"     }   ],   "settings": {     "files.exclude": {       "**/node_modules": true,       "**/dist": true,       "**/.git": true,       "**/coverage": true,       "**/.next": true,       "**/build": true,       "**/__pycache__": true,       "**/*.pyc": true     },     "search.exclude": {       "**/node_modules": true,       "**/dist": true,       "**/.git": true,       "**/coverage": true,       "**/.next": true,       "**/build": true,       "**/__pycache__": true     },     "editor.formatOnSave": true,     "editor.codeActionsOnSave": {       "source.fixAll": "explicit",       "source.organizeImports": "explicit"     },     "typescript.tsdk": "../terrabuild-modernization/node_modules/typescript/lib",     "eslint.workingDirectories": [       "./terrabuild-modernization/client",       "./terrabuild-modernization/server"     ],     "python.defaultInterpreterPath": "../terrabuild-modernization/.venv/bin/python",     "python.linting.enabled": true,     "python.linting.pylintEnabled": true,     "terrafusion.modernization": {       "sourceApplication": "TerraBuild BCBS",       "targetFramework": "TerraFusion OS 1.0",       "modernizationPhase": "Phase Beta - Legacy Transformation",       "aiEnhancementLevel": "1234x Quantum Optimization",       "governmentCompliance": "FISMA-HIGH-PLUS",       "deploymentTarget": "TerraFusion Marketplace"     },     "terrafusion.aiIntegration": {       "sourceAgents": "Master Control Program (MCP)",       "targetAgents": "1,008 Agent Quantum Swarm",       "coordinationLevel": "Autonomous Transcendent",       "optimizationFactor": "999x Improvement"     },     "terrafusion.development": {       "projectType": "Legacy Modernization - STANDALONE WORKSPACE",       "originalRepo": "https://github.com/bsvalues/TerraBuild",       "modernizationFramework": "Phase Beta Engine",       "businessValue": "2,847% ROI Government Transformation",       "workspaceScope": "TerraBuild Development Only - NOT integrated with main platform"     }   },   "extensions": {     "recommendations": [       "dbaeumer.vscode-eslint",       "esbenp.prettier-vscode",       "ms-vscode.vscode-typescript-next",       "bradlc.vscode-tailwindcss",       "ms-python.python",       "ms-python.pylint",       "hashicorp.terraform",       "ms-vscode.docker",       "github.copilot",       "github.copilot-chat",       "streetsidesoftware.code-spell-checker",       "usernamehw.errorlens",       "eamodio.gitlens",       "ms-vscode.vscode-json",       "redhat.vscode-yaml",       "ms-vscode.test-adapter-converter"     ]   },   "launch": {     "version": "0.2.0",     "configurations": [       {         "name": "🏛️ Start TerraBuild Full Stack (Backend + Frontend)",         "type": "node",         "request": "launch",         "cwd": "${workspaceFolder}/terrabuild-modernization",         "runtimeExecutable": "npm",         "runtimeArgs": ["run", "dev"],         "console": "integratedTerminal",         "env": {           "NODE_ENV": "development"         }       },       {         "name": "⚛️ Start Frontend Only (Vite Dev Server)",         "type": "node",         "request": "launch",         "cwd": "${workspaceFolder}/terrabuild-modernization",         "runtimeExecutable": "npm",         "runtimeArgs": ["run", "dev:client"],         "console": "integratedTerminal"       },       {         "name": "🔧 Start Backend Only (Express Server)",         "type": "node",         "request": "launch",         "cwd": "${workspaceFolder}/terrabuild-modernization",         "runtimeExecutable": "npm",         "runtimeArgs": ["run", "dev:server"],         "console": "integratedTerminal"       }     ],     "compounds": [       {         "name": "🏛️ Full TerraBuild Development Stack",         "configurations": [           "⚛️ Start Frontend Only (Vite Dev Server)",           "🔧 Start Backend Only (Express Server)"         ]       }     ]   },   "tasks": {     "version": "2.0.0",     "tasks": [       {         "label": "📦 Install TerraBuild Dependencies",         "type": "shell",         "command": "npm",         "args": ["install"],         "options": {           "cwd": "${workspaceFolder}/terrabuild-modernization"         },         "group": "build"       },       {         "label": "🏗️ Build TerraBuild for Production",         "type": "shell",         "command": "npm",         "args": ["run", "build"],         "options": {           "cwd": "${workspaceFolder}/terrabuild-modernization"         },         "group": {           "kind": "build",           "isDefault": true         },         "problemMatcher": ["$tsc"]       },       {         "label": "🧪 Run TerraBuild Test Suite",         "type": "shell",         "command": "npm",         "args": ["test"],         "options": {           "cwd": "${workspaceFolder}/terrabuild-modernization"         },         "group": {           "kind": "test",           "isDefault": true         }       }     ]   } } 
+{
+  "folders": [
+    { "path": "../terrabuild-modernization", "name": "🏗️ TerraBuild Modernization" },
+    { "path": "../terrabuild-modernization/client", "name": "📱 TerraBuild Client" },
+    { "path": "../terrabuild-modernization/server", "name": "⚙️ TerraBuild Server" },
+    { "path": "../property-workbench", "name": "🏠 Property Workbench" },
+    { "path": "../config", "name": "⚙️ Configuration" },
+    { "path": "../tests", "name": "🧪 Property Tests" }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#00B981",
+      "titleBar.activeForeground": "#FFFFFF"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/backend": true,
+      "**/frontend": true,
+      "**/marketplace": true
+    },
+    "search.exclude": {
+      "**/backend": true,
+      "**/frontend": true,
+      "**/node_modules": true
+    },
+    "terrafusion.role": "property_assessment",
+    "terrafusion.responsibility": "terrabuild_modernization"
+  },
+  "extensions": {
+    "recommendations": [
+      // Frontend & Client
+      "ms-vscode.vscode-typescript-next",
+      "bradlc.vscode-tailwindcss",
+      "wix.vscode-import-cost",
+
+      // Testing
+      "ms-playwright.playwright",
+      "vitest.explorer",
+
+      // .NET & Server
+      "ms-dotnettools.csharp",
+      "ms-dotnettools.csdevkit",
+
+      // GIS & PostGIS
+      "esri.arcgis-for-vscode",
+      "pajkeki.vscode-postgis",
+
+      // DevOps
+      "ms-azuretools.vscode-docker",
+      "ms-kubernetes-tools.vscode-kubernetes-tools",
+
+      // Docs & Diagrams
+      "yzhang.markdown-all-in-one",
+      "bierner.markdown-mermaid",
+
+      // Productivity & Git
+      "eamodio.gitlens",
+      "gruntfuggly.todo-tree",
+
+      // AI
+      "github.copilot",
+      "github.copilot-chat"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🔧 Build: TerraBuild Client",
+        "type": "shell",
+        "command": "npm run build",
+        "options": { "cwd": "${workspaceFolder}/../terrabuild-modernization/client" },
+        "group": { "kind": "build", "isDefault": true }
+      },
+      {
+        "label": "🔧 Build: TerraBuild Server",
+        "type": "shell",
+        "command": "dotnet build",
+        "options": { "cwd": "${workspaceFolder}/../terrabuild-modernization/server" },
+        "group": "build"
+      },
+      {
+        "label": "🚀 Run: TerraBuild Server",
+        "type": "shell",
+        "command": "dotnet run --project TerraBuild.Server --urls http://localhost:5010",
+        "options": { "cwd": "${workspaceFolder}/../terrabuild-modernization/server" },
+        "isBackground": true
+      },
+      {
+        "label": "📦 Migrate: Database",
+        "type": "shell",
+        "command": "dotnet ef database update",
+        "options": { "cwd": "${workspaceFolder}/../terrabuild-modernization/server" }
+      },
+      {
+        "label": "🧪 Test: Property Tests",
+        "type": "shell",
+        "command": "dotnet test ../tests --nologo",
+        "options": { "cwd": "${workspaceFolder}" },
+        "group": "test"
+      },
+      {
+        "label": "📚 Storybook: Start",
+        "type": "shell",
+        "command": "npm run storybook",
+        "options": { "cwd": "${workspaceFolder}/../terrabuild-modernization/client" },
+        "isBackground": true
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug: TerraBuild Client (Vite)",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "dev"],
+        "cwd": "${workspaceFolder}/../terrabuild-modernization/client",
+        "console": "integratedTerminal",
+        "preLaunchTask": "📚 Storybook: Start"
+      },
+      {
+        "name": "Debug: TerraBuild Server (CoreCLR)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "🔧 Build: TerraBuild Server",
+        "program": "${workspaceFolder}/../terrabuild-modernization/server/bin/Debug/net8.0/TerraBuild.Server.dll",
+        "cwd": "${workspaceFolder}/../terrabuild-modernization/server",
+        "env": { "ASPNETCORE_ENVIRONMENT": "Development", "ASPNETCORE_URLS": "http://localhost:5010" }
+      },
+      {
+        "name": "Attach: .NET Process",
+        "type": "coreclr",
+        "request": "attach",
+        "processId": "${command:pickProcess}"
+      }
+    ]
+  }
+}

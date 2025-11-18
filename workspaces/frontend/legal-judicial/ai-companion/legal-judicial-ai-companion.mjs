@@ -5,7 +5,6 @@
  */
 
 import fs from 'fs';
-import path from 'path';
 
 class LegalJudicialAICompanion {
     constructor() {
@@ -32,7 +31,7 @@ class LegalJudicialAICompanion {
 
     async loadDomainKnowledge() {
         console.log('📚 Loading legal-judicial Domain Knowledge...');
-        
+
         const domainKnowledge = {
             primary_functions: this.getPrimaryFunctions(),
             data_handling_procedures: this.getDataHandlingProcedures(),
@@ -56,7 +55,7 @@ class LegalJudicialAICompanion {
             ],
             'regulatory_compliance': [
                 'violation_detection',
-                'compliance_monitoring', 
+                'compliance_monitoring',
                 'legal_document_processing',
                 'enforcement_automation'
             ],
@@ -85,7 +84,7 @@ class LegalJudicialAICompanion {
 
     getDataHandlingProcedures() {
         const procedures = [];
-        
+
         this.dataTypes.forEach(dataType => {
             procedures.push({
                 data_type: dataType,
@@ -101,7 +100,7 @@ class LegalJudicialAICompanion {
 
     getComplianceRequirements() {
         const requirements = [];
-        
+
         this.protectionPriorities.forEach(priority => {
             requirements.push({
                 requirement: priority,
@@ -117,7 +116,7 @@ class LegalJudicialAICompanion {
     getOptimizationStrategies() {
         return [
             `${this.specialization}_performance_tuning`,
-            `${this.domain}_workflow_optimization`, 
+            `${this.domain}_workflow_optimization`,
             `${this.workspaceName}_efficiency_enhancement`,
             'user_experience_improvement'
         ];
@@ -125,7 +124,7 @@ class LegalJudicialAICompanion {
 
     async activateProtectionSystems() {
         console.log('🛡️ Activating legal-judicial Protection Systems...');
-        
+
         console.log('   🔒 Security Measures:');
         this.protectionPriorities.forEach(priority => {
             console.log(`      - ${priority} monitoring active`);
@@ -139,7 +138,7 @@ class LegalJudicialAICompanion {
 
     async startWorkspaceMonitoring() {
         console.log('📊 Starting legal-judicial Monitoring...');
-        
+
         const monitoringConfig = {
             workspace: this.workspaceName,
             monitoring_active: true,
@@ -153,7 +152,7 @@ class LegalJudicialAICompanion {
 
         const configPath = '.terrafusion/legal-judicial-companion-config.json';
         fs.writeFileSync(configPath, JSON.stringify(monitoringConfig, null, 2));
-        
+
         console.log('   ✅ Monitoring systems active');
         console.log(`   📄 Config saved: ${configPath}`);
         console.log('');
@@ -162,10 +161,10 @@ class LegalJudicialAICompanion {
 
     async executeCommand(command, context = {}) {
         console.log(`🎯 Executing ${command} for ${this.workspaceName}`);
-        
+
         // Command execution logic would go here
         // This is where workspace-specific AI operations would be handled
-        
+
         return {
             workspace: this.workspaceName,
             command: command,

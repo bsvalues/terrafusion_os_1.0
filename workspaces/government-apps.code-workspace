@@ -1,1 +1,74 @@
-{   "settings": {     "workbench.iconTheme": "terrafusion-icons",     "editor.codeActionsOnSave": {       "source.fixAll": "explicit"     },     "editor.formatOnSave": true,     "terrafusion.focus": "Full Government Applications",     "terrafusion.team": "Government Applications Team",     "workbench.colorTheme": "TerraFusion Dark"   },   "folders": [     {       "path": "../../government-core",       "name": "government-core"     },     {       "path": "../../government-edition",       "name": "government-edition"     },     {       "path": "../../property-workbench",       "name": "property-workbench"     }   ],   "extensions": {     "recommendations": [       "ms-vscode.vscode-typescript-next",       "bradlc.vscode-tailwindcss",       "ms-dotnettools.csharp",       "ms-python.python",       "ms-vscode.powershell",       "GitHub.copilot",       "terrafusion.ai-agent-tools"     ]   } } 
+{
+  "settings": {
+    "workbench.iconTheme": "terrafusion-icons",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    },
+    "editor.formatOnSave": true,
+    "terrafusion.focus": "Full Government Applications",
+    "terrafusion.team": "Government Applications Team",
+    "workbench.colorTheme": "TerraFusion Dark"
+  },
+  "folders": [
+    {
+      "path": "../government-core",
+      "name": "government-core"
+    },
+    {
+      "path": "../government-edition",
+      "name": "government-edition"
+    },
+    {
+      "path": "../property-workbench",
+      "name": "property-workbench"
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.vscode-typescript-next",
+      "bradlc.vscode-tailwindcss",
+      "ms-dotnettools.csharp",
+      "ms-python.python",
+      "ms-vscode.powershell",
+      "GitHub.copilot",
+      "terrafusion.ai-agent-tools"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Government Apps",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Government Apps",
+        "type": "shell",
+        "command": "echo 'Build task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Government Apps",
+        "type": "shell",
+        "command": "echo 'Test task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

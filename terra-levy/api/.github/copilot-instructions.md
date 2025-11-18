@@ -1,234 +1,202 @@
-# TerraLevy Elite Application - AI Coding Guidelines
+# TerraLevy Application - AI Coding Guidelines
 
-## 🏛️ Project Overview
+## Project Overview
 
-TerraLevy is a sophisticated government tax and levy management application
-within TerraFusion OS, designed for PhD-level users requiring quantum AI
-capabilities. This is a full-stack application comparable to Microsoft Excel
-within Windows.
+TerraLevy is a government tax and levy management application within TerraFusion OS. The codebase is distributed across a multi-workspace monorepo with distinct layers for API, core services, frontend components, AI systems, and analytics platforms.
 
-## 👥 Power User Personas & Immersive Workflows
+## Architecture & Project Structure
 
-### 🏛️ Levy Clerk (Daily Operations)
+### Multi-Workspace Organization
+The project spans 20 workspace folders organized by functional domain:
+- **Core Application Layer**: `terra-levy/api`, `terra-levy/core-services`, `terra-levy/collection-engine`
+- **Frontend Layer**: `frontend/src/applications/terra-levy`, `native-shell/applications/terra-levy`
+- **Intelligence Layer**: `ai-systems/levy-intelligence`, `consciousness/agents/levy-management`
+- **Analytics & Workflows**: `analytics-platform/terra-levy`, `workflow-automation/levy-processes`
+- **Supporting Systems**: Configuration, documentation, testing, monitoring, infrastructure
 
-- **Immersive Dashboard**: Real-time levy status, citizen interactions, payment
-  tracking
-- **AI-Assisted Processing**: Natural language queries for complex levy
-  scenarios
-- **Workflow Builder**: Visual process designer for custom levy procedures
-- **3D Data Visualization**: Interactive charts for payment trends and
-  collections
+**Key Pattern**: Components are segregated by responsibility but share TypeScript interfaces. When modifying data structures, check all workspace folders for dependent types.
 
-### 💰 Department of Revenue (Strategic Analysis)
+### Frontend Architecture (React + Three.js)
 
-- **Quantum Analytics Suite**: PhD-level statistical modeling with Harvard/MIT
-  frameworks
-- **Predictive Modeling**: 99.7% accuracy targets for revenue forecasting
-- **Custom AI Training**: Fine-tune models with department-specific data
-- **Jupyter Lab Integration**: Advanced data science environment for deep
-  analysis
-
-### 📊 County Budgeting (Financial Planning)
-
-- **Immersive Budget Visualization**: 3D financial landscapes and projection
-  modeling
-- **Scenario Planning**: AI-powered "what-if" analysis with quantum optimization
-- **Real-time Integration**: Live feeds from county systems and external data
-  sources
-- **Collaborative Workflows**: Multi-user budget development with AI assistance
-
-### 🎓 Quantum AI Power User (PhD Physics/Statistics)
-
-- **Deep Analytics Laboratory**: Full toolset for advanced statistical analysis
-- **AI Model Development**: Custom quantum-enhanced pattern recognition
-- **Workflow Automation**: Build, analyze, and maintain AI-powered processes
-- **Research Integration**: Connect to quantum computing resources and academic
-  datasets
-
-## 🎯 User Experience Architecture
-
-### Immersive Application Experience
-
-- **Native Desktop Integration**: Deep Windows OS integration like Excel
-- **Multi-Modal Interaction**: Voice commands, gesture control, traditional UI
-- **Adaptive Intelligence**: AI learns user patterns and preferences
-- **Real-time Collaboration**: Shared workspaces with live data synchronization
-
-## 🚀 Critical User-Centric Development Workflows
-
-### User Experience First
-
-- **Immersive Interface Development**: Focus on 3D visualization and intuitive
-  interactions
-- **AI Assistant Integration**: Natural language processing for user queries
-- **Real-time Responsiveness**: Sub-100ms targets for seamless user experience
-- **Adaptive Learning**: AI systems that learn from user behavior patterns
-
-### Build System (User-Experience Focused)
-
-```bash
-# Launch complete user experience stack
-npm run build:terra-levy:user-experience
-
-# Component builds supporting user workflows
-dotnet build --configuration UserOptimized  # Performance-focused backend
-npm run build:immersive-ui                  # 3D visualization frontend
-python train_models.py --user-specific     # Personalized AI models
+**Component Organization** (`frontend/src/applications/terra-levy/`):
+```
+components/
+  ├── ai/              # AI assistant overlays & interactions
+  ├── analytics/       # Data visualization & reporting
+  ├── budget/          # Budget planning & projections
+  ├── immersive/       # 3D visualizations using @react-three/fiber
+  └── workflow/        # Process automation & workflow builders
 ```
 
-### Key User Workflow Tasks
+**Custom Hooks Pattern**: All feature logic lives in custom hooks (`hooks/`), not components:
+- `useAIAssistant` - AI response generation, model training, proactive insights
+- `useBudgetData` - WebSocket-based real-time budget updates
+- `useVoiceCommands` - Voice interaction for immersive experiences
+- `useGestureControl` - Gesture-based 3D navigation
+- `useQuantumResearch` - Quantum computing integration APIs
+- `useCollaboration` - Multi-user workspace synchronization
 
-- **� Launch Immersive Dashboard** - Full 3D user experience environment
-- **🤖 Personalize AI Assistant** - Train models for user-specific workflows
-- **📊 Generate Interactive Analytics** - PhD-level visualizations with
-  real-time data
-- **🔬 Open Data Science Lab** - Jupyter integration for advanced analysis
-- **⚡ Optimize User Performance** - Quantum-enhanced response optimization
+**Example**: When building new features, create a custom hook first, then build UI components that consume it.
 
-### User-Centric Testing
+### Type System & Data Models
 
-- **👥 User Workflow Testing** - `npm run test:user-journeys`
-- **🎯 Performance Validation** - Sub-100ms response time verification
-- **🧠 AI Accuracy Testing** - 99.7% accuracy validation for user predictions
-- **🔒 Security User Experience** - FISMA-HIGH compliance without UX compromise
+**Centralized Types** (`frontend/src/applications/terra-levy/types/`):
+- `LevyTypes.ts` - Core levy data structures with AI recommendations
+- `BudgetTypes.ts` - Budget categories, projections, compliance tracking
+- `CitizenTypes.ts` - Citizen profiles, interactions, payment records
+- `PaymentTypes.ts` - Payment flows, analytics, trends
 
-## 🎯 User-Centered Development Patterns
+**Critical Pattern**: All data interfaces include optional `aiRecommendation` fields:
+```typescript
+interface LevyDataPoint {
+  // ... core fields
+  aiRecommendation?: {
+    action: string;
+    confidence: number;
+    reasoning: string;
+  };
+}
+```
 
-### Immersive Experience Design
+When adding AI features, extend existing types rather than creating parallel structures.
 
-- **3D Data Landscapes**: All financial data presented in interactive 3D
-  environments
-- **Voice-First Interaction**: Natural language commands for complex operations
-- **Gesture Control**: Touch and gesture navigation for immersive workflows
-- **Adaptive AI**: Systems that learn and evolve with each user's expertise
-  level
+### 3D Immersive Dashboard Pattern
 
-### PhD-Level User Toolsets
+**Tech Stack**: React Three Fiber + Drei helpers + Three.js primitives
 
-- **Quantum Analytics Workbench**: Advanced statistical modeling environments
-- **Custom AI Fine-Tuning**: User-controlled model training with personal
-  datasets
-- **Research Integration**: Direct connection to academic quantum computing
-  resources
-- **Collaborative Intelligence**: AI agents that work alongside human experts
+**Core Pattern** (see `ImmersiveDashboard.tsx`):
+1. Canvas wrapper with high-performance WebGL settings
+2. OrbitControls for camera navigation
+3. Multiple 3D visualization components positioned in 3D space
+4. Environment lighting (studio preset + directional lights)
+5. Integration with voice/gesture hooks for multi-modal interaction
 
-### Workflow Automation for Power Users
+**Example**: `LevyStatusVisualization`, `CitizenInteractionPanel`, `PaymentTrackingSphere` are positioned as separate 3D objects in the scene. Each receives data props and handles its own rendering.
 
-- **Visual Process Designer**: Drag-and-drop workflow creation with AI
-  suggestions
-- **Real-time Collaboration**: Multi-user workflow development and sharing
-- **Intelligent Automation**: AI-powered process optimization and execution
-- **Custom Analytics Pipelines**: User-built data processing workflows
+When creating new 3D visualizations:
+- Position using Vector3 coordinates (x, y, z)
+- Support `immersionLevel` prop (0.1-1.0) for zoom/detail control
+- Add `quantumMode` toggle for enhanced rendering options
+- Use `useTerraFusionTheme()` for consistent quantum-themed colors
 
-### Government User Experience
+### Real-Time Data Patterns
 
-- **Compliance-First UX**: Security and compliance seamlessly integrated into
-  workflows
-- **Multi-Jurisdictional Views**: Handle multiple counties/regions
-  simultaneously
-- **Audit Trail Visualization**: Interactive exploration of all system changes
-- **Citizen Interaction Tools**: AI-enhanced communication and dispute
-  resolution
+**WebSocket Integration** (see `useBudgetData.ts`):
+```typescript
+// Standard pattern for real-time updates
+wsRef.current = new WebSocket('ws://localhost:8080/budget-updates');
 
-## �️ Technology Stack for User Excellence
+wsRef.current.onmessage = (event) => {
+  const update = JSON.parse(event.data);
+  if (update.type === 'budget_update') {
+    setBudgetData(prevData => 
+      prevData.map(item => 
+        item.id === update.categoryId 
+          ? { ...item, ...update.changes, lastUpdated: new Date() }
+          : item
+      )
+    );
+  }
+};
+```
 
-### Frontend Experience (React 18 + Quantum UI)
+**Auto-reconnect**: Always implement reconnection logic with exponential backoff
+**State Merging**: Use functional setState to prevent race conditions
 
-- **Immersive 3D Components**: `@terrafusion/quantum-charts` for data
-  visualization
-- **Voice Control Integration**: `@terrafusion/voice-commands` for natural
-  interaction
-- **Gesture Recognition**: Touch and motion controls for intuitive navigation
-- **Real-time Collaboration**: Live multi-user workspace synchronization
+### AI Assistant Integration
 
-### Native Desktop Power (C# WPF)
+**Core Hook**: `useAIAssistant` provides:
+- `generateResponse()` - Natural language query processing with context
+- `analyzeContext()` - Extract relevant data from current user state
+- `suggestWorkflows()` - Quantum-optimized workflow recommendations
+- `personalizeModel()` - User-specific AI model training
+- `getProactiveInsights()` - Module-aware insight generation
 
-- **Excel-like Integration**: Deep Windows OS integration for seamless workflow
-- **High-Performance Rendering**: Handle massive datasets with smooth
-  interaction
-- **Offline Analytics**: Full functionality without internet connectivity
-- **Multi-Monitor Support**: Immersive workspace across multiple displays
+**AI Response Types**: 
+- `text` - Standard conversational response
+- `action` - Executable workflow suggestions
+- `visualization` - Trigger 3D data rendering
+- `workflow` - Process automation recommendations
+- `insight` - Proactive analytical findings
 
-### AI Intelligence Layer (Python + Quantum)
+**Intent Classification**: Built-in patterns recognize:
+- `data_query` - Analytics and reporting requests
+- `workflow_optimization` - Process improvement queries
+- `compliance_check` - Regulatory status requests
+- `revenue_analysis` - Forecasting and projection queries
+- `general_help` - User assistance
 
-- **User-Specific Models**: Personalized AI training for individual workflow
-  patterns
-- **Research-Grade Analytics**: Harvard/MIT-level statistical framework
-  integration
-- **Quantum Algorithm Access**: Direct integration with quantum computing
-  resources
-- **Collaborative AI Agents**: Swarm intelligence for complex problem solving
+When extending AI capabilities:
+1. Add new intent types to `analyzeIntent()`
+2. Create corresponding response generators
+3. Define action payloads for executable recommendations
+4. Update confidence scoring based on personalization
 
-### Backend Excellence (.NET Core)
+### Government Compliance & Security
 
-- **User-Centric APIs**: Endpoints designed around user workflow patterns
-- **Real-time Data Streaming**: Live updates for collaborative environments
-- **Quantum-Optimized Processing**: Sub-100ms response for all user interactions
-- **Government-Grade Security**: FISMA-HIGH compliance without user friction
+**FISMA-HIGH Compliance** embedded in data models:
+```typescript
+complianceStatus: {
+  level: 'FISMA-HIGH',
+  auditTrail: [],
+  lastAudit: Date,
+  nextAuditDue: Date,
+  complianceScore: number,
+  violations: [],
+  certifications: string[]
+}
+```
 
-## 🎓 Elite User Integration Points
+**Pattern**: Every budget category, levy record, and citizen interaction includes compliance tracking. When modifying data operations, preserve audit trail updates.
 
-### Power User Workflow Integration
+### Multi-Modal Interaction System
 
-- **Levy Clerk Dashboard**: Real-time citizen interaction tracking with AI
-  recommendations
-- **Revenue Analytics Workbench**: Department-level forecasting with quantum
-  optimization
-- **Budget Planning Studio**: County-wide financial modeling with collaborative
-  tools
-- **Research Laboratory**: PhD-level statistical analysis with academic resource
-  access
+**Voice Commands** (`useVoiceCommands` hook):
+- Continuous listening mode for hands-free operation
+- Command patterns: "show levy status", "quantum mode", "ai assistant"
+- Callback-based action dispatch
 
-### External Academic & Government Systems
+**Gesture Control** (`useGestureControl` hook):
+- Pinch gestures control immersion level (zoom)
+- Canvas-based coordinate tracking
+- 3D navigation through gesture primitives
 
-- **Harvard/MIT Research Networks**: Direct access to academic quantum computing
-- **Government Compliance Systems**: Harris PACS, Tyler Technologies, Aumentum
-  integration
-- **Financial Data Sources**: Real-time feeds from county and state databases
-- **Collaboration Platforms**: Multi-jurisdictional data sharing and analysis
+**Integration Pattern**: Components combining voice + gesture + traditional UI should:
+1. Initialize both hooks with shared state callbacks
+2. Provide visual feedback for active listening/gesture states
+3. Disable conflicting input modes when appropriate
 
-### Performance Excellence for Power Users
+### Development Workflow
 
-- **Quantum Response Times**: Sub-100ms for all user interactions
-- **Predictive Accuracy**: 99.7% reliability for financial forecasting models
-- **Infinite Scale Capability**: Handle state-level data without performance
-  degradation
-- **Zero-Interruption Workflows**: Continuous availability with seamless updates
+**Build Tasks** (VS Code tasks.json provides):
+- `🏗️ Build TerraLevy Application` - Main build orchestration
+- `Build Backend Services` - .NET Core service compilation
+- `Build Frontend Application` - React + TypeScript build
+- `Build AI Models` - Python model preparation with quantum flags
+- `🧪 Run Comprehensive Test Suite` - Full test execution
+- `🤖 Train AI Models` - Model training with quantum acceleration
+- `🔬 Start Data Science Environment` - Jupyter Lab on port 8888
 
-## 📁 Key User Experience Files & Directories
+**Common Patterns**:
+- All Python scripts accept `--quantum-enhanced` flag
+- Backend uses `--configuration Debug` for development
+- Testing targets sub-100ms response validation
+- Security scans run with `--fisma-high --quantum-security` flags
 
-### Immersive User Interfaces
+### Key Files for Understanding
 
-- `frontend/src/applications/terra-levy/components/immersive/` - 3D
-  visualization components
-- `native-shell/applications/terra-levy/views/` - Native desktop user experience
-- `frontend/src/applications/terra-levy/workflows/` - Visual workflow designer
+**Must-Read for AI Agents**:
+- `hooks/useAIAssistant.ts` - 500+ lines implementing AI response generation, personalization, and proactive insights
+- `components/immersive/dashboard/ImmersiveDashboard.tsx` - 3D visualization orchestration
+- `types/BudgetTypes.ts` - Complex budget modeling with quantum projections
+- `hooks/useBudgetData.ts` - Real-time data synchronization patterns
 
-### AI-Powered User Tools
+## Development Guidelines
 
-- `ai-systems/levy-intelligence/user-models/` - Personalized AI training
-  pipelines
-- `consciousness/agents/levy-management/user-assistance/` - AI workflow
-  assistants
-- `analytics-platform/terra-levy/jupyter-lab/` - Data science laboratory
-  environment
-
-### User-Specific Configuration
-
-- `config/applications/terra-levy/user-profiles/` - Personalized settings and
-  preferences
-- `workflow-automation/levy-processes/user-workflows/` - Custom user automation
-- `docs/applications/terra-levy/user-guides/` - PhD-level user documentation
-
-## 🎯 User-First Development Priorities
-
-1. **Immersive User Experience** - Every feature must enhance the user's
-   analytical journey
-2. **AI-Powered Workflow Assistance** - Intelligent automation that learns from
-   user patterns
-3. **Real-time Collaborative Intelligence** - Multi-user environments with
-   shared AI insights
-4. **Academic-Grade Analytics** - PhD-level tools with quantum computational
-   power
-5. **Seamless Government Integration** - Compliance and security without
-   workflow friction
+1. **Component-Hook Separation**: UI components are thin wrappers around custom hooks containing all logic
+2. **Type Safety**: All data flows use exported TypeScript interfaces from `types/` directory
+3. **AI-First Design**: Assume AI recommendations are optional but ubiquitous - include in all data models
+4. **3D Performance**: Use `powerPreference: 'high-performance'` and enable antialiasing for WebGL
+5. **Real-Time by Default**: Implement WebSocket connections for live data feeds, not polling
+6. **Compliance Embedded**: FISMA-HIGH tracking is not optional - include in all government data operations
+7. **Multi-Modal Support**: Voice and gesture should augment, not replace, traditional UI patterns

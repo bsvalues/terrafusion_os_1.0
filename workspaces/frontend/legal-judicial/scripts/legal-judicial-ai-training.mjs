@@ -7,7 +7,6 @@
  */
 
 import fs from 'fs';
-import path from 'path';
 
 class LegalJudicialAITraining {
     constructor() {
@@ -35,7 +34,7 @@ class LegalJudicialAITraining {
 
     async validateDomainKnowledge() {
         console.log('📚 Step 1: Domain Knowledge Validation');
-        
+
         const domainQuestions = [
             {
                 question: "What is the primary domain of legal-judicial?",
@@ -43,7 +42,7 @@ class LegalJudicialAITraining {
                 critical: true
             },
             {
-                question: "What is the risk level for legal-judicial?", 
+                question: "What is the risk level for legal-judicial?",
                 expected: "critical",
                 critical: true
             },
@@ -70,12 +69,12 @@ class LegalJudicialAITraining {
 
     async trainProtectionSystems() {
         console.log('🛡️ Step 2: LEGAL-JUDICIAL Protection System Training');
-        
+
         console.log('   🔒 Protection Priorities for legal-judicial:');
         this.protectionPriorities.forEach(priority => {
             console.log(`      - ${priority}`);
         });
-        
+
         console.log('');
         console.log('   🎯 Specialized Protection Training:');
         console.log(`      - legal_proceedings threat modeling`);
@@ -86,7 +85,7 @@ class LegalJudicialAITraining {
 
     async validateWorkspaceSpecificCapabilities() {
         console.log('⚡ Step 3: LEGAL-JUDICIAL Capability Validation');
-        
+
         const capabilities = [
             `${this.domain} domain expertise`,
             `${this.riskLevel} security controls`,
@@ -103,7 +102,7 @@ class LegalJudicialAITraining {
 
     async generateTrainingReport() {
         console.log('📊 Step 4: Training Report Generation');
-        
+
         const report = {
             timestamp: new Date().toISOString(),
             workspace: this.workspaceName,
@@ -121,7 +120,7 @@ class LegalJudicialAITraining {
 
         const reportPath = '.terrafusion/legal-judicial-training-report.json';
         fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-        
+
         console.log('   ✅ Training completed for legal-judicial');
         console.log(`   📄 Report saved: ${reportPath}`);
         console.log('');

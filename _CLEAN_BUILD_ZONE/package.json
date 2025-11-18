@@ -141,7 +141,13 @@
     "reinstall": "rm -rf node_modules package-lock.json && npm install",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "docs:api": "typedoc",
+    "docs:api:watch": "typedoc --watch",
+    "docs:tokens": "tsx scripts/sync-figma-tokens.ts",
+    "docs:all": "npm run docs:tokens && npm run docs:api && npm run build-storybook",
+    "quality": "npm run lint && npm run format && npm run type-check",
+    "government:compliance": "npm run lint && npm run test:coverage && npm run test:e2e"
   },
   "eslintConfig": {
     "extends": [

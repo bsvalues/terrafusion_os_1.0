@@ -179,7 +179,8 @@
       "debuggingTools": "quantum-enhanced",
       "deploymentAutomation": "zero-touch",
       "versionControl": "ai-semantic-commits"
-    }
+    },
+    "todo-tree.tree.scanMode": "workspace only"
   },
   "extensions": {
     "recommendations": [

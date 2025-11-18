@@ -1,1 +1,564 @@
-{   "name": "TerraFusion Master Coordination",   "folders": [     {       "path": "../backend"     },     {       "path": "../frontend"     },     {       "path": "../config"     },     {       "path": "../docs"     },     {       "path": "../SDK"     },     {       "path": "../terrabuild-modernization"     },     {       "path": "../monitoring"     },     {       "path": "../marketplace"     },     {       "path": "../workspaces"     }   ],   "settings": {     "terrafusion.quantum_factor": 949,     "terrafusion.target_score": 12.0,     "terrafusion.sacred_mathematics": "OPERATIONAL",     "terrafusion.role": "master_coordination",     "terrafusion.responsibility": "39_county_deployment",     "powershell.cwd": "SDK",     "files.watcherExclude": {       "**/node_modules/**": true,       "**/.git/**": true,       "**/dist/**": true,       "**/out/**": true,       "**/.next/**": true     },     "git.ignoreLimitWarning": true   },   "extensions": {     "recommendations": [       "ms-python.python",       "ms-dotnettools.csharp",       "ms-vscode.powershell",       "github.copilot",       "ms-vscode.vscode-json",       "bradlc.vscode-tailwindcss",       "esbenp.prettier-vscode",       "ms-playwright.playwright",       "ms-vscode.vscode-typescript-next"     ]   } } 
+{
+  "folders": [
+    { "path": "..", "name": "🏛️ TerraFusion OS Root" },
+    { "path": "../backend", "name": "⚙️ Backend - .NET Microservices" },
+    { "path": "../frontend", "name": "🎨 Frontend - React PWA" },
+    { "path": "../SDK", "name": "📦 SDK - Developer Kit" },
+    { "path": "../config", "name": "⚙️ Config - County Settings" },
+    { "path": "../docs", "name": "📚 Documentation" },
+    { "path": "../monitoring", "name": "📊 Monitoring & QA" },
+    { "path": "../tests", "name": "🧪 Tests - Multi-Workspace" }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#00FFFF",
+      "titleBar.activeForeground": "#0A0E1A",
+      "statusBar.background": "#00FFFF",
+      "statusBar.foreground": "#0A0E1A"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/bin": true,
+      "**/obj": true,
+      "**/dist": true,
+      "**/build": true
+    },
+    "git.ignoreLimitWarning": true,
+    "todo-tree.tree.scanMode": "workspace",
+    "terrafusion.role": "master_coordination",
+    "terrafusion.responsibility": "full_system_oversight"
+  },
+  "extensions": {
+    "recommendations": [
+      // === Backend Development (.NET 8, C#) - 10 extensions ===
+      "ms-dotnettools.csharp",
+      "ms-dotnettools.vscode-dotnet-runtime",
+      "ms-dotnettools.csdevkit",
+      "jchannon.csharpextensions",
+      "kreativ-software.csharpextensions",
+      "patcx.vscode-nuget-gallery",
+      "icsharpcode.ilspy-vscode",
+      "humao.rest-client",
+      "42crunch.vscode-openapi",
+      "swagger-viewer.swagger-viewer",
+
+      // === Frontend Development (React 18, TypeScript, Tailwind) - 13 extensions ===
+      "bradlc.vscode-tailwindcss",
+      "ms-vscode.vscode-typescript-next",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-playwright.playwright",
+      "styled-components.vscode-styled-components",
+      "dsznajder.es7-react-js-snippets",
+      "wix.vscode-import-cost",
+      "formulahendry.auto-rename-tag",
+      "pmneo.tsimporter",
+      "chakrounanas.turbo-console-log",
+      "steoates.autoimport",
+      "xabikos.javascriptsnippets",
+
+      // === Testing & Quality - 10 extensions ===
+      "orta.vscode-jest",
+      "firsttris.vscode-jest-runner",
+      "hbenl.vscode-test-explorer",
+      "vitest.explorer",
+      "ryanluker.vscode-coverage-gutters",
+      "sonarsource.sonarlint-vscode",
+      "streetsidesoftware.code-spell-checker",
+      "editorconfig.editorconfig",
+      "DavidAnson.vscode-markdownlint",
+      "timonwong.shellcheck",
+
+      // === DevOps & Infrastructure - 10 extensions ===
+      "ms-azuretools.vscode-docker",
+      "ms-kubernetes-tools.vscode-kubernetes-tools",
+      "hashicorp.terraform",
+      "ms-vscode-remote.remote-containers",
+      "ms-azuretools.vscode-azurefunctions",
+      "ms-azuretools.vscode-azureresourcegroups",
+      "github.vscode-github-actions",
+      "ms-azure-devops.azure-pipelines",
+      "ms-vscode.azure-account",
+      "redhat.vscode-xml",
+
+      // === Database & Data Tools - 7 extensions ===
+      "ms-mssql.mssql",
+      "cweijan.vscode-postgresql-client2",
+      "mtxr.sqltools",
+      "mtxr.sqltools-driver-pg",
+      "mongodb.mongodb-vscode",
+      "redis.redis-for-vscode",
+      "ms-azuretools.vscode-cosmosdb",
+
+      // === Git & Version Control - 6 extensions ===
+      "gruntfuggly.todo-tree",
+      "eamodio.gitlens",
+      "donjayamanne.githistory",
+      "github.vscode-pull-request-github",
+      "mhutchie.git-graph",
+      "adam-bender.commit-message-editor",
+
+      // === Productivity & Collaboration - 13 extensions ===
+      "ms-vsliveshare.vsliveshare",
+      "ms-vsliveshare.vsliveshare-audio",
+      "aaron-bond.better-comments",
+      "wayou.vscode-todo-highlight",
+      "christian-kohler.path-intellisense",
+      "formulahendry.auto-close-tag",
+      "coenraads.bracket-pair-colorizer-2",
+      "oderwat.indent-rainbow",
+      "earshinov.sort-lines-by-selection",
+      "usernamehw.errorlens",
+      "naumovs.color-highlight",
+      "hediet.vscode-drawio",
+      "alefragnani.bookmarks",
+
+      // === Data & Config - 6 extensions ===
+      "ms-vscode.vscode-json",
+      "redhat.vscode-yaml",
+      "tamasfe.even-better-toml",
+      "dotenv.dotenv-vscode",
+      "mechatroner.rainbow-csv",
+      "quicktype.quicktype",
+
+      // === AI & Documentation - 10 extensions ===
+      "github.copilot",
+      "github.copilot-chat",
+      "visualstudioexptteam.vscodeintellicode",
+      "visualstudioexptteam.intellicode-api-usage-examples",
+      "yzhang.markdown-all-in-one",
+      "bierner.markdown-mermaid",
+      "shd101wyy.markdown-preview-enhanced",
+      "jebbs.plantuml",
+      "yzane.markdown-pdf",
+      "foam.foam-vscode"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      // === Build Tasks ===
+      {
+        "label": "🔧 Full System Build",
+        "type": "shell",
+        "command": "dotnet build backend/TerraFusion.sln --configuration Release && cd frontend && npm run build",
+        "group": { "kind": "build", "isDefault": true },
+        "problemMatcher": ["$msCompile", "$tsc"],
+        "presentation": { "reveal": "always", "panel": "dedicated" }
+      },
+      {
+        "label": "🔧 Build: Backend Only",
+        "type": "shell",
+        "command": "dotnet build TerraFusion.sln --configuration Release",
+        "options": { "cwd": "${workspaceFolder}/backend" },
+        "group": "build",
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "🔧 Build: Frontend Only",
+        "type": "shell",
+        "command": "npm run build",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": "build",
+        "problemMatcher": "$tsc"
+      },
+
+      // === Test Tasks ===
+      {
+        "label": "🧪 Run All Tests",
+        "type": "shell",
+        "command": "dotnet test backend/TerraFusion.sln --nologo && cd frontend && npm test",
+        "group": { "kind": "test", "isDefault": true },
+        "problemMatcher": ["$msCompile", "$tsc"],
+        "presentation": { "reveal": "always", "panel": "dedicated" }
+      },
+      {
+        "label": "🧪 Test: Backend Unit Tests",
+        "type": "shell",
+        "command": "dotnet test tests/TerraFusion.Tests --nologo",
+        "options": { "cwd": "${workspaceFolder}/backend" },
+        "group": "test",
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "🧪 Test: Backend Integration Tests",
+        "type": "shell",
+        "command": "dotnet test tests/TerraFusion.Integration.Tests --nologo",
+        "options": { "cwd": "${workspaceFolder}/backend" },
+        "group": "test",
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "🧪 Test: Frontend E2E Tests",
+        "type": "shell",
+        "command": "npm run test:e2e",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": "🧪 Test: Coverage Report",
+        "type": "shell",
+        "command": "dotnet test /p:CollectCoverage=true && cd ../frontend && npm run test:coverage",
+        "options": { "cwd": "${workspaceFolder}/backend" },
+        "group": "test",
+        "problemMatcher": []
+      },
+
+      // === Launch Tasks ===
+      {
+        "label": "🚀 Launch: Backend API",
+        "type": "shell",
+        "command": "dotnet run --project TerraFusion.API --urls http://localhost:5000",
+        "options": { "cwd": "${workspaceFolder}/backend" },
+        "isBackground": true,
+        "group": "none",
+        "problemMatcher": {
+          "pattern": { "regexp": "." },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^.*Building.*$",
+            "endsPattern": "^.*Application started.*$"
+          }
+        }
+      },
+      {
+        "label": "🚀 Launch: Consciousness Engine",
+        "type": "shell",
+        "command": "dotnet run --project TerraFusion.Consciousness --urls http://localhost:3004",
+        "options": { "cwd": "${workspaceFolder}/backend" },
+        "isBackground": true,
+        "group": "none",
+        "problemMatcher": {
+          "pattern": { "regexp": "." },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^.*Building.*$",
+            "endsPattern": "^.*Application started.*$"
+          }
+        }
+      },
+      {
+        "label": "🚀 Launch: Frontend Dev Server",
+        "type": "shell",
+        "command": "npm run dev",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "isBackground": true,
+        "group": "none",
+        "problemMatcher": {
+          "pattern": { "regexp": "." },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^.*VITE.*$",
+            "endsPattern": "^.*Local:.*$"
+          }
+        }
+      },
+      {
+        "label": "🚀 Launch: All Services",
+        "dependsOn": ["🚀 Launch: Backend API", "🚀 Launch: Consciousness Engine", "🚀 Launch: Frontend Dev Server"],
+        "group": "none",
+        "problemMatcher": []
+      },
+
+      // === Quality & Compliance Tasks ===
+      {
+        "label": "🔍 Quality: Frontend Checks",
+        "type": "shell",
+        "command": "npm run quality",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": "test",
+        "problemMatcher": ["$eslint-stylish", "$tsc"]
+      },
+      {
+        "label": "🔍 Quality: Backend Lint",
+        "type": "shell",
+        "command": "dotnet format --verify-no-changes",
+        "options": { "cwd": "${workspaceFolder}/backend" },
+        "group": "test",
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "🔍 Quality: All Checks",
+        "dependsOn": ["🔍 Quality: Frontend Checks", "🔍 Quality: Backend Lint"],
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": "🛡️ Government Compliance Validation",
+        "type": "shell",
+        "command": "cd frontend && npm run government:compliance && cd ../backend && dotnet test tests/TerraFusion.Compliance.Tests --nologo",
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": "🔒 Security Scan",
+        "type": "shell",
+        "command": "cd frontend && npm audit && cd ../backend && dotnet list package --vulnerable",
+        "group": "test",
+        "problemMatcher": []
+      },
+
+      // === Deployment Tasks ===
+      {
+        "label": "📦 Deploy: Local",
+        "type": "shell",
+        "command": "cd backend && dotnet publish -c Release -o ../publish/backend && cd ../frontend && npm run build && cp -r dist ../publish/frontend",
+        "group": "none",
+        "problemMatcher": []
+      },
+
+      // === Maintenance Tasks ===
+      {
+        "label": "🧹 Clean: All Artifacts",
+        "type": "shell",
+        "command": "cd backend && dotnet clean && cd ../frontend && rm -rf dist node_modules/.vite",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "📦 Install: All Dependencies",
+        "type": "shell",
+        "command": "cd frontend && npm install && cd ../_CLEAN_BUILD_ZONE && npm install",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "🔄 Restore: Backend Packages",
+        "type": "shell",
+        "command": "dotnet restore",
+        "options": { "cwd": "${workspaceFolder}/backend" },
+        "group": "none",
+        "problemMatcher": []
+      },
+
+      // === Documentation Tasks ===
+      {
+        "label": "📚 Docs: Generate API Documentation",
+        "type": "shell",
+        "command": "npm run docs:api",
+        "options": { "cwd": "${workspaceFolder}/_CLEAN_BUILD_ZONE" },
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "📚 Docs: Build Storybook",
+        "type": "shell",
+        "command": "npm run build-storybook",
+        "options": { "cwd": "${workspaceFolder}/_CLEAN_BUILD_ZONE" },
+        "group": "none",
+        "problemMatcher": []
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      // === Backend .NET 8 Debugging ===
+      {
+        "name": "🎯 Debug: TerraFusion API",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "🔧 Build: Backend Only",
+        "program": "${workspaceFolder}/backend/TerraFusion.API/bin/Debug/net8.0/TerraFusion.API.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/backend/TerraFusion.API",
+        "stopAtEntry": false,
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "ASPNETCORE_URLS": "http://localhost:5000"
+        },
+        "serverReadyAction": {
+          "action": "openExternally",
+          "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+          "uriFormat": "%s/swagger"
+        },
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen"
+      },
+      {
+        "name": "🎯 Debug: Consciousness Engine",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "🔧 Build: Backend Only",
+        "program": "${workspaceFolder}/backend/TerraFusion.Consciousness/bin/Debug/net8.0/TerraFusion.Consciousness.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/backend/TerraFusion.Consciousness",
+        "stopAtEntry": false,
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "ASPNETCORE_URLS": "http://localhost:3004",
+          "TF_SKIP_DB_HEALTH": "false"
+        },
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen"
+      },
+      {
+        "name": "🎯 Debug: Gateway Service",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "🔧 Build: Backend Only",
+        "program": "${workspaceFolder}/backend/TerraFusion.Gateway/bin/Debug/net8.0/TerraFusion.Gateway.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/backend/TerraFusion.Gateway",
+        "stopAtEntry": false,
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "ASPNETCORE_URLS": "http://localhost:3002"
+        },
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen"
+      },
+      {
+        "name": "🔗 Attach: .NET Process",
+        "type": "coreclr",
+        "request": "attach",
+        "processId": "${command:pickProcess}"
+      },
+
+      // === Frontend Node.js/Chrome Debugging ===
+      {
+        "name": "🎯 Debug: Frontend (Chrome)",
+        "type": "chrome",
+        "request": "launch",
+        "url": "http://localhost:5173",
+        "webRoot": "${workspaceFolder}/frontend",
+        "sourceMaps": true,
+        "preLaunchTask": "🚀 Launch: Frontend Dev Server",
+        "userDataDir": "${workspaceFolder}/.vscode/chrome-debug",
+        "runtimeArgs": [
+          "--auto-open-devtools-for-tabs",
+          "--disable-web-security"
+        ]
+      },
+      {
+        "name": "🎯 Debug: Frontend (Edge)",
+        "type": "msedge",
+        "request": "launch",
+        "url": "http://localhost:5173",
+        "webRoot": "${workspaceFolder}/frontend",
+        "sourceMaps": true,
+        "preLaunchTask": "🚀 Launch: Frontend Dev Server",
+        "userDataDir": "${workspaceFolder}/.vscode/edge-debug"
+      },
+      {
+        "name": "🔗 Attach: Node Process",
+        "type": "node",
+        "request": "attach",
+        "port": 9229,
+        "skipFiles": ["<node_internals>/**"],
+        "restart": true,
+        "localRoot": "${workspaceFolder}/frontend",
+        "remoteRoot": null
+      },
+      {
+        "name": "🎯 Debug: Vite Server",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "dev"],
+        "cwd": "${workspaceFolder}/frontend",
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+        "skipFiles": ["<node_internals>/**"]
+      },
+
+      // === Testing Debugging ===
+      {
+        "name": "🧪 Debug: Backend Unit Tests",
+        "type": "coreclr",
+        "request": "launch",
+        "program": "${workspaceFolder}/backend/tests/TerraFusion.Tests/bin/Debug/net8.0/TerraFusion.Tests.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/backend/tests/TerraFusion.Tests",
+        "stopAtEntry": false,
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "🧪 Debug: Backend Integration Tests",
+        "type": "coreclr",
+        "request": "launch",
+        "program": "${workspaceFolder}/backend/tests/TerraFusion.Integration.Tests/bin/Debug/net8.0/TerraFusion.Integration.Tests.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/backend/tests/TerraFusion.Integration.Tests",
+        "stopAtEntry": false,
+        "console": "integratedTerminal",
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Testing"
+        }
+      },
+      {
+        "name": "🧪 Debug: Frontend Jest Tests",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "test:unit", "--", "--runInBand"],
+        "cwd": "${workspaceFolder}/frontend",
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen"
+      },
+      {
+        "name": "🧪 Debug: Frontend Playwright Tests",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/frontend/node_modules/.bin/playwright",
+        "args": ["test", "--debug"],
+        "cwd": "${workspaceFolder}/frontend",
+        "console": "integratedTerminal"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "🌟 Full Stack Debug",
+        "configurations": [
+          "🎯 Debug: TerraFusion API",
+          "🎯 Debug: Consciousness Engine",
+          "🎯 Debug: Frontend (Chrome)"
+        ],
+        "stopAll": true,
+        "presentation": {
+          "order": 1,
+          "group": "FullStack"
+        }
+      },
+      {
+        "name": "🌟 Backend Services Debug",
+        "configurations": [
+          "🎯 Debug: TerraFusion API",
+          "🎯 Debug: Consciousness Engine",
+          "🎯 Debug: Gateway Service"
+        ],
+        "stopAll": true,
+        "presentation": {
+          "order": 2,
+          "group": "Backend"
+        }
+      },
+      {
+        "name": "🌟 Frontend Full Debug",
+        "configurations": [
+          "🎯 Debug: Frontend (Chrome)",
+          "🎯 Debug: Vite Server"
+        ],
+        "stopAll": true,
+        "presentation": {
+          "order": 3,
+          "group": "Frontend"
+        }
+      },
+      {
+        "name": "🧪 Debug All Tests",
+        "configurations": [
+          "🧪 Debug: Backend Unit Tests",
+          "🧪 Debug: Backend Integration Tests",
+          "🧪 Debug: Frontend Jest Tests"
+        ],
+        "stopAll": false,
+        "presentation": {
+          "order": 4,
+          "group": "Testing"
+        }
+      }
+    ]
+  }
+}

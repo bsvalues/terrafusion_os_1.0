@@ -1,1 +1,52 @@
-{   "name": "TerraFusion Development Excellence",   "folders": [     {       "path": "../.github"     },     {       "path": "../scripts"     }   ],   "settings": {     "terrafusion.role": "development_excellence",     "terrafusion.ci_cd": "zero_downtime"   } }
+{
+  "name": "TerraFusion Development Excellence",
+  "folders": [
+    {
+      "path": "../.github"
+    },
+    {
+      "path": "../scripts"
+    }
+  ],
+  "settings": {
+    "terrafusion.role": "development_excellence",
+    "terrafusion.ci_cd": "zero_downtime"
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Development",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Development",
+        "type": "shell",
+        "command": "echo 'Build task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Development",
+        "type": "shell",
+        "command": "echo 'Test task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

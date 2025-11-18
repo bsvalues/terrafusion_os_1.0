@@ -1,1 +1,52 @@
-{   "name": "TerraFusion Monitoring Transcendence",   "folders": [     {       "path": "../monitoring"     },     {       "path": "../ops"     }   ],   "settings": {     "terrafusion.role": "monitoring_transcendence",     "terrafusion.dashboard": "quantum_real_time"   } }
+{
+  "name": "TerraFusion Monitoring Transcendence",
+  "folders": [
+    {
+      "path": "../monitoring"
+    },
+    {
+      "path": "../ops"
+    }
+  ],
+  "settings": {
+    "terrafusion.role": "monitoring_transcendence",
+    "terrafusion.dashboard": "quantum_real_time"
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Monitoring",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Monitoring",
+        "type": "shell",
+        "command": "echo 'Build task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Monitoring",
+        "type": "shell",
+        "command": "echo 'Test task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

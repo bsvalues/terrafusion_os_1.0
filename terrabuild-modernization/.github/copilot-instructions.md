@@ -2,70 +2,35 @@
 
 ## 🏗️ Project Context
 
-TerraBuild is the **modernization layer** for TerraFusion OS, providing a modern
-Node.js/React interface for property cost assessment and analysis for Benton
-County, Washington. This system serves as a bridge between legacy county systems
-and modern web technologies, featuring AI-powered cost calculations and
-multi-agent orchestration.
+TerraBuild is the **modernization layer** for TerraFusion OS, providing a modern Node.js/React interface for property cost assessment and analysis for Benton County, Washington. This system serves as a bridge between legacy county systems and modern web technologies, featuring AI-powered cost calculations and multi-agent orchestration.
 
-## 🔮 Current System Status (December 2024)
+**Tech Stack**: React 18 + TypeScript + Express.js + PostgreSQL (Drizzle ORM) + MCP AI Agents + shadcn/ui
 
-### ⚡ Elite Government OS Engineering Agent Active
+## � Quick Start
 
-This system has been enhanced by the **Elite Government OS Engineering Agent** using multi-dimensional transformation protocols:
+```bash
+npm install              # Install dependencies
+npm run dev             # Start development (client on 5002, server on dynamic port)
+npm run build           # Build for production
+npm run db:push         # Push database schema changes
+npm run check           # TypeScript type checking
+```
 
-**DIMENSION 3**: Consciousness Trinity Orchestration
-- Individual agent consciousness optimization  
-- Collective swarm intelligence coordination
-- Cosmic supreme commander elevation
+## 🎯 Critical Architecture Patterns
 
-**DIMENSION 6**: Hexagonal Excellence Architecture  
-- Data architecture transcendence
-- Network, compute, security optimization
-- Interface and integration harmony
+### Dual-Port Development
 
-**DIMENSION 9**: Enneagram of Excellence Operations
-- 9 operational vectors for government excellence
-- Perfectionist quality, helper citizen service  
-- Achiever performance with investigator intelligence
+**CRITICAL**: This project uses specific dual-port configuration:
+- **Development**: Client on port 5002 (Vite), Server on dynamic port via `tsx server/index.ts`
+- **Production**: Single port 5000 serving static files + API routes
+- Never manually configure ports - use npm scripts
 
-**DIMENSION 12**: Strategic Transcendence Phases
-- 12-phase transformation orchestration
-- Strategic velocity monitoring
-- Phase transition preparation
+### Database First (Drizzle Push Pattern)
 
-### 🔧 Recent System Healing Progress
-
-**TypeScript Error Reduction**: From 1,210 → 1,171 errors (significant improvement)
-
-Key healing accomplishments:
-- ✅ **Authentication Context**: Added missing `useAuth` hook to `auth-context.tsx`
-- ✅ **Import Optimization**: Fixed missing React hooks and UI component imports
-- ✅ **Schema Type Safety**: Enhanced Drizzle ORM type inference patterns
-- ✅ **Component Integration**: Resolved TerraFusionConsciousnessDisplay import issues
-- ✅ **Query Typing**: Added proper TypeScript generics to useQuery calls
-
-**Active Issues Being Resolved**:
-- 🔄 Path alias resolution in TypeScript compilation context
-- 🔄 Implicit 'any' parameter types (212 TS7006 errors)
-- 🔄 Property existence validation (511 TS2339 errors)
-
-### 🎯 Development Focus Areas
-
-**Priority 1**: Complete TypeScript compilation healing
-- Fix remaining path alias resolution issues
-- Add explicit typing to component parameters
-- Resolve property interface mismatches
-
-**Priority 2**: MCP Agent System Restoration  
-- Verify BaseAgent inheritance patterns
-- Restore agent coordination protocols
-- Validate swarm orchestration functionality
-
-**Priority 3**: Database Schema Optimization
-- Complete Drizzle ORM type consistency
-- Validate all table relationship integrity
-- Ensure FISMA compliance across all operations
+- **Schema**: Define in `shared/schema.ts` (camelCase TypeScript, snake_case DB)
+- **Apply changes**: `npm run db:push` (no migrations - push-based workflow)
+- **Import types**: Always from `shared/schema.ts` for consistency
+- **Initialization order**: `initDatabase()` → `initMCP()` → Agent activation
 
 ## 🎯 Architecture Overview
 

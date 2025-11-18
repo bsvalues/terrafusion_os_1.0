@@ -1,1 +1,77 @@
-{   "name": "TerraFusion Security Transcendence",   "folders": [     {       "path": "../backend/TerraFusion.Security"     },     {       "path": "../config/security"     }   ],   "settings": {     "terrafusion.role": "security_transcendence",     "terrafusion.security_level": "FISMA_HIGH",     "terrafusion.encryption": "quantum_enhanced"   } }
+{
+  "folders": [
+    {
+      "path": "../security-operations",
+      "name": "🔒 Security Operations"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Security Configuration"
+    },
+    {
+      "path": "../tests",
+      "name": "🧪 Security Tests"
+    },
+    {
+      "path": "../docs",
+      "name": "📚 Security Documentation"
+    }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#FFB400",
+      "titleBar.activeForeground": "#000000"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/frontend": true,
+      "**/marketplace": true
+    },
+    "terrafusion.role": "security_operations",
+    "terrafusion.responsibility": "fisma_high_compliance"
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-dotnettools.csharp",
+      "gruntfuggly.todo-tree",
+      "redhat.vscode-yaml"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Security",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Security",
+        "type": "shell",
+        "command": "echo 'Build task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Security",
+        "type": "shell",
+        "command": "echo 'Test task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

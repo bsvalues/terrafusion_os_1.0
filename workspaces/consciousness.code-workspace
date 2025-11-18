@@ -1,1 +1,156 @@
-{   "name": "TerraFusion AI Consciousness",   "folders": [     {       "path": "../backend/TerraFusion.Consciousness"     },     {       "path": "../config/ai-system-prompts.json"     },     {       "path": "../docs/AI_AGENT_INTEGRATION_GUIDE.md"     }   ],   "settings": {     "azureML.showWelcomePage": false,     "azureML.enableWorkspaceCompletions": false,     "python.defaultInterpreterPath": "./venv/Scripts/python.exe",     "terrafusion.quantum_factor": 949,     "terrafusion.target_score": 12.0,     "terrafusion.sacred_mathematics": "OPERATIONAL",     "terrafusion.role": "consciousness_coordination",     "terrafusion.ai_agents": 1008,     "terrafusion.harmony_index": 0.999   } }
+{
+  "folders": [
+    { "path": "../backend/TerraFusion.Consciousness", "name": "AI Consciousness Engine" },
+    { "path": "../ai-systems", "name": "AI Systems" },
+    { "path": "../agents", "name": "AI Agents" },
+    { "path": "../config", "name": "AI Configuration" },
+    { "path": "../tests", "name": "AI Tests" }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#80DEEA",
+      "titleBar.activeForeground": "#0A0E1A"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/frontend": true,
+      "**/marketplace": true,
+      "**/platform": true
+    },
+    "terrafusion.role": "consciousness_coordination",
+    "terrafusion.responsibility": "50000_agent_swarm"
+  },
+  "extensions": {
+    "recommendations": [
+      // .NET & C#
+      "ms-dotnettools.csharp",
+      "ms-dotnettools.csdevkit",
+      "icsharpcode.ilspy-vscode",
+      "josefpihrt-vscode.roslynator",
+
+      // Python & ML
+      "ms-python.python",
+      "ms-toolsai.jupyter",
+      "ms-toolsai.vscode-ai",
+      "ms-toolsai.vscode-models",
+
+      // AI / ML Workflow
+      "ms-python.vscode-pylance",
+      "njpwerner.autodocstring",
+      "visualstudiocodecs.vscode-python-docs",
+
+      // DevOps & Infra
+      "ms-azuretools.vscode-docker",
+      "ms-kubernetes-tools.vscode-kubernetes-tools",
+      "hashicorp.terraform",
+
+      // Observability & Monitoring
+      "ms-azuretools.azure-monitor",
+      "ms-vscode-azureloadtester.azureloadtesting",
+
+      // Testing & Quality
+      "hbenl.vscode-test-explorer",
+      "ryanluker.vscode-coverage-gutters",
+      "sonarsource.sonarlint-vscode",
+
+      // Productivity & Git
+      "eamodio.gitlens",
+      "gruntfuggly.todo-tree",
+      "mhutchie.git-graph",
+
+      // Security & Compliance
+      "snyk-security.snyk-vulnerability-scanner",
+      "microsoft.vscode-security-baseline",
+
+      // Misc
+      "bierner.markdown-mermaid",
+      "yzhang.markdown-all-in-one",
+      "github.copilot",
+      "github.copilot-chat"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Consciousness Engine",
+        "type": "shell",
+        "command": "dotnet build TerraFusion.Consciousness -c Debug",
+        "options": { "cwd": "${workspaceFolder}/../backend" },
+        "group": { "kind": "build", "isDefault": true }
+      },
+      {
+        "label": "Run Consciousness Engine (Dev)",
+        "type": "shell",
+        "command": "dotnet run --project TerraFusion.Consciousness --urls http://localhost:3004",
+        "options": { "cwd": "${workspaceFolder}/../backend" },
+        "isBackground": true
+      },
+      {
+        "label": "Test AI",
+        "type": "shell",
+        "command": "dotnet test ../tests --filter Category=AI --nologo",
+        "options": { "cwd": "${workspaceFolder}" },
+        "group": "test"
+      },
+      {
+        "label": "Quality Lint Python",
+        "type": "shell",
+        "command": "ruff .",
+        "options": { "cwd": "${workspaceFolder}/../ai-systems" },
+        "group": "test"
+      },
+      {
+        "label": "Security Dependency Scan",
+        "type": "shell",
+        "command": "snyk test || true",
+        "options": { "cwd": "${workspaceFolder}" },
+        "group": "test"
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Consciousness Engine (CoreCLR)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "Build Consciousness Engine",
+        "program": "${workspaceFolder}/../backend/TerraFusion.Consciousness/bin/Debug/net8.0/TerraFusion.Consciousness.dll",
+        "cwd": "${workspaceFolder}/../backend/TerraFusion.Consciousness",
+        "env": { "ASPNETCORE_ENVIRONMENT": "Development", "ASPNETCORE_URLS": "http://localhost:3004" }
+      },
+      {
+        "name": ".NET Core Launch (web)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "Build Consciousness Engine",
+        "program": "${workspaceFolder}/../backend/TerraFusion.Consciousness/bin/Debug/net8.0/TerraFusion.Consciousness.dll",
+        "cwd": "${workspaceFolder}/../backend/TerraFusion.Consciousness",
+        "env": { "ASPNETCORE_ENVIRONMENT": "Development", "ASPNETCORE_URLS": "http://localhost:3004" }
+      },
+      {
+        "name": "Attach .NET Process",
+        "type": "coreclr",
+        "request": "attach",
+        "processId": "${command:pickProcess}"
+      },
+      {
+        "name": "Debug AI Python Notebook",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/../ai-systems/notebooks/run_notebook.py",
+        "console": "integratedTerminal"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Debug Consciousness (Build + Run)",
+        "configurations": [
+          ".NET Core Launch (web)"
+        ]
+      }
+    ]
+  }
+}

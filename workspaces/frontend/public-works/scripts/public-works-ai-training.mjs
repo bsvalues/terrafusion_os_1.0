@@ -7,7 +7,6 @@
  */
 
 import fs from 'fs';
-import path from 'path';
 
 class PublicWorksAITraining {
     constructor() {
@@ -35,7 +34,7 @@ class PublicWorksAITraining {
 
     async validateDomainKnowledge() {
         console.log('📚 Step 1: Domain Knowledge Validation');
-        
+
         const domainQuestions = [
             {
                 question: "What is the primary domain of public-works?",
@@ -43,7 +42,7 @@ class PublicWorksAITraining {
                 critical: true
             },
             {
-                question: "What is the risk level for public-works?", 
+                question: "What is the risk level for public-works?",
                 expected: "medium",
                 critical: true
             },
@@ -70,12 +69,12 @@ class PublicWorksAITraining {
 
     async trainProtectionSystems() {
         console.log('🛡️ Step 2: PUBLIC-WORKS Protection System Training');
-        
+
         console.log('   🔒 Protection Priorities for public-works:');
         this.protectionPriorities.forEach(priority => {
             console.log(`      - ${priority}`);
         });
-        
+
         console.log('');
         console.log('   🎯 Specialized Protection Training:');
         console.log(`      - infrastructure_management threat modeling`);
@@ -86,7 +85,7 @@ class PublicWorksAITraining {
 
     async validateWorkspaceSpecificCapabilities() {
         console.log('⚡ Step 3: PUBLIC-WORKS Capability Validation');
-        
+
         const capabilities = [
             `${this.domain} domain expertise`,
             `${this.riskLevel} security controls`,
@@ -103,7 +102,7 @@ class PublicWorksAITraining {
 
     async generateTrainingReport() {
         console.log('📊 Step 4: Training Report Generation');
-        
+
         const report = {
             timestamp: new Date().toISOString(),
             workspace: this.workspaceName,
@@ -121,7 +120,7 @@ class PublicWorksAITraining {
 
         const reportPath = '.terrafusion/public-works-training-report.json';
         fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-        
+
         console.log('   ✅ Training completed for public-works');
         console.log(`   📄 Report saved: ${reportPath}`);
         console.log('');

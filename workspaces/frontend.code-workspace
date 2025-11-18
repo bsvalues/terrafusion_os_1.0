@@ -1,1 +1,322 @@
-{   "folders": [     {       "name": "🏛️ TerraFusion Frontend Core - Government. Transcended.",       "path": "../frontend"     },     {       "name": "🎨 TERRAFUSION BRAND CODEX - Divine Design System",       "path": "../TERRAFUSION BRAND CODEX - The Divine Design System"     },     {       "name": "🎨 Design System (Platform)",       "path": "../platform/design-system"     },     {       "name": "📦 Platform SDK - TerraFusion OS",       "path": "../SDK"     },     {       "name": "🧪 Frontend Test Suite - Championship Excellence",       "path": "../tests/frontend/core"     },     {       "name": "📚 Frontend Documentation",       "path": "../docs/frontend"     },     {       "name": "⚙️ TerraFusion Config - Quantum Settings",       "path": "../config"     },     {       "name": "🔧 Backend Integration Target",       "path": "../backend"     },     {       "name": "♿ Accessibility Testing Suite - WCAG 2.1 AA Excellence",       "path": "../tests/accessibility"     },     {       "name": "⚡ Performance & Quality Gates",       "path": "../tests/performance"     },     {       "name": "📊 Quality Assurance Dashboard",       "path": "../monitoring/qa"     }   ],   "settings": {     "files.exclude": {       "**/node_modules": true,       "**/dist": true,       "**/.git": true,       "**/coverage": true,       "**/.next": true,       "**/build": true,       "**/__pycache__": true,       "**/*.pyc": true,       "**/test-results": false,       "**/accessibility-reports": false     },     "editor.formatOnSave": true,     "editor.codeActionsOnSave": {       "source.fixAll.eslint": "explicit",       "source.organizeImports": "explicit"     },     "typescript.preferences.quoteStyle": "single",     "typescript.suggest.autoImports": true,     "typescript.updateImportsOnFileMove.enabled": "always",     "typescript.inlayHints.parameterNames.enabled": "all",     "typescript.inlayHints.variableTypes.enabled": true,     "typescript.inlayHints.functionLikeReturnTypes.enabled": true,     "eslint.workingDirectories": ["./frontend"],     "eslint.format.enable": true,     "eslint.codeActionsOnSave.mode": "all",     "prettier.tabWidth": 2,     "prettier.useTabs": false,     "prettier.semi": true,     "prettier.singleQuote": true,     "prettier.trailingComma": "es5",     "editor.rulers": [80, 120],     "editor.bracketPairColorization.enabled": true,     "editor.linkedEditing": true,     "editor.inlineSuggest.enabled": true,     "editor.guides.indentation": true,     "workbench.tree.indent": 20,     "breadcrumbs.enabled": true,     "workbench.colorTheme": "TerraFusion Dark",     "terminal.integrated.defaultProfile.windows": "PowerShell",     "git.autofetch": true,     "git.enableSmartCommit": true,     "search.exclude": {       "**/node_modules": true,       "**/coverage": true,       "**/dist": true,       "**/.git": true,       "**/.DS_Store": true,       "**/Thumbs.db": true,       "**/build": true     },     "emmet.includeLanguages": {       "typescript": "html",       "javascript": "html"     },     "html.format.wrapLineLength": 80,     "css.format.wrapLineLength": 80,     "terrafusion.frontend": {       "primaryStack": "React 18 + TypeScript + Vite",       "scope": "FRONTEND ONLY - No TerraBuild integration",       "qaLead": "enhanced",       "testingFramework": "Vitest + Testing Library + Playwright",       "accessibilityTesting": "axe-core + WCAG 2.1 AA",       "performanceMonitoring": "Lighthouse + Core Web Vitals",       "qualityGates": "mandatory"     },     "terrafusion.testing": {       "unitTestCoverage": "≥90% critical paths required",       "integrationTesting": "comprehensive",       "e2eTesting": "Playwright automation",       "accessibilityTesting": "automated WCAG 2.1 AA validation",       "performanceTesting": "Core Web Vitals monitoring",       "visualRegressionTesting": "enabled",       "testReporting": "comprehensive with evidence collection"     },     "terrafusion.accessibility": {       "wcag21AA": "mandatory",       "axeCore": "automated scanning",       "colorContrast": "4.5:1 minimum",       "keyboardNavigation": "comprehensive",       "screenReaderTesting": "manual validation required",       "accessibilityAudit": "quarterly"     },     "terrafusion.qualityAssurance": {       "codeQuality": "championship excellence",       "testCoverage": "≥90% critical paths",       "performanceStandards": "Core Web Vitals green",       "accessibilityCompliance": "WCAG 2.1 AA",       "usabilityTesting": "systematic",       "governmentStandards": "transcendent",       "evidenceCollection": "automatic"     },     "terrafusion.qaLead": {       "enhancedRoles": "enabled",       "traceabilityMatrix": "comprehensive",       "qualityGates": "enforced",       "testAutomation": "continuous",       "accessibilityFirst": "mandatory",       "evidenceCollection": "systematic",       "governmentTranscended": true     },     "terrafusion.development": {       "confidenceTarget": 0.97,       "currentConfidence": 0.974,       "testCoverageTarget": 0.9,       "accessibilityTarget": "AAA where possible",       "performanceTarget": "90+ Lighthouse scores",       "codeQuality": "championship",       "governmentTranscended": true,       "dataMLEnhancement": "97.4%",       "aiDrivenUX": "implemented",       "quantumUIPerformance": "60fps+",       "costForgeIntegration": "real-time",       "predictiveInterface": "active"     },     "powershell.cwd": "🏛️ TerraFusion Frontend Core - Government. Transcended.",     "liveServer.settings.multiRootWorkspaceName": "🎨 TERRAFUSION BRAND CODEX - Divine Design System",     "chat.agent.maxRequests": 100   },   "extensions": {     "recommendations": [       "dbaeumer.vscode-eslint",       "esbenp.prettier-vscode",       "ms-vscode.vscode-typescript-next",       "bradlc.vscode-tailwindcss",       "github.copilot",       "github.copilot-chat",       "vitest.explorer",       "ms-playwright.playwright",       "deque-systems.vscode-axe-linter",       "webhint.vscode-webhint",       "ms-vscode.test-adapter-converter",       "coverage-gutters.coverage-gutters",       "usernamehw.errorlens",       "streetsidesoftware.code-spell-checker",       "ms-vscode.vscode-json",       "redhat.vscode-yaml",       "ms-vscode.vscode-ai-toolkit",       "gruntfuggly.todo-tree",       "aaron-bond.better-comments",       "bradlc.vscode-tailwindcss",       "christian-kohler.path-intellisense",       "formulahendry.auto-rename-tag",       "ms-vscode.live-server",       "ritwickdey.liveserver",       "ms-vscode.vscode-github-issue-notebooks",       "eamodio.gitlens"     ]   } } 
+{
+  "folders": [
+    { "path": "../frontend", "name": "🎨 Frontend Application" },
+    { "path": "../platform/design-system", "name": "🎨 Design System" },
+    { "path": "../SDK", "name": "📦 Component SDK" },
+    { "path": "../tests", "name": "🧪 Frontend Tests" },
+    { "path": "../config", "name": "⚙️ Configuration" }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#00FFEE",
+      "titleBar.activeForeground": "#0A0E1A"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/backend": true,
+      "**/bin": true,
+      "**/obj": true,
+      "**/dist": true,
+      "**/build": true
+    },
+    "search.exclude": {
+      "**/backend": true,
+      "**/node_modules": true,
+      "**/dist": true
+    },
+    "typescript.preferences.preferTypeOnlyAutoImports": true,
+    "typescript.suggest.includeCompletionsForModuleExports": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "eslint.workingDirectories": ["../frontend"],
+    "terrafusion.role": "frontend_development",
+    "terrafusion.responsibility": "react_quantum_ui"
+  },
+  "extensions": {
+    "recommendations": [
+      // === React 18 & TypeScript - 15 extensions ===
+      "ms-vscode.vscode-typescript-next",
+      "dsznajder.es7-react-js-snippets",
+      "wix.vscode-import-cost",
+      "formulahendry.auto-rename-tag",
+      "pmneo.tsimporter",
+      "chakrounanas.turbo-console-log",
+      "steoates.autoimport",
+      "xabikos.javascriptsnippets",
+      "planbcoding.vscode-react-refactor",
+      "burkeholland.simple-react-snippets",
+      "rodrigovallades.es7-react-js-snippets",
+      "jamesbirtles.svelte-vscode",
+      "styled-components.vscode-styled-components",
+      "csstools.postcss",
+      "jpoissonnier.vscode-styled-components",
+
+      // === Tailwind CSS & Styling - 8 extensions ===
+      "bradlc.vscode-tailwindcss",
+      "sudoaugustin.tailwindcss-utilities",
+      "bourhaouta.tailwindshades",
+      "austenc.tailwind-docs",
+      "maciekkoks.tailwindcss-color-preview",
+      "pranaygp.vscode-css-peek",
+      "stylelint.vscode-stylelint",
+      "zignd.html-css-class-completion",
+
+      // === Testing & Quality - 12 extensions ===
+      "ms-playwright.playwright",
+      "orta.vscode-jest",
+      "firsttris.vscode-jest-runner",
+      "vitest.explorer",
+      "hbenl.vscode-test-explorer",
+      "ryanluker.vscode-coverage-gutters",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "sonarsource.sonarlint-vscode",
+      "streetsidesoftware.code-spell-checker",
+      "editorconfig.editorconfig",
+      "usernamehw.errorlens",
+
+      // === Storybook & Component Development - 6 extensions ===
+      "chromatic.chromatic-addon",
+      "unifiedjs.vscode-mdx",
+      "silvenon.mdx",
+      "yoavbls.pretty-ts-errors",
+      "lokalise.i18n-ally",
+      "antfu.iconify",
+
+      // === Build Tools & DevOps - 8 extensions ===
+      "ms-azuretools.vscode-docker",
+      "ms-vscode-remote.remote-containers",
+      "github.vscode-github-actions",
+      "eamodio.gitlens",
+      "gruntfuggly.todo-tree",
+      "donjayamanne.githistory",
+      "github.vscode-pull-request-github",
+      "mhutchie.git-graph",
+
+      // === Accessibility & UX - 6 extensions ===
+      "deque-systems.vscode-axe-linter",
+      "maxvanderschee.web-accessibility",
+      "webhint.vscode-webhint",
+      "vincaslt.highlight-matching-tag",
+      "naumovs.color-highlight",
+      "kamikillerto.vscode-colorize",
+
+      // === Productivity & Utilities - 10 extensions ===
+      "christian-kohler.path-intellisense",
+      "formulahendry.auto-close-tag",
+      "coenraads.bracket-pair-colorizer-2",
+      "oderwat.indent-rainbow",
+      "aaron-bond.better-comments",
+      "wayou.vscode-todo-highlight",
+      "alefragnani.bookmarks",
+      "hediet.vscode-drawio",
+      "earshinov.sort-lines-by-selection",
+      "ms-vsliveshare.vsliveshare",
+
+      // === AI & Documentation - 5 extensions ===
+      "github.copilot",
+      "github.copilot-chat",
+      "visualstudioexptteam.vscodeintellicode",
+      "yzhang.markdown-all-in-one",
+      "bierner.markdown-mermaid"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🔧 Build: Production",
+        "type": "shell",
+        "command": "npm run build",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": { "kind": "build", "isDefault": true },
+        "problemMatcher": "$tsc"
+      },
+      {
+        "label": "🔧 Build: Clean Build Zone",
+        "type": "shell",
+        "command": "npm run build",
+        "options": { "cwd": "${workspaceFolder}/_CLEAN_BUILD_ZONE" },
+        "group": "build"
+      },
+      {
+        "label": "🚀 Dev: Start Vite Server",
+        "type": "shell",
+        "command": "npm run dev",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "isBackground": true,
+        "problemMatcher": {
+          "pattern": { "regexp": "." },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^.*VITE.*$",
+            "endsPattern": "^.*Local:.*$"
+          }
+        }
+      },
+      {
+        "label": "📚 Storybook: Start Dev",
+        "type": "shell",
+        "command": "npm run storybook",
+        "options": { "cwd": "${workspaceFolder}/_CLEAN_BUILD_ZONE" },
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
+        "label": "📚 Storybook: Build Static",
+        "type": "shell",
+        "command": "npm run build-storybook",
+        "options": { "cwd": "${workspaceFolder}/_CLEAN_BUILD_ZONE" },
+        "group": "build"
+      },
+      {
+        "label": "🧪 Test: Unit Tests",
+        "type": "shell",
+        "command": "npm run test:unit",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": { "kind": "test", "isDefault": true }
+      },
+      {
+        "label": "🧪 Test: E2E Tests",
+        "type": "shell",
+        "command": "npm run test:e2e",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": "test"
+      },
+      {
+        "label": "🧪 Test: Coverage Report",
+        "type": "shell",
+        "command": "npm run test:coverage",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": "test"
+      },
+      {
+        "label": "🔍 Quality: Lint & Format",
+        "type": "shell",
+        "command": "npm run quality",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": "test"
+      },
+      {
+        "label": "🔍 Quality: Type Check",
+        "type": "shell",
+        "command": "npm run type-check",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": "test"
+      },
+      {
+        "label": "🛡️ Compliance: Government Validation",
+        "type": "shell",
+        "command": "npm run government:compliance",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": "test"
+      },
+      {
+        "label": "🔒 Security: Audit Dependencies",
+        "type": "shell",
+        "command": "npm audit",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": "test"
+      },
+      {
+        "label": "🧹 Clean: Artifacts",
+        "type": "shell",
+        "command": "rm -rf dist node_modules/.vite",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": "none"
+      },
+      {
+        "label": "📦 Install: Dependencies",
+        "type": "shell",
+        "command": "npm install",
+        "options": { "cwd": "${workspaceFolder}/frontend" },
+        "group": "none"
+      },
+      {
+        "label": "📚 Docs: Generate API Docs",
+        "type": "shell",
+        "command": "npm run docs:api",
+        "options": { "cwd": "${workspaceFolder}/_CLEAN_BUILD_ZONE" },
+        "group": "none"
+      },
+      {
+        "label": "📚 Docs: Sync Design Tokens",
+        "type": "shell",
+        "command": "npm run docs:tokens",
+        "options": { "cwd": "${workspaceFolder}/_CLEAN_BUILD_ZONE" },
+        "group": "none"
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug: Chrome",
+        "type": "chrome",
+        "request": "launch",
+        "url": "http://localhost:5173",
+        "webRoot": "${workspaceFolder}/frontend",
+        "sourceMaps": true,
+        "preLaunchTask": "🚀 Dev: Start Vite Server",
+        "userDataDir": "${workspaceFolder}/.vscode/chrome-debug",
+        "runtimeArgs": [
+          "--auto-open-devtools-for-tabs"
+        ]
+      },
+      {
+        "name": "Debug: Edge",
+        "type": "msedge",
+        "request": "launch",
+        "url": "http://localhost:5173",
+        "webRoot": "${workspaceFolder}/frontend",
+        "sourceMaps": true,
+        "preLaunchTask": "🚀 Dev: Start Vite Server"
+      },
+      {
+        "name": "Debug: Vite Server",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "dev"],
+        "cwd": "${workspaceFolder}/frontend",
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Attach: Node Process",
+        "type": "node",
+        "request": "attach",
+        "port": 9229,
+        "skipFiles": ["<node_internals>/**"],
+        "restart": true
+      },
+      {
+        "name": "Debug: Jest Tests",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "test:unit", "--", "--runInBand"],
+        "cwd": "${workspaceFolder}/frontend",
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Debug: Playwright Tests",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/frontend/node_modules/.bin/playwright",
+        "args": ["test", "--debug"],
+        "cwd": "${workspaceFolder}/frontend",
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Debug: Storybook",
+        "type": "chrome",
+        "request": "launch",
+        "url": "http://localhost:6006",
+        "webRoot": "${workspaceFolder}/_CLEAN_BUILD_ZONE",
+        "preLaunchTask": "📚 Storybook: Start Dev"
+      }
+    ]
+  }
+}

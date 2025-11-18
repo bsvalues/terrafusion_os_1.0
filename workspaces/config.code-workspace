@@ -1,0 +1,71 @@
+{
+  "folders": [
+    { "path": "../config", "name": "⚙️ TerraFusion Configuration" }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#1E293B",
+      "titleBar.activeForeground": "#00FFFF"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": true
+    },
+    "search.exclude": {
+      "**/node_modules": true
+    },
+    "yaml.format.enable": true,
+    "json.format.enable": true,
+    "editor.formatOnSave": true,
+    "terrafusion.role": "configuration_management",
+    "terrafusion.responsibility": "tenant_isolation_and_policies"
+  },
+  "extensions": {
+    "recommendations": [
+      "redhat.vscode-yaml",
+      "ms-vscode.vscode-json",
+      "davidanson.vscode-markdownlint",
+      "dotenv.dotenv-vscode",
+      "mechatroner.rainbow-csv",
+      "eamodio.gitlens",
+      "gruntfuggly.todo-tree",
+      "streetsidesoftware.code-spell-checker",
+      "bierner.markdown-mermaid"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Validate: Tenant Config (prompt county)",
+        "type": "shell",
+        "command": "python validate_tenant_config.py --county=${input:county}",
+        "options": { "cwd": "${workspaceFolder}/../config" },
+        "group": { "kind": "test", "isDefault": true }
+      },
+      {
+        "label": "Security: FISMA-High Audit",
+        "type": "shell",
+        "command": "python security_audit_config.py --fisma-high || true",
+        "options": { "cwd": "${workspaceFolder}/../config" },
+        "group": "test"
+      },
+      {
+        "label": "Validate: Environment (development)",
+        "type": "shell",
+        "command": "npm run config:validate --env=development || true",
+        "options": { "cwd": "${workspaceFolder}/../config" },
+        "group": "test"
+      }
+    ]
+  },
+  "launch": { "version": "0.2.0", "configurations": [] },
+  "inputs": [
+    {
+      "id": "county",
+      "type": "promptString",
+      "description": "County id (e.g., benton, yakima)",
+      "default": "benton"
+    }
+  ]
+}

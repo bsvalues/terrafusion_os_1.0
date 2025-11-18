@@ -1,0 +1,65 @@
+{
+  "folders": [
+    { "path": "../backend/tests", "name": "🧪 Backend Tests" },
+    { "path": "../tests", "name": "🧪 Cross-Workspace Tests" }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#1F2937",
+      "titleBar.activeForeground": "#FFFFFF"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": true
+    },
+    "terrafusion.role": "testing",
+    "terrafusion.responsibility": "unit_integration_performance"
+  },
+  "extensions": {
+    "recommendations": [
+      "hbenl.vscode-test-explorer",
+      "formulahendry.dotnet-test-explorer",
+      "vitest.explorer",
+      "ms-playwright.playwright",
+      "ryanluker.vscode-coverage-gutters",
+      "sonarsource.sonarlint-vscode",
+      "usernamehw.errorlens",
+      "eamodio.gitlens",
+      "gruntfuggly.todo-tree"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Run: Unit Smoke Tests",
+        "type": "shell",
+        "command": "dotnet test --nologo",
+        "options": { "cwd": "${workspaceFolder}/../backend/tests/TerraFusion.Unit.SmokeTests" },
+        "group": { "kind": "test", "isDefault": true }
+      },
+      {
+        "label": "Run: Integration Tests",
+        "type": "shell",
+        "command": "dotnet test --nologo",
+        "options": { "cwd": "${workspaceFolder}/../backend/tests/TerraFusion.Integration.Tests" },
+        "group": "test"
+      },
+      {
+        "label": "Run: Performance Tests",
+        "type": "shell",
+        "command": "dotnet test --nologo",
+        "options": { "cwd": "${workspaceFolder}/../backend/tests/TerraFusion.Performance.Tests" },
+        "group": "test"
+      },
+      {
+        "label": "Run: Backend Tests (legacy)",
+        "type": "shell",
+        "command": "dotnet test --nologo",
+        "options": { "cwd": "${workspaceFolder}/../backend/tests" },
+        "group": "test"
+      }
+    ]
+  },
+  "launch": { "version": "0.2.0", "configurations": [] }
+}

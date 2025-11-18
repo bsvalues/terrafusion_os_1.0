@@ -7,7 +7,6 @@
  */
 
 import fs from 'fs';
-import path from 'path';
 
 class EconomicDevelopmentAITraining {
     constructor() {
@@ -35,7 +34,7 @@ class EconomicDevelopmentAITraining {
 
     async validateDomainKnowledge() {
         console.log('📚 Step 1: Domain Knowledge Validation');
-        
+
         const domainQuestions = [
             {
                 question: "What is the primary domain of economic-development?",
@@ -43,7 +42,7 @@ class EconomicDevelopmentAITraining {
                 critical: true
             },
             {
-                question: "What is the risk level for economic-development?", 
+                question: "What is the risk level for economic-development?",
                 expected: "medium",
                 critical: true
             },
@@ -70,12 +69,12 @@ class EconomicDevelopmentAITraining {
 
     async trainProtectionSystems() {
         console.log('🛡️ Step 2: ECONOMIC-DEVELOPMENT Protection System Training');
-        
+
         console.log('   🔒 Protection Priorities for economic-development:');
         this.protectionPriorities.forEach(priority => {
             console.log(`      - ${priority}`);
         });
-        
+
         console.log('');
         console.log('   🎯 Specialized Protection Training:');
         console.log(`      - business_development threat modeling`);
@@ -86,7 +85,7 @@ class EconomicDevelopmentAITraining {
 
     async validateWorkspaceSpecificCapabilities() {
         console.log('⚡ Step 3: ECONOMIC-DEVELOPMENT Capability Validation');
-        
+
         const capabilities = [
             `${this.domain} domain expertise`,
             `${this.riskLevel} security controls`,
@@ -103,7 +102,7 @@ class EconomicDevelopmentAITraining {
 
     async generateTrainingReport() {
         console.log('📊 Step 4: Training Report Generation');
-        
+
         const report = {
             timestamp: new Date().toISOString(),
             workspace: this.workspaceName,
@@ -121,7 +120,7 @@ class EconomicDevelopmentAITraining {
 
         const reportPath = '.terrafusion/economic-development-training-report.json';
         fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-        
+
         console.log('   ✅ Training completed for economic-development');
         console.log(`   📄 Report saved: ${reportPath}`);
         console.log('');

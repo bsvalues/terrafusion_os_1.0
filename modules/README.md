@@ -1,18 +1,22 @@
-# MODULES
+# TerraFusion OS Modules
 
-Active production modules
+This directory contains symlinks to modules in SDK/modules/ for workspace compatibility.
 
-*Organized by MIT PhD-Level Systems Architecture Standards*
-*TerraFusion OS Module Organization System*
+## Available Modules
 
-## Purpose
-Production-ready modules actively integrated into TerraFusion OS ecosystem.
+- **costforge-ai**: AI-powered cost estimation and quantum ML services
+- **terra-levy**: Tax levy calculation and government revenue management  
+- **terra-agent**: AI agent coordination and swarm intelligence
+- **terra-pilt**: PILT (Payments In Lieu of Taxes) management
+- **terra-playground**: Development and testing environment
+- **terra-dashboard**: Government operations dashboard
+- **bcbs-webhub**: Legacy system integration hub
 
-## Standards
-- All modules must have proper documentation
-- Version control through git, not directory copies
-- MCP server integration where applicable
-- Comprehensive testing coverage
+## Usage
 
----
-*Last updated: 2025-09-07T14:00:34.484Z*
+Each module can be developed independently using its dedicated workspace:
+- `costforge-ai.code-workspace`
+- `terra-levy.code-workspace`
+- etc.
+
+**Government. Transcended.**

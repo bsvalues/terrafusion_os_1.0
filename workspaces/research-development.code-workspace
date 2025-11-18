@@ -1,1 +1,52 @@
-{   "name": "TerraFusion Research Innovation",   "folders": [     {       "path": "../docs/research"     },     {       "path": "../SDK/experimental"     }   ],   "settings": {     "terrafusion.role": "research_innovation",     "terrafusion.innovation": "cutting_edge_government_tech"   } }
+{
+  "name": "TerraFusion Research Innovation",
+  "folders": [
+    {
+      "path": "../docs/research"
+    },
+    {
+      "path": "../SDK/experimental"
+    }
+  ],
+  "settings": {
+    "terrafusion.role": "research_innovation",
+    "terrafusion.innovation": "cutting_edge_government_tech"
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Research Development",
+        "type": "node",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Research Development",
+        "type": "shell",
+        "command": "echo 'Build task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Research Development",
+        "type": "shell",
+        "command": "echo 'Test task for ${workspaceFolder}'",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

@@ -7,7 +7,6 @@
  */
 
 import fs from 'fs';
-import path from 'path';
 
 class CodeEnforcementAITraining {
     constructor() {
@@ -35,7 +34,7 @@ class CodeEnforcementAITraining {
 
     async validateDomainKnowledge() {
         console.log('📚 Step 1: Domain Knowledge Validation');
-        
+
         const domainQuestions = [
             {
                 question: "What is the primary domain of code-enforcement?",
@@ -43,7 +42,7 @@ class CodeEnforcementAITraining {
                 critical: true
             },
             {
-                question: "What is the risk level for code-enforcement?", 
+                question: "What is the risk level for code-enforcement?",
                 expected: "high",
                 critical: true
             },
@@ -70,12 +69,12 @@ class CodeEnforcementAITraining {
 
     async trainProtectionSystems() {
         console.log('🛡️ Step 2: CODE-ENFORCEMENT Protection System Training');
-        
+
         console.log('   🔒 Protection Priorities for code-enforcement:');
         this.protectionPriorities.forEach(priority => {
             console.log(`      - ${priority}`);
         });
-        
+
         console.log('');
         console.log('   🎯 Specialized Protection Training:');
         console.log(`      - regulatory_compliance threat modeling`);
@@ -86,7 +85,7 @@ class CodeEnforcementAITraining {
 
     async validateWorkspaceSpecificCapabilities() {
         console.log('⚡ Step 3: CODE-ENFORCEMENT Capability Validation');
-        
+
         const capabilities = [
             `${this.domain} domain expertise`,
             `${this.riskLevel} security controls`,
@@ -103,7 +102,7 @@ class CodeEnforcementAITraining {
 
     async generateTrainingReport() {
         console.log('📊 Step 4: Training Report Generation');
-        
+
         const report = {
             timestamp: new Date().toISOString(),
             workspace: this.workspaceName,
@@ -121,7 +120,7 @@ class CodeEnforcementAITraining {
 
         const reportPath = '.terrafusion/code-enforcement-training-report.json';
         fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-        
+
         console.log('   ✅ Training completed for code-enforcement');
         console.log(`   📄 Report saved: ${reportPath}`);
         console.log('');

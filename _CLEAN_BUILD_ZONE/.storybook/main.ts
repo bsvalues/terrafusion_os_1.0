@@ -1,31 +1,65 @@
-import type { StorybookConfig } from '@storybook/react-vite';
+/**
+ * Storybook Main Configuration
+ *
+ * TerraFusion OS component documentation system
+ */
 
-import { join, dirname } from "path"
+import type { StorybookConfig } from '@storybook/react-vite';
+import { dirname, join } from "path";
+import { mergeConfig } from 'vite';
 
 /**
 * This function is used to resolve the absolute path of a package.
 * It is needed in projects that use Yarn PnP or are set up within a monorepo.
 */
 function getAbsolutePath(value: string): any {
-  return dirname(require.resolve(join(value, 'package.json')))
+  return dirname(require.resolve(join(value, 'package.json')));
 }
+
 const config: StorybookConfig = {
-  "stories": [
-    "../src/**/*.mdx",
-    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+  stories: [
+    '../src/**/*.mdx',
+    '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
-  "addons": [
+
+  addons: [
     getAbsolutePath('@storybook/addon-docs'),
     getAbsolutePath('@storybook/addon-onboarding'),
     getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@storybook/addon-a11y'),
   ],
-  "framework": {
-    "name": getAbsolutePath('@storybook/react-vite'),
-    "options": {}
+
+  framework: {
+    name: getAbsolutePath('@storybook/react-vite'),
+    options: {},
   },
-  "docs": {
-    "autodocs": true
-  }
+
+  docs: {
+    autodocs: 'tag',
+  },
+
+  core: {
+    disableTelemetry: true,
+  },
+
+  async viteFinal(config) {
+    return mergeConfig(config, {
+      resolve: {
+        alias: {
+          '@': '/src',
+          '@components': '/src/components',
+          '@hooks': '/src/hooks',
+          '@utils': '/src/utils',
+          '@ui': '/src/components/ui',
+          '@quantum': '/src/quantum',
+          '@terrafusion': '/src/terrafusion',
+        },
+      },
+      define: {
+        'process.env.STORYBOOK': JSON.stringify('true'),
+      },
+    });
+  },
 };
+
 export default config;

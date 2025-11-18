@@ -1,0 +1,65 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "TerraFusion OS API Documentation",
+  "entryPoints": [
+    "src/hooks",
+    "src/utils",
+    "src/lib",
+    "src/components/ui",
+    "src/components/terrafusion-design-system.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "docs/api",
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.stories.tsx",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**"
+  ],
+  "excludePrivate": false,
+  "excludeProtected": false,
+  "excludeExternals": true,
+  "includeVersion": true,
+  "disableSources": false,
+  "theme": "default",
+  "readme": "README.md",
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Hooks",
+    "Utilities",
+    "Components",
+    "Types",
+    "*"
+  ],
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true,
+    "includeFolders": true
+  },
+  "plugin": [
+    "typedoc-plugin-markdown"
+  ],
+  "searchInComments": true,
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false
+  },
+  "comment": {
+    "useTsLinkResolution": true
+  },
+  "sort": [
+    "source-order",
+    "alphabetical"
+  ],
+  "kindSortOrder": [
+    "Function",
+    "Class",
+    "Interface",
+    "TypeAlias",
+    "Variable",
+    "Enum"
+  ]
+}
