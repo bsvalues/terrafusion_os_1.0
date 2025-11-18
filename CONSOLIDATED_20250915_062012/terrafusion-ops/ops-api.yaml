@@ -1,0 +1,328 @@
+openapi: 3.0.3
+info:
+  title: TerraFusion Ops Runner API
+  description: |
+    Hardened operations runner for TerraFusion OS 2.0
+    
+    Provides safe execution of scripts, workflows, and maintenance tasks
+    with comprehensive logging, retry logic, and timeout protection.
+  version: 2.0.0
+  contact:
+    name: TerraFusion Operations Team
+    email: ops@terrafusion.gov
+
+servers:
+  - url: http://localhost:\${{TF_SERVICE_8090_PORT:-8090}}/api/v1
+    description: Development server
+  - url: https://ops.terrafusion.gov/api/v1
+    description: Production server
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns operational status of the ops runner
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded, unhealthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  version:
+                    type: string
+                  components:
+                    type: object
+                    properties:
+                      inventory:
+                        type: string
+                        enum: [ok, error]
+                      scripts:
+                        type: string
+                        enum: [ok, error]
+                      logs:
+                        type: string
+                        enum: [ok, error]
+
+  /scripts:
+    get:
+      summary: List available scripts
+      description: Returns inventory of all registered scripts
+      responses:
+        '200':
+          description: List of available scripts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  scripts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Script'
+
+  /scripts/{scriptName}/run:
+    post:
+      summary: Execute a script
+      description: |
+        Execute a named script with optional parameters.
+        Supports dry-run mode, retries, and timeout configuration.
+      parameters:
+        - name: scriptName
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Name of the script to execute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dry_run:
+                  type: boolean
+                  default: false
+                  description: Execute in dry-run mode (no side effects)
+                retries:
+                  type: integer
+                  default: 0
+                  minimum: 0
+                  maximum: 5
+                  description: Number of retry attempts
+                timeout:
+                  type: integer
+                  default: 3600
+                  minimum: 30
+                  maximum: 14400
+                  description: Timeout in seconds
+                continue_on_error:
+                  type: boolean
+                  default: false
+                  description: Continue workflow on error
+                parameters:
+                  type: object
+                  description: Script-specific parameters
+      responses:
+        '200':
+          description: Script execution initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '404':
+          description: Script not found
+        '400':
+          description: Invalid parameters
+
+  /workflows:
+    get:
+      summary: List available workflows
+      description: Returns all registered workflows
+      responses:
+        '200':
+          description: List of workflows
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  workflows:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Workflow'
+
+  /workflows/{workflowName}/run:
+    post:
+      summary: Execute a workflow
+      description: Execute a named workflow (sequence of scripts)
+      parameters:
+        - name: workflowName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dry_run:
+                  type: boolean
+                  default: false
+                continue_on_error:
+                  type: boolean
+                  default: false
+                parameters:
+                  type: object
+      responses:
+        '200':
+          description: Workflow execution initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+
+  /jobs/{jobId}:
+    get:
+      summary: Get job status
+      description: Returns status and output of a running or completed job
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+        '404':
+          description: Job not found
+
+  /jobs/{jobId}/logs:
+    get:
+      summary: Get job logs
+      description: Stream or retrieve logs for a job
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: follow
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: Follow logs (stream mode)
+      responses:
+        '200':
+          description: Job logs
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  schemas:
+    Script:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Unique script identifier
+        description:
+          type: string
+          description: Human-readable description
+        path:
+          type: string
+          description: File system path to script
+        category:
+          type: string
+          enum: [deployment, testing, maintenance, demo, ai, validation]
+        timeout_default:
+          type: integer
+          description: Default timeout in seconds
+        retries_default:
+          type: integer
+          description: Default retry count
+        parameters:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+                enum: [string, integer, boolean]
+              required:
+                type: boolean
+              default:
+                type: string
+              description:
+                type: string
+
+    Workflow:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              script:
+                type: string
+              parameters:
+                type: object
+              continue_on_error:
+                type: boolean
+              timeout:
+                type: integer
+
+    JobResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+          description: Unique job identifier
+        status:
+          type: string
+          enum: [queued, running, completed, failed, timeout]
+        started_at:
+          type: string
+          format: date-time
+        estimated_duration:
+          type: integer
+          description: Estimated duration in seconds
+
+    JobStatus:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+          enum: [queued, running, completed, failed, timeout]
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+          description: Actual duration in seconds
+        exit_code:
+          type: integer
+        output:
+          type: string
+          description: Captured stdout/stderr
+        logs_path:
+          type: string
+          description: Path to detailed logs
+        retry_count:
+          type: integer
+          description: Number of retries attempted
+        script_name:
+          type: string
+        workflow_name:
+          type: string

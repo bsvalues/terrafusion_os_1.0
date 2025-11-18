@@ -1,0 +1,51 @@
+export const ColorPalette = () =>{const colors = [
+    {
+      name: 'Primary Cyan',
+      hex: '#00e5ff',
+      rgb: '0, 229, 255',
+      hsl: '186, 100%, 50%',
+      description: 'Primary brand color for logos, CTA buttons, and key highlights',
+      className: 'bg-tf-gradient-primary',
+      textColor: 'text-primary-foreground',},
+    {name: 'Secondary Blue',
+      hex: '#00b8d4',
+      rgb: '0, 184, 212',
+      hsl: '188, 100%, 42%',
+      description: 'Supporting blue for gradients and secondary elements',
+      className: 'bg-tf-secondary-blue',
+      textColor: 'text-white',},
+    {name: 'Deep Teal',
+      hex: '#006064',
+      rgb: '0, 96, 100',
+      hsl: '182, 100%, 20%',
+      description: 'Dark accent for depth and professional applications',
+      className: 'bg-tf-deep-teal',
+      textColor: 'text-white',},
+    {name: 'Dark Background',
+      hex: '#1a2332',
+      rgb: '26, 35, 50',
+      hsl: '216, 32%, 15%',
+      description: 'Primary dark background for cards and containers',
+      className: 'bg-tf-dark-bg',
+      textColor: 'text-white',},
+    {name: 'Space Black',
+      hex: '#0a0f1c',
+      rgb: '10, 15, 28',
+      hsl: '216, 55%, 4%',
+      description: 'Deep background for maximum contrast and premium feel',
+      className: 'bg-tf-space-black',
+      textColor: 'text-white',},
+    {name: 'Pure White',
+      hex: '#ffffff',
+      rgb: '255, 255, 255',
+      hsl: '0, 0%, 100%',
+      description: 'Clean white for text, icons, and high contrast elements',
+      className: 'bg-white',
+      textColor: 'text-black',},
+  ];
+
+  return (<section className="py-20"><div className="container mx-auto px-4"><div className="flex items-center mb-12"><div className="w-2 h-16 bg-tf-gradient-primary rounded-full shadow-tf-cyan mr-6" /><h2 className="text-5xl font-bold text-white">Brand Color Palette</h2></div><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{colors.map((color, index) => (<div key={index} className="tf-card rounded-2xl overflow-hidden group hover:scale-105">{/* Color Swatch */}<div
+                className={`h-32 flex items-end p-6 ${color.className} relative overflow-hidden`}
+              ><div className={`font-semibold text-lg ${color.textColor} relative z-10`}>{color.name}</div>{/* Gradient overlay for better text readability */}<div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" /></div>{/* Color Information */}<div className="p-6"><div className="space-y-3 mb-4"><div className="flex justify-between"><span className="text-muted-foreground text-sm">HEX</span><code className="text-white font-mono text-sm bg-tf-space-black px-2 py-1 rounded">{color.hex}</code></div><div className="flex justify-between"><span className="text-muted-foreground text-sm">RGB</span><code className="text-white font-mono text-sm bg-tf-space-black px-2 py-1 rounded">{color.rgb}</code></div><div className="flex justify-between"><span className="text-muted-foreground text-sm">HSL</span><code className="text-white font-mono text-sm bg-tf-space-black px-2 py-1 rounded">{color.hsl}</code></div></div><p className="text-muted-foreground text-sm leading-relaxed">{color.description}</p>{/* Copy to clipboard functionality placeholder */}<button className="w-full mt-4 py-2 px-4 bg-primary/20 hover:bg-primary/30 text-primary text-sm rounded-lg border border-primary/30 transition-colors">Copy Color Values</button></div></div>))}</div>{/* Color Usage Guidelines */}<div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8"><div className="tf-card rounded-2xl p-8"><div className="flex items-center mb-6"><div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4"><span className="text-white font-bold text-sm">✓</span></div><h3 className="text-xl font-semibold text-white">Best Practices</h3></div><ul className="space-y-4 text-muted-foreground"><li className="flex items-start"><span className="text-primary mr-3 mt-1">•</span>Use Primary Cyan for call-to-action buttons and key interactive elements</li><li className="flex items-start"><span className="text-primary mr-3 mt-1">•</span>Combine gradients for depth and premium appearance</li><li className="flex items-start"><span className="text-primary mr-3 mt-1">•</span>Maintain contrast ratios above 4.5:1 for accessibility</li><li className="flex items-start"><span className="text-primary mr-3 mt-1">•</span>Use Dark Background for cards and content containers</li></ul></div><div className="tf-card rounded-2xl p-8"><div className="flex items-center mb-6"><div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center mr-4"><span className="text-white font-bold text-sm">✗</span></div><h3 className="text-xl font-semibold text-white">Avoid These</h3></div><ul className="space-y-4 text-muted-foreground"><li className="flex items-start"><span className="text-red-400 mr-3 mt-1">•</span>Don't use colors at low opacity that reduce readability</li><li className="flex items-start"><span className="text-red-400 mr-3 mt-1">•</span>Avoid using pure cyan on white backgrounds without sufficient contrast</li><li className="flex items-start"><span className="text-red-400 mr-3 mt-1">•</span>Don't mix warm colors with the cool TerraFusion palette</li><li className="flex items-start"><span className="text-red-400 mr-3 mt-1">•</span>Never use the brand colors for error states or destructive actions</li></ul></div></div></div></section>
+  );
+};

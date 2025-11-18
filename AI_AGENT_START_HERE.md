@@ -1,0 +1,1 @@
+docs/AI_AGENT_START_HERE.md

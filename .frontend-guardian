@@ -1,0 +1,15 @@
+{
+  "lastCheck": "2025-09-25T00:51:23.985Z",
+  "legacyPaths": [
+    "/frontend/",
+    "/terrafusion/frontend/",
+    "frontend/src",
+    "frontend/components"
+  ],
+  "correctPaths": [
+    "/frontend-v2/",
+    "/frontend-v2/shell/",
+    "/frontend-v2/packages/"
+  ],
+  "message": "AI agents must use frontend-v2 architecture only"
+}

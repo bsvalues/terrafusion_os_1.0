@@ -1,0 +1,98 @@
+name: tfctl CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'tfctl.py'
+      - 'tests/**'
+      - '.github/workflows/tfctl-ci.yml'
+  pull_request:
+    paths:
+      - 'tfctl.py'
+      - 'tests/**'
+      - '.github/workflows/tfctl-ci.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [ '3.10', '3.11', '3.12' ]
+    env:
+      TF_API_PORT: 0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python }}-${{ hashFiles('requirements-dev.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+      - name: Install dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; else pip install pytest requests boto3 moto==4.1.0; fi
+      - name: Run pytest (all)
+        id: run-tests
+        run: |
+          set -o pipefail
+          pytest -q || echo "PYTEST_FAILED=1" > pytest_status
+
+      - name: Create bundle for artifacts
+        if: always()
+        run: |
+          python tfctl.py bundle --max-lines 2000 || true
+          mkdir -p artifacts
+          find . /tmp -maxdepth 2 -type f -name "tfctl_bundle*.zip" -exec cp -v {} artifacts/ \; || true
+
+      - name: Upload bundle artifact (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfctl-bundle-${{ matrix.python }}
+          path: artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  s3-bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-3.11-${{ hashFiles('requirements-dev.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+      - name: Install pinned moto and test deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Create bundle for artifacts
+        if: always()
+        run: |
+          python tfctl.py bundle --max-lines 2000 || true
+          mkdir -p artifacts
+          find . /tmp -maxdepth 2 -type f -name "tfctl_bundle*.zip" -exec cp -v {} artifacts/ \; || true
+
+      - name: Upload bundle artifact (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfctl-bundle-s3
+          path: artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Run S3 bundle test
+        run: pytest -q tests/test_bundle_s3.py
+

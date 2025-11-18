@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* TerraFusion Design System - All colors, gradients, fonts, and effects 
+AI That Understands Land - Professional Branding System
+*/
+
+@layer base {
+  :root {
+    /* TerraFusion Brand Colors */
+    --tf-primary-cyan: 186 100% 50%;        /* #00e5ff */
+    --tf-secondary-blue: 188 100% 42%;      /* #00b8d4 */
+    --tf-deep-teal: 182 100% 20%;           /* #006064 */
+    --tf-dark-bg: 216 32% 15%;              /* #1a2332 */
+    --tf-darker-bg: 216 45% 8%;             /* #0f1a2a */
+    --tf-space-black: 216 55% 4%;           /* #0a0f1c */
+    
+    /* Core System Colors */
+    --background: 216 55% 4%;
+    --foreground: 0 0% 100%;
+
+    --card: 216 32% 15%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 216 32% 15%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 186 100% 50%;
+    --primary-foreground: 216 32% 15%;
+
+    --secondary: 188 100% 42%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 216 45% 8%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 186 100% 50%;
+    --accent-foreground: 216 32% 15%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 186 100% 50% / 0.2;
+    --input: 216 32% 15%;
+    --ring: 186 100% 50%;
+
+    --radius: 0.75rem;
+    
+    /* TerraFusion Brand Gradients */
+    --tf-gradient-primary: linear-gradient(135deg, hsl(186 100% 50%), hsl(188 100% 42%));
+    --tf-gradient-cosmic: linear-gradient(135deg, hsl(216 55% 4%), hsl(216 32% 15%));
+    --tf-gradient-hero: linear-gradient(135deg, hsl(186 100% 50%), hsl(182 100% 20%));
+    --tf-gradient-glow: radial-gradient(circle at center, hsl(186 100% 50% / 0.3), transparent 70%);
+    
+    /* TerraFusion Shadows & Effects */
+    --tf-shadow-cyan: 0 0 40px hsl(186 100% 50% / 0.4);
+    --tf-shadow-glow: 0 0 60px hsl(186 100% 50% / 0.6);
+    --tf-shadow-card: 0 20px 40px hsl(216 55% 4% / 0.8);
+    --tf-shadow-float: 0 25px 50px hsl(186 100% 50% / 0.15);
+    
+    /* Animation Variables */
+    --tf-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --tf-transition-fast: all 0.2s ease;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter;
+    background: var(--tf-gradient-cosmic);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  /* TerraFusion Brand Components */
+  .tf-logo-glow {
+    animation: tf-glow-pulse 2s ease-in-out infinite alternate;
+    filter: drop-shadow(var(--tf-shadow-cyan));
+  }
+  
+  .tf-gradient-text {
+    background: var(--tf-gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .tf-card {
+    background: linear-gradient(145deg, hsl(var(--tf-dark-bg)), hsl(var(--tf-darker-bg)));
+    border: 1px solid hsl(var(--primary) / 0.2);
+    box-shadow: var(--tf-shadow-card);
+    transition: var(--tf-transition);
+  }
+  
+  .tf-card:hover {
+    transform: translateY(-8px);
+    border-color: hsl(var(--primary));
+    box-shadow: var(--tf-shadow-float);
+  }
+  
+  .tf-button-primary {
+    background: var(--tf-gradient-primary);
+    color: hsl(var(--primary-foreground));
+    border: none;
+    transition: var(--tf-transition);
+    box-shadow: 0 4px 20px hsl(var(--primary) / 0.3);
+  }
+  
+  .tf-button-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px hsl(var(--primary) / 0.5);
+  }
+}
+
+@layer utilities {
+  @keyframes tf-glow-pulse {
+    from {
+      filter: drop-shadow(0 0 20px hsl(var(--primary) / 0.4));
+    }
+    to {
+      filter: drop-shadow(0 0 40px hsl(var(--primary) / 0.8));
+    }
+  }
+  
+  @keyframes tf-float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  .tf-animate-float {
+    animation: tf-float 6s ease-in-out infinite;
+  }
+}
