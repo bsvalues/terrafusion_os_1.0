@@ -1,0 +1,230 @@
+name: TerraFusion OS - Verified Build & Test
+
+on:
+  push:
+    branches: [main, develop, 'feature/**']
+  pull_request:
+    branches: [main, develop]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  NODE_VERSION: '20.x'
+
+jobs:
+  build-backend:
+    name: Build .NET Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('backend/**/*.csproj', 'backend/**/*.sln') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore backend/TerraFusion.sln
+
+      - name: Build solution
+        run: dotnet build backend/TerraFusion.sln --no-restore --configuration Release
+
+      - name: Run backend tests
+        run: dotnet test backend/TerraFusion.sln --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage"
+        continue-on-error: false
+
+      - name: Publish test results
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Backend Test Results
+          path: '**/test-results.trx'
+          reporter: dotnet-trx
+
+  build-frontend:
+    name: Build React Frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test -- --coverage --watchAll=false
+        continue-on-error: false
+
+  code-quality:
+    name: Code Quality & Security
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-frontend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run CodeQL Analysis
+        if: ${{ github.event_name == 'push' }}
+        uses: github/codeql-action/init@v3
+        with:
+          languages: 'csharp,javascript'
+
+      - name: Setup .NET for CodeQL
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Build for CodeQL
+        if: ${{ github.event_name == 'push' }}
+        run: dotnet build backend/TerraFusion.sln --configuration Release
+
+      - name: Perform CodeQL Analysis
+        if: ${{ github.event_name == 'push' }}
+        uses: github/codeql-action/analyze@v3
+
+  container-build:
+    name: Build Container Images
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-frontend]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        if: ${{ secrets.GITHUB_TOKEN != '' }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/terrafusion-api
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+
+      - name: Build container image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-dev:
+    name: Deploy to Development
+    runs-on: ubuntu-latest
+    needs: [code-quality, container-build]
+    if: github.ref == 'refs/heads/develop'
+    environment: development
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Azure App Service
+        if: ${{ secrets.AZURE_CREDENTIALS != '' }}
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'terrafusion-dev'
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE_DEV }}
+          package: './backend'
+
+      - name: Skip deployment (missing credentials)
+        if: ${{ secrets.AZURE_CREDENTIALS == '' }}
+        run: |
+          echo "⚠️ Skipping Azure deployment - AZURE_CREDENTIALS not configured"
+          echo "To enable deployment, configure Azure credentials in repository secrets"
+          echo "Deployment would target: terrafusion-dev environment"
+
+  deploy-prod:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [code-quality, container-build]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Azure App Service
+        if: ${{ secrets.AZURE_CREDENTIALS != '' }}
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'terrafusion-prod'
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE_PROD }}
+          package: './backend'
+
+      - name: Skip deployment (missing credentials)
+        if: ${{ secrets.AZURE_CREDENTIALS == '' }}
+        run: |
+          echo "⚠️ Skipping Azure deployment - AZURE_CREDENTIALS not configured"
+          echo "To enable deployment, configure Azure credentials in repository secrets"
+          echo "Deployment would target: terrafusion-prod environment"
+
+  notify:
+    name: Notification
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-frontend, code-quality]
+    if: always()
+
+    steps:
+      - name: Notify success
+        if: ${{ needs.build-backend.result == 'success' && needs.build-frontend.result == 'success' }}
+        run: |
+          echo "✅ TerraFusion OS build completed successfully!"
+          echo "Backend: ${{ needs.build-backend.result }}"
+          echo "Frontend: ${{ needs.build-frontend.result }}"
+          echo "Code Quality: ${{ needs.code-quality.result }}"
+
+      - name: Notify failure
+        if: ${{ needs.build-backend.result == 'failure' || needs.build-frontend.result == 'failure' }}
+        run: |
+          echo "❌ TerraFusion OS build failed!"
+          echo "Backend: ${{ needs.build-backend.result }}"
+          echo "Frontend: ${{ needs.build-frontend.result }}"
+          exit 1

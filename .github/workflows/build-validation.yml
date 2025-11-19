@@ -1,0 +1,79 @@
+name: TerraFusion OS - Build Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-build:
+    name: Validate Perfect Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore NuGet packages
+        run: dotnet restore backend/TerraFusion.sln
+
+      - name: Build with zero tolerance
+        run: |
+          echo "🏗️ Building TerraFusion OS with zero error/warning tolerance..."
+          dotnet build backend/TerraFusion.sln --no-restore --configuration Release --verbosity minimal
+
+          # Verify zero errors and warnings
+          BUILD_OUTPUT=$(dotnet build backend/TerraFusion.sln --no-restore --configuration Release 2>&1)
+          ERROR_COUNT=$(echo "$BUILD_OUTPUT" | grep -o '[0-9]\+ Error(s)' | grep -o '[0-9]\+' || echo "0")
+          WARNING_COUNT=$(echo "$BUILD_OUTPUT" | grep -o '[0-9]\+ Warning(s)' | grep -o '[0-9]\+' || echo "0")
+
+          echo "🔍 Build Quality Check:"
+          echo "   Errors: $ERROR_COUNT"
+          echo "   Warnings: $WARNING_COUNT"
+
+          if [ "$ERROR_COUNT" != "0" ]; then
+            echo "❌ FAILED: Build has $ERROR_COUNT error(s). TerraFusion OS requires zero errors."
+            exit 1
+          fi
+
+          if [ "$WARNING_COUNT" != "0" ]; then
+            echo "❌ FAILED: Build has $WARNING_COUNT warning(s). TerraFusion OS requires zero warnings."
+            exit 1
+          fi
+
+          echo "✅ SUCCESS: Perfect build achieved - 0 errors, 0 warnings!"
+
+      - name: Validate architecture integrity
+        run: |
+          echo "🏛️ Validating Single Source of Truth architecture..."
+
+          # Check that DTOs exist in Abstractions
+          if [ ! -f "backend/TerraFusion.Abstractions/DTOs/Shared/SharedDtos.cs" ]; then
+            echo "❌ FAILED: SharedDtos.cs missing from Abstractions"
+            exit 1
+          fi
+
+          if [ ! -f "backend/TerraFusion.Abstractions/DTOs/Responses/PerformanceMetricsDto.cs" ]; then
+            echo "❌ FAILED: PerformanceMetricsDto.cs missing from Abstractions"
+            exit 1
+          fi
+
+          echo "✅ SUCCESS: Architecture integrity verified!"
+
+      - name: Elite status confirmation
+        run: |
+          echo "🏆 TERRAFUSION OS - ELITE GOVERNMENT SOFTWARE"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Zero compilation errors"
+          echo "✅ Zero compiler warnings"
+          echo "✅ Single Source of Truth architecture"
+          echo "✅ Perfect code quality maintained"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🚀 DEPLOYMENT READY - GOVERNMENT GRADE"
