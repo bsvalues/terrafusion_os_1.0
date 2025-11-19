@@ -115,6 +115,27 @@ bundle: ## Build edge/disconnected bundle
 	cd tools/tf-bundle && go build -o ../../artifacts/tf-bundle && ../../artifacts/tf-bundle
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# CI/CD TARGETS FOR GITHUB ACTIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+ci-build: ## CI build target for GitHub Actions
+	@echo "🔨 CI Build - TerraFusion OS..."
+	@echo "📦 Building .NET Backend..."
+	cd backend && dotnet restore TerraFusion.sln
+	cd backend && dotnet build TerraFusion.sln --configuration Release --no-restore
+	@echo "📦 Building Frontend (if exists)..."
+	@if [ -d "frontend" ]; then cd frontend && npm ci && npm run build; fi
+	@echo "✅ CI Build complete"
+
+ci-test: ## CI test target for GitHub Actions
+	@echo "🧪 CI Tests - TerraFusion OS..."
+	@echo "🧪 Running Backend Tests..."
+	cd backend && dotnet test TerraFusion.sln --configuration Release --no-build --verbosity minimal --logger "console;verbosity=normal"
+	@echo "🧪 Running Frontend Tests (if exists)..."
+	@if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then cd frontend && npm run test; fi
+	@echo "✅ CI Tests complete"
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # LEGACY BENTON COUNTY DEMO
 # ═══════════════════════════════════════════════════════════════════════════════
 

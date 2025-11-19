@@ -2,9 +2,9 @@ name: CI - Build and Smoke (fixed)
 
 on:
   push:
-    branches: [ main, 'feature/**' ]
+    branches: [main, "feature/**"]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -15,12 +15,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: 'false'
+          submodules: "false"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
 
       - name: Cache NuGet
         uses: actions/cache@v4
@@ -51,10 +51,23 @@ jobs:
           sudo apt-get install -y k6
 
       - name: ci-build
-        run: make ci-build
+        run: |
+          echo "🔨 Starting CI Build..."
+          make ci-build || {
+            echo "❌ Build failed, collecting diagnostics..."
+            find backend -name "*.log" -type f -exec echo "=== {} ===" \; -exec cat {} \; || true
+            exit 1
+          }
 
       - name: ci-test
-        run: make ci-test
+        run: |
+          echo "🧪 Starting CI Tests..."
+          make ci-test || {
+            echo "❌ Tests failed, collecting test results..."
+            find backend -name "TestResults" -type d -exec find {} -name "*.trx" -exec echo "=== {} ===" \; -exec cat {} \; || true
+            echo "Note: Some test failures may be due to missing test dependencies"
+            exit 1
+          }
 
       - name: optionally-run-k6
         env:
