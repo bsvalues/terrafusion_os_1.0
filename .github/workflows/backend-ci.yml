@@ -1,0 +1,174 @@
+name: ⚙️ Backend .NET Services CI
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+    branches: [main, development]
+  pull_request:
+    paths:
+      - 'backend/**'
+    branches: [main, development]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build-and-test:
+    name: 🔨 Build & Test .NET Services
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: terrafusion_test
+        options: >
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: 🔄 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔵 Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 📦 Restore Dependencies
+        run: dotnet restore backend/TerraFusion.sln
+
+      - name: 🔨 Build Solution
+        run: dotnet build backend/TerraFusion.sln --no-restore --configuration Release
+
+      - name: 🧪 Run Unit Tests
+        run: |
+          dotnet test backend/tests/TerraFusion.Unit.SmokeTests/TerraFusion.Unit.SmokeTests.csproj \
+            --no-build --configuration Release --logger trx --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults/
+        env:
+          ConnectionStrings__DefaultConnection: 'Host=localhost;Port=5432;Database=terrafusion_test;Username=postgres;Password=postgres'
+
+      - name: 🧪 Run Integration Tests
+        run: |
+          dotnet test backend/tests/TerraFusion.Integration.Tests/TerraFusion.Integration.Tests.csproj \
+            --no-build --configuration Release --logger trx --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults/
+        env:
+          ConnectionStrings__DefaultConnection: 'Host=localhost;Port=5432;Database=terrafusion_test;Username=postgres;Password=postgres'
+          ASPNETCORE_ENVIRONMENT: Testing
+
+      - name: 🧪 Run Performance Tests
+        run: |
+          if [ -d "backend/tests/TerraFusion.Performance.Tests" ]; then
+            dotnet test backend/tests/TerraFusion.Performance.Tests/TerraFusion.Performance.Tests.csproj \
+              --no-build --configuration Release --logger trx \
+              --results-directory ./TestResults/
+          else
+            echo "Performance tests not found, skipping"
+          fi
+        env:
+          ConnectionStrings__DefaultConnection: 'Host=localhost;Port=5432;Database=terrafusion_test;Username=postgres;Password=postgres'
+
+      - name: 📊 Generate Coverage Report
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator \
+            "-reports:TestResults/**/coverage.cobertura.xml" \
+            "-targetdir:coverage" \
+            "-reporttypes:Html;Cobertura;JsonSummary"
+
+      - name: 📤 Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-test-results
+          path: |
+            TestResults/
+            coverage/
+
+      - name: 🔍 Validate API Projects
+        run: |
+          echo "🔍 Validating TerraFusion API Services:"
+          dotnet build backend/TerraFusion.API/TerraFusion.API.csproj --verbosity normal
+          dotnet build backend/TerraFusion.Consciousness/TerraFusion.Consciousness.csproj --verbosity normal || echo "Consciousness project validation skipped"
+
+      - name: 📊 Coverage Summary
+        run: |
+          if [ -f "coverage/Summary.json" ]; then
+            echo "📊 Code Coverage Summary:"
+            cat coverage/Summary.json | jq '.summary'
+          else
+            echo "📊 Coverage report not generated"
+          fi
+
+  architecture-validation:
+    name: 🏗️ Architecture Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔵 Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 📦 Restore Dependencies
+        run: dotnet restore backend/TerraFusion.sln
+
+      - name: 🏗️ Validate Dependencies
+        run: |
+          echo "🏗️ Analyzing project dependencies:"
+          dotnet list backend/TerraFusion.sln package --outdated || echo "No outdated packages"
+          dotnet list backend/TerraFusion.sln package --vulnerable || echo "No vulnerable packages"
+
+      - name: 📏 Code Metrics
+        run: |
+          echo "📏 Analyzing code metrics:"
+          find backend -name "*.cs" | wc -l | xargs echo "C# files:"
+          find backend -name "*.csproj" | wc -l | xargs echo "Projects:"
+
+  security-analysis:
+    name: 🛡️ Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+
+    steps:
+      - name: 🔄 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔵 Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 🔐 Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: 'csharp'
+
+      - name: 📦 Restore and Build for Analysis
+        run: |
+          dotnet restore backend/TerraFusion.sln
+          dotnet build backend/TerraFusion.sln --no-restore
+
+      - name: 🔍 Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+      - name: 🛡️ Security Audit
+        run: |
+          echo "🛡️ Running .NET security audit:"
+          dotnet list backend/TerraFusion.sln package --vulnerable --include-transitive

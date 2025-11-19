@@ -10,7 +10,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { usePiltStatus, type PiltStatus } from './usePILTData';
 // TerraLevy integration - cross-module revenue aggregation
-import { useLevyMeasures, useDistricts as useLevyDistricts } from '@terra-levy/hooks/useLevyData';
+// import { useLevyMeasures, useDistricts as useLevyDistricts } from '@terra-levy/hooks/useLevyData';
 
 export interface UnifiedRevenueProjection {
   fiscalYear: number;
