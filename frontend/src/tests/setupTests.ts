@@ -205,19 +205,19 @@ export const createMockResponse = <T>(data: T, status = 200, ok = true): Respons
   return {
     ok,
     status,
-    json: jest.fn().mockResolvedValue(json),
-    text: jest.fn().mockResolvedValue(text),
-    headers: new Headers(headers),
+    json: async () => data,
+    text: async () => JSON.stringify(data),
+    headers: new Headers(),
     redirected: false,
-    statusText: status >= 200 && status < 300 ? 'OK' : 'Error',
+    statusText: ok ? 'OK' : 'Error',
     type: 'basic',
     url: '',
+    clone: jest.fn(),
     body: null,
     bodyUsed: false,
     arrayBuffer: jest.fn(),
     blob: jest.fn(),
     formData: jest.fn(),
-    bytes: jest.fn(),
   } as Response;
 };
 

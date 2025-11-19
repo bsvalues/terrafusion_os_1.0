@@ -9,8 +9,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { usePiltStatus, type PiltStatus } from './usePILTData';
-// TerraLevy integration - cross-module revenue aggregation
-// import { useLevyMeasures, useDistricts as useLevyDistricts } from '@terra-levy/hooks/useLevyData';
+// TerraLevy integration - cross-module revenue aggregation// TODO: Re-enable when @terra-levy module is availableimport { useLevyMeasures, useDistricts as useLevyDistricts } from '@terra-levy/hooks/useLevyData';
 
 export interface UnifiedRevenueProjection {
   fiscalYear: number;
@@ -46,7 +45,10 @@ export function useUnifiedRevenueProjections(fiscalYear?: number, includeProject
   const { data: piltStatus, isLoading: piltLoading } = usePiltStatus();
 
   // TerraLevy integration - live property tax levy data
-  const { data: levyData, isLoading: levyLoading } = useLevyMeasures(undefined, 100, 0);
+  // TODO: Re-enable when @terra-levy module is available
+  // const { data: levyData, isLoading: levyLoading } = useLevyMeasures(undefined, 100, 0);
+  const levyData = null;
+  const levyLoading = false;
 
   return useQuery<UnifiedRevenueProjection>({
     queryKey: ['unified-revenue', fiscalYear ?? 'current'],
@@ -91,7 +93,10 @@ export function useUnifiedRevenueProjections(fiscalYear?: number, includeProject
 export function useDistrictRevenueSummary(countyId?: string) {
   const { data: piltStatus } = usePiltStatus();
   // TerraLevy districts integration - live district data
-  const { data: levyDistrictsData, isLoading: levyDistrictsLoading } = useLevyDistricts(countyId, 100, 0);
+  // TODO: Re-enable when @terra-levy module is available
+  // const { data: levyDistrictsData, isLoading: levyDistrictsLoading } = useLevyDistricts(countyId, 100, 0);
+  const levyDistrictsData = null;
+  const levyDistrictsLoading = false;
 
   return useQuery<DistrictRevenueSummary[]>({
     queryKey: ['district-revenue-summary', countyId ?? 'all'],
