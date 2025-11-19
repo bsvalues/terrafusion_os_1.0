@@ -1,0 +1,55 @@
+// TerraFusion Elite Engineering - Evidence-Based Fix
+// Bug: CS9035 - Required member SystemMetrics not set in failure response
+// Location: Line ~70, else block in InitializeAdvancedAI()
+
+// ORIGINAL CODE (BROKEN):
+/*
+else
+{
+    var response = new AdvancedAIInitResponse
+    {
+        Success = false,
+        Message = "Advanced AI System initialization failed",
+        InitializationTime = initTime,
+        Timestamp = DateTime.UtcNow
+        // MISSING: SystemMetrics = ... (REQUIRED PROPERTY)
+    };
+    _logger.LogError("❌ Advanced AI System initialization failed");
+    return BadRequest(response);
+}
+*/
+
+// FIXED CODE:
+else
+{
+    // Provide empty metrics for failure scenarios
+    var emptyMetrics = new AdvancedAIMetrics
+    {
+        ActiveAgents = 0,
+        TotalAgents = 0,
+        OverallAccuracy = 0.0,
+        QuantumAdvantage = 0.0,
+        EmergentCapabilities = 0,
+        EthicalComplianceScore = 0.0,
+        SwarmCoherence = 0.0,
+        CollectiveIntelligenceScore = 0.0,
+        LearningRate = 0.0,
+        AdaptationSpeed = 0.0,
+        TotalRequests = 0,
+        SuccessfulRequests = 0,
+        FailedRequests = 0,
+        AverageProcessingTime = 0.0
+    };
+
+    var response = new AdvancedAIInitResponse
+    {
+        Success = false,
+        Message = "Advanced AI System initialization failed",
+        InitializationTime = initTime,
+        SystemMetrics = emptyMetrics, // FIX: Set required property
+        Timestamp = DateTime.UtcNow
+    };
+
+    _logger.LogError("❌ Advanced AI System initialization failed");
+    return BadRequest(response);
+}

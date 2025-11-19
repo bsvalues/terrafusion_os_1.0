@@ -1,0 +1,3 @@
+
+# Ignore Windows reserved filename
+os-platform/development/tools/TerraFusionIDE/nul
