@@ -2,7 +2,7 @@ name: Frontend CI (isolated)
 
 on:
   push:
-    branches: [ main, feature/e2e-ci-strict ]
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
           clean: true
 
-      - name: "Guard: no gitlinks allowed"
+      - name: 'Guard: no gitlinks allowed'
         run: |
           BAD="$(git ls-files -s | awk '$1==160000{print $4}')"
           if [ -n "$BAD" ]; then
