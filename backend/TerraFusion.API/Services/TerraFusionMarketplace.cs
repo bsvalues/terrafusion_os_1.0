@@ -441,7 +441,7 @@ namespace TerraFusion.API.Services
                 modules = modules.Where(m => IsModuleAvailableForCounty(m, countyCode)).ToList();
             }
 
-            return modules;
+            return await Task.FromResult(modules);
         }
 
         /// <summary>
@@ -483,7 +483,7 @@ namespace TerraFusion.API.Services
         private async Task<ModulePerformanceData> CollectModulePerformanceDataAsync(ActiveModuleInstance activeModule)
         {
             // This would collect actual performance metrics from the module
-            return new ModulePerformanceData
+            var performanceData = new ModulePerformanceData
             {
                 PerformanceScore = 0.95m, // 95% performance score
                 ResponseTime = TimeSpan.FromMilliseconds(50), // 50ms response time
@@ -492,6 +492,7 @@ namespace TerraFusion.API.Services
                 MemoryUsage = 256, // 256MB memory usage
                 CPUUsage = 15.5m // 15.5% CPU usage
             };
+            return await Task.FromResult(performanceData);
         }
 
         private async Task HandleModulePerformanceIssueAsync(ActiveModuleInstance activeModule, ModulePerformanceData performanceData)

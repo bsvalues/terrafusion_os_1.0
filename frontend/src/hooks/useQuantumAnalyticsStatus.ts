@@ -42,7 +42,6 @@ export function useQuantumAnalyticsStatus(
 
   useEffect(() => {
     let isMounted = true;
-    let intervalId: NodeJS.Timeout;
 
     const checkHealth = async () => {
       try {
@@ -92,7 +91,7 @@ export function useQuantumAnalyticsStatus(
     checkHealth();
 
     // Set up polling
-    intervalId = setInterval(checkHealth, pollInterval);
+    const intervalId = setInterval(checkHealth, pollInterval);
 
     // Cleanup
     return () => {

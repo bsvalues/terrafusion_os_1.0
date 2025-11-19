@@ -5,7 +5,7 @@ module.exports = {
     es2020: true,
     node: true,
   },
-  extends: ['eslint:recommended', 'plugin:storybook/recommended'],
+  extends: ['eslint:recommended'],
   ignorePatterns: ['dist', '.eslintrc.js', 'node_modules', 'components-enhanced', '**/*.test.*'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -16,7 +16,7 @@ module.exports = {
     },
   },
   rules: {
-    'no-unused-vars': 'off', // Disabled for TypeScript
+    'no-unused-vars': 'off', // Disabled for TypeScript (handled in upper workspace)
     'prefer-const': 'warn',
     'no-console': 'off', // Temporarily disabled for cleanup
     'no-undef': 'off', // TypeScript handles this

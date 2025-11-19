@@ -690,8 +690,8 @@ namespace TerraFusion.API.Services
 
             try
             {
-                // TODO: Implement full migration plan generation
-                return new MigrationPlanResult
+                // TODO: Implement full migration plan generation with actual async operations
+                var result = new MigrationPlanResult
                 {
                     Success = true,
                     CountyCode = countyCode,
@@ -699,6 +699,7 @@ namespace TerraFusion.API.Services
                     Phases = new List<string> { "Assessment", "Data Migration", "Feature Activation", "Go-Live" }.Cast<object>().ToList(),
                     Message = "Migration plan generation not yet fully implemented"
                 };
+                return await Task.FromResult(result);
             }
             catch (Exception ex)
             {
@@ -713,8 +714,8 @@ namespace TerraFusion.API.Services
 
             try
             {
-                // TODO: Implement full migration execution
-                return new MigrationExecutionResult
+                // TODO: Implement full migration execution with actual async operations
+                var result = new MigrationExecutionResult
                 {
                     Success = true,
                     CountyCode = countyCode,
@@ -722,6 +723,7 @@ namespace TerraFusion.API.Services
                     Status = "InProgress",
                     Message = "Migration execution not yet fully implemented"
                 };
+                return await Task.FromResult(result);
             }
             catch (Exception ex)
             {
@@ -736,14 +738,15 @@ namespace TerraFusion.API.Services
 
             try
             {
-                // TODO: Implement full migration status retrieval
-                return new MigrationStatusResult
+                // TODO: Implement full migration status retrieval with actual async operations
+                var result = new MigrationStatusResult
                 {
                     CountyCode = countyCode,
                     Status = "NotStarted",
                     ProgressPercentage = 0,
                     Message = "Migration status retrieval not yet fully implemented"
                 };
+                return await Task.FromResult(result);
             }
             catch (Exception ex)
             {

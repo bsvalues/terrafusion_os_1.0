@@ -479,6 +479,9 @@ namespace TerraFusion.API.Services
                     (progress.TotalRecords - progress.ProcessedRecords) *
                     (elapsedTime.TotalMilliseconds / progress.ProcessedRecords));
             }
+
+            // Persist progress to storage (simulated async operation)
+            await Task.CompletedTask;
         }
 
         #region IDataMigrationEngine Implementation
@@ -489,25 +492,27 @@ namespace TerraFusion.API.Services
 
             try
             {
-                // TODO: Implement full data migration logic
-                return new DataMigrationResult
+                // TODO: Implement full data migration logic with actual async operations
+                var result = new DataMigrationResult
                 {
                     Success = true,
                     CountyCode = countyCode,
                     RecordsMigrated = 0,
                     Message = "Data migration not yet implemented"
                 };
+                return await Task.FromResult(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Data migration failed for county: {CountyCode}", countyCode);
-                return new DataMigrationResult
+                var errorResult = new DataMigrationResult
                 {
                     Success = false,
                     CountyCode = countyCode,
                     RecordsMigrated = 0,
                     Message = $"Migration failed: {ex.Message}"
                 };
+                return await Task.FromResult(errorResult);
             }
         }
 

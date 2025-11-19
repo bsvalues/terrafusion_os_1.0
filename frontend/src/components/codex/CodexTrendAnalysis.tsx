@@ -189,7 +189,7 @@ export function CodexTrendAnalysis({
             trends = await codexAPI.get7DayTrend(countyId);
             break;
           case '30d':
-          case '90d':
+          case '90d': {
             const endDate = new Date();
             const startDate = new Date();
             startDate.setDate(
@@ -197,6 +197,7 @@ export function CodexTrendAnalysis({
             );
             trends = await codexAPI.getTrends(startDate, endDate, countyId);
             break;
+          }
           default:
             trends = await codexAPI.get24HourTrend(countyId);
         }

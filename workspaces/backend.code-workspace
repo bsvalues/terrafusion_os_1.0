@@ -23,7 +23,8 @@
     },
     "dotnet.defaultSolution": "backend/TerraFusion.sln",
     "terrafusion.role": "backend_development",
-    "terrafusion.responsibility": "api_services_microservices"
+    "terrafusion.responsibility": "api_services_microservices",
+    "todo-tree.tree.scanMode": "workspace only"
   },
   "extensions": {
     "recommendations": [

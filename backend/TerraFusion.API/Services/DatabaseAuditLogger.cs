@@ -842,7 +842,7 @@ namespace TerraFusion.API.Services
           await WriteAuditLogToDatabase(log);
 
           // Real-time threat analysis
-          await AnalyzeThreatLevel(log);
+          AnalyzeThreatLevel(log);
 
           // Government alert system integration
           if (IsEmergencySecurityEvent(log))
@@ -920,7 +920,7 @@ namespace TerraFusion.API.Services
     /// <summary>
     /// 🔍 TIER 3 Advanced Threat Analysis
     /// </summary>
-    private async Task AnalyzeThreatLevel(TerraFusion.Core.Entities.AuditLog log)
+    private void AnalyzeThreatLevel(TerraFusion.Core.Entities.AuditLog log)
     {
       try
       {

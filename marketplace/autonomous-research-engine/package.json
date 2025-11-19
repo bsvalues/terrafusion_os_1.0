@@ -1,0 +1,10 @@
+{
+  "name": "autonomous-research-engine",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "description": "TerraFusion Autonomous Research Engine",
+  "version": "1.0.0"
+}

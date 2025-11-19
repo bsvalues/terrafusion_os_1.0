@@ -489,3 +489,7 @@ workspaces/**/*.tsbuildinfo
 
 # Snyk Security Extension - AI Rules (auto-generated)
 .cursor\rules\snyk_rules.mdc
+
+# Symlink files that cause Git issues on Windows/WSL
+**/symlink-errors/
+**/*symlink*

@@ -498,42 +498,42 @@ namespace TerraFusion.AI.Controllers
         public class AdvancedAIInitResponse
         {
             public bool Success { get; set; }
-            public string Message { get; set; }
+            public required string Message { get; set; }
             public TimeSpan InitializationTime { get; set; }
-            public AdvancedAIMetrics SystemMetrics { get; set; }
+            public required AdvancedAIMetrics SystemMetrics { get; set; }
             public DateTime Timestamp { get; set; }
         }
 
         public class AdvancedAIMetricsResponse
         {
             public bool Success { get; set; }
-            public AdvancedAIMetrics Metrics { get; set; }
+            public required AdvancedAIMetrics Metrics { get; set; }
             public DateTime RetrievalTime { get; set; }
-            public string SystemStatus { get; set; }
-            public string PerformanceGrade { get; set; }
-            public List<string> Recommendations { get; set; }
+            public required string SystemStatus { get; set; }
+            public required string PerformanceGrade { get; set; }
+            public required List<string> Recommendations { get; set; }
         }
 
         public class AdvancedAIHealthResponse
         {
-            public string Status { get; set; }
+            public required string Status { get; set; }
             public DateTime Timestamp { get; set; }
             public int ActiveAgents { get; set; }
             public int TotalAgents { get; set; }
             public TimeSpan SystemUptime { get; set; }
             public double OverallAccuracy { get; set; }
-            public string QuantumSystemStatus { get; set; }
+            public required string QuantumSystemStatus { get; set; }
             public int EmergentCapabilities { get; set; }
             public double EthicalComplianceScore { get; set; }
         }
 
         public class AdvancedAICapabilitiesResponse
         {
-            public MultiModalCapabilities MultiModalProcessing { get; set; }
-            public QuantumCapabilities QuantumCapabilities { get; set; }
-            public SwarmCapabilities SwarmCapabilities { get; set; }
-            public EthicalAICapabilities EthicalAI { get; set; }
-            public LearningCapabilities LearningCapabilities { get; set; }
+            public required MultiModalCapabilities MultiModalProcessing { get; set; }
+            public required QuantumCapabilities QuantumCapabilities { get; set; }
+            public required SwarmCapabilities SwarmCapabilities { get; set; }
+            public required EthicalAICapabilities EthicalAI { get; set; }
+            public required LearningCapabilities LearningCapabilities { get; set; }
             public DateTime Timestamp { get; set; }
         }
 

@@ -1,5 +1,5 @@
 {
-  "name": "workspace",
+  "name": "terra-prof-production",
   "version": "1.0.0",
   "description": "A next-generation real estate appraisal platform combining field data collection, geospatial analysis, and AI-powered valuation tools.",
   "main": "index.js",

@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => ({
           'ui': ['@mui/material', '@mui/icons-material'],
           'charts': ['recharts'],
           '3d': ['three'],
-          'platform-design-system': ['../platform/design-system'],
+          // 'platform-design-system': ['../platform/design-system'], // Commented out - directory exists but is empty
         },
         // Platform-specific naming for cache busting
         chunkFileNames: 'assets/[name]-[hash].js',

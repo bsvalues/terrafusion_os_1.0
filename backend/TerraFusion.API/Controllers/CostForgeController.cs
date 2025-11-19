@@ -5,6 +5,7 @@ using TerraFusion.Core.DTOs;
 using TerraFusion.API.Security;
 using TerraFusion.API.Models;
 using TerraFusion.Abstractions.Interfaces;
+using TerraFusion.Abstractions.DTOs.Responses;
 using System.ComponentModel.DataAnnotations;
 
 namespace TerraFusion.API.Controllers;

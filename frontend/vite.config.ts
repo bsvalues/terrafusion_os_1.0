@@ -2,11 +2,13 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { securityPlugin } from './src/middleware/security-plugin';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const plugins = [
     react(),
+    securityPlugin(), // Security headers and CSP
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
@@ -78,6 +80,7 @@ export default defineConfig(({ mode }) => {
             ui: ['@mui/material', '@mui/icons-material'],
             charts: ['recharts'],
             '3d': ['three'],
+            'platform-design-system': ['./src/design-system'],
           },
         },
       },

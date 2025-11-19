@@ -8,13 +8,13 @@
  * @version 2.0.0 - Phase 2 Week 5 Day 5
  */
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Card, CardContent } from '../ui/card';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Alert } from '../ui/alert';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { Spinner } from '../ui/spinner';
-import { Alert } from '../ui/alert';
+import { Card, CardContent } from '../ui/card';
 import { ScrollArea } from '../ui/scroll-area';
+import { Spinner } from '../ui/spinner';
 
 // ==================== TYPES ====================
 
@@ -131,7 +131,7 @@ export function StreamingCellOutput({
         );
 
       case 'execute_result':
-      case 'display_data':
+      case 'display_data': {
         // Handle different MIME types
         const data = output.content;
 
@@ -181,6 +181,7 @@ export function StreamingCellOutput({
         }
 
         return null;
+      }
 
       default:
         return (

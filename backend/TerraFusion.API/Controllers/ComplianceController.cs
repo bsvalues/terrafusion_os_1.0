@@ -270,20 +270,20 @@ namespace TerraFusion.API.Controllers
 
     public class CreateAuditTrailRequest
     {
-        public string Action { get; set; }
-        public object Data { get; set; }
-        public string EntityType { get; set; }
+        public required string Action { get; set; }
+        public required object Data { get; set; }
+        public required string EntityType { get; set; }
     }
 
     public class RemediateViolationRequest
     {
-        public string RemediationAction { get; set; }
+        public required string RemediationAction { get; set; }
     }
 
     public class UpdateControlRequest
     {
         public ComplianceControlStatus Status { get; set; }
-        public string Evidence { get; set; }
+        public required string Evidence { get; set; }
     }
 }
 

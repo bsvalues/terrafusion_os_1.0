@@ -55,7 +55,6 @@ export function useAgentSwarmStatus(
 
   useEffect(() => {
     let isMounted = true;
-    let intervalId: NodeJS.Timeout;
 
     const fetchSwarmStatus = async () => {
       try {
@@ -144,7 +143,7 @@ export function useAgentSwarmStatus(
     fetchSwarmStatus();
 
     // Set up polling
-    intervalId = setInterval(fetchSwarmStatus, pollInterval);
+    const intervalId = setInterval(fetchSwarmStatus, pollInterval);
 
     // Cleanup
     return () => {

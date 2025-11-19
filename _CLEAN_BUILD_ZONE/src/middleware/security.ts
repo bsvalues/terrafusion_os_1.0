@@ -2,7 +2,7 @@
 // Implements Content Security Policy, Security Headers, and JWT Validation
 
 import { NextFunction, Request, Response } from 'express';
-import helmet from 'helmet';
+// import helmet from 'helmet'; // Commented out - not needed for frontend build
 
 /**
  * Content Security Policy Configuration

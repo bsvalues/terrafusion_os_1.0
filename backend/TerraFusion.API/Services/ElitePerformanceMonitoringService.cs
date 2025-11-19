@@ -675,17 +675,18 @@ public class ElitePerformanceMonitoringService : BackgroundService, IElitePerfor
         return await Task.FromResult(new TerraFusion.API.Models.Performance.PerformanceRecoveryResult { Status = "Recovered" });
     }
 
-    private async Task<bool> PerformHealthCheckAsync()
+    private Task<bool> PerformHealthCheckAsync()
     {
-        return await Task.FromResult(true);
+        return Task.FromResult(true);
     }
 
-    private async Task NotifyHealthIssuesAsync(bool healthStatus)
+    private Task NotifyHealthIssuesAsync(bool healthStatus)
     {
         if (!healthStatus)
         {
             _logger.LogWarning("Health issues detected");
         }
+        return Task.CompletedTask;
     }
 
     private async Task<object> CollectSystemMetricsAsync()

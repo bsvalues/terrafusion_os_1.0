@@ -1,32 +1,22 @@
 /**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - SHARED DATA TRANSFER OBJECTS
- * Common DTOs used across multiple controllers
+ * References canonical DTOs from TerraFusion.Abstractions
  * ═══════════════════════════════════════════════════════════════
  */
 
+using TerraFusion.Abstractions.DTOs.Responses;
+using TerraFusion.Abstractions.DTOs.Shared;
+
 namespace TerraFusion.API.Models;
 
-/// <summary>
-/// Real-time performance metrics for quantum consciousness operations
-/// </summary>
-public class QuantumPerformanceMetricsDto
-{
-    public required int ThroughputOps { get; set; }
-    public required double LatencyMs { get; set; }
-    public required double ResourceUtilization { get; set; }
-    public required double AccuracyScore { get; set; }
-    public required double UptimePercentage { get; set; }
-}
+// All shared DTOs now use canonical implementations from TerraFusion.Abstractions
+// This ensures Single Source of Truth for type definitions across all services
 
-/// <summary>
-/// Performance metrics for CostForge calculations
-/// </summary>
-public class CostForgePerformanceMetricsDto
-{
-    public double AverageResponseTime { get; set; }
-    public int RequestsPerSecond { get; set; }
-    public double AccuracyRate { get; set; }
-    public int TotalCalculations { get; set; }
-    public Dictionary<string, double> DetailedMetrics { get; set; } = new();
-}
+// Performance metrics available via canonical types:
+// - QuantumPerformanceMetricsDto (from TerraFusion.Abstractions.DTOs.Responses)
+// - CostForgePerformanceMetricsDto (from TerraFusion.Abstractions.DTOs.Responses)
+// - ElitePerformanceMetrics (from TerraFusion.Abstractions.DTOs.Shared)
+// - SyncResult (from TerraFusion.Abstractions.DTOs.Shared)
+// - OptimizationRecommendation (from TerraFusion.Abstractions.DTOs.Shared)
+// - ComplianceViolation (from TerraFusion.Abstractions.DTOs.Shared)

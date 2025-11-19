@@ -531,10 +531,10 @@ namespace TerraFusion.API.Controllers
     public class ModuleDeactivationResult
     {
         public bool Success { get; set; }
-        public string ActivationId { get; set; }
+        public required string ActivationId { get; set; }
         public DateTime DeactivationTime { get; set; }
-        public string Message { get; set; }
-        public string ErrorMessage { get; set; }
+        public required string Message { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 
     public class HarrisPACSBridgeStatus

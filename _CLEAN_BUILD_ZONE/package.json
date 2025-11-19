@@ -1,5 +1,5 @@
 {
-  "name": "terrafusion-frontend",
+  "name": "terrafusion-frontend-build-zone",
   "version": "0.1.0",
   "description": "Terrafusion OS Frontend - React 18 PWA with Electron Shell",
   "private": true,
@@ -103,7 +103,7 @@
     "playwright": "^1.40.1",
     "postcss": "8.5.6",
     "prettier": "^3.1.0",
-    "rollup-plugin-visualizer": "^5.12.0",
+    "rollup-plugin-visualizer": "^5.14.0",
     "size-limit": "^11.0.1",
     "storybook": "8.6.14",
     "tailwindcss": "4.1.14",

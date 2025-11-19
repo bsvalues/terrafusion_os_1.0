@@ -14,6 +14,7 @@ using TerraFusion.Consciousness.DTOs;
 using TerraFusion.Consciousness.Interfaces;
 using TerraFusion.Data.Services;
 using TerraFusion.API.Models;
+using TerraFusion.Abstractions.DTOs.Responses;
 using TerraFusion.Core.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;

@@ -149,14 +149,14 @@ namespace TerraFusion.API.Controllers
     // Request models
     public class ExecuteWorkflowRequest
     {
-        public string WorkflowId { get; set; }
-        public string CountyId { get; set; }
-        public Dictionary<string, object> Parameters { get; set; }
+        public required string WorkflowId { get; set; }
+        public required string CountyId { get; set; }
+        public required Dictionary<string, object> Parameters { get; set; }
     }
 
     public class AnalyzeWorkflowRequest
     {
-        public string WorkflowId { get; set; }
-        public string CountyId { get; set; }
+        public required string WorkflowId { get; set; }
+        public required string CountyId { get; set; }
     }
 }

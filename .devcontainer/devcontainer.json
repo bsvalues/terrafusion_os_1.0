@@ -1,6 +1,8 @@
 {
   "name": "TerraFusion OS 1.0 - Government AI Development Environment",
   "image": "mcr.microsoft.com/devcontainers/universal:2-linux",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "shutdownAction": "stopContainer",
   "features": {
     "ghcr.io/devcontainers/features/dotnet:1": {
       "version": "8.0"
@@ -35,14 +37,7 @@
       }
     }
   },
-  "forwardPorts": [
-    3000,
-    5000,
-    5001,
-    8080,
-    9090,
-    3001
-  ],
+  "forwardPorts": [3000, 5000, 5001, 8080, 9090, 3001],
   "portsAttributes": {
     "3000": {
       "label": "TerraFusion UI",
@@ -90,5 +85,11 @@
     "NODE_ENV": "development",
     "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
     "DOTNET_NOLOGO": "1"
-  }
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder}/.vscode,target=/workspaces/${localWorkspaceFolderBasename}/.vscode,type=bind",
+    "source=${localWorkspaceFolder}/node_modules,target=/workspaces/${localWorkspaceFolderBasename}/node_modules,type=volume"
+  ],
+  "initializeCommand": "docker --version",
+  "waitFor": "postCreateCommand"
 }

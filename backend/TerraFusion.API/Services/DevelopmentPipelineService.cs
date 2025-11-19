@@ -405,16 +405,16 @@ public class DevelopmentPipelineService : BackgroundService
         return Math.Round(buildScore + qualityScore, 2);
     }
 
-    public async Task<PipelineStatusDto> GetPipelineStatusAsync()
+    public Task<PipelineStatusDto> GetPipelineStatusAsync()
     {
-        return new PipelineStatusDto
+        return Task.FromResult(new PipelineStatusDto
         {
             TotalWorkspaces = _workspaceStatuses.Count,
             WorkspaceStatuses = _workspaceStatuses.Values.ToList(),
             OverallHealthScore = CalculateOverallHealthScore(),
             LastUpdateTime = DateTime.UtcNow,
             GovernmentCompliance = true
-        };
+        });
     }
 }
 
