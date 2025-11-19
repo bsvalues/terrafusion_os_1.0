@@ -474,9 +474,9 @@ namespace TerraFusion.Sync.Services
         {
             return new PropertyRecord
             {
-                ParcelId = transformedRecord.GetValueOrDefault("parcel_id")?.ToString(),
-                OwnerName = transformedRecord.GetValueOrDefault("owner_name")?.ToString(),
-                PropertyAddress = transformedRecord.GetValueOrDefault("property_address")?.ToString(),
+                ParcelId = transformedRecord.GetValueOrDefault("parcel_id")?.ToString() ?? "UNKNOWN",
+                OwnerName = transformedRecord.GetValueOrDefault("owner_name")?.ToString() ?? "UNKNOWN",
+                PropertyAddress = transformedRecord.GetValueOrDefault("property_address")?.ToString() ?? "UNKNOWN",
                 AssessmentValue = transformedRecord.GetValueOrDefault("assessment_value") as decimal?,
                 LandValue = transformedRecord.GetValueOrDefault("land_value") as decimal?,
                 ImprovementValue = transformedRecord.GetValueOrDefault("improvement_value") as decimal?,
@@ -484,7 +484,10 @@ namespace TerraFusion.Sync.Services
                 ExemptionAmount = transformedRecord.GetValueOrDefault("exemption_amount") as decimal?,
                 TaxAmount = transformedRecord.GetValueOrDefault("tax_amount") as decimal?,
                 LastModified = transformedRecord.GetValueOrDefault("LAST_MODIFIED") as DateTime? ?? DateTime.UtcNow,
-                SourceSystem = "Harris PACS v12.4.7"
+                SourceSystem = "Harris PACS v12.4.7",
+                CountyCode = "HARRIS",
+                SyncJobId = Guid.NewGuid().ToString(),
+                SyncedAt = DateTime.UtcNow
             };
         }
 

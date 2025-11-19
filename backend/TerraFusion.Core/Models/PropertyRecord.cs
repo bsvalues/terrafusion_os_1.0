@@ -6,9 +6,9 @@ namespace TerraFusion.Core.Models
     /// </summary>
     public class PropertyRecord
     {
-        public string ParcelId { get; set; }
-        public string OwnerName { get; set; }
-        public string PropertyAddress { get; set; }
+        public required string ParcelId { get; set; }
+        public required string OwnerName { get; set; }
+        public required string PropertyAddress { get; set; }
 
         // Assessment values
         public decimal? AssessmentValue { get; set; }
@@ -16,23 +16,23 @@ namespace TerraFusion.Core.Models
         public decimal? ImprovementValue { get; set; }
 
         // Tax information
-        public string ExemptionCode { get; set; }
+        public string? ExemptionCode { get; set; }
         public decimal? ExemptionAmount { get; set; }
         public decimal? TaxAmount { get; set; }
 
         // Metadata
         public DateTime LastModified { get; set; }
-        public string SourceSystem { get; set; }
-        public string CountyCode { get; set; }
+        public required string SourceSystem { get; set; }
+        public required string CountyCode { get; set; }
 
         // Geospatial (if available)
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
-        public string GeometryWKT { get; set; }
+        public string? GeometryWKT { get; set; }
 
         // Additional property details
-        public string PropertyClass { get; set; }
-        public string PropertyUse { get; set; }
+        public string? PropertyClass { get; set; }
+        public string? PropertyUse { get; set; }
         public int? YearBuilt { get; set; }
         public int? SquareFeet { get; set; }
         public int? Bedrooms { get; set; }
@@ -45,7 +45,7 @@ namespace TerraFusion.Core.Models
 
         // Sync metadata
         public DateTime SyncedAt { get; set; }
-        public string SyncJobId { get; set; }
+        public required string SyncJobId { get; set; }
         public int SyncVersion { get; set; }
     }
 }
