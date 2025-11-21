@@ -104,7 +104,7 @@
     "papaparse": "^5.5.2",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "pdfjs-dist": "^2.16.105",
+    "pdfjs-dist": "^4.2.67",
     "pdfkit": "^0.17.1",
     "postgres": "^3.4.5",
     "react": "^18.3.1",
