@@ -2,7 +2,7 @@
 # Multi-stage build for security and optimization
 
 # Build stage
-FROM node:20.9.0-alpine as builder
+FROM node:20.19.6-alpine as builder
 
 # Install dependencies for building
 RUN apk add --no-cache libc6-compat
@@ -32,7 +32,7 @@ ENV NPM_CONFIG_LEGACY_PEER_DEPS=true
 RUN npm run build
 
 # Runtime stage
-FROM node:20.9.0-alpine as runner
+FROM node:20.19.6-alpine as runner
 
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init curl
