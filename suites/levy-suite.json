@@ -8,14 +8,8 @@
     "budget-forecasting",
     "dor-reporting"
   ],
-  "nativeModules": [
-    "levy-desktop-panel",
-    "rate-editor-panel"
-  ],
-  "engines": [
-    "levy-engine",
-    "sync-engine"
-  ],
+  "nativeModules": ["levy-desktop-panel", "rate-editor-panel"],
+  "engines": ["levy-engine", "sync-engine"],
   "apis": [
     "levy-api",
     "districts-api",
@@ -51,18 +45,12 @@
     "ROLE_CHIEF_APPRAISER"
   ],
   "hotSwappable": true,
-  "dependencies": [
-    "assessment"
-  ],
+  "dependencies": ["assessment"],
   "integrations": [
     {
       "id": "pacs9",
       "type": "pacs",
-      "endpoints": [
-        "pacs9/levy",
-        "pacs9/districts",
-        "pacs9/taxareas"
-      ]
+      "endpoints": ["pacs9/levy", "pacs9/districts", "pacs9/taxareas"]
     }
   ]
 }

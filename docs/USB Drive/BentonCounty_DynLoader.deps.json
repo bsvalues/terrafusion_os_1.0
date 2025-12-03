@@ -980,19 +980,8 @@
     }
   },
   "runtimes": {
-    "win-x86": [
-      "win",
-      "any",
-      "base"
-    ],
-    "win-x86-aot": [
-      "win-aot",
-      "win-x86",
-      "win",
-      "aot",
-      "any",
-      "base"
-    ],
+    "win-x86": ["win", "any", "base"],
+    "win-x86-aot": ["win-aot", "win-x86", "win", "aot", "any", "base"],
     "win10-x86": [
       "win10",
       "win81-x86",
@@ -1030,13 +1019,7 @@
       "any",
       "base"
     ],
-    "win7-x86": [
-      "win7",
-      "win-x86",
-      "win",
-      "any",
-      "base"
-    ],
+    "win7-x86": ["win7", "win-x86", "win", "any", "base"],
     "win7-x86-aot": [
       "win7-aot",
       "win7-x86",
@@ -1049,15 +1032,7 @@
       "any",
       "base"
     ],
-    "win8-x86": [
-      "win8",
-      "win7-x86",
-      "win7",
-      "win-x86",
-      "win",
-      "any",
-      "base"
-    ],
+    "win8-x86": ["win8", "win7-x86", "win7", "win-x86", "win", "any", "base"],
     "win8-x86-aot": [
       "win8-aot",
       "win8-x86",
