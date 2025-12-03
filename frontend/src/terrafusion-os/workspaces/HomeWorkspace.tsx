@@ -18,6 +18,7 @@ import { OSGlassPanel } from '../os/ui/OSGlassPanel';
 import { WorkspaceTerraSphere } from '../os/ui/WorkspaceTerraSphere';
 import { OSHealthSummaryBar } from './OSHealthSummaryBar';
 import { RightRailShell } from './RightRailShell';
+import { WorkspaceHealthHUD } from './WorkspaceHealthHUD';
 
 export const HomeWorkspace: React.FC = () => {
   const workspaceId = 'home';
@@ -135,6 +136,11 @@ export const HomeWorkspace: React.FC = () => {
               </div>
             )}
           </OSGlassPanel>
+
+          {/* Workspace-level Health HUD strip */}
+          <div style={{ marginTop: 8, marginBottom: 8 }}>
+            <WorkspaceHealthHUD workspaceId={workspaceId} />
+          </div>
 
           {/* Main Content Grid: Quick List + Activity */}
           <div

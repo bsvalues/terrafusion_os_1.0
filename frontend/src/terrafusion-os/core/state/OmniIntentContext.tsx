@@ -38,6 +38,7 @@ interface OmniIntentState {
   gravityWell: IntentGravityWell;
   rightRail: RightRailState;
   setIntent: (intent: string, contextData?: any) => void;
+  emitIntent: (intent: string, contextData?: any) => void;
   clearIntent: () => void;
   setRightRail: (state: RightRailState) => void;
   closeRightRail: () => void;
@@ -456,6 +457,7 @@ export const OmniIntentProvider = ({ children }: { children: ReactNode }) => {
         gravityWell,
         rightRail,
         setIntent,
+        emitIntent: setIntent,
         clearIntent,
         setRightRail,
         closeRightRail,

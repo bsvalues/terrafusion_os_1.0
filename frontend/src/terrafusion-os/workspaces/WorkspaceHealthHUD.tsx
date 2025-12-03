@@ -11,10 +11,10 @@
  * @see docs/WORKSPACE_EXPERIENCE_V1.md Section 3.1
  */
 import React, { useMemo } from 'react';
-import { WorkspaceTerraSphere } from '../os/ui/WorkspaceTerraSphere';
 import { resolveOSObjectComponent } from '../catalog/osObjects';
 import { useWorkspaceCommands } from '../core/command/useWorkspaceCommands';
 import { useOmniIntent } from '../core/state/OmniIntentContext';
+import { WorkspaceTerraSphere } from '../os/ui/WorkspaceTerraSphere';
 
 const WorkspaceStatusChip = resolveOSObjectComponent('workspace_status_chip');
 
@@ -30,7 +30,7 @@ export const WorkspaceHealthHUD: React.FC<WorkspaceHealthHUDProps> = ({
   testId,
 }) => {
   const { commands, loading } = useWorkspaceCommands(workspaceId);
-  const { setIntent } = useOmniIntent();
+  const { emitIntent } = useOmniIntent();
 
   const quickCommands = useMemo(() => {
     if (loading) return [];
@@ -41,7 +41,7 @@ export const WorkspaceHealthHUD: React.FC<WorkspaceHealthHUDProps> = ({
   }, [commands, loading, maxQuickCommands]);
 
   const handleCommandClick = (cmdId: string, label: string) => {
-    setIntent('workspace_command_invoked', {
+    emitIntent('workspace_command_invoked', {
       workspaceId,
       commandId: cmdId,
       label,
@@ -73,7 +73,7 @@ export const WorkspaceHealthHUD: React.FC<WorkspaceHealthHUDProps> = ({
       >
         <WorkspaceTerraSphere
           workspaceId={workspaceId}
-          size="small"
+          size='small'
           testId={`${testId ?? 'workspace-health-hud'}-sphere`}
         />
         <span
@@ -108,7 +108,7 @@ export const WorkspaceHealthHUD: React.FC<WorkspaceHealthHUDProps> = ({
       >
         {loading ? (
           <span
-            data-testid="workspace-health-hud-loading"
+            data-testid='workspace-health-hud-loading'
             style={{
               fontSize: 11,
               opacity: 0.7,
@@ -118,7 +118,7 @@ export const WorkspaceHealthHUD: React.FC<WorkspaceHealthHUDProps> = ({
           </span>
         ) : quickCommands.length === 0 ? (
           <span
-            data-testid="workspace-health-hud-empty"
+            data-testid='workspace-health-hud-empty'
             style={{
               fontSize: 11,
               opacity: 0.7,
@@ -130,8 +130,8 @@ export const WorkspaceHealthHUD: React.FC<WorkspaceHealthHUDProps> = ({
           quickCommands.map((cmd) => (
             <button
               key={cmd.id}
-              type="button"
-              data-testid="workspace-health-hud-command"
+              type='button'
+              data-testid='workspace-health-hud-command'
               onClick={() => handleCommandClick(cmd.id, cmd.label)}
               style={{
                 padding: '2px 8px',

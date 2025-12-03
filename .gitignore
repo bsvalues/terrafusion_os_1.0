@@ -84,6 +84,9 @@ modules/shock-and-awe/ai_systems/ai_systems/shared_assets/FRESH_REPOSITORIES/Ter
 modules/shock-and-awe/terrafusion-shock-awe-hostinger-fixed.tar.gz
 modules/shock-and-awe/terrafusion-shock-awe-hostinger.zip
 
+# Binary/personal artifacts
+docs/USB Drive/
+
 # Note: Embedded repositories converted to Git submodules
 # See .gitmodules for submodule configuration
 
@@ -104,6 +107,10 @@ jspm_packages/
 
 # Optional REPL history
 .node_repl_history
+
+# SQLite/DB write-ahead logs
+*.db-wal
+*.db-shm
 
 # Output of 'npm pack'
 *.tgz

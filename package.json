@@ -292,12 +292,21 @@
     "frontend/electron"
   ],
   "lint-staged": {
-    "frontend/**/*.{js,jsx,ts,tsx}": [
+    "frontend/src/**/*.{js,jsx,ts,tsx}": [
       "eslint --fix",
+      "prettier --write"
+    ],
+    "frontend/src/**/*.{css,scss,less}": [
+      "prettier --write"
+    ],
+    "frontend/**/*.{json,md,yml,yaml}": [
       "prettier --write"
     ],
     "backend/**/*.cs": [
       "dotnet format"
+    ],
+    "tests/**/*.{ts,tsx,js,jsx}": [
+      "prettier --write"
     ]
   },
   "husky": {
