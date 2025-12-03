@@ -102,10 +102,21 @@ export default defineConfig(({ mode }) => {
       // Proxy API calls to .NET backend
       proxy: {
         '/api': {
-          target: process.env.VITE_API_URL || 'http://localhost:5000',
+          target: process.env.VITE_API_URL || 'http://localhost:5001',
           changeOrigin: true,
           secure: false,
           ws: true, // WebSocket support for SignalR
+        },
+        '/health': {
+          target: process.env.VITE_API_URL || 'http://localhost:5001',
+          changeOrigin: true,
+          secure: false,
+        },
+        '/hubs': {
+          target: process.env.VITE_API_URL || 'http://localhost:5001',
+          changeOrigin: true,
+          secure: false,
+          ws: true, // WebSocket support for SignalR hubs
         },
       },
     },
@@ -122,7 +133,7 @@ export default defineConfig(({ mode }) => {
     define: {
       // Environment variables available in app
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
-      __API_URL__: JSON.stringify(process.env.VITE_API_URL || 'http://localhost:5000'),
+      __API_URL__: JSON.stringify(process.env.VITE_API_URL || 'http://localhost:5001'),
     },
   };
 });

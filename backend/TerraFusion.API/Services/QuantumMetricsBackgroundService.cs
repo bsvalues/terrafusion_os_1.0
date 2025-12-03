@@ -8,6 +8,7 @@
  */
 
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using TerraFusion.API.Hubs;
 using TerraFusion.AI.Services;
 using TerraFusion.Core.Services;
@@ -20,6 +21,7 @@ public class QuantumMetricsBackgroundService : BackgroundService
     private readonly IHubContext<QuantumMetricsHub> _hubContext;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<QuantumMetricsBackgroundService> _logger;
+    private readonly IConfiguration _config;
     private readonly TimeSpan _broadcastInterval = TimeSpan.FromSeconds(1); // Real-time updates
     private readonly TimeSpan _healthCheckInterval = TimeSpan.FromMinutes(1); // Health monitoring
 
@@ -31,11 +33,13 @@ public class QuantumMetricsBackgroundService : BackgroundService
     public QuantumMetricsBackgroundService(
         IHubContext<QuantumMetricsHub> hubContext,
         IServiceProvider serviceProvider,
-        ILogger<QuantumMetricsBackgroundService> logger)
+        ILogger<QuantumMetricsBackgroundService> logger,
+        IConfiguration config)
     {
         _hubContext = hubContext;
         _serviceProvider = serviceProvider;
         _logger = logger;
+        _config = config;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

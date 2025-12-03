@@ -1,0 +1,68 @@
+{
+  "id": "levy",
+  "label": "Levy & Tax Suite",
+  "category": "core",
+  "webApps": [
+    "terra-levy-production",
+    "tax-rate-calculator",
+    "budget-forecasting",
+    "dor-reporting"
+  ],
+  "nativeModules": [
+    "levy-desktop-panel",
+    "rate-editor-panel"
+  ],
+  "engines": [
+    "levy-engine",
+    "sync-engine"
+  ],
+  "apis": [
+    "levy-api",
+    "districts-api",
+    "tf-substrate-core/districts",
+    "tf-substrate-core/levy",
+    "tf-substrate-core/rates"
+  ],
+  "aiAgents": [
+    {
+      "id": "levy-clerk-assistant",
+      "name": "Levy Clerk Assistant",
+      "capabilities": [
+        "explain-levy-law",
+        "walkthrough-budget-process",
+        "inspect-district-boundaries",
+        "summarize-dor-reports"
+      ]
+    },
+    {
+      "id": "dor-reporting-agent",
+      "name": "DOR Reporting Agent",
+      "capabilities": [
+        "prepare-dor-forms",
+        "validate-dor-errors",
+        "explain-wac",
+        "audit-levy-rate-changes"
+      ]
+    }
+  ],
+  "permissions": [
+    "ROLE_LEVY_CLERK",
+    "ROLE_BUDGET_OFFICER",
+    "ROLE_CHIEF_APPRAISER"
+  ],
+  "hotSwappable": true,
+  "dependencies": [
+    "assessment"
+  ],
+  "integrations": [
+    {
+      "id": "pacs9",
+      "type": "pacs",
+      "endpoints": [
+        "pacs9/levy",
+        "pacs9/districts",
+        "pacs9/taxareas"
+      ]
+    }
+  ]
+}

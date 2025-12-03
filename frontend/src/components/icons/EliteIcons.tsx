@@ -375,9 +375,20 @@ export const EliteQuantumIcon: React.FC<
   className = 'w-6 h-6',
   color = '#00FFFF',
   glowIntensity = 'medium',
-  ...props
+  strokeWidth,
+  glow,
 }) => {
   const IconComponent = EliteIcons[iconType];
+
+  if (!IconComponent) {
+    console.error(
+      'EliteQuantumIcon: Icon not found:',
+      iconType,
+      'Available icons:',
+      Object.keys(EliteIcons)
+    );
+    return null;
+  }
 
   const glowStyles = {
     low: 'drop-shadow-sm',
@@ -389,7 +400,12 @@ export const EliteQuantumIcon: React.FC<
     <div
       className={`${glowStyles[glowIntensity]} hover:scale-110 transition-transform duration-200`}
     >
-      <IconComponent className={`${className} text-terra-cyan`} color={color} {...props} />
+      <IconComponent
+        className={`${className} text-terra-cyan`}
+        color={color}
+        strokeWidth={strokeWidth}
+        glow={glow}
+      />
     </div>
   );
 };

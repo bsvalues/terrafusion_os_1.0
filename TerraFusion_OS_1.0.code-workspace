@@ -20,5 +20,6 @@
     "liveServer.settings.multiRootWorkspaceName": "🏛️ TerraFusion OS Root",
     "git.ignoreLimitWarning": true,
     "todo-tree.tree.scanMode": "workspace only",
+    "chatgpt.openOnStartup": true,
   },
 }

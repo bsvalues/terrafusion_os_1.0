@@ -199,6 +199,39 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
             <stop offset='100%' stopColor='#8844FF' stopOpacity='0.3' />
           </linearGradient>
 
+          {/* VARIANT-SPECIFIC GRADIENTS */}
+          {/* Glow variant - Green */}
+          <radialGradient id='glowGradient' cx='0.3' cy='0.3' r='0.8'>
+            <stop offset='0%' stopColor='#00FF88' stopOpacity='0.9' />
+            <stop offset='40%' stopColor='#00FF55' stopOpacity='0.7' />
+            <stop offset='70%' stopColor='#1E293B' stopOpacity='0.8' />
+            <stop offset='100%' stopColor='#0A0E1A' stopOpacity='0.95' />
+          </radialGradient>
+
+          {/* Pulse variant - Orange */}
+          <radialGradient id='pulseGradient' cx='0.3' cy='0.3' r='0.8'>
+            <stop offset='0%' stopColor='#FFA500' stopOpacity='0.9' />
+            <stop offset='40%' stopColor='#FF8C00' stopOpacity='0.7' />
+            <stop offset='70%' stopColor='#1E293B' stopOpacity='0.8' />
+            <stop offset='100%' stopColor='#0A0E1A' stopOpacity='0.95' />
+          </radialGradient>
+
+          {/* Quantum variant - Purple/Magenta */}
+          <radialGradient id='quantumGradient' cx='0.3' cy='0.3' r='0.8'>
+            <stop offset='0%' stopColor='#FF00FF' stopOpacity='0.9' />
+            <stop offset='40%' stopColor='#8A2BE2' stopOpacity='0.7' />
+            <stop offset='70%' stopColor='#4B0082' stopOpacity='0.8' />
+            <stop offset='100%' stopColor='#0A0E1A' stopOpacity='0.95' />
+          </radialGradient>
+
+          {/* Static variant - Gray/White */}
+          <radialGradient id='staticGradient' cx='0.3' cy='0.3' r='0.8'>
+            <stop offset='0%' stopColor='#E5E7EB' stopOpacity='0.9' />
+            <stop offset='40%' stopColor='#D1D5DB' stopOpacity='0.7' />
+            <stop offset='70%' stopColor='#6B7280' stopOpacity='0.6' />
+            <stop offset='100%' stopColor='#374151' stopOpacity='0.8' />
+          </radialGradient>
+
           {/* Glow filter */}
           <filter id='glow' x='-50%' y='-50%' width='200%' height='200%'>
             <feGaussianBlur stdDeviation='3' result='coloredBlur' />

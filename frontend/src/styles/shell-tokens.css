@@ -1,0 +1,176 @@
+/**
+ * TerraFusion OS - Shell Design Tokens v2
+ *
+ * Visual foundation for the Native Shell.
+ * Creates a calm, professional OS experience.
+ *
+ * Philosophy:
+ * - Calm OS, not busy SaaS dashboard
+ * - High signal, low noise
+ * - Government-grade professionalism
+ * - Suite-specific accents for clarity
+ */
+
+:root {
+  /* ===== Color System ===== */
+
+  /* Base: Deep blue-gray OS aesthetic */
+  --tf-color-void: #0a0e1a; /* Darkest background (shell container) */
+  --tf-color-bg: #0f1419; /* Background (main workspace) */
+  --tf-color-surface: #1a1f2e; /* Elevated surfaces (cards, panels) */
+  --tf-color-surface-hover: #242937; /* Hover state for surfaces */
+  --tf-color-border: #2a3142; /* Subtle borders and dividers */
+
+  /* Text: High contrast, clear hierarchy */
+  --tf-color-text-primary: #ffffff; /* Primary text (headings, important info) */
+  --tf-color-text-secondary: #a8b3cf; /* Secondary text (descriptions, labels) */
+  --tf-color-text-tertiary: #6b7a99; /* Tertiary text (metadata, timestamps) */
+  --tf-color-text-disabled: #4a5568; /* Disabled text */
+
+  /* Suite Accents: Domain-specific colors */
+  --tf-accent-assessment: #00d9ff; /* Cyan - Property assessment */
+  --tf-accent-levy: #ffa726; /* Amber - Tax calculations */
+  --tf-accent-gis: #4caf50; /* Green - Geospatial */
+  --tf-accent-collections: #26c6da; /* Teal - Payment collection */
+  --tf-accent-sync: #7e57c2; /* Purple - Data sync */
+  --tf-accent-flow: #42a5f5; /* Blue - Workflow */
+  --tf-accent-insights: #ec407a; /* Pink - Analytics */
+  --tf-accent-agent: #ab47bc; /* Deep purple - AI agents */
+  --tf-accent-admin: #78909c; /* Blue-gray - Administration */
+
+  /* Status Colors: Government-appropriate feedback */
+  --tf-status-success: #66bb6a; /* Approval, completion, validation */
+  --tf-status-warning: #ffa726; /* Review needed, approaching limits */
+  --tf-status-error: #ef5350; /* Errors, violations, critical issues */
+  --tf-status-info: #42a5f5; /* Informational, neutral notices */
+
+  /* Interactive States */
+  --tf-color-primary: #00d9ff; /* Primary actions (buttons, links) */
+  --tf-color-primary-hover: #00bfe8; /* Primary hover state */
+  --tf-color-secondary: #6b7a99; /* Secondary actions */
+  --tf-color-secondary-hover: #8a99b8; /* Secondary hover state */
+
+  /* ===== Spacing System (Base-8 + Golden Ratio) ===== */
+
+  /* Base-8 spacing scale */
+  --tf-space-1: 0.25rem; /* 4px - Tight spacing */
+  --tf-space-2: 0.5rem; /* 8px - Standard tight */
+  --tf-space-3: 0.75rem; /* 12px - Comfortable tight */
+  --tf-space-4: 1rem; /* 16px - Standard base */
+  --tf-space-5: 1.25rem; /* 20px - Comfortable */
+  --tf-space-6: 1.5rem; /* 24px - Section spacing */
+  --tf-space-8: 2rem; /* 32px - Large gaps */
+  --tf-space-10: 2.5rem; /* 40px - Major sections */
+  --tf-space-12: 3rem; /* 48px - Page margins */
+  --tf-space-16: 4rem; /* 64px - Hero spacing */
+
+  /* Golden ratio spacing (φ = 1.618) */
+  --tf-space-golden: 1.618rem; /* 25.888px - Harmonious spacing */
+
+  /* ===== Typography System (Golden Ratio Scale) ===== */
+
+  /* Font families */
+  --tf-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+  --tf-font-mono: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+
+  /* Font sizes (Golden ratio progression) */
+  --tf-text-xs: 0.75rem; /* 12px - Metadata, timestamps */
+  --tf-text-sm: 0.875rem; /* 14px - Secondary text, captions */
+  --tf-text-base: 1rem; /* 16px - Body text (base) */
+  --tf-text-lg: 1.236rem; /* 19.776px - φ × base - Emphasized text */
+  --tf-text-xl: 1.618rem; /* 25.888px - φ² × base - Section headers */
+  --tf-text-2xl: 2rem; /* 32px - Suite titles */
+  --tf-text-3xl: 2.618rem; /* 41.888px - Page titles */
+  --tf-text-4xl: 3.236rem; /* 51.776px - Hero titles */
+
+  /* Font weights */
+  --tf-weight-regular: 400;
+  --tf-weight-medium: 500;
+  --tf-weight-semibold: 600;
+  --tf-weight-bold: 700;
+
+  /* Line heights */
+  --tf-leading-tight: 1.25; /* Headings */
+  --tf-leading-normal: 1.5; /* Body text */
+  --tf-leading-relaxed: 1.75; /* Paragraphs */
+
+  /* ===== Border Radius ===== */
+
+  --tf-radius-sm: 0.375rem; /* 6px - Small elements */
+  --tf-radius-md: 0.5rem; /* 8px - Cards, buttons */
+  --tf-radius-lg: 0.75rem; /* 12px - Panels, modals */
+  --tf-radius-xl: 1rem; /* 16px - Hero elements */
+  --tf-radius-full: 9999px; /* Pills, circles */
+
+  /* ===== Shadows (Subtle, OS-appropriate) ===== */
+
+  --tf-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --tf-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --tf-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --tf-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+
+  /* Glow effects for interactive elements */
+  --tf-shadow-glow-primary: 0 0 20px rgba(0, 217, 255, 0.3);
+  --tf-shadow-glow-assessment: 0 0 20px rgba(0, 217, 255, 0.25);
+  --tf-shadow-glow-levy: 0 0 20px rgba(255, 167, 38, 0.25);
+  --tf-shadow-glow-gis: 0 0 20px rgba(76, 175, 80, 0.25);
+
+  /* ===== Layout Dimensions ===== */
+
+  /* Shell structure */
+  --tf-topbar-height: 3.5rem; /* 56px - Top navigation bar */
+  --tf-leftrail-width: 14rem; /* 224px - Suite navigation rail */
+  --tf-rightdrawer-width: 22rem; /* 352px - AI drawer / details panel */
+
+  /* Content constraints */
+  --tf-content-max-width: 80rem; /* 1280px - Max content width */
+  --tf-panel-max-width: 48rem; /* 768px - Max panel width for forms */
+
+  /* ===== Z-Index Scale ===== */
+
+  --tf-z-base: 0;
+  --tf-z-raised: 10; /* Cards, panels */
+  --tf-z-dropdown: 100; /* Dropdowns, popovers */
+  --tf-z-overlay: 200; /* Overlays, backdrops */
+  --tf-z-modal: 300; /* Modals, dialogs */
+  --tf-z-toast: 400; /* Notifications, toasts */
+  --tf-z-tooltip: 500; /* Tooltips */
+
+  /* ===== Transitions ===== */
+
+  --tf-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --tf-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --tf-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ===== Opacity Scale ===== */
+
+  --tf-opacity-disabled: 0.4;
+  --tf-opacity-hover: 0.8;
+  --tf-opacity-subtle: 0.6;
+}
+
+/* ===== Dark Mode Adjustments (if needed) ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Already optimized for dark mode by default */
+    /* Add overrides here if needed for forced light mode scenarios */
+  }
+}
+
+/* ===== High Contrast Mode (Accessibility) ===== */
+@media (prefers-contrast: high) {
+  :root {
+    --tf-color-border: #3a4152;
+    --tf-color-text-secondary: #b8c3df;
+    --tf-shadow-md: 0 4px 8px -1px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ===== Reduced Motion (Accessibility) ===== */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --tf-transition-fast: 0ms;
+    --tf-transition-base: 0ms;
+    --tf-transition-slow: 0ms;
+  }
+}

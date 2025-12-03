@@ -2,6 +2,49 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+## 🧠 START HERE (AI AGENTS) – OS Workspace Spine
+
+> **🚨 IF YOU ARE MODIFYING ANYTHING IN `src/terrafusion-os/`** — READ THIS FIRST.
+
+TerraFusion OS has a **workspace spine** that ALL workspace UI, OS objects, intents, and activity systems are built on.
+
+### Files that trigger this rule:
+
+* `src/terrafusion-os/core/osObjects/*`
+* `src/terrafusion-os/core/state/OmniIntentContext.tsx`
+* `src/terrafusion-os/core/activity/*`
+* `src/terrafusion-os/core/commands/*`
+* `src/terrafusion-os/workspaces/*`
+
+### You MUST read these docs:
+
+| Doc | Purpose |
+|-----|---------|
+| **[OS_SPINE_INDEX.md](../docs/OS_SPINE_INDEX.md)** | 🗺️ Navigation hub – start here |
+| [os-workspace-spine-spec.md](../docs/os-workspace-spine-spec.md) | Contract definitions |
+| [OS_SPINE_CONTRIBUTOR_GUIDE.md](../docs/OS_SPINE_CONTRIBUTOR_GUIDE.md) | How to extend |
+| [AGENT_ONBOARDING_OS_SPINE.md](../docs/AGENT_ONBOARDING_OS_SPINE.md) | Full agent rules |
+
+### Golden Rule:
+
+```
+OS Objects → emitIntent() → Activity Provider → Hooks → Workspaces/Panels
+```
+
+**DO NOT** bypass this. **DO NOT** add domain logic (parcels, levies, GIS) at OS level.
+
+### Before committing:
+
+```bash
+npx vitest run src/terrafusion-os
+```
+
+If tests fail, fix your changes — don't alter contracts.
+
+---
+
 ## Overview
 
 **TerraFusion OS Frontend** is a React 18 + TypeScript PWA with Electron desktop shell for government operations. This is the UI layer for a complete government operating system with real-time AI coordination, property management, and citizen services.

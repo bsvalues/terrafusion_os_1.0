@@ -7,9 +7,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using TerraFusion.AI.Data;
 using TerraFusion.AI.Entities;
-using TerraFusion.AI.Interfaces;
-using TerraFusion.AI.Data; // Extension methods for DbContext
+using TerraFusion.AI.Interfaces; // Extension methods for DbContext
 using TerraFusion.Data;
 
 namespace TerraFusion.AI.Services
@@ -19,7 +19,7 @@ namespace TerraFusion.AI.Services
     /// </summary>
     public class RAGService : IRAGService
     {
-        private readonly TerraFusionDbContext _context;
+        private readonly AIDbContext _context;
         private readonly ILogger<RAGService> _logger;
 
         private const int DefaultChunkSize = 512; // tokens
@@ -27,7 +27,7 @@ namespace TerraFusion.AI.Services
         private const int DefaultVectorDimension = 1536; // OpenAI text-embedding-3-small
 
         public RAGService(
-            TerraFusionDbContext context,
+            AIDbContext context,
             ILogger<RAGService> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -60,7 +60,7 @@ namespace TerraFusion.AI.Services
                     UpdatedAt = DateTime.UtcNow
                 };
 
-                _context.RAGDatasets().Add(dataset);
+                _context.RAGDatasets.Add(dataset);
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("RAG dataset created: {Name} (ID: {Id})", name, dataset.Id);
@@ -87,7 +87,7 @@ namespace TerraFusion.AI.Services
                 _logger.LogInformation("Adding document to dataset {DatasetId}: {Title}",
                     datasetId, title);
 
-                var dataset = await _context.RAGDatasets().FindAsync(datasetId);
+                var dataset = await _context.RAGDatasets.FindAsync(datasetId);
                 if (dataset == null)
                 {
                     throw new InvalidOperationException($"Dataset {datasetId} not found");
@@ -105,7 +105,7 @@ namespace TerraFusion.AI.Services
                     UpdatedAt = DateTime.UtcNow
                 };
 
-                _context.RAGDocuments().Add(document);
+                _context.RAGDocuments.Add(document);
                 await _context.SaveChangesAsync();
 
                 // Update dataset statistics
@@ -133,7 +133,7 @@ namespace TerraFusion.AI.Services
             {
                 _logger.LogInformation("Indexing document ID: {DocumentId}", documentId);
 
-                var document = await _context.RAGDocuments()
+                var document = await _context.RAGDocuments
                     .Include(d => d.Dataset)
                     .FirstOrDefaultAsync(d => d.Id == documentId);
 
@@ -200,7 +200,7 @@ namespace TerraFusion.AI.Services
             {
                 _logger.LogInformation("Searching dataset {DatasetId} for: {Query}", datasetId, query);
 
-                var dataset = await _context.RAGDatasets().FindAsync(datasetId);
+                var dataset = await _context.RAGDatasets.FindAsync(datasetId);
                 if (dataset == null)
                 {
                     throw new InvalidOperationException($"Dataset {datasetId} not found");
@@ -221,7 +221,7 @@ namespace TerraFusion.AI.Services
                 // LIMIT @topK
 
                 // Simulated results
-                var documents = await _context.RAGDocuments()
+                var documents = await _context.RAGDocuments
                     .Where(d => d.DatasetId == datasetId)
                     .Take(topK)
                     .ToListAsync();
@@ -281,7 +281,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<List<RAGDataset>> GetCountyDatasetsAsync(int countyId)
         {
-            return await _context.RAGDatasets()
+            return await _context.RAGDatasets
                 .Where(d => d.CountyId == countyId && d.Status == "Active")
                 .OrderByDescending(d => d.UpdatedAt)
                 .ToListAsync();
@@ -289,13 +289,13 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<RAGDataset?> GetDatasetAsync(int datasetId)
         {
-            return await _context.RAGDatasets()
+            return await _context.RAGDatasets
                 .FirstOrDefaultAsync(d => d.Id == datasetId && d.Status == "Active");
         }
 
         public async System.Threading.Tasks.Task<bool> DeleteDatasetAsync(int datasetId)
         {
-            var dataset = await _context.RAGDatasets().FindAsync(datasetId);
+            var dataset = await _context.RAGDatasets.FindAsync(datasetId);
             if (dataset == null)
             {
                 return false;
@@ -312,7 +312,7 @@ namespace TerraFusion.AI.Services
         public async System.Threading.Tasks.Task<List<RAGDocument>> GetDocumentsAsync(
             int datasetId, int skip = 0, int take = 50)
         {
-            return await _context.RAGDocuments()
+            return await _context.RAGDocuments
                 .Where(d => d.DatasetId == datasetId)
                 .OrderByDescending(d => d.CreatedAt)
                 .Skip(skip)
@@ -322,13 +322,13 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<bool> DeleteDocumentAsync(int documentId)
         {
-            var document = await _context.RAGDocuments().FindAsync(documentId);
+            var document = await _context.RAGDocuments.FindAsync(documentId);
             if (document == null)
             {
                 return false;
             }
 
-            _context.RAGDocuments().Remove(document);
+            _context.RAGDocuments.Remove(document);
             await _context.SaveChangesAsync();
 
             return true;

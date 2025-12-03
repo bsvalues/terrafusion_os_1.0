@@ -6,7 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.CostForge.Services;
 using TerraFusion.CostForge.Interfaces;
-using TerraFusion.CostForge.Data;
+using TerraFusion.CostForge.Context;
 using TerraFusion.CostForge.HealthChecks;
 using TerraFusion.Core.Services;
 using TerraFusion.AI.Services;

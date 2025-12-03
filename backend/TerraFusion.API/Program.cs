@@ -100,6 +100,9 @@ builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTerraFusionAuthentication(builder.Configuration);
 
+// 🤖 AI SERVICES - Register TerraFusion AI with IAICommandService for quantum metrics
+builder.Services.AddTerraFusionAI(builder.Configuration);
+
 // 🎯 SERVICE REGISTRY & DISCOVERY - No more hardcoded ports!
 builder.Services.AddSingleton<ServiceRegistry>();
 // ✅ RE-ENABLED: Fixed BackgroundService pattern with proper ExecuteAsync implementation
@@ -240,6 +243,23 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(TerraFusion.Core
 
 // Register database context with SQLite fallback
 builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
+
+    if (connectionString.Contains("Host="))
+    {
+        // PostgreSQL for production
+        options.UseNpgsql(connectionString);
+    }
+    else
+    {
+        // SQLite for development
+        options.UseSqlite(connectionString);
+    }
+});
+
+// 🧠 Register AIDbContext for TerraFusion.AI entities (separate to avoid circular dependency)
+builder.Services.AddDbContext<TerraFusion.AI.Data.AIDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
 
@@ -962,6 +982,46 @@ try
     {
         Console.WriteLine($"🛑 ApplicationStopped event fired at {DateTime.Now:HH:mm:ss.fff}");
     });
+
+    // 🗄️ AUTO-MIGRATE DATABASE ON STARTUP (SELF-HEALING ARCHITECTURE)
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var config = services.GetRequiredService<IConfiguration>();
+        var env = services.GetRequiredService<IHostEnvironment>();
+
+        var bypassDb = config.GetValue<bool>("Development:BypassDatabase");
+        var dbRequired = config.GetValue<bool>("Features:DatabaseRequired");
+
+        Console.WriteLine($"📊 Database Configuration:");
+        Console.WriteLine($"   BypassDatabase: {bypassDb}");
+        Console.WriteLine($"   DatabaseRequired: {dbRequired}");
+
+        // Only migrate when DB is actually supposed to be used
+        if (!bypassDb && dbRequired)
+        {
+            try
+            {
+                var db = services.GetRequiredService<TerraFusionContext>();
+                Console.WriteLine($"🔄 Applying database migrations...");
+
+                // Create terrafusion_dev.db for SQLite and apply all migrations
+                await db.Database.MigrateAsync();
+
+                Console.WriteLine($"✅ Database migrations applied successfully");
+                Console.WriteLine($"   Database: {db.Database.GetConnectionString()}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️ Database migration failed (non-fatal): {ex.Message}");
+                Console.WriteLine($"   Application will continue with degraded database functionality");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"⏭️ Database bypass enabled - skipping migrations");
+        }
+    }
 
     // 🌟 Initialize Ultimate CostForge AI Consciousness
     // RE-ENABLED: Championship-level 1M agent deployment with quantum Factor 999

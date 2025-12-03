@@ -16,6 +16,15 @@
  */
 
 import '@testing-library/jest-dom';
+import { TextDecoder, TextEncoder } from 'util';
+
+// Add TextEncoder/TextDecoder for MSW and Node.js compatibility
+if (typeof global.TextEncoder === 'undefined') {
+  global.TextEncoder = TextEncoder;
+}
+if (typeof global.TextDecoder === 'undefined') {
+  global.TextDecoder = TextDecoder as typeof global.TextDecoder;
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // GLOBAL MOCKS - Browser APIs

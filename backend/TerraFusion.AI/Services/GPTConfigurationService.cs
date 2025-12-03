@@ -7,9 +7,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using TerraFusion.AI.Data;
 using TerraFusion.AI.Entities;
 using TerraFusion.AI.Interfaces;
-using TerraFusion.AI.Data; // Extension methods for DbContext
 using TerraFusion.Core.Entities;
 using TerraFusion.Data;
 using TaskAsync = System.Threading.Tasks.Task;
@@ -21,11 +21,11 @@ namespace TerraFusion.AI.Services
     /// </summary>
     public class GPTConfigurationService : IGPTConfigurationService
     {
-        private readonly TerraFusionDbContext _context;
+        private readonly AIDbContext _context;
         private readonly ILogger<GPTConfigurationService> _logger;
 
         public GPTConfigurationService(
-            TerraFusionDbContext context,
+            AIDbContext context,
             ILogger<GPTConfigurationService> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -49,7 +49,7 @@ namespace TerraFusion.AI.Services
                 }
 
                 // Check for duplicate name
-                var existing = await _context.GPTConfigurations()
+                var existing = await _context.GPTConfigurations
                     .FirstOrDefaultAsync(g => g.Name == config.Name && g.Status != "Deleted");
 
                 if (existing != null)
@@ -62,7 +62,7 @@ namespace TerraFusion.AI.Services
                 config.UpdatedAt = DateTime.UtcNow;
                 config.Status = "Active";
 
-                _context.GPTConfigurations().Add(config);
+                _context.GPTConfigurations.Add(config);
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("GPT created successfully: {Name} (ID: {Id})",
@@ -83,7 +83,7 @@ namespace TerraFusion.AI.Services
             {
                 _logger.LogInformation("Updating GPT ID: {Id}", id);
 
-                var existing = await _context.GPTConfigurations().FindAsync(id);
+                var existing = await _context.GPTConfigurations.FindAsync(id);
                 if (existing == null)
                 {
                     throw new InvalidOperationException($"GPT with ID {id} not found");
@@ -144,7 +144,7 @@ namespace TerraFusion.AI.Services
             {
                 _logger.LogInformation("Deleting GPT ID: {Id}", id);
 
-                var gpt = await _context.GPTConfigurations().FindAsync(id);
+                var gpt = await _context.GPTConfigurations.FindAsync(id);
                 if (gpt == null)
                 {
                     return false;
@@ -170,13 +170,13 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<GPTConfiguration?> GetGPTByIdAsync(int id)
         {
-            return await _context.GPTConfigurations()
+            return await _context.GPTConfigurations
                 .FirstOrDefaultAsync(g => g.Id == id && g.Status != "Deleted");
         }
 
         public async System.Threading.Tasks.Task<GPTConfiguration?> GetGPTByNameAsync(string name)
         {
-            return await _context.GPTConfigurations()
+            return await _context.GPTConfigurations
                 .FirstOrDefaultAsync(g => g.Name == name && g.Status != "Deleted");
         }
 
@@ -185,7 +185,7 @@ namespace TerraFusion.AI.Services
         {
             try
             {
-                var query = _context.GPTConfigurations()
+                var query = _context.GPTConfigurations
                     .Where(g => g.Status == "Active");
 
                 // Include system GPTs
@@ -216,7 +216,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<List<GPTConfiguration>> GetSystemGPTsAsync()
         {
-            return await _context.GPTConfigurations()
+            return await _context.GPTConfigurations
                 .Where(g => g.IsSystemGPT && g.Status == "Active")
                 .OrderBy(g => g.Category)
                 .ThenBy(g => g.DisplayName)
@@ -226,7 +226,7 @@ namespace TerraFusion.AI.Services
         public async System.Threading.Tasks.Task<List<GPTConfiguration>> GetGPTsByCategoryAsync(
             string category, int? countyId = null)
         {
-            var query = _context.GPTConfigurations()
+            var query = _context.GPTConfigurations
                 .Where(g => g.Category == category && g.Status == "Active");
 
             if (countyId.HasValue)
@@ -246,7 +246,7 @@ namespace TerraFusion.AI.Services
         public async System.Threading.Tasks.Task<List<GPTConfiguration>> SearchGPTsAsync(
             string query, int? countyId = null)
         {
-            var searchQuery = _context.GPTConfigurations()
+            var searchQuery = _context.GPTConfigurations
                 .Where(g => g.Status == "Active" &&
                     (g.DisplayName.Contains(query) ||
                      g.Description!.Contains(query) ||
@@ -268,7 +268,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<List<GPTConfiguration>> GetPopularGPTsAsync(int count = 10)
         {
-            return await _context.GPTConfigurations()
+            return await _context.GPTConfigurations
                 .Where(g => g.Status == "Active")
                 .OrderByDescending(g => g.InstallCount)
                 .Take(count)
@@ -277,7 +277,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<List<GPTConfiguration>> GetTopRatedGPTsAsync(int count = 10)
         {
-            return await _context.GPTConfigurations()
+            return await _context.GPTConfigurations
                 .Where(g => g.Status == "Active" && g.AverageRating.HasValue)
                 .OrderByDescending(g => g.AverageRating)
                 .ThenByDescending(g => g.RatingCount)
@@ -287,7 +287,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<List<GPTConfiguration>> GetFeaturedGPTsAsync()
         {
-            return await _context.GPTConfigurations()
+            return await _context.GPTConfigurations
                 .Where(g => g.IsFeatured && g.Status == "Active")
                 .OrderByDescending(g => g.InstallCount)
                 .ToListAsync();
@@ -295,7 +295,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task IncrementInstallCountAsync(int gptId)
         {
-            var gpt = await _context.GPTConfigurations().FindAsync(gptId);
+            var gpt = await _context.GPTConfigurations.FindAsync(gptId);
             if (gpt != null)
             {
                 gpt.InstallCount++;
@@ -306,7 +306,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task UpdateRatingAsync(int gptId, decimal rating, int ratingCount)
         {
-            var gpt = await _context.GPTConfigurations().FindAsync(gptId);
+            var gpt = await _context.GPTConfigurations.FindAsync(gptId);
             if (gpt != null)
             {
                 gpt.AverageRating = rating;
@@ -319,7 +319,7 @@ namespace TerraFusion.AI.Services
         public async System.Threading.Tasks.Task IncrementUsageStatsAsync(
             int gptId, int messages, long tokens, decimal cost)
         {
-            var gpt = await _context.GPTConfigurations().FindAsync(gptId);
+            var gpt = await _context.GPTConfigurations.FindAsync(gptId);
             if (gpt != null)
             {
                 gpt.TotalMessages += messages;

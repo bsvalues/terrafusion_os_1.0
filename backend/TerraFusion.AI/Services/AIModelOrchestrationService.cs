@@ -97,6 +97,10 @@ public class AIModelOrchestrationService : BackgroundService
                 await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             }
         }
+        catch (TaskCanceledException)
+        {
+            _logger.LogInformation("✅ AI Model Orchestration Service stopped gracefully");
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Critical error in AI Model Orchestration Service");

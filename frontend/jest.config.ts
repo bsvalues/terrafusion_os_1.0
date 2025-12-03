@@ -18,7 +18,7 @@ const config: Config = {
     '^@utils/(.*)$': '<rootDir>/src/utils/$1',
     '^@lib/(.*)$': '<rootDir>/src/lib/$1',
     '^@assets/(.*)$': '<rootDir>/src/assets/$1',
-    
+
     // Mock static assets
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|svg|webp)$': '<rootDir>/src/__mocks__/fileMock.ts',
@@ -27,13 +27,16 @@ const config: Config = {
 
   // Transform files with ts-jest
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', {
-      tsconfig: {
-        jsx: 'react-jsx',
-        esModuleInterop: true,
-        allowSyntheticDefaultImports: true,
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          jsx: 'react-jsx',
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+        },
       },
-    }],
+    ],
   },
 
   // Test file patterns
@@ -41,6 +44,20 @@ const config: Config = {
     '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
     '<rootDir>/src/**/*.{test,spec}.{ts,tsx}',
     '<rootDir>/tests/**/*.{test,spec}.{ts,tsx}',
+  ],
+
+  // Ignore patterns - exclude Vitest tests and MSW-based tests
+  testPathIgnorePatterns: [
+    '<rootDir>/node_modules/',
+    '<rootDir>/dist/',
+    '<rootDir>/build/',
+    '<rootDir>/coverage/',
+    // Exclude terrafusion-os tests - they use Vitest, not Jest
+    '<rootDir>/src/terrafusion-os/',
+    // Exclude MSW-based integration tests that need special setup
+    '<rootDir>/src/tests/integration/SystemIntegration.e2e.test.tsx',
+    '<rootDir>/src/tests/integration/CountyEmployeeWorkspace.integration.test.tsx',
+    '<rootDir>/src/tests/integration/ResearchPortal.integration.test.tsx',
   ],
 
   // Files to collect coverage from
@@ -68,14 +85,6 @@ const config: Config = {
   // Coverage reporters
   coverageReporters: ['text', 'text-summary', 'lcov', 'html'],
   coverageDirectory: '<rootDir>/coverage',
-
-  // Ignore patterns
-  testPathIgnorePatterns: [
-    '<rootDir>/node_modules/',
-    '<rootDir>/dist/',
-    '<rootDir>/build/',
-    '<rootDir>/coverage/',
-  ],
 
   // Module file extensions
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],

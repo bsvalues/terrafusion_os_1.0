@@ -219,6 +219,10 @@ public class EnterpriseAIAgentCoordinator : BackgroundService, IEnterpriseAIAgen
 
                 await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
             }
+            catch (TaskCanceledException)
+            {
+                _logger.LogInformation("✅ Enterprise AI Agent Coordinator stopped gracefully");
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "❌ Error in agent coordination background service");

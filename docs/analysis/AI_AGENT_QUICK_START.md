@@ -1,5 +1,47 @@
 # 🤖 AI AGENT QUICK START GUIDE - PRODUCTION READY
 
+---
+
+## 🧠 START HERE (AI AGENTS) – OS Workspace Spine
+
+> **🚨 IF YOU ARE MODIFYING ANYTHING IN `frontend/src/terrafusion-os/`** — READ THIS FIRST.
+
+TerraFusion OS has a **workspace spine** that ALL workspace UI, OS objects, intents, and activity systems are built on.
+
+### Files that trigger this rule:
+
+* `core/osObjects/*` — OS object catalog & components
+* `core/state/OmniIntentContext.tsx` — Intent router
+* `core/activity/*` — Activity provider, bridges, hooks
+* `core/commands/*` — Command providers
+* `workspaces/*` — Workspace components
+
+### You MUST read these docs:
+
+| Doc | Purpose |
+|-----|--------|
+| [os-workspace-spine-spec.md](../os-workspace-spine-spec.md) | Contract definitions |
+| [OS_SPINE_CONTRIBUTOR_GUIDE.md](../OS_SPINE_CONTRIBUTOR_GUIDE.md) | How to extend |
+| [AGENT_ONBOARDING_OS_SPINE.md](../AGENT_ONBOARDING_OS_SPINE.md) | Full agent rules |
+
+### Golden Rule:
+
+```
+OS Objects → emitIntent() → Activity Provider → Hooks → Workspaces/Panels
+```
+
+**Forbidden at OS level:** domain terms like "parcel", "levy", "GIS", "owner", "tax roll".
+
+### Before committing any OS spine changes:
+
+```bash
+cd frontend && npx vitest run src/terrafusion-os
+```
+
+If tests fail → fix your changes. Do not alter contracts.
+
+---
+
 ## 🎯 **START HERE - TERRAFUSION OS 1.0 COMPLETE**
 
 This is the **MASTER REFERENCE** for any AI agent working on Terrafusion OS. **IMPLEMENTATION STATUS: COMPLETE** - All major objectives achieved and system is production-ready.

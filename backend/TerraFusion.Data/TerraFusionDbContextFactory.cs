@@ -6,33 +6,66 @@ namespace TerraFusion.Data;
 
 /// <summary>
 /// Design-time DbContext factory for EF Core migrations
+/// Respects DOTNET_ENVIRONMENT / ASPNETCORE_ENVIRONMENT for proper config loading
 /// </summary>
 public class TerraFusionDbContextFactory : IDesignTimeDbContextFactory<TerraFusionDbContext>
 {
     public TerraFusionDbContext CreateDbContext(string[] args)
     {
-        // Build configuration from TerraFusion.API appsettings (where Production config lives)
+        // Determine environment (default to Development for local dev)
+        var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+            ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+            ?? "Development";
+
+        Console.WriteLine($"[TerraFusionDbContextFactory] Environment: {environment}");
+
+        // Build configuration from TerraFusion.API appsettings
         var apiPath = Path.Combine(Directory.GetCurrentDirectory(), "../TerraFusion.API");
+        if (!Directory.Exists(apiPath))
+        {
+            apiPath = Path.Combine(Directory.GetCurrentDirectory(), "TerraFusion.API");
+        }
+        if (!Directory.Exists(apiPath))
+        {
+            apiPath = Directory.GetCurrentDirectory();
+        }
+
+        Console.WriteLine($"[TerraFusionDbContextFactory] Config path: {apiPath}");
+
         var configuration = new ConfigurationBuilder()
             .SetBasePath(apiPath)
-            .AddJsonFile("appsettings.json", optional: false)
-            .AddJsonFile("appsettings.Production.json", optional: true)
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile($"appsettings.{environment}.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
+
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? "Data Source=terrafusion_dev.db";
+
+        Console.WriteLine($"[TerraFusionDbContextFactory] Connection: {connectionString}");
 
         // Create DbContext options
         var optionsBuilder = new DbContextOptionsBuilder<TerraFusionDbContext>();
 
-        // PRODUCTION POSTGRESQL: Force PostgreSQL for migrations (no SQLite fallback)
-        // This ensures EF Core migrations create tables in the actual terrafusion_production database
-        var connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? "Host=localhost;Database=terrafusion_production;Username=terrafusion;Password=terrafusion_production_secure_2025";
-
-        optionsBuilder.UseNpgsql(connectionString, npgsqlOptions =>
+        if (connectionString.Contains("Host="))
         {
-            npgsqlOptions.MigrationsAssembly("TerraFusion.Data");
-            npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3);
-        });
+            // PostgreSQL for production
+            Console.WriteLine($"[TerraFusionDbContextFactory] Using PostgreSQL");
+            optionsBuilder.UseNpgsql(connectionString, npgsqlOptions =>
+            {
+                npgsqlOptions.MigrationsAssembly("TerraFusion.Data");
+                npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3);
+            });
+        }
+        else
+        {
+            // SQLite for development
+            Console.WriteLine($"[TerraFusionDbContextFactory] Using SQLite");
+            optionsBuilder.UseSqlite(connectionString, sqliteOptions =>
+            {
+                sqliteOptions.MigrationsAssembly("TerraFusion.Data");
+            });
+        }
 
         return new TerraFusionDbContext(optionsBuilder.Options, configuration);
     }

@@ -131,6 +131,11 @@ jobs:
           if [[ -d "policies" ]]; then
             conftest test policies --all-namespaces
           fi
+      - name: Gate F-OS — TerraFusion OS workspace smoke tests
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run test:os:smoke
       - name: Gate F — Validation Matrix (env-aware)
         env:
           TF_ENV: ${{ env.TF_ENV }}

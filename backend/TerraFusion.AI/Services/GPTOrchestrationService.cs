@@ -8,9 +8,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using TerraFusion.AI.Data;
 using TerraFusion.AI.Entities;
 using TerraFusion.AI.Interfaces;
-using TerraFusion.AI.Data; // Extension methods for DbContext
 using TerraFusion.Core.Entities;
 using TerraFusion.Data;
 using TaskAsync = System.Threading.Tasks.Task;
@@ -22,7 +22,7 @@ namespace TerraFusion.AI.Services
     /// </summary>
     public class GPTOrchestrationService : IGPTOrchestrationService
     {
-        private readonly TerraFusionDbContext _context;
+        private readonly AIDbContext _context;
         private readonly ILogger<GPTOrchestrationService> _logger;
         private readonly IRAGService _ragService;
 
@@ -51,7 +51,7 @@ namespace TerraFusion.AI.Services
         };
 
         public GPTOrchestrationService(
-            TerraFusionDbContext context,
+            AIDbContext context,
             ILogger<GPTOrchestrationService> logger,
             IRAGService ragService)
         {
@@ -73,14 +73,14 @@ namespace TerraFusion.AI.Services
                     gptConfigId, conversationId);
 
                 // Get GPT configuration
-                var gptConfig = await _context.GPTConfigurations().FindAsync(gptConfigId);
+                var gptConfig = await _context.GPTConfigurations.FindAsync(gptConfigId);
                 if (gptConfig == null)
                 {
                     throw new InvalidOperationException($"GPT configuration {gptConfigId} not found");
                 }
 
                 // Get conversation
-                var conversation = await _context.GPTConversations().FindAsync(conversationId);
+                var conversation = await _context.GPTConversations.FindAsync(conversationId);
                 if (conversation == null)
                 {
                     throw new InvalidOperationException($"Conversation {conversationId} not found");
@@ -95,7 +95,7 @@ namespace TerraFusion.AI.Services
                     CreatedAt = DateTime.UtcNow
                 };
 
-                _context.GPTMessages().Add(userMessageEntity);
+                _context.GPTMessages.Add(userMessageEntity);
                 await _context.SaveChangesAsync();
 
                 // Get conversation history for context
@@ -156,7 +156,7 @@ namespace TerraFusion.AI.Services
                     CreatedAt = DateTime.UtcNow
                 };
 
-                _context.GPTMessages().Add(assistantMessageEntity);
+                _context.GPTMessages.Add(assistantMessageEntity);
 
                 // Update conversation statistics
                 conversation.TotalMessages += 2; // user + assistant
@@ -186,7 +186,7 @@ namespace TerraFusion.AI.Services
                     Timestamp = DateTime.UtcNow
                 };
 
-                _context.GPTUsageMetrics().Add(usageMetric);
+                _context.GPTUsageMetrics.Add(usageMetric);
 
                 await _context.SaveChangesAsync();
 
@@ -213,7 +213,7 @@ namespace TerraFusion.AI.Services
                     Timestamp = DateTime.UtcNow
                 };
 
-                _context.GPTUsageMetrics().Add(failedMetric);
+                _context.GPTUsageMetrics.Add(failedMetric);
                 await _context.SaveChangesAsync();
 
                 throw;
@@ -283,11 +283,11 @@ namespace TerraFusion.AI.Services
                     UpdatedAt = DateTime.UtcNow
                 };
 
-                _context.GPTConversations().Add(conversation);
+                _context.GPTConversations.Add(conversation);
                 await _context.SaveChangesAsync();
 
                 // Increment conversation count on GPT config
-                var gpt = await _context.GPTConfigurations().FindAsync(gptConfigId);
+                var gpt = await _context.GPTConfigurations.FindAsync(gptConfigId);
                 if (gpt != null)
                 {
                     gpt.TotalConversations++;
@@ -308,7 +308,7 @@ namespace TerraFusion.AI.Services
         public async System.Threading.Tasks.Task<List<GPTMessage>> GetConversationHistoryAsync(
             int conversationId, int limit = 50)
         {
-            return await _context.GPTMessages()
+            return await _context.GPTMessages
                 .Where(m => m.ConversationId == conversationId)
                 .OrderByDescending(m => m.CreatedAt)
                 .Take(limit)
@@ -318,7 +318,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<GPTConversation?> GetConversationAsync(int conversationId)
         {
-            return await _context.GPTConversations()
+            return await _context.GPTConversations
                 .Include(c => c.GPTConfiguration)
                 .FirstOrDefaultAsync(c => c.Id == conversationId);
         }
@@ -328,7 +328,7 @@ namespace TerraFusion.AI.Services
             int gptConfigId,
             int limit = 20)
         {
-            return await _context.GPTConversations()
+            return await _context.GPTConversations
                 .Where(c => c.UserId == userId &&
                            c.GPTConfigurationId == gptConfigId &&
                            c.Status != "Deleted")
@@ -339,7 +339,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task UpdateConversationTitleAsync(int conversationId, string title)
         {
-            var conversation = await _context.GPTConversations().FindAsync(conversationId);
+            var conversation = await _context.GPTConversations.FindAsync(conversationId);
             if (conversation != null)
             {
                 conversation.Title = title;
@@ -350,7 +350,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task ArchiveConversationAsync(int conversationId)
         {
-            var conversation = await _context.GPTConversations().FindAsync(conversationId);
+            var conversation = await _context.GPTConversations.FindAsync(conversationId);
             if (conversation != null)
             {
                 conversation.Status = "Archived";
@@ -361,7 +361,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task DeleteConversationAsync(int conversationId)
         {
-            var conversation = await _context.GPTConversations().FindAsync(conversationId);
+            var conversation = await _context.GPTConversations.FindAsync(conversationId);
             if (conversation != null)
             {
                 conversation.Status = "Deleted";
@@ -372,7 +372,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task RateConversationAsync(int conversationId, int rating, string? feedback = null)
         {
-            var conversation = await _context.GPTConversations()
+            var conversation = await _context.GPTConversations
                 .Include(c => c.GPTConfiguration)
                 .FirstOrDefaultAsync(c => c.Id == conversationId);
 
@@ -418,7 +418,7 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<ConversationStatistics> GetConversationStatisticsAsync(int conversationId)
         {
-            var conversation = await _context.GPTConversations().FindAsync(conversationId);
+            var conversation = await _context.GPTConversations.FindAsync(conversationId);
             if (conversation == null)
             {
                 throw new InvalidOperationException($"Conversation {conversationId} not found");
@@ -448,19 +448,19 @@ namespace TerraFusion.AI.Services
             var start = startDate ?? DateTime.UtcNow.AddMonths(-1);
             var end = endDate ?? DateTime.UtcNow;
 
-            var gpt = await _context.GPTConfigurations().FindAsync(gptConfigId);
+            var gpt = await _context.GPTConfigurations.FindAsync(gptConfigId);
             if (gpt == null)
             {
                 throw new InvalidOperationException($"GPT {gptConfigId} not found");
             }
 
-            var metrics = await _context.GPTUsageMetrics()
+            var metrics = await _context.GPTUsageMetrics
                 .Where(m => m.GPTConfigurationId == gptConfigId &&
                            m.Timestamp >= start &&
                            m.Timestamp <= end)
                 .ToListAsync();
 
-            var conversations = await _context.GPTConversations()
+            var conversations = await _context.GPTConversations
                 .Where(c => c.GPTConfigurationId == gptConfigId &&
                            c.CreatedAt >= start &&
                            c.CreatedAt <= end)
@@ -490,14 +490,14 @@ namespace TerraFusion.AI.Services
             var start = startDate ?? DateTime.UtcNow.AddMonths(-1);
             var end = endDate ?? DateTime.UtcNow;
 
-            var metrics = await _context.GPTUsageMetrics()
+            var metrics = await _context.GPTUsageMetrics
                 .Include(m => m.GPTConfiguration)
                 .Where(m => m.CountyId == countyId &&
                            m.Timestamp >= start &&
                            m.Timestamp <= end)
                 .ToListAsync();
 
-            var conversations = await _context.GPTConversations()
+            var conversations = await _context.GPTConversations
                 .Where(c => c.CountyId == countyId &&
                            c.CreatedAt >= start &&
                            c.CreatedAt <= end)

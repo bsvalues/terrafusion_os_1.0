@@ -26,6 +26,9 @@ public static class AIServiceExtensions
         services.AddHostedService<AIModelOrchestrationService>(provider =>
             provider.GetRequiredService<AIModelOrchestrationService>());
 
+        // Register AI Command Service for quantum metrics and AI coordination
+        services.AddScoped<IAICommandService, AICommandService>();
+
         // Register SignalR for real-time AI communication
         services.AddSignalR(options =>
         {

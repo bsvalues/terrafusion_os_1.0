@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using AutoMapper;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Enums;
 using TerraFusion.Core.Services;
 using TerraFusion.Data;
+using Microsoft.Data.Sqlite;
 
 namespace TerraFusion.AI.Services;
 
@@ -14,36 +16,87 @@ public class AICommandService : IAICommandService
     private readonly TerraFusionContext _context;
     private readonly IMapper _mapper;
     private readonly ILogger<AICommandService> _logger;
+    private readonly IConfiguration _config;
 
-    public AICommandService(TerraFusionContext context, IMapper mapper, ILogger<AICommandService> logger)
+    public AICommandService(TerraFusionContext context, IMapper mapper, ILogger<AICommandService> logger, IConfiguration config)
     {
         _context = context;
         _mapper = mapper;
         _logger = logger;
+        _config = config;
     }
 
     public async System.Threading.Tasks.Task<AISwarmStatusDto> GetSwarmStatusAsync()
     {
         _logger.LogInformation("Getting AI swarm status");
 
-        var activeModels = await _context.AIModels
-            .Where(m => m.Status == AIModelStatus.Active)
-            .CountAsync();
+        var bypassDb = _config.GetValue<bool>("Development:BypassDatabase");
+        var dbRequired = _config.GetValue<bool>("Features:DatabaseRequired");
 
-        var totalAgents = 1008; // Simulated swarm size
-        var activeAgents = (int)(totalAgents * 0.85); // 85% active
+        // Respect bypass configuration - return mock data when database is bypassed
+        if (bypassDb || !dbRequired)
+        {
+            _logger.LogInformation("Database bypass enabled - returning mock AI swarm status");
+            return CreateMockSwarmStatus();
+        }
+
+        try
+        {
+            // Safety check: verify database connectivity before querying
+            if (!await _context.Database.CanConnectAsync())
+            {
+                _logger.LogWarning("Database is not available - returning mock AI swarm status");
+                return CreateMockSwarmStatus();
+            }
+
+            var activeModels = await _context.AIModels
+                .Where(m => m.Status == AIModelStatus.Active)
+                .CountAsync();
+
+            var totalAgents = 1008; // Simulated swarm size
+            var activeAgents = (int)(totalAgents * 0.85); // 85% active
+            var idleAgents = totalAgents - activeAgents;
+
+            return new AISwarmStatusDto
+            {
+                Status = "Active",
+                TotalAgents = totalAgents,
+                ActiveAgents = activeAgents,
+                IdleAgents = idleAgents,
+                BusyAgents = (int)(activeAgents * 0.6),
+                AverageLoad = 65.5,
+                LastUpdate = DateTime.UtcNow,
+                AgentStatuses = GenerateAgentStatuses(20) // Show top 20 agents
+            };
+        }
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 1 && ex.Message.Contains("no such table"))
+        {
+            _logger.LogWarning(ex, "AIModels table missing - returning mock AI swarm status. Run database migrations.");
+            return CreateMockSwarmStatus();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving AI swarm status - returning mock data");
+            return CreateMockSwarmStatus();
+        }
+    }
+
+    private AISwarmStatusDto CreateMockSwarmStatus()
+    {
+        var totalAgents = 1008;
+        var activeAgents = (int)(totalAgents * 0.85);
         var idleAgents = totalAgents - activeAgents;
 
         return new AISwarmStatusDto
         {
-            Status = "Active",
+            Status = "Active (Mock)",
             TotalAgents = totalAgents,
             ActiveAgents = activeAgents,
             IdleAgents = idleAgents,
             BusyAgents = (int)(activeAgents * 0.6),
             AverageLoad = 65.5,
             LastUpdate = DateTime.UtcNow,
-            AgentStatuses = GenerateAgentStatuses(20) // Show top 20 agents
+            AgentStatuses = GenerateAgentStatuses(20)
         };
     }
 

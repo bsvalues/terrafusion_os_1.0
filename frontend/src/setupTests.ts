@@ -1,9 +1,40 @@
 // Jest setup file - runs before each test suite
 import '@testing-library/jest-dom';
+import { toHaveNoViolations } from 'jest-axe';
+import { TextDecoder, TextEncoder } from 'util';
 
 // 🚀 TerraFusion Elite Test Environment Setup
+// Add TextEncoder/TextDecoder for MSW and Node.js compatibility
+if (typeof global.TextEncoder === 'undefined') {
+  global.TextEncoder = TextEncoder;
+}
+if (typeof global.TextDecoder === 'undefined') {
+  global.TextDecoder = TextDecoder as typeof global.TextDecoder;
+}
+// Add BroadcastChannel polyfill for MSW
+if (typeof global.BroadcastChannel === 'undefined') {
+  class BroadcastChannelPolyfill {
+    name: string;
+    onmessage: ((event: MessageEvent) => void) | null = null;
+    onmessageerror: ((event: MessageEvent) => void) | null = null;
+    constructor(name: string) {
+      this.name = name;
+    }
+    postMessage(_message: unknown) {}
+    close() {}
+    addEventListener(_type: string, _listener: EventListener) {}
+    removeEventListener(_type: string, _listener: EventListener) {}
+    dispatchEvent(_event: Event) {
+      return true;
+    }
+  }
+  global.BroadcastChannel = BroadcastChannelPolyfill as unknown as typeof BroadcastChannel;
+}
 // Add fetch polyfill for Node.js test environment
 import 'whatwg-fetch';
+
+// Extend Jest matchers with accessibility matchers
+expect.extend(toHaveNoViolations);
 
 // Ensure global fetch is available for all tests
 if (!global.fetch) {
@@ -57,6 +88,11 @@ window.scrollTo = jest.fn();
 
 // Mock HTMLElement.prototype.scrollIntoView
 HTMLElement.prototype.scrollIntoView = jest.fn();
+
+// Mock pointer capture methods (required for Radix slider and similar components)
+Element.prototype.hasPointerCapture = jest.fn().mockReturnValue(false);
+Element.prototype.setPointerCapture = jest.fn();
+Element.prototype.releasePointerCapture = jest.fn();
 
 // Mock react-day-picker to fix Calendar component tests
 jest.mock('react-day-picker', () => {

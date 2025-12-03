@@ -1,0 +1,2 @@
+import"./vendor-CQJcVwtU.js";function r(e){var t,n,o="";if("string"==typeof e||"number"==typeof e)o+=e;else if("object"==typeof e)if(Array.isArray(e)){var f=e.length;for(t=0;t<f;t++)e[t]&&(n=r(e[t]))&&(o&&(o+=" "),o+=n)}else for(n in e)e[n]&&(o&&(o+=" "),o+=n);return o}function e(){for(var e,t,n=0,o="",f=arguments.length;n<f;n++)(e=arguments[n])&&(t=r(e))&&(o&&(o+=" "),o+=t);return o}export{e as c};
+//# sourceMappingURL=ui-CaNJ-T69.js.map

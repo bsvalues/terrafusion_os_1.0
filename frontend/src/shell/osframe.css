@@ -1,0 +1,398 @@
+/* TerraFusion OS Frame - Pro Workspace */
+
+.tf-quantum-desktop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #0a0e1a 0%, #1a202c 50%, #0f172a 100%);
+  overflow: hidden;
+}
+
+.tf-desktop-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.4;
+  z-index: 1;
+}
+
+.tf-quantum-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: 2;
+}
+
+/* Top System Bar */
+.tf-quantum-system-bar {
+  position: relative;
+  z-index: 100;
+  height: 80px;
+  background: rgba(0, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+}
+
+.tf-system-bar-content {
+  width: 100%;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.tf-home-button {
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 0.75rem;
+  color: #00ffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tf-home-button:hover {
+  background: rgba(0, 255, 255, 0.15);
+  border-color: rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  transform: translateX(-2px);
+}
+
+.tf-brand-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.tf-terrafusion-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #00ffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0a0e1a;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+}
+
+.tf-brand-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.tf-brand-subtitle {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.tf-system-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tf-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tf-mode-toggle:hover {
+  background: rgba(0, 255, 255, 0.15);
+  border-color: rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.tf-mode-toggle-icon {
+  font-size: 1.5rem;
+}
+
+.tf-mode-toggle-label {
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.tf-mode-toggle-pill {
+  padding: 0.25rem 0.75rem;
+  background: rgba(0, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  color: #00ffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* OS Container */
+.terrafusion-os-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  height: calc(100vh - 80px);
+}
+
+/* Left Navigation Rail */
+.terrafusion-os-navigation {
+  width: 280px;
+  background: rgba(0, 255, 255, 0.05);
+  border-right: 2px solid rgba(0, 255, 255, 0.2);
+  padding: 2rem 1rem;
+  overflow-y: auto;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+.terrafusion-os-nav-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+.terrafusion-os-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.terrafusion-os-nav-item:hover {
+  background: rgba(0, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.terrafusion-os-nav-item-active {
+  background: rgba(0, 255, 255, 0.15);
+  color: #00ffff;
+  border-left: 3px solid #00ffff;
+  padding-left: calc(1rem - 3px);
+}
+
+.terrafusion-os-nav-icon {
+  font-size: 1.5rem;
+}
+
+.terrafusion-os-nav-label {
+  flex: 1;
+}
+
+/* Main Workspace */
+.terrafusion-os-main {
+  flex: 1;
+  overflow-y: auto;
+  background: rgba(10, 14, 26, 0.5);
+}
+
+.tf-suite-workspace {
+  padding: 3rem;
+  min-height: 100%;
+}
+
+.tf-suite-workspace-header {
+  margin-bottom: 3rem;
+}
+
+.tf-suite-workspace-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.tf-suite-workspace-subtitle {
+  font-size: 1.125rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.tf-suite-workspace-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.tf-suite-placeholder-card {
+  background: rgba(30, 41, 59, 0.4);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 1rem;
+  padding: 3rem;
+  text-align: center;
+}
+
+.tf-suite-placeholder-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.tf-suite-placeholder-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.tf-suite-placeholder-text {
+  font-size: 1rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto 1.5rem;
+}
+
+.tf-suite-placeholder-tech {
+  text-align: left;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: rgba(0, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  color: #94a3b8;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.tf-suite-placeholder-tech ul {
+  margin-top: 0.75rem;
+  margin-left: 1.5rem;
+}
+
+.tf-suite-placeholder-tech li {
+  margin-bottom: 0.5rem;
+}
+
+/* Right AI Drawer */
+.terrafusion-os-right-drawer {
+  width: 360px;
+  background: rgba(0, 255, 255, 0.05);
+  border-left: 2px solid rgba(0, 255, 255, 0.2);
+  padding: 2rem 1.5rem;
+  overflow-y: auto;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+.tf-ai-drawer-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.tf-ai-drawer-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.tf-ai-drawer-subtitle {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.tf-ai-drawer-body {
+  color: #94a3b8;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.tf-ai-drawer-placeholder {
+  margin-bottom: 1.5rem;
+}
+
+.tf-ai-drawer-agents {
+  padding: 1rem;
+  background: rgba(0, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.tf-ai-agent-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+
+.tf-ai-agent-chip {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  margin: 0.25rem;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 0.5rem;
+  color: #00ffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Scrollbar */
+.terrafusion-os-navigation::-webkit-scrollbar,
+.terrafusion-os-main::-webkit-scrollbar,
+.terrafusion-os-right-drawer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.terrafusion-os-navigation::-webkit-scrollbar-track,
+.terrafusion-os-main::-webkit-scrollbar-track,
+.terrafusion-os-right-drawer::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.terrafusion-os-navigation::-webkit-scrollbar-thumb,
+.terrafusion-os-main::-webkit-scrollbar-thumb,
+.terrafusion-os-right-drawer::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.terrafusion-os-navigation::-webkit-scrollbar-thumb:hover,
+.terrafusion-os-main::-webkit-scrollbar-thumb:hover,
+.terrafusion-os-right-drawer::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.5);
+}

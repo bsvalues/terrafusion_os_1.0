@@ -2,55 +2,69 @@
 
 ## Project Overview
 
-TerraLevy is a government tax and levy management application within TerraFusion OS. The codebase is distributed across a multi-workspace monorepo with distinct layers for API, core services, frontend components, AI systems, and analytics platforms.
+TerraLevy is a government tax and levy management application within TerraFusion
+OS. The frontend codebase lives in `frontend/src/applications/terra-levy/` with
+a React + Three.js architecture for immersive 3D data visualization.
 
-## Architecture & Project Structure
+## Architecture at a Glance
 
-### Multi-Workspace Organization
-The project spans 20 workspace folders organized by functional domain:
-- **Core Application Layer**: `terra-levy/api`, `terra-levy/core-services`, `terra-levy/collection-engine`
-- **Frontend Layer**: `frontend/src/applications/terra-levy`, `native-shell/applications/terra-levy`
-- **Intelligence Layer**: `ai-systems/levy-intelligence`, `consciousness/agents/levy-management`
-- **Analytics & Workflows**: `analytics-platform/terra-levy`, `workflow-automation/levy-processes`
-- **Supporting Systems**: Configuration, documentation, testing, monitoring, infrastructure
-
-**Key Pattern**: Components are segregated by responsibility but share TypeScript interfaces. When modifying data structures, check all workspace folders for dependent types.
-
-### Frontend Architecture (React + Three.js)
-
-**Component Organization** (`frontend/src/applications/terra-levy/`):
 ```
-components/
-  ├── ai/              # AI assistant overlays & interactions
-  ├── analytics/       # Data visualization & reporting
-  ├── budget/          # Budget planning & projections
-  ├── immersive/       # 3D visualizations using @react-three/fiber
-  └── workflow/        # Process automation & workflow builders
+frontend/src/applications/terra-levy/
+├── components/          # UI organized by feature domain
+│   ├── ai/              # AIAssistant.tsx - overlay interactions
+│   ├── analytics/       # Data visualization
+│   ├── budget/          # Budget planning
+│   ├── immersive/       # 3D dashboards (React Three Fiber)
+│   └── workflow/        # VisualWorkflowDesigner.tsx
+├── hooks/               # ALL business logic lives here
+└── types/               # Shared TypeScript interfaces
 ```
 
-**Custom Hooks Pattern**: All feature logic lives in custom hooks (`hooks/`), not components:
-- `useAIAssistant` - AI response generation, model training, proactive insights
-- `useBudgetData` - WebSocket-based real-time budget updates
-- `useVoiceCommands` - Voice interaction for immersive experiences
-- `useGestureControl` - Gesture-based 3D navigation
-- `useQuantumResearch` - Quantum computing integration APIs
-- `useCollaboration` - Multi-user workspace synchronization
+## Critical Pattern: Hook-First Development
 
-**Example**: When building new features, create a custom hook first, then build UI components that consume it.
+**All feature logic belongs in custom hooks, not components.** Components are
+thin rendering wrappers.
 
-### Type System & Data Models
+| Hook                    | Purpose                                                              |
+| ----------------------- | -------------------------------------------------------------------- |
+| `useAIAssistant`        | AI response generation, intent classification, personalization       |
+| `useBudgetData`         | WebSocket real-time updates, CRUD operations                         |
+| `useVoiceCommands`      | Speech recognition with confidence thresholds                        |
+| `useGestureControl`     | Pinch/gesture handling for 3D navigation                             |
+| `useCollaboration`      | Multi-user session sync                                              |
+| `useQuantumProjections` | Quantum-enhanced forecasting, scenario analysis, budget optimization |
+| `useJupyterLab`         | Data science notebook integration, kernel management                 |
 
-**Centralized Types** (`frontend/src/applications/terra-levy/types/`):
-- `LevyTypes.ts` - Core levy data structures with AI recommendations
-- `BudgetTypes.ts` - Budget categories, projections, compliance tracking
-- `CitizenTypes.ts` - Citizen profiles, interactions, payment records
-- `PaymentTypes.ts` - Payment flows, analytics, trends
+**Example - Adding a feature:**
 
-**Critical Pattern**: All data interfaces include optional `aiRecommendation` fields:
 ```typescript
+// 1. Create hook first
+export const useNewFeature = (options) => {
+  const [data, setData] = useState([]);
+  // ...logic
+  return { data, actions };
+};
+
+// 2. Then thin component wrapper
+const FeatureComponent = () => {
+  const { data, actions } = useNewFeature(options);
+  return <div>{/* render data */}</div>;
+};
+```
+
+## Type System: AI-First Data Models
+
+All interfaces in `types/` include optional AI recommendation fields. **Extend
+existing types; don't create parallel structures.**
+
+```typescript
+// From types/LevyTypes.ts - standard pattern
 interface LevyDataPoint {
-  // ... core fields
+  id: string;
+  amount: number;
+  status: 'paid' | 'pending' | 'overdue' | 'disputed';
   aiRecommendation?: {
+    // Always include this pattern
     action: string;
     confidence: number;
     reasoning: string;
@@ -58,145 +72,287 @@ interface LevyDataPoint {
 }
 ```
 
-When adding AI features, extend existing types rather than creating parallel structures.
+Key type files:
 
-### 3D Immersive Dashboard Pattern
+- `types/BudgetTypes.ts` - 400+ lines with `ComplianceStatus`,
+  `QuantumBudgetProjection`, `CollaborativeSession`
+- `types/LevyTypes.ts` - Core levy data structures
 
-**Tech Stack**: React Three Fiber + Drei helpers + Three.js primitives
+## 3D Immersive Dashboard Pattern
 
-**Core Pattern** (see `ImmersiveDashboard.tsx`):
-1. Canvas wrapper with high-performance WebGL settings
-2. OrbitControls for camera navigation
-3. Multiple 3D visualization components positioned in 3D space
-4. Environment lighting (studio preset + directional lights)
-5. Integration with voice/gesture hooks for multi-modal interaction
+Uses React Three Fiber + Drei. See
+`components/immersive/dashboard/ImmersiveDashboard.tsx`.
 
-**Example**: `LevyStatusVisualization`, `CitizenInteractionPanel`, `PaymentTrackingSphere` are positioned as separate 3D objects in the scene. Each receives data props and handles its own rendering.
+```tsx
+// Standard Canvas setup
+<Canvas
+  gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+  camera={{ position: new Vector3(0, 5, 10), fov: 60 }}
+>
+  <Environment preset="studio" />
+  <OrbitControls enablePan enableZoom enableRotate />
 
-When creating new 3D visualizations:
-- Position using Vector3 coordinates (x, y, z)
-- Support `immersionLevel` prop (0.1-1.0) for zoom/detail control
-- Add `quantumMode` toggle for enhanced rendering options
-- Use `useTerraFusionTheme()` for consistent quantum-themed colors
+  {/* Position 3D components in space */}
+  <LevyStatusVisualization
+    position={[-5, 0, 0]}
+    immersionLevel={0.8}
+    quantumMode={false}
+  />
+  <CitizenInteractionPanel position={[0, 0, 0]} interactive aiEnhanced />
+  <PaymentTrackingSphere position={[5, 0, 0]} realTimeUpdates predictiveMode />
+</Canvas>
+```
 
-### Real-Time Data Patterns
+**New 3D component requirements:**
 
-**WebSocket Integration** (see `useBudgetData.ts`):
+- Accept `position: [x, y, z]` prop
+- Support `immersionLevel` (0.1-1.0) for detail scaling
+- Add `quantumMode` toggle for enhanced effects
+- Use `useTerraFusionTheme()` for consistent colors
+
+## Real-Time WebSocket Pattern
+
 ```typescript
-// Standard pattern for real-time updates
+// From useBudgetData.ts - standard reconnection pattern
 wsRef.current = new WebSocket('ws://localhost:8080/budget-updates');
 
-wsRef.current.onmessage = (event) => {
+wsRef.current.onmessage = event => {
   const update = JSON.parse(event.data);
   if (update.type === 'budget_update') {
-    setBudgetData(prevData => 
-      prevData.map(item => 
-        item.id === update.categoryId 
+    setBudgetData(prev =>
+      prev.map(item =>
+        item.id === update.categoryId
           ? { ...item, ...update.changes, lastUpdated: new Date() }
           : item
       )
     );
   }
 };
+
+wsRef.current.onclose = () => {
+  setTimeout(connectWebSocket, 5000); // Auto-reconnect
+};
 ```
 
-**Auto-reconnect**: Always implement reconnection logic with exponential backoff
-**State Merging**: Use functional setState to prevent race conditions
+## AI Intent Classification
 
-### AI Assistant Integration
+`useAIAssistant` classifies user intent via keyword matching. To add intents:
 
-**Core Hook**: `useAIAssistant` provides:
-- `generateResponse()` - Natural language query processing with context
-- `analyzeContext()` - Extract relevant data from current user state
-- `suggestWorkflows()` - Quantum-optimized workflow recommendations
-- `personalizeModel()` - User-specific AI model training
-- `getProactiveInsights()` - Module-aware insight generation
+```typescript
+// In useAIAssistant.ts analyzeIntent()
+function analyzeIntent(input: string) {
+  const lowercaseInput = input.toLowerCase();
 
-**AI Response Types**: 
-- `text` - Standard conversational response
-- `action` - Executable workflow suggestions
-- `visualization` - Trigger 3D data rendering
-- `workflow` - Process automation recommendations
-- `insight` - Proactive analytical findings
+  if (
+    lowercaseInput.includes('optimize') ||
+    lowercaseInput.includes('workflow')
+  ) {
+    return { type: 'workflow_optimization', confidence: 0.85 };
+  }
+  // Add new intents here with keyword patterns
+}
+```
 
-**Intent Classification**: Built-in patterns recognize:
-- `data_query` - Analytics and reporting requests
-- `workflow_optimization` - Process improvement queries
-- `compliance_check` - Regulatory status requests
-- `revenue_analysis` - Forecasting and projection queries
-- `general_help` - User assistance
+Built-in intents: `data_query`, `workflow_optimization`, `compliance_check`,
+`revenue_analysis`, `general_help`
 
-When extending AI capabilities:
-1. Add new intent types to `analyzeIntent()`
-2. Create corresponding response generators
-3. Define action payloads for executable recommendations
-4. Update confidence scoring based on personalization
+## Compliance: FISMA-HIGH Required
 
-### Government Compliance & Security
+Every data model involving government data **must** include compliance tracking:
 
-**FISMA-HIGH Compliance** embedded in data models:
 ```typescript
 complianceStatus: {
   level: 'FISMA-HIGH',
-  auditTrail: [],
+  auditTrail: AuditEntry[],
   lastAudit: Date,
   nextAuditDue: Date,
-  complianceScore: number,
-  violations: [],
+  complianceScore: number,  // 0-100
+  violations: ComplianceViolation[],
   certifications: string[]
 }
 ```
 
-**Pattern**: Every budget category, levy record, and citizen interaction includes compliance tracking. When modifying data operations, preserve audit trail updates.
+## Build & Development Tasks
 
-### Multi-Modal Interaction System
+Run via `Ctrl+Shift+P` → "Tasks: Run Task":
 
-**Voice Commands** (`useVoiceCommands` hook):
-- Continuous listening mode for hands-free operation
-- Command patterns: "show levy status", "quantum mode", "ai assistant"
-- Callback-based action dispatch
+| Task                                | Description                                     |
+| ----------------------------------- | ----------------------------------------------- |
+| `🏗️ Build TerraLevy Application`    | Full build (depends on backend + frontend + AI) |
+| `Build Frontend Application`        | `npm run build` in frontend dir                 |
+| `Build Backend Services`            | `dotnet build --configuration Debug`            |
+| `🧪 Run Comprehensive Test Suite`   | Full test execution                             |
+| `🔬 Start Data Science Environment` | Jupyter Lab on port 8888                        |
 
-**Gesture Control** (`useGestureControl` hook):
-- Pinch gestures control immersion level (zoom)
-- Canvas-based coordinate tracking
-- 3D navigation through gesture primitives
+## Key Files for Context
 
-**Integration Pattern**: Components combining voice + gesture + traditional UI should:
-1. Initialize both hooks with shared state callbacks
-2. Provide visual feedback for active listening/gesture states
-3. Disable conflicting input modes when appropriate
+| File                                                    | Why It Matters                                                      |
+| ------------------------------------------------------- | ------------------------------------------------------------------- |
+| `hooks/useAIAssistant.ts`                               | 400+ lines: AI response generation, intent parsing, personalization |
+| `hooks/useBudgetData.ts`                                | WebSocket pattern, state management                                 |
+| `types/BudgetTypes.ts`                                  | Complex nested types, compliance structures                         |
+| `components/immersive/dashboard/ImmersiveDashboard.tsx` | 3D orchestration pattern                                            |
 
-### Development Workflow
+## Guidelines Summary
 
-**Build Tasks** (VS Code tasks.json provides):
-- `🏗️ Build TerraLevy Application` - Main build orchestration
-- `Build Backend Services` - .NET Core service compilation
-- `Build Frontend Application` - React + TypeScript build
-- `Build AI Models` - Python model preparation with quantum flags
-- `🧪 Run Comprehensive Test Suite` - Full test execution
-- `🤖 Train AI Models` - Model training with quantum acceleration
-- `🔬 Start Data Science Environment` - Jupyter Lab on port 8888
+1. **Hooks contain logic** - Components only render
+2. **Extend types with `aiRecommendation`** - Don't create parallel structures
+3. **FISMA-HIGH compliance** - Include audit trails in all government data
+4. **WebSocket with reconnect** - Not polling for real-time data
+5. **3D components** - Position props + immersionLevel + quantumMode
+6. **Voice/gesture augment UI** - Never replace traditional controls
 
-**Common Patterns**:
-- All Python scripts accept `--quantum-enhanced` flag
-- Backend uses `--configuration Debug` for development
-- Testing targets sub-100ms response validation
-- Security scans run with `--fisma-high --quantum-security` flags
+## Voice Command Integration
 
-### Key Files for Understanding
+`useVoiceCommands` wraps Web Speech API with confidence filtering:
 
-**Must-Read for AI Agents**:
-- `hooks/useAIAssistant.ts` - 500+ lines implementing AI response generation, personalization, and proactive insights
-- `components/immersive/dashboard/ImmersiveDashboard.tsx` - 3D visualization orchestration
-- `types/BudgetTypes.ts` - Complex budget modeling with quantum projections
-- `hooks/useBudgetData.ts` - Real-time data synchronization patterns
+```typescript
+// Standard voice command setup
+const { voiceCommand, isListening, transcript, confidence } = useVoiceCommands({
+  onCommand: (command, confidence) => handleVoiceCommand(command),
+  continuous: true, // Keep listening after recognition
+  language: 'en-US',
+  confidenceThreshold: 0.7, // Reject low-confidence results
+});
 
-## Development Guidelines
+// Built-in command patterns in ImmersiveDashboard
+function handleVoiceCommand(command: string) {
+  switch (command.toLowerCase()) {
+    case 'show levy status':
+      setSelectedDataSet('levy-overview');
+      break;
+    case 'quantum mode':
+      setQuantumVisualization(!quantumVisualization);
+      break;
+    case 'ai assistant':
+      setAiAssistantActive(!aiAssistantActive);
+      break;
+  }
+}
+```
 
-1. **Component-Hook Separation**: UI components are thin wrappers around custom hooks containing all logic
-2. **Type Safety**: All data flows use exported TypeScript interfaces from `types/` directory
-3. **AI-First Design**: Assume AI recommendations are optional but ubiquitous - include in all data models
-4. **3D Performance**: Use `powerPreference: 'high-performance'` and enable antialiasing for WebGL
-5. **Real-Time by Default**: Implement WebSocket connections for live data feeds, not polling
-6. **Compliance Embedded**: FISMA-HIGH tracking is not optional - include in all government data operations
-7. **Multi-Modal Support**: Voice and gesture should augment, not replace, traditional UI patterns
+**Adding new voice commands**: Add case statements to `handleVoiceCommand()` in
+the consuming component.
+
+## Quantum Projections & Scenario Analysis
+
+`useQuantumProjections` provides budget forecasting with what-if scenarios:
+
+```typescript
+const {
+  projections,
+  scenarios,
+  optimizations,
+  quantumState,        // 'idle' | 'computing' | 'optimizing'
+  generateQuantumProjections,
+  generateScenarios,
+  optimizeBudgetAllocation,
+} = useQuantumProjections();
+
+// Generate projections with economic factors
+await generateQuantumProjections(historicalData, economicFactors, policyChanges);
+
+// Standard projection structure
+interface QuantumBudgetProjection {
+  confidence: number;                    // Target 0.997 (99.7%)
+  baseScenario: { totalRevenue, totalExpenses, netPosition, assumptions };
+  optimisticScenario: { ... };
+  pessimisticScenario: { ... };
+  riskFactors: Array<{ factor, probability, impact, mitigation }>;
+  quantumAlgorithms: string[];           // e.g., ['QAOA', 'VQE']
+  quantumAdvantage: number;              // % improvement over classical
+}
+```
+
+## Jupyter Lab Integration
+
+`useJupyterLab` manages data science notebooks with quantum computing resources:
+
+```typescript
+const {
+  isConnected,
+  kernels, // Available computation kernels
+  notebooks,
+  quantumResources, // IBM/Google simulators, hardware access
+  createNotebook,
+  executeCell,
+  saveNotebook,
+} = useJupyterLab(userId, department);
+
+// Create notebook from template
+const notebook = await createNotebook('Revenue Forecasting', options);
+
+// Available templates: 'Revenue Forecasting', 'Citizen Analytics', 'Quantum Optimization'
+// Kernels: 'python-quantum-ai', 'r-statistics', 'julia-hpc', 'quantum-circuit'
+```
+
+**Jupyter WebSocket**: Connects to `ws://localhost:8888/jupyter-ws` for
+real-time cell execution updates.
+
+## Complex Type Examples
+
+### CollaborativeSession (multi-user budget editing)
+
+```typescript
+interface CollaborativeSession {
+  id: string;
+  participants: SessionParticipant[];
+  budgetScope: {
+    fiscalYear: string;
+    departments: string[];
+    categories: string[];
+  };
+  permissions: {
+    canEdit: string[];
+    canApprove: string[];
+  };
+  settings: {
+    autoSave: boolean;
+    conflictResolution: 'auto' | 'manual';
+  };
+  modifications: CollaborativeModification[];
+  conflictResolution: ConflictResolution[];
+}
+```
+
+### ScenarioProjection (what-if analysis)
+
+```typescript
+interface ScenarioProjection {
+  id: string;
+  name: string;
+  variables: Array<{ name; currentValue; newValue; unit }>;
+  projectedOutcome: {
+    revenueChange: number;
+    expenseChange: number;
+    netImpact: number;
+    confidence: number;
+  };
+  stakeholderImpact: Array<{
+    stakeholder: string;
+    impact: 'positive' | 'negative' | 'neutral' | 'mixed';
+    severity: 'low' | 'moderate' | 'high';
+    mitigation: string;
+  }>;
+}
+```
+
+## Intended Backend Architecture
+
+The backend services are under development. Workspace folders exist for:
+
+```
+terra-levy/
+├── api/                    # Express/Fastify REST API (planned)
+├── core-services/          # .NET Core business logic (planned)
+├── collection-engine/      # Payment processing (planned)
+├── analytics-platform/     # Python analytics services (planned)
+└── citizen-portal/         # Public-facing API (planned)
+```
+
+**When implementing backend services**:
+
+- Use `.NET Core` for `core-services/` with `dotnet build --configuration Debug`
+- Python services should accept `--quantum-enhanced` flag
+- All APIs must include FISMA-HIGH compliance headers
+- WebSocket endpoints follow pattern: `ws://localhost:{port}/{service}-updates`

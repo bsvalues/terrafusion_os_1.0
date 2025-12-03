@@ -18,7 +18,7 @@
       "**/build": true,
     },
     "git.ignoreLimitWarning": true,
-    "todo-tree.tree.scanMode": "current file",
+    "todo-tree.tree.scanMode": "workspace",
     "terrafusion.role": "master_coordination",
     "terrafusion.responsibility": "full_system_oversight",
     "editor.codeActions.triggerOnFocusChange": true,

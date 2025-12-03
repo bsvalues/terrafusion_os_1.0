@@ -1,0 +1,667 @@
+/**
+ * TerraFusion OS - Shell Base Styles v2
+ *
+ * Core shell layout and component styling.
+ * Uses design tokens from shell-tokens.css.
+ *
+ * Structure:
+ * - Shell container and layout
+ * - Top bar
+ * - Left suite rail
+ * - Main workspace
+ * - Right drawer
+ * - Common component patterns
+ */
+
+/* ===== Shell Container ===== */
+
+.tf-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--tf-color-void);
+  color: var(--tf-color-text-primary);
+  font-family: var(--tf-font-sans);
+  font-size: var(--tf-text-base);
+  line-height: var(--tf-leading-normal);
+  overflow: hidden;
+}
+
+.tf-shell * {
+  box-sizing: border-box;
+}
+
+/* ===== Top Bar ===== */
+
+.tf-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--tf-topbar-height);
+  padding: 0 var(--tf-space-6);
+  background-color: var(--tf-color-surface);
+  border-bottom: 1px solid var(--tf-color-border);
+  z-index: var(--tf-z-raised);
+}
+
+.tf-topbar-left,
+.tf-topbar-center,
+.tf-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--tf-space-4);
+}
+
+.tf-topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--tf-space-2);
+  font-size: var(--tf-text-lg);
+  font-weight: var(--tf-weight-semibold);
+  color: var(--tf-color-text-primary);
+}
+
+.tf-topbar-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--tf-space-2);
+  color: var(--tf-color-text-secondary);
+  font-size: var(--tf-text-sm);
+}
+
+.tf-topbar-breadcrumb-separator {
+  color: var(--tf-color-text-tertiary);
+}
+
+.tf-topbar-search {
+  width: 20rem;
+}
+
+.tf-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--tf-space-3);
+}
+
+/* ===== Shell Body (3-column layout) ===== */
+
+.tf-shell-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ===== Left Suite Rail ===== */
+
+.tf-leftrail {
+  width: var(--tf-leftrail-width);
+  background-color: var(--tf-color-bg);
+  border-right: 1px solid var(--tf-color-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.tf-leftrail-section {
+  padding: var(--tf-space-4);
+}
+
+.tf-leftrail-section-title {
+  font-size: var(--tf-text-xs);
+  font-weight: var(--tf-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tf-color-text-tertiary);
+  margin-bottom: var(--tf-space-3);
+}
+
+.tf-leftrail-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tf-space-2);
+}
+
+.tf-suite-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--tf-space-3);
+  padding: var(--tf-space-3) var(--tf-space-4);
+  border-radius: var(--tf-radius-md);
+  color: var(--tf-color-text-secondary);
+  font-size: var(--tf-text-sm);
+  font-weight: var(--tf-weight-medium);
+  cursor: pointer;
+  transition: all var(--tf-transition-fast);
+  text-decoration: none;
+}
+
+.tf-suite-nav-item:hover {
+  background-color: var(--tf-color-surface);
+  color: var(--tf-color-text-primary);
+}
+
+.tf-suite-nav-item.active {
+  background-color: var(--tf-color-surface);
+  color: var(--tf-color-primary);
+  font-weight: var(--tf-weight-semibold);
+}
+
+.tf-suite-nav-item-icon {
+  font-size: var(--tf-text-xl);
+  width: 1.5rem;
+  text-align: center;
+}
+
+.tf-suite-nav-item-badge {
+  margin-left: auto;
+  padding: 0.125rem var(--tf-space-2);
+  border-radius: var(--tf-radius-sm);
+  font-size: var(--tf-text-xs);
+  font-weight: var(--tf-weight-semibold);
+  background-color: var(--tf-color-primary);
+  color: var(--tf-color-void);
+}
+
+/* ===== Main Workspace ===== */
+
+.tf-workspace {
+  flex: 1;
+  background-color: var(--tf-color-bg);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.tf-workspace-header {
+  padding: var(--tf-space-8) var(--tf-space-8) var(--tf-space-6);
+  border-bottom: 1px solid var(--tf-color-border);
+}
+
+.tf-workspace-title {
+  font-size: var(--tf-text-3xl);
+  font-weight: var(--tf-weight-bold);
+  color: var(--tf-color-text-primary);
+  margin: 0 0 var(--tf-space-2);
+}
+
+.tf-workspace-subtitle {
+  font-size: var(--tf-text-base);
+  color: var(--tf-color-text-secondary);
+  margin: 0;
+}
+
+.tf-workspace-content {
+  flex: 1;
+  padding: var(--tf-space-8);
+}
+
+/* ===== Right Drawer ===== */
+
+.tf-rightdrawer {
+  width: var(--tf-rightdrawer-width);
+  background-color: var(--tf-color-surface);
+  border-left: 1px solid var(--tf-color-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.tf-rightdrawer.collapsed {
+  width: 0;
+  border-left: none;
+}
+
+.tf-rightdrawer-header {
+  padding: var(--tf-space-4);
+  border-bottom: 1px solid var(--tf-color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tf-rightdrawer-title {
+  font-size: var(--tf-text-lg);
+  font-weight: var(--tf-weight-semibold);
+  color: var(--tf-color-text-primary);
+}
+
+.tf-rightdrawer-content {
+  flex: 1;
+  padding: var(--tf-space-4);
+}
+
+/* ===== Common UI Components ===== */
+
+/* Buttons */
+.tf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tf-space-2);
+  padding: var(--tf-space-2) var(--tf-space-4);
+  border-radius: var(--tf-radius-md);
+  font-size: var(--tf-text-sm);
+  font-weight: var(--tf-weight-medium);
+  cursor: pointer;
+  transition: all var(--tf-transition-fast);
+  border: none;
+  outline: none;
+}
+
+.tf-btn-primary {
+  background-color: var(--tf-color-primary);
+  color: var(--tf-color-void);
+}
+
+.tf-btn-primary:hover {
+  background-color: var(--tf-color-primary-hover);
+}
+
+.tf-btn-secondary {
+  background-color: var(--tf-color-surface);
+  color: var(--tf-color-text-primary);
+  border: 1px solid var(--tf-color-border);
+}
+
+.tf-btn-secondary:hover {
+  background-color: var(--tf-color-surface-hover);
+}
+
+.tf-btn-ghost {
+  background-color: transparent;
+  color: var(--tf-color-text-secondary);
+}
+
+.tf-btn-ghost:hover {
+  background-color: var(--tf-color-surface);
+  color: var(--tf-color-text-primary);
+}
+
+/* Cards */
+.tf-card {
+  background-color: var(--tf-color-surface);
+  border: 1px solid var(--tf-color-border);
+  border-radius: var(--tf-radius-lg);
+  padding: var(--tf-space-6);
+  transition: all var(--tf-transition-base);
+}
+
+.tf-card:hover {
+  border-color: var(--tf-color-primary);
+  box-shadow: var(--tf-shadow-glow-primary);
+}
+
+.tf-card-header {
+  margin-bottom: var(--tf-space-4);
+}
+
+.tf-card-title {
+  font-size: var(--tf-text-xl);
+  font-weight: var(--tf-weight-semibold);
+  color: var(--tf-color-text-primary);
+  margin: 0 0 var(--tf-space-2);
+}
+
+.tf-card-description {
+  font-size: var(--tf-text-sm);
+  color: var(--tf-color-text-secondary);
+  margin: 0;
+}
+
+/* Input */
+.tf-input {
+  width: 100%;
+  padding: var(--tf-space-2) var(--tf-space-3);
+  background-color: var(--tf-color-bg);
+  border: 1px solid var(--tf-color-border);
+  border-radius: var(--tf-radius-md);
+  color: var(--tf-color-text-primary);
+  font-size: var(--tf-text-base);
+  transition: all var(--tf-transition-fast);
+}
+
+.tf-input:focus {
+  outline: none;
+  border-color: var(--tf-color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+}
+
+/* Badge */
+.tf-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem var(--tf-space-2);
+  border-radius: var(--tf-radius-full);
+  font-size: var(--tf-text-xs);
+  font-weight: var(--tf-weight-semibold);
+}
+
+.tf-badge-success {
+  background-color: rgba(102, 187, 106, 0.15);
+  color: var(--tf-status-success);
+}
+
+.tf-badge-warning {
+  background-color: rgba(255, 167, 38, 0.15);
+  color: var(--tf-status-warning);
+}
+
+.tf-badge-error {
+  background-color: rgba(239, 83, 80, 0.15);
+  color: var(--tf-status-error);
+}
+
+.tf-badge-info {
+  background-color: rgba(66, 165, 245, 0.15);
+  color: var(--tf-status-info);
+}
+
+/* Divider */
+.tf-divider {
+  height: 1px;
+  background-color: var(--tf-color-border);
+  margin: var(--tf-space-4) 0;
+}
+
+/* Loading State */
+.tf-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--tf-space-12);
+  color: var(--tf-color-text-secondary);
+}
+
+/* Empty State */
+.tf-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--tf-space-12);
+  text-align: center;
+}
+
+.tf-empty-icon {
+  font-size: var(--tf-text-4xl);
+  color: var(--tf-color-text-tertiary);
+  margin-bottom: var(--tf-space-4);
+}
+
+.tf-empty-title {
+  font-size: var(--tf-text-xl);
+  font-weight: var(--tf-weight-semibold);
+  color: var(--tf-color-text-primary);
+  margin: 0 0 var(--tf-space-2);
+}
+
+.tf-empty-description {
+  font-size: var(--tf-text-base);
+  color: var(--tf-color-text-secondary);
+  margin: 0 0 var(--tf-space-6);
+  max-width: 28rem;
+}
+
+/* ===== Suite-Specific Accents ===== */
+
+[data-suite='assessment'] {
+  --suite-accent: var(--tf-accent-assessment);
+}
+
+[data-suite='levy'] {
+  --suite-accent: var(--tf-accent-levy);
+}
+
+[data-suite='gis'] {
+  --suite-accent: var(--tf-accent-gis);
+}
+
+[data-suite='collections'] {
+  --suite-accent: var(--tf-accent-collections);
+}
+
+[data-suite='sync'] {
+  --suite-accent: var(--tf-accent-sync);
+}
+
+[data-suite='flow'] {
+  --suite-accent: var(--tf-accent-flow);
+}
+
+[data-suite='insights'] {
+  --suite-accent: var(--tf-accent-insights);
+}
+
+[data-suite='agent'] {
+  --suite-accent: var(--tf-accent-agent);
+}
+
+[data-suite='admin'] {
+  --suite-accent: var(--tf-accent-admin);
+}
+
+/* Apply suite accent to active nav items */
+[data-suite] .tf-suite-nav-item.active {
+  color: var(--suite-accent);
+  border-left: 3px solid var(--suite-accent);
+  padding-left: calc(var(--tf-space-4) - 3px);
+}
+
+/* ===== TerraFusion Quantum Components ===== */
+
+/* Consciousness Orb - The living quantum core */
+.tf-consciousness-orb {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 255, 255, 0.8) 0%,
+    rgba(0, 128, 255, 0.4) 50%,
+    transparent 70%
+  );
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.6),
+    0 0 40px rgba(0, 255, 255, 0.4),
+    inset 0 0 10px rgba(0, 255, 255, 0.3);
+  animation: quantum-pulse 3s ease-in-out infinite;
+  position: relative;
+}
+
+.tf-consciousness-orb::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 60%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes quantum-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(0, 255, 255, 0.6),
+      0 0 40px rgba(0, 255, 255, 0.4),
+      inset 0 0 10px rgba(0, 255, 255, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(0, 255, 255, 0.8),
+      0 0 60px rgba(0, 255, 255, 0.6),
+      inset 0 0 15px rgba(0, 255, 255, 0.5);
+    transform: scale(1.05);
+  }
+}
+
+/* Quantum Hover Effect */
+.quantum-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quantum-hover:hover {
+  transform: translateY(-2px) scale(1.05);
+  filter: brightness(1.2);
+}
+
+/* Terra Glass Effect */
+.terra-glass {
+  background: rgba(30, 41, 59, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Elite Quantum Grid Pattern */
+.quantum-grid-pattern {
+  background-image:
+    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  position: relative;
+}
+
+.quantum-grid-pattern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ===== TerraFusion Header Components ===== */
+
+.tf-header-left,
+.tf-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--tf-space-4);
+}
+
+.tf-logo-cluster {
+  display: flex;
+  align-items: center;
+  gap: var(--tf-space-3);
+}
+
+.tf-county-badge {
+  font-size: var(--tf-text-sm);
+  font-weight: var(--tf-weight-medium);
+  padding: var(--tf-space-2) var(--tf-space-3);
+  border-radius: var(--tf-radius-md);
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: var(--tf-color-primary);
+}
+
+.terrafusion-view-toggle {
+  font-size: var(--tf-text-sm);
+  font-weight: var(--tf-weight-medium);
+  padding: var(--tf-space-2) var(--tf-space-4);
+  border-radius: var(--tf-radius-md);
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: var(--tf-color-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.terrafusion-view-toggle:hover {
+  background: rgba(0, 255, 255, 0.15);
+  border-color: rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.tf-connection-status {
+  display: flex;
+  align-items: center;
+  gap: var(--tf-space-2);
+  font-size: var(--tf-text-xs);
+  color: var(--tf-color-text-secondary);
+}
+
+.tf-status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tf-color-error);
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+.tf-status-indicator.connected {
+  background: var(--tf-color-success);
+}
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.tf-status-text {
+  font-weight: var(--tf-weight-medium);
+}
+
+/* ===== Utility Classes ===== */
+
+.tf-hidden {
+  display: none !important;
+}
+
+.tf-flex {
+  display: flex;
+}
+
+.tf-flex-col {
+  flex-direction: column;
+}
+
+.tf-items-center {
+  align-items: center;
+}
+
+.tf-justify-between {
+  justify-content: space-between;
+}
+
+.tf-gap-2 {
+  gap: var(--tf-space-2);
+}
+
+.tf-gap-4 {
+  gap: var(--tf-space-4);
+}
+
+.tf-gap-6 {
+  gap: var(--tf-space-6);
+}
+
+.tf-mt-4 {
+  margin-top: var(--tf-space-4);
+}
+
+.tf-mb-4 {
+  margin-bottom: var(--tf-space-4);
+}
+
+.tf-p-4 {
+  padding: var(--tf-space-4);
+}
+
+.tf-p-6 {
+  padding: var(--tf-space-6);
+}
