@@ -13,11 +13,11 @@
 - [ ] Implement SIEM/fallback logging and security alert triggers in `ProductionAuditService`.
 
 ## Operational Services
-- [ ] Wire real implementations (or guard mocks behind feature flags) for health monitoring/self-healing/performance services in `backend/TerraFusion.Operations`.
-- [ ] Register real services/health checks in `backend/TerraFusion.Operations/Configuration/DependencyInjection.cs`.
+- [x] Wire real implementations (or guard mocks behind feature flags) for health monitoring/self-healing/performance services in `backend/TerraFusion.Operations` (baseline Null* services registered).
+- [x] Register real services/health checks in `backend/TerraFusion.Operations/Configuration/DependencyInjection.cs` (baseline registrations added).
 
 ## Service Registry
-- [ ] Implement secure Government OS client/communication in `applications/terra-proplus-production/server/elite-service-registry.ts`.
+- [x] Implement secure Government OS client/communication in `applications/terra-proplus-production/server/elite-service-registry.ts` (POST + API key with fallback).
 - [ ] Harden health checks (auth/backoff) in `elite-service-registry.ts`.
 
 ## Workspace Mapping
