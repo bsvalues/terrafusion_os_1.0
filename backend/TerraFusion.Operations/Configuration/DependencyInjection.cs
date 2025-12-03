@@ -25,44 +25,33 @@ public static class DependencyInjection
         // Register Core Operational Services - Mock implementations for now
         services.AddScoped<IEliteOperationalService, Services.EliteOperationalService>();
 
-        // TODO: Implement remaining service implementations
-        // services.AddScoped<IHealthMonitoringService, HealthMonitoringService>();
-        // services.AddScoped<IIncidentResponseService, IncidentResponseService>();
-        // services.AddScoped<ISelfHealingService, SelfHealingService>();
-        // services.AddScoped<IPerformanceOptimizationService, PerformanceOptimizationService>();
-        // services.AddScoped<IAutonomousRecoveryService, AutonomousRecoveryService>();
+        // Baseline operational services (null-safe implementations until real services are available)
+        services.AddScoped<IHealthMonitoringService, Services.NullHealthMonitoringService>();
+        services.AddScoped<IIncidentResponseService, Services.NullIncidentResponseService>();
+        services.AddScoped<ISelfHealingService, Services.NullSelfHealingService>();
+        services.AddScoped<IPerformanceOptimizationService, Services.NullPerformanceOptimizationService>();
+        services.AddScoped<IAutonomousRecoveryService, Services.NullAutonomousRecoveryService>();
 
-        // TODO: Register Elite Monitoring Services
-        // services.AddScoped<ISystemMetricsCollector, SystemMetricsCollector>();
-        // services.AddScoped<IPerformanceAnalyzer, PerformanceAnalyzer>();
-        // services.AddScoped<ISecurityMonitor, SecurityMonitor>();
-        // services.AddScoped<IComplianceValidator, ComplianceValidator>();
+        // Monitoring and analytics baselines
+        services.AddScoped<ISystemMetricsCollector, Services.NullSystemMetricsCollector>();
+        services.AddScoped<IPerformanceAnalyzer, Services.NullPerformanceAnalyzer>();
+        services.AddScoped<ISecurityMonitor, Services.NullSecurityMonitor>();
+        services.AddScoped<IComplianceValidator, Services.NullComplianceValidator>();
 
-        // TODO: Register AI Agent Coordination Services
-        // services.AddScoped<IAIAgentCoordinator, AIAgentCoordinator>();
-        // services.AddScoped<IAgentHealthMonitor, AgentHealthMonitor>();
-        // services.AddScoped<ISwarmOptimizer, SwarmOptimizer>();
+        // AI coordination baselines
+        services.AddScoped<IAIAgentCoordinator, Services.NullAIAgentCoordinator>();
+        services.AddScoped<IAgentHealthMonitor, Services.NullAgentHealthMonitor>();
+        services.AddScoped<ISwarmOptimizer, Services.NullSwarmOptimizer>();
 
-        // TODO: Register County Services
-        // services.AddScoped<ICountyServiceMonitor, CountyServiceMonitor>();
-        // services.AddScoped<ICitizenServiceAnalyzer, CitizenServiceAnalyzer>();
-        // services.AddScoped<IGovernmentComplianceService, GovernmentComplianceService>();
+        // County/citizen/government services
+        services.AddScoped<ICountyServiceMonitor, Services.NullCountyServiceMonitor>();
+        services.AddScoped<ICitizenServiceAnalyzer, Services.NullCitizenServiceAnalyzer>();
+        services.AddScoped<IGovernmentComplianceService, Services.NullGovernmentComplianceService>();
 
-        // TODO: Register Emergency Response Services
-        // services.AddScoped<IEmergencyResponseCoordinator, EmergencyResponseCoordinator>();
-        // services.AddScoped<IDisasterRecoveryService, DisasterRecoveryService>();
-        // services.AddScoped<ICrisisManagementService, CrisisManagementService>();
-
-        // TODO: Register Advanced Analytics Services
-        // services.AddScoped<IPredictiveAnalyticsService, PredictiveAnalyticsService>();
-        // services.AddScoped<IOperationalIntelligenceService, OperationalIntelligenceService>();
-        // services.AddScoped<IThreatDetectionService, ThreatDetectionService>();
-
-        // TODO: Register Background Services for Continuous Monitoring
-        // services.AddHostedService<EliteOperationalBackgroundService>();
-        // services.AddHostedService<HealthMonitoringBackgroundService>();
-        // services.AddHostedService<PerformanceOptimizationBackgroundService>();
-        // services.AddHostedService<SecurityMonitoringBackgroundService>();
+        // Emergency/disaster/crisis
+        services.AddScoped<IEmergencyResponseCoordinator, Services.NullEmergencyResponseCoordinator>();
+        services.AddScoped<IDisasterRecoveryService, Services.NullDisasterRecoveryService>();
+        services.AddScoped<ICrisisManagementService, Services.NullCrisisManagementService>();
 
         // Configure Elite Operational Options
         services.Configure<EliteOperationalOptions>(

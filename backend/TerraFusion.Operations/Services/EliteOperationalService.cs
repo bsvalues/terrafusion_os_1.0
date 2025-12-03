@@ -15,19 +15,28 @@ public class EliteOperationalService : IEliteOperationalService
 {
     private readonly ILogger<EliteOperationalService> _logger;
     private readonly IAuditLogger _auditLogger;
-    // TODO: Inject these services when implementations are ready
-    // private readonly IHealthMonitoringService _healthMonitoring;
-    // private readonly IIncidentResponseService _incidentResponse;
-    // private readonly ISelfHealingService _selfHealing;
-    // private readonly IPerformanceOptimizationService _performanceOptimization;
-    // private readonly IAutonomousRecoveryService _autonomousRecovery;
+    private readonly IHealthMonitoringService _healthMonitoring;
+    private readonly IIncidentResponseService _incidentResponse;
+    private readonly ISelfHealingService _selfHealing;
+    private readonly IPerformanceOptimizationService _performanceOptimization;
+    private readonly IAutonomousRecoveryService _autonomousRecovery;
 
     public EliteOperationalService(
         ILogger<EliteOperationalService> logger,
-        IAuditLogger auditLogger)
+        IAuditLogger auditLogger,
+        IHealthMonitoringService healthMonitoring,
+        IIncidentResponseService incidentResponse,
+        ISelfHealingService selfHealing,
+        IPerformanceOptimizationService performanceOptimization,
+        IAutonomousRecoveryService autonomousRecovery)
     {
         _logger = logger;
         _auditLogger = auditLogger;
+        _healthMonitoring = healthMonitoring;
+        _incidentResponse = incidentResponse;
+        _selfHealing = selfHealing;
+        _performanceOptimization = performanceOptimization;
+        _autonomousRecovery = autonomousRecovery;
     }
 
     /// <summary>
@@ -103,15 +112,7 @@ public class EliteOperationalService : IEliteOperationalService
             _logger.LogInformation("Executing Elite Operational Excellence Cycle - Quantum algorithms computing...");
 
             // Step 1: Comprehensive Health Assessment
-            // TODO: Implement when _healthMonitoring service is available
-            var healthReport = new EliteHealthMetrics
-            {
-                OverallHealthScore = 95.0,
-                HealthyComponents = 10,
-                UnhealthyComponents = 0,
-                LastHealthCheck = DateTime.UtcNow
-            };
-            // Store health metrics in Metrics dictionary for now
+            var healthReport = await _healthMonitoring.GetCurrentHealthMetricsAsync();
             result.Metrics["HealthMetrics"] = healthReport;
 
             // Step 2: Predictive Issue Detection
@@ -119,11 +120,11 @@ public class EliteOperationalService : IEliteOperationalService
             result.Metrics["PredictiveIssues"] = predictiveIssues;
 
             // Step 3: Autonomous Self-Healing
-            var selfHealingResults = await PerformAutonomousSelfHealingAsync();
+            var selfHealingResults = await _selfHealing.PerformSelfHealingAsync();
             result.Metrics["SelfHealingResults"] = selfHealingResults;
 
             // Step 4: Performance Optimization
-            var performanceOptimizations = await OptimizeSystemPerformanceAsync();
+            var performanceOptimizations = await _performanceOptimization.OptimizePerformanceAsync();
             result.Metrics["PerformanceOptimizations"] = performanceOptimizations;
 
             // Step 5: Capacity Analysis and Scaling
@@ -253,7 +254,7 @@ public class EliteOperationalService : IEliteOperationalService
                 severityLevel >= EmergencySeverity.High)
             {
                 response.RequiresAutonomousRecovery = true;
-                var recoveryResult = await PerformEmergencyAutonomousRecoveryAsync(request);
+                var recoveryResult = await _autonomousRecovery.PerformAutonomousRecoveryAsync();
                 response.AutonomousRecoveryResult = recoveryResult;
                 response.ActionsExecuted.Add(new EmergencyAction
                 {
