@@ -11,16 +11,18 @@ interface FileNode {
 interface FileExplorerProps {
   onFileSelect: (path: string) => void;
   rootPath: string;
+  workspaceIds?: string[]; // optional workspace selector list
 }
 
-export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, rootPath }) => {
+export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, rootPath, workspaceIds }) => {
   const [files, setFiles] = useState<FileNode[]>([]);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [currentRoot, setCurrentRoot] = useState(rootPath);
 
   useEffect(() => {
-    fetchFiles(rootPath);
-  }, [rootPath]);
+    fetchFiles(currentRoot);
+  }, [currentRoot]);
 
   const fetchFiles = async (path: string) => {
     try {
@@ -112,6 +114,23 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect, rootPa
     <div className='h-full overflow-y-auto bg-terra-midnight border-r border-terra-cyan/20'>
       <div className='p-2 border-b border-terra-cyan/20'>
         <h3 className='text-sm font-semibold text-terra-cyan'>EXPLORER</h3>
+        {workspaceIds && workspaceIds.length > 0 && (
+          <select
+            className='mt-2 w-full bg-terra-slate text-white text-sm px-2 py-1 rounded border border-terra-cyan/40'
+            value={currentRoot}
+            onChange={(e) => {
+              setExpandedFolders(new Set());
+              setSelectedFile(null);
+              setCurrentRoot(`workspaces/${e.target.value}`);
+            }}
+          >
+            {workspaceIds.map((id) => (
+              <option key={id} value={`workspaces/${id}`}>
+                {id}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
       <div className='py-2'>{files.map((node) => renderNode(node))}</div>
     </div>
