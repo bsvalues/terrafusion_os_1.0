@@ -127,11 +127,17 @@ export class EliteServiceRegistry extends EventEmitter {
     this.healthCheckInterval = setInterval(async () => {
       for (const [name, service] of this.services) {
         try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 5000);
+
           const response = await fetch(`http://${service.host || 'localhost'}:${service.port}${service.healthEndpoint}`, {
             method: 'GET',
-            // @ts-expect-error fetch timeout for node
-            timeout: 5000
+            headers: {
+              ...(process.env.SERVICE_HEALTH_TOKEN ? { Authorization: `Bearer ${process.env.SERVICE_HEALTH_TOKEN}` } : {})
+            },
+            signal: controller.signal,
           });
+          clearTimeout(timeout);
 
           if (response.ok) {
             service.status = 'healthy';
