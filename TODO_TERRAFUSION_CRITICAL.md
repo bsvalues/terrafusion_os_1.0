@@ -8,9 +8,9 @@
 - [ ] Implement LDAP auto-provisioning in `ProductionAuthenticationService`.
 
 ## Audit Integrity
-- [ ] Implement dynamic WHERE clause building in `backend/TerraFusion.Security/ProductionAuditService.cs::BuildWhereClause`.
-- [ ] Implement archive write/storage and hashing in `ProductionAuditService` (replace current stubbed return values).
-- [ ] Implement SIEM/fallback logging and security alert triggers in `ProductionAuditService`.
+- [x] Implement dynamic WHERE clause building in `backend/TerraFusion.Security/ProductionAuditService.cs::BuildWhereClause`.
+- [x] Implement archive write/storage and hashing in `ProductionAuditService` (replace current stubbed return values).
+- [x] Implement SIEM/fallback logging and security alert triggers in `ProductionAuditService` (basic alert logging + file archive; SIEM still optional).
 
 ## Operational Services
 - [x] Wire real implementations (or guard mocks behind feature flags) for health monitoring/self-healing/performance services in `backend/TerraFusion.Operations` (baseline Null* services registered).
