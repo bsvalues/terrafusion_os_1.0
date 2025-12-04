@@ -29,6 +29,10 @@ namespace TerraFusion.Security
         private readonly IMfaService _mfaService;
         private readonly ISessionManager _sessionManager;
         private readonly ILdapService _ldapService;
+        private readonly IUserRepository _userRepository;
+        private readonly ITokenRepository _tokenRepository;
+        private readonly IPasswordHistoryRepository _passwordHistoryRepository;
+        private readonly ICommonPasswordService _commonPasswordService;
         
         // Security configuration
         private readonly int _maxLoginAttempts = 5;
@@ -44,7 +48,11 @@ namespace TerraFusion.Security
             IPasswordHasher<ApplicationUser> passwordHasher,
             IMfaService mfaService,
             ISessionManager sessionManager,
-            ILdapService ldapService)
+            ILdapService ldapService,
+            IUserRepository userRepository,
+            ITokenRepository tokenRepository,
+            IPasswordHistoryRepository passwordHistoryRepository,
+            ICommonPasswordService commonPasswordService)
         {
             _configuration = configuration;
             _logger = logger;
@@ -54,6 +62,10 @@ namespace TerraFusion.Security
             _mfaService = mfaService;
             _sessionManager = sessionManager;
             _ldapService = ldapService;
+            _userRepository = userRepository;
+            _tokenRepository = tokenRepository;
+            _passwordHistoryRepository = passwordHistoryRepository;
+            _commonPasswordService = commonPasswordService;
         }
 
         /// <summary>
@@ -446,17 +458,100 @@ namespace TerraFusion.Security
         }
 
         // Helper methods would continue here...
-        private async Task<bool> IsAccountLockedOutAsync(string username) => false; // TODO: Implement
-        private async Task RecordFailedLoginAttemptAsync(string username) { } // TODO: Implement
-        private async Task ClearFailedLoginAttemptsAsync(string username) { } // TODO: Implement
-        private async Task<List<string>> GetUserRolesAsync(ApplicationUser user) => new List<string>(); // TODO: Implement
-        private async Task<List<string>> GetUserPermissionsAsync(ApplicationUser user) => new List<string>(); // TODO: Implement
-        private async Task<bool> IsTokenRevokedAsync(string jti) => false; // TODO: Implement
-        private async Task RevokeUserTokensAsync(string userId) { } // TODO: Implement
-        private async Task<bool> IsPasswordInHistoryAsync(string userId, string password) => false; // TODO: Implement
-        private async Task SavePasswordHistoryAsync(string userId, string passwordHash) { } // TODO: Implement
-        private bool IsCommonPassword(string password) => false; // TODO: Implement
-        private bool IsHighPrivilegeRole(ApplicationUser user) => false; // TODO: Implement
-        private async Task<ApplicationUser> AutoProvisionUserFromLdapAsync(LdapAuthResult ldapResult) => null; // TODO: Implement
+        private async Task<bool> IsAccountLockedOutAsync(string username)
+        {
+            var lockout = await _userRepository.GetLockoutInfoAsync(username);
+            if (lockout == null) return false;
+            if (lockout.LockedUntil.HasValue && lockout.LockedUntil > DateTime.UtcNow) return true;
+            if (lockout.LockedUntil.HasValue && lockout.LockedUntil <= DateTime.UtcNow)
+            {
+                await _userRepository.ClearLockoutAsync(username);
+                return false;
+            }
+            return false;
+        }
+
+        private async Task RecordFailedLoginAttemptAsync(string username)
+        {
+            var info = await _userRepository.IncrementFailedLoginAsync(username);
+            if (info.FailedAttempts >= _maxLoginAttempts)
+            {
+                await _userRepository.SetLockoutAsync(username, DateTime.UtcNow.Add(_lockoutDuration));
+                _logger.LogWarning("User {Username} locked out until {LockedUntil}", username, DateTime.UtcNow.Add(_lockoutDuration));
+            }
+        }
+
+        private async Task ClearFailedLoginAttemptsAsync(string username)
+        {
+            await _userRepository.ClearFailedLoginAsync(username);
+        }
+
+        private async Task<List<string>> GetUserRolesAsync(ApplicationUser user)
+        {
+            return await _userRepository.GetUserRolesAsync(user.Id);
+        }
+
+        private async Task<List<string>> GetUserPermissionsAsync(ApplicationUser user)
+        {
+            return await _userRepository.GetUserPermissionsAsync(user.Id);
+        }
+
+        private async Task<bool> IsTokenRevokedAsync(string jti)
+        {
+            if (string.IsNullOrEmpty(jti)) return false;
+            return await _tokenRepository.IsRevokedAsync(jti);
+        }
+
+        private async Task RevokeUserTokensAsync(string userId)
+        {
+            await _tokenRepository.RevokeByUserAsync(userId);
+        }
+
+        private async Task<bool> IsPasswordInHistoryAsync(string userId, string password)
+        {
+            var history = await _passwordHistoryRepository.GetRecentHashesAsync(userId, count: 5);
+            foreach (var hash in history)
+            {
+                var result = _passwordHasher.VerifyHashedPassword(new ApplicationUser { Id = userId }, hash, password);
+                if (result == PasswordVerificationResult.Success)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private async Task SavePasswordHistoryAsync(string userId, string passwordHash)
+        {
+            await _passwordHistoryRepository.SaveAsync(userId, passwordHash, DateTime.UtcNow);
+        }
+
+        private bool IsCommonPassword(string password)
+        {
+            return _commonPasswordService.IsCommon(password);
+        }
+
+        private bool IsHighPrivilegeRole(ApplicationUser user)
+        {
+            var roles = user.Roles ?? new List<string>();
+            return roles.Any(r => string.Equals(r, "Admin", StringComparison.OrdinalIgnoreCase) ||
+                                  string.Equals(r, "SystemAdministrator", StringComparison.OrdinalIgnoreCase) ||
+                                  string.Equals(r, "Security", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private async Task<ApplicationUser> AutoProvisionUserFromLdapAsync(LdapAuthResult ldapResult)
+        {
+            var user = new ApplicationUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                Username = ldapResult.Username,
+                Email = ldapResult.Email,
+                IsActive = true,
+                Roles = ldapResult.Roles?.ToList() ?? new List<string>()
+            };
+
+            await _userRepository.CreateAsync(user);
+            return user;
+        }
     }
 }
