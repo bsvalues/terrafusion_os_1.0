@@ -82,6 +82,10 @@ public static class SecurityModule
         services.AddScoped<IQuantumResistantEncryptionService, QuantumResistantEncryptionService>();
         services.AddScoped<IMultiFactorAuthService, MultiFactorAuthService>();
         services.AddScoped<ISecurityAuditService, SecurityAuditService>();
+        services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+        services.AddSingleton<ITokenRepository, InMemoryTokenRepository>();
+        services.AddSingleton<IPasswordHistoryRepository, InMemoryPasswordHistoryRepository>();
+        services.AddSingleton<ICommonPasswordService, CommonPasswordService>();
 
         return services;
     }
