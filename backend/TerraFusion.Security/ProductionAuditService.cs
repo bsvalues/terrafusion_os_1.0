@@ -513,22 +513,68 @@ namespace TerraFusion.Security
         
         private string BuildWhereClause(AuditLogQuery query)
         {
-            return "1=1"; // TODO: Build dynamic WHERE clause
+            var conditions = new List<string> { "1=1" };
+
+            if (!string.IsNullOrWhiteSpace(query.EventType))
+                conditions.Add("event_type = @EventType");
+            if (!string.IsNullOrWhiteSpace(query.EventCategory))
+                conditions.Add("event_category = @EventCategory");
+            if (!string.IsNullOrWhiteSpace(query.UserId))
+                conditions.Add("user_id = @UserId");
+            if (!string.IsNullOrWhiteSpace(query.Username))
+                conditions.Add("username ILIKE @UsernamePattern");
+            if (!string.IsNullOrWhiteSpace(query.IpAddress))
+                conditions.Add("ip_address = @IpAddress");
+            if (!string.IsNullOrWhiteSpace(query.ResourceType))
+                conditions.Add("resource_type = @ResourceType");
+            if (!string.IsNullOrWhiteSpace(query.ResourceId))
+                conditions.Add("resource_id = @ResourceId");
+            if (query.StartDate.HasValue)
+                conditions.Add("timestamp >= @StartDate");
+            if (query.EndDate.HasValue)
+                conditions.Add("timestamp <= @EndDate");
+            if (!string.IsNullOrWhiteSpace(query.Severity))
+                conditions.Add("severity = @Severity");
+            if (!string.IsNullOrWhiteSpace(query.Outcome))
+                conditions.Add("outcome = @Outcome");
+
+            // Pattern params
+            query.UsernamePattern = string.IsNullOrWhiteSpace(query.Username) ? null : $"%{query.Username}%";
+
+            return string.Join(" AND ", conditions);
         }
         
         private async Task TriggerSecurityAlertAsync(SecurityViolationEvent violation)
         {
-            // Send security alerts
+            try
+            {
+                // Placeholder: integrate with alerting (PagerDuty/Teams/Email)
+                _logger.LogCritical("Security alert: {Type} for user {User}", violation.ViolationType, violation.UserId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to dispatch security alert");
+            }
         }
         
         private async Task<string> WriteToArchiveStorageAsync(IEnumerable<AuditEvent> logs)
         {
-            return "archive://location"; // TODO: Implement archive storage
+            var archiveDir = _configuration["Audit:ArchivePath"] ?? "audit-archive";
+            Directory.CreateDirectory(archiveDir);
+            var fileName = $"audit-archive-{DateTime.UtcNow:yyyyMMddHHmmss}.json";
+            var fullPath = Path.Combine(archiveDir, fileName);
+
+            var options = new JsonSerializerOptions { WriteIndented = false };
+            var json = JsonSerializer.Serialize(logs, options);
+            await File.WriteAllTextAsync(fullPath, json);
+
+            return fullPath;
         }
         
         private string CalculateArchiveHash(IEnumerable<AuditEvent> logs)
         {
-            return "hash"; // TODO: Calculate archive hash
+            var serialized = JsonSerializer.Serialize(logs.OrderBy(l => l.Timestamp));
+            return _hashingService.ComputeSha256(serialized);
         }
     }
 }
