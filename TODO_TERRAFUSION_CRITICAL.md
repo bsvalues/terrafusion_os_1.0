@@ -18,8 +18,8 @@
 
 ## Service Registry
 - [x] Implement secure Government OS client/communication in `applications/terra-proplus-production/server/elite-service-registry.ts` (POST + API key with fallback).
-- [ ] Harden health checks (auth/backoff) in `elite-service-registry.ts`.
+- [x] Harden health checks (auth/backoff) in `elite-service-registry.ts`.
 
 ## Workspace Mapping
-- [ ] Add all `terra-*` workspaces to backend mapping (see `WORKSPACE_ARCHITECTURE_CURRENT_SESSION.md`).
-- [ ] Rebuild backend container and update FileExplorer to use the selector for new workspaces.
+- [x] Add all `terra-*` workspaces to backend mapping (see `WORKSPACE_ARCHITECTURE_CURRENT_SESSION.md`).
+- [x] Rebuild backend container and update FileExplorer to use the selector for new workspaces.
