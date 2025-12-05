@@ -24,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TerraFusion.AI\TerraFusion.AI.csproj" />
     <ProjectReference Include="..\TerraFusion.Core\TerraFusion.Core.csproj" />
     <ProjectReference Include="..\TerraFusion.Data\TerraFusion.Data.csproj" />
-    <ProjectReference Include="..\TerraFusion.AI\TerraFusion.AI.csproj" />
     <ProjectReference Include="..\TerraFusion.Abstractions\TerraFusion.Abstractions.csproj" />
   </ItemGroup>
 

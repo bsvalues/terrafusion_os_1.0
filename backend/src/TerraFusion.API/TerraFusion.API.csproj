@@ -47,9 +47,9 @@
     <ProjectReference Include="..\TerraFusion.Data\TerraFusion.Data.csproj" />
     <ProjectReference Include="..\TerraFusion.Abstractions\TerraFusion.Abstractions.csproj" />
     <ProjectReference Include="..\TerraFusion.AI\TerraFusion.AI.csproj" />
+    <ProjectReference Include="..\TerraFusion.Levy\TerraFusion.Levy.csproj" />
     <ProjectReference Include="..\TerraFusion.Operations\TerraFusion.Operations.csproj" />
     <ProjectReference Include="..\TerraFusion.CostForge\TerraFusion.CostForge.csproj" />
-    <ProjectReference Include="..\TerraFusion.Levy\TerraFusion.Levy.csproj" />
     <ProjectReference Include="..\TerraFusion.Consciousness\TerraFusion.Consciousness.csproj" />
     <ProjectReference Include="..\TerraFusion.Sync\TerraFusion.Sync.csproj" />
   </ItemGroup>
