@@ -5,27 +5,55 @@ param(
     [string[]]$Args
 )
 
+function Invoke-TerraScript {
+    param(
+        [string]$RelativePath,
+        [string[]]$ScriptArgs
+    )
+
+    $script = Join-Path $PSScriptRoot $RelativePath
+    & $script @ScriptArgs
+}
+
+function Show-Usage {
+    Write-Error "Usage: ./terra.ps1 <backend|frontend|run> [args]"
+    Write-Error "       ./terra.ps1 run <backend|frontend> [args]"
+}
+
 switch ($Command.ToLower()) {
     "backend" {
-        $script = Join-Path $PSScriptRoot "..\\..\\backend\\scripts\\start-api.ps1"
-        & $script @Args
+        Invoke-TerraScript "..\\..\\backend\\scripts\\start-api.ps1" $Args
+    }
+    "frontend" {
+        Invoke-TerraScript "..\\..\\frontend\\scripts\\command-center.ps1" $Args
     }
     "run" {
-        if (-not $Args -or $Args[0].ToLower() -ne "backend") {
-            Write-Error "Usage: ./terra.ps1 run backend [args]"
+        if (-not $Args) {
+            Show-Usage
             exit 1
         }
 
-        $script = Join-Path $PSScriptRoot "..\\..\\backend\\scripts\\start-api.ps1"
+        $target = $Args[0].ToLower()
         $scriptArgs = @()
         if ($Args.Length -gt 1) {
             $scriptArgs = $Args[1..($Args.Length - 1)]
         }
 
-        & $script @scriptArgs
+        switch ($target) {
+            "backend" {
+                Invoke-TerraScript "..\\..\\backend\\scripts\\start-api.ps1" $scriptArgs
+            }
+            "frontend" {
+                Invoke-TerraScript "..\\..\\frontend\\scripts\\command-center.ps1" $scriptArgs
+            }
+            default {
+                Show-Usage
+                exit 1
+            }
+        }
     }
     default {
-        Write-Error "Unknown command '$Command'."
+        Show-Usage
         exit 1
     }
 }
