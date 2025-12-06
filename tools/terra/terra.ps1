@@ -79,6 +79,10 @@ function Test-Frontend {
     $frontendRoot = Join-Path $RepoRoot "frontend"
     $commandCenter = Join-Path $RepoRoot "frontend/scripts/command-center.ps1"
     $osShell = Join-Path $RepoRoot "frontend/apps/os-shell"
+    $full = $false
+    if ($Args) {
+        $full = $Args -contains "-Full"
+    }
 
     $ok = $true
 
@@ -103,7 +107,7 @@ function Test-Frontend {
         Write-Host "[terra:doctor] ✅ os-shell app present" -ForegroundColor Green
     }
 
-    # Optional: light frontend build check if pnpm + package.json exist
+    # Optional: frontend check if pnpm + package.json exist
     if ($ok) {
         $pnpm = Get-Command pnpm -ErrorAction SilentlyContinue
         $pkg  = Join-Path $frontendRoot "package.json"
@@ -111,14 +115,19 @@ function Test-Frontend {
         if ($pnpm -and (Test-Path $pkg)) {
             Push-Location $frontendRoot
             try {
-                Write-Host "[terra:doctor] ▶ pnpm run build (frontend)" -ForegroundColor Cyan
-                & pnpm run build
+                if ($full) {
+                    Write-Host "[terra:doctor] ▶ pnpm run build (frontend, full)" -ForegroundColor Cyan
+                    & pnpm run build
+                } else {
+                    Write-Host "[terra:doctor] ▶ pnpm run lint (frontend, quick)" -ForegroundColor Cyan
+                    & pnpm run lint
+                }
                 if ($LASTEXITCODE -ne 0) {
-                    Write-Host "[terra:doctor] ❌ Frontend build failed (exit $LASTEXITCODE)" -ForegroundColor Red
+                    Write-Host "[terra:doctor] ❌ Frontend check failed (exit $LASTEXITCODE)" -ForegroundColor Red
                     return $false
                 }
 
-                Write-Host "[terra:doctor] ✅ Frontend build succeeded" -ForegroundColor Green
+                Write-Host "[terra:doctor] ✅ Frontend check succeeded" -ForegroundColor Green
             }
             finally {
                 Pop-Location
@@ -136,7 +145,14 @@ function Invoke-Doctor {
     Write-Host "[terra:doctor] Running TerraFusion OS health checks..." -ForegroundColor Cyan
 
     $backendOk  = Test-Backend
-    $frontendOk = Test-Frontend
+    $frontendOk = $true
+
+    # Pass through any doctor flags (e.g., -Full) into Test-Frontend
+    if ($Args) {
+        $frontendOk = Test-Frontend @Args
+    } else {
+        $frontendOk = Test-Frontend
+    }
 
     if ($backendOk -and $frontendOk) {
         Write-Host "`n[terra:doctor] ✅ All checks passed" -ForegroundColor Green
@@ -150,7 +166,7 @@ function Invoke-Doctor {
 switch ($Command.ToLowerInvariant()) {
     "backend"   { Invoke-Backend -Args $Args }
     "frontend"  { Invoke-Frontend -Args $Args }
-    "doctor"    { Invoke-Doctor }
+    "doctor"    { Invoke-Doctor @Args }
     "run" {
         if ($Args.Length -eq 0) {
             Write-Host "[terra] Usage: terra.ps1 run <backend|frontend|doctor>" -ForegroundColor Yellow
@@ -166,7 +182,7 @@ switch ($Command.ToLowerInvariant()) {
         switch ($sub) {
             "backend"  { Invoke-Backend -Args $rest }
             "frontend" { Invoke-Frontend -Args $rest }
-            "doctor"   { Invoke-Doctor }
+            "doctor"   { Invoke-Doctor @rest }
             default {
                 Write-Host "[terra] Unknown run target '$sub'. Expected backend|frontend|doctor." -ForegroundColor Red
                 exit 1
