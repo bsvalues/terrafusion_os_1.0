@@ -1,0 +1,671 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * ELITE ANALYTICS TOOLSET - PhD-LEVEL STYLING
+ * Advanced Mathematical Visualization for Harvard/MIT Users
+ * Statistical Analysis • Model Interpretability • Quantum States
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+/* Main Toolset Container */
+.elite-analytics-toolset {
+  padding: 2rem;
+  background: linear-gradient(135deg, #0a0e1a 0%, #1a202c 100%);
+  color: #00ffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* Toolset Header */
+.toolset-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.toolset-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(135deg, #00ffff, #0099ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.toolset-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  margin: 0 0 2rem 0;
+}
+
+/* Tool Selector */
+.tool-selector {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tool-btn {
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 8px;
+  color: #00ffff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tool-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  border-color: rgba(0, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.tool-btn.active {
+  background: linear-gradient(135deg, #00ffff, #0099ff);
+  color: #0a0e1a;
+  border-color: #00ffff;
+}
+
+/* Analytics Sections */
+.analytics-section {
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0 0 1.5rem 0;
+  color: #00ffff;
+}
+
+/* Distribution Analysis */
+.distribution-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.distribution-card {
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.distribution-card:hover {
+  background: rgba(0, 255, 255, 0.12);
+  border-color: rgba(0, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.distribution-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0 0 1rem 0;
+  color: #00ffff;
+}
+
+.distribution-stats {
+  margin-bottom: 1rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.stat-label {
+  opacity: 0.8;
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+}
+
+.stat-value {
+  font-weight: bold;
+  color: #00ff88;
+}
+
+/* Mini Histogram */
+.mini-histogram {
+  height: 60px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.histogram-bars {
+  display: flex;
+  align-items: end;
+  height: 100%;
+  gap: 1px;
+}
+
+.histogram-bar {
+  flex: 1;
+  background: linear-gradient(to top, #00ffff, #0099ff);
+  opacity: 0.8;
+  min-height: 2px;
+  transition: opacity 0.3s ease;
+}
+
+.histogram-bar:hover {
+  opacity: 1;
+}
+
+/* Model Interpretability */
+.interpretability-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.feature-importance,
+.correlation-matrix {
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.feature-importance h4,
+.correlation-matrix h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  color: #00ffff;
+}
+
+.feature-row {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: rgba(0, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+.feature-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.feature-name {
+  font-weight: bold;
+  color: #00ffff;
+}
+
+.feature-importance {
+  color: #00ff88;
+  font-weight: bold;
+}
+
+.importance-bar {
+  height: 8px;
+  background: rgba(0, 255, 255, 0.2);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.importance-fill {
+  height: 100%;
+  background: linear-gradient(to right, #00ffff, #00ff88);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.shap-analysis {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+
+.shap-label,
+.gradient-label {
+  opacity: 0.7;
+}
+
+.shap-value,
+.gradient-value {
+  font-weight: bold;
+  color: #00ff88;
+}
+
+/* Correlation Matrix */
+.matrix-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.8rem;
+}
+
+.matrix-row {
+  display: flex;
+  gap: 2px;
+}
+
+.matrix-cell {
+  flex: 1;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.matrix-cell:hover {
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+/* Quantum State Analysis */
+.quantum-analysis-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.quantum-states-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.quantum-state-card {
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.quantum-state-card:hover {
+  background: rgba(0, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.state-index {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0 0 0.75rem 0;
+  color: #00ffff;
+  font-family: 'Times New Roman', serif;
+}
+
+.quantum-metrics {
+  margin-bottom: 1rem;
+}
+
+.quantum-metric {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.metric-label {
+  opacity: 0.7;
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+}
+
+.metric-value {
+  font-weight: bold;
+  color: #00ff88;
+}
+
+.metric-value.complex {
+  font-family: 'Times New Roman', serif;
+  color: #ff8800;
+}
+
+/* State Visualization */
+.state-visualization {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phase-circle {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #00ffff;
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.5s ease;
+}
+
+.phase-vector {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 18px;
+  background: #00ffff;
+  transform-origin: bottom center;
+  transform: translate(-50%, -100%);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+}
+
+/* Quantum Coherence Analysis */
+.quantum-coherence-analysis {
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.quantum-coherence-analysis h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  color: #00ffff;
+}
+
+.coherence-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.coherence-metric {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: rgba(0, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+/* Swarm Coordination */
+.swarm-patterns-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.swarm-pattern-card {
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.swarm-pattern-card:hover {
+  background: rgba(0, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.pattern-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0 0 1rem 0;
+  color: #00ffff;
+}
+
+.pattern-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.pattern-metric {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.emergent-behavior {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: rgba(0, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+.behavior-label {
+  font-weight: bold;
+  color: #00ffff;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.behavior-description {
+  color: #00ff88;
+  font-style: italic;
+}
+
+/* Pattern Visualization */
+.pattern-visualization {
+  height: 60px;
+  position: relative;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.coordination-wave {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.wave-point {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #00ffff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.8);
+  transform: translate(-50%, 50%);
+}
+
+/* Optimization Suite */
+.optimization-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.optimization-card {
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.optimization-card:hover {
+  background: rgba(0, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.parameter-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0 0 1rem 0;
+  color: #00ffff;
+}
+
+.optimization-comparison {
+  margin-bottom: 1rem;
+}
+
+.value-comparison {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.current-value,
+.optimal-value {
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: rgba(0, 255, 255, 0.05);
+}
+
+.optimal-value {
+  background: rgba(0, 255, 136, 0.1);
+}
+
+.value-label {
+  display: block;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin-bottom: 0.25rem;
+}
+
+.value-number {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #00ffff;
+}
+
+.value-number.optimal {
+  color: #00ff88;
+}
+
+.improvement-metrics {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.improvement,
+.confidence {
+  text-align: center;
+}
+
+.improvement-value {
+  color: #00ff88;
+  font-weight: bold;
+}
+
+.confidence-value {
+  color: #00ffff;
+  font-weight: bold;
+}
+
+.algorithm-info {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background: rgba(0, 255, 255, 0.05);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.algorithm-label {
+  opacity: 0.7;
+  margin-right: 0.5rem;
+}
+
+.algorithm-name {
+  font-weight: bold;
+  color: #00ff88;
+}
+
+.optimization-progress {
+  height: 8px;
+  background: rgba(0, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, #00ffff, #00ff88);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .distribution-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .interpretability-container {
+    grid-template-columns: 1fr;
+  }
+
+  .quantum-analysis-container {
+    grid-template-columns: 1fr;
+  }
+
+  .quantum-states-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .swarm-patterns-grid,
+  .optimization-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .elite-analytics-toolset {
+    padding: 1rem;
+  }
+
+  .tool-selector {
+    flex-wrap: wrap;
+  }
+
+  .tool-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .quantum-states-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .matrix-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mathematical notation enhancements */
+.math-notation {
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+}
+
+/* Animations for elite feel */
+@keyframes quantumPulse {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+.quantum-state-card:hover .phase-circle {
+  animation: quantumPulse 2s ease-in-out infinite;
+}
+
+.elite-glow {
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.elite-glow:hover {
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+}

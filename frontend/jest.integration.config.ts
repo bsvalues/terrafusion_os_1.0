@@ -22,8 +22,8 @@ const config: Config = {
 
   // Only run integration test files
   testMatch: [
-    '<rootDir>/src/**/*.integration.test.{ts,tsx}',
-    '<rootDir>/src/__tests__/integration/**/*.test.{ts,tsx}',
+    '<rootDir>/apps/os-shell/src/**/*.integration.test.{ts,tsx}',
+    '<rootDir>/apps/os-shell/src/__tests__/integration/**/*.test.{ts,tsx}',
   ],
 
   // Longer timeout for complex integration workflows (default: 5000ms)
@@ -38,8 +38,8 @@ const config: Config = {
   // Collect coverage from integration test files
   collectCoverageFrom: [
     ...(baseConfig.collectCoverageFrom || []),
-    'src/__tests__/integration/**/*.{ts,tsx}',
-    '!src/__tests__/integration/**/*.d.ts',
+    'apps/os-shell/src/__tests__/integration/**/*.{ts,tsx}',
+    '!apps/os-shell/src/__tests__/integration/**/*.d.ts',
   ],
 
   // Coverage thresholds specific to integration tests
@@ -47,8 +47,8 @@ const config: Config = {
 
   // Setup files specific to integration tests
   setupFilesAfterEnv: [
-    '<rootDir>/src/setupTests.ts',
-    '<rootDir>/src/__tests__/integration/setupIntegrationTests.ts',
+    '<rootDir>/apps/os-shell/src/setupTests.ts',
+    '<rootDir>/apps/os-shell/src/__tests__/integration/setupIntegrationTests.ts',
   ],
 
   // Increase slowTestThreshold for integration tests (workflows take longer)

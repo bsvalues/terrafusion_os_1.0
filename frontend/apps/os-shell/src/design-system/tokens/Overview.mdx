@@ -1,0 +1,342 @@
+import { Meta } from '@storybook/blocks';
+import { tokens } from '../tokens';
+
+<Meta title='Design System/Overview' />
+
+# TerraFusion Design System
+
+<div
+  style={{
+    padding: '32px',
+    background: 'linear-gradient(135deg, #0099ff 0%, #00ffee 100%)',
+    borderRadius: '16px',
+    marginBottom: '48px',
+    color: '#000',
+  }}
+>
+  <h2 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '16px', margin: 0 }}>
+    World-Class Design Token System
+  </h2>
+  <p style={{ fontSize: '18px', margin: 0, opacity: 0.9 }}>
+    Built The TerraFusion Way - MIT/PhD-level engineering with no compromises.
+  </p>
+</div>
+
+## 🎨 What is a Design System?
+
+A design system is a collection of reusable components, tokens, and guidelines that ensure consistency across your entire application. The TerraFusion Design System provides:
+
+- **150+ Design Tokens** for colors, spacing, typography, motion, and more
+- **Type-Safe API** with full TypeScript support
+- **Semantic Naming** that describes intent, not implementation
+- **Accessibility Built-in** following WCAG 2.1 AA standards
+- **Comprehensive Documentation** with interactive examples
+
+---
+
+## 📚 Token Categories
+
+### [Colors](/docs/design-system-tokens-colors--docs)
+
+100+ color tokens including brand colors, semantic colors, state colors, and component-specific colors.
+
+- **Brand Colors**: Primary (#0099ff), Transcend (#00ffee), Accent (#00ffaa)
+- **Semantic Colors**: Text, background, border, surface
+- **State Colors**: Success, error, warning, info
+- **Component Colors**: Button, input, card, navigation, modal, badge
+- **Gradients**: Pre-defined gradients for hero sections and effects
+
+```typescript
+import { tokens } from '@/design-system';
+
+const primaryColor = tokens.colors.brand.primary[500]; // #0099ff
+const buttonBg = tokens.colors.component.button.primary.background;
+```
+
+[View Color Documentation →](/docs/design-system-tokens-colors--docs)
+
+---
+
+### [Spacing](/docs/design-system-tokens-spacing--docs)
+
+40+ spacing values based on an 8px grid system with semantic naming.
+
+- **Base Scale**: 0 → 96 (0px → 384px)
+- **Semantic Spacing**: Component, layout, container, section
+- **Gap Utilities**: For flexbox/grid layouts
+- **Inset**: Padding shortcuts
+- **Stack**: Vertical rhythm
+
+```typescript
+const padding = tokens.spacing[4]; // 16px
+const gap = tokens.gap[4]; // 1rem
+const layoutSpacing = tokens.semantic.spacing.layout.lg; // 48px
+```
+
+[View Spacing Documentation →](/docs/design-system-tokens-spacing--docs)
+
+---
+
+### [Typography](/docs/design-system-tokens-typography--docs)
+
+Complete typography system with Inter font family and semantic text styles.
+
+- **Font Families**: Inter (sans), Fira Code (mono)
+- **13 Font Sizes**: xs → 9xl
+- **9 Font Weights**: thin → black
+- **Text Styles**: Display, heading, body, label, code
+
+```typescript
+const heading = tokens.typography.textStyles.heading.h1;
+const bodyText = tokens.typography.textStyles.body.md;
+const codeFont = tokens.typography.fontFamily.mono;
+```
+
+[View Typography Documentation →](/docs/design-system-tokens-typography--docs)
+
+---
+
+### [Motion](/docs/design-system-tokens-motion--docs)
+
+Animation and transition system for smooth, consistent motion design.
+
+- **7 Durations**: instant (0ms) → slowest (700ms)
+- **10 Easing Functions**: Including custom cubic-bezier curves
+- **Transition Presets**: Fast, normal, slow
+- **12 Animation Keyframes**: Fade, scale, slide, pulse, spin, bounce, glow, shimmer
+- **Spring Physics**: For Framer Motion
+
+```typescript
+const transition = tokens.motion.transition.normal.colors;
+const fadeIn = tokens.motion.animation.fadeIn;
+const spring = tokens.motion.spring.bouncy;
+```
+
+[View Motion Documentation →](/docs/design-system-tokens-motion--docs)
+
+---
+
+### Shadows
+
+Elevation and depth system with box shadows, glows, and text shadows.
+
+- **6 Box Shadow Elevations**
+- **5 Elevation Levels**
+- **Colored Shadows** for brand colors
+- **4 Glow Effects**
+- **Text Shadows**
+
+```typescript
+const shadow = tokens.shadows.box.lg;
+const glow = tokens.shadows.box.glow.md;
+const elevation = tokens.shadows.box.elevation[3];
+```
+
+---
+
+### Z-Index
+
+Consistent layering system for modals, tooltips, and overlays.
+
+```typescript
+const modalZIndex = tokens.zIndex.modal; // 1400
+const tooltipZIndex = tokens.zIndex.tooltip; // 1600
+const toastZIndex = tokens.zIndex.toast; // 1700
+```
+
+---
+
+### Border Radius
+
+Corner rounding scale for consistent UI elements.
+
+```typescript
+const buttonRadius = tokens.semantic.radius.button;
+const cardRadius = tokens.semantic.radius.card;
+const pill = tokens.radius.full; // Circle/pill shape
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Import Tokens
+
+```typescript
+import { tokens } from '@/design-system';
+```
+
+### 2. Use in Components
+
+```typescript
+function Card({ children }) {
+  return (
+    <div style={{
+      background: tokens.colors.component.card.background,
+      border: \`1px solid \${tokens.colors.component.card.border}\`,
+      borderRadius: tokens.semantic.radius.card,
+      padding: tokens.spacing[6],
+      boxShadow: tokens.shadows.box.lg,
+      transition: tokens.motion.transition.normal.default,
+    }}>
+      {children}
+    </div>
+  );
+}
+```
+
+### 3. Leverage TypeScript
+
+```typescript
+import type { BrandColor, SpacingScale } from '@/design-system';
+
+// Get type-safe suggestions as you type
+const color: BrandColor = 'primary';
+const space: SpacingScale = 4;
+```
+
+---
+
+## 💡 Best Practices
+
+### ✅ Do
+
+- Use semantic tokens when available (component.md, layout.lg)
+- Stick to the 8px grid system for spacing
+- Use text style tokens instead of raw font sizes
+- Leverage TypeScript for auto-completion
+- Use transition presets for consistent motion
+
+### ❌ Don't
+
+- Don't hardcode colors, use tokens
+- Don't use arbitrary spacing values (13px, 27px)
+- Don't skip the type system benefits
+- Don't mix multiple design systems
+- Don't over-animate interfaces
+
+---
+
+## 📊 Token Coverage
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', margin: '32px 0' }}>
+  <div style={{ 
+    background: 'rgba(0, 153, 255, 0.1)', 
+    border: '1px solid rgba(0, 153, 255, 0.3)',
+    borderRadius: '12px',
+    padding: '24px',
+    textAlign: 'center',
+  }}>
+    <div style={{ fontSize: '36px', fontWeight: '700', color: '#0099ff', marginBottom: '8px' }}>
+      150+
+    </div>
+    <div style={{ color: '#b3b3b3', fontSize: '14px' }}>
+      Design Tokens
+    </div>
+  </div>
+
+<div
+  style={{
+    background: 'rgba(0, 255, 238, 0.1)',
+    border: '1px solid rgba(0, 255, 238, 0.3)',
+    borderRadius: '12px',
+    padding: '24px',
+    textAlign: 'center',
+  }}
+>
+  <div style={{ fontSize: '36px', fontWeight: '700', color: '#00ffee', marginBottom: '8px' }}>
+    100%
+  </div>
+  <div style={{ color: '#b3b3b3', fontSize: '14px' }}>Type Coverage</div>
+</div>
+
+<div
+  style={{
+    background: 'rgba(0, 255, 170, 0.1)',
+    border: '1px solid rgba(0, 255, 170, 0.3)',
+    borderRadius: '12px',
+    padding: '24px',
+    textAlign: 'center',
+  }}
+>
+  <div style={{ fontSize: '36px', fontWeight: '700', color: '#00ffaa', marginBottom: '8px' }}>
+    7
+  </div>
+  <div style={{ color: '#b3b3b3', fontSize: '14px' }}>Token Categories</div>
+</div>
+
+  <div style={{ 
+    background: 'rgba(0, 153, 255, 0.1)', 
+    border: '1px solid rgba(0, 153, 255, 0.3)',
+    borderRadius: '12px',
+    padding: '24px',
+    textAlign: 'center',
+  }}>
+    <div style={{ fontSize: '36px', fontWeight: '700', color: '#0099ff', marginBottom: '8px' }}>
+      WCAG AA
+    </div>
+    <div style={{ color: '#b3b3b3', fontSize: '14px' }}>
+      Accessibility
+    </div>
+  </div>
+</div>
+
+---
+
+## 🏗️ Architecture
+
+The design system is organized into clear, logical categories:
+
+```
+frontend/src/design-system/
+├── tokens/
+│   ├── colors.ts       # Brand, semantic, state, component colors
+│   ├── spacing.ts      # 8px grid system, semantic spacing
+│   ├── typography.ts   # Font families, sizes, weights, text styles
+│   ├── motion.ts       # Animations, transitions, springs
+│   ├── shadows.ts      # Box shadows, glows, text shadows
+│   ├── zIndex.ts       # Layering system
+│   ├── radius.ts       # Border radius scale
+│   └── index.ts        # Unified token export
+├── components/         # (Future) Component library
+├── hooks/              # (Future) Design system hooks
+├── utils/              # (Future) Utility functions
+├── index.ts            # Main export
+└── README.md           # Comprehensive documentation
+```
+
+---
+
+## 🎯 Next Steps
+
+1. **Explore Token Categories**: Browse each token category to understand available options
+2. **Try the Examples**: Experiment with interactive examples in each story
+3. **Build Components**: Start using tokens in your components
+4. **Contribute**: Help expand the design system with new patterns
+
+---
+
+## 📖 Resources
+
+- [GitHub Repository](https://github.com/bsvalues/terrafusion_os_1.0)
+- [Frontend Architecture Audit](/docs/architecture/FRONTEND_ARCHITECTURE_AUDIT.md)
+- [Implementation Plan](/docs/guides/FRONTEND_EXCELLENCE_IMPLEMENTATION_PLAN.md)
+- [Quick Start Guide](/docs/guides/FRONTEND_QUICK_START.md)
+
+---
+
+<div
+  style={{
+    padding: '24px',
+    background: 'rgba(0, 153, 255, 0.05)',
+    border: '1px solid rgba(0, 153, 255, 0.2)',
+    borderRadius: '12px',
+    marginTop: '48px',
+  }}
+>
+  <p style={{ margin: 0, color: '#b3b3b3', fontSize: '14px', lineHeight: '1.6' }}>
+    <strong style={{ color: '#fff' }}>Built The TerraFusion Way:</strong> Excellence, not speed.
+    MIT/PhD-level engineering with comprehensive documentation, full type safety, and accessibility
+    built-in. No compromises, just world-class design infrastructure.
+  </p>
+</div>

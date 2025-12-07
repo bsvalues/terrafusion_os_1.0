@@ -15,7 +15,12 @@
     "isolatedModules": false,
     "exactOptionalPropertyTypes": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.jsx"],
+  "include": [
+    "apps/os-shell/src/**/*.ts",
+    "apps/os-shell/src/**/*.tsx",
+    "apps/os-shell/src/**/*.js",
+    "apps/os-shell/src/**/*.jsx"
+  ],
   "exclude": [
     "node_modules",
     "dist",

@@ -2,10 +2,12 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import { securityPlugin } from './src/middleware/security-plugin';
+import { securityPlugin } from './apps/os-shell/src/middleware/security-plugin';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
+  const appRoot = path.resolve(__dirname, 'apps/os-shell');
+
   const plugins = [
     react(),
     securityPlugin(), // Security headers and CSP
@@ -52,21 +54,25 @@ export default defineConfig(({ mode }) => {
   return {
     plugins,
 
+    root: appRoot,
+
+    publicDir: path.resolve(__dirname, 'public'),
+
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
-        '@components': path.resolve(__dirname, './src/components'),
-        '@services': path.resolve(__dirname, './src/services'),
-        '@hooks': path.resolve(__dirname, './src/hooks'),
-        '@utils': path.resolve(__dirname, './src/utils'),
-        '@types': path.resolve(__dirname, './src/types'),
+        '@': path.resolve(appRoot, 'src'),
+        '@components': path.resolve(appRoot, 'src/components'),
+        '@services': path.resolve(appRoot, 'src/services'),
+        '@hooks': path.resolve(appRoot, 'src/hooks'),
+        '@utils': path.resolve(appRoot, 'src/utils'),
+        '@types': path.resolve(appRoot, 'src/types'),
         '@terrafusion/shared': path.resolve(__dirname, '../terrafusion-shared/dist/index.js'),
       },
     },
 
     build: {
       // Build directly to native shell UI directory!
-      outDir: '../native-shell/ui',
+      outDir: path.resolve(__dirname, '../native-shell/ui'),
       emptyOutDir: true,
 
       // Optimize for production
@@ -80,7 +86,7 @@ export default defineConfig(({ mode }) => {
             ui: ['@mui/material', '@mui/icons-material'],
             charts: ['recharts'],
             '3d': ['three'],
-            'platform-design-system': ['./src/design-system'],
+            'platform-design-system': [path.resolve(appRoot, 'src/design-system')],
           },
         },
       },

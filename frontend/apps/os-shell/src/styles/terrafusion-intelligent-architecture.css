@@ -1,0 +1,368 @@
+/**
+ * TerraFusion Intelligent CSS Architecture - Base Styles
+ *
+ * Replaces conditional CSS syntax with CSS custom properties
+ * that are dynamically updated by the TerraFusion CSS Engine
+ *
+ * PhD-Level CSS Architecture for AI Operating Systems
+ */
+
+/* ===== CSS CUSTOM PROPERTIES FOUNDATION ===== */
+
+:root {
+  /* Performance Metrics (updated by CSS Engine) */
+  --tf-performance-index: 0.8;
+  --tf-fps-current: 60;
+  --tf-memory-usage: 0.5;
+  --tf-cpu-usage: 0.3;
+  --tf-network-latency: 50;
+  --tf-render-time: 16;
+
+  /* AI Agent States */
+  --tf-agent-count-active: 0;
+  --tf-agent-count-total: 1008;
+  --tf-quantum-coherence: 1;
+  --tf-neural-activation: ease-in-out;
+  --tf-agent-coherence-freq: 2s;
+
+  /* Performance-Responsive Values */
+  --tf-scroll-behavior: smooth; /* Updated by engine based on performance */
+  --tf-animation-duration: 0.3s; /* Shorter on low performance */
+  --tf-transform-style: translate3d(0, 0, 0); /* Optimized transforms */
+
+  /* Status-Based Colors (AI-responsive) */
+  --tf-status-active: hsl(120 100% 60%);
+  --tf-status-processing: hsl(200 100% 60%);
+  --tf-status-idle: hsl(0 0% 60%);
+  --tf-status-error: hsl(0 100% 60%);
+  --tf-status-optimal: hsl(120 80% 50%);
+  --tf-status-warning: hsl(45 100% 50%);
+  --tf-status-critical: hsl(0 100% 50%);
+
+  /* Memory-Responsive Properties */
+  --tf-pointer-events: auto; /* 'none' when memory > 0.8 */
+  --tf-contain-level: layout style paint; /* Reduced on low memory */
+
+  /* Brand Colors - TerraFusion Quantum Palette */
+  --tf-primary: #00ffff; /* Terra-Cyan - The Consciousness Color */
+  --tf-primary-dark: #00cccc; /* Terra-Cyan Dark */
+  --tf-accent: #00ffaa; /* Quantum Accent */
+  --tf-accent-dark: #00cc88; /* Accent Dark */
+  --tf-transcend: #00ffee; /* Transcendence */
+  --tf-dark: #0a0e1a; /* Terra-Midnight */
+  --tf-dark-lighter: #1e293b; /* Terra-Slate */
+  --tf-light: #ffffff; /* Pure Light */
+
+  /* Government Compliance */
+  --tf-contrast-ratio: 4.5; /* WCAG AA minimum */
+  --tf-focus-outline: 3px solid var(--tf-primary);
+  --tf-safe-area-inset: env(safe-area-inset-top, 0px);
+
+  /* Quantum Design System */
+  --tf-quantum-phase: 0deg;
+  --tf-superposition-blur: 0px;
+  --tf-entanglement-distance: 0px;
+}
+
+/* ===== PERFORMANCE-BASED CSS CLASSES ===== */
+
+/* High Performance Mode (> 80% performance) */
+.tf-high-performance {
+  scroll-behavior: var(--tf-scroll-behavior);
+
+  .tf-quantum-element {
+    animation: quantum-superposition var(--tf-agent-coherence-freq) var(--tf-neural-activation)
+      infinite;
+    transform: var(--tf-transform-style);
+    will-change: transform, opacity;
+  }
+
+  .tf-ai-agent-status {
+    transition: all var(--tf-animation-duration) ease-out;
+    box-shadow: 0 0 calc(4px * var(--tf-quantum-coherence)) var(--tf-status-active);
+  }
+}
+
+/* Medium Performance Mode (50-80% performance) */
+.tf-medium-performance {
+  scroll-behavior: auto;
+
+  .tf-quantum-element {
+    animation: simple-pulse calc(var(--tf-agent-coherence-freq) * 2) ease infinite;
+    transform: translateZ(0);
+  }
+
+  .tf-ai-agent-status {
+    transition: opacity var(--tf-animation-duration) ease;
+  }
+}
+
+/* Low Performance Mode (< 50% performance) */
+.tf-low-performance {
+  scroll-behavior: auto;
+
+  .tf-quantum-element {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+
+  .tf-ai-agent-status {
+    transition: none;
+  }
+
+  /* Disable expensive visual effects */
+  .tf-expensive-animation {
+    animation: none !important;
+  }
+
+  .tf-expensive-filter {
+    filter: none !important;
+  }
+}
+
+/* ===== MEMORY-AWARE STYLES ===== */
+
+.tf-memory-constrained {
+  /* Reduce visual complexity when memory > 80% */
+  .tf-memory-expensive {
+    opacity: calc(1 - (var(--tf-memory-usage) - 0.7) * 3);
+    pointer-events: var(--tf-pointer-events);
+  }
+
+  /* Simplified shadows and gradients */
+  .tf-complex-visual {
+    background: var(--tf-primary) !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ===== AI AGENT STATUS VISUALIZATION ===== */
+
+.tf-ai-agent-status {
+  position: relative;
+  contain: var(--tf-contain-level);
+
+  &.tf-status-active {
+    background: radial-gradient(
+      circle,
+      var(--tf-status-active) 0%,
+      color-mix(in srgb, var(--tf-status-active) 70%, transparent) 100%
+    );
+  }
+
+  &.tf-status-processing {
+    background: radial-gradient(
+      circle,
+      var(--tf-status-processing) 0%,
+      color-mix(in srgb, var(--tf-status-processing) 70%, transparent) 100%
+    );
+    animation: processing-pulse 1s ease-in-out infinite alternate;
+  }
+
+  &.tf-status-idle {
+    background: var(--tf-status-idle);
+    opacity: 0.6;
+  }
+
+  &.tf-status-error {
+    background: var(--tf-status-error);
+    animation: error-flash 0.5s ease-in-out 3;
+  }
+}
+
+.tf-ai-global-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .tf-agent-count {
+    font-family: var(--tf-font-mono);
+    font-weight: 600;
+    color: var(--tf-status-active);
+  }
+
+  .tf-status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--tf-status-active);
+    animation: heartbeat calc(var(--tf-agent-coherence-freq) / 2) ease-in-out infinite;
+  }
+}
+
+/* ===== QUANTUM DESIGN SYSTEM ===== */
+
+.tf-quantum-element {
+  position: relative;
+
+  &.tf-quantum-superposition {
+    filter: blur(var(--tf-superposition-blur));
+    opacity: 0.8;
+    animation: quantum-superposition var(--tf-agent-coherence-freq) ease-in-out infinite;
+  }
+
+  &.tf-quantum-entangled {
+    transform: translateX(var(--tf-entanglement-distance));
+  }
+
+  &.tf-quantum-collapsed {
+    transform: none;
+    filter: none;
+    opacity: 1;
+  }
+}
+
+/* ===== GOVERNMENT COMPLIANCE STYLES ===== */
+
+.tf-compliance-wrapper {
+  /* WCAG 2.1 AAA Compliance */
+  &.tf-accessibility-AAA {
+    --tf-contrast-ratio: 7; /* AAA standard */
+  }
+
+  &.tf-accessibility-AA {
+    --tf-contrast-ratio: 4.5; /* AA standard */
+  }
+
+  /* Security Classifications */
+  &.tf-security-classified {
+    border: 2px solid var(--tf-error);
+    background: linear-gradient(
+      45deg,
+      transparent 25%,
+      rgba(255, 0, 0, 0.1) 25%,
+      rgba(255, 0, 0, 0.1) 50%,
+      transparent 50%
+    );
+  }
+
+  &.tf-audit-mode {
+    outline: 3px dashed var(--tf-warning);
+    outline-offset: 2px;
+  }
+}
+
+/* Focus management for government accessibility */
+.tf-compliance-wrapper :focus {
+  outline: var(--tf-focus-outline);
+  outline-offset: 2px;
+  z-index: 1000;
+}
+
+/* ===== RESPONSIVE PERFORMANCE ARCHITECTURE ===== */
+
+/* FPS-based optimizations */
+@media (min-resolution: 2dppx) {
+  .tf-high-performance .tf-quantum-element {
+    animation-duration: calc(var(--tf-agent-coherence-freq) * 0.8);
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .tf-quantum-element {
+    animation: none !important;
+  }
+
+  .tf-ai-agent-status {
+    transition: none !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --tf-contrast-ratio: 7;
+  }
+
+  .tf-ai-agent-status {
+    border: 2px solid currentColor;
+  }
+}
+
+/* ===== KEYFRAME ANIMATIONS ===== */
+
+@keyframes quantum-superposition {
+  0% {
+    transform: translateY(0) rotateZ(0deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-2px) rotateZ(calc(var(--tf-quantum-phase) * 0.5));
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) rotateZ(var(--tf-quantum-phase));
+    opacity: 0.8;
+  }
+}
+
+@keyframes processing-pulse {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes error-flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes simple-pulse {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+.tf-performance-aware {
+  contain: var(--tf-contain-level);
+}
+
+.tf-gpu-accelerated {
+  transform: var(--tf-transform-style);
+  will-change: transform;
+}
+
+.tf-memory-efficient {
+  contain: layout style;
+}
+
+.tf-accessibility-enhanced {
+  scroll-margin-top: var(--tf-safe-area-inset);
+}
+
+/* ===== EMERGENCY PERFORMANCE MODE ===== */
+
+.tf-emergency-performance * {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  filter: none !important;
+  will-change: auto !important;
+  contain: none !important;
+}

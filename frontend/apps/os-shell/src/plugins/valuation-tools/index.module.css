@@ -1,0 +1,129 @@
+.root {
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin: 12px 0;
+  background: #f9f9f9;
+}
+
+.header {
+  margin-bottom: 16px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 12px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+.info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #555;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #2c3e50;
+}
+
+.input,
+.select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background: white;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.button {
+  padding: 8px 16px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.button:hover:not(:disabled) {
+  background: #c0392b;
+}
+
+.buttonSecondary {
+  padding: 8px 16px;
+  background: #9b59b6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.buttonSecondary:hover:not(:disabled) {
+  background: #8e44ad;
+}
+
+.button:disabled,
+.buttonSecondary:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+}
+
+.results {
+  background: #ecf0f1;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.resultsTitle {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.resultsData {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  background: white;
+  padding: 8px;
+  border-radius: 3px;
+  border: 1px solid #d5dbdb;
+  overflow-x: auto;
+  max-height: 200px;
+  overflow-y: auto;
+}

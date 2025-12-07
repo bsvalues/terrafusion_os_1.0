@@ -1,0 +1,454 @@
+/* ═══════════════════════════════════════════════════════════════
+   TERRAFUSION WIDGET MANAGER PANEL STYLES
+   Advanced UI for widget management and arrangement
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ═══ OVERLAY & MAIN PANEL ═══ */
+.quantum-widget-manager-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  animation: fade-in 0.3s ease-out;
+}
+
+.quantum-widget-manager-panel {
+  background: rgba(10, 14, 26, 0.95);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow:
+    0 0 50px rgba(0, 255, 255, 0.2),
+    0 20px 40px rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  animation: slide-up 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ═══ HEADER ═══ */
+.quantum-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  background: rgba(0, 255, 255, 0.05);
+}
+
+.quantum-manager-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.quantum-manager-title h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #00ffff;
+  letter-spacing: -0.01em;
+}
+
+.quantum-manager-close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 99, 99, 0.3);
+  background: rgba(255, 99, 99, 0.1);
+  color: #ff6363;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.quantum-manager-close:hover {
+  background: rgba(255, 99, 99, 0.2);
+  transform: scale(1.1);
+}
+
+/* ═══ SECTIONS ═══ */
+.quantum-manager-section {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.quantum-manager-section:last-child {
+  border-bottom: none;
+}
+
+.quantum-manager-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: rgba(248, 250, 252, 0.9);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ═══ QUICK ACTIONS ═══ */
+.quantum-manager-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.quantum-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  background: rgba(0, 255, 255, 0.1);
+  color: #00ffff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.quantum-action-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);
+}
+
+.quantum-action-btn:active {
+  transform: translateY(0);
+}
+
+.quantum-action-btn.active {
+  background: rgba(0, 255, 255, 0.3);
+  border-color: #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+}
+
+.quantum-action-btn.success {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.quantum-action-btn.success:hover {
+  background: rgba(34, 197, 94, 0.2);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.quantum-action-btn.sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* ═══ WIDGET LISTS ═══ */
+.quantum-widget-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quantum-widget-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.quantum-widget-item.visible {
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.quantum-widget-item.hidden {
+  background: rgba(100, 116, 139, 0.1);
+  border: 1px solid rgba(100, 116, 139, 0.3);
+  opacity: 0.7;
+}
+
+.quantum-widget-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.quantum-widget-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.quantum-widget-name {
+  font-weight: 500;
+  color: rgba(248, 250, 252, 0.9);
+}
+
+.quantum-widget-status {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.quantum-widget-toggle {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  background: rgba(0, 255, 255, 0.1);
+  color: #00ffff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quantum-widget-toggle:hover {
+  background: rgba(0, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.quantum-empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(148, 163, 184, 0.7);
+  font-style: italic;
+}
+
+/* ═══ ADVANCED SETTINGS ═══ */
+.quantum-advanced-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(30, 41, 59, 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 8px;
+  color: rgba(248, 250, 252, 0.9);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.quantum-advanced-toggle:hover {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(0, 255, 255, 0.4);
+}
+
+.quantum-chevron {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+
+.quantum-chevron.open {
+  transform: rotate(180deg);
+}
+
+.quantum-advanced-settings {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(30, 41, 59, 0.2);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ═══ SETTING ITEMS ═══ */
+.quantum-setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quantum-setting-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: rgba(248, 250, 252, 0.9);
+  cursor: pointer;
+}
+
+.quantum-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #00ffff;
+  cursor: pointer;
+}
+
+.quantum-setting-description {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(148, 163, 184, 0.8);
+  margin-left: 1.75rem;
+}
+
+.quantum-range {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(100, 116, 139, 0.3);
+  outline: none;
+  accent-color: #00ffff;
+  cursor: pointer;
+}
+
+.quantum-range-value {
+  font-size: 0.875rem;
+  color: #00ffff;
+  font-weight: 500;
+  text-align: center;
+}
+
+.quantum-layout-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* ═══ ARRANGEMENT INDICATOR ═══ */
+.quantum-arrangement-indicator {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 165, 0, 0.9);
+  color: #0a0e1a;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 12px rgba(255, 165, 0, 0.4);
+  z-index: 1001;
+}
+
+.quantum-pulse {
+  width: 8px;
+  height: 8px;
+  background: #0a0e1a;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+/* ═══ RESPONSIVE DESIGN ═══ */
+@media (max-width: 768px) {
+  .quantum-widget-manager-panel {
+    width: 95%;
+    max-height: 90vh;
+    margin: 1rem;
+  }
+
+  .quantum-manager-header,
+  .quantum-manager-section {
+    padding: 1rem 1.5rem;
+  }
+
+  .quantum-manager-actions {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  .quantum-action-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .quantum-widget-item {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .quantum-arrangement-indicator {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* ═══ ACCESSIBILITY ═══ */
+.quantum-action-btn:focus,
+.quantum-widget-toggle:focus,
+.quantum-manager-close:focus,
+.quantum-advanced-toggle:focus {
+  outline: 2px solid #00ffff;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quantum-widget-manager-overlay,
+  .quantum-widget-manager-panel,
+  .quantum-action-btn,
+  .quantum-widget-item,
+  .quantum-widget-toggle,
+  .quantum-chevron,
+  .quantum-pulse {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ═══ HIGH CONTRAST MODE ═══ */
+@media (prefers-contrast: high) {
+  .quantum-widget-manager-panel {
+    border-width: 2px;
+  }
+
+  .quantum-action-btn,
+  .quantum-widget-toggle,
+  .quantum-manager-close {
+    border-width: 2px;
+  }
+}
