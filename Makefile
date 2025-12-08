@@ -43,27 +43,27 @@ help: ## Show this help message
 
 preflight: ## Gate A - Preflight checks (hardware/ports/DNS/deps)
 	@echo "🔍 Gate A - Preflight checks..."
-	bash ops/scripts/preflight.sh
+	bash ops/scripts/gate-a-preflight.sh
 
 security: ## Gate B - Security baseline (TLS/MFA/RBAC/SBOM)
 	@echo "🔒 Gate B - Security baseline..."
-	bash ops/scripts/security-baseline.sh
+	bash ops/scripts/gate-b-security-baseline.sh
 
 core: ## Gate C - Core stack bring-up (DB/Redis/Ingress/API)
 	@echo "⚙️ Gate C - Core stack bring-up..."
-	bash ops/scripts/bringup-core.sh
+	bash ops/scripts/gate-c-core-bringup.sh
 
 swarm: ## Gate D - AI swarm control plane
 	@echo "🧠 Gate D - AI swarm control plane..."
-	bash ops/scripts/swarm-online.sh
+	bash ops/scripts/gate-d-swarm-online.sh
 
 api: ## Gate E - API surface publish (OpenAPI/GraphQL)
 	@echo "🌐 Gate E - API surface publish..."
-	bash ops/scripts/api-surface.sh
+	bash ops/scripts/gate-e-api-surface.sh
 
 validate: ## Gate F - Full validation matrix (unit/integration/E2E/load/sec)
 	@echo "🧪 Gate F - Full validation matrix..."
-	bash ops/scripts/validate-all.sh
+	bash ops/scripts/gate-f-validate-all.sh
 
 package: ## Package artifacts
 	@echo "📦 Packaging artifacts..."
