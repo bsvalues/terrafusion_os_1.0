@@ -1,0 +1,333 @@
+name: TerraFusion Gate Pipeline
+
+on:
+    push:
+        branches: [main, develop, "feature/**"]
+    pull_request:
+        branches: [main, develop]
+    workflow_dispatch:
+        inputs:
+            skip_security:
+                description: "Skip security scanning"
+                type: boolean
+                default: false
+            run_integration:
+                description: "Run integration tests"
+                type: boolean
+                default: false
+            run_e2e:
+                description: "Run E2E tests"
+                type: boolean
+                default: false
+
+permissions:
+    contents: read
+    security-events: write
+
+concurrency:
+    group: gates-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    DOTNET_NOLOGO: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+    # ═══════════════════════════════════════════════════════════════
+    # Gate A: Preflight
+    # ═══════════════════════════════════════════════════════════════
+    gate-a-preflight:
+        name: "🔍 Gate A: Preflight"
+        runs-on: ubuntu-24.04
+        timeout-minutes: 5
+        outputs:
+            dotnet-available: ${{ steps.check.outputs.dotnet }}
+            node-available: ${{ steps.check.outputs.node }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: "8.x"
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+
+            - name: Create artifacts directory
+              run: mkdir -p artifacts/logs
+
+            - name: Run Gate A
+              id: check
+              run: |
+                  bash ./ops/scripts/gate-a-preflight.sh
+                  echo "dotnet=$(command -v dotnet >/dev/null && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+                  echo "node=$(command -v node >/dev/null && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+
+            - name: Upload preflight log
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: gate-a-log
+                  path: artifacts/logs/gate-a-*.log
+                  if-no-files-found: ignore
+
+    # ═══════════════════════════════════════════════════════════════
+    # Gate B: Security Baseline
+    # ═══════════════════════════════════════════════════════════════
+    gate-b-security:
+        name: "🔒 Gate B: Security"
+        runs-on: ubuntu-24.04
+        timeout-minutes: 15
+        needs: gate-a-preflight
+        if: ${{ !inputs.skip_security }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install Trivy
+              run: |
+                  sudo apt-get install wget apt-transport-https gnupg lsb-release -y
+                  wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+                  echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+                  sudo apt-get update
+                  sudo apt-get install trivy -y
+
+            - name: Create artifacts directory
+              run: mkdir -p artifacts/{logs,reports,sbom}
+
+            - name: Run Gate B
+              run: bash ./ops/scripts/gate-b-security-baseline.sh
+              env:
+                  SKIP_SECURITY_SCAN: false
+
+            - name: Upload security reports
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: gate-b-reports
+                  path: |
+                      artifacts/reports/trivy-*.json
+                      artifacts/reports/gitleaks-*.json
+                      artifacts/sbom/*.json
+                      artifacts/logs/gate-b-*.log
+                  if-no-files-found: ignore
+
+    # ═══════════════════════════════════════════════════════════════
+    # Gate C: Core Bringup (Build)
+    # ═══════════════════════════════════════════════════════════════
+    gate-c-build:
+        name: "⚙️ Gate C: Build"
+        runs-on: ubuntu-24.04
+        timeout-minutes: 30
+        needs: gate-a-preflight
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: "8.x"
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+
+            - name: Cache NuGet packages
+              uses: actions/cache@v4
+              with:
+                  path: ~/.nuget/packages
+                  key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/global.json') }}
+                  restore-keys: nuget-${{ runner.os }}-
+
+            - name: Cache pnpm store
+              uses: actions/cache@v4
+              with:
+                  path: ~/.pnpm-store
+                  key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: pnpm-${{ runner.os }}-
+
+            - name: Create artifacts directory
+              run: mkdir -p artifacts/logs
+
+            - name: Run Gate C (Build Only)
+              run: bash ./ops/scripts/gate-c-core-bringup.sh
+              env:
+                  SKIP_DOCKER: true
+                  BUILD_ONLY: true
+
+            - name: Upload build log
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: gate-c-log
+                  path: artifacts/logs/gate-c-*.log
+                  if-no-files-found: ignore
+
+    # ═══════════════════════════════════════════════════════════════
+    # Gate D: Swarm Online (skipped in CI - no live services)
+    # ═══════════════════════════════════════════════════════════════
+    gate-d-swarm:
+        name: "🧠 Gate D: Swarm Config"
+        runs-on: ubuntu-24.04
+        timeout-minutes: 5
+        needs: gate-c-build
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Create artifacts directory
+              run: mkdir -p artifacts/logs
+
+            - name: Run Gate D (Config Check Only)
+              run: bash ./ops/scripts/gate-d-swarm-online.sh
+              env:
+                  SKIP_HEALTH_CHECKS: true
+
+            - name: Upload swarm log
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: gate-d-log
+                  path: artifacts/logs/gate-d-*.log
+                  if-no-files-found: ignore
+
+    # ═══════════════════════════════════════════════════════════════
+    # Gate E: API Surface
+    # ═══════════════════════════════════════════════════════════════
+    gate-e-api:
+        name: "🌐 Gate E: API Surface"
+        runs-on: ubuntu-24.04
+        timeout-minutes: 10
+        needs: gate-c-build
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Create artifacts directory
+              run: mkdir -p artifacts/{logs,reports}
+
+            - name: Run Gate E (Static Analysis)
+              run: bash ./ops/scripts/gate-e-api-surface.sh
+              env:
+                  SKIP_LIVE_CHECKS: true
+
+            - name: Upload API reports
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: gate-e-reports
+                  path: |
+                      artifacts/reports/*.json
+                      artifacts/logs/gate-e-*.log
+                  if-no-files-found: ignore
+
+    # ═══════════════════════════════════════════════════════════════
+    # Gate F: Validate All (Tests)
+    # ═══════════════════════════════════════════════════════════════
+    gate-f-tests:
+        name: "🧪 Gate F: Tests"
+        runs-on: ubuntu-24.04
+        timeout-minutes: 30
+        needs: gate-c-build
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: "8.x"
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+
+            - name: Restore NuGet cache
+              uses: actions/cache@v4
+              with:
+                  path: ~/.nuget/packages
+                  key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/global.json') }}
+
+            - name: Restore pnpm cache
+              uses: actions/cache@v4
+              with:
+                  path: ~/.pnpm-store
+                  key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+            - name: Create artifacts directory
+              run: mkdir -p artifacts/{logs,reports}
+
+            - name: Run Gate F
+              run: bash ./ops/scripts/gate-f-validate-all.sh
+              env:
+                  RUN_UNIT_TESTS: true
+                  RUN_INTEGRATION_TESTS: ${{ inputs.run_integration || 'false' }}
+                  RUN_E2E_TESTS: ${{ inputs.run_e2e || 'false' }}
+                  RUN_PERF_TESTS: false
+                  FAIL_FAST: false
+
+            - name: Upload test reports
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: gate-f-reports
+                  path: |
+                      artifacts/reports/test-*.json
+                      artifacts/logs/gate-f-*.log
+                  if-no-files-found: ignore
+
+    # ═══════════════════════════════════════════════════════════════
+    # Pipeline Summary
+    # ═══════════════════════════════════════════════════════════════
+    pipeline-summary:
+        name: "📊 Pipeline Summary"
+        runs-on: ubuntu-24.04
+        if: always()
+        needs:
+            [
+                gate-a-preflight,
+                gate-b-security,
+                gate-c-build,
+                gate-d-swarm,
+                gate-e-api,
+                gate-f-tests,
+            ]
+        steps:
+            - name: Generate Summary
+              run: |
+                  echo "## 🏛️ TerraFusion Gate Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "| Gate | Status |" >> $GITHUB_STEP_SUMMARY
+                  echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+                  echo "| 🔍 Gate A: Preflight | ${{ needs.gate-a-preflight.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| 🔒 Gate B: Security | ${{ needs.gate-b-security.result == 'success' && '✅ Passed' || (needs.gate-b-security.result == 'skipped' && '⏭️ Skipped' || '❌ Failed') }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| ⚙️ Gate C: Build | ${{ needs.gate-c-build.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| 🧠 Gate D: Swarm | ${{ needs.gate-d-swarm.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| 🌐 Gate E: API | ${{ needs.gate-e-api.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| 🧪 Gate F: Tests | ${{ needs.gate-f-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "**Triggered by:** ${{ github.event_name }} on \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+                  echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+            - name: Check overall status
+              if: |
+                  needs.gate-a-preflight.result == 'failure' ||
+                  needs.gate-c-build.result == 'failure' ||
+                  needs.gate-f-tests.result == 'failure'
+              run: exit 1
