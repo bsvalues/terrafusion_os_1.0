@@ -40,6 +40,23 @@ log_error() {
   ((ERRORS++)) || true
 }
 
+log_info() {
+  log "ℹ️  INFO: $*"
+}
+
+# Detect if running under WSL (Windows Subsystem for Linux)
+# In WSL, dotnet/pwsh are expected on Windows host, not inside WSL
+is_wsl() {
+  # Common WSL signals: /proc version mentioning Microsoft, or WSL env vars
+  if grep -qi "microsoft" /proc/sys/kernel/osrelease 2>/dev/null; then
+    return 0
+  fi
+  if [[ -n "${WSL_INTEROP:-}" ]] || [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
+    return 0
+  fi
+  return 1
+}
+
 require_cmd() {
   local cmd="$1"
   if ! command -v "$cmd" >/dev/null 2>&1; then
@@ -106,7 +123,11 @@ if command -v dotnet >/dev/null 2>&1; then
     log_error "dotnet version $DOTNET_VERSION is below minimum required ($MIN_DOTNET_MAJOR.x)"
   fi
 else
-  log_warn "dotnet not found. Required for backend builds."
+  if is_wsl; then
+    log_info "dotnet not found in WSL. Backend builds are expected to run on the Windows host."
+  else
+    log_warn "dotnet not found. Required for backend builds."
+  fi
 fi
 
 # --- Node.js ---
@@ -143,7 +164,7 @@ else
   log_warn "No package manager (npm/pnpm) found."
 fi
 
-# --- PowerShell (pwsh) ---
+# --- PowerShell Core (pwsh) ---
 log ""
 log "--- PowerShell ---"
 if command -v pwsh >/dev/null 2>&1; then
@@ -152,7 +173,11 @@ if command -v pwsh >/dev/null 2>&1; then
 elif command -v powershell >/dev/null 2>&1; then
   log_ok "powershell (Windows built-in) available"
 else
-  log_warn "pwsh not found. Some Windows-native scripts may not work."
+  if is_wsl; then
+    log_info "pwsh not found in WSL. Windows-native scripts (terra.ps1, etc.) run from Windows PowerShell."
+  else
+    log_warn "pwsh not found. Some TerraFusion scripts may not run on this machine."
+  fi
 fi
 
 # --- Docker ---
@@ -186,7 +211,9 @@ elif command -v docker-compose >/dev/null 2>&1 && docker-compose --version >/dev
   log_ok "docker-compose (legacy): $COMPOSE_VERSION"
 else
   log "INFO: docker compose not available"
-fi# --- Git Configuration ---
+fi
+
+# --- Git Configuration ---
 log ""
 log "--- Git Configuration ---"
 if command -v git >/dev/null 2>&1; then

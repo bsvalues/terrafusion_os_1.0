@@ -26,6 +26,18 @@ log_ok() { log "✅ $*"; }
 log_warn() { log "⚠️  WARN: $*"; ((WARNINGS++)) || true; }
 log_error() { log "❌ ERROR: $*"; ((ERRORS++)) || true; }
 log_skip() { log "⏭️  SKIP: $*"; }
+log_info() { log "ℹ️  INFO: $*"; }
+
+# Detect if running under WSL (Windows Subsystem for Linux)
+is_wsl() {
+  if grep -qi "microsoft" /proc/sys/kernel/osrelease 2>/dev/null; then
+    return 0
+  fi
+  if [[ -n "${WSL_INTEROP:-}" ]] || [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
+    return 0
+  fi
+  return 1
+}
 
 log "════════════════════════════════════════════════════════════════"
 log "Starting Gate C: Core Bringup"
@@ -55,7 +67,11 @@ if [[ -f "$BACKEND_SLN" ]]; then
       log_error "dotnet build failed"
     fi
   else
-    log_warn "dotnet not available - skipping backend build"
+    if is_wsl; then
+      log_info "dotnet not available in WSL - backend builds expected on Windows host"
+    else
+      log_warn "dotnet not available - skipping backend build"
+    fi
   fi
 else
   log_warn "Backend solution not found at $BACKEND_SLN"
@@ -69,9 +85,9 @@ FRONTEND_DIR="$ROOT_DIR/frontend"
 if [[ -f "$FRONTEND_DIR/package.json" ]]; then
   cd "$FRONTEND_DIR"
 
-  # Determine package manager
+  # Determine package manager (prefer pnpm if available, handles WSL better)
   PKG_MGR="npm"
-  if [[ -f "pnpm-lock.yaml" ]] && command -v pnpm >/dev/null 2>&1; then
+  if command -v pnpm >/dev/null 2>&1; then
     PKG_MGR="pnpm"
   elif [[ -f "package-lock.json" ]]; then
     PKG_MGR="npm"

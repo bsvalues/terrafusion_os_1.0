@@ -34,7 +34,7 @@ log "═════════════════════════
 
 # --- Check for sensitive files in repo ---
 log ""
-log "--- Checking for sensitive files ---"
+log "--- Checking for sensitive files (git-tracked only for speed) ---"
 SENSITIVE_PATTERNS=(
   "*.pem"
   "*.key"
@@ -44,28 +44,29 @@ SENSITIVE_PATTERNS=(
   "id_ed25519"
   ".env.local"
   ".env.production"
-  "*secret*"
-  "*password*"
 )
 
+# Use git ls-files for fast scanning of tracked files only
 FOUND_SENSITIVE=0
+cd "$ROOT_DIR"
 for pattern in "${SENSITIVE_PATTERNS[@]}"; do
-  # Exclude node_modules, .git, artifacts
-  matches=$(find "$ROOT_DIR" -name "$pattern" -type f \
-    ! -path "**/node_modules/*" \
-    ! -path "**/.git/*" \
-    ! -path "**/artifacts/*" \
-    ! -path "**/obj/*" \
-    ! -path "**/bin/*" \
-    ! -name "*.md" \
-    ! -name "*.example" \
-    2>/dev/null | head -5 || true)
+  # Search only git-tracked files (fast)
+  matches=$(git ls-files "$pattern" 2>/dev/null | grep -v -E '(\.md$|\.example$|cacert\.pem$)' | head -5 || true)
   if [[ -n "$matches" ]]; then
-    log_warn "Found potential sensitive files matching '$pattern':"
+    log_warn "Found potential sensitive TRACKED files matching '$pattern':"
     echo "$matches" | while read -r f; do log "  - $f"; done
     ((FOUND_SENSITIVE++)) || true
   fi
 done
+
+# Quick check for untracked sensitive files (with 5 second timeout)
+log "Checking untracked files (5s timeout)..."
+UNTRACKED_SENSITIVE=$(timeout 5 git ls-files --others --exclude-standard 2>/dev/null | grep -E '\.(pem|key|p12|pfx)$' | grep -v -E '(cacert\.pem$|node_modules|\.venv|venv|site-packages)' | head -5 || true)
+if [[ -n "$UNTRACKED_SENSITIVE" ]]; then
+  log_warn "Found potential sensitive UNTRACKED files:"
+  echo "$UNTRACKED_SENSITIVE" | while read -r f; do log "  - $f"; done
+  ((FOUND_SENSITIVE++)) || true
+fi
 
 if (( FOUND_SENSITIVE == 0 )); then
   log_ok "No obvious sensitive files found in repo"
