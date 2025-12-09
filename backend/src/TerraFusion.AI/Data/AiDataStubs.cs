@@ -19,6 +19,9 @@ namespace TerraFusion.AI.Data
         public static DbSet<RAGDocument> RAGDocuments(this TerraFusionDbContext context)
             => context.Set<RAGDocument>();
 
+        public static DbSet<RAGEmbedding> RAGEmbeddings(this TerraFusionDbContext context)
+            => context.Set<RAGEmbedding>();
+
         public static DbSet<GPTConversation> GPTConversations(this TerraFusionDbContext context)
             => context.Set<GPTConversation>();
 

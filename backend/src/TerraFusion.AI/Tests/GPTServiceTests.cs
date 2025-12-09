@@ -11,6 +11,7 @@ using Moq;
 using Xunit;
 using TerraFusion.AI.Services;
 using TerraFusion.AI.Interfaces;
+using TerraFusion.AI.Entities;
 
 // Entity aliases to avoid conflict between System.Threading.Tasks.Task and TerraFusion.Core.Entities.Task
 using GPTConfiguration = TerraFusion.Core.Entities.GPTConfiguration;
@@ -337,6 +338,151 @@ Decision Timeline: 30 days from hearing",
       Assert.Contains("Informal Review", result.Context);
       Assert.Contains("BOE", result.Context);
       Assert.Contains("workflow_overview", result.DocumentIds[0]);
+    }
+  }
+
+  /// <summary>
+  /// Phase 4: RAG Embedding Repository tests
+  /// Tests for vector storage and similarity search
+  /// </summary>
+  public class RAGEmbeddingTests
+  {
+    [Fact]
+    public void RAGEmbedding_NewInstance_HasCorrectDefaults()
+    {
+      // Arrange & Act
+      var embedding = new RAGEmbedding();
+
+      // Assert
+      Assert.Equal(0, embedding.Id);
+      Assert.Equal(0, embedding.DocumentId);
+      Assert.Equal(0, embedding.DatasetId);
+      Assert.Equal(0, embedding.ChunkIndex);
+      Assert.Equal(string.Empty, embedding.ChunkText);
+      Assert.Empty(embedding.Embedding);
+    }
+
+    [Fact]
+    public void RAGEmbedding_SetProperties_RetainsValues()
+    {
+      // Arrange
+      var testEmbedding = new float[] { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f };
+
+      var embedding = new RAGEmbedding
+      {
+        DocumentId = 42,
+        DatasetId = 1,
+        ChunkIndex = 3,
+        ChunkText = "Quality grades range from Excellent to Poor.",
+        Embedding = testEmbedding,
+        TokenCount = 10,
+        StartPosition = 500,
+        EndPosition = 550
+      };
+
+      // Assert
+      Assert.Equal(42, embedding.DocumentId);
+      Assert.Equal(1, embedding.DatasetId);
+      Assert.Equal(3, embedding.ChunkIndex);
+      Assert.Contains("Quality grades", embedding.ChunkText);
+      Assert.Equal(5, embedding.Embedding.Length);
+      Assert.Equal(0.1f, embedding.Embedding[0]);
+      Assert.Equal(10, embedding.TokenCount);
+      Assert.Equal(500, embedding.StartPosition);
+      Assert.Equal(550, embedding.EndPosition);
+    }
+
+    [Fact]
+    public void RAGEmbeddingSearchResult_SetProperties_RetainsValues()
+    {
+      // Arrange & Act
+      var result = new RAGEmbeddingSearchResult
+      {
+        EmbeddingId = 123,
+        DocumentId = 42,
+        DatasetId = 1,
+        ChunkIndex = 3,
+        ChunkText = "Quality Grade A: Excellent construction",
+        SimilarityScore = 0.95f,
+        DocumentTitle = "Residential Valuation Policy",
+        SourceUrl = "file://policies/residential_valuation_policy.md"
+      };
+
+      // Assert
+      Assert.Equal(123, result.EmbeddingId);
+      Assert.Equal(42, result.DocumentId);
+      Assert.Equal(1, result.DatasetId);
+      Assert.Contains("Quality Grade A", result.ChunkText);
+      Assert.Equal(0.95f, result.SimilarityScore);
+      Assert.Equal("Residential Valuation Policy", result.DocumentTitle);
+    }
+
+    [Fact]
+    public void CosineSimilarity_IdenticalVectors_ReturnsOne()
+    {
+      // Arrange
+      var vectorA = new float[] { 1.0f, 0.0f, 0.0f };
+      var vectorB = new float[] { 1.0f, 0.0f, 0.0f };
+
+      // Act
+      var similarity = CalculateCosineSimilarity(vectorA, vectorB);
+
+      // Assert
+      Assert.Equal(1.0f, similarity, precision: 5);
+    }
+
+    [Fact]
+    public void CosineSimilarity_OrthogonalVectors_ReturnsZero()
+    {
+      // Arrange
+      var vectorA = new float[] { 1.0f, 0.0f, 0.0f };
+      var vectorB = new float[] { 0.0f, 1.0f, 0.0f };
+
+      // Act
+      var similarity = CalculateCosineSimilarity(vectorA, vectorB);
+
+      // Assert
+      Assert.Equal(0.0f, similarity, precision: 5);
+    }
+
+    [Fact]
+    public void CosineSimilarity_SimilarVectors_ReturnsHighScore()
+    {
+      // Arrange - vectors that are similar but not identical
+      var vectorA = new float[] { 0.9f, 0.1f, 0.0f };
+      var vectorB = new float[] { 0.8f, 0.2f, 0.0f };
+
+      // Act
+      var similarity = CalculateCosineSimilarity(vectorA, vectorB);
+
+      // Assert - should be high (close to 1)
+      Assert.True(similarity > 0.95f, $"Expected similarity > 0.95, got {similarity}");
+    }
+
+    // Helper method matching the repository implementation
+    private static float CalculateCosineSimilarity(float[] vectorA, float[] vectorB)
+    {
+      if (vectorA.Length != vectorB.Length || vectorA.Length == 0)
+        return 0f;
+
+      float dotProduct = 0f;
+      float magnitudeA = 0f;
+      float magnitudeB = 0f;
+
+      for (int i = 0; i < vectorA.Length; i++)
+      {
+        dotProduct += vectorA[i] * vectorB[i];
+        magnitudeA += vectorA[i] * vectorA[i];
+        magnitudeB += vectorB[i] * vectorB[i];
+      }
+
+      magnitudeA = (float)System.Math.Sqrt(magnitudeA);
+      magnitudeB = (float)System.Math.Sqrt(magnitudeB);
+
+      if (magnitudeA == 0f || magnitudeB == 0f)
+        return 0f;
+
+      return dotProduct / (magnitudeA * magnitudeB);
     }
   }
 }

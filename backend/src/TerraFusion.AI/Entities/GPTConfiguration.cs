@@ -182,6 +182,73 @@ namespace TerraFusion.AI.Entities
     }
 
     /// <summary>
+    /// RAG Embedding entity - stores vector embeddings for document chunks
+    /// Uses pgvector extension for similarity search
+    /// </summary>
+    [Table("RAGEmbeddings")]
+    public class RAGEmbedding
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public int DocumentId { get; set; }
+
+        [Required]
+        public int DatasetId { get; set; }
+
+        /// <summary>
+        /// Chunk index within the document (0-based)
+        /// </summary>
+        public int ChunkIndex { get; set; }
+
+        /// <summary>
+        /// The text content of this chunk
+        /// </summary>
+        [Required]
+        [Column(TypeName = "text")]
+        public string ChunkText { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The vector embedding (pgvector type)
+        /// Stored as float[] in EF Core, mapped to vector(1536) in PostgreSQL
+        /// </summary>
+        [Required]
+        [Column(TypeName = "vector(1536)")]
+        public float[] Embedding { get; set; } = Array.Empty<float>();
+
+        /// <summary>
+        /// Token count of this chunk
+        /// </summary>
+        public int TokenCount { get; set; }
+
+        /// <summary>
+        /// Character start position in original document
+        /// </summary>
+        public int StartPosition { get; set; }
+
+        /// <summary>
+        /// Character end position in original document
+        /// </summary>
+        public int EndPosition { get; set; }
+
+        /// <summary>
+        /// Optional metadata for this chunk (JSON)
+        /// </summary>
+        [Column(TypeName = "jsonb")]
+        public string? Metadata { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        // Navigation properties
+        [ForeignKey("DocumentId")]
+        public RAGDocument? Document { get; set; }
+
+        [ForeignKey("DatasetId")]
+        public RAGDataset? Dataset { get; set; }
+    }
+
+    /// <summary>
     /// GPT Marketplace Install entity - tracks installations
     /// </summary>
     [Table("GPTMarketplaceInstalls")]

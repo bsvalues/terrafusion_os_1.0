@@ -1,5 +1,6 @@
 // TerraFusionGPT Suite: RAG Service Implementation
 // Elite Government OS Engineering - AI Platform
+// Phase 4: Integrated vector storage with IRAGEmbeddingRepository
 
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace TerraFusion.AI.Services
     public class RAGService : IRAGService
     {
         private readonly TerraFusionDbContext _context;
+        private readonly IRAGEmbeddingRepository _embeddingRepository;
         private readonly ILogger<RAGService> _logger;
 
         private const int DefaultChunkSize = 512; // tokens
@@ -28,9 +30,11 @@ namespace TerraFusion.AI.Services
 
         public RAGService(
             TerraFusionDbContext context,
+            IRAGEmbeddingRepository embeddingRepository,
             ILogger<RAGService> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _embeddingRepository = embeddingRepository ?? throw new ArgumentNullException(nameof(embeddingRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -147,22 +151,48 @@ namespace TerraFusion.AI.Services
                     throw new InvalidOperationException($"Dataset not found for document {documentId}");
                 }
 
+                // Delete existing embeddings for this document (re-indexing)
+                await _embeddingRepository.DeleteDocumentEmbeddingsAsync(documentId);
+
                 // Chunk the document
                 var chunks = ChunkDocument(document.Content, DefaultChunkSize, DefaultChunkOverlap);
 
                 _logger.LogInformation("Document chunked into {ChunkCount} chunks", chunks.Count);
 
-                // Generate embeddings for each chunk (simulated - in production, call embedding API)
-                foreach (var chunk in chunks)
+                // Generate embeddings for each chunk and store them
+                var embeddings = new List<RAGEmbedding>();
+                int position = 0;
+
+                for (int i = 0; i < chunks.Count; i++)
                 {
+                    var chunk = chunks[i];
                     var embedding = await GenerateEmbeddingAsync(
                         chunk,
                         document.Dataset.EmbeddingProvider,
                         document.Dataset.EmbeddingModel);
 
-                    // Store in RAGEmbeddings table (not implemented in this phase)
-                    // In production, insert into RAGEmbeddings with vector data
+                    var startPos = position;
+                    var endPos = position + chunk.Length;
+                    position = endPos - DefaultChunkOverlap; // Account for overlap
+
+                    embeddings.Add(new RAGEmbedding
+                    {
+                        DocumentId = documentId,
+                        DatasetId = document.DatasetId,
+                        ChunkIndex = i,
+                        ChunkText = chunk,
+                        Embedding = embedding,
+                        TokenCount = EstimateTokenCount(chunk),
+                        StartPosition = startPos,
+                        EndPosition = endPos
+                    });
                 }
+
+                // Store all embeddings in batch
+                await _embeddingRepository.StoreBatchEmbeddingsAsync(embeddings);
+
+                _logger.LogInformation("Stored {Count} embeddings for document {DocumentId}",
+                    embeddings.Count, documentId);
 
                 // Update document processing status
                 document.ChunkCount = chunks.Count;
@@ -171,12 +201,10 @@ namespace TerraFusion.AI.Services
                 document.UpdatedAt = DateTime.UtcNow;
 
                 // Update dataset statistics
-                if (document.Dataset != null)
-                {
-                    document.Dataset.TotalChunks += chunks.Count;
-                    document.Dataset.LastIndexedAt = DateTime.UtcNow;
-                    document.Dataset.UpdatedAt = DateTime.UtcNow;
-                }
+                var datasetEmbeddingCount = await _embeddingRepository.GetDatasetEmbeddingCountAsync(document.DatasetId);
+                document.Dataset.TotalChunks = datasetEmbeddingCount;
+                document.Dataset.LastIndexedAt = DateTime.UtcNow;
+                document.Dataset.UpdatedAt = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
 
@@ -188,6 +216,15 @@ namespace TerraFusion.AI.Services
                 _logger.LogError(ex, "Error indexing document ID: {DocumentId}", documentId);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Estimate token count for a text chunk (rough approximation)
+        /// </summary>
+        private static int EstimateTokenCount(string text)
+        {
+            // Rough estimate: ~4 characters per token for English
+            return (int)Math.Ceiling(text.Length / 4.0);
         }
 
         public async System.Threading.Tasks.Task<RAGSearchResult> GetRelevantContextAsync(
@@ -212,35 +249,59 @@ namespace TerraFusion.AI.Services
                     dataset.EmbeddingProvider,
                     dataset.EmbeddingModel);
 
-                // PRODUCTION NOTE: This is simulated
-                // In production, use pgvector for vector similarity search:
-                // SELECT *, (embedding <=> query_embedding) AS distance
-                // FROM rag_embeddings
-                // WHERE dataset_id = @datasetId
-                // ORDER BY distance
-                // LIMIT @topK
+                // Search for similar embeddings using the repository
+                var searchResults = await _embeddingRepository.SearchSimilarAsync(
+                    datasetId,
+                    queryEmbedding,
+                    topK,
+                    (float)scoreThreshold);
 
-                // Simulated results
+                if (!searchResults.Any())
+                {
+                    _logger.LogInformation("No relevant chunks found for query in dataset {DatasetId}", datasetId);
+                    return new RAGSearchResult
+                    {
+                        Context = string.Empty,
+                        DocumentIds = new List<string>(),
+                        AverageScore = 0,
+                        ChunksRetrieved = 0
+                    };
+                }
+
+                // Enrich results with document titles
+                var documentIds = searchResults.Select(r => r.DocumentId).Distinct().ToList();
                 var documents = await _context.RAGDocuments()
-                    .Where(d => d.DatasetId == datasetId)
-                    .Take(topK)
-                    .ToListAsync();
+                    .Where(d => documentIds.Contains(d.Id))
+                    .ToDictionaryAsync(d => d.Id, d => d);
 
-                var context = string.Join("\n\n", documents.Select(d =>
-                    $"[Document: {d.Title}]\n{d.Content.Substring(0, Math.Min(500, d.Content.Length))}..."));
+                foreach (var searchResult in searchResults)
+                {
+                    if (documents.TryGetValue(searchResult.DocumentId, out var doc))
+                    {
+                        searchResult.DocumentTitle = doc.Title;
+                        searchResult.SourceUrl = doc.SourceUrl;
+                    }
+                }
 
-                var result = new RAGSearchResult
+                // Build context from retrieved chunks
+                var contextParts = searchResults.Select(r =>
+                    $"[Source: {r.DocumentTitle ?? "Unknown"} (Score: {r.SimilarityScore:F2})]\n{r.ChunkText}");
+                var context = string.Join("\n\n---\n\n", contextParts);
+
+                var avgScore = searchResults.Average(r => (decimal)r.SimilarityScore);
+
+                var ragResult = new RAGSearchResult
                 {
                     Context = context,
-                    DocumentIds = documents.Select(d => d.Id.ToString()).ToList(),
-                    AverageScore = 0.85m, // Simulated score
-                    ChunksRetrieved = documents.Count
+                    DocumentIds = searchResults.Select(r => r.DocumentId.ToString()).Distinct().ToList(),
+                    AverageScore = avgScore,
+                    ChunksRetrieved = searchResults.Count
                 };
 
-                _logger.LogInformation("RAG search completed: {ChunkCount} chunks retrieved, avg score: {Score}",
-                    result.ChunksRetrieved, result.AverageScore);
+                _logger.LogInformation("RAG search completed: {ChunkCount} chunks retrieved, avg score: {Score:F2}",
+                    ragResult.ChunksRetrieved, ragResult.AverageScore);
 
-                return result;
+                return ragResult;
             }
             catch (Exception ex)
             {
