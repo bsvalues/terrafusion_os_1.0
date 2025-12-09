@@ -160,10 +160,15 @@ gpt-system: ## 🤖 List available GPT configurations
 	@curl -s $(API_URL)/api/gpt/system || \
 		echo "⚠️  API not running. Start with 'make dev-backend' first."
 
-test-gpt: ## 🧪 Run GPT/RAG specific tests
+test-gpt: ## 🧪 Run GPT/RAG specific tests (excluding Legacy)
 	@echo "🌈 Arc: Running GPT/RAG tests..."
-	cd backend && dotnet test src/TerraFusion.AI/TerraFusion.AI.csproj --nologo --filter "FullyQualifiedName~GPT|FullyQualifiedName~RAG|FullyQualifiedName~Embedding|FullyQualifiedName~Audit"
+	cd backend && dotnet test src/TerraFusion.AI/TerraFusion.AI.csproj --nologo --filter "(FullyQualifiedName~GPT|FullyQualifiedName~RAG|FullyQualifiedName~Embedding|FullyQualifiedName~Audit|FullyQualifiedName~Explain)&Category!=Legacy"
 	@echo "✅ GPT/RAG tests complete"
+
+test-ai-fast: ## ⚡ Fast AI test slice (GPT/RAG/Explain, no Legacy)
+	@echo "⚡ Fast AI test slice..."
+	cd backend && dotnet test src/TerraFusion.AI/TerraFusion.AI.csproj --nologo --filter "(FullyQualifiedName~GPT|FullyQualifiedName~RAG|FullyQualifiedName~Explain)&Category!=Legacy"
+	@echo "✅ Fast AI tests complete"
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # ✨ RADIANT CONSTELLATION - DEVELOPER EXPERIENCE (Phase 12)

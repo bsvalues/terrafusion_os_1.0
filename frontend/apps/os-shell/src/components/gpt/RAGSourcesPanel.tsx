@@ -6,9 +6,9 @@
  */
 
 import { useState } from 'react';
+import { explainContext } from '../../api/explainApi';
 import type { RAGChunkDetailDto } from '../../lib/api/gptClient';
 import { ExplainPanel, type ExplainPanelState } from '../common/ExplainPanel';
-import { explainContext } from '../../api/explainApi';
 
 interface RAGSourcesPanelProps {
   chunks: RAGChunkDetailDto[];
@@ -176,24 +176,29 @@ function DocumentGroup({ title, chunks }: { title: string; chunks: RAGChunkDetai
  */
 export function RAGSourcesPanel({ chunks, defaultExpanded = true }: RAGSourcesPanelProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-  const [explainState, setExplainState] = useState<ExplainPanelState>({ state: 'idle' });
+  const [explainState, setExplainState] = useState<ExplainPanelState>({ status: 'idle' });
 
   /**
    * Handle "Explain this view" action - fetch ExplainGPT context for RAGTracePanel
    */
   const handleExplainThisView = async () => {
-    setExplainState({ state: 'loading' });
+    setExplainState({ status: 'loading' });
     try {
       const response = await explainContext({
         contextType: 'Component',
         contextId: 'RAGTracePanel',
         metadata: { chunkCount: chunks.length },
       });
-      setExplainState({ state: 'ready', response });
+      setExplainState({
+        status: 'ready',
+        text: response.explanation,
+        summary: response.summary,
+        keyPoints: response.keyPoints,
+      });
     } catch (err) {
       setExplainState({
-        state: 'error',
-        error: err instanceof Error ? err.message : 'Failed to fetch explanation',
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Failed to fetch explanation',
       });
     }
   };
@@ -202,7 +207,7 @@ export function RAGSourcesPanel({ chunks, defaultExpanded = true }: RAGSourcesPa
    * Close the ExplainPanel
    */
   const handleCloseExplain = () => {
-    setExplainState({ state: 'idle' });
+    setExplainState({ status: 'idle' });
   };
 
   if (!chunks || chunks.length === 0) {

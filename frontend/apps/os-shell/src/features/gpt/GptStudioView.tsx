@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ExplainPanelState } from '../../components/common/ExplainPanel';
+import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
+import { explainContext } from '../../api/explainApi';
 import {
   ConversationDto,
   createConversation,
@@ -193,18 +194,23 @@ export const GptStudioView: React.FC = () => {
    * Handle "Explain this" action - fetch ExplainGPT context for GPTStudio
    */
   const handleExplainThis = async () => {
-    setExplainState({ state: 'loading' });
+    setExplainState({ status: 'loading' });
     try {
       const response = await explainContext({
         contextType: 'View',
         contextId: 'GPTStudio',
         metadata: { activeGpt: selectedGpt?.key },
       });
-      setExplainState({ state: 'ready', response });
+      setExplainState({
+        status: 'ready',
+        text: response.explanation,
+        summary: response.summary,
+        keyPoints: response.keyPoints,
+      });
     } catch (err) {
       setExplainState({
-        state: 'error',
-        error: err instanceof Error ? err.message : 'Failed to fetch explanation',
+        status: 'error',
+        message: err instanceof Error ? err.message : 'Failed to fetch explanation',
       });
     }
   };
@@ -213,7 +219,7 @@ export const GptStudioView: React.FC = () => {
    * Close the ExplainPanel
    */
   const handleCloseExplain = () => {
-    setExplainState({ state: 'idle' });
+    setExplainState({ status: 'idle' });
   };
 
   return (
