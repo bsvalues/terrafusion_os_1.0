@@ -24,9 +24,11 @@ import TerraFusionEliteIntegrationNexus from './components/nexus/TerraFusionElit
 import TerraFusionEliteServiceOrchestrator from './components/orchestrator/TerraFusionEliteServiceOrchestrator';
 import EliteQuantumDashboard from './components/performance/EliteQuantumDashboard';
 import TerraFusionQuantumComputing from './components/quantum/TerraFusionQuantumComputing';
+import { AIHealthStatusChip } from './components/status/AIHealthStatusChip';
 import { GovernmentExcellenceStatus } from './components/status/GovernmentExcellenceStatus';
 import EliteSystemValidator from './components/validation/EliteSystemValidator';
 import { GptStudioView } from './features/gpt/GptStudioView';
+import { SystemGptConsoleView } from './features/gpt/SystemGptConsoleView';
 import TerraFusionExcellenceProvider from './providers/TerraFusionExcellenceProvider.tsx';
 import { QuantumDesktopShell } from './shell/QuantumDesktopShell';
 
@@ -49,7 +51,8 @@ type OSViewMode =
   | 'EDGE_COORDINATION'
   | 'SYSTEM_INTEGRATION'
   | 'ELITE_COMMAND_CENTER'
-  | 'GPT_STUDIO';
+  | 'GPT_STUDIO'
+  | 'SYSTEM_GPT_CONSOLE';
 // Quantum state interface for advanced users
 interface QuantumState {
   waveFunction: Complex[];
@@ -289,6 +292,8 @@ export function TerraFusionQuantumOS() {
         return '🏛️ SYSTEM INTEGRATION';
       case 'ELITE_COMMAND_CENTER':
         return '🎖️ ELITE COMMAND CENTER';
+      case 'SYSTEM_GPT_CONSOLE':
+        return '🖥️ SYSTEMGPT CONSOLE';
       default:
         return '🏛️ ELITE NEXUS';
     }
@@ -829,6 +834,12 @@ export function TerraFusionQuantumOS() {
               <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#00ff88' }}>LIVE</div>
             </div>
 
+            {/* AI Health Status - Phase 15.3 */}
+            <AIHealthStatusChip
+              onClick={() => setViewMode('SYSTEM_GPT_CONSOLE')}
+              refreshInterval={30000}
+            />
+
             {/* Government Excellence Status */}
             <GovernmentExcellenceStatus />
           </div>
@@ -928,6 +939,12 @@ export function TerraFusionQuantumOS() {
               },
               { mode: 'GPT_STUDIO', icon: '🤖', label: 'GPT Studio', testId: 'nav-gpt-studio' },
               {
+                mode: 'SYSTEM_GPT_CONSOLE',
+                icon: '🖥️',
+                label: 'SystemGPT Console',
+                testId: 'nav-system-gpt-console',
+              },
+              {
                 mode: 'MODULE_HUB',
                 icon: '🏛️',
                 label: 'Government Module Hub',
@@ -996,6 +1013,7 @@ export function TerraFusionQuantumOS() {
               {viewMode === 'SYSTEM_INTEGRATION' && <TerraFusionSystemIntegration />}
               {viewMode === 'ELITE_COMMAND_CENTER' && <TerraFusionEliteCommandCenter />}
               {viewMode === 'GPT_STUDIO' && <GptStudioView />}
+              {viewMode === 'SYSTEM_GPT_CONSOLE' && <SystemGptConsoleView />}
               {viewMode === 'REALTIME_DASHBOARD' && <TerraFusionEliteRealtimeDashboard />}
               {viewMode === 'SERVICE_ORCHESTRATOR' && <TerraFusionEliteServiceOrchestrator />}
               {viewMode === 'DEPLOYMENT_ORCHESTRATOR' && (

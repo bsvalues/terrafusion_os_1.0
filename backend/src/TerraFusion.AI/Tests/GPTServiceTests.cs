@@ -1887,9 +1887,10 @@ Decision Timeline: 30 days from hearing",
       var result = _evaluator.EvaluateHealth(diagnostics);
 
       // Assert
-      Assert.Contains(result.HeraldMessages, m => 
+      Assert.Contains(result.HeraldMessages, m =>
         m.Level == "Info" && m.Message.Contains("Simulated"));
-    }    [Fact]
+    }
+    [Fact]
     public void EvaluateHealth_NoGptConfigs_ReturnsWarning()
     {
       // Arrange
@@ -1966,9 +1967,10 @@ Decision Timeline: 30 days from hearing",
       var result = _evaluator.EvaluateHealth(diagnostics);
 
       // Assert
-      Assert.Contains(result.HeraldMessages, m => 
+      Assert.Contains(result.HeraldMessages, m =>
         m.Level == "Info" && m.Message.Contains("High") && m.Message.Contains("150"));
-    }    [Fact]
+    }
+    [Fact]
     public void EvaluateHealth_RagEnabledGptWithUnindexedRAG_GeneratesWarning()
     {
       // Arrange
