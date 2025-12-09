@@ -30,5 +30,8 @@ namespace TerraFusion.AI.Data
 
         public static DbSet<GPTUsageMetric> GPTUsageMetrics(this TerraFusionDbContext context)
             => context.Set<GPTUsageMetric>();
+
+        public static DbSet<GPTAudit> GPTAudits(this TerraFusionDbContext context)
+            => context.Set<GPTAudit>();
     }
 }

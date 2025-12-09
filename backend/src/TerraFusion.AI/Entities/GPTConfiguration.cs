@@ -347,4 +347,145 @@ namespace TerraFusion.AI.Entities
         [ForeignKey("GPTConfigurationId")]
         public GPTConfiguration? GPTConfiguration { get; set; }
     }
+
+    /// <summary>
+    /// GPT Audit entity - RAG traceability and audit logging
+    /// Phase 11: Every GPT/RAG answer is auditable
+    /// </summary>
+    [Table("GPTAudit")]
+    public class GPTAudit
+    {
+        [Key]
+        public int Id { get; set; }
+
+        /// <summary>
+        /// The message this audit entry relates to
+        /// </summary>
+        [Required]
+        public int MessageId { get; set; }
+
+        /// <summary>
+        /// Conversation context
+        /// </summary>
+        [Required]
+        public int ConversationId { get; set; }
+
+        /// <summary>
+        /// GPT configuration used
+        /// </summary>
+        [Required]
+        public int GPTConfigurationId { get; set; }
+
+        /// <summary>
+        /// User who initiated the request
+        /// </summary>
+        [Required]
+        [MaxLength(450)]
+        public string UserId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// County context for data isolation
+        /// </summary>
+        [Required]
+        public int CountyId { get; set; }
+
+        // RAG Traceability
+        /// <summary>
+        /// Whether RAG was used for this response
+        /// </summary>
+        public bool RAGUsed { get; set; } = false;
+
+        /// <summary>
+        /// RAG dataset ID that was queried
+        /// </summary>
+        public int? RAGDatasetId { get; set; }
+
+        /// <summary>
+        /// JSON array of document IDs retrieved from RAG
+        /// </summary>
+        [Column(TypeName = "jsonb")]
+        public string? RAGDocumentIds { get; set; }
+
+        /// <summary>
+        /// JSON array of chunk IDs with their similarity scores
+        /// Format: [{"chunkId": 1, "score": 0.95, "text": "..."}, ...]
+        /// </summary>
+        [Column(TypeName = "jsonb")]
+        public string? RAGChunkDetails { get; set; }
+
+        /// <summary>
+        /// Number of RAG chunks retrieved
+        /// </summary>
+        public int RAGChunksRetrieved { get; set; } = 0;
+
+        /// <summary>
+        /// Average similarity score across retrieved chunks
+        /// </summary>
+        [Column(TypeName = "decimal(5,4)")]
+        public decimal? RAGAverageScore { get; set; }
+
+        // Embedding Provider Info
+        /// <summary>
+        /// Embedding service used: "OpenAI" or "Simulated"
+        /// </summary>
+        [MaxLength(50)]
+        public string? EmbeddingProvider { get; set; }
+
+        /// <summary>
+        /// Embedding model used (e.g., "text-embedding-3-small")
+        /// </summary>
+        [MaxLength(100)]
+        public string? EmbeddingModel { get; set; }
+
+        // LLM Provider Info
+        /// <summary>
+        /// LLM provider used for response generation
+        /// </summary>
+        [MaxLength(50)]
+        public string? LLMProvider { get; set; }
+
+        /// <summary>
+        /// LLM model used for response generation
+        /// </summary>
+        [MaxLength(100)]
+        public string? LLMModel { get; set; }
+
+        // Performance Metrics
+        /// <summary>
+        /// Time spent on RAG retrieval (ms)
+        /// </summary>
+        public int? RAGRetrievalTimeMs { get; set; }
+
+        /// <summary>
+        /// Time spent on LLM generation (ms)
+        /// </summary>
+        public int? LLMGenerationTimeMs { get; set; }
+
+        /// <summary>
+        /// Total end-to-end time (ms)
+        /// </summary>
+        public int? TotalResponseTimeMs { get; set; }
+
+        // Audit Metadata
+        public DateTime CreatedAt { get; set; }
+
+        /// <summary>
+        /// Source IP or client identifier for audit trail
+        /// </summary>
+        [MaxLength(100)]
+        public string? ClientInfo { get; set; }
+
+        // Navigation properties
+        [ForeignKey("MessageId")]
+        public GPTMessage? Message { get; set; }
+
+        [ForeignKey("ConversationId")]
+        public GPTConversation? Conversation { get; set; }
+
+        [ForeignKey("GPTConfigurationId")]
+        public GPTConfiguration? GPTConfiguration { get; set; }
+
+        [ForeignKey("RAGDatasetId")]
+        public RAGDataset? RAGDataset { get; set; }
+    }
 }

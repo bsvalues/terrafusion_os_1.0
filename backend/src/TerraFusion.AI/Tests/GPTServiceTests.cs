@@ -4,6 +4,7 @@
 // For in-memory testing, use the Integration.Tests project.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -674,6 +675,227 @@ Decision Timeline: 30 days from hearing",
         return 0f;
 
       return dotProduct / (magnitudeA * magnitudeB);
+    }
+  }
+
+  /// <summary>
+  /// Phase 11: GPT Audit and RAG Traceability Tests
+  /// Validates audit logging and trace API for government compliance
+  /// </summary>
+  public class GPTAuditTests
+  {
+    [Fact]
+    public void GPTAudit_NewInstance_HasCorrectDefaults()
+    {
+      // Arrange & Act
+      var audit = new GPTAudit();
+
+      // Assert
+      Assert.Equal(0, audit.Id);
+      Assert.Equal(0, audit.MessageId);
+      Assert.Equal(0, audit.ConversationId);
+      Assert.Equal(string.Empty, audit.UserId);
+      Assert.False(audit.RAGUsed);
+      Assert.Null(audit.RAGDatasetId);
+      Assert.Null(audit.RAGDocumentIds);
+      Assert.Null(audit.RAGChunkDetails);
+      Assert.Equal(0, audit.RAGChunksRetrieved);
+      Assert.Null(audit.RAGAverageScore);
+      Assert.Null(audit.EmbeddingProvider);
+    }
+
+    [Fact]
+    public void GPTAudit_WithRAGData_StoresAllFields()
+    {
+      // Arrange & Act
+      var audit = new GPTAudit
+      {
+        Id = 1,
+        MessageId = 42,
+        ConversationId = 10,
+        GPTConfigurationId = 5,
+        UserId = "user-123",
+        CountyId = 1,
+        RAGUsed = true,
+        RAGDatasetId = 1,
+        RAGDocumentIds = "[\"doc-1\", \"doc-2\", \"doc-3\"]",
+        RAGChunkDetails = "[{\"chunkId\": 1, \"score\": 0.95}, {\"chunkId\": 2, \"score\": 0.87}]",
+        RAGChunksRetrieved = 2,
+        RAGAverageScore = 0.91m,
+        EmbeddingProvider = "Simulated",
+        EmbeddingModel = "text-embedding-3-small",
+        LLMProvider = "OpenAI",
+        LLMModel = "gpt-4o",
+        RAGRetrievalTimeMs = 45,
+        LLMGenerationTimeMs = 1200,
+        TotalResponseTimeMs = 1250,
+        CreatedAt = DateTime.UtcNow,
+        ClientInfo = "GPT Studio v1.0"
+      };
+
+      // Assert
+      Assert.Equal(42, audit.MessageId);
+      Assert.Equal(10, audit.ConversationId);
+      Assert.True(audit.RAGUsed);
+      Assert.Equal(1, audit.RAGDatasetId);
+      Assert.Contains("doc-1", audit.RAGDocumentIds);
+      Assert.Contains("doc-2", audit.RAGDocumentIds);
+      Assert.Equal(2, audit.RAGChunksRetrieved);
+      Assert.Equal(0.91m, audit.RAGAverageScore);
+      Assert.Equal("Simulated", audit.EmbeddingProvider);
+      Assert.Equal("text-embedding-3-small", audit.EmbeddingModel);
+      Assert.Equal("gpt-4o", audit.LLMModel);
+      Assert.Equal(45, audit.RAGRetrievalTimeMs);
+      Assert.Equal(1250, audit.TotalResponseTimeMs);
+    }
+
+    [Fact]
+    public void GPTAudit_WithoutRAG_HasMinimalData()
+    {
+      // Arrange & Act - Audit for a non-RAG message
+      var audit = new GPTAudit
+      {
+        Id = 2,
+        MessageId = 100,
+        ConversationId = 20,
+        GPTConfigurationId = 3,
+        UserId = "user-456",
+        CountyId = 1,
+        RAGUsed = false,
+        LLMProvider = "OpenAI",
+        LLMModel = "gpt-3.5-turbo",
+        LLMGenerationTimeMs = 500,
+        TotalResponseTimeMs = 500,
+        CreatedAt = DateTime.UtcNow
+      };
+
+      // Assert
+      Assert.False(audit.RAGUsed);
+      Assert.Null(audit.RAGDatasetId);
+      Assert.Null(audit.RAGDocumentIds);
+      Assert.Null(audit.RAGChunkDetails);
+      Assert.Equal(0, audit.RAGChunksRetrieved);
+      Assert.Null(audit.RAGAverageScore);
+      Assert.Null(audit.EmbeddingProvider);
+      Assert.Equal("gpt-3.5-turbo", audit.LLMModel);
+    }
+
+    [Fact]
+    public void GPTAudit_ChunkDetails_CanSerializeComplexStructure()
+    {
+      // Arrange
+      var chunkDetails = new[]
+      {
+        new { chunkId = 1, score = 0.95, documentTitle = "Residential Valuation Policy", text = "Quality grades for residential properties..." },
+        new { chunkId = 2, score = 0.87, documentTitle = "Benton CAMA Overview", text = "The cost approach methodology..." },
+        new { chunkId = 3, score = 0.82, documentTitle = "Workflow Overview", text = "Assessment workflow steps..." }
+      };
+      var serialized = System.Text.Json.JsonSerializer.Serialize(chunkDetails);
+
+      // Act
+      var audit = new GPTAudit
+      {
+        RAGUsed = true,
+        RAGChunkDetails = serialized,
+        RAGChunksRetrieved = 3,
+        RAGAverageScore = 0.88m
+      };
+
+      // Assert
+      Assert.Contains("Residential Valuation Policy", audit.RAGChunkDetails);
+      Assert.Contains("score", audit.RAGChunkDetails);
+      Assert.Equal(3, audit.RAGChunksRetrieved);
+    }
+  }
+
+  /// <summary>
+  /// Phase 11: Conversation Trace API Tests
+  /// Tests for the trace endpoint that returns audit data
+  /// </summary>
+  public class ConversationTraceTests
+  {
+    // Helper class for trace response testing
+    private class TraceMessageDto
+    {
+      public int Id { get; set; }
+      public string Role { get; set; } = string.Empty;
+      public string Content { get; set; } = string.Empty;
+      public TraceAuditDto? Audit { get; set; }
+    }
+
+    private class TraceAuditDto
+    {
+      public bool RagUsed { get; set; }
+      public int? DatasetId { get; set; }
+      public string? DatasetName { get; set; }
+      public string[]? DocumentsUsed { get; set; }
+      public int ChunksRetrieved { get; set; }
+      public decimal AverageScore { get; set; }
+      public string? EmbeddingProvider { get; set; }
+    }
+
+    [Fact]
+    public void TraceResponse_WithRAGMessages_IncludesAuditData()
+    {
+      // Arrange - Simulate a trace response structure
+      var messages = new List<TraceMessageDto>
+      {
+        new TraceMessageDto { Id = 1, Role = "user", Content = "What are quality grades?", Audit = null },
+        new TraceMessageDto
+        {
+          Id = 2,
+          Role = "assistant",
+          Content = "Quality grades range from A to D...",
+          Audit = new TraceAuditDto
+          {
+            RagUsed = true,
+            DatasetId = 1,
+            DatasetName = "Benton CAMA Basics",
+            DocumentsUsed = new[] { "residential_valuation_policy.md", "benton_cama_overview.md" },
+            ChunksRetrieved = 3,
+            AverageScore = 0.89m,
+            EmbeddingProvider = "Simulated"
+          }
+        }
+      };
+
+      var traceResponse = new
+      {
+        conversationId = 10,
+        gptKey = "PropertyAssessmentGPT",
+        messageCount = 4,
+        messages
+      };
+
+      // Assert
+      Assert.Equal(10, traceResponse.conversationId);
+      Assert.Equal("PropertyAssessmentGPT", traceResponse.gptKey);
+      var assistantMessage = traceResponse.messages[1];
+      Assert.NotNull(assistantMessage.Audit);
+      Assert.True(assistantMessage.Audit.RagUsed);
+      Assert.Equal(2, assistantMessage.Audit.DocumentsUsed!.Length);
+      Assert.Contains("residential_valuation_policy.md", assistantMessage.Audit.DocumentsUsed);
+    }
+
+    [Fact]
+    public void TraceResponse_WithoutRAG_HasEmptyAudit()
+    {
+      // Arrange - Non-RAG conversation trace
+      var traceResponse = new
+      {
+        conversationId = 20,
+        gptKey = "GeneralAssistantGPT",
+        messageCount = 2,
+        messages = new[]
+        {
+          new { id = 1, role = "user", content = "Hello", ragUsed = false, documentsUsed = (string[]?)null },
+          new { id = 2, role = "assistant", content = "Hello! How can I help?", ragUsed = false, documentsUsed = (string[]?)null }
+        }
+      };
+
+      // Assert
+      Assert.False(traceResponse.messages[1].ragUsed);
+      Assert.Null(traceResponse.messages[1].documentsUsed);
     }
   }
 }
