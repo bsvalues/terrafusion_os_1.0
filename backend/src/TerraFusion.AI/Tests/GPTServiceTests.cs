@@ -1541,4 +1541,253 @@ Decision Timeline: 30 days from hearing",
       Assert.True(expectedKeywords.Length > 0);
     }
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // 📊 Phase 15: SystemGPT Diagnostics Tests
+  // SystemGPT Console - AI Control Center for County Tech Leads
+  // ═══════════════════════════════════════════════════════════════════════════════
+
+  /// <summary>
+  /// Tests for SystemDiagnosticsResponse and related models (Phase 15)
+  /// </summary>
+  public class SystemDiagnosticsModelTests
+  {
+    [Fact]
+    public void SystemDiagnosticsResponse_HasCorrectDefaults()
+    {
+      // Arrange & Act
+      var response = new TerraFusion.AI.Models.SystemDiagnosticsResponse();
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.SystemHealthStatus.Unknown, response.OverallHealth);
+      Assert.NotEqual(default, response.Timestamp);
+      Assert.NotNull(response.GptConfigs);
+      Assert.Empty(response.GptConfigs);
+      Assert.NotNull(response.RagDatasets);
+      Assert.Empty(response.RagDatasets);
+      Assert.NotNull(response.HeraldMessages);
+      Assert.Empty(response.HeraldMessages);
+    }
+
+    [Fact]
+    public void SystemHealthStatus_HasExpectedValues()
+    {
+      // Assert - verify all health status values exist
+      Assert.Equal(0, (int)TerraFusion.AI.Models.SystemHealthStatus.Unknown);
+      Assert.Equal(1, (int)TerraFusion.AI.Models.SystemHealthStatus.Healthy);
+      Assert.Equal(2, (int)TerraFusion.AI.Models.SystemHealthStatus.Degraded);
+      Assert.Equal(3, (int)TerraFusion.AI.Models.SystemHealthStatus.Unhealthy);
+    }
+
+    [Fact]
+    public void GptConfigSummary_SetProperties_RetainsValues()
+    {
+      // Arrange
+      var summary = new TerraFusion.AI.Models.GptConfigSummary
+      {
+        Key = "PropertyAssessmentGPT",
+        Name = "Property Assessment GPT",
+        Enabled = true,
+        Model = "gpt-4o",
+        RagEnabled = true,
+        ConversationCount = 42
+      };
+
+      // Assert
+      Assert.Equal("PropertyAssessmentGPT", summary.Key);
+      Assert.Equal("Property Assessment GPT", summary.Name);
+      Assert.True(summary.Enabled);
+      Assert.Equal("gpt-4o", summary.Model);
+      Assert.True(summary.RagEnabled);
+      Assert.Equal(42, summary.ConversationCount);
+    }
+
+    [Fact]
+    public void EmbeddingServiceStatus_HasCorrectDefaults()
+    {
+      // Arrange & Act
+      var status = new TerraFusion.AI.Models.EmbeddingServiceStatus();
+
+      // Assert
+      Assert.Equal("Unknown", status.Mode);
+      Assert.False(status.Available);
+      Assert.Equal(0, status.Dimensions);
+      Assert.Equal(string.Empty, status.Provider);
+      Assert.Null(status.LastSuccess);
+    }
+
+    [Fact]
+    public void EmbeddingServiceStatus_SetProperties_RetainsValues()
+    {
+      // Arrange
+      var now = DateTime.UtcNow;
+      var status = new TerraFusion.AI.Models.EmbeddingServiceStatus
+      {
+        Mode = "OpenAI",
+        Available = true,
+        Dimensions = 1536,
+        Provider = "OpenAI",
+        LastSuccess = now
+      };
+
+      // Assert
+      Assert.Equal("OpenAI", status.Mode);
+      Assert.True(status.Available);
+      Assert.Equal(1536, status.Dimensions);
+      Assert.Equal("OpenAI", status.Provider);
+      Assert.Equal(now, status.LastSuccess);
+    }
+
+    [Fact]
+    public void RagDatasetSummary_HasCorrectDefaults()
+    {
+      // Arrange & Act
+      var summary = new TerraFusion.AI.Models.RagDatasetSummary();
+
+      // Assert
+      Assert.Equal(string.Empty, summary.Key);
+      Assert.Equal(string.Empty, summary.Name);
+      Assert.False(summary.Indexed);
+      Assert.Equal(0, summary.DocumentCount);
+      Assert.Equal(0, summary.EmbeddingCount);
+      Assert.Null(summary.LastIndexed);
+      Assert.Equal("Unknown", summary.Status);
+    }
+
+    [Fact]
+    public void RagDatasetSummary_SetProperties_RetainsValues()
+    {
+      // Arrange
+      var indexed = DateTime.UtcNow;
+      var summary = new TerraFusion.AI.Models.RagDatasetSummary
+      {
+        Key = "benton_cama_basics",
+        Name = "Benton County CAMA Basics",
+        Indexed = true,
+        DocumentCount = 15,
+        EmbeddingCount = 150,
+        LastIndexed = indexed,
+        Status = "Healthy"
+      };
+
+      // Assert
+      Assert.Equal("benton_cama_basics", summary.Key);
+      Assert.Equal("Benton County CAMA Basics", summary.Name);
+      Assert.True(summary.Indexed);
+      Assert.Equal(15, summary.DocumentCount);
+      Assert.Equal(150, summary.EmbeddingCount);
+      Assert.Equal(indexed, summary.LastIndexed);
+      Assert.Equal("Healthy", summary.Status);
+    }
+
+    [Fact]
+    public void ServiceStatus_HasCorrectDefaults()
+    {
+      // Arrange & Act
+      var status = new TerraFusion.AI.Models.ServiceStatus();
+
+      // Assert
+      Assert.False(status.Healthy);
+      Assert.Equal(string.Empty, status.Message);
+      Assert.Null(status.LastCheck);
+      Assert.Null(status.ResponseTimeMs);
+    }
+
+    [Fact]
+    public void UsageStatistics_HasCorrectDefaults()
+    {
+      // Arrange & Act
+      var stats = new TerraFusion.AI.Models.UsageStatistics();
+
+      // Assert
+      Assert.Equal(0, stats.TotalConversations);
+      Assert.Equal(0, stats.TotalMessages);
+      Assert.Equal(0, stats.AuditRecordCount);
+      Assert.Equal(0, stats.RagTraceCount);
+      Assert.Equal(0, stats.MessagesLast24h);
+      Assert.Equal(0, stats.ConversationsLast24h);
+    }
+
+    [Fact]
+    public void HeraldMessage_HasCorrectDefaults()
+    {
+      // Arrange & Act
+      var message = new TerraFusion.AI.Models.HeraldMessage();
+
+      // Assert
+      Assert.Equal("Info", message.Level);
+      Assert.Equal(string.Empty, message.Message);
+      Assert.Equal(default, message.Timestamp);
+      Assert.Equal(string.Empty, message.Source);
+    }
+
+    [Fact]
+    public void HeraldMessage_SetProperties_RetainsValues()
+    {
+      // Arrange
+      var now = DateTime.UtcNow;
+      var message = new TerraFusion.AI.Models.HeraldMessage
+      {
+        Level = "Warning",
+        Message = "RAG index not found",
+        Timestamp = now,
+        Source = "Arc"
+      };
+
+      // Assert
+      Assert.Equal("Warning", message.Level);
+      Assert.Equal("RAG index not found", message.Message);
+      Assert.Equal(now, message.Timestamp);
+      Assert.Equal("Arc", message.Source);
+    }
+
+    [Fact]
+    public void SystemDiagnosticsResponse_FullPopulation_Works()
+    {
+      // Arrange & Act
+      var diagnostics = new TerraFusion.AI.Models.SystemDiagnosticsResponse
+      {
+        OverallHealth = TerraFusion.AI.Models.SystemHealthStatus.Healthy,
+        Timestamp = DateTime.UtcNow,
+        GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>
+        {
+          new() { Key = "PropertyAssessmentGPT", Enabled = true }
+        },
+        EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
+        {
+          Mode = "Simulated",
+          Available = true
+        },
+        RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>
+        {
+          new() { Key = "benton_cama_basics", Indexed = true }
+        },
+        ExplainGptStatus = new TerraFusion.AI.Models.ServiceStatus
+        {
+          Healthy = true,
+          Message = "Ready"
+        },
+        Statistics = new TerraFusion.AI.Models.UsageStatistics
+        {
+          TotalConversations = 10,
+          TotalMessages = 50
+        },
+        HeraldMessages = new List<TerraFusion.AI.Models.HeraldMessage>
+        {
+          new() { Level = "Info", Message = "All systems operational" }
+        }
+      };
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.SystemHealthStatus.Healthy, diagnostics.OverallHealth);
+      Assert.Single(diagnostics.GptConfigs);
+      Assert.Equal("PropertyAssessmentGPT", diagnostics.GptConfigs[0].Key);
+      Assert.True(diagnostics.EmbeddingStatus.Available);
+      Assert.Single(diagnostics.RagDatasets);
+      Assert.True(diagnostics.RagDatasets[0].Indexed);
+      Assert.True(diagnostics.ExplainGptStatus.Healthy);
+      Assert.Equal(10, diagnostics.Statistics.TotalConversations);
+      Assert.Single(diagnostics.HeraldMessages);
+    }
+  }
 }
