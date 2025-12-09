@@ -312,8 +312,10 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
     if (!string.IsNullOrEmpty(openAIKey))
     {
         var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+        var httpClient = httpClientFactory.CreateClient();
+        var configuration = sp.GetRequiredService<IConfiguration>();
         var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.OpenAIEmbeddingService>>();
-        return new TerraFusion.AI.Services.OpenAIEmbeddingService(httpClientFactory, logger);
+        return new TerraFusion.AI.Services.OpenAIEmbeddingService(httpClient, configuration, logger);
     }
     else
     {

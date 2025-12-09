@@ -50,14 +50,18 @@ namespace TerraFusion.AI.Services
             { "Local:mistral", (0m, 0m) }
         };
 
+        private readonly IEmbeddingService _embeddingService;
+
         public GPTOrchestrationService(
             TerraFusionDbContext context,
             ILogger<GPTOrchestrationService> logger,
-            IRAGService ragService)
+            IRAGService ragService,
+            IEmbeddingService embeddingService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _ragService = ragService ?? throw new ArgumentNullException(nameof(ragService));
+            _embeddingService = embeddingService ?? throw new ArgumentNullException(nameof(embeddingService));
         }
 
         public async System.Threading.Tasks.Task<GPTMessage> SendMessageAsync(
@@ -101,33 +105,44 @@ namespace TerraFusion.AI.Services
                 // Get conversation history for context
                 var history = await GetConversationHistoryAsync(conversationId, limit: 10);
 
-                // Augment with RAG if enabled
+                // Augment with RAG if enabled (with timing for audit)
                 string? ragContext = null;
                 List<string>? ragDocuments = null;
                 decimal? ragScore = null;
+                int? ragRetrievalTimeMs = null;
+                int ragChunksRetrieved = 0;
 
                 if (gptConfig.EnableRAG && gptConfig.RAGDatasetId.HasValue)
                 {
+                    var ragStartTime = System.Diagnostics.Stopwatch.StartNew();
+                    
                     var ragResult = await _ragService.GetRelevantContextAsync(
                         gptConfig.RAGDatasetId.Value,
                         userMessage,
                         gptConfig.RAGTopK);
 
+                    ragStartTime.Stop();
+                    ragRetrievalTimeMs = (int)ragStartTime.ElapsedMilliseconds;
+                    
                     ragContext = ragResult.Context;
                     ragDocuments = ragResult.DocumentIds;
                     ragScore = ragResult.AverageScore;
+                    ragChunksRetrieved = ragResult.ChunksRetrieved;
 
-                    _logger.LogInformation("RAG context retrieved: {DocumentCount} documents, score: {Score}",
-                        ragDocuments.Count, ragScore);
+                    _logger.LogInformation("RAG context retrieved: {DocumentCount} documents, score: {Score}, time: {TimeMs}ms",
+                        ragDocuments.Count, ragScore, ragRetrievalTimeMs);
                 }
 
-                // Call LLM provider (simulated - in production, use actual API clients)
+                // Call LLM provider (with timing for audit)
+                var llmStartTime = System.Diagnostics.Stopwatch.StartNew();
                 var (assistantMessage, promptTokens, completionTokens, responseTime) =
                     await CallLLMProviderAsync(
                         gptConfig,
                         history,
                         userMessage,
                         ragContext);
+                llmStartTime.Stop();
+                var llmGenerationTimeMs = (int)llmStartTime.ElapsedMilliseconds;
 
                 // Calculate cost
                 var totalTokens = promptTokens + completionTokens;
@@ -187,6 +202,34 @@ namespace TerraFusion.AI.Services
                 };
 
                 _context.GPTUsageMetrics().Add(usageMetric);
+
+                // Phase 11: Create GPTAudit record for RAG traceability
+                var auditRecord = new GPTAudit
+                {
+                    MessageId = assistantMessageEntity.Id,
+                    ConversationId = conversationId,
+                    GPTConfigurationId = gptConfigId,
+                    UserId = userId,
+                    CountyId = countyId,
+                    RAGUsed = gptConfig.EnableRAG && ragDocuments != null && ragDocuments.Count > 0,
+                    RAGDatasetId = gptConfig.RAGDatasetId,
+                    RAGDocumentIds = ragDocuments != null ? JsonSerializer.Serialize(ragDocuments) : null,
+                    RAGChunksRetrieved = ragChunksRetrieved,
+                    RAGAverageScore = ragScore,
+                    EmbeddingProvider = gptConfig.EnableRAG ? _embeddingService.ProviderName : null,
+                    EmbeddingModel = gptConfig.EnableRAG ? "text-embedding-3-small" : null,
+                    LLMProvider = gptConfig.ModelProvider,
+                    LLMModel = gptConfig.ModelName,
+                    RAGRetrievalTimeMs = ragRetrievalTimeMs,
+                    LLMGenerationTimeMs = llmGenerationTimeMs,
+                    TotalResponseTimeMs = (ragRetrievalTimeMs ?? 0) + llmGenerationTimeMs,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.GPTAudits().Add(auditRecord);
+
+                _logger.LogInformation("Audit record created for message {MessageId}: RAG={RAGUsed}, EmbeddingProvider={Provider}",
+                    assistantMessageEntity.Id, auditRecord.RAGUsed, auditRecord.EmbeddingProvider);
 
                 await _context.SaveChangesAsync();
 
