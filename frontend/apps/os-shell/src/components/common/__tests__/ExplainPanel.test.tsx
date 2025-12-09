@@ -25,9 +25,7 @@ describe('ExplainPanel', () => {
     it('renders nothing when status is idle', () => {
       const state: ExplainPanelState = { status: 'idle' };
 
-      const { container } = render(
-        <ExplainPanel state={state} onClose={mockOnClose} />
-      );
+      const { container } = render(<ExplainPanel state={state} onClose={mockOnClose} />);
 
       expect(container).toBeEmptyDOMElement();
     });
@@ -182,13 +180,7 @@ describe('ExplainPanel', () => {
     it('accepts custom title prop', () => {
       const state: ExplainPanelState = { status: 'loading' };
 
-      render(
-        <ExplainPanel
-          state={state}
-          onClose={mockOnClose}
-          title="Explain RAG Sources"
-        />
-      );
+      render(<ExplainPanel state={state} onClose={mockOnClose} title='Explain RAG Sources' />);
 
       expect(screen.getByText('Explain RAG Sources')).toBeInTheDocument();
     });
@@ -204,10 +196,7 @@ describe('ExplainPanel', () => {
 
       render(<ExplainPanel state={state} onClose={mockOnClose} />);
 
-      expect(screen.getByRole('complementary')).toHaveAttribute(
-        'aria-label',
-        'Explanation panel'
-      );
+      expect(screen.getByRole('complementary')).toHaveAttribute('aria-label', 'Explanation panel');
     });
 
     it('close button has accessible label', () => {

@@ -94,5 +94,10 @@ namespace TerraFusion.AI.Interfaces
         /// Validate GPT configuration before saving
         /// </summary>
         System.Threading.Tasks.Task<(bool IsValid, List<string> Errors)> ValidateGPTConfigAsync(GPTConfiguration config);
+
+        /// <summary>
+        /// Phase 15: Get all GPT configurations for diagnostics (no filters)
+        /// </summary>
+        System.Threading.Tasks.Task<List<GPTConfiguration>> GetAllConfigurationsAsync();
     }
 }

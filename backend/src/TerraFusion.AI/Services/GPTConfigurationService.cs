@@ -380,5 +380,25 @@ namespace TerraFusion.AI.Services
 
             return (errors.Count == 0, errors);
         }
+
+        /// <inheritdoc />
+        public async System.Threading.Tasks.Task<List<GPTConfiguration>> GetAllConfigurationsAsync()
+        {
+            try
+            {
+                _logger.LogDebug("Fetching all GPT configurations for diagnostics");
+
+                return await _context.GPTConfigurations()
+                    .Where(g => g.Status != "Deleted")
+                    .OrderBy(g => g.Name)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching all GPT configurations");
+                // Return empty list on error to allow diagnostics to continue
+                return new List<GPTConfiguration>();
+            }
+        }
     }
 }

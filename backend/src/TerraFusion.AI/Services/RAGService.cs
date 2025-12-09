@@ -457,5 +457,60 @@ namespace TerraFusion.AI.Services
         {
             return _embeddingService.GetVectorDimension(model);
         }
+
+        /// <inheritdoc />
+        public async Task<RAGHealthStatus> GetRagHealthAsync(string datasetName)
+        {
+            try
+            {
+                _logger.LogDebug("Fetching RAG health for dataset: {DatasetName}", datasetName);
+
+                // Try to find dataset by name in DB
+                var dataset = await _context.RAGDatasets()
+                    .FirstOrDefaultAsync(d => d.Name == datasetName);
+
+                if (dataset == null)
+                {
+                    // Dataset doesn't exist in DB - return not indexed status
+                    return new RAGHealthStatus
+                    {
+                        DatasetName = datasetName,
+                        Indexed = false,
+                        DocumentCount = 0,
+                        EmbeddingCount = 0,
+                        LastIndexed = null
+                    };
+                }
+
+                // Get embedding count from repository using datasetId
+                var embeddingCount = await _embeddingRepository.GetDatasetEmbeddingCountAsync(dataset.Id);
+                var documents = await _context.RAGDocuments()
+                    .Where(d => d.DatasetId == dataset.Id)
+                    .CountAsync();
+
+                return new RAGHealthStatus
+                {
+                    DatasetName = datasetName,
+                    Indexed = embeddingCount > 0,
+                    DocumentCount = documents,
+                    EmbeddingCount = embeddingCount,
+                    LastIndexed = dataset.UpdatedAt
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting RAG health for {DatasetName}", datasetName);
+
+                // Return degraded status on error
+                return new RAGHealthStatus
+                {
+                    DatasetName = datasetName,
+                    Indexed = false,
+                    DocumentCount = 0,
+                    EmbeddingCount = 0,
+                    LastIndexed = null
+                };
+            }
+        }
     }
 }

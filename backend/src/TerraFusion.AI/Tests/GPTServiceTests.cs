@@ -1790,4 +1790,257 @@ Decision Timeline: 30 days from hearing",
       Assert.Single(diagnostics.HeraldMessages);
     }
   }
+
+  /// <summary>
+  /// Tests for SystemGptHealthEvaluator (Phase 15.4)
+  /// Verifies threshold-based Herald message generation
+  /// </summary>
+  public class SystemGptHealthEvaluatorTests
+  {
+    private readonly Mock<ILogger<SystemGptHealthEvaluator>> _loggerMock;
+    private readonly SystemGptHealthEvaluator _evaluator;
+
+    public SystemGptHealthEvaluatorTests()
+    {
+      _loggerMock = new Mock<ILogger<SystemGptHealthEvaluator>>();
+      _evaluator = new SystemGptHealthEvaluator(_loggerMock.Object);
+    }
+
+    [Fact]
+    public void EvaluateHealth_HealthySystem_ReturnsHealthyStatus()
+    {
+      // Arrange
+      var diagnostics = CreateBaseDiagnostics();
+      diagnostics.RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>
+      {
+        new() { Key = "test_dataset", Name = "Test Dataset", Indexed = true, DocumentCount = 10 }
+      };
+      diagnostics.EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
+      {
+        Mode = "OpenAI",
+        Available = true,
+        Dimensions = 1536
+      };
+      diagnostics.GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>
+      {
+        new() { Key = "TestGPT", Name = "Test GPT", Enabled = true, Model = "gpt-4" }
+      };
+
+      // Act
+      var result = _evaluator.EvaluateHealth(diagnostics);
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.SystemHealthStatus.Healthy, result.OverallHealth);
+      Assert.Contains(result.HeraldMessages, m => m.Level == "Success");
+    }
+
+    [Fact]
+    public void EvaluateHealth_UnindexedRAG_SimulatedEmbeddings_ReturnsWarning()
+    {
+      // Arrange
+      var diagnostics = CreateBaseDiagnostics();
+      diagnostics.RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>
+      {
+        new() { Key = "unindexed_dataset", Name = "Unindexed Dataset", Indexed = false }
+      };
+      diagnostics.EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
+      {
+        Mode = "Simulated",
+        Available = true,
+        Dimensions = 384  // Simulated dimension
+      };
+      diagnostics.GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>
+      {
+        new() { Key = "TestGPT", Name = "Test GPT", Enabled = true }
+      };
+
+      // Act
+      var result = _evaluator.EvaluateHealth(diagnostics);
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.SystemHealthStatus.Degraded, result.OverallHealth);
+      Assert.Contains(result.HeraldMessages, m =>
+        m.Level == "Warning" && m.Message.Contains("RAG not fully indexed"));
+    }
+
+    [Fact]
+    public void EvaluateHealth_SimulatedEmbeddings_GeneratesInfoMessage()
+    {
+      // Arrange
+      var diagnostics = CreateBaseDiagnostics();
+      diagnostics.RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>
+      {
+        new() { Key = "test", Indexed = true }
+      };
+      diagnostics.EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
+      {
+        Mode = "Simulated",
+        Available = true,
+        Dimensions = 384
+      };
+      diagnostics.GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>
+      {
+        new() { Key = "TestGPT", Enabled = true }
+      };
+
+      // Act
+      var result = _evaluator.EvaluateHealth(diagnostics);
+
+      // Assert
+      Assert.Contains(result.HeraldMessages, m => 
+        m.Level == "Info" && m.Message.Contains("Simulated"));
+    }    [Fact]
+    public void EvaluateHealth_NoGptConfigs_ReturnsWarning()
+    {
+      // Arrange
+      var diagnostics = CreateBaseDiagnostics();
+      diagnostics.RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>();
+      diagnostics.EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
+      {
+        Mode = "OpenAI",
+        Available = true,
+        Dimensions = 1536
+      };
+      diagnostics.GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>(); // Empty
+
+      // Act
+      var result = _evaluator.EvaluateHealth(diagnostics);
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.SystemHealthStatus.Degraded, result.OverallHealth);
+      Assert.Contains(result.HeraldMessages, m =>
+        m.Level == "Warning" && m.Message.Contains("No GPT configurations"));
+    }
+
+    [Fact]
+    public void EvaluateHealth_AllGptsDisabled_ReturnsWarning()
+    {
+      // Arrange
+      var diagnostics = CreateBaseDiagnostics();
+      diagnostics.RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>();
+      diagnostics.EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
+      {
+        Mode = "OpenAI",
+        Available = true,
+        Dimensions = 1536
+      };
+      diagnostics.GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>
+      {
+        new() { Key = "DisabledGPT", Enabled = false }
+      };
+
+      // Act
+      var result = _evaluator.EvaluateHealth(diagnostics);
+
+      // Assert
+      Assert.Contains(result.HeraldMessages, m =>
+        m.Level == "Warning" && m.Message.Contains("disabled"));
+    }
+
+    [Fact]
+    public void EvaluateHealth_HighActivity_GeneratesInfoMessage()
+    {
+      // Arrange
+      var diagnostics = CreateBaseDiagnostics();
+      diagnostics.RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>
+      {
+        new() { Key = "test", Indexed = true }
+      };
+      diagnostics.EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
+      {
+        Mode = "OpenAI",
+        Available = true,
+        Dimensions = 1536
+      };
+      diagnostics.GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>
+      {
+        new() { Key = "TestGPT", Enabled = true }
+      };
+      diagnostics.Statistics = new TerraFusion.AI.Models.UsageStatistics
+      {
+        TotalMessages = 0,
+        MessagesLast24h = 150  // Above 100 threshold
+      };
+
+      // Act
+      var result = _evaluator.EvaluateHealth(diagnostics);
+
+      // Assert
+      Assert.Contains(result.HeraldMessages, m => 
+        m.Level == "Info" && m.Message.Contains("High") && m.Message.Contains("150"));
+    }    [Fact]
+    public void EvaluateHealth_RagEnabledGptWithUnindexedRAG_GeneratesWarning()
+    {
+      // Arrange
+      var diagnostics = CreateBaseDiagnostics();
+      diagnostics.RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>
+      {
+        new() { Key = "unindexed", Indexed = false }
+      };
+      diagnostics.EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
+      {
+        Mode = "OpenAI",
+        Available = true,
+        Dimensions = 1536
+      };
+      diagnostics.GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>
+      {
+        new() { Key = "RagGPT", Enabled = true, RagEnabled = true }
+      };
+
+      // Act
+      var result = _evaluator.EvaluateHealth(diagnostics);
+
+      // Assert
+      Assert.Contains(result.HeraldMessages, m =>
+        m.Level == "Warning" && m.Message.Contains("RAG-enabled GPT"));
+    }
+
+    [Fact]
+    public void EvaluateHealth_PreservesExistingMessages()
+    {
+      // Arrange
+      var diagnostics = CreateBaseDiagnostics();
+      diagnostics.RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>
+      {
+        new() { Key = "test", Indexed = true }
+      };
+      diagnostics.EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
+      {
+        Mode = "OpenAI",
+        Available = true,
+        Dimensions = 1536
+      };
+      diagnostics.GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>
+      {
+        new() { Key = "TestGPT", Enabled = true }
+      };
+      diagnostics.HeraldMessages = new List<TerraFusion.AI.Models.HeraldMessage>
+      {
+        new() { Level = "Info", Message = "Existing message", Source = "Test" }
+      };
+
+      // Act
+      var result = _evaluator.EvaluateHealth(diagnostics);
+
+      // Assert
+      Assert.Contains(result.HeraldMessages, m => m.Message == "Existing message");
+    }
+
+    private TerraFusion.AI.Models.SystemDiagnosticsResponse CreateBaseDiagnostics()
+    {
+      return new TerraFusion.AI.Models.SystemDiagnosticsResponse
+      {
+        Timestamp = DateTime.UtcNow,
+        OverallHealth = TerraFusion.AI.Models.SystemHealthStatus.Healthy,
+        ExplainGptStatus = new TerraFusion.AI.Models.ServiceStatus
+        {
+          Healthy = true,
+          Message = "Ready"
+        },
+        Statistics = new TerraFusion.AI.Models.UsageStatistics(),
+        HeraldMessages = new List<TerraFusion.AI.Models.HeraldMessage>()
+      };
+    }
+  }
 }

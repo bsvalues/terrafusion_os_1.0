@@ -81,6 +81,23 @@ namespace TerraFusion.AI.Interfaces
         /// Delete a document
         /// </summary>
         Task<bool> DeleteDocumentAsync(int documentId);
+
+        /// <summary>
+        /// Phase 15: Get health status of a RAG dataset for diagnostics
+        /// </summary>
+        Task<RAGHealthStatus> GetRagHealthAsync(string datasetName);
+    }
+
+    /// <summary>
+    /// Phase 15: RAG dataset health status for diagnostics
+    /// </summary>
+    public class RAGHealthStatus
+    {
+        public string DatasetName { get; set; } = string.Empty;
+        public bool Indexed { get; set; }
+        public int DocumentCount { get; set; }
+        public int EmbeddingCount { get; set; }
+        public DateTime? LastIndexed { get; set; }
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
 import { explainContext } from '../../api/explainApi';
+import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
 import {
   ConversationDto,
   createConversation,

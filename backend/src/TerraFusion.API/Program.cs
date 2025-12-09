@@ -339,6 +339,9 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.InMemoryRAGEmbeddingRepository>();
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGService, TerraFusion.AI.Services.RAGService>();
 
+// Phase 15.4: SystemGPT Health Evaluator for Herald threshold-based alerts
+builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptHealthEvaluator, TerraFusion.AI.Services.SystemGptHealthEvaluator>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown

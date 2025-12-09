@@ -44,8 +44,8 @@ jest.mock('../../../lib/api/gptClient', () => ({
   indexRagDataset: jest.fn(),
 }));
 
-import { GptStudioView } from '../GptStudioView';
 import { explainContext } from '../../../api/explainApi';
+import { GptStudioView } from '../GptStudioView';
 
 const mockExplainContext = explainContext as jest.MockedFunction<typeof explainContext>;
 

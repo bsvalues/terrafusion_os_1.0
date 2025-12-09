@@ -26,18 +26,21 @@ namespace TerraFusion.API.Controllers
         private readonly IGPTConfigurationService _configService;
         private readonly IGPTOrchestrationService _orchestrationService;
         private readonly IRAGService _ragService;
+        private readonly TerraFusion.AI.Services.ISystemGptHealthEvaluator? _healthEvaluator;
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
             IGPTConfigurationService configService,
             IGPTOrchestrationService orchestrationService,
             IRAGService ragService,
-            ILogger<GPTController> logger)
+            ILogger<GPTController> logger,
+            TerraFusion.AI.Services.ISystemGptHealthEvaluator? healthEvaluator = null)
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
             _ragService = ragService ?? throw new ArgumentNullException(nameof(ragService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _healthEvaluator = healthEvaluator; // Optional - graceful degradation if not registered
         }
 
         #region GPT Configuration Management
@@ -790,11 +793,11 @@ namespace TerraFusion.API.Controllers
                 var gpts = await _configService.GetAllConfigurationsAsync();
                 diagnostics.GptConfigs = gpts.Select(g => new TerraFusion.AI.Models.GptConfigSummary
                 {
-                    Key = g.Key,
-                    Name = g.Name,
-                    Enabled = g.Enabled,
-                    Model = g.Model ?? "simulated",
-                    RagEnabled = g.Key == "PropertyAssessmentGPT" // PropertyAssessmentGPT uses RAG
+                    Key = g.Name, // Use Name as Key
+                    Name = g.DisplayName ?? g.Name,
+                    Enabled = g.Status == "Active",
+                    Model = g.ModelName ?? "simulated",
+                    RagEnabled = g.EnableRAG // Check EnableRAG property
                 }).ToList();
 
                 // Embedding status
@@ -821,7 +824,7 @@ namespace TerraFusion.API.Controllers
                         Indexed = ragHealth.Indexed,
                         DocumentCount = ragHealth.DocumentCount,
                         EmbeddingCount = ragHealth.EmbeddingCount,
-                        Status = ragHealth.Healthy ? "Healthy" : (ragHealth.Indexed ? "Degraded" : "Not Indexed")
+                        Status = ragHealth.Indexed ? "Healthy" : "Not Indexed"
                     }
                 };
 
@@ -845,38 +848,43 @@ namespace TerraFusion.API.Controllers
                     ConversationsLast24h = 0
                 };
 
-                // Herald messages (recent diagnostics)
-                diagnostics.HeraldMessages = new List<TerraFusion.AI.Models.HeraldMessage>
+                // Use Health Evaluator if registered, otherwise generate basic messages
+                if (_healthEvaluator != null)
                 {
-                    new()
-                    {
-                        Level = "Info",
-                        Message = "SystemGPT Console initialized",
-                        Timestamp = DateTime.UtcNow,
-                        Source = "Herald"
-                    },
-                    new()
-                    {
-                        Level = "Info",
-                        Message = $"Embedding mode: {embeddingMode}",
-                        Timestamp = DateTime.UtcNow,
-                        Source = "Arc"
-                    },
-                    new()
-                    {
-                        Level = ragHealth.Indexed ? "Success" : "Warning",
-                        Message = ragHealth.Indexed
-                            ? $"RAG index ready: {ragHealth.DocumentCount} documents"
-                            : "RAG not indexed - run 'make gpt-ingest' to index",
-                        Timestamp = DateTime.UtcNow,
-                        Source = "Arc"
-                    }
-                };
+                    // Evaluator mutates and returns diagnostics with evaluated health + Herald messages
+                    diagnostics = _healthEvaluator.EvaluateHealth(diagnostics);
 
-                // Determine overall health
-                if (!ragHealth.Indexed)
+                    _logger.LogDebug("SystemGPT: Health evaluation returned {Status} with {MessageCount} herald messages",
+                        diagnostics.OverallHealth, diagnostics.HeraldMessages.Count);
+                }
+                else
                 {
-                    diagnostics.OverallHealth = TerraFusion.AI.Models.SystemHealthStatus.Degraded;
+                    // Fallback: Basic herald messages if evaluator not registered
+                    diagnostics.HeraldMessages = new List<TerraFusion.AI.Models.HeraldMessage>
+                    {
+                        new()
+                        {
+                            Level = "Info",
+                            Message = "SystemGPT Console initialized (Herald evaluator not registered)",
+                            Timestamp = DateTime.UtcNow,
+                            Source = "Herald"
+                        },
+                        new()
+                        {
+                            Level = ragHealth.Indexed ? "Success" : "Warning",
+                            Message = ragHealth.Indexed
+                                ? $"RAG index ready: {ragHealth.DocumentCount} documents"
+                                : "RAG not indexed - run 'make gpt-ingest' to index",
+                            Timestamp = DateTime.UtcNow,
+                            Source = "Arc"
+                        }
+                    };
+
+                    // Fallback health determination
+                    if (!ragHealth.Indexed)
+                    {
+                        diagnostics.OverallHealth = TerraFusion.AI.Models.SystemHealthStatus.Degraded;
+                    }
                 }
 
                 stopwatch.Stop();
