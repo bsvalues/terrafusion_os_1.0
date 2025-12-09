@@ -1,6 +1,6 @@
 // TerraFusionGPT Suite: RAG Service Implementation
 // Elite Government OS Engineering - AI Platform
-// Phase 4: Integrated vector storage with IRAGEmbeddingRepository
+// Phase 5: Integrated with IEmbeddingService for real/simulated embeddings
 
 using System;
 using System.Collections.Generic;
@@ -22,6 +22,7 @@ namespace TerraFusion.AI.Services
     {
         private readonly TerraFusionDbContext _context;
         private readonly IRAGEmbeddingRepository _embeddingRepository;
+        private readonly IEmbeddingService _embeddingService;
         private readonly ILogger<RAGService> _logger;
 
         private const int DefaultChunkSize = 512; // tokens
@@ -31,10 +32,12 @@ namespace TerraFusion.AI.Services
         public RAGService(
             TerraFusionDbContext context,
             IRAGEmbeddingRepository embeddingRepository,
+            IEmbeddingService embeddingService,
             ILogger<RAGService> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _embeddingRepository = embeddingRepository ?? throw new ArgumentNullException(nameof(embeddingRepository));
+            _embeddingService = embeddingService ?? throw new ArgumentNullException(nameof(embeddingService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -157,20 +160,21 @@ namespace TerraFusion.AI.Services
                 // Chunk the document
                 var chunks = ChunkDocument(document.Content, DefaultChunkSize, DefaultChunkOverlap);
 
-                _logger.LogInformation("Document chunked into {ChunkCount} chunks", chunks.Count);
+                _logger.LogInformation("Document chunked into {ChunkCount} chunks using {Provider}",
+                    chunks.Count, _embeddingService.ProviderName);
 
-                // Generate embeddings for each chunk and store them
+                // Generate embeddings in batch (more efficient)
+                var embeddingVectors = await _embeddingService.GenerateBatchEmbeddingsAsync(
+                    chunks,
+                    document.Dataset.EmbeddingModel);
+
+                // Build RAGEmbedding entities
                 var embeddings = new List<RAGEmbedding>();
                 int position = 0;
 
                 for (int i = 0; i < chunks.Count; i++)
                 {
                     var chunk = chunks[i];
-                    var embedding = await GenerateEmbeddingAsync(
-                        chunk,
-                        document.Dataset.EmbeddingProvider,
-                        document.Dataset.EmbeddingModel);
-
                     var startPos = position;
                     var endPos = position + chunk.Length;
                     position = endPos - DefaultChunkOverlap; // Account for overlap
@@ -181,7 +185,7 @@ namespace TerraFusion.AI.Services
                         DatasetId = document.DatasetId,
                         ChunkIndex = i,
                         ChunkText = chunk,
-                        Embedding = embedding,
+                        Embedding = embeddingVectors[i],
                         TokenCount = EstimateTokenCount(chunk),
                         StartPosition = startPos,
                         EndPosition = endPos
@@ -243,10 +247,9 @@ namespace TerraFusion.AI.Services
                     throw new InvalidOperationException($"Dataset {datasetId} not found");
                 }
 
-                // Generate query embedding
-                var queryEmbedding = await GenerateEmbeddingAsync(
+                // Generate query embedding using the embedding service
+                var queryEmbedding = await _embeddingService.GenerateEmbeddingAsync(
                     query,
-                    dataset.EmbeddingProvider,
                     dataset.EmbeddingModel);
 
                 // Search for similar embeddings using the repository
@@ -435,55 +438,11 @@ namespace TerraFusion.AI.Services
         }
 
         /// <summary>
-        /// Generate embedding for text (simulated - in production, call embedding API)
-        /// </summary>
-        private async System.Threading.Tasks.Task<float[]> GenerateEmbeddingAsync(
-            string text,
-            string provider,
-            string model)
-        {
-            // PRODUCTION NOTE: This is simulated
-            // In production, implement actual embedding generation:
-            // - OpenAI: using OpenAI .NET SDK (CreateEmbeddingAsync)
-            // - Sentence-Transformers: using ONNX Runtime or Python interop
-            // - Azure: using Azure OpenAI SDK
-
-            await Task.Delay(10); // Simulate API call
-
-            var dimension = GetVectorDimension(model);
-            var embedding = new float[dimension];
-
-            // Generate random embedding (simulated)
-            var random = new Random(text.GetHashCode());
-            for (int i = 0; i < dimension; i++)
-            {
-                embedding[i] = (float)(random.NextDouble() * 2 - 1); // Random values between -1 and 1
-            }
-
-            // Normalize (unit vector)
-            var magnitude = Math.Sqrt(embedding.Sum(x => x * x));
-            for (int i = 0; i < dimension; i++)
-            {
-                embedding[i] /= (float)magnitude;
-            }
-
-            return embedding;
-        }
-
-        /// <summary>
-        /// Get vector dimension for embedding model
+        /// Get vector dimension for embedding model (delegates to embedding service)
         /// </summary>
         private int GetVectorDimension(string model)
         {
-            return model switch
-            {
-                "text-embedding-3-small" => 1536,
-                "text-embedding-3-large" => 3072,
-                "text-embedding-ada-002" => 1536,
-                "all-MiniLM-L6-v2" => 384,
-                "all-mpnet-base-v2" => 768,
-                _ => DefaultVectorDimension
-            };
+            return _embeddingService.GetVectorDimension(model);
         }
     }
 }

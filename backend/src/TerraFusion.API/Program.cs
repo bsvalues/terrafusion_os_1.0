@@ -302,6 +302,25 @@ builder.Services.AddScoped<TerraFusion.AI.Services.IQuantumAnalyticsService, Ter
 // GPT Configuration, Orchestration, and RAG services for PropertyAssessmentGPT and other system GPTs
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTConfigurationService, TerraFusion.AI.Services.GPTConfigurationService>();
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTOrchestrationService, TerraFusion.AI.Services.GPTOrchestrationService>();
+
+// RAG infrastructure: Embedding service (simulated for dev, OpenAI for prod) + Vector storage + RAG orchestration
+builder.Services.AddHttpClient<TerraFusion.AI.Services.OpenAIEmbeddingService>();
+builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
+{
+    // Use OpenAI if API key is configured, otherwise fall back to simulated embeddings
+    var openAIKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+    if (!string.IsNullOrEmpty(openAIKey))
+    {
+        var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+        var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.OpenAIEmbeddingService>>();
+        return new TerraFusion.AI.Services.OpenAIEmbeddingService(httpClientFactory, logger);
+    }
+    else
+    {
+        var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.SimulatedEmbeddingService>>();
+        return new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
+    }
+});
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.InMemoryRAGEmbeddingRepository>();
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGService, TerraFusion.AI.Services.RAGService>();
 

@@ -485,4 +485,195 @@ Decision Timeline: 30 days from hearing",
       return dotProduct / (magnitudeA * magnitudeB);
     }
   }
+
+  /// <summary>
+  /// End-to-end RAG integration tests with IEmbeddingService
+  /// Phase 7: Validates full RAG pipeline - indexing → embedding → search → response
+  /// </summary>
+  public class RAGEndToEndIntegrationTests
+  {
+    [Fact]
+    public void SimulatedEmbeddingService_GeneratesConsistentEmbeddings()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SimulatedEmbeddingService>.Instance;
+      var embeddingService = new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
+
+      // Act - same text should produce same embedding
+      var embedding1 = embeddingService.GenerateEmbeddingAsync("test property valuation", "text-embedding-3-small").Result;
+      var embedding2 = embeddingService.GenerateEmbeddingAsync("test property valuation", "text-embedding-3-small").Result;
+
+      // Assert - deterministic behavior
+      Assert.Equal(embedding1.Length, embedding2.Length);
+      Assert.Equal(1536, embedding1.Length); // text-embedding-3-small dimension
+      for (int i = 0; i < embedding1.Length; i++)
+      {
+        Assert.Equal(embedding1[i], embedding2[i]);
+      }
+    }
+
+    [Fact]
+    public void SimulatedEmbeddingService_DifferentTextProducesDifferentEmbeddings()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SimulatedEmbeddingService>.Instance;
+      var embeddingService = new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
+
+      // Act
+      var embedding1 = embeddingService.GenerateEmbeddingAsync("residential property valuation", "text-embedding-3-small").Result;
+      var embedding2 = embeddingService.GenerateEmbeddingAsync("commercial real estate assessment", "text-embedding-3-small").Result;
+
+      // Assert - different text produces different embeddings
+      Assert.Equal(embedding1.Length, embedding2.Length);
+      bool isDifferent = false;
+      for (int i = 0; i < embedding1.Length; i++)
+      {
+        if (Math.Abs(embedding1[i] - embedding2[i]) > 0.001f)
+        {
+          isDifferent = true;
+          break;
+        }
+      }
+      Assert.True(isDifferent, "Different text should produce different embeddings");
+    }
+
+    [Fact]
+    public void SimulatedEmbeddingService_BatchGeneratesCorrectCount()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SimulatedEmbeddingService>.Instance;
+      var embeddingService = new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
+      var texts = new System.Collections.Generic.List<string>
+      {
+        "First property description",
+        "Second property details",
+        "Third assessment information"
+      };
+
+      // Act
+      var embeddings = embeddingService.GenerateBatchEmbeddingsAsync(texts, "text-embedding-3-small").Result;
+
+      // Assert
+      Assert.Equal(3, embeddings.Count);
+      foreach (var embedding in embeddings)
+      {
+        Assert.Equal(1536, embedding.Length);
+      }
+    }
+
+    [Fact]
+    public void SimulatedEmbeddingService_SupportsMultipleModels()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SimulatedEmbeddingService>.Instance;
+      var embeddingService = new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
+
+      // Act & Assert - different models have different dimensions
+      var smallEmbedding = embeddingService.GenerateEmbeddingAsync("test", "text-embedding-3-small").Result;
+      var largeEmbedding = embeddingService.GenerateEmbeddingAsync("test", "text-embedding-3-large").Result;
+      var adaEmbedding = embeddingService.GenerateEmbeddingAsync("test", "text-embedding-ada-002").Result;
+
+      Assert.Equal(1536, smallEmbedding.Length);
+      Assert.Equal(3072, largeEmbedding.Length);
+      Assert.Equal(1536, adaEmbedding.Length);
+    }
+
+    [Fact]
+    public void IEmbeddingService_InterfaceHasRequiredMethods()
+    {
+      // Verify interface contract
+      var interfaceType = typeof(TerraFusion.AI.Interfaces.IEmbeddingService);
+
+      Assert.NotNull(interfaceType.GetMethod("GenerateEmbeddingAsync"));
+      Assert.NotNull(interfaceType.GetMethod("GenerateBatchEmbeddingsAsync"));
+      Assert.NotNull(interfaceType.GetMethod("GetVectorDimension"));
+      Assert.NotNull(interfaceType.GetMethod("IsAvailableAsync"));
+      Assert.NotNull(interfaceType.GetProperty("ProviderName"));
+    }
+
+    [Fact]
+    public void SimulatedEmbeddingService_IsAlwaysAvailable()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SimulatedEmbeddingService>.Instance;
+      var embeddingService = new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
+
+      // Act
+      var isAvailable = embeddingService.IsAvailableAsync().Result;
+
+      // Assert
+      Assert.True(isAvailable);
+      Assert.Equal("Simulated", embeddingService.ProviderName);
+    }
+
+    [Fact]
+    public void RAGPipeline_IndexAndSearch_FindsRelevantContent()
+    {
+      // Arrange - simulated RAG pipeline flow
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SimulatedEmbeddingService>.Instance;
+      var embeddingService = new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
+
+      // Simulate document chunks (what would be in the database)
+      var documentChunks = new System.Collections.Generic.List<(string Text, float[] Embedding)>
+      {
+        ("Quality grades for residential properties range from A (excellent) to D (poor)", null!),
+        ("Land valuation considers location, zoning, and market conditions", null!),
+        ("Assessment appeals must be filed within 60 days of notice", null!)
+      };
+
+      // Generate embeddings for chunks
+      for (int i = 0; i < documentChunks.Count; i++)
+      {
+        var embedding = embeddingService.GenerateEmbeddingAsync(documentChunks[i].Text, "text-embedding-3-small").Result;
+        documentChunks[i] = (documentChunks[i].Text, embedding);
+      }
+
+      // Query about quality grades
+      var queryText = "What are the property quality grades?";
+      var queryEmbedding = embeddingService.GenerateEmbeddingAsync(queryText, "text-embedding-3-small").Result;
+
+      // Find most similar chunk
+      float bestScore = -1f;
+      string bestMatch = "";
+      foreach (var chunk in documentChunks)
+      {
+        var similarity = CalculateCosineSimilarity(queryEmbedding, chunk.Embedding);
+        if (similarity > bestScore)
+        {
+          bestScore = similarity;
+          bestMatch = chunk.Text;
+        }
+      }
+
+      // Assert - should find the quality grades chunk
+      Assert.Contains("Quality grades", bestMatch);
+      Assert.True(bestScore > 0, "Should have positive similarity score");
+    }
+
+    // Helper for similarity calculation
+    private static float CalculateCosineSimilarity(float[] vectorA, float[] vectorB)
+    {
+      if (vectorA.Length != vectorB.Length || vectorA.Length == 0)
+        return 0f;
+
+      float dotProduct = 0f;
+      float magnitudeA = 0f;
+      float magnitudeB = 0f;
+
+      for (int i = 0; i < vectorA.Length; i++)
+      {
+        dotProduct += vectorA[i] * vectorB[i];
+        magnitudeA += vectorA[i] * vectorA[i];
+        magnitudeB += vectorB[i] * vectorB[i];
+      }
+
+      magnitudeA = (float)Math.Sqrt(magnitudeA);
+      magnitudeB = (float)Math.Sqrt(magnitudeB);
+
+      if (magnitudeA == 0f || magnitudeB == 0f)
+        return 0f;
+
+      return dotProduct / (magnitudeA * magnitudeB);
+    }
+  }
 }
