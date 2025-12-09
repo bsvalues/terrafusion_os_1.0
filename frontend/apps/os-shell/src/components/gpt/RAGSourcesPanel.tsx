@@ -1,11 +1,14 @@
 /**
  * RAGSourcesPanel Component
  * Phase 11: Display RAG chunk sources with expandable details
+ * Phase 13: ExplainGPT integration - "Explain this view" affordance
  * Constellation: Radiant (UX) + Arc (RAG) + Sentinel (Audit)
  */
 
 import { useState } from 'react';
 import type { RAGChunkDetailDto } from '../../lib/api/gptClient';
+import { ExplainPanel, type ExplainPanelState } from '../common/ExplainPanel';
+import { explainContext } from '../../api/explainApi';
 
 interface RAGSourcesPanelProps {
   chunks: RAGChunkDetailDto[];
@@ -173,6 +176,34 @@ function DocumentGroup({ title, chunks }: { title: string; chunks: RAGChunkDetai
  */
 export function RAGSourcesPanel({ chunks, defaultExpanded = true }: RAGSourcesPanelProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const [explainState, setExplainState] = useState<ExplainPanelState>({ state: 'idle' });
+
+  /**
+   * Handle "Explain this view" action - fetch ExplainGPT context for RAGTracePanel
+   */
+  const handleExplainThisView = async () => {
+    setExplainState({ state: 'loading' });
+    try {
+      const response = await explainContext({
+        contextType: 'Component',
+        contextId: 'RAGTracePanel',
+        metadata: { chunkCount: chunks.length },
+      });
+      setExplainState({ state: 'ready', response });
+    } catch (err) {
+      setExplainState({
+        state: 'error',
+        error: err instanceof Error ? err.message : 'Failed to fetch explanation',
+      });
+    }
+  };
+
+  /**
+   * Close the ExplainPanel
+   */
+  const handleCloseExplain = () => {
+    setExplainState({ state: 'idle' });
+  };
 
   if (!chunks || chunks.length === 0) {
     return null;
@@ -202,6 +233,18 @@ export function RAGSourcesPanel({ chunks, defaultExpanded = true }: RAGSourcesPa
             {chunks.length !== 1 ? 's' : ''}
           </span>
           <ScoreBadge score={avgScore} />
+          {/* Explain this view button (Phase 13) */}
+          <button
+            type='button'
+            onClick={(e) => {
+              e.stopPropagation();
+              void handleExplainThisView();
+            }}
+            className='rounded-full border border-fuchsia-500/50 bg-fuchsia-500/10 px-1.5 py-0.5 text-[0.55rem] text-fuchsia-300 transition-all hover:bg-fuchsia-500/20 hover:shadow-[0_0_8px_rgba(217,70,239,0.3)]'
+            title='Explain this view'
+          >
+            ❓
+          </button>
           <span className='text-emerald-400/60 transition-transform duration-200'>
             {isExpanded ? '▲' : '▼'}
           </span>
@@ -222,6 +265,9 @@ export function RAGSourcesPanel({ chunks, defaultExpanded = true }: RAGSourcesPa
           </div>
         </div>
       )}
+
+      {/* ExplainPanel overlay (Phase 13) */}
+      <ExplainPanel state={explainState} onClose={handleCloseExplain} />
     </div>
   );
 }

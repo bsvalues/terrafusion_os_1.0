@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { ExplainPanelState } from '../../components/common/ExplainPanel';
 import {
   ConversationDto,
   createConversation,
@@ -35,6 +36,9 @@ export const GptStudioView: React.FC = () => {
 
   // Phase 11: Show Sources toggle for RAG traceability
   const [showSources, setShowSources] = useState(false);
+
+  // Phase 13: ExplainGPT state
+  const [explainState, setExplainState] = useState<ExplainPanelState>({ status: 'idle' });
 
   // Load system GPTs on mount
   useEffect(() => {
@@ -185,6 +189,33 @@ export const GptStudioView: React.FC = () => {
    */
   const showAssessorFlows = selectedGpt?.key === 'PropertyAssessmentGPT' && conversation;
 
+  /**
+   * Handle "Explain this" action - fetch ExplainGPT context for GPTStudio
+   */
+  const handleExplainThis = async () => {
+    setExplainState({ state: 'loading' });
+    try {
+      const response = await explainContext({
+        contextType: 'View',
+        contextId: 'GPTStudio',
+        metadata: { activeGpt: selectedGpt?.key },
+      });
+      setExplainState({ state: 'ready', response });
+    } catch (err) {
+      setExplainState({
+        state: 'error',
+        error: err instanceof Error ? err.message : 'Failed to fetch explanation',
+      });
+    }
+  };
+
+  /**
+   * Close the ExplainPanel
+   */
+  const handleCloseExplain = () => {
+    setExplainState({ state: 'idle' });
+  };
+
   return (
     <div
       data-testid='gpt-studio-view'
@@ -265,6 +296,14 @@ export const GptStudioView: React.FC = () => {
             <span className='rounded-full border border-slate-700/60 bg-slate-950/70 px-2 py-0.5'>
               Conversation {conversation.id.substring(0, 8)}…
             </span>
+            {/* Explain This button (Phase 13) */}
+            <button
+              onClick={() => void handleExplainThis()}
+              className='rounded-full border border-fuchsia-500/50 bg-fuchsia-500/10 px-2 py-0.5 text-[0.6rem] text-fuchsia-300 transition-all hover:bg-fuchsia-500/20 hover:shadow-[0_0_12px_rgba(217,70,239,0.4)]'
+              title='Explain this view'
+            >
+              ❓ Explain
+            </button>
           </div>
         )}
       </div>
@@ -459,6 +498,9 @@ export const GptStudioView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* ExplainPanel overlay (Phase 13) */}
+      <ExplainPanel state={explainState} onClose={handleCloseExplain} />
     </div>
   );
 };
