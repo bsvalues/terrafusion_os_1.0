@@ -111,6 +111,7 @@ namespace TerraFusion.AI.Services
                 decimal? ragScore = null;
                 int? ragRetrievalTimeMs = null;
                 int ragChunksRetrieved = 0;
+                List<RAGChunkDetail>? ragChunkDetails = null; // Phase 11: Chunk details for audit
 
                 if (gptConfig.EnableRAG && gptConfig.RAGDatasetId.HasValue)
                 {
@@ -128,9 +129,10 @@ namespace TerraFusion.AI.Services
                     ragDocuments = ragResult.DocumentIds;
                     ragScore = ragResult.AverageScore;
                     ragChunksRetrieved = ragResult.ChunksRetrieved;
+                    ragChunkDetails = ragResult.ChunkDetails; // Phase 11: Capture chunk details
 
-                    _logger.LogInformation("RAG context retrieved: {DocumentCount} documents, score: {Score}, time: {TimeMs}ms",
-                        ragDocuments.Count, ragScore, ragRetrievalTimeMs);
+                    _logger.LogInformation("RAG context retrieved: {DocumentCount} documents, {ChunkCount} chunks, score: {Score}, time: {TimeMs}ms",
+                        ragDocuments.Count, ragChunkDetails?.Count ?? 0, ragScore, ragRetrievalTimeMs);
                 }
 
                 // Call LLM provider (with timing for audit)
@@ -214,6 +216,17 @@ namespace TerraFusion.AI.Services
                     RAGUsed = gptConfig.EnableRAG && ragDocuments != null && ragDocuments.Count > 0,
                     RAGDatasetId = gptConfig.RAGDatasetId,
                     RAGDocumentIds = ragDocuments != null ? JsonSerializer.Serialize(ragDocuments) : null,
+                    RAGChunkDetails = ragChunkDetails != null && ragChunkDetails.Count > 0
+                        ? JsonSerializer.Serialize(ragChunkDetails.Select(c => new
+                        {
+                            chunkId = c.ChunkId,
+                            documentTitle = c.DocumentTitle,
+                            sourceUrl = c.SourceUrl,
+                            textSnippet = c.TextSnippet,
+                            score = c.Score,
+                            chunkIndex = c.ChunkIndex
+                        }))
+                        : null, // Phase 11: Serialize chunk details for audit trail
                     RAGChunksRetrieved = ragChunksRetrieved,
                     RAGAverageScore = ragScore,
                     EmbeddingProvider = gptConfig.EnableRAG ? _embeddingService.ProviderName : null,
@@ -674,6 +687,23 @@ This information comes from the Benton County property assessment knowledge base
                 PeriodStart = start,
                 PeriodEnd = end
             };
+        }
+
+        /// <summary>
+        /// Phase 11: Get audit record by message ID for RAG traceability
+        /// </summary>
+        public async Task<GPTAudit?> GetAuditByMessageIdAsync(int messageId)
+        {
+            try
+            {
+                return await _context.GPTAudits()
+                    .FirstOrDefaultAsync(a => a.MessageId == messageId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving audit for message {MessageId}", messageId);
+                return null;
+            }
         }
     }
 }

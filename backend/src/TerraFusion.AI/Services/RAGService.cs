@@ -293,12 +293,25 @@ namespace TerraFusion.AI.Services
 
                 var avgScore = searchResults.Average(r => (decimal)r.SimilarityScore);
 
+                // Phase 11: Build chunk details for audit traceability
+                var chunkDetails = searchResults.Select(r => new RAGChunkDetail
+                {
+                    ChunkId = r.EmbeddingId,
+                    DocumentTitle = r.DocumentTitle ?? "Unknown",
+                    SourceUrl = r.SourceUrl,
+                    TextSnippet = r.ChunkText ?? string.Empty, // Auto-truncated by setter
+                    FullText = r.ChunkText,
+                    Score = (decimal)r.SimilarityScore,
+                    ChunkIndex = r.ChunkIndex
+                }).ToList();
+
                 var ragResult = new RAGSearchResult
                 {
                     Context = context,
                     DocumentIds = searchResults.Select(r => r.DocumentId.ToString()).Distinct().ToList(),
                     AverageScore = avgScore,
-                    ChunksRetrieved = searchResults.Count
+                    ChunksRetrieved = searchResults.Count,
+                    ChunkDetails = chunkDetails // Phase 11: Include chunk details
                 };
 
                 _logger.LogInformation("RAG search completed: {ChunkCount} chunks retrieved, avg score: {Score:F2}",

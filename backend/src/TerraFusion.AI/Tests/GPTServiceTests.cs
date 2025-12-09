@@ -900,6 +900,148 @@ Decision Timeline: 30 days from hearing",
   }
 
   /// <summary>
+  /// Phase 11: RAGChunkDetail Model Tests
+  /// Tests for the new chunk detail model used in audit traceability
+  /// </summary>
+  public class RAGChunkDetailTests
+  {
+    [Fact]
+    public void RAGChunkDetail_NewInstance_HasCorrectDefaults()
+    {
+      // Arrange & Act
+      var detail = new TerraFusion.AI.Interfaces.RAGChunkDetail();
+
+      // Assert
+      Assert.Equal(0, detail.ChunkId);
+      Assert.Equal(string.Empty, detail.DocumentTitle);
+      Assert.Equal(string.Empty, detail.TextSnippet);
+      Assert.Equal(0m, detail.Score);
+      Assert.Equal(0, detail.ChunkIndex);
+      Assert.Null(detail.SourceUrl);
+      Assert.Null(detail.FullText);
+    }
+
+    [Fact]
+    public void RAGChunkDetail_SetProperties_RetainsValues()
+    {
+      // Arrange & Act
+      var detail = new TerraFusion.AI.Interfaces.RAGChunkDetail
+      {
+        ChunkId = 42,
+        DocumentTitle = "Benton CAMA Guide",
+        SourceUrl = "https://benton.county/cama-guide",
+        TextSnippet = "Property assessment follows RCW 84.40...",
+        FullText = "Property assessment follows RCW 84.40 guidelines for accurate valuation.",
+        Score = 0.95m,
+        ChunkIndex = 3
+      };
+
+      // Assert
+      Assert.Equal(42, detail.ChunkId);
+      Assert.Equal("Benton CAMA Guide", detail.DocumentTitle);
+      Assert.Equal("https://benton.county/cama-guide", detail.SourceUrl);
+      Assert.Contains("RCW 84.40", detail.TextSnippet);
+      Assert.NotNull(detail.FullText);
+      Assert.Equal(0.95m, detail.Score);
+      Assert.Equal(3, detail.ChunkIndex);
+    }
+
+    [Fact]
+    public void RAGChunkDetail_TextSnippet_TruncatesLongContent()
+    {
+      // Arrange
+      var longText = new string('A', 500);
+
+      // Act
+      var detail = new TerraFusion.AI.Interfaces.RAGChunkDetail { TextSnippet = longText };
+
+      // Assert - Implementation truncates to 200 chars
+      Assert.True(detail.TextSnippet.Length <= 200);
+      Assert.EndsWith("...", detail.TextSnippet);
+    }
+
+    [Fact]
+    public void RAGChunkDetail_TextSnippet_PreservesShortContent()
+    {
+      // Arrange
+      var shortText = "This is a short snippet.";
+
+      // Act
+      var detail = new TerraFusion.AI.Interfaces.RAGChunkDetail { TextSnippet = shortText };
+
+      // Assert
+      Assert.Equal(shortText, detail.TextSnippet);
+      Assert.False(detail.TextSnippet.EndsWith("..."));
+    }
+  }
+
+  /// <summary>
+  /// Phase 11: RAGSearchResult Enhancement Tests
+  /// Tests for ChunkDetails integration into search results
+  /// </summary>
+  public class RAGSearchResultEnhancementTests
+  {
+    [Fact]
+    public void RAGSearchResult_ChunkDetails_DefaultsToEmptyList()
+    {
+      // Arrange & Act
+      var result = new TerraFusion.AI.Interfaces.RAGSearchResult();
+
+      // Assert
+      Assert.NotNull(result.ChunkDetails);
+      Assert.Empty(result.ChunkDetails);
+    }
+
+    [Fact]
+    public void RAGSearchResult_ChunkDetails_CanBePopulated()
+    {
+      // Arrange & Act
+      var result = new TerraFusion.AI.Interfaces.RAGSearchResult
+      {
+        Context = "Combined context from chunks",
+        DocumentIds = new List<string> { "doc-1", "doc-2" },
+        AverageScore = 0.87m,
+        ChunksRetrieved = 3,
+        ChunkDetails = new List<TerraFusion.AI.Interfaces.RAGChunkDetail>
+        {
+          new() { ChunkId = 1, DocumentTitle = "Doc 1", TextSnippet = "Chunk 1 text", Score = 0.92m },
+          new() { ChunkId = 2, DocumentTitle = "Doc 1", TextSnippet = "Chunk 2 text", Score = 0.85m },
+          new() { ChunkId = 3, DocumentTitle = "Doc 2", TextSnippet = "Chunk 3 text", Score = 0.84m }
+        }
+      };
+
+      // Assert
+      Assert.Equal(3, result.ChunkDetails.Count);
+      Assert.Equal(0.92m, result.ChunkDetails[0].Score);
+      Assert.Equal("Doc 1", result.ChunkDetails[0].DocumentTitle);
+      Assert.Equal("Doc 2", result.ChunkDetails[2].DocumentTitle);
+    }
+
+    [Fact]
+    public void RAGSearchResult_ChunkDetails_CanSerializeToJson()
+    {
+      // Arrange
+      var result = new TerraFusion.AI.Interfaces.RAGSearchResult
+      {
+        ChunkDetails = new List<TerraFusion.AI.Interfaces.RAGChunkDetail>
+        {
+          new() { ChunkId = 1, DocumentTitle = "Guide", TextSnippet = "Important text...", Score = 0.9m }
+        }
+      };
+
+      // Act
+      var json = System.Text.Json.JsonSerializer.Serialize(result.ChunkDetails);
+      var deserialized = System.Text.Json.JsonSerializer.Deserialize<List<TerraFusion.AI.Interfaces.RAGChunkDetail>>(json);
+
+      // Assert
+      Assert.NotNull(deserialized);
+      Assert.Single(deserialized);
+      Assert.Equal("Guide", deserialized[0].DocumentTitle);
+      Assert.Equal(0.9m, deserialized[0].Score);
+    }
+  }
+
+  /// <summary>
   /// Phase 9 Tests: GPT/RAG Configuration and Operational Hardening
   /// Arc Constellation + Herald Constellation collaboration
   /// </summary>

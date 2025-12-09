@@ -92,5 +92,56 @@ namespace TerraFusion.AI.Interfaces
         public List<string> DocumentIds { get; set; } = new();
         public decimal AverageScore { get; set; }
         public int ChunksRetrieved { get; set; }
+
+        /// <summary>
+        /// Phase 11: Detailed chunk information for audit traceability
+        /// </summary>
+        public List<RAGChunkDetail> ChunkDetails { get; set; } = new();
+    }
+
+    /// <summary>
+    /// Phase 11: Detailed information about a retrieved RAG chunk for audit trail
+    /// </summary>
+    public class RAGChunkDetail
+    {
+        /// <summary>
+        /// Chunk identifier (embedding ID)
+        /// </summary>
+        public int ChunkId { get; set; }
+
+        /// <summary>
+        /// Title of the source document
+        /// </summary>
+        public string DocumentTitle { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Source URL if available
+        /// </summary>
+        public string? SourceUrl { get; set; }
+
+        /// <summary>
+        /// Chunk text snippet (truncated to 200 chars for preview)
+        /// </summary>
+        private string _textSnippet = string.Empty;
+        public string TextSnippet
+        {
+            get => _textSnippet;
+            set => _textSnippet = value.Length > 200 ? value.Substring(0, 197) + "..." : value;
+        }
+
+        /// <summary>
+        /// Full chunk text (available for detailed view)
+        /// </summary>
+        public string? FullText { get; set; }
+
+        /// <summary>
+        /// Similarity score (0-1)
+        /// </summary>
+        public decimal Score { get; set; }
+
+        /// <summary>
+        /// Position within the document
+        /// </summary>
+        public int ChunkIndex { get; set; }
     }
 }

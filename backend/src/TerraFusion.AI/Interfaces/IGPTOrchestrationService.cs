@@ -101,6 +101,11 @@ namespace TerraFusion.AI.Interfaces
             int countyId,
             DateTime? startDate = null,
             DateTime? endDate = null);
+
+        /// <summary>
+        /// Phase 11: Get audit record by message ID for RAG traceability
+        /// </summary>
+        System.Threading.Tasks.Task<GPTAudit?> GetAuditByMessageIdAsync(int messageId);
     }
 
     /// <summary>

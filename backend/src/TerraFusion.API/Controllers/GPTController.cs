@@ -711,6 +711,21 @@ namespace TerraFusion.API.Controllers
                             traceMsg.RAGUsed = true;
                             traceMsg.RAGDocuments = docIds;
                             traceMsg.RAGScore = msg.RAGScore;
+
+                            // Phase 11: Try to get chunk details from GPTAudit record
+                            var audit = await _orchestrationService.GetAuditByMessageIdAsync(msg.Id);
+                            if (audit != null && !string.IsNullOrEmpty(audit.RAGChunkDetails))
+                            {
+                                try
+                                {
+                                    traceMsg.RAGChunkDetails = System.Text.Json.JsonSerializer.Deserialize<List<RAGChunkDetailDto>>(audit.RAGChunkDetails);
+                                }
+                                catch
+                                {
+                                    // If deserialization fails, leave chunk details null
+                                    _logger.LogWarning("Failed to deserialize RAGChunkDetails for message {MessageId}", msg.Id);
+                                }
+                            }
                         }
                         catch
                         {
@@ -828,6 +843,7 @@ namespace TerraFusion.API.Controllers
             public DateTime CompletedAt { get; set; }
         }
 
+
         // Phase 11: Conversation Trace DTOs
         public class ConversationTraceResponse
         {
@@ -856,8 +872,25 @@ namespace TerraFusion.API.Controllers
             public bool RAGUsed { get; set; }
             public List<string>? RAGDocuments { get; set; }
             public decimal? RAGScore { get; set; }
+
+            // Phase 11: Detailed chunk information for audit trail
+            public List<RAGChunkDetailDto>? RAGChunkDetails { get; set; }
+        }
+
+        /// <summary>
+        /// Phase 11: Chunk detail for RAG audit traceability
+        /// </summary>
+        public class RAGChunkDetailDto
+        {
+            public int ChunkId { get; set; }
+            public string DocumentTitle { get; set; } = string.Empty;
+            public string? SourceUrl { get; set; }
+            public string TextSnippet { get; set; } = string.Empty;
+            public decimal Score { get; set; }
+            public int ChunkIndex { get; set; }
         }
 
         #endregion
     }
 }
+
