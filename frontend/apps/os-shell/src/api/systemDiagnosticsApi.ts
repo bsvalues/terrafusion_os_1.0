@@ -135,3 +135,34 @@ export async function getGptHealth(): Promise<{ healthy: boolean; message: strin
 
   return { healthy: true, message: 'All systems operational' };
 }
+
+/**
+ * Download AI Health Snapshot as JSON file.
+ * Phase 16: One-click audit artifact for compliance and troubleshooting.
+ */
+export async function downloadHealthSnapshot(): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/gpt/system/diagnostics/download`, {
+    method: 'GET',
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`Health snapshot download failed (${response.status}): ${errorText}`);
+  }
+
+  // Extract filename from Content-Disposition header or generate default
+  const contentDisposition = response.headers.get('Content-Disposition');
+  const filenameMatch = contentDisposition?.match(/filename="?([^"]+)"?/);
+  const filename = filenameMatch?.[1] || `terrafusion_ai_health_snapshot_${Date.now()}.json`;
+
+  // Create blob and trigger download
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+}

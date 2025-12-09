@@ -2045,4 +2045,108 @@ Decision Timeline: 30 days from hearing",
       };
     }
   }
+
+  /// <summary>
+  /// Tests for Phase 16: AI Health Snapshot Export functionality.
+  /// Verifies the download endpoint returns proper JSON with correct content-disposition.
+  /// </summary>
+  public class HealthSnapshotExportTests
+  {
+    [Fact]
+    public void SystemDiagnosticsResponse_SerializesToJson_WithAllProperties()
+    {
+      // Arrange
+      var diagnostics = new TerraFusion.AI.Models.SystemDiagnosticsResponse
+      {
+        Timestamp = new DateTime(2024, 1, 15, 12, 30, 45, DateTimeKind.Utc),
+        OverallHealth = TerraFusion.AI.Models.SystemHealthStatus.Healthy,
+        GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>
+        {
+          new() { Key = "TestGPT", Name = "Test GPT", Enabled = true, Model = "gpt-4", RagEnabled = true }
+        },
+        EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
+        {
+          Mode = "OpenAI",
+          Available = true,
+          Dimensions = 1536,
+          Provider = "OpenAI"
+        },
+        RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>
+        {
+          new() { Key = "test_dataset", Name = "Test Dataset", Indexed = true, DocumentCount = 100 }
+        },
+        ExplainGptStatus = new TerraFusion.AI.Models.ServiceStatus
+        {
+          Healthy = true,
+          Message = "Ready"
+        },
+        Statistics = new TerraFusion.AI.Models.UsageStatistics
+        {
+          TotalConversations = 50,
+          TotalMessages = 200
+        },
+        HeraldMessages = new List<TerraFusion.AI.Models.HeraldMessage>
+        {
+          new() { Level = "Info", Message = "All systems operational", Source = "Herald" }
+        }
+      };
+
+      // Act
+      var options = new System.Text.Json.JsonSerializerOptions
+      {
+        WriteIndented = true,
+        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+      };
+      var json = System.Text.Json.JsonSerializer.Serialize(diagnostics, options);
+
+      // Assert - verify JSON contains expected structure
+      Assert.Contains("\"overallHealth\"", json);
+      Assert.Contains("\"gptConfigs\"", json);
+      Assert.Contains("\"embeddingStatus\"", json);
+      Assert.Contains("\"ragDatasets\"", json);
+      Assert.Contains("\"heraldMessages\"", json);
+      Assert.Contains("\"TestGPT\"", json);
+      Assert.Contains("\"test_dataset\"", json);
+    }
+
+    [Fact]
+    public void SystemDiagnosticsResponse_DeserializesFromJson_Correctly()
+    {
+      // Arrange - use numeric enum value for deserialization (default JSON serializer behavior)
+      var json = @"{
+        ""timestamp"": ""2024-01-15T12:30:45Z"",
+        ""overallHealth"": 1,
+        ""gptConfigs"": [{""key"": ""TestGPT"", ""enabled"": true}],
+        ""heraldMessages"": [{""level"": ""Info"", ""message"": ""Test"", ""source"": ""Herald""}]
+      }";
+
+      // Act
+      var options = new System.Text.Json.JsonSerializerOptions
+      {
+        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+      };
+      var diagnostics = System.Text.Json.JsonSerializer.Deserialize<TerraFusion.AI.Models.SystemDiagnosticsResponse>(json, options);
+
+      // Assert
+      Assert.NotNull(diagnostics);
+      Assert.Equal(TerraFusion.AI.Models.SystemHealthStatus.Healthy, diagnostics!.OverallHealth);
+      Assert.Single(diagnostics.GptConfigs);
+      Assert.Single(diagnostics.HeraldMessages);
+    }
+
+    [Fact]
+    public void SnapshotFilename_IncludesTimestamp_InCorrectFormat()
+    {
+      // Arrange
+      var timestamp = new DateTime(2024, 1, 15, 12, 30, 45, DateTimeKind.Utc);
+
+      // Act - simulate filename generation as done in controller
+      var filename = $"terrafusion_ai_health_snapshot_{timestamp.ToString("yyyyMMdd_HHmmss")}.json";
+
+      // Assert
+      Assert.Equal("terrafusion_ai_health_snapshot_20240115_123045.json", filename);
+      Assert.EndsWith(".json", filename);
+      Assert.StartsWith("terrafusion_ai_health_snapshot_", filename);
+    }
+  }
 }

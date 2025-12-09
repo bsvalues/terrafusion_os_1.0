@@ -899,6 +899,56 @@ namespace TerraFusion.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Download AI Health Snapshot as JSON file.
+        /// Phase 16: One-click audit artifact for compliance and troubleshooting.
+        /// Returns the same diagnostics DTO with Content-Disposition: attachment.
+        /// </summary>
+        [HttpGet("system/diagnostics/download")]
+        [AllowAnonymous] // Allow download without auth for health monitoring exports
+        public async System.Threading.Tasks.Task<IActionResult> DownloadSystemDiagnostics()
+        {
+            try
+            {
+                _logger.LogInformation("SystemGPT: Generating downloadable health snapshot");
+
+                // Get the same diagnostics as the regular endpoint
+                var diagnosticsResult = await GetSystemDiagnostics();
+                if (diagnosticsResult.Result is not OkObjectResult okResult)
+                {
+                    return StatusCode(500, new { error = "Failed to generate diagnostics for download" });
+                }
+
+                var diagnostics = okResult.Value as TerraFusion.AI.Models.SystemDiagnosticsResponse;
+                if (diagnostics == null)
+                {
+                    return StatusCode(500, new { error = "Invalid diagnostics response" });
+                }
+
+                // Serialize to indented JSON for human readability
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                };
+                var jsonContent = System.Text.Json.JsonSerializer.Serialize(diagnostics, options);
+                var bytes = System.Text.Encoding.UTF8.GetBytes(jsonContent);
+
+                // Generate filename with timestamp
+                var timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
+                var filename = $"terrafusion_ai_health_snapshot_{timestamp}.json";
+
+                _logger.LogInformation("SystemGPT: Health snapshot download generated ({ByteCount} bytes)", bytes.Length);
+
+                return File(bytes, "application/json", filename);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating health snapshot download");
+                return StatusCode(500, new { error = "Failed to generate health snapshot" });
+            }
+        }
+
         #endregion
 
         #region ExplainGPT (Phase 13 - Self-Explaining TerraFusion)

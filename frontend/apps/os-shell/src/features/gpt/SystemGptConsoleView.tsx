@@ -98,6 +98,23 @@ export const SystemGptConsoleView: React.FC = () => {
   };
 
   /**
+   * Download AI Health Snapshot - Phase 16
+   */
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadSnapshot = async () => {
+    setDownloading(true);
+    try {
+      await downloadHealthSnapshot();
+    } catch (err) {
+      console.error('Download failed:', err);
+      // Could add toast notification here
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  /**
    * Get health status color classes
    */
   const getHealthColor = (status: SystemHealthStatus) => {
@@ -160,6 +177,16 @@ export const SystemGptConsoleView: React.FC = () => {
               <span>{diagnostics.overallHealth}</span>
             </div>
           )}
+
+          {/* Download Snapshot button - Phase 16 */}
+          <button
+            onClick={() => void handleDownloadSnapshot()}
+            disabled={downloading || !diagnostics}
+            className='rounded-full border border-sky-500/50 bg-sky-500/10 px-3 py-1 text-xs text-sky-300 transition-all hover:bg-sky-500/20 hover:shadow-[0_0_12px_rgba(14,165,233,0.4)] disabled:cursor-not-allowed disabled:opacity-50'
+            title='Download AI Health Snapshot (JSON)'
+          >
+            {downloading ? '⏳ Downloading…' : '📥 Download Snapshot'}
+          </button>
 
           {/* Explain This button */}
           <button
