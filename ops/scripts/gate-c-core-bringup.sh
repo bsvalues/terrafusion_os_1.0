@@ -2,218 +2,175 @@
 set -euo pipefail
 
 # Gate C: Core Bringup
-# Build and verify core services: backend (.NET), frontend (Node/Vite)
-# Optionally start Docker services (DB, Redis, etc.)
+# Responsibilities:
+#   - Ensure backend and frontend can build.
+#   - On non-WSL environments, start the API on a fixed port for Gate E.
+#   - Treat WSL as a "frontend/dev-only" node (backend optional).
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 ARTIFACTS_DIR="$ROOT_DIR/artifacts"
-LOG_FILE="$ARTIFACTS_DIR/logs/gate-c-core.log"
+LOG_FILE="$ARTIFACTS_DIR/logs/gate-c-core-bringup.log"
+PIDS_DIR="$ARTIFACTS_DIR/pids"
 
-mkdir -p "$ARTIFACTS_DIR/logs"
-
-ERRORS=0
-WARNINGS=0
-SKIP_DOCKER=${SKIP_DOCKER:-false}
-BUILD_ONLY=${BUILD_ONLY:-false}
+mkdir -p "$(dirname "$LOG_FILE")" "$PIDS_DIR"
 
 log() {
-  local msg="[Gate C - $(date -Iseconds)] $*"
-  echo "$msg"
-  echo "$msg" >> "$LOG_FILE"
+  echo "[Gate C - $(date -Iseconds)] $*"
+  echo "[Gate C - $(date -Iseconds)] $*" >> "$LOG_FILE"
 }
 
-log_ok() { log "✅ $*"; }
-log_warn() { log "⚠️  WARN: $*"; ((WARNINGS++)) || true; }
-log_error() { log "❌ ERROR: $*"; ((ERRORS++)) || true; }
-log_skip() { log "⏭️  SKIP: $*"; }
-log_info() { log "ℹ️  INFO: $*"; }
+errors=0
+warnings=0
 
-# Detect if running under WSL (Windows Subsystem for Linux)
+increment_error() {
+  errors=$((errors + 1))
+}
+
+increment_warning() {
+  warnings=$((warnings + 1))
+}
+
 is_wsl() {
   if grep -qi "microsoft" /proc/sys/kernel/osrelease 2>/dev/null; then
     return 0
   fi
-  if [[ -n "${WSL_INTEROP:-}" ]] || [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
+  if env | grep -qE '^WSL_INTEROP='; then
     return 0
   fi
   return 1
 }
 
-log "════════════════════════════════════════════════════════════════"
-log "Starting Gate C: Core Bringup"
-log "════════════════════════════════════════════════════════════════"
-
-# --- Backend Build (.NET) ---
-log ""
-log "--- Backend Build (.NET) ---"
-BACKEND_DIR="$ROOT_DIR/backend"
-BACKEND_SLN="$BACKEND_DIR/TerraFusion.sln"
-
-if [[ -f "$BACKEND_SLN" ]]; then
-  if command -v dotnet >/dev/null 2>&1; then
-    log "Building backend solution..."
-
-    # Restore
-    if dotnet restore "$BACKEND_SLN" --verbosity quiet 2>&1 | tee -a "$LOG_FILE"; then
-      log_ok "dotnet restore completed"
-    else
-      log_error "dotnet restore failed"
-    fi
-
-    # Build
-    if dotnet build "$BACKEND_SLN" --configuration Release --no-restore --verbosity quiet 2>&1 | tee -a "$LOG_FILE"; then
-      log_ok "dotnet build completed (Release)"
-    else
-      log_error "dotnet build failed"
-    fi
-  else
-    if is_wsl; then
-      log_info "dotnet not available in WSL - backend builds expected on Windows host"
-    else
-      log_warn "dotnet not available - skipping backend build"
-    fi
+require_cmd() {
+  local cmd="$1"
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    log "ERROR: Required command not found: $cmd"
+    increment_error
+    exit 1
   fi
-else
-  log_warn "Backend solution not found at $BACKEND_SLN"
-fi
+}
 
-# --- Frontend Build (Node/pnpm) ---
-log ""
-log "--- Frontend Build (Node) ---"
+# Paths – adjust if needed
+BACKEND_API_DIR="$ROOT_DIR/backend/src/TerraFusion.API"
 FRONTEND_DIR="$ROOT_DIR/frontend"
 
-if [[ -f "$FRONTEND_DIR/package.json" ]]; then
-  cd "$FRONTEND_DIR"
+# Port & base URL for API; Gate E should use the same
+TF_API_PORT="${TF_API_PORT:-5000}"
+TF_API_BASE_URL="${TF_API_BASE_URL:-http://localhost:$TF_API_PORT}"
 
-  # Determine package manager (prefer pnpm if available, handles WSL better)
-  PKG_MGR="npm"
+log "════════════════════════════════════════════════════════════════"
+log "Starting Gate C: Core Bringup"
+log "ROOT_DIR=$ROOT_DIR"
+log "BACKEND_API_DIR=$BACKEND_API_DIR"
+log "FRONTEND_DIR=$FRONTEND_DIR"
+log "TF_API_BASE_URL=$TF_API_BASE_URL"
+log "Log file: $LOG_FILE"
+log "════════════════════════════════════════════════════════════════"
+log ""
+
+# -----------------------------------------------------------------------------
+# 1) Frontend build (required everywhere)
+# -----------------------------------------------------------------------------
+
+log "--- Frontend core build ---"
+
+if [ ! -d "$FRONTEND_DIR" ]; then
+  log "ERROR: Frontend directory not found at $FRONTEND_DIR"
+  increment_error
+else
+  pushd "$FRONTEND_DIR" >/dev/null
+
+  # Prefer pnpm, fallback to npm
   if command -v pnpm >/dev/null 2>&1; then
-    PKG_MGR="pnpm"
-  elif [[ -f "package-lock.json" ]]; then
-    PKG_MGR="npm"
-  fi
-
-  log "Using package manager: $PKG_MGR"
-
-  # Install dependencies
-  if [[ "$PKG_MGR" == "pnpm" ]]; then
-    if pnpm install --frozen-lockfile 2>&1 | tail -5 | tee -a "$LOG_FILE"; then
-      log_ok "pnpm install completed"
-    else
-      # Try without frozen lockfile
-      if pnpm install 2>&1 | tail -5 | tee -a "$LOG_FILE"; then
-        log_ok "pnpm install completed (lockfile updated)"
-      else
-        log_error "pnpm install failed"
-      fi
-    fi
+    log "INFO: Using pnpm for frontend"
+    PM="pnpm"
+  elif command -v npm >/dev/null 2>&1; then
+    log "INFO: pnpm not found, falling back to npm"
+    PM="npm"
   else
-    if npm ci 2>&1 | tail -5 | tee -a "$LOG_FILE"; then
-      log_ok "npm ci completed"
+    log "ERROR: Neither pnpm nor npm is available for frontend build."
+    increment_error
+    PM=""
+  fi
+
+  if [ -n "$PM" ]; then
+    log "INFO: Installing frontend dependencies..."
+    if ! $PM install >>"$LOG_FILE" 2>&1; then
+      log "ERROR: Frontend dependency install failed."
+      increment_error
     else
-      if npm install 2>&1 | tail -5 | tee -a "$LOG_FILE"; then
-        log_ok "npm install completed"
+      log "INFO: Running frontend build..."
+      if ! $PM run build >>"$LOG_FILE" 2>&1; then
+        log "ERROR: Frontend build failed."
+        increment_error
       else
-        log_error "npm install failed"
+        log "✅ Frontend build succeeded."
       fi
     fi
   fi
 
-  # Type check (if available)
-  if grep -q '"typecheck"' package.json 2>/dev/null; then
-    log "Running TypeScript type check..."
-    if $PKG_MGR run typecheck 2>&1 | tee -a "$LOG_FILE"; then
-      log_ok "TypeScript type check passed"
-    else
-      log_warn "TypeScript type check had issues"
-    fi
-  fi
-
-  # Build (skip for dev-only mode)
-  if [[ "$BUILD_ONLY" == "true" ]] || grep -q '"build"' package.json 2>/dev/null; then
-    log "Building frontend..."
-    if $PKG_MGR run build 2>&1 | tail -10 | tee -a "$LOG_FILE"; then
-      log_ok "Frontend build completed"
-    else
-      log_warn "Frontend build had issues (may be non-blocking)"
-    fi
-  fi
-
-  cd "$ROOT_DIR"
-else
-  log_warn "Frontend package.json not found"
+  popd >/dev/null
 fi
 
-# --- Docker Services (optional) ---
 log ""
-log "--- Docker Services ---"
 
-if [[ "$SKIP_DOCKER" == "true" ]]; then
-  log_skip "Docker services disabled (SKIP_DOCKER=true)"
-elif ! command -v docker >/dev/null 2>&1; then
-  log_warn "Docker not available - skipping container services"
-elif ! docker info >/dev/null 2>&1; then
-  log_warn "Docker daemon not running - skipping container services"
+# -----------------------------------------------------------------------------
+# 2) Backend build + API bringup (optional in WSL, required elsewhere)
+# -----------------------------------------------------------------------------
+
+log "--- Backend core build + API bringup ---"
+
+if [ ! -d "$BACKEND_API_DIR" ]; then
+  log "WARN: Backend API directory not found at $BACKEND_API_DIR; skipping backend bringup."
+  increment_warning
 else
-  # Look for compose files
-  COMPOSE_FILES=(
-    "$ROOT_DIR/docker-compose.yml"
-    "$ROOT_DIR/docker-compose.dev.yml"
-    "$ROOT_DIR/compose/docker-compose.dev.yml"
-  )
+  if is_wsl; then
+    log "INFO: Detected WSL environment."
+    log "INFO: Treating backend bringup as optional inside WSL (expected to run on Windows host)."
+    # You could still try dotnet build here if you end up installing it in WSL.
+  else
+    # Non-WSL: require dotnet and actually bring up the API
+    require_cmd dotnet
 
-  COMPOSE_FILE=""
-  for cf in "${COMPOSE_FILES[@]}"; do
-    if [[ -f "$cf" ]]; then
-      COMPOSE_FILE="$cf"
-      break
-    fi
-  done
+    pushd "$BACKEND_API_DIR" >/dev/null
 
-  if [[ -n "$COMPOSE_FILE" ]]; then
-    log "Found compose file: $COMPOSE_FILE"
-
-    if [[ "$BUILD_ONLY" == "true" ]]; then
-      log_skip "BUILD_ONLY=true - not starting containers"
+    log "INFO: Restoring backend packages..."
+    if ! dotnet restore >>"$LOG_FILE" 2>&1; then
+      log "ERROR: dotnet restore failed."
+      increment_error
     else
-      log "Starting infrastructure services (db, redis)..."
-      # Start only infra services, not the full stack
-      if docker compose -f "$COMPOSE_FILE" up -d db redis 2>&1 | tee -a "$LOG_FILE"; then
-        log_ok "Infrastructure services started"
-
-        # Wait for DB to be ready
-        log "Waiting for database to be ready..."
-        sleep 5
-        if docker compose -f "$COMPOSE_FILE" exec -T db pg_isready -U terrafusion 2>/dev/null; then
-          log_ok "Database is ready"
-        else
-          log_warn "Database may not be ready yet"
-        fi
+      log "INFO: Building backend (Release)..."
+      if ! dotnet build -c Release >>"$LOG_FILE" 2>&1; then
+        log "ERROR: dotnet build failed."
+        increment_error
       else
-        log_warn "Failed to start some infrastructure services"
+        log "✅ Backend build succeeded."
+
+        # Start API on fixed port in background
+        log "INFO: Starting API on $TF_API_BASE_URL ..."
+        ASPNETCORE_URLS="$TF_API_BASE_URL" dotnet run --no-build >>"$LOG_FILE" 2>&1 &
+        API_PID=$!
+        echo "$API_PID" >"$PIDS_DIR/api.pid"
+        log "INFO: API started with PID $API_PID"
       fi
     fi
-  else
-    log "INFO: No docker-compose file found - skipping container services"
+
+    popd >/dev/null
   fi
 fi
 
-# --- Summary ---
 log ""
 log "════════════════════════════════════════════════════════════════"
-log "Gate C Summary: $ERRORS error(s), $WARNINGS warning(s)"
-log "Log: $LOG_FILE"
+log "Gate C Summary: $errors error(s), $warnings warning(s)"
+log "Log written to: $LOG_FILE"
 log "════════════════════════════════════════════════════════════════"
 
-if (( ERRORS > 0 )); then
-  log "❌ Gate C: FAILED - Build errors detected"
+if ((errors > 0)); then
+  log "❌ Gate C: FAILED"
   exit 1
-fi
-
-if (( WARNINGS > 0 )); then
+elif ((warnings > 0)); then
   log "⚠️  Gate C: PASSED with warnings"
+  exit 0
 else
-  log "✅ Gate C: PASSED"
+  log "✅ Gate C: PASSED clean"
+  exit 0
 fi
-
-exit 0

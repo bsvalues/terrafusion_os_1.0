@@ -21,5 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="../../TerraFusion.Core/TerraFusion.Core.csproj" />
     <ProjectReference Include="../../TerraFusion.Data/TerraFusion.Data.csproj" />
+    <ProjectReference Include="../../src/TerraFusion.AI/TerraFusion.AI.csproj" />
   </ItemGroup>
 </Project>

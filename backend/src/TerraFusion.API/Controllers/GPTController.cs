@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -453,6 +454,214 @@ namespace TerraFusion.API.Controllers
 
         #endregion
 
+        #region RAG Health
+
+        /// <summary>
+        /// Get RAG system health status
+        /// </summary>
+        [HttpGet("rag/health")]
+        [AllowAnonymous] // Allow health checks without auth for monitoring
+        public async System.Threading.Tasks.Task<ActionResult<RAGHealthResponse>> GetRAGHealth()
+        {
+            try
+            {
+                var health = new RAGHealthResponse
+                {
+                    Status = "healthy",
+                    Timestamp = DateTime.UtcNow,
+                    Datasets = new List<DatasetHealthInfo>()
+                };
+
+                // Check benton_cama_basics dataset (primary for PropertyAssessmentGPT)
+                var bentonDataset = await _ragService.GetDatasetAsync(1);
+                if (bentonDataset != null)
+                {
+                    health.Datasets.Add(new DatasetHealthInfo
+                    {
+                        Id = "benton_cama_basics",
+                        Name = bentonDataset.Name,
+                        Indexed = bentonDataset.DocumentCount > 0,
+                        DocumentCount = bentonDataset.DocumentCount,
+                        EmbeddingCount = bentonDataset.TotalChunks,
+                        LastUpdated = bentonDataset.UpdatedAt
+                    });
+                }
+                else
+                {
+                    // Check if files exist in rag folder even if DB dataset not created
+                    var ragPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "rag", "benton-cama");
+                    var filesExist = Directory.Exists(ragPath) &&
+                        (Directory.GetFiles(ragPath, "*.md", SearchOption.AllDirectories).Length > 0 ||
+                         Directory.GetFiles(ragPath, "*.pdf", SearchOption.AllDirectories).Length > 0);
+
+                    health.Datasets.Add(new DatasetHealthInfo
+                    {
+                        Id = "benton_cama_basics",
+                        Name = "Benton CAMA Basics",
+                        Indexed = false,
+                        DocumentCount = filesExist ? -1 : 0, // -1 indicates files exist but not indexed
+                        EmbeddingCount = 0,
+                        LastUpdated = null
+                    });
+                }
+
+                // Check assessment-standards dataset
+                var standardsDataset = await _ragService.GetDatasetAsync(2);
+                if (standardsDataset != null)
+                {
+                    health.Datasets.Add(new DatasetHealthInfo
+                    {
+                        Id = "assessment-standards",
+                        Name = standardsDataset.Name,
+                        Indexed = standardsDataset.DocumentCount > 0,
+                        DocumentCount = standardsDataset.DocumentCount,
+                        EmbeddingCount = standardsDataset.TotalChunks,
+                        LastUpdated = standardsDataset.UpdatedAt
+                    });
+                }
+                else
+                {
+                    health.Datasets.Add(new DatasetHealthInfo
+                    {
+                        Id = "assessment-standards",
+                        Name = "Assessment Standards",
+                        Indexed = false,
+                        DocumentCount = 0,
+                        EmbeddingCount = 0
+                    });
+                }
+
+                // Overall status based on primary dataset
+                var primaryDataset = health.Datasets.FirstOrDefault(d => d.Id == "benton_cama_basics");
+                if (primaryDataset == null || !primaryDataset.Indexed)
+                {
+                    health.Status = "degraded";
+                }
+
+                return Ok(health);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking RAG health");
+                return Ok(new RAGHealthResponse
+                {
+                    Status = "error",
+                    Timestamp = DateTime.UtcNow,
+                    Error = ex.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Trigger RAG ingestion for a specific dataset
+        /// </summary>
+        [HttpPost("rag/index/{datasetId}")]
+        [AllowAnonymous] // For now, allow without auth for dev; add auth for production
+        public async System.Threading.Tasks.Task<ActionResult<RAGIngestionResponse>> IndexDataset(string datasetId)
+        {
+            try
+            {
+                _logger.LogInformation("RAG ingestion requested for dataset: {DatasetId}", datasetId);
+
+                // Map config dataset IDs to internal dataset IDs
+                var internalDatasetId = datasetId switch
+                {
+                    "benton_cama_basics" => 1,
+                    "assessment-standards" => 2,
+                    "comparable-sales" => 3,
+                    _ => 0
+                };
+
+                if (internalDatasetId == 0)
+                {
+                    return BadRequest(new RAGIngestionResponse
+                    {
+                        DatasetId = datasetId,
+                        Success = false,
+                        Error = $"Unknown dataset: {datasetId}"
+                    });
+                }
+
+                // Get or create the dataset
+                var dataset = await _ragService.GetDatasetAsync(internalDatasetId);
+                if (dataset == null)
+                {
+                    // Create the dataset
+                    var datasetName = datasetId switch
+                    {
+                        "benton_cama_basics" => "Benton CAMA Basics",
+                        "assessment-standards" => "Assessment Standards & Procedures",
+                        "comparable-sales" => "Comparable Sales Database",
+                        _ => datasetId
+                    };
+
+                    dataset = await _ragService.CreateDatasetAsync(
+                        datasetName,
+                        $"RAG dataset for {datasetId}",
+                        countyId: 1, // Benton County
+                        category: "PropertyAssessment");
+                }
+
+                // Find and ingest files from the rag folder
+                var ragBasePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "rag");
+                var datasetPath = datasetId switch
+                {
+                    "benton_cama_basics" => Path.Combine(ragBasePath, "benton-cama"),
+                    "assessment-standards" => Path.Combine(ragBasePath, "assessment-standards"),
+                    _ => string.Empty
+                };
+
+                var docCount = 0;
+                var chunkCount = 0;
+
+                if (!string.IsNullOrEmpty(datasetPath) && Directory.Exists(datasetPath))
+                {
+                    var mdFiles = Directory.GetFiles(datasetPath, "*.md", SearchOption.AllDirectories);
+
+                    foreach (var file in mdFiles)
+                    {
+                        var content = await System.IO.File.ReadAllTextAsync(file);
+                        var title = Path.GetFileNameWithoutExtension(file);
+
+                        var doc = await _ragService.AddDocumentAsync(
+                            dataset.Id,
+                            title,
+                            content,
+                            sourceUrl: file,
+                            documentType: "markdown");
+
+                        docCount++;
+                        chunkCount += doc.ChunkCount;
+                    }
+                }
+
+                _logger.LogInformation(
+                    "RAG ingestion completed for {DatasetId}: {DocCount} documents, {ChunkCount} chunks",
+                    datasetId, docCount, chunkCount);
+
+                return Ok(new RAGIngestionResponse
+                {
+                    DatasetId = datasetId,
+                    Success = true,
+                    DocumentCount = docCount,
+                    ChunkCount = chunkCount,
+                    CompletedAt = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during RAG ingestion for dataset: {DatasetId}", datasetId);
+                return StatusCode(500, new RAGIngestionResponse
+                {
+                    DatasetId = datasetId,
+                    Success = false,
+                    Error = ex.Message
+                });
+            }
+        }
+
+        #endregion
+
         #region Helper Methods
 
         private string GetUserId()
@@ -496,6 +705,39 @@ namespace TerraFusion.API.Controllers
         {
             public int Rating { get; set; } // 1-5
             public string? Feedback { get; set; }
+        }
+
+        public class RAGHealthResponse
+        {
+            public string Status { get; set; } = "unknown";
+            public DateTime Timestamp { get; set; }
+            public List<DatasetHealthInfo> Datasets { get; set; } = new();
+            public string? Error { get; set; }
+        }
+
+        public class DatasetHealthInfo
+        {
+            public string Id { get; set; } = string.Empty;  // String ID like "benton_cama_basics"
+            public string Name { get; set; } = string.Empty;
+            public bool Indexed { get; set; }
+            public int DocumentCount { get; set; }
+            public int EmbeddingCount { get; set; }
+            public DateTime? LastUpdated { get; set; }
+        }
+
+        public class RAGIngestionRequest
+        {
+            public string? DatasetId { get; set; }
+        }
+
+        public class RAGIngestionResponse
+        {
+            public string DatasetId { get; set; } = string.Empty;
+            public bool Success { get; set; }
+            public int DocumentCount { get; set; }
+            public int ChunkCount { get; set; }
+            public string? Error { get; set; }
+            public DateTime CompletedAt { get; set; }
         }
 
         #endregion

@@ -18,7 +18,7 @@ const config: Config = {
     '^@utils/(.*)$': '<rootDir>/apps/os-shell/src/utils/$1',
     '^@lib/(.*)$': '<rootDir>/apps/os-shell/src/lib/$1',
     '^@assets/(.*)$': '<rootDir>/apps/os-shell/src/assets/$1',
-    
+
     // Mock static assets
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|svg|webp)$': '<rootDir>/apps/os-shell/src/__mocks__/fileMock.ts',
@@ -27,13 +27,16 @@ const config: Config = {
 
   // Transform files with ts-jest
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', {
-      tsconfig: {
-        jsx: 'react-jsx',
-        esModuleInterop: true,
-        allowSyntheticDefaultImports: true,
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          jsx: 'react-jsx',
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+        },
       },
-    }],
+    ],
   },
 
   // Test file patterns
@@ -75,6 +78,8 @@ const config: Config = {
     '<rootDir>/dist/',
     '<rootDir>/build/',
     '<rootDir>/coverage/',
+    '<rootDir>/tests/integration/',
+    '\\.spec\\.ts$', // Playwright uses .spec.ts convention
   ],
 
   // Module file extensions

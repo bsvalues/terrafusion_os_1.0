@@ -114,9 +114,11 @@
     "tailwindcss": "4.1.14",
     "tailwindcss-animate": "1.0.7",
     "ts-jest": "29.4.5",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.2",
     "vite": "^5.0.8",
-    "vite-plugin-pwa": "^0.17.4"
+    "vite-plugin-pwa": "^0.17.4",
+    "whatwg-fetch": "^3.6.20"
   },
   "scripts": {
     "start": "vite --host",

@@ -26,6 +26,7 @@ import EliteQuantumDashboard from './components/performance/EliteQuantumDashboar
 import TerraFusionQuantumComputing from './components/quantum/TerraFusionQuantumComputing';
 import { GovernmentExcellenceStatus } from './components/status/GovernmentExcellenceStatus';
 import EliteSystemValidator from './components/validation/EliteSystemValidator';
+import { GptStudioView } from './features/gpt/GptStudioView';
 import TerraFusionExcellenceProvider from './providers/TerraFusionExcellenceProvider.tsx';
 import { QuantumDesktopShell } from './shell/QuantumDesktopShell';
 
@@ -47,7 +48,8 @@ type OSViewMode =
   | 'ADVANCED_ANALYTICS'
   | 'EDGE_COORDINATION'
   | 'SYSTEM_INTEGRATION'
-  | 'ELITE_COMMAND_CENTER';
+  | 'ELITE_COMMAND_CENTER'
+  | 'GPT_STUDIO';
 // Quantum state interface for advanced users
 interface QuantumState {
   waveFunction: Complex[];
@@ -800,7 +802,8 @@ export function TerraFusionQuantumOS() {
                   color: '#00ffaa',
                 }}
               >
-                Benton County, WA • await DynamicPropertyService.GetPropertyCountAsync("benton") Parcels • Harris PACS v12.4.7 Integration
+                Benton County, WA • await DynamicPropertyService.GetPropertyCountAsync("benton")
+                Parcels • Harris PACS v12.4.7 Integration
               </p>
             </div>
           </div>
@@ -811,7 +814,9 @@ export function TerraFusionQuantumOS() {
               <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#00ffaa' }}>
                 Parcels Synced
               </div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#00ffff' }}>await DynamicPropertyService.GetPropertyCountAsync("benton")</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#00ffff' }}>
+                await DynamicPropertyService.GetPropertyCountAsync("benton")
+              </div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#00ffaa' }}>PACS Version</div>
@@ -867,19 +872,71 @@ export function TerraFusionQuantumOS() {
 
             {/* Module Navigation Buttons */}
             {[
-              { mode: 'ELITE_NEXUS', icon: '🏛️', label: 'Elite Integration Nexus' },
-              { mode: 'AI_CONSCIOUSNESS_NETWORK', icon: '🧠', label: 'AI Consciousness Network' },
-              { mode: 'QUANTUM_COMPUTING', icon: '⚛️', label: 'Quantum Computing' },
-              { mode: 'ML_INTELLIGENCE_HUB', icon: '🤖', label: 'ML Intelligence Hub' },
-              { mode: 'BLOCKCHAIN_LEDGER', icon: '⛓️', label: 'Blockchain Ledger' },
-              { mode: 'ADVANCED_ANALYTICS', icon: '📊', label: 'Advanced Analytics' },
-              { mode: 'EDGE_COORDINATION', icon: '🌐', label: 'Edge Coordination' },
-              { mode: 'SYSTEM_INTEGRATION', icon: '🔗', label: 'System Integration' },
-              { mode: 'ELITE_COMMAND_CENTER', icon: '🎖️', label: 'Elite Command Center' },
-              { mode: 'MODULE_HUB', icon: '🏛️', label: 'Government Module Hub' },
+              {
+                mode: 'ELITE_NEXUS',
+                icon: '🏛️',
+                label: 'Elite Integration Nexus',
+                testId: 'nav-elite-nexus',
+              },
+              {
+                mode: 'AI_CONSCIOUSNESS_NETWORK',
+                icon: '🧠',
+                label: 'AI Consciousness Network',
+                testId: 'nav-ai-consciousness',
+              },
+              {
+                mode: 'QUANTUM_COMPUTING',
+                icon: '⚛️',
+                label: 'Quantum Computing',
+                testId: 'nav-quantum-computing',
+              },
+              {
+                mode: 'ML_INTELLIGENCE_HUB',
+                icon: '🤖',
+                label: 'ML Intelligence Hub',
+                testId: 'nav-ml-hub',
+              },
+              {
+                mode: 'BLOCKCHAIN_LEDGER',
+                icon: '⛓️',
+                label: 'Blockchain Ledger',
+                testId: 'nav-blockchain',
+              },
+              {
+                mode: 'ADVANCED_ANALYTICS',
+                icon: '📊',
+                label: 'Advanced Analytics',
+                testId: 'nav-analytics',
+              },
+              {
+                mode: 'EDGE_COORDINATION',
+                icon: '🌐',
+                label: 'Edge Coordination',
+                testId: 'nav-edge',
+              },
+              {
+                mode: 'SYSTEM_INTEGRATION',
+                icon: '🔗',
+                label: 'System Integration',
+                testId: 'nav-integration',
+              },
+              {
+                mode: 'ELITE_COMMAND_CENTER',
+                icon: '🎖️',
+                label: 'Elite Command Center',
+                testId: 'nav-command-center',
+              },
+              { mode: 'GPT_STUDIO', icon: '🤖', label: 'GPT Studio', testId: 'nav-gpt-studio' },
+              {
+                mode: 'MODULE_HUB',
+                icon: '🏛️',
+                label: 'Government Module Hub',
+                testId: 'nav-module-hub',
+              },
             ].map((item) => (
               <button
                 key={item.mode}
+                data-testid={item.testId}
                 onClick={() => setViewMode(item.mode as OSViewMode)}
                 style={{
                   padding: '1rem',
@@ -938,6 +995,7 @@ export function TerraFusionQuantumOS() {
               {viewMode === 'EDGE_COORDINATION' && <TerraFusionEdgeCoordination />}
               {viewMode === 'SYSTEM_INTEGRATION' && <TerraFusionSystemIntegration />}
               {viewMode === 'ELITE_COMMAND_CENTER' && <TerraFusionEliteCommandCenter />}
+              {viewMode === 'GPT_STUDIO' && <GptStudioView />}
               {viewMode === 'REALTIME_DASHBOARD' && <TerraFusionEliteRealtimeDashboard />}
               {viewMode === 'SERVICE_ORCHESTRATOR' && <TerraFusionEliteServiceOrchestrator />}
               {viewMode === 'DEPLOYMENT_ORCHESTRATOR' && (

@@ -1,190 +1,167 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Gate E: API Surface
-# Validate API contracts, OpenAPI specs, health probes, GraphQL schema
+# Gate E: API Surface Check
+# Verifies:
+#   - API is reachable on a known base URL
+#   - /health responds with HTTP 200
+#   - /api/gpt/system responds with HTTP 200
+#   - /api/gpt/system includes PropertyAssessmentGPT (or at least one system GPT)
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 ARTIFACTS_DIR="$ROOT_DIR/artifacts"
-REPORTS_DIR="$ARTIFACTS_DIR/reports"
-LOG_FILE="$ARTIFACTS_DIR/logs/gate-e-api.log"
+LOG_FILE="$ARTIFACTS_DIR/logs/gate-e-api-surface.log"
 
-mkdir -p "$REPORTS_DIR" "$ARTIFACTS_DIR/logs"
-
-ERRORS=0
-WARNINGS=0
-SKIP_LIVE=${SKIP_LIVE_CHECKS:-false}
-
-# API endpoints
-API_URL=${API_URL:-"http://localhost:5000"}
-GATEWAY_URL=${GATEWAY_URL:-"http://localhost:3002"}
+mkdir -p "$(dirname "$LOG_FILE")"
 
 log() {
-  local msg="[Gate E - $(date -Iseconds)] $*"
-  echo "$msg"
-  echo "$msg" >> "$LOG_FILE"
+  echo "[Gate E - $(date -Iseconds)] $*"
+  echo "[Gate E - $(date -Iseconds)] $*" >> "$LOG_FILE"
 }
 
-log_ok() { log "✅ $*"; }
-log_warn() { log "⚠️  WARN: $*"; ((WARNINGS++)) || true; }
-log_error() { log "❌ ERROR: $*"; ((ERRORS++)) || true; }
-log_skip() { log "⏭️  SKIP: $*"; }
+errors=0
+warnings=0
 
-log "════════════════════════════════════════════════════════════════"
-log "Starting Gate E: API Surface Validation"
-log "════════════════════════════════════════════════════════════════"
+increment_error() {
+  errors=$((errors + 1))
+}
 
-# --- OpenAPI Spec Validation ---
-log ""
-log "--- OpenAPI Specification ---"
+increment_warning() {
+  warnings=$((warnings + 1))
+}
 
-# Find OpenAPI specs
-OPENAPI_SPECS=(
-  "$ROOT_DIR/docs/api/openapi.yaml"
-  "$ROOT_DIR/docs/api/openapi.json"
-  "$ROOT_DIR/backend/TerraFusion.API/openapi.json"
-  "$ROOT_DIR/api/openapi.yaml"
-)
-
-FOUND_SPEC=""
-for spec in "${OPENAPI_SPECS[@]}"; do
-  if [[ -f "$spec" ]]; then
-    FOUND_SPEC="$spec"
-    log_ok "Found OpenAPI spec: $spec"
-    break
+require_cmd() {
+  local cmd="$1"
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    log "ERROR: Required command not found: $cmd"
+    increment_error
+    exit 1
   fi
-done
+}
 
-if [[ -z "$FOUND_SPEC" ]]; then
-  log "INFO: No OpenAPI specification found in standard locations"
-  log "      Consider generating one from controllers"
+# Allow override via env; default to localhost:5000
+API_BASE_URL="${TF_API_BASE_URL:-http://localhost:5000}"
+
+log "════════════════════════════════════════════════════════════════"
+log "Starting Gate E: API Surface Check"
+log "ROOT_DIR=$ROOT_DIR"
+log "API_BASE_URL=$API_BASE_URL"
+log "Log file: $LOG_FILE"
+log "════════════════════════════════════════════════════════════════"
+log ""
+
+# -----------------------------------------------------------------------------
+# 0) Tooling
+# -----------------------------------------------------------------------------
+
+require_cmd curl
+
+if command -v jq >/dev/null 2>&1; then
+  HAS_JQ=1
+  log "INFO: jq found - will use it for JSON assertions."
+else
+  HAS_JQ=0
+  log "INFO: jq not found - falling back to grep for JSON assertions."
 fi
 
-# Validate OpenAPI spec if spectral is available
-if [[ -n "$FOUND_SPEC" ]] && command -v spectral >/dev/null 2>&1; then
-  log "Validating OpenAPI spec with Spectral..."
-  SPECTRAL_REPORT="$REPORTS_DIR/spectral-report.json"
-  if spectral lint "$FOUND_SPEC" --format json --output "$SPECTRAL_REPORT" 2>/dev/null; then
-    log_ok "OpenAPI spec validation passed"
+log ""
+
+# -----------------------------------------------------------------------------
+# 1) Health endpoint
+# -----------------------------------------------------------------------------
+
+log "--- Checking /health endpoint ---"
+
+HEALTH_URL="$API_BASE_URL/health"
+
+if ! HEALTH_RESP="$(curl -sS -w '%{http_code}' -o /tmp/gate_e_health_body.txt "$HEALTH_URL" 2>>"$LOG_FILE")"; then
+  log "ERROR: Failed to call $HEALTH_URL"
+  increment_error
+else
+  log "INFO: /health HTTP status: $HEALTH_RESP"
+  if [[ "$HEALTH_RESP" != "200" ]]; then
+    log "ERROR: /health did not return 200 (got $HEALTH_RESP)"
+    increment_error
   else
-    log_warn "OpenAPI spec has linting issues (see $SPECTRAL_REPORT)"
+    log "✅ /health returned 200 OK"
   fi
 fi
 
-# --- Controller/Route Inventory ---
 log ""
-log "--- API Controllers ---"
 
-# .NET Controllers
-if [[ -d "$ROOT_DIR/backend" ]]; then
-  CONTROLLERS=$(find "$ROOT_DIR/backend" -name "*Controller.cs" -type f 2>/dev/null | wc -l || echo "0")
-  log_ok "Found $CONTROLLERS .NET API controllers"
+# -----------------------------------------------------------------------------
+# 2) GPT system catalog
+# -----------------------------------------------------------------------------
 
-  # List controller names
-  if (( CONTROLLERS > 0 )) && (( CONTROLLERS <= 20 )); then
-    find "$ROOT_DIR/backend" -name "*Controller.cs" -type f 2>/dev/null | while read -r f; do
-      log "  - $(basename "$f" .cs)"
-    done
-  fi
-fi
+log "--- Checking /api/gpt/system ---"
 
-# Express/Node routes
-if [[ -d "$ROOT_DIR/terrabuild-modernization/server" ]]; then
-  ROUTES=$(find "$ROOT_DIR/terrabuild-modernization/server" -name "*.ts" -path "*/routes/*" 2>/dev/null | wc -l || echo "0")
-  if (( ROUTES > 0 )); then
-    log_ok "Found $ROUTES Node.js route files"
-  fi
-fi
+GPT_SYSTEM_URL="$API_BASE_URL/api/gpt/system"
 
-# --- Ocelot Gateway Configuration ---
-log ""
-log "--- API Gateway Configuration ---"
-OCELOT_CONFIG="$ROOT_DIR/backend/TerraFusion.Gateway/ocelot.json"
-
-if [[ -f "$OCELOT_CONFIG" ]]; then
-  log_ok "Ocelot gateway config found"
-
-  if command -v jq >/dev/null 2>&1; then
-    ROUTE_COUNT=$(jq '.Routes | length // 0' "$OCELOT_CONFIG" 2>/dev/null || echo "0")
-    log "  Configured routes: $ROUTE_COUNT"
-  fi
+if ! GPT_STATUS="$(curl -sS -w '%{http_code}' -o /tmp/gate_e_gpt_system_body.txt "$GPT_SYSTEM_URL" 2>>"$LOG_FILE")"; then
+  log "ERROR: Failed to call $GPT_SYSTEM_URL"
+  increment_error
 else
-  log "INFO: Ocelot gateway config not found at $OCELOT_CONFIG"
+  log "INFO: /api/gpt/system HTTP status: $GPT_STATUS"
+  if [[ "$GPT_STATUS" != "200" ]]; then
+    log "ERROR: /api/gpt/system did not return 200 (got $GPT_STATUS)"
+    increment_error
+  else
+    log "✅ /api/gpt/system returned 200 OK"
+  fi
 fi
 
-# --- Live API Health Checks ---
-log ""
-log "--- Live API Checks ---"
+# If we got 200, do a quick sanity check on body
+if [[ "${GPT_STATUS:-}" == "200" ]]; then
+  GPT_BODY="$(cat /tmp/gate_e_gpt_system_body.txt)"
 
-if [[ "$SKIP_LIVE" == "true" ]]; then
-  log_skip "Live API checks disabled (SKIP_LIVE_CHECKS=true)"
-else
-  # Check API health endpoint
-  if curl -fsS --max-time 5 "$API_URL/health" >/dev/null 2>&1; then
-    log_ok "API health endpoint responding at $API_URL/health"
+  if [[ $HAS_JQ -eq 1 ]]; then
+    # Expect at least one GPT configuration
+    COUNT="$(echo "$GPT_BODY" | jq 'length' 2>/dev/null || echo "0")"
+    log "INFO: System GPT count according to jq: $COUNT"
+    if [[ "$COUNT" -lt 1 ]]; then
+      log "ERROR: /api/gpt/system returned an empty list of GPTs."
+      increment_error
+    else
+      log "✅ /api/gpt/system returned at least one GPT."
+    fi
 
-    # Try to get OpenAPI from running service
-    if curl -fsS --max-time 5 "$API_URL/swagger/v1/swagger.json" -o "$REPORTS_DIR/live-openapi.json" 2>/dev/null; then
-      log_ok "Retrieved live OpenAPI spec from running service"
+    # Optional: look for PropertyAssessmentGPT by key or name
+    if echo "$GPT_BODY" | jq -e '.[] | select(.key=="PropertyAssessmentGPT" or .name=="Property Assessment GPT" or .name=="PropertyAssessmentGPT")' >/dev/null 2>&1; then
+      log "✅ PropertyAssessmentGPT found in system catalog."
+    else
+      log "⚠️  WARN: PropertyAssessmentGPT not found in system catalog (may be OK if not yet seeded)."
+      increment_warning
     fi
   else
-    log "INFO: API not responding at $API_URL (service may not be running)"
-  fi
-
-  # Check Gateway
-  if curl -fsS --max-time 5 "$GATEWAY_URL/health" >/dev/null 2>&1; then
-    log_ok "Gateway health endpoint responding at $GATEWAY_URL/health"
-  else
-    log "INFO: Gateway not responding at $GATEWAY_URL"
+    # Fallback: just check non-empty and look for a GPT-like string
+    if [[ -n "$GPT_BODY" ]]; then
+      log "✅ /api/gpt/system body is non-empty."
+      if echo "$GPT_BODY" | grep -qi "PropertyAssessmentGPT"; then
+        log "✅ PropertyAssessmentGPT found in system catalog (via grep)."
+      else
+        log "⚠️  WARN: PropertyAssessmentGPT not clearly present in body."
+        increment_warning
+      fi
+    else
+      log "ERROR: /api/gpt/system body is empty."
+      increment_error
+    fi
   fi
 fi
 
-# --- API Contract Tests ---
-log ""
-log "--- API Contract Tests ---"
-
-# Check for contract test files
-CONTRACT_TESTS="$ROOT_DIR/backend/tests/TerraFusion.Integration.Tests"
-if [[ -d "$CONTRACT_TESTS" ]]; then
-  TEST_COUNT=$(find "$CONTRACT_TESTS" -name "*Tests.cs" -type f 2>/dev/null | wc -l || echo "0")
-  log_ok "Found $TEST_COUNT API integration test files"
-else
-  log "INFO: No integration test directory found"
-fi
-
-# --- GraphQL Schema (if present) ---
-log ""
-log "--- GraphQL Schema ---"
-GRAPHQL_SCHEMAS=(
-  "$ROOT_DIR/backend/TerraFusion.API/schema.graphql"
-  "$ROOT_DIR/api/schema.graphql"
-  "$ROOT_DIR/graphql/schema.graphql"
-)
-
-for schema in "${GRAPHQL_SCHEMAS[@]}"; do
-  if [[ -f "$schema" ]]; then
-    log_ok "GraphQL schema found: $schema"
-    break
-  fi
-done
-
-# --- Summary ---
 log ""
 log "════════════════════════════════════════════════════════════════"
-log "Gate E Summary: $ERRORS error(s), $WARNINGS warning(s)"
-log "Reports: $REPORTS_DIR"
-log "Log: $LOG_FILE"
+log "Gate E Summary: $errors error(s), $warnings warning(s)"
+log "Log written to: $LOG_FILE"
 log "════════════════════════════════════════════════════════════════"
 
-if (( ERRORS > 0 )); then
+if ((errors > 0)); then
   log "❌ Gate E: FAILED"
   exit 1
-fi
-
-if (( WARNINGS > 0 )); then
+elif ((warnings > 0)); then
   log "⚠️  Gate E: PASSED with warnings"
+  exit 0
 else
-  log "✅ Gate E: PASSED"
+  log "✅ Gate E: PASSED clean"
+  exit 0
 fi
-
-exit 0

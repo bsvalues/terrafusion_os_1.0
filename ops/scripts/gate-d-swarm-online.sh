@@ -126,6 +126,93 @@ else
   log "INFO: MCP agents directory not found at $MCP_DIR"
 fi
 
+# --- RAG configuration sanity check ---
+log ""
+log "--- RAG Configuration Check ---"
+
+# Check for RAG config in various possible locations
+RAG_CONFIG_PATHS=(
+  "$ROOT_DIR/backend/src/TerraFusion.AI/Configs/RAG/config.json"
+  "$ROOT_DIR/config/rag-config.json"
+  "$ROOT_DIR/backend/src/TerraFusion.AI/appsettings.json"
+)
+
+RAG_CONFIG_FOUND=false
+for RAG_CONFIG in "${RAG_CONFIG_PATHS[@]}"; do
+  if [[ -f "$RAG_CONFIG" ]]; then
+    log "INFO: RAG config file found at $RAG_CONFIG"
+    RAG_CONFIG_FOUND=true
+
+    # Check for PropertyAssessmentGPT dataset mapping
+    if grep -q "PropertyAssessmentGPT" "$RAG_CONFIG" 2>/dev/null; then
+      log_ok "RAG dataset mapping for PropertyAssessmentGPT appears configured."
+    else
+      log "INFO: No explicit RAG mapping for PropertyAssessmentGPT in $RAG_CONFIG"
+    fi
+
+    # Check for benton_cama_basics dataset
+    if grep -q "benton_cama_basics" "$RAG_CONFIG" 2>/dev/null; then
+      log_ok "RAG dataset 'benton_cama_basics' is defined in config."
+    else
+      log "INFO: Dataset 'benton_cama_basics' not found in config."
+    fi
+    break
+  fi
+done
+
+if [[ "$RAG_CONFIG_FOUND" == "false" ]]; then
+  log "INFO: No RAG config file found; RAG modes disabled in this environment."
+  log "  (This is normal if RAG is not yet configured)"
+fi
+
+# --- RAG Live Health Check ---
+log ""
+log "--- RAG Live Health Check ---"
+
+RAG_HEALTH_URL="${AI_GATEWAY_URL}/api/gpt/rag/health"
+
+if command -v curl >/dev/null 2>&1; then
+  log "Checking RAG health at $RAG_HEALTH_URL..."
+
+  if curl -sS --max-time "$HEALTH_TIMEOUT" "$RAG_HEALTH_URL" -o /tmp/gate_d_rag_health.json 2>>"$LOG_FILE"; then
+    log_ok "RAG health endpoint responded."
+
+    if command -v jq >/dev/null 2>&1; then
+      # Parse the response
+      RAG_STATUS=$(jq -r '.status // "unknown"' /tmp/gate_d_rag_health.json 2>/dev/null)
+      log "  RAG System Status: $RAG_STATUS"
+
+      # Check benton_cama_basics dataset specifically
+      DATASET_JSON=$(jq '.datasets[] | select(.id=="benton_cama_basics")' /tmp/gate_d_rag_health.json 2>/dev/null || echo "")
+
+      if [[ -n "$DATASET_JSON" ]]; then
+        DOC_COUNT=$(echo "$DATASET_JSON" | jq '.documentCount // 0')
+        EMB_COUNT=$(echo "$DATASET_JSON" | jq '.embeddingCount // 0')
+        INDEXED=$(echo "$DATASET_JSON" | jq '.indexed // false')
+
+        log "  Dataset 'benton_cama_basics': indexed=$INDEXED, docs=$DOC_COUNT, embeddings=$EMB_COUNT"
+
+        if [[ "$INDEXED" == "true" ]] && [[ "$EMB_COUNT" -gt 0 ]]; then
+          log_ok "RAG dataset 'benton_cama_basics' is online and populated."
+        elif [[ "$DOC_COUNT" -eq -1 ]]; then
+          log "  INFO: Files exist but not yet indexed. Run: curl -X POST $AI_GATEWAY_URL/api/gpt/rag/index/benton_cama_basics"
+        else
+          log_warn "RAG dataset 'benton_cama_basics' is configured but empty or not indexed."
+        fi
+      else
+        log "  INFO: Dataset 'benton_cama_basics' not in health response."
+      fi
+    else
+      log "  INFO: jq not installed; RAG health JSON saved at /tmp/gate_d_rag_health.json"
+      cat /tmp/gate_d_rag_health.json 2>/dev/null | head -5
+    fi
+  else
+    log "  INFO: RAG health endpoint not reachable (API may not be running)."
+  fi
+else
+  log "  WARN: curl not available; RAG live health check skipped."
+fi
+
 # --- Docker container check ---
 log ""
 log "--- Container Status ---"

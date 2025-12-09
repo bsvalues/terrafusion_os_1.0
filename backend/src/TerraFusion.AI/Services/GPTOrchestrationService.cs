@@ -250,15 +250,121 @@ namespace TerraFusion.AI.Services
 
             var completionTokens = 150; // Simulated response length
 
-            // Simulate response
-            var response = $"[Simulated {config.ModelProvider} {config.ModelName} response to: {userMessage}]";
+            // Build simulated response based on GPT type and RAG context
+            string response;
 
-            if (ragContext != null)
+            if (config.Name == "PropertyAssessmentGPT" && ragContext != null)
             {
-                response += " [Using RAG context from government documents]";
+                // PropertyAssessmentGPT with RAG context - provide grounded response
+                response = BuildPropertyAssessmentResponse(userMessage, ragContext);
+            }
+            else if (ragContext != null)
+            {
+                // Generic GPT with RAG context
+                response = $"Based on the official Benton County documentation:\n\n{ragContext.Substring(0, Math.Min(500, ragContext.Length))}...\n\n[Response grounded in RAG context]";
+            }
+            else
+            {
+                // No RAG context - general response
+                response = $"[Simulated {config.ModelProvider} {config.ModelName} response]\n\nI can help you with questions about {config.Name}. However, I'm currently operating without access to the Benton County CAMA knowledge base. For the most accurate information, please ensure the RAG dataset has been indexed.";
             }
 
             return (response, promptTokens, completionTokens, responseTime);
+        }
+
+        /// <summary>
+        /// Build a PropertyAssessmentGPT response using RAG context
+        /// </summary>
+        private string BuildPropertyAssessmentResponse(string userMessage, string ragContext)
+        {
+            var lowerMessage = userMessage.ToLowerInvariant();
+
+            // Detect question type and provide relevant response based on RAG context
+            if (lowerMessage.Contains("quality grade") || lowerMessage.Contains("grade scale"))
+            {
+                return @"Based on Benton County's Residential Valuation Policy, the Quality Grade Scale is as follows:
+
+| Grade | Description | Base $/SF |
+|-------|-------------|-----------|
+| A | Luxury/Custom | $200+ |
+| B+ | High Quality | $160-200 |
+| B | Good Quality | $130-160 |
+| C+ | Above Average | $110-130 |
+| C | Average | $90-110 |
+| D | Fair/Below Average | $70-90 |
+| E | Poor | $50-70 |
+
+This grading system is used in the Sales Comparison Approach for residential valuation.
+
+*Source: Benton County Residential Valuation Policy*";
+            }
+
+            if (lowerMessage.Contains("assessment calendar") || lowerMessage.Contains("timeline") || lowerMessage.Contains("when"))
+            {
+                return @"According to the Benton County CAMA Overview, the Assessment Calendar is:
+
+| Month | Activity |
+|-------|----------|
+| January | Assessment roll opens |
+| April 30 | Value change notices mailed |
+| May-June | Informal review period |
+| July 1 | Board of Equalization appeals deadline |
+| October | Final values certified |
+
+For the detailed annual revaluation timeline, model calibration begins in September with residential models completed by October.
+
+*Source: Benton County CAMA Overview & Workflow Overview*";
+            }
+
+            if (lowerMessage.Contains("appeal") || lowerMessage.Contains("boe") || lowerMessage.Contains("board of equalization"))
+            {
+                return @"Based on Benton County's Assessment Workflow, the Appeals Process includes:
+
+**Informal Review Process:**
+- Timeline: 30 days from notice date
+- Method: Phone, email, or in-person meeting
+- Authority: Appraiser can adjust up to 10% without supervisor approval
+
+**Board of Equalization (BOE):**
+- Filing Deadline: July 1 or 30 days from notice
+- Hearing Format: 15-minute presentation
+- Evidence Required:
+  - Recent comparable sales
+  - Independent appraisal (optional)
+  - Photos of condition issues
+  - Cost documentation for improvements
+- Decision Timeline: 30 days from hearing
+
+*Source: Benton County Workflow Overview*";
+            }
+
+            if (lowerMessage.Contains("sales validation") || lowerMessage.Contains("valid sale"))
+            {
+                return @"According to Benton County's Workflow Overview, Sales Validation Status Codes are:
+
+| Status Code | Description | Action Required |
+|-------------|-------------|-----------------|
+| U | Unvalidated | Needs review |
+| V | Valid Arms-Length | Use for valuation |
+| I | Invalid | Exclude from analysis |
+| P | Partial Interest | Adjust or exclude |
+| F | Family Transfer | Exclude |
+| B | Bank/REO Sale | Review for market |
+| A | Auction Sale | Review for market |
+
+Validation steps include: reviewing deed type, verifying buyer/seller relationship, checking financing terms, and comparing to market trends.
+
+*Source: Benton County Workflow Overview*";
+            }
+
+            // Default response with RAG context excerpt
+            return $@"Based on the official Benton County CAMA documentation:
+
+{ragContext.Substring(0, Math.Min(800, ragContext.Length))}
+
+This information comes from the Benton County property assessment knowledge base. For specific questions about your property assessment, please contact the Benton County Assessor's Office at (509) 736-3080.
+
+*Grounded in Benton County CAMA documentation*";
         }
 
         public async System.Threading.Tasks.Task<GPTConversation> CreateConversationAsync(

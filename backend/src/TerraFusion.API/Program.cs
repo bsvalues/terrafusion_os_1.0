@@ -298,6 +298,12 @@ builder.Services.AddScoped<IWorkflowExecutionRepository, TerraFusion.Data.Reposi
 // 📊 TerraFlow Quantum Command Center Service (Phase 1 Week 4)
 builder.Services.AddScoped<TerraFusion.AI.Services.IQuantumAnalyticsService, TerraFusion.AI.Services.QuantumAnalyticsService>();
 
+// 🤖 TerraFusionGPT Suite Services - AI Chat & Conversation Management
+// GPT Configuration, Orchestration, and RAG services for PropertyAssessmentGPT and other system GPTs
+builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTConfigurationService, TerraFusion.AI.Services.GPTConfigurationService>();
+builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTOrchestrationService, TerraFusion.AI.Services.GPTOrchestrationService>();
+builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGService, TerraFusion.AI.Services.RAGService>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown
@@ -425,6 +431,29 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// 🤖 Seed GPT configurations on startup (PropertyAssessmentGPT, etc.)
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("GPTSeeder");
+
+        // Ensure database is created
+        await dbContext.Database.EnsureCreatedAsync();
+
+        var seeder = new TerraFusion.AI.Seeds.GPTConfigurationSeeder(dbContext,
+            scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>());
+        await seeder.SeedAllGPTsAsync();
+
+        logger.LogInformation("✅ GPT configurations seeded successfully");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"⚠️ GPT seeding skipped: {ex.Message}");
+    }
+}
 
 // Configure pipeline
 if (app.Environment.IsDevelopment())
