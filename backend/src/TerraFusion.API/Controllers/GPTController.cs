@@ -662,6 +662,94 @@ namespace TerraFusion.API.Controllers
 
         #endregion
 
+        #region Conversation Trace (Phase 11 - Audit & Traceability)
+
+        /// <summary>
+        /// Get conversation trace with RAG audit details
+        /// Phase 11: Full traceability for government compliance
+        /// </summary>
+        [HttpGet("conversations/{conversationId}/trace")]
+        public async System.Threading.Tasks.Task<ActionResult<ConversationTraceResponse>> GetConversationTrace(int conversationId)
+        {
+            try
+            {
+                _logger.LogInformation("Retrieving trace for conversation: {ConversationId}", conversationId);
+
+                // Get conversation with messages
+                var conversation = await _orchestrationService.GetConversationAsync(conversationId);
+                if (conversation == null)
+                {
+                    return NotFound(new { error = $"Conversation {conversationId} not found" });
+                }
+
+                // Get messages
+                var messages = await _orchestrationService.GetConversationHistoryAsync(conversationId);
+
+                // Get GPT config for context
+                var gptConfig = await _configService.GetGPTByIdAsync(conversation.GPTConfigurationId);
+
+                // Build trace response with audit details
+                var traceMessages = new List<TraceMessageDto>();
+                foreach (var msg in messages.OrderBy(m => m.CreatedAt))
+                {
+                    var traceMsg = new TraceMessageDto
+                    {
+                        Id = msg.Id,
+                        Role = msg.Role,
+                        Content = msg.Content,
+                        CreatedAt = msg.CreatedAt,
+                        TokensUsed = msg.TotalTokens,
+                        Cost = msg.Cost
+                    };
+
+                    // Add RAG trace info if available (from GPTMessage fields)
+                    if (msg.Role == "assistant" && !string.IsNullOrEmpty(msg.RAGDocumentsUsed))
+                    {
+                        try
+                        {
+                            var docIds = System.Text.Json.JsonSerializer.Deserialize<List<string>>(msg.RAGDocumentsUsed);
+                            traceMsg.RAGUsed = true;
+                            traceMsg.RAGDocuments = docIds;
+                            traceMsg.RAGScore = msg.RAGScore;
+                        }
+                        catch
+                        {
+                            traceMsg.RAGUsed = false;
+                        }
+                    }
+                    else
+                    {
+                        traceMsg.RAGUsed = false;
+                    }
+
+                    traceMessages.Add(traceMsg);
+                }
+
+                var response = new ConversationTraceResponse
+                {
+                    ConversationId = conversationId,
+                    GPTKey = gptConfig?.Name ?? "Unknown",
+                    GPTDisplayName = gptConfig?.DisplayName ?? "Unknown",
+                    Title = conversation.Title,
+                    MessageCount = traceMessages.Count,
+                    TotalTokensUsed = conversation.TotalTokensUsed,
+                    TotalCost = conversation.TotalCost,
+                    Messages = traceMessages,
+                    CreatedAt = conversation.CreatedAt,
+                    LastMessageAt = conversation.LastMessageAt
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving trace for conversation: {ConversationId}", conversationId);
+                return StatusCode(500, new { error = "Failed to retrieve conversation trace" });
+            }
+        }
+
+        #endregion
+
         #region Helper Methods
 
         private string GetUserId()
@@ -734,13 +822,42 @@ namespace TerraFusion.API.Controllers
         {
             public string DatasetId { get; set; } = string.Empty;
             public bool Success { get; set; }
-            public int DocumentCount { get; set; }
+public int DocumentCount { get; set; }
             public int ChunkCount { get; set; }
             public string? Error { get; set; }
             public DateTime CompletedAt { get; set; }
         }
 
+        // Phase 11: Conversation Trace DTOs
+        public class ConversationTraceResponse
+        {
+            public int ConversationId { get; set; }
+            public string GPTKey { get; set; } = string.Empty;
+            public string GPTDisplayName { get; set; } = string.Empty;
+            public string? Title { get; set; }
+            public int MessageCount { get; set; }
+            public long TotalTokensUsed { get; set; }
+            public decimal TotalCost { get; set; }
+            public List<TraceMessageDto> Messages { get; set; } = new();
+            public DateTime CreatedAt { get; set; }
+            public DateTime? LastMessageAt { get; set; }
+        }
+
+        public class TraceMessageDto
+        {
+            public int Id { get; set; }
+            public string Role { get; set; } = string.Empty;
+            public string Content { get; set; } = string.Empty;
+            public DateTime CreatedAt { get; set; }
+            public int TokensUsed { get; set; }
+            public decimal Cost { get; set; }
+            
+            // RAG Trace Info
+            public bool RAGUsed { get; set; }
+            public List<string>? RAGDocuments { get; set; }
+            public decimal? RAGScore { get; set; }
+        }
+
         #endregion
     }
 }
-
