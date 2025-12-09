@@ -1003,6 +1003,109 @@ Decision Timeline: 30 days from hearing",
     }
 
     [Fact]
+    public void GptRagOptions_LogHeraldStartupBanner_ContainsEraName()
+    {
+      // Arrange - Phase 12.5: Herald Startup Banner Test
+      var options = new TerraFusion.AI.Configuration.GptRagOptions
+      {
+        UseRealEmbeddings = false,
+        EmbeddingProvider = "Simulated",
+        RagDatasets = new List<string> { "benton_cama_basics" }
+      };
+
+      var logMessages = new List<string>();
+      var mockLogger = new Mock<ILogger>();
+      mockLogger
+        .Setup(l => l.Log(
+          It.IsAny<LogLevel>(),
+          It.IsAny<EventId>(),
+          It.IsAny<It.IsAnyType>(),
+          It.IsAny<Exception?>(),
+          It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+        .Callback<LogLevel, EventId, object, Exception?, Delegate>((level, id, state, ex, formatter) =>
+        {
+          logMessages.Add(state?.ToString() ?? "");
+        });
+
+      // Act
+      options.LogHeraldStartupBanner(mockLogger.Object, gptConfigCount: 3, gptConfigNames: new[] { "PropertyAssessmentGPT" });
+
+      // Assert - Phase 12.5: Verify Herald Status banner content
+      var allLogs = string.Join("\n", logMessages);
+      Assert.Contains("HERALD STATUS", allLogs);
+      Assert.Contains("Genesis Era", allLogs);
+      Assert.Contains("Embeddings", allLogs);
+      Assert.Contains("RAG datasets", allLogs);
+      Assert.Contains("DX:", allLogs);
+    }
+
+    [Fact]
+    public void GptRagOptions_LogHeraldStartupBanner_ShowsSimulatedMode()
+    {
+      // Arrange
+      var options = new TerraFusion.AI.Configuration.GptRagOptions
+      {
+        UseRealEmbeddings = false,
+        EmbeddingProvider = "Simulated"
+      };
+
+      var logMessages = new List<string>();
+      var mockLogger = new Mock<ILogger>();
+      mockLogger
+        .Setup(l => l.Log(
+          It.IsAny<LogLevel>(),
+          It.IsAny<EventId>(),
+          It.IsAny<It.IsAnyType>(),
+          It.IsAny<Exception?>(),
+          It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+        .Callback<LogLevel, EventId, object, Exception?, Delegate>((level, id, state, ex, formatter) =>
+        {
+          logMessages.Add(state?.ToString() ?? "");
+        });
+
+      // Act
+      options.LogHeraldStartupBanner(mockLogger.Object, gptConfigCount: null);
+
+      // Assert
+      var allLogs = string.Join("\n", logMessages);
+      Assert.Contains("SimulatedEmbeddingService", allLogs);
+    }
+
+    [Fact]
+    public void GptRagOptions_LogHeraldStartupBanner_ShowsOpenAIMode()
+    {
+      // Arrange
+      var options = new TerraFusion.AI.Configuration.GptRagOptions
+      {
+        UseRealEmbeddings = true,
+        EmbeddingProvider = "OpenAI",
+        EmbeddingModel = "text-embedding-3-small"
+      };
+
+      var logMessages = new List<string>();
+      var mockLogger = new Mock<ILogger>();
+      mockLogger
+        .Setup(l => l.Log(
+          It.IsAny<LogLevel>(),
+          It.IsAny<EventId>(),
+          It.IsAny<It.IsAnyType>(),
+          It.IsAny<Exception?>(),
+          It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+        .Callback<LogLevel, EventId, object, Exception?, Delegate>((level, id, state, ex, formatter) =>
+        {
+          logMessages.Add(state?.ToString() ?? "");
+        });
+
+      // Act
+      options.LogHeraldStartupBanner(mockLogger.Object, gptConfigCount: 2);
+
+      // Assert
+      var allLogs = string.Join("\n", logMessages);
+      Assert.Contains("OpenAIEmbeddingService", allLogs);
+      Assert.Contains("OPENAI_API_KEY detected", allLogs);
+    }
+
+    [Fact]
     public void GptRagOptions_ReadsCustomApiBaseUrl()
     {
       // Arrange

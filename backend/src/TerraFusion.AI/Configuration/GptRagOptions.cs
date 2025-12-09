@@ -93,37 +93,61 @@ public class GptRagOptions
     {
         if (!EnableHeraldLogging) return;
 
-        logger.LogInformation(
-            "╔══════════════════════════════════════════════════════════════╗");
-        logger.LogInformation(
-            "║  📢 HERALD CONSTELLATION - GPT/RAG Configuration Report     ║");
-        logger.LogInformation(
-            "╠══════════════════════════════════════════════════════════════╣");
+        LogHeraldStartupBanner(logger, gptConfigCount: null);
+    }
 
+    /// <summary>
+    /// Log the comprehensive Herald startup banner with all system status.
+    /// Phase 12.5: Enhanced DX with era branding, GPT config count, and DX commands.
+    /// </summary>
+    /// <param name="logger">Logger instance</param>
+    /// <param name="gptConfigCount">Number of GPT configurations (optional, from IGPTConfigurationService)</param>
+    /// <param name="gptConfigNames">Names of configured GPTs (optional)</param>
+    public void LogHeraldStartupBanner(ILogger logger, int? gptConfigCount, IEnumerable<string>? gptConfigNames = null)
+    {
+        if (!EnableHeraldLogging) return;
+
+        const string era = "TerraFusion OS 1.0 – Genesis Era";
+
+        logger.LogInformation("");
+        logger.LogInformation("╔══════════════════════════════════════════════════════════════════════════╗");
+        logger.LogInformation("║  📢 HERALD STATUS – {Era}                           ║", era.PadRight(30));
+        logger.LogInformation("╠══════════════════════════════════════════════════════════════════════════╣");
+
+        // Embedding mode
         if (UseRealEmbeddings)
         {
-            logger.LogInformation(
-                "║  🟢 Embedding Provider: OpenAI ({Model})            ║",
-                EmbeddingModel);
-            logger.LogInformation(
-                "║  ✓  OPENAI_API_KEY detected - production mode active       ║");
+            logger.LogInformation("║  🟢 Embeddings: OpenAIEmbeddingService (OPENAI_API_KEY detected)         ║");
+            logger.LogInformation("║     Model: {Model}                                                   ║", EmbeddingModel.PadRight(20));
         }
         else
         {
-            logger.LogInformation(
-                "║  🟡 Embedding Provider: Simulated (dev/CI safe mode)       ║");
-            logger.LogInformation(
-                "║  ℹ  No OPENAI_API_KEY - using deterministic embeddings     ║");
+            logger.LogInformation("║  🟡 Embeddings: SimulatedEmbeddingService (no OPENAI_API_KEY)            ║");
+            logger.LogInformation("║     Safe dev/CI mode – deterministic, no external API calls             ║");
         }
 
-        logger.LogInformation(
-            "║  📚 RAG Datasets: {Datasets}                          ║",
-            string.Join(", ", RagDatasets));
-        logger.LogInformation(
-            "║  🌐 API Base URL: {Url}                               ║",
-            ApiBaseUrl);
-        logger.LogInformation(
-            "╚══════════════════════════════════════════════════════════════╝");
+        // RAG Datasets
+        var datasetStr = string.Join(", ", RagDatasets.Select(d => $"{d} [NOT INDEXED]"));
+        logger.LogInformation("║  📚 RAG datasets: {Datasets}                                    ║",
+            datasetStr.Length > 40 ? datasetStr.Substring(0, 37) + "..." : datasetStr.PadRight(40));
+
+        // GPT Configs
+        if (gptConfigCount.HasValue)
+        {
+            var gptNames = gptConfigNames != null ? string.Join(", ", gptConfigNames) : "PropertyAssessmentGPT, ...";
+            logger.LogInformation("║  🤖 GPT configs: {Count} configured ({Names})                            ║",
+                gptConfigCount.Value, gptNames.Length > 30 ? gptNames.Substring(0, 27) + "..." : gptNames);
+        }
+        else
+        {
+            logger.LogInformation("║  🤖 GPT configs: Loading...                                              ║");
+        }
+
+        // DX Commands
+        logger.LogInformation("╠══════════════════════════════════════════════════════════════════════════╣");
+        logger.LogInformation("║  ✨ DX: make oneclick | make gpt-ingest | make dev                       ║");
+        logger.LogInformation("╚══════════════════════════════════════════════════════════════════════════╝");
+        logger.LogInformation("");
     }
 
     /// <summary>

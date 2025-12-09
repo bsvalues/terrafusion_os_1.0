@@ -115,7 +115,7 @@ namespace TerraFusion.AI.Services
                 if (gptConfig.EnableRAG && gptConfig.RAGDatasetId.HasValue)
                 {
                     var ragStartTime = System.Diagnostics.Stopwatch.StartNew();
-                    
+
                     var ragResult = await _ragService.GetRelevantContextAsync(
                         gptConfig.RAGDatasetId.Value,
                         userMessage,
@@ -123,7 +123,7 @@ namespace TerraFusion.AI.Services
 
                     ragStartTime.Stop();
                     ragRetrievalTimeMs = (int)ragStartTime.ElapsedMilliseconds;
-                    
+
                     ragContext = ragResult.Context;
                     ragDocuments = ragResult.DocumentIds;
                     ragScore = ragResult.AverageScore;

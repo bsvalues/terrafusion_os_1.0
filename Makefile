@@ -136,6 +136,81 @@ ci-test: ## CI test target for GitHub Actions
 	@echo "✅ CI Tests complete"
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# 🌈 ARC CONSTELLATION - GPT/RAG TARGETS (Phase 12)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+API_URL ?= http://localhost:5000
+
+gpt-ingest: ## 🌈 Arc: Index Benton CAMA RAG dataset
+	@echo "╔══════════════════════════════════════════════════════════════╗"
+	@echo "║  🌈 ARC CONSTELLATION - RAG Ingestion                       ║"
+	@echo "╚══════════════════════════════════════════════════════════════╝"
+	@echo "Indexing dataset: benton_cama_basics..."
+	@curl -s -X POST $(API_URL)/api/gpt/rag/index/benton_cama_basics && echo "" || \
+		echo "⚠️  API not running. Start with 'make dev-backend' first."
+	@echo "✅ RAG Ingestion request sent"
+
+gpt-health: ## 📢 Herald: Check GPT/RAG health status
+	@echo "📢 Herald: Checking GPT/RAG health..."
+	@curl -s $(API_URL)/api/gpt/rag/health || \
+		echo "⚠️  API not running. Start with 'make dev-backend' first."
+
+gpt-system: ## 🤖 List available GPT configurations
+	@echo "🤖 Listing system GPTs..."
+	@curl -s $(API_URL)/api/gpt/system || \
+		echo "⚠️  API not running. Start with 'make dev-backend' first."
+
+test-gpt: ## 🧪 Run GPT/RAG specific tests
+	@echo "🌈 Arc: Running GPT/RAG tests..."
+	cd backend && dotnet test src/TerraFusion.AI/TerraFusion.AI.csproj --nologo --filter "FullyQualifiedName~GPT|FullyQualifiedName~RAG|FullyQualifiedName~Embedding|FullyQualifiedName~Audit"
+	@echo "✅ GPT/RAG tests complete"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ✨ RADIANT CONSTELLATION - DEVELOPER EXPERIENCE (Phase 12)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+dev: ## ✨ Radiant: Show development startup instructions
+	@echo "╔══════════════════════════════════════════════════════════════╗"
+	@echo "║  ✨ RADIANT CONSTELLATION - Development Mode                ║"
+	@echo "║  TerraFusion OS 1.0 – Genesis Era                           ║"
+	@echo "╚══════════════════════════════════════════════════════════════╝"
+	@echo ""
+	@echo "Run these in separate terminals:"
+	@echo "  Terminal 1: make dev-backend"
+	@echo "  Terminal 2: make dev-frontend"
+	@echo ""
+	@echo "Or use VS Code tasks: 'TerraFusion: Launch Full Dev Mode'"
+	@echo ""
+	@echo "Quick Start:"
+	@echo "  1. make dev-backend    # Start API on port 5000"
+	@echo "  2. make gpt-ingest     # Index RAG dataset"
+	@echo "  3. make dev-frontend   # Start OS Shell on port 5173"
+	@echo ""
+
+dev-backend: ## 🔨 Forge: Start backend API server
+	@echo "🔨 Forge: Starting backend on port 5000..."
+	cd backend && dotnet run --project src/TerraFusion.API
+
+dev-frontend: ## ✨ Radiant: Start frontend OS Shell
+	@echo "✨ Radiant: Starting frontend on port 5173..."
+	cd frontend/apps/os-shell && pnpm dev
+
+doctor: ## 📢 Herald: Run system diagnostics
+	@echo "╔══════════════════════════════════════════════════════════════╗"
+	@echo "║  📢 HERALD CONSTELLATION - System Diagnostics               ║"
+	@echo "╚══════════════════════════════════════════════════════════════╝"
+	@echo ""
+	@echo "Checking prerequisites:"
+	@command -v dotnet >/dev/null 2>&1 && echo "  ✓ dotnet" || echo "  ✗ dotnet (required)"
+	@command -v node >/dev/null 2>&1 && echo "  ✓ node" || echo "  ✗ node (required)"
+	@command -v pnpm >/dev/null 2>&1 && echo "  ✓ pnpm" || echo "  ✗ pnpm (required)"
+	@command -v curl >/dev/null 2>&1 && echo "  ✓ curl" || echo "  ○ curl (optional)"
+	@echo ""
+	@echo "Environment:"
+	@if [ -n "$$OPENAI_API_KEY" ]; then echo "  OPENAI_API_KEY: ✓ Set (OpenAI embeddings)"; else echo "  OPENAI_API_KEY: ○ Not set (SimulatedEmbeddings)"; fi
+	@echo ""
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # LEGACY BENTON COUNTY DEMO
 # ═══════════════════════════════════════════════════════════════════════════════
 
