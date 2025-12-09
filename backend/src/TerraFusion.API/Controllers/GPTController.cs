@@ -822,7 +822,7 @@ namespace TerraFusion.API.Controllers
         {
             public string DatasetId { get; set; } = string.Empty;
             public bool Success { get; set; }
-public int DocumentCount { get; set; }
+            public int DocumentCount { get; set; }
             public int ChunkCount { get; set; }
             public string? Error { get; set; }
             public DateTime CompletedAt { get; set; }
@@ -851,7 +851,7 @@ public int DocumentCount { get; set; }
             public DateTime CreatedAt { get; set; }
             public int TokensUsed { get; set; }
             public decimal Cost { get; set; }
-            
+
             // RAG Trace Info
             public bool RAGUsed { get; set; }
             public List<string>? RAGDocuments { get; set; }

@@ -33,6 +33,9 @@ export const GptStudioView: React.FC = () => {
   const [ragError, setRagError] = useState<string | null>(null);
   const [ragIndexing, setRagIndexing] = useState(false);
 
+  // Phase 11: Show Sources toggle for RAG traceability
+  const [showSources, setShowSources] = useState(false);
+
   // Load system GPTs on mount
   useEffect(() => {
     const load = async () => {
@@ -168,6 +171,20 @@ export const GptStudioView: React.FC = () => {
     }
   };
 
+  /**
+   * Handle flow selection - pre-populate input with flow prompt
+   */
+  const handleSelectFlow = (flow: AssessorFlow) => {
+    setInput(flow.prompt);
+    // Optionally auto-send for a more streamlined UX
+    // void handleSend(); // Uncomment to auto-send when flow is clicked
+  };
+
+  /**
+   * Check if PropertyAssessmentGPT flows should be shown
+   */
+  const showAssessorFlows = selectedGpt?.key === 'PropertyAssessmentGPT' && conversation;
+
   return (
     <div
       data-testid='gpt-studio-view'
@@ -300,6 +317,13 @@ export const GptStudioView: React.FC = () => {
           </div>
         </div>
 
+        {/* Middle column: Assessor Flows (only for PropertyAssessmentGPT) */}
+        {showAssessorFlows && (
+          <div className='flex w-64 flex-col rounded-2xl border border-slate-800/70 bg-slate-950/70 p-3 shadow-[0_18px_55px_rgba(0,0,0,0.65)] backdrop-blur-xl'>
+            <PropertyAssessmentFlows onSelectFlow={handleSelectFlow} isDisabled={sending} />
+          </div>
+        )}
+
         {/* Right column: conversation */}
         <div className='flex min-w-0 flex-1 flex-col rounded-2xl border border-slate-800/70 bg-slate-950/70 p-3 shadow-[0_20px_60px_rgba(0,0,0,0.75)] backdrop-blur-2xl'>
           <div className='mb-2 flex items-center justify-between'>
@@ -313,6 +337,23 @@ export const GptStudioView: React.FC = () => {
                   : 'Choose a system GPT to start a new conversation.'}
               </div>
             </div>
+            {/* Phase 11: Show Sources Toggle */}
+            {selectedGpt && (
+              <button
+                type='button'
+                onClick={() => setShowSources((prev) => !prev)}
+                className={[
+                  'flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-[0.65rem] font-medium transition-all',
+                  showSources
+                    ? 'border border-emerald-400/60 bg-emerald-500/20 text-emerald-200 shadow-[0_0_15px_rgba(52,211,153,0.4)]'
+                    : 'border border-slate-700/50 bg-slate-900/60 text-slate-400 hover:border-emerald-400/40 hover:text-emerald-300',
+                ].join(' ')}
+                title='Toggle RAG source visibility for audit traceability'
+              >
+                <span>{showSources ? '📚' : '📄'}</span>
+                <span>{showSources ? 'Sources ON' : 'Show Sources'}</span>
+              </button>
+            )}
           </div>
 
           {/* Messages */}
@@ -355,17 +396,28 @@ export const GptStudioView: React.FC = () => {
                         )}
                       </div>
                       <div className='whitespace-pre-wrap'>{msg.content}</div>
-                      {hasRagSources && (
-                        <div className='mt-2 border-t border-slate-700/40 pt-2'>
-                          <div className='text-[0.6rem] text-slate-400/80'>
-                            <span className='font-semibold'>Sources:</span>{' '}
+                      {/* Phase 11: Conditional source display based on showSources toggle */}
+                      {hasRagSources && showSources && (
+                        <div className='mt-2 rounded-xl border border-emerald-400/30 bg-emerald-500/5 p-2'>
+                          <div className='text-[0.6rem] text-emerald-300/90'>
+                            <span className='font-semibold'>📄 Sources (RAG Trace):</span>
+                          </div>
+                          <div className='mt-1 space-y-0.5'>
                             {msg.ragDocumentsUsed?.map((doc, idx) => (
-                              <span key={doc} className='font-mono'>
-                                {doc}
-                                {idx < (msg.ragDocumentsUsed?.length ?? 0) - 1 ? ', ' : ''}
-                              </span>
+                              <div
+                                key={doc}
+                                className='flex items-center gap-1.5 text-[0.6rem] text-slate-300/80'
+                              >
+                                <span className='text-emerald-400'>•</span>
+                                <span className='font-mono'>{doc}</span>
+                              </div>
                             ))}
                           </div>
+                          {msg.ragScore && (
+                            <div className='mt-1.5 text-[0.55rem] text-slate-400/70'>
+                              Relevance Score: {(msg.ragScore * 100).toFixed(1)}%
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
