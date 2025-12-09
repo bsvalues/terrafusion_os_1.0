@@ -298,8 +298,19 @@ builder.Services.AddScoped<IWorkflowExecutionRepository, TerraFusion.Data.Reposi
 // 📊 TerraFlow Quantum Command Center Service (Phase 1 Week 4)
 builder.Services.AddScoped<TerraFusion.AI.Services.IQuantumAnalyticsService, TerraFusion.AI.Services.QuantumAnalyticsService>();
 
-// 🤖 TerraFusionGPT Suite Services - AI Chat & Conversation Management
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🌈 ARC CONSTELLATION - GPT/RAG Subsystem (Phase 9: Operational Hardening)
+// ═══════════════════════════════════════════════════════════════════════════════
 // GPT Configuration, Orchestration, and RAG services for PropertyAssessmentGPT and other system GPTs
+
+// Register GptRagOptions - centralized configuration for GPT/RAG subsystem
+var gptRagOptions = TerraFusion.AI.Configuration.GptRagOptions.FromConfiguration(builder.Configuration);
+builder.Services.AddSingleton(gptRagOptions);
+
+// 📢 HERALD CONSTELLATION - Log GPT/RAG configuration at startup
+var heraldLogger = LoggerFactory.Create(b => b.AddConsole()).CreateLogger("Herald.GptRag");
+gptRagOptions.LogConfiguration(heraldLogger);
+
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTConfigurationService, TerraFusion.AI.Services.GPTConfigurationService>();
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTOrchestrationService, TerraFusion.AI.Services.GPTOrchestrationService>();
 
@@ -307,10 +318,11 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTOrchestrationService, T
 builder.Services.AddHttpClient<TerraFusion.AI.Services.OpenAIEmbeddingService>();
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
 {
-    // Use OpenAI if API key is configured, otherwise fall back to simulated embeddings
-    var openAIKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-    if (!string.IsNullOrEmpty(openAIKey))
+    var options = sp.GetRequiredService<TerraFusion.AI.Configuration.GptRagOptions>();
+
+    if (options.UseRealEmbeddings)
     {
+        // 🟢 OpenAI embeddings - production mode
         var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
         var httpClient = httpClientFactory.CreateClient();
         var configuration = sp.GetRequiredService<IConfiguration>();
@@ -319,6 +331,7 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
     }
     else
     {
+        // 🟡 Simulated embeddings - dev/CI safe mode
         var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.SimulatedEmbeddingService>>();
         return new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
     }

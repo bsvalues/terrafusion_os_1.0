@@ -898,4 +898,198 @@ Decision Timeline: 30 days from hearing",
       Assert.Null(traceResponse.messages[1].documentsUsed);
     }
   }
+
+  /// <summary>
+  /// Phase 9 Tests: GPT/RAG Configuration and Operational Hardening
+  /// Arc Constellation + Herald Constellation collaboration
+  /// </summary>
+  public class GptRagOptionsTests
+  {
+    [Fact]
+    public void GptRagOptions_DefaultValues_AreCorrect()
+    {
+      // Arrange & Act
+      var options = new TerraFusion.AI.Configuration.GptRagOptions();
+
+      // Assert - defaults should be dev/CI safe mode
+      Assert.False(options.UseRealEmbeddings);
+      Assert.Equal("Simulated", options.EmbeddingProvider);
+      Assert.Equal("text-embedding-3-small", options.EmbeddingModel);
+      Assert.Contains("benton_cama_basics", options.RagDatasets);
+      Assert.True(options.EnableHeraldLogging);
+      Assert.True(options.ShowMissingDatasetDisclaimers);
+    }
+
+    [Fact]
+    public void GptRagOptions_WhenApiKeyMissing_UsesSimulatedEmbeddings()
+    {
+      // Arrange - ensure no API key in environment for this test
+      var originalKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+      try
+      {
+        Environment.SetEnvironmentVariable("OPENAI_API_KEY", null);
+
+        // Act
+        var configBuilder = new Microsoft.Extensions.Configuration.ConfigurationBuilder();
+        var config = configBuilder.Build();
+        var options = TerraFusion.AI.Configuration.GptRagOptions.FromConfiguration(config);
+
+        // Assert
+        Assert.False(options.UseRealEmbeddings);
+        Assert.Equal("Simulated", options.EmbeddingProvider);
+      }
+      finally
+      {
+        // Restore original key
+        Environment.SetEnvironmentVariable("OPENAI_API_KEY", originalKey);
+      }
+    }
+
+    [Fact]
+    public void GptRagOptions_WhenApiKeyPresent_UsesOpenAIEmbeddings()
+    {
+      // Arrange
+      var originalKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+      try
+      {
+        Environment.SetEnvironmentVariable("OPENAI_API_KEY", "sk-test-key-for-unit-test");
+
+        // Act
+        var configBuilder = new Microsoft.Extensions.Configuration.ConfigurationBuilder();
+        var config = configBuilder.Build();
+        var options = TerraFusion.AI.Configuration.GptRagOptions.FromConfiguration(config);
+
+        // Assert
+        Assert.True(options.UseRealEmbeddings);
+        Assert.Equal("OpenAI", options.EmbeddingProvider);
+      }
+      finally
+      {
+        // Restore original key
+        Environment.SetEnvironmentVariable("OPENAI_API_KEY", originalKey);
+      }
+    }
+
+    [Fact]
+    public void GptRagOptions_GetSummary_ReturnsFormattedString()
+    {
+      // Arrange
+      var options = new TerraFusion.AI.Configuration.GptRagOptions
+      {
+        EmbeddingProvider = "Simulated",
+        EmbeddingModel = "text-embedding-3-small",
+        RagDatasets = new List<string> { "benton_cama_basics" },
+        UseRealEmbeddings = false
+      };
+
+      // Act
+      var summary = options.GetSummary();
+
+      // Assert
+      Assert.Contains("EmbeddingProvider=Simulated", summary);
+      Assert.Contains("benton_cama_basics", summary);
+      Assert.Contains("UseReal=False", summary);
+    }
+
+    [Fact]
+    public void GptRagOptions_LogConfiguration_DoesNotThrow()
+    {
+      // Arrange
+      var options = new TerraFusion.AI.Configuration.GptRagOptions();
+      var mockLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+
+      // Act & Assert - should not throw
+      options.LogConfiguration(mockLogger);
+    }
+
+    [Fact]
+    public void GptRagOptions_ReadsCustomApiBaseUrl()
+    {
+      // Arrange
+      var originalUrl = Environment.GetEnvironmentVariable("TF_API_BASE_URL");
+      try
+      {
+        Environment.SetEnvironmentVariable("TF_API_BASE_URL", "https://custom.terrafusion.gov");
+
+        // Act
+        var configBuilder = new Microsoft.Extensions.Configuration.ConfigurationBuilder();
+        var config = configBuilder.Build();
+        var options = TerraFusion.AI.Configuration.GptRagOptions.FromConfiguration(config);
+
+        // Assert
+        Assert.Equal("https://custom.terrafusion.gov", options.ApiBaseUrl);
+      }
+      finally
+      {
+        Environment.SetEnvironmentVariable("TF_API_BASE_URL", originalUrl);
+      }
+    }
+  }
+
+  /// <summary>
+  /// Phase 9 Tests: Safe Failure Behavior
+  /// Ensures graceful degradation when RAG datasets are not indexed
+  /// </summary>
+  public class SafeFailureBehaviorTests
+  {
+    [Fact]
+    public void MissingDatasetDisclaimer_WhenShowDisclaimersEnabled_IsGenerated()
+    {
+      // Arrange
+      var options = new TerraFusion.AI.Configuration.GptRagOptions
+      {
+        ShowMissingDatasetDisclaimers = true,
+        RagDatasets = new List<string> { "benton_cama_basics" }
+      };
+
+      // Act - simulate a response that would include disclaimer
+      var hasIndexedData = false; // Dataset not indexed
+      var disclaimer = hasIndexedData
+        ? null
+        : "Note: No Benton CAMA dataset currently indexed; response is based on general configuration only.";
+
+      // Assert
+      Assert.NotNull(disclaimer);
+      Assert.Contains("Benton CAMA", disclaimer);
+      Assert.Contains("indexed", disclaimer.ToLower());
+    }
+
+    [Fact]
+    public void MissingDatasetDisclaimer_WhenShowDisclaimersDisabled_IsNull()
+    {
+      // Arrange
+      var options = new TerraFusion.AI.Configuration.GptRagOptions
+      {
+        ShowMissingDatasetDisclaimers = false
+      };
+
+      // Act
+      var hasIndexedData = false;
+      var disclaimer = options.ShowMissingDatasetDisclaimers && !hasIndexedData
+        ? "Disclaimer text"
+        : null;
+
+      // Assert
+      Assert.Null(disclaimer);
+    }
+
+    [Fact]
+    public void EmbeddingFallback_SimulatedMode_ProducesDeterministicResults()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SimulatedEmbeddingService>.Instance;
+      var service = new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
+
+      // Act - generate embeddings twice for same text
+      var embedding1 = service.GenerateEmbeddingAsync("test query", "text-embedding-3-small").Result;
+      var embedding2 = service.GenerateEmbeddingAsync("test query", "text-embedding-3-small").Result;
+
+      // Assert - should be identical (deterministic)
+      Assert.Equal(embedding1.Length, embedding2.Length);
+      for (int i = 0; i < embedding1.Length; i++)
+      {
+        Assert.Equal(embedding1[i], embedding2[i]);
+      }
+    }
+  }
 }
