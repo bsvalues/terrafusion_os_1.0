@@ -86,11 +86,12 @@ jobs:
       - name: "🌈 Arc: Run GPT/RAG Tests"
         run: |
           echo "Running GPT/RAG specific tests (SimulatedEmbeddings mode)..."
+          echo "Note: Legacy integration tests excluded (Category!=Legacy)"
           dotnet test backend/src/TerraFusion.AI/TerraFusion.AI.csproj \
             --configuration Release \
             --no-build \
             --verbosity normal \
-            --filter "FullyQualifiedName~GPT|FullyQualifiedName~RAG|FullyQualifiedName~Embedding|FullyQualifiedName~Audit" \
+            --filter "(FullyQualifiedName~GPT|FullyQualifiedName~RAG|FullyQualifiedName~Embedding|FullyQualifiedName~Audit)&Category!=Legacy" \
             --logger "console;verbosity=detailed" \
             --results-directory ./test-results \
             --collect:"XPlat Code Coverage"

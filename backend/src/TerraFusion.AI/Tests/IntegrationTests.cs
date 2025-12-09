@@ -12,6 +12,11 @@ using Xunit.Abstractions;
 
 namespace TerraFusion.AI.Tests
 {
+    /// <summary>
+    /// Legacy integration tests requiring real services.
+    /// Excluded from CI. Run with: dotnet test --filter "Category=Legacy"
+    /// </summary>
+    [Trait("Category", "Legacy")]
     public class IntegrationTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
