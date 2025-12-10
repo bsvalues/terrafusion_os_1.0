@@ -391,6 +391,37 @@ export interface SystemGptMetricsSnapshot {
 
   // Time series for charts
   series: SystemGptMetricSeries[];
+
+  // Phase 21: Capacity prediction
+  capacity?: SystemGptCapacityPrediction;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 21: Capacity Prediction & Advisory
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Phase 21: Saturation risk levels for capacity planning */
+export type SaturationRiskLevel = 'Low' | 'Medium' | 'High';
+
+/** Phase 21: Capacity prediction and advisory for county tech leads */
+export interface SystemGptCapacityPrediction {
+  /** Current saturation risk level */
+  saturationRisk: SaturationRiskLevel;
+
+  /** Predicted requests per minute in approximately 5 minutes */
+  predictedRequestsPerMinuteIn5Min: number;
+
+  /** True if GPT latency is trending upward */
+  latencyIncreasing: boolean;
+
+  /** True if error rate is trending upward */
+  errorRateIncreasing: boolean;
+
+  /** True if RAG latency is trending upward */
+  ragLatencyIncreasing: boolean;
+
+  /** Human-readable advisory for the county tech lead */
+  advisory?: string;
 }
 
 /**

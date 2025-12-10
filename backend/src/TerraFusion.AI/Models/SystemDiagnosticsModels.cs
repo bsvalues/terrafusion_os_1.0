@@ -662,7 +662,58 @@ namespace TerraFusion.AI.Models
 
         /// <summary>Time series data for charting (latency, throughput, errors over time).</summary>
         public IReadOnlyList<SystemGptMetricSeries> Series { get; init; } = Array.Empty<SystemGptMetricSeries>();
+
+        // ─────────────────────────────────────────────────────────────────────
+        // Phase 21: Capacity Prediction & Advisory
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>Phase 21: Capacity prediction and advisory for county tech leads.</summary>
+        public SystemGptCapacityPredictionDto? Capacity { get; init; }
     }
+
+    #region Phase 21: Capacity Prediction & Advisory
+
+    /// <summary>
+    /// Phase 21: Saturation risk level for capacity planning.
+    /// </summary>
+    public enum SaturationRiskLevel
+    {
+        /// <summary>System operating within normal parameters.</summary>
+        Low = 0,
+
+        /// <summary>Moderate load with rising metrics - monitor closely.</summary>
+        Medium = 1,
+
+        /// <summary>Approaching saturation - action recommended.</summary>
+        High = 2
+    }
+
+    /// <summary>
+    /// Phase 21: Capacity prediction and advisory for the SystemGPT Console.
+    /// Answers: "Are we trending towards saturation?", "What should we do about it?"
+    /// </summary>
+    public sealed class SystemGptCapacityPredictionDto
+    {
+        /// <summary>Current saturation risk level: "Low", "Medium", or "High".</summary>
+        public string SaturationRisk { get; init; } = "Low";
+
+        /// <summary>Predicted requests per minute in approximately 5 minutes.</summary>
+        public double PredictedRequestsPerMinuteIn5Min { get; init; }
+
+        /// <summary>True if GPT latency is trending upward.</summary>
+        public bool LatencyIncreasing { get; init; }
+
+        /// <summary>True if error rate is trending upward.</summary>
+        public bool ErrorRateIncreasing { get; init; }
+
+        /// <summary>True if RAG latency is trending upward.</summary>
+        public bool RagLatencyIncreasing { get; init; }
+
+        /// <summary>Human-readable advisory for the county tech lead.</summary>
+        public string? Advisory { get; init; }
+    }
+
+    #endregion
 
     #endregion
 }

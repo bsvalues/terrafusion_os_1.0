@@ -7,12 +7,13 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   getSystemGptMetrics,
-  type SystemGptMetricsSnapshot,
   type SystemGptMetricSeries,
+  type SystemGptMetricsSnapshot,
 } from '../../../api/systemDiagnosticsApi';
+import { SystemGptCapacityPanel } from './SystemGptCapacityPanel';
 
 // ═══════════════════════════════════════════════════════════════
 // SPARKLINE COMPONENT
@@ -35,7 +36,14 @@ function Sparkline({ series, width = 120, height = 32, color = '#00FFFF' }: Spar
   if (points.length === 0) {
     return (
       <svg width={width} height={height} className='opacity-30'>
-        <line x1={0} y1={height / 2} x2={width} y2={height / 2} stroke={color} strokeOpacity={0.3} />
+        <line
+          x1={0}
+          y1={height / 2}
+          x2={width}
+          y2={height / 2}
+          stroke={color}
+          strokeOpacity={0.3}
+        />
       </svg>
     );
   }
@@ -62,13 +70,27 @@ function Sparkline({ series, width = 120, height = 32, color = '#00FFFF' }: Spar
     <div className='flex items-center gap-2'>
       <svg width={width} height={height}>
         {/* Background grid line */}
-        <line x1={0} y1={height / 2} x2={width} y2={height / 2} stroke={color} strokeOpacity={0.1} />
+        <line
+          x1={0}
+          y1={height / 2}
+          x2={width}
+          y2={height / 2}
+          stroke={color}
+          strokeOpacity={0.1}
+        />
         {/* Sparkline */}
-        <polyline fill='none' stroke={color} strokeWidth={1.5} strokeLinecap='round' strokeLinejoin='round' points={svgPoints} />
+        <polyline
+          fill='none'
+          stroke={color}
+          strokeWidth={1.5}
+          strokeLinecap='round'
+          strokeLinejoin='round'
+          points={svgPoints}
+        />
         {/* End dot */}
         {points.length > 0 && (
           <circle
-            cx={(points.length - 1) / (points.length - 1 || 1) * width}
+            cx={((points.length - 1) / (points.length - 1 || 1)) * width}
             cy={height - ((lastValue - min) / range) * (height - 4) - 2}
             r={2.5}
             fill={color}
@@ -152,7 +174,10 @@ export function SystemGptMetricsPanel({
         }
       } catch (error) {
         if (!cancelled) {
-          setState({ status: 'error', error: error instanceof Error ? error : new Error(String(error)) });
+          setState({
+            status: 'error',
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
         }
       }
     };
@@ -197,8 +222,19 @@ export function SystemGptMetricsPanel({
       <div className='rounded-lg border border-slate-800/60 bg-slate-900/40 p-4'>
         <div className='flex items-center gap-2 text-slate-500'>
           <svg className='h-4 w-4 animate-spin' fill='none' viewBox='0 0 24 24'>
-            <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
-            <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z' />
+            <circle
+              className='opacity-25'
+              cx='12'
+              cy='12'
+              r='10'
+              stroke='currentColor'
+              strokeWidth='4'
+            />
+            <path
+              className='opacity-75'
+              fill='currentColor'
+              d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z'
+            />
           </svg>
           <span className='text-sm'>Loading AI metrics...</span>
         </div>
@@ -276,7 +312,12 @@ export function SystemGptMetricsPanel({
           {seriesByName['gpt_latency_ms_avg'] && (
             <div className='rounded-lg border border-slate-800/40 bg-slate-900/30 p-3'>
               <div className='text-[0.65rem] text-slate-500 mb-2'>GPT Latency (avg)</div>
-              <Sparkline series={seriesByName['gpt_latency_ms_avg']} color='#00FFFF' width={140} height={36} />
+              <Sparkline
+                series={seriesByName['gpt_latency_ms_avg']}
+                color='#00FFFF'
+                width={140}
+                height={36}
+              />
             </div>
           )}
 
@@ -284,7 +325,12 @@ export function SystemGptMetricsPanel({
           {seriesByName['requests_per_minute'] && (
             <div className='rounded-lg border border-slate-800/40 bg-slate-900/30 p-3'>
               <div className='text-[0.65rem] text-slate-500 mb-2'>Throughput</div>
-              <Sparkline series={seriesByName['requests_per_minute']} color='#00FF88' width={140} height={36} />
+              <Sparkline
+                series={seriesByName['requests_per_minute']}
+                color='#00FF88'
+                width={140}
+                height={36}
+              />
             </div>
           )}
 
@@ -292,16 +338,30 @@ export function SystemGptMetricsPanel({
           {seriesByName['error_rate_percent'] && (
             <div className='rounded-lg border border-slate-800/40 bg-slate-900/30 p-3'>
               <div className='text-[0.65rem] text-slate-500 mb-2'>Error Rate</div>
-              <Sparkline series={seriesByName['error_rate_percent']} color='#FF6B6B' width={140} height={36} />
+              <Sparkline
+                series={seriesByName['error_rate_percent']}
+                color='#FF6B6B'
+                width={140}
+                height={36}
+              />
             </div>
           )}
+        </div>
+      )}
+
+      {/* Phase 21: Capacity Prediction Panel */}
+      {data.capacity && (
+        <div className='rounded-lg border border-slate-800/50 bg-slate-900/40 p-4'>
+          <SystemGptCapacityPanel capacity={data.capacity} currentRpm={data.requestsPerMinute} />
         </div>
       )}
 
       {/* Empty state for no data */}
       {data.totalRequests === 0 && (
         <div className='rounded-lg border border-slate-800/40 bg-slate-900/30 p-4 text-center'>
-          <span className='text-sm text-slate-500'>No AI requests in the last {data.windowMinutes} minutes</span>
+          <span className='text-sm text-slate-500'>
+            No AI requests in the last {data.windowMinutes} minutes
+          </span>
         </div>
       )}
     </div>

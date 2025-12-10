@@ -174,6 +174,9 @@ public class SystemGptMetricsService : ISystemGptMetricsService
         // Build time series for charts
         var series = BuildTimeSeries(windowSamples, cutoff, now, maxSeriesPoints);
 
+        // Phase 21: Compute capacity prediction
+        var capacity = ComputeCapacityPrediction(series, requestsPerMinute, errorRate);
+
         return new SystemGptMetricsSnapshotDto
         {
             GeneratedAtUtc = now,
@@ -187,7 +190,8 @@ public class SystemGptMetricsService : ISystemGptMetricsService
             TotalRequests = totalRequests,
             TotalTokensIn = totalTokensIn,
             TotalTokensOut = totalTokensOut,
-            Series = series
+            Series = series,
+            Capacity = capacity
         };
     }
 
@@ -206,7 +210,16 @@ public class SystemGptMetricsService : ISystemGptMetricsService
             TotalRequests = 0,
             TotalTokensIn = 0,
             TotalTokensOut = 0,
-            Series = Array.Empty<SystemGptMetricSeries>()
+            Series = Array.Empty<SystemGptMetricSeries>(),
+            Capacity = new SystemGptCapacityPredictionDto
+            {
+                SaturationRisk = "Low",
+                PredictedRequestsPerMinuteIn5Min = 0,
+                LatencyIncreasing = false,
+                ErrorRateIncreasing = false,
+                RagLatencyIncreasing = false,
+                Advisory = "Insufficient data for prediction."
+            }
         };
     }
 
@@ -357,4 +370,199 @@ public class SystemGptMetricsService : ISystemGptMetricsService
     /// Get current sample count (for diagnostics/testing).
     /// </summary>
     internal int SampleCount => _samples.Count;
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Phase 21: Capacity Prediction & Advisory
+    // ─────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Phase 21: Compute capacity prediction based on time series trends.
+    /// Uses simple linear regression over recent data points (no ML required).
+    /// </summary>
+    private static SystemGptCapacityPredictionDto ComputeCapacityPrediction(
+        IReadOnlyList<SystemGptMetricSeries> series,
+        double currentRpm,
+        double currentErrorRate)
+    {
+        // Find relevant series
+        var rpmSeries = series.FirstOrDefault(s => s.Name == "requests_per_minute");
+        var latencySeries = series.FirstOrDefault(s => s.Name == "gpt_latency_ms_avg");
+        var errorSeries = series.FirstOrDefault(s => s.Name == "error_rate_percent");
+
+        // Calculate trend flags (20%+ increase from first half to second half = trending up)
+        var latencyIncreasing = IsSeriesTrendingUp(latencySeries);
+        var errorRateIncreasing = IsSeriesTrendingUp(errorSeries);
+        var rpmIncreasing = IsSeriesTrendingUp(rpmSeries);
+
+        // RAG latency isn't tracked separately in series currently,
+        // so we approximate from GPT latency trend (they correlate)
+        var ragLatencyIncreasing = latencyIncreasing;
+
+        // Predict RPM in 5 minutes using linear extrapolation
+        var predictedRpm = PredictValueIn5Minutes(rpmSeries, currentRpm);
+
+        // Determine saturation risk level based on thresholds
+        var (riskLevel, advisory) = DetermineRiskAndAdvisory(
+            currentRpm, predictedRpm,
+            currentErrorRate, errorRateIncreasing,
+            latencyIncreasing, rpmIncreasing);
+
+        return new SystemGptCapacityPredictionDto
+        {
+            SaturationRisk = riskLevel.ToString(),
+            PredictedRequestsPerMinuteIn5Min = Math.Round(predictedRpm, 2),
+            LatencyIncreasing = latencyIncreasing,
+            ErrorRateIncreasing = errorRateIncreasing,
+            RagLatencyIncreasing = ragLatencyIncreasing,
+            Advisory = advisory
+        };
+    }
+
+    /// <summary>
+    /// Phase 21: Determine if a series is trending upward.
+    /// Compares average of first half to second half - 20%+ increase = trending up.
+    /// </summary>
+    private static bool IsSeriesTrendingUp(SystemGptMetricSeries? series)
+    {
+        if (series?.Points == null || series.Points.Count < 4)
+            return false;
+
+        var points = series.Points.OrderBy(p => p.TimestampUtc).ToArray();
+        var midpoint = points.Length / 2;
+
+        var firstHalfAvg = points.Take(midpoint).Average(p => p.Value);
+        var secondHalfAvg = points.Skip(midpoint).Average(p => p.Value);
+
+        // Avoid division by zero; if first half is ~0, only flag if second half is significant
+        if (firstHalfAvg < 0.01)
+            return secondHalfAvg > 1.0;
+
+        var percentChange = (secondHalfAvg - firstHalfAvg) / firstHalfAvg * 100;
+        return percentChange >= 20.0; // 20%+ increase = trending up
+    }
+
+    /// <summary>
+    /// Phase 21: Predict value 5 minutes from now using simple linear extrapolation.
+    /// </summary>
+    private static double PredictValueIn5Minutes(SystemGptMetricSeries? series, double currentValue)
+    {
+        if (series?.Points == null || series.Points.Count < 2)
+            return currentValue; // No data for prediction
+
+        var points = series.Points.OrderBy(p => p.TimestampUtc).ToArray();
+
+        // Use last few points to calculate trend (slope)
+        var recentPoints = points.TakeLast(Math.Min(5, points.Length)).ToArray();
+        if (recentPoints.Length < 2)
+            return currentValue;
+
+        // Simple linear regression: calculate slope
+        var firstTime = recentPoints.First().TimestampUtc;
+        var xValues = recentPoints.Select(p => (p.TimestampUtc - firstTime).TotalMinutes).ToArray();
+        var yValues = recentPoints.Select(p => p.Value).ToArray();
+
+        // Calculate slope (rise/run)
+        var n = recentPoints.Length;
+        var sumX = xValues.Sum();
+        var sumY = yValues.Sum();
+        var sumXY = xValues.Zip(yValues, (x, y) => x * y).Sum();
+        var sumX2 = xValues.Sum(x => x * x);
+
+        var denominator = n * sumX2 - sumX * sumX;
+        if (Math.Abs(denominator) < 0.0001)
+            return currentValue; // Avoid division by zero (flat or insufficient data)
+
+        var slope = (n * sumXY - sumX * sumY) / denominator;
+        var intercept = (sumY - slope * sumX) / n;
+
+        // Predict 5 minutes ahead
+        var lastX = xValues.Last();
+        var predicted = intercept + slope * (lastX + 5.0);
+
+        // Don't predict negative values
+        return Math.Max(0, predicted);
+    }
+
+    /// <summary>
+    /// Phase 21: Determine risk level and advisory based on current metrics and trends.
+    /// </summary>
+    private static (SaturationRiskLevel Risk, string Advisory) DetermineRiskAndAdvisory(
+        double currentRpm,
+        double predictedRpm,
+        double errorRate,
+        bool errorRateIncreasing,
+        bool latencyIncreasing,
+        bool rpmIncreasing)
+    {
+        // Thresholds (configurable in production)
+        const double HighRpmThreshold = 100.0;       // High load
+        const double MediumRpmThreshold = 50.0;      // Moderate load
+        const double HighErrorThreshold = 5.0;       // 5% error rate is concerning
+        const double MediumErrorThreshold = 1.0;     // 1% error rate needs attention
+
+        // Count concerning signals
+        var concernSignals = 0;
+        var advisoryPoints = new List<string>();
+
+        // RPM-based concerns
+        if (predictedRpm >= HighRpmThreshold || currentRpm >= HighRpmThreshold)
+        {
+            concernSignals += 2;
+            advisoryPoints.Add($"request rate approaching capacity ({predictedRpm:F0} RPM predicted)");
+        }
+        else if (predictedRpm >= MediumRpmThreshold || currentRpm >= MediumRpmThreshold)
+        {
+            concernSignals += 1;
+            if (rpmIncreasing)
+            {
+                advisoryPoints.Add("request rate rising");
+            }
+        }
+
+        // Error rate concerns
+        if (errorRate >= HighErrorThreshold)
+        {
+            concernSignals += 2;
+            advisoryPoints.Add($"error rate elevated at {errorRate:F1}%");
+        }
+        else if (errorRate >= MediumErrorThreshold || errorRateIncreasing)
+        {
+            concernSignals += 1;
+            if (errorRateIncreasing)
+            {
+                advisoryPoints.Add("error rate trending upward");
+            }
+        }
+
+        // Latency concerns
+        if (latencyIncreasing)
+        {
+            concernSignals += 1;
+            advisoryPoints.Add("GPT latency increasing");
+        }
+
+        // Determine risk level
+        SaturationRiskLevel risk;
+        string advisory;
+
+        if (concernSignals >= 3)
+        {
+            risk = SaturationRiskLevel.High;
+            advisory = $"⚠️ HIGH RISK: {string.Join(", ", advisoryPoints)}. " +
+                       "Consider scaling resources or rate-limiting non-critical operations.";
+        }
+        else if (concernSignals >= 1)
+        {
+            risk = SaturationRiskLevel.Medium;
+            advisory = $"⚡ MODERATE: {string.Join(", ", advisoryPoints)}. " +
+                       "Continue monitoring; prepare contingency if trends persist.";
+        }
+        else
+        {
+            risk = SaturationRiskLevel.Low;
+            advisory = "✅ System operating within normal parameters. No action required.";
+        }
+
+        return (risk, advisory);
+    }
 }

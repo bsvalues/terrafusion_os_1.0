@@ -883,7 +883,11 @@ export const SystemGptConsoleView: React.FC = () => {
             data-testid='ai-metrics-panel'
             className='rounded-xl border border-cyan-800/40 bg-gradient-to-br from-slate-900/80 via-cyan-900/10 to-slate-900/80 p-4 md:col-span-2 lg:col-span-3'
           >
-            <SystemGptMetricsPanel windowMinutes={15} maxSeriesPoints={40} refreshIntervalMs={30000} />
+            <SystemGptMetricsPanel
+              windowMinutes={15}
+              maxSeriesPoints={40}
+              refreshIntervalMs={30000}
+            />
           </div>
         </div>
       )}
