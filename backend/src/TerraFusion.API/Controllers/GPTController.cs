@@ -33,6 +33,7 @@ namespace TerraFusion.API.Controllers
         private readonly IBentonRagReadinessService? _bentonRagService; // Phase 18
         private readonly ISystemGptEventService? _eventService; // Phase 19
         private readonly ISystemGptMetricsService? _metricsService; // Phase 20
+        private readonly ISystemGptFederatedOverviewService? _federatedOverviewService; // Phase 23
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
@@ -44,7 +45,8 @@ namespace TerraFusion.API.Controllers
             ISystemGptModeService? modeService = null,
             IBentonRagReadinessService? bentonRagService = null,
             ISystemGptEventService? eventService = null,
-            ISystemGptMetricsService? metricsService = null) // Phase 20
+            ISystemGptMetricsService? metricsService = null,
+            ISystemGptFederatedOverviewService? federatedOverviewService = null) // Phase 23
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
@@ -55,6 +57,7 @@ namespace TerraFusion.API.Controllers
             _bentonRagService = bentonRagService; // Optional - Phase 18 Benton RAG Readiness
             _eventService = eventService; // Optional - Phase 19 AI Incident Timeline
             _metricsService = metricsService; // Optional - Phase 20 AI Metrics & Telemetry
+            _federatedOverviewService = federatedOverviewService; // Optional - Phase 23 Federated Overview
         }
 
         #region GPT Configuration Management
@@ -1360,6 +1363,62 @@ namespace TerraFusion.API.Controllers
             {
                 _logger.LogError(ex, "Error retrieving system metrics");
                 return StatusCode(500, new { error = "Failed to retrieve system metrics" });
+            }
+        }
+
+        #endregion
+
+        #region Phase 23: Federated Overview (Multi-County Dashboard)
+
+        /// <summary>
+        /// Get a federated overview of all counties' SystemGPT operational status.
+        /// Phase 23: Multi-County Dashboard - Aggregates all counties into a single view.
+        /// This endpoint returns data for ALL counties (no countyId parameter).
+        /// </summary>
+        [HttpGet("system/federated-overview")]
+        [AllowAnonymous] // Allow overview access for monitoring dashboards
+        public async System.Threading.Tasks.Task<ActionResult<TerraFusion.AI.Models.SystemGptFederatedOverviewResponse>> GetFederatedOverview()
+        {
+            try
+            {
+                _logger.LogInformation("Phase 23: Generating federated overview for all counties");
+
+                // If service is not registered, return a basic overview using CountyHelper
+                if (_federatedOverviewService == null)
+                {
+                    _logger.LogWarning("Phase 23: FederatedOverviewService not registered, returning basic overview");
+
+                    var basicCounties = TerraFusion.AI.Models.CountyHelper.AllCounties.Select(c =>
+                        new TerraFusion.AI.Models.SystemGptCountyOverviewDto
+                        {
+                            CountyId = c.Code,
+                            CountyName = c.DisplayName,
+                            Configured = c.IsConfigured,
+                            Health = c.IsConfigured ? "Unknown" : "Unknown",
+                            CapacityRisk = "Unknown",
+                            P95LatencyMs = -1,
+                            ErrorRatePercent = -1,
+                            RagStatus = "Unknown",
+                            AiMode = "Unknown",
+                            Note = c.IsConfigured ? "Service not registered" : "Not configured"
+                        }).ToList();
+
+                    return Ok(new TerraFusion.AI.Models.SystemGptFederatedOverviewResponse
+                    {
+                        GeneratedAtUtc = DateTimeOffset.UtcNow,
+                        TotalCounties = basicCounties.Count,
+                        ConfiguredCounties = basicCounties.Count(c => c.Configured),
+                        Counties = basicCounties
+                    });
+                }
+
+                var overview = await _federatedOverviewService.GetOverviewAsync();
+                return Ok(overview);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating federated overview");
+                return StatusCode(500, new { error = "Failed to generate federated overview" });
             }
         }
 

@@ -740,4 +740,68 @@ namespace TerraFusion.AI.Models
     #endregion
 
     #endregion
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // Phase 23: SystemGPT Federated Overview (Multi-County Dashboard)
+    // Aggregates all counties' SystemGPT status into a read-only overview.
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    #region Phase 23: Federated Overview
+
+    /// <summary>
+    /// Phase 23: Per-county health overview for the Federated Dashboard.
+    /// Provides a snapshot of each county's SystemGPT operational status.
+    /// </summary>
+    public sealed class SystemGptCountyOverviewDto
+    {
+        /// <summary>County code (e.g., "benton", "yakima", "franklin").</summary>
+        public string CountyId { get; init; } = string.Empty;
+
+        /// <summary>Display name (e.g., "Benton County").</summary>
+        public string CountyName { get; init; } = string.Empty;
+
+        /// <summary>Whether this county has full AI/RAG services configured.</summary>
+        public bool Configured { get; init; }
+
+        /// <summary>Overall system health: "Healthy", "Degraded", "Unhealthy", or "Unknown".</summary>
+        public string Health { get; init; } = "Unknown";
+
+        /// <summary>Capacity risk level: "Low", "Medium", "High", or "Unknown".</summary>
+        public string CapacityRisk { get; init; } = "Unknown";
+
+        /// <summary>GPT latency P95 in milliseconds (-1 if unavailable).</summary>
+        public double P95LatencyMs { get; init; } = -1;
+
+        /// <summary>Error rate percentage in the last metrics window (-1 if unavailable).</summary>
+        public double ErrorRatePercent { get; init; } = -1;
+
+        /// <summary>Benton RAG readiness: "Ready", "Stale", "Partial", "Unindexed", or "Unknown".</summary>
+        public string RagStatus { get; init; } = "Unknown";
+
+        /// <summary>SystemGPT operational mode: "Normal", "SafeMode", or "Unknown".</summary>
+        public string AiMode { get; init; } = "Unknown";
+
+        /// <summary>Optional human-readable note (e.g., "Not configured", "Placeholder").</summary>
+        public string? Note { get; init; }
+    }
+
+    /// <summary>
+    /// Phase 23: Federated overview response containing all counties.
+    /// </summary>
+    public sealed class SystemGptFederatedOverviewResponse
+    {
+        /// <summary>Timestamp when this overview was generated.</summary>
+        public DateTimeOffset GeneratedAtUtc { get; init; } = DateTimeOffset.UtcNow;
+
+        /// <summary>Total number of counties in the federation.</summary>
+        public int TotalCounties { get; init; }
+
+        /// <summary>Number of fully configured counties.</summary>
+        public int ConfiguredCounties { get; init; }
+
+        /// <summary>Per-county overview list.</summary>
+        public IReadOnlyList<SystemGptCountyOverviewDto> Counties { get; init; } = Array.Empty<SystemGptCountyOverviewDto>();
+    }
+
+    #endregion
 }

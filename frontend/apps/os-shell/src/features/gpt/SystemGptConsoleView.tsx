@@ -7,6 +7,7 @@
  * Phase 19: AI Incident Timeline
  * Phase 20: Metrics & Telemetry Console
  * Phase 22: Multi-County Federation Layer
+ * Phase 23: Federated Overview (Multi-County Dashboard)
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -15,6 +16,7 @@ import React, { useEffect, useState } from 'react';
 import { explainContext } from '../../api/explainApi';
 import {
   BentonRagStatus,
+  CountyId,
   downloadBentonRagSnapshot,
   downloadHealthSnapshot,
   getCountyOption,
@@ -29,7 +31,11 @@ import {
 } from '../../api/systemDiagnosticsApi';
 import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
 import { CountySelector, useCountySelection } from './components/CountySelector';
+import { SystemGptFederatedOverviewPanel } from './components/SystemGptFederatedOverviewPanel';
 import { SystemGptMetricsPanel } from './components/SystemGptMetricsPanel';
+
+/** Phase 23: Console tab options */
+type ConsoleTab = 'overview' | 'federated';
 
 type LoadState = 'idle' | 'loading' | 'error';
 
@@ -41,6 +47,9 @@ export const SystemGptConsoleView: React.FC = () => {
   // Phase 22: County selection state
   const [selectedCounty, setSelectedCounty] = useCountySelection();
   const countyInfo = getCountyOption(selectedCounty);
+
+  // Phase 23: Tab navigation state
+  const [activeTab, setActiveTab] = useState<ConsoleTab>('overview');
 
   const [diagnostics, setDiagnostics] = useState<SystemDiagnosticsResponse | null>(null);
   const [loadState, setLoadState] = useState<LoadState>('idle');
@@ -365,6 +374,15 @@ export const SystemGptConsoleView: React.FC = () => {
     }
   };
 
+  /**
+   * Phase 23: Handle county selection from Federated Overview panel
+   * Switches to Overview tab and updates county selector.
+   */
+  const handleFederatedCountySelect = (countyId: CountyId) => {
+    setSelectedCounty(countyId);
+    setActiveTab('overview');
+  };
+
   return (
     <div
       data-testid='system-gpt-console'
@@ -468,450 +486,495 @@ export const SystemGptConsoleView: React.FC = () => {
         </div>
       </div>
 
-      {/* Loading State */}
-      {loadState === 'loading' && !diagnostics && (
-        <div className='flex flex-1 items-center justify-center'>
-          <div className='flex items-center gap-3 text-slate-400'>
-            <div className='h-5 w-5 animate-spin rounded-full border-2 border-sky-400 border-t-transparent' />
-            <span>Loading diagnostics…</span>
-          </div>
+      {/* Phase 23: Tab Navigation */}
+      <div className='mb-4 flex items-center gap-2 border-b border-slate-800/60 pb-2'>
+        <button
+          onClick={() => setActiveTab('overview')}
+          className={`rounded-t-lg px-4 py-2 text-sm font-medium transition-all ${
+            activeTab === 'overview'
+              ? 'border-b-2 border-cyan-500 bg-slate-800/50 text-cyan-300'
+              : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-300'
+          }`}
+        >
+          📊 Overview
+        </button>
+        <button
+          onClick={() => setActiveTab('federated')}
+          className={`rounded-t-lg px-4 py-2 text-sm font-medium transition-all ${
+            activeTab === 'federated'
+              ? 'border-b-2 border-cyan-500 bg-slate-800/50 text-cyan-300'
+              : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-300'
+          }`}
+        >
+          🏛️ Federated
+        </button>
+      </div>
+
+      {/* Phase 23: Federated Overview Tab */}
+      {activeTab === 'federated' && (
+        <div className='flex-1 overflow-auto rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
+          <SystemGptFederatedOverviewPanel
+            onCountySelect={handleFederatedCountySelect}
+            refreshInterval={30000}
+          />
         </div>
       )}
 
-      {/* Error State */}
-      {loadState === 'error' && (
-        <div className='flex flex-1 items-center justify-center'>
-          <div className='rounded-xl border border-rose-500/40 bg-rose-500/10 px-6 py-4 text-rose-200'>
-            <div className='flex items-center gap-2 font-medium'>
-              <span>⚠️</span>
-              <span>Failed to load diagnostics</span>
+      {/* Overview Tab Content */}
+      {activeTab === 'overview' && (
+        <>
+          {/* Loading State */}
+          {loadState === 'loading' && !diagnostics && (
+            <div className='flex flex-1 items-center justify-center'>
+              <div className='flex items-center gap-3 text-slate-400'>
+                <div className='h-5 w-5 animate-spin rounded-full border-2 border-sky-400 border-t-transparent' />
+                <span>Loading diagnostics…</span>
+              </div>
             </div>
-            <p className='mt-1 text-sm text-rose-300/80'>{loadError}</p>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* Main Content */}
-      {diagnostics && (
-        <div className='grid flex-1 gap-4 overflow-auto md:grid-cols-2 lg:grid-cols-3'>
-          {/* Embedding Mode Card */}
-          <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
-            <div className='mb-3 flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <span className='text-lg'>🧬</span>
-                <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
-                  Embedding Service
-                </span>
-              </div>
-              <span
-                className={`rounded-full px-2 py-0.5 text-[0.6rem] font-medium ${diagnostics.embeddingStatus.available ? 'border border-emerald-400/50 bg-emerald-500/10 text-emerald-300' : 'border border-rose-400/50 bg-rose-500/10 text-rose-300'}`}
-              >
-                {diagnostics.embeddingStatus.available ? 'Online' : 'Offline'}
-              </span>
-            </div>
-            <div className='space-y-2'>
-              <div className='flex justify-between text-xs'>
-                <span className='text-slate-400'>Mode</span>
-                <span className='font-mono text-cyan-300'>{diagnostics.embeddingStatus.mode}</span>
-              </div>
-              <div className='flex justify-between text-xs'>
-                <span className='text-slate-400'>Provider</span>
-                <span className='text-slate-200'>{diagnostics.embeddingStatus.provider}</span>
-              </div>
-              <div className='flex justify-between text-xs'>
-                <span className='text-slate-400'>Dimensions</span>
-                <span className='font-mono text-slate-200'>
-                  {diagnostics.embeddingStatus.dimensions}
-                </span>
+          {/* Error State */}
+          {loadState === 'error' && (
+            <div className='flex flex-1 items-center justify-center'>
+              <div className='rounded-xl border border-rose-500/40 bg-rose-500/10 px-6 py-4 text-rose-200'>
+                <div className='flex items-center gap-2 font-medium'>
+                  <span>⚠️</span>
+                  <span>Failed to load diagnostics</span>
+                </div>
+                <p className='mt-1 text-sm text-rose-300/80'>{loadError}</p>
               </div>
             </div>
-          </div>
+          )}
 
-          {/* RAG Datasets Card */}
-          {diagnostics.ragDatasets.map((dataset) => (
-            <div
-              key={dataset.key}
-              className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'
-            >
-              <div className='mb-3 flex items-center justify-between'>
-                <div className='flex items-center gap-2'>
-                  <span className='text-lg'>📚</span>
-                  <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
-                    RAG Dataset
-                  </span>
-                </div>
-                <span
-                  className={`rounded-full px-2 py-0.5 text-[0.6rem] font-medium ${dataset.indexed ? 'border border-emerald-400/50 bg-emerald-500/10 text-emerald-300' : 'border border-amber-400/50 bg-amber-500/10 text-amber-300'}`}
-                >
-                  {dataset.status}
-                </span>
-              </div>
-              <div className='space-y-2'>
-                <div className='text-xs font-medium text-slate-200'>{dataset.name}</div>
-                <div className='flex justify-between text-xs'>
-                  <span className='text-slate-400'>Documents</span>
-                  <span className='font-mono text-slate-200'>{dataset.documentCount}</span>
-                </div>
-                <div className='flex justify-between text-xs'>
-                  <span className='text-slate-400'>Embeddings</span>
-                  <span className='font-mono text-slate-200'>{dataset.embeddingCount}</span>
-                </div>
-                {!dataset.indexed && (
-                  <button
-                    onClick={() => void handleIndexRag(dataset.key)}
-                    disabled={indexing}
-                    className='mt-2 w-full rounded-lg border border-cyan-400/60 bg-cyan-500/10 px-3 py-1.5 text-xs text-cyan-300 transition-all hover:bg-cyan-500/20 disabled:opacity-50'
-                  >
-                    {indexing ? 'Indexing…' : 'Index Now'}
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-
-          {/* ExplainGPT Status Card */}
-          <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
-            <div className='mb-3 flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <span className='text-lg'>💡</span>
-                <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
-                  ExplainGPT
-                </span>
-              </div>
-              <span
-                className={`rounded-full px-2 py-0.5 text-[0.6rem] font-medium ${diagnostics.explainGptStatus.healthy ? 'border border-emerald-400/50 bg-emerald-500/10 text-emerald-300' : 'border border-rose-400/50 bg-rose-500/10 text-rose-300'}`}
-              >
-                {diagnostics.explainGptStatus.healthy ? 'Healthy' : 'Unhealthy'}
-              </span>
-            </div>
-            <div className='space-y-2'>
-              <div className='text-xs text-slate-300'>{diagnostics.explainGptStatus.message}</div>
-              {diagnostics.explainGptStatus.responseTimeMs && (
-                <div className='flex justify-between text-xs'>
-                  <span className='text-slate-400'>Response Time</span>
-                  <span className='font-mono text-slate-200'>
-                    {diagnostics.explainGptStatus.responseTimeMs}ms
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* GPT Configurations Card */}
-          <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
-            <div className='mb-3 flex items-center gap-2'>
-              <span className='text-lg'>🤖</span>
-              <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
-                GPT Configurations
-              </span>
-            </div>
-            <div className='space-y-2'>
-              {diagnostics.gptConfigs.map((gpt) => (
-                <div
-                  key={gpt.key}
-                  className='flex items-center justify-between rounded-lg border border-slate-700/40 bg-slate-800/30 px-3 py-2'
-                >
-                  <div>
-                    <div className='text-xs font-medium text-slate-200'>{gpt.name}</div>
-                    <div className='text-[0.6rem] text-slate-400 font-mono'>{gpt.model}</div>
-                  </div>
+          {/* Main Content */}
+          {diagnostics && (
+            <div className='grid flex-1 gap-4 overflow-auto md:grid-cols-2 lg:grid-cols-3'>
+              {/* Embedding Mode Card */}
+              <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
+                <div className='mb-3 flex items-center justify-between'>
                   <div className='flex items-center gap-2'>
-                    {gpt.ragEnabled && (
-                      <span className='rounded-full border border-cyan-400/40 bg-cyan-500/10 px-1.5 py-0.5 text-[0.55rem] text-cyan-300'>
-                        RAG
+                    <span className='text-lg'>🧬</span>
+                    <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
+                      Embedding Service
+                    </span>
+                  </div>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[0.6rem] font-medium ${diagnostics.embeddingStatus.available ? 'border border-emerald-400/50 bg-emerald-500/10 text-emerald-300' : 'border border-rose-400/50 bg-rose-500/10 text-rose-300'}`}
+                  >
+                    {diagnostics.embeddingStatus.available ? 'Online' : 'Offline'}
+                  </span>
+                </div>
+                <div className='space-y-2'>
+                  <div className='flex justify-between text-xs'>
+                    <span className='text-slate-400'>Mode</span>
+                    <span className='font-mono text-cyan-300'>
+                      {diagnostics.embeddingStatus.mode}
+                    </span>
+                  </div>
+                  <div className='flex justify-between text-xs'>
+                    <span className='text-slate-400'>Provider</span>
+                    <span className='text-slate-200'>{diagnostics.embeddingStatus.provider}</span>
+                  </div>
+                  <div className='flex justify-between text-xs'>
+                    <span className='text-slate-400'>Dimensions</span>
+                    <span className='font-mono text-slate-200'>
+                      {diagnostics.embeddingStatus.dimensions}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* RAG Datasets Card */}
+              {diagnostics.ragDatasets.map((dataset) => (
+                <div
+                  key={dataset.key}
+                  className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'
+                >
+                  <div className='mb-3 flex items-center justify-between'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-lg'>📚</span>
+                      <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
+                        RAG Dataset
                       </span>
-                    )}
+                    </div>
                     <span
-                      className={`h-2 w-2 rounded-full ${gpt.enabled ? 'bg-emerald-400' : 'bg-slate-500'}`}
-                      title={gpt.enabled ? 'Enabled' : 'Disabled'}
-                    />
+                      className={`rounded-full px-2 py-0.5 text-[0.6rem] font-medium ${dataset.indexed ? 'border border-emerald-400/50 bg-emerald-500/10 text-emerald-300' : 'border border-amber-400/50 bg-amber-500/10 text-amber-300'}`}
+                    >
+                      {dataset.status}
+                    </span>
+                  </div>
+                  <div className='space-y-2'>
+                    <div className='text-xs font-medium text-slate-200'>{dataset.name}</div>
+                    <div className='flex justify-between text-xs'>
+                      <span className='text-slate-400'>Documents</span>
+                      <span className='font-mono text-slate-200'>{dataset.documentCount}</span>
+                    </div>
+                    <div className='flex justify-between text-xs'>
+                      <span className='text-slate-400'>Embeddings</span>
+                      <span className='font-mono text-slate-200'>{dataset.embeddingCount}</span>
+                    </div>
+                    {!dataset.indexed && (
+                      <button
+                        onClick={() => void handleIndexRag(dataset.key)}
+                        disabled={indexing}
+                        className='mt-2 w-full rounded-lg border border-cyan-400/60 bg-cyan-500/10 px-3 py-1.5 text-xs text-cyan-300 transition-all hover:bg-cyan-500/20 disabled:opacity-50'
+                      >
+                        {indexing ? 'Indexing…' : 'Index Now'}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
 
-          {/* Usage Statistics Card */}
-          <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
-            <div className='mb-3 flex items-center gap-2'>
-              <span className='text-lg'>📊</span>
-              <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
-                Usage Statistics
-              </span>
-            </div>
-            <div className='grid grid-cols-2 gap-3'>
-              <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
-                <div className='text-lg font-bold text-cyan-300'>
-                  {diagnostics.statistics.totalConversations}
-                </div>
-                <div className='text-[0.6rem] text-slate-400'>Conversations</div>
-              </div>
-              <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
-                <div className='text-lg font-bold text-cyan-300'>
-                  {diagnostics.statistics.totalMessages}
-                </div>
-                <div className='text-[0.6rem] text-slate-400'>Messages</div>
-              </div>
-              <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
-                <div className='text-lg font-bold text-emerald-300'>
-                  {diagnostics.statistics.auditRecordCount}
-                </div>
-                <div className='text-[0.6rem] text-slate-400'>Audit Records</div>
-              </div>
-              <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
-                <div className='text-lg font-bold text-emerald-300'>
-                  {diagnostics.statistics.ragTraceCount}
-                </div>
-                <div className='text-[0.6rem] text-slate-400'>RAG Traces</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Benton CAMA RAG Readiness - Phase 18 */}
-          <div className='rounded-xl border border-violet-800/40 bg-gradient-to-br from-slate-900/80 via-violet-900/10 to-slate-900/80 p-4 md:col-span-2'>
-            <div className='mb-3 flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <span className='text-lg'>🏛️</span>
-                <span className='text-xs font-semibold uppercase tracking-[0.12em] text-violet-300'>
-                  Benton CAMA RAG Readiness
-                </span>
-              </div>
-              {diagnostics.bentonRag && (
-                <div
-                  className={`flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${getBentonRagStatusColor(diagnostics.bentonRag.overallStatus)}`}
-                >
-                  <span>{getBentonRagStatusIcon(diagnostics.bentonRag.overallStatus)}</span>
-                  <span>{diagnostics.bentonRag.overallStatus}</span>
-                </div>
-              )}
-            </div>
-
-            {!diagnostics.bentonRag ? (
-              <div className='flex items-center gap-2 rounded-lg bg-slate-800/30 px-3 py-2 text-xs text-slate-400'>
-                <span>❓</span>
-                <span>No Benton CAMA RAG dataset found.</span>
-              </div>
-            ) : (
-              <div className='space-y-3'>
-                {/* Status reason */}
-                <div className='rounded-lg bg-slate-800/30 px-3 py-2 text-xs text-slate-300'>
-                  {diagnostics.bentonRag.statusReason}
-                </div>
-
-                {/* Stats row */}
-                <div className='grid grid-cols-4 gap-2'>
-                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
-                    <div className='text-base font-bold text-violet-300'>
-                      {diagnostics.bentonRag.documentCount}
-                    </div>
-                    <div className='text-[0.6rem] text-slate-400'>Documents</div>
+              {/* ExplainGPT Status Card */}
+              <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
+                <div className='mb-3 flex items-center justify-between'>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-lg'>💡</span>
+                    <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
+                      ExplainGPT
+                    </span>
                   </div>
-                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
-                    <div className='text-base font-bold text-violet-300'>
-                      {diagnostics.bentonRag.embeddingCount}
-                    </div>
-                    <div className='text-[0.6rem] text-slate-400'>Embeddings</div>
-                  </div>
-                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
-                    <div className='truncate text-[0.65rem] font-medium text-violet-200'>
-                      {diagnostics.bentonRag.lastIngestAt
-                        ? new Date(diagnostics.bentonRag.lastIngestAt).toLocaleDateString()
-                        : '—'}
-                    </div>
-                    <div className='text-[0.55rem] text-slate-400'>Last Ingest</div>
-                  </div>
-                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
-                    <div className='truncate text-[0.65rem] font-medium text-violet-200'>
-                      {diagnostics.bentonRag.lastIndexAt
-                        ? new Date(diagnostics.bentonRag.lastIndexAt).toLocaleDateString()
-                        : '—'}
-                    </div>
-                    <div className='text-[0.55rem] text-slate-400'>Last Index</div>
-                  </div>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[0.6rem] font-medium ${diagnostics.explainGptStatus.healthy ? 'border border-emerald-400/50 bg-emerald-500/10 text-emerald-300' : 'border border-rose-400/50 bg-rose-500/10 text-rose-300'}`}
+                  >
+                    {diagnostics.explainGptStatus.healthy ? 'Healthy' : 'Unhealthy'}
+                  </span>
                 </div>
-
-                {/* Active GPTs */}
-                {diagnostics.bentonRag.activeGptConfigs.length > 0 && (
-                  <div className='flex flex-wrap gap-1'>
-                    <span className='text-[0.6rem] text-slate-500'>Used by:</span>
-                    {diagnostics.bentonRag.activeGptConfigs.map((gpt) => (
-                      <span
-                        key={gpt}
-                        className='rounded-full border border-violet-600/40 bg-violet-500/10 px-2 py-0.5 text-[0.6rem] text-violet-300'
-                      >
-                        {gpt}
+                <div className='space-y-2'>
+                  <div className='text-xs text-slate-300'>
+                    {diagnostics.explainGptStatus.message}
+                  </div>
+                  {diagnostics.explainGptStatus.responseTimeMs && (
+                    <div className='flex justify-between text-xs'>
+                      <span className='text-slate-400'>Response Time</span>
+                      <span className='font-mono text-slate-200'>
+                        {diagnostics.explainGptStatus.responseTimeMs}ms
                       </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* GPT Configurations Card */}
+              <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
+                <div className='mb-3 flex items-center gap-2'>
+                  <span className='text-lg'>🤖</span>
+                  <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
+                    GPT Configurations
+                  </span>
+                </div>
+                <div className='space-y-2'>
+                  {diagnostics.gptConfigs.map((gpt) => (
+                    <div
+                      key={gpt.key}
+                      className='flex items-center justify-between rounded-lg border border-slate-700/40 bg-slate-800/30 px-3 py-2'
+                    >
+                      <div>
+                        <div className='text-xs font-medium text-slate-200'>{gpt.name}</div>
+                        <div className='text-[0.6rem] text-slate-400 font-mono'>{gpt.model}</div>
+                      </div>
+                      <div className='flex items-center gap-2'>
+                        {gpt.ragEnabled && (
+                          <span className='rounded-full border border-cyan-400/40 bg-cyan-500/10 px-1.5 py-0.5 text-[0.55rem] text-cyan-300'>
+                            RAG
+                          </span>
+                        )}
+                        <span
+                          className={`h-2 w-2 rounded-full ${gpt.enabled ? 'bg-emerald-400' : 'bg-slate-500'}`}
+                          title={gpt.enabled ? 'Enabled' : 'Disabled'}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Usage Statistics Card */}
+              <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
+                <div className='mb-3 flex items-center gap-2'>
+                  <span className='text-lg'>📊</span>
+                  <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
+                    Usage Statistics
+                  </span>
+                </div>
+                <div className='grid grid-cols-2 gap-3'>
+                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                    <div className='text-lg font-bold text-cyan-300'>
+                      {diagnostics.statistics.totalConversations}
+                    </div>
+                    <div className='text-[0.6rem] text-slate-400'>Conversations</div>
+                  </div>
+                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                    <div className='text-lg font-bold text-cyan-300'>
+                      {diagnostics.statistics.totalMessages}
+                    </div>
+                    <div className='text-[0.6rem] text-slate-400'>Messages</div>
+                  </div>
+                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                    <div className='text-lg font-bold text-emerald-300'>
+                      {diagnostics.statistics.auditRecordCount}
+                    </div>
+                    <div className='text-[0.6rem] text-slate-400'>Audit Records</div>
+                  </div>
+                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                    <div className='text-lg font-bold text-emerald-300'>
+                      {diagnostics.statistics.ragTraceCount}
+                    </div>
+                    <div className='text-[0.6rem] text-slate-400'>RAG Traces</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Benton CAMA RAG Readiness - Phase 18 */}
+              <div className='rounded-xl border border-violet-800/40 bg-gradient-to-br from-slate-900/80 via-violet-900/10 to-slate-900/80 p-4 md:col-span-2'>
+                <div className='mb-3 flex items-center justify-between'>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-lg'>🏛️</span>
+                    <span className='text-xs font-semibold uppercase tracking-[0.12em] text-violet-300'>
+                      Benton CAMA RAG Readiness
+                    </span>
+                  </div>
+                  {diagnostics.bentonRag && (
+                    <div
+                      className={`flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${getBentonRagStatusColor(diagnostics.bentonRag.overallStatus)}`}
+                    >
+                      <span>{getBentonRagStatusIcon(diagnostics.bentonRag.overallStatus)}</span>
+                      <span>{diagnostics.bentonRag.overallStatus}</span>
+                    </div>
+                  )}
+                </div>
+
+                {!diagnostics.bentonRag ? (
+                  <div className='flex items-center gap-2 rounded-lg bg-slate-800/30 px-3 py-2 text-xs text-slate-400'>
+                    <span>❓</span>
+                    <span>No Benton CAMA RAG dataset found.</span>
+                  </div>
+                ) : (
+                  <div className='space-y-3'>
+                    {/* Status reason */}
+                    <div className='rounded-lg bg-slate-800/30 px-3 py-2 text-xs text-slate-300'>
+                      {diagnostics.bentonRag.statusReason}
+                    </div>
+
+                    {/* Stats row */}
+                    <div className='grid grid-cols-4 gap-2'>
+                      <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                        <div className='text-base font-bold text-violet-300'>
+                          {diagnostics.bentonRag.documentCount}
+                        </div>
+                        <div className='text-[0.6rem] text-slate-400'>Documents</div>
+                      </div>
+                      <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                        <div className='text-base font-bold text-violet-300'>
+                          {diagnostics.bentonRag.embeddingCount}
+                        </div>
+                        <div className='text-[0.6rem] text-slate-400'>Embeddings</div>
+                      </div>
+                      <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                        <div className='truncate text-[0.65rem] font-medium text-violet-200'>
+                          {diagnostics.bentonRag.lastIngestAt
+                            ? new Date(diagnostics.bentonRag.lastIngestAt).toLocaleDateString()
+                            : '—'}
+                        </div>
+                        <div className='text-[0.55rem] text-slate-400'>Last Ingest</div>
+                      </div>
+                      <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                        <div className='truncate text-[0.65rem] font-medium text-violet-200'>
+                          {diagnostics.bentonRag.lastIndexAt
+                            ? new Date(diagnostics.bentonRag.lastIndexAt).toLocaleDateString()
+                            : '—'}
+                        </div>
+                        <div className='text-[0.55rem] text-slate-400'>Last Index</div>
+                      </div>
+                    </div>
+
+                    {/* Active GPTs */}
+                    {diagnostics.bentonRag.activeGptConfigs.length > 0 && (
+                      <div className='flex flex-wrap gap-1'>
+                        <span className='text-[0.6rem] text-slate-500'>Used by:</span>
+                        {diagnostics.bentonRag.activeGptConfigs.map((gpt) => (
+                          <span
+                            key={gpt}
+                            className='rounded-full border border-violet-600/40 bg-violet-500/10 px-2 py-0.5 text-[0.6rem] text-violet-300'
+                          >
+                            {gpt}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className='flex gap-2 pt-1'>
+                      <button
+                        onClick={() => void handleReindexBentonCama()}
+                        disabled={bentonReindexing}
+                        className='flex items-center gap-1.5 rounded-lg border border-violet-600/50 bg-violet-600/20 px-3 py-1.5 text-xs font-medium text-violet-200 transition-all hover:bg-violet-600/30 disabled:cursor-not-allowed disabled:opacity-50'
+                      >
+                        {bentonReindexing ? '⏳' : '🔄'}{' '}
+                        {bentonReindexing ? 'Reindexing...' : 'Reindex Benton CAMA'}
+                      </button>
+                      <button
+                        onClick={() => void handleDownloadBentonSnapshot()}
+                        disabled={bentonDownloading}
+                        className='flex items-center gap-1.5 rounded-lg border border-slate-600/50 bg-slate-700/30 px-3 py-1.5 text-xs font-medium text-slate-300 transition-all hover:bg-slate-700/50 disabled:cursor-not-allowed disabled:opacity-50'
+                      >
+                        {bentonDownloading ? '⏳' : '📥'}{' '}
+                        {bentonDownloading ? 'Downloading...' : 'Download RAG Snapshot'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Herald Log Card */}
+              <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4 md:col-span-2 lg:col-span-1'>
+                <div className='mb-3 flex items-center gap-2'>
+                  <span className='text-lg'>📢</span>
+                  <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
+                    Herald Log
+                  </span>
+                </div>
+                <div className='space-y-2 max-h-48 overflow-y-auto'>
+                  {diagnostics.heraldMessages.map((msg, idx) => (
+                    <div
+                      key={idx}
+                      className={`flex items-start gap-2 rounded-lg px-2 py-1.5 text-xs ${
+                        msg.level === 'Success'
+                          ? 'bg-emerald-500/10'
+                          : msg.level === 'Warning'
+                            ? 'bg-amber-500/10'
+                            : msg.level === 'Error'
+                              ? 'bg-rose-500/10'
+                              : 'bg-slate-800/30'
+                      }`}
+                    >
+                      <span
+                        className={`${
+                          msg.level === 'Success'
+                            ? 'text-emerald-400'
+                            : msg.level === 'Warning'
+                              ? 'text-amber-400'
+                              : msg.level === 'Error'
+                                ? 'text-rose-400'
+                                : 'text-slate-400'
+                        }`}
+                      >
+                        {msg.level === 'Success'
+                          ? '✓'
+                          : msg.level === 'Warning'
+                            ? '⚠'
+                            : msg.level === 'Error'
+                              ? '✗'
+                              : 'ℹ'}
+                      </span>
+                      <div className='flex-1'>
+                        <div className='text-slate-200'>{msg.message}</div>
+                        <div className='text-[0.6rem] text-slate-500'>
+                          {msg.source} • {new Date(msg.timestamp).toLocaleTimeString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* AI Incident Timeline - Phase 19 */}
+              <div
+                data-testid='ai-incident-timeline'
+                className='rounded-xl border border-cyan-800/40 bg-gradient-to-br from-slate-900/80 via-cyan-900/10 to-slate-900/80 p-4 md:col-span-2 lg:col-span-3'
+              >
+                <div className='mb-3 flex items-center justify-between'>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-lg'>📜</span>
+                    <span className='text-xs font-semibold uppercase tracking-[0.12em] text-cyan-300'>
+                      AI Incident Timeline
+                    </span>
+                  </div>
+                  {/* Filter buttons */}
+                  <div className='flex gap-1'>
+                    {[
+                      { key: 'all' as const, label: 'All' },
+                      { key: 'warnings' as const, label: '⚠ Warnings' },
+                      { key: 'safemode' as const, label: '🛑 Safe Mode' },
+                      { key: 'rag' as const, label: '📚 RAG' },
+                    ].map((f) => (
+                      <button
+                        key={f.key}
+                        onClick={() => setEventFilter(f.key)}
+                        className={`rounded-full px-2 py-0.5 text-[0.6rem] font-medium transition-all ${
+                          eventFilter === f.key
+                            ? 'border border-cyan-400/60 bg-cyan-500/20 text-cyan-200'
+                            : 'border border-slate-600/40 bg-slate-800/30 text-slate-400 hover:bg-slate-700/40'
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {eventsLoading ? (
+                  <div className='flex items-center justify-center py-8 text-slate-400'>
+                    <span className='animate-pulse'>Loading events...</span>
+                  </div>
+                ) : getFilteredEvents().length === 0 ? (
+                  <div className='flex items-center gap-2 rounded-lg bg-slate-800/30 px-3 py-4 text-xs text-slate-400'>
+                    <span>📭</span>
+                    <span>No events to display.</span>
+                  </div>
+                ) : (
+                  <div className='max-h-64 space-y-2 overflow-y-auto'>
+                    {getFilteredEvents().map((evt, idx) => (
+                      <div
+                        key={`${evt.timestampUtc}-${idx}`}
+                        className={`flex items-start gap-2 rounded-lg border px-3 py-2 text-xs ${getEventSeverityColor(evt.severity)}`}
+                      >
+                        <span className='mt-0.5 text-sm'>{getEventIcon(evt.kind)}</span>
+                        <div className='flex-1 min-w-0'>
+                          <div className='flex items-center justify-between gap-2'>
+                            <span className='font-medium truncate'>{evt.summary}</span>
+                            <span className='text-[0.55rem] text-slate-500 whitespace-nowrap'>
+                              {new Date(evt.timestampUtc).toLocaleString()}
+                            </span>
+                          </div>
+                          {evt.details && (
+                            <div className='mt-1 text-[0.65rem] text-slate-400 truncate'>
+                              {evt.details}
+                            </div>
+                          )}
+                          {evt.actor && (
+                            <div className='mt-0.5 text-[0.55rem] text-slate-500'>
+                              by {evt.actor}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}
-
-                {/* Actions */}
-                <div className='flex gap-2 pt-1'>
-                  <button
-                    onClick={() => void handleReindexBentonCama()}
-                    disabled={bentonReindexing}
-                    className='flex items-center gap-1.5 rounded-lg border border-violet-600/50 bg-violet-600/20 px-3 py-1.5 text-xs font-medium text-violet-200 transition-all hover:bg-violet-600/30 disabled:cursor-not-allowed disabled:opacity-50'
-                  >
-                    {bentonReindexing ? '⏳' : '🔄'}{' '}
-                    {bentonReindexing ? 'Reindexing...' : 'Reindex Benton CAMA'}
-                  </button>
-                  <button
-                    onClick={() => void handleDownloadBentonSnapshot()}
-                    disabled={bentonDownloading}
-                    className='flex items-center gap-1.5 rounded-lg border border-slate-600/50 bg-slate-700/30 px-3 py-1.5 text-xs font-medium text-slate-300 transition-all hover:bg-slate-700/50 disabled:cursor-not-allowed disabled:opacity-50'
-                  >
-                    {bentonDownloading ? '⏳' : '📥'}{' '}
-                    {bentonDownloading ? 'Downloading...' : 'Download RAG Snapshot'}
-                  </button>
-                </div>
               </div>
-            )}
-          </div>
 
-          {/* Herald Log Card */}
-          <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4 md:col-span-2 lg:col-span-1'>
-            <div className='mb-3 flex items-center gap-2'>
-              <span className='text-lg'>📢</span>
-              <span className='text-xs font-semibold uppercase tracking-[0.12em] text-slate-300'>
-                Herald Log
-              </span>
-            </div>
-            <div className='space-y-2 max-h-48 overflow-y-auto'>
-              {diagnostics.heraldMessages.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`flex items-start gap-2 rounded-lg px-2 py-1.5 text-xs ${
-                    msg.level === 'Success'
-                      ? 'bg-emerald-500/10'
-                      : msg.level === 'Warning'
-                        ? 'bg-amber-500/10'
-                        : msg.level === 'Error'
-                          ? 'bg-rose-500/10'
-                          : 'bg-slate-800/30'
-                  }`}
-                >
-                  <span
-                    className={`${
-                      msg.level === 'Success'
-                        ? 'text-emerald-400'
-                        : msg.level === 'Warning'
-                          ? 'text-amber-400'
-                          : msg.level === 'Error'
-                            ? 'text-rose-400'
-                            : 'text-slate-400'
-                    }`}
-                  >
-                    {msg.level === 'Success'
-                      ? '✓'
-                      : msg.level === 'Warning'
-                        ? '⚠'
-                        : msg.level === 'Error'
-                          ? '✗'
-                          : 'ℹ'}
-                  </span>
-                  <div className='flex-1'>
-                    <div className='text-slate-200'>{msg.message}</div>
-                    <div className='text-[0.6rem] text-slate-500'>
-                      {msg.source} • {new Date(msg.timestamp).toLocaleTimeString()}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* AI Incident Timeline - Phase 19 */}
-          <div
-            data-testid='ai-incident-timeline'
-            className='rounded-xl border border-cyan-800/40 bg-gradient-to-br from-slate-900/80 via-cyan-900/10 to-slate-900/80 p-4 md:col-span-2 lg:col-span-3'
-          >
-            <div className='mb-3 flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <span className='text-lg'>📜</span>
-                <span className='text-xs font-semibold uppercase tracking-[0.12em] text-cyan-300'>
-                  AI Incident Timeline
-                </span>
-              </div>
-              {/* Filter buttons */}
-              <div className='flex gap-1'>
-                {[
-                  { key: 'all' as const, label: 'All' },
-                  { key: 'warnings' as const, label: '⚠ Warnings' },
-                  { key: 'safemode' as const, label: '🛑 Safe Mode' },
-                  { key: 'rag' as const, label: '📚 RAG' },
-                ].map((f) => (
-                  <button
-                    key={f.key}
-                    onClick={() => setEventFilter(f.key)}
-                    className={`rounded-full px-2 py-0.5 text-[0.6rem] font-medium transition-all ${
-                      eventFilter === f.key
-                        ? 'border border-cyan-400/60 bg-cyan-500/20 text-cyan-200'
-                        : 'border border-slate-600/40 bg-slate-800/30 text-slate-400 hover:bg-slate-700/40'
-                    }`}
-                  >
-                    {f.label}
-                  </button>
-                ))}
+              {/* AI Metrics & Telemetry - Phase 20 */}
+              <div
+                data-testid='ai-metrics-panel'
+                className='rounded-xl border border-cyan-800/40 bg-gradient-to-br from-slate-900/80 via-cyan-900/10 to-slate-900/80 p-4 md:col-span-2 lg:col-span-3'
+              >
+                <SystemGptMetricsPanel
+                  countyId={selectedCounty}
+                  windowMinutes={15}
+                  maxSeriesPoints={40}
+                  refreshIntervalMs={30000}
+                />
               </div>
             </div>
-
-            {eventsLoading ? (
-              <div className='flex items-center justify-center py-8 text-slate-400'>
-                <span className='animate-pulse'>Loading events...</span>
-              </div>
-            ) : getFilteredEvents().length === 0 ? (
-              <div className='flex items-center gap-2 rounded-lg bg-slate-800/30 px-3 py-4 text-xs text-slate-400'>
-                <span>📭</span>
-                <span>No events to display.</span>
-              </div>
-            ) : (
-              <div className='max-h-64 space-y-2 overflow-y-auto'>
-                {getFilteredEvents().map((evt, idx) => (
-                  <div
-                    key={`${evt.timestampUtc}-${idx}`}
-                    className={`flex items-start gap-2 rounded-lg border px-3 py-2 text-xs ${getEventSeverityColor(evt.severity)}`}
-                  >
-                    <span className='mt-0.5 text-sm'>{getEventIcon(evt.kind)}</span>
-                    <div className='flex-1 min-w-0'>
-                      <div className='flex items-center justify-between gap-2'>
-                        <span className='font-medium truncate'>{evt.summary}</span>
-                        <span className='text-[0.55rem] text-slate-500 whitespace-nowrap'>
-                          {new Date(evt.timestampUtc).toLocaleString()}
-                        </span>
-                      </div>
-                      {evt.details && (
-                        <div className='mt-1 text-[0.65rem] text-slate-400 truncate'>
-                          {evt.details}
-                        </div>
-                      )}
-                      {evt.actor && (
-                        <div className='mt-0.5 text-[0.55rem] text-slate-500'>by {evt.actor}</div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* AI Metrics & Telemetry - Phase 20 */}
-          <div
-            data-testid='ai-metrics-panel'
-            className='rounded-xl border border-cyan-800/40 bg-gradient-to-br from-slate-900/80 via-cyan-900/10 to-slate-900/80 p-4 md:col-span-2 lg:col-span-3'
-          >
-            <SystemGptMetricsPanel
-              countyId={selectedCounty}
-              windowMinutes={15}
-              maxSeriesPoints={40}
-              refreshIntervalMs={30000}
-            />
-          </div>
-        </div>
+          )}
+        </>
       )}
 
       {/* Footer */}
       <div className='mt-4 flex items-center justify-between border-t border-slate-800/60 pt-3 text-[0.65rem] text-slate-500'>
-        <span>Phase 15-22 · SystemGPT Console · {countyInfo.displayName} · TerraFusion OS</span>
+        <span>Phase 15-23 · SystemGPT Console · {countyInfo.displayName} · TerraFusion OS</span>
         {diagnostics && (
           <span>Last updated: {new Date(diagnostics.timestamp).toLocaleTimeString()}</span>
         )}

@@ -354,6 +354,9 @@ builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptEventService, Te
 // Phase 20: SystemGPT Metrics Service for AI telemetry console
 builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptMetricsService, TerraFusion.AI.Services.SystemGptMetricsService>();
 
+// Phase 23: SystemGPT Federated Overview Service for multi-county dashboard
+builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptFederatedOverviewService, TerraFusion.AI.Services.SystemGptFederatedOverviewService>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown

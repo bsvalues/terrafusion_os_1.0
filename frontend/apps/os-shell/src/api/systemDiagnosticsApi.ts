@@ -522,3 +522,66 @@ export async function getSystemGptMetrics(
 
   return (await response.json()) as SystemGptMetricsSnapshot;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 23: FEDERATED OVERVIEW (MULTI-COUNTY DASHBOARD)
+// ═══════════════════════════════════════════════════════════════
+
+/** Phase 23: Per-county health overview for the Federated Dashboard */
+export interface SystemGptCountyOverview {
+  /** County code (e.g., "benton", "yakima", "franklin") */
+  countyId: string;
+  /** Display name (e.g., "Benton County") */
+  countyName: string;
+  /** Whether this county has full AI/RAG services configured */
+  configured: boolean;
+  /** Overall system health: "Healthy", "Degraded", "Unhealthy", or "Unknown" */
+  health: string;
+  /** Capacity risk level: "Low", "Medium", "High", or "Unknown" */
+  capacityRisk: string;
+  /** GPT latency P95 in milliseconds (-1 if unavailable) */
+  p95LatencyMs: number;
+  /** Error rate percentage (-1 if unavailable) */
+  errorRatePercent: number;
+  /** RAG readiness: "Ready", "Stale", "Partial", "Unindexed", or "Unknown" */
+  ragStatus: string;
+  /** SystemGPT operational mode: "Normal", "SafeMode", or "Unknown" */
+  aiMode: string;
+  /** Optional human-readable note */
+  note?: string | null;
+}
+
+/** Phase 23: Federated overview response containing all counties */
+export interface SystemGptFederatedOverviewResponse {
+  /** Timestamp when this overview was generated */
+  generatedAtUtc: string;
+  /** Total number of counties in the federation */
+  totalCounties: number;
+  /** Number of fully configured counties */
+  configuredCounties: number;
+  /** Per-county overview list */
+  counties: SystemGptCountyOverview[];
+}
+
+/**
+ * Fetch federated overview of all counties' SystemGPT operational status.
+ * Phase 23: Multi-County Dashboard - Aggregates all counties into a single view.
+ * This endpoint returns data for ALL counties (no countyId parameter).
+ */
+export async function getSystemGptFederatedOverview(): Promise<SystemGptFederatedOverviewResponse> {
+  const url = `${API_BASE_URL}/api/gpt/system/federated-overview`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`Federated overview request failed (${response.status}): ${errorText}`);
+  }
+
+  return (await response.json()) as SystemGptFederatedOverviewResponse;
+}
