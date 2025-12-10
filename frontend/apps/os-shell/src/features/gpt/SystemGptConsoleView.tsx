@@ -4,6 +4,7 @@
  * Phase 15: AI Control Center for County Tech Leads
  * Phase 17: Safe Mode & Kill Switch
  * Phase 18: Benton CAMA RAG Readiness Panel
+ * Phase 19: AI Incident Timeline
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -15,8 +16,11 @@ import {
   downloadBentonRagSnapshot,
   downloadHealthSnapshot,
   getSystemDiagnostics,
+  getSystemGptEvents,
   setSystemGptMode,
   SystemDiagnosticsResponse,
+  SystemGptEvent,
+  SystemGptEventKind,
   SystemHealthStatus,
   triggerRagIndex,
 } from '../../api/systemDiagnosticsApi';
@@ -101,6 +105,82 @@ export const SystemGptConsoleView: React.FC = () => {
 
   const handleCloseExplain = () => {
     setExplainState({ status: 'idle' });
+  };
+
+  /**
+   * AI Incident Timeline - Phase 19
+   */
+  const [events, setEvents] = useState<SystemGptEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const [eventFilter, setEventFilter] = useState<'all' | 'warnings' | 'safemode' | 'rag'>('all');
+
+  // Load events on mount and when diagnostics refresh
+  useEffect(() => {
+    const loadEvents = async () => {
+      setEventsLoading(true);
+      try {
+        const data = await getSystemGptEvents(undefined, 50);
+        setEvents(data);
+      } catch (err) {
+        console.error('Failed to load events:', err);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+
+    void loadEvents();
+    // Refresh events every 60 seconds
+    const interval = setInterval(() => void loadEvents(), 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const getFilteredEvents = () => {
+    if (eventFilter === 'all') return events;
+    if (eventFilter === 'warnings')
+      return events.filter((e) => e.severity === 'warning' || e.severity === 'error');
+    if (eventFilter === 'safemode') return events.filter((e) => e.kind === 'SafeModeChanged');
+    if (eventFilter === 'rag')
+      return events.filter(
+        (e) =>
+          e.kind === 'RagReindexed' ||
+          e.kind === 'RagHealthChanged' ||
+          e.kind === 'BentonRagSnapshotDownloaded'
+      );
+    return events;
+  };
+
+  const getEventIcon = (kind: SystemGptEventKind) => {
+    switch (kind) {
+      case 'SafeModeChanged':
+        return '🛑';
+      case 'RagReindexed':
+        return '🔄';
+      case 'RagHealthChanged':
+        return '📊';
+      case 'HealthSnapshotDownloaded':
+        return '📥';
+      case 'BentonRagSnapshotDownloaded':
+        return '🏛️';
+      case 'HeraldWarning':
+        return '⚠️';
+      case 'HeraldError':
+        return '❌';
+      default:
+        return 'ℹ️';
+    }
+  };
+
+  const getEventSeverityColor = (severity: string) => {
+    switch (severity.toLowerCase()) {
+      case 'error':
+      case 'critical':
+        return 'border-rose-500/50 bg-rose-500/10 text-rose-300';
+      case 'warning':
+        return 'border-amber-500/50 bg-amber-500/10 text-amber-300';
+      case 'info':
+      default:
+        return 'border-slate-600/50 bg-slate-700/20 text-slate-300';
+    }
   };
 
   /**
@@ -721,12 +801,86 @@ export const SystemGptConsoleView: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {/* AI Incident Timeline - Phase 19 */}
+          <div
+            data-testid='ai-incident-timeline'
+            className='rounded-xl border border-cyan-800/40 bg-gradient-to-br from-slate-900/80 via-cyan-900/10 to-slate-900/80 p-4 md:col-span-2 lg:col-span-3'
+          >
+            <div className='mb-3 flex items-center justify-between'>
+              <div className='flex items-center gap-2'>
+                <span className='text-lg'>📜</span>
+                <span className='text-xs font-semibold uppercase tracking-[0.12em] text-cyan-300'>
+                  AI Incident Timeline
+                </span>
+              </div>
+              {/* Filter buttons */}
+              <div className='flex gap-1'>
+                {[
+                  { key: 'all' as const, label: 'All' },
+                  { key: 'warnings' as const, label: '⚠ Warnings' },
+                  { key: 'safemode' as const, label: '🛑 Safe Mode' },
+                  { key: 'rag' as const, label: '📚 RAG' },
+                ].map((f) => (
+                  <button
+                    key={f.key}
+                    onClick={() => setEventFilter(f.key)}
+                    className={`rounded-full px-2 py-0.5 text-[0.6rem] font-medium transition-all ${
+                      eventFilter === f.key
+                        ? 'border border-cyan-400/60 bg-cyan-500/20 text-cyan-200'
+                        : 'border border-slate-600/40 bg-slate-800/30 text-slate-400 hover:bg-slate-700/40'
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {eventsLoading ? (
+              <div className='flex items-center justify-center py-8 text-slate-400'>
+                <span className='animate-pulse'>Loading events...</span>
+              </div>
+            ) : getFilteredEvents().length === 0 ? (
+              <div className='flex items-center gap-2 rounded-lg bg-slate-800/30 px-3 py-4 text-xs text-slate-400'>
+                <span>📭</span>
+                <span>No events to display.</span>
+              </div>
+            ) : (
+              <div className='max-h-64 space-y-2 overflow-y-auto'>
+                {getFilteredEvents().map((evt, idx) => (
+                  <div
+                    key={`${evt.timestampUtc}-${idx}`}
+                    className={`flex items-start gap-2 rounded-lg border px-3 py-2 text-xs ${getEventSeverityColor(evt.severity)}`}
+                  >
+                    <span className='mt-0.5 text-sm'>{getEventIcon(evt.kind)}</span>
+                    <div className='flex-1 min-w-0'>
+                      <div className='flex items-center justify-between gap-2'>
+                        <span className='font-medium truncate'>{evt.summary}</span>
+                        <span className='text-[0.55rem] text-slate-500 whitespace-nowrap'>
+                          {new Date(evt.timestampUtc).toLocaleString()}
+                        </span>
+                      </div>
+                      {evt.details && (
+                        <div className='mt-1 text-[0.65rem] text-slate-400 truncate'>
+                          {evt.details}
+                        </div>
+                      )}
+                      {evt.actor && (
+                        <div className='mt-0.5 text-[0.55rem] text-slate-500'>by {evt.actor}</div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
       {/* Footer */}
       <div className='mt-4 flex items-center justify-between border-t border-slate-800/60 pt-3 text-[0.65rem] text-slate-500'>
-        <span>Phase 15-18 · SystemGPT Console · Benton County Edition · TerraFusion OS</span>
+        <span>Phase 15-19 · SystemGPT Console · Benton County Edition · TerraFusion OS</span>
         {diagnostics && (
           <span>Last updated: {new Date(diagnostics.timestamp).toLocaleTimeString()}</span>
         )}

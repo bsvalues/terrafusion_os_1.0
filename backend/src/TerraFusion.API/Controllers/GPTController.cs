@@ -31,6 +31,7 @@ namespace TerraFusion.API.Controllers
         private readonly ISystemGptHealthEvaluator? _healthEvaluator;
         private readonly ISystemGptModeService? _modeService;
         private readonly IBentonRagReadinessService? _bentonRagService; // Phase 18
+        private readonly ISystemGptEventService? _eventService; // Phase 19
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
@@ -40,7 +41,8 @@ namespace TerraFusion.API.Controllers
             ILogger<GPTController> logger,
             ISystemGptHealthEvaluator? healthEvaluator = null,
             ISystemGptModeService? modeService = null,
-            IBentonRagReadinessService? bentonRagService = null) // Phase 18
+            IBentonRagReadinessService? bentonRagService = null,
+            ISystemGptEventService? eventService = null) // Phase 19
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
@@ -49,6 +51,7 @@ namespace TerraFusion.API.Controllers
             _healthEvaluator = healthEvaluator; // Optional - graceful degradation if not registered
             _modeService = modeService; // Optional - Phase 17 Safe Mode
             _bentonRagService = bentonRagService; // Optional - Phase 18 Benton RAG Readiness
+            _eventService = eventService; // Optional - Phase 19 AI Incident Timeline
         }
 
         #region GPT Configuration Management
@@ -1002,6 +1005,14 @@ namespace TerraFusion.API.Controllers
 
                 _logger.LogInformation("SystemGPT: Health snapshot download generated ({ByteCount} bytes)", bytes.Length);
 
+                // Phase 19: Record event in timeline
+                _eventService?.RecordEvent(
+                    TerraFusion.AI.Models.SystemGptEventKind.HealthSnapshotDownloaded,
+                    "info",
+                    "Health Snapshot Downloaded",
+                    $"Exported {bytes.Length} bytes as {filename}",
+                    User?.Identity?.Name ?? "system");
+
                 return File(bytes, "application/json", filename);
             }
             catch (Exception ex)
@@ -1044,12 +1055,20 @@ namespace TerraFusion.API.Controllers
                 _modeService.SetMode(targetMode, request.Reason, changedBy);
 
                 // Log Herald entry for audit trail
-                var heraldLevel = request.Enabled ? "Warning" : "Info";
+                var heraldLevel = request.Enabled ? "warning" : "info";
                 var heraldMessage = request.Enabled
                     ? $"🛑 SystemGPT SAFE MODE ENABLED by {changedBy}: {request.Reason}"
                     : $"✅ SystemGPT SAFE MODE DISABLED by {changedBy}";
 
                 _logger.LogWarning("Phase 17 Safe Mode: {Message}", heraldMessage);
+
+                // Phase 19: Record event in timeline
+                _eventService?.RecordEvent(
+                    TerraFusion.AI.Models.SystemGptEventKind.SafeModeChanged,
+                    heraldLevel,
+                    request.Enabled ? "Safe Mode Enabled" : "Safe Mode Disabled",
+                    heraldMessage,
+                    changedBy);
 
                 var response = new TerraFusion.AI.Models.SetSystemGptModeResponse
                 {
@@ -1143,12 +1162,56 @@ namespace TerraFusion.API.Controllers
 
                 _logger.LogInformation("Phase 18: Benton CAMA RAG snapshot generated ({ByteCount} bytes)", bytes.Length);
 
+                // Phase 19: Record event in timeline
+                _eventService?.RecordEvent(
+                    TerraFusion.AI.Models.SystemGptEventKind.BentonRagSnapshotDownloaded,
+                    "info",
+                    "Benton RAG Snapshot Downloaded",
+                    $"Exported {bytes.Length} bytes as {filename}",
+                    User?.Identity?.Name ?? "system");
+
                 return File(bytes, "application/json", filename);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error generating Benton RAG snapshot");
                 return StatusCode(500, new { error = "Failed to generate Benton RAG snapshot" });
+            }
+        }
+
+        /// <summary>
+        /// Get recent SystemGPT events for AI incident timeline.
+        /// Phase 19: Chronological list of key AI events (Safe Mode toggles, RAG reindexes, health transitions, exports).
+        /// </summary>
+        /// <param name="since">Optional UTC timestamp to filter events after this time</param>
+        /// <param name="limit">Maximum number of events to return (default: 50, max: 100)</param>
+        [HttpGet("system/events")]
+        [AllowAnonymous] // Allow event viewing without auth for county monitoring dashboards
+        public async System.Threading.Tasks.Task<ActionResult<IReadOnlyList<TerraFusion.AI.Models.SystemGptEventDto>>> GetSystemEvents(
+            [FromQuery] DateTimeOffset? since = null,
+            [FromQuery] int limit = 50)
+        {
+            try
+            {
+                if (_eventService == null)
+                {
+                    // Return empty list if service not registered (graceful degradation)
+                    return Ok(Array.Empty<TerraFusion.AI.Models.SystemGptEventDto>());
+                }
+
+                // Clamp limit to reasonable range
+                var clampedLimit = Math.Clamp(limit, 1, 100);
+
+                var events = await _eventService.GetRecentEventsAsync(since, clampedLimit, HttpContext.RequestAborted);
+
+                _logger.LogDebug("Phase 19: Returning {EventCount} system events", events.Count);
+
+                return Ok(events);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving system events");
+                return StatusCode(500, new { error = "Failed to retrieve system events" });
             }
         }
 

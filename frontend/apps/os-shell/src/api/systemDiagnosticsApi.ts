@@ -4,6 +4,7 @@
  * Phase 15: SystemGPT Console - AI Control Center
  * Phase 17: Safe Mode & Kill Switch
  * Phase 18: Benton CAMA RAG Readiness Panel
+ * Phase 19: AI Incident Timeline
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -86,6 +87,32 @@ export interface BentonRagReadiness {
   overallStatus: BentonRagStatus;
   statusReason?: string | null;
   activeGptConfigs: string[];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 19: AI INCIDENT TIMELINE TYPES
+// ═══════════════════════════════════════════════════════════════
+
+/** Phase 19: Types of AI system events */
+export type SystemGptEventKind =
+  | 'Unknown'
+  | 'SafeModeChanged'
+  | 'RagReindexed'
+  | 'RagHealthChanged'
+  | 'HealthSnapshotDownloaded'
+  | 'BentonRagSnapshotDownloaded'
+  | 'HeraldWarning'
+  | 'HeraldError';
+
+/** Phase 19: AI system event for timeline display */
+export interface SystemGptEvent {
+  timestampUtc: string;
+  kind: SystemGptEventKind;
+  severity: string; // 'info' | 'warning' | 'error' | 'critical'
+  summary: string;
+  details?: string | null;
+  actor?: string | null;
+  correlationId?: string | null;
 }
 
 export interface SystemDiagnosticsResponse {
@@ -287,4 +314,41 @@ export async function downloadBentonRagSnapshot(): Promise<void> {
   link.click();
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 19: AI INCIDENT TIMELINE API
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Fetch recent AI system events for timeline display.
+ * Phase 19: AI Incident Timeline - "What happened to the AI system this week?"
+ * @param since - Optional ISO timestamp to filter events after this time
+ * @param limit - Maximum number of events to return (default: 50, max: 100)
+ */
+export async function getSystemGptEvents(
+  since?: string,
+  limit: number = 50
+): Promise<SystemGptEvent[]> {
+  const params = new URLSearchParams();
+  if (since) {
+    params.append('since', since);
+  }
+  params.append('limit', String(Math.min(limit, 100)));
+
+  const url = `${API_BASE_URL}/api/gpt/system/events?${params.toString()}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`System events request failed (${response.status}): ${errorText}`);
+  }
+
+  return (await response.json()) as SystemGptEvent[];
 }

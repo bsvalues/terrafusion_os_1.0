@@ -3,6 +3,7 @@
 // Phase 15: SystemGPT Console - AI Control Center for County Tech Leads
 // Phase 17: Safe Mode & Kill Switch
 // Phase 18: Benton CAMA RAG Readiness Panel
+// Phase 19: AI Incident Timeline
 // Government. Transcended.
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -504,5 +505,81 @@ namespace TerraFusion.AI.Models
         /// Export format version for forward compatibility.
         /// </summary>
         public string FormatVersion { get; init; } = "1.0";
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // Phase 19: SystemGPT AI Incident Timeline DTOs
+    // Chronological list of key AI events for audit and visibility.
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Phase 19: Kind of SystemGPT event for the incident timeline.
+    /// </summary>
+    public enum SystemGptEventKind
+    {
+        /// <summary>Unknown event type.</summary>
+        Unknown = 0,
+
+        /// <summary>Safe Mode was enabled or disabled.</summary>
+        SafeModeChanged = 1,
+
+        /// <summary>RAG dataset was reindexed.</summary>
+        RagReindexed = 2,
+
+        /// <summary>RAG health status changed (Ready/Stale/Partial/Unindexed).</summary>
+        RagHealthChanged = 3,
+
+        /// <summary>AI health snapshot was downloaded.</summary>
+        HealthSnapshotDownloaded = 4,
+
+        /// <summary>Benton CAMA RAG snapshot was downloaded.</summary>
+        BentonRagSnapshotDownloaded = 5,
+
+        /// <summary>Herald warning message.</summary>
+        HeraldWarning = 6,
+
+        /// <summary>Herald error message.</summary>
+        HeraldError = 7
+    }
+
+    /// <summary>
+    /// Phase 19: DTO representing a single AI system event for the incident timeline.
+    /// </summary>
+    public sealed class SystemGptEventDto
+    {
+        /// <summary>
+        /// UTC timestamp when the event occurred.
+        /// </summary>
+        public DateTimeOffset TimestampUtc { get; init; }
+
+        /// <summary>
+        /// Kind/category of the event.
+        /// </summary>
+        public SystemGptEventKind Kind { get; init; }
+
+        /// <summary>
+        /// Severity level: "info", "warning", or "error".
+        /// </summary>
+        public string Severity { get; init; } = "info";
+
+        /// <summary>
+        /// Short summary/title of the event.
+        /// </summary>
+        public string Summary { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Optional longer description or context.
+        /// </summary>
+        public string? Details { get; init; }
+
+        /// <summary>
+        /// Actor who triggered the event (username, "system", or null).
+        /// </summary>
+        public string? Actor { get; init; }
+
+        /// <summary>
+        /// Optional correlation/trace ID for linking related events.
+        /// </summary>
+        public string? CorrelationId { get; init; }
     }
 }

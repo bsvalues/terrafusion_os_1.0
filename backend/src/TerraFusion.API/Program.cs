@@ -348,6 +348,9 @@ builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptModeService, Ter
 // Phase 18: Benton CAMA RAG Readiness Service for county-specific AI health
 builder.Services.AddScoped<TerraFusion.AI.Services.IBentonRagReadinessService, TerraFusion.AI.Services.BentonRagReadinessService>();
 
+// Phase 19: SystemGPT Event Service for AI incident timeline
+builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptEventService, TerraFusion.AI.Services.SystemGptEventService>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown

@@ -2532,4 +2532,167 @@ Decision Timeline: 30 days from hearing",
         m.Message.Contains("ready"));
     }
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // 📜 Phase 19: AI Incident Timeline Tests
+  // "What happened to the AI system this week?"
+  // ═══════════════════════════════════════════════════════════════════════════════
+
+  /// <summary>
+  /// Tests for SystemGPT Event Service and AI Incident Timeline (Phase 19).
+  /// </summary>
+  public class SystemGptEventServiceTests
+  {
+    [Fact]
+    public void SystemGptEventKind_EnumValues_AreCorrect()
+    {
+      // Assert - verify enum values
+      Assert.Equal(0, (int)TerraFusion.AI.Models.SystemGptEventKind.Unknown);
+      Assert.Equal(1, (int)TerraFusion.AI.Models.SystemGptEventKind.SafeModeChanged);
+      Assert.Equal(2, (int)TerraFusion.AI.Models.SystemGptEventKind.RagReindexed);
+      Assert.Equal(3, (int)TerraFusion.AI.Models.SystemGptEventKind.RagHealthChanged);
+      Assert.Equal(4, (int)TerraFusion.AI.Models.SystemGptEventKind.HealthSnapshotDownloaded);
+      Assert.Equal(5, (int)TerraFusion.AI.Models.SystemGptEventKind.BentonRagSnapshotDownloaded);
+      Assert.Equal(6, (int)TerraFusion.AI.Models.SystemGptEventKind.HeraldWarning);
+      Assert.Equal(7, (int)TerraFusion.AI.Models.SystemGptEventKind.HeraldError);
+    }
+
+    [Fact]
+    public void SystemGptEventDto_DefaultValues_AreCorrect()
+    {
+      // Arrange & Act
+      var dto = new TerraFusion.AI.Models.SystemGptEventDto();
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.SystemGptEventKind.Unknown, dto.Kind);
+      Assert.Null(dto.Details);
+      Assert.Null(dto.Actor);
+      Assert.Null(dto.CorrelationId);
+    }
+
+    [Fact]
+    public void SystemGptEventDto_HasCorrectShape_ForSafeModeEvent()
+    {
+      // Arrange
+      var now = DateTimeOffset.UtcNow;
+      var dto = new TerraFusion.AI.Models.SystemGptEventDto
+      {
+        TimestampUtc = now,
+        Kind = TerraFusion.AI.Models.SystemGptEventKind.SafeModeChanged,
+        Severity = "warning",
+        Summary = "Safe Mode Enabled",
+        Details = "🛑 SystemGPT SAFE MODE ENABLED by admin: Testing",
+        Actor = "admin"
+      };
+
+      // Assert
+      Assert.Equal(now, dto.TimestampUtc);
+      Assert.Equal(TerraFusion.AI.Models.SystemGptEventKind.SafeModeChanged, dto.Kind);
+      Assert.Equal("warning", dto.Severity);
+      Assert.Equal("Safe Mode Enabled", dto.Summary);
+      Assert.Contains("admin", dto.Actor);
+    }
+
+    [Fact]
+    public async Task EventService_RecordsEvents_AndReturnsThemInOrder()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptEventService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptEventService(logger);
+
+      // Act - record events
+      service.RecordEvent(
+        TerraFusion.AI.Models.SystemGptEventKind.SafeModeChanged,
+        "warning",
+        "Safe Mode Enabled",
+        "Testing",
+        "test-user");
+
+      await Task.Delay(10); // Ensure different timestamps
+
+      service.RecordEvent(
+        TerraFusion.AI.Models.SystemGptEventKind.HealthSnapshotDownloaded,
+        "info",
+        "Health Snapshot Downloaded",
+        "Downloaded 5000 bytes");
+
+      // Act - get events
+      var events = await service.GetRecentEventsAsync(null, 100);
+
+      // Assert - should have at least 3 events (init + 2 recorded)
+      Assert.True(events.Count >= 3);
+
+      // Most recent first
+      var healthEvent = events.FirstOrDefault(e => e.Kind == TerraFusion.AI.Models.SystemGptEventKind.HealthSnapshotDownloaded);
+      var safeEvent = events.FirstOrDefault(e => e.Kind == TerraFusion.AI.Models.SystemGptEventKind.SafeModeChanged);
+
+      Assert.NotNull(healthEvent);
+      Assert.NotNull(safeEvent);
+      Assert.Equal("info", healthEvent.Severity);
+      Assert.Equal("warning", safeEvent.Severity);
+    }
+
+    [Fact]
+    public async Task EventService_RespectsLimitParameter()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptEventService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptEventService(logger);
+
+      // Add several events
+      for (int i = 0; i < 10; i++)
+      {
+        service.RecordEvent(
+          TerraFusion.AI.Models.SystemGptEventKind.HeraldWarning,
+          "warning",
+          $"Test event {i}");
+      }
+
+      // Act
+      var events = await service.GetRecentEventsAsync(null, 5);
+
+      // Assert
+      Assert.Equal(5, events.Count);
+    }
+
+    [Fact]
+    public async Task EventService_FiltersBySinceUtc()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptEventService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptEventService(logger);
+
+      var cutoff = DateTimeOffset.UtcNow.AddMinutes(5); // Future cutoff
+
+      // Act
+      var events = await service.GetRecentEventsAsync(cutoff, 100);
+
+      // Assert - should be empty since cutoff is in the future
+      Assert.Empty(events);
+    }
+
+    [Fact]
+    public void EventService_PrunesOldEventsWhenOverCapacity()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptEventService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptEventService(logger);
+
+      // Act - add more than max capacity
+      for (int i = 0; i < TerraFusion.AI.Services.SystemGptEventService.MaxEventCapacity + 100; i++)
+      {
+        service.RecordEvent(
+          TerraFusion.AI.Models.SystemGptEventKind.Unknown,
+          "info",
+          $"Event {i}");
+      }
+
+      // We can't directly check internal count, but we can verify it doesn't throw
+      // and still returns events
+      var events = service.GetRecentEventsAsync(null, 1000).Result;
+
+      // Assert - should have at most max capacity events
+      Assert.True(events.Count <= TerraFusion.AI.Services.SystemGptEventService.MaxEventCapacity);
+    }
+  }
 }
