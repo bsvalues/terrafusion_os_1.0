@@ -22,7 +22,7 @@ ADD . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-editable
 
-FROM python:3.12-slim-bookworm
+FROM python:3.14.2-slim-bookworm
 
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
