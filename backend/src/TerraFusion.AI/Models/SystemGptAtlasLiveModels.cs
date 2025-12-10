@@ -22,7 +22,7 @@ public sealed class SystemGptAtlasLiveEventDto
     public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
 
     /// <summary>Live telemetry for all counties in this batch.</summary>
-    public IReadOnlyList<SystemGptAtlasLiveCountyEventDto> Counties { get; init; } 
+    public IReadOnlyList<SystemGptAtlasLiveCountyEventDto> Counties { get; init; }
         = Array.Empty<SystemGptAtlasLiveCountyEventDto>();
 }
 
@@ -80,30 +80,30 @@ public sealed class SystemGptAtlasThresholds
     // ─────────────────────────────────────────────────────────────────────────
 
     /// <summary>Health score below this triggers Warning state.</summary>
-    public double WarningHealthScore { get; init; } = 0.80;
+    public double WarningHealthScore { get; set; } = 0.80;
 
     /// <summary>Health score below this triggers Critical state.</summary>
-    public double CriticalHealthScore { get; init; } = 0.60;
+    public double CriticalHealthScore { get; set; } = 0.60;
 
     // ─────────────────────────────────────────────────────────────────────────
     // Error Rate Thresholds (%)
     // ─────────────────────────────────────────────────────────────────────────
 
     /// <summary>Error rate above this triggers Warning state.</summary>
-    public double WarningErrorRatePercent { get; init; } = 1.0;
+    public double WarningErrorRatePercent { get; set; } = 1.0;
 
     /// <summary>Error rate above this triggers Critical state.</summary>
-    public double CriticalErrorRatePercent { get; init; } = 5.0;
+    public double CriticalErrorRatePercent { get; set; } = 5.0;
 
     // ─────────────────────────────────────────────────────────────────────────
     // Latency Thresholds (ms)
     // ─────────────────────────────────────────────────────────────────────────
 
     /// <summary>P95 latency above this triggers Warning state.</summary>
-    public double WarningP95Ms { get; init; } = 300;
+    public double WarningP95Ms { get; set; } = 300;
 
     /// <summary>P95 latency above this triggers Critical state.</summary>
-    public double CriticalP95Ms { get; init; } = 1000;
+    public double CriticalP95Ms { get; set; } = 1000;
 }
 
 /// <summary>
@@ -115,7 +115,7 @@ public sealed class SystemGptAtlasLiveOptions
     public const string SectionName = "SystemGptAtlas:Live";
 
     /// <summary>Interval between SSE events in milliseconds.</summary>
-    public int IntervalMs { get; init; } = 1000;
+    public int IntervalMs { get; set; } = 1000;
 
     /// <summary>Maximum number of connection retries on error.</summary>
     public int MaxRetries { get; init; } = 5;
