@@ -367,6 +367,9 @@ builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptGuardrailService
 // Phase 27: RAG Fleet Readiness - Multi-county RAG comparison and drift detection
 builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptRagFleetService, TerraFusion.AI.Services.SystemGptRagFleetService>();
 
+// Phase 28: SystemGPT Atlas - Map-based AI health visualization with county nodes
+builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptAtlasService, TerraFusion.AI.Services.SystemGptAtlasService>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown

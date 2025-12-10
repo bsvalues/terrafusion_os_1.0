@@ -126,7 +126,7 @@ public class SystemGptRagFleetServiceTests
         Assert.NotNull(result);
         Assert.NotNull(result.Counties);
         // Benton should still appear in list but as Unknown
-        var bentonCounty = result.Counties.FirstOrDefault(c => 
+        var bentonCounty = result.Counties.FirstOrDefault(c =>
             c.CountyId.Equals("benton", StringComparison.OrdinalIgnoreCase));
         Assert.NotNull(bentonCounty);
     }
@@ -175,7 +175,7 @@ public class SystemGptRagFleetServiceTests
 
         // Assert
         // Should have Stale status for Benton
-        var bentonCounty = result.Counties.FirstOrDefault(c => 
+        var bentonCounty = result.Counties.FirstOrDefault(c =>
             c.CountyId.Equals("benton", StringComparison.OrdinalIgnoreCase));
         Assert.NotNull(bentonCounty);
         Assert.Equal("Stale", bentonCounty.RagStatus);

@@ -38,6 +38,7 @@ namespace TerraFusion.API.Controllers
         private readonly ISystemGptPolicyEvaluator? _policyEvaluator; // Phase 24
         private readonly ISystemGptGuardrailService? _guardrailService; // Phase 26
         private readonly ISystemGptRagFleetService? _ragFleetService; // Phase 27
+        private readonly ISystemGptAtlasService? _atlasService; // Phase 28
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
@@ -54,7 +55,8 @@ namespace TerraFusion.API.Controllers
             ICountyPolicyService? policyService = null, // Phase 24
             ISystemGptPolicyEvaluator? policyEvaluator = null, // Phase 24
             ISystemGptGuardrailService? guardrailService = null, // Phase 26
-            ISystemGptRagFleetService? ragFleetService = null) // Phase 27
+            ISystemGptRagFleetService? ragFleetService = null, // Phase 27
+            ISystemGptAtlasService? atlasService = null) // Phase 28
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
@@ -70,6 +72,7 @@ namespace TerraFusion.API.Controllers
             _policyEvaluator = policyEvaluator; // Optional - Phase 24 Policy Evaluator
             _guardrailService = guardrailService; // Optional - Phase 26 Autonomous Guardrails
             _ragFleetService = ragFleetService; // Optional - Phase 27 RAG Fleet Readiness
+            _atlasService = atlasService; // Optional - Phase 28 Map-Based AI Health Atlas
         }
 
         // Phase 26: In-memory storage for last guardrail decision per county (for diagnostics)
@@ -1750,7 +1753,7 @@ namespace TerraFusion.API.Controllers
                 }
 
                 var countyReadiness = await _ragFleetService.GetCountyReadinessAsync(countyId);
-                
+
                 if (countyReadiness == null)
                 {
                     return NotFound(new { error = $"County '{countyId}' not found in RAG fleet configuration." });
@@ -1762,6 +1765,42 @@ namespace TerraFusion.API.Controllers
             {
                 _logger.LogError(ex, "Error fetching RAG readiness for county: {CountyId}", countyId);
                 return StatusCode(500, new { error = $"Failed to fetch RAG readiness for county '{countyId}'" });
+            }
+        }
+
+        #endregion
+
+        #region Phase 28: SystemGPT Atlas - Map-Based AI Health Visualization
+
+        /// <summary>
+        /// Get Atlas view with all counties as map nodes showing health, capacity, and RAG status.
+        /// Phase 28: Map-based AI health visualization for multi-county oversight.
+        /// </summary>
+        [HttpGet("system/atlas")]
+        [AllowAnonymous] // Read-only map visualization - allow for dashboards
+        public async System.Threading.Tasks.Task<ActionResult<SystemGptAtlasResponseDto>> GetSystemAtlas()
+        {
+            try
+            {
+                _logger.LogInformation("Phase 28: Fetching SystemGPT Atlas for map visualization");
+
+                if (_atlasService == null)
+                {
+                    _logger.LogWarning("Phase 28: AtlasService not registered, returning stub response");
+                    return Ok(new SystemGptAtlasResponseDto
+                    {
+                        GeneratedAtUtc = DateTime.UtcNow,
+                        Nodes = new List<SystemGptAtlasNodeDto>()
+                    });
+                }
+
+                var result = await _atlasService.GetAtlasAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching SystemGPT Atlas");
+                return StatusCode(500, new { error = "Failed to fetch SystemGPT Atlas" });
             }
         }
 

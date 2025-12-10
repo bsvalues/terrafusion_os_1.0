@@ -7,8 +7,8 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { useState, useEffect } from 'react';
-import type { RagFleetReadiness, RagCountyReadiness } from '../../../api/systemDiagnosticsApi';
+import { useEffect, useState } from 'react';
+import type { RagCountyReadiness, RagFleetReadiness } from '../../../api/systemDiagnosticsApi';
 import { fetchRagFleetReadiness } from '../../../api/systemDiagnosticsApi';
 
 // ═══════════════════════════════════════════════════════════════
@@ -43,12 +43,12 @@ function DriftRiskBadge({ risk, size = 'md' }: DriftRiskBadgeProps) {
   };
 
   const c = config[risk] ?? config.Low;
-  const sizeClasses = size === 'sm' 
-    ? 'px-2 py-0.5 text-[0.6rem]' 
-    : 'px-3 py-1 text-xs';
+  const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-[0.6rem]' : 'px-3 py-1 text-xs';
 
   return (
-    <div className={`inline-flex items-center gap-1.5 rounded-full border ${c.bgClass} ${sizeClasses}`}>
+    <div
+      className={`inline-flex items-center gap-1.5 rounded-full border ${c.bgClass} ${sizeClasses}`}
+    >
       <span className={size === 'sm' ? 'text-xs' : 'text-sm'}>{c.icon}</span>
       <span className={`font-semibold tracking-wider ${c.textClass}`}>{c.label}</span>
     </div>
@@ -95,7 +95,9 @@ function FleetStat({ label, value, accent }: FleetStatProps) {
   return (
     <div className='rounded-lg border border-cyan-500/20 bg-slate-900/60 px-3 py-2 text-center'>
       <div className='text-[0.55rem] uppercase tracking-wider text-slate-500'>{label}</div>
-      <div className={`text-lg font-semibold mt-0.5 ${accent ? 'text-cyan-400' : 'text-slate-300'}`}>
+      <div
+        className={`text-lg font-semibold mt-0.5 ${accent ? 'text-cyan-400' : 'text-slate-300'}`}
+      >
         {value}
       </div>
     </div>

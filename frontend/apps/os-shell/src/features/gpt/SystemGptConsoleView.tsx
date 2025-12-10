@@ -36,9 +36,10 @@ import { SystemGptFederatedOverviewPanel } from './components/SystemGptFederated
 import { SystemGptGuardrailPanel } from './components/SystemGptGuardrailPanel';
 import { SystemGptMetricsPanel } from './components/SystemGptMetricsPanel';
 import { SystemGptPolicyPanel } from './components/SystemGptPolicyPanel';
+import { SystemGptAtlasPanel } from './components/SystemGptAtlasPanel';
 
-/** Phase 24: Console tab options */
-type ConsoleTab = 'overview' | 'federated' | 'policy';
+/** Phase 24: Console tab options (Phase 28: Added 'atlas') */
+type ConsoleTab = 'overview' | 'federated' | 'policy' | 'atlas';
 
 type LoadState = 'idle' | 'loading' | 'error';
 
@@ -521,6 +522,16 @@ export const SystemGptConsoleView: React.FC = () => {
         >
           🛡️ Policy
         </button>
+        <button
+          onClick={() => setActiveTab('atlas')}
+          className={`rounded-t-lg px-4 py-2 text-sm font-medium transition-all ${
+            activeTab === 'atlas'
+              ? 'border-b-2 border-cyan-500 bg-slate-800/50 text-cyan-300'
+              : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-300'
+          }`}
+        >
+          🗺️ Atlas
+        </button>
       </div>
 
       {/* Phase 23: Federated Overview Tab */}
@@ -537,6 +548,16 @@ export const SystemGptConsoleView: React.FC = () => {
       {activeTab === 'policy' && (
         <div className='flex-1 overflow-auto rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
           <SystemGptPolicyPanel selectedCounty={selectedCounty} refreshInterval={60000} />
+        </div>
+      )}
+
+      {/* Phase 28: Atlas Map-Based AI Health Visualization Tab */}
+      {activeTab === 'atlas' && (
+        <div className='flex-1 overflow-auto rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
+          <SystemGptAtlasPanel
+            onCountySelect={handleFederatedCountySelect}
+            refreshInterval={30000}
+          />
         </div>
       )}
 

@@ -699,3 +699,65 @@ export async function fetchRagFleetReadiness(): Promise<RagFleetReadiness> {
 
   return (await response.json()) as RagFleetReadiness;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 28: SYSTEMGPT ATLAS - MAP-BASED AI HEALTH VISUALIZATION
+// ═══════════════════════════════════════════════════════════════
+
+/** Phase 28: Single county node for the Atlas map visualization */
+export interface SystemGptAtlasNode {
+  /** County code (e.g., "benton", "yakima") */
+  countyId: string;
+  /** Display name (e.g., "Benton County") */
+  countyName: string;
+  /** Overall health status: "Healthy", "Degraded", "Unhealthy", or "Unknown" */
+  health: SystemHealthStatus;
+  /** Capacity risk: "Low", "Medium", "High", or "Overloaded" */
+  capacityRisk: string;
+  /** RAG status: "Ready", "Stale", "Partial", "Unindexed", or "Unknown" */
+  ragStatus: string;
+  /** Whether this county has GPT/RAG configured */
+  configured: boolean;
+  /** Fleet-wide drift risk detection from Phase 27 */
+  fleetRagDriftRisk: RagFleetDriftRisk;
+  /** Optional note about RAG fleet status */
+  fleetRagNote?: string | null;
+  /** Recent guardrail denial detected */
+  recentGuardrailDeny: boolean;
+  /** Recent safe mode recommendation */
+  recentSafeModeRecommended: boolean;
+  /** X coordinate on pseudo-map (0.0 to 1.0) */
+  mapX: number;
+  /** Y coordinate on pseudo-map (0.0 to 1.0) */
+  mapY: number;
+}
+
+/** Phase 28: Atlas response with all county nodes for map visualization */
+export interface SystemGptAtlasResponse {
+  /** Timestamp when this Atlas snapshot was generated */
+  generatedAtUtc: string;
+  /** All county nodes for map rendering */
+  nodes: readonly SystemGptAtlasNode[];
+}
+
+/**
+ * Fetch SystemGPT Atlas with all county nodes for map-based visualization.
+ * Phase 28: Map-Based AI Health Visualization.
+ */
+export async function fetchSystemGptAtlas(): Promise<SystemGptAtlasResponse> {
+  const url = `${API_BASE_URL}/api/gpt/system/atlas`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`SystemGPT Atlas request failed (${response.status}): ${errorText}`);
+  }
+
+  return (await response.json()) as SystemGptAtlasResponse;
+}
