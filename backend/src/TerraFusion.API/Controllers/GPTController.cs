@@ -36,6 +36,7 @@ namespace TerraFusion.API.Controllers
         private readonly ISystemGptFederatedOverviewService? _federatedOverviewService; // Phase 23
         private readonly ICountyPolicyService? _policyService; // Phase 24
         private readonly ISystemGptPolicyEvaluator? _policyEvaluator; // Phase 24
+        private readonly ISystemGptGuardrailService? _guardrailService; // Phase 26
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
@@ -50,7 +51,8 @@ namespace TerraFusion.API.Controllers
             ISystemGptMetricsService? metricsService = null,
             ISystemGptFederatedOverviewService? federatedOverviewService = null,
             ICountyPolicyService? policyService = null, // Phase 24
-            ISystemGptPolicyEvaluator? policyEvaluator = null) // Phase 24
+            ISystemGptPolicyEvaluator? policyEvaluator = null, // Phase 24
+            ISystemGptGuardrailService? guardrailService = null) // Phase 26
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
@@ -64,6 +66,22 @@ namespace TerraFusion.API.Controllers
             _federatedOverviewService = federatedOverviewService; // Optional - Phase 23 Federated Overview
             _policyService = policyService; // Optional - Phase 24 AI Policy Engine
             _policyEvaluator = policyEvaluator; // Optional - Phase 24 Policy Evaluator
+            _guardrailService = guardrailService; // Optional - Phase 26 Autonomous Guardrails
+        }
+
+        // Phase 26: In-memory storage for last guardrail decision per county (for diagnostics)
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<TerraFusion.AI.Models.CountyId, TerraFusion.AI.Models.LastGuardrailDecisionDto>
+            _lastGuardrailDecisions = new();
+
+        private void StoreLastGuardrailDecision(TerraFusion.AI.Models.CountyId countyId, TerraFusion.AI.Models.GuardrailDecision decision)
+        {
+            var dto = TerraFusion.AI.Models.LastGuardrailDecisionDto.FromDecision(decision);
+            _lastGuardrailDecisions[countyId] = dto;
+        }
+
+        internal static TerraFusion.AI.Models.LastGuardrailDecisionDto? GetLastGuardrailDecision(TerraFusion.AI.Models.CountyId countyId)
+        {
+            return _lastGuardrailDecisions.TryGetValue(countyId, out var decision) ? decision : null;
         }
 
         #region GPT Configuration Management
@@ -380,13 +398,87 @@ namespace TerraFusion.API.Controllers
 
                 var userId = GetUserId();
                 var countyId = GetCountyId();
+                var countyIdEnum = (TerraFusion.AI.Models.CountyId)countyId;
+
+                // Phase 26: Autonomous Guardrails - comprehensive evaluation before processing
+                if (_guardrailService != null && _metricsService != null && _policyService != null)
+                {
+                    var guardrailContext = new TerraFusion.AI.Models.GptRequestContext
+                    {
+                        CountyId = countyIdEnum,
+                        Prompt = request.Message,
+                        GptConfigKey = request.GPTConfigId.ToString(),
+                        ContextId = conversationId.ToString(),
+                        RequiresRag = false, // Basic message doesn't require RAG
+                        RequiresEmbedding = false,
+                        UserId = userId
+                    };
+
+                    var metrics = _metricsService.GetSnapshot(TimeSpan.FromMinutes(15), maxSeriesPoints: 20);
+                    var policy = await _policyService.GetPolicyAsync(countyIdEnum);
+                    var countyInfo = TerraFusion.AI.Models.CountyHelper.GetCountyInfo(countyIdEnum);
+
+                    var guardrailDecision = _guardrailService.EvaluateGuardrails(
+                        countyIdEnum, guardrailContext, metrics, policy, countyInfo.IsConfigured);
+
+                    // Store decision for diagnostics (in-memory, last decision per county)
+                    StoreLastGuardrailDecision(countyIdEnum, guardrailDecision);
+
+                    // Handle deny decisions
+                    if (!guardrailDecision.Allow)
+                    {
+                        _logger.LogWarning("SendMessage blocked by guardrails: {Reason} (County: {CountyId}, Kind: {Kind})",
+                            guardrailDecision.DenyReason, countyId, guardrailDecision.Kind);
+
+                        var guardrailDeniedMessage = new GPTMessage
+                        {
+                            Id = 0,
+                            ConversationId = conversationId,
+                            Role = "assistant",
+                            Content = $"🛡️ **Request blocked by AI Guardrails**\n\n" +
+                                      $"This operation was blocked by autonomous guardrails.\n\n" +
+                                      $"Reason: {guardrailDecision.DenyReason ?? "Guardrail violation"}\n" +
+                                      $"Decision: {guardrailDecision.Kind}\n\n" +
+                                      (guardrailDecision.Advisory != null ? $"Advisory: {guardrailDecision.Advisory}\n\n" : "") +
+                                      $"Contact your administrator if you believe this is an error.",
+                            CreatedAt = DateTime.UtcNow
+                        };
+
+                        return Ok(guardrailDeniedMessage);
+                    }
+
+                    // Handle throttle - add delay if needed (v1 is lightweight, ~500ms)
+                    if (guardrailDecision.AutoThrottle)
+                    {
+                        _logger.LogInformation("Phase 26: Request throttled by guardrails for county {CountyId}", countyId);
+                        await System.Threading.Tasks.Task.Delay(500); // Brief delay for capacity relief
+                    }
+
+                    // Handle sanitization
+                    if (guardrailDecision.AutoSanitize)
+                    {
+                        _logger.LogInformation("Phase 26: Message sanitization recommended by guardrails for county {CountyId}", countyId);
+                        // Sanitization is applied by policy evaluator below if applicable
+                    }
+
+                    // Log safe mode recommendation (v1 doesn't auto-flip, just logs)
+                    if (guardrailDecision.AutoSafeModeRecommended)
+                    {
+                        _logger.LogWarning("Phase 26 ADVISORY: Safe Mode recommended for county {CountyId}. Reason: {Advisory}",
+                            countyId, guardrailDecision.Advisory);
+                    }
+
+                    // Note: ForceExplain is tracked in decision for UI to show, but explain is a separate endpoint
+                    if (guardrailDecision.ForceExplain)
+                    {
+                        _logger.LogInformation("Phase 26: Force-explain flag set for county {CountyId} (valuation context)", countyId);
+                    }
+                }
 
                 // Phase 24: Policy Engine check - evaluate request against county policy
+                // (This provides sanitization and additional policy checks)
                 if (_policyEvaluator != null)
                 {
-                    // Convert int countyId to CountyId enum (0=Benton, 1=Yakima, 2=Franklin)
-                    var countyIdEnum = (TerraFusion.AI.Models.CountyId)countyId;
-
                     var policyContext = new TerraFusion.AI.Models.GptRequestContext
                     {
                         CountyId = countyIdEnum,
@@ -1060,6 +1152,9 @@ namespace TerraFusion.API.Controllers
 
                 stopwatch.Stop();
                 _logger.LogInformation("SystemGPT: Diagnostics generated in {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
+
+                // Phase 26: Include last guardrail decision if available
+                diagnostics.LastGuardrailDecision = GetLastGuardrailDecision(county);
 
                 return Ok(diagnostics);
             }
@@ -1801,7 +1896,7 @@ namespace TerraFusion.API.Controllers
                 {
                     StepId = "step-001",
                     Title = "Context Detection",
-                    Description = $"Identified current context as '{contextType}'" + 
+                    Description = $"Identified current context as '{contextType}'" +
                         (contextId != null ? $" with ID '{contextId}'" : ""),
                     SourceIds = new List<string>()
                 },

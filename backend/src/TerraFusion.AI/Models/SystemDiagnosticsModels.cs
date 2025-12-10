@@ -109,6 +109,12 @@ namespace TerraFusion.AI.Models
         /// County-specific RAG health for the Benton County demo story.
         /// </summary>
         public BentonRagReadinessDto? BentonRag { get; set; }
+
+        /// <summary>
+        /// Phase 26: Last guardrail decision for this county.
+        /// Shows the most recent guardrail evaluation result.
+        /// </summary>
+        public LastGuardrailDecisionDto? LastGuardrailDecision { get; set; }
     }
 
     /// <summary>

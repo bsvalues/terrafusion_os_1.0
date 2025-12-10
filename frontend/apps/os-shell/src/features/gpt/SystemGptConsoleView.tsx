@@ -33,6 +33,7 @@ import {
 import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
 import { CountySelector, useCountySelection } from './components/CountySelector';
 import { SystemGptFederatedOverviewPanel } from './components/SystemGptFederatedOverviewPanel';
+import { SystemGptGuardrailPanel } from './components/SystemGptGuardrailPanel';
 import { SystemGptMetricsPanel } from './components/SystemGptMetricsPanel';
 import { SystemGptPolicyPanel } from './components/SystemGptPolicyPanel';
 
@@ -845,6 +846,12 @@ export const SystemGptConsoleView: React.FC = () => {
                   </div>
                 )}
               </div>
+
+              {/* Phase 26: Guardrail Decisions Card */}
+              <SystemGptGuardrailPanel
+                decision={diagnostics.lastGuardrailDecision}
+                countyName={diagnostics.countyName}
+              />
 
               {/* Herald Log Card */}
               <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4 md:col-span-2 lg:col-span-1'>

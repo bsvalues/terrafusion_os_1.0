@@ -7,11 +7,11 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import type {
   ExplainResponseV2,
-  ExplainSourceAttribution,
   ExplainSegment,
+  ExplainSourceAttribution,
   ExplainStep,
 } from '../../api/explainApi';
 
@@ -23,8 +23,8 @@ export type ExplainPanelState =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'error'; message: string }
-  | { status: 'ready'; text: string; keyPoints?: string[]; summary?: string }  // V1
-  | { status: 'ready-v2'; data: ExplainResponseV2 };  // V2
+  | { status: 'ready'; text: string; keyPoints?: string[]; summary?: string } // V1
+  | { status: 'ready-v2'; data: ExplainResponseV2 }; // V2
 
 // ═══════════════════════════════════════════════════════════════
 // COMPONENT PROPS
@@ -65,7 +65,7 @@ const SourceCard: React.FC<SourceCardProps> = ({ source, isHighlighted, onClick 
 
   return (
     <button
-      type="button"
+      type='button'
       onClick={onClick}
       className={`
         w-full rounded-lg border p-2 text-left transition-all duration-200
@@ -74,12 +74,12 @@ const SourceCard: React.FC<SourceCardProps> = ({ source, isHighlighted, onClick 
         hover:border-opacity-60 hover:bg-opacity-20
       `}
     >
-      <div className="flex items-center gap-1.5 text-xs font-medium text-slate-200">
+      <div className='flex items-center gap-1.5 text-xs font-medium text-slate-200'>
         <span>📄</span>
-        <span className="truncate">{source.sourceTitle}</span>
+        <span className='truncate'>{source.sourceTitle}</span>
       </div>
-      <div className="mt-1 text-[0.65rem] text-slate-400 line-clamp-2">{source.snippet}</div>
-      <div className="mt-1.5 inline-block rounded bg-slate-800/60 px-1.5 py-0.5 text-[0.6rem] text-slate-500">
+      <div className='mt-1 text-[0.65rem] text-slate-400 line-clamp-2'>{source.snippet}</div>
+      <div className='mt-1.5 inline-block rounded bg-slate-800/60 px-1.5 py-0.5 text-[0.6rem] text-slate-500'>
         {source.sourceType}
       </div>
     </button>
@@ -100,25 +100,29 @@ interface StepCardProps {
 const StepCard: React.FC<StepCardProps> = ({ step, stepNumber, isActive, onClick }) => {
   return (
     <button
-      type="button"
+      type='button'
       onClick={onClick}
       className={`
         flex-shrink-0 rounded-lg border p-2 text-left transition-all duration-200 w-36
-        ${isActive 
-          ? 'border-cyan-400/60 bg-cyan-500/15 ring-1 ring-cyan-400/50' 
-          : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600/60'}
+        ${
+          isActive
+            ? 'border-cyan-400/60 bg-cyan-500/15 ring-1 ring-cyan-400/50'
+            : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600/60'
+        }
       `}
     >
-      <div className="flex items-center gap-1.5">
-        <span className={`
+      <div className='flex items-center gap-1.5'>
+        <span
+          className={`
           flex h-5 w-5 items-center justify-center rounded-full text-[0.65rem] font-bold
           ${isActive ? 'bg-cyan-400 text-slate-950' : 'bg-slate-700 text-slate-300'}
-        `}>
+        `}
+        >
           {stepNumber}
         </span>
-        <span className="text-xs font-medium text-slate-200 truncate">{step.title}</span>
+        <span className='text-xs font-medium text-slate-200 truncate'>{step.title}</span>
       </div>
-      <p className="mt-1 text-[0.6rem] text-slate-400 line-clamp-2">{step.description}</p>
+      <p className='mt-1 text-[0.6rem] text-slate-400 line-clamp-2'>{step.description}</p>
     </button>
   );
 };
@@ -139,7 +143,7 @@ const SegmentedText: React.FC<SegmentedTextProps> = ({
   onSegmentHover,
 }) => {
   return (
-    <div className="text-sm leading-relaxed text-slate-300 whitespace-pre-wrap">
+    <div className='text-sm leading-relaxed text-slate-300 whitespace-pre-wrap'>
       {segments.map((segment, idx) => {
         const isHighlighted = segment.sourceIds.some((sid) => highlightedSourceIds.includes(sid));
         return (
@@ -221,7 +225,7 @@ export const ExplainPanel: React.FC<ExplainPanelProps> = ({
   return (
     <aside
       className={`
-        tf-explain-panel fixed bottom-4 right-4 z-50 rounded-2xl border border-slate-700/60 
+        tf-explain-panel fixed bottom-4 right-4 z-50 rounded-2xl border border-slate-700/60
         bg-slate-950/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.75)] backdrop-blur-xl
         ${isV2 ? 'w-[32rem] max-w-[calc(100vw-2rem)]' : 'w-96 max-w-[calc(100vw-2rem)]'}
       `}
@@ -366,7 +370,8 @@ export const ExplainPanel: React.FC<ExplainPanelProps> = ({
           {/* Metadata Footer */}
           <div className='flex items-center justify-between text-[0.6rem] text-slate-500'>
             <span>
-              Confidence: {Math.round((state.data.confidence ?? 0) * 100)}% · {state.data.processingTimeMs}ms
+              Confidence: {Math.round((state.data.confidence ?? 0) * 100)}% ·{' '}
+              {state.data.processingTimeMs}ms
             </span>
             <span>ID: {state.data.explanationId?.slice(0, 8) ?? 'n/a'}</span>
           </div>

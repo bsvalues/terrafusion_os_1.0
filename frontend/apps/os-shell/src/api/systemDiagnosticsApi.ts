@@ -126,6 +126,47 @@ export interface BentonRagReadiness {
 // PHASE 19: AI INCIDENT TIMELINE TYPES
 // ═══════════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════════
+// PHASE 26: GUARDRAIL DECISION TYPES
+// ═══════════════════════════════════════════════════════════════
+
+/** Phase 26: Guardrail decision kinds */
+export type GuardrailDecisionKind =
+  | 'None'
+  | 'Allowed'
+  | 'DeniedByPolicy'
+  | 'DeniedUnconfigured'
+  | 'ThrottledByCapacity'
+  | 'SafeModeRecommended'
+  | 'Sanitized'
+  | 'ForceExplainOnValuation';
+
+/** Phase 26: Last guardrail decision for UI display */
+export interface LastGuardrailDecision {
+  /** Whether the request was allowed. */
+  allow: boolean;
+  /** Reason for denial (if allow=false). */
+  denyReason?: string | null;
+  /** Decision kind for categorization. */
+  kind: GuardrailDecisionKind;
+  /** Safe Mode is recommended based on system state. */
+  autoSafeModeRecommended: boolean;
+  /** Request was/should be throttled. */
+  autoThrottle: boolean;
+  /** ExplainGPT is required for this request. */
+  forceExplain: boolean;
+  /** Sanitization was/should be applied. */
+  autoSanitize: boolean;
+  /** Human-readable advisory message. */
+  advisory?: string | null;
+  /** When this decision was made. */
+  decisionTimestampUtc: string;
+  /** Context ID of the evaluated request. */
+  contextId?: string | null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+
 /** Phase 19: Types of AI system events */
 export type SystemGptEventKind =
   | 'Unknown'
@@ -173,6 +214,8 @@ export interface SystemDiagnosticsResponse {
   heraldMessages: HeraldMessage[];
   /** Phase 18: Benton CAMA RAG readiness status */
   bentonRag?: BentonRagReadiness | null;
+  /** Phase 26: Last guardrail decision for this county */
+  lastGuardrailDecision?: LastGuardrailDecision | null;
 }
 
 /** Phase 17: Request to set Safe Mode */

@@ -361,6 +361,9 @@ builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptFederatedOverviewSe
 builder.Services.AddSingleton<TerraFusion.AI.Services.ICountyPolicyService, TerraFusion.AI.Services.InMemoryCountyPolicyService>();
 builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptPolicyEvaluator, TerraFusion.AI.Services.SystemGptPolicyEvaluator>();
 
+// Phase 26: Autonomous Guardrails - deterministic pre-flight checks for GPT requests
+builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptGuardrailService, TerraFusion.AI.Services.SystemGptGuardrailService>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown
