@@ -231,9 +231,9 @@ public class SystemGptAtlasServiceTests
         var configuredNodes = result.Nodes.Where(n => n.Configured).ToList();
         // The fleet drift should be reflected in nodes
         Assert.True(configuredNodes.Any(n =>
-            n.FleetRagDriftRisk == RagFleetDriftRisk.High ||
-            n.FleetRagDriftRisk == RagFleetDriftRisk.Medium ||
-            n.FleetRagDriftRisk == RagFleetDriftRisk.Low),
+            n.FleetRagDriftRisk == "High" ||
+            n.FleetRagDriftRisk == "Medium" ||
+            n.FleetRagDriftRisk == "Low"),
             "Configured nodes should have drift risk set");
     }
 
@@ -280,7 +280,7 @@ public class SystemGptAtlasServiceTests
         foreach (var node in result.Nodes)
         {
             // Without fleet service, drift should default to Low
-            Assert.Equal(RagFleetDriftRisk.Low, node.FleetRagDriftRisk);
+            Assert.Equal("Low", node.FleetRagDriftRisk);
         }
     }
 
@@ -322,7 +322,7 @@ public class SystemGptAtlasServiceTests
         };
 
         _mockFederatedService
-            .Setup(x => x.GetFederatedOverviewAsync())
+            .Setup(x => x.GetOverviewAsync())
             .ReturnsAsync(overview);
     }
 
@@ -349,7 +349,7 @@ public class SystemGptAtlasServiceTests
         };
 
         _mockRagFleetService
-            .Setup(x => x.GetFleetReadinessAsync())
+            .Setup(x => x.GetFleetReadinessAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(fleet);
     }
 
@@ -386,7 +386,7 @@ public class SystemGptAtlasServiceTests
         };
 
         _mockRagFleetService
-            .Setup(x => x.GetFleetReadinessAsync())
+            .Setup(x => x.GetFleetReadinessAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(fleet);
     }
 }

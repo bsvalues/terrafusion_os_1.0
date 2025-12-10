@@ -39,6 +39,8 @@ namespace TerraFusion.API.Controllers
         private readonly ISystemGptGuardrailService? _guardrailService; // Phase 26
         private readonly ISystemGptRagFleetService? _ragFleetService; // Phase 27
         private readonly ISystemGptAtlasService? _atlasService; // Phase 28
+        private readonly ISystemGptAtlasLiveService? _atlasLiveService; // Phase 29
+        private readonly TerraFusion.AI.Infrastructure.IServerSentEventsWriter? _sseWriter; // Phase 29
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
@@ -56,7 +58,9 @@ namespace TerraFusion.API.Controllers
             ISystemGptPolicyEvaluator? policyEvaluator = null, // Phase 24
             ISystemGptGuardrailService? guardrailService = null, // Phase 26
             ISystemGptRagFleetService? ragFleetService = null, // Phase 27
-            ISystemGptAtlasService? atlasService = null) // Phase 28
+            ISystemGptAtlasService? atlasService = null, // Phase 28
+            ISystemGptAtlasLiveService? atlasLiveService = null, // Phase 29
+            TerraFusion.AI.Infrastructure.IServerSentEventsWriter? sseWriter = null) // Phase 29
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
@@ -73,6 +77,8 @@ namespace TerraFusion.API.Controllers
             _guardrailService = guardrailService; // Optional - Phase 26 Autonomous Guardrails
             _ragFleetService = ragFleetService; // Optional - Phase 27 RAG Fleet Readiness
             _atlasService = atlasService; // Optional - Phase 28 Map-Based AI Health Atlas
+            _atlasLiveService = atlasLiveService; // Optional - Phase 29 Live Telemetry
+            _sseWriter = sseWriter; // Optional - Phase 29 SSE Writer
         }
 
         // Phase 26: In-memory storage for last guardrail decision per county (for diagnostics)
@@ -1801,6 +1807,85 @@ namespace TerraFusion.API.Controllers
             {
                 _logger.LogError(ex, "Error fetching SystemGPT Atlas");
                 return StatusCode(500, new { error = "Failed to fetch SystemGPT Atlas" });
+            }
+        }
+
+        #endregion
+
+        #region Phase 29: SystemGPT Atlas Live - Real-Time Telemetry & Alert Engine
+
+        /// <summary>
+        /// Stream live telemetry events via Server-Sent Events (SSE).
+        /// Phase 29: Real-time health updates for map visualization.
+        /// </summary>
+        [HttpGet("system/atlas/live")]
+        [AllowAnonymous] // Read-only streaming - allow for dashboards
+        public async System.Threading.Tasks.Task GetAtlasLiveStream(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Phase 29: Starting Atlas live SSE stream");
+
+            if (_atlasLiveService == null || _sseWriter == null)
+            {
+                _logger.LogWarning("Phase 29: Live service not registered, returning 503");
+                Response.StatusCode = 503;
+                await Response.WriteAsync("Live streaming service not available", cancellationToken);
+                return;
+            }
+
+            try
+            {
+                // Configure SSE headers
+                _sseWriter.ConfigureResponseHeaders(Response);
+
+                // Stream events until client disconnects
+                await foreach (var evt in _atlasLiveService.StreamEventsAsync(cancellationToken))
+                {
+                    await _sseWriter.WriteEventAsync(Response, evt.EventType, evt, cancellationToken);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogDebug("Phase 29: Atlas live stream cancelled (client disconnected)");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in Atlas live stream");
+                // Can't return error response once streaming has started
+            }
+        }
+
+        /// <summary>
+        /// Get a single snapshot of current live data (for polling fallback).
+        /// Phase 29: Polling endpoint for clients that can't use SSE.
+        /// </summary>
+        [HttpGet("system/atlas/live/snapshot")]
+        [AllowAnonymous] // Read-only snapshot - allow for dashboards
+        public async System.Threading.Tasks.Task<ActionResult<SystemGptAtlasLiveEventDto>> GetAtlasLiveSnapshot(
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                _logger.LogInformation("Phase 29: Fetching Atlas live snapshot");
+
+                if (_atlasLiveService == null)
+                {
+                    _logger.LogWarning("Phase 29: Live service not registered, returning stub response");
+                    return Ok(new SystemGptAtlasLiveEventDto
+                    {
+                        Version = "1.0",
+                        EventType = "atlas_county_batch",
+                        Timestamp = DateTimeOffset.UtcNow,
+                        Counties = new List<SystemGptAtlasLiveCountyEventDto>()
+                    });
+                }
+
+                var result = await _atlasLiveService.GetCurrentSnapshotAsync(cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching Atlas live snapshot");
+                return StatusCode(500, new { error = "Failed to fetch Atlas live snapshot" });
             }
         }
 

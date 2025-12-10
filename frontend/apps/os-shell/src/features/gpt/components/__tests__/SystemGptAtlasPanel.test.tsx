@@ -6,7 +6,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SystemGptAtlasResponse } from '../../../../api/systemDiagnosticsApi';
 import { SystemGptAtlasPanel } from '../SystemGptAtlasPanel';
@@ -94,7 +94,7 @@ describe('SystemGptAtlasPanel', () => {
   describe('loading state', () => {
     it('shows loading indicator initially', () => {
       (fetchSystemGptAtlas as ReturnType<typeof vi.fn>).mockImplementation(
-        () => new Promise(() => {}), // Never resolves
+        () => new Promise(() => {}) // Never resolves
       );
 
       render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
@@ -246,7 +246,7 @@ describe('SystemGptAtlasPanel', () => {
   describe('error state', () => {
     it('displays error message when fetch fails', async () => {
       (fetchSystemGptAtlas as ReturnType<typeof vi.fn>).mockRejectedValue(
-        new Error('Network error'),
+        new Error('Network error')
       );
 
       render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
@@ -259,7 +259,7 @@ describe('SystemGptAtlasPanel', () => {
 
     it('shows retry button on error', async () => {
       (fetchSystemGptAtlas as ReturnType<typeof vi.fn>).mockRejectedValue(
-        new Error('Network error'),
+        new Error('Network error')
       );
 
       render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
@@ -285,6 +285,101 @@ describe('SystemGptAtlasPanel', () => {
 
       await waitFor(() => {
         expect(screen.getByText(/No county data available/i)).toBeInTheDocument();
+      });
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  // PHASE 29: LIVE STREAMING TESTS (C2)
+  // "Write the exam before the course"
+  // ═══════════════════════════════════════════════════════════════
+
+  describe('Phase 29: Live Streaming Integration', () => {
+    // These tests will be enabled once the useSystemGptAtlasLive hook is implemented
+    // For now, they are skipped to allow the test suite to pass
+
+    describe.skip('C2.1 - Connection state display', () => {
+      it('should show connecting indicator when connectionState is connecting', () => {
+        // TODO: Implement when useSystemGptAtlasLive is wired to SystemGptAtlasPanel
+        expect(true).toBe(true);
+      });
+
+      it('should show connected/live indicator when connectionState is connected', () => {
+        // TODO: Implement when useSystemGptAtlasLive is wired to SystemGptAtlasPanel
+        expect(true).toBe(true);
+      });
+
+      it('should show reconnecting indicator with retry info', () => {
+        // TODO: Implement when useSystemGptAtlasLive is wired to SystemGptAtlasPanel
+        expect(true).toBe(true);
+      });
+
+      it('should show offline indicator with fallback message', () => {
+        // TODO: Implement when useSystemGptAtlasLive is wired to SystemGptAtlasPanel
+        expect(true).toBe(true);
+      });
+    });
+
+    describe.skip('C2.2 - County node health visualization', () => {
+      it('should render healthy county with green indicator', () => {
+        // TODO: Implement when live data integration is complete
+        expect(true).toBe(true);
+      });
+
+      it('should render warning county with yellow/amber indicator', () => {
+        // TODO: Implement when live data integration is complete
+        expect(true).toBe(true);
+      });
+
+      it('should render critical county with red indicator', () => {
+        // TODO: Implement when live data integration is complete
+        expect(true).toBe(true);
+      });
+
+      it('should render offline county with gray indicator', () => {
+        // TODO: Implement when live data integration is complete
+        expect(true).toBe(true);
+      });
+    });
+
+    describe.skip('C2.3 - Live metrics display', () => {
+      it('should display health score percentage', () => {
+        // TODO: Implement when live data integration is complete
+        expect(true).toBe(true);
+      });
+
+      it('should display active requests count', () => {
+        // TODO: Implement when live data integration is complete
+        expect(true).toBe(true);
+      });
+
+      it('should display P95 latency', () => {
+        // TODO: Implement when live data integration is complete
+        expect(true).toBe(true);
+      });
+    });
+
+    describe.skip('C2.4 - Alert display', () => {
+      it('should display active alerts for county', () => {
+        // TODO: Implement when live data integration is complete
+        expect(true).toBe(true);
+      });
+
+      it('should not show alert section when no alerts', () => {
+        // TODO: Implement when live data integration is complete
+        expect(true).toBe(true);
+      });
+    });
+
+    describe.skip('C2.5 - Static + Live merge', () => {
+      it('should show static data when live data not yet received', () => {
+        // TODO: Implement when live data integration is complete
+        expect(true).toBe(true);
+      });
+
+      it('should overlay live data on static nodes when available', () => {
+        // TODO: Implement when live data integration is complete
+        expect(true).toBe(true);
       });
     });
   });

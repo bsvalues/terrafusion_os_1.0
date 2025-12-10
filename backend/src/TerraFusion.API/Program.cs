@@ -370,6 +370,25 @@ builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptRagFleetService,
 // Phase 28: SystemGPT Atlas - Map-based AI health visualization with county nodes
 builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptAtlasService, TerraFusion.AI.Services.SystemGptAtlasService>();
 
+// Phase 29: SystemGPT Atlas Live - Real-Time Telemetry & Alert Engine (SSE streaming)
+builder.Services.Configure<TerraFusion.AI.Models.SystemGptAtlasThresholds>(options =>
+{
+    options.WarningHealthScore = 0.80;
+    options.CriticalHealthScore = 0.60;
+    options.WarningErrorRatePercent = 1.0;
+    options.CriticalErrorRatePercent = 5.0;
+    options.WarningP95Ms = 300;
+    options.CriticalP95Ms = 1000;
+});
+builder.Services.Configure<TerraFusion.AI.Models.SystemGptAtlasLiveOptions>(options =>
+{
+    options.IntervalMs = 3000; // 3-second updates
+});
+builder.Services.AddSingleton<TerraFusion.AI.Services.SystemGptAtlasClassifier>();
+builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptAtlasTelemetrySource, TerraFusion.AI.Services.SystemGptAtlasTelemetrySource>();
+builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptAtlasLiveService, TerraFusion.AI.Services.SystemGptAtlasLiveService>();
+builder.Services.AddSingleton<TerraFusion.AI.Infrastructure.IServerSentEventsWriter, TerraFusion.AI.Infrastructure.ServerSentEventsWriter>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown
