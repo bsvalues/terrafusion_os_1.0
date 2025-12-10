@@ -1,11 +1,25 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // 📊 TerraFusion SystemGPT Diagnostic Models
 // Phase 15: SystemGPT Console - AI Control Center for County Tech Leads
+// Phase 17: Safe Mode & Kill Switch
 // Government. Transcended.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 namespace TerraFusion.AI.Models
 {
+    /// <summary>
+    /// SystemGPT operational mode.
+    /// Phase 17: Safe Mode allows county tech leads to constrain AI behavior during incidents.
+    /// </summary>
+    public enum SystemGptMode
+    {
+        /// <summary>Normal operation - all AI features enabled.</summary>
+        Normal = 0,
+
+        /// <summary>Safe Mode - AI constrained, mutating operations blocked.</summary>
+        SafeMode = 1
+    }
+
     /// <summary>
     /// Response model for the SystemGPT Diagnostics endpoint.
     /// Provides a consolidated view of the TerraFusion AI subsystem health.
@@ -16,6 +30,26 @@ namespace TerraFusion.AI.Models
         /// Overall system health status.
         /// </summary>
         public SystemHealthStatus OverallHealth { get; set; } = SystemHealthStatus.Unknown;
+
+        /// <summary>
+        /// Current SystemGPT operational mode (Phase 17).
+        /// </summary>
+        public SystemGptMode Mode { get; set; } = SystemGptMode.Normal;
+
+        /// <summary>
+        /// Human-readable reason if Safe Mode is active (Phase 17).
+        /// </summary>
+        public string? ModeReason { get; set; }
+
+        /// <summary>
+        /// Who/what changed the mode last (Phase 17).
+        /// </summary>
+        public string? ModeChangedBy { get; set; }
+
+        /// <summary>
+        /// When the mode was last changed (Phase 17).
+        /// </summary>
+        public DateTime? ModeChangedAt { get; set; }
 
         /// <summary>
         /// Timestamp of this diagnostics snapshot.
@@ -258,5 +292,61 @@ namespace TerraFusion.AI.Models
         /// Source component.
         /// </summary>
         public string Source { get; set; } = string.Empty;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // Phase 17: Safe Mode Request/Response DTOs
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Request to set SystemGPT operational mode (Phase 17).
+    /// </summary>
+    public class SetSystemGptModeRequest
+    {
+        /// <summary>
+        /// True to enable Safe Mode, false to return to Normal.
+        /// </summary>
+        public bool Enabled { get; set; }
+
+        /// <summary>
+        /// Required when enabling Safe Mode - explains why it's being activated.
+        /// </summary>
+        public string? Reason { get; set; }
+    }
+
+    /// <summary>
+    /// Response after setting SystemGPT mode (Phase 17).
+    /// </summary>
+    public class SetSystemGptModeResponse
+    {
+        /// <summary>
+        /// Whether the operation succeeded.
+        /// </summary>
+        public bool Success { get; set; }
+
+        /// <summary>
+        /// Current mode after the operation.
+        /// </summary>
+        public SystemGptMode Mode { get; set; }
+
+        /// <summary>
+        /// Mode reason (if Safe Mode is active).
+        /// </summary>
+        public string? ModeReason { get; set; }
+
+        /// <summary>
+        /// Who changed the mode.
+        /// </summary>
+        public string? ChangedBy { get; set; }
+
+        /// <summary>
+        /// When the mode was changed.
+        /// </summary>
+        public DateTime ChangedAt { get; set; }
+
+        /// <summary>
+        /// Status message.
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
     }
 }

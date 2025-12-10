@@ -170,6 +170,21 @@ test-ai-fast: ## ⚡ Fast AI test slice (GPT/RAG/Explain, no Legacy)
 	cd backend && dotnet test src/TerraFusion.AI/TerraFusion.AI.csproj --nologo --filter "(FullyQualifiedName~GPT|FullyQualifiedName~RAG|FullyQualifiedName~Explain)&Category!=Legacy"
 	@echo "✅ Fast AI tests complete"
 
+test-ai-unit: ## ✅ AI unit tests only (safe anytime, no server needed)
+	@echo "╔══════════════════════════════════════════════════════════════╗"
+	@echo "║  ✅ AI Unit Tests - No server required                       ║"
+	@echo "╚══════════════════════════════════════════════════════════════╝"
+	cd backend && dotnet test src/TerraFusion.AI/TerraFusion.AI.csproj --nologo --filter "Category!=Legacy"
+	@echo "✅ AI unit tests complete (safe anytime)"
+
+test-ai-all: ## 🧪 All AI tests including Legacy/Integration (requires running server)
+	@echo "╔══════════════════════════════════════════════════════════════╗"
+	@echo "║  🧪 All AI Tests - Requires full stack running              ║"
+	@echo "║  ⚠️  Make sure to run 'make dev-backend' first!              ║"
+	@echo "╚══════════════════════════════════════════════════════════════╝"
+	cd backend && dotnet test src/TerraFusion.AI/TerraFusion.AI.csproj --nologo
+	@echo "✅ All AI tests complete"
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # ✨ RADIANT CONSTELLATION - DEVELOPER EXPERIENCE (Phase 12)
 # ═══════════════════════════════════════════════════════════════════════════════

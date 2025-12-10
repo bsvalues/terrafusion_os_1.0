@@ -2149,4 +2149,159 @@ Decision Timeline: 30 days from hearing",
       Assert.StartsWith("terrafusion_ai_health_snapshot_", filename);
     }
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // Phase 17: SystemGPT Safe Mode Tests
+  // ═══════════════════════════════════════════════════════════════════════════════
+
+  /// <summary>
+  /// Tests for the SystemGptModeService - the in-memory Safe Mode state manager.
+  /// </summary>
+  public class SystemGptModeServiceTests
+  {
+    [Fact]
+    public void DefaultMode_IsNormal()
+    {
+      // Arrange
+      var logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptModeService>();
+      var service = new TerraFusion.AI.Services.SystemGptModeService(logger);
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.SystemGptMode.Normal, service.CurrentMode);
+      Assert.Null(service.CurrentReason);
+      Assert.False(service.IsSafeMode);
+    }
+
+    [Fact]
+    public void SetMode_ToSafeMode_UpdatesAllProperties()
+    {
+      // Arrange
+      var logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptModeService>();
+      var service = new TerraFusion.AI.Services.SystemGptModeService(logger);
+
+      // Act
+      service.SetMode(TerraFusion.AI.Models.SystemGptMode.SafeMode, "Test incident XYZ", "test-user");
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.SystemGptMode.SafeMode, service.CurrentMode);
+      Assert.Equal("Test incident XYZ", service.CurrentReason);
+      Assert.Equal("test-user", service.ChangedBy);
+      Assert.NotNull(service.ChangedAt);
+      Assert.True(service.IsSafeMode);
+    }
+
+    [Fact]
+    public void SetMode_BackToNormal_ClearsReason()
+    {
+      // Arrange
+      var logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptModeService>();
+      var service = new TerraFusion.AI.Services.SystemGptModeService(logger);
+      service.SetMode(TerraFusion.AI.Models.SystemGptMode.SafeMode, "Initial reason", "user1");
+
+      // Act
+      service.SetMode(TerraFusion.AI.Models.SystemGptMode.Normal, null, "user2");
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.SystemGptMode.Normal, service.CurrentMode);
+      Assert.Null(service.CurrentReason);
+      Assert.Equal("user2", service.ChangedBy);
+      Assert.False(service.IsSafeMode);
+    }
+
+    [Fact]
+    public void IsSafeMode_ReturnsTrueOnlyInSafeMode()
+    {
+      // Arrange
+      var logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptModeService>();
+      var service = new TerraFusion.AI.Services.SystemGptModeService(logger);
+
+      // Assert - initially false
+      Assert.False(service.IsSafeMode);
+
+      // Act & Assert - true after enabling
+      service.SetMode(TerraFusion.AI.Models.SystemGptMode.SafeMode, "Testing", "tester");
+      Assert.True(service.IsSafeMode);
+
+      // Act & Assert - false after disabling
+      service.SetMode(TerraFusion.AI.Models.SystemGptMode.Normal, null, "tester");
+      Assert.False(service.IsSafeMode);
+    }
+  }
+
+  /// <summary>
+  /// Tests for Safe Mode DTOs.
+  /// </summary>
+  public class SafeModeDtoTests
+  {
+    [Fact]
+    public void SetSystemGptModeRequest_SerializesToJson_Correctly()
+    {
+      // Arrange
+      var request = new TerraFusion.AI.Models.SetSystemGptModeRequest
+      {
+        Enabled = true,
+        Reason = "Investigating anomaly"
+      };
+
+      // Act
+      var options = new System.Text.Json.JsonSerializerOptions
+      {
+        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+      };
+      var json = System.Text.Json.JsonSerializer.Serialize(request, options);
+
+      // Assert
+      Assert.Contains("\"enabled\":true", json);
+      Assert.Contains("\"reason\":\"Investigating anomaly\"", json);
+    }
+
+    [Fact]
+    public void SetSystemGptModeResponse_IncludesAllFields()
+    {
+      // Arrange
+      var response = new TerraFusion.AI.Models.SetSystemGptModeResponse
+      {
+        Success = true,
+        Mode = TerraFusion.AI.Models.SystemGptMode.SafeMode,
+        ModeReason = "Test reason",
+        ChangedBy = "admin",
+        ChangedAt = DateTime.UtcNow,
+        Message = "Safe Mode enabled"
+      };
+
+      // Assert
+      Assert.True(response.Success);
+      Assert.Equal(TerraFusion.AI.Models.SystemGptMode.SafeMode, response.Mode);
+      Assert.Equal("Test reason", response.ModeReason);
+      Assert.Equal("admin", response.ChangedBy);
+      Assert.Equal("Safe Mode enabled", response.Message);
+    }
+
+    [Fact]
+    public void SystemGptMode_EnumValues_AreCorrect()
+    {
+      // Assert
+      Assert.Equal(0, (int)TerraFusion.AI.Models.SystemGptMode.Normal);
+      Assert.Equal(1, (int)TerraFusion.AI.Models.SystemGptMode.SafeMode);
+    }
+
+    [Fact]
+    public void DiagnosticsResponse_IncludesModeFields()
+    {
+      // Arrange
+      var diagnostics = new TerraFusion.AI.Models.SystemDiagnosticsResponse
+      {
+        Mode = TerraFusion.AI.Models.SystemGptMode.SafeMode,
+        ModeReason = "Testing Phase 17",
+        ModeChangedBy = "test-admin",
+        ModeChangedAt = DateTime.UtcNow
+      };
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.SystemGptMode.SafeMode, diagnostics.Mode);
+      Assert.Equal("Testing Phase 17", diagnostics.ModeReason);
+      Assert.Equal("test-admin", diagnostics.ModeChangedBy);
+      Assert.NotNull(diagnostics.ModeChangedAt);
+    }
+  }
 }

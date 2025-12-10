@@ -2,6 +2,7 @@
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION SYSTEMGPT CONSOLE VIEW
  * Phase 15: AI Control Center for County Tech Leads
+ * Phase 17: Safe Mode & Kill Switch
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -9,7 +10,9 @@
 import React, { useEffect, useState } from 'react';
 import { explainContext } from '../../api/explainApi';
 import {
+  downloadHealthSnapshot,
   getSystemDiagnostics,
+  setSystemGptMode,
   SystemDiagnosticsResponse,
   SystemHealthStatus,
   triggerRagIndex,
@@ -115,6 +118,66 @@ export const SystemGptConsoleView: React.FC = () => {
   };
 
   /**
+   * Safe Mode Toggle - Phase 17
+   */
+  const [safeModeLoading, setSafeModeLoading] = useState(false);
+  const [safeModeError, setSafeModeError] = useState<string | null>(null);
+  const [showSafeModeDialog, setShowSafeModeDialog] = useState(false);
+  const [safeModeReason, setSafeModeReason] = useState('');
+
+  const handleToggleSafeMode = async () => {
+    const isCurrentlySafe = diagnostics?.mode === 'SafeMode';
+
+    if (!isCurrentlySafe) {
+      // Show dialog to get reason before enabling Safe Mode
+      setShowSafeModeDialog(true);
+      return;
+    }
+
+    // Disabling Safe Mode - no reason needed
+    setSafeModeLoading(true);
+    setSafeModeError(null);
+    try {
+      await setSystemGptMode({ enabled: false });
+      // Reload diagnostics to reflect new mode
+      const data = await getSystemDiagnostics();
+      setDiagnostics(data);
+    } catch (err) {
+      setSafeModeError(err instanceof Error ? err.message : 'Failed to disable Safe Mode');
+    } finally {
+      setSafeModeLoading(false);
+    }
+  };
+
+  const handleConfirmSafeMode = async () => {
+    if (!safeModeReason.trim()) {
+      setSafeModeError('Please provide a reason for enabling Safe Mode');
+      return;
+    }
+
+    setSafeModeLoading(true);
+    setSafeModeError(null);
+    try {
+      await setSystemGptMode({ enabled: true, reason: safeModeReason.trim() });
+      // Reload diagnostics to reflect new mode
+      const data = await getSystemDiagnostics();
+      setDiagnostics(data);
+      setShowSafeModeDialog(false);
+      setSafeModeReason('');
+    } catch (err) {
+      setSafeModeError(err instanceof Error ? err.message : 'Failed to enable Safe Mode');
+    } finally {
+      setSafeModeLoading(false);
+    }
+  };
+
+  const handleCancelSafeMode = () => {
+    setShowSafeModeDialog(false);
+    setSafeModeReason('');
+    setSafeModeError(null);
+  };
+
+  /**
    * Get health status color classes
    */
   const getHealthColor = (status: SystemHealthStatus) => {
@@ -177,6 +240,47 @@ export const SystemGptConsoleView: React.FC = () => {
               <span>{diagnostics.overallHealth}</span>
             </div>
           )}
+
+          {/* Mode Badge - Phase 17 */}
+          {diagnostics && (
+            <div
+              className={`flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium ${
+                diagnostics.mode === 'SafeMode'
+                  ? 'border-rose-500/60 bg-rose-500/10 text-rose-300'
+                  : 'border-slate-600/60 bg-slate-700/30 text-slate-400'
+              }`}
+              title={
+                diagnostics.mode === 'SafeMode'
+                  ? `Safe Mode active: ${diagnostics.modeReason || 'No reason provided'}`
+                  : 'Normal operation'
+              }
+            >
+              <span>{diagnostics.mode === 'SafeMode' ? '🛑' : '✨'}</span>
+              <span>Mode: {diagnostics.mode === 'SafeMode' ? 'Safe' : 'Normal'}</span>
+            </div>
+          )}
+
+          {/* Safe Mode Toggle Button - Phase 17 */}
+          <button
+            onClick={() => void handleToggleSafeMode()}
+            disabled={safeModeLoading || !diagnostics}
+            className={`rounded-full border px-3 py-1 text-xs font-medium transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
+              diagnostics?.mode === 'SafeMode'
+                ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 hover:shadow-[0_0_12px_rgba(16,185,129,0.4)]'
+                : 'border-rose-500/50 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 hover:shadow-[0_0_12px_rgba(244,63,94,0.4)]'
+            }`}
+            title={
+              diagnostics?.mode === 'SafeMode'
+                ? 'Disable Safe Mode and return to normal operation'
+                : 'Enable Safe Mode to restrict AI operations'
+            }
+          >
+            {safeModeLoading
+              ? '⏳ Updating...'
+              : diagnostics?.mode === 'SafeMode'
+                ? '✅ Disable Safe Mode'
+                : '🛑 Enable Safe Mode'}
+          </button>
 
           {/* Download Snapshot button - Phase 16 */}
           <button
@@ -454,11 +558,73 @@ export const SystemGptConsoleView: React.FC = () => {
 
       {/* Footer */}
       <div className='mt-4 flex items-center justify-between border-t border-slate-800/60 pt-3 text-[0.65rem] text-slate-500'>
-        <span>Phase 15 · SystemGPT Console · TerraFusion OS</span>
+        <span>Phase 15/17 · SystemGPT Console · TerraFusion OS</span>
         {diagnostics && (
           <span>Last updated: {new Date(diagnostics.timestamp).toLocaleTimeString()}</span>
         )}
       </div>
+
+      {/* Safe Mode Confirmation Dialog - Phase 17 */}
+      {showSafeModeDialog && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm'>
+          <div className='w-full max-w-md rounded-2xl border border-rose-800/60 bg-gradient-to-br from-slate-950 via-slate-900 to-rose-950/30 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.8)]'>
+            <div className='mb-4 flex items-center gap-3'>
+              <div className='flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/20 text-2xl'>
+                🛑
+              </div>
+              <div>
+                <h3 className='text-lg font-semibold text-rose-300'>Enable Safe Mode</h3>
+                <p className='text-xs text-slate-400'>
+                  This will restrict AI operations for all users
+                </p>
+              </div>
+            </div>
+
+            <div className='mb-4'>
+              <label className='mb-2 block text-xs font-medium text-slate-300'>
+                Reason for Safe Mode <span className='text-rose-400'>*</span>
+              </label>
+              <textarea
+                value={safeModeReason}
+                onChange={(e) => setSafeModeReason(e.target.value)}
+                placeholder='e.g., "Investigating unexpected AI responses on property valuations"'
+                className='w-full rounded-lg border border-slate-700 bg-slate-800/50 p-3 text-sm text-slate-200 placeholder-slate-500 focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500/50'
+                rows={3}
+                autoFocus
+              />
+              {safeModeError && <p className='mt-2 text-xs text-rose-400'>{safeModeError}</p>}
+            </div>
+
+            <div className='mb-4 rounded-lg border border-amber-700/50 bg-amber-500/10 p-3'>
+              <p className='text-xs text-amber-300'>
+                <strong>⚠️ Warning:</strong> While Safe Mode is active:
+              </p>
+              <ul className='mt-2 list-inside list-disc text-xs text-amber-200/80'>
+                <li>New AI conversations will be blocked</li>
+                <li>RAG indexing operations will be disabled</li>
+                <li>Users will see Safe Mode notices</li>
+              </ul>
+            </div>
+
+            <div className='flex justify-end gap-3'>
+              <button
+                onClick={handleCancelSafeMode}
+                disabled={safeModeLoading}
+                className='rounded-lg border border-slate-600 bg-slate-800 px-4 py-2 text-sm text-slate-300 transition-all hover:bg-slate-700 disabled:opacity-50'
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => void handleConfirmSafeMode()}
+                disabled={safeModeLoading || !safeModeReason.trim()}
+                className='rounded-lg border border-rose-600 bg-rose-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-50'
+              >
+                {safeModeLoading ? '⏳ Enabling...' : '🛑 Enable Safe Mode'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ExplainPanel overlay */}
       <ExplainPanel state={explainState} onClose={handleCloseExplain} />

@@ -2,6 +2,7 @@
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION SYSTEM DIAGNOSTICS API CLIENT
  * Phase 15: SystemGPT Console - AI Control Center
+ * Phase 17: Safe Mode & Kill Switch
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -14,6 +15,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 // ═══════════════════════════════════════════════════════════════
 
 export type SystemHealthStatus = 'Unknown' | 'Healthy' | 'Degraded' | 'Unhealthy';
+
+/** Phase 17: SystemGPT operational mode */
+export type SystemGptMode = 'Normal' | 'SafeMode';
 
 export interface GptConfigSummary {
   key: string;
@@ -67,6 +71,14 @@ export interface HeraldMessage {
 
 export interface SystemDiagnosticsResponse {
   overallHealth: SystemHealthStatus;
+  /** Phase 17: Current operational mode */
+  mode: SystemGptMode;
+  /** Phase 17: Reason for Safe Mode (if active) */
+  modeReason?: string | null;
+  /** Phase 17: Who changed the mode */
+  modeChangedBy?: string | null;
+  /** Phase 17: When the mode was changed */
+  modeChangedAt?: string | null;
   timestamp: string;
   gptConfigs: GptConfigSummary[];
   embeddingStatus: EmbeddingServiceStatus;
@@ -74,6 +86,22 @@ export interface SystemDiagnosticsResponse {
   explainGptStatus: ServiceStatus;
   statistics: UsageStatistics;
   heraldMessages: HeraldMessage[];
+}
+
+/** Phase 17: Request to set Safe Mode */
+export interface SetSystemGptModeRequest {
+  enabled: boolean;
+  reason?: string;
+}
+
+/** Phase 17: Response after setting mode */
+export interface SetSystemGptModeResponse {
+  success: boolean;
+  mode: SystemGptMode;
+  modeReason?: string | null;
+  changedBy?: string | null;
+  changedAt: string;
+  message: string;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -165,4 +193,46 @@ export async function downloadHealthSnapshot(): Promise<void> {
   link.click();
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
+}
+
+/**
+ * Set SystemGPT Safe Mode.
+ * Phase 17: Kill Switch - allows county tech leads to constrain AI behavior during incidents.
+ */
+export async function setSystemGptMode(
+  payload: SetSystemGptModeRequest
+): Promise<SetSystemGptModeResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/gpt/system/safe-mode`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(errorData.error || `Failed to set SystemGPT mode (${response.status})`);
+  }
+
+  return (await response.json()) as SetSystemGptModeResponse;
+}
+
+/**
+ * Get current SystemGPT Safe Mode status.
+ * Phase 17: Quick check for mode status without full diagnostics.
+ */
+export async function getSystemGptModeStatus(): Promise<SetSystemGptModeResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/gpt/system/safe-mode`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to get SystemGPT mode status (${response.status})`);
+  }
+
+  return (await response.json()) as SetSystemGptModeResponse;
 }

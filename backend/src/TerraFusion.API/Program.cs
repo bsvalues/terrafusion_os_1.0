@@ -342,6 +342,9 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGService, TerraFusion.AI
 // Phase 15.4: SystemGPT Health Evaluator for Herald threshold-based alerts
 builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptHealthEvaluator, TerraFusion.AI.Services.SystemGptHealthEvaluator>();
 
+// Phase 17: SystemGPT Safe Mode Service for kill switch functionality
+builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptModeService, TerraFusion.AI.Services.SystemGptModeService>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown

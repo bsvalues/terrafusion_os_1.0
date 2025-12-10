@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TerraFusion.AI.Entities;
 using TerraFusion.AI.Interfaces;
+using TerraFusion.AI.Services;
 using TerraFusion.Core.Entities;
 
 namespace TerraFusion.API.Controllers
@@ -26,7 +27,8 @@ namespace TerraFusion.API.Controllers
         private readonly IGPTConfigurationService _configService;
         private readonly IGPTOrchestrationService _orchestrationService;
         private readonly IRAGService _ragService;
-        private readonly TerraFusion.AI.Services.ISystemGptHealthEvaluator? _healthEvaluator;
+        private readonly ISystemGptHealthEvaluator? _healthEvaluator;
+        private readonly ISystemGptModeService? _modeService;
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
@@ -34,13 +36,15 @@ namespace TerraFusion.API.Controllers
             IGPTOrchestrationService orchestrationService,
             IRAGService ragService,
             ILogger<GPTController> logger,
-            TerraFusion.AI.Services.ISystemGptHealthEvaluator? healthEvaluator = null)
+            ISystemGptHealthEvaluator? healthEvaluator = null,
+            ISystemGptModeService? modeService = null)
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
             _ragService = ragService ?? throw new ArgumentNullException(nameof(ragService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _healthEvaluator = healthEvaluator; // Optional - graceful degradation if not registered
+            _modeService = modeService; // Optional - Phase 17 Safe Mode
         }
 
         #region GPT Configuration Management
@@ -334,6 +338,27 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
+                // Phase 17: Safe Mode check - block new messages when in Safe Mode
+                if (_modeService?.IsSafeMode == true)
+                {
+                    _logger.LogWarning("SendMessage blocked: SystemGPT is in Safe Mode. Reason: {Reason}",
+                        _modeService.CurrentReason);
+
+                    // Return a safe mode message instead of processing
+                    var safeModeMessage = new GPTMessage
+                    {
+                        Id = 0,
+                        ConversationId = conversationId,
+                        Role = "assistant",
+                        Content = $"🛑 **SystemGPT is currently in Safe Mode**\n\n" +
+                                  $"AI operations are temporarily restricted. Reason: {_modeService.CurrentReason ?? "No reason provided"}\n\n" +
+                                  $"Please contact your system administrator or wait until Safe Mode is disabled.",
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    return Ok(safeModeMessage);
+                }
+
                 var userId = GetUserId();
                 var countyId = GetCountyId();
 
@@ -564,6 +589,20 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
+                // Phase 17: Safe Mode check - block RAG indexing when in Safe Mode
+                if (_modeService?.IsSafeMode == true)
+                {
+                    _logger.LogWarning("RAG indexing blocked: SystemGPT is in Safe Mode. Dataset: {DatasetId}, Reason: {Reason}",
+                        datasetId, _modeService.CurrentReason);
+
+                    return BadRequest(new RAGIngestionResponse
+                    {
+                        DatasetId = datasetId,
+                        Success = false,
+                        Error = $"🛑 SystemGPT is in Safe Mode. RAG operations are blocked. Reason: {_modeService.CurrentReason}"
+                    });
+                }
+
                 _logger.LogInformation("RAG ingestion requested for dataset: {DatasetId}", datasetId);
 
                 // Map config dataset IDs to internal dataset IDs
@@ -786,7 +825,12 @@ namespace TerraFusion.API.Controllers
                 var diagnostics = new TerraFusion.AI.Models.SystemDiagnosticsResponse
                 {
                     Timestamp = DateTime.UtcNow,
-                    OverallHealth = TerraFusion.AI.Models.SystemHealthStatus.Healthy
+                    OverallHealth = TerraFusion.AI.Models.SystemHealthStatus.Healthy,
+                    // Phase 17: Include Safe Mode status
+                    Mode = _modeService?.CurrentMode ?? TerraFusion.AI.Models.SystemGptMode.Normal,
+                    ModeReason = _modeService?.CurrentReason,
+                    ModeChangedBy = _modeService?.ChangedBy,
+                    ModeChangedAt = _modeService?.ChangedAt
                 };
 
                 // Gather GPT configurations
@@ -946,6 +990,104 @@ namespace TerraFusion.API.Controllers
             {
                 _logger.LogError(ex, "Error generating health snapshot download");
                 return StatusCode(500, new { error = "Failed to generate health snapshot" });
+            }
+        }
+
+        /// <summary>
+        /// Set SystemGPT Safe Mode.
+        /// Phase 17: Kill Switch - allows county tech leads to constrain AI behavior during incidents.
+        /// </summary>
+        [HttpPost("system/safe-mode")]
+        [AllowAnonymous] // Allow Safe Mode control without auth for emergency response
+        public ActionResult<TerraFusion.AI.Models.SetSystemGptModeResponse> SetSafeMode(
+            [FromBody] TerraFusion.AI.Models.SetSystemGptModeRequest request)
+        {
+            try
+            {
+                if (_modeService == null)
+                {
+                    return StatusCode(503, new { error = "Safe Mode service not available" });
+                }
+
+                // Validate: reason is required when enabling Safe Mode
+                if (request.Enabled && string.IsNullOrWhiteSpace(request.Reason))
+                {
+                    return BadRequest(new { error = "Reason is required when enabling Safe Mode" });
+                }
+
+                // Get user identity or use 'system' for anonymous
+                var changedBy = User?.Identity?.Name ?? "system";
+
+                var targetMode = request.Enabled
+                    ? TerraFusion.AI.Models.SystemGptMode.SafeMode
+                    : TerraFusion.AI.Models.SystemGptMode.Normal;
+
+                var previousMode = _modeService.CurrentMode;
+                _modeService.SetMode(targetMode, request.Reason, changedBy);
+
+                // Log Herald entry for audit trail
+                var heraldLevel = request.Enabled ? "Warning" : "Info";
+                var heraldMessage = request.Enabled
+                    ? $"🛑 SystemGPT SAFE MODE ENABLED by {changedBy}: {request.Reason}"
+                    : $"✅ SystemGPT SAFE MODE DISABLED by {changedBy}";
+
+                _logger.LogWarning("Phase 17 Safe Mode: {Message}", heraldMessage);
+
+                var response = new TerraFusion.AI.Models.SetSystemGptModeResponse
+                {
+                    Success = true,
+                    Mode = _modeService.CurrentMode,
+                    ModeReason = _modeService.CurrentReason,
+                    ChangedBy = changedBy,
+                    ChangedAt = _modeService.ChangedAt ?? DateTime.UtcNow,
+                    Message = heraldMessage
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error setting Safe Mode");
+                return StatusCode(500, new { error = "Failed to set Safe Mode" });
+            }
+        }
+
+        /// <summary>
+        /// Get current SystemGPT Safe Mode status.
+        /// Phase 17: Quick check endpoint for mode status.
+        /// </summary>
+        [HttpGet("system/safe-mode")]
+        [AllowAnonymous]
+        public ActionResult<TerraFusion.AI.Models.SetSystemGptModeResponse> GetSafeModeStatus()
+        {
+            try
+            {
+                if (_modeService == null)
+                {
+                    return Ok(new TerraFusion.AI.Models.SetSystemGptModeResponse
+                    {
+                        Success = true,
+                        Mode = TerraFusion.AI.Models.SystemGptMode.Normal,
+                        Message = "Safe Mode service not registered - default Normal mode"
+                    });
+                }
+
+                return Ok(new TerraFusion.AI.Models.SetSystemGptModeResponse
+                {
+                    Success = true,
+                    Mode = _modeService.CurrentMode,
+                    ModeReason = _modeService.CurrentReason,
+                    ChangedBy = _modeService.ChangedBy,
+                    ChangedAt = _modeService.ChangedAt ?? DateTime.UtcNow,
+                    Message = _modeService.IsSafeMode
+                        ? $"Safe Mode active: {_modeService.CurrentReason}"
+                        : "Normal operation"
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting Safe Mode status");
+                return StatusCode(500, new { error = "Failed to get Safe Mode status" });
             }
         }
 
