@@ -111,4 +111,157 @@ namespace TerraFusion.AI.Models
         /// </summary>
         public string Target { get; set; } = string.Empty;
     }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // Phase 25: ExplainGPT v2 - Source Highlighting & Trace Carousel
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Phase 25: Source attribution for an explanation.
+    /// Links a specific source document/trace entry to the explanation.
+    /// </summary>
+    public sealed class ExplainSourceAttributionDto
+    {
+        /// <summary>
+        /// Unique identifier for this source (e.g., RAG doc id, trace entry id).
+        /// </summary>
+        public string SourceId { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Human-readable title for the source (e.g., "Parcel 123 Summary").
+        /// </summary>
+        public string SourceTitle { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Type of source: "rag", "note", "external", "cama", "policy".
+        /// </summary>
+        public string SourceType { get; init; } = "rag";
+
+        /// <summary>
+        /// Short text excerpt from the source (typically first 200 chars).
+        /// </summary>
+        public string? Snippet { get; init; }
+
+        /// <summary>
+        /// Relevance score (0.0-1.0) if available from RAG retrieval.
+        /// </summary>
+        public decimal? RelevanceScore { get; init; }
+    }
+
+    /// <summary>
+    /// Phase 25: A segment of the explanation with source attribution.
+    /// Allows fine-grained linking between explanation text and sources.
+    /// </summary>
+    public sealed class ExplainSegmentDto
+    {
+        /// <summary>
+        /// Unique identifier for this segment (e.g., "S1", "S2").
+        /// </summary>
+        public string SegmentId { get; init; } = string.Empty;
+
+        /// <summary>
+        /// The explanation text for this segment.
+        /// </summary>
+        public string Text { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Source IDs that support this segment.
+        /// </summary>
+        public IReadOnlyList<string> SourceIds { get; init; } = Array.Empty<string>();
+    }
+
+    /// <summary>
+    /// Phase 25: A step in the explanation trace (carousel step).
+    /// Provides step-by-step breakdown of how the explanation was generated.
+    /// </summary>
+    public sealed class ExplainStepDto
+    {
+        /// <summary>
+        /// Unique identifier for this step (e.g., "step1", "step2").
+        /// </summary>
+        public string StepId { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Human-readable title (e.g., "Step 1 – Identify comparables").
+        /// </summary>
+        public string Title { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Optional detailed description of this step.
+        /// </summary>
+        public string? Description { get; init; }
+
+        /// <summary>
+        /// Source IDs relevant to this step.
+        /// </summary>
+        public IReadOnlyList<string> SourceIds { get; init; } = Array.Empty<string>();
+    }
+
+    /// <summary>
+    /// Phase 25: Enhanced ExplainGPT response with source highlighting and trace steps.
+    /// Backward compatible with v1 (segments/sources/steps can be empty).
+    /// </summary>
+    public sealed class ExplainResponseV2Dto
+    {
+        /// <summary>
+        /// Unique identifier for this explanation (for audit trail).
+        /// </summary>
+        public string ExplanationId { get; init; } = Guid.NewGuid().ToString("N")[..12];
+
+        /// <summary>
+        /// The full explanation text (same as v1 Explanation field).
+        /// </summary>
+        public string FullText { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Short summary (1-2 sentences) for UI previews.
+        /// </summary>
+        public string? Summary { get; init; }
+
+        /// <summary>
+        /// Key points extracted from the explanation.
+        /// </summary>
+        public IReadOnlyList<string> KeyPoints { get; init; } = Array.Empty<string>();
+
+        /// <summary>
+        /// Context type that was explained.
+        /// </summary>
+        public string ContextType { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Processing time in milliseconds.
+        /// </summary>
+        public int ProcessingTimeMs { get; set; }
+
+        /// <summary>
+        /// Confidence score (0.0-1.0) of the explanation.
+        /// </summary>
+        public decimal Confidence { get; init; }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // Phase 25: New V2 Fields
+        // ═══════════════════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Explanation broken into segments with source attribution.
+        /// If empty, frontend shows FullText as single block (v1 behavior).
+        /// </summary>
+        public IReadOnlyList<ExplainSegmentDto> Segments { get; init; } = Array.Empty<ExplainSegmentDto>();
+
+        /// <summary>
+        /// All sources that contributed to this explanation.
+        /// </summary>
+        public IReadOnlyList<ExplainSourceAttributionDto> Sources { get; init; } = Array.Empty<ExplainSourceAttributionDto>();
+
+        /// <summary>
+        /// Step-by-step trace of how the explanation was generated.
+        /// If empty, frontend hides the steps carousel.
+        /// </summary>
+        public IReadOnlyList<ExplainStepDto> Steps { get; init; } = Array.Empty<ExplainStepDto>();
+
+        /// <summary>
+        /// Related actions user might want to take.
+        /// </summary>
+        public IReadOnlyList<RelatedAction> RelatedActions { get; init; } = Array.Empty<RelatedAction>();
+    }
 }
