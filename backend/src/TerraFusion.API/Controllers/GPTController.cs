@@ -34,6 +34,8 @@ namespace TerraFusion.API.Controllers
         private readonly ISystemGptEventService? _eventService; // Phase 19
         private readonly ISystemGptMetricsService? _metricsService; // Phase 20
         private readonly ISystemGptFederatedOverviewService? _federatedOverviewService; // Phase 23
+        private readonly ICountyPolicyService? _policyService; // Phase 24
+        private readonly ISystemGptPolicyEvaluator? _policyEvaluator; // Phase 24
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
@@ -46,7 +48,9 @@ namespace TerraFusion.API.Controllers
             IBentonRagReadinessService? bentonRagService = null,
             ISystemGptEventService? eventService = null,
             ISystemGptMetricsService? metricsService = null,
-            ISystemGptFederatedOverviewService? federatedOverviewService = null) // Phase 23
+            ISystemGptFederatedOverviewService? federatedOverviewService = null,
+            ICountyPolicyService? policyService = null, // Phase 24
+            ISystemGptPolicyEvaluator? policyEvaluator = null) // Phase 24
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
@@ -58,6 +62,8 @@ namespace TerraFusion.API.Controllers
             _eventService = eventService; // Optional - Phase 19 AI Incident Timeline
             _metricsService = metricsService; // Optional - Phase 20 AI Metrics & Telemetry
             _federatedOverviewService = federatedOverviewService; // Optional - Phase 23 Federated Overview
+            _policyService = policyService; // Optional - Phase 24 AI Policy Engine
+            _policyEvaluator = policyEvaluator; // Optional - Phase 24 Policy Evaluator
         }
 
         #region GPT Configuration Management
@@ -374,6 +380,53 @@ namespace TerraFusion.API.Controllers
 
                 var userId = GetUserId();
                 var countyId = GetCountyId();
+
+                // Phase 24: Policy Engine check - evaluate request against county policy
+                if (_policyEvaluator != null)
+                {
+                    // Convert int countyId to CountyId enum (0=Benton, 1=Yakima, 2=Franklin)
+                    var countyIdEnum = (TerraFusion.AI.Models.CountyId)countyId;
+
+                    var policyContext = new TerraFusion.AI.Models.GptRequestContext
+                    {
+                        CountyId = countyIdEnum,
+                        Prompt = request.Message,
+                        GptConfigKey = request.GPTConfigId.ToString(),
+                        ContextId = conversationId.ToString(),
+                        RequiresRag = false, // Basic message doesn't require RAG
+                        RequiresEmbedding = false,
+                        UserId = userId
+                    };
+
+                    var policyResult = await _policyEvaluator.EvaluateRequestAsync(policyContext);
+
+                    if (!policyResult.Allowed)
+                    {
+                        _logger.LogWarning("SendMessage blocked by policy: {Reason} (County: {CountyId})",
+                            policyResult.DenyReason, countyId);
+
+                        var policyDeniedMessage = new GPTMessage
+                        {
+                            Id = 0,
+                            ConversationId = conversationId,
+                            Role = "assistant",
+                            Content = $"🚫 **Request blocked by AI Policy**\n\n" +
+                                      $"This operation is not allowed by your county's AI governance policy.\n\n" +
+                                      $"Reason: {policyResult.DenyReason ?? "Policy violation"}\n\n" +
+                                      $"Contact your administrator if you believe this is an error.",
+                            CreatedAt = DateTime.UtcNow
+                        };
+
+                        return Ok(policyDeniedMessage);
+                    }
+
+                    // Use sanitized prompt if applicable
+                    if (policyResult.WasSanitized && !string.IsNullOrEmpty(policyResult.SanitizedPrompt))
+                    {
+                        _logger.LogInformation("Phase 24: Message sanitized by policy for county {CountyId}", countyId);
+                        request.Message = policyResult.SanitizedPrompt;
+                    }
+                }
 
                 var response = await _orchestrationService.SendMessageAsync(
                     request.GPTConfigId,
@@ -1419,6 +1472,117 @@ namespace TerraFusion.API.Controllers
             {
                 _logger.LogError(ex, "Error generating federated overview");
                 return StatusCode(500, new { error = "Failed to generate federated overview" });
+            }
+        }
+
+        #endregion
+
+        #region Phase 24: AI Policy Engine (County-Scoped Governance)
+
+        /// <summary>
+        /// Get the AI policy configuration for a specific county.
+        /// Phase 24: AI Policy Engine - County-scoped governance for GPT, RAG, Embeddings & ExplainGPT.
+        /// Returns the policy rules that govern what AI operations are allowed for the given county.
+        /// </summary>
+        [HttpGet("system/policy")]
+        [AllowAnonymous] // Allow policy inspection for monitoring dashboards
+        public async System.Threading.Tasks.Task<ActionResult<TerraFusion.AI.Models.SystemGptPolicyDto>> GetCountyPolicy(
+            [FromQuery] string? countyId = null)
+        {
+            try
+            {
+                // Parse string county code to CountyId enum, defaulting to Benton
+                var effectiveCountyId = TerraFusion.AI.Models.CountyHelper.ParseCountyIdOrDefault(countyId);
+                _logger.LogInformation("Phase 24: Retrieving AI policy for county {CountyId}", effectiveCountyId);
+
+                // If service is not registered, return a permissive default policy
+                if (_policyService == null)
+                {
+                    _logger.LogWarning("Phase 24: PolicyService not registered, returning permissive default");
+                    return Ok(new TerraFusion.AI.Models.SystemGptPolicyDto
+                    {
+                        CountyId = TerraFusion.AI.Models.CountyHelper.GetCountyCode(effectiveCountyId),
+                        CountyName = TerraFusion.AI.Models.CountyHelper.GetCountyInfo(effectiveCountyId).DisplayName,
+                        AllowGptSendMessage = true,
+                        AllowRagQueries = true,
+                        AllowEmbeddings = true,
+                        RequireExplainOnValuation = false,
+                        DenyPromptPatterns = Array.Empty<string>(),
+                        DenyContextIds = Array.Empty<string>(),
+                        SanitizeOwnerNames = false,
+                        PolicyVersion = "1.0.0-default",
+                        LastUpdatedUtc = DateTimeOffset.UtcNow,
+                        IsPlaceholder = true
+                    });
+                }
+
+                var policy = await _policyService.GetPolicyAsync(effectiveCountyId);
+                return Ok(policy);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving AI policy for county {CountyId}", countyId);
+                return StatusCode(500, new { error = "Failed to retrieve AI policy" });
+            }
+        }
+
+        /// <summary>
+        /// Evaluate a request against the county's AI policy.
+        /// Phase 24: AI Policy Engine - Test whether a specific request would be allowed.
+        /// Useful for UX pre-validation and debugging policy rules.
+        /// </summary>
+        [HttpPost("system/policy/evaluate")]
+        [AllowAnonymous] // Allow policy testing for debugging
+        public async System.Threading.Tasks.Task<ActionResult<TerraFusion.AI.Models.PolicyEvaluationResult>> EvaluatePolicyRequest(
+            [FromBody] TerraFusion.AI.Models.GptRequestContext request)
+        {
+            try
+            {
+                _logger.LogInformation("Phase 24: Evaluating policy request for county {CountyId}", request.CountyId);
+
+                // If evaluator is not registered, return allowed
+                if (_policyEvaluator == null)
+                {
+                    _logger.LogWarning("Phase 24: PolicyEvaluator not registered, allowing request by default");
+                    return Ok(TerraFusion.AI.Models.PolicyEvaluationResult.Allow(request.Prompt));
+                }
+
+                var result = await _policyEvaluator.EvaluateRequestAsync(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error evaluating policy request");
+                return StatusCode(500, new { error = "Failed to evaluate policy request" });
+            }
+        }
+
+        /// <summary>
+        /// Get AI policies for all known counties (admin overview).
+        /// Phase 24: AI Policy Engine - Returns a summary of all county policies.
+        /// </summary>
+        [HttpGet("system/policy/all")]
+        [AllowAnonymous] // Allow admin overview for monitoring
+        public async System.Threading.Tasks.Task<ActionResult<List<TerraFusion.AI.Models.SystemGptPolicyDto>>> GetAllCountyPolicies()
+        {
+            try
+            {
+                _logger.LogInformation("Phase 24: Retrieving all county AI policies");
+
+                if (_policyService == null)
+                {
+                    _logger.LogWarning("Phase 24: PolicyService not registered, returning empty list");
+                    return Ok(new List<TerraFusion.AI.Models.SystemGptPolicyDto>());
+                }
+
+                // Use the GetAllPoliciesAsync method to retrieve all policies at once
+                var allPolicies = await _policyService.GetAllPoliciesAsync();
+                return Ok(allPolicies.Values.ToList());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving all county AI policies");
+                return StatusCode(500, new { error = "Failed to retrieve all county AI policies" });
             }
         }
 

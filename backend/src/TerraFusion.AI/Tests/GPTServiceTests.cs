@@ -2885,4 +2885,436 @@ Decision Timeline: 30 days from hearing",
       Assert.InRange(snapshot.GeneratedAtUtc, before, after);
     }
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // Phase 24: AI Policy Engine Tests
+  // ═══════════════════════════════════════════════════════════════════════════════
+
+  /// <summary>
+  /// Phase 24: Unit tests for SystemGptPolicyDto and PolicyEvaluationResult.
+  /// </summary>
+  public class SystemGptPolicyDtoTests
+  {
+    [Fact]
+    public void SystemGptPolicyDto_DefaultValues_ArePermissive()
+    {
+      // Arrange & Act
+      var policy = new TerraFusion.AI.Models.SystemGptPolicyDto();
+
+      // Assert - defaults should be permissive (Benton County pattern)
+      Assert.Equal("benton", policy.CountyId);
+      Assert.True(policy.AllowGptSendMessage);
+      Assert.True(policy.AllowRagQueries);
+      Assert.True(policy.AllowEmbeddings);
+      Assert.True(policy.AllowExplainGpt);
+      Assert.False(policy.RequireExplainOnValuation);
+      Assert.False(policy.SanitizeOwnerNames);
+      Assert.Empty(policy.DenyPromptPatterns);
+      Assert.Empty(policy.DenyContextIds);
+      Assert.False(policy.IsPlaceholder);
+    }
+
+    [Fact]
+    public void SystemGptPolicyDto_CanSetRestrictivePolicy()
+    {
+      // Arrange & Act
+      var policy = new TerraFusion.AI.Models.SystemGptPolicyDto
+      {
+        CountyId = "yakima",
+        CountyName = "Yakima County",
+        AllowGptSendMessage = false,
+        AllowRagQueries = false,
+        AllowEmbeddings = false,
+        AllowExplainGpt = true,
+        RequireExplainOnValuation = true,
+        SanitizeOwnerNames = true,
+        DenyPromptPatterns = new[] { "confidential", "secret" },
+        DenyContextIds = new[] { "sensitive-data" },
+        PolicyVersion = "2.0",
+        IsPlaceholder = true
+      };
+
+      // Assert
+      Assert.Equal("yakima", policy.CountyId);
+      Assert.Equal("Yakima County", policy.CountyName);
+      Assert.False(policy.AllowGptSendMessage);
+      Assert.False(policy.AllowRagQueries);
+      Assert.False(policy.AllowEmbeddings);
+      Assert.True(policy.AllowExplainGpt);
+      Assert.True(policy.RequireExplainOnValuation);
+      Assert.True(policy.SanitizeOwnerNames);
+      Assert.Contains("confidential", policy.DenyPromptPatterns);
+      Assert.Contains("secret", policy.DenyPromptPatterns);
+      Assert.Contains("sensitive-data", policy.DenyContextIds);
+      Assert.Equal("2.0", policy.PolicyVersion);
+      Assert.True(policy.IsPlaceholder);
+    }
+  }
+
+  /// <summary>
+  /// Phase 24: Unit tests for PolicyEvaluationResult.
+  /// </summary>
+  public class PolicyEvaluationResultTests
+  {
+    [Fact]
+    public void PolicyEvaluationResult_Allow_ReturnsAllowed()
+    {
+      // Arrange & Act
+      var result = TerraFusion.AI.Models.PolicyEvaluationResult.Allow();
+
+      // Assert
+      Assert.True(result.Allowed);
+      Assert.Null(result.DenyReason);
+      Assert.Null(result.DenyRule);
+      Assert.False(result.WasSanitized);
+      Assert.False(result.RequiresExplain);
+    }
+
+    [Fact]
+    public void PolicyEvaluationResult_Allow_WithSanitizedPrompt()
+    {
+      // Arrange & Act
+      var result = TerraFusion.AI.Models.PolicyEvaluationResult.Allow(
+        sanitizedPrompt: "Sanitized message",
+        requiresExplain: false);
+
+      // Assert
+      Assert.True(result.Allowed);
+      Assert.Equal("Sanitized message", result.SanitizedPrompt);
+      Assert.True(result.WasSanitized);
+    }
+
+    [Fact]
+    public void PolicyEvaluationResult_Allow_WithRequiresExplain()
+    {
+      // Arrange & Act
+      var result = TerraFusion.AI.Models.PolicyEvaluationResult.Allow(requiresExplain: true);
+
+      // Assert
+      Assert.True(result.Allowed);
+      Assert.True(result.RequiresExplain);
+    }
+
+    [Fact]
+    public void PolicyEvaluationResult_Deny_ReturnsDenied()
+    {
+      // Arrange & Act
+      var result = TerraFusion.AI.Models.PolicyEvaluationResult.Deny(
+        reason: "Policy violation",
+        rule: "DenyPromptPattern");
+
+      // Assert
+      Assert.False(result.Allowed);
+      Assert.Equal("Policy violation", result.DenyReason);
+      Assert.Equal("DenyPromptPattern", result.DenyRule);
+    }
+  }
+
+  /// <summary>
+  /// Phase 24: Unit tests for GptRequestContext.
+  /// </summary>
+  public class GptRequestContextTests
+  {
+    [Fact]
+    public void GptRequestContext_DefaultValues_AreCorrect()
+    {
+      // Arrange & Act
+      var context = new TerraFusion.AI.Models.GptRequestContext();
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.CountyId.Benton, context.CountyId);
+      Assert.Equal(string.Empty, context.Prompt);
+      Assert.Null(context.GptConfigKey);
+      Assert.Null(context.ContextId);
+      Assert.False(context.RequiresRag);
+      Assert.False(context.RequiresEmbedding);
+      Assert.False(context.IsExplainRequest);
+      Assert.Null(context.UserId);
+    }
+
+    [Fact]
+    public void GptRequestContext_CanSetAllProperties()
+    {
+      // Arrange & Act
+      var context = new TerraFusion.AI.Models.GptRequestContext
+      {
+        CountyId = TerraFusion.AI.Models.CountyId.Franklin,
+        Prompt = "What is the value of property X?",
+        GptConfigKey = "ValuationGPT",
+        ContextId = "valuation-context",
+        RequiresRag = true,
+        RequiresEmbedding = true,
+        IsExplainRequest = false,
+        UserId = "user123"
+      };
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.CountyId.Franklin, context.CountyId);
+      Assert.Equal("What is the value of property X?", context.Prompt);
+      Assert.Equal("ValuationGPT", context.GptConfigKey);
+      Assert.Equal("valuation-context", context.ContextId);
+      Assert.True(context.RequiresRag);
+      Assert.True(context.RequiresEmbedding);
+      Assert.False(context.IsExplainRequest);
+      Assert.Equal("user123", context.UserId);
+    }
+  }
+
+  /// <summary>
+  /// Phase 24: Unit tests for PolicyEventKind enum.
+  /// </summary>
+  public class PolicyEventKindTests
+  {
+    [Fact]
+    public void PolicyEventKind_EnumValues_AreCorrect()
+    {
+      // Assert
+      Assert.Equal(0, (int)TerraFusion.AI.Models.PolicyEventKind.PolicyAllow);
+      Assert.Equal(1, (int)TerraFusion.AI.Models.PolicyEventKind.PolicyDeny);
+      Assert.Equal(2, (int)TerraFusion.AI.Models.PolicyEventKind.PolicySanitize);
+      Assert.Equal(3, (int)TerraFusion.AI.Models.PolicyEventKind.PolicyForceExplain);
+      Assert.Equal(4, (int)TerraFusion.AI.Models.PolicyEventKind.PolicyUpdated);
+    }
+  }
+
+  /// <summary>
+  /// Phase 24: Unit tests for InMemoryCountyPolicyService.
+  /// </summary>
+  public class InMemoryCountyPolicyServiceTests
+  {
+    [Fact]
+    public async System.Threading.Tasks.Task GetPolicyAsync_Benton_ReturnsPermissivePolicy()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.InMemoryCountyPolicyService>.Instance;
+      var service = new TerraFusion.AI.Services.InMemoryCountyPolicyService(logger);
+
+      // Act
+      var policy = await service.GetPolicyAsync(TerraFusion.AI.Models.CountyId.Benton);
+
+      // Assert
+      Assert.Equal("benton", policy.CountyId);
+      Assert.Equal("Benton County", policy.CountyName);
+      Assert.True(policy.AllowGptSendMessage);
+      Assert.True(policy.AllowRagQueries);
+      Assert.True(policy.AllowEmbeddings);
+      Assert.False(policy.IsPlaceholder);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task GetPolicyAsync_Yakima_ReturnsRestrictivePolicy()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.InMemoryCountyPolicyService>.Instance;
+      var service = new TerraFusion.AI.Services.InMemoryCountyPolicyService(logger);
+
+      // Act
+      var policy = await service.GetPolicyAsync(TerraFusion.AI.Models.CountyId.Yakima);
+
+      // Assert
+      Assert.Equal("yakima", policy.CountyId);
+      Assert.Equal("Yakima County", policy.CountyName);
+      Assert.False(policy.AllowGptSendMessage);
+      Assert.False(policy.AllowRagQueries);
+      Assert.False(policy.AllowEmbeddings);
+      Assert.True(policy.IsPlaceholder);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task GetPolicyAsync_Franklin_ReturnsPlaceholderPolicyWithSanitization()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.InMemoryCountyPolicyService>.Instance;
+      var service = new TerraFusion.AI.Services.InMemoryCountyPolicyService(logger);
+
+      // Act
+      var policy = await service.GetPolicyAsync(TerraFusion.AI.Models.CountyId.Franklin);
+
+      // Assert
+      Assert.Equal("franklin", policy.CountyId);
+      Assert.Equal("Franklin County", policy.CountyName);
+      Assert.False(policy.AllowGptSendMessage); // Placeholder - not configured yet
+      Assert.False(policy.AllowRagQueries);      // Placeholder - not configured yet
+      Assert.True(policy.SanitizeOwnerNames);    // Privacy protection enabled
+      Assert.True(policy.RequireExplainOnValuation); // Conservative default
+      Assert.True(policy.IsPlaceholder);         // Not fully configured
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task GetAllPoliciesAsync_ReturnsAllThreeCounties()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.InMemoryCountyPolicyService>.Instance;
+      var service = new TerraFusion.AI.Services.InMemoryCountyPolicyService(logger);
+
+      // Act
+      var allPolicies = await service.GetAllPoliciesAsync();
+
+      // Assert
+      Assert.Equal(3, allPolicies.Count);
+      Assert.Contains(allPolicies.Keys, k => k == TerraFusion.AI.Models.CountyId.Benton);
+      Assert.Contains(allPolicies.Keys, k => k == TerraFusion.AI.Models.CountyId.Yakima);
+      Assert.Contains(allPolicies.Keys, k => k == TerraFusion.AI.Models.CountyId.Franklin);
+    }
+  }
+
+  /// <summary>
+  /// Phase 24: Unit tests for SystemGptPolicyEvaluator.
+  /// </summary>
+  public class SystemGptPolicyEvaluatorTests
+  {
+    private TerraFusion.AI.Services.SystemGptPolicyEvaluator CreateEvaluator()
+    {
+      var policyLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.InMemoryCountyPolicyService>.Instance;
+      var policyService = new TerraFusion.AI.Services.InMemoryCountyPolicyService(policyLogger);
+
+      var evalLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptPolicyEvaluator>.Instance;
+      return new TerraFusion.AI.Services.SystemGptPolicyEvaluator(policyService, evalLogger, null);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task EvaluateRequestAsync_BentonSimpleRequest_ReturnsAllowed()
+    {
+      // Arrange
+      var evaluator = CreateEvaluator();
+      var request = new TerraFusion.AI.Models.GptRequestContext
+      {
+        CountyId = TerraFusion.AI.Models.CountyId.Benton,
+        Prompt = "What is the value of this property?",
+        RequiresRag = false,
+        RequiresEmbedding = false
+      };
+
+      // Act
+      var result = await evaluator.EvaluateRequestAsync(request);
+
+      // Assert
+      Assert.True(result.Allowed);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task EvaluateRequestAsync_YakimaRequest_ReturnsDenied()
+    {
+      // Arrange
+      var evaluator = CreateEvaluator();
+      var request = new TerraFusion.AI.Models.GptRequestContext
+      {
+        CountyId = TerraFusion.AI.Models.CountyId.Yakima,
+        Prompt = "What is the value of this property?",
+        RequiresRag = false,
+        RequiresEmbedding = false
+      };
+
+      // Act
+      var result = await evaluator.EvaluateRequestAsync(request);
+
+      // Assert
+      Assert.False(result.Allowed);
+      Assert.Contains("disabled", result.DenyReason, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task EvaluateRequestAsync_YakimaWithRag_ReturnsDenied()
+    {
+      // Arrange
+      var evaluator = CreateEvaluator();
+      var request = new TerraFusion.AI.Models.GptRequestContext
+      {
+        CountyId = TerraFusion.AI.Models.CountyId.Yakima,
+        Prompt = "Query the knowledge base",
+        RequiresRag = true
+      };
+
+      // Act
+      var result = await evaluator.EvaluateRequestAsync(request);
+
+      // Assert
+      Assert.False(result.Allowed);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task EvaluateRequestAsync_YakimaWithEmbeddings_ReturnsDenied()
+    {
+      // Arrange
+      var evaluator = CreateEvaluator();
+      var request = new TerraFusion.AI.Models.GptRequestContext
+      {
+        CountyId = TerraFusion.AI.Models.CountyId.Yakima,
+        Prompt = "Generate embeddings",
+        RequiresEmbedding = true
+      };
+
+      // Act
+      var result = await evaluator.EvaluateRequestAsync(request);
+
+      // Assert
+      Assert.False(result.Allowed);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task EvaluateRequestAsync_FranklinWithValuationContext_RequiresExplain()
+    {
+      // Arrange
+      var evaluator = CreateEvaluator();
+      // Franklin has AllowGptSendMessage=false, but allows ExplainGPT
+      // Using IsExplainRequest=true to bypass the AllowGptSendMessage check
+      var request = new TerraFusion.AI.Models.GptRequestContext
+      {
+        CountyId = TerraFusion.AI.Models.CountyId.Franklin,
+        Prompt = "What is the value?",
+        ContextId = "valuation",
+        IsExplainRequest = true // Bypass AllowGptSendMessage=false
+      };
+
+      // Act
+      var result = await evaluator.EvaluateRequestAsync(request);
+
+      // Assert
+      Assert.True(result.Allowed);
+      Assert.True(result.RequiresExplain);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task EvaluateRequestAsync_FranklinWithOwnerName_SanitizesPrompt()
+    {
+      // Arrange
+      var evaluator = CreateEvaluator();
+      // Note: Franklin has AllowGptSendMessage=false, but allows ExplainGPT
+      // We need to test with IsExplainRequest=true to get past the first check
+      var request = new TerraFusion.AI.Models.GptRequestContext
+      {
+        CountyId = TerraFusion.AI.Models.CountyId.Franklin,
+        Prompt = "Look up property owned by John Smith at 123 Main St",
+        IsExplainRequest = true // This bypasses the AllowGptSendMessage=false check
+      };
+
+      // Act
+      var result = await evaluator.EvaluateRequestAsync(request);
+
+      // Assert
+      Assert.True(result.Allowed);
+      Assert.True(result.WasSanitized);
+      Assert.NotEqual(request.Prompt, result.SanitizedPrompt);
+      Assert.Contains("[OWNER_REDACTED]", result.SanitizedPrompt);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task EvaluateRequestAsync_FranklinNonExplainRequest_ReturnsDenied()
+    {
+      // Arrange - Franklin has AllowGptSendMessage=false for non-explain requests
+      var evaluator = CreateEvaluator();
+      var request = new TerraFusion.AI.Models.GptRequestContext
+      {
+        CountyId = TerraFusion.AI.Models.CountyId.Franklin,
+        Prompt = "What is the value of this property?",
+        IsExplainRequest = false
+      };
+
+      // Act
+      var result = await evaluator.EvaluateRequestAsync(request);
+
+      // Assert - Should be denied because AllowGptSendMessage=false
+      Assert.False(result.Allowed);
+    }
+  }
 }

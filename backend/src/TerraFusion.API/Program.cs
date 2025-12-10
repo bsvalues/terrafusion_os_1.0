@@ -357,6 +357,10 @@ builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptMetricsService, 
 // Phase 23: SystemGPT Federated Overview Service for multi-county dashboard
 builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptFederatedOverviewService, TerraFusion.AI.Services.SystemGptFederatedOverviewService>();
 
+// Phase 24: AI Policy Engine - County-scoped governance for GPT operations
+builder.Services.AddSingleton<TerraFusion.AI.Services.ICountyPolicyService, TerraFusion.AI.Services.InMemoryCountyPolicyService>();
+builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptPolicyEvaluator, TerraFusion.AI.Services.SystemGptPolicyEvaluator>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown

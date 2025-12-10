@@ -8,6 +8,7 @@
  * Phase 20: Metrics & Telemetry Console
  * Phase 22: Multi-County Federation Layer
  * Phase 23: Federated Overview (Multi-County Dashboard)
+ * Phase 24: AI Policy Engine
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -33,9 +34,10 @@ import { ExplainPanel, ExplainPanelState } from '../../components/common/Explain
 import { CountySelector, useCountySelection } from './components/CountySelector';
 import { SystemGptFederatedOverviewPanel } from './components/SystemGptFederatedOverviewPanel';
 import { SystemGptMetricsPanel } from './components/SystemGptMetricsPanel';
+import { SystemGptPolicyPanel } from './components/SystemGptPolicyPanel';
 
-/** Phase 23: Console tab options */
-type ConsoleTab = 'overview' | 'federated';
+/** Phase 24: Console tab options */
+type ConsoleTab = 'overview' | 'federated' | 'policy';
 
 type LoadState = 'idle' | 'loading' | 'error';
 
@@ -508,6 +510,16 @@ export const SystemGptConsoleView: React.FC = () => {
         >
           🏛️ Federated
         </button>
+        <button
+          onClick={() => setActiveTab('policy')}
+          className={`rounded-t-lg px-4 py-2 text-sm font-medium transition-all ${
+            activeTab === 'policy'
+              ? 'border-b-2 border-cyan-500 bg-slate-800/50 text-cyan-300'
+              : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-300'
+          }`}
+        >
+          🛡️ Policy
+        </button>
       </div>
 
       {/* Phase 23: Federated Overview Tab */}
@@ -517,6 +529,13 @@ export const SystemGptConsoleView: React.FC = () => {
             onCountySelect={handleFederatedCountySelect}
             refreshInterval={30000}
           />
+        </div>
+      )}
+
+      {/* Phase 24: Policy Engine Tab */}
+      {activeTab === 'policy' && (
+        <div className='flex-1 overflow-auto rounded-xl border border-slate-800/60 bg-slate-900/50 p-4'>
+          <SystemGptPolicyPanel selectedCounty={selectedCounty} refreshInterval={60000} />
         </div>
       )}
 
