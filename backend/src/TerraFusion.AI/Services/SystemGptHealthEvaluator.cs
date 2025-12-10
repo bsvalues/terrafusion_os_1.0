@@ -250,6 +250,66 @@ namespace TerraFusion.AI.Services
             }
 
             // ═══════════════════════════════════════════════════════════════
+            // RULE 7: Phase 18 - Benton CAMA RAG Readiness
+            // County-specific warnings for the Benton County demo story.
+            // ═══════════════════════════════════════════════════════════════
+            if (diagnostics.BentonRag != null)
+            {
+                switch (diagnostics.BentonRag.OverallStatus)
+                {
+                    case BentonRagStatus.Unindexed:
+                        messages.Add(new HeraldMessage
+                        {
+                            Level = "Warning",
+                            Message = "Benton CAMA RAG dataset is unindexed — ExplainGPT and RAG responses may be incomplete.",
+                            Timestamp = DateTime.UtcNow,
+                            Source = "BentonRagReadiness"
+                        });
+                        overallHealth = SystemHealthStatus.Degraded;
+                        break;
+
+                    case BentonRagStatus.Partial:
+                        messages.Add(new HeraldMessage
+                        {
+                            Level = "Warning",
+                            Message = "Benton CAMA RAG embeddings are incomplete — similarity quality reduced.",
+                            Timestamp = DateTime.UtcNow,
+                            Source = "BentonRagReadiness"
+                        });
+                        // Don't override to Degraded if already Unhealthy
+                        if (overallHealth == SystemHealthStatus.Healthy)
+                        {
+                            overallHealth = SystemHealthStatus.Degraded;
+                        }
+                        break;
+
+                    case BentonRagStatus.Stale:
+                        var daysOld = diagnostics.BentonRag.LastIngestAt.HasValue
+                            ? (int)(DateTimeOffset.UtcNow - diagnostics.BentonRag.LastIngestAt.Value).TotalDays
+                            : -1;
+                        messages.Add(new HeraldMessage
+                        {
+                            Level = "Info",
+                            Message = $"Benton CAMA RAG data may be stale (last ingest: {daysOld} days ago). Consider re-ingesting.",
+                            Timestamp = DateTime.UtcNow,
+                            Source = "BentonRagReadiness"
+                        });
+                        break;
+
+                    case BentonRagStatus.Ready:
+                        messages.Add(new HeraldMessage
+                        {
+                            Level = "Success",
+                            Message = $"Benton CAMA RAG is ready: {diagnostics.BentonRag.DocumentCount} docs, " +
+                                      $"{diagnostics.BentonRag.EmbeddingCount} embeddings.",
+                            Timestamp = DateTime.UtcNow,
+                            Source = "BentonRagReadiness"
+                        });
+                        break;
+                }
+            }
+
+            // ═══════════════════════════════════════════════════════════════
             // FINAL: Apply evaluated health and messages
             // ═══════════════════════════════════════════════════════════════
 

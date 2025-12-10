@@ -2304,4 +2304,232 @@ Decision Timeline: 30 days from hearing",
       Assert.NotNull(diagnostics.ModeChangedAt);
     }
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // 🏛️ Phase 18: Benton CAMA RAG Readiness Tests
+  // "Is the Benton CAMA RAG brain ready, fresh, and indexed?"
+  // ═══════════════════════════════════════════════════════════════════════════════
+
+  /// <summary>
+  /// Tests for Benton CAMA RAG readiness DTOs and status computation (Phase 18).
+  /// </summary>
+  public class BentonRagReadinessTests
+  {
+    [Fact]
+    public void BentonRagStatus_EnumValues_AreCorrect()
+    {
+      // Assert - verify enum values
+      Assert.Equal(0, (int)TerraFusion.AI.Models.BentonRagStatus.Ready);
+      Assert.Equal(1, (int)TerraFusion.AI.Models.BentonRagStatus.Stale);
+      Assert.Equal(2, (int)TerraFusion.AI.Models.BentonRagStatus.Unindexed);
+      Assert.Equal(3, (int)TerraFusion.AI.Models.BentonRagStatus.Partial);
+    }
+
+    [Fact]
+    public void BentonRagReadinessDto_DefaultValues_AreCorrect()
+    {
+      // Arrange & Act
+      var dto = new TerraFusion.AI.Models.BentonRagReadinessDto();
+
+      // Assert
+      Assert.Equal("benton_cama_basics", dto.DatasetKey);
+      Assert.Equal("Benton CAMA Basics", dto.DisplayName);
+      Assert.False(dto.IsIndexed);
+      Assert.False(dto.IsPartiallyIndexed);
+      Assert.Equal(0, dto.DocumentCount);
+      Assert.Equal(0, dto.EmbeddingCount);
+      Assert.Null(dto.LastIngestAt);
+      Assert.Null(dto.LastIndexAt);
+      Assert.Equal(TerraFusion.AI.Models.BentonRagStatus.Unindexed, dto.OverallStatus);
+    }
+
+    [Fact]
+    public void BentonRagReadinessDto_ReadyStatus_HasCorrectShape()
+    {
+      // Arrange
+      var now = DateTimeOffset.UtcNow;
+      var dto = new TerraFusion.AI.Models.BentonRagReadinessDto
+      {
+        DatasetKey = "benton_cama_basics",
+        DisplayName = "Benton CAMA Basics",
+        IsIndexed = true,
+        IsPartiallyIndexed = false,
+        DocumentCount = 15,
+        EmbeddingCount = 150,
+        LastIngestAt = now.AddHours(-2),
+        LastIndexAt = now.AddHours(-1),
+        OverallStatus = TerraFusion.AI.Models.BentonRagStatus.Ready,
+        StatusReason = "Fully indexed and up-to-date.",
+        ActiveGptConfigs = new List<string> { "PropertyAssessmentGPT", "ExplainGPT" }
+      };
+
+      // Assert
+      Assert.True(dto.IsIndexed);
+      Assert.False(dto.IsPartiallyIndexed);
+      Assert.Equal(15, dto.DocumentCount);
+      Assert.Equal(150, dto.EmbeddingCount);
+      Assert.Equal(TerraFusion.AI.Models.BentonRagStatus.Ready, dto.OverallStatus);
+      Assert.Contains("PropertyAssessmentGPT", dto.ActiveGptConfigs);
+    }
+
+    [Fact]
+    public void BentonRagReadinessDto_StaleStatus_HasCorrectShape()
+    {
+      // Arrange
+      var dto = new TerraFusion.AI.Models.BentonRagReadinessDto
+      {
+        IsIndexed = true,
+        DocumentCount = 10,
+        EmbeddingCount = 100,
+        LastIngestAt = DateTimeOffset.UtcNow.AddDays(-10),
+        OverallStatus = TerraFusion.AI.Models.BentonRagStatus.Stale,
+        StatusReason = "Data older than 7 days; consider re-ingesting."
+      };
+
+      // Assert
+      Assert.True(dto.IsIndexed);
+      Assert.Equal(TerraFusion.AI.Models.BentonRagStatus.Stale, dto.OverallStatus);
+      Assert.Contains("7 days", dto.StatusReason);
+    }
+
+    [Fact]
+    public void BentonRagReadinessDto_PartialStatus_HasCorrectShape()
+    {
+      // Arrange
+      var dto = new TerraFusion.AI.Models.BentonRagReadinessDto
+      {
+        IsIndexed = false,
+        IsPartiallyIndexed = true,
+        DocumentCount = 10,
+        EmbeddingCount = 5, // Less than documents
+        OverallStatus = TerraFusion.AI.Models.BentonRagStatus.Partial,
+        StatusReason = "Some documents may be missing embeddings."
+      };
+
+      // Assert
+      Assert.False(dto.IsIndexed);
+      Assert.True(dto.IsPartiallyIndexed);
+      Assert.Equal(TerraFusion.AI.Models.BentonRagStatus.Partial, dto.OverallStatus);
+    }
+
+    [Fact]
+    public void BentonRagSnapshotDto_IncludesAllRequiredFields()
+    {
+      // Arrange
+      var readiness = new TerraFusion.AI.Models.BentonRagReadinessDto
+      {
+        DocumentCount = 15,
+        EmbeddingCount = 150,
+        OverallStatus = TerraFusion.AI.Models.BentonRagStatus.Ready
+      };
+
+      var snapshot = new TerraFusion.AI.Models.BentonRagSnapshotDto
+      {
+        GeneratedAtUtc = DateTimeOffset.UtcNow,
+        TerraFusionVersion = "1.0.0",
+        Readiness = readiness,
+        ActiveGptConfigsUsingRag = new List<string> { "PropertyAssessmentGPT" },
+        HealthWarnings = new List<string>(),
+        Metadata = new TerraFusion.AI.Models.BentonRagSnapshotMetadata
+        {
+          CountyCode = "benton",
+          CountyName = "Benton County, WA"
+        }
+      };
+
+      // Assert
+      Assert.NotNull(snapshot.Readiness);
+      Assert.Equal(15, snapshot.Readiness.DocumentCount);
+      Assert.Equal("1.0.0", snapshot.TerraFusionVersion);
+      Assert.Equal("benton", snapshot.Metadata.CountyCode);
+      Assert.Equal("Benton County, WA", snapshot.Metadata.CountyName);
+    }
+
+    [Fact]
+    public void DiagnosticsResponse_IncludesBentonRagField()
+    {
+      // Arrange
+      var diagnostics = new TerraFusion.AI.Models.SystemDiagnosticsResponse
+      {
+        BentonRag = new TerraFusion.AI.Models.BentonRagReadinessDto
+        {
+          OverallStatus = TerraFusion.AI.Models.BentonRagStatus.Ready,
+          DocumentCount = 20
+        }
+      };
+
+      // Assert
+      Assert.NotNull(diagnostics.BentonRag);
+      Assert.Equal(TerraFusion.AI.Models.BentonRagStatus.Ready, diagnostics.BentonRag.OverallStatus);
+      Assert.Equal(20, diagnostics.BentonRag.DocumentCount);
+    }
+
+    [Fact]
+    public void HealthEvaluator_BentonRagUnindexed_ProducesWarning()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptHealthEvaluator>.Instance;
+      var evaluator = new TerraFusion.AI.Services.SystemGptHealthEvaluator(logger);
+
+      var diagnostics = new TerraFusion.AI.Models.SystemDiagnosticsResponse
+      {
+        BentonRag = new TerraFusion.AI.Models.BentonRagReadinessDto
+        {
+          OverallStatus = TerraFusion.AI.Models.BentonRagStatus.Unindexed,
+          StatusReason = "No documents ingested."
+        },
+        EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus { Available = true, Mode = "Simulated" },
+        RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>(),
+        GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>(),
+        ExplainGptStatus = new TerraFusion.AI.Models.ServiceStatus { Healthy = true }
+      };
+
+      // Act
+      var result = evaluator.EvaluateHealth(diagnostics);
+
+      // Assert
+      Assert.Equal(TerraFusion.AI.Models.SystemHealthStatus.Degraded, result.OverallHealth);
+      Assert.Contains(result.HeraldMessages, m =>
+        m.Source == "BentonRagReadiness" &&
+        m.Level == "Warning" &&
+        m.Message.Contains("unindexed"));
+    }
+
+    [Fact]
+    public void HealthEvaluator_BentonRagReady_ProducesSuccessMessage()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptHealthEvaluator>.Instance;
+      var evaluator = new TerraFusion.AI.Services.SystemGptHealthEvaluator(logger);
+
+      var diagnostics = new TerraFusion.AI.Models.SystemDiagnosticsResponse
+      {
+        BentonRag = new TerraFusion.AI.Models.BentonRagReadinessDto
+        {
+          OverallStatus = TerraFusion.AI.Models.BentonRagStatus.Ready,
+          DocumentCount = 15,
+          EmbeddingCount = 150
+        },
+        EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus { Available = true, Mode = "OpenAI", Dimensions = 1536 },
+        RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>
+        {
+          new() { Key = "benton_cama_basics", Indexed = true }
+        },
+        GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>
+        {
+          new() { Key = "PropertyAssessmentGPT", Enabled = true }
+        },
+        ExplainGptStatus = new TerraFusion.AI.Models.ServiceStatus { Healthy = true }
+      };
+
+      // Act
+      var result = evaluator.EvaluateHealth(diagnostics);
+
+      // Assert
+      Assert.Contains(result.HeraldMessages, m =>
+        m.Source == "BentonRagReadiness" &&
+        m.Level == "Success" &&
+        m.Message.Contains("ready"));
+    }
+  }
 }

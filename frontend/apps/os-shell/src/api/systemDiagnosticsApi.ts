@@ -3,6 +3,7 @@
  * TERRAFUSION SYSTEM DIAGNOSTICS API CLIENT
  * Phase 15: SystemGPT Console - AI Control Center
  * Phase 17: Safe Mode & Kill Switch
+ * Phase 18: Benton CAMA RAG Readiness Panel
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -18,6 +19,9 @@ export type SystemHealthStatus = 'Unknown' | 'Healthy' | 'Degraded' | 'Unhealthy
 
 /** Phase 17: SystemGPT operational mode */
 export type SystemGptMode = 'Normal' | 'SafeMode';
+
+/** Phase 18: Benton CAMA RAG overall status */
+export type BentonRagStatus = 'Ready' | 'Stale' | 'Unindexed' | 'Partial';
 
 export interface GptConfigSummary {
   key: string;
@@ -69,6 +73,21 @@ export interface HeraldMessage {
   source: string;
 }
 
+/** Phase 18: Benton CAMA RAG Readiness */
+export interface BentonRagReadiness {
+  datasetKey: string;
+  displayName: string;
+  isIndexed: boolean;
+  isPartiallyIndexed: boolean;
+  documentCount: number;
+  embeddingCount: number;
+  lastIngestAt?: string | null;
+  lastIndexAt?: string | null;
+  overallStatus: BentonRagStatus;
+  statusReason?: string | null;
+  activeGptConfigs: string[];
+}
+
 export interface SystemDiagnosticsResponse {
   overallHealth: SystemHealthStatus;
   /** Phase 17: Current operational mode */
@@ -86,6 +105,8 @@ export interface SystemDiagnosticsResponse {
   explainGptStatus: ServiceStatus;
   statistics: UsageStatistics;
   heraldMessages: HeraldMessage[];
+  /** Phase 18: Benton CAMA RAG readiness status */
+  bentonRag?: BentonRagReadiness | null;
 }
 
 /** Phase 17: Request to set Safe Mode */
@@ -235,4 +256,35 @@ export async function getSystemGptModeStatus(): Promise<SetSystemGptModeResponse
   }
 
   return (await response.json()) as SetSystemGptModeResponse;
+}
+
+/**
+ * Download Benton CAMA RAG Snapshot as JSON file.
+ * Phase 18: County-specific RAG health export for audits and demos.
+ */
+export async function downloadBentonRagSnapshot(): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/gpt/rag/benton_cama_basics/export`, {
+    method: 'GET',
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`Benton RAG snapshot download failed (${response.status}): ${errorText}`);
+  }
+
+  // Extract filename from Content-Disposition header or generate default
+  const contentDisposition = response.headers.get('Content-Disposition');
+  const filenameMatch = contentDisposition?.match(/filename="?([^"]+)"?/);
+  const filename = filenameMatch?.[1] || `benton_cama_rag_snapshot_${Date.now()}.json`;
+
+  // Create blob and trigger download
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
 }

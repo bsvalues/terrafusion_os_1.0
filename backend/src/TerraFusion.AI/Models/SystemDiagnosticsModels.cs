@@ -2,6 +2,7 @@
 // 📊 TerraFusion SystemGPT Diagnostic Models
 // Phase 15: SystemGPT Console - AI Control Center for County Tech Leads
 // Phase 17: Safe Mode & Kill Switch
+// Phase 18: Benton CAMA RAG Readiness Panel
 // Government. Transcended.
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -85,6 +86,12 @@ namespace TerraFusion.AI.Models
         /// Herald banner summary (last diagnostic messages).
         /// </summary>
         public List<HeraldMessage> HeraldMessages { get; set; } = new();
+
+        /// <summary>
+        /// Phase 18: Benton CAMA RAG readiness status.
+        /// County-specific RAG health for the Benton County demo story.
+        /// </summary>
+        public BentonRagReadinessDto? BentonRag { get; set; }
     }
 
     /// <summary>
@@ -348,5 +355,154 @@ namespace TerraFusion.AI.Models
         /// Status message.
         /// </summary>
         public string Message { get; set; } = string.Empty;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // Phase 18: Benton CAMA RAG Readiness DTOs
+    // County-specific RAG health for the Benton County demo story.
+    // "Is the Benton CAMA RAG brain ready, fresh, and indexed?"
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Benton CAMA RAG overall status indicator.
+    /// </summary>
+    public enum BentonRagStatus
+    {
+        /// <summary>Fully indexed and up-to-date.</summary>
+        Ready,
+
+        /// <summary>Data older than threshold (e.g., 7 days).</summary>
+        Stale,
+
+        /// <summary>No documents or embeddings present.</summary>
+        Unindexed,
+
+        /// <summary>Some documents missing embeddings.</summary>
+        Partial
+    }
+
+    /// <summary>
+    /// Phase 18: Benton CAMA RAG readiness status for SystemGPT Console.
+    /// Provides county-specific visibility into the RAG brain health.
+    /// </summary>
+    public sealed class BentonRagReadinessDto
+    {
+        /// <summary>
+        /// Dataset key (e.g., "benton_cama_basics").
+        /// </summary>
+        public string DatasetKey { get; init; } = "benton_cama_basics";
+
+        /// <summary>
+        /// Human-friendly display name.
+        /// </summary>
+        public string DisplayName { get; init; } = "Benton CAMA Basics";
+
+        /// <summary>
+        /// Whether the dataset is fully indexed (docs and embeddings present).
+        /// </summary>
+        public bool IsIndexed { get; init; }
+
+        /// <summary>
+        /// True if documents exist but embeddings are incomplete.
+        /// </summary>
+        public bool IsPartiallyIndexed { get; init; }
+
+        /// <summary>
+        /// Number of documents in the dataset.
+        /// </summary>
+        public int DocumentCount { get; init; }
+
+        /// <summary>
+        /// Number of embeddings (chunks) generated.
+        /// </summary>
+        public int EmbeddingCount { get; init; }
+
+        /// <summary>
+        /// Last document ingestion timestamp.
+        /// </summary>
+        public DateTimeOffset? LastIngestAt { get; init; }
+
+        /// <summary>
+        /// Last embedding index timestamp.
+        /// </summary>
+        public DateTimeOffset? LastIndexAt { get; init; }
+
+        /// <summary>
+        /// Overall readiness status.
+        /// </summary>
+        public BentonRagStatus OverallStatus { get; init; } = BentonRagStatus.Unindexed;
+
+        /// <summary>
+        /// Human-readable explanation of the status.
+        /// </summary>
+        public string? StatusReason { get; init; }
+
+        /// <summary>
+        /// List of GPT configs that use this RAG dataset.
+        /// </summary>
+        public List<string> ActiveGptConfigs { get; init; } = new();
+    }
+
+    /// <summary>
+    /// Phase 18: Benton CAMA RAG snapshot for export.
+    /// Downloadable audit artifact with full context.
+    /// </summary>
+    public sealed class BentonRagSnapshotDto
+    {
+        /// <summary>
+        /// Snapshot generation timestamp.
+        /// </summary>
+        public DateTimeOffset GeneratedAtUtc { get; init; } = DateTimeOffset.UtcNow;
+
+        /// <summary>
+        /// TerraFusion OS version.
+        /// </summary>
+        public string TerraFusionVersion { get; init; } = "1.0.0";
+
+        /// <summary>
+        /// Benton CAMA RAG readiness data.
+        /// </summary>
+        public BentonRagReadinessDto Readiness { get; init; } = new();
+
+        /// <summary>
+        /// GPT configurations actively using Benton CAMA RAG.
+        /// </summary>
+        public List<string> ActiveGptConfigsUsingRag { get; init; } = new();
+
+        /// <summary>
+        /// Any health warnings related to this dataset.
+        /// </summary>
+        public List<string> HealthWarnings { get; init; } = new();
+
+        /// <summary>
+        /// Snapshot metadata.
+        /// </summary>
+        public BentonRagSnapshotMetadata Metadata { get; init; } = new();
+    }
+
+    /// <summary>
+    /// Metadata for Benton RAG snapshot.
+    /// </summary>
+    public sealed class BentonRagSnapshotMetadata
+    {
+        /// <summary>
+        /// County identifier.
+        /// </summary>
+        public string CountyCode { get; init; } = "benton";
+
+        /// <summary>
+        /// County display name.
+        /// </summary>
+        public string CountyName { get; init; } = "Benton County, WA";
+
+        /// <summary>
+        /// Snapshot type identifier.
+        /// </summary>
+        public string SnapshotType { get; init; } = "BentonCamaRagReadiness";
+
+        /// <summary>
+        /// Export format version for forward compatibility.
+        /// </summary>
+        public string FormatVersion { get; init; } = "1.0";
     }
 }

@@ -3,6 +3,7 @@
  * TERRAFUSION SYSTEMGPT CONSOLE VIEW
  * Phase 15: AI Control Center for County Tech Leads
  * Phase 17: Safe Mode & Kill Switch
+ * Phase 18: Benton CAMA RAG Readiness Panel
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -10,6 +11,8 @@
 import React, { useEffect, useState } from 'react';
 import { explainContext } from '../../api/explainApi';
 import {
+  BentonRagStatus,
+  downloadBentonRagSnapshot,
   downloadHealthSnapshot,
   getSystemDiagnostics,
   setSystemGptMode,
@@ -175,6 +178,70 @@ export const SystemGptConsoleView: React.FC = () => {
     setShowSafeModeDialog(false);
     setSafeModeReason('');
     setSafeModeError(null);
+  };
+
+  /**
+   * Benton CAMA RAG Readiness - Phase 18
+   */
+  const [bentonReindexing, setBentonReindexing] = useState(false);
+  const [bentonDownloading, setBentonDownloading] = useState(false);
+
+  const handleReindexBentonCama = async () => {
+    setBentonReindexing(true);
+    try {
+      await triggerRagIndex('benton_cama_basics');
+      // Reload diagnostics to reflect new status
+      const data = await getSystemDiagnostics();
+      setDiagnostics(data);
+    } catch (err) {
+      console.error('Benton CAMA reindex failed:', err);
+    } finally {
+      setBentonReindexing(false);
+    }
+  };
+
+  const handleDownloadBentonSnapshot = async () => {
+    setBentonDownloading(true);
+    try {
+      await downloadBentonRagSnapshot();
+    } catch (err) {
+      console.error('Benton RAG snapshot download failed:', err);
+    } finally {
+      setBentonDownloading(false);
+    }
+  };
+
+  /**
+   * Get Benton RAG status color classes - Phase 18
+   */
+  const getBentonRagStatusColor = (status: BentonRagStatus) => {
+    switch (status) {
+      case 'Ready':
+        return 'text-emerald-400 border-emerald-400/60 bg-emerald-500/10';
+      case 'Stale':
+        return 'text-amber-400 border-amber-400/60 bg-amber-500/10';
+      case 'Partial':
+        return 'text-amber-400 border-amber-400/60 bg-amber-500/10';
+      case 'Unindexed':
+        return 'text-rose-400 border-rose-400/60 bg-rose-500/10';
+      default:
+        return 'text-slate-400 border-slate-400/60 bg-slate-500/10';
+    }
+  };
+
+  const getBentonRagStatusIcon = (status: BentonRagStatus) => {
+    switch (status) {
+      case 'Ready':
+        return '✅';
+      case 'Stale':
+        return '⏰';
+      case 'Partial':
+        return '⚠️';
+      case 'Unindexed':
+        return '❌';
+      default:
+        return '❓';
+    }
   };
 
   /**
@@ -502,6 +569,107 @@ export const SystemGptConsoleView: React.FC = () => {
             </div>
           </div>
 
+          {/* Benton CAMA RAG Readiness - Phase 18 */}
+          <div className='rounded-xl border border-violet-800/40 bg-gradient-to-br from-slate-900/80 via-violet-900/10 to-slate-900/80 p-4 md:col-span-2'>
+            <div className='mb-3 flex items-center justify-between'>
+              <div className='flex items-center gap-2'>
+                <span className='text-lg'>🏛️</span>
+                <span className='text-xs font-semibold uppercase tracking-[0.12em] text-violet-300'>
+                  Benton CAMA RAG Readiness
+                </span>
+              </div>
+              {diagnostics.bentonRag && (
+                <div
+                  className={`flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${getBentonRagStatusColor(diagnostics.bentonRag.overallStatus)}`}
+                >
+                  <span>{getBentonRagStatusIcon(diagnostics.bentonRag.overallStatus)}</span>
+                  <span>{diagnostics.bentonRag.overallStatus}</span>
+                </div>
+              )}
+            </div>
+
+            {!diagnostics.bentonRag ? (
+              <div className='flex items-center gap-2 rounded-lg bg-slate-800/30 px-3 py-2 text-xs text-slate-400'>
+                <span>❓</span>
+                <span>No Benton CAMA RAG dataset found.</span>
+              </div>
+            ) : (
+              <div className='space-y-3'>
+                {/* Status reason */}
+                <div className='rounded-lg bg-slate-800/30 px-3 py-2 text-xs text-slate-300'>
+                  {diagnostics.bentonRag.statusReason}
+                </div>
+
+                {/* Stats row */}
+                <div className='grid grid-cols-4 gap-2'>
+                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                    <div className='text-base font-bold text-violet-300'>
+                      {diagnostics.bentonRag.documentCount}
+                    </div>
+                    <div className='text-[0.6rem] text-slate-400'>Documents</div>
+                  </div>
+                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                    <div className='text-base font-bold text-violet-300'>
+                      {diagnostics.bentonRag.embeddingCount}
+                    </div>
+                    <div className='text-[0.6rem] text-slate-400'>Embeddings</div>
+                  </div>
+                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                    <div className='truncate text-[0.65rem] font-medium text-violet-200'>
+                      {diagnostics.bentonRag.lastIngestAt
+                        ? new Date(diagnostics.bentonRag.lastIngestAt).toLocaleDateString()
+                        : '—'}
+                    </div>
+                    <div className='text-[0.55rem] text-slate-400'>Last Ingest</div>
+                  </div>
+                  <div className='rounded-lg border border-slate-700/40 bg-slate-800/30 p-2 text-center'>
+                    <div className='truncate text-[0.65rem] font-medium text-violet-200'>
+                      {diagnostics.bentonRag.lastIndexAt
+                        ? new Date(diagnostics.bentonRag.lastIndexAt).toLocaleDateString()
+                        : '—'}
+                    </div>
+                    <div className='text-[0.55rem] text-slate-400'>Last Index</div>
+                  </div>
+                </div>
+
+                {/* Active GPTs */}
+                {diagnostics.bentonRag.activeGptConfigs.length > 0 && (
+                  <div className='flex flex-wrap gap-1'>
+                    <span className='text-[0.6rem] text-slate-500'>Used by:</span>
+                    {diagnostics.bentonRag.activeGptConfigs.map((gpt) => (
+                      <span
+                        key={gpt}
+                        className='rounded-full border border-violet-600/40 bg-violet-500/10 px-2 py-0.5 text-[0.6rem] text-violet-300'
+                      >
+                        {gpt}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className='flex gap-2 pt-1'>
+                  <button
+                    onClick={() => void handleReindexBentonCama()}
+                    disabled={bentonReindexing}
+                    className='flex items-center gap-1.5 rounded-lg border border-violet-600/50 bg-violet-600/20 px-3 py-1.5 text-xs font-medium text-violet-200 transition-all hover:bg-violet-600/30 disabled:cursor-not-allowed disabled:opacity-50'
+                  >
+                    {bentonReindexing ? '⏳' : '🔄'}{' '}
+                    {bentonReindexing ? 'Reindexing...' : 'Reindex Benton CAMA'}
+                  </button>
+                  <button
+                    onClick={() => void handleDownloadBentonSnapshot()}
+                    disabled={bentonDownloading}
+                    className='flex items-center gap-1.5 rounded-lg border border-slate-600/50 bg-slate-700/30 px-3 py-1.5 text-xs font-medium text-slate-300 transition-all hover:bg-slate-700/50 disabled:cursor-not-allowed disabled:opacity-50'
+                  >
+                    {bentonDownloading ? '⏳' : '📥'}{' '}
+                    {bentonDownloading ? 'Downloading...' : 'Download RAG Snapshot'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Herald Log Card */}
           <div className='rounded-xl border border-slate-800/60 bg-slate-900/50 p-4 md:col-span-2 lg:col-span-1'>
             <div className='mb-3 flex items-center gap-2'>
@@ -558,7 +726,7 @@ export const SystemGptConsoleView: React.FC = () => {
 
       {/* Footer */}
       <div className='mt-4 flex items-center justify-between border-t border-slate-800/60 pt-3 text-[0.65rem] text-slate-500'>
-        <span>Phase 15/17 · SystemGPT Console · TerraFusion OS</span>
+        <span>Phase 15-18 · SystemGPT Console · Benton County Edition · TerraFusion OS</span>
         {diagnostics && (
           <span>Last updated: {new Date(diagnostics.timestamp).toLocaleTimeString()}</span>
         )}

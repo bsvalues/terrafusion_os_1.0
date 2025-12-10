@@ -345,6 +345,9 @@ builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptHealthEvaluator,
 // Phase 17: SystemGPT Safe Mode Service for kill switch functionality
 builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptModeService, TerraFusion.AI.Services.SystemGptModeService>();
 
+// Phase 18: Benton CAMA RAG Readiness Service for county-specific AI health
+builder.Services.AddScoped<TerraFusion.AI.Services.IBentonRagReadinessService, TerraFusion.AI.Services.BentonRagReadinessService>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown

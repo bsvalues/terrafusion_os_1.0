@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TerraFusion.AI.Entities;
 using TerraFusion.AI.Interfaces;
+using TerraFusion.AI.Models;
 using TerraFusion.AI.Services;
 using TerraFusion.Core.Entities;
 
@@ -29,6 +30,7 @@ namespace TerraFusion.API.Controllers
         private readonly IRAGService _ragService;
         private readonly ISystemGptHealthEvaluator? _healthEvaluator;
         private readonly ISystemGptModeService? _modeService;
+        private readonly IBentonRagReadinessService? _bentonRagService; // Phase 18
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
@@ -37,7 +39,8 @@ namespace TerraFusion.API.Controllers
             IRAGService ragService,
             ILogger<GPTController> logger,
             ISystemGptHealthEvaluator? healthEvaluator = null,
-            ISystemGptModeService? modeService = null)
+            ISystemGptModeService? modeService = null,
+            IBentonRagReadinessService? bentonRagService = null) // Phase 18
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
@@ -45,6 +48,7 @@ namespace TerraFusion.API.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _healthEvaluator = healthEvaluator; // Optional - graceful degradation if not registered
             _modeService = modeService; // Optional - Phase 17 Safe Mode
+            _bentonRagService = bentonRagService; // Optional - Phase 18 Benton RAG Readiness
         }
 
         #region GPT Configuration Management
@@ -881,6 +885,20 @@ namespace TerraFusion.API.Controllers
                     ResponseTimeMs = 5
                 };
 
+                // Phase 18: Benton CAMA RAG Readiness
+                if (_bentonRagService != null)
+                {
+                    try
+                    {
+                        diagnostics.BentonRag = await _bentonRagService.GetReadinessAsync();
+                        _logger.LogDebug("Benton CAMA RAG status: {Status}", diagnostics.BentonRag.OverallStatus);
+                    }
+                    catch (Exception bentonEx)
+                    {
+                        _logger.LogWarning(bentonEx, "Failed to get Benton RAG readiness - continuing without it");
+                    }
+                }
+
                 // Usage statistics (placeholder - would query actual DB in production)
                 diagnostics.Statistics = new TerraFusion.AI.Models.UsageStatistics
                 {
@@ -1088,6 +1106,49 @@ namespace TerraFusion.API.Controllers
             {
                 _logger.LogError(ex, "Error getting Safe Mode status");
                 return StatusCode(500, new { error = "Failed to get Safe Mode status" });
+            }
+        }
+
+        /// <summary>
+        /// Download Benton CAMA RAG Readiness Snapshot as JSON file.
+        /// Phase 18: County-specific RAG health export for audits and demos.
+        /// </summary>
+        [HttpGet("rag/benton_cama_basics/export")]
+        [AllowAnonymous] // Allow export without auth for county demos
+        public async System.Threading.Tasks.Task<IActionResult> DownloadBentonRagSnapshot()
+        {
+            try
+            {
+                _logger.LogInformation("Phase 18: Generating Benton CAMA RAG snapshot for export");
+
+                if (_bentonRagService == null)
+                {
+                    return StatusCode(503, new { error = "Benton RAG Readiness service not available" });
+                }
+
+                var snapshot = await _bentonRagService.GenerateSnapshotAsync();
+
+                // Serialize to indented JSON for human readability
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                };
+                var jsonContent = System.Text.Json.JsonSerializer.Serialize(snapshot, options);
+                var bytes = System.Text.Encoding.UTF8.GetBytes(jsonContent);
+
+                // Generate filename with timestamp
+                var timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
+                var filename = $"benton_cama_rag_snapshot_{timestamp}.json";
+
+                _logger.LogInformation("Phase 18: Benton CAMA RAG snapshot generated ({ByteCount} bytes)", bytes.Length);
+
+                return File(bytes, "application/json", filename);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating Benton RAG snapshot");
+                return StatusCode(500, new { error = "Failed to generate Benton RAG snapshot" });
             }
         }
 
