@@ -364,6 +364,9 @@ builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptPolicyEvaluator, Te
 // Phase 26: Autonomous Guardrails - deterministic pre-flight checks for GPT requests
 builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptGuardrailService, TerraFusion.AI.Services.SystemGptGuardrailService>();
 
+// Phase 27: RAG Fleet Readiness - Multi-county RAG comparison and drift detection
+builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptRagFleetService, TerraFusion.AI.Services.SystemGptRagFleetService>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown

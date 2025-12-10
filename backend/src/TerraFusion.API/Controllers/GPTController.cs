@@ -37,6 +37,7 @@ namespace TerraFusion.API.Controllers
         private readonly ICountyPolicyService? _policyService; // Phase 24
         private readonly ISystemGptPolicyEvaluator? _policyEvaluator; // Phase 24
         private readonly ISystemGptGuardrailService? _guardrailService; // Phase 26
+        private readonly ISystemGptRagFleetService? _ragFleetService; // Phase 27
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
@@ -52,7 +53,8 @@ namespace TerraFusion.API.Controllers
             ISystemGptFederatedOverviewService? federatedOverviewService = null,
             ICountyPolicyService? policyService = null, // Phase 24
             ISystemGptPolicyEvaluator? policyEvaluator = null, // Phase 24
-            ISystemGptGuardrailService? guardrailService = null) // Phase 26
+            ISystemGptGuardrailService? guardrailService = null, // Phase 26
+            ISystemGptRagFleetService? ragFleetService = null) // Phase 27
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
@@ -67,6 +69,7 @@ namespace TerraFusion.API.Controllers
             _policyService = policyService; // Optional - Phase 24 AI Policy Engine
             _policyEvaluator = policyEvaluator; // Optional - Phase 24 Policy Evaluator
             _guardrailService = guardrailService; // Optional - Phase 26 Autonomous Guardrails
+            _ragFleetService = ragFleetService; // Optional - Phase 27 RAG Fleet Readiness
         }
 
         // Phase 26: In-memory storage for last guardrail decision per county (for diagnostics)
@@ -1678,6 +1681,87 @@ namespace TerraFusion.API.Controllers
             {
                 _logger.LogError(ex, "Error retrieving all county AI policies");
                 return StatusCode(500, new { error = "Failed to retrieve all county AI policies" });
+            }
+        }
+
+        #endregion
+
+        #region Phase 27: RAG Fleet Readiness & Drift Detection (Multi-County RAG Intelligence)
+
+        /// <summary>
+        /// Get RAG fleet readiness status across all configured counties with drift detection.
+        /// Phase 27: Multi-County RAG Fleet Readiness - Compare county RAG status, detect drift,
+        /// and provide advisory for SystemGPT federated oversight.
+        /// </summary>
+        [HttpGet("system/fleet/rag-readiness")]
+        [AllowAnonymous] // Read-only fleet status - allow for dashboards
+        public async System.Threading.Tasks.Task<ActionResult<RagFleetReadinessDto>> GetRagFleetReadiness()
+        {
+            try
+            {
+                _logger.LogInformation("Phase 27: Fetching RAG Fleet Readiness status across all counties");
+
+                if (_ragFleetService == null)
+                {
+                    _logger.LogWarning("Phase 27: RagFleetService not registered, returning stub response");
+                    return Ok(new RagFleetReadinessDto
+                    {
+                        GeneratedAtUtc = DateTime.UtcNow,
+                        FleetDriftRisk = RagFleetDriftRisk.Low,
+                        Advisory = "RAG Fleet Readiness service not configured. Register ISystemGptRagFleetService to enable multi-county drift detection.",
+                        Counties = new List<RagCountyReadinessDto>()
+                    });
+                }
+
+                var result = await _ragFleetService.GetFleetReadinessAsync();
+
+                // Log drift risk for monitoring
+                if (result.FleetDriftRisk != RagFleetDriftRisk.Low)
+                {
+                    _logger.LogWarning("Phase 27: RAG Fleet drift detected - Risk: {DriftRisk}, Advisory: {Advisory}",
+                        result.FleetDriftRisk, result.Advisory);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching RAG Fleet Readiness");
+                return StatusCode(500, new { error = "Failed to fetch RAG fleet readiness status" });
+            }
+        }
+
+        /// <summary>
+        /// Get RAG readiness status for a specific county within the fleet.
+        /// Phase 27: Per-county detail view for fleet comparison.
+        /// </summary>
+        [HttpGet("system/fleet/rag-readiness/{countyId}")]
+        [AllowAnonymous] // Read-only county status - allow for dashboards
+        public async System.Threading.Tasks.Task<ActionResult<RagCountyReadinessDto>> GetCountyRagReadiness(string countyId)
+        {
+            try
+            {
+                _logger.LogInformation("Phase 27: Fetching RAG readiness for county: {CountyId}", countyId);
+
+                if (_ragFleetService == null)
+                {
+                    _logger.LogWarning("Phase 27: RagFleetService not registered");
+                    return NotFound(new { error = $"RAG Fleet service not configured. County '{countyId}' status unavailable." });
+                }
+
+                var countyReadiness = await _ragFleetService.GetCountyReadinessAsync(countyId);
+                
+                if (countyReadiness == null)
+                {
+                    return NotFound(new { error = $"County '{countyId}' not found in RAG fleet configuration." });
+                }
+
+                return Ok(countyReadiness);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching RAG readiness for county: {CountyId}", countyId);
+                return StatusCode(500, new { error = $"Failed to fetch RAG readiness for county '{countyId}'" });
             }
         }
 

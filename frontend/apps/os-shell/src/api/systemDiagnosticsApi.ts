@@ -628,3 +628,74 @@ export async function getSystemGptFederatedOverview(): Promise<SystemGptFederate
 
   return (await response.json()) as SystemGptFederatedOverviewResponse;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 27: RAG FLEET READINESS & DRIFT DETECTION
+// ═══════════════════════════════════════════════════════════════
+
+/** Phase 27: Drift risk levels for cross-county RAG comparison */
+export type RagFleetDriftRisk = 'Low' | 'Medium' | 'High';
+
+/** Phase 27: Per-county RAG readiness snapshot for fleet comparison */
+export interface RagCountyReadiness {
+  /** County code (e.g., "benton", "yakima") */
+  countyId: string;
+  /** Display name (e.g., "Benton County") */
+  countyName: string;
+  /** Whether this county has RAG services configured */
+  configured: boolean;
+  /** RAG status: "Ready", "Stale", "Partial", "Unindexed", or "Unknown" */
+  ragStatus: string;
+  /** Number of documents in the RAG dataset */
+  documentCount?: number | null;
+  /** Number of embeddings/chunks */
+  embeddingCount?: number | null;
+  /** Last time the RAG index was updated */
+  lastIndexedAtUtc?: string | null;
+  /** Index age in hours */
+  indexAgeHours?: number | null;
+  /** Optional note about this county's RAG status */
+  note?: string | null;
+}
+
+/** Phase 27: RAG Fleet Readiness response with cross-county drift detection */
+export interface RagFleetReadiness {
+  /** Timestamp when this readiness check was generated */
+  generatedAtUtc: string;
+  /** Fleet-wide drift risk level */
+  fleetDriftRisk: RagFleetDriftRisk;
+  /** Human-readable advisory explaining the drift status */
+  advisory: string;
+  /** Per-county RAG readiness data for comparison */
+  counties: readonly RagCountyReadiness[];
+  /** Total counties in the fleet */
+  totalCounties: number;
+  /** Number of counties with RAG configured */
+  configuredCounties: number;
+  /** Number of counties with RAG in "Ready" status */
+  readyCounties: number;
+  /** Drift conditions detected (for diagnostics) */
+  driftConditions: readonly string[];
+}
+
+/**
+ * Fetch RAG fleet readiness status across all configured counties.
+ * Phase 27: Multi-County RAG Fleet Readiness - Detects cross-county drift.
+ */
+export async function fetchRagFleetReadiness(): Promise<RagFleetReadiness> {
+  const url = `${API_BASE_URL}/api/gpt/system/fleet/rag-readiness`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`RAG fleet readiness request failed (${response.status}): ${errorText}`);
+  }
+
+  return (await response.json()) as RagFleetReadiness;
+}
