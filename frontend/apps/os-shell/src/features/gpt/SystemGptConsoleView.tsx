@@ -6,6 +6,7 @@
  * Phase 18: Benton CAMA RAG Readiness Panel
  * Phase 19: AI Incident Timeline
  * Phase 20: Metrics & Telemetry Console
+ * Phase 22: Multi-County Federation Layer
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -16,6 +17,7 @@ import {
   BentonRagStatus,
   downloadBentonRagSnapshot,
   downloadHealthSnapshot,
+  getCountyOption,
   getSystemDiagnostics,
   getSystemGptEvents,
   setSystemGptMode,
@@ -26,6 +28,7 @@ import {
   triggerRagIndex,
 } from '../../api/systemDiagnosticsApi';
 import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
+import { CountySelector, useCountySelection } from './components/CountySelector';
 import { SystemGptMetricsPanel } from './components/SystemGptMetricsPanel';
 
 type LoadState = 'idle' | 'loading' | 'error';
@@ -35,19 +38,23 @@ type LoadState = 'idle' | 'loading' | 'error';
  * Provides county tech leads with visibility into the TerraFusion AI subsystem.
  */
 export const SystemGptConsoleView: React.FC = () => {
+  // Phase 22: County selection state
+  const [selectedCounty, setSelectedCounty] = useCountySelection();
+  const countyInfo = getCountyOption(selectedCounty);
+
   const [diagnostics, setDiagnostics] = useState<SystemDiagnosticsResponse | null>(null);
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [loadError, setLoadError] = useState<string | null>(null);
   const [indexing, setIndexing] = useState(false);
   const [explainState, setExplainState] = useState<ExplainPanelState>({ status: 'idle' });
 
-  // Load diagnostics on mount and periodically
+  // Load diagnostics on mount, periodically, and when county changes
   useEffect(() => {
     const loadDiagnostics = async () => {
       setLoadState('loading');
       setLoadError(null);
       try {
-        const data = await getSystemDiagnostics();
+        const data = await getSystemDiagnostics(selectedCounty);
         setDiagnostics(data);
         setLoadState('idle');
       } catch (err) {
@@ -61,7 +68,7 @@ export const SystemGptConsoleView: React.FC = () => {
     // Refresh every 30 seconds
     const interval = setInterval(loadDiagnostics, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedCounty]); // Phase 22: Reload when county changes
 
   /**
    * Handle RAG index button click
@@ -71,7 +78,7 @@ export const SystemGptConsoleView: React.FC = () => {
     try {
       await triggerRagIndex(datasetKey);
       // Reload diagnostics after indexing
-      const data = await getSystemDiagnostics();
+      const data = await getSystemDiagnostics(selectedCounty);
       setDiagnostics(data);
     } catch (err) {
       console.error('Index failed:', err);
@@ -116,12 +123,12 @@ export const SystemGptConsoleView: React.FC = () => {
   const [eventsLoading, setEventsLoading] = useState(false);
   const [eventFilter, setEventFilter] = useState<'all' | 'warnings' | 'safemode' | 'rag'>('all');
 
-  // Load events on mount and when diagnostics refresh
+  // Load events on mount and when county changes
   useEffect(() => {
     const loadEvents = async () => {
       setEventsLoading(true);
       try {
-        const data = await getSystemGptEvents(undefined, 50);
+        const data = await getSystemGptEvents(selectedCounty, undefined, 50);
         setEvents(data);
       } catch (err) {
         console.error('Failed to load events:', err);
@@ -134,7 +141,7 @@ export const SystemGptConsoleView: React.FC = () => {
     // Refresh events every 60 seconds
     const interval = setInterval(() => void loadEvents(), 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedCounty]); // Phase 22: Reload when county changes
 
   const getFilteredEvents = () => {
     if (eventFilter === 'all') return events;
@@ -376,6 +383,15 @@ export const SystemGptConsoleView: React.FC = () => {
               SystemGPT Console
             </div>
             <div className='text-[0.7rem] text-slate-400'>AI Control Center for TerraFusion OS</div>
+          </div>
+
+          {/* Phase 22: County Selector */}
+          <div className='ml-4 border-l border-slate-700 pl-4'>
+            <CountySelector
+              selectedCountyId={selectedCounty}
+              onCountyChange={setSelectedCounty}
+              disabled={loadState === 'loading'}
+            />
           </div>
         </div>
 
@@ -884,6 +900,7 @@ export const SystemGptConsoleView: React.FC = () => {
             className='rounded-xl border border-cyan-800/40 bg-gradient-to-br from-slate-900/80 via-cyan-900/10 to-slate-900/80 p-4 md:col-span-2 lg:col-span-3'
           >
             <SystemGptMetricsPanel
+              countyId={selectedCounty}
               windowMinutes={15}
               maxSeriesPoints={40}
               refreshIntervalMs={30000}
@@ -894,7 +911,7 @@ export const SystemGptConsoleView: React.FC = () => {
 
       {/* Footer */}
       <div className='mt-4 flex items-center justify-between border-t border-slate-800/60 pt-3 text-[0.65rem] text-slate-500'>
-        <span>Phase 15-20 · SystemGPT Console · Benton County Edition · TerraFusion OS</span>
+        <span>Phase 15-22 · SystemGPT Console · {countyInfo.displayName} · TerraFusion OS</span>
         {diagnostics && (
           <span>Last updated: {new Date(diagnostics.timestamp).toLocaleTimeString()}</span>
         )}

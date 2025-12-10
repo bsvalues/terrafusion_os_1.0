@@ -6,12 +6,44 @@
  * Phase 18: Benton CAMA RAG Readiness Panel
  * Phase 19: AI Incident Timeline
  * Phase 20: Metrics & Telemetry Console
+ * Phase 22: Multi-County Federation Layer
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
 
 // API Base URL - uses deterministic port 5000
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 22: COUNTY FEDERATION TYPES
+// ═══════════════════════════════════════════════════════════════
+
+/** Phase 22: County identifiers for multi-county federation */
+export type CountyId = 'benton' | 'yakima' | 'franklin';
+
+/** Phase 22: County metadata for display and selection */
+export interface CountyOption {
+  id: CountyId;
+  displayName: string;
+  isConfigured: boolean;
+  state: string;
+}
+
+/** Phase 22: Available counties for the county selector */
+export const COUNTY_OPTIONS: CountyOption[] = [
+  { id: 'benton', displayName: 'Benton County', isConfigured: true, state: 'WA' },
+  { id: 'yakima', displayName: 'Yakima County', isConfigured: false, state: 'WA' },
+  { id: 'franklin', displayName: 'Franklin County', isConfigured: false, state: 'WA' },
+];
+
+/** Phase 22: Default county (Benton) */
+export const DEFAULT_COUNTY_ID: CountyId = 'benton';
+
+/** Phase 22: Get county option by ID */
+export function getCountyOption(countyId: CountyId | string | undefined): CountyOption {
+  const found = COUNTY_OPTIONS.find((c) => c.id === countyId);
+  return found ?? COUNTY_OPTIONS[0]; // Default to Benton
+}
 
 // ═══════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS
@@ -117,6 +149,12 @@ export interface SystemGptEvent {
 }
 
 export interface SystemDiagnosticsResponse {
+  /** Phase 22: County identifier for this snapshot */
+  countyId: string;
+  /** Phase 22: County display name */
+  countyName: string;
+  /** Phase 22: Whether this county has AI/RAG services configured */
+  countyConfigured: boolean;
   overallHealth: SystemHealthStatus;
   /** Phase 17: Current operational mode */
   mode: SystemGptMode;
@@ -160,9 +198,20 @@ export interface SetSystemGptModeResponse {
 /**
  * Fetch system diagnostics snapshot.
  * Phase 15: AI Control Center for county tech leads.
+ * Phase 22: Multi-county federation - optional countyId parameter.
+ * @param countyId - County identifier (benton, yakima, franklin). Defaults to Benton.
  */
-export async function getSystemDiagnostics(): Promise<SystemDiagnosticsResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/gpt/system/diagnostics`, {
+export async function getSystemDiagnostics(
+  countyId?: CountyId
+): Promise<SystemDiagnosticsResponse> {
+  const params = new URLSearchParams();
+  if (countyId) {
+    params.set('countyId', countyId);
+  }
+  const queryString = params.toString();
+  const url = `${API_BASE_URL}/api/gpt/system/diagnostics${queryString ? `?${queryString}` : ''}`;
+
+  const response = await fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -324,14 +373,20 @@ export async function downloadBentonRagSnapshot(): Promise<void> {
 /**
  * Fetch recent AI system events for timeline display.
  * Phase 19: AI Incident Timeline - "What happened to the AI system this week?"
+ * Phase 22: Multi-county federation - optional countyId parameter.
+ * @param countyId - County identifier (benton, yakima, franklin). Defaults to Benton.
  * @param since - Optional ISO timestamp to filter events after this time
  * @param limit - Maximum number of events to return (default: 50, max: 100)
  */
 export async function getSystemGptEvents(
+  countyId?: CountyId,
   since?: string,
   limit: number = 50
 ): Promise<SystemGptEvent[]> {
   const params = new URLSearchParams();
+  if (countyId) {
+    params.append('countyId', countyId);
+  }
   if (since) {
     params.append('since', since);
   }
@@ -373,6 +428,13 @@ export interface SystemGptMetricSeries {
 
 /** Phase 20: Comprehensive metrics snapshot for telemetry console */
 export interface SystemGptMetricsSnapshot {
+  /** Phase 22: County identifier for this snapshot */
+  countyId: string;
+  /** Phase 22: County display name */
+  countyName: string;
+  /** Phase 22: Whether this county has AI/RAG services configured */
+  countyConfigured: boolean;
+
   generatedAtUtc: string;
   windowMinutes: number;
 
@@ -427,14 +489,20 @@ export interface SystemGptCapacityPrediction {
 /**
  * Fetch SystemGPT metrics snapshot for telemetry display.
  * Phase 20: AI Metrics & Telemetry - "How fast is GPT right now?"
+ * Phase 22: Multi-county federation - optional countyId parameter.
+ * @param countyId - County identifier (benton, yakima, franklin). Defaults to Benton.
  * @param windowMinutes - Time window in minutes (default: 15, max: 60)
  * @param maxSeriesPoints - Maximum data points per series (default: 50, max: 200)
  */
 export async function getSystemGptMetrics(
+  countyId?: CountyId,
   windowMinutes: number = 15,
   maxSeriesPoints: number = 50
 ): Promise<SystemGptMetricsSnapshot> {
   const params = new URLSearchParams();
+  if (countyId) {
+    params.append('countyId', countyId);
+  }
   params.append('windowMinutes', String(Math.min(windowMinutes, 60)));
   params.append('maxSeriesPoints', String(Math.min(maxSeriesPoints, 200)));
 

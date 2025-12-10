@@ -2,6 +2,7 @@
  * ═══════════════════════════════════════════════════════════════
  * SYSTEMGPT METRICS PANEL
  * Phase 20: AI Metrics & Telemetry Console
+ * Phase 22: Multi-County Federation Layer
  * "How fast is GPT right now?" "What's our error rate?" "How busy is the AI?"
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
@@ -9,6 +10,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
+  type CountyId,
   getSystemGptMetrics,
   type SystemGptMetricSeries,
   type SystemGptMetricsSnapshot,
@@ -145,6 +147,8 @@ function StatCard({ label, value, unit, subtext, color = 'cyan' }: StatCardProps
 // ═══════════════════════════════════════════════════════════════
 
 interface SystemGptMetricsPanelProps {
+  /** Phase 22: County identifier for metrics */
+  countyId?: CountyId;
   windowMinutes?: number;
   maxSeriesPoints?: number;
   refreshIntervalMs?: number;
@@ -156,19 +160,20 @@ type MetricsState =
   | { status: 'ready'; data: SystemGptMetricsSnapshot };
 
 export function SystemGptMetricsPanel({
+  countyId,
   windowMinutes = 15,
   maxSeriesPoints = 40,
   refreshIntervalMs = 30000, // 30 second refresh
 }: SystemGptMetricsPanelProps) {
   const [state, setState] = useState<MetricsState>({ status: 'loading' });
 
-  // Fetch metrics
+  // Fetch metrics - Phase 22: Reload when county changes
   useEffect(() => {
     let cancelled = false;
 
     const fetchMetrics = async () => {
       try {
-        const data = await getSystemGptMetrics(windowMinutes, maxSeriesPoints);
+        const data = await getSystemGptMetrics(countyId, windowMinutes, maxSeriesPoints);
         if (!cancelled) {
           setState({ status: 'ready', data });
         }
@@ -191,7 +196,7 @@ export function SystemGptMetricsPanel({
       cancelled = true;
       clearInterval(interval);
     };
-  }, [windowMinutes, maxSeriesPoints, refreshIntervalMs]);
+  }, [countyId, windowMinutes, maxSeriesPoints, refreshIntervalMs]); // Phase 22: Reload when county changes
 
   // Extract series by name
   const seriesByName = useMemo(() => {

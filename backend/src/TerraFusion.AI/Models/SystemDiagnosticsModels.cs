@@ -30,6 +30,21 @@ namespace TerraFusion.AI.Models
     public class SystemDiagnosticsResponse
     {
         /// <summary>
+        /// Phase 22: County identifier for this diagnostics snapshot.
+        /// </summary>
+        public string CountyId { get; set; } = "benton";
+
+        /// <summary>
+        /// Phase 22: County display name.
+        /// </summary>
+        public string CountyName { get; set; } = "Benton County";
+
+        /// <summary>
+        /// Phase 22: Whether this county has full AI/RAG services configured.
+        /// </summary>
+        public bool CountyConfigured { get; set; } = true;
+
+        /// <summary>
         /// Overall system health status.
         /// </summary>
         public SystemHealthStatus OverallHealth { get; set; } = SystemHealthStatus.Unknown;
@@ -619,6 +634,15 @@ namespace TerraFusion.AI.Models
     /// </summary>
     public sealed class SystemGptMetricsSnapshotDto
     {
+        /// <summary>Phase 22: County identifier for this metrics snapshot.</summary>
+        public string CountyId { get; init; } = "benton";
+
+        /// <summary>Phase 22: County display name.</summary>
+        public string CountyName { get; init; } = "Benton County";
+
+        /// <summary>Phase 22: Whether this county has full AI/RAG services configured.</summary>
+        public bool CountyConfigured { get; init; } = true;
+
         /// <summary>When this snapshot was generated.</summary>
         public DateTimeOffset GeneratedAtUtc { get; init; }
 

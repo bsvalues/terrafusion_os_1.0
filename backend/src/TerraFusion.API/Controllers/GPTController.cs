@@ -822,20 +822,32 @@ namespace TerraFusion.API.Controllers
         /// <summary>
         /// Get comprehensive diagnostics for the TerraFusion AI subsystem.
         /// Phase 15: SystemGPT Console - Visible, controllable AI surface for county tech leads.
+        /// Phase 22: Multi-county federation - optional countyId parameter (defaults to Benton).
         /// </summary>
+        /// <param name="countyId">County identifier (benton, yakima, franklin). Defaults to Benton if omitted.</param>
         [HttpGet("system/diagnostics")]
         [AllowAnonymous] // Allow diagnostics without auth for health monitoring
-        public async System.Threading.Tasks.Task<ActionResult<TerraFusion.AI.Models.SystemDiagnosticsResponse>> GetSystemDiagnostics()
+        public async System.Threading.Tasks.Task<ActionResult<TerraFusion.AI.Models.SystemDiagnosticsResponse>> GetSystemDiagnostics(
+            [FromQuery] string? countyId = null)
         {
             try
             {
+                var county = TerraFusion.AI.Models.CountyHelper.ParseCountyIdOrDefault(countyId);
+                var countyInfo = TerraFusion.AI.Models.CountyHelper.GetCountyInfo(county);
+
                 var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-                _logger.LogInformation("SystemGPT: Generating diagnostics snapshot");
+                _logger.LogInformation("SystemGPT: Generating diagnostics snapshot for {County}", countyInfo.DisplayName);
 
                 var diagnostics = new TerraFusion.AI.Models.SystemDiagnosticsResponse
                 {
                     Timestamp = DateTime.UtcNow,
-                    OverallHealth = TerraFusion.AI.Models.SystemHealthStatus.Healthy,
+                    // Phase 22: County federation fields
+                    CountyId = countyInfo.Code,
+                    CountyName = countyInfo.DisplayName,
+                    CountyConfigured = countyInfo.IsConfigured,
+                    OverallHealth = countyInfo.IsConfigured
+                        ? TerraFusion.AI.Models.SystemHealthStatus.Healthy
+                        : TerraFusion.AI.Models.SystemHealthStatus.Degraded,
                     // Phase 17: Include Safe Mode status
                     Mode = _modeService?.CurrentMode ?? TerraFusion.AI.Models.SystemGptMode.Normal,
                     ModeReason = _modeService?.CurrentReason,
@@ -843,7 +855,42 @@ namespace TerraFusion.API.Controllers
                     ModeChangedAt = _modeService?.ChangedAt
                 };
 
-                // Gather GPT configurations
+                // Phase 22: Non-Benton counties return placeholder diagnostics
+                if (!countyInfo.IsConfigured)
+                {
+                    diagnostics.HeraldMessages = new List<TerraFusion.AI.Models.HeraldMessage>
+                    {
+                        new()
+                        {
+                            Level = "Warning",
+                            Message = $"{countyInfo.DisplayName} AI services are not yet configured. RAG and GPT features are unavailable for this county.",
+                            Timestamp = DateTime.UtcNow,
+                            Source = "Herald"
+                        }
+                    };
+                    diagnostics.GptConfigs = new List<TerraFusion.AI.Models.GptConfigSummary>();
+                    diagnostics.RagDatasets = new List<TerraFusion.AI.Models.RagDatasetSummary>();
+                    diagnostics.EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
+                    {
+                        Mode = "NotConfigured",
+                        Available = false,
+                        Provider = "None",
+                        Dimensions = 0
+                    };
+                    diagnostics.ExplainGptStatus = new TerraFusion.AI.Models.ServiceStatus
+                    {
+                        Healthy = false,
+                        Message = $"{countyInfo.DisplayName} ExplainGPT not configured"
+                    };
+                    diagnostics.Statistics = new TerraFusion.AI.Models.UsageStatistics();
+
+                    stopwatch.Stop();
+                    _logger.LogInformation("SystemGPT: Non-configured county diagnostics returned for {County} in {ElapsedMs}ms",
+                        countyInfo.DisplayName, stopwatch.ElapsedMilliseconds);
+                    return Ok(diagnostics);
+                }
+
+                // Gather GPT configurations (Benton only for now)
                 var gpts = await _configService.GetAllConfigurationsAsync();
                 diagnostics.GptConfigs = gpts.Select(g => new TerraFusion.AI.Models.GptConfigSummary
                 {
@@ -1185,17 +1232,30 @@ namespace TerraFusion.API.Controllers
         /// <summary>
         /// Get recent SystemGPT events for AI incident timeline.
         /// Phase 19: Chronological list of key AI events (Safe Mode toggles, RAG reindexes, health transitions, exports).
+        /// Phase 22: Multi-county federation - optional countyId parameter (defaults to Benton).
         /// </summary>
+        /// <param name="countyId">County identifier (benton, yakima, franklin). Defaults to Benton if omitted.</param>
         /// <param name="since">Optional UTC timestamp to filter events after this time</param>
         /// <param name="limit">Maximum number of events to return (default: 50, max: 100)</param>
         [HttpGet("system/events")]
         [AllowAnonymous] // Allow event viewing without auth for county monitoring dashboards
         public async System.Threading.Tasks.Task<ActionResult<IReadOnlyList<TerraFusion.AI.Models.SystemGptEventDto>>> GetSystemEvents(
+            [FromQuery] string? countyId = null,
             [FromQuery] DateTimeOffset? since = null,
             [FromQuery] int limit = 50)
         {
             try
             {
+                var county = TerraFusion.AI.Models.CountyHelper.ParseCountyIdOrDefault(countyId);
+                var countyInfo = TerraFusion.AI.Models.CountyHelper.GetCountyInfo(county);
+
+                // Phase 22: Non-configured counties return empty events list
+                if (!countyInfo.IsConfigured)
+                {
+                    _logger.LogDebug("Phase 22: Returning empty events for non-configured county {County}", countyInfo.DisplayName);
+                    return Ok(Array.Empty<TerraFusion.AI.Models.SystemGptEventDto>());
+                }
+
                 if (_eventService == null)
                 {
                     // Return empty list if service not registered (graceful degradation)
@@ -1207,7 +1267,7 @@ namespace TerraFusion.API.Controllers
 
                 var events = await _eventService.GetRecentEventsAsync(since, clampedLimit, HttpContext.RequestAborted);
 
-                _logger.LogDebug("Phase 19: Returning {EventCount} system events", events.Count);
+                _logger.LogDebug("Phase 19: Returning {EventCount} system events for {County}", events.Count, countyInfo.DisplayName);
 
                 return Ok(events);
             }
@@ -1221,22 +1281,55 @@ namespace TerraFusion.API.Controllers
         /// <summary>
         /// Get SystemGPT metrics snapshot for AI telemetry console.
         /// Phase 20: Real-time AI performance metrics - latency, throughput, error rate, tokens.
+        /// Phase 22: Multi-county federation - optional countyId parameter (defaults to Benton).
         /// </summary>
+        /// <param name="countyId">County identifier (benton, yakima, franklin). Defaults to Benton if omitted.</param>
         /// <param name="windowMinutes">Time window in minutes (default: 15, max: 60)</param>
         /// <param name="maxSeriesPoints">Maximum data points per time series (default: 50, max: 200)</param>
         [HttpGet("system/metrics")]
         [AllowAnonymous] // Allow metrics viewing without auth for county monitoring dashboards
         public ActionResult<TerraFusion.AI.Models.SystemGptMetricsSnapshotDto> GetSystemMetrics(
+            [FromQuery] string? countyId = null,
             [FromQuery] int? windowMinutes = null,
             [FromQuery] int? maxSeriesPoints = null)
         {
             try
             {
+                var county = TerraFusion.AI.Models.CountyHelper.ParseCountyIdOrDefault(countyId);
+                var countyInfo = TerraFusion.AI.Models.CountyHelper.GetCountyInfo(county);
+
+                // Phase 22: Non-configured counties return empty metrics snapshot
+                if (!countyInfo.IsConfigured)
+                {
+                    _logger.LogDebug("Phase 22: Returning empty metrics for non-configured county {County}", countyInfo.DisplayName);
+                    return Ok(new TerraFusion.AI.Models.SystemGptMetricsSnapshotDto
+                    {
+                        CountyId = countyInfo.Code,
+                        CountyName = countyInfo.DisplayName,
+                        CountyConfigured = false,
+                        GeneratedAtUtc = DateTimeOffset.UtcNow,
+                        WindowMinutes = windowMinutes ?? 15,
+                        GptLatencyMsP50 = 0,
+                        GptLatencyMsP95 = 0,
+                        RagLatencyMsP95 = 0,
+                        EmbeddingLatencyMsP95 = 0,
+                        RequestsPerMinute = 0,
+                        ErrorRatePercent = 0,
+                        TotalRequests = 0,
+                        TotalTokensIn = 0,
+                        TotalTokensOut = 0,
+                        Series = Array.Empty<TerraFusion.AI.Models.SystemGptMetricSeries>()
+                    });
+                }
+
                 if (_metricsService == null)
                 {
                     // Return empty snapshot if service not registered (graceful degradation)
                     return Ok(new TerraFusion.AI.Models.SystemGptMetricsSnapshotDto
                     {
+                        CountyId = countyInfo.Code,
+                        CountyName = countyInfo.DisplayName,
+                        CountyConfigured = true,
                         GeneratedAtUtc = DateTimeOffset.UtcNow,
                         WindowMinutes = windowMinutes ?? 15,
                         GptLatencyMsP50 = 0,
@@ -1258,8 +1351,8 @@ namespace TerraFusion.API.Controllers
 
                 var snapshot = _metricsService.GetSnapshot(window, maxPoints);
 
-                _logger.LogDebug("Phase 20: Returning metrics snapshot - {TotalRequests} requests in {WindowMinutes}min window",
-                    snapshot.TotalRequests, snapshot.WindowMinutes);
+                _logger.LogDebug("Phase 20: Returning metrics snapshot for {County} - {TotalRequests} requests in {WindowMinutes}min window",
+                    countyInfo.DisplayName, snapshot.TotalRequests, snapshot.WindowMinutes);
 
                 return Ok(snapshot);
             }
