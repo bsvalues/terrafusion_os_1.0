@@ -32,6 +32,7 @@ namespace TerraFusion.API.Controllers
         private readonly ISystemGptModeService? _modeService;
         private readonly IBentonRagReadinessService? _bentonRagService; // Phase 18
         private readonly ISystemGptEventService? _eventService; // Phase 19
+        private readonly ISystemGptMetricsService? _metricsService; // Phase 20
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
@@ -42,7 +43,8 @@ namespace TerraFusion.API.Controllers
             ISystemGptHealthEvaluator? healthEvaluator = null,
             ISystemGptModeService? modeService = null,
             IBentonRagReadinessService? bentonRagService = null,
-            ISystemGptEventService? eventService = null) // Phase 19
+            ISystemGptEventService? eventService = null,
+            ISystemGptMetricsService? metricsService = null) // Phase 20
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
@@ -52,6 +54,7 @@ namespace TerraFusion.API.Controllers
             _modeService = modeService; // Optional - Phase 17 Safe Mode
             _bentonRagService = bentonRagService; // Optional - Phase 18 Benton RAG Readiness
             _eventService = eventService; // Optional - Phase 19 AI Incident Timeline
+            _metricsService = metricsService; // Optional - Phase 20 AI Metrics & Telemetry
         }
 
         #region GPT Configuration Management
@@ -1212,6 +1215,58 @@ namespace TerraFusion.API.Controllers
             {
                 _logger.LogError(ex, "Error retrieving system events");
                 return StatusCode(500, new { error = "Failed to retrieve system events" });
+            }
+        }
+
+        /// <summary>
+        /// Get SystemGPT metrics snapshot for AI telemetry console.
+        /// Phase 20: Real-time AI performance metrics - latency, throughput, error rate, tokens.
+        /// </summary>
+        /// <param name="windowMinutes">Time window in minutes (default: 15, max: 60)</param>
+        /// <param name="maxSeriesPoints">Maximum data points per time series (default: 50, max: 200)</param>
+        [HttpGet("system/metrics")]
+        [AllowAnonymous] // Allow metrics viewing without auth for county monitoring dashboards
+        public ActionResult<TerraFusion.AI.Models.SystemGptMetricsSnapshotDto> GetSystemMetrics(
+            [FromQuery] int? windowMinutes = null,
+            [FromQuery] int? maxSeriesPoints = null)
+        {
+            try
+            {
+                if (_metricsService == null)
+                {
+                    // Return empty snapshot if service not registered (graceful degradation)
+                    return Ok(new TerraFusion.AI.Models.SystemGptMetricsSnapshotDto
+                    {
+                        GeneratedAtUtc = DateTimeOffset.UtcNow,
+                        WindowMinutes = windowMinutes ?? 15,
+                        GptLatencyMsP50 = 0,
+                        GptLatencyMsP95 = 0,
+                        RagLatencyMsP95 = 0,
+                        EmbeddingLatencyMsP95 = 0,
+                        RequestsPerMinute = 0,
+                        ErrorRatePercent = 0,
+                        TotalRequests = 0,
+                        TotalTokensIn = 0,
+                        TotalTokensOut = 0,
+                        Series = Array.Empty<TerraFusion.AI.Models.SystemGptMetricSeries>()
+                    });
+                }
+
+                // Clamp parameters to reasonable ranges
+                var window = TimeSpan.FromMinutes(Math.Clamp(windowMinutes ?? 15, 1, 60));
+                var maxPoints = Math.Clamp(maxSeriesPoints ?? 50, 1, 200);
+
+                var snapshot = _metricsService.GetSnapshot(window, maxPoints);
+
+                _logger.LogDebug("Phase 20: Returning metrics snapshot - {TotalRequests} requests in {WindowMinutes}min window",
+                    snapshot.TotalRequests, snapshot.WindowMinutes);
+
+                return Ok(snapshot);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving system metrics");
+                return StatusCode(500, new { error = "Failed to retrieve system metrics" });
             }
         }
 

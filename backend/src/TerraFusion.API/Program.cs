@@ -351,6 +351,9 @@ builder.Services.AddScoped<TerraFusion.AI.Services.IBentonRagReadinessService, T
 // Phase 19: SystemGPT Event Service for AI incident timeline
 builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptEventService, TerraFusion.AI.Services.SystemGptEventService>();
 
+// Phase 20: SystemGPT Metrics Service for AI telemetry console
+builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptMetricsService, TerraFusion.AI.Services.SystemGptMetricsService>();
+
 // Register database services
 builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializationService>();
 // TEMPORARILY DISABLED - StartAsync completes immediately, causing shutdown

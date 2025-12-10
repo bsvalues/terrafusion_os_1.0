@@ -4,6 +4,7 @@
 // Phase 17: Safe Mode & Kill Switch
 // Phase 18: Benton CAMA RAG Readiness Panel
 // Phase 19: AI Incident Timeline
+// Phase 20: Metrics & Telemetry Console
 // Government. Transcended.
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -582,4 +583,86 @@ namespace TerraFusion.AI.Models
         /// </summary>
         public string? CorrelationId { get; init; }
     }
+
+    #region Phase 20: Metrics & Telemetry
+
+    /// <summary>
+    /// Phase 20: A single data point in a metrics time series.
+    /// </summary>
+    public sealed class SystemGptMetricSeriesPoint
+    {
+        /// <summary>UTC timestamp for this data point.</summary>
+        public DateTimeOffset TimestampUtc { get; init; }
+
+        /// <summary>The metric value at this timestamp.</summary>
+        public double Value { get; init; }
+    }
+
+    /// <summary>
+    /// Phase 20: A named time series of metric values (for sparkline charts).
+    /// </summary>
+    public sealed class SystemGptMetricSeries
+    {
+        /// <summary>Metric name, e.g. "gpt_latency_ms_p95".</summary>
+        public string Name { get; init; } = string.Empty;
+
+        /// <summary>Unit of measurement, e.g. "ms", "req/min", "%".</summary>
+        public string Unit { get; init; } = string.Empty;
+
+        /// <summary>Data points for the time series.</summary>
+        public IReadOnlyList<SystemGptMetricSeriesPoint> Points { get; init; } = Array.Empty<SystemGptMetricSeriesPoint>();
+    }
+
+    /// <summary>
+    /// Phase 20: Comprehensive metrics snapshot for the SystemGPT Telemetry Console.
+    /// Answers: "How fast is GPT?", "What's our error rate?", "How busy is the AI?"
+    /// </summary>
+    public sealed class SystemGptMetricsSnapshotDto
+    {
+        /// <summary>When this snapshot was generated.</summary>
+        public DateTimeOffset GeneratedAtUtc { get; init; }
+
+        /// <summary>Time window in minutes that this snapshot covers.</summary>
+        public int WindowMinutes { get; init; }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // High-level stats (quick display cards)
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>GPT completion latency - 50th percentile (median) in ms.</summary>
+        public double GptLatencyMsP50 { get; init; }
+
+        /// <summary>GPT completion latency - 95th percentile in ms.</summary>
+        public double GptLatencyMsP95 { get; init; }
+
+        /// <summary>RAG retrieval latency - 95th percentile in ms.</summary>
+        public double RagLatencyMsP95 { get; init; }
+
+        /// <summary>Embedding generation latency - 95th percentile in ms.</summary>
+        public double EmbeddingLatencyMsP95 { get; init; }
+
+        /// <summary>Average requests per minute in the window.</summary>
+        public double RequestsPerMinute { get; init; }
+
+        /// <summary>Error rate as a percentage (0–100).</summary>
+        public double ErrorRatePercent { get; init; }
+
+        /// <summary>Total requests in the window.</summary>
+        public long TotalRequests { get; init; }
+
+        /// <summary>Total input tokens processed in the window.</summary>
+        public long TotalTokensIn { get; init; }
+
+        /// <summary>Total output tokens generated in the window.</summary>
+        public long TotalTokensOut { get; init; }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // Time series for sparkline charts
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>Time series data for charting (latency, throughput, errors over time).</summary>
+        public IReadOnlyList<SystemGptMetricSeries> Series { get; init; } = Array.Empty<SystemGptMetricSeries>();
+    }
+
+    #endregion
 }

@@ -5,6 +5,7 @@
  * Phase 17: Safe Mode & Kill Switch
  * Phase 18: Benton CAMA RAG Readiness Panel
  * Phase 19: AI Incident Timeline
+ * Phase 20: Metrics & Telemetry Console
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -351,4 +352,74 @@ export async function getSystemGptEvents(
   }
 
   return (await response.json()) as SystemGptEvent[];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 20: METRICS & TELEMETRY CONSOLE API
+// ═══════════════════════════════════════════════════════════════
+
+/** Phase 20: A single data point in a metrics time series */
+export interface SystemGptMetricSeriesPoint {
+  timestampUtc: string;
+  value: number;
+}
+
+/** Phase 20: A named time series of metric values (for sparkline charts) */
+export interface SystemGptMetricSeries {
+  name: string;
+  unit: string;
+  points: SystemGptMetricSeriesPoint[];
+}
+
+/** Phase 20: Comprehensive metrics snapshot for telemetry console */
+export interface SystemGptMetricsSnapshot {
+  generatedAtUtc: string;
+  windowMinutes: number;
+
+  // High-level stats
+  gptLatencyMsP50: number;
+  gptLatencyMsP95: number;
+  ragLatencyMsP95: number;
+  embeddingLatencyMsP95: number;
+
+  requestsPerMinute: number;
+  errorRatePercent: number;
+  totalRequests: number;
+
+  totalTokensIn: number;
+  totalTokensOut: number;
+
+  // Time series for charts
+  series: SystemGptMetricSeries[];
+}
+
+/**
+ * Fetch SystemGPT metrics snapshot for telemetry display.
+ * Phase 20: AI Metrics & Telemetry - "How fast is GPT right now?"
+ * @param windowMinutes - Time window in minutes (default: 15, max: 60)
+ * @param maxSeriesPoints - Maximum data points per series (default: 50, max: 200)
+ */
+export async function getSystemGptMetrics(
+  windowMinutes: number = 15,
+  maxSeriesPoints: number = 50
+): Promise<SystemGptMetricsSnapshot> {
+  const params = new URLSearchParams();
+  params.append('windowMinutes', String(Math.min(windowMinutes, 60)));
+  params.append('maxSeriesPoints', String(Math.min(maxSeriesPoints, 200)));
+
+  const url = `${API_BASE_URL}/api/gpt/system/metrics?${params.toString()}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`System metrics request failed (${response.status}): ${errorText}`);
+  }
+
+  return (await response.json()) as SystemGptMetricsSnapshot;
 }

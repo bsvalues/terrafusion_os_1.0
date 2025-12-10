@@ -5,6 +5,7 @@
  * Phase 17: Safe Mode & Kill Switch
  * Phase 18: Benton CAMA RAG Readiness Panel
  * Phase 19: AI Incident Timeline
+ * Phase 20: Metrics & Telemetry Console
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -25,6 +26,7 @@ import {
   triggerRagIndex,
 } from '../../api/systemDiagnosticsApi';
 import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
+import { SystemGptMetricsPanel } from './components/SystemGptMetricsPanel';
 
 type LoadState = 'idle' | 'loading' | 'error';
 
@@ -875,12 +877,20 @@ export const SystemGptConsoleView: React.FC = () => {
               </div>
             )}
           </div>
+
+          {/* AI Metrics & Telemetry - Phase 20 */}
+          <div
+            data-testid='ai-metrics-panel'
+            className='rounded-xl border border-cyan-800/40 bg-gradient-to-br from-slate-900/80 via-cyan-900/10 to-slate-900/80 p-4 md:col-span-2 lg:col-span-3'
+          >
+            <SystemGptMetricsPanel windowMinutes={15} maxSeriesPoints={40} refreshIntervalMs={30000} />
+          </div>
         </div>
       )}
 
       {/* Footer */}
       <div className='mt-4 flex items-center justify-between border-t border-slate-800/60 pt-3 text-[0.65rem] text-slate-500'>
-        <span>Phase 15-19 · SystemGPT Console · Benton County Edition · TerraFusion OS</span>
+        <span>Phase 15-20 · SystemGPT Console · Benton County Edition · TerraFusion OS</span>
         {diagnostics && (
           <span>Last updated: {new Date(diagnostics.timestamp).toLocaleTimeString()}</span>
         )}

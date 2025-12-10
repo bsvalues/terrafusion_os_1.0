@@ -2695,4 +2695,194 @@ Decision Timeline: 30 days from hearing",
       Assert.True(events.Count <= TerraFusion.AI.Services.SystemGptEventService.MaxEventCapacity);
     }
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // PHASE 20: SYSTEMGPT METRICS SERVICE TESTS
+  // "How fast is GPT right now?" "What's our error rate?" "How busy is the AI?"
+  // ═══════════════════════════════════════════════════════════════════════════════
+
+  /// <summary>
+  /// Phase 20: Unit tests for SystemGPT Metrics Service.
+  /// Tests metrics collection, aggregation, and snapshot generation.
+  /// </summary>
+  public class SystemGptMetricsServiceTests
+  {
+    [Fact]
+    public void MetricsSnapshot_WithNoSamples_ReturnsZeros()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptMetricsService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptMetricsService(logger);
+
+      // Act
+      var snapshot = service.GetSnapshot(TimeSpan.FromMinutes(15));
+
+      // Assert
+      Assert.Equal(0, snapshot.TotalRequests);
+      Assert.Equal(0, snapshot.RequestsPerMinute);
+      Assert.Equal(0, snapshot.ErrorRatePercent);
+      Assert.Equal(0, snapshot.GptLatencyMsP50);
+      Assert.Equal(0, snapshot.GptLatencyMsP95);
+      Assert.Equal(0, snapshot.RagLatencyMsP95);
+      Assert.Equal(0, snapshot.EmbeddingLatencyMsP95);
+      Assert.Equal(0, snapshot.TotalTokensIn);
+      Assert.Equal(0, snapshot.TotalTokensOut);
+      Assert.Empty(snapshot.Series);
+    }
+
+    [Fact]
+    public void MetricsSnapshot_WithKnownSamples_ComputesCorrectStats()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptMetricsService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptMetricsService(logger);
+
+      // Record 10 samples with known latencies: 100, 200, 300, ..., 1000ms
+      for (int i = 1; i <= 10; i++)
+      {
+        service.RecordSample(
+          latencyMs: i * 100,
+          success: i != 5, // 1 failure
+          tokensIn: i * 10,
+          tokensOut: i * 5);
+      }
+
+      // Act
+      var snapshot = service.GetSnapshot(TimeSpan.FromMinutes(15));
+
+      // Assert
+      Assert.Equal(10, snapshot.TotalRequests);
+      Assert.Equal(10, snapshot.ErrorRatePercent); // 1/10 = 10%
+      Assert.Equal(550, snapshot.TotalTokensIn); // Sum of 10+20+...+100
+      Assert.Equal(275, snapshot.TotalTokensOut); // Sum of 5+10+...+50
+
+      // p50 should be around 500-600ms (median of 100-1000)
+      Assert.InRange(snapshot.GptLatencyMsP50, 400, 600);
+      // p95 should be around 900-1000ms
+      Assert.InRange(snapshot.GptLatencyMsP95, 900, 1000);
+    }
+
+    [Fact]
+    public void MetricsSnapshot_WithRagLatencies_ComputesRagP95()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptMetricsService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptMetricsService(logger);
+
+      // Record samples with RAG latencies
+      for (int i = 1; i <= 5; i++)
+      {
+        service.RecordSample(
+          latencyMs: 100,
+          success: true,
+          ragLatencyMs: i * 50); // 50, 100, 150, 200, 250ms
+      }
+
+      // Act
+      var snapshot = service.GetSnapshot(TimeSpan.FromMinutes(15));
+
+      // Assert
+      Assert.InRange(snapshot.RagLatencyMsP95, 200, 250);
+    }
+
+    [Fact]
+    public void MetricsSnapshot_GeneratesTimeSeries()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptMetricsService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptMetricsService(logger);
+
+      // Record several samples
+      for (int i = 0; i < 20; i++)
+      {
+        service.RecordSample(
+          latencyMs: 100 + i * 10,
+          success: true);
+      }
+
+      // Act
+      var snapshot = service.GetSnapshot(TimeSpan.FromMinutes(15), maxSeriesPoints: 10);
+
+      // Assert
+      Assert.NotEmpty(snapshot.Series);
+      Assert.All(snapshot.Series, s =>
+      {
+        Assert.NotEmpty(s.Name);
+        Assert.NotEmpty(s.Unit);
+      });
+    }
+
+    [Fact]
+    public void MetricsService_RecordSample_IsNonFatal()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptMetricsService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptMetricsService(logger);
+
+      // Act - should not throw even with extreme values
+      service.RecordSample(double.MaxValue, false);
+      service.RecordSample(-1, true);
+      service.RecordSample(0, true, int.MaxValue, int.MaxValue);
+
+      // Assert - can still get a snapshot
+      var snapshot = service.GetSnapshot(TimeSpan.FromMinutes(15));
+      Assert.True(snapshot.TotalRequests >= 3);
+    }
+
+    [Fact]
+    public void MetricsSnapshot_ClampsMaxSeriesPoints()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptMetricsService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptMetricsService(logger);
+
+      for (int i = 0; i < 100; i++)
+      {
+        service.RecordSample(100, true);
+      }
+
+      // Act - request excessive series points
+      var snapshot = service.GetSnapshot(TimeSpan.FromMinutes(15), maxSeriesPoints: 99999);
+
+      // Assert - series points should be clamped
+      Assert.All(snapshot.Series, s =>
+      {
+        Assert.True(s.Points.Count <= TerraFusion.AI.Services.SystemGptMetricsService.MaxSeriesPointsCap);
+      });
+    }
+
+    [Fact]
+    public void MetricsSnapshot_HasCorrectWindowMinutes()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptMetricsService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptMetricsService(logger);
+
+      // Act
+      var snapshot15 = service.GetSnapshot(TimeSpan.FromMinutes(15));
+      var snapshot30 = service.GetSnapshot(TimeSpan.FromMinutes(30));
+
+      // Assert
+      Assert.Equal(15, snapshot15.WindowMinutes);
+      Assert.Equal(30, snapshot30.WindowMinutes);
+    }
+
+    [Fact]
+    public void MetricsSnapshot_HasGeneratedAtTimestamp()
+    {
+      // Arrange
+      var logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SystemGptMetricsService>.Instance;
+      var service = new TerraFusion.AI.Services.SystemGptMetricsService(logger);
+
+      var before = DateTimeOffset.UtcNow;
+
+      // Act
+      var snapshot = service.GetSnapshot(TimeSpan.FromMinutes(15));
+
+      var after = DateTimeOffset.UtcNow;
+
+      // Assert
+      Assert.InRange(snapshot.GeneratedAtUtc, before, after);
+    }
+  }
 }

@@ -1,5 +1,6 @@
 // TerraFusionGPT Suite: GPT Orchestration Service Implementation
 // Elite Government OS Engineering - AI Platform
+// Phase 20: Integrated with SystemGPT Metrics Service
 
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,14 @@ namespace TerraFusion.AI.Services
 {
     /// <summary>
     /// Service for orchestrating GPT operations - message routing, cost tracking, conversation management
+    /// Phase 20: Now records metrics for SystemGPT Telemetry Console
     /// </summary>
     public class GPTOrchestrationService : IGPTOrchestrationService
     {
         private readonly TerraFusionDbContext _context;
         private readonly ILogger<GPTOrchestrationService> _logger;
         private readonly IRAGService _ragService;
+        private readonly ISystemGptMetricsService? _metricsService; // Phase 20: Optional metrics service
 
         // Token pricing per 1M tokens (in dollars)
         private static readonly Dictionary<string, (decimal Prompt, decimal Completion)> TokenPricing = new()
@@ -56,12 +59,14 @@ namespace TerraFusion.AI.Services
             TerraFusionDbContext context,
             ILogger<GPTOrchestrationService> logger,
             IRAGService ragService,
-            IEmbeddingService embeddingService)
+            IEmbeddingService embeddingService,
+            ISystemGptMetricsService? metricsService = null) // Phase 20: Optional metrics
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _ragService = ragService ?? throw new ArgumentNullException(nameof(ragService));
             _embeddingService = embeddingService ?? throw new ArgumentNullException(nameof(embeddingService));
+            _metricsService = metricsService; // Phase 20: May be null in tests
         }
 
         public async System.Threading.Tasks.Task<GPTMessage> SendMessageAsync(
@@ -246,6 +251,15 @@ namespace TerraFusion.AI.Services
 
                 await _context.SaveChangesAsync();
 
+                // Phase 20: Record metrics sample for successful request
+                RecordMetricsSample(
+                    success: true,
+                    totalLatencyMs: (ragRetrievalTimeMs ?? 0) + llmGenerationTimeMs,
+                    tokensIn: promptTokens,
+                    tokensOut: completionTokens,
+                    ragLatencyMs: ragRetrievalTimeMs,
+                    gptConfigKey: gptConfig.Name);
+
                 _logger.LogInformation("Message sent successfully. Tokens: {Tokens}, Cost: ${Cost:F6}",
                     totalTokens, cost);
 
@@ -254,6 +268,15 @@ namespace TerraFusion.AI.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending message to GPT {GPTId}", gptConfigId);
+
+                // Phase 20: Record metrics sample for failed request
+                RecordMetricsSample(
+                    success: false,
+                    totalLatencyMs: 0,
+                    tokensIn: 0,
+                    tokensOut: 0,
+                    ragLatencyMs: null,
+                    gptConfigKey: null);
 
                 // Record failed usage metric
                 var failedMetric = new GPTUsageMetric
@@ -273,6 +296,35 @@ namespace TerraFusion.AI.Services
                 await _context.SaveChangesAsync();
 
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Phase 20: Record a metrics sample (non-fatal, wrapped in try-catch).
+        /// </summary>
+        private void RecordMetricsSample(
+            bool success,
+            double totalLatencyMs,
+            int tokensIn,
+            int tokensOut,
+            double? ragLatencyMs,
+            string? gptConfigKey)
+        {
+            try
+            {
+                _metricsService?.RecordSample(
+                    latencyMs: totalLatencyMs,
+                    success: success,
+                    tokensIn: tokensIn,
+                    tokensOut: tokensOut,
+                    ragLatencyMs: ragLatencyMs,
+                    embeddingLatencyMs: null, // TODO: Track embedding latency separately if needed
+                    gptConfigKey: gptConfigKey);
+            }
+            catch (Exception ex)
+            {
+                // Metrics collection should never break GPT responses
+                _logger.LogWarning(ex, "Phase 20: Failed to record metrics sample (non-fatal)");
             }
         }
 
