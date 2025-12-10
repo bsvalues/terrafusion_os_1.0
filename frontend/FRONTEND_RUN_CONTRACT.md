@@ -7,3 +7,18 @@
 - Output expectation: dev server on the default Vite port (5173 unless overridden)
 
 Keep all future frontend apps under `frontend/apps/*`; the OS shell namespace is reserved at `frontend/apps/os-shell`.
+
+---
+
+## Optional: Bun Accelerated Development
+
+If you want faster installs and dev server startup:
+
+```bash
+bun install
+bun run dev
+```
+
+Bun is optional and local-only. Node remains the official runtime used in CI.
+
+For full details, see [docs/DEV_ENV_BUN.md](../docs/DEV_ENV_BUN.md).

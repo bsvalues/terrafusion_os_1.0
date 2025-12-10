@@ -1,0 +1,19 @@
+# bunfig.toml – TerraFusion OS
+# Bun configuration for accelerated local development
+# See: docs/DEV_ENV_BUN.md
+
+[install]
+# Respect existing dependencies; avoid peer warnings
+peer = "ignore"
+# Don't auto-save exact versions (honor package.json ranges)
+saveExact = false
+
+[test]
+# Reasonable default timeout (ms) for integration tests
+timeout = 60000
+# Parallel test execution
+concurrency = 4
+
+[run]
+# Silence Bun update notifications (optional)
+silent = false
