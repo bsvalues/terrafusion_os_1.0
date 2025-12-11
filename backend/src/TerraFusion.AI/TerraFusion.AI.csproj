@@ -18,6 +18,7 @@
     <PackageReference Include="MathNet.Numerics" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Wasmtime" />
+    <PackageReference Include="prometheus-net" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
