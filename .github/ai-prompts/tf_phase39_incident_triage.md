@@ -332,6 +332,89 @@ Status Codes:
 - 500: Triage engine failure
 ```
 
+## D) LLM Explanation Layer (Optional)
+
+**Design Principle**: Deterministic classification + LLM-as-explainer
+
+The **IncidentTriageEngine** remains rule- & signal-driven.
+The **LLM layer** is a *separate, optional* "explanation engine."
+
+### Interface
+
+```csharp
+public interface IIncidentExplanationService
+{
+    /// <summary>
+    /// Enriches an incident summary with LLM-generated explanations.
+    /// MUST NOT change: incidentId, severity, impactedCountyIds.
+    /// MAY refine: title, description, recommendations.
+    /// </summary>
+    Task<IncidentSummary> EnrichWithExplanationAsync(
+        IncidentSummary incident,
+        IncidentExplanationOptions? options = null,
+        CancellationToken cancellationToken = default);
+}
+
+public record IncidentExplanationOptions
+{
+    public bool Enabled { get; init; } = true;
+    public int MaxTokens { get; init; } = 1024;
+    public TimeSpan Timeout { get; init; } = TimeSpan.FromSeconds(10);
+    public string? ModelKey { get; init; }
+    public string? AudienceHint { get; init; } // "ops" | "cio" | "county-it"
+}
+```
+
+### Implementations
+
+| Implementation | Behavior |
+|----------------|----------|
+| `NullIncidentExplanationService` | No-op; returns incident unchanged |
+| `SystemGptIncidentExplanationService` | Uses SystemGPT with strict constraints |
+
+### Data Flow
+
+```
+1. Alerts arrive → build IncidentTriageRequest
+2. Deterministic triage:
+   var incident = await _triageEngine.TriageAsync(request, ct);
+3. Optional LLM enrichment:
+   if (_options.EnableIncidentExplanation)
+   {
+       incident = await _explanationService
+           .EnrichWithExplanationAsync(incident, options, ct);
+   }
+4. Return enriched incident via API
+```
+
+### LLM Constraints (IMMUTABLE)
+
+| Field | LLM May Modify? |
+|-------|-----------------|
+| `incidentId` | ❌ NEVER |
+| `severity` | ❌ NEVER |
+| `impactedCountyIds` | ❌ NEVER |
+| `alerts` | ❌ NEVER |
+| `metrics` | ❌ NEVER |
+| `title` | ✅ Refine for clarity |
+| `description` | ✅ Expand with explanation |
+| `recommendations` | ✅ Reword, add details, prioritize |
+
+### Safety & Observability
+
+**Fallback**: If LLM fails → log and return original incident unchanged.
+
+**Tracing**: Add span `SystemGpt.Incident.Explain` with attributes:
+- `tf.incident_id`
+- `tf.county_id`
+- `tf.explain.success`
+- `tf.explain.duration_ms`
+
+**Metrics**:
+- `incident_explanation_requests_total`
+- `incident_explanation_failures_total`
+- `incident_explanation_duration_seconds` (histogram)
+
 **Once SPEC LOCK is defined, it is FROZEN for Phase 39.**
 **Any change requires explicit "SPEC CHANGE REQUIRED" with justification.**
 
