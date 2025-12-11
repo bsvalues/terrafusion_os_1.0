@@ -145,14 +145,14 @@ public class SystemGptSwarmPolicyPredictiveTests
 
         // Act - first call should succeed
         var firstDecision = await service.EvaluatePredictiveAsync("benton");
-        
+
         // Act - second call within cooldown should skip
         var secondDecision = await service.EvaluatePredictiveAsync("benton");
 
         // Assert
         Assert.NotNull(firstDecision);
         Assert.Equal(SwarmActionKind.IncreaseCapacity, firstDecision.RecommendedAction);
-        
+
         Assert.NotNull(secondDecision);
         Assert.True(secondDecision.IsSkippedDueToCooldown);
         Assert.Null(secondDecision.RecommendedAction);

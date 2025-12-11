@@ -261,17 +261,17 @@ public sealed class SystemGptAtlasForecastEngine : ISystemGptAtlasForecastEngine
             return null;
 
         // Critical offline risk → EnableSafeMode
-        if (highestDimension == AtlasRiskDimension.Offline && 
+        if (highestDimension == AtlasRiskDimension.Offline &&
             dimensionRisks[AtlasRiskDimension.Offline] >= AtlasRiskLevel.Critical)
             return SwarmActionKind.EnableSafeMode;
 
         // High error rate risk → RouteToSafeModel
-        if (highestDimension == AtlasRiskDimension.ErrorRate && 
+        if (highestDimension == AtlasRiskDimension.ErrorRate &&
             dimensionRisks[AtlasRiskDimension.ErrorRate] >= AtlasRiskLevel.High)
             return SwarmActionKind.RouteToSafeModel;
 
         // High latency or capacity risk → IncreaseCapacity
-        if ((highestDimension == AtlasRiskDimension.Latency || 
+        if ((highestDimension == AtlasRiskDimension.Latency ||
              highestDimension == AtlasRiskDimension.Capacity) &&
             dimensionRisks[highestDimension] >= AtlasRiskLevel.High)
             return SwarmActionKind.IncreaseCapacity;

@@ -24,7 +24,7 @@ public class SystemGptSwarmPolicyService : ISystemGptSwarmPolicyService
     private readonly ILogger<SystemGptSwarmPolicyService> _logger;
     private readonly ISystemGptSwarmStateStore? _stateStore;
     private readonly ISystemGptAtlasForecastEngine? _forecastEngine;
-    
+
     // Phase 32: Cooldown tracking for predictive actions
     private readonly ConcurrentDictionary<string, DateTimeOffset> _predictiveCooldowns = new();
 
@@ -428,10 +428,10 @@ public class SystemGptSwarmPolicyService : ISystemGptSwarmPolicyService
 public interface ISystemGptSwarmPolicyService
 {
     SwarmPolicyDecision EvaluatePolicy(SwarmPolicyInput input);
-    
+
     /// <summary>Evaluates predictive action based on forecast (Phase 32).</summary>
     Task<SwarmPredictiveDecision> EvaluatePredictiveAsync(string countyId);
-    
+
     /// <summary>Evaluates reactive action based on current state (Phase 32).</summary>
     Task<SwarmPredictiveDecision> EvaluateAsync(string countyId);
 }
