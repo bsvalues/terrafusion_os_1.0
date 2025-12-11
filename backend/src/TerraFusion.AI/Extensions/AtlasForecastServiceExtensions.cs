@@ -1,9 +1,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// TerraFusion OS — Phase 34/35: Atlas Forecast DI Extensions
+// TerraFusion OS — Phase 34/35/36: Atlas Forecast DI Extensions
 // ─────────────────────────────────────────────────────────────────────────────
 // Provides service collection extensions for registering the Atlas Forecast
-// Orchestrator, Engine, Store, and Metrics services with the DI container.
+// Orchestrator, Engine, Store, Metrics, and Tracing services with the DI container.
 // Phase 35: Added metrics collector registration
+// Phase 36: Added distributed tracing registration
 // ─────────────────────────────────────────────────────────────────────────────
 
 using Microsoft.Extensions.Configuration;
@@ -12,19 +13,20 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using TerraFusion.AI.Metrics;
 using TerraFusion.AI.Models;
+using TerraFusion.AI.Tracing;
 using TerraFusion.AI.Services;
 
 namespace TerraFusion.AI.Extensions;
 
 /// <summary>
-/// Phase 34/35: Service collection extensions for Atlas Forecast services.
-/// Provides methods to register the forecast orchestrator, engine, store, and metrics.
+/// Phase 34/35/36: Service collection extensions for Atlas Forecast services.
+/// Provides methods to register the forecast orchestrator, engine, store, metrics, and tracing.
 /// </summary>
 public static class AtlasForecastServiceExtensions
 {
     /// <summary>
     /// Adds all Atlas Forecast services to the service collection.
-    /// This includes the ForecastEngine, ForecastStore, MetricsCollector, and background Orchestrator.
+    /// This includes the ForecastEngine, ForecastStore, MetricsCollector, Tracing, and background Orchestrator.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="configuration">Optional configuration for binding options.</param>
@@ -35,6 +37,9 @@ public static class AtlasForecastServiceExtensions
     {
         // Phase 35: Register the Metrics Collector (singleton - shared across all services)
         services.AddAtlasMetrics();
+
+        // Phase 36: Register distributed tracing
+        services.AddAtlasTracing();
 
         // Register the Forecast Engine (singleton - stateless computation)
         services.AddSingleton<ISystemGptAtlasForecastEngine, SystemGptAtlasForecastEngine>();
@@ -73,6 +78,9 @@ public static class AtlasForecastServiceExtensions
         // Phase 35: Register the Metrics Collector (singleton - shared across all services)
         services.AddAtlasMetrics();
 
+        // Phase 36: Register distributed tracing
+        services.AddAtlasTracing();
+
         // Register the Forecast Engine (singleton - stateless computation)
         services.AddSingleton<ISystemGptAtlasForecastEngine, SystemGptAtlasForecastEngine>();
 
@@ -98,6 +106,9 @@ public static class AtlasForecastServiceExtensions
     {
         // Phase 35: Register the Metrics Collector (singleton - shared across all services)
         services.AddAtlasMetrics();
+
+        // Phase 36: Register distributed tracing
+        services.AddAtlasTracing();
 
         // Register the Forecast Engine (singleton - stateless computation)
         services.AddSingleton<ISystemGptAtlasForecastEngine, SystemGptAtlasForecastEngine>();
@@ -129,6 +140,29 @@ public static class AtlasForecastServiceExtensions
     public static IServiceCollection AddAtlasNullMetrics(this IServiceCollection services)
     {
         services.AddSingleton<IAtlasMetricsCollector, NullAtlasMetricsCollector>();
+        return services;
+    }
+
+    /// <summary>
+    /// Phase 36: Adds TerraFusion distributed tracing to the service collection.
+    /// This registers the ITerraFusionTracer for OpenTelemetry span creation.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddAtlasTracing(this IServiceCollection services)
+    {
+        services.AddTerraFusionTracing();
+        return services;
+    }
+
+    /// <summary>
+    /// Phase 36: Adds a null tracer for testing without OpenTelemetry.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddAtlasNullTracing(this IServiceCollection services)
+    {
+        services.AddNullTracing();
         return services;
     }
 }
