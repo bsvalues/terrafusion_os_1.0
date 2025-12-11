@@ -250,3 +250,52 @@ public record SwarmPredictiveDecision
     /// <summary>Timestamp when decision was made.</summary>
     public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
 }
+
+/// <summary>
+/// Configuration options for the Forecast Orchestrator background service.
+/// </summary>
+public class AtlasForecastOrchestratorOptions
+{
+    /// <summary>Configuration section name.</summary>
+    public const string Section = "Atlas:ForecastOrchestrator";
+
+    /// <summary>Interval in seconds between forecast computation cycles.</summary>
+    public int IntervalSeconds { get; set; } = 30;
+
+    /// <summary>Maximum age of forecasts before cleanup.</summary>
+    public TimeSpan MaxForecastAge { get; set; } = TimeSpan.FromHours(1);
+
+    /// <summary>Number of ticks between cleanup operations.</summary>
+    public int CleanupIntervalTicks { get; set; } = 10;
+
+    /// <summary>Hours to look back for anomaly data.</summary>
+    public int AnomalyLookbackHours { get; set; } = 1;
+
+    /// <summary>Whether the orchestrator is enabled.</summary>
+    public bool Enabled { get; set; } = true;
+}
+
+/// <summary>
+/// Statistics for monitoring orchestrator health.
+/// </summary>
+public record AtlasForecastOrchestratorStatistics
+{
+    /// <summary>Total number of orchestrator runs.</summary>
+    public long TotalRuns { get; init; }
+
+    /// <summary>Total forecasts computed across all runs.</summary>
+    public long TotalForecastsComputed { get; init; }
+
+    /// <summary>Total errors encountered.</summary>
+    public long TotalErrors { get; init; }
+
+    /// <summary>Last successful run time.</summary>
+    public DateTimeOffset LastRunTime { get; init; }
+
+    /// <summary>Average time per forecast computation in milliseconds.</summary>
+    public double AverageComputeTimeMs { get; init; }
+
+    /// <summary>Total forecasts cleaned up.</summary>
+    public long TotalForecastsCleaned { get; init; }
+}
+
