@@ -1,0 +1,152 @@
+# =============================================================================
+# Phase 38: Swarm Alert Rules - promtool Test File
+# Tests for SwarmActionSpike, SwarmCooldownActivation, SwarmSafeModeTriggered,
+# SwarmPolicyLoadHigh, SwarmActionsByCountyImbalance
+# =============================================================================
+
+rule_files:
+  - ../swarm-alerts.yml
+
+evaluation_interval: 1m
+
+tests:
+  # ===========================================================================
+  # SwarmActionSpike Tests
+  # ===========================================================================
+  
+  # Nominal: Low action rate - no alert
+  - interval: 1m
+    input_series:
+      - series: 'swarm_predictive_actions_total{countyId="benton",actionType="scale_up"}'
+        values: '0 2 4 6 8 10 12 14 16 18'
+    alert_rule_test:
+      - alertname: SwarmActionSpike
+        eval_time: 5m
+        exp_alerts: []
+
+  # Spike: >50 actions in 5 minutes - alert fires
+  - interval: 1m
+    input_series:
+      - series: 'swarm_predictive_actions_total{countyId="benton",actionType="scale_up"}'
+        values: '0 20 40 60 80 100 120 140 160 180'
+    alert_rule_test:
+      - alertname: SwarmActionSpike
+        eval_time: 5m
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              government: "true"
+              component: swarm
+              countyId: benton
+
+  # ===========================================================================
+  # SwarmCooldownActivation Tests
+  # ===========================================================================
+
+  # Nominal: No cooldowns - no alert
+  - interval: 1m
+    input_series:
+      - series: 'swarm_predictive_cooldown_activations_total{countyId="benton"}'
+        values: '0 0 0 0 0 0 0 0 0 0'
+    alert_rule_test:
+      - alertname: SwarmCooldownActivation
+        eval_time: 5m
+        exp_alerts: []
+
+  # Cooldown activated - info alert fires immediately
+  - interval: 1m
+    input_series:
+      - series: 'swarm_predictive_cooldown_activations_total{countyId="benton"}'
+        values: '0 0 0 0 1 1 1 1 1 1'
+    alert_rule_test:
+      - alertname: SwarmCooldownActivation
+        eval_time: 5m
+        exp_alerts:
+          - exp_labels:
+              severity: info
+              government: "true"
+              component: swarm
+              countyId: benton
+
+  # ===========================================================================
+  # SwarmSafeModeTriggered Tests
+  # ===========================================================================
+
+  # Nominal: Few cooldowns - no critical alert
+  - interval: 1m
+    input_series:
+      - series: 'swarm_predictive_cooldown_activations_total{countyId="benton"}'
+        values: '0 1 1 2 2 3 3 4 4 5'
+    alert_rule_test:
+      - alertname: SwarmSafeModeTriggered
+        eval_time: 5m
+        exp_alerts: []
+
+  # Safe mode: >5 cooldowns in 1 minute - critical alert fires
+  - interval: 1m
+    input_series:
+      - series: 'swarm_predictive_cooldown_activations_total{countyId="benton"}'
+        values: '0 0 0 0 10 10 10 10 10 10'
+    alert_rule_test:
+      - alertname: SwarmSafeModeTriggered
+        eval_time: 5m
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              government: "true"
+              component: swarm
+              countyId: benton
+              citizen_impact: high
+
+  # ===========================================================================
+  # SwarmPolicyLoadHigh Tests
+  # ===========================================================================
+
+  # Nominal: Normal policy evaluation rate - no alert
+  - interval: 1m
+    input_series:
+      - series: 'swarm_predictive_policy_evaluations_total{countyId="benton"}'
+        values: '0 50 100 150 200 250 300 350 400 450'
+    alert_rule_test:
+      - alertname: SwarmPolicyLoadHigh
+        eval_time: 5m
+        exp_alerts: []
+
+  # High load: >100 evaluations/minute sustained - alert fires
+  - interval: 1m
+    input_series:
+      - series: 'swarm_predictive_policy_evaluations_total{countyId="benton"}'
+        values: '0 200 400 600 800 1000 1200 1400 1600 1800'
+    alert_rule_test:
+      - alertname: SwarmPolicyLoadHigh
+        eval_time: 5m
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              government: "true"
+              component: swarm
+              countyId: benton
+
+  # ===========================================================================
+  # Multi-County Isolation Tests
+  # ===========================================================================
+
+  # Verify alerts are isolated per county
+  - interval: 1m
+    input_series:
+      # Benton has a spike
+      - series: 'swarm_predictive_actions_total{countyId="benton",actionType="scale_up"}'
+        values: '0 20 40 60 80 100 120 140 160 180'
+      # Yakima is normal
+      - series: 'swarm_predictive_actions_total{countyId="yakima",actionType="scale_up"}'
+        values: '0 2 4 6 8 10 12 14 16 18'
+    alert_rule_test:
+      - alertname: SwarmActionSpike
+        eval_time: 5m
+        exp_alerts:
+          # Only Benton should alert
+          - exp_labels:
+              severity: warning
+              government: "true"
+              component: swarm
+              countyId: benton
