@@ -46,7 +46,7 @@
     "natural": "^6.10.0",
     "compromise": "^14.10.0",
     "pdf-parse": "^1.1.1",
-    "puppeteer": "^21.0.0",
+    "puppeteer": "^24.15.0",
     "cheerio": "^1.0.0-rc.12",
     "openai": "^4.20.0",
     "graphlib": "^2.1.8",
