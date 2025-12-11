@@ -1,9 +1,11 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // 🐝 PHASE 30: SystemGPT Swarm Policy Service
 // Deterministic rules that map Atlas telemetry to Swarm control actions
+// Extended in Phase 32 with predictive evaluation
 // "Government. Transcended."
 // ═══════════════════════════════════════════════════════════════════════════════
 
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TerraFusion.AI.Models;
@@ -14,11 +16,17 @@ namespace TerraFusion.AI.Services;
 /// Phase 30: Swarm Policy Engine.
 /// Evaluates Atlas telemetry and decides what Swarm actions to take.
 /// Uses deterministic rules with hysteresis to prevent flapping.
+/// Extended in Phase 32 with predictive evaluation based on forecasts.
 /// </summary>
 public class SystemGptSwarmPolicyService : ISystemGptSwarmPolicyService
 {
     private readonly SwarmPolicyOptions _options;
     private readonly ILogger<SystemGptSwarmPolicyService> _logger;
+    private readonly ISystemGptSwarmStateStore? _stateStore;
+    private readonly ISystemGptAtlasForecastEngine? _forecastEngine;
+    
+    // Phase 32: Cooldown tracking for predictive actions
+    private readonly ConcurrentDictionary<string, DateTimeOffset> _predictiveCooldowns = new();
 
     // Health state constants (matching Atlas classifier)
     private static class HealthStates
@@ -38,10 +46,30 @@ public class SystemGptSwarmPolicyService : ISystemGptSwarmPolicyService
     // Hysteresis window in seconds
     private const int HysteresisWindowSeconds = 60;
 
+    /// <summary>
+    /// Constructor for basic policy evaluation (Phase 30).
+    /// </summary>
     public SystemGptSwarmPolicyService(
         IOptions<SwarmPolicyOptions> options,
         ILogger<SystemGptSwarmPolicyService> logger)
     {
+        _options = options.Value;
+        _logger = logger;
+        _stateStore = null;
+        _forecastEngine = null;
+    }
+
+    /// <summary>
+    /// Constructor with full dependency injection for predictive evaluation (Phase 32).
+    /// </summary>
+    public SystemGptSwarmPolicyService(
+        ISystemGptSwarmStateStore stateStore,
+        ISystemGptAtlasForecastEngine forecastEngine,
+        IOptions<SwarmPolicyOptions> options,
+        ILogger<SystemGptSwarmPolicyService> logger)
+    {
+        _stateStore = stateStore;
+        _forecastEngine = forecastEngine;
         _options = options.Value;
         _logger = logger;
     }
@@ -279,6 +307,119 @@ public class SystemGptSwarmPolicyService : ISystemGptSwarmPolicyService
     }
 
     #endregion
+
+    #region Phase 32: Predictive Evaluation
+
+    /// <summary>
+    /// Evaluates predictive action based on forecast risk (Phase 32).
+    /// </summary>
+    public async Task<SwarmPredictiveDecision> EvaluatePredictiveAsync(string countyId)
+    {
+        _logger.LogDebug("Evaluating predictive policy for county {CountyId}", countyId);
+
+        // Check if predictive actions are disabled
+        if (!_options.PredictiveActionsEnabled)
+        {
+            return new SwarmPredictiveDecision
+            {
+                CountyId = countyId,
+                IsPredictive = true,
+                RecommendedAction = null,
+                Reasoning = "Predictive actions are disabled by configuration"
+            };
+        }
+
+        // Check cooldown
+        if (IsInPredictiveCooldown(countyId))
+        {
+            return new SwarmPredictiveDecision
+            {
+                CountyId = countyId,
+                IsPredictive = true,
+                RecommendedAction = null,
+                IsSkippedDueToCooldown = true,
+                Reasoning = $"Predictive action skipped - in cooldown period for county {countyId}"
+            };
+        }
+
+        // Get forecast from engine
+        if (_forecastEngine == null)
+        {
+            return new SwarmPredictiveDecision
+            {
+                CountyId = countyId,
+                IsPredictive = true,
+                RecommendedAction = null,
+                Reasoning = "Forecast engine not available"
+            };
+        }
+
+        var input = new AtlasForecastInput { CountyId = countyId };
+        var forecast = await _forecastEngine.ComputeForecast(input);
+
+        // If forecast recommends action, record cooldown
+        if (forecast.RecommendedAction.HasValue)
+        {
+            RecordPredictiveCooldown(countyId);
+        }
+
+        return new SwarmPredictiveDecision
+        {
+            CountyId = countyId,
+            IsPredictive = true,
+            RecommendedAction = forecast.RecommendedAction,
+            Confidence = forecast.Confidence,
+            Reasoning = $"Forecast-based decision: {forecast.Reasoning}"
+        };
+    }
+
+    /// <summary>
+    /// Reactive evaluation using state store (Phase 32 extension).
+    /// Returns a decision with IsPredictive = false.
+    /// </summary>
+    public async Task<SwarmPredictiveDecision> EvaluateAsync(string countyId)
+    {
+        _logger.LogDebug("Evaluating reactive policy for county {CountyId}", countyId);
+
+        if (_stateStore == null)
+        {
+            return new SwarmPredictiveDecision
+            {
+                CountyId = countyId,
+                IsPredictive = false,
+                RecommendedAction = null,
+                Reasoning = "State store not available"
+            };
+        }
+
+        var state = _stateStore.GetState(countyId);
+
+        // For reactive mode, we just return current state info
+        return await Task.FromResult(new SwarmPredictiveDecision
+        {
+            CountyId = countyId,
+            IsPredictive = false,
+            RecommendedAction = null,
+            Reasoning = $"Reactive evaluation: Mode={state?.Mode}, Capacity={state?.CurrentCapacity}"
+        });
+    }
+
+    private bool IsInPredictiveCooldown(string countyId)
+    {
+        if (_predictiveCooldowns.TryGetValue(countyId, out var lastAction))
+        {
+            var elapsed = DateTimeOffset.UtcNow - lastAction;
+            return elapsed.TotalMinutes < _options.PredictiveCooldownMinutes;
+        }
+        return false;
+    }
+
+    private void RecordPredictiveCooldown(string countyId)
+    {
+        _predictiveCooldowns[countyId] = DateTimeOffset.UtcNow;
+    }
+
+    #endregion
 }
 
 /// <summary>
@@ -287,4 +428,10 @@ public class SystemGptSwarmPolicyService : ISystemGptSwarmPolicyService
 public interface ISystemGptSwarmPolicyService
 {
     SwarmPolicyDecision EvaluatePolicy(SwarmPolicyInput input);
+    
+    /// <summary>Evaluates predictive action based on forecast (Phase 32).</summary>
+    Task<SwarmPredictiveDecision> EvaluatePredictiveAsync(string countyId);
+    
+    /// <summary>Evaluates reactive action based on current state (Phase 32).</summary>
+    Task<SwarmPredictiveDecision> EvaluateAsync(string countyId);
 }

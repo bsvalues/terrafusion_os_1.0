@@ -189,6 +189,7 @@ public sealed record SwarmStateSnapshot
 
 /// <summary>
 /// Phase 30: Configuration options for Swarm Policy evaluation.
+/// Extended in Phase 32 with predictive action settings.
 /// </summary>
 public sealed class SwarmPolicyOptions
 {
@@ -212,6 +213,16 @@ public sealed class SwarmPolicyOptions
 
     /// <summary>Minimum intervals between capacity changes (hysteresis).</summary>
     public int CapacityChangeHysteresisIntervals { get; init; } = 2;
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // Phase 32: Predictive Action Settings
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    /// <summary>Whether predictive actions based on forecasts are enabled.</summary>
+    public bool PredictiveActionsEnabled { get; init; } = true;
+
+    /// <summary>Cooldown in minutes between predictive actions for the same county.</summary>
+    public int PredictiveCooldownMinutes { get; init; } = 5;
 }
 
 /// <summary>
