@@ -1,14 +1,20 @@
 #!/bin/bash
 #
-# TerraFusion SpecLock CI Script
+# TerraFusion SpecLock CI Pipeline (ABSOLUTE LAW)
 #
-# Runs validation and checks that INDEX.md is up-to-date.
-# Returns non-zero if:
-#   - INDEX.json validation fails
-#   - INDEX.md is out of sync (needs regeneration)
+# This is the single source of truth for SpecLock validation.
+# If this passes, the PR is mathematically valid.
+#
+# Steps:
+#   1. Validate INDEX.json (strict mode)
+#   2. Regenerate INDEX.md + verify no drift
+#   3. Run all generators for locks with generated_artifacts
+#   4. Enforce no drift in generated artifacts
+#   5. PR diff detection (if BASE_REF/HEAD_REF provided)
+#   6. Run SpecLock enforcement tests
 #
 # Usage:
-#   ./scripts/speclock-ci.sh [--strict]
+#   ./scripts/speclock-ci.sh [--strict] [--skip-generate] [--skip-tests]
 #
 # Environment:
 #   BASE_REF - Git base ref for PR diff detection (optional)
@@ -26,27 +32,46 @@ cd "$REPO_ROOT"
 BASE_REF="${BASE_REF:-}"
 HEAD_REF="${HEAD_REF:-}"
 
-echo ""
-echo "═══════════════════════════════════════════════════════════════"
-echo "  TerraFusion SpecLock CI Pipeline"
-echo "═══════════════════════════════════════════════════════════════"
-echo ""
+# Parse flags
+STRICT_FLAG="--strict"
+SKIP_GENERATE=false
+SKIP_TESTS=false
+STRICT_MODE=true
 
-STRICT_FLAG=""
-if [[ "$1" == "--strict" ]]; then
-    STRICT_FLAG="--strict"
-    echo "ℹ️  Running in STRICT mode (warnings = errors)"
+for arg in "$@"; do
+    case $arg in
+        --skip-generate)
+            SKIP_GENERATE=true
+            ;;
+        --skip-tests)
+            SKIP_TESTS=true
+            ;;
+        --no-strict)
+            STRICT_FLAG=""
+            STRICT_MODE=false
+            ;;
+    esac
+done
+
+echo ""
+echo "═══════════════════════════════════════════════════════════════"
+echo "  TerraFusion SpecLock CI Pipeline (ABSOLUTE LAW)"
+echo "═══════════════════════════════════════════════════════════════"
+echo ""
+if [ "$STRICT_MODE" = true ]; then
+    echo "ℹ️  Mode: STRICT (warnings = errors)"
 else
-    echo "ℹ️  Running in normal mode"
+    echo "ℹ️  Mode: NORMAL (warnings allowed)"
+fi
+if [ "$SKIP_GENERATE" = true ]; then
+    echo "ℹ️  Generators: SKIPPED"
+fi
+if [ "$SKIP_TESTS" = true ]; then
+    echo "ℹ️  Tests: SKIPPED"
 fi
 echo ""
 
-# Step 1: Validate INDEX.json
-echo "─────────────────────────────────────────────────────────────────"
-echo "Step 1: Validating INDEX.json"
-echo "─────────────────────────────────────────────────────────────────"
-echo ""
-
+# Detect Python command
 if command -v python3 &> /dev/null; then
     PYTHON_CMD="python3"
 elif command -v python &> /dev/null; then
@@ -55,6 +80,14 @@ else
     echo "❌ ERROR: Python not found"
     exit 1
 fi
+
+# ═══════════════════════════════════════════════════════════════
+# Step 1: Validate INDEX.json (STRICT)
+# ═══════════════════════════════════════════════════════════════
+echo "─────────────────────────────────────────────────────────────────"
+echo "Step 1: Validating INDEX.json (STRICT)"
+echo "─────────────────────────────────────────────────────────────────"
+echo ""
 
 $PYTHON_CMD scripts/validate-speclock-index.py $STRICT_FLAG
 VALIDATE_EXIT=$?
@@ -67,9 +100,11 @@ fi
 
 echo ""
 
-# Step 2: Check INDEX.md is up-to-date
+# ═══════════════════════════════════════════════════════════════
+# Step 2: Regenerate INDEX.md + verify no drift
+# ═══════════════════════════════════════════════════════════════
 echo "─────────────────────────────────────────────────────────────────"
-echo "Step 2: Checking INDEX.md is up-to-date"
+echo "Step 2: Regenerate INDEX.md + verify no drift"
 echo "─────────────────────────────────────────────────────────────────"
 echo ""
 
@@ -83,13 +118,10 @@ $PYTHON_CMD scripts/generate-speclock-index-md.py
 
 # Compare (strip trailing whitespace and normalize line endings)
 if [ -f "docs/spec-lock/INDEX.md.backup" ]; then
-    # Normalize both files: remove trailing whitespace and convert line endings
     CURRENT_HASH=$(cat "docs/spec-lock/INDEX.md" | sed 's/[[:space:]]*$//' | tr -d '\r' | md5sum | cut -d' ' -f1)
     BACKUP_HASH=$(cat "docs/spec-lock/INDEX.md.backup" | sed 's/[[:space:]]*$//' | tr -d '\r' | md5sum | cut -d' ' -f1)
 
     if [ "$CURRENT_HASH" != "$BACKUP_HASH" ]; then
-        echo ""
-        echo "⚠️  INDEX.md has changed."
         echo ""
         echo "❌ INDEX.md is out of sync with INDEX.json."
         echo "   Run: python scripts/generate-speclock-index-md.py"
@@ -103,10 +135,50 @@ fi
 echo "✅ INDEX.md is up-to-date"
 echo ""
 
-# Step 2.5: PR Diff Detection (if BASE_REF and HEAD_REF provided)
+# ═══════════════════════════════════════════════════════════════
+# Step 3: Generate SpecLock artifacts
+# ═══════════════════════════════════════════════════════════════
+if [ "$SKIP_GENERATE" = false ]; then
+    echo "─────────────────────────────────────────────────────────────────"
+    echo "Step 3: Generate SpecLock artifacts"
+    echo "─────────────────────────────────────────────────────────────────"
+    echo ""
+
+    if [ -f "docs/spec-lock/GENERATORS.json" ]; then
+        $PYTHON_CMD scripts/speclock-generate-all.py
+        GEN_EXIT=$?
+        if [ $GEN_EXIT -ne 0 ]; then
+            echo "❌ Generator failed"
+            exit $GEN_EXIT
+        fi
+    else
+        echo "ℹ️  No GENERATORS.json found, skipping artifact generation"
+    fi
+    echo ""
+
+    # ═══════════════════════════════════════════════════════════════
+    # Step 4: Enforce generated artifacts (no drift)
+    # ═══════════════════════════════════════════════════════════════
+    echo "─────────────────────────────────────────────────────────────────"
+    echo "Step 4: Enforce generated artifacts (no drift)"
+    echo "─────────────────────────────────────────────────────────────────"
+    echo ""
+
+    bash scripts/speclock-enforce-generated.sh
+    echo ""
+else
+    echo "─────────────────────────────────────────────────────────────────"
+    echo "Step 3-4: SKIPPED (--skip-generate)"
+    echo "─────────────────────────────────────────────────────────────────"
+    echo ""
+fi
+
+# ═══════════════════════════════════════════════════════════════
+# Step 5: PR Diff Detection (if BASE_REF and HEAD_REF provided)
+# ═══════════════════════════════════════════════════════════════
 if [[ -n "$BASE_REF" && -n "$HEAD_REF" ]]; then
     echo "─────────────────────────────────────────────────────────────────"
-    echo "Step 2.5: Detecting touched SpecLocks for PR range"
+    echo "Step 5: Detecting touched SpecLocks for PR range"
     echo "─────────────────────────────────────────────────────────────────"
     echo ""
     echo "Range: $BASE_REF..$HEAD_REF"
@@ -115,29 +187,41 @@ if [[ -n "$BASE_REF" && -n "$HEAD_REF" ]]; then
     echo ""
 fi
 
-# Step 3: Run SpecLock tests (if dotnet available)
-echo "─────────────────────────────────────────────────────────────────"
-echo "Step 3: Running SpecLock Tests"
-echo "─────────────────────────────────────────────────────────────────"
-echo ""
+# ═══════════════════════════════════════════════════════════════
+# Step 6: Run SpecLock enforcement tests
+# ═══════════════════════════════════════════════════════════════
+if [ "$SKIP_TESTS" = false ]; then
+    echo "─────────────────────────────────────────────────────────────────"
+    echo "Step 6: Running SpecLock enforcement tests"
+    echo "─────────────────────────────────────────────────────────────────"
+    echo ""
 
-if command -v dotnet &> /dev/null; then
-    echo "Running: dotnet test --filter \"Category=SpecLock\""
-    echo ""
-    dotnet test --filter "Category=SpecLock" --nologo || {
+    if command -v dotnet &> /dev/null; then
+        echo "Running: dotnet test --filter \"Category=SpecLock\""
         echo ""
-        echo "❌ SpecLock tests failed"
-        exit 1
-    }
+        dotnet test --filter "Category=SpecLock" --nologo || {
+            echo ""
+            echo "❌ SpecLock tests failed"
+            exit 1
+        }
+        echo ""
+        echo "✅ SpecLock tests passed"
+    else
+        echo "⚠️  dotnet not found, skipping SpecLock tests"
+    fi
     echo ""
-    echo "✅ SpecLock tests passed"
 else
-    echo "⚠️  dotnet not found, skipping SpecLock tests"
+    echo "─────────────────────────────────────────────────────────────────"
+    echo "Step 6: SKIPPED (--skip-tests)"
+    echo "─────────────────────────────────────────────────────────────────"
+    echo ""
 fi
 
-echo ""
+# ═══════════════════════════════════════════════════════════════
+# VICTORY
+# ═══════════════════════════════════════════════════════════════
 echo "═══════════════════════════════════════════════════════════════"
-echo "  ✅ SpecLock CI Pipeline PASSED"
+echo "  ✅ SpecLock CI Pipeline PASSED (ABSOLUTE LAW UPHELD)"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
 

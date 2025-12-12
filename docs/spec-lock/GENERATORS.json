@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "description": "SpecLock generator registry - maps surface type to generator script",
+  "generators": {
+    "api": {
+      "script": "scripts/speclock-openapi-snapshot.py",
+      "args": ["--lock", "{id}", "--out", "{out}"],
+      "description": "Generates deterministic OpenAPI snapshot JSON"
+    },
+    "dashboards": {
+      "script": "scripts/speclock-grafana-render.py",
+      "args": ["--lock", "{id}", "--out", "{out}"],
+      "description": "Renders Grafana dashboard JSON from spec_data_path"
+    },
+    "alerts": {
+      "script": "scripts/speclock-alert-compile.py",
+      "args": ["--lock", "{id}", "--out", "{out}", "--name", "{name}"],
+      "description": "Compiles PrometheusRule YAML from spec_data_path"
+    }
+  }
+}
