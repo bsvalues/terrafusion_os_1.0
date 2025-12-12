@@ -100,4 +100,46 @@ public static class RunbookServiceExtensions
         services.AddSingleton<IRunbookExplanationService, TService>();
         return services;
     }
+
+    /// <summary>
+    /// Adds the runbook execution engine and related services.
+    /// Phase 41: EXECUTION SPEC LOCK v1.0.0
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddRunbookExecutor(this IServiceCollection services)
+    {
+        // Register the in-memory execution store
+        services.AddSingleton<Execution.IRunbookExecutionStore, Execution.InMemoryRunbookExecutionStore>();
+
+        // Register the no-op action provider (safe for Phase 41)
+        services.AddSingleton<Execution.IRunbookActionProvider, Execution.NoOpRunbookActionProvider>();
+
+        // Register the executor
+        services.AddSingleton<Execution.IRunbookExecutor, Execution.RunbookExecutor>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the runbook execution engine with a custom action provider.
+    /// Phase 41: EXECUTION SPEC LOCK v1.0.0
+    /// </summary>
+    /// <typeparam name="TActionProvider">The action provider implementation type.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddRunbookExecutor<TActionProvider>(this IServiceCollection services)
+        where TActionProvider : class, Execution.IRunbookActionProvider
+    {
+        // Register the in-memory execution store
+        services.AddSingleton<Execution.IRunbookExecutionStore, Execution.InMemoryRunbookExecutionStore>();
+
+        // Register the custom action provider
+        services.AddSingleton<Execution.IRunbookActionProvider, TActionProvider>();
+
+        // Register the executor
+        services.AddSingleton<Execution.IRunbookExecutor, Execution.RunbookExecutor>();
+
+        return services;
+    }
 }
