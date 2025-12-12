@@ -124,7 +124,7 @@ public class RunbookExplainerErrorHandlingTests
 
         // Assert
         var resultJson = JsonSerializer.Serialize(result);
-        resultJson.Should().Be(originalPlanJson, 
+        resultJson.Should().Be(originalPlanJson,
             $"HTTP {(int)statusCode} should return original plan unchanged");
     }
 
