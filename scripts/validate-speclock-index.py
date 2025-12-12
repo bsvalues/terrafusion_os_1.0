@@ -209,6 +209,28 @@ def validate_index(index_path: Path, schema_path: Path) -> Tuple[List[Finding], 
                     p = root / ap
                     _warn(p.exists(), f"{prefix}.artifact_paths[{j}] missing (warn): {ap}", findings)
 
+        # generated_artifacts: warn if any missing (not fatal), these are often generated in CI
+        gen = lock.get("generated_artifacts", [])
+        if gen is None:
+            gen = []
+        _require(isinstance(gen, list) or gen is None, f"{prefix}.generated_artifacts must be an array if present.", findings)
+        if isinstance(gen, list):
+            for j, gp in enumerate(gen):
+                if not isinstance(gp, str) or not gp.strip():
+                    findings.append(Finding("ERROR", f"{prefix}.generated_artifacts[{j}] must be a non-empty string."))
+                    continue
+                p = root / gp
+                _warn(p.exists(), f"{prefix}.generated_artifacts[{j}] missing (warn): {gp}", findings)
+
+        # spec_data_path: optional structured generator input (warn if set but missing)
+        sdp = lock.get("spec_data_path", "")
+        if sdp is None:
+            sdp = ""
+        _require(isinstance(sdp, str) or sdp is None, f"{prefix}.spec_data_path must be a string if present.", findings)
+        if isinstance(sdp, str) and sdp.strip():
+            p = root / sdp
+            _warn(p.exists() and p.is_file(), f"{prefix}.spec_data_path missing (warn): {sdp}", findings)
+
         # ci_tags: must be array of safe tags (warn on empties)
         ci_tags = _as_list(lock.get("ci_tags"))
         _require(ci_tags is not None, f"{prefix}.ci_tags must be an array (can be empty).", findings)

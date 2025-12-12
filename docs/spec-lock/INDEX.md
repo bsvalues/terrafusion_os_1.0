@@ -1,32 +1,43 @@
-# TerraFusion SpecLock Index
+# TerraFusion SpecLock Index (v1.0)
 
-> Central registry of all frozen spec-lock contracts
+> **GENERATED FILE** — do not hand-edit.
+> 
+> Regenerate: `python scripts/generate-speclock-index-md.py`
 
-**Version**: 1.0
 **Updated**: 2025-01-15
-**Total Locks**: 6
+**Total Locks**: 3
 
 ---
 
-## Quick Links
+## Summary
 
-- [Active Locks](#active-locks)
-- [By Surface](#by-surface)
-- [By Project](#by-project)
-- [Deprecated Locks](#deprecated-locks)
+| Status | Count |
+|--------|-------|
+| ✅ Active | 3 |
+| ⚠️ Draft | 0 |
+| 🚫 Deprecated | 0 |
 
 ---
 
-## Active Locks
+## ✅ Active Locks
 
-| ID | Surface | Project | Version | Owner | Spec |
-|----|---------|---------|---------|-------|------|
-| `tf.dashboards.atlas_auto_remediation_benton_ops` | dashboards | monitoring | v1.0.0 | systemgpt | [📄](../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |
-| `tf.dashboards.atlas_auto_remediation_governance` | dashboards | monitoring | v1.0.0 | systemgpt | [📄](../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |
-| `tf.metrics.phase45_auto_remediation` | metrics | TerraFusion.Operations | v1.0.0 | systemgpt | [📄](../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |
-| `tf.alerts.phase44_remediation` | alerts | monitoring | v1.0.0 | systemgpt | [📄](../prometheus/rules/phase44_remediation_alerts.yml) |
-| `tf.api.runbook_execution` | api | TerraFusion.Operations | v1.0.0 | systemgpt | [📄](TerraFusion.Operations/api/runbook_execution_SPEC_LOCK_v1.0.0.md) |
-| `tf.events.runbook_sse` | events | TerraFusion.Operations | v1.0.0 | systemgpt | [📄](TerraFusion.Operations/events/runbook_sse_SPEC_LOCK_v1.0.0.md) |
+| ID | Surface | Project | Version | Owner | Status | Spec |
+|---|---|---|---|---|---|---|
+| `tf.dashboards.atlas_auto_remediation_benton_ops` | 📊 dashboards | monitoring | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |
+| `tf.dashboards.atlas_auto_remediation_governance` | 📊 dashboards | monitoring | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |
+| `tf.metrics.phase45_auto_remediation` | 📈 metrics | TerraFusion.Operations | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |
+
+## ⚠️ Draft Locks
+
+| ID | Surface | Project | Version | Owner | Status | Spec |
+|---|---|---|---|---|---|---|
+| *None* | | | | | | |
+
+## 🚫 Deprecated Locks
+
+| ID | Surface | Project | Version | Owner | Status | Spec |
+|---|---|---|---|---|---|---|
+| *None* | | | | | | |
 
 ---
 
@@ -35,67 +46,38 @@
 ### 📊 Dashboards (2)
 
 | ID | Project | Version | Status |
-|----|---------|---------|--------|
+|---|---|---|---|
 | `tf.dashboards.atlas_auto_remediation_benton_ops` | monitoring | v1.0.0 | ✅ active |
 | `tf.dashboards.atlas_auto_remediation_governance` | monitoring | v1.0.0 | ✅ active |
 
 ### 📈 Metrics (1)
 
 | ID | Project | Version | Status |
-|----|---------|---------|--------|
+|---|---|---|---|
 | `tf.metrics.phase45_auto_remediation` | TerraFusion.Operations | v1.0.0 | ✅ active |
-
-### 🚨 Alerts (1)
-
-| ID | Project | Version | Status |
-|----|---------|---------|--------|
-| `tf.alerts.phase44_remediation` | monitoring | v1.0.0 | ✅ active |
-
-### 🔌 API (1)
-
-| ID | Project | Version | Status |
-|----|---------|---------|--------|
-| `tf.api.runbook_execution` | TerraFusion.Operations | v1.0.0 | ✅ active |
-
-### 📡 Events (1)
-
-| ID | Project | Version | Status |
-|----|---------|---------|--------|
-| `tf.events.runbook_sse` | TerraFusion.Operations | v1.0.0 | ✅ active |
-
-### 🖥️ UI (0)
-
-*No UI spec-locks registered yet.*
-
----
-
-## By Project
-
-### TerraFusion.Operations (3)
-
-| ID | Surface | Version | Status |
-|----|---------|---------|--------|
-| `tf.metrics.phase45_auto_remediation` | metrics | v1.0.0 | ✅ active |
-| `tf.api.runbook_execution` | api | v1.0.0 | ✅ active |
-| `tf.events.runbook_sse` | events | v1.0.0 | ✅ active |
-
-### monitoring (3)
-
-| ID | Surface | Version | Status |
-|----|---------|---------|--------|
-| `tf.dashboards.atlas_auto_remediation_benton_ops` | dashboards | v1.0.0 | ✅ active |
-| `tf.dashboards.atlas_auto_remediation_governance` | dashboards | v1.0.0 | ✅ active |
-| `tf.alerts.phase44_remediation` | alerts | v1.0.0 | ✅ active |
-
----
-
-## Deprecated Locks
-
-*No deprecated spec-locks.*
 
 ---
 
 ## CI Integration
+
+### Validate Index
+
+```bash
+# Python (cross-platform)
+python scripts/validate-speclock-index.py
+
+# PowerShell (Windows)
+./scripts/validate-speclock-index.ps1
+
+# Strict mode (treat warnings as errors)
+python scripts/validate-speclock-index.py --strict
+```
+
+### Regenerate This File
+
+```bash
+python scripts/generate-speclock-index-md.py
+```
 
 ### Run All SpecLock Tests
 
@@ -103,37 +85,6 @@
 dotnet test --filter "Category=SpecLock"
 ```
 
-### Validate Index
-
-```powershell
-./scripts/validate-speclock-index.ps1
-```
-
-### Regenerate This File
-
-```powershell
-./scripts/generate-speclock-index-md.ps1
-```
-
 ---
 
-## Adding a New SpecLock
-
-1. Use `/tf-speclock` command to create spec + tests
-2. Entry is auto-registered in `INDEX.json`
-3. Run `./scripts/generate-speclock-index-md.ps1` to update this file
-4. Commit both files together
-
----
-
-## SpecLock Status Definitions
-
-| Status | Meaning |
-|--------|---------|
-| ✅ `active` | Contract is frozen and enforced by tests |
-| ⚠️ `draft` | Contract is being defined, not yet enforced |
-| 🚫 `deprecated` | Contract is superseded, tests may be removed |
-
----
-
-*Generated by `generate-speclock-index-md.ps1` — Do not edit manually*
+*Generated by `generate-speclock-index-md.py` — Do not edit manually*

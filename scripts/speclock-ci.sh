@@ -10,6 +10,10 @@
 # Usage:
 #   ./scripts/speclock-ci.sh [--strict]
 #
+# Environment:
+#   BASE_REF - Git base ref for PR diff detection (optional)
+#   HEAD_REF - Git head ref for PR diff detection (optional)
+#
 
 set -e
 
@@ -17,6 +21,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 cd "$REPO_ROOT"
+
+# Optional PR range inputs (CI can set these)
+BASE_REF="${BASE_REF:-}"
+HEAD_REF="${HEAD_REF:-}"
 
 echo ""
 echo "═══════════════════════════════════════════════════════════════"
@@ -78,7 +86,7 @@ if [ -f "docs/spec-lock/INDEX.md.backup" ]; then
     # Normalize both files: remove trailing whitespace and convert line endings
     CURRENT_HASH=$(cat "docs/spec-lock/INDEX.md" | sed 's/[[:space:]]*$//' | tr -d '\r' | md5sum | cut -d' ' -f1)
     BACKUP_HASH=$(cat "docs/spec-lock/INDEX.md.backup" | sed 's/[[:space:]]*$//' | tr -d '\r' | md5sum | cut -d' ' -f1)
-    
+
     if [ "$CURRENT_HASH" != "$BACKUP_HASH" ]; then
         echo ""
         echo "⚠️  INDEX.md has changed."
@@ -94,6 +102,18 @@ fi
 
 echo "✅ INDEX.md is up-to-date"
 echo ""
+
+# Step 2.5: PR Diff Detection (if BASE_REF and HEAD_REF provided)
+if [[ -n "$BASE_REF" && -n "$HEAD_REF" ]]; then
+    echo "─────────────────────────────────────────────────────────────────"
+    echo "Step 2.5: Detecting touched SpecLocks for PR range"
+    echo "─────────────────────────────────────────────────────────────────"
+    echo ""
+    echo "Range: $BASE_REF..$HEAD_REF"
+    echo ""
+    $PYTHON_CMD scripts/speclock-diff.py --base "$BASE_REF" --head "$HEAD_REF"
+    echo ""
+fi
 
 # Step 3: Run SpecLock tests (if dotnet available)
 echo "─────────────────────────────────────────────────────────────────"

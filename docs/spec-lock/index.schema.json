@@ -62,6 +62,12 @@
       "minItems": 0,
       "items": { "$ref": "#/$defs/nonEmptyString" }
     },
+    "generatedArtifactsArray": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "$ref": "#/$defs/nonEmptyString" },
+      "description": "Files generated from this spec-lock (renderer/compiler outputs)."
+    },
     "tagsArray": {
       "type": "array",
       "minItems": 0,
@@ -99,6 +105,15 @@
         "spec_version": { "$ref": "#/$defs/specVersion" },
         "spec_path": { "$ref": "#/$defs/nonEmptyString" },
         "artifact_paths": { "$ref": "#/$defs/pathsArray" },
+        "generated_artifacts": {
+          "$ref": "#/$defs/generatedArtifactsArray",
+          "description": "Files generated from this spec-lock (renderer/compiler outputs)."
+        },
+        "spec_data_path": {
+          "type": "string",
+          "minLength": 0,
+          "description": "Optional structured YAML/JSON input for generators (preferred over parsing markdown)."
+        },
         "test_paths": {
           "type": "array",
           "minItems": 1,
