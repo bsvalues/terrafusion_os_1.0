@@ -62,6 +62,18 @@ public interface IIncidentExplanationService
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Generates an LLM explanation for an incident without modifying it.
+    /// </summary>
+    /// <param name="incident">The incident to explain.</param>
+    /// <param name="options">Optional configuration for the explanation request.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Generated explanation or null if LLM is unavailable.</returns>
+    Task<IncidentExplanation?> GenerateExplanationAsync(
+        IncidentSummary incident,
+        IncidentExplanationOptions? options = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Checks if the explanation service is available and configured.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -91,4 +103,51 @@ public class NullIncidentExplanationService : IIncidentExplanationService
         // Always "available" but does nothing
         return Task.FromResult(false);
     }
+
+    /// <inheritdoc />
+    public Task<IncidentExplanation?> GenerateExplanationAsync(
+        IncidentSummary incident,
+        IncidentExplanationOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        // No-op: return null explanation
+        return Task.FromResult<IncidentExplanation?>(null);
+    }
+}
+
+/// <summary>
+/// LLM-generated explanation for an incident.
+/// Optional enrichment layer added after deterministic triage.
+/// </summary>
+public record IncidentExplanation
+{
+    /// <summary>
+    /// High-level summary of what happened.
+    /// </summary>
+    public string Summary { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Hypothesis about the root cause of the incident.
+    /// </summary>
+    public string RootCauseHypothesis { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Assessment of the impact on county operations.
+    /// </summary>
+    public string ImpactAssessment { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Ordered list of remediation steps to resolve the incident.
+    /// </summary>
+    public List<string> RemediationSteps { get; init; } = new();
+
+    /// <summary>
+    /// Confidence level of the LLM in its explanation.
+    /// </summary>
+    public ConfidenceLevel Confidence { get; init; } = ConfidenceLevel.Medium;
+
+    /// <summary>
+    /// When this explanation was generated.
+    /// </summary>
+    public DateTime GeneratedAt { get; init; } = DateTime.UtcNow;
 }

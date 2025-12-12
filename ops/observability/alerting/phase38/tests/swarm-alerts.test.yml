@@ -13,7 +13,7 @@ tests:
   # ===========================================================================
   # SwarmActionSpike Tests
   # ===========================================================================
-  
+
   # Nominal: Low action rate - no alert
   - interval: 1m
     input_series:
@@ -35,7 +35,7 @@ tests:
         exp_alerts:
           - exp_labels:
               severity: warning
-              government: "true"
+              government: 'true'
               component: swarm
               countyId: benton
 
@@ -64,7 +64,7 @@ tests:
         exp_alerts:
           - exp_labels:
               severity: info
-              government: "true"
+              government: 'true'
               component: swarm
               countyId: benton
 
@@ -93,7 +93,7 @@ tests:
         exp_alerts:
           - exp_labels:
               severity: critical
-              government: "true"
+              government: 'true'
               component: swarm
               countyId: benton
               citizen_impact: high
@@ -123,7 +123,7 @@ tests:
         exp_alerts:
           - exp_labels:
               severity: warning
-              government: "true"
+              government: 'true'
               component: swarm
               countyId: benton
 
@@ -147,6 +147,6 @@ tests:
           # Only Benton should alert
           - exp_labels:
               severity: warning
-              government: "true"
+              government: 'true'
               component: swarm
               countyId: benton

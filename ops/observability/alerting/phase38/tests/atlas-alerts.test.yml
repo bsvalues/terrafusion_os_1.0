@@ -13,7 +13,7 @@ tests:
   # ===========================================================================
   # AtlasOrchestratorStall Tests
   # ===========================================================================
-  
+
   # Nominal: Orchestrator running normally - no alert
   - interval: 1m
     input_series:
@@ -35,7 +35,7 @@ tests:
         exp_alerts:
           - exp_labels:
               severity: critical
-              government: "true"
+              government: 'true'
               component: orchestrator
 
   # ===========================================================================
@@ -67,7 +67,7 @@ tests:
         exp_alerts:
           - exp_labels:
               severity: warning
-              government: "true"
+              government: 'true'
               component: forecast
               countyId: benton
 
@@ -96,7 +96,7 @@ tests:
         exp_alerts:
           - exp_labels:
               severity: warning
-              government: "true"
+              government: 'true'
               component: anomaly
               countyId: benton
 
@@ -125,7 +125,7 @@ tests:
         exp_alerts:
           - exp_labels:
               severity: critical
-              government: "true"
+              government: 'true'
               component: anomaly
               countyId: benton
 
@@ -154,6 +154,6 @@ tests:
         exp_alerts:
           - exp_labels:
               severity: warning
-              government: "true"
+              government: 'true'
               component: telemetry
               countyId: benton

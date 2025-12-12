@@ -115,6 +115,12 @@ public record IncidentSummary
     public bool LlmEnriched { get; init; } = false;
 
     /// <summary>
+    /// Optional LLM-generated explanation for this incident.
+    /// Only populated if explanation service was invoked.
+    /// </summary>
+    public IncidentExplanation? Explanation { get; init; }
+
+    /// <summary>
     /// Optional links to relevant Phase 37 Grafana dashboards.
     /// </summary>
     public List<string>? DashboardLinks { get; init; }

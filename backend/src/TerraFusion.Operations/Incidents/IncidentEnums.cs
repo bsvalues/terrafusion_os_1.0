@@ -101,6 +101,16 @@ public enum RecommendationCategory
     ExternalDependency = 5,
 
     /// <summary>
+    /// Recovery action recommendation (restart, failover).
+    /// </summary>
+    Recovery = 6,
+
+    /// <summary>
+    /// Monitoring recommendation (check dashboards, logs).
+    /// </summary>
+    Monitoring = 7,
+
+    /// <summary>
     /// Unknown or unclassified recommendation.
     /// </summary>
     Unknown = 99
