@@ -19,6 +19,8 @@ namespace TerraFusion.Unit.Tests.Phase41;
 /// Tests for audit trail functionality.
 /// Focus: Timestamps, identity tracking, execution records.
 /// </summary>
+[Trait("Phase", "41")]
+[Trait("Component", "RunbookExecution")]
 public sealed class RunbookExecutionAuditTests : IDisposable
 {
     private readonly InMemoryRunbookExecutionStore _store;

@@ -18,6 +18,9 @@ namespace TerraFusion.Unit.Tests.Phase41.BreakerTests;
 /// <summary>
 /// BREAKER: Tests for authorization bypass attacks on the approval workflow.
 /// </summary>
+[Trait("Phase", "41")]
+[Trait("Component", "RunbookExecution")]
+[Trait("Category", "Breaker")]
 public sealed class AuthorizationBypassTests : IDisposable
 {
     private readonly InMemoryRunbookExecutionStore _store;

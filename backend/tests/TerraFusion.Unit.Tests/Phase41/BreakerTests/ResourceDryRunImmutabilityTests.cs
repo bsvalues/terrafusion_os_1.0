@@ -18,6 +18,9 @@ namespace TerraFusion.Unit.Tests.Phase41.BreakerTests;
 /// <summary>
 /// BREAKER: Tests for resource exhaustion, DryRun enforcement, and immutability.
 /// </summary>
+[Trait("Phase", "41")]
+[Trait("Component", "RunbookExecution")]
+[Trait("Category", "Breaker")]
 public sealed class ResourceDryRunImmutabilityTests : IDisposable
 {
     private readonly InMemoryRunbookExecutionStore _store;

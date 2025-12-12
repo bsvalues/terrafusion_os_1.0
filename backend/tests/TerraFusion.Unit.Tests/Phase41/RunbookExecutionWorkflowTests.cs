@@ -19,6 +19,8 @@ namespace TerraFusion.Unit.Tests.Phase41;
 /// Tests for multi-step workflow execution.
 /// Focus: Step ordering, partial completion, state transitions.
 /// </summary>
+[Trait("Phase", "41")]
+[Trait("Component", "RunbookExecution")]
 public sealed class RunbookExecutionWorkflowTests : IDisposable
 {
     private readonly InMemoryRunbookExecutionStore _store;

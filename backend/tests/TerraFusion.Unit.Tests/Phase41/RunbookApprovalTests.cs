@@ -19,6 +19,8 @@ namespace TerraFusion.Unit.Tests.Phase41;
 /// Tests for approval workflow enforcement.
 /// Focus: Approval requirements, safety level enforcement, manual-only steps.
 /// </summary>
+[Trait("Phase", "41")]
+[Trait("Component", "RunbookExecution")]
 public sealed class RunbookApprovalTests : IDisposable
 {
     private readonly InMemoryRunbookExecutionStore _store;

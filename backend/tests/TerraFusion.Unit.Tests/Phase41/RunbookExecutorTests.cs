@@ -19,6 +19,8 @@ namespace TerraFusion.Unit.Tests.Phase41;
 /// Tests for <see cref="RunbookExecutor"/>.
 /// Focus: Core execution logic, state transitions, step execution.
 /// </summary>
+[Trait("Phase", "41")]
+[Trait("Component", "RunbookExecution")]
 public sealed class RunbookExecutorTests : IDisposable
 {
     private readonly InMemoryRunbookExecutionStore _store;

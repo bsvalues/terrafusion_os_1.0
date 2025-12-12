@@ -20,6 +20,9 @@ namespace TerraFusion.Unit.Tests.Phase41.BreakerTests;
 /// Note: These tests probe for concurrency vulnerabilities but may need
 /// production-grade synchronization to fully validate thread safety.
 /// </summary>
+[Trait("Phase", "41")]
+[Trait("Component", "RunbookExecution")]
+[Trait("Category", "Breaker")]
 public sealed class RaceConditionTests : IDisposable
 {
     private readonly InMemoryRunbookExecutionStore _store;
