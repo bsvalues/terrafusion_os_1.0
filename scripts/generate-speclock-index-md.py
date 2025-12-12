@@ -73,6 +73,21 @@ def _surface_emoji(surface: str) -> str:
     }.get(surface, "📦")
 
 
+def _render_generated(gen: Any) -> str:
+    """
+    Deterministic rendering:
+      - list of paths sorted lexicographically
+      - joined with <br> so the table stays readable
+    """
+    if not isinstance(gen, list) or len(gen) == 0:
+        return ""
+    paths = [str(x) for x in gen if isinstance(x, str) and str(x).strip()]
+    if not paths:
+        return ""
+    paths.sort()
+    return "<br>".join(paths)
+
+
 def generate(index_json: Path, index_md: Path) -> None:
     doc = _load_json(index_json)
     locks = doc.get("locks", [])
@@ -95,6 +110,7 @@ def generate(index_json: Path, index_md: Path) -> None:
         rows: List[List[str]] = []
         for lock in grouped[status]:
             surface = str(lock.get("surface", ""))
+            gen_col = _render_generated(lock.get("generated_artifacts", []))
             rows.append([
                 f"`{lock.get('id', '')}`",
                 f"{_surface_emoji(surface)} {surface}",
@@ -102,7 +118,8 @@ def generate(index_json: Path, index_md: Path) -> None:
                 str(lock.get("spec_version", "")),
                 str(lock.get("owner", "")),
                 f"{_status_emoji(status)} {status}",
-                _link(str(lock.get("spec_path", "")))
+                _link(str(lock.get("spec_path", ""))),
+                gen_col
             ])
         return rows
 
@@ -113,7 +130,7 @@ def generate(index_json: Path, index_md: Path) -> None:
     draft_count = len(grouped["draft"])
     deprecated_count = len(grouped["deprecated"])
 
-    headers = ["ID", "Surface", "Project", "Version", "Owner", "Status", "Spec"]
+    headers = ["ID", "Surface", "Project", "Version", "Owner", "Status", "Spec", "Generated"]
 
     md = []
     md.append(f"# TerraFusion SpecLock Index (v{version})")

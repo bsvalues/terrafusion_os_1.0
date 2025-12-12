@@ -21,23 +21,23 @@
 
 ## ✅ Active Locks
 
-| ID | Surface | Project | Version | Owner | Status | Spec |
-|---|---|---|---|---|---|---|
-| `tf.dashboards.atlas_auto_remediation_benton_ops` | 📊 dashboards | monitoring | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |
-| `tf.dashboards.atlas_auto_remediation_governance` | 📊 dashboards | monitoring | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |
-| `tf.metrics.phase45_auto_remediation` | 📈 metrics | TerraFusion.Operations | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |
+| ID | Surface | Project | Version | Owner | Status | Spec | Generated |
+|---|---|---|---|---|---|---|---|
+| `tf.dashboards.atlas_auto_remediation_benton_ops` | 📊 dashboards | monitoring | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |  |
+| `tf.dashboards.atlas_auto_remediation_governance` | 📊 dashboards | monitoring | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |  |
+| `tf.metrics.phase45_auto_remediation` | 📈 metrics | TerraFusion.Operations | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |  |
 
 ## ⚠️ Draft Locks
 
-| ID | Surface | Project | Version | Owner | Status | Spec |
-|---|---|---|---|---|---|---|
-| *None* | | | | | | |
+| ID | Surface | Project | Version | Owner | Status | Spec | Generated |
+|---|---|---|---|---|---|---|---|
+| *None* | | | | | | | |
 
 ## 🚫 Deprecated Locks
 
-| ID | Surface | Project | Version | Owner | Status | Spec |
-|---|---|---|---|---|---|---|
-| *None* | | | | | | |
+| ID | Surface | Project | Version | Owner | Status | Spec | Generated |
+|---|---|---|---|---|---|---|---|
+| *None* | | | | | | | |
 
 ---
 
