@@ -1,11 +1,21 @@
 {
-  "version": "1.0",
-  "description": "SpecLock generator registry - maps surface type to generator script",
+  "version": "2.0",
+  "description": "SpecLock generator registry - maps surface/key to generator script (Nuclear Mode)",
   "generators": {
     "api": {
       "script": "scripts/speclock-openapi-snapshot.py",
       "args": ["--lock", "{id}", "--out", "{out}"],
       "description": "Generates deterministic OpenAPI snapshot JSON"
+    },
+    "api_ts_sdk": {
+      "script": "scripts/speclock-sdk-gen-ts.py",
+      "args": ["--lock", "{id}", "--out", "{out}"],
+      "description": "Generates TypeScript types from spec_data_path"
+    },
+    "api_cs_dtos": {
+      "script": "scripts/speclock-sdk-gen-cs.py",
+      "args": ["--lock", "{id}", "--out", "{out}"],
+      "description": "Generates C# DTO records from spec_data_path"
     },
     "dashboards": {
       "script": "scripts/speclock-grafana-render.py",
@@ -16,6 +26,11 @@
       "script": "scripts/speclock-alert-compile.py",
       "args": ["--lock", "{id}", "--out", "{out}", "--name", "{name}"],
       "description": "Compiles PrometheusRule YAML from spec_data_path"
+    },
+    "opa": {
+      "script": "scripts/speclock-opa-gen.py",
+      "args": ["--lock", "{id}", "--out", "{out}"],
+      "description": "Generates OPA Rego policy from spec_data_path"
     }
   }
 }

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-SpecLock Generator Runner (Machine Mode)
+SpecLock Generator Runner (Nuclear Mode)
 
 Reads:
   - docs/spec-lock/INDEX.json
   - docs/spec-lock/GENERATORS.json
 
 For each lock with generated_artifacts:
-  - Select generator by lock.surface
-  - Run generator once per generated_artifact
+  - If lock.generator_keys specified: run those generators
+  - Otherwise: run generator by lock.surface
   - Fail closed on any error
 
 Usage:
@@ -44,6 +44,19 @@ def _run(cmd: List[str], dry_run: bool = False) -> bool:
     return result.returncode == 0
 
 
+def _pick_generator_keys(lock: Dict[str, Any]) -> List[str]:
+    """
+    Determine which generators to run for a lock:
+    - If generator_keys is specified and non-empty: use those
+    - Otherwise: use surface as single key
+    """
+    gen_keys = lock.get("generator_keys", [])
+    if isinstance(gen_keys, list) and gen_keys:
+        return [str(k) for k in gen_keys if str(k).strip()]
+    surface = lock.get("surface", "")
+    return [surface] if surface else []
+
+
 def generate_for_lock(
     lock: Dict[str, Any],
     generators: Dict[str, Any],
@@ -57,51 +70,58 @@ def generate_for_lock(
     if not outs:
         return 0
 
-    gen = generators.get(surface)
-    if not gen:
-        print(f"❌ No generator registered for surface: {surface} (lock: {lock_id})")
+    # Get generator keys (generator_keys or surface fallback)
+    gen_keys = _pick_generator_keys(lock)
+    if not gen_keys:
+        print(f"❌ No generator keys resolved for lock: {lock_id}")
         raise SystemExit(1)
 
-    script = gen["script"]
-    args_tmpl = gen["args"]
-
     generated = 0
-    for out in outs:
-        if not isinstance(out, str) or not out.strip():
-            continue
-
-        # Derive name from output path (last segment, no extension)
-        name = Path(out).stem
-
-        # Format args with placeholders
-        args = []
-        for a in args_tmpl:
-            args.append(
-                a.replace("{id}", lock_id)
-                 .replace("{out}", out)
-                 .replace("{name}", name)
-            )
-
-        # Determine python command
-        python_cmd = "python3" if sys.platform != "win32" else "python"
-        cmd = [python_cmd, script] + args
-
-        print(f"▶ Generating: {out}")
-        print(f"  Lock: {lock_id} | Surface: {surface}")
-
-        if not _run(cmd, dry_run):
-            print(f"❌ Generator failed for: {out}")
+    for gen_key in gen_keys:
+        gen = generators.get(gen_key)
+        if not gen:
+            print(f"❌ No generator registered for key: {gen_key} (lock: {lock_id})")
             raise SystemExit(1)
 
-        if not dry_run:
-            out_path = Path(out)
-            if not out_path.exists():
-                print(f"❌ Expected output missing after generation: {out}")
-                raise SystemExit(1)
-            print(f"  ✅ Output verified: {out}")
+        script = gen["script"]
+        args_tmpl = gen["args"]
 
-        generated += 1
-        print("")
+        for out in outs:
+            if not isinstance(out, str) or not out.strip():
+                continue
+
+            # Derive name from output path (last segment, no extension)
+            name = Path(out).stem
+
+            # Format args with placeholders
+            args = []
+            for a in args_tmpl:
+                args.append(
+                    a.replace("{id}", lock_id)
+                     .replace("{out}", out)
+                     .replace("{name}", name)
+                )
+
+            # Determine python command
+            python_cmd = "python3" if sys.platform != "win32" else "python"
+            cmd = [python_cmd, script] + args
+
+            print(f"▶ Generating: {out}")
+            print(f"  Lock: {lock_id} | Generator: {gen_key}")
+
+            if not _run(cmd, dry_run):
+                print(f"❌ Generator failed for: {out}")
+                raise SystemExit(1)
+
+            if not dry_run:
+                out_path = Path(out)
+                if not out_path.exists():
+                    print(f"❌ Expected output missing after generation: {out}")
+                    raise SystemExit(1)
+                print(f"  ✅ Output verified: {out}")
+
+            generated += 1
+            print("")
 
     return generated
 

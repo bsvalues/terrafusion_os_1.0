@@ -9,314 +9,314 @@
 name: Phase 41 - Runbook Execution Quality Gate
 
 on:
-  pull_request:
-    paths:
-      - "backend/**RunbookExecution**"
-      - "backend/**RunbookExecutor**"
-      - "backend/**Runbooks/Execution/**"
-      - "backend/tests/**Phase41**"
-      - ".github/ai-prompts/breaker-phase41.md"
-      - ".github/ai-prompts/reviewer-phase41.md"
-      - ".github/workflows/phase41-runbook-execution-gate.yml"
-  workflow_dispatch:
-    inputs:
-      run_breaker:
-        description: "Run Phase 41 Breaker Agent?"
-        required: true
-        default: "true"
-        type: choice
-        options: ["true", "false"]
-      run_reviewer:
-        description: "Run Phase 41 Reviewer Agent?"
-        required: true
-        default: "true"
-        type: choice
-        options: ["true", "false"]
+    pull_request:
+        paths:
+            - "backend/**RunbookExecution**"
+            - "backend/**RunbookExecutor**"
+            - "backend/**Runbooks/Execution/**"
+            - "backend/tests/**Phase41**"
+            - ".github/ai-prompts/breaker-phase41.md"
+            - ".github/ai-prompts/reviewer-phase41.md"
+            - ".github/workflows/phase41-runbook-execution-gate.yml"
+    workflow_dispatch:
+        inputs:
+            run_breaker:
+                description: "Run Phase 41 Breaker Agent?"
+                required: true
+                default: "true"
+                type: choice
+                options: ["true", "false"]
+            run_reviewer:
+                description: "Run Phase 41 Reviewer Agent?"
+                required: true
+                default: "true"
+                type: choice
+                options: ["true", "false"]
 
 env:
-  DOTNET_VERSION: "8.0.x"
-  SOLUTION_PATH: "backend/TerraFusion.sln"
+    DOTNET_VERSION: "8.0.x"
+    SOLUTION_PATH: "backend/TerraFusion.sln"
 
 jobs:
-  # =========================================================================
-  # Stage 1: Phase 41 Tests (Core + Breaker)
-  # =========================================================================
-  runbook-execution-tests:
-    name: Phase 41 Runbook Execution Tests
-    runs-on: ubuntu-latest
+    # =========================================================================
+    # Stage 1: Phase 41 Tests (Core + Breaker)
+    # =========================================================================
+    runbook-execution-tests:
+        name: Phase 41 Runbook Execution Tests
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore dependencies
-        run: dotnet restore ${{ env.SOLUTION_PATH }}
+            - name: Restore dependencies
+              run: dotnet restore ${{ env.SOLUTION_PATH }}
 
-      - name: Build
-        run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
+            - name: Build
+              run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
 
-      - name: Run Phase 41 Core Tests
-        id: core-tests
-        run: |
-          dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj \
-            --configuration Release \
-            --no-build \
-            --filter "Phase=41&Component=RunbookExecution&Category!=Breaker" \
-            --logger "trx;LogFileName=phase41-core.trx" \
-            --results-directory ./TestResults
+            - name: Run Phase 41 Core Tests
+              id: core-tests
+              run: |
+                  dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj \
+                    --configuration Release \
+                    --no-build \
+                    --filter "Phase=41&Component=RunbookExecution&Category!=Breaker" \
+                    --logger "trx;LogFileName=phase41-core.trx" \
+                    --results-directory ./TestResults
 
-      - name: Run Phase 41 Breaker Tests
-        id: breaker-tests
-        run: |
-          dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj \
-            --configuration Release \
-            --no-build \
-            --filter "Phase=41&Category=Breaker" \
-            --logger "trx;LogFileName=phase41-breaker.trx" \
-            --results-directory ./TestResults
+            - name: Run Phase 41 Breaker Tests
+              id: breaker-tests
+              run: |
+                  dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj \
+                    --configuration Release \
+                    --no-build \
+                    --filter "Phase=41&Category=Breaker" \
+                    --logger "trx;LogFileName=phase41-breaker.trx" \
+                    --results-directory ./TestResults
 
-      - name: Generate Test Summary
+            - name: Generate Test Summary
+              if: always()
+              run: |
+                  echo "## Phase 41 Test Results" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "| Test Suite | Status |" >> $GITHUB_STEP_SUMMARY
+                  echo "|------------|--------|" >> $GITHUB_STEP_SUMMARY
+                  echo "| Core Tests | ${{ steps.core-tests.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Breaker Tests | ${{ steps.breaker-tests.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+
+            - name: Upload Test Results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: phase41-test-results
+                  path: TestResults/*.trx
+                  retention-days: 30
+
+    # =========================================================================
+    # Stage 2: Phase 41 Breaker Agent (Red Team Analysis)
+    # =========================================================================
+    breaker-phase41:
+        name: Phase 41 Breaker (Red Team Analysis)
+        runs-on: ubuntu-latest
+        needs: runbook-execution-tests
+        if: |
+            needs.runbook-execution-tests.result == 'success' &&
+            (github.event_name != 'workflow_dispatch' || inputs.run_breaker == 'true')
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Load Breaker Prompt
+              id: breaker-prompt
+              run: |
+                  echo "Loading Phase 41 Breaker prompt..."
+                  if [ -f ".github/ai-prompts/breaker-phase41.md" ]; then
+                    echo "breaker_prompt_exists=true" >> $GITHUB_OUTPUT
+                    echo "## Breaker Prompt Loaded" >> $GITHUB_STEP_SUMMARY
+                    echo "Attack vectors defined in \`.github/ai-prompts/breaker-phase41.md\`" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "breaker_prompt_exists=false" >> $GITHUB_OUTPUT
+                    echo "⚠️ Breaker prompt not found" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+            - name: Analyze Security Attack Surface
+              run: |
+                  echo "## Phase 41 Breaker Analysis" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "Attack vectors tested by Breaker tests:" >> $GITHUB_STEP_SUMMARY
+                  echo "1. ✅ Authorization Bypass (whitespace/null ApprovedBy)" >> $GITHUB_STEP_SUMMARY
+                  echo "2. ✅ State Machine Violations (out-of-order execution)" >> $GITHUB_STEP_SUMMARY
+                  echo "3. ✅ Race Conditions (concurrent approvals)" >> $GITHUB_STEP_SUMMARY
+                  echo "4. ✅ Resource Exhaustion (many steps)" >> $GITHUB_STEP_SUMMARY
+                  echo "5. ✅ DryRun Bypass (immutable flag)" >> $GITHUB_STEP_SUMMARY
+                  echo "6. ✅ Action Provider Exploits (exceptions)" >> $GITHUB_STEP_SUMMARY
+                  echo "7. ✅ Plan/Incident Immutability" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "**Result: 51 Breaker tests passed, 0 vulnerabilities found**" >> $GITHUB_STEP_SUMMARY
+
+            # NOTE: Replace with actual AI runner when available
+            # - name: Run Phase 41 Breaker Agent
+            #   uses: openai/chatgpt-action@v1
+            #   with:
+            #     model: gpt-5-1
+            #     prompt-file: .github/ai-prompts/breaker-phase41.md
+            #     repo-root: "."
+
+            - name: Generate Breaker Report
+              run: |
+                  mkdir -p phase41-breaker-output
+                  cat > phase41-breaker-output/breaker-report.md << 'EOF'
+                  # Phase 41 Breaker Report
+
+                  ## Executive Summary
+                  All 51 Breaker tests passed. No security vulnerabilities identified.
+
+                  ## Attack Vectors Tested
+                  | Vector | Tests | Vulnerabilities |
+                  |--------|-------|-----------------|
+                  | Authorization Bypass | 15 | 0 |
+                  | State Machine Violations | 12 | 0 |
+                  | Race Conditions | 10 | 0 |
+                  | Resource Exhaustion | 4 | 0 |
+                  | DryRun Enforcement | 4 | 0 |
+                  | Action Provider Exploits | 2 | 0 |
+                  | Immutability | 4 | 0 |
+
+                  ## Recommendation
+                  Phase 41 is secure and ready for reviewer validation.
+                  EOF
+
+            - name: Upload Breaker Output
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: phase41-breaker-output
+                  path: phase41-breaker-output/
+                  retention-days: 30
+
+    # =========================================================================
+    # Stage 3: Phase 41 Reviewer Agent (Governance Validation)
+    # =========================================================================
+    reviewer-phase41:
+        name: Phase 41 Reviewer (Governance Validation)
+        runs-on: ubuntu-latest
+        needs: breaker-phase41
+        if: |
+            needs.breaker-phase41.result == 'success' &&
+            (github.event_name != 'workflow_dispatch' || inputs.run_reviewer == 'true')
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Download Breaker Output
+              uses: actions/download-artifact@v4
+              with:
+                  name: phase41-breaker-output
+                  path: phase41-breaker-output/
+
+            - name: Load Reviewer Checklist
+              run: |
+                  echo "## Phase 41 Reviewer Checklist" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "### EXECUTION SPEC LOCK v1.0.0 Compliance" >> $GITHUB_STEP_SUMMARY
+                  echo "- [x] Status transitions validated" >> $GITHUB_STEP_SUMMARY
+                  echo "- [x] Step status transitions validated" >> $GITHUB_STEP_SUMMARY
+                  echo "- [x] Approval enforcement verified" >> $GITHUB_STEP_SUMMARY
+                  echo "- [x] DryRun enforcement verified" >> $GITHUB_STEP_SUMMARY
+                  echo "- [x] Immutability verified" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "### Code Quality" >> $GITHUB_STEP_SUMMARY
+                  echo "- [x] RunbookExecutor.cs validated" >> $GITHUB_STEP_SUMMARY
+                  echo "- [x] InMemoryRunbookExecutionStore.cs validated" >> $GITHUB_STEP_SUMMARY
+                  echo "- [x] RunbookExecutionModels.cs validated" >> $GITHUB_STEP_SUMMARY
+                  echo "- [x] IRunbookActionProvider.cs validated" >> $GITHUB_STEP_SUMMARY
+
+            # NOTE: Replace with actual AI runner when available
+            # - name: Run Phase 41 Reviewer Agent
+            #   uses: openai/chatgpt-action@v1
+            #   with:
+            #     model: gpt-5-1
+            #     prompt-file: .github/ai-prompts/reviewer-phase41.md
+            #     repo-root: "."
+
+            - name: Generate Review Report
+              run: |
+                  mkdir -p phase41-reviewer-output
+                  cat > phase41-reviewer-output/review.md << 'EOF'
+                  # Phase 41 Reviewer Report
+
+                  ## Status: ✅ APPROVED
+
+                  ### Test Coverage
+                  | Suite | Tests | Status |
+                  |-------|-------|--------|
+                  | Core Tests | 80 | ✅ Pass |
+                  | Breaker Tests | 51 | ✅ Pass |
+                  | **Total** | **131** | ✅ Pass |
+
+                  ### Compliance Checklist
+                  - ✅ EXECUTION SPEC LOCK v1.0.0 requirements met
+                  - ✅ Approval enforcement verified
+                  - ✅ State machine transitions validated
+                  - ✅ DryRun enforcement verified
+                  - ✅ Plan/incident immutability verified
+
+                  ### Security Assessment
+                  - 0 CRITICAL vulnerabilities
+                  - 0 HIGH vulnerabilities
+                  - 0 MEDIUM vulnerabilities
+
+                  ### Recommendation
+                  Phase 41 is approved for production deployment.
+                  EOF
+
+            - name: Upload Reviewer Output
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: phase41-reviewer-output
+                  path: phase41-reviewer-output/
+                  retention-days: 30
+
+            - name: Post Review to PR
+              if: github.event_name == 'pull_request'
+              uses: marocchino/sticky-pull-request-comment@v2
+              with:
+                  recreate: true
+                  path: phase41-reviewer-output/review.md
+
+    # =========================================================================
+    # Stage 4: Quality Gate Summary
+    # =========================================================================
+    quality-gate:
+        name: Phase 41 Quality Gate Summary
+        runs-on: ubuntu-latest
+        needs:
+            - runbook-execution-tests
+            - breaker-phase41
+            - reviewer-phase41
         if: always()
-        run: |
-          echo "## Phase 41 Test Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Test Suite | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|------------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Core Tests | ${{ steps.core-tests.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Breaker Tests | ${{ steps.breaker-tests.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
 
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: phase41-test-results
-          path: TestResults/*.trx
-          retention-days: 30
+        steps:
+            - name: Evaluate Quality Gate
+              run: |
+                  echo "# Phase 41 Quality Gate" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "| Stage | Result |" >> $GITHUB_STEP_SUMMARY
+                  echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+                  echo "| Tests | ${{ needs.runbook-execution-tests.result == 'success' && '✅ Pass' || needs.runbook-execution-tests.result == 'skipped' && '⏭️ Skipped' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Breaker | ${{ needs.breaker-phase41.result == 'success' && '✅ Pass' || needs.breaker-phase41.result == 'skipped' && '⏭️ Skipped' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Reviewer | ${{ needs.reviewer-phase41.result == 'success' && '✅ Pass' || needs.reviewer-phase41.result == 'skipped' && '⏭️ Skipped' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
 
-  # =========================================================================
-  # Stage 2: Phase 41 Breaker Agent (Red Team Analysis)
-  # =========================================================================
-  breaker-phase41:
-    name: Phase 41 Breaker (Red Team Analysis)
-    runs-on: ubuntu-latest
-    needs: runbook-execution-tests
-    if: |
-      needs.runbook-execution-tests.result == 'success' &&
-      (github.event_name != 'workflow_dispatch' || inputs.run_breaker == 'true')
+                  # Determine overall gate status
+                  if [ "${{ needs.runbook-execution-tests.result }}" != "success" ]; then
+                    echo "**Status: ❌ FAILED** - Tests must pass" >> $GITHUB_STEP_SUMMARY
+                    echo "Phase 41 gate FAILED: tests failing."
+                    exit 1
+                  fi
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+                  # Breaker may be skipped if toggled off for manual runs
+                  if [ "${{ needs.breaker-phase41.result }}" == "failure" ]; then
+                    echo "**Status: ❌ FAILED** - Breaker found issues" >> $GITHUB_STEP_SUMMARY
+                    echo "Phase 41 gate FAILED: Breaker failed."
+                    exit 1
+                  fi
 
-      - name: Load Breaker Prompt
-        id: breaker-prompt
-        run: |
-          echo "Loading Phase 41 Breaker prompt..."
-          if [ -f ".github/ai-prompts/breaker-phase41.md" ]; then
-            echo "breaker_prompt_exists=true" >> $GITHUB_OUTPUT
-            echo "## Breaker Prompt Loaded" >> $GITHUB_STEP_SUMMARY
-            echo "Attack vectors defined in \`.github/ai-prompts/breaker-phase41.md\`" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "breaker_prompt_exists=false" >> $GITHUB_OUTPUT
-            echo "⚠️ Breaker prompt not found" >> $GITHUB_STEP_SUMMARY
-          fi
+                  # Reviewer may be skipped if toggled off for manual runs
+                  if [ "${{ needs.reviewer-phase41.result }}" == "failure" ]; then
+                    echo "**Status: ❌ FAILED** - Reviewer rejected" >> $GITHUB_STEP_SUMMARY
+                    echo "Phase 41 gate FAILED: Reviewer failed."
+                    exit 1
+                  fi
 
-      - name: Analyze Security Attack Surface
-        run: |
-          echo "## Phase 41 Breaker Analysis" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Attack vectors tested by Breaker tests:" >> $GITHUB_STEP_SUMMARY
-          echo "1. ✅ Authorization Bypass (whitespace/null ApprovedBy)" >> $GITHUB_STEP_SUMMARY
-          echo "2. ✅ State Machine Violations (out-of-order execution)" >> $GITHUB_STEP_SUMMARY
-          echo "3. ✅ Race Conditions (concurrent approvals)" >> $GITHUB_STEP_SUMMARY
-          echo "4. ✅ Resource Exhaustion (many steps)" >> $GITHUB_STEP_SUMMARY
-          echo "5. ✅ DryRun Bypass (immutable flag)" >> $GITHUB_STEP_SUMMARY
-          echo "6. ✅ Action Provider Exploits (exceptions)" >> $GITHUB_STEP_SUMMARY
-          echo "7. ✅ Plan/Incident Immutability" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Result: 51 Breaker tests passed, 0 vulnerabilities found**" >> $GITHUB_STEP_SUMMARY
-
-      # NOTE: Replace with actual AI runner when available
-      # - name: Run Phase 41 Breaker Agent
-      #   uses: openai/chatgpt-action@v1
-      #   with:
-      #     model: gpt-5-1
-      #     prompt-file: .github/ai-prompts/breaker-phase41.md
-      #     repo-root: "."
-
-      - name: Generate Breaker Report
-        run: |
-          mkdir -p phase41-breaker-output
-          cat > phase41-breaker-output/breaker-report.md << 'EOF'
-          # Phase 41 Breaker Report
-
-          ## Executive Summary
-          All 51 Breaker tests passed. No security vulnerabilities identified.
-
-          ## Attack Vectors Tested
-          | Vector | Tests | Vulnerabilities |
-          |--------|-------|-----------------|
-          | Authorization Bypass | 15 | 0 |
-          | State Machine Violations | 12 | 0 |
-          | Race Conditions | 10 | 0 |
-          | Resource Exhaustion | 4 | 0 |
-          | DryRun Enforcement | 4 | 0 |
-          | Action Provider Exploits | 2 | 0 |
-          | Immutability | 4 | 0 |
-
-          ## Recommendation
-          Phase 41 is secure and ready for reviewer validation.
-          EOF
-
-      - name: Upload Breaker Output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: phase41-breaker-output
-          path: phase41-breaker-output/
-          retention-days: 30
-
-  # =========================================================================
-  # Stage 3: Phase 41 Reviewer Agent (Governance Validation)
-  # =========================================================================
-  reviewer-phase41:
-    name: Phase 41 Reviewer (Governance Validation)
-    runs-on: ubuntu-latest
-    needs: breaker-phase41
-    if: |
-      needs.breaker-phase41.result == 'success' &&
-      (github.event_name != 'workflow_dispatch' || inputs.run_reviewer == 'true')
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download Breaker Output
-        uses: actions/download-artifact@v4
-        with:
-          name: phase41-breaker-output
-          path: phase41-breaker-output/
-
-      - name: Load Reviewer Checklist
-        run: |
-          echo "## Phase 41 Reviewer Checklist" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### EXECUTION SPEC LOCK v1.0.0 Compliance" >> $GITHUB_STEP_SUMMARY
-          echo "- [x] Status transitions validated" >> $GITHUB_STEP_SUMMARY
-          echo "- [x] Step status transitions validated" >> $GITHUB_STEP_SUMMARY
-          echo "- [x] Approval enforcement verified" >> $GITHUB_STEP_SUMMARY
-          echo "- [x] DryRun enforcement verified" >> $GITHUB_STEP_SUMMARY
-          echo "- [x] Immutability verified" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Code Quality" >> $GITHUB_STEP_SUMMARY
-          echo "- [x] RunbookExecutor.cs validated" >> $GITHUB_STEP_SUMMARY
-          echo "- [x] InMemoryRunbookExecutionStore.cs validated" >> $GITHUB_STEP_SUMMARY
-          echo "- [x] RunbookExecutionModels.cs validated" >> $GITHUB_STEP_SUMMARY
-          echo "- [x] IRunbookActionProvider.cs validated" >> $GITHUB_STEP_SUMMARY
-
-      # NOTE: Replace with actual AI runner when available
-      # - name: Run Phase 41 Reviewer Agent
-      #   uses: openai/chatgpt-action@v1
-      #   with:
-      #     model: gpt-5-1
-      #     prompt-file: .github/ai-prompts/reviewer-phase41.md
-      #     repo-root: "."
-
-      - name: Generate Review Report
-        run: |
-          mkdir -p phase41-reviewer-output
-          cat > phase41-reviewer-output/review.md << 'EOF'
-          # Phase 41 Reviewer Report
-
-          ## Status: ✅ APPROVED
-
-          ### Test Coverage
-          | Suite | Tests | Status |
-          |-------|-------|--------|
-          | Core Tests | 80 | ✅ Pass |
-          | Breaker Tests | 51 | ✅ Pass |
-          | **Total** | **131** | ✅ Pass |
-
-          ### Compliance Checklist
-          - ✅ EXECUTION SPEC LOCK v1.0.0 requirements met
-          - ✅ Approval enforcement verified
-          - ✅ State machine transitions validated
-          - ✅ DryRun enforcement verified
-          - ✅ Plan/incident immutability verified
-
-          ### Security Assessment
-          - 0 CRITICAL vulnerabilities
-          - 0 HIGH vulnerabilities
-          - 0 MEDIUM vulnerabilities
-
-          ### Recommendation
-          Phase 41 is approved for production deployment.
-          EOF
-
-      - name: Upload Reviewer Output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: phase41-reviewer-output
-          path: phase41-reviewer-output/
-          retention-days: 30
-
-      - name: Post Review to PR
-        if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          recreate: true
-          path: phase41-reviewer-output/review.md
-
-  # =========================================================================
-  # Stage 4: Quality Gate Summary
-  # =========================================================================
-  quality-gate:
-    name: Phase 41 Quality Gate Summary
-    runs-on: ubuntu-latest
-    needs:
-      - runbook-execution-tests
-      - breaker-phase41
-      - reviewer-phase41
-    if: always()
-
-    steps:
-      - name: Evaluate Quality Gate
-        run: |
-          echo "# Phase 41 Quality Gate" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Stage | Result |" >> $GITHUB_STEP_SUMMARY
-          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Tests | ${{ needs.runbook-execution-tests.result == 'success' && '✅ Pass' || needs.runbook-execution-tests.result == 'skipped' && '⏭️ Skipped' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Breaker | ${{ needs.breaker-phase41.result == 'success' && '✅ Pass' || needs.breaker-phase41.result == 'skipped' && '⏭️ Skipped' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Reviewer | ${{ needs.reviewer-phase41.result == 'success' && '✅ Pass' || needs.reviewer-phase41.result == 'skipped' && '⏭️ Skipped' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          # Determine overall gate status
-          if [ "${{ needs.runbook-execution-tests.result }}" != "success" ]; then
-            echo "**Status: ❌ FAILED** - Tests must pass" >> $GITHUB_STEP_SUMMARY
-            echo "Phase 41 gate FAILED: tests failing."
-            exit 1
-          fi
-
-          # Breaker may be skipped if toggled off for manual runs
-          if [ "${{ needs.breaker-phase41.result }}" == "failure" ]; then
-            echo "**Status: ❌ FAILED** - Breaker found issues" >> $GITHUB_STEP_SUMMARY
-            echo "Phase 41 gate FAILED: Breaker failed."
-            exit 1
-          fi
-
-          # Reviewer may be skipped if toggled off for manual runs
-          if [ "${{ needs.reviewer-phase41.result }}" == "failure" ]; then
-            echo "**Status: ❌ FAILED** - Reviewer rejected" >> $GITHUB_STEP_SUMMARY
-            echo "Phase 41 gate FAILED: Reviewer failed."
-            exit 1
-          fi
-
-          echo "**Status: ✅ PASSED** - Phase 41 is production-ready" >> $GITHUB_STEP_SUMMARY
-          echo "Phase 41 gate PASSED."
+                  echo "**Status: ✅ PASSED** - Phase 41 is production-ready" >> $GITHUB_STEP_SUMMARY
+                  echo "Phase 41 gate PASSED."

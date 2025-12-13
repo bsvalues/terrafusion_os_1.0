@@ -231,6 +231,16 @@ def validate_index(index_path: Path, schema_path: Path) -> Tuple[List[Finding], 
             p = root / sdp
             _warn(p.exists() and p.is_file(), f"{prefix}.spec_data_path missing (warn): {sdp}", findings)
 
+        # generator_keys: optional array of generator keys (from GENERATORS.json)
+        gkeys = lock.get("generator_keys", [])
+        if gkeys is None:
+            gkeys = []
+        _require(isinstance(gkeys, list) or gkeys is None, f"{prefix}.generator_keys must be an array if present.", findings)
+        if isinstance(gkeys, list):
+            for j, gk in enumerate(gkeys):
+                if not isinstance(gk, str) or not gk.strip():
+                    findings.append(Finding("ERROR", f"{prefix}.generator_keys[{j}] must be a non-empty string."))
+
         # ci_tags: must be array of safe tags (warn on empties)
         ci_tags = _as_list(lock.get("ci_tags"))
         _require(ci_tags is not None, f"{prefix}.ci_tags must be an array (can be empty).", findings)

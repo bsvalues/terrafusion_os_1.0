@@ -62,7 +62,7 @@ public record RunbookExecution
 
 /// <summary>
 /// Tracks execution of a single runbook step.
-/// EXECUTION SPEC LOCK v1.0.0
+/// EXECUTION SPEC LOCK v1.0.0 + WIRING SPEC LOCK v1.0.0 (Phase 43)
 /// </summary>
 public record RunbookStepExecution
 {
@@ -92,6 +92,24 @@ public record RunbookStepExecution
 
     /// <summary>Result output from the action provider (if any).</summary>
     public string? ActionOutput { get; init; }
+
+    // =========================================================================
+    // Phase 43: Policy Decision Fields (WIRING SPEC LOCK v1.0.0)
+    // =========================================================================
+
+    /// <summary>
+    /// The policy decision made for this step.
+    /// Null if no policy engine was configured.
+    /// Phase 43 WIRING SPEC LOCK v1.0.0.
+    /// </summary>
+    public Remediation.RemediationDecisionKind? PolicyDecision { get; init; }
+
+    /// <summary>
+    /// The rule ID that produced the policy decision.
+    /// Null if default decision was used or no policy engine.
+    /// Phase 43 WIRING SPEC LOCK v1.0.0.
+    /// </summary>
+    public string? PolicyRuleId { get; init; }
 }
 
 /// <summary>

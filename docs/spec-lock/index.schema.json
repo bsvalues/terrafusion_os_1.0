@@ -68,6 +68,12 @@
       "items": { "$ref": "#/$defs/nonEmptyString" },
       "description": "Files generated from this spec-lock (renderer/compiler outputs)."
     },
+    "generatorKeysArray": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "List of generator keys to run for this lock (from GENERATORS.json). If empty, uses surface default."
+    },
     "tagsArray": {
       "type": "array",
       "minItems": 0,
@@ -113,6 +119,10 @@
           "type": "string",
           "minLength": 0,
           "description": "Optional structured YAML/JSON input for generators (preferred over parsing markdown)."
+        },
+        "generator_keys": {
+          "$ref": "#/$defs/generatorKeysArray",
+          "description": "Which generators to run from GENERATORS.json (empty = surface default)."
         },
         "test_paths": {
           "type": "array",
