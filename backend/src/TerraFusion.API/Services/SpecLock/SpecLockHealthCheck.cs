@@ -76,12 +76,23 @@ public sealed class SpecLockHealthCheck : IHealthCheck
 
             if (errors.Count == 0)
             {
+                // Emit canonical truth signal
+                SpecLockMetrics.SpecLockOk.WithLabels("terrafusion-api").Set(1);
+                SpecLockMetrics.SpecLockCount.WithLabels("terrafusion-api").Set(manifest.LockCount);
+                SpecLockMetrics.SpecLockArtifactCount.WithLabels("terrafusion-api").Set(
+                    manifest.Locks.Sum(l => l.GeneratedArtifacts.Count));
+                SpecLockMetrics.SpecLockCheckTotal.WithLabels("terrafusion-api", "healthy").Inc();
+
                 return HealthCheckResult.Healthy("SpecLock invariant satisfied.", new Dictionary<string, object?>
                 {
                     ["lockCount"] = manifest.LockCount,
                     ["generatedAt"] = manifest.GeneratedAt
                 });
             }
+
+            // Emit violation signal
+            SpecLockMetrics.SpecLockOk.WithLabels("terrafusion-api").Set(0);
+            SpecLockMetrics.SpecLockCount.WithLabels("terrafusion-api").Set(manifest.LockCount);
 
             var data = new Dictionary<string, object?>
             {
@@ -91,8 +102,12 @@ public sealed class SpecLockHealthCheck : IHealthCheck
             };
 
             if (guardEnabled)
+            {
+                SpecLockMetrics.SpecLockCheckTotal.WithLabels("terrafusion-api", "unhealthy").Inc();
                 return HealthCheckResult.Unhealthy("SpecLock invariant violated (guard enabled).", data: data);
+            }
 
+            SpecLockMetrics.SpecLockCheckTotal.WithLabels("terrafusion-api", "degraded").Inc();
             return HealthCheckResult.Degraded("SpecLock invariant violated (guard disabled).", data: data);
         }
         catch (FileNotFoundException)

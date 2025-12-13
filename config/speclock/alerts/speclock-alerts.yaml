@@ -1,0 +1,81 @@
+# =============================================================================
+# SpecLock Prometheus Alerts (MYTHIC TIER)
+# =============================================================================
+# Deterministic alerts for SpecLock violations.
+# No heuristics. No noise. Pure truth signal.
+# =============================================================================
+
+groups:
+  - name: speclock
+    rules:
+      # ═══════════════════════════════════════════════════════════════
+      # Critical: SpecLock Invariant Violated
+      # ═══════════════════════════════════════════════════════════════
+      - alert: TerraFusionSpecLockViolation
+        expr: tf_speclock_ok{service="terrafusion-api"} == 0
+        for: 1m
+        labels:
+          severity: page
+          team: platform
+          category: integrity
+        annotations:
+          summary: 'SpecLock invariant violated'
+          description: 'Generated artifacts do not match SpecLock manifest. Traffic may be blocked.'
+          runbook: '/ops/speclock'
+          action: |
+            1. Check /ops/speclock for drift details
+            2. Run: python scripts/speclock-generate-all.py
+            3. Run: python scripts/speclock-manifest.py
+            4. Redeploy
+
+      # ═══════════════════════════════════════════════════════════════
+      # Warning: Signature Verification Failed
+      # ═══════════════════════════════════════════════════════════════
+      - alert: TerraFusionSpecLockSignatureUnverified
+        expr: tf_speclock_signature_verified{service="terrafusion-api"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+          category: security
+        annotations:
+          summary: 'SpecLock signature not verified'
+          description: 'Manifest signature verification is disabled or failed. Cryptographic integrity not proven.'
+          runbook: '/ops/speclock/proof'
+          action: |
+            1. Check /ops/speclock/proof for status
+            2. Ensure TF_SPECLOCK_SIGNATURE_VERIFY_ENABLED=true
+            3. Verify cosign.pub is deployed
+            4. Re-sign manifest if needed
+
+      # ═══════════════════════════════════════════════════════════════
+      # Info: Lock Count Changed
+      # ═══════════════════════════════════════════════════════════════
+      - alert: TerraFusionSpecLockCountChanged
+        expr: |
+          changes(tf_speclock_lock_count{service="terrafusion-api"}[1h]) > 0
+        for: 0m
+        labels:
+          severity: info
+          team: platform
+          category: audit
+        annotations:
+          summary: 'SpecLock count changed'
+          description: 'Number of active SpecLocks changed in the last hour. Review for intentional changes.'
+          runbook: '/docs/spec-lock/INDEX.md'
+
+      # ═══════════════════════════════════════════════════════════════
+      # Critical: SpecLock Health Check Failing
+      # ═══════════════════════════════════════════════════════════════
+      - alert: TerraFusionSpecLockHealthUnhealthy
+        expr: |
+          sum(increase(tf_speclock_check_total{service="terrafusion-api",result="unhealthy"}[5m])) > 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+          category: availability
+        annotations:
+          summary: 'SpecLock health checks failing'
+          description: 'SpecLock health check returning unhealthy status. Pod may not pass readiness.'
+          runbook: '/healthz/ready'

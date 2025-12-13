@@ -1,7 +1,8 @@
 // =============================================================================
-// SpecLock Ops Endpoints (MACHINE MODE)
+// SpecLock Ops Endpoints (MACHINE MODE + MYTHIC TIER)
 // =============================================================================
 // Exposes /ops/speclock for ops tooling to inspect manifest.
+// Exposes /ops/speclock/proof for cryptographic proof chain (MYTHIC).
 // Includes ETag for caching and conditional GET.
 // =============================================================================
 
@@ -9,6 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
 
 namespace TerraFusion.API.Services.SpecLock;
 
@@ -18,9 +20,8 @@ namespace TerraFusion.API.Services.SpecLock;
 public static class SpecLockOpsEndpoints
 {
     /// <summary>
-    /// GET /ops/speclock
-    /// Returns the raw manifest JSON (as built by scripts/speclock-manifest.py).
-    /// Includes ETag based on sha256(rawJson) so ops tooling can cache.
+    /// GET /ops/speclock - Returns raw manifest JSON
+    /// GET /ops/speclock/proof - Returns cryptographic proof chain (MYTHIC)
     /// </summary>
     public static IEndpointRouteBuilder MapSpecLockOps(this IEndpointRouteBuilder app)
     {
@@ -63,6 +64,63 @@ public static class SpecLockOpsEndpoints
         .Produces<string>(StatusCodes.Status200OK, "application/json")
         .Produces(StatusCodes.Status304NotModified)
         .Produces(StatusCodes.Status404NotFound);
+
+        // ═══════════════════════════════════════════════════════════════
+        // MYTHIC TIER: /ops/speclock/proof
+        // Returns manifest + bundle + public key metadata for audit
+        // ═══════════════════════════════════════════════════════════════
+        group.MapGet("/speclock/proof", (HttpContext ctx, IFileProvider files, IConfiguration cfg) =>
+        {
+            var manifestPath = cfg["TF_SPECLOCK_MANIFEST_PATH"] ?? "artifacts/speclock/manifest.json";
+            var bundlePath = cfg["TF_SPECLOCK_COSIGN_BUNDLE_PATH"] ?? "artifacts/speclock/manifest.bundle.json";
+            var pubKeyPath = cfg["TF_SPECLOCK_COSIGN_PUBLIC_KEY_PATH"] ?? "";
+
+            static string? FileSha256(IFileProvider files, string path)
+            {
+                var fi = files.GetFileInfo(path);
+                if (!fi.Exists) return null;
+                using var s = fi.CreateReadStream();
+                return Convert.ToHexString(SHA256.HashData(s)).ToLowerInvariant();
+            }
+
+            var payload = new
+            {
+                manifest = new
+                {
+                    path = manifestPath,
+                    sha256 = FileSha256(files, manifestPath),
+                    exists = files.GetFileInfo(manifestPath).Exists
+                },
+                bundle = new
+                {
+                    path = bundlePath,
+                    sha256 = FileSha256(files, bundlePath),
+                    exists = files.GetFileInfo(bundlePath).Exists
+                },
+                publicKey = new
+                {
+                    path = string.IsNullOrWhiteSpace(pubKeyPath) ? null : pubKeyPath,
+                    sha256 = string.IsNullOrWhiteSpace(pubKeyPath) ? null : FileSha256(files, pubKeyPath),
+                    exists = !string.IsNullOrWhiteSpace(pubKeyPath) && files.GetFileInfo(pubKeyPath).Exists
+                },
+                configuration = new
+                {
+                    signatureVerifyEnabled = string.Equals(
+                        cfg["TF_SPECLOCK_SIGNATURE_VERIFY_ENABLED"], "true", StringComparison.OrdinalIgnoreCase),
+                    guardEnabled = string.Equals(
+                        cfg["TF_SPECLOCK_GUARD_ENABLED"], "true", StringComparison.OrdinalIgnoreCase),
+                    allowMissing = string.Equals(
+                        cfg["TF_SPECLOCK_GUARD_ALLOW_MISSING"], "true", StringComparison.OrdinalIgnoreCase)
+                },
+                timestamp = DateTime.UtcNow.ToString("O")
+            };
+
+            ctx.Response.Headers.CacheControl = "no-store";
+            return Results.Json(payload);
+        })
+        .WithName("GetSpecLockProof")
+        .WithTags("Ops", "SpecLock", "Mythic")
+        .Produces<object>(StatusCodes.Status200OK, "application/json");
 
         return app;
     }

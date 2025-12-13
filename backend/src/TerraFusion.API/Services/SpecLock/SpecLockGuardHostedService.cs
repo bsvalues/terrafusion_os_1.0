@@ -20,17 +20,20 @@ public sealed class SpecLockGuardHostedService : IHostedService
 {
     private readonly ILogger<SpecLockGuardHostedService> _log;
     private readonly ISpecLockManifestLoader _loader;
+    private readonly ISpecLockSignatureVerifier _signatureVerifier;
     private readonly IFileProvider _files;
     private readonly IConfiguration _cfg;
 
     public SpecLockGuardHostedService(
         ILogger<SpecLockGuardHostedService> log,
         ISpecLockManifestLoader loader,
+        ISpecLockSignatureVerifier signatureVerifier,
         IFileProvider files,
         IConfiguration cfg)
     {
         _log = log;
         _loader = loader;
+        _signatureVerifier = signatureVerifier;
         _files = files;
         _cfg = cfg;
     }
@@ -47,6 +50,9 @@ public sealed class SpecLockGuardHostedService : IHostedService
         }
 
         _log.LogInformation("SpecLock guard ENABLED - validating runtime invariants...");
+
+        // MYTHIC TIER: Verify signature BEFORE trusting manifest contents.
+        await _signatureVerifier.VerifyAsync(cancellationToken);
 
         SpecLockManifest manifest;
         try

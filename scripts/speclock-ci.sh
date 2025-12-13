@@ -233,9 +233,43 @@ if [ "$SKIP_GENERATE" = false ]; then
         exit $MANIFEST_EXIT
     fi
     echo ""
+
+    # ═══════════════════════════════════════════════════════════════
+    # Step 8: MYTHIC TIER - Sign + Verify Manifest (if configured)
+    # ═══════════════════════════════════════════════════════════════
+    if [[ -n "${TF_SPECLOCK_COSIGN_PUBLIC_KEY_PATH:-}" ]]; then
+        echo "─────────────────────────────────────────────────────────────────"
+        echo "Step 8: MYTHIC TIER - Sign + Verify Manifest"
+        echo "─────────────────────────────────────────────────────────────────"
+        echo ""
+
+        if command -v cosign >/dev/null 2>&1; then
+            # Sign the manifest
+            bash scripts/speclock-sign-manifest.sh \
+                artifacts/speclock/manifest.json \
+                artifacts/speclock/manifest.bundle.json
+
+            # Verify the signature
+            bash scripts/speclock-verify-manifest.sh \
+                artifacts/speclock/manifest.json \
+                artifacts/speclock/manifest.bundle.json \
+                "$TF_SPECLOCK_COSIGN_PUBLIC_KEY_PATH"
+
+            echo "✅ MYTHIC TIER: Manifest signed and verified"
+        else
+            echo "⚠️  cosign not found - skipping MYTHIC tier signing"
+            echo "   Install: https://docs.sigstore.dev/cosign/installation/"
+        fi
+        echo ""
+    else
+        echo "─────────────────────────────────────────────────────────────────"
+        echo "Step 8: MYTHIC TIER - SKIPPED (TF_SPECLOCK_COSIGN_PUBLIC_KEY_PATH not set)"
+        echo "─────────────────────────────────────────────────────────────────"
+        echo ""
+    fi
 else
     echo "─────────────────────────────────────────────────────────────────"
-    echo "Step 7: SKIPPED (--skip-generate)"
+    echo "Step 7-8: SKIPPED (--skip-generate)"
     echo "─────────────────────────────────────────────────────────────────"
     echo ""
 fi

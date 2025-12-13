@@ -31,6 +31,7 @@ public static class SpecLockServiceCollectionExtensions
         });
 
         services.AddSingleton<ISpecLockManifestLoader, SpecLockManifestLoader>();
+        services.AddSingleton<ISpecLockSignatureVerifier, SpecLockCosignVerifier>();
         services.AddHostedService<SpecLockGuardHostedService>();
 
         return services;
