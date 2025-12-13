@@ -24,12 +24,15 @@
     <PackageReference Include="Moq" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
     <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="YamlDotNet" />
+    <PackageReference Include="Testcontainers" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../TerraFusion.API/TerraFusion.API.csproj" />
-    <ProjectReference Include="../TerraFusion.Core/TerraFusion.Core.csproj" />
-    <ProjectReference Include="../TerraFusion.Data/TerraFusion.Data.csproj" />
+    <ProjectReference Include="../src/TerraFusion.API/TerraFusion.API.csproj" />
+    <ProjectReference Include="../src/TerraFusion.Core/TerraFusion.Core.csproj" />
+    <ProjectReference Include="../src/TerraFusion.Data/TerraFusion.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
