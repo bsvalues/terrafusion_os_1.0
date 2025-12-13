@@ -74,7 +74,30 @@
       "created": "2025-12-12",
       "updated": "2025-12-12",
       "notes": "Constitutional governance upgrade workflow",
-      "related": ["receipt.v1", "pluginlock.v1"]
+      "related": ["receipt.v1", "pluginlock.v1", "state-report.v1"]
+    },
+    {
+      "id": "state-report.v1",
+      "surface": "state-report",
+      "project": "TerraFusion OS",
+      "name": "StateReportLock v1",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "docs/spec-lock/locks/state-report/state-report.v1/SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "docs/spec-lock/locks/state-report/state-report.v1/speclock.spec.json",
+      "generated_artifacts": [
+        "docs/spec-lock/locks/state-report/state-report.v1/generated/state-report.schema.json"
+      ],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.SmokeTests/StateReportLockTests.cs"
+      ],
+      "ci_tags": ["speclock", "state-report", "governance", "mesh", "quorum"],
+      "created": "2025-12-13",
+      "updated": "2025-12-13",
+      "notes": "Federated state-level reports requiring county quorum signatures",
+      "related": ["receipt.v1", "pluginlock.v1", "amendment.v1"]
     },
     {
       "id": "tf.dashboards.atlas_auto_remediation_benton_ops",

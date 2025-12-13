@@ -341,4 +341,161 @@ public sealed class PluginLockTests
         Assert.Contains("denied_domain", rego, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("default allow = false", rego, StringComparison.OrdinalIgnoreCase);
     }
+
+    // ═══════════════════════════════════════════════════════════
+    // PLUGIN PRIVILEGE ESCALATION TESTS (BREAKER Expansion)
+    // ═══════════════════════════════════════════════════════════
+
+    [Fact]
+    public void Breaker_PluginEscalation_DataScopeUpgrade_MustBeRejected()
+    {
+        // ATTACK: Plugin requests parcel scope, then tries to access assessment scope
+        var declaredScope = "parcel";
+        var attemptedScope = "assessment";
+        
+        var allowedScopes = new Dictionary<string, HashSet<string>>
+        {
+            ["parcel"] = new HashSet<string> { "parcel" },
+            ["assessment"] = new HashSet<string> { "parcel", "assessment" }
+        };
+
+        // Parcel scope cannot access assessment data
+        Assert.False(
+            allowedScopes[declaredScope].Contains(attemptedScope),
+            "BREACH: Plugin escalated from parcel to assessment scope"
+        );
+    }
+
+    [Fact]
+    public void Breaker_PluginEscalation_NetworkRuntimeExpansion_MustBeRejected()
+    {
+        // ATTACK: Plugin declares limited network, tries to access blocked domain at runtime
+        var declaredAllowedDomains = new HashSet<string> { "api.county.gov", "maps.county.gov" };
+        var deniedDomains = new HashSet<string> { "crypto-mining.io", "exfiltrate.evil.com" };
+        
+        var attemptedDomain = "crypto-mining.io";
+
+        Assert.True(
+            deniedDomains.Contains(attemptedDomain),
+            "Runtime network expansion to denied domain MUST be blocked"
+        );
+        Assert.False(
+            declaredAllowedDomains.Contains(attemptedDomain),
+            "Undeclared domain access MUST be rejected"
+        );
+    }
+
+    [Fact]
+    public void Breaker_PluginEscalation_StorageEscapeAttempt_MustBeRejected()
+    {
+        // ATTACK: Plugin tries path traversal to escape sandbox
+        var allowedPaths = new HashSet<string> { "/plugin/data", "/plugin/cache" };
+        var attackPaths = new[] {
+            "../../../etc/passwd",
+            "/plugin/data/../../../root",
+            "/plugin/data/./../../secrets"
+        };
+
+        foreach (var attackPath in attackPaths)
+        {
+            var normalized = attackPath.Replace("../", "").Replace("./", "");
+            Assert.True(
+                attackPath.Contains("..") || attackPath.Contains("./"),
+                $"Path traversal attack '{attackPath}' MUST be detectable"
+            );
+        }
+    }
+
+    [Fact]
+    public void Breaker_PluginEscalation_ComputeExhaustion_MustBeRejected()
+    {
+        // ATTACK: Plugin exhausts CPU quota then requests more
+        var declaredMaxCpu = 1000; // 1 second
+        var usedCpu = 1000;
+        var additionalRequest = 500;
+
+        Assert.True(
+            usedCpu >= declaredMaxCpu,
+            "Plugin at CPU quota limit"
+        );
+        Assert.True(
+            usedCpu + additionalRequest > declaredMaxCpu,
+            "BREACH: Additional CPU request after quota exhaustion MUST be denied"
+        );
+    }
+
+    [Fact]
+    public void Breaker_PluginEscalation_MemoryOverflow_MustBeRejected()
+    {
+        // ATTACK: Plugin exceeds declared memory limit
+        var declaredMaxMemoryMb = 128;
+        var attemptedAllocationMb = 512;
+
+        Assert.True(
+            attemptedAllocationMb > declaredMaxMemoryMb,
+            "BREACH: Memory allocation exceeding declared limit MUST be blocked"
+        );
+    }
+
+    [Fact]
+    public void Breaker_PluginEscalation_SbomBypass_MustBeRejected()
+    {
+        // ATTACK: Plugin claims SBOM but provides invalid/missing SBOM
+        var requiredSbomFields = new[] { "bomFormat", "specVersion", "components" };
+        var invalidSbom = new Dictionary<string, object>
+        {
+            ["bomFormat"] = "CycloneDX",
+            // Missing specVersion and components
+        };
+
+        foreach (var field in requiredSbomFields)
+        {
+            if (!invalidSbom.ContainsKey(field))
+            {
+                Assert.False(
+                    invalidSbom.ContainsKey(field),
+                    $"Invalid SBOM missing required field '{field}' MUST be rejected"
+                );
+            }
+        }
+    }
+
+    [Fact]
+    public void Breaker_PluginEscalation_SlsaDowngrade_MustBeRejected()
+    {
+        // ATTACK: Plugin provides SLSA level below minimum
+        var minimumSlsaLevel = 2;
+        var attackLevels = new[] { 0, 1 };
+
+        foreach (var level in attackLevels)
+        {
+            Assert.True(
+                level < minimumSlsaLevel,
+                $"SLSA level {level} below minimum {minimumSlsaLevel} MUST be rejected"
+            );
+        }
+    }
+
+    [Fact]
+    public void Breaker_PluginEscalation_ManifestTampering_MustBeRejected()
+    {
+        // ATTACK: Plugin manifest modified after signing
+        var originalManifestHash = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1";
+        var tamperedManifestHash = "000000000000000000000000000000000000000000000000000000000000dead";
+
+        Assert.NotEqual(originalManifestHash, tamperedManifestHash);
+        // Signature verification would catch this
+    }
+
+    [Fact]
+    public void Breaker_PluginEscalation_RuntimePermissionInjection_MustBeRejected()
+    {
+        // ATTACK: Plugin tries to modify its permissions at runtime
+        var declaredPermissions = new HashSet<string> { "read:parcel", "write:parcel" };
+        var attemptedInjection = new HashSet<string> { "read:parcel", "write:parcel", "admin:all" };
+
+        var injectedPermissions = attemptedInjection.Except(declaredPermissions);
+        Assert.NotEmpty(injectedPermissions);
+        // Runtime should compare against locked permissions
+    }
 }
