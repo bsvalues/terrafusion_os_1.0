@@ -24,7 +24,7 @@ public sealed class PublicProofEndpointTests
     {
         // The endpoint contract specifies the response shape
         var expectedFields = new[] { "receipt", "verified", "speclock_proof" };
-        
+
         // Verify contract defines these fields
         foreach (var field in expectedFields)
         {
@@ -39,7 +39,7 @@ public sealed class PublicProofEndpointTests
         // 404 response must include error and receiptId
         var expectedFields = new[] { "error", "receiptId" };
         var expectedError = "receipt_not_found";
-        
+
         Assert.Equal("receipt_not_found", expectedError);
         Assert.Contains("error", expectedFields);
         Assert.Contains("receiptId", expectedFields);
@@ -51,7 +51,7 @@ public sealed class PublicProofEndpointTests
         // 400 response must include error, receiptId, and details
         var expectedFields = new[] { "error", "receiptId", "details" };
         var expectedError = "invalid_receipt";
-        
+
         Assert.Equal("invalid_receipt", expectedError);
         Assert.Contains("error", expectedFields);
         Assert.Contains("details", expectedFields);
@@ -100,7 +100,7 @@ public sealed class PublicProofEndpointTests
         // speclock_proof can be null if /ops/speclock/proof is unavailable
         object? speclockProof = null;
         Assert.Null(speclockProof);
-        
+
         // When available, it should be an object
         speclockProof = new { manifest = "present" };
         Assert.NotNull(speclockProof);
@@ -116,7 +116,7 @@ public sealed class PublicProofEndpointTests
         // Receipts stored at: artifacts/receipts/{receiptId}.receipt.json
         var receiptId = "RCPT-2025-TEST-001";
         var expectedPath = $"artifacts/receipts/{receiptId}.receipt.json";
-        
+
         Assert.Contains(receiptId, expectedPath);
         Assert.EndsWith(".receipt.json", expectedPath);
     }
@@ -149,7 +149,7 @@ public sealed class PublicProofEndpointTests
         // All timestamps must end with Z (UTC)
         var validTimestamp = "2025-12-13T00:00:00Z";
         var invalidTimestamp = "2025-12-13T00:00:00+00:00";
-        
+
         Assert.EndsWith("Z", validTimestamp);
         Assert.False(invalidTimestamp.EndsWith("Z"));
     }
@@ -164,7 +164,7 @@ public sealed class PublicProofEndpointTests
         // Same receipt ID should always return same receipt content
         var receiptId1 = "RCPT-2025-001";
         var receiptId2 = "RCPT-2025-001";
-        
+
         Assert.Equal(receiptId1, receiptId2);
     }
 
@@ -174,7 +174,7 @@ public sealed class PublicProofEndpointTests
         // All SHA-256 values must be lowercase hex
         var validSha = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         var invalidSha = "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855";
-        
+
         Assert.True(validSha.All(c => char.IsDigit(c) || (c >= 'a' && c <= 'f')));
         Assert.False(invalidSha.All(c => char.IsDigit(c) || (c >= 'a' && c <= 'f')));
     }
@@ -185,7 +185,7 @@ public sealed class PublicProofEndpointTests
         // receipt_id in JSON must match filename (without .receipt.json)
         var filename = "RCPT-2025-TEST-001.receipt.json";
         var expectedReceiptId = "RCPT-2025-TEST-001";
-        
+
         Assert.StartsWith(expectedReceiptId, filename);
     }
 }

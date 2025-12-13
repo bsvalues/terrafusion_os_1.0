@@ -57,9 +57,9 @@ public sealed class PublicReceiptProofService : IPublicReceiptProofService
     public async Task<PublicProofResult> BuildProofAsync(string receiptId, CancellationToken ct)
     {
         // Sanitize receiptId to prevent path traversal
-        if (string.IsNullOrWhiteSpace(receiptId) || 
-            receiptId.Contains("..") || 
-            receiptId.Contains('/') || 
+        if (string.IsNullOrWhiteSpace(receiptId) ||
+            receiptId.Contains("..") ||
+            receiptId.Contains('/') ||
             receiptId.Contains('\\'))
         {
             return new PublicProofResult.InvalidReceipt("Invalid receipt ID format.");

@@ -24,6 +24,7 @@ using TerraFusion.Levy.Services;
 using System.Data;
 using TerraFusion.Core.Services;
 using TerraFusion.API.Services.SpecLock;
+using TerraFusion.API.Services.Marketplace;
 // Conditional DB providers
 using Npgsql;
 using Microsoft.Data.Sqlite;
@@ -435,6 +436,10 @@ builder.Services.AddHealthChecks()
 // Enable with: TF_SPECLOCK_GUARD_ENABLED=true
 builder.Services.AddSpecLockRuntime();
 
+// 🛒 Marketplace Security (PHASE B)
+// Plugin admission control with OPA sandbox + SBOM/SLSA hard gates
+builder.Services.AddMarketplaceSecurity();
+
 // Register AI swarm orchestration services
 builder.Services.AddHttpClient<IAIModuleOrchestrator, AIModuleOrchestrator>();
 builder.Services.AddScoped<IAIModuleOrchestrator, AIModuleOrchestrator>();
@@ -646,6 +651,10 @@ app.MapSpecLockOps();
 // 🔒 Public Proof Endpoint (/public/proof/{receiptId})
 // Citizen-verifiable receipt proofs with speclock manifest snapshot
 app.MapPublicProof();
+
+// 🛒 Marketplace Ops Endpoints (/ops/plugins)
+// Plugin admission control, permissions lookup, health check
+app.MapMarketplaceOps();
 
 // 🩺 Health Check Endpoints (K8s / Infra / Ops)
 // /healthz        → liveness  (is the process alive?)

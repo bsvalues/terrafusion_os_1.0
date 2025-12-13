@@ -31,16 +31,16 @@ public static class PublicProofEndpoints
             CancellationToken ct) =>
         {
             var result = await proof.BuildProofAsync(receiptId, ct);
-            
+
             if (result == PublicProofResult.NotFound)
                 return Results.NotFound(new { error = "receipt_not_found", receiptId });
-            
+
             if (result is PublicProofResult.InvalidReceipt ir)
                 return Results.BadRequest(new { error = "invalid_receipt", receiptId, details = ir.Details });
-            
+
             if (result is PublicProofResult.Ok ok)
                 return Results.Json(ok.Payload, contentType: "application/json; charset=utf-8");
-            
+
             return Results.StatusCode(500);
         })
         .WithName("GetPublicProof")
