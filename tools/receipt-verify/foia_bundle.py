@@ -171,14 +171,14 @@ def generate_proof_json(receipt: dict[str, Any], manifest_path: Path | None) -> 
         ],
         "signing_details": receipt.get("signing", {})
     }
-    
+
     # Add manifest hash verification if available
     if manifest_path and manifest_path.exists():
         with open(manifest_path, "rb") as f:
             actual_hash = sha256_hex(f.read())
         proof["manifest_hash_verified"] = actual_hash == receipt.get("speclock_manifest_sha256")
         proof["manifest_hash_actual"] = actual_hash
-    
+
     return proof
 
 def create_foia_bundle(
@@ -190,60 +190,60 @@ def create_foia_bundle(
     output_path: Path
 ) -> None:
     """Create a FOIA-compliant verification bundle."""
-    
+
     print("═" * 60)
     print("  TerraFusion FOIA Bundle Generator (GOD-TIER)")
     print("═" * 60)
-    
+
     # Load receipt
     receipt = load_json(receipt_path)
     print(f"\n📋 Receipt: {receipt.get('receipt_id')}")
-    
+
     # Create zip bundle
     with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zf:
         # Add receipt
         print("   📄 Adding receipt.json")
         zf.write(receipt_path, "receipt.json")
-        
+
         # Add artifact if provided
         if artifact_path and artifact_path.exists():
             print(f"   📄 Adding artifact.bin ({artifact_path.name})")
             zf.write(artifact_path, "artifact.bin")
         else:
             print("   ⚠️  No artifact provided")
-        
+
         # Add manifest if provided
         if manifest_path and manifest_path.exists():
             print("   📄 Adding manifest.json")
             zf.write(manifest_path, "manifest.json")
         else:
             print("   ⚠️  No manifest provided")
-        
+
         # Generate and add proof.json
         print("   📄 Generating proof.json")
         proof = generate_proof_json(receipt, manifest_path)
         zf.writestr("proof.json", json.dumps(proof, indent=2, sort_keys=True))
-        
+
         # Generate and add VERIFY.md
         print("   📄 Generating VERIFY.md")
         verify_md = generate_verify_md(receipt)
         zf.writestr("VERIFY.md", verify_md)
-        
+
         # Add signature if provided
         if signature_path and signature_path.exists():
             print("   📄 Adding signature.sig")
             zf.write(signature_path, "signature.sig")
-        
+
         # Add cosign bundle if provided
         if cosign_bundle_path and cosign_bundle_path.exists():
             print("   📄 Adding bundle.json")
             zf.write(cosign_bundle_path, "bundle.json")
-    
+
     # Report bundle size
     bundle_size = output_path.stat().st_size
     print(f"\n✅ Bundle created: {output_path}")
     print(f"   Size: {bundle_size:,} bytes")
-    
+
     # List contents
     print("\n📦 Bundle contents:")
     with zipfile.ZipFile(output_path, 'r') as zf:
@@ -255,20 +255,20 @@ def main():
         description="TerraFusion FOIA Bundle Generator (GOD-TIER)",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    
+
     parser.add_argument("receipt", type=Path, help="Path to receipt JSON file")
     parser.add_argument("--artifact", type=Path, help="Path to original artifact file")
     parser.add_argument("--manifest", type=Path, help="Path to SpecLock manifest JSON")
     parser.add_argument("--signature", type=Path, help="Path to raw signature file")
     parser.add_argument("--cosign-bundle", type=Path, help="Path to Cosign bundle JSON")
     parser.add_argument("--out", type=Path, default=Path("foia_bundle.zip"), help="Output bundle path")
-    
+
     args = parser.parse_args()
-    
+
     if not args.receipt.exists():
         print(f"❌ ERROR: Receipt file not found: {args.receipt}")
         sys.exit(2)
-    
+
     create_foia_bundle(
         receipt_path=args.receipt,
         artifact_path=args.artifact,
