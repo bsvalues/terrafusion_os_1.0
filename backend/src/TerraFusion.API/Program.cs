@@ -648,6 +648,10 @@ app.MapMetrics();
 // Returns manifest JSON with ETag for ops tooling
 app.MapSpecLockOps();
 
+// 🔒 State Mesh Ops Endpoint (/ops/speclock/state)
+// Federated county quorum verification proofs
+app.MapSpecLockStateOps();
+
 // 🔒 Public Proof Endpoint (/public/proof/{receiptId})
 // Citizen-verifiable receipt proofs with speclock manifest snapshot
 app.MapPublicProof();

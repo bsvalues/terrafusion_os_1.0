@@ -1,122 +1,82 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://terrafusion.io/schemas/state-report.generated.v1.schema.json",
-  "title": "TerraFusion State Report v1 (Generated)",
-  "description": "Auto-generated schema for state report validation - DO NOT EDIT MANUALLY",
-  "type": "object",
-  "required": [
-    "report_id",
-    "report_type",
-    "generated_at",
-    "period_start",
-    "period_end",
-    "counties_included",
-    "aggregation_method",
-    "signing"
-  ],
+  "additionalProperties": false,
   "properties": {
-    "report_id": {
-      "type": "string",
-      "description": "Unique report identifier",
-      "minLength": 1
-    },
-    "report_type": {
-      "type": "string",
-      "description": "Type of state report",
-      "enum": [
-        "annual_assessment_summary",
-        "levy_rate_comparison",
-        "compliance_audit",
-        "interop_certification"
-      ]
-    },
-    "generated_at": {
-      "type": "string",
-      "description": "RFC3339 UTC timestamp when report was generated",
-      "format": "date-time",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
-    },
-    "period_start": {
-      "type": "string",
-      "description": "Reporting period start (RFC3339 UTC)",
-      "format": "date-time",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
-    },
-    "period_end": {
-      "type": "string",
-      "description": "Reporting period end (RFC3339 UTC)",
-      "format": "date-time",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
-    },
-    "counties_included": {
-      "type": "array",
-      "description": "List of county IDs included in this report",
+    "county_set": {
       "items": {
         "type": "string"
       },
-      "minItems": 1
+      "type": "array"
     },
-    "aggregation_method": {
-      "type": "string",
-      "description": "Method used to aggregate county data",
+    "data_sha256": {
+      "type": "string"
+    },
+    "exp": {
+      "type": "string"
+    },
+    "issued_at": {
+      "type": "string"
+    },
+    "nbf": {
+      "type": "string"
+    },
+    "report_id": {
+      "type": "string"
+    },
+    "report_type": {
       "enum": [
-        "sum_with_anonymization",
-        "average_with_outlier_removal",
-        "median_based",
-        "weighted_by_population"
-      ]
-    },
-    "data": {
-      "type": "object",
-      "description": "Aggregated report data (schema varies by report_type)",
-      "additionalProperties": true
+        "levy_summary",
+        "assessment_roll_summary",
+        "ops_health",
+        "other"
+      ],
+      "type": "string"
     },
     "signing": {
-      "type": "object",
-      "description": "State quorum signature details",
-      "required": [
-        "mode",
-        "threshold",
-        "participants",
-        "group_pub_sha256",
-        "signature_sha256"
-      ],
+      "additionalProperties": false,
       "properties": {
-        "mode": {
-          "type": "string",
-          "const": "state_quorum"
-        },
-        "threshold": {
-          "type": "integer",
-          "description": "Required number of county signers",
-          "minimum": 3
-        },
-        "participants": {
-          "type": "array",
-          "description": "Signer IDs that participated",
-          "items": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "minItems": 3
-        },
         "group_pub_sha256": {
-          "type": "string",
-          "description": "SHA-256 of the state group public key",
-          "pattern": "^[a-f0-9]{64}$"
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "cosmic_tss"
+          ],
+          "type": "string"
+        },
+        "participants_used": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
         },
         "signature_sha256": {
-          "type": "string",
-          "description": "SHA-256 of the combined signature",
-          "pattern": "^[a-f0-9]{64}$"
-        },
-        "proof_path": {
-          "type": "string",
-          "description": "Path to proof JSON file"
+          "type": "string"
         }
       },
-      "additionalProperties": false
+      "required": [
+        "mode",
+        "group_pub_sha256",
+        "signature_sha256",
+        "participants_used"
+      ],
+      "type": "object"
+    },
+    "speclock_manifest_sha256": {
+      "type": "string"
     }
   },
-  "additionalProperties": false
+  "required": [
+    "report_id",
+    "report_type",
+    "issued_at",
+    "nbf",
+    "exp",
+    "county_set",
+    "data_sha256",
+    "speclock_manifest_sha256",
+    "signing"
+  ],
+  "title": "TerraFusion State Report v1",
+  "type": "object"
 }

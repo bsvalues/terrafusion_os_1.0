@@ -88,10 +88,12 @@
       "artifact_paths": [],
       "spec_data_path": "docs/spec-lock/locks/state-report/state-report.v1/speclock.spec.json",
       "generated_artifacts": [
-        "docs/spec-lock/locks/state-report/state-report.v1/generated/state-report.schema.json"
+        "docs/spec-lock/locks/state-report/state-report.v1/generated/state-report.schema.json",
+        "docs/spec-lock/locks/state-report/state-report.v1/generated/state-report.template.json"
       ],
       "test_paths": [
-        "backend/tests/TerraFusion.Unit.SmokeTests/StateReportLockTests.cs"
+        "backend/tests/TerraFusion.Unit.SmokeTests/StateReportLockTests.cs",
+        "backend/tests/TerraFusion.Unit.SmokeTests/StateMeshBreakerTests.cs"
       ],
       "ci_tags": ["speclock", "state-report", "governance", "mesh", "quorum"],
       "created": "2025-12-13",
