@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.io/schemas/amendment.workflow.v1.json",
+  "title": "TerraFusion Amendment Workflow v1",
+  "description": "State machine definition for amendment lifecycle - DO NOT EDIT MANUALLY",
+  "type": "object",
+  "properties": {
+    "initial_state": {
+      "const": "proposed"
+    },
+    "states": {
+      "type": "object",
+      "properties": {
+        "approved": {
+          "properties": {
+            "entry_conditions": {
+              "items": [
+                {
+                  "const": "quorum_signatures_collected"
+                },
+                {
+                  "const": "all_signatures_valid"
+                }
+              ],
+              "type": "array"
+            },
+            "transitions": {
+              "properties": {
+                "effective": {
+                  "properties": {
+                    "conditions": {
+                      "items": [
+                        {
+                          "const": "current_time_gte_nbf"
+                        },
+                        {
+                          "const": "all_validation_steps_passed"
+                        }
+                      ],
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "expired": {
+                  "properties": {
+                    "conditions": {
+                      "items": [
+                        {
+                          "const": "current_time_gte_exp"
+                        }
+                      ],
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "effective": {
+          "properties": {
+            "entry_conditions": {
+              "items": [
+                {
+                  "const": "current_time_gte_nbf"
+                },
+                {
+                  "const": "quorum_achieved"
+                },
+                {
+                  "const": "validation_passed"
+                }
+              ],
+              "type": "array"
+            },
+            "final": {
+              "const": true
+            },
+            "transitions": {
+              "properties": {
+                "expired": {
+                  "properties": {
+                    "conditions": {
+                      "items": [
+                        {
+                          "const": "current_time_gte_exp"
+                        }
+                      ],
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "superseded": {
+                  "properties": {
+                    "conditions": {
+                      "items": [
+                        {
+                          "const": "newer_amendment_effective"
+                        }
+                      ],
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "expired": {
+          "properties": {
+            "final": {
+              "const": true
+            },
+            "transitions": {}
+          },
+          "type": "object"
+        },
+        "proposed": {
+          "properties": {
+            "entry_conditions": {
+              "items": [
+                {
+                  "const": "spec_sha256_provided"
+                },
+                {
+                  "const": "tests_sha256_provided"
+                },
+                {
+                  "const": "target_lock_exists"
+                }
+              ],
+              "type": "array"
+            },
+            "transitions": {
+              "properties": {
+                "rejected": {
+                  "properties": {
+                    "conditions": {
+                      "items": [
+                        {
+                          "const": "review_failed"
+                        }
+                      ],
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "reviewed": {
+                  "properties": {
+                    "conditions": {
+                      "items": [
+                        {
+                          "const": "builder_gate_passed"
+                        },
+                        {
+                          "const": "breaker_gate_passed"
+                        },
+                        {
+                          "const": "security_gate_passed"
+                        }
+                      ],
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "rejected": {
+          "properties": {
+            "final": {
+              "const": true
+            },
+            "transitions": {}
+          },
+          "type": "object"
+        },
+        "reviewed": {
+          "properties": {
+            "entry_conditions": {
+              "items": [
+                {
+                  "const": "all_review_gates_passed"
+                }
+              ],
+              "type": "array"
+            },
+            "transitions": {
+              "properties": {
+                "approved": {
+                  "properties": {
+                    "conditions": {
+                      "items": [
+                        {
+                          "const": "quorum_signatures_collected"
+                        }
+                      ],
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "rejected": {
+                  "properties": {
+                    "conditions": {
+                      "items": [
+                        {
+                          "const": "quorum_timeout"
+                        }
+                      ],
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "superseded": {
+          "properties": {
+            "final": {
+              "const": true
+            },
+            "transitions": {}
+          },
+          "type": "object"
+        }
+      }
+    },
+    "version": {
+      "const": "1.0.0"
+    }
+  }
+}

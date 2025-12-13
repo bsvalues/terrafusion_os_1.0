@@ -28,12 +28,13 @@ INDEX_JSON_DEFAULT = Path("docs/spec-lock/INDEX.json")
 SCHEMA_JSON_DEFAULT = Path("docs/spec-lock/index.schema.json")
 
 RE_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-RE_SPECVER = re.compile(r"^v\d+\.\d+\.\d+$")
-RE_LOCK_ID = re.compile(r"^tf\.[a-z0-9_]+\.[a-z0-9_]+$")
+RE_SPECVER = re.compile(r"^v?\d+\.\d+\.\d+$")
+RE_LOCK_ID = re.compile(r"^(tf\.[a-z0-9_]+\.[a-z0-9_]+|[a-z]+\.v\d+)$")
 RE_TAG = re.compile(r"^[a-z0-9_\-]+$")
 
-ALLOWED_STATUS = {"active", "deprecated", "draft"}
-ALLOWED_SURFACE = {"api", "ui", "events", "metrics", "alerts", "dashboards", "mixed"}
+ALLOWED_STATUS = {"active", "deprecated", "draft", "archived"}
+ALLOWED_SURFACE = {"api", "ui", "events", "metrics", "alerts", "dashboards", "mixed",
+                   "receipt", "pluginlock", "amendment", "openapi", "grafana", "alert"}
 
 
 @dataclass

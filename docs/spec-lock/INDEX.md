@@ -1,11 +1,11 @@
-# TerraFusion SpecLock Index (v1.0)
+# TerraFusion SpecLock Index (v1.0.0)
 
 > **GENERATED FILE** — do not hand-edit.
 > 
 > Regenerate: `python scripts/generate-speclock-index-md.py`
 
-**Updated**: 2025-01-15
-**Total Locks**: 3
+**Updated**: 2025-12-12
+**Total Locks**: 6
 
 ---
 
@@ -13,7 +13,7 @@
 
 | Status | Count |
 |--------|-------|
-| ✅ Active | 3 |
+| ✅ Active | 6 |
 | ⚠️ Draft | 0 |
 | 🚫 Deprecated | 0 |
 
@@ -23,8 +23,11 @@
 
 | ID | Surface | Project | Version | Owner | Status | Spec | Generated |
 |---|---|---|---|---|---|---|---|
-| `tf.dashboards.atlas_auto_remediation_benton_ops` | 📊 dashboards | monitoring | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |  |
-| `tf.dashboards.atlas_auto_remediation_governance` | 📊 dashboards | monitoring | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |  |
+| `amendment.v1` | 📜 amendment | TerraFusion OS | v1.0.0 | systemgpt | ✅ active | [📄](locks/amendment/amendment.v1/SPEC_LOCK_v1.0.0.md) | docs/spec-lock/locks/amendment/amendment.v1/generated/amendment.schema.json<br>docs/spec-lock/locks/amendment/amendment.v1/generated/amendment.workflow.json |
+| `pluginlock.v1` | 🔐 pluginlock | TerraFusion OS | v1.0.0 | systemgpt | ✅ active | [📄](locks/pluginlock/pluginlock.v1/SPEC_LOCK_v1.0.0.md) | docs/spec-lock/locks/pluginlock/pluginlock.v1/generated/pluginlock.permissions.json<br>docs/spec-lock/locks/pluginlock/pluginlock.v1/generated/pluginlock.policy.rego<br>docs/spec-lock/locks/pluginlock/pluginlock.v1/generated/pluginlock.schema.json |
+| `receipt.v1` | 🧾 receipt | TerraFusion OS | v1.0.0 | systemgpt | ✅ active | [📄](locks/receipt/receipt.v1/SPEC_LOCK_v1.0.0.md) | docs/spec-lock/locks/receipt/receipt.v1/generated/receipt.openapi.snapshot.json<br>docs/spec-lock/locks/receipt/receipt.v1/generated/receipt.schema.json |
+| `tf.dashboards.atlas_auto_remediation_benton_ops` | 📊 dashboards | monitoring | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) | grafana/phase45/atlas-auto-remediation-benton-ops.json |
+| `tf.dashboards.atlas_auto_remediation_governance` | 📊 dashboards | monitoring | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) | grafana/phase45/atlas-auto-remediation-governance.json |
 | `tf.metrics.phase45_auto_remediation` | 📈 metrics | TerraFusion.Operations | v1.0.0 | systemgpt | ✅ active | [📄](../../grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md) |  |
 
 ## ⚠️ Draft Locks
@@ -43,6 +46,12 @@
 
 ## By Surface
 
+### 📜 Amendment (1)
+
+| ID | Project | Version | Status |
+|---|---|---|---|
+| `amendment.v1` | TerraFusion OS | v1.0.0 | ✅ active |
+
 ### 📊 Dashboards (2)
 
 | ID | Project | Version | Status |
@@ -55,6 +64,18 @@
 | ID | Project | Version | Status |
 |---|---|---|---|
 | `tf.metrics.phase45_auto_remediation` | TerraFusion.Operations | v1.0.0 | ✅ active |
+
+### 🔐 Pluginlock (1)
+
+| ID | Project | Version | Status |
+|---|---|---|---|
+| `pluginlock.v1` | TerraFusion OS | v1.0.0 | ✅ active |
+
+### 🧾 Receipt (1)
+
+| ID | Project | Version | Status |
+|---|---|---|---|
+| `receipt.v1` | TerraFusion OS | v1.0.0 | ✅ active |
 
 ---
 

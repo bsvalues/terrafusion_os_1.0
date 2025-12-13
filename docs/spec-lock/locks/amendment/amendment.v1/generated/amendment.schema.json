@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.io/schemas/amendment.generated.v1.schema.json",
+  "title": "TerraFusion AmendmentLock v1 (Generated)",
+  "description": "Auto-generated schema for amendment validation - DO NOT EDIT MANUALLY",
+  "type": "object",
+  "required": [
+    "amendment_id",
+    "approvals",
+    "changeset",
+    "effective_nbf",
+    "rollout",
+    "target_lock_id"
+  ],
+  "properties": {
+    "amendment_id": {
+      "description": "Unique amendment identifier (TFAM-YYYY-NNN)",
+      "pattern": "^TFAM-\\d{4}-\\d{3}$",
+      "type": "string"
+    },
+    "approvals": {
+      "additionalProperties": false,
+      "properties": {
+        "required_quorum": {
+          "description": "Minimum approvals needed (must be >= 2)",
+          "minimum": 2,
+          "type": "integer"
+        },
+        "signers": {
+          "description": "List of signers with their signatures",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "participant_idx": {
+                "description": "Participant index in the signing group",
+                "minimum": 1,
+                "type": "integer"
+              },
+              "signature_sha256": {
+                "description": "SHA-256 of the signature",
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              "signed_at": {
+                "description": "When the signature was made (RFC3339 UTC)",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                "type": "string"
+              }
+            },
+            "required": ["participant_idx", "signature_sha256", "signed_at"],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": ["required_quorum", "signers"],
+      "type": "object"
+    },
+    "changeset": {
+      "additionalProperties": false,
+      "properties": {
+        "generated_artifacts_sha256": {
+          "description": "SHA-256 of each generated artifact",
+          "items": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "migration_plan_sha256": {
+          "description": "SHA-256 of migration plan document",
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "spec_sha256": {
+          "description": "SHA-256 of the new spec",
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "tests_sha256": {
+          "description": "SHA-256 of the new tests",
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "generated_artifacts_sha256",
+        "migration_plan_sha256",
+        "spec_sha256",
+        "tests_sha256"
+      ],
+      "type": "object"
+    },
+    "effective_exp": {
+      "description": "Expiration - when amendment auto-expires (RFC3339 UTC)",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "type": "string"
+    },
+    "effective_nbf": {
+      "description": "Not Before - when amendment takes effect (RFC3339 UTC)",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "type": "string"
+    },
+    "rationale": {
+      "description": "Human-readable rationale for the change",
+      "type": "string"
+    },
+    "rollout": {
+      "additionalProperties": false,
+      "properties": {
+        "backout_plan_sha256": {
+          "description": "SHA-256 of backout/rollback plan",
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "validation_steps": {
+          "description": "List of validation steps before activation",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": ["backout_plan_sha256", "validation_steps"],
+      "type": "object"
+    },
+    "supersedes": {
+      "description": "ID of amendment this replaces",
+      "type": ["null", "string"]
+    },
+    "target_lock_id": {
+      "description": "ID of the SpecLock being amended (must exist in INDEX.json)",
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "speclock.schema.json",
+  "lock_id": "pluginlock.v1",
+  "surface": "pluginlock",
+  "version": "1.0.0",
+  "status": "active",
+  "owner": "systemgpt",
+  "created": "2025-12-12",
+  "updated": "2025-12-12",
+  "description": "Marketplace plugin permission envelope",
+  "example_plugin_id": "io.terrafusion.plugins.property-analyzer",
+  "example_version": "2.1.0",
+  "permissions": {
+    "data_scopes": ["property_read", "assessment_read"],
+    "network": {
+      "allow_domains": ["api.terrafusion.io", "maps.googleapis.com"],
+      "deny_domains": ["malicious.example.com"]
+    },
+    "storage": ["local_cache", "session_storage"],
+    "compute": {
+      "max_cpu_ms": 5000,
+      "max_memory_mb": 256
+    },
+    "telemetry_required": true
+  },
+  "sbom_sha256": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "slsa_provenance_sha256": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+  "valid_data_scopes": [
+    "assessment_read",
+    "assessment_write",
+    "audit_log_read",
+    "config_read",
+    "gis_read",
+    "gis_write",
+    "property_read",
+    "property_write",
+    "user_profile_read"
+  ],
+  "valid_storage_types": [
+    "cloud_blob",
+    "local_cache",
+    "persistent_local",
+    "session_storage"
+  ],
+  "enforcement_rules": {
+    "deny_beats_allow": true,
+    "empty_allow_means_no_network": true,
+    "sbom_required": true,
+    "slsa_provenance_required": true
+  },
+  "generated_artifacts": [
+    "generated/pluginlock.schema.json",
+    "generated/pluginlock.permissions.json",
+    "generated/pluginlock.policy.rego"
+  ],
+  "test_requirements": [
+    "schema_validates_canonical_examples",
+    "schema_rejects_unknown_scopes",
+    "compiler_emits_deterministic_outputs",
+    "deny_list_beats_allow_list",
+    "empty_allow_means_no_network"
+  ]
+}

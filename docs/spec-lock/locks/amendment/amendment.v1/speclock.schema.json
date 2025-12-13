@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.io/schemas/amendment.v1.schema.json",
+  "title": "TerraFusion AmendmentLock v1",
+  "description": "Constitutional governance upgrade workflow",
+  "type": "object",
+  "required": [
+    "amendment_id",
+    "approvals",
+    "changeset",
+    "effective_nbf",
+    "rollout",
+    "target_lock_id"
+  ],
+  "properties": {
+    "amendment_id": {
+      "type": "string",
+      "pattern": "^TFAM-\\d{4}-\\d{3}$",
+      "description": "Unique amendment identifier (TFAM-YYYY-NNN)"
+    },
+    "target_lock_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ID of the SpecLock being amended (must exist in INDEX.json)"
+    },
+    "effective_nbf": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "Not Before - when amendment takes effect (RFC3339 UTC)"
+    },
+    "effective_exp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "Expiration - when amendment auto-expires (RFC3339 UTC)"
+    },
+    "changeset": {
+      "type": "object",
+      "required": [
+        "generated_artifacts_sha256",
+        "migration_plan_sha256",
+        "spec_sha256",
+        "tests_sha256"
+      ],
+      "properties": {
+        "spec_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of the new spec"
+        },
+        "tests_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of the new tests"
+        },
+        "generated_artifacts_sha256": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "description": "SHA-256 of each generated artifact"
+        },
+        "migration_plan_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of migration plan document"
+        }
+      },
+      "additionalProperties": false
+    },
+    "approvals": {
+      "type": "object",
+      "required": ["required_quorum", "signers"],
+      "properties": {
+        "required_quorum": {
+          "type": "integer",
+          "minimum": 2,
+          "description": "Minimum approvals needed (must be >= 2)"
+        },
+        "signers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Signer"
+          },
+          "description": "List of signers with their signatures"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rollout": {
+      "type": "object",
+      "required": ["backout_plan_sha256", "validation_steps"],
+      "properties": {
+        "backout_plan_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of backout/rollback plan"
+        },
+        "validation_steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "List of validation steps before activation"
+        }
+      },
+      "additionalProperties": false
+    },
+    "supersedes": {
+      "type": ["string", "null"],
+      "description": "ID of amendment this replaces"
+    },
+    "rationale": {
+      "type": "string",
+      "description": "Human-readable rationale for the change"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "Signer": {
+      "type": "object",
+      "required": ["participant_idx", "signature_sha256", "signed_at"],
+      "properties": {
+        "participant_idx": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Participant index in the signing group"
+        },
+        "signed_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+          "description": "When the signature was made (RFC3339 UTC)"
+        },
+        "signature_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of the signature"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

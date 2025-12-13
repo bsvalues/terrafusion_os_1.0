@@ -1,0 +1,73 @@
+{
+  "$schema": "speclock.schema.json",
+  "lock_id": "receipt.v1",
+  "surface": "receipt",
+  "version": "1.0.0",
+  "status": "active",
+  "owner": "systemgpt",
+  "created": "2025-12-12",
+  "updated": "2025-12-12",
+  "description": "Citizen/auditor-verifiable receipts for government artifacts",
+  "artifact_types": [
+    "assessment_notice",
+    "levy_table",
+    "gis_export",
+    "report",
+    "other"
+  ],
+  "signing_modes": ["mythic_cosign", "cosmic_tss"],
+  "required_fields": [
+    "receipt_id",
+    "issued_at",
+    "nbf",
+    "exp",
+    "artifact",
+    "artifact.type",
+    "artifact.sha256",
+    "speclock_manifest_sha256",
+    "signing",
+    "signing.mode",
+    "signing.signature_sha256",
+    "proof_url"
+  ],
+  "optional_fields": [
+    "policy_bundle_sha256",
+    "signing.group_pub_sha256",
+    "signing.participants_used"
+  ],
+  "determinism_rules": {
+    "json_key_ordering": "lexicographic",
+    "sha256_format": "lowercase_hex_64",
+    "timestamp_format": "rfc3339_utc_z",
+    "whitespace": "no_trailing_lf_endings"
+  },
+  "validation_rules": [
+    {
+      "id": "time_window_valid",
+      "rule": "nbf <= exp",
+      "error": "nbf must be less than or equal to exp"
+    },
+    {
+      "id": "issued_before_expiry",
+      "rule": "issued_at <= exp",
+      "error": "issued_at must be before expiry"
+    },
+    {
+      "id": "sha256_format",
+      "rule": "all sha256 fields must be exactly 64 lowercase hex characters",
+      "error": "invalid sha256 format"
+    }
+  ],
+  "generated_artifacts": [
+    "generated/receipt.schema.json",
+    "generated/receipt.openapi.snapshot.json"
+  ],
+  "test_requirements": [
+    "schema_validates_canonical_examples",
+    "schema_rejects_missing_required_fields",
+    "schema_rejects_invalid_enums",
+    "schema_rejects_malformed_sha256",
+    "deterministic_serialization_stable_hash",
+    "invalid_time_window_fails"
+  ]
+}

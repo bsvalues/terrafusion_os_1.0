@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.io/schemas/receipt.generated.v1.schema.json",
+  "title": "TerraFusion Receipt v1 (Generated)",
+  "description": "Auto-generated schema for receipt validation - DO NOT EDIT MANUALLY",
+  "type": "object",
+  "required": [
+    "artifact",
+    "exp",
+    "issued_at",
+    "nbf",
+    "proof_url",
+    "receipt_id",
+    "signing",
+    "speclock_manifest_sha256"
+  ],
+  "properties": {
+    "artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "sha256": {
+          "description": "Lower-case hex SHA-256 of artifact content",
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of artifact being receipted",
+          "enum": [
+            "assessment_notice",
+            "gis_export",
+            "levy_table",
+            "other",
+            "report"
+          ],
+          "type": "string"
+        }
+      },
+      "required": ["sha256", "type"],
+      "type": "object"
+    },
+    "exp": {
+      "description": "Expiration - validity window end (RFC3339 UTC)",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "type": "string"
+    },
+    "issued_at": {
+      "description": "RFC3339 UTC timestamp when receipt was issued",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "type": "string"
+    },
+    "nbf": {
+      "description": "Not Before - validity window start (RFC3339 UTC)",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "type": "string"
+    },
+    "policy_bundle_sha256": {
+      "description": "SHA-256 of the OPA policy bundle (optional)",
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "proof_url": {
+      "description": "URL path to verification endpoint",
+      "pattern": "^/",
+      "type": "string"
+    },
+    "receipt_id": {
+      "description": "Stable unique identifier for the receipt",
+      "minLength": 1,
+      "type": "string"
+    },
+    "signing": {
+      "additionalProperties": false,
+      "properties": {
+        "group_pub_sha256": {
+          "description": "Group public key hash (cosmic_tss only)",
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "mode": {
+          "description": "Signature mode used",
+          "enum": ["cosmic_tss", "mythic_cosign"],
+          "type": "string"
+        },
+        "participants_used": {
+          "description": "Participant indices used for threshold signature (cosmic_tss only)",
+          "items": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "signature_sha256": {
+          "description": "SHA-256 of the signature",
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": ["mode", "signature_sha256"],
+      "type": "object"
+    },
+    "speclock_manifest_sha256": {
+      "description": "SHA-256 of the SpecLock manifest at issuance time",
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

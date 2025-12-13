@@ -57,7 +57,8 @@ def _status_emoji(status: str) -> str:
     return {
         "active": "✅",
         "draft": "⚠️",
-        "deprecated": "🚫"
+        "deprecated": "🚫",
+        "archived": "📦"
     }.get(status, "❓")
 
 
@@ -68,8 +69,14 @@ def _surface_emoji(surface: str) -> str:
         "events": "📡",
         "metrics": "📈",
         "alerts": "🚨",
+        "alert": "🚨",
         "dashboards": "📊",
-        "mixed": "🔀"
+        "grafana": "📊",
+        "mixed": "🔀",
+        "receipt": "🧾",
+        "pluginlock": "🔐",
+        "amendment": "📜",
+        "openapi": "📋"
     }.get(surface, "📦")
 
 
@@ -111,6 +118,8 @@ def generate(index_json: Path, index_md: Path) -> None:
         for lock in grouped[status]:
             surface = str(lock.get("surface", ""))
             gen_col = _render_generated(lock.get("generated_artifacts", []))
+            # Handle both old spec_path and new path fields
+            spec_path = str(lock.get("path", lock.get("spec_path", "")))
             rows.append([
                 f"`{lock.get('id', '')}`",
                 f"{_surface_emoji(surface)} {surface}",
@@ -118,7 +127,7 @@ def generate(index_json: Path, index_md: Path) -> None:
                 str(lock.get("spec_version", "")),
                 str(lock.get("owner", "")),
                 f"{_status_emoji(status)} {status}",
-                _link(str(lock.get("spec_path", ""))),
+                _link(spec_path) if spec_path else "",
                 gen_col
             ])
         return rows

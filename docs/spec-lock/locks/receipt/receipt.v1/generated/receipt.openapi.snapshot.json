@@ -1,0 +1,247 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "TerraFusion Receipt API",
+    "version": "1.0.0",
+    "description": "Citizen-verifiable receipt generation and verification endpoints"
+  },
+  "paths": {
+    "/ops/speclock/receipts": {
+      "post": {
+        "operationId": "generateReceipt",
+        "summary": "Generate a new receipt for an artifact",
+        "tags": ["receipts"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReceiptRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Receipt generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ops/speclock/verify/receipt/{receipt_id}": {
+      "get": {
+        "operationId": "verifyReceipt",
+        "summary": "Verify a receipt by ID",
+        "tags": ["receipts"],
+        "parameters": [
+          {
+            "name": "receipt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Receipt not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Receipt": {
+        "type": "object",
+        "required": [
+          "artifact",
+          "exp",
+          "issued_at",
+          "nbf",
+          "proof_url",
+          "receipt_id",
+          "signing",
+          "speclock_manifest_sha256"
+        ],
+        "properties": {
+          "artifact": {
+            "$ref": "#/components/schemas/Artifact"
+          },
+          "exp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "nbf": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "policy_bundle_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "proof_url": {
+            "type": "string"
+          },
+          "receipt_id": {
+            "type": "string"
+          },
+          "signing": {
+            "$ref": "#/components/schemas/Signing"
+          },
+          "speclock_manifest_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "Artifact": {
+        "type": "object",
+        "required": ["sha256", "type"],
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "assessment_notice",
+              "levy_table",
+              "gis_export",
+              "report",
+              "other"
+            ]
+          }
+        }
+      },
+      "Signing": {
+        "type": "object",
+        "required": ["mode", "signature_sha256"],
+        "properties": {
+          "group_pub_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["mythic_cosign", "cosmic_tss"]
+          },
+          "participants_used": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "signature_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "ReceiptRequest": {
+        "type": "object",
+        "required": ["artifact_sha256", "artifact_type"],
+        "properties": {
+          "artifact_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "artifact_type": {
+            "type": "string",
+            "enum": [
+              "assessment_notice",
+              "levy_table",
+              "gis_export",
+              "report",
+              "other"
+            ]
+          },
+          "validity_hours": {
+            "type": "integer",
+            "default": 8760
+          }
+        }
+      },
+      "VerificationResult": {
+        "type": "object",
+        "required": ["errors", "receipt", "valid", "verification"],
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "receipt": {
+            "$ref": "#/components/schemas/Receipt"
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "verification": {
+            "type": "object",
+            "properties": {
+              "artifact_hash_match": {
+                "type": "boolean"
+              },
+              "manifest_hash_match": {
+                "type": "boolean"
+              },
+              "signature_valid": {
+                "type": "boolean"
+              },
+              "time_window_valid": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

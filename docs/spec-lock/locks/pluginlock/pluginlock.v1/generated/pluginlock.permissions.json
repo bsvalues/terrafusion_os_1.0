@@ -1,0 +1,15 @@
+{
+  "compute": {
+    "max_cpu_ms": 5000,
+    "max_memory_mb": 256
+  },
+  "data_scopes": ["assessment_read", "property_read"],
+  "network": {
+    "allow_domains": ["api.terrafusion.io", "maps.googleapis.com"],
+    "deny_domains": ["malicious.example.com"]
+  },
+  "plugin_id": "io.terrafusion.plugins.property-analyzer",
+  "storage": ["local_cache", "session_storage"],
+  "telemetry_required": true,
+  "version": "2.1.0"
+}
