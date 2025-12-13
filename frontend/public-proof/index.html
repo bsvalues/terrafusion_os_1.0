@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerraFusion Public Proof Verification</title>
+  <meta name="description" content="Verify government artifact receipts issued by TerraFusion OS">
+  <style>
+    :root {
+      --terra-cyan: #00FFFF;
+      --terra-midnight: #0A0E1A;
+      --terra-blue: #0080FF;
+      --terra-green: #00FF88;
+      --terra-red: #FF4444;
+      --terra-yellow: #FFD700;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--terra-midnight);
+      color: #E0E0E0;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+      padding-bottom: 2rem;
+    }
+    
+    h1 {
+      color: var(--terra-cyan);
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .tagline {
+      color: #888;
+      font-size: 0.9rem;
+    }
+    
+    .verification-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .verification-box h2 {
+      color: var(--terra-cyan);
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #AAA;
+    }
+    
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 4px;
+      color: #FFF;
+      font-family: 'Consolas', monospace;
+      font-size: 0.9rem;
+    }
+    
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+    
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--terra-cyan);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+    }
+    
+    button {
+      background: linear-gradient(135deg, var(--terra-cyan), var(--terra-blue));
+      color: var(--terra-midnight);
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .result {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      border-radius: 8px;
+      display: none;
+    }
+    
+    .result.valid {
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid var(--terra-green);
+      display: block;
+    }
+    
+    .result.invalid {
+      background: rgba(255, 68, 68, 0.1);
+      border: 1px solid var(--terra-red);
+      display: block;
+    }
+    
+    .result.warning {
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid var(--terra-yellow);
+      display: block;
+    }
+    
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .result-icon {
+      font-size: 1.5rem;
+    }
+    
+    .result-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    
+    .result.valid .result-title { color: var(--terra-green); }
+    .result.invalid .result-title { color: var(--terra-red); }
+    .result.warning .result-title { color: var(--terra-yellow); }
+    
+    .result-details {
+      font-family: 'Consolas', monospace;
+      font-size: 0.85rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    
+    .result-details dt {
+      color: #888;
+      margin-top: 0.5rem;
+    }
+    
+    .result-details dd {
+      margin-left: 1rem;
+      word-break: break-all;
+    }
+    
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .step:last-child {
+      border-bottom: none;
+    }
+    
+    .step-icon {
+      width: 24px;
+      text-align: center;
+    }
+    
+    .step-name {
+      flex: 1;
+    }
+    
+    .step-status {
+      font-family: 'Consolas', monospace;
+      font-size: 0.8rem;
+    }
+    
+    .step-status.pass { color: var(--terra-green); }
+    .step-status.fail { color: var(--terra-red); }
+    .step-status.skip { color: #888; }
+    
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(0, 255, 255, 0.2);
+      color: #666;
+      font-size: 0.85rem;
+    }
+    
+    footer a {
+      color: var(--terra-cyan);
+      text-decoration: none;
+    }
+    
+    .qr-section {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    
+    #qr-canvas {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      display: inline-block;
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .verification-box {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🏛️ TerraFusion Public Proof</h1>
+      <p class="tagline">Citizen-verifiable government artifact verification</p>
+    </header>
+    
+    <main>
+      <div class="verification-box">
+        <h2>Verify Receipt</h2>
+        
+        <div class="input-group">
+          <label for="receipt-id">Receipt ID</label>
+          <input type="text" id="receipt-id" placeholder="r-2025-12-13-001" />
+        </div>
+        
+        <div class="input-group">
+          <label for="receipt-json">Or paste full receipt JSON</label>
+          <textarea id="receipt-json" placeholder='{"receipt_id": "...", "artifact": {...}, ...}'></textarea>
+        </div>
+        
+        <button id="verify-btn" onclick="verifyReceipt()">
+          🔍 Verify Receipt
+        </button>
+        
+        <div id="result" class="result"></div>
+      </div>
+      
+      <div class="verification-box">
+        <h2>Verification Steps</h2>
+        <p style="color: #888; margin-bottom: 1rem;">
+          This verifier performs the following checks:
+        </p>
+        <div id="steps">
+          <div class="step">
+            <span class="step-icon">1️⃣</span>
+            <span class="step-name">Schema Validation</span>
+            <span class="step-status" id="step1-status">—</span>
+          </div>
+          <div class="step">
+            <span class="step-icon">2️⃣</span>
+            <span class="step-name">Time Window Check</span>
+            <span class="step-status" id="step2-status">—</span>
+          </div>
+          <div class="step">
+            <span class="step-icon">3️⃣</span>
+            <span class="step-name">Artifact Hash</span>
+            <span class="step-status" id="step3-status">—</span>
+          </div>
+          <div class="step">
+            <span class="step-icon">4️⃣</span>
+            <span class="step-name">Manifest Anchor</span>
+            <span class="step-status" id="step4-status">—</span>
+          </div>
+          <div class="step">
+            <span class="step-icon">5️⃣</span>
+            <span class="step-name">Signature Verification</span>
+            <span class="step-status" id="step5-status">—</span>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>
+        <strong>Government. Transcended.</strong><br>
+        <a href="/docs/spec-lock/locks/receipt/receipt.v1/generated/receipt.verifier.json">Verification Contract</a> |
+        <a href="/ops/speclock">SpecLock Status</a> |
+        <a href="https://github.com/terrafusion/terrafusion-os">Source Code</a>
+      </p>
+      <p style="margin-top: 1rem;">
+        For offline verification, use the <a href="/tools/receipt-verify/">CLI tool</a>.
+      </p>
+    </footer>
+  </div>
+  
+  <script>
+    // SHA-256 format validation (lowercase hex, 64 chars)
+    const SHA256_PATTERN = /^[a-f0-9]{64}$/;
+    
+    // RFC3339 UTC timestamp pattern
+    const TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
+    
+    // Valid artifact types
+    const ARTIFACT_TYPES = ['assessment_notice', 'gis_export', 'levy_table', 'other', 'report'];
+    
+    // Valid signing modes
+    const SIGNING_MODES = ['cosmic_tss', 'mythic_cosign'];
+    
+    // Required fields
+    const REQUIRED_FIELDS = [
+      'receipt_id', 'issued_at', 'nbf', 'exp', 'artifact', 'speclock_manifest_sha256', 'signing', 'proof_url'
+    ];
+    
+    function setStepStatus(step, status, text) {
+      const el = document.getElementById(`step${step}-status`);
+      el.textContent = text || status.toUpperCase();
+      el.className = `step-status ${status}`;
+    }
+    
+    function resetSteps() {
+      for (let i = 1; i <= 5; i++) {
+        setStepStatus(i, '', '—');
+      }
+    }
+    
+    function validateSchema(receipt) {
+      const errors = [];
+      
+      // Check required fields
+      for (const field of REQUIRED_FIELDS) {
+        if (!(field in receipt)) {
+          errors.push(`Missing required field: ${field}`);
+        }
+      }
+      
+      // Check artifact sub-fields
+      if (receipt.artifact) {
+        if (!receipt.artifact.type) errors.push('Missing artifact.type');
+        if (!receipt.artifact.sha256) errors.push('Missing artifact.sha256');
+        if (receipt.artifact.type && !ARTIFACT_TYPES.includes(receipt.artifact.type)) {
+          errors.push(`Invalid artifact type: ${receipt.artifact.type}`);
+        }
+        if (receipt.artifact.sha256 && !SHA256_PATTERN.test(receipt.artifact.sha256)) {
+          errors.push(`Invalid artifact.sha256 format`);
+        }
+      }
+      
+      // Check signing sub-fields
+      if (receipt.signing) {
+        if (!receipt.signing.mode) errors.push('Missing signing.mode');
+        if (!receipt.signing.signature_sha256) errors.push('Missing signing.signature_sha256');
+        if (receipt.signing.mode && !SIGNING_MODES.includes(receipt.signing.mode)) {
+          errors.push(`Invalid signing mode: ${receipt.signing.mode}`);
+        }
+        if (receipt.signing.signature_sha256 && !SHA256_PATTERN.test(receipt.signing.signature_sha256)) {
+          errors.push(`Invalid signing.signature_sha256 format`);
+        }
+      }
+      
+      // Check timestamp formats
+      for (const field of ['issued_at', 'nbf', 'exp']) {
+        if (receipt[field] && !TIMESTAMP_PATTERN.test(receipt[field])) {
+          errors.push(`Invalid timestamp format: ${field}`);
+        }
+      }
+      
+      // Check speclock_manifest_sha256 format
+      if (receipt.speclock_manifest_sha256 && !SHA256_PATTERN.test(receipt.speclock_manifest_sha256)) {
+        errors.push('Invalid speclock_manifest_sha256 format');
+      }
+      
+      return errors;
+    }
+    
+    function validateTimeWindow(receipt) {
+      const errors = [];
+      const warnings = [];
+      const now = new Date();
+      
+      try {
+        const nbf = new Date(receipt.nbf);
+        const exp = new Date(receipt.exp);
+        const issuedAt = new Date(receipt.issued_at);
+        
+        if (nbf > exp) {
+          errors.push(`nbf (${receipt.nbf}) > exp (${receipt.exp})`);
+        }
+        
+        if (issuedAt > exp) {
+          errors.push(`issued_at (${receipt.issued_at}) > exp (${receipt.exp})`);
+        }
+        
+        if (now < nbf) {
+          warnings.push(`Not yet valid (nbf: ${receipt.nbf})`);
+        }
+        
+        if (now > exp) {
+          warnings.push(`Expired (exp: ${receipt.exp})`);
+        }
+      } catch (e) {
+        errors.push(`Failed to parse timestamps: ${e.message}`);
+      }
+      
+      return { errors, warnings };
+    }
+    
+    async function fetchReceipt(receiptId) {
+      try {
+        const response = await fetch(`/public/proof/${encodeURIComponent(receiptId)}`);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        return await response.json();
+      } catch (e) {
+        throw new Error(`Failed to fetch receipt: ${e.message}`);
+      }
+    }
+    
+    async function verifyReceipt() {
+      const btn = document.getElementById('verify-btn');
+      const resultDiv = document.getElementById('result');
+      const receiptIdInput = document.getElementById('receipt-id').value.trim();
+      const receiptJsonInput = document.getElementById('receipt-json').value.trim();
+      
+      btn.disabled = true;
+      btn.textContent = '🔄 Verifying...';
+      resetSteps();
+      resultDiv.className = 'result';
+      resultDiv.style.display = 'none';
+      
+      let receipt;
+      const allErrors = [];
+      const allWarnings = [];
+      
+      try {
+        // Get receipt from JSON or fetch by ID
+        if (receiptJsonInput) {
+          try {
+            receipt = JSON.parse(receiptJsonInput);
+          } catch (e) {
+            throw new Error(`Invalid JSON: ${e.message}`);
+          }
+        } else if (receiptIdInput) {
+          receipt = await fetchReceipt(receiptIdInput);
+        } else {
+          throw new Error('Please provide a receipt ID or paste receipt JSON');
+        }
+        
+        // Step 1: Schema validation
+        const schemaErrors = validateSchema(receipt);
+        if (schemaErrors.length > 0) {
+          allErrors.push(...schemaErrors);
+          setStepStatus(1, 'fail', `FAIL (${schemaErrors.length})`);
+        } else {
+          setStepStatus(1, 'pass', 'PASS');
+        }
+        
+        // Step 2: Time window check
+        const { errors: timeErrors, warnings: timeWarnings } = validateTimeWindow(receipt);
+        allErrors.push(...timeErrors);
+        allWarnings.push(...timeWarnings);
+        
+        if (timeErrors.length > 0) {
+          setStepStatus(2, 'fail', `FAIL (${timeErrors.length})`);
+        } else if (timeWarnings.length > 0) {
+          setStepStatus(2, 'pass', `WARN (${timeWarnings.length})`);
+        } else {
+          setStepStatus(2, 'pass', 'PASS');
+        }
+        
+        // Step 3: Artifact hash (client-side only checks format)
+        if (receipt.artifact && SHA256_PATTERN.test(receipt.artifact.sha256)) {
+          setStepStatus(3, 'skip', 'FORMAT OK');
+        } else {
+          setStepStatus(3, 'fail', 'INVALID');
+        }
+        
+        // Step 4: Manifest anchor (would need server-side check)
+        if (receipt.speclock_manifest_sha256 && SHA256_PATTERN.test(receipt.speclock_manifest_sha256)) {
+          setStepStatus(4, 'skip', 'FORMAT OK');
+        } else {
+          setStepStatus(4, 'fail', 'INVALID');
+        }
+        
+        // Step 5: Signature verification (requires crypto libraries)
+        setStepStatus(5, 'skip', 'USE CLI');
+        
+        // Display result
+        if (allErrors.length > 0) {
+          resultDiv.className = 'result invalid';
+          resultDiv.innerHTML = `
+            <div class="result-header">
+              <span class="result-icon">❌</span>
+              <span class="result-title">INVALID</span>
+            </div>
+            <p>Verification failed with ${allErrors.length} error(s):</p>
+            <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+              ${allErrors.map(e => `<li>${e}</li>`).join('')}
+            </ul>
+          `;
+        } else if (allWarnings.length > 0) {
+          resultDiv.className = 'result warning';
+          resultDiv.innerHTML = `
+            <div class="result-header">
+              <span class="result-icon">⚠️</span>
+              <span class="result-title">VALID (with warnings)</span>
+            </div>
+            <p>Receipt verified with ${allWarnings.length} warning(s):</p>
+            <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+              ${allWarnings.map(w => `<li>${w}</li>`).join('')}
+            </ul>
+            <div class="result-details">
+              <dl>
+                <dt>Receipt ID:</dt><dd>${receipt.receipt_id}</dd>
+                <dt>Issued:</dt><dd>${receipt.issued_at}</dd>
+                <dt>Artifact Type:</dt><dd>${receipt.artifact?.type}</dd>
+                <dt>Signing Mode:</dt><dd>${receipt.signing?.mode}</dd>
+              </dl>
+            </div>
+          `;
+        } else {
+          resultDiv.className = 'result valid';
+          resultDiv.innerHTML = `
+            <div class="result-header">
+              <span class="result-icon">✅</span>
+              <span class="result-title">VALID</span>
+            </div>
+            <p>Receipt schema and format verified successfully.</p>
+            <div class="result-details">
+              <dl>
+                <dt>Receipt ID:</dt><dd>${receipt.receipt_id}</dd>
+                <dt>Issued:</dt><dd>${receipt.issued_at}</dd>
+                <dt>Valid From:</dt><dd>${receipt.nbf}</dd>
+                <dt>Expires:</dt><dd>${receipt.exp}</dd>
+                <dt>Artifact Type:</dt><dd>${receipt.artifact?.type}</dd>
+                <dt>Artifact Hash:</dt><dd>${receipt.artifact?.sha256}</dd>
+                <dt>Signing Mode:</dt><dd>${receipt.signing?.mode}</dd>
+                <dt>Proof URL:</dt><dd><a href="${receipt.proof_url}">${receipt.proof_url}</a></dd>
+              </dl>
+            </div>
+            <p style="margin-top: 1rem; color: #888; font-size: 0.85rem;">
+              ℹ️ For full cryptographic verification, use the <a href="/tools/receipt-verify/">offline CLI tool</a>.
+            </p>
+          `;
+        }
+        
+      } catch (e) {
+        resultDiv.className = 'result invalid';
+        resultDiv.innerHTML = `
+          <div class="result-header">
+            <span class="result-icon">❌</span>
+            <span class="result-title">ERROR</span>
+          </div>
+          <p>${e.message}</p>
+        `;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔍 Verify Receipt';
+      }
+    }
+    
+    // Check for receipt ID in URL
+    window.addEventListener('DOMContentLoaded', () => {
+      const path = window.location.pathname;
+      const match = path.match(/\/public\/proof\/(.+)/);
+      if (match) {
+        document.getElementById('receipt-id').value = decodeURIComponent(match[1]);
+        verifyReceipt();
+      }
+    });
+  </script>
+</body>
+</html>

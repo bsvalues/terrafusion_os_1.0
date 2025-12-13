@@ -191,7 +191,7 @@ public sealed class ReceiptLockTests
         // ATTACK: Uppercase SHA-256 should fail pattern validation
         var uppercaseSha = "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855";
         var pattern = new System.Text.RegularExpressions.Regex("^[a-f0-9]{64}$");
-        
+
         Assert.False(pattern.IsMatch(uppercaseSha), "BREACH: Uppercase SHA-256 was accepted");
     }
 
@@ -201,7 +201,7 @@ public sealed class ReceiptLockTests
         // ATTACK: Non-UTC timestamp (timezone offset instead of Z)
         var nonUtc = "2025-12-12T12:00:00+00:00";
         var pattern = new System.Text.RegularExpressions.Regex(@"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$");
-        
+
         Assert.False(pattern.IsMatch(nonUtc), "BREACH: Non-UTC timestamp was accepted");
     }
 
@@ -211,7 +211,7 @@ public sealed class ReceiptLockTests
         // ATTACK: Receipt with exp in the past should be detected
         var expiredExp = DateTime.Parse("2020-01-01T00:00:00Z");
         var now = DateTime.UtcNow;
-        
+
         Assert.True(expiredExp < now, "Expired receipt detected");
     }
 
@@ -221,7 +221,7 @@ public sealed class ReceiptLockTests
         // ATTACK: Receipt with nbf in the future should be detected
         var futureNbf = DateTime.Parse("2030-01-01T00:00:00Z");
         var now = DateTime.UtcNow;
-        
+
         Assert.True(futureNbf > now, "Not-yet-valid receipt detected");
     }
 
@@ -231,7 +231,7 @@ public sealed class ReceiptLockTests
         // ATTACK: nbf > exp is an invalid time window
         var nbf = DateTime.Parse("2026-01-01T00:00:00Z");
         var exp = DateTime.Parse("2025-01-01T00:00:00Z");
-        
+
         Assert.True(nbf > exp, "Invalid time window (nbf > exp) detected");
     }
 
@@ -241,7 +241,7 @@ public sealed class ReceiptLockTests
         // ATTACK: SHA-256 with wrong length
         var shortSha = "e3b0c44298fc1c149afbf4c8996fb924";
         var pattern = new System.Text.RegularExpressions.Regex("^[a-f0-9]{64}$");
-        
+
         Assert.False(pattern.IsMatch(shortSha), "BREACH: Short SHA-256 was accepted");
     }
 

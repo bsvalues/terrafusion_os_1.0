@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated": "2025-12-12",
+  "updated": "2025-12-13",
   "locks": [
     {
       "id": "receipt.v1",
@@ -15,15 +15,16 @@
       "spec_data_path": "docs/spec-lock/locks/receipt/receipt.v1/speclock.spec.json",
       "generated_artifacts": [
         "docs/spec-lock/locks/receipt/receipt.v1/generated/receipt.schema.json",
-        "docs/spec-lock/locks/receipt/receipt.v1/generated/receipt.openapi.snapshot.json"
+        "docs/spec-lock/locks/receipt/receipt.v1/generated/receipt.openapi.snapshot.json",
+        "docs/spec-lock/locks/receipt/receipt.v1/generated/receipt.verifier.json"
       ],
       "test_paths": [
         "backend/tests/TerraFusion.Unit.SmokeTests/ReceiptLockTests.cs"
       ],
-      "ci_tags": ["speclock", "receipt", "governance"],
+      "ci_tags": ["speclock", "receipt", "governance", "proof", "foia"],
       "created": "2025-12-12",
-      "updated": "2025-12-12",
-      "notes": "Citizen-verifiable receipts for government artifacts",
+      "updated": "2025-12-13",
+      "notes": "Citizen-verifiable receipts for government artifacts with public proof + FOIA bundle support",
       "related": ["pluginlock.v1", "amendment.v1"]
     },
     {
