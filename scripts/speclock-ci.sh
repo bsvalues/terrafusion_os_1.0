@@ -307,9 +307,55 @@ if [ "$SKIP_GENERATE" = false ]; then
         echo "─────────────────────────────────────────────────────────────────"
         echo ""
     fi
+
+    # ═══════════════════════════════════════════════════════════════
+    # Step 10: COSMIC TIER - FROST Threshold Signature Verification
+    # ═══════════════════════════════════════════════════════════════
+    MODE=$(jq -r '.mode // "mythic"' docs/spec-lock/AUTHORITIES.json 2>/dev/null || echo "mythic")
+    if [[ "$MODE" == "cosmic_tss" ]]; then
+        echo "─────────────────────────────────────────────────────────────────"
+        echo "Step 10: COSMIC TIER - FROST Threshold Signature"
+        echo "─────────────────────────────────────────────────────────────────"
+        echo ""
+
+        # Check for Rust toolchain
+        if command -v cargo >/dev/null 2>&1; then
+            echo "🜂 COSMIC: Computing manifest digest..."
+            bash scripts/speclock-tss-digest.sh \
+                artifacts/speclock/manifest.json \
+                artifacts/speclock/tss/manifest.digest.json
+
+            # Verify signature if present (CI pulls from secure storage)
+            SIG_PATH=$(jq -r '.tss.signature_path' docs/spec-lock/AUTHORITIES.json)
+            if [[ -f "$SIG_PATH" ]]; then
+                echo ""
+                echo "🜂 COSMIC: Verifying threshold signature..."
+                bash scripts/speclock-tss-verify.sh \
+                    docs/spec-lock/AUTHORITIES.json \
+                    artifacts/speclock/tss/manifest.digest.json
+
+                echo "✅ COSMIC TIER: Threshold signature verified"
+            else
+                echo "⚠️  COSMIC signature not found: $SIG_PATH"
+                echo "   Run ./scripts/speclock-tss-sign.sh to create signature"
+                if [[ "${TF_SPECLOCK_COSMIC_REQUIRED:-}" == "true" ]]; then
+                    echo "❌ TF_SPECLOCK_COSMIC_REQUIRED=true but signature missing"
+                    exit 10
+                fi
+            fi
+        else
+            echo "⚠️  cargo not found - skipping COSMIC tier"
+        fi
+        echo ""
+    else
+        echo "─────────────────────────────────────────────────────────────────"
+        echo "Step 10: COSMIC TIER - SKIPPED (mode != cosmic_tss)"
+        echo "─────────────────────────────────────────────────────────────────"
+        echo ""
+    fi
 else
     echo "─────────────────────────────────────────────────────────────────"
-    echo "Step 7-9: SKIPPED (--skip-generate)"
+    echo "Step 7-10: SKIPPED (--skip-generate)"
     echo "─────────────────────────────────────────────────────────────────"
     echo ""
 fi

@@ -1,9 +1,9 @@
 // =============================================================================
-// SpecLock Ops Endpoints (MACHINE MODE + MYTHIC TIER)
+// SpecLock Ops Endpoints (COSMIC TIER)
 // =============================================================================
 // Exposes /ops/speclock for ops tooling to inspect manifest.
-// Exposes /ops/speclock/proof for cryptographic proof chain (MYTHIC).
-// Includes ETag for caching and conditional GET.
+// Exposes /ops/speclock/proof for cryptographic proof chain.
+// Supports MYTHIC (Cosign), GOD-TIER (Quorum), and COSMIC (TSS).
 // =============================================================================
 
 using System.Security.Cryptography;
@@ -150,8 +150,14 @@ public static class SpecLockOpsEndpoints
                     guardEnabled = string.Equals(
                         cfg["TF_SPECLOCK_GUARD_ENABLED"], "true", StringComparison.OrdinalIgnoreCase),
                     allowMissing = string.Equals(
-                        cfg["TF_SPECLOCK_GUARD_ALLOW_MISSING"], "true", StringComparison.OrdinalIgnoreCase)
+                        cfg["TF_SPECLOCK_GUARD_ALLOW_MISSING"], "true", StringComparison.OrdinalIgnoreCase),
+                    signatureMode = cfg["TF_SPECLOCK_SIGNATURE_MODE"]
+                        ?? GetModeFromAuthorities(files, authoritiesPath)
+                        ?? "mythic_cosign",
+                    cosmicRequired = string.Equals(
+                        cfg["TF_SPECLOCK_COSMIC_REQUIRED"], "true", StringComparison.OrdinalIgnoreCase)
                 },
+                cosmic = GetCosmicProof(files, cfg),
                 timestamp = DateTime.UtcNow.ToString("O")
             };
 
@@ -159,9 +165,97 @@ public static class SpecLockOpsEndpoints
             return Results.Json(payload);
         })
         .WithName("GetSpecLockProof")
-        .WithTags("Ops", "SpecLock", "GodTier")
+        .WithTags("Ops", "SpecLock", "CosmicTier")
         .Produces<object>(StatusCodes.Status200OK, "application/json");
 
         return app;
+    }
+
+    private static string? GetModeFromAuthorities(IFileProvider files, string path)
+    {
+        var fi = files.GetFileInfo(path);
+        if (!fi.Exists) return null;
+        try
+        {
+            using var stream = fi.CreateReadStream();
+            var doc = System.Text.Json.JsonDocument.Parse(stream);
+            return doc.RootElement.TryGetProperty("mode", out var mode) ? mode.GetString() : null;
+        }
+        catch { return null; }
+    }
+
+    private static object? GetCosmicProof(IFileProvider files, IConfiguration cfg)
+    {
+        var authPath = cfg["TF_SPECLOCK_AUTHORITIES_PATH"] ?? "docs/spec-lock/AUTHORITIES.json";
+        var authFile = files.GetFileInfo(authPath);
+        if (!authFile.Exists) return null;
+
+        try
+        {
+            using var stream = authFile.CreateReadStream();
+            var doc = System.Text.Json.JsonDocument.Parse(stream);
+
+            if (!doc.RootElement.TryGetProperty("mode", out var modeEl) ||
+                modeEl.GetString() != "cosmic_tss")
+                return null;
+
+            if (!doc.RootElement.TryGetProperty("tss", out var tss))
+                return null;
+
+            var sigPath = tss.GetProperty("signature_path").GetString() ?? "";
+            var proofPath = tss.GetProperty("proof_path").GetString() ?? "";
+            var groupPubPath = tss.GetProperty("group_public_key_path").GetString() ?? "";
+
+            static string? FileSha(IFileProvider files, string path)
+            {
+                var fi = files.GetFileInfo(path);
+                if (!fi.Exists) return null;
+                using var s = fi.CreateReadStream();
+                return Convert.ToHexString(SHA256.HashData(s)).ToLowerInvariant();
+            }
+
+            // Try to load the proof JSON
+            object? proofContent = null;
+            var proofFile = files.GetFileInfo(proofPath);
+            if (proofFile.Exists)
+            {
+                try
+                {
+                    using var s = proofFile.CreateReadStream();
+                    proofContent = System.Text.Json.JsonSerializer.Deserialize<object>(s);
+                }
+                catch { /* ignore */ }
+            }
+
+            return new
+            {
+                scheme = "frost_ed25519",
+                thresholdK = tss.GetProperty("threshold_k").GetInt32(),
+                participantsN = tss.GetProperty("participants_n").GetInt32(),
+                signature = new
+                {
+                    path = sigPath,
+                    sha256 = FileSha(files, sigPath),
+                    exists = files.GetFileInfo(sigPath).Exists
+                },
+                groupPublicKey = new
+                {
+                    path = groupPubPath,
+                    sha256 = FileSha(files, groupPubPath),
+                    exists = files.GetFileInfo(groupPubPath).Exists
+                },
+                proof = new
+                {
+                    path = proofPath,
+                    sha256 = FileSha(files, proofPath),
+                    exists = files.GetFileInfo(proofPath).Exists,
+                    content = proofContent
+                }
+            };
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

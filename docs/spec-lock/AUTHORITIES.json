@@ -1,52 +1,59 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "2.0",
-  "description": "SpecLock Authority Registry (GOD-TIER) - Federated multi-authority cryptographic governance",
-  "quorum": 2,
-  "federated_quorum": {
-    "description": "At least one authority from required_authorities must sign",
-    "required_authorities": ["benton_county"],
-    "vendor_optional": false
+  "version": "3.0",
+  "mode": "cosmic_tss",
+  "description": "SpecLock Authority Registry (COSMIC TIER) - FROST-Ed25519 Threshold Signatures",
+  "tss": {
+    "scheme": "frost_ed25519",
+    "threshold_k": 2,
+    "participants_n": 3,
+    "group_public_key_path": "artifacts/speclock/tss/group.pub",
+    "signature_path": "artifacts/speclock/tss/manifest.sig",
+    "proof_path": "artifacts/speclock/tss/manifest.proof.json",
+    "digest_path": "artifacts/speclock/tss/manifest.digest.json"
+  },
+  "rotation": {
+    "allow_overlap": true,
+    "overlap_days": 30,
+    "previous_group_public_keys": []
   },
   "authorities": [
     {
       "id": "benton_county",
-      "name": "Benton County, WA",
+      "name": "Benton County, WA (TSS Participant 1)",
+      "participant_id": 1,
       "description": "Primary county authority for sovereign data governance",
-      "public_key_path": "artifacts/speclock/keys/benton_county.pub",
-      "kms": {
-        "provider": "local",
-        "key_ref": "artifacts/speclock/keys/benton_county.key",
-        "notes": "For production, use: aws|azure|gcp with HSM-backed key"
-      },
       "active": true,
       "valid_from": "2025-01-01T00:00:00Z",
       "valid_to": null
     },
     {
-      "id": "vendor",
-      "name": "TerraFusion Vendor",
+      "id": "yakima_county",
+      "name": "Yakima County, WA (TSS Participant 2)",
+      "participant_id": 2,
+      "description": "Secondary county authority for federation",
+      "active": true,
+      "valid_from": "2025-01-01T00:00:00Z",
+      "valid_to": null
+    },
+    {
+      "id": "terrafusion_vendor",
+      "name": "TerraFusion Vendor (TSS Participant 3)",
+      "participant_id": 3,
       "description": "Vendor authority for code integrity",
-      "public_key_path": "artifacts/speclock/keys/vendor.pub",
-      "kms": {
-        "provider": "local",
-        "key_ref": "artifacts/speclock/keys/vendor.key",
-        "notes": "For production, use: aws|azure|gcp with HSM-backed key"
-      },
       "active": true,
       "valid_from": "2025-01-01T00:00:00Z",
       "valid_to": null
     }
   ],
-  "rotation_policy": {
-    "overlap_days": 30,
-    "description": "New keys must overlap with old keys for at least 30 days before old key is deactivated"
-  },
   "notes": [
-    "No deletes. Ever. Mark valid_to to sunset a key.",
-    "Rotation: add new key with active=true, keep old active during overlap, then set old valid_to",
-    "KMS providers: local (dev), aws (awskms://), azure (azurekms://), gcp (gcpkms://)",
-    "Quorum must be satisfied for any manifest to be trusted",
-    "At least one required_authority must sign (federated constraint)"
+    "COSMIC TIER: True threshold signatures (FROST-Ed25519)",
+    "k-of-n participants must cooperate to sign",
+    "ONE signature, ONE group public key",
+    "No single participant can sign alone",
+    "Rotation = new DKG ceremony, overlap with old group key",
+    "participant_id maps to FROST identifier",
+    "Run ./scripts/speclock-tss-dkg.sh to generate keys",
+    "Run ./scripts/speclock-tss-sign.sh to create signatures"
   ]
 }

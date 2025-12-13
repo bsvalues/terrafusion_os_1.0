@@ -1,11 +1,13 @@
 // =============================================================================
-// SpecLock Service Collection Extensions (MACHINE MODE)
+// SpecLock Service Collection Extensions (COSMIC TIER)
 // =============================================================================
 // DI registration for SpecLock runtime services.
+// Supports MYTHIC (Cosign), GOD-TIER (Quorum), and COSMIC (TSS) modes.
 // =============================================================================
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using System.Text.Json;
 
 namespace TerraFusion.API.Services.SpecLock;
 
@@ -17,6 +19,7 @@ public static class SpecLockServiceCollectionExtensions
     /// <summary>
     /// Adds SpecLock runtime services:
     /// - ISpecLockManifestLoader (singleton)
+    /// - ISpecLockSignatureVerifier (mode-dependent: Cosign or TSS)
     /// - SpecLockGuardHostedService (startup guard)
     /// - SpecLockHealthCheck (ready gate)
     /// </summary>
@@ -31,7 +34,35 @@ public static class SpecLockServiceCollectionExtensions
         });
 
         services.AddSingleton<ISpecLockManifestLoader, SpecLockManifestLoader>();
-        services.AddSingleton<ISpecLockSignatureVerifier, SpecLockCosignVerifier>();
+
+        // Mode-dependent verifier registration
+        services.AddSingleton<ISpecLockSignatureVerifier>(sp =>
+        {
+            var cfg = sp.GetRequiredService<IConfiguration>();
+            var env = sp.GetRequiredService<IHostEnvironment>();
+            var files = sp.GetRequiredService<IFileProvider>();
+            var log = sp.GetRequiredService<ILoggerFactory>();
+
+            // Check AUTHORITIES.json for mode
+            var mode = GetSignatureMode(cfg, env);
+
+            if (string.Equals(mode, "cosmic_tss", StringComparison.OrdinalIgnoreCase))
+            {
+                // COSMIC TIER: FROST-Ed25519 threshold signatures
+                return new SpecLockTssVerifier(
+                    log.CreateLogger<SpecLockTssVerifier>(),
+                    cfg,
+                    env);
+            }
+
+            // MYTHIC/GOD-TIER: Cosign-based verification
+            return new SpecLockCosignVerifier(
+                log.CreateLogger<SpecLockCosignVerifier>(),
+                files,
+                cfg,
+                env);
+        });
+
         services.AddHostedService<SpecLockGuardHostedService>();
 
         return services;
@@ -46,5 +77,40 @@ public static class SpecLockServiceCollectionExtensions
         return builder.AddCheck<SpecLockHealthCheck>(
             "speclock",
             tags: new[] { "ready", "ops", "speclock" });
+    }
+
+    private static string GetSignatureMode(IConfiguration cfg, IHostEnvironment env)
+    {
+        // First check environment variable
+        var envMode = Environment.GetEnvironmentVariable("TF_SPECLOCK_SIGNATURE_MODE")
+            ?? cfg["TF_SPECLOCK_SIGNATURE_MODE"];
+        if (!string.IsNullOrEmpty(envMode))
+            return envMode;
+
+        // Check AUTHORITIES.json
+        var authPath = Environment.GetEnvironmentVariable("TF_SPECLOCK_AUTHORITIES_PATH")
+            ?? cfg["TF_SPECLOCK_AUTHORITIES_PATH"]
+            ?? "docs/spec-lock/AUTHORITIES.json";
+
+        var fullPath = Path.IsPathRooted(authPath)
+            ? authPath
+            : Path.Combine(env.ContentRootPath, authPath);
+
+        if (!File.Exists(fullPath))
+            return "mythic_cosign";
+
+        try
+        {
+            var json = File.ReadAllText(fullPath);
+            var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("mode", out var modeEl))
+                return modeEl.GetString() ?? "mythic_cosign";
+        }
+        catch
+        {
+            // Ignore parse errors, default to mythic
+        }
+
+        return "mythic_cosign";
     }
 }
