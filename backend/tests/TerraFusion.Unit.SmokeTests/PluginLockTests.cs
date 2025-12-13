@@ -352,7 +352,7 @@ public sealed class PluginLockTests
         // ATTACK: Plugin requests parcel scope, then tries to access assessment scope
         var declaredScope = "parcel";
         var attemptedScope = "assessment";
-        
+
         var allowedScopes = new Dictionary<string, HashSet<string>>
         {
             ["parcel"] = new HashSet<string> { "parcel" },
@@ -372,7 +372,7 @@ public sealed class PluginLockTests
         // ATTACK: Plugin declares limited network, tries to access blocked domain at runtime
         var declaredAllowedDomains = new HashSet<string> { "api.county.gov", "maps.county.gov" };
         var deniedDomains = new HashSet<string> { "crypto-mining.io", "exfiltrate.evil.com" };
-        
+
         var attemptedDomain = "crypto-mining.io";
 
         Assert.True(

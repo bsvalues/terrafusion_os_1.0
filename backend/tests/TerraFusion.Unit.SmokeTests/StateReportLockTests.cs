@@ -231,7 +231,7 @@ public partial class StateReportLockTests
         // BREAKER: Attempt to use wrong group public key
         var report = CreateValidStateReport();
         var signing = (Dictionary<string, object>)report["signing"]!;
-        
+
         // Wrong group key (different from expected state.group.pub)
         var wrongGroupKey = "0000000000000000000000000000000000000000000000000000000000000000";
         var expectedGroupKey = signing["group_pub_sha256"]!.ToString();
@@ -255,10 +255,10 @@ public partial class StateReportLockTests
     {
         // BREAKER: Attempt to include county-specific PII in state report
         var report = CreateValidStateReport();
-        
+
         // State reports should only contain aggregated data
         var data = (Dictionary<string, object>)report["data"]!;
-        
+
         // Ensure no county-specific identifiable data
         Assert.False(
             data.ContainsKey("individual_parcels"),

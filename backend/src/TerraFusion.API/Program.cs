@@ -643,6 +643,10 @@ app.MapMetrics();
 // Returns manifest JSON with ETag for ops tooling
 app.MapSpecLockOps();
 
+// 🔒 Public Proof Endpoint (/public/proof/{receiptId})
+// Citizen-verifiable receipt proofs with speclock manifest snapshot
+app.MapPublicProof();
+
 // 🩺 Health Check Endpoints (K8s / Infra / Ops)
 // /healthz        → liveness  (is the process alive?)
 // /healthz/ready  → readiness (can I serve traffic?)

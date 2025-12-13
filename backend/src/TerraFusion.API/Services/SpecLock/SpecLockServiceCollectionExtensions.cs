@@ -65,6 +65,10 @@ public static class SpecLockServiceCollectionExtensions
 
         services.AddHostedService<SpecLockGuardHostedService>();
 
+        // 🔒 Public Proof Service (PHASE A: Citizen-Verifiable Trust)
+        services.AddHttpClient("LocalOps"); // used for proof snapshot (safe to fail)
+        services.AddSingleton<IPublicReceiptProofService, PublicReceiptProofService>();
+
         return services;
     }
 
