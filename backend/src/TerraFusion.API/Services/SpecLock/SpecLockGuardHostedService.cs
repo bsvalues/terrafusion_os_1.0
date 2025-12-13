@@ -1,7 +1,9 @@
 // =============================================================================
-// SpecLock Guard Hosted Service (MACHINE MODE)
+// SpecLock Guard Hosted Service (GOD-TIER)
 // =============================================================================
 // Runtime invariant enforcement at startup.
+// - Verifies signature quorum (GOD-TIER multi-authority)
+// - Verifies time window (nbf/exp)
 // - Verifies generated artifacts match manifest sha256 values.
 // - Fail-closed: throws on mismatch (startup abort) when guard enabled.
 // =============================================================================
@@ -12,8 +14,10 @@ using Microsoft.Extensions.Hosting;
 namespace TerraFusion.API.Services.SpecLock;
 
 /// <summary>
-/// MACHINE MODE runtime invariant:
-/// - If enabled, verifies that generated artifacts on disk match the SpecLock manifest sha256 values.
+/// GOD-TIER runtime invariant:
+/// - Verifies signature quorum BEFORE trusting manifest.
+/// - Verifies manifest is within time window (nbf/exp).
+/// - Verifies that generated artifacts on disk match the SpecLock manifest sha256 values.
 /// - Fail-closed by throwing on mismatch (startup abort).
 /// </summary>
 public sealed class SpecLockGuardHostedService : IHostedService
@@ -49,9 +53,9 @@ public sealed class SpecLockGuardHostedService : IHostedService
             return;
         }
 
-        _log.LogInformation("SpecLock guard ENABLED - validating runtime invariants...");
+        _log.LogInformation("SpecLock guard ENABLED - validating runtime invariants (GOD-TIER)...");
 
-        // MYTHIC TIER: Verify signature BEFORE trusting manifest contents.
+        // GOD-TIER: Verify signature quorum BEFORE trusting manifest contents.
         await _signatureVerifier.VerifyAsync(cancellationToken);
 
         SpecLockManifest manifest;
@@ -64,6 +68,13 @@ public sealed class SpecLockGuardHostedService : IHostedService
         {
             _log.LogError(ex, "SpecLock manifest not found. Run: python scripts/speclock-manifest.py");
             throw;
+        }
+
+        // GOD-TIER: Verify time window (nbf/exp)
+        var timeEnforcement = string.Equals(_cfg["TF_SPECLOCK_TIME_ENFORCEMENT"], "true", StringComparison.OrdinalIgnoreCase);
+        if (timeEnforcement)
+        {
+            VerifyTimeWindow(manifest);
         }
 
         var failOnMissing = !string.Equals(
@@ -120,7 +131,36 @@ public sealed class SpecLockGuardHostedService : IHostedService
                 string.Join("\n", errors));
         }
 
-        _log.LogInformation("SpecLock guard PASSED. (locks={LockCount})", manifest.LockCount);
+        _log.LogInformation("SpecLock guard PASSED (GOD-TIER). (locks={LockCount})", manifest.LockCount);
+    }
+
+    /// <summary>
+    /// GOD-TIER: Verify manifest is within time window.
+    /// </summary>
+    private void VerifyTimeWindow(SpecLockManifest manifest)
+    {
+        var now = DateTime.UtcNow;
+
+        if (!string.IsNullOrWhiteSpace(manifest.NotBefore))
+        {
+            if (DateTime.TryParse(manifest.NotBefore, out var nbf) && now < nbf)
+            {
+                throw new InvalidOperationException(
+                    $"SpecLock manifest not yet valid. NBF={manifest.NotBefore}, Now={now:O}");
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(manifest.ExpiresAt))
+        {
+            if (DateTime.TryParse(manifest.ExpiresAt, out var exp) && now > exp)
+            {
+                throw new InvalidOperationException(
+                    $"SpecLock manifest expired. EXP={manifest.ExpiresAt}, Now={now:O}");
+            }
+        }
+
+        _log.LogInformation("SpecLock time window verified. NBF={NBF}, EXP={EXP}",
+            manifest.NotBefore ?? "(none)", manifest.ExpiresAt ?? "(none)");
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

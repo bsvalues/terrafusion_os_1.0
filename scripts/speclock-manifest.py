@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-SpecLock Manifest Builder (Nuclear Mode)
+SpecLock Manifest Builder (GOD-TIER)
 
 Builds an immutable manifest of:
   - INDEX.json hash
   - each lock spec_path hash
   - each generated artifact hash
   - each spec_data_path hash (if present)
+  - Time-locked validity window (nbf/exp)
 
 Output:
   artifacts/speclock/manifest.json
@@ -15,7 +16,12 @@ Deterministic:
   - sorted keys, stable ordering, sha256 of file bytes
 
 Usage:
-  python scripts/speclock-manifest.py [--out PATH]
+  python scripts/speclock-manifest.py [--out PATH] [--nbf ISO] [--exp ISO]
+
+Environment:
+  TF_SPECLOCK_NBF - Not-before timestamp (ISO 8601)
+  TF_SPECLOCK_EXP - Expiration timestamp (ISO 8601)
+  TF_SPECLOCK_EXP_DAYS - Days until expiration (default: 30)
 """
 
 from __future__ import annotations
@@ -23,7 +29,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from datetime import datetime, timezone
+import os
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -53,6 +60,8 @@ def main() -> int:
 
     ap = argparse.ArgumentParser(description="Build SpecLock manifest (sha256 hashes)")
     ap.add_argument("--out", default=str(OUT_DEFAULT), help="Output manifest path")
+    ap.add_argument("--nbf", default=None, help="Not-before timestamp (ISO 8601)")
+    ap.add_argument("--exp", default=None, help="Expiration timestamp (ISO 8601)")
     args = ap.parse_args()
 
     if not INDEX.exists():
@@ -117,9 +126,18 @@ def main() -> int:
 
     entries.sort(key=lambda x: x["id"])
 
+    # GOD-TIER: Time-locked validity window
+    now = datetime.now(timezone.utc)
+    exp_days = int(os.getenv("TF_SPECLOCK_EXP_DAYS", "30"))
+
+    nbf = os.getenv("TF_SPECLOCK_NBF") or args.nbf or now.isoformat().replace("+00:00", "Z")
+    exp = os.getenv("TF_SPECLOCK_EXP") or args.exp or (now + timedelta(days=exp_days)).isoformat().replace("+00:00", "Z")
+
     manifest: Dict[str, Any] = {
-        "version": "1.0",
-        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "version": "2.0",
+        "generated_at": now.isoformat().replace("+00:00", "Z"),
+        "nbf": nbf,
+        "exp": exp,
         "index_path": str(INDEX),
         "index_sha256": _sha256_file(INDEX),
         "lock_count": len(entries),
@@ -132,6 +150,8 @@ def main() -> int:
 
     print(f"✅ Wrote manifest: {out}")
     print(f"   Locks: {len(entries)}")
+    print(f"   NBF:   {nbf}")
+    print(f"   EXP:   {exp}")
     return 0
 
 

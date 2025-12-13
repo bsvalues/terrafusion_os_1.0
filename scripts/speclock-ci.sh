@@ -267,9 +267,49 @@ if [ "$SKIP_GENERATE" = false ]; then
         echo "─────────────────────────────────────────────────────────────────"
         echo ""
     fi
+
+    # ═══════════════════════════════════════════════════════════════
+    # Step 9: GOD-TIER - Multi-Authority Quorum Verification
+    # ═══════════════════════════════════════════════════════════════
+    if [[ "${TF_SPECLOCK_QUORUM_MODE:-}" == "true" ]]; then
+        echo "─────────────────────────────────────────────────────────────────"
+        echo "Step 9: GOD-TIER - Multi-Authority Quorum Verification"
+        echo "─────────────────────────────────────────────────────────────────"
+        echo ""
+
+        if command -v cosign >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+            # Multi-authority signing (if keys available)
+            if [[ -f "docs/spec-lock/AUTHORITIES.json" ]]; then
+                echo "🜂 Signing with multiple authorities..."
+                bash scripts/speclock-sign-manifest-multi.sh \
+                    artifacts/speclock/manifest.json \
+                    docs/spec-lock/AUTHORITIES.json \
+                    artifacts/speclock/bundles || true
+
+                echo ""
+                echo "🜂 Verifying quorum..."
+                bash scripts/speclock-verify-manifest-quorum.sh \
+                    artifacts/speclock/manifest.json \
+                    docs/spec-lock/AUTHORITIES.json \
+                    artifacts/speclock/bundles
+
+                echo "✅ GOD-TIER: Quorum verification passed"
+            else
+                echo "⚠️  AUTHORITIES.json not found - skipping quorum verification"
+            fi
+        else
+            echo "⚠️  cosign/jq not found - skipping GOD-TIER quorum"
+        fi
+        echo ""
+    else
+        echo "─────────────────────────────────────────────────────────────────"
+        echo "Step 9: GOD-TIER - SKIPPED (TF_SPECLOCK_QUORUM_MODE != true)"
+        echo "─────────────────────────────────────────────────────────────────"
+        echo ""
+    fi
 else
     echo "─────────────────────────────────────────────────────────────────"
-    echo "Step 7-8: SKIPPED (--skip-generate)"
+    echo "Step 7-9: SKIPPED (--skip-generate)"
     echo "─────────────────────────────────────────────────────────────────"
     echo ""
 fi

@@ -66,14 +66,15 @@ public static class SpecLockOpsEndpoints
         .Produces(StatusCodes.Status404NotFound);
 
         // ═══════════════════════════════════════════════════════════════
-        // MYTHIC TIER: /ops/speclock/proof
-        // Returns manifest + bundle + public key metadata for audit
+        // GOD-TIER: /ops/speclock/proof
+        // Returns manifest + bundle + authority metadata for audit
+        // Shows: who signed, time window, quorum status
         // ═══════════════════════════════════════════════════════════════
-        group.MapGet("/speclock/proof", (HttpContext ctx, IFileProvider files, IConfiguration cfg) =>
+        group.MapGet("/speclock/proof", async (HttpContext ctx, IFileProvider files, IConfiguration cfg, ISpecLockManifestLoader loader) =>
         {
             var manifestPath = cfg["TF_SPECLOCK_MANIFEST_PATH"] ?? "artifacts/speclock/manifest.json";
-            var bundlePath = cfg["TF_SPECLOCK_COSIGN_BUNDLE_PATH"] ?? "artifacts/speclock/manifest.bundle.json";
-            var pubKeyPath = cfg["TF_SPECLOCK_COSIGN_PUBLIC_KEY_PATH"] ?? "";
+            var bundlesPath = cfg["TF_SPECLOCK_BUNDLES_PATH"] ?? "artifacts/speclock/bundles";
+            var authoritiesPath = cfg["TF_SPECLOCK_AUTHORITIES_PATH"] ?? "docs/spec-lock/AUTHORITIES.json";
 
             static string? FileSha256(IFileProvider files, string path)
             {
@@ -83,30 +84,69 @@ public static class SpecLockOpsEndpoints
                 return Convert.ToHexString(SHA256.HashData(s)).ToLowerInvariant();
             }
 
+            // Load manifest for nbf/exp
+            string? nbf = null, exp = null;
+            try
+            {
+                var (manifest, _) = await loader.LoadAsync(ctx.RequestAborted);
+                nbf = manifest.NotBefore;
+                exp = manifest.ExpiresAt;
+            }
+            catch { /* ignore */ }
+
+            // Enumerate authority bundles
+            var bundles = new List<object>();
+            var bundlesDir = files.GetDirectoryContents(bundlesPath);
+            if (bundlesDir.Exists)
+            {
+                foreach (var file in bundlesDir.Where(f => !f.IsDirectory && f.Name.EndsWith(".bundle.json")))
+                {
+                    var authorityId = file.Name.Replace("manifest.", "").Replace(".bundle.json", "");
+                    using var stream = file.CreateReadStream();
+                    bundles.Add(new
+                    {
+                        authorityId,
+                        path = Path.Combine(bundlesPath, file.Name),
+                        sha256 = Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant()
+                    });
+                }
+            }
+
+            // Try to load authorities registry
+            object? authorities = null;
+            var authFile = files.GetFileInfo(authoritiesPath);
+            if (authFile.Exists)
+            {
+                try
+                {
+                    using var stream = authFile.CreateReadStream();
+                    using var reader = new StreamReader(stream);
+                    var json = await reader.ReadToEndAsync();
+                    authorities = System.Text.Json.JsonSerializer.Deserialize<object>(json);
+                }
+                catch { /* ignore */ }
+            }
+
             var payload = new
             {
                 manifest = new
                 {
                     path = manifestPath,
                     sha256 = FileSha256(files, manifestPath),
-                    exists = files.GetFileInfo(manifestPath).Exists
+                    exists = files.GetFileInfo(manifestPath).Exists,
+                    nbf,
+                    exp
                 },
-                bundle = new
-                {
-                    path = bundlePath,
-                    sha256 = FileSha256(files, bundlePath),
-                    exists = files.GetFileInfo(bundlePath).Exists
-                },
-                publicKey = new
-                {
-                    path = string.IsNullOrWhiteSpace(pubKeyPath) ? null : pubKeyPath,
-                    sha256 = string.IsNullOrWhiteSpace(pubKeyPath) ? null : FileSha256(files, pubKeyPath),
-                    exists = !string.IsNullOrWhiteSpace(pubKeyPath) && files.GetFileInfo(pubKeyPath).Exists
-                },
+                bundles,
+                authorities,
                 configuration = new
                 {
                     signatureVerifyEnabled = string.Equals(
                         cfg["TF_SPECLOCK_SIGNATURE_VERIFY_ENABLED"], "true", StringComparison.OrdinalIgnoreCase),
+                    quorumMode = string.Equals(
+                        cfg["TF_SPECLOCK_QUORUM_MODE"], "true", StringComparison.OrdinalIgnoreCase),
+                    timeEnforcement = string.Equals(
+                        cfg["TF_SPECLOCK_TIME_ENFORCEMENT"], "true", StringComparison.OrdinalIgnoreCase),
                     guardEnabled = string.Equals(
                         cfg["TF_SPECLOCK_GUARD_ENABLED"], "true", StringComparison.OrdinalIgnoreCase),
                     allowMissing = string.Equals(
@@ -119,7 +159,7 @@ public static class SpecLockOpsEndpoints
             return Results.Json(payload);
         })
         .WithName("GetSpecLockProof")
-        .WithTags("Ops", "SpecLock", "Mythic")
+        .WithTags("Ops", "SpecLock", "GodTier")
         .Produces<object>(StatusCodes.Status200OK, "application/json");
 
         return app;
