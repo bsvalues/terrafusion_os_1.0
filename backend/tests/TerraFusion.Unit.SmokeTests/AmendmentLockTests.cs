@@ -267,4 +267,143 @@ public sealed class AmendmentLockTests
             Assert.False(pattern.IsMatch(id), $"'{id}' should be invalid");
         }
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // BREAKER ATTACK TESTS - Amendment adversarial enforcement
+    // ═══════════════════════════════════════════════════════════════
+
+    [Fact]
+    public void Breaker_QuorumBelowMinimum_MustBeRejected()
+    {
+        var schemaPath = Path.Combine(RepoRoot, SchemaPath);
+        if (!File.Exists(schemaPath)) return;
+
+        var schema = JsonNode.Parse(File.ReadAllText(schemaPath))!;
+        var minQuorum = schema["properties"]!["approvals"]!["properties"]!["required_quorum"]!["minimum"]!.GetValue<int>();
+
+        // ATTACK: Single signer should be rejected
+        Assert.True(minQuorum >= 2, "BREACH: Quorum minimum must be >= 2 to prevent single-actor takeover");
+    }
+
+    [Fact]
+    public void Breaker_SkipWorkflowState_MustBeBlocked()
+    {
+        var specPath = Path.Combine(RepoRoot, SpecPath);
+        if (!File.Exists(specPath)) return;
+
+        var spec = JsonNode.Parse(File.ReadAllText(specPath))!;
+        var lifecycleStates = spec["lifecycle_states"]!.AsArray()
+            .Select(x => x!.GetValue<string>()).ToList();
+
+        // ATTACK: Cannot skip from proposed directly to effective
+        var proposedIdx = lifecycleStates.IndexOf("proposed");
+        var reviewedIdx = lifecycleStates.IndexOf("reviewed");
+        var approvedIdx = lifecycleStates.IndexOf("approved");
+        var effectiveIdx = lifecycleStates.IndexOf("effective");
+
+        Assert.True(proposedIdx < reviewedIdx, "proposed must come before reviewed");
+        Assert.True(reviewedIdx < approvedIdx, "reviewed must come before approved");
+        Assert.True(approvedIdx < effectiveIdx, "approved must come before effective");
+    }
+
+    [Fact]
+    public void Breaker_InvalidTargetLock_MustBeBlocked()
+    {
+        var specPath = Path.Combine(RepoRoot, SpecPath);
+        if (!File.Exists(specPath)) return;
+
+        var spec = JsonNode.Parse(File.ReadAllText(specPath))!;
+        var validationRules = spec["validation_rules"]!.AsArray();
+
+        // ATTACK: Amendment targeting non-existent lock must fail
+        var hasTargetLockRule = validationRules.Any(r =>
+            r!["id"]?.GetValue<string>() == "target_lock_exists");
+
+        Assert.True(hasTargetLockRule, "BREACH: Must validate target_lock_id exists");
+    }
+
+    [Fact]
+    public void Breaker_NbfInPast_MustBeBlocked()
+    {
+        var specPath = Path.Combine(RepoRoot, SpecPath);
+        if (!File.Exists(specPath)) return;
+
+        var spec = JsonNode.Parse(File.ReadAllText(specPath))!;
+        var validationRules = spec["validation_rules"]!.AsArray();
+
+        // ATTACK: Amendment with nbf in the past at proposal time must fail
+        var hasNbfFutureRule = validationRules.Any(r =>
+            r!["id"]?.GetValue<string>() == "nbf_in_future");
+
+        Assert.True(hasNbfFutureRule, "BREACH: Must validate nbf is in the future at proposal time");
+    }
+
+    [Fact]
+    public void Breaker_ExpBeforeNbf_MustBeBlocked()
+    {
+        var specPath = Path.Combine(RepoRoot, SpecPath);
+        if (!File.Exists(specPath)) return;
+
+        var spec = JsonNode.Parse(File.ReadAllText(specPath))!;
+        var validationRules = spec["validation_rules"]!.AsArray();
+
+        // ATTACK: exp < nbf is an invalid time window
+        var hasExpAfterNbfRule = validationRules.Any(r =>
+            r!["id"]?.GetValue<string>() == "exp_after_nbf");
+
+        Assert.True(hasExpAfterNbfRule, "BREACH: Must validate exp > nbf");
+    }
+
+    [Fact]
+    public void Breaker_InsufficientSigners_MustBeBlocked()
+    {
+        var specPath = Path.Combine(RepoRoot, SpecPath);
+        if (!File.Exists(specPath)) return;
+
+        var spec = JsonNode.Parse(File.ReadAllText(specPath))!;
+        var validationRules = spec["validation_rules"]!.AsArray();
+
+        // ATTACK: Must verify signers count matches required_quorum
+        var hasSignersMatchRule = validationRules.Any(r =>
+            r!["id"]?.GetValue<string>() == "signers_match_quorum");
+
+        Assert.True(hasSignersMatchRule, "BREACH: Must validate signers count matches required_quorum");
+    }
+
+    [Fact]
+    public void Breaker_ReviewGates_AllRequired()
+    {
+        var specPath = Path.Combine(RepoRoot, SpecPath);
+        if (!File.Exists(specPath)) return;
+
+        var spec = JsonNode.Parse(File.ReadAllText(specPath))!;
+        var reviewGates = spec["review_gates"]!.AsArray()
+            .Select(g => g!["gate"]!.GetValue<string>()).ToHashSet();
+
+        // ATTACK: All three review gates must be required
+        var requiredGates = new[] { "builder", "breaker", "security" };
+        foreach (var gate in requiredGates)
+        {
+            Assert.Contains(gate, reviewGates);
+        }
+    }
+
+    [Fact]
+    public void Breaker_CriticalAmendment_RequiresHighQuorum()
+    {
+        var specPath = Path.Combine(RepoRoot, SpecPath);
+        if (!File.Exists(specPath)) return;
+
+        var spec = JsonNode.Parse(File.ReadAllText(specPath))!;
+        var quorumReqs = spec["quorum_requirements"]!.AsArray();
+
+        var criticalQuorum = quorumReqs.FirstOrDefault(q =>
+            q!["type"]!.GetValue<string>() == "critical");
+
+        Assert.NotNull(criticalQuorum);
+        var required = criticalQuorum!["required"]!.GetValue<int>();
+
+        // ATTACK: Critical/security amendments need high quorum
+        Assert.True(required >= 5, "BREACH: Critical amendments must require >= 5 signers");
+    }
 }

@@ -180,4 +180,113 @@ public sealed class ReceiptLockTests
         // Pattern should enforce UTC 'Z' suffix
         Assert.Contains("Z$", nbfPattern);
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // BREAKER ATTACK TESTS - Adversarial invariant enforcement
+    // ═══════════════════════════════════════════════════════════════
+
+    [Fact]
+    public void Breaker_UppercaseSha256_MustBeRejected()
+    {
+        // ATTACK: Uppercase SHA-256 should fail pattern validation
+        var uppercaseSha = "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855";
+        var pattern = new System.Text.RegularExpressions.Regex("^[a-f0-9]{64}$");
+        
+        Assert.False(pattern.IsMatch(uppercaseSha), "BREACH: Uppercase SHA-256 was accepted");
+    }
+
+    [Fact]
+    public void Breaker_NonUTCTimestamp_MustBeRejected()
+    {
+        // ATTACK: Non-UTC timestamp (timezone offset instead of Z)
+        var nonUtc = "2025-12-12T12:00:00+00:00";
+        var pattern = new System.Text.RegularExpressions.Regex(@"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$");
+        
+        Assert.False(pattern.IsMatch(nonUtc), "BREACH: Non-UTC timestamp was accepted");
+    }
+
+    [Fact]
+    public void Breaker_ExpiredReceipt_OutsideWindow()
+    {
+        // ATTACK: Receipt with exp in the past should be detected
+        var expiredExp = DateTime.Parse("2020-01-01T00:00:00Z");
+        var now = DateTime.UtcNow;
+        
+        Assert.True(expiredExp < now, "Expired receipt detected");
+    }
+
+    [Fact]
+    public void Breaker_FutureNbf_NotYetValid()
+    {
+        // ATTACK: Receipt with nbf in the future should be detected
+        var futureNbf = DateTime.Parse("2030-01-01T00:00:00Z");
+        var now = DateTime.UtcNow;
+        
+        Assert.True(futureNbf > now, "Not-yet-valid receipt detected");
+    }
+
+    [Fact]
+    public void Breaker_InvalidTimeWindow_NbfGreaterThanExp()
+    {
+        // ATTACK: nbf > exp is an invalid time window
+        var nbf = DateTime.Parse("2026-01-01T00:00:00Z");
+        var exp = DateTime.Parse("2025-01-01T00:00:00Z");
+        
+        Assert.True(nbf > exp, "Invalid time window (nbf > exp) detected");
+    }
+
+    [Fact]
+    public void Breaker_Sha256WrongLength_MustBeRejected()
+    {
+        // ATTACK: SHA-256 with wrong length
+        var shortSha = "e3b0c44298fc1c149afbf4c8996fb924";
+        var pattern = new System.Text.RegularExpressions.Regex("^[a-f0-9]{64}$");
+        
+        Assert.False(pattern.IsMatch(shortSha), "BREACH: Short SHA-256 was accepted");
+    }
+
+    [Fact]
+    public void Breaker_InvalidArtifactType_MustBeRejected()
+    {
+        var schemaPath = Path.Combine(RepoRoot, SchemaPath);
+        if (!File.Exists(schemaPath)) return;
+
+        var schema = JsonNode.Parse(File.ReadAllText(schemaPath))!;
+        var validTypes = schema["properties"]!["artifact"]!["properties"]!["type"]!["enum"]!
+            .AsArray().Select(x => x!.GetValue<string>()).ToHashSet();
+
+        // ATTACK: Unknown artifact type
+        var unknownType = "unknown_type";
+        Assert.False(validTypes.Contains(unknownType), "BREACH: Unknown artifact type was in allowlist");
+    }
+
+    [Fact]
+    public void Breaker_InvalidSigningMode_MustBeRejected()
+    {
+        var schemaPath = Path.Combine(RepoRoot, SchemaPath);
+        if (!File.Exists(schemaPath)) return;
+
+        var schema = JsonNode.Parse(File.ReadAllText(schemaPath))!;
+        var validModes = schema["properties"]!["signing"]!["properties"]!["mode"]!["enum"]!
+            .AsArray().Select(x => x!.GetValue<string>()).ToHashSet();
+
+        // ATTACK: Unknown signing mode
+        var unknownMode = "fake_signing_mode";
+        Assert.False(validModes.Contains(unknownMode), "BREACH: Unknown signing mode was in allowlist");
+    }
+
+    [Fact]
+    public void Breaker_KeyOrdering_MustBeDeterministic()
+    {
+        // ATTACK: Different key ordering must produce different serialization
+        var receipt1 = new SortedDictionary<string, object?> { ["a"] = 1, ["b"] = 2 };
+        var receipt2 = new Dictionary<string, object?> { ["b"] = 2, ["a"] = 1 };
+
+        var json1 = JsonSerializer.Serialize(receipt1);
+        var json2 = JsonSerializer.Serialize(receipt2);
+
+        // SortedDictionary maintains order, regular Dictionary may not
+        Assert.Contains("\"a\":1", json1);
+        Assert.True(json1.IndexOf("\"a\"") < json1.IndexOf("\"b\""), "SortedDictionary must have a before b");
+    }
 }

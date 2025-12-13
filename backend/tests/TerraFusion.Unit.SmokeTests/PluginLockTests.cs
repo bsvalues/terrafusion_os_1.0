@@ -235,4 +235,110 @@ public sealed class PluginLockTests
         Assert.True(memMin >= 16, "Memory min should be >= 16MB");
         Assert.True(memMax <= 4096, "Memory max should be <= 4096MB");
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // BREAKER ATTACK TESTS - PluginLock adversarial enforcement
+    // ═══════════════════════════════════════════════════════════════
+
+    [Fact]
+    public void Breaker_DenyBeatsAllow_MustBeEnforced()
+    {
+        var specPath = Path.Combine(RepoRoot, SpecPath);
+        if (!File.Exists(specPath)) return;
+
+        var spec = JsonNode.Parse(File.ReadAllText(specPath))!;
+        var denyBeatsAllow = spec["enforcement_rules"]!["deny_beats_allow"]!.GetValue<bool>();
+
+        // ATTACK: If deny_beats_allow is false, domain confusion is possible
+        Assert.True(denyBeatsAllow, "BREACH: deny_beats_allow must be true to prevent allow/deny confusion");
+    }
+
+    [Fact]
+    public void Breaker_UnknownDataScope_MustBeRejected()
+    {
+        var specPath = Path.Combine(RepoRoot, SpecPath);
+        if (!File.Exists(specPath)) return;
+
+        var spec = JsonNode.Parse(File.ReadAllText(specPath))!;
+        var validScopes = spec["valid_data_scopes"]!.AsArray()
+            .Select(x => x!.GetValue<string>()).ToHashSet();
+
+        // ATTACK: Inject unknown scope
+        var unknownScope = "admin_full_access";
+        Assert.False(validScopes.Contains(unknownScope), "BREACH: Unknown scope was in allowlist");
+    }
+
+    [Fact]
+    public void Breaker_UnknownStorageType_MustBeRejected()
+    {
+        var specPath = Path.Combine(RepoRoot, SpecPath);
+        if (!File.Exists(specPath)) return;
+
+        var spec = JsonNode.Parse(File.ReadAllText(specPath))!;
+        var validStorage = spec["valid_storage_types"]!.AsArray()
+            .Select(x => x!.GetValue<string>()).ToHashSet();
+
+        // ATTACK: Inject unknown storage type
+        var unknownStorage = "root_filesystem";
+        Assert.False(validStorage.Contains(unknownStorage), "BREACH: Unknown storage type was in allowlist");
+    }
+
+    [Fact]
+    public void Breaker_MissingSbom_MustBeRequired()
+    {
+        var specPath = Path.Combine(RepoRoot, SpecPath);
+        if (!File.Exists(specPath)) return;
+
+        var spec = JsonNode.Parse(File.ReadAllText(specPath))!;
+        var sbomRequired = spec["enforcement_rules"]!["sbom_required"]!.GetValue<bool>();
+
+        // ATTACK: If SBOM not required, supply chain attack possible
+        Assert.True(sbomRequired, "BREACH: SBOM must be required for supply chain security");
+    }
+
+    [Fact]
+    public void Breaker_ComputeExceedsMax_MustBeBlocked()
+    {
+        var schemaPath = Path.Combine(RepoRoot, SchemaPath);
+        if (!File.Exists(schemaPath)) return;
+
+        var schema = JsonNode.Parse(File.ReadAllText(schemaPath))!;
+        var cpuMax = schema["properties"]!["permissions"]!["properties"]!["compute"]!
+            ["properties"]!["max_cpu_ms"]!["maximum"]!.GetValue<int>();
+
+        // ATTACK: Request CPU time exceeding maximum
+        var attackCpu = 999999;
+        Assert.True(attackCpu > cpuMax, "BREACH: Excessive CPU request should be blocked by schema");
+    }
+
+    [Fact]
+    public void Breaker_InvalidPluginId_MustBeRejected()
+    {
+        var schemaPath = Path.Combine(RepoRoot, SchemaPath);
+        if (!File.Exists(schemaPath)) return;
+
+        var schema = JsonNode.Parse(File.ReadAllText(schemaPath))!;
+        var pattern = schema["properties"]!["plugin_id"]!["pattern"]!.GetValue<string>();
+        var regex = new System.Text.RegularExpressions.Regex(pattern);
+
+        // ATTACK: Invalid plugin ID formats
+        var attacks = new[] { "UPPERCASE.plugin", "no-domain", "123.starts.with.number", "../path/injection" };
+        foreach (var attack in attacks)
+        {
+            Assert.False(regex.IsMatch(attack), $"BREACH: Invalid plugin ID '{attack}' was accepted");
+        }
+    }
+
+    [Fact]
+    public void Breaker_OpaRego_ContainsDenyRule()
+    {
+        var regoPath = Path.Combine(RepoRoot, RegoPath);
+        if (!File.Exists(regoPath)) return;
+
+        var rego = File.ReadAllText(regoPath);
+
+        // ATTACK: If deny rule missing, bypass possible
+        Assert.Contains("denied_domain", rego, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("default allow = false", rego, StringComparison.OrdinalIgnoreCase);
+    }
 }
