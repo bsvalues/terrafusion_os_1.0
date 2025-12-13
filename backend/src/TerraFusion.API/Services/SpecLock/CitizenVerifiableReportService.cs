@@ -18,7 +18,7 @@ namespace TerraFusion.API.Services.SpecLock;
 
 /// <summary>
 /// FINAL SEAL: Citizen-verifiable state reports.
-/// 
+///
 /// Produces complete verification bundles that can be validated
 /// offline by courts, auditors, and citizens.
 /// </summary>

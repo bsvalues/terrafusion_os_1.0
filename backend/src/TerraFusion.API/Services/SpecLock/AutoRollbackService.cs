@@ -11,13 +11,13 @@ namespace TerraFusion.API.Services.SpecLock;
 
 /// <summary>
 /// FINAL SEAL: Auto-rollback on quorum loss.
-/// 
+///
 /// When state mesh verification fails after startup:
 /// 1. Freeze writes (set frozen flag)
 /// 2. Flip readiness ❌
 /// 3. Restore last-known-good manifest
 /// 4. Emit incident + audit record
-/// 
+///
 /// Invariant: No undefined state. Ever.
 /// </summary>
 public sealed class AutoRollbackService : IHostedService, IDisposable
