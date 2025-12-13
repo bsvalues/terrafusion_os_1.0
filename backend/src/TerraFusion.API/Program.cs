@@ -23,6 +23,7 @@ using TerraFusion.Levy.Models;
 using TerraFusion.Levy.Services;
 using System.Data;
 using TerraFusion.Core.Services;
+using TerraFusion.API.Services.SpecLock;
 // Conditional DB providers
 using Npgsql;
 using Microsoft.Data.Sqlite;
@@ -426,7 +427,13 @@ builder.Services.AddScoped<TerraFusion.Levy.Services.IRevenueProjectionService, 
 // Add health checks for monitoring
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<TerraFusion.Data.TerraFusionDbContext>("database")
-    .AddCheck<TerraFusion.API.Health.ModuleConsistencyHealthCheck>("modules_consistency");
+    .AddCheck<TerraFusion.API.Health.ModuleConsistencyHealthCheck>("modules_consistency")
+    .AddSpecLockCheck();
+
+// 🔒 SpecLock Runtime Guard (MACHINE MODE)
+// Validates generated artifacts match manifest sha256 at startup.
+// Enable with: TF_SPECLOCK_GUARD_ENABLED=true
+builder.Services.AddSpecLockRuntime();
 
 // Register AI swarm orchestration services
 builder.Services.AddHttpClient<IAIModuleOrchestrator, AIModuleOrchestrator>();
@@ -631,6 +638,40 @@ if (Directory.Exists(uiPath))
 
 // Map Prometheus metrics endpoint
 app.MapMetrics();
+
+// 🔒 SpecLock Ops Endpoint (/ops/speclock)
+// Returns manifest JSON with ETag for ops tooling
+app.MapSpecLockOps();
+
+// 🩺 Health Check Endpoints (K8s / Infra / Ops)
+// /healthz        → liveness  (is the process alive?)
+// /healthz/ready  → readiness (can I serve traffic?)
+app.MapHealthChecks("/healthz", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = _ => false, // Always healthy if process is alive
+    ResponseWriter = async (ctx, _) =>
+    {
+        ctx.Response.ContentType = "application/json; charset=utf-8";
+        await ctx.Response.WriteAsync("{\"status\":\"ok\",\"probe\":\"liveness\"}");
+    }
+});
+
+app.MapHealthChecks("/healthz/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = hc => hc.Tags.Contains("readiness") || hc.Name == "speclock",
+    ResponseWriter = async (ctx, report) =>
+    {
+        ctx.Response.ContentType = "application/json; charset=utf-8";
+        var status = report.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy ? "ok" : "not_ready";
+        var payload = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            status,
+            probe = "readiness",
+            checks = report.Entries.Select(e => new { name = e.Key, status = e.Value.Status.ToString() })
+        });
+        await ctx.Response.WriteAsync(payload);
+    }
+});
 
 // Map SignalR hubs
 app.MapHub<OSCoreHub>("/hubs/oscore");
