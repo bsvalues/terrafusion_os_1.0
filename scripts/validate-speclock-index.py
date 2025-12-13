@@ -34,7 +34,8 @@ RE_TAG = re.compile(r"^[a-z0-9_\-]+$")
 
 ALLOWED_STATUS = {"active", "deprecated", "draft", "archived"}
 ALLOWED_SURFACE = {"api", "ui", "events", "metrics", "alerts", "dashboards", "mixed",
-                   "receipt", "pluginlock", "amendment", "openapi", "grafana", "alert"}
+                   "receipt", "pluginlock", "amendment", "openapi", "grafana", "alert",
+                   "state-report", "governance", "plugin", "policy", "schema", "model"}
 
 
 @dataclass

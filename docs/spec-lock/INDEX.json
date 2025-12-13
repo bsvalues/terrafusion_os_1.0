@@ -74,10 +74,10 @@
       "created": "2025-12-12",
       "updated": "2025-12-12",
       "notes": "Constitutional governance upgrade workflow",
-      "related": ["receipt.v1", "pluginlock.v1", "state-report.v1"]
+      "related": ["receipt.v1", "pluginlock.v1", "statereport.v1"]
     },
     {
-      "id": "state-report.v1",
+      "id": "statereport.v1",
       "surface": "state-report",
       "project": "TerraFusion OS",
       "name": "StateReportLock v1",

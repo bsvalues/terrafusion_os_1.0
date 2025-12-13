@@ -62,7 +62,8 @@
         "plugin",
         "policy",
         "schema",
-        "model"
+        "model",
+        "state-report"
       ]
     },
     "pathsArray": {
