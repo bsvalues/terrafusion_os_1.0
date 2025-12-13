@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.io/authorities/interstate.v1.json",
+  "title": "TerraFusion Interstate Mesh Authority",
+  "description": "Meta-authority layer for multi-state federation",
+  "version": "1.0.0",
+  "status": "locked",
+  "created": "2025-12-13T00:00:00Z",
+  "updated": "2025-12-13T00:00:00Z",
+  "mode": "dual_quorum",
+  "scope": "interstate_mesh",
+  "rules": [
+    {
+      "id": "dual_quorum_required",
+      "rule": "State A cannot consume State B artifacts unless both sign a shared Interop Authority Lock",
+      "enforcement": "hard"
+    },
+    {
+      "id": "dual_proof_required",
+      "rule": "Interstate artifacts must carry dual quorum proofs from both states",
+      "enforcement": "hard"
+    },
+    {
+      "id": "vendor_exclusion",
+      "rule": "Vendors cannot sign at the interstate level. Ever.",
+      "enforcement": "absolute"
+    },
+    {
+      "id": "sovereignty_preserved",
+      "rule": "Each state retains full sovereignty over its own data and policies",
+      "enforcement": "constitutional"
+    }
+  ],
+  "interop_requirements": {
+    "minimum_state_quorum": 3,
+    "artifact_types_allowed": [
+      "interstate_data_exchange",
+      "cross_state_policy_alignment",
+      "shared_infrastructure_certificate"
+    ],
+    "artifact_types_forbidden": [
+      "state_internal_policy",
+      "county_data",
+      "citizen_pii"
+    ]
+  },
+  "expansion_gate": {
+    "description": "New states must be added via constitutional amendment process",
+    "required_approvals": [
+      "existing_state_quorum",
+      "new_state_quorum",
+      "terrafusion_attestation"
+    ],
+    "terrafusion_role": "witness_only",
+    "effective_window_days": 30
+  },
+  "states": [
+    {
+      "id": "wa",
+      "name": "Washington",
+      "fips": "53",
+      "authority_path": "docs/spec-lock/AUTHORITIES.state.json",
+      "status": "active",
+      "joined": "2025-12-13"
+    }
+  ],
+  "future_states_placeholder": [
+    {
+      "id": "or",
+      "name": "Oregon",
+      "fips": "41",
+      "status": "pending_interop_lock"
+    },
+    {
+      "id": "id",
+      "name": "Idaho",
+      "fips": "16",
+      "status": "pending_interop_lock"
+    }
+  ],
+  "verification": {
+    "runtime_endpoint": "/ops/speclock/interstate/verify",
+    "dual_signature_required": true,
+    "proof_chain_depth": 2
+  }
+}

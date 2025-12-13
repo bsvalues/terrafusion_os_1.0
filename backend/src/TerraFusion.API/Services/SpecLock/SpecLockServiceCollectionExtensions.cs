@@ -68,9 +68,15 @@ public static class SpecLockServiceCollectionExtensions
         // 🔒 NO MERCY: State Mesh Guard (fail-closed startup enforcement)
         services.AddHostedService<StateMeshGuardHostedService>();
 
+        // 🔒 FINAL SEAL: Auto-rollback on quorum loss
+        services.AddHostedService<AutoRollbackService>();
+
         // 🔒 Public Proof Service (PHASE A: Citizen-Verifiable Trust)
         services.AddHttpClient("LocalOps"); // used for proof snapshot (safe to fail)
         services.AddSingleton<IPublicReceiptProofService, PublicReceiptProofService>();
+
+        // 🔒 FINAL SEAL: Citizen-verifiable state reports
+        services.AddSingleton<ICitizenVerifiableReportService, CitizenVerifiableReportService>();
 
         return services;
     }
