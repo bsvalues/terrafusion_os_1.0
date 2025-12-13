@@ -158,6 +158,13 @@ public static class SpecLockOpsEndpoints
                         cfg["TF_SPECLOCK_COSMIC_REQUIRED"], "true", StringComparison.OrdinalIgnoreCase)
                 },
                 cosmic = GetCosmicProof(files, cfg),
+                // NO MERCY: Verification status (fail-closed enforcement)
+                verified = SpecLockGuardHostedService.Verified,
+                state_mesh = new
+                {
+                    verified = StateMeshGuardHostedService.Verified,
+                    failure = StateMeshGuardHostedService.FailureReason
+                },
                 timestamp = DateTime.UtcNow.ToString("O")
             };
 

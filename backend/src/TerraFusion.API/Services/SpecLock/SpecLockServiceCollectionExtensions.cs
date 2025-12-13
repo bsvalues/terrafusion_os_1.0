@@ -65,6 +65,9 @@ public static class SpecLockServiceCollectionExtensions
 
         services.AddHostedService<SpecLockGuardHostedService>();
 
+        // 🔒 NO MERCY: State Mesh Guard (fail-closed startup enforcement)
+        services.AddHostedService<StateMeshGuardHostedService>();
+
         // 🔒 Public Proof Service (PHASE A: Citizen-Verifiable Trust)
         services.AddHttpClient("LocalOps"); // used for proof snapshot (safe to fail)
         services.AddSingleton<IPublicReceiptProofService, PublicReceiptProofService>();

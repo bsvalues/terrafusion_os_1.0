@@ -86,4 +86,36 @@ public static class SpecLockMetrics
             {
                 LabelNames = new[] { "service" }
             });
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // NO MERCY: State Mesh Metrics
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Gauge: tf_state_mesh_verified
+    /// 1 = State mesh quorum verified, 0 = not verified
+    /// </summary>
+    public static readonly Gauge StateMeshVerified =
+        Metrics.CreateGauge(
+            "tf_state_mesh_verified",
+            "State mesh quorum verification status (1 = verified, 0 = not verified)",
+            new GaugeConfiguration
+            {
+                LabelNames = new[] { "service" }
+            });
+
+    /// <summary>
+    /// Updates all SpecLock metrics based on current verification state.
+    /// Called after each verification attempt.
+    /// </summary>
+    public static void Update()
+    {
+        var service = "terrafusion-api";
+        var speclockOk = SpecLockGuardHostedService.Verified;
+        var meshOk = StateMeshGuardHostedService.Verified;
+
+        SpecLockOk.WithLabels(service).Set(speclockOk && meshOk ? 1 : 0);
+        SpecLockSignatureVerified.WithLabels(service).Set(speclockOk ? 1 : 0);
+        StateMeshVerified.WithLabels(service).Set(meshOk ? 1 : 0);
+    }
 }

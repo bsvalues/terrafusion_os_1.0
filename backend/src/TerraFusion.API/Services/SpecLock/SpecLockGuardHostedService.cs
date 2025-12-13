@@ -28,6 +28,16 @@ public sealed class SpecLockGuardHostedService : IHostedService
     private readonly IFileProvider _files;
     private readonly IConfiguration _cfg;
 
+    /// <summary>
+    /// Static verification state - checked by readiness probes and metrics.
+    /// </summary>
+    public static volatile bool Verified = false;
+
+    /// <summary>
+    /// Failure reason for diagnostics (empty if verified).
+    /// </summary>
+    public static volatile string FailureReason = "";
+
     public SpecLockGuardHostedService(
         ILogger<SpecLockGuardHostedService> log,
         ISpecLockManifestLoader loader,
@@ -49,7 +59,9 @@ public sealed class SpecLockGuardHostedService : IHostedService
         var enabled = string.Equals(_cfg["TF_SPECLOCK_GUARD_ENABLED"], "true", StringComparison.OrdinalIgnoreCase);
         if (!enabled)
         {
+            Verified = true; // Allow bypass when guard disabled
             _log.LogInformation("SpecLock guard disabled (TF_SPECLOCK_GUARD_ENABLED != true).");
+            SpecLockMetrics.Update();
             return;
         }
 
@@ -119,10 +131,12 @@ public sealed class SpecLockGuardHostedService : IHostedService
 
         if (errors.Count > 0)
         {
+            FailureReason = string.Join("; ", errors.Take(3));
             _log.LogError("SpecLock guard FAILED with {Count} error(s).", errors.Count);
             foreach (var e in errors)
                 _log.LogError("SpecLockGuard: {Error}", e);
 
+            SpecLockMetrics.Update();
             throw new InvalidOperationException(
                 "SpecLock runtime invariant violated. Regenerate artifacts + manifest:\n" +
                 "  python scripts/speclock-generate-all.py\n" +
@@ -131,7 +145,10 @@ public sealed class SpecLockGuardHostedService : IHostedService
                 string.Join("\n", errors));
         }
 
+        Verified = true;
+        FailureReason = "";
         _log.LogInformation("SpecLock guard PASSED (GOD-TIER). (locks={LockCount})", manifest.LockCount);
+        SpecLockMetrics.Update();
     }
 
     /// <summary>

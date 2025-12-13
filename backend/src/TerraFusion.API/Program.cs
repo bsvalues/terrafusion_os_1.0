@@ -679,14 +679,40 @@ app.MapHealthChecks("/healthz/ready", new Microsoft.AspNetCore.Diagnostics.Healt
     ResponseWriter = async (ctx, report) =>
     {
         ctx.Response.ContentType = "application/json; charset=utf-8";
+
+        // NO MERCY: Hard gate on SpecLock + State Mesh verification
+        if (!TerraFusion.API.Services.SpecLock.SpecLockGuardHostedService.Verified)
+        {
+            ctx.Response.StatusCode = 503;
+            await ctx.Response.WriteAsync("{\"status\":\"not_ready\",\"probe\":\"readiness\",\"reason\":\"speclock_failed\"}");
+            return;
+        }
+
+        if (!TerraFusion.API.Services.SpecLock.StateMeshGuardHostedService.Verified)
+        {
+            ctx.Response.StatusCode = 503;
+            var reason = TerraFusion.API.Services.SpecLock.StateMeshGuardHostedService.FailureReason;
+            var payload = System.Text.Json.JsonSerializer.Serialize(new
+            {
+                status = "not_ready",
+                probe = "readiness",
+                reason = "state_mesh_unverified",
+                detail = reason
+            });
+            await ctx.Response.WriteAsync(payload);
+            return;
+        }
+
         var status = report.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy ? "ok" : "not_ready";
-        var payload = System.Text.Json.JsonSerializer.Serialize(new
+        var responsePayload = System.Text.Json.JsonSerializer.Serialize(new
         {
             status,
             probe = "readiness",
+            speclock_verified = true,
+            state_mesh_verified = true,
             checks = report.Entries.Select(e => new { name = e.Key, status = e.Value.Status.ToString() })
         });
-        await ctx.Response.WriteAsync(payload);
+        await ctx.Response.WriteAsync(responsePayload);
     }
 });
 
