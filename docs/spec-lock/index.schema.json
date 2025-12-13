@@ -54,7 +54,14 @@
         "metrics",
         "alerts",
         "dashboards",
-        "mixed"
+        "mixed",
+        "governance",
+        "receipt",
+        "plugin",
+        "amendment",
+        "policy",
+        "schema",
+        "model"
       ]
     },
     "pathsArray": {

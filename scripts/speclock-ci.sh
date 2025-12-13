@@ -353,9 +353,44 @@ if [ "$SKIP_GENERATE" = false ]; then
         echo "─────────────────────────────────────────────────────────────────"
         echo ""
     fi
+
+    # ═══════════════════════════════════════════════════════════════
+    # Step 11: FINAL TRANSCENDENCE - Governance Objects Validation
+    # ═══════════════════════════════════════════════════════════════
+    if [[ "${TF_SPECLOCK_GOVERNANCE_ENABLED:-true}" == "true" ]]; then
+        echo "─────────────────────────────────────────────────────────────────"
+        echo "Step 11: FINAL TRANSCENDENCE - Governance Objects"
+        echo "─────────────────────────────────────────────────────────────────"
+        echo ""
+
+        if [[ -f "scripts/speclock-governance-gate.sh" ]]; then
+            echo "🔮 Validating governance objects (Receipts, PluginLocks, Amendments)..."
+            bash scripts/speclock-governance-gate.sh
+            GOV_EXIT=$?
+
+            if [[ $GOV_EXIT -ne 0 ]]; then
+                if [[ "${TF_SPECLOCK_GOVERNANCE_STRICT:-}" == "true" ]]; then
+                    echo "❌ Governance validation failed (strict mode)"
+                    exit 11
+                else
+                    echo "⚠️  Governance validation had issues (non-strict mode)"
+                fi
+            else
+                echo "✅ FINAL TRANSCENDENCE: Governance objects validated"
+            fi
+        else
+            echo "⚠️  Governance gate script not found"
+        fi
+        echo ""
+    else
+        echo "─────────────────────────────────────────────────────────────────"
+        echo "Step 11: FINAL TRANSCENDENCE - SKIPPED"
+        echo "─────────────────────────────────────────────────────────────────"
+        echo ""
+    fi
 else
     echo "─────────────────────────────────────────────────────────────────"
-    echo "Step 7-10: SKIPPED (--skip-generate)"
+    echo "Step 7-11: SKIPPED (--skip-generate)"
     echo "─────────────────────────────────────────────────────────────────"
     echo ""
 fi
