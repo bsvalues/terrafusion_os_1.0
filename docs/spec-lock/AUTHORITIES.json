@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "version": "3.0",
-  "mode": "cosmic_tss",
-  "description": "SpecLock Authority Registry (COSMIC TIER) - FROST-Ed25519 Threshold Signatures",
+  "mode": "mythic",
+  "description": "SpecLock Authority Registry - TSS opt-in (set mode to 'cosmic_tss' after DKG ceremony)",
   "tss": {
     "scheme": "frost_ed25519",
     "threshold_k": 2,

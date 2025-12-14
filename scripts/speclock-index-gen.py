@@ -71,16 +71,33 @@ def count_tests(repo_root: Path, test_paths: List[str]) -> int:
 # MARKDOWN GENERATION
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def generate_header(index: dict) -> str:
+def generate_header(index: dict, repo_root: Path) -> str:
     """Generate markdown header."""
     from datetime import timezone
+    import subprocess
+    
+    # Use git commit time for determinism (avoids regeneration drift)
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%ci", "docs/spec-lock/INDEX.json"],
+            capture_output=True, text=True, cwd=repo_root
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            # Parse git date and reformat
+            git_date = result.stdout.strip().split()[0]  # Just the date part
+            updated = git_date
+        else:
+            updated = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    except Exception:
+        updated = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    
     return f"""# TerraFusion SpecLock Index
 
 > Auto-generated from `INDEX.json` — do not edit directly.
 > Regenerate with: `python scripts/speclock-index-gen.py`
 
 **Version**: {index.get('version', '1.0.0')}
-**Updated**: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC
+**Updated**: {updated}
 
 ---
 
@@ -269,7 +286,7 @@ def generate_index_markdown(repo_root: Path) -> str:
     locks = index.get('locks', [])
 
     parts = [
-        generate_header(index),
+        generate_header(index, repo_root),
         generate_summary_table(locks, repo_root),
         generate_lock_details(locks, repo_root),
         generate_generators_section(repo_root),
