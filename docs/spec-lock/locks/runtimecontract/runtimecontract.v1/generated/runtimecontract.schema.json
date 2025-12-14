@@ -1,0 +1,39 @@
+{
+  "$id": "https://terrafusion.gov/schemas/runtimecontract.v1.proof.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "description": "Schema for /healthz/proof endpoint response - constitutional runtime contract",
+  "properties": {
+    "manifest_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "receipt_count": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "speclock_ok": {
+      "type": "boolean"
+    },
+    "state_mesh_ok": {
+      "type": "boolean"
+    },
+    "state_proof_present": {
+      "type": "boolean"
+    },
+    "timestamp_epoch": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "manifest_sha256",
+    "receipt_count",
+    "speclock_ok",
+    "state_mesh_ok",
+    "state_proof_present",
+    "timestamp_epoch"
+  ],
+  "title": "RuntimeContract v1 Proof Response",
+  "type": "object"
+}

@@ -1,0 +1,88 @@
+{{- if .Values.marketplace.admissionGate.enabled }}
+# =============================================================================
+# Plugin Admission Gate ConfigMap
+# =============================================================================
+# Constitutional enforcement: No plugin pod starts without passing admission.
+# SBOM + SLSA required. No bypass. Fail-closed.
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "terrafusion.fullname" . }}-plugin-admission-gate
+  labels:
+    {{- include "terrafusion.labels" . | nindent 4 }}
+    constitution: "sealed"
+data:
+  plugin-admission-gate.sh: |
+    #!/usr/bin/env sh
+    set -euo pipefail
+
+    API_URL="${TF_ADMISSION_URL:-http://terrafusion-api:8000/ops/plugins/admission}"
+
+    # Required fields (fail-closed) - NO BYPASS
+    : "${TF_PLUGIN_ID:?TF_PLUGIN_ID required}"
+    : "${TF_PLUGIN_VERSION:?TF_PLUGIN_VERSION required}"
+    : "${TF_COUNTY_ID:?TF_COUNTY_ID required}"
+    : "${TF_BUNDLE_SHA256:?TF_BUNDLE_SHA256 required}"
+    : "${TF_SBOM_SHA256:?TF_SBOM_SHA256 required}"
+    : "${TF_SLSA_SHA256:?TF_SLSA_SHA256 required}"
+
+    TF_NET_DOMAIN="${TF_NET_DOMAIN:-unknown}"
+    TF_MAX_EGRESS_KB_MIN="${TF_MAX_EGRESS_KB_MIN:-10}"
+    TF_MAX_CPU_MS="${TF_MAX_CPU_MS:-50}"
+    TF_MAX_MEM_MB="${TF_MAX_MEM_MB:-128}"
+
+    # Scopes are comma-separated (deterministic)
+    TF_DATA_SCOPES="${TF_DATA_SCOPES:-}"
+    TF_STORAGE_SCOPES="${TF_STORAGE_SCOPES:-}"
+
+    json_escape() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
+    csv_to_json_array() {
+      if [ -z "$1" ]; then echo "[]"; return; fi
+      printf '%s' "$1" | awk -F',' '{
+        printf "[";
+        for (i=1;i<=NF;i++) {
+          gsub(/^[ \t]+|[ \t]+$/, "", $i);
+          printf "\"%s\"", $i;
+          if (i<NF) printf ",";
+        }
+        printf "]";
+      }'
+    }
+
+    DATA_SCOPES="$(csv_to_json_array "$TF_DATA_SCOPES")"
+    STORAGE_SCOPES="$(csv_to_json_array "$TF_STORAGE_SCOPES")"
+
+    payload="$(cat <<EOF
+    {
+      "pluginId": "$(json_escape "$TF_PLUGIN_ID")",
+      "version": "$(json_escape "$TF_PLUGIN_VERSION")",
+      "countyId": "$(json_escape "$TF_COUNTY_ID")",
+      "bundleSha256": "$(json_escape "$TF_BUNDLE_SHA256")",
+      "sbomSha256": "$(json_escape "$TF_SBOM_SHA256")",
+      "slsaProvenanceSha256": "$(json_escape "$TF_SLSA_SHA256")",
+      "network": {
+        "domain": "$(json_escape "$TF_NET_DOMAIN")",
+        "allowDomains": [],
+        "denyDomains": [],
+        "maxEgressKbPerMin": ${TF_MAX_EGRESS_KB_MIN}
+      },
+      "compute": {
+        "maxCpuMs": ${TF_MAX_CPU_MS},
+        "maxMemoryMb": ${TF_MAX_MEM_MB}
+      },
+      "dataScopes": ${DATA_SCOPES},
+      "storageScopes": ${STORAGE_SCOPES}
+    }
+    EOF
+    )"
+
+    echo "🔒 Plugin admission gate → POST ${API_URL}"
+    resp="$(curl -fsS -H "Content-Type: application/json" -d "$payload" "$API_URL")"
+    echo "$resp" | grep -q '"allow"[[:space:]]*:[[:space:]]*true' || {
+      echo "❌ Plugin admission DENIED"
+      echo "$resp"
+      exit 18
+    }
+    echo "✅ Plugin admission ALLOWED"
+{{- end }}

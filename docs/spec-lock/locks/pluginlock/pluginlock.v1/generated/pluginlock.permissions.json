@@ -1,15 +1,29 @@
 {
-  "compute": {
+  "data_scopes": [
+    "assessment_read",
+    "assessment_write",
+    "audit_log_read",
+    "config_read",
+    "gis_read",
+    "gis_write",
+    "property_read",
+    "property_write",
+    "user_profile_read"
+  ],
+  "storage_types": [
+    "cloud_blob",
+    "local_cache",
+    "persistent_local",
+    "session_storage"
+  ],
+  "default_compute_limits": {
     "max_cpu_ms": 5000,
     "max_memory_mb": 256
   },
-  "data_scopes": ["assessment_read", "property_read"],
-  "network": {
-    "allow_domains": ["api.terrafusion.io", "maps.googleapis.com"],
-    "deny_domains": ["malicious.example.com"]
-  },
-  "plugin_id": "io.terrafusion.plugins.property-analyzer",
-  "storage": ["local_cache", "session_storage"],
-  "telemetry_required": true,
-  "version": "2.1.0"
+  "enforcement_rules": {
+    "deny_beats_allow": true,
+    "empty_allow_means_no_network": true,
+    "sbom_required": true,
+    "slsa_provenance_required": true
+  }
 }

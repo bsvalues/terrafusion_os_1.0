@@ -8,15 +8,39 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Change to project root for all commands
+cd "$PROJECT_ROOT"
+
 echo "🜄🜁🜂🜃 CI SEAL GATE — EXECUTING"
 echo "=================================="
 echo ""
 
 FAIL=0
 
+# Gate 0: Helm Production Constitutional Assertions
+echo "🔒 Gate 0: Helm Production Assertions"
+if [ -f "$SCRIPT_DIR/helm-prod-assertions.sh" ]; then
+    if bash "$SCRIPT_DIR/helm-prod-assertions.sh" 2>/dev/null; then
+        echo "   ✅ PASS"
+    else
+        echo "   ❌ FAIL: Helm production assertions failed"
+        FAIL=1
+    fi
+else
+    echo "   ⚠️  SKIP: helm-prod-assertions.sh not found"
+fi
+echo ""
+
 # Gate 1: SpecLock Index Validation
 echo "🔒 Gate 1: SpecLock Index Validation"
-if python scripts/validate-speclock-index.py --strict 2>/dev/null; then
+set +e
+python scripts/validate-speclock-index.py --strict >/dev/null 2>&1
+RESULT=$?
+set -e
+if [ $RESULT -eq 0 ]; then
     echo "   ✅ PASS"
 else
     echo "   ❌ FAIL: SpecLock index invalid"
@@ -26,7 +50,11 @@ echo ""
 
 # Gate 2: Generate All Artifacts
 echo "🔒 Gate 2: Generate All Artifacts"
-if python scripts/speclock-generate-all.py 2>/dev/null; then
+set +e
+python scripts/speclock-generate-all.py >/dev/null 2>&1
+RESULT=$?
+set -e
+if [ $RESULT -eq 0 ]; then
     echo "   ✅ PASS"
 else
     echo "   ❌ FAIL: Artifact generation failed"
@@ -36,7 +64,11 @@ echo ""
 
 # Gate 3: Manifest Generation
 echo "🔒 Gate 3: Manifest Generation"
-if python scripts/speclock-manifest.py 2>/dev/null; then
+set +e
+python scripts/speclock-manifest.py >/dev/null 2>&1
+RESULT=$?
+set -e
+if [ $RESULT -eq 0 ]; then
     echo "   ✅ PASS"
 else
     echo "   ❌ FAIL: Manifest generation failed"
@@ -72,7 +104,11 @@ echo ""
 
 # Gate 6: Full Test Suite
 echo "🔒 Gate 6: Full Test Suite"
-if dotnet test backend/tests/TerraFusion.Unit.SmokeTests --nologo --verbosity quiet 2>/dev/null; then
+set +e
+dotnet test backend/tests/TerraFusion.Unit.SmokeTests --nologo --verbosity quiet >/dev/null 2>&1
+RESULT=$?
+set -e
+if [ $RESULT -eq 0 ]; then
     echo "   ✅ PASS"
 else
     echo "   ❌ FAIL: Tests failed"

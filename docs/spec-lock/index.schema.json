@@ -63,7 +63,8 @@
         "policy",
         "schema",
         "model",
-        "state-report"
+        "state-report",
+        "runtimecontract"
       ]
     },
     "pathsArray": {

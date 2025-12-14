@@ -91,9 +91,7 @@
           "unit": "short",
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "value": 0, "color": "blue" }
-            ]
+            "steps": [{ "value": 0, "color": "blue" }]
           }
         }
       },
@@ -327,13 +325,19 @@
           {
             "matcher": { "id": "byName", "options": "Errors" },
             "properties": [
-              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }
+              {
+                "id": "color",
+                "value": { "mode": "fixed", "fixedColor": "red" }
+              }
             ]
           },
           {
             "matcher": { "id": "byName", "options": "Forecasts" },
             "properties": [
-              { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }
+              {
+                "id": "color",
+                "value": { "mode": "fixed", "fixedColor": "green" }
+              }
             ]
           }
         ]
@@ -472,9 +476,7 @@
           "unit": "short",
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "value": 0, "color": "blue" }
-            ]
+            "steps": [{ "value": 0, "color": "blue" }]
           }
         }
       },
@@ -514,9 +516,7 @@
           "unit": "short",
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "value": 0, "color": "blue" }
-            ]
+            "steps": [{ "value": 0, "color": "blue" }]
           }
         }
       },
@@ -556,9 +556,7 @@
           "unit": "short",
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "value": 0, "color": "blue" }
-            ]
+            "steps": [{ "value": 0, "color": "blue" }]
           }
         }
       },

@@ -1,42 +1,52 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://terrafusion.io/schemas/pluginlock.generated.v1.schema.json",
-  "title": "TerraFusion PluginLock v1 (Generated)",
-  "description": "Auto-generated schema for plugin permission validation - DO NOT EDIT MANUALLY",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion PluginLock",
+  "description": "Marketplace plugin permission envelope",
   "type": "object",
   "required": [
-    "permissions",
     "plugin_id",
+    "version",
+    "bundle_sha256",
     "sbom_sha256",
     "slsa_provenance_sha256",
-    "version"
+    "permissions"
   ],
   "properties": {
+    "plugin_id": {
+      "type": "string",
+      "pattern": "^io\\.[a-z]+\\.[a-z]+\\.[a-z0-9-]+$",
+      "description": "Reverse-domain plugin identifier"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version"
+    },
+    "bundle_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of plugin bundle (lowercase hex)"
+    },
+    "sbom_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of SBOM (lowercase hex)"
+    },
+    "slsa_provenance_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of SLSA provenance (lowercase hex)"
+    },
     "permissions": {
-      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "data_scopes"
+      ],
       "properties": {
-        "compute": {
-          "additionalProperties": false,
-          "properties": {
-            "max_cpu_ms": {
-              "description": "Maximum CPU time in milliseconds",
-              "maximum": 60000,
-              "minimum": 100,
-              "type": "integer"
-            },
-            "max_memory_mb": {
-              "description": "Maximum memory in megabytes",
-              "maximum": 4096,
-              "minimum": 16,
-              "type": "integer"
-            }
-          },
-          "required": ["max_cpu_ms", "max_memory_mb"],
-          "type": "object"
-        },
         "data_scopes": {
-          "description": "Data access scopes requested",
+          "type": "array",
           "items": {
+            "type": "string",
             "enum": [
               "assessment_read",
               "assessment_write",
@@ -47,78 +57,82 @@
               "property_read",
               "property_write",
               "user_profile_read"
-            ],
-            "type": "string"
+            ]
           },
-          "type": "array",
-          "uniqueItems": true
+          "description": "Requested data access scopes"
         },
         "network": {
-          "additionalProperties": false,
+          "type": "object",
           "properties": {
             "allow_domains": {
-              "description": "Explicit allowlist of domains",
+              "type": "array",
               "items": {
-                "format": "hostname",
                 "type": "string"
               },
-              "type": "array"
+              "description": "Allowed network domains"
             },
             "deny_domains": {
-              "description": "Explicit denylist (takes precedence over allow)",
+              "type": "array",
               "items": {
-                "format": "hostname",
                 "type": "string"
               },
-              "type": "array"
+              "description": "Denied network domains"
             }
-          },
-          "required": ["allow_domains", "deny_domains"],
-          "type": "object"
+          }
         },
         "storage": {
-          "description": "Storage access types",
+          "type": "array",
           "items": {
+            "type": "string",
             "enum": [
               "cloud_blob",
               "local_cache",
               "persistent_local",
               "session_storage"
-            ],
-            "type": "string"
+            ]
           },
-          "type": "array",
-          "uniqueItems": true
+          "description": "Requested storage types"
+        },
+        "compute": {
+          "type": "object",
+          "properties": {
+            "max_cpu_ms": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 60000,
+              "description": "Max CPU time in milliseconds"
+            },
+            "max_memory_mb": {
+              "type": "integer",
+              "minimum": 16,
+              "maximum": 4096,
+              "description": "Max memory in megabytes"
+            }
+          }
         },
         "telemetry_required": {
-          "default": true,
-          "description": "Whether telemetry reporting is required",
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Whether telemetry is required"
         }
-      },
-      "required": ["compute", "data_scopes", "network", "storage"],
-      "type": "object"
+      }
     },
-    "plugin_id": {
-      "description": "Unique plugin identifier (reverse domain notation)",
-      "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9-]*)+$",
-      "type": "string"
-    },
-    "sbom_sha256": {
-      "description": "SHA-256 of SBOM (Software Bill of Materials)",
-      "pattern": "^[a-f0-9]{64}$",
-      "type": "string"
-    },
-    "slsa_provenance_sha256": {
-      "description": "SHA-256 of SLSA provenance attestation",
-      "pattern": "^[a-f0-9]{64}$",
-      "type": "string"
-    },
-    "version": {
-      "description": "Semantic version (X.Y.Z with optional prerelease/build)",
-      "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9]+)?(\\+[a-zA-Z0-9]+)?$",
-      "type": "string"
+    "admission_decision": {
+      "type": "object",
+      "properties": {
+        "allowed": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "decided_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "decided_by": {
+          "type": "string"
+        }
+      }
     }
-  },
-  "additionalProperties": false
+  }
 }

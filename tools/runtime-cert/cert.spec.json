@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Runtime Certification Spec",
+  "description": "Deterministic expectations for runtime certification against runtimecontract.v1",
+  "version": "1.0.0",
+  "spec_lock": "runtimecontract.v1",
+  "checks": [
+    {
+      "id": "readiness_endpoint",
+      "name": "Readiness Endpoint",
+      "endpoint": "/healthz/ready",
+      "method": "GET",
+      "expected_status": 200,
+      "severity": "critical",
+      "description": "Readiness must return 200 when constitutional flags are true"
+    },
+    {
+      "id": "proof_endpoint",
+      "name": "Proof Endpoint",
+      "endpoint": "/healthz/proof",
+      "method": "GET",
+      "expected_status": 200,
+      "severity": "critical",
+      "required_fields": [
+        "speclock_ok",
+        "state_mesh_ok",
+        "manifest_sha256",
+        "timestamp_epoch",
+        "receipt_count",
+        "state_proof_present"
+      ],
+      "description": "Proof endpoint must return deterministic JSON with all required fields"
+    },
+    {
+      "id": "proof_determinism",
+      "name": "Proof Determinism",
+      "endpoint": "/healthz/proof",
+      "method": "GET",
+      "validation": "keys_lexicographic",
+      "severity": "critical",
+      "description": "Proof response keys must be lexicographically sorted for determinism"
+    },
+    {
+      "id": "sha256_format",
+      "name": "SHA-256 Format",
+      "endpoint": "/healthz/proof",
+      "field": "manifest_sha256",
+      "pattern": "^[a-f0-9]{64}$",
+      "severity": "critical",
+      "description": "manifest_sha256 must be lowercase hex (64 characters)"
+    },
+    {
+      "id": "speclock_status",
+      "name": "SpecLock Status",
+      "endpoint": "/healthz/proof",
+      "field": "speclock_ok",
+      "expected_value": true,
+      "severity": "critical",
+      "description": "speclock_ok must be true for constitutional compliance"
+    },
+    {
+      "id": "state_mesh_status",
+      "name": "State Mesh Status",
+      "endpoint": "/healthz/proof",
+      "field": "state_mesh_ok",
+      "expected_value": true,
+      "severity": "critical",
+      "description": "state_mesh_ok must be true for constitutional compliance"
+    },
+    {
+      "id": "metrics_endpoint",
+      "name": "Metrics Endpoint",
+      "endpoint": "/metrics",
+      "method": "GET",
+      "expected_status": 200,
+      "required_metrics": [
+        "tf_speclock_ok",
+        "tf_state_mesh_ok",
+        "tf_receipt_count",
+        "tf_runtime_boot_timestamp"
+      ],
+      "severity": "critical",
+      "description": "Prometheus metrics endpoint must expose required constitutional metrics"
+    },
+    {
+      "id": "speclock_api",
+      "name": "SpecLock API",
+      "endpoint": "/ops/speclock",
+      "method": "GET",
+      "expected_status": 200,
+      "severity": "high",
+      "description": "SpecLock governance API must be accessible"
+    },
+    {
+      "id": "speclock_proof",
+      "name": "SpecLock Proof",
+      "endpoint": "/ops/speclock/proof",
+      "method": "GET",
+      "expected_status": 200,
+      "severity": "medium",
+      "description": "SpecLock proof endpoint for governance verification"
+    },
+    {
+      "id": "state_proof",
+      "name": "State Proof",
+      "endpoint": "/ops/speclock/state/proof",
+      "method": "GET",
+      "expected_status": 200,
+      "severity": "medium",
+      "description": "State mesh proof endpoint for federation verification"
+    }
+  ],
+  "fail_fast_checks": [
+    "readiness_endpoint",
+    "speclock_status",
+    "state_mesh_status"
+  ],
+  "constitutional_invariants": {
+    "fail_closed": true,
+    "deny_beats_allow": true,
+    "deterministic_proofs": true,
+    "lowercase_sha256_only": true
+  },
+  "exit_codes": {
+    "0": "CERTIFIED - all checks pass",
+    "1": "CERTIFICATION_FAILED - one or more checks failed",
+    "2": "UNREACHABLE - target not reachable"
+  }
+}

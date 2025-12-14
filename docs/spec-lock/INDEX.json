@@ -1,7 +1,44 @@
 {
   "version": "1.0.0",
-  "updated": "2025-12-13",
+  "updated": "2025-12-19",
   "locks": [
+    {
+      "id": "runtimecontract.v1",
+      "surface": "runtimecontract",
+      "project": "TerraFusion OS",
+      "name": "RuntimeContract v1",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "docs/spec-lock/locks/runtimecontract/runtimecontract.v1/SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "docs/spec-lock/locks/runtimecontract/runtimecontract.v1/speclock.spec.json",
+      "generated_artifacts": [
+        "docs/spec-lock/locks/runtimecontract/runtimecontract.v1/generated/runtimecontract.schema.json",
+        "docs/spec-lock/locks/runtimecontract/runtimecontract.v1/generated/openapi-proof.yaml",
+        "docs/spec-lock/locks/runtimecontract/runtimecontract.v1/generated/k8s-readiness-snippet.yaml"
+      ],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.SmokeTests/RuntimeContractTests.cs"
+      ],
+      "ci_tags": [
+        "speclock",
+        "runtimecontract",
+        "governance",
+        "constitutional",
+        "k8s",
+        "admission"
+      ],
+      "created": "2025-12-19",
+      "updated": "2025-12-19",
+      "notes": "Shell-agnostic constitutional runtime contract - defines required endpoints, metrics, storage, and plugin admission for all deployment shells",
+      "related": [
+        "receipt.v1",
+        "pluginlock.v1",
+        "amendment.v1",
+        "statereport.v1"
+      ]
+    },
     {
       "id": "receipt.v1",
       "surface": "receipt",

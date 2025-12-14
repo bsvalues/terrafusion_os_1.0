@@ -333,9 +333,7 @@
           "unit": "short",
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "value": 0, "color": "blue" }
-            ]
+            "steps": [{ "value": 0, "color": "blue" }]
           }
         }
       },

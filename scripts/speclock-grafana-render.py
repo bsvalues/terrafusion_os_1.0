@@ -122,6 +122,19 @@ def main() -> int:
     print(f"Output: {args.out}")
     print("")
 
+    out = Path(args.out)
+
+    # If output already exists and is valid JSON, skip regeneration
+    if out.exists():
+        try:
+            existing = _load_json(out)
+            if isinstance(existing.get("uid"), str) and isinstance(existing.get("panels"), list):
+                print(f"ℹ️  Dashboard already exists and is valid: {out}")
+                print("   Skipping regeneration (use --force to override)")
+                return 0
+        except Exception:
+            pass  # Continue to regenerate if existing file is invalid
+
     sdp = str(lock.get("spec_data_path", "") or "").strip()
     if not sdp:
         print("❌ spec_data_path required for grafana renderer (structured input).")

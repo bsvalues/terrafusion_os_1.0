@@ -18,11 +18,9 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-
 
 INDEX_JSON_DEFAULT = Path("docs/spec-lock/INDEX.json")
 SCHEMA_JSON_DEFAULT = Path("docs/spec-lock/index.schema.json")
@@ -35,7 +33,8 @@ RE_TAG = re.compile(r"^[a-z0-9_\-]+$")
 ALLOWED_STATUS = {"active", "deprecated", "draft", "archived"}
 ALLOWED_SURFACE = {"api", "ui", "events", "metrics", "alerts", "dashboards", "mixed",
                    "receipt", "pluginlock", "amendment", "openapi", "grafana", "alert",
-                   "state-report", "governance", "plugin", "policy", "schema", "model"}
+                   "state-report", "governance", "plugin", "policy", "schema", "model",
+                   "runtimecontract"}
 
 
 @dataclass

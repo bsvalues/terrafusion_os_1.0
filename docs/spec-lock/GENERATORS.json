@@ -2,6 +2,31 @@
   "version": "2.0",
   "description": "SpecLock generator registry - maps surface/key to generator script (Nuclear Mode)",
   "generators": {
+    "runtimecontract": {
+      "script": "scripts/speclock-runtimecontract-gen.py",
+      "args": [],
+      "description": "Generates runtime contract schema, OpenAPI fragment, and K8s readiness snippet"
+    },
+    "receipt": {
+      "script": "scripts/speclock-receipt-gen.py",
+      "args": ["--lock", "{id}", "--out", "{out}"],
+      "description": "Generates receipt schema and verifier artifacts"
+    },
+    "pluginlock": {
+      "script": "scripts/speclock-pluginlock-gen.py",
+      "args": ["--lock", "{id}", "--out", "{out}"],
+      "description": "Generates plugin permission envelope schema"
+    },
+    "amendment": {
+      "script": "scripts/speclock-amendment-gen.py",
+      "args": ["--lock", "{id}", "--out", "{out}"],
+      "description": "Generates amendment workflow schema"
+    },
+    "state-report": {
+      "script": "scripts/speclock-state-report-gen.py",
+      "args": ["--lock", "{id}", "--out", "{out}"],
+      "description": "Generates state report schema with quorum validation"
+    },
     "api": {
       "script": "scripts/speclock-openapi-snapshot.py",
       "args": ["--lock", "{id}", "--out", "{out}"],

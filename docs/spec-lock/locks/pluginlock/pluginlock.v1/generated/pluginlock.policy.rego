@@ -1,63 +1,40 @@
-# TerraFusion PluginLock Policy v1.0.0
-# Auto-generated - DO NOT EDIT MANUALLY
-# Source: docs/spec-lock/locks/pluginlock/pluginlock.v1/speclock.spec.json
-
+# TerraFusion PluginLock OPA Policy
 package terrafusion.pluginlock
 
 default allow = false
 
-# Main allow rule - all conditions must pass
+# Deny beats allow - blocked domains take priority
+denied_domain[domain] {
+    domain := input.permissions.network.deny_domains[_]
+    domain == input.request_domain
+}
+
+# Allow if all required fields present and not in deny list
 allow {
+    input.bundle_sha256 != ""
+    input.sbom_sha256 != ""
+    input.slsa_provenance_sha256 != ""
+    input.county_id != ""
+    count(denied_domain) == 0
     valid_plugin_id
-    valid_data_scope
-    valid_network_access
-    valid_compute_limits
-    not denied_domain
+    compute_within_limits
 }
 
-# Plugin ID validation
+# Plugin ID must match reverse-domain pattern
 valid_plugin_id {
-    input.plugin_id == "io.terrafusion.plugins.property-analyzer"
+    regex.match("^io\\.[a-z]+\\.[a-z]+\\.[a-z0-9-]+$", input.plugin_id)
 }
 
-# Data scope validation - input scope must be in allowed list
-valid_data_scope {
-    allowed_scopes := {"assessment_read", "property_read"}
-    allowed_scopes[input.data_scope]
+# Compute limits must be within bounds
+compute_within_limits {
+    input.permissions.compute.max_cpu_ms <= 60000
+    input.permissions.compute.max_memory_mb <= 4096
 }
 
-# Network access validation - domain must be in allow list
-valid_network_access {
-    allowed_domains := {"api.terrafusion.io", "maps.googleapis.com"}
-    allowed_domains[input.network.domain]
-}
-
-# Compute limit validation
-valid_compute_limits {
-    input.cpu_ms <= 5000
-    input.memory_mb <= 256
-}
-
-# Deny list takes precedence - if domain is denied, block
-denied_domain {
-    denied_domains := {"malicious.example.com"}
-    denied_domains[input.network.domain]
-}
-
-# Storage access validation
-valid_storage {
-    allowed_storage := {"local_cache", "session_storage"}
-    allowed_storage[input.storage_type]
-}
-
-# Telemetry requirement check
-telemetry_compliant {
-    input.telemetry_enabled == true
-}
-
-# Combined enforcement for sandbox
-sandbox_allowed {
-    allow
-    valid_storage
-    telemetry_compliant
-}
+# Deny rules
+deny["missing_bundle_hash"] { input.bundle_sha256 == "" }
+deny["missing_sbom_hash"] { input.sbom_sha256 == "" }
+deny["missing_slsa_hash"] { input.slsa_provenance_sha256 == "" }
+deny["missing_county_id"] { input.county_id == "" }
+deny["invalid_plugin_id"] { not valid_plugin_id }
+deny["compute_exceeds_limits"] { not compute_within_limits }
