@@ -73,9 +73,9 @@ def count_tests(repo_root: Path, test_paths: List[str]) -> int:
 
 def generate_header(index: dict, repo_root: Path) -> str:
     """Generate markdown header."""
-    from datetime import timezone
     import subprocess
-    
+    from datetime import timezone
+
     # Use git commit time for determinism (avoids regeneration drift)
     try:
         result = subprocess.run(
@@ -90,7 +90,7 @@ def generate_header(index: dict, repo_root: Path) -> str:
             updated = datetime.now(timezone.utc).strftime('%Y-%m-%d')
     except Exception:
         updated = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-    
+
     return f"""# TerraFusion SpecLock Index
 
 > Auto-generated from `INDEX.json` — do not edit directly.

@@ -530,19 +530,19 @@ public sealed class ConstitutionalBreakerTests
     {
         // ATTACK: Someone might "helpfully" set mode = cosmic_tss by default
         // DEFENSE: AUTHORITIES.json must NOT have cosmic_tss unless explicitly intended
-        
+
         var authoritiesFile = Path.Combine(RepoRoot, "docs", "spec-lock", "AUTHORITIES.json");
         Assert.True(File.Exists(authoritiesFile), "AUTHORITIES.json must exist");
-        
+
         var content = File.ReadAllText(authoritiesFile);
         var json = System.Text.Json.JsonDocument.Parse(content);
         var mode = json.RootElement.GetProperty("mode").GetString();
-        
+
         // When TSS infrastructure is not set up, mode should NOT be cosmic_tss
         // If this test fails, it means someone enabled TSS without setting up signing
         var sigPath = Path.Combine(RepoRoot, "artifacts", "speclock", "tss", "manifest.sig");
         var groupPubPath = Path.Combine(RepoRoot, "artifacts", "speclock", "tss", "group.pub");
-        
+
         if (mode == "cosmic_tss")
         {
             // If cosmic_tss is enabled, the signing infrastructure MUST exist
@@ -561,14 +561,14 @@ public sealed class ConstitutionalBreakerTests
     {
         // CONSTITUTIONAL: When mode != cosmic_tss, Gate 4 MUST return exit 9 (SKIP)
         // This test verifies the skip logic exists in the verify script
-        
+
         var tssScript = Path.Combine(RepoRoot, "scripts", "speclock-tss-verify.sh");
         var content = File.ReadAllText(tssScript);
-        
+
         // Must check mode and skip if not cosmic_tss
         Assert.True(content.Contains("cosmic_tss") && content.Contains("exit 9"),
             "BREACH: TSS verify must skip (exit 9) when mode is not cosmic_tss");
-        
+
         // Must explicitly check mode value
         Assert.True(content.Contains(".mode") || content.Contains("MODE"),
             "BREACH: TSS verify must read and check the mode field");
@@ -579,24 +579,24 @@ public sealed class ConstitutionalBreakerTests
     {
         // CONSTITUTIONAL: When mode = cosmic_tss AND signature missing → FAIL (exit 1)
         // This test verifies the fail-closed logic
-        
+
         var tssScript = Path.Combine(RepoRoot, "scripts", "speclock-tss-verify.sh");
         var content = File.ReadAllText(tssScript);
-        
+
         // After mode check passes, missing signature must be a hard failure
         Assert.True(content.Contains("Signature file not found"),
             "BREACH: TSS verify must detect missing signature file");
-        
+
         // Must exit 1 (failure), not exit 9 (skip)
         var lines = content.Split('\n');
         var sigNotFoundLines = lines.Where(l => l.Contains("Signature file not found")).ToList();
-        
+
         // The signature-not-found check must be followed by exit 1
         Assert.True(sigNotFoundLines.Any(),
             "BREACH: Must have 'Signature file not found' error message");
-        
+
         // Verify there's an exit 1 associated with missing signature
-        Assert.True(content.Contains("Signature file not found") && 
+        Assert.True(content.Contains("Signature file not found") &&
                     content.IndexOf("exit 1", content.IndexOf("Signature file not found")) > 0,
             "BREACH: Missing signature when TSS enabled must exit 1, not skip");
     }
