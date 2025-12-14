@@ -228,6 +228,27 @@
       "updated": "2025-12-14",
       "notes": "Immutable contract defining TerraFusion OS dependencies on Harris PACS (TrueAutomation) database systems",
       "related": ["runtimecontract.v1", "amendment.v1"]
+    },
+    {
+      "id": "runtimecert.v1",
+      "surface": "runtimecert",
+      "project": "TerraFusion OS",
+      "name": "Runtime Certification v1",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "docs/spec-lock/locks/runtimecert/runtimecert.v1/speclock.spec.json",
+      "artifact_paths": [],
+      "spec_data_path": "docs/spec-lock/locks/runtimecert/runtimecert.v1/speclock.spec.json",
+      "generated_artifacts": [],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.SmokeTests/CertificationTests.cs"
+      ],
+      "ci_tags": ["speclock", "runtimecert", "governance", "certification", "go-live"],
+      "created": "2025-12-14",
+      "updated": "2025-12-14",
+      "notes": "Runtime certification gate for county go-live acceptance. No cert = no go-live.",
+      "related": ["runtimecontract.v1", "pacscontract.v1"]
     }
   ]
 }
