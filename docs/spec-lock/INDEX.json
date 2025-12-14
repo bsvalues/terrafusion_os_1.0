@@ -204,6 +204,30 @@
       "updated": "2025-12-12",
       "notes": "Allowed metrics: tf_runbook_autoexec_total, tf_runbook_autoexec_duration_seconds, tf_remediation_policy_eval_total, tf_runbook_killswitch_enabled, tf_runbook_autoexec_block_total, tf_remediation_slo_compliance_ratio",
       "related": []
+    },
+    {
+      "id": "pacscontract.v1",
+      "surface": "pacscontract",
+      "project": "TerraFusion OS",
+      "name": "PACS Contract v1",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "docs/spec-lock/locks/pacscontract/pacscontract.v1/SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "docs/spec-lock/locks/pacscontract/pacscontract.v1/speclock.spec.json",
+      "generated_artifacts": [
+        "docs/spec-lock/locks/pacscontract/pacscontract.v1/generated/pacscontract.schema.json",
+        "docs/spec-lock/locks/pacscontract/pacscontract.v1/generated/pacscontract.openapi.yaml"
+      ],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.SmokeTests/PacsContractTests.cs"
+      ],
+      "ci_tags": ["speclock", "pacscontract", "governance", "pacs", "database"],
+      "created": "2025-12-14",
+      "updated": "2025-12-14",
+      "notes": "Immutable contract defining TerraFusion OS dependencies on Harris PACS (TrueAutomation) database systems",
+      "related": ["runtimecontract.v1", "amendment.v1"]
     }
   ]
 }

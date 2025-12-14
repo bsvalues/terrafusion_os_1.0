@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/pacscontract.v1.json",
+  "title": "PACS Contract Validation Schema",
+  "description": "Runtime validation schema for TerraFusion PACS contract compliance",
+  "type": "object",
+  "required": ["contract_version", "validation_time", "databases", "status"],
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the PACS contract"
+    },
+    "contract_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "SHA-256 hash of the contract spec file"
+    },
+    "validation_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp of validation"
+    },
+    "databases": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/DatabaseValidation"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["VALID", "INVALID", "DEGRADED"],
+      "description": "Overall contract validation status"
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ValidationError"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ValidationWarning"
+      }
+    }
+  },
+  "definitions": {
+    "DatabaseValidation": {
+      "type": "object",
+      "required": ["connected"],
+      "properties": {
+        "connected": {
+          "type": "boolean"
+        },
+        "connection_time_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "views_present": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "views_missing": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "indexes_present": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "indexes_missing": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "procedures_present": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "procedures_missing": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "ValidationError": {
+      "type": "object",
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "PACS_VIEW_MISSING",
+            "PACS_COLUMN_MISSING",
+            "PACS_PERMISSION_DENIED",
+            "PACS_CONNECTION_FAILED",
+            "PACS_PROCEDURE_MISSING"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "object": {
+          "type": "string"
+        },
+        "database": {
+          "type": "string"
+        }
+      }
+    },
+    "ValidationWarning": {
+      "type": "object",
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": ["PACS_INDEX_MISSING"]
+        },
+        "message": {
+          "type": "string"
+        },
+        "object": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
