@@ -600,4 +600,333 @@ public sealed class ConstitutionalBreakerTests
                     content.IndexOf("exit 1", content.IndexOf("Signature file not found")) > 0,
             "BREACH: Missing signature when TSS enabled must exit 1, not skip");
     }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ATTACK VECTOR: PACS Contract Bypass (pacscontract.v1)
+    // A TerraFusion node must refuse to report healthy if PACS is required and
+    // non-compliant, and must prove PACS contract compliance deterministically.
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_Pacs1_MissingView_ErrorCodeDefined()
+    {
+        // ATTACK: Query fails because required view is missing
+        // DEFENSE: Adapter must have PACS_VIEW_MISSING error code defined
+
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "IPacsAdapter.cs");
+        Assert.True(File.Exists(path), $"IPacsAdapter.cs must exist at {path}");
+
+        var content = File.ReadAllText(path);
+
+        Assert.True(content.Contains("PACS_VIEW_MISSING") || content.Contains("ViewMissing"),
+            "BREACH: PACS adapter must define ViewMissing error code");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_Pacs1_MissingView_FailClosedInSpec()
+    {
+        // pacscontract.v1 specifies fail_closed for missing views
+        var specPath = Path.Combine(RepoRoot, "docs", "spec-lock", "locks", "pacscontract", "pacscontract.v1", "speclock.spec.json");
+        Assert.True(File.Exists(specPath), $"pacscontract.v1 spec must exist at {specPath}");
+
+        var json = File.ReadAllText(specPath);
+        var spec = JsonNode.Parse(json);
+
+        var behavior = spec!["error_codes"]?["PACS_VIEW_MISSING"]?["behavior"]?.GetValue<string>();
+        Assert.Equal("fail_closed", behavior);
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_Pacs2_PermissionDenied_ErrorCodeDefined()
+    {
+        // ATTACK: Query fails because user lacks permission
+        // DEFENSE: Adapter must have PACS_PERMISSION_DENIED error code
+
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "IPacsAdapter.cs");
+        var content = File.ReadAllText(path);
+
+        Assert.True(content.Contains("PACS_PERMISSION_DENIED") || content.Contains("PermissionDenied"),
+            "BREACH: PACS adapter must define PermissionDenied error code");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_Pacs2_PermissionDenied_FailClosedInSpec()
+    {
+        // pacscontract.v1 specifies fail_closed for permission denied
+        var specPath = Path.Combine(RepoRoot, "docs", "spec-lock", "locks", "pacscontract", "pacscontract.v1", "speclock.spec.json");
+        var json = File.ReadAllText(specPath);
+        var spec = JsonNode.Parse(json);
+
+        var behavior = spec!["error_codes"]?["PACS_PERMISSION_DENIED"]?["behavior"]?.GetValue<string>();
+        Assert.Equal("fail_closed", behavior);
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_Pacs2_PermissionDenied_NoSilentFallback()
+    {
+        // ATTACK: Adapter silently returns empty when permission denied
+        // DEFENSE: Adapter must throw, not return null/empty
+
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "PacsSqlAdapter.cs");
+        Assert.True(File.Exists(path), $"PacsSqlAdapter.cs must exist at {path}");
+
+        var content = File.ReadAllText(path);
+
+        // Must map SQL error to exception
+        Assert.True(content.Contains("WrapSqlException") || content.Contains("PacsContractViolationException"),
+            "BREACH: PACS adapter must throw on SQL errors, not silently fail");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_Pacs3_SchemaDrift_ExplicitColumnNames()
+    {
+        // ATTACK: Schema drift (column missing/type change) causes silent failures
+        // DEFENSE: Adapter must query explicit columns (not SELECT *)
+
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "PacsSqlAdapter.cs");
+        var content = File.ReadAllText(path);
+
+        // Must NOT use SELECT * (schema drift protection)
+        Assert.DoesNotContain("SELECT *", content);
+
+        // Must use explicit column names
+        Assert.True(content.Contains("prop_id") || content.Contains("PropertyId"),
+            "BREACH: PACS adapter must query explicit columns, not SELECT *");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_Pacs3_SchemaDrift_RequiredColumnsInSpec()
+    {
+        // pacscontract.v1 must document required columns for views
+        var specPath = Path.Combine(RepoRoot, "docs", "spec-lock", "locks", "pacscontract", "pacscontract.v1", "speclock.spec.json");
+        var json = File.ReadAllText(specPath);
+        var spec = JsonNode.Parse(json);
+
+        var propertyCore = spec!["required_objects"]?["pacs_oltp"]?["views"]?.AsArray()
+            ?.FirstOrDefault(v => v?["name"]?.GetValue<string>() == "vw_TerraFusion_Property_Core");
+
+        Assert.NotNull(propertyCore);
+
+        var columns = propertyCore!["required_columns"]?.AsArray();
+        Assert.NotNull(columns);
+        Assert.True(columns!.Count >= 3, "At least 3 required columns must be documented in pacscontract.v1");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_Pacs4_SqlInjection_ParameterizedQueries()
+    {
+        // ATTACK: SQL injection via user-provided input
+        // DEFENSE: All SQL must use parameterized queries (Dapper)
+
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "PacsSqlAdapter.cs");
+        var content = File.ReadAllText(path);
+
+        // Must use Dapper (parameterized by default)
+        Assert.Contains("using Dapper", content);
+
+        // Must use parameter objects (new { ... }) or @Parameter syntax
+        Assert.True(content.Contains("new {") || content.Contains("@"),
+            "BREACH: PACS adapter must use parameterized queries");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_Pacs4_SqlInjection_ViewNamesAreConstants()
+    {
+        // ATTACK: View names could be injectable if dynamic
+        // DEFENSE: View names must be compile-time constants
+
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "PacsSqlAdapter.cs");
+        var content = File.ReadAllText(path);
+
+        Assert.True(content.Contains("const string") && content.Contains("View"),
+            "BREACH: PACS view names must be compile-time constants, not user input");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_Pacs5_LatencyBudget_TimeoutConfigured()
+    {
+        // ATTACK: Slow queries hang forever, causing cascading failures
+        // DEFENSE: Adapter must have configurable command timeout
+
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "PacsSqlAdapter.cs");
+        var content = File.ReadAllText(path);
+
+        Assert.True(content.Contains("CommandTimeout") || content.Contains("_commandTimeout"),
+            "BREACH: PACS adapter must have configurable command timeout");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_Pacs5_LatencyBudget_TimeoutErrorCode()
+    {
+        // Adapter must have PACS_TIMEOUT error code
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "IPacsAdapter.cs");
+        var content = File.ReadAllText(path);
+
+        Assert.True(content.Contains("PACS_TIMEOUT") || content.Contains("Timeout"),
+            "BREACH: PACS adapter must define Timeout error code");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PACS Readiness Integration (fail-closed when required + broken)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsReadiness_HealthCheckExists()
+    {
+        // DEFENSE: PacsReadinessHealthCheck.cs must exist
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.API", "Health", "PacsReadinessHealthCheck.cs");
+        Assert.True(File.Exists(path), $"PacsReadinessHealthCheck.cs must exist at {path}");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsReadiness_ImplementsIHealthCheck()
+    {
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.API", "Health", "PacsReadinessHealthCheck.cs");
+        var content = File.ReadAllText(path);
+
+        Assert.Contains("IHealthCheck", content);
+        Assert.Contains("CheckHealthAsync", content);
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsReadiness_ConfigDriven()
+    {
+        // Must be config-driven, not environment-guessed
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.API", "Health", "PacsReadinessHealthCheck.cs");
+        var content = File.ReadAllText(path);
+
+        Assert.True(content.Contains("PACS:Required") || content.Contains("PACS_REQUIRED"),
+            "BREACH: PACS readiness must be config-driven (PACS:Required or PACS_REQUIRED)");
+
+        Assert.Contains("IConfiguration", content);
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsReadiness_UnhealthyWhenRequiredAndBroken()
+    {
+        // ATTACK: Node reports healthy when PACS required but broken
+        // DEFENSE: Must return Unhealthy (503)
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.API", "Health", "PacsReadinessHealthCheck.cs");
+        var content = File.ReadAllText(path);
+
+        Assert.Contains("HealthCheckResult.Unhealthy", content);
+        Assert.True(content.Contains("_pacsRequired") || content.Contains("pacsRequired"),
+            "BREACH: PACS readiness must check if PACS is required before failing");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsReadiness_DegradedWhenOptionalAndBroken()
+    {
+        // When PACS is optional, broken = Degraded (200), not Unhealthy
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.API", "Health", "PacsReadinessHealthCheck.cs");
+        var content = File.ReadAllText(path);
+
+        Assert.Contains("HealthCheckResult.Degraded", content);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PACS Ops Endpoint (/ops/pacs/proof)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsOps_ControllerExists()
+    {
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.API", "Controllers", "PacsOpsController.cs");
+        Assert.True(File.Exists(path), $"PacsOpsController.cs must exist at {path}");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsOps_ProofRouteCorrect()
+    {
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.API", "Controllers", "PacsOpsController.cs");
+        var content = File.ReadAllText(path);
+
+        Assert.True(content.Contains("ops/pacs") || content.Contains("ops/pacs/proof"),
+            "BREACH: /ops/pacs/proof route must be defined");
+
+        Assert.Contains("HttpGet", content);
+        Assert.Contains("proof", content.ToLower());
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsOps_UsesPacsAdapter()
+    {
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.API", "Controllers", "PacsOpsController.cs");
+        var content = File.ReadAllText(path);
+
+        Assert.Contains("IPacsAdapter", content);
+        Assert.True(content.Contains("_pacsAdapter") || content.Contains("pacsAdapter"),
+            "BREACH: PacsOpsController must use IPacsAdapter");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsOps_DeterministicJsonStructure()
+    {
+        // Proof response must have all required fields for deterministic validation
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.API", "Controllers", "PacsOpsController.cs");
+        var content = File.ReadAllText(path);
+
+        // Required fields per user spec
+        Assert.Contains("Enabled", content);
+        Assert.Contains("Contract", content);
+        Assert.Contains("Databases", content);
+        Assert.Contains("Views", content);
+        Assert.Contains("LatencyMs", content);
+        Assert.Contains("LastVerified", content);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PACS Runtime Certification
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsRuntimeCert_ScriptExists()
+    {
+        var path = Path.Combine(RepoRoot, "tools", "runtime-cert", "checks", "pacs_check.py");
+        Assert.True(File.Exists(path), $"pacs_check.py must exist at {path}");
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsRuntimeCert_ChecksContractNameVersion()
+    {
+        var path = Path.Combine(RepoRoot, "tools", "runtime-cert", "checks", "pacs_check.py");
+        var content = File.ReadAllText(path);
+
+        Assert.Contains("pacscontract.v1", content);
+        Assert.Contains("1.0.0", content);
+    }
+
+    [Fact]
+    [Trait("Surface", "pacscontract")]
+    public void Breaker_PacsRuntimeCert_FailsOnContractViolation()
+    {
+        var path = Path.Combine(RepoRoot, "tools", "runtime-cert", "checks", "pacs_check.py");
+        var content = File.ReadAllText(path);
+
+        // Must exit with non-zero on failure
+        Assert.True(content.Contains("sys.exit(1)") || content.Contains("exit(1)") || content.Contains("sys.exit(0 if"),
+            "BREACH: pacs_check.py must exit non-zero on contract violation");
+    }
 }
