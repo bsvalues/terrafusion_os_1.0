@@ -4,7 +4,7 @@
 > Regenerate with: `python scripts/speclock-index-gen.py`
 
 **Version**: 1.0.0
-**Updated**: 2025-12-14 01:02:08 UTC
+**Updated**: 2025-12-14 01:08:38 UTC
 
 ---
 
