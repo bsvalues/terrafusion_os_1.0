@@ -69,8 +69,7 @@ export const GptStudioView: React.FC = () => {
     if (propertyGpt) {
       void handleSelectGpt(propertyGpt);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gpts]);
+  }, [gpts, selectedGpt]);
 
   // Load RAG health when PropertyAssessmentGPT is selected
   useEffect(() => {
