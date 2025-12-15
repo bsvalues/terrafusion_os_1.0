@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { explainContext } from '../../api/explainApi';
-import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
 import {
   ConversationDto,
   createConversation,
@@ -12,7 +11,8 @@ import {
   indexRagDataset,
   RagDatasetStatus,
   sendMessage,
-} from '../../lib/api/gptClient';
+} from '../../api/gptClient';
+import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
 
 type LoadState = 'idle' | 'loading' | 'error';
 
