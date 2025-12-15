@@ -84,8 +84,9 @@ All other "orchestrator" workflows should delegate to these or become Tier 2.
 - Maintain audit trail (government compliance)
 
 **Rules:**
-- Stored under `.github/workflows/archived/`
-- Must NOT run automatically on PR/push
+- Stored under `docs/ci/archived/` (OUTSIDE `.github/workflows/`)
+- ⚠️ GitHub Actions scans ALL `.yml` files under `.github/workflows/` recursively
+- Placing files in `.github/workflows/archived/` does NOT disable them
 - Never delete — archive for audit purposes
 
 **Archived Workflow Examples:**
@@ -93,6 +94,8 @@ All other "orchestrator" workflows should delegate to these or become Tier 2.
 - `day7-chaos-ci.yml` (chaos engineering experiments)
 - `quantum-optimization.yml` (research pipelines)
 - `terrafusion-revolutionary-cicd.yml` (superseded experiments)
+
+**Archive Location:** `docs/ci/archived/*.yml`
 
 ---
 
@@ -205,25 +208,25 @@ Every Tier 1 workflow must end with:
     name: 🔒 TerraFusion Seal Gate
     runs-on: ubuntu-latest
     needs: [<all-previous-jobs>]
-    
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      
+
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-        
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-        
+
     - name: TerraFusion Seal Gate
       shell: pwsh
       run: pwsh -NoProfile -File scripts/ci-seal-gate.ps1
-      
+
     - name: Upload Artifacts
       if: always()
       uses: actions/upload-artifact@v4

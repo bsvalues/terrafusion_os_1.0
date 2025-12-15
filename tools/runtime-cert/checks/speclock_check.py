@@ -30,7 +30,7 @@ from pathlib import Path
 def find_repo_root() -> Path:
     """Find repository root by looking for INDEX.json."""
     current = Path(__file__).resolve().parent
-    
+
     # Walk up to find docs/spec-lock/INDEX.json
     for _ in range(10):  # Prevent infinite loop
         index_path = current / "docs" / "spec-lock" / "INDEX.json"
@@ -40,7 +40,7 @@ def find_repo_root() -> Path:
         if parent == current:
             break
         current = parent
-    
+
     # Fallback: assume we're in tools/runtime-cert/checks/
     return Path(__file__).resolve().parent.parent.parent.parent
 
@@ -92,7 +92,7 @@ def check_speclock_index(repo_root: Path) -> tuple[bool, dict, list[str]]:
     # Validate each lock entry
     for lock in locks:
         lock_id = lock.get("id", "<unknown>")
-        
+
         # Check required fields
         required_fields = ["id", "surface", "status", "spec_version"]
         for field in required_fields:
@@ -126,7 +126,7 @@ def check_speclock_index(repo_root: Path) -> tuple[bool, dict, list[str]]:
                 try:
                     with open(full_spec_path, "r", encoding="utf-8") as f:
                         spec_data = json.load(f)
-                    
+
                     # Check for speclock.spec.json expected fields
                     if "speclock.spec.json" in spec_path:
                         if "id" not in spec_data:
@@ -201,7 +201,7 @@ def main():
             print("Valid specs:")
             for spec in details.get("valid_specs", []):
                 print(f"  ✓ {spec['id']} ({spec['status']})")
-            
+
             if details.get("warnings"):
                 print()
                 print("Warnings:")
@@ -213,7 +213,7 @@ def main():
             print("Errors:")
             for err in errors:
                 print(f"  ✗ {err}")
-            
+
             if details.get("missing_specs"):
                 print()
                 print("Missing spec files:")

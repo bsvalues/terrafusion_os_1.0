@@ -244,7 +244,13 @@
       "test_paths": [
         "backend/tests/TerraFusion.Unit.SmokeTests/CertificationTests.cs"
       ],
-      "ci_tags": ["speclock", "runtimecert", "governance", "certification", "go-live"],
+      "ci_tags": [
+        "speclock",
+        "runtimecert",
+        "governance",
+        "certification",
+        "go-live"
+      ],
       "created": "2025-12-14",
       "updated": "2025-12-14",
       "notes": "Runtime certification gate for county go-live acceptance. No cert = no go-live.",

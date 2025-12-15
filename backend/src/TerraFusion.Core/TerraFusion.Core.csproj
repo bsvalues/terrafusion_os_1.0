@@ -48,7 +48,7 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.SqlClient" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
     <PackageReference Include="OpenTelemetry.Exporter.Jaeger" />
-    
+
   </ItemGroup>
 
 

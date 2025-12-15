@@ -285,7 +285,7 @@ public sealed class RuntimeCertBreakerTests
 
         // Check that SKIP is documented in the check result schema
         var statusValues = spec?["report_schema"]?["check_result"]?["properties"]?["status"]?["enum"];
-        
+
         // If the nested path doesn't exist, check in checks array items
         if (statusValues == null)
         {
@@ -299,7 +299,7 @@ public sealed class RuntimeCertBreakerTests
         // Verify skip_policy is defined in spec
         var skipPolicy = spec?["skip_policy"];
         Assert.NotNull(skipPolicy);
-        
+
         // Must have explicit rules about SKIP
         Assert.True(
             content.Contains("skip_policy") && content.Contains("skip_reason"),

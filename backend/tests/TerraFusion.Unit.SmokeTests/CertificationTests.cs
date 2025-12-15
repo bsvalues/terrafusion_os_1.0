@@ -56,7 +56,7 @@ public sealed class CertificationTests
     {
         var specPath = Path.Combine(RepoRoot, "docs", "spec-lock", "locks", "runtimecert", "runtimecert.v1", "speclock.spec.json");
         var json = File.ReadAllText(specPath);
-        
+
         var doc = JsonDocument.Parse(json);
         Assert.NotNull(doc);
         Assert.Equal("runtimecert.v1", doc.RootElement.GetProperty("id").GetString());

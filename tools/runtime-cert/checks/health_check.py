@@ -27,7 +27,6 @@ import urllib.error
 import urllib.request
 from datetime import datetime
 
-
 # Health endpoints to validate (deterministic order)
 HEALTH_ENDPOINTS = [
     {
@@ -96,7 +95,7 @@ def check_health_endpoints(base_url: str, timeout: int) -> tuple[bool, dict, lis
         required = endpoint["required"]
 
         status_code, error, latency_ms = check_endpoint(base_url, path, timeout)
-        
+
         endpoint_result = {
             "name": name,
             "path": path,
@@ -175,7 +174,7 @@ def main():
                 print(f"  {status} {ep['name']}: {ep['status_code'] or 'N/A'} ({ep['latency_ms']:.1f}ms)")
             print()
             print(f"Total latency: {details['total_latency_ms']:.1f}ms")
-            
+
             if warnings:
                 print()
                 print("Warnings:")
