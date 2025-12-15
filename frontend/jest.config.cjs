@@ -1,6 +1,5 @@
-import type { Config } from 'jest';
-
-const config: Config = {
+/** @type {import('jest').Config} */
+const config = {
   // Use jsdom for browser-like testing environment
   testEnvironment: 'jsdom',
 
@@ -30,6 +29,7 @@ const config: Config = {
     '^.+\\.tsx?$': [
       'ts-jest',
       {
+        useESM: true,
         tsconfig: {
           jsx: 'react-jsx',
           esModuleInterop: true,
@@ -38,6 +38,9 @@ const config: Config = {
       },
     ],
   },
+
+  // ESM support
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
 
   // Test file patterns
   testMatch: [
@@ -101,4 +104,4 @@ const config: Config = {
   testTimeout: 10000,
 };
 
-export default config;
+module.exports = config;
