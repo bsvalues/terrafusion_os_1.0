@@ -22,6 +22,9 @@ from typing import Any
 CHECKS_DIR = Path(__file__).parent / "checks"
 sys.path.insert(0, str(CHECKS_DIR))
 
+# Import re for input validation
+import re
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # CONSTANTS
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -30,12 +33,78 @@ VERSION = "1.0.0"
 DEFAULT_BASE_URL = "http://localhost:5000"
 DEFAULT_OUTPUT_DIR = "artifacts/cert"
 
+# Input validation patterns
+COUNTY_PATTERN = re.compile(r"^[a-zA-Z0-9_-]+$")
+URL_ALLOWED_SCHEMES = ("http://", "https://")
+
 # Check status values (deterministic order)
 STATUS_PASS = "PASS"
 STATUS_WARN = "WARN"
 STATUS_FAIL = "FAIL"
 STATUS_SKIP = "SKIP"
 STATUS_ERROR = "ERROR"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# INPUT VALIDATION (Security: fail-closed on invalid input)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def validate_county(county: str) -> tuple[bool, str]:
+    """
+    Validate county argument is alphanumeric only.
+    Prevents path traversal, command injection, and other attacks.
+
+    Returns:
+        (valid: bool, sanitized_or_error: str)
+    """
+    if not county:
+        return False, "County argument is required"
+
+    # Strip whitespace
+    county = county.strip()
+
+    # Check for path traversal attempts
+    if ".." in county or "/" in county or "\\" in county:
+        return False, "Invalid county: path traversal detected"
+
+    # Check for null bytes
+    if "\x00" in county or "%00" in county:
+        return False, "Invalid county: null byte detected"
+
+    # Check for command injection attempts
+    if any(c in county for c in [";", "&", "|", "`", "$", "(", ")", "\n", "\r"]):
+        return False, "Invalid county: shell metacharacters detected"
+
+    # Must match alphanumeric pattern
+    if not COUNTY_PATTERN.match(county):
+        return False, f"Invalid county: must be alphanumeric (got '{county[:20]}...')"
+
+    return True, county.lower()  # Normalize to lowercase
+
+
+def validate_base_url(url: str) -> tuple[bool, str]:
+    """
+    Validate base URL is http or https only.
+    Prevents javascript:, file:, and other protocol attacks.
+
+    Returns:
+        (valid: bool, sanitized_or_error: str)
+    """
+    if not url:
+        return False, "Base URL is required"
+
+    # Strip whitespace
+    url = url.strip()
+
+    # Check protocol
+    if not any(url.startswith(scheme) for scheme in URL_ALLOWED_SCHEMES):
+        return False, f"Invalid URL: must start with http:// or https:// (got '{url[:30]}...')"
+
+    # Check for path traversal in URL
+    if "/../" in url or "//.." in url:
+        return False, "Invalid URL: path traversal detected"
+
+    return True, url.rstrip("/")  # Normalize: remove trailing slash
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # REPORT GENERATION
@@ -251,9 +320,22 @@ def run_checks(base_url: str, county: str, strict: bool) -> list[dict[str, Any]]
 
 def cmd_cert(args) -> int:
     """Execute the cert command."""
+    # SECURITY: Validate inputs before any processing
+    county_valid, county_result = validate_county(args.county)
+    if not county_valid:
+        print(f"❌ Input validation failed: {county_result}", file=sys.stderr)
+        sys.exit(2)
+    county = county_result  # Sanitized value
+
+    url_valid, url_result = validate_base_url(args.base_url)
+    if not url_valid:
+        print(f"❌ Input validation failed: {url_result}", file=sys.stderr)
+        sys.exit(2)
+    base_url = url_result  # Sanitized value
+
     print("🔒 TerraFusion Runtime Certification")
-    print(f"   County: {args.county}")
-    print(f"   Base URL: {args.base_url}")
+    print(f"   County: {county}")
+    print(f"   Base URL: {base_url}")
     print(f"   Strict Mode: {args.strict}")
     print()
 
@@ -268,13 +350,13 @@ def cmd_cert(args) -> int:
         # Run checks
         start_time = datetime.now(timezone.utc)
         print("🔍 Running certification checks...")
-        checks = run_checks(args.base_url, args.county, args.strict)
+        checks = run_checks(base_url, county, args.strict)
         end_time = datetime.now(timezone.utc)
 
         # Build report
         report = build_report(
-            county=args.county,
-            base_url=args.base_url,
+            county=county,
+            base_url=base_url,
             strict_mode=args.strict,
             checks=checks,
             start_time=start_time,

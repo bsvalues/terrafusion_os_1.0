@@ -89,7 +89,14 @@
 
   "report_schema": {
     "type": "object",
-    "required": ["timestamp", "county", "base_url", "duration_ms", "result", "checks"],
+    "required": [
+      "timestamp",
+      "county",
+      "base_url",
+      "duration_ms",
+      "result",
+      "checks"
+    ],
     "properties": {
       "timestamp": {
         "type": "string",
@@ -185,19 +192,31 @@
     "health_ready": {
       "description": "Validates /healthz/ready returns 200",
       "endpoint": "/healthz/ready",
-      "validations": [
-        "response.status_code == 200"
-      ],
+      "validations": ["response.status_code == 200"],
       "fail_behavior": "fail_closed"
     },
     "health_live": {
       "description": "Validates /healthz/live returns 200",
       "endpoint": "/healthz/live",
-      "validations": [
-        "response.status_code == 200"
-      ],
+      "validations": ["response.status_code == 200"],
       "fail_behavior": "warn"
     }
+  },
+
+  "skip_policy": {
+    "description": "SKIP status requires explicit policy declaration - cannot be inferred",
+    "rules": [
+      "SKIP is only valid when a check is explicitly disabled via configuration",
+      "SKIP must include a skip_reason in the check result details",
+      "SKIP counts toward total but does not affect pass/fail determination",
+      "In strict mode, any SKIP without explicit policy flag becomes FAIL"
+    ],
+    "allowed_skip_reasons": [
+      "CHECK_DISABLED_BY_CONFIG",
+      "ENDPOINT_NOT_APPLICABLE",
+      "DEPENDENCY_CHECK_FAILED"
+    ],
+    "enforcement": "Any check returning SKIP without valid skip_reason is treated as ERROR"
   },
 
   "error_codes": {
@@ -229,10 +248,7 @@
     }
   },
 
-  "dependencies": [
-    "pacscontract.v1",
-    "runtimecontract.v1"
-  ],
+  "dependencies": ["pacscontract.v1", "runtimecontract.v1"],
 
   "test_file": "backend/tests/TerraFusion.Unit.SmokeTests/CertificationTests.cs",
   "implementation_files": [
