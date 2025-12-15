@@ -17,7 +17,7 @@ import {
   CardContent,
   CardHeader,
 } from '@/components/terrafusion-design-system';
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import {
   Activity,
   BarChart3,

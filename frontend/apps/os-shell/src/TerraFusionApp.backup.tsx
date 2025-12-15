@@ -6,7 +6,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import { useState } from 'react';
 import CostForgeAI from './CostForgeAI';
 import TerraAIAssistant from './design/TerraAIAssistant';

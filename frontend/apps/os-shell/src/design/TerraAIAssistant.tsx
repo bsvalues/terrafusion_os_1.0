@@ -6,7 +6,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import React, { useEffect, useRef, useState } from 'react';
 import { TerraPanel, TerraSphere, useTerraFlow } from './TerraFlowEngine';
 

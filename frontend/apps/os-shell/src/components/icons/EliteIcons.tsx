@@ -6,7 +6,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import React from 'react';
 
 // Elite Icon Component Interface

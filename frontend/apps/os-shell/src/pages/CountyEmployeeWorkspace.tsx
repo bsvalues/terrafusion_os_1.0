@@ -18,7 +18,7 @@ import { CountyEmployeeDashboard } from '@/components/dashboards/CountyEmployeeD
 import { Badge, Button, Card, CardContent } from '@/components/terrafusion-design-system';
 import { useAIAssistant } from '@/hooks/useAIAssistant';
 import { usePropertyAnalysis } from '@/hooks/usePropertyAnalysis';
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import {
   Bell,
   Brain,

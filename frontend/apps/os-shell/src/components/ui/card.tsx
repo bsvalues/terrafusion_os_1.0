@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { cn } from '../../lib/utils';
+import { cn } from '@/utils/cn';
 
 interface EliteCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'glass' | 'quantum' | 'elite';

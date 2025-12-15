@@ -5,7 +5,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import './NotificationSystem.css';
 

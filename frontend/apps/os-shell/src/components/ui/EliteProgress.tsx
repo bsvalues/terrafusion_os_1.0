@@ -6,7 +6,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import { EliteProgressProps } from '@/types/elite-interfaces';
 import React from 'react';
 import './EliteProgress.css';

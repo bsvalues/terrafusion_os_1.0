@@ -9,7 +9,7 @@ import {
   Progress,
   TerraSphere,
 } from '@/components/terrafusion-design-system';
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import React, { useCallback, useEffect, useState } from 'react';
 
 // ==================== TYPES & INTERFACES ====================

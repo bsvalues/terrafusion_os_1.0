@@ -5,7 +5,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import * as LucideIcons from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './DashboardWidgets.css';
