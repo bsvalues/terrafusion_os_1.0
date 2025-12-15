@@ -181,6 +181,68 @@ if ($LASTEXITCODE -eq 0) {
 }
 Write-Host ""
 
+# Gate 6b: Runtime Certification Tool Integrity
+# CONSTITUTIONAL: Validates runtime-cert tool exists and produces valid output schema
+Write-Host "Gate 6b: Runtime Certification Tool Integrity" -ForegroundColor Yellow
+$runtimeCertScript = "tools/runtime-cert/tf-runtime.py"
+if (Test-Path $runtimeCertScript) {
+    # 6b.1: Tool exists and has correct version format
+    $versionCheck = python $runtimeCertScript --version 2>&1 | Out-String
+    if ($versionCheck -match "tf-runtime\s+\d+\.\d+\.\d+") {
+        Write-Host "   6b.1 Tool version: PASS" -ForegroundColor Green
+    } else {
+        Write-Host "   6b.1 Tool version: FAIL (invalid version format)" -ForegroundColor Red
+        $FAIL = 1
+    }
+
+    # 6b.2: Check module integrity (all check modules exist)
+    $checksDir = "tools/runtime-cert/checks"
+    $requiredChecks = @("pacs_check.py", "speclock_check.py", "health_check.py")
+    $allChecksExist = $true
+    foreach ($check in $requiredChecks) {
+        $checkPath = Join-Path $checksDir $check
+        if (-not (Test-Path $checkPath)) {
+            Write-Host "   6b.2 Missing check module: $check" -ForegroundColor Red
+            $allChecksExist = $false
+        }
+    }
+    if ($allChecksExist) {
+        Write-Host "   6b.2 Check modules: PASS" -ForegroundColor Green
+    } else {
+        Write-Host "   6b.2 Check modules: FAIL" -ForegroundColor Red
+        $FAIL = 1
+    }
+
+    # 6b.3: Live certification (only if RUNTIMECERT_BASE_URL is set)
+    if ($env:RUNTIMECERT_BASE_URL) {
+        Write-Host "   6b.3 Live certification target: $env:RUNTIMECERT_BASE_URL" -ForegroundColor Cyan
+        $county = if ($env:RUNTIMECERT_COUNTY) { $env:RUNTIMECERT_COUNTY } else { "benton" }
+        $strictFlag = if ($env:RUNTIMECERT_STRICT -eq "true") { "--strict" } else { "" }
+
+        # Run live certification
+        $certOutput = python $runtimeCertScript cert $county --base-url $env:RUNTIMECERT_BASE_URL $strictFlag 2>&1 | Out-String
+        $certExitCode = $LASTEXITCODE
+
+        if ($certExitCode -eq 0) {
+            Write-Host "   6b.3 Live certification: PASS" -ForegroundColor Green
+        } elseif ($certExitCode -eq 1) {
+            Write-Host "   6b.3 Live certification: FAIL (checks failed)" -ForegroundColor Red
+            Write-Host $certOutput
+            $FAIL = 1
+        } else {
+            Write-Host "   6b.3 Live certification: ERROR (exit code $certExitCode)" -ForegroundColor Red
+            Write-Host $certOutput
+            $FAIL = 1
+        }
+    } else {
+        Write-Host "   6b.3 Live certification: SKIP (RUNTIMECERT_BASE_URL not set)" -ForegroundColor DarkYellow
+    }
+} else {
+    Write-Host "   FAIL: Runtime certification tool not found at $runtimeCertScript" -ForegroundColor Red
+    $FAIL = 1
+}
+Write-Host ""
+
 # Gate 7: No Uncommitted Changes (drift check)
 Write-Host "Gate 7: No Uncommitted Changes" -ForegroundColor Yellow
 $gitDiff = git diff --stat 2>&1
