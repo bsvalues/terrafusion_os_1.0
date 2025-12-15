@@ -264,3 +264,52 @@ jobs:
       with:
         name: performance-results
         path: ./performance-reports/
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # 🔒 TERRAFUSION SEAL GATE - SINGLE SOURCE OF TRUTH
+  # ═══════════════════════════════════════════════════════════════════════════
+  # "GitHub Actions is not your CI system. TerraFusion is your CI system."
+  # See: docs/ci/CI_CONSTITUTION.md
+  # ═══════════════════════════════════════════════════════════════════════════
+  seal-gate:
+    name: 🔒 TerraFusion Seal Gate
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests, ai-validation, security-scan, build-and-package, performance-test]
+    
+    env:
+      RUNTIMECERT_COUNTY: benton
+      RUNTIMECERT_STRICT: 'true'
+      # RUNTIMECERT_BASE_URL: ${{ secrets.PROD_API_URL }}  # Enable for live certification
+    
+    steps:
+    - name: 🔄 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: 🔵 Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 📦 Restore .NET Dependencies
+      run: dotnet restore
+
+    - name: 🔒 TerraFusion Seal Gate
+      shell: pwsh
+      run: pwsh -NoProfile -File scripts/ci-seal-gate.ps1
+
+    - name: 📤 Upload Seal Artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: terrafusion-seal-artifacts
+        path: |
+          artifacts/**
+          docs/spec-lock/INDEX.md
+        if-no-files-found: warn
