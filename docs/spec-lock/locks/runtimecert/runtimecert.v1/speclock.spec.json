@@ -2,12 +2,12 @@
   "$schema": "../../speclock.schema.json",
   "id": "runtimecert.v1",
   "surface": "runtimecert",
-  "version": "1.0.0",
+  "version": "1.0.0-BYPASS-DRILL-INTENTIONAL-VIOLATION",
   "status": "active",
   "created": "2025-06-14T00:00:00Z",
   "updated": "2025-06-14T00:00:00Z",
   "owners": ["platform-team"],
-  "description": "Runtime certification gate for county go-live acceptance. Validates all contract compliance before production deployment.",
+  "description": "INTENTIONALLY BROKEN FOR BYPASS DRILL - This should fail CI",
 
   "success_criteria": {
     "SC-1": {
