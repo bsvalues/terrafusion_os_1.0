@@ -2,83 +2,83 @@ name: TerraFusion OS Comprehensive Testing
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   test:
     name: Comprehensive Testing Suite
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [18.x, 20.x]
-    
+
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        # npm cache disabled - package-lock.json is gitignored
-    
-    - name: Install Dependencies
-      run: npm install
-      continue-on-error: true
-    
-    - name: Run Unit Tests
-      run: npm run test:unit || echo "No unit tests defined"
-      continue-on-error: true
-    
-    - name: Run Integration Tests
-      run: npm run test:integration || echo "No integration tests defined"
-      continue-on-error: true
-    
-    - name: Run Security Tests
-      run: npm run test:security || echo "No security tests defined"
-      continue-on-error: true
-    
-    - name: Run Performance Tests
-      run: npm run test:performance || echo "No performance tests defined"
-      continue-on-error: true
-    
-    - name: Generate Test Coverage
-      run: npm run test:coverage || echo "No coverage tests defined"
-      continue-on-error: true
-    
-    - name: Upload Coverage Reports
-      uses: codecov/codecov-action@v4
-      continue-on-error: true
-      with:
-        file: ./coverage/lcov.info
-        flags: unittests
-        name: codecov-umbrella
-    
-    - name: Upload Test Results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results-${{ matrix.node-version }}
-        path: |
-          coverage/
-          test-results/
-        if-no-files-found: ignore
-  
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          # npm cache disabled - package-lock.json is gitignored
+
+      - name: Install Dependencies
+        run: npm install
+        continue-on-error: true
+
+      - name: Run Unit Tests
+        run: npm run test:unit || echo "No unit tests defined"
+        continue-on-error: true
+
+      - name: Run Integration Tests
+        run: npm run test:integration || echo "No integration tests defined"
+        continue-on-error: true
+
+      - name: Run Security Tests
+        run: npm run test:security || echo "No security tests defined"
+        continue-on-error: true
+
+      - name: Run Performance Tests
+        run: npm run test:performance || echo "No performance tests defined"
+        continue-on-error: true
+
+      - name: Generate Test Coverage
+        run: npm run test:coverage || echo "No coverage tests defined"
+        continue-on-error: true
+
+      - name: Upload Coverage Reports
+        uses: codecov/codecov-action@v4
+        continue-on-error: true
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.node-version }}
+          path: |
+            coverage/
+            test-results/
+          if-no-files-found: ignore
+
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
     needs: test
-    if: always()  # Run even if tests have continue-on-error
-    
+    if: always() # Run even if tests have continue-on-error
+
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    
-    - name: Quality Gate Check
-      run: |
-        echo "Checking quality metrics..."
-        # Add quality gate logic here
-        echo "✅ Quality gate passed"
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Quality Gate Check
+        run: |
+          echo "Checking quality metrics..."
+          # Add quality gate logic here
+          echo "✅ Quality gate passed"
