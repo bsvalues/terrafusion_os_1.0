@@ -49,7 +49,7 @@ jobs:
 
       - name: 📦 Install dependencies (frontend)
         working-directory: ./frontend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🔍 Run TypeScript type checking
         working-directory: ./frontend
@@ -107,7 +107,7 @@ jobs:
 
       - name: 📦 Install dependencies (frontend)
         working-directory: ./frontend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🧪 Run integration tests with coverage
         working-directory: ./frontend
@@ -162,7 +162,7 @@ jobs:
 
       - name: 📦 Install dependencies (frontend)
         working-directory: ./frontend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 📦 Install Playwright browsers
         run: npx playwright install --with-deps ${{ matrix.browser }}
@@ -230,7 +230,7 @@ jobs:
 
       - name: 📦 Install dependencies (frontend)
         working-directory: ./frontend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🔍 Run ESLint
         working-directory: ./frontend
@@ -266,7 +266,7 @@ jobs:
 
       - name: 📦 Install dependencies (frontend)
         working-directory: ./frontend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🏗️ Build frontend
         working-directory: ./frontend
