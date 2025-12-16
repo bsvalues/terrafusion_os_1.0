@@ -2,6 +2,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { fileURLToPath } from 'node:url';
+
+// Anchor paths to config file location, not cwd (fixes dual-checkout scenarios)
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
@@ -23,7 +27,7 @@ export default defineConfig({
     ],
     globals: true,
     environment: 'jsdom',
-    setupFiles: './tests/setupTests.ts',
+    setupFiles: [path.resolve(__dirname, 'tests/setupTests.ts')],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary', 'html'],
