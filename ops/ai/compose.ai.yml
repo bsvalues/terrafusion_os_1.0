@@ -1,0 +1,107 @@
+# TerraFusion AI Lab - Isolated Compute Stack
+# ═══════════════════════════════════════════════════════════════════════════
+# Purpose: Run local AI inference without destabilizing dev environment
+#
+# Usage:
+#   tf ai up    - Start AI Lab
+#   tf ai down  - Stop AI Lab
+#
+# Resource Isolation:
+#   - Hard memory limit: 8GB (prevents stealing from dev stack)
+#   - CPU limit: 4 cores (leaves headroom for builds)
+#   - GPU: Optional passthrough for CUDA workloads
+# ═══════════════════════════════════════════════════════════════════════════
+
+services:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Ollama - Local LLM Server
+  # ─────────────────────────────────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: tf-ai-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: "4"
+        reservations:
+          memory: 4G
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_NUM_PARALLEL=2
+      - OLLAMA_MAX_LOADED_MODELS=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - tf-ai-network
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Open WebUI - Chat Interface for Local Models
+  # ─────────────────────────────────────────────────────────────────────────
+  webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: tf-ai-webui
+    ports:
+      - "3030:8080"
+    volumes:
+      - webui_data:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_SECRET_KEY=terrafusion-ai-lab
+      - ENABLE_RAG_WEB_SEARCH=true
+      - RAG_EMBEDDING_ENGINE=ollama
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - tf-ai-network
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # ChromaDB - Vector Store for RAG
+  # ─────────────────────────────────────────────────────────────────────────
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: tf-ai-chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "2"
+    restart: unless-stopped
+    networks:
+      - tf-ai-network
+
+networks:
+  tf-ai-network:
+    name: tf-ai-network
+    driver: bridge
+
+volumes:
+  ollama_data:
+    name: tf-ai-ollama-data
+  webui_data:
+    name: tf-ai-webui-data
+  chroma_data:
+    name: tf-ai-chroma-data
