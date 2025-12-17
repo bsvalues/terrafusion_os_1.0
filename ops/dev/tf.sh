@@ -534,58 +534,108 @@ cmd_status() {
 # ═══════════════════════════════════════════════════════════════════════════
 
 cmd_gate() {
-    local full_mode="${1:-}"
+    local full_mode=""
+    local ci_mode=""
+    
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --ci) ci_mode="1" ;;
+            --full) full_mode="1" ;;
+            *) ;;
+        esac
+        shift
+    done
+    
     local failures=0
+    local warnings=0
+    local skipped=0
     local checks_passed=0
     local total_checks=11
     
-    echo ""
-    echo -e "\033[36m  ╔═══════════════════════════════════════════════════════════╗\033[0m"
-    echo -e "\033[36m  ║         🛡️  Gate Z: Local Constitution Check              ║\033[0m"
-    echo -e "\033[36m  ╚═══════════════════════════════════════════════════════════╝\033[0m"
-    echo ""
+    # JSON accumulator arrays (for CI mode)
+    declare -a CHECK_RESULTS=()
+    
+    # Helper to record check result
+    record_check() {
+        local id="$1"
+        local name="$2"
+        local status="$3"
+        local message="${4:-}"
+        local details="${5:-null}"
+        
+        if [[ "$ci_mode" == "1" ]]; then
+            local json_entry
+            if [[ "$details" == "null" ]]; then
+                json_entry="{\"id\":$id,\"name\":\"$name\",\"status\":\"$status\",\"message\":\"$message\"}"
+            else
+                json_entry="{\"id\":$id,\"name\":\"$name\",\"status\":\"$status\",\"message\":\"$message\",\"details\":$details}"
+            fi
+            CHECK_RESULTS+=("$json_entry")
+        fi
+        
+        case "$status" in
+            pass) checks_passed=$((checks_passed + 1)) ;;
+            fail) failures=$((failures + 1)) ;;
+            warn) warnings=$((warnings + 1)); checks_passed=$((checks_passed + 1)) ;;
+            skip) skipped=$((skipped + 1)); checks_passed=$((checks_passed + 1)) ;;
+        esac
+    }
+    
+    # Human output helper (suppressed in CI mode)
+    human_echo() {
+        if [[ "$ci_mode" != "1" ]]; then
+            echo -e "$@"
+        fi
+        return 0
+    }
+    
+    human_echo ""
+    human_echo "\033[36m  ╔═══════════════════════════════════════════════════════════╗\033[0m"
+    human_echo "\033[36m  ║         🛡️  Gate Z: Local Constitution Check              ║\033[0m"
+    human_echo "\033[36m  ╚═══════════════════════════════════════════════════════════╝\033[0m"
+    human_echo ""
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 1: WSL Memory Cap
     # ─────────────────────────────────────────────────────────────────────────
-    echo -n "  [1/$total_checks] WSL Memory Cap: "
+    human_echo -n "  [1/$total_checks] WSL Memory Cap: "
     local wslconfig="/mnt/c/Users/$USER/.wslconfig"
     if [[ -f "$wslconfig" ]] && grep -q "memory=" "$wslconfig" 2>/dev/null; then
         local mem_cap=$(grep "memory=" "$wslconfig" | head -1 | cut -d'=' -f2 | tr -d '[:space:]')
         local mem_num=$(echo "$mem_cap" | grep -oE '[0-9]+')
         if [[ $mem_num -le 8 ]]; then
-            echo -e "\033[32m✓ PASS\033[0m ($mem_cap)"
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[32m✓ PASS\033[0m ($mem_cap)"
+            record_check 1 "wsl_memory_cap" "pass" "Configured: $mem_cap"
         else
-            echo -e "\033[31m✗ FAIL\033[0m (${mem_cap} > 8GB)"
-            echo "     FIX: Edit $wslconfig → memory=8GB"
-            failures=$((failures + 1))
+            human_echo "\033[31m✗ FAIL\033[0m (${mem_cap} > 8GB)"
+            human_echo "     FIX: Edit $wslconfig → memory=8GB"
+            record_check 1 "wsl_memory_cap" "fail" "Memory cap too high: $mem_cap > 8GB"
         fi
     else
-        echo -e "\033[31m✗ FAIL\033[0m (no .wslconfig)"
-        echo "     FIX: Create $wslconfig with [wsl2] memory=8GB"
-        failures=$((failures + 1))
+        human_echo "\033[31m✗ FAIL\033[0m (no .wslconfig)"
+        human_echo "     FIX: Create $wslconfig with [wsl2] memory=8GB"
+        record_check 1 "wsl_memory_cap" "fail" "No .wslconfig found"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 2: VS Code Extension Count
     # ─────────────────────────────────────────────────────────────────────────
-    echo -n "  [2/$total_checks] VS Code Extensions: "
+    human_echo -n "  [2/$total_checks] VS Code Extensions: "
     local ext_count=$(code --list-extensions 2>/dev/null | wc -l || echo "0")
     if [[ $ext_count -le 25 ]]; then
-        echo -e "\033[32m✓ PASS\033[0m ($ext_count enabled)"
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[32m✓ PASS\033[0m ($ext_count enabled)"
+        record_check 2 "vscode_extensions" "pass" "$ext_count extensions enabled"
     else
-        echo -e "\033[33m⚠ WARN\033[0m ($ext_count > 25 threshold)"
-        echo "     TIP: Disable unused extensions to reduce memory"
-        # Warning only, not a failure
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[33m⚠ WARN\033[0m ($ext_count > 25 threshold)"
+        human_echo "     TIP: Disable unused extensions to reduce memory"
+        record_check 2 "vscode_extensions" "warn" "$ext_count extensions (> 25 threshold)"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 3: K8s Pods Have Resource Limits
     # ─────────────────────────────────────────────────────────────────────────
-    echo -n "  [3/$total_checks] K8s Resource Limits: "
+    human_echo -n "  [3/$total_checks] K8s Resource Limits: "
     if kubectl get namespace "$K8S_NAMESPACE" &>/dev/null; then
         local pods_without_limits=$(kubectl get pods -n "$K8S_NAMESPACE" -o json 2>/dev/null | \
             python3 -c "
@@ -600,63 +650,63 @@ for pod in data.get('items', []):
 print(' '.join(set(missing)))
 " 2>/dev/null || echo "")
         if [[ -z "$pods_without_limits" ]]; then
-            echo -e "\033[32m✓ PASS\033[0m (all pods bounded)"
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[32m✓ PASS\033[0m (all pods bounded)"
+            record_check 3 "k8s_resource_limits" "pass" "All pods have resource limits"
         else
-            echo -e "\033[31m✗ FAIL\033[0m (missing limits)"
-            echo "     Pods: $pods_without_limits"
-            echo "     FIX: Add resources.limits to deployment specs"
-            failures=$((failures + 1))
+            human_echo "\033[31m✗ FAIL\033[0m (missing limits)"
+            human_echo "     Pods: $pods_without_limits"
+            human_echo "     FIX: Add resources.limits to deployment specs"
+            record_check 3 "k8s_resource_limits" "fail" "Pods missing limits: $pods_without_limits"
         fi
     else
-        echo -e "\033[90m○ SKIP\033[0m (k8s not available)"
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[90m○ SKIP\033[0m (k8s not available)"
+        record_check 3 "k8s_resource_limits" "skip" "Kubernetes not available"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 4: AI Lab Ports Localhost-Only
     # ─────────────────────────────────────────────────────────────────────────
-    echo -n "  [4/$total_checks] AI Lab Security: "
+    human_echo -n "  [4/$total_checks] AI Lab Security: "
     if docker ps --filter "name=tf-ai" --format '{{.Names}}' 2>/dev/null | grep -q "tf-ai"; then
         local exposed=$(docker ps --filter "name=tf-ai" --format '{{.Ports}}' 2>/dev/null | grep -E "0\.0\.0\.0:|:::" || true)
         if [[ -z "$exposed" ]]; then
-            echo -e "\033[32m✓ PASS\033[0m (localhost-only)"
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[32m✓ PASS\033[0m (localhost-only)"
+            record_check 4 "ai_lab_security" "pass" "All ports bound to localhost"
         else
-            echo -e "\033[31m✗ FAIL\033[0m (network-exposed ports!)"
-            echo "     $exposed"
-            echo "     FIX: Update compose.ai.yml ports to 127.0.0.1:PORT:PORT"
-            failures=$((failures + 1))
+            human_echo "\033[31m✗ FAIL\033[0m (network-exposed ports!)"
+            human_echo "     $exposed"
+            human_echo "     FIX: Update compose.ai.yml ports to 127.0.0.1:PORT:PORT"
+            record_check 4 "ai_lab_security" "fail" "Network-exposed ports: $exposed"
         fi
     else
-        echo -e "\033[90m○ SKIP\033[0m (AI Lab not running)"
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[90m○ SKIP\033[0m (AI Lab not running)"
+        record_check 4 "ai_lab_security" "skip" "AI Lab not running"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 5: Docker Disk Usage
     # ─────────────────────────────────────────────────────────────────────────
-    echo -n "  [5/$total_checks] Docker Disk: "
+    human_echo -n "  [5/$total_checks] Docker Disk: "
     local docker_gb=$(docker system df --format '{{.Size}}' 2>/dev/null | head -1 | grep -oE '[0-9]+\.?[0-9]*' | head -1)
     if [[ -n "$docker_gb" ]]; then
         local docker_int=${docker_gb%.*}
         if [[ $docker_int -lt 50 ]]; then
-            echo -e "\033[32m✓ PASS\033[0m (${docker_gb}GB < 50GB)"
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[32m✓ PASS\033[0m (${docker_gb}GB < 50GB)"
+            record_check 5 "docker_disk" "pass" "${docker_gb}GB used"
         else
-            echo -e "\033[33m⚠ WARN\033[0m (${docker_gb}GB approaching limit)"
-            echo "     TIP: Run 'tf clean' to reclaim space"
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[33m⚠ WARN\033[0m (${docker_gb}GB approaching limit)"
+            human_echo "     TIP: Run 'tf clean' to reclaim space"
+            record_check 5 "docker_disk" "warn" "${docker_gb}GB used (approaching 50GB limit)"
         fi
     else
-        echo -e "\033[90m○ SKIP\033[0m (cannot determine)"
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[90m○ SKIP\033[0m (cannot determine)"
+        record_check 5 "docker_disk" "skip" "Cannot determine disk usage"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 6: RAG Index Freshness
     # ─────────────────────────────────────────────────────────────────────────
-    echo -n "  [6/$total_checks] RAG Index: "
+    human_echo -n "  [6/$total_checks] RAG Index: "
     local manifest="$ROOT/ops/ai/rag/state/manifest.json"
     if [[ -f "$manifest" ]]; then
         local age_days=$(python3 -c "
@@ -671,80 +721,80 @@ else:
     print(999)
 " 2>/dev/null || echo "999")
         if [[ $age_days -le 7 ]]; then
-            echo -e "\033[32m✓ PASS\033[0m (${age_days}d old)"
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[32m✓ PASS\033[0m (${age_days}d old)"
+            record_check 6 "rag_index" "pass" "Index is ${age_days} days old"
         else
-            echo -e "\033[33m⚠ WARN\033[0m (${age_days}d stale)"
-            echo "     TIP: Run 'tf ai ingest' to refresh"
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[33m⚠ WARN\033[0m (${age_days}d stale)"
+            human_echo "     TIP: Run 'tf ai ingest' to refresh"
+            record_check 6 "rag_index" "warn" "Index is ${age_days} days old (stale)"
         fi
     else
-        echo -e "\033[90m○ SKIP\033[0m (not initialized)"
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[90m○ SKIP\033[0m (not initialized)"
+        record_check 6 "rag_index" "skip" "RAG not initialized"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 7: Current Memory Usage
     # ─────────────────────────────────────────────────────────────────────────
-    echo -n "  [7/$total_checks] WSL Memory: "
+    human_echo -n "  [7/$total_checks] WSL Memory: "
     local wsl_used=$(free -g | awk '/^Mem:/{print $3}')
     local wsl_total=$(free -g | awk '/^Mem:/{print $2}')
     if [[ $wsl_used -le 6 ]]; then
-        echo -e "\033[32m✓ PASS\033[0m (${wsl_used}GB / ${wsl_total}GB)"
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[32m✓ PASS\033[0m (${wsl_used}GB / ${wsl_total}GB)"
+        record_check 7 "wsl_memory" "pass" "${wsl_used}GB / ${wsl_total}GB used"
     else
-        echo -e "\033[33m⚠ WARN\033[0m (${wsl_used}GB high)"
-        echo "     TIP: Check for runaway processes with 'top'"
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[33m⚠ WARN\033[0m (${wsl_used}GB high)"
+        human_echo "     TIP: Check for runaway processes with 'top'"
+        record_check 7 "wsl_memory" "warn" "${wsl_used}GB / ${wsl_total}GB used (high)"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 8: Ollama Model Storage
     # ─────────────────────────────────────────────────────────────────────────
-    echo -n "  [8/$total_checks] Model Storage: "
+    human_echo -n "  [8/$total_checks] Model Storage: "
     if docker ps --filter "name=tf-ai-ollama" --format '{{.Names}}' 2>/dev/null | grep -q "tf-ai-ollama"; then
         local model_size=$(docker exec tf-ai-ollama du -sh /root/.ollama/models 2>/dev/null | cut -f1 || echo "0")
         local model_gb=$(echo "$model_size" | grep -oE '[0-9]+\.?[0-9]*')
         if [[ -n "$model_gb" ]] && [[ "${model_size: -1}" == "G" ]]; then
             if (( $(echo "$model_gb < 15" | bc -l) )); then
-                echo -e "\033[32m✓ PASS\033[0m ($model_size)"
-                checks_passed=$((checks_passed + 1))
+                human_echo "\033[32m✓ PASS\033[0m ($model_size)"
+                record_check 8 "model_storage" "pass" "Model storage: $model_size"
             else
-                echo -e "\033[33m⚠ WARN\033[0m ($model_size > 15GB budget)"
-                echo "     TIP: Remove unused models with 'docker exec tf-ai-ollama ollama rm <model>'"
-                checks_passed=$((checks_passed + 1))
+                human_echo "\033[33m⚠ WARN\033[0m ($model_size > 15GB budget)"
+                human_echo "     TIP: Remove unused models with 'docker exec tf-ai-ollama ollama rm <model>'"
+                record_check 8 "model_storage" "warn" "Model storage: $model_size (> 15GB budget)"
             fi
         else
-            echo -e "\033[32m✓ PASS\033[0m ($model_size)"
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[32m✓ PASS\033[0m ($model_size)"
+            record_check 8 "model_storage" "pass" "Model storage: $model_size"
         fi
     else
-        echo -e "\033[90m○ SKIP\033[0m (Ollama not running)"
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[90m○ SKIP\033[0m (Ollama not running)"
+        record_check 8 "model_storage" "skip" "Ollama not running"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 9: Hub Tasks Sync (no drift)
     # ─────────────────────────────────────────────────────────────────────────
-    echo -n "  [9/$total_checks] Hub Tasks Sync: "
+    human_echo -n "  [9/$total_checks] Hub Tasks Sync: "
     if [[ -f "$ROOT/ops/tooling/registry.yml" ]] && [[ -f "$ROOT/.vscode/tasks.json" ]]; then
         if python3 "$ROOT/ops/tooling/verify-tasks.py" &>/dev/null; then
-            echo -e "\033[32m✓ PASS\033[0m (tasks.json matches registry)"
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[32m✓ PASS\033[0m (tasks.json matches registry)"
+            record_check 9 "hub_tasks_sync" "pass" "tasks.json matches registry"
         else
-            echo -e "\033[33m⚠ WARN\033[0m (drift detected)"
-            echo "     TIP: Run 'tf hub tasks' to regenerate"
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[33m⚠ WARN\033[0m (drift detected)"
+            human_echo "     TIP: Run 'tf hub tasks' to regenerate"
+            record_check 9 "hub_tasks_sync" "warn" "Drift detected between tasks.json and registry"
         fi
     else
-        echo -e "\033[90m○ SKIP\033[0m (registry or tasks.json missing)"
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[90m○ SKIP\033[0m (registry or tasks.json missing)"
+        record_check 9 "hub_tasks_sync" "skip" "Registry or tasks.json missing"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 10: Agent Session Health
     # ─────────────────────────────────────────────────────────────────────────
-    echo -n "  [10/$total_checks] Agent Sessions: "
+    human_echo -n "  [10/$total_checks] Agent Sessions: "
     if [[ -f "$ROOT/ops/agents/generate-contract.py" ]]; then
         local session_errors
         session_errors=$(python3 "$ROOT/ops/agents/generate-contract.py" check 2>&1)
@@ -763,25 +813,26 @@ else:
             fi
             
             if [[ $active_count -eq 0 ]]; then
-                echo -e "\033[32m✓ PASS\033[0m (no active sessions)"
+                human_echo "\033[32m✓ PASS\033[0m (no active sessions)"
+                record_check 10 "agent_sessions" "pass" "No active sessions"
             else
-                echo -e "\033[32m✓ PASS\033[0m ($active_count active, all healthy)"
+                human_echo "\033[32m✓ PASS\033[0m ($active_count active, all healthy)"
+                record_check 10 "agent_sessions" "pass" "$active_count active sessions, all healthy"
             fi
-            checks_passed=$((checks_passed + 1))
         else
-            echo -e "\033[31m✗ FAIL\033[0m (session issues found)"
-            echo "$session_errors" | head -5 | sed 's/^/     /'
-            failures=$((failures + 1))
+            human_echo "\033[31m✗ FAIL\033[0m (session issues found)"
+            human_echo "$session_errors" | head -5 | sed 's/^/     /'
+            record_check 10 "agent_sessions" "fail" "Session health check failed"
         fi
     else
-        echo -e "\033[90m○ SKIP\033[0m (agent protocol not installed)"
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[90m○ SKIP\033[0m (agent protocol not installed)"
+        record_check 10 "agent_sessions" "skip" "Agent protocol not installed"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 11: Protocol Enforcement (changed files in protected scopes)
     # ─────────────────────────────────────────────────────────────────────────
-    echo -n "  [11/$total_checks] Protocol Enforcement: "
+    human_echo -n "  [11/$total_checks] Protocol Enforcement: "
     # Protected scopes that REQUIRE agent sessions
     local protected_scopes="ops/ai/ ops/dev/ backend/ frontend/ SDK/ config/tenant."
     local has_protected_changes=false
@@ -806,41 +857,74 @@ else:
         fi
         
         if [[ -n "$active_session_id" ]]; then
-            echo -e "\033[32m✓ PASS\033[0m (session active for protected changes)"
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[32m✓ PASS\033[0m (session active for protected changes)"
+            record_check 11 "protocol_enforcement" "pass" "Session active for protected scope changes"
         else
-            echo -e "\033[33m⚠ WARN\033[0m (protected scope changes without session)"
-            echo "     Changed:$changed_protected"
-            echo "     Consider: tf agent run --project=<p> --feature=<f>"
-            # Warning only, not failure (allows emergency fixes)
-            checks_passed=$((checks_passed + 1))
+            human_echo "\033[33m⚠ WARN\033[0m (protected scope changes without session)"
+            human_echo "     Changed:$changed_protected"
+            human_echo "     Consider: tf agent run --project=<p> --feature=<f>"
+            record_check 11 "protocol_enforcement" "warn" "Protected scope changes without active session"
         fi
     else
-        echo -e "\033[32m✓ PASS\033[0m (no protected scope changes)"
-        checks_passed=$((checks_passed + 1))
+        human_echo "\033[32m✓ PASS\033[0m (no protected scope changes)"
+        record_check 11 "protocol_enforcement" "pass" "No protected scope changes"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
     # Full mode: run builds/tests
     # ─────────────────────────────────────────────────────────────────────────
-    if [[ "$full_mode" == "--full" ]]; then
-        echo ""
-        echo -e "\033[33m  ═══ Full Gate: Build Verification ═══\033[0m"
-        echo "  (Not yet implemented - add your build commands here)"
+    if [[ "$full_mode" == "1" ]]; then
+        human_echo ""
+        human_echo "\033[33m  ═══ Full Gate: Build Verification ═══\033[0m"
+        human_echo "  (Not yet implemented - add your build commands here)"
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
-    # Summary
+    # CI Mode: Output JSON
     # ─────────────────────────────────────────────────────────────────────────
-    echo ""
-    echo "  ─────────────────────────────────────────────────────────────"
+    if [[ "$ci_mode" == "1" ]]; then
+        local timestamp
+        timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        
+        local overall_status="pass"
+        if [[ $failures -gt 0 ]]; then
+            overall_status="fail"
+        fi
+        
+        # Build JSON array from CHECK_RESULTS
+        local checks_json=""
+        local first=true
+        for check in "${CHECK_RESULTS[@]}"; do
+            if [[ "$first" == "true" ]]; then
+                checks_json="$check"
+                first=false
+            else
+                checks_json="$checks_json,$check"
+            fi
+        done
+        
+        # Output JSON to stdout
+        printf '%s\n' "{\"version\":\"1.0.0\",\"timestamp\":\"$timestamp\",\"status\":\"$overall_status\",\"summary\":{\"total\":$total_checks,\"passed\":$checks_passed,\"failed\":$failures,\"warnings\":$warnings,\"skipped\":$skipped},\"checks\":[$checks_json]}"
+        
+        # Exit with appropriate code
+        if [[ $failures -gt 0 ]]; then
+            return 1
+        fi
+        return 0
+    fi
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Summary (human mode only)
+    # ─────────────────────────────────────────────────────────────────────────
+    human_echo ""
+    human_echo "  ─────────────────────────────────────────────────────────────"
     if [[ $failures -eq 0 ]]; then
-        echo -e "  \033[32m✓ GATE PASSED\033[0m ($checks_passed/$total_checks checks)"
-        echo "  Ready for development."
+        human_echo "  \033[32m✓ GATE PASSED\033[0m ($checks_passed/$total_checks checks)"
+        human_echo "  Ready for development."
         return 0
     else
-        echo -e "  \033[31m✗ GATE FAILED\033[0m ($failures invariant(s) violated)"
-        echo "  Fix the issues above before continuing."
+        human_echo "  \033[31m✗ GATE FAILED\033[0m ($failures invariant(s) violated)"
+        human_echo "  Fix the issues above before continuing."
         return 1
     fi
 }
