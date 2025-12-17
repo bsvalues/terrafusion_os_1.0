@@ -796,9 +796,8 @@ else:
     # ─────────────────────────────────────────────────────────────────────────
     human_echo -n "  [10/$total_checks] Agent Sessions: "
     if [[ -f "$ROOT/ops/agents/generate-contract.py" ]]; then
-        local session_errors
-        session_errors=$(python3 "$ROOT/ops/agents/generate-contract.py" check 2>&1)
-        local session_exit=$?
+        local session_errors session_exit
+        session_errors=$(python3 "$ROOT/ops/agents/generate-contract.py" check 2>&1) && session_exit=0 || session_exit=$?
         
         if [[ $session_exit -eq 0 ]]; then
             # Count active sessions
