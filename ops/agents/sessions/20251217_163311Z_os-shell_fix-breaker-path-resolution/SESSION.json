@@ -1,9 +1,9 @@
 {
   "version": 1,
   "id": "20251217_163311Z_os-shell_fix-breaker-path-resolution",
-  "status": "active",
+  "status": "complete",
   "createdUtc": "2025-12-17T16:33:11Z",
-  "updatedUtc": "2025-12-17T16:48:10Z",
+  "updatedUtc": "2025-12-17T16:50:25Z",
   "project": "os-shell",
   "feature": "Fix breaker PATH resolution",
   "featureSlug": "fix-breaker-path-resolution",
