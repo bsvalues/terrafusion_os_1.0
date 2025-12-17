@@ -1214,7 +1214,7 @@ def complete_session(session_id: str = None) -> bool:
 
 
 def get_telemetry() -> dict:
-    """Get agent protocol telemetry metrics."""
+    """Get agent protocol telemetry metrics - first-class engineering health signals."""
     sessions = get_all_sessions()
     
     total = len(sessions)
@@ -1224,6 +1224,11 @@ def get_telemetry() -> dict:
     with_speclock = 0
     with_testplan = 0
     with_attack = 0
+    test_counts = []
+    breaker_findings = []
+    commits_per_session = []
+    speclock_to_complete_hours = []
+    sessions_without_speclock = 0
     
     for session in sessions:
         session_dir = Path(session.get("_path", ""))
@@ -1232,24 +1237,69 @@ def get_telemetry() -> dict:
         
         # Check SpecLock frozen
         speclock = session_dir / "SPECLOCK.md"
+        speclock_frozen = False
         if speclock.exists():
             content = speclock.read_text()
             if "Status: **FROZEN**" in content:
                 with_speclock += 1
+                speclock_frozen = True
+            else:
+                sessions_without_speclock += 1
+        else:
+            sessions_without_speclock += 1
         
-        # Check TestPlan has tests
+        # Count tests in TestPlan
         testplan = session_dir / "TESTPLAN.md"
         if testplan.exists():
             content = testplan.read_text()
-            if "| ✅" in content or "| 🟢" in content:
+            passing = content.count("| ✅") + content.count("| 🟢")
+            total_tests = passing + content.count("| ⬜") + content.count("| 🟡") + content.count("| ❌")
+            if passing > 0:
                 with_testplan += 1
+            if total_tests > 0:
+                test_counts.append(total_tests)
         
-        # Check Attack completed
+        # Count Breaker findings
         attack = session_dir / "ATTACK_REPORT.md"
         if attack.exists():
             content = attack.read_text()
             if "APPROVE" in content or "✅ PASSED" in content:
                 with_attack += 1
+            # Count findings by severity
+            findings = 0
+            for sev in ["Critical", "High", "Medium", "Low"]:
+                # Look for "### Finding N:" pattern or severity counts
+                findings += content.count(f"**Severity**: {sev}")
+            breaker_findings.append(findings)
+        
+        # Count commits (from PATCHLOG.md "**Committed**:" entries)
+        patchlog = session_dir / "PATCHLOG.md"
+        if patchlog.exists():
+            content = patchlog.read_text()
+            commit_count = content.count("**Committed**:")
+            commits_per_session.append(commit_count)
+        
+        # Calculate time from SpecLock freeze to completion
+        if speclock_frozen and session.get("status") == "complete":
+            try:
+                speclock_content = speclock.read_text()
+                # Find "**Frozen At**: YYYY-MM-DDTHH:MM:SSZ"
+                import re
+                frozen_match = re.search(r'\*\*Frozen At\*\*:\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?)', speclock_content)
+                if frozen_match:
+                    frozen_time = datetime.fromisoformat(frozen_match.group(1).replace("Z", "+00:00"))
+                    updated_time = datetime.fromisoformat(session.get("updatedUtc", "").replace("Z", "+00:00"))
+                    hours = (updated_time - frozen_time).total_seconds() / 3600
+                    if hours > 0:
+                        speclock_to_complete_hours.append(hours)
+            except:
+                pass
+    
+    # Calculate averages
+    avg_tests = sum(test_counts) / len(test_counts) if test_counts else 0
+    avg_findings = sum(breaker_findings) / len(breaker_findings) if breaker_findings else 0
+    avg_commits = sum(commits_per_session) / len(commits_per_session) if commits_per_session else 0
+    avg_time = sum(speclock_to_complete_hours) / len(speclock_to_complete_hours) if speclock_to_complete_hours else 0
     
     return {
         "total_sessions": total,
@@ -1258,6 +1308,12 @@ def get_telemetry() -> dict:
         "speclock_frozen": f"{with_speclock}/{total}" if total > 0 else "0/0",
         "testplan_complete": f"{with_testplan}/{total}" if total > 0 else "0/0",
         "attack_complete": f"{with_attack}/{total}" if total > 0 else "0/0",
+        # Health indicators
+        "avg_tests_per_feature": round(avg_tests, 1),
+        "avg_breaker_findings": round(avg_findings, 1),
+        "sessions_without_speclock": sessions_without_speclock,
+        "avg_commits_per_session": round(avg_commits, 1),
+        "avg_hours_speclock_to_merge": round(avg_time, 1),
     }
 
 
@@ -1485,18 +1541,46 @@ def cmd_check(args):
 
 
 def cmd_telemetry(args):
-    """Show agent protocol metrics."""
+    """Show agent protocol metrics - engineering health indicators."""
     
     metrics = get_telemetry()
     
     print("📊 Agent Protocol Telemetry")
     print("")
-    print(f"   Total sessions:     {metrics['total_sessions']}")
-    print(f"   Active sessions:    {metrics['active_sessions']}")
-    print(f"   Completed sessions: {metrics['completed_sessions']}")
-    print(f"   SpecLock frozen:    {metrics['speclock_frozen']}")
-    print(f"   TestPlan complete:  {metrics['testplan_complete']}")
-    print(f"   Attack complete:    {metrics['attack_complete']}")
+    print("  ─── Session Counts ───")
+    print(f"   Total sessions:       {metrics['total_sessions']}")
+    print(f"   Active sessions:      {metrics['active_sessions']}")
+    print(f"   Completed sessions:   {metrics['completed_sessions']}")
+    print("")
+    print("  ─── Protocol Compliance ───")
+    print(f"   SpecLock frozen:      {metrics['speclock_frozen']}")
+    print(f"   TestPlan complete:    {metrics['testplan_complete']}")
+    print(f"   Attack complete:      {metrics['attack_complete']}")
+    print("")
+    print("  ─── Health Indicators ───")
+    print(f"   Avg tests/feature:    {metrics['avg_tests_per_feature']}")
+    print(f"   Avg breaker findings: {metrics['avg_breaker_findings']}")
+    print(f"   Sessions w/o SpecLock:{metrics['sessions_without_speclock']} ⚠️" if metrics['sessions_without_speclock'] > 0 else f"   Sessions w/o SpecLock: {metrics['sessions_without_speclock']} ✓")
+    print(f"   Avg commits/session:  {metrics['avg_commits_per_session']}")
+    print(f"   Avg hrs to merge:     {metrics['avg_hours_speclock_to_merge']}")
+    print("")
+    
+    # Health assessment
+    print("  ─── Assessment ───")
+    issues = []
+    if metrics['sessions_without_speclock'] > 0:
+        issues.append("Sessions without SpecLock (chaos indicator)")
+    if metrics['avg_tests_per_feature'] < 5 and metrics['total_sessions'] > 0:
+        issues.append("Low avg tests/feature (regression risk)")
+    if metrics['avg_breaker_findings'] < 0.5 and metrics['total_sessions'] > 1:
+        issues.append("Low breaker findings (may indicate weak attacks)")
+    
+    if issues:
+        print("   ⚠️  Issues:")
+        for issue in issues:
+            print(f"      - {issue}")
+    else:
+        print("   ✓ Protocol health: GOOD")
     
     return 0
 

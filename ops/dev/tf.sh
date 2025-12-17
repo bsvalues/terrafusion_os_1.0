@@ -537,7 +537,7 @@ cmd_gate() {
     local full_mode="${1:-}"
     local failures=0
     local checks_passed=0
-    local total_checks=10
+    local total_checks=11
     
     echo ""
     echo -e "\033[36m  ╔═══════════════════════════════════════════════════════════╗\033[0m"
@@ -775,6 +775,48 @@ else:
         fi
     else
         echo -e "\033[90m○ SKIP\033[0m (agent protocol not installed)"
+        checks_passed=$((checks_passed + 1))
+    fi
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # INVARIANT 11: Protocol Enforcement (changed files in protected scopes)
+    # ─────────────────────────────────────────────────────────────────────────
+    echo -n "  [11/$total_checks] Protocol Enforcement: "
+    # Protected scopes that REQUIRE agent sessions
+    local protected_scopes="ops/ai/ ops/dev/ backend/ frontend/ SDK/ config/tenant."
+    local has_protected_changes=false
+    local changed_protected=""
+    
+    # Check for uncommitted changes in protected scopes
+    local uncommitted
+    uncommitted=$(git -C "$ROOT" status --porcelain 2>/dev/null || echo "")
+    
+    for scope in $protected_scopes; do
+        if echo "$uncommitted" | grep -q "$scope"; then
+            has_protected_changes=true
+            changed_protected="$changed_protected $scope"
+        fi
+    done
+    
+    if [[ "$has_protected_changes" == "true" ]]; then
+        # Check if there's an active session
+        local active_session_id=""
+        if [[ -f "$ROOT/ops/agents/ACTIVE_SESSION" ]]; then
+            active_session_id=$(cat "$ROOT/ops/agents/ACTIVE_SESSION" 2>/dev/null || echo "")
+        fi
+        
+        if [[ -n "$active_session_id" ]]; then
+            echo -e "\033[32m✓ PASS\033[0m (session active for protected changes)"
+            checks_passed=$((checks_passed + 1))
+        else
+            echo -e "\033[33m⚠ WARN\033[0m (protected scope changes without session)"
+            echo "     Changed:$changed_protected"
+            echo "     Consider: tf agent run --project=<p> --feature=<f>"
+            # Warning only, not failure (allows emergency fixes)
+            checks_passed=$((checks_passed + 1))
+        fi
+    else
+        echo -e "\033[32m✓ PASS\033[0m (no protected scope changes)"
         checks_passed=$((checks_passed + 1))
     fi
 
@@ -1202,6 +1244,7 @@ cmd_start() {
     echo ""
     echo -e "\033[36m  ╔═══════════════════════════════════════════════════════════╗\033[0m"
     echo -e "\033[36m  ║           🌅 TerraFusion Daily Start                      ║\033[0m"
+    echo -e "\033[36m  ║           Protocol v1.0.0 │ Stability Phase               ║\033[0m"
     echo -e "\033[36m  ╚═══════════════════════════════════════════════════════════╝\033[0m"
     echo ""
     
@@ -1338,6 +1381,13 @@ cmd_start() {
     fi
     echo "    • tf hub          (interactive tool menu)"
     echo "    • tf status       (see running services)"
+    echo ""
+    
+    # Show protocol telemetry summary
+    echo -e "\033[33m  ─── Protocol Health (v1.0.0 Stability Phase) ───\033[0m"
+    if [[ -f "$ROOT/ops/agents/generate-contract.py" ]]; then
+        python3 "$ROOT/ops/agents/generate-contract.py" telemetry 2>/dev/null | grep -E "^\s+(Total|Completed|Avg tests|Sessions w/o)" | sed 's/^/  /'
+    fi
     echo ""
 }
 
