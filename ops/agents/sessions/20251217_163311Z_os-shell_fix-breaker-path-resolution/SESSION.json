@@ -1,21 +1,19 @@
 {
   "version": 1,
-  "id": "20251217_084815Z_os-shell_tf-gate-ci-json-output",
-  "status": "complete",
-  "createdUtc": "2025-12-17T08:48:15Z",
-  "updatedUtc": "2025-12-17T16:15:12Z",
+  "id": "20251217_163311Z_os-shell_fix-breaker-path-resolution",
+  "status": "active",
+  "createdUtc": "2025-12-17T16:33:11Z",
+  "updatedUtc": "2025-12-17T16:33:45Z",
   "project": "os-shell",
-  "feature": "tf gate --ci JSON output",
-  "featureSlug": "tf-gate-ci-json-output",
-  "mode": "feature",
+  "feature": "Fix breaker PATH resolution",
+  "featureSlug": "fix-breaker-path-resolution",
+  "mode": "bugfix",
   "risk": "low",
   "diffOnly": true,
   "specLock": "strict",
   "tests": "all",
   "scope": [
-    "ops/dev/**",
-    "ops/tooling/**",
-    "ops/ai/**"
+    "config/tenant."
   ],
   "agents": {
     "builder": "Agent A",
@@ -23,7 +21,7 @@
   },
   "git": {
     "baseBranch": "main",
-    "workBranch": "feat/os-shell/tf-gate-ci-json-output"
+    "workBranch": "feat/os-shell/fix-breaker-path-resolution"
   },
   "artifacts": {
     "contract": "CONTRACT.md",

@@ -25,26 +25,29 @@ SESSIONS_DIR = AGENTS_DIR / "sessions"
 ACTIVE_SESSION_FILE = AGENTS_DIR / "ACTIVE_SESSION"
 
 # Project definitions
+# NOTE: Use ./ops/dev/tf.sh (not bare `tf`) to avoid PATH resolution issues
+TF_CLI = "./ops/dev/tf.sh"
+
 PROJECTS = {
     "os-shell": {
         "name": "TerraFusion OS Shell",
         "scope": ["ops/dev/**", "ops/tooling/**", "ops/ai/**"],
-        "gate": "tf gate",
+        "gate": f"{TF_CLI} gate",
     },
     "api-gateway": {
         "name": "API Gateway",
         "scope": ["backend/TerraFusion.Gateway/**", "backend/TerraFusion.API/**"],
-        "gate": "tf gate --full",
+        "gate": f"{TF_CLI} gate --full",
     },
     "ai-lab": {
         "name": "AI Lab",
         "scope": ["ops/ai/**"],
-        "gate": "tf ai status && tf gate",
+        "gate": f"{TF_CLI} ai status && {TF_CLI} gate",
     },
     "consciousness": {
         "name": "Consciousness Engine",
         "scope": ["backend/TerraFusion.Consciousness/**"],
-        "gate": "tf gate --full",
+        "gate": f"{TF_CLI} gate --full",
     },
     "terrabuild": {
         "name": "TerraBuild Modernization",
@@ -54,7 +57,7 @@ PROJECTS = {
     "sdk": {
         "name": "TerraFusion SDK",
         "scope": ["SDK/**"],
-        "gate": "tf gate",
+        "gate": f"{TF_CLI} gate",
     },
 }
 
@@ -155,7 +158,7 @@ CONTRACT_VERSION = "1.0.0"
 
 def generate_contract(session: dict) -> str:
     """Generate CONTRACT.md (7-phase protocol, never hand-edited)."""
-    proj = PROJECTS.get(session["project"], {"name": session["project"], "gate": "tf gate"})
+    proj = PROJECTS.get(session["project"], {"name": session["project"], "gate": f"{TF_CLI} gate"})
     
     return f"""<!--
 TerraFusion Agent Execution Contract
@@ -497,7 +500,7 @@ Before marking FROZEN:
 
 def generate_testplan(session: dict) -> str:
     """Generate TESTPLAN.md (success criteria + tests-first list)."""
-    proj = PROJECTS.get(session["project"], {"gate": "tf gate"})
+    proj = PROJECTS.get(session["project"], {"gate": f"{TF_CLI} gate"})
     return f"""# Test Plan: {session['feature']}
 
 > Session: `{session['id']}`
@@ -1087,7 +1090,7 @@ def run_breaker(session_id: str = None) -> tuple[bool, Path]:
     
     session = json.loads(session_file.read_text())
     session_dir = SESSIONS_DIR / session_id
-    proj = PROJECTS.get(session["project"], {"gate": "tf gate"})
+    proj = PROJECTS.get(session["project"], {"gate": f"{TF_CLI} gate"})
     
     results = {
         "timestamp": utc_iso(),
@@ -1334,7 +1337,7 @@ def cmd_run(args):
     # Run gate first
     print("🔒 Running gate check before session creation...")
     gate_result = subprocess.run(
-        ["bash", "-c", f"cd {ROOT} && tf gate"],
+        ["bash", "-c", f"cd {ROOT} && {TF_CLI} gate"],
         capture_output=True, text=True
     )
     if gate_result.returncode != 0:
