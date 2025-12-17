@@ -6,6 +6,11 @@
 
 set -euo pipefail
 
+# Locale hardening: prevent setlocale errors in CI/dev shells
+# Use C.utf8 for UTF-8 support, fall back to C if unavailable
+export LANG="${LANG:-C.utf8}"
+export LC_ALL="${LC_ALL:-C.utf8}"
+
 # Configuration - resolve symlinks to get the real script location
 SCRIPT_SOURCE="${BASH_SOURCE[0]}"
 while [ -L "$SCRIPT_SOURCE" ]; do
@@ -830,6 +835,7 @@ else:
 
     # ─────────────────────────────────────────────────────────────────────────
     # INVARIANT 11: Protocol Enforcement (changed files in protected scopes)
+    # Session-aware: recognizes completed sessions tied to recent commits
     # ─────────────────────────────────────────────────────────────────────────
     human_echo -n "  [11/$total_checks] Protocol Enforcement: "
     # Protected scopes that REQUIRE agent sessions
@@ -865,17 +871,88 @@ else:
             record_check 11 "protocol_enforcement" "warn" "Protected scope changes without active session"
         fi
     else
-        human_echo "\033[32m✓ PASS\033[0m (no protected scope changes)"
-        record_check 11 "protocol_enforcement" "pass" "No protected scope changes"
+        # No uncommitted protected changes - check if recent commits have session artifacts
+        # This handles the case where work was committed via a completed session
+        local has_recent_session=false
+        local recent_session_commit=""
+        
+        # Look for session completion commits in last 10 commits
+        local session_commit
+        session_commit=$(git -C "$ROOT" log -10 --oneline --grep="chore(session): complete" 2>/dev/null | head -1 || echo "")
+        
+        if [[ -n "$session_commit" ]]; then
+            has_recent_session=true
+            recent_session_commit=$(echo "$session_commit" | cut -d' ' -f1)
+        fi
+        
+        if [[ "$has_recent_session" == "true" ]]; then
+            human_echo "\033[32m✓ PASS\033[0m (session completed at $recent_session_commit)"
+            record_check 11 "protocol_enforcement" "pass" "Recent session completed at $recent_session_commit"
+        else
+            human_echo "\033[32m✓ PASS\033[0m (no protected scope changes)"
+            record_check 11 "protocol_enforcement" "pass" "No protected scope changes"
+        fi
     fi
 
     # ─────────────────────────────────────────────────────────────────────────
-    # Full mode: run builds/tests
+    # Full mode: run builds/tests + invariant suites
     # ─────────────────────────────────────────────────────────────────────────
     if [[ "$full_mode" == "1" ]]; then
         human_echo ""
-        human_echo "\033[33m  ═══ Full Gate: Build Verification ═══\033[0m"
-        human_echo "  (Not yet implemented - add your build commands here)"
+        human_echo "\033[33m  ═══ Full Gate: Invariant Suites ═══\033[0m"
+        
+        local tests_dir="$ROOT/ops/dev/tests"
+        local suite_failures=0
+        local suite_warnings=0
+        local suite_rc=0
+        
+        # Run gate CI tests (capture RC safely under set -e, timebox to 60s)
+        if [[ -f "$tests_dir/test_gate_ci.sh" ]]; then
+            human_echo ""
+            human_echo "  Gate CI tests (timeboxed: 60s):"
+            human_echo ""
+            suite_rc=0
+            command timeout 60 bash "$tests_dir/test_gate_ci.sh" || suite_rc=$?
+            if [[ $suite_rc -eq 124 ]]; then
+                human_echo "\033[33m  ⚠ TIMEOUT\033[0m (exceeded 60s budget)"
+                suite_warnings=$((suite_warnings + 1))  # Timeout = WARN in --full
+            elif [[ $suite_rc -ne 0 ]]; then
+                suite_failures=$((suite_failures + 1))
+            fi
+        else
+            human_echo "  Gate CI tests: \033[90m○ SKIP\033[0m (test_gate_ci.sh not found)"
+        fi
+        
+        # Run breaker invariants (capture RC safely under set -e, timebox to 30s)
+        if [[ -f "$tests_dir/test_breaker_invariants.sh" ]]; then
+            human_echo ""
+            human_echo "  Breaker invariants (timeboxed: 30s):"
+            human_echo ""
+            suite_rc=0
+            command timeout 30 bash "$tests_dir/test_breaker_invariants.sh" || suite_rc=$?
+            if [[ $suite_rc -eq 124 ]]; then
+                human_echo "\033[33m  ⚠ TIMEOUT\033[0m (exceeded 30s budget)"
+                suite_warnings=$((suite_warnings + 1))  # Timeout = WARN in --full
+            elif [[ $suite_rc -ne 0 ]]; then
+                suite_failures=$((suite_failures + 1))
+            fi
+        else
+            human_echo "  Breaker invariants: \033[90m○ SKIP\033[0m (test_breaker_invariants.sh not found)"
+        fi
+        
+        # Summary for invariant suites
+        if [[ $suite_failures -gt 0 ]]; then
+            failures=$((failures + suite_failures))
+            human_echo ""
+            human_echo "\033[31m  ✗ $suite_failures invariant suite(s) failed\033[0m"
+        elif [[ $suite_warnings -gt 0 ]]; then
+            warnings=$((warnings + suite_warnings))
+            human_echo ""
+            human_echo "\033[33m  ⚠ $suite_warnings invariant suite(s) timed out (warnings only)\033[0m"
+        else
+            human_echo ""
+            human_echo "\033[32m  ✓ All invariant suites passed\033[0m"
+        fi
     fi
 
     # ─────────────────────────────────────────────────────────────────────────

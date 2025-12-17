@@ -93,7 +93,36 @@ fi
 
 ---
 
-## 3. Breaker Portability Requirements
+## 3. Gate Performance Contracts
+
+### Runtime Bounds
+
+`tf gate --full` MUST complete within **120 seconds** under normal dev host conditions.
+
+**Sub-suite budgets** (enforced via `timeout`):
+- `test_gate_ci.sh`: 60s
+- `test_breaker_invariants.sh`: 30s
+
+**Timeout behavior:**
+- Prints `⚠ TIMEOUT (exceeded Ns budget)`
+- Status: **WARN** in `--full` mode, **FAIL** in `--ci` mode
+- Exit code: non-zero if timeout causes failure per mode rules
+
+**Rationale:**
+- Prevents gate from blocking development workflow
+- Makes "slow gate" a detectable regression
+- Bounded runtime enables CI integration without hangs
+
+### JSON Schema Stability
+
+When `--ci` mode emits JSON, timeout warnings MUST be:
+- Recorded as `"status": "warn"` in check results
+- ANSI-free (no escape codes in JSON fields)
+- Schema-stable (no ad-hoc text injection)
+
+---
+
+## 4. Breaker Portability Requirements
 
 All breaker checks MUST pass under:
 
@@ -117,15 +146,51 @@ env -i PATH=/usr/bin:/bin HOME="$HOME" bash -lc './ops/dev/tf.sh agent break'
 1. **PATH hardening**: Breaker passes with stripped PATH
 2. **set -e safety**: Gate checks complete even when probes fail
 3. **JSON output**: CI mode produces valid JSON (no human text leakage)
+4. **Forbidden patterns**: No bare CLI commands in critical scripts
 
 ### Location
 
-- `ops/dev/tests/test_breaker_invariants.sh` - breaker-specific
+- `ops/dev/tests/test_breaker_invariants.sh` - breaker + forbidden patterns
 - `ops/dev/tests/test_gate_ci.sh` - gate JSON contract
+
+### Enforcement Points
+
+- **Local**: `tf gate --full` runs all invariant suites
+- **CI**: `ops/scripts/gate-f-validate-all.sh` runs with minimal PATH
 
 ---
 
-## 5. Code Review Checklist
+## 5. Breaker Contract
+
+The Breaker is a critical quality gate. These rules are non-negotiable:
+
+### Determinism
+
+- Breaker MUST produce identical results regardless of developer environment
+- Breaker MUST NOT depend on user-specific PATH, aliases, or shell config
+- All CLI invocations MUST use repo-relative paths (`./ops/dev/tf.sh`)
+
+### Hermeticity
+
+- Breaker MUST pass with `PATH=/usr/local/bin:/usr/bin:/bin` (CI-style)
+- Breaker MUST NOT require tools outside the repo or standard system paths
+- External dependencies MUST be validated before use with graceful fallback
+
+### No False Positives
+
+- Breaker failures MUST indicate real problems, never tooling assumptions
+- Every breaker check MUST be backed by a regression test
+- "Works on my machine" is not an acceptable breaker state
+
+### Change Protocol
+
+- Breaker changes REQUIRE invariant suite updates
+- New breaker checks REQUIRE corresponding test in `test_breaker_invariants.sh`
+- Breaker regressions block merge (no exceptions)
+
+---
+
+## 6. Code Review Checklist
 
 Before merging changes to `ops/agents/` or `ops/dev/`:
 
@@ -134,6 +199,7 @@ Before merging changes to `ops/agents/` or `ops/dev/`:
 - [ ] Command substitutions under `set -e` use `&& rc=0 || rc=$?`
 - [ ] Breaker passes with `PATH=/usr/bin:/bin`
 - [ ] Tests added for new invariants
+- [ ] `tf gate --full` passes locally
 
 ---
 

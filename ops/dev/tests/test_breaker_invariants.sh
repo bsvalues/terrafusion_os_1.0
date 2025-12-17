@@ -10,6 +10,10 @@
 
 set -euo pipefail
 
+# Locale hardening: prevent setlocale errors in CI/minimal environments
+export LC_ALL=C
+export LANG=C
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
@@ -213,6 +217,100 @@ if [[ -z "$bare_subprocess" ]]; then
     pass
 else
     fail "Found bare CLI in subprocess: $bare_subprocess"
+fi
+
+echo ""
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TEST D: Forbidden Patterns (Convention Enforcement)
+# ─────────────────────────────────────────────────────────────────────────────
+echo "Forbidden Pattern Guards:"
+
+# Test D1: No bare 'python ' or 'python3 ' in gate-critical paths
+echo -n "  [D1] No bare python in gate/breaker scripts... "
+run_test
+
+# Only check gate scripts (ops/scripts/gate-*.sh) - command handlers in tf.sh are OK
+# Use 'command grep' to avoid aliases; '|| true' to handle no-match exit code
+bare_python=$(command grep -rn "^\s*python3\? " "$ROOT/ops/scripts"/gate-*.sh 2>/dev/null | \
+    command grep -v "^#" | command grep -v "command -v" | command grep -v "which python" | head -1 || true)
+if [[ -z "$bare_python" ]]; then
+    pass
+else
+    fail "Found bare python in gate script: $(echo "$bare_python" | cut -d: -f1-2)"
+fi
+
+# Test D2: No unguarded command substitution in set -e scripts
+echo -n "  [D2] No unguarded \$(cmd) probes in gate checks... "
+run_test
+
+# Look for pattern: var=$(python3 ... ) without && or || guard on same/next line
+# This is a heuristic check for the specific anti-pattern we fixed
+gate_probes=$(command grep -n '=\$(python3.*check' "$ROOT/ops/dev/tf.sh" 2>/dev/null | \
+    command grep -v '&& .*=0 || .*=\$?' | head -1 || true)
+if [[ -z "$gate_probes" ]]; then
+    pass
+else
+    fail "Found unguarded probe: $gate_probes"
+fi
+
+# Test D3: All PROJECTS in generate-contract.py use TF_CLI
+echo -n "  [D3] All PROJECTS entries use TF_CLI... "
+run_test
+
+# Count gate entries that don't use TF_CLI
+# Use awk for deterministic count (no wc formatting issues)
+# Pipeline: find "gate":..."tf " lines, exclude TF_CLI, count
+non_tf_cli=$(
+    command grep -E '"gate":.*"tf ' "$ROOT/ops/agents/generate-contract.py" 2>/dev/null \
+    | command grep -v 'TF_CLI' 2>/dev/null \
+    | command awk 'END{print NR+0}' \
+    || echo "0"
+)
+# Sanitize: strip all whitespace, ensure single token
+non_tf_cli="$(printf '%s' "$non_tf_cli" | tr -d '[:space:]')"
+
+# Validate numeric before comparing (prevents bash syntax errors)
+if ! [[ "$non_tf_cli" =~ ^[0-9]+$ ]]; then
+    fail "D3 produced non-numeric count: [$non_tf_cli]"
+elif [[ "$non_tf_cli" -ne 0 ]]; then
+    fail "Found $non_tf_cli PROJECTS entries with bare 'tf' command"
+else
+    pass
+fi
+
+# Test D4: timeout command is available and deterministic
+echo -n "  [D4] timeout command available... "
+run_test
+
+# Verify timeout resolves to system binary (not alias/function)
+timeout_path=$(command -v timeout 2>/dev/null) && timeout_rc=0 || timeout_rc=$?
+if [[ $timeout_rc -eq 0 ]] && [[ -x "$timeout_path" ]]; then
+    # Verify it's the real timeout (supports --version or standard usage)
+    command timeout 1 true 2>/dev/null && verify_rc=0 || verify_rc=$?
+    if [[ $verify_rc -eq 0 ]]; then
+        pass
+    else
+        fail "timeout command exists but doesn't work correctly"
+    fi
+else
+    fail "timeout command not found or not executable"
+fi
+
+# Test D5: Sterile shell produces no warnings
+echo -n "  [D5] tf.sh clean in sterile environment... "
+run_test
+
+sterile_test="$SCRIPT_DIR/test_sterile_shell.sh"
+if [[ -f "$sterile_test" ]]; then
+    sterile_output=$(bash "$sterile_test" 2>&1) && sterile_rc=0 || sterile_rc=$?
+    if [[ $sterile_rc -eq 0 ]]; then
+        pass
+    else
+        fail "Sterile shell test failed: $sterile_output"
+    fi
+else
+    skip "test_sterile_shell.sh not found"
 fi
 
 echo ""
