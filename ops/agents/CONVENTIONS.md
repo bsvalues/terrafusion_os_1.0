@@ -103,10 +103,17 @@ fi
 - `test_gate_ci.sh`: 60s
 - `test_breaker_invariants.sh`: 30s
 
-**Timeout behavior:**
+**Timeout behavior** (applies to `--full` mode only):
 - Prints `⚠ TIMEOUT (exceeded Ns budget)`
-- Status: **WARN** in `--full` mode, **FAIL** in `--ci` mode
-- Exit code: non-zero if timeout causes failure per mode rules
+- Status: **WARN** (increments warnings, not failures)
+- Exit code: 0 (gate passes with warnings)
+- Suites do NOT run in `--ci` mode (JSON-only, no suite execution)
+
+**Flag combinations:**
+- `tf gate` - 11 core checks, human output
+- `tf gate --full` - 11 checks + invariant suites (timeboxed), human output
+- `tf gate --ci` - 11 core checks only, JSON output to stdout
+- `tf gate --ci --full` - **INVALID** (exit 2, JSON error payload)
 
 **Rationale:**
 - Prevents gate from blocking development workflow

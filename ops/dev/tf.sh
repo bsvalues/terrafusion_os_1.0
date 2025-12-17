@@ -552,6 +552,14 @@ cmd_gate() {
         shift
     done
     
+    # Validate flag combinations (--ci is machine mode, --full is human mode)
+    if [[ "$ci_mode" == "1" ]] && [[ "$full_mode" == "1" ]]; then
+        local timestamp
+        timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        printf '%s\n' "{\"version\":\"1.0.0\",\"timestamp\":\"$timestamp\",\"status\":\"error\",\"error\":{\"code\":\"invalid_flags\",\"message\":\"--ci (machine mode) cannot be combined with --full (human suite mode)\"}}"
+        return 2
+    fi
+    
     local failures=0
     local warnings=0
     local skipped=0

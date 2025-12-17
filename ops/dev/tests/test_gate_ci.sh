@@ -370,10 +370,26 @@ print(f'{warns} {fails}')
     fi
 }
 
-test_ci_full_flag_combines() {
-    local output
-    output=$("$TF" gate --ci --full 2>/dev/null || true)
+test_ci_full_flag_invalid() {
+    # --ci --full should be rejected with exit code 2 and JSON error
+    local output exit_code
+    output=$("$TF" gate --ci --full 2>/dev/null) && exit_code=0 || exit_code=$?
+    
+    # Should exit with code 2 (invalid flags)
+    assert_eq "2" "$exit_code" "Exit code should be 2 for invalid flag combo"
+    
+    # Should still be valid JSON
     assert_json_valid "$output"
+    
+    # Should have error status
+    local status
+    status=$(json_get "$output" "status")
+    assert_eq "error" "$status" "Status should be 'error'"
+    
+    # Should have error.code field
+    local error_code
+    error_code=$(echo "$output" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('error',{}).get('code',''))" 2>/dev/null || echo "")
+    assert_eq "invalid_flags" "$error_code" "Error code should be 'invalid_flags'"
 }
 
 test_human_output_unchanged() {
@@ -425,7 +441,7 @@ echo "Integration Tests:"
 run_test "Exit code 0 on pass" test_ci_exit_code_0_on_pass
 run_test "Exit code reflects status" test_ci_exit_code_reflects_status
 run_test "Warn status does not cause failure" test_ci_warn_does_not_fail
-run_test "CI and full flags combine" test_ci_full_flag_combines
+run_test "CI and full flags are invalid" test_ci_full_flag_invalid
 run_test "Human output unchanged" test_human_output_unchanged
 run_test "CI output has no ANSI codes" test_ci_no_ansi_codes
 
