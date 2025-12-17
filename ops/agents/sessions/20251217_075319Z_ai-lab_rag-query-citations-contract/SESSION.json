@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "id": "20251217_075319Z_ai-lab_rag-query-citations-contract",
+  "status": "active",
+  "createdUtc": "2025-12-17T07:53:19Z",
+  "updatedUtc": "2025-12-17T07:53:19Z",
+  "project": "ai-lab",
+  "feature": "RAG Query Citations Contract",
+  "featureSlug": "rag-query-citations-contract",
+  "mode": "feature",
+  "risk": "med",
+  "diffOnly": true,
+  "specLock": "strict",
+  "tests": "all",
+  "scope": [
+    "ops/ai/rag/**"
+  ],
+  "agents": {
+    "builder": "Agent A",
+    "breaker": "Agent B"
+  },
+  "git": {
+    "baseBranch": "main",
+    "workBranch": "feat/ai-lab/rag-query-citations-contract"
+  },
+  "artifacts": {
+    "contract": "CONTRACT.md",
+    "speclock": "SPECLOCK.md",
+    "testplan": "TESTPLAN.md",
+    "attackplan": "ATTACKPLAN.md",
+    "patchlog": "PATCHLOG.md",
+    "attackReport": "ATTACK_REPORT.md",
+    "prReview": "PR_REVIEW.md",
+    "notes": "NOTES.md"
+  }
+}

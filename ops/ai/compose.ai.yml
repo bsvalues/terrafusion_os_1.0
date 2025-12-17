@@ -3,40 +3,49 @@
 # Purpose: Run local AI inference without destabilizing dev environment
 #
 # Usage:
-#   tf ai up    - Start AI Lab
+#   tf ai up    - Start AI Lab (GPU-accelerated)
 #   tf ai down  - Stop AI Lab
 #
 # Resource Isolation:
-#   - Hard memory limit: 8GB (prevents stealing from dev stack)
-#   - CPU limit: 4 cores (leaves headroom for builds)
-#   - GPU: Optional passthrough for CUDA workloads
+#   - Hard memory limit: 6GB RAM (leaves headroom for dev stack)
+#   - CPU limit: 6 cores (burst allowed)
+#   - GPU: RTX 5060 Ti passthrough (8GB VRAM)
+#
+# GPU Support: Enabled for NVIDIA RTX 5060 Ti
 # ═══════════════════════════════════════════════════════════════════════════
 
 services:
   # ─────────────────────────────────────────────────────────────────────────
-  # Ollama - Local LLM Server
+  # Ollama - Local LLM Server (GPU-Accelerated)
   # ─────────────────────────────────────────────────────────────────────────
   ollama:
     image: ollama/ollama:latest
     container_name: tf-ai-ollama
+    runtime: nvidia
     ports:
-      - "11434:11434"
+      - "127.0.0.1:11434:11434"
     volumes:
       - ollama_data:/root/.ollama
     deploy:
       resources:
         limits:
-          memory: 8G
-          cpus: "4"
+          memory: 6G
+          cpus: "6"
         reservations:
-          memory: 4G
+          memory: 2G
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     environment:
       - OLLAMA_HOST=0.0.0.0
       - OLLAMA_NUM_PARALLEL=2
       - OLLAMA_MAX_LOADED_MODELS=1
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      test: ["CMD-SHELL", "ollama list || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -51,7 +60,7 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     container_name: tf-ai-webui
     ports:
-      - "3030:8080"
+      - "127.0.0.1:3030:8080"
     volumes:
       - webui_data:/app/backend/data
     environment:
@@ -78,7 +87,7 @@ services:
     image: chromadb/chroma:latest
     container_name: tf-ai-chromadb
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - chroma_data:/chroma/chroma
     environment:

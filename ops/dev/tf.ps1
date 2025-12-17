@@ -159,35 +159,162 @@ function Invoke-Doctor {
     Show-Banner
     Log "Running health checks..." "Cyan"
 
-    Write-Host ""
-    Write-Host "  ═══ WSL Status ═══" -ForegroundColor Yellow
-    wsl -l -v
+    $warnings = 0
+    $errors = 0
 
     Write-Host ""
-    Write-Host "  ═══ WSL Resources ═══" -ForegroundColor Yellow
-    Run-WSL "echo 'Memory:' && free -h | head -2 && echo '' && echo 'CPUs:' && nproc"
+    Write-Host "  ═══ TerraFusion Environment Checks ═══" -ForegroundColor Yellow
+
+    # Check 1: VS Code Profile
+    Write-Host -NoNewline "  VS Code Profile: "
+    try {
+        $storageJson = Get-Content "$env:APPDATA\Code - Insiders\User\globalStorage\storage.json" -ErrorAction Stop | ConvertFrom-Json
+        $wsPath = "vscode-remote://wsl%2Bubuntu/home/bsval/dev/terrafusion_os_1.0"
+        $profileAssoc = $storageJson.profileAssociations.workspaces.$wsPath
+        
+        if ($profileAssoc -eq "11a4aa8e") {
+            Write-Host "✓ TerraFusion Core (locked)" -ForegroundColor Green
+        }
+        elseif ($profileAssoc -eq "__default__profile__") {
+            Write-Host "⚠ Default Profile (189 extensions!)" -ForegroundColor Red
+            Write-Host "     Fix: Ctrl+Shift+P → 'Profiles: Associate Profile with Workspace' → TerraFusion Core" -ForegroundColor Gray
+            $errors++
+        }
+        else {
+            Write-Host "? Unknown profile: $profileAssoc" -ForegroundColor Yellow
+            $warnings++
+        }
+    }
+    catch {
+        Write-Host "? Could not read profile config" -ForegroundColor Yellow
+        $warnings++
+    }
+
+    # Check 2: WSL Memory Cap
+    Write-Host -NoNewline "  WSL Memory Cap: "
+    $wslConfig = "$env:USERPROFILE\.wslconfig"
+    if (Test-Path $wslConfig) {
+        $content = Get-Content $wslConfig -Raw
+        if ($content -match "memory=(\d+GB?)") {
+            Write-Host "✓ Configured ($($Matches[1]))" -ForegroundColor Green
+        }
+        else {
+            Write-Host "⚠ .wslconfig exists but no memory limit" -ForegroundColor Yellow
+            $warnings++
+        }
+    }
+    else {
+        Write-Host "✗ Not configured (WSL can use unlimited RAM!)" -ForegroundColor Red
+        Write-Host "     Fix: Create $wslConfig with [wsl2] memory=8GB" -ForegroundColor Gray
+        $errors++
+    }
+
+    # Check 3: Current WSL Memory
+    Write-Host -NoNewline "  WSL Current Memory: "
+    $wslMem = Get-Process -Name "vmmemWSL" -ErrorAction SilentlyContinue
+    if ($wslMem) {
+        $wslGB = [math]::Round($wslMem.WorkingSet64 / 1GB, 2)
+        if ($wslGB -gt 7) {
+            Write-Host "⚠ $wslGB GB (approaching cap)" -ForegroundColor Yellow
+            $warnings++
+        }
+        else {
+            Write-Host "✓ $wslGB GB" -ForegroundColor Green
+        }
+    }
+    else {
+        Write-Host "- WSL not running" -ForegroundColor Gray
+    }
+
+    # Check 4: VS Code Memory
+    Write-Host -NoNewline "  VS Code Memory: "
+    $vscodeProcs = Get-Process | Where-Object { $_.ProcessName -like "*Code*" }
+    if ($vscodeProcs) {
+        $totalVS = [math]::Round(($vscodeProcs | Measure-Object WorkingSet64 -Sum).Sum / 1GB, 2)
+        if ($totalVS -gt 4) {
+            Write-Host "⚠ $totalVS GB (consider fewer extensions)" -ForegroundColor Yellow
+            $warnings++
+        }
+        else {
+            Write-Host "✓ $totalVS GB" -ForegroundColor Green
+        }
+    }
+    else {
+        Write-Host "- VS Code not running" -ForegroundColor Gray
+    }
+
+    # Check 5: PACS SQL Server
+    Write-Host -NoNewline "  PACS SQL Server: "
+    $pacsRunning = docker ps --format '{{.Names}}' 2>$null | Select-String "pacs-benton-mssql"
+    if ($pacsRunning) {
+        if ($env:TF_PACS_MODE -eq "1") {
+            Write-Host "✓ Running (TF_PACS_MODE=1)" -ForegroundColor Green
+        }
+        else {
+            Write-Host "⚠ Running but TF_PACS_MODE not set (+1.5GB)" -ForegroundColor Yellow
+            Write-Host "     Tip: 'docker stop pacs-benton-mssql' if not needed" -ForegroundColor Gray
+            $warnings++
+        }
+    }
+    else {
+        Write-Host "✓ Not running (saves 1.5GB)" -ForegroundColor Green
+    }
+
+    # Check 6: System RAM
+    Write-Host -NoNewline "  System RAM: "
+    $os = Get-CimInstance Win32_OperatingSystem
+    $totalRAM = [math]::Round($os.TotalVisibleMemorySize / 1MB, 1)
+    $freeRAM = [math]::Round($os.FreePhysicalMemory / 1MB, 1)
+    $usedPct = [math]::Round((($totalRAM - $freeRAM) / $totalRAM) * 100, 1)
+    if ($usedPct -gt 85) {
+        Write-Host "✗ $usedPct% used (critical!)" -ForegroundColor Red
+        $errors++
+    }
+    elseif ($usedPct -gt 75) {
+        Write-Host "⚠ $usedPct% used" -ForegroundColor Yellow
+        $warnings++
+    }
+    else {
+        Write-Host "✓ $usedPct% used ($freeRAM GB free)" -ForegroundColor Green
+    }
+
+    Write-Host ""
+    Write-Host "  ═══ WSL Status ═══" -ForegroundColor Yellow
+    wsl -l -v 2>$null | ForEach-Object { Write-Host "    $_" }
 
     Write-Host ""
     Write-Host "  ═══ Docker Status ═══" -ForegroundColor Yellow
-    Run-WSL "docker system df"
+    Run-WSL "docker system df" 2>$null
 
     Write-Host ""
     Write-Host "  ═══ Running Containers ═══" -ForegroundColor Yellow
-    Run-WSL "docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | head -20"
+    Run-WSL "docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | head -15"
 
     Write-Host ""
     Write-Host "  ═══ Disk Usage ═══" -ForegroundColor Yellow
     $drive = Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='C:'"
     $freeGB = [math]::Round($drive.FreeSpace / 1GB, 1)
     $totalGB = [math]::Round($drive.Size / 1GB, 1)
-    $usedPct = [math]::Round((1 - $drive.FreeSpace / $drive.Size) * 100, 1)
-    Write-Host "    C: Drive: $freeGB GB free / $totalGB GB ($usedPct% used)" -ForegroundColor $(if ($usedPct -gt 80) { "Red" } elseif ($usedPct -gt 60) { "Yellow" } else { "Green" })
+    $usedPctDisk = [math]::Round((1 - $drive.FreeSpace / $drive.Size) * 100, 1)
+    Write-Host "    C: Drive: $freeGB GB free / $totalGB GB ($usedPctDisk% used)" -ForegroundColor $(if ($usedPctDisk -gt 80) { "Red" } elseif ($usedPctDisk -gt 60) { "Yellow" } else { "Green" })
 
     # Check VHDX sizes
     $dockerVhdx = Get-Item "$env:LOCALAPPDATA\Docker\wsl\disk\docker_data.vhdx" -ErrorAction SilentlyContinue
     if ($dockerVhdx) {
         $vhdxGB = [math]::Round($dockerVhdx.Length / 1GB, 1)
         Write-Host "    Docker VHDX: $vhdxGB GB" -ForegroundColor $(if ($vhdxGB -gt 100) { "Yellow" } else { "Green" })
+    }
+
+    Write-Host ""
+    Write-Host "  ═══ Summary ═══" -ForegroundColor Yellow
+    if ($errors -gt 0) {
+        Write-Host "  ✗ $errors error(s) require attention" -ForegroundColor Red
+    }
+    if ($warnings -gt 0) {
+        Write-Host "  ⚠ $warnings warning(s) found" -ForegroundColor Yellow
+    }
+    if ($errors -eq 0 -and $warnings -eq 0) {
+        Write-Host "  ✓ All checks passed! System is optimized." -ForegroundColor Green
     }
 
     Write-Host ""
