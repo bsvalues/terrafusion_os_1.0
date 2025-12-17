@@ -1,7 +1,7 @@
 # SpecLock: Fix breaker PATH resolution
 
 > Session: `20251217_163311Z_os-shell_fix-breaker-path-resolution`
-> Status: **DRAFT** (must freeze before coding)
+> Status: **FROZEN**
 
 ---
 
@@ -10,40 +10,26 @@
 <!-- Define exact files/modules in scope -->
 
 ```
-config/tenant.
+ops/agents/generate-contract.py  - Add TF_CLI constant for deterministic path
+ops/dev/tf.sh                    - Fix set -e exit on agent check failure
 ```
 
 ---
 
 ## Public API / Component Contracts
 
-### Routes / Endpoints
-<!-- List all new or modified endpoints -->
-
-| Method | Path | Request | Response | Auth |
-|:-------|:-----|:--------|:---------|:-----|
-| | | | | |
-
 ### CLI Commands / Flags
 <!-- New command-line options -->
 
 | Command | Flag | Type | Default | Description |
 |:--------|:-----|:-----|:--------|:------------|
-| | | | | |
+| tf gate | (no change) | | | Gate check 10 now completes even if session errors found |
 
-### Component Props (if UI)
-<!-- Component interface -->
+### Internal Constants
 
-| Prop | Type | Required | Description |
-|:-----|:-----|:---------|:------------|
-| | | | |
-
-### Events Emitted
-<!-- Events the component emits -->
-
-| Event | Payload | When |
-|:------|:--------|:-----|
-| | | |
+| Constant | Value | File | Description |
+|:---------|:------|:-----|:------------|
+| TF_CLI | `./ops/dev/tf.sh` | generate-contract.py | Deterministic path to tf CLI |
 
 ---
 
@@ -51,39 +37,15 @@ config/tenant.
 
 | Code | Status | Message | When |
 |:-----|:-------|:--------|:-----|
-| | | | |
-
----
-
-## Telemetry Contracts
-
-### Metrics
-<!-- Metrics to emit -->
-
-| Metric | Type | Labels | Description |
-|:-------|:-----|:-------|:------------|
-| | | | |
-
-### Log Events
-<!-- Structured log events -->
-
-| Event | Level | Fields | When |
-|:------|:------|:-------|:-----|
-| | | | |
-
-### Trace Spans
-<!-- Distributed tracing spans -->
-
-| Span | Parent | Attributes |
-|:-----|:-------|:-----------|
-| | | |
+| 1 | fail | Gate check 10 session issues | Agent session health check finds errors |
 
 ---
 
 ## Backward Compat Rules
 
 - **Breaking changes**: NONE
-<!-- Or list them with migration path -->
+- All gate behavior unchanged externally
+- PATH now resolved deterministically vs relying on shell PATH
 
 ---
 
@@ -91,29 +53,16 @@ config/tenant.
 
 <!-- What this feature explicitly does NOT do -->
 
-- 
+- Does NOT change gate check logic
+- Does NOT modify breaker pass criteria
+- Does NOT affect session completion workflow
 
 ---
 
 ## Frozen At
 
-<!-- Add timestamp when freezing -->
+**Status**: FROZEN
 
-**Status**: DRAFT
+**Frozen At**: 2025-12-17T16:46:00Z
 
-**Frozen At**: _not frozen_
-
-**Frozen By**: _agent name_
-
----
-
-### Freeze Checklist
-
-Before marking FROZEN:
-- [ ] All API surfaces documented
-- [ ] Error cases enumerated
-- [ ] Telemetry contracts defined
-- [ ] Breaking changes assessed
-- [ ] Non-goals documented
-
-**To freeze**: Change status to FROZEN and add UTC timestamp.
+**Frozen By**: claude-agent
