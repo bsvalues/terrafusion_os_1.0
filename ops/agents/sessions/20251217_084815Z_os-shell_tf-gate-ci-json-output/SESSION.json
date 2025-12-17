@@ -3,7 +3,7 @@
   "id": "20251217_084815Z_os-shell_tf-gate-ci-json-output",
   "status": "active",
   "createdUtc": "2025-12-17T08:48:15Z",
-  "updatedUtc": "2025-12-17T08:48:15Z",
+  "updatedUtc": "2025-12-17T16:09:36Z",
   "project": "os-shell",
   "feature": "tf gate --ci JSON output",
   "featureSlug": "tf-gate-ci-json-output",
