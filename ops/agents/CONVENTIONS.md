@@ -56,6 +56,20 @@
 - CI JSON purity: no ANSI codes, no raw plugin output in machine-readable mode
 - Kill semantics: --plugin required, running validation, exit 0/1/2 contract
 
+### RuntimeCert Bundle Subsystem (v1.0.0-runtimecert-bundle-constitution)
+- `ops/dev/tf.sh` cmd_release_bundle(), cmd_release_verify() implementations
+- Invocation contract (exit codes: 0=success, 1=failure, 2=invalid)
+- Bundle command: `tf release bundle --out <dir> [--mode dev|techsupport|prod] [--include-sbom] [--force]`
+- Verify command: `tf release verify --bundle <dir> [--ci]`
+- Bundle layout: manifest.json, proofs/ (gate.json, agent.json, deploy.json, marketplace.json), checksums.sha256, bundle_meta.json
+- Proof schema: must include version, timestamp, status, source, summary fields
+- Status enum: pass|fail|warn|error (fail/error triggers verify failure)
+- Checksum integrity: SHA-256 of all files except bundle_meta.json
+- Determinism: stable JSON ordering, timestamps allowed only in bundle_meta.json and proof files
+- CI JSON purity: no ANSI codes, newlines stripped from paths, valid JSON output
+- Path sanitization: control characters and newlines removed from all JSON output
+- Overwrite protection: fails on existing directory unless --force
+
 This governance layer is **IMMUTABLE** without explicit constitutional amendment process.
 
 **Amendment Process:**
