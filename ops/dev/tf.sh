@@ -1616,6 +1616,16 @@ cmd_agent() {
                 return 2
             fi
             
+            # Validate project against canonical registry (generate-contract.py PROJECTS)
+            local valid_projects="os-shell api-gateway ai-lab consciousness terrabuild sdk"
+            if ! echo "$valid_projects" | grep -qw "$project"; then
+                log_error "Invalid project: $project"
+                echo ""
+                echo "Valid projects: os-shell, api-gateway, ai-lab, consciousness, terrabuild, sdk"
+                echo ""
+                return 2
+            fi
+            
             # Run gate first
             log_info "Running gate check before agent session..."
             if ! cmd_gate >/dev/null 2>&1; then
