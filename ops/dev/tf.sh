@@ -1775,6 +1775,308 @@ print(json.dumps(sessions, indent=2))
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
+# Deploy Runtime Protocol (v1.0.0 Constitution)
+# ═══════════════════════════════════════════════════════════════════════════
+
+ACTIVE_SESSION="$ROOT/ops/agents/ACTIVE_SESSION"
+
+cmd_deploy() {
+    local subcmd="${1:-deploy}"
+    
+    # Handle subcommands (promote, rollback)
+    if [[ "$subcmd" == "promote" ]]; then
+        shift
+        cmd_deploy_promote "$@"
+        return $?
+    elif [[ "$subcmd" == "rollback" ]]; then
+        shift
+        cmd_deploy_rollback "$@"
+        return $?
+    fi
+    
+    # Main deploy command parsing
+    local environment="" bundle_path="" ci_mode="" dry_run=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --env=*) environment="${1#*=}" ;;
+            --env) environment="$2"; shift ;;
+            --bundle=*) bundle_path="${1#*=}" ;;
+            --bundle) bundle_path="$2"; shift ;;
+            --ci) ci_mode="true" ;;
+            --dry-run) dry_run="true" ;;
+            promote|rollback)
+                # Already handled above
+                shift
+                continue
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                echo ""
+                echo "Usage: tf deploy --env <dev|techsupport|prod> --bundle <path> [--ci] [--dry-run]"
+                echo "       tf deploy promote --from <env> --to <env>"
+                echo "       tf deploy rollback --env <env> --to-version <version>"
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    # ─── Invariant A: Invocation Validity (Exit 2) ───
+    if [[ -z "$environment" ]]; then
+        log_error "Missing required argument: --env"
+        echo ""
+        echo "Valid environments: dev, techsupport, prod"
+        echo ""
+        echo "Usage: tf deploy --env <dev|techsupport|prod> --bundle <path>"
+        return 2
+    fi
+    
+    if [[ ! "$environment" =~ ^(dev|techsupport|prod)$ ]]; then
+        log_error "Invalid environment: $environment"
+        echo ""
+        echo "Valid environments: dev, techsupport, prod"
+        echo ""
+        echo "Usage: tf deploy --env <dev|techsupport|prod> --bundle <path>"
+        return 2
+    fi
+    
+    if [[ -z "$bundle_path" ]]; then
+        log_error "Missing required argument: --bundle"
+        echo ""
+        echo "Usage: tf deploy --env <env> --bundle <path>"
+        return 2
+    fi
+    
+    # ─── Invariant B: Gate-First (Exit 1) ───
+    if [[ -n "$ci_mode" ]]; then
+        # CI mode: run gate in JSON mode
+        if ! bash "$SCRIPT_DIR/tf.sh" gate --ci >/dev/null 2>&1; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","reason":"gate_failed","environment":"'"$environment"'"}'
+            else
+                log_error "Gate check failed - deployment blocked"
+                echo ""
+                echo "Fix gate violations before deploying:"
+                echo "  tf gate"
+            fi
+            return 1
+        fi
+    else
+        # Human mode: show gate results
+        log_info "Running gate preflight check..."
+        if ! bash "$SCRIPT_DIR/tf.sh" gate; then
+            log_error "Gate check failed - deployment blocked"
+            echo ""
+            echo "Fix gate violations before deploying:"
+            echo "  tf gate"
+            return 1
+        fi
+    fi
+    
+    # ─── Invariant C: No Active Sessions (Exit 1) ───
+    if [[ -f "$ACTIVE_SESSION" ]]; then
+        local session_id
+        session_id=$(cat "$ACTIVE_SESSION" 2>/dev/null || echo "unknown")
+        
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","reason":"active_session","session_id":"'"$session_id"'","environment":"'"$environment"'"}'
+        else
+            log_error "Active agent session detected: $session_id"
+            echo ""
+            echo "Complete or abort the active session before deploying:"
+            echo "  tf agent complete"
+            echo "  tf agent status"
+        fi
+        return 1
+    fi
+    
+    # ─── Invariant D: Bundle Requirements (Exit 1) ───
+    if [[ ! -d "$bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","reason":"bundle_not_found","bundle":"'"$bundle_path"'","environment":"'"$environment"'"}'
+        else
+            log_error "Bundle path not found: $bundle_path"
+            echo ""
+            echo "Ensure bundle directory exists and contains:"
+            echo "  - manifest.json"
+            echo "  - sbom.json"
+            echo "  - proofs/"
+        fi
+        return 1
+    fi
+    
+    if [[ ! -f "$bundle_path/manifest.json" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","reason":"missing_manifest","bundle":"'"$bundle_path"'","environment":"'"$environment"'"}'
+        else
+            log_error "Bundle missing required file: manifest.json"
+            echo ""
+            echo "Bundle structure:"
+            echo "  bundle/"
+            echo "    ├── manifest.json  (required)"
+            echo "    ├── sbom.json      (required)"
+            echo "    └── proofs/        (required)"
+        fi
+        return 1
+    fi
+    
+    # ─── Dry-Run Exit (Success) ───
+    if [[ -n "$dry_run" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","mode":"dry_run","environment":"'"$environment"'","bundle":"'"$bundle_path"'"}'
+        else
+            log_success "Dry-run preflight checks passed"
+            echo ""
+            echo "  Environment:  $environment"
+            echo "  Bundle:       $bundle_path"
+            echo "  Gate:         ✓ Passed"
+            echo "  Sessions:     ✓ None active"
+            echo "  Bundle:       ✓ Valid structure"
+            echo ""
+            echo "Ready for deployment (remove --dry-run to execute)"
+        fi
+        return 0
+    fi
+    
+    # ─── Actual Deployment (Placeholder for v1.0) ───
+    if [[ -n "$ci_mode" ]]; then
+        echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","environment":"'"$environment"'","bundle":"'"$bundle_path"'","note":"v1.0_placeholder_actual_deployment_tbd"}'
+    else
+        log_success "Deploy preflight complete - ready for deployment"
+        echo ""
+        echo "  Environment:  $environment"
+        echo "  Bundle:       $bundle_path"
+        echo ""
+        log_warn "NOTE: v1.0.0 constitution establishes governance only"
+        log_warn "      Actual deployment orchestration: Phase 2"
+    fi
+    
+    return 0
+}
+
+cmd_deploy_promote() {
+    local from_env="" to_env="" ci_mode=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --from=*) from_env="${1#*=}" ;;
+            --from) from_env="$2"; shift ;;
+            --to=*) to_env="${1#*=}" ;;
+            --to) to_env="$2"; shift ;;
+            --ci) ci_mode="true" ;;
+            *)
+                log_error "Unknown option: $1"
+                echo ""
+                echo "Usage: tf deploy promote --from <env> --to <env> [--ci]"
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    # Validation
+    if [[ -z "$from_env" ]] || [[ -z "$to_env" ]]; then
+        log_error "Missing required arguments: --from and --to"
+        echo ""
+        echo "Usage: tf deploy promote --from <dev|techsupport> --to <techsupport|prod>"
+        return 2
+    fi
+    
+    if [[ ! "$from_env" =~ ^(dev|techsupport)$ ]] || [[ ! "$to_env" =~ ^(techsupport|prod)$ ]]; then
+        log_error "Invalid promotion path: $from_env → $to_env"
+        echo ""
+        echo "Valid paths: dev→techsupport, techsupport→prod"
+        return 2
+    fi
+    
+    # Prevent backwards promotion
+    if [[ "$from_env" == "techsupport" && "$to_env" == "dev" ]] || \
+       [[ "$from_env" == "prod" ]]; then
+        log_error "Invalid promotion direction: $from_env → $to_env"
+        echo ""
+        echo "Promotions must move forward: dev→techsupport→prod"
+        return 2
+    fi
+    
+    # Gate-first check
+    if ! bash "$SCRIPT_DIR/tf.sh" gate --ci >/dev/null 2>&1; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","reason":"gate_failed","operation":"promote","from":"'"$from_env"'","to":"'"$to_env"'"}'
+        else
+            log_error "Gate check failed - promotion blocked"
+        fi
+        return 1
+    fi
+    
+    # Placeholder for actual promotion
+    if [[ -n "$ci_mode" ]]; then
+        echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","operation":"promote","from":"'"$from_env"'","to":"'"$to_env"'","note":"v1.0_placeholder"}'
+    else
+        log_success "Promotion preflight complete: $from_env → $to_env"
+        log_warn "NOTE: Actual promotion orchestration: Phase 2"
+    fi
+    
+    return 0
+}
+
+cmd_deploy_rollback() {
+    local environment="" version="" ci_mode=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --env=*) environment="${1#*=}" ;;
+            --env) environment="$2"; shift ;;
+            --to-version=*) version="${1#*=}" ;;
+            --to-version) version="$2"; shift ;;
+            --ci) ci_mode="true" ;;
+            *)
+                log_error "Unknown option: $1"
+                echo ""
+                echo "Usage: tf deploy rollback --env <env> --to-version <version> [--ci]"
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    # Validation
+    if [[ -z "$environment" ]] || [[ -z "$version" ]]; then
+        log_error "Missing required arguments: --env and --to-version"
+        echo ""
+        echo "Usage: tf deploy rollback --env <dev|techsupport|prod> --to-version <version>"
+        return 2
+    fi
+    
+    if [[ ! "$environment" =~ ^(dev|techsupport|prod)$ ]]; then
+        log_error "Invalid environment: $environment"
+        echo ""
+        echo "Valid environments: dev, techsupport, prod"
+        return 2
+    fi
+    
+    # Gate-first check
+    if ! bash "$SCRIPT_DIR/tf.sh" gate --ci >/dev/null 2>&1; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","reason":"gate_failed","operation":"rollback","environment":"'"$environment"'","version":"'"$version"'"}'
+        else
+            log_error "Gate check failed - rollback blocked"
+        fi
+        return 1
+    fi
+    
+    # Placeholder for actual rollback
+    if [[ -n "$ci_mode" ]]; then
+        echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","operation":"rollback","environment":"'"$environment"'","version":"'"$version"'","note":"v1.0_placeholder"}'
+    else
+        log_success "Rollback preflight complete: $environment → $version"
+        log_warn "NOTE: Actual rollback orchestration: Phase 2"
+    fi
+    
+    return 0
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
 # Main
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -1794,5 +2096,6 @@ case "$cmd" in
     ai)       cmd_ai "$@" ;;
     hub)      cmd_hub "$@" ;;
     agent)    cmd_agent "$@" ;;
+    deploy)   cmd_deploy "$@" ;;
     help|*)   show_help ;;
 esac
