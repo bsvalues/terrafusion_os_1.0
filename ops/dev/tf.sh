@@ -1635,8 +1635,8 @@ cmd_agent() {
                 if [[ -n "$active_session_id" ]]; then
                     local session_dir="$SESSIONS_DIR/$active_session_id"
                     local feature_name="unknown"
-                    if [[ -f "$session_dir/session.json" ]]; then
-                        feature_name=$(python3 -c "import json; print(json.load(open('$session_dir/session.json')).get('feature', 'unknown'))" 2>/dev/null || echo "unknown")
+                    if [[ -f "$session_dir/SESSION.json" ]]; then
+                        feature_name=$(python3 -c "import json; print(json.load(open('$session_dir/SESSION.json')).get('feature', 'unknown'))" 2>/dev/null || echo "unknown")
                     fi
                     log_error "Concurrent session detected: $feature_name"
                     echo ""

@@ -119,7 +119,7 @@ run_test
 cleanup_sessions
 # We can't easily simulate gate failure without breaking the system
 # So we verify gate is called by checking the output
-output=$(bash "$TF" agent run --project="os-shell" --feature="test-gate-check" --print 2>&1) && rc=0 || rc=$?
+output=$(bash "$TF" agent run --project="os-shell" --feature="test-gate-check" 2>&1) && rc=0 || rc=$?
 if [[ $output == *"gate"* ]] || [[ $output == *"Gate"* ]]; then
     pass
 else
@@ -171,11 +171,11 @@ echo "D. Session State Machine:"
 echo -n "  [D1] Session creates required artifacts... "
 run_test
 cleanup_sessions
-bash "$TF" agent run --project="os-shell" --feature="test-artifacts" --print >/dev/null 2>&1 || true
+bash "$TF" agent run --project="os-shell" --feature="test-artifacts" >/dev/null 2>&1 || true
 latest_session=$(ls -t "$SESSIONS_DIR" 2>/dev/null | grep "test-artifacts" | head -1 || true)
 if [[ -n "$latest_session" ]]; then
     session_dir="$SESSIONS_DIR/$latest_session"
-    required_files=("session.json" "CONTRACT.md" "SPECLOCK.md" "TESTPLAN.md" "NOTES.md")
+    required_files=("SESSION.json" "CONTRACT.md" "SPECLOCK.md" "TESTPLAN.md" "NOTES.md")
     all_exist=true
     for file in "${required_files[@]}"; do
         if [[ ! -f "$session_dir/$file" ]]; then
@@ -198,7 +198,7 @@ run_test
 cleanup_sessions
 # Create active session marker
 echo "test-session-id" > "$ACTIVE_SESSION"
-output=$(bash "$TF" agent run --project="os-shell" --feature="concurrent-test" --print 2>&1) && rc=0 || rc=$?
+output=$(bash "$TF" agent run --project="os-shell" --feature="concurrent-test" 2>&1) && rc=0 || rc=$?
 if [[ $rc -ne 0 ]]; then
     # Should fail with active session (exit 1)
     if [[ $output == *"Concurrent"* ]] || [[ $output == *"active session"* ]]; then
@@ -215,10 +215,10 @@ cleanup_sessions
 echo -n "  [D3] Session status in session.json... "
 run_test
 cleanup_sessions
-bash "$TF" agent run --project="os-shell" --feature="status-test" --print >/dev/null 2>&1 || true
+bash "$TF" agent run --project="os-shell" --feature="status-test" >/dev/null 2>&1 || true
 latest_session=$(ls -t "$SESSIONS_DIR" 2>/dev/null | grep "status-test" | head -1 || true)
 if [[ -n "$latest_session" ]]; then
-    session_json="$SESSIONS_DIR/$latest_session/session.json"
+    session_json="$SESSIONS_DIR/$latest_session/SESSION.json"
     if [[ -f "$session_json" ]]; then
         status=$(python3 -c "import json; print(json.load(open('$session_json')).get('status',''))" 2>/dev/null || echo "")
         if [[ "$status" == "active" ]] || [[ "$status" == "created" ]]; then
@@ -227,7 +227,7 @@ if [[ -n "$latest_session" ]]; then
             fail "Invalid status: $status"
         fi
     else
-        fail "No session.json"
+        fail "No SESSION.json"
     fi
 else
     fail "No session created"
@@ -244,7 +244,7 @@ echo "E. Immutable Audit Trail:"
 echo -n "  [E1] PATCHLOG structure valid... "
 run_test
 cleanup_sessions
-bash "$TF" agent run --project="os-shell" --feature="patchlog-test" --print >/dev/null 2>&1 || true
+bash "$TF" agent run --project="os-shell" --feature="patchlog-test" >/dev/null 2>&1 || true
 latest_session=$(ls -t "$SESSIONS_DIR" 2>/dev/null | grep "patchlog-test" | head -1 || true)
 if [[ -n "$latest_session" ]]; then
     patchlog="$SESSIONS_DIR/$latest_session/PATCHLOG.md"
