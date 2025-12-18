@@ -43,6 +43,19 @@
 - Lifecycle commands (install, enable, disable, remove, list, inspect)
 - CI JSON mode (--ci flag, machine-readable output)
 
+### Marketplace Execution Containment (v1.0.0-marketplace-execution-constitution)
+- `ops/dev/tf.sh` cmd_marketplace_run(), cmd_marketplace_kill() implementations
+- Execution invocation contract (exit codes: 0=success, 1=policy/runtime failure, 2=invalid)
+- Plugin prerequisite enforcement: installed + enabled, else fail-closed exit 1
+- Entrypoint validation: valid identifier + file exists, else exit 2
+- Capability enforcement: CAPABILITY_INVOKE: prefix, fail-closed allowlist check
+- Resource limits: --timeout flag (default 60s), process-group kill (setsid)
+- Crash containment: subprocess isolation, no host crash propagation
+- Process group containment: setsid + kill entire process group (-pgid) on timeout
+- Audit logging: ops/marketplace/audit/{plugin_id}/{timestamp}.json (7 required fields)
+- CI JSON purity: no ANSI codes, no raw plugin output in machine-readable mode
+- Kill semantics: --plugin required, running validation, exit 0/1/2 contract
+
 This governance layer is **IMMUTABLE** without explicit constitutional amendment process.
 
 **Amendment Process:**

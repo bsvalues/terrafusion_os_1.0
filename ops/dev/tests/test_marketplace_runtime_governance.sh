@@ -518,6 +518,48 @@ else
 fi
 cleanup_bundles
 
+# Test R.D4: Background processes killed with parent (process group containment)
+echo -n "  [R.D4] Background processes killed with parent (setsid)... "
+run_test
+cleanup_registry
+cleanup_audit
+bundle_path="/tmp/tf-marketplace-runtime-test-d4-$$"
+mkdir -p "$bundle_path"
+# Create a plugin that spawns background process with nohup
+cat > "$bundle_path/main.sh" << 'FORK_SCRIPT'
+#!/bin/bash
+# Spawn a background process that writes to marker file
+nohup bash -c "sleep 60; echo 'survived' > /tmp/tf-fork-survived-marker" &
+# Parent sleeps, gets killed by timeout
+sleep 30
+FORK_SCRIPT
+chmod +x "$bundle_path/main.sh"
+cat > "$bundle_path/manifest.json" << 'EOF'
+{"id":"fork-test","version":"1.0.0","name":"Fork Test","entrypoints":{"main":"main.sh"},"capabilities":["ui.panel"]}
+EOF
+install_and_enable_plugin "$bundle_path" "fork-test"
+# Remove any stale marker
+rm -f /tmp/tf-fork-survived-marker
+# Run with very short timeout (2s) - parent + children should all be killed
+output=$(timeout 10 bash "$TF" marketplace run --plugin fork-test --entry main --timeout 2 2>&1) && rc=0 || rc=$?
+# Wait a moment for any rogue processes to potentially write
+sleep 1
+# Check if background process survived (it should NOT)
+if [[ -f /tmp/tf-fork-survived-marker ]]; then
+    fail "Background process survived timeout - process group kill failed"
+elif [[ $rc -eq 1 ]]; then
+    # Also verify no lingering sleep processes from our test
+    if pgrep -f "sleep 60.*tf-fork" >/dev/null 2>&1; then
+        fail "Background process still running"
+    else
+        pass
+    fi
+else
+    fail "Wrong exit code: $rc (expected 1)"
+fi
+rm -f /tmp/tf-fork-survived-marker
+cleanup_bundles
+
 echo ""
 
 # ==============================================================================

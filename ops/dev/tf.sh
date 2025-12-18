@@ -2936,26 +2936,26 @@ PY
     start_epoch=$(date +%s%N)
 
     # Execute in subprocess with timeout, tracking PID for potential kill
+    # SECURITY: Use setsid to create new process group for full containment
     local exec_output_file="/tmp/tf-mp-exec-output-$$"
     local exec_rc_file="/tmp/tf-mp-exec-rc-$$"
     
-    # Run plugin in background so we can track PID
-    (
-        bash "$full_entrypoint" >"$exec_output_file" 2>&1
-        echo $? >"$exec_rc_file"
-    ) &
+    # Run plugin in NEW SESSION (setsid) so we can kill entire process group
+    # This prevents background processes (nohup, &) from surviving timeout
+    setsid bash -c "bash \"$full_entrypoint\" >\"$exec_output_file\" 2>&1; echo \$? >\"$exec_rc_file\"" &
     local plugin_pid=$!
     
-    # Record PID for kill command
+    # Record PID for kill command (this is now the session leader)
     _mp_mark_running "$plugin" "$plugin_pid"
     
     # Wait with timeout
     local exec_rc=0
     if ! timeout "$timeout_s" tail --pid=$plugin_pid -f /dev/null 2>/dev/null; then
-        # Timeout exceeded, kill the plugin
-        kill -TERM "$plugin_pid" 2>/dev/null || true
+        # Timeout exceeded, kill ENTIRE PROCESS GROUP (negative PID)
+        # This ensures background processes spawned by plugin are also killed
+        kill -TERM -- -"$plugin_pid" 2>/dev/null || true
         sleep 0.5
-        kill -KILL "$plugin_pid" 2>/dev/null || true
+        kill -KILL -- -"$plugin_pid" 2>/dev/null || true
         exec_rc=124
     else
         wait "$plugin_pid" 2>/dev/null || true
