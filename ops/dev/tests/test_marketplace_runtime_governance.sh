@@ -30,9 +30,14 @@ set -uo pipefail
 # --- Constants ---
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 TF="$ROOT/ops/dev/tf.sh"
-MARKETPLACE_DIR="${MARKETPLACE_DIR:-$ROOT/ops/marketplace}"
-REGISTRY="${MARKETPLACE_REGISTRY:-$MARKETPLACE_DIR/registry.json}"
+# Use temp directory for test isolation
+export MARKETPLACE_DIR="${MARKETPLACE_DIR:-/tmp/tf-marketplace-runtime-test-suite-$$}"
+export MARKETPLACE_REGISTRY="$MARKETPLACE_DIR/registry.json"
+REGISTRY="$MARKETPLACE_REGISTRY"
 AUDIT_DIR="$MARKETPLACE_DIR/audit"
+
+# Initialize test directories
+mkdir -p "$MARKETPLACE_DIR/audit"
 
 # Test counters
 PASS_COUNT=0
@@ -71,6 +76,41 @@ skip() {
 
 run_test() {
     ((TOTAL_TESTS++))
+}
+
+# JSON validation helper (uses jq if available, grep fallback)
+json_valid() {
+    local input="$1"
+    if command -v jq &>/dev/null; then
+        echo "$input" | jq . >/dev/null 2>&1
+    else
+        # Fallback: basic JSON structure check
+        [[ "$input" == "{"*"}" ]] && echo "$input" | grep -qE '"[^"]+"\s*:'
+    fi
+}
+
+# JSON field check helper (uses jq if available, grep fallback)
+json_has_field() {
+    local input="$1"
+    local field="$2"
+    if command -v jq &>/dev/null; then
+        echo "$input" | jq -e ".$field" >/dev/null 2>&1
+    else
+        # Fallback: grep for field pattern
+        echo "$input" | grep -qE "\"$field\"\s*:"
+    fi
+}
+
+# JSON field check from file (uses jq if available, grep fallback)
+json_file_has_field() {
+    local file="$1"
+    local field="$2"
+    if command -v jq &>/dev/null; then
+        jq -e ".$field" "$file" >/dev/null 2>&1
+    else
+        # Fallback: grep for field pattern
+        grep -qE "\"$field\"\s*:" "$file"
+    fi
 }
 
 cleanup_registry() {
@@ -590,11 +630,11 @@ output=$(bash "$TF" marketplace run --plugin audit-schema --entry main 2>&1) && 
 # Find the audit log and check schema
 audit_log=$(ls "$AUDIT_DIR/audit-schema"/*.json 2>/dev/null | head -1)
 if [[ -f "$audit_log" ]]; then
-    # Check for required fields
-    has_plugin_id=$(jq -e '.plugin_id' "$audit_log" >/dev/null 2>&1&& echo "yes" || echo "no")
-    has_outcome=$(jq -e '.outcome' "$audit_log" >/dev/null 2>&1 && echo "yes" || echo "no")
-    has_started_at=$(jq -e '.started_at' "$audit_log" >/dev/null 2>&1 && echo "yes" || echo "no")
-    has_exit_code=$(jq -e '.exit_code' "$audit_log" >/dev/null 2>&1 && echo "yes" || echo "no")
+    # Check for required fields using portable helper
+    has_plugin_id=$(json_file_has_field "$audit_log" "plugin_id" && echo "yes" || echo "no")
+    has_outcome=$(json_file_has_field "$audit_log" "outcome" && echo "yes" || echo "no")
+    has_started_at=$(json_file_has_field "$audit_log" "started_at" && echo "yes" || echo "no")
+    has_exit_code=$(json_file_has_field "$audit_log" "exit_code" && echo "yes" || echo "no")
     
     if [[ "$has_plugin_id" == "yes" && "$has_outcome" == "yes" && "$has_started_at" == "yes" && "$has_exit_code" == "yes" ]]; then
         pass
@@ -622,7 +662,7 @@ bundle_path="/tmp/tf-marketplace-runtime-test-g1-$$"
 create_valid_plugin_bundle "$bundle_path" "ci-json-test"
 install_and_enable_plugin "$bundle_path" "ci-json-test"
 output=$(bash "$TF" marketplace run --plugin ci-json-test --entry main --ci 2>&1)
-if echo "$output" | jq . >/dev/null 2>&1; then
+if json_valid "$output"; then
     pass
 else
     fail "Output is not valid JSON"
@@ -654,9 +694,9 @@ bundle_path="/tmp/tf-marketplace-runtime-test-g3-$$"
 create_valid_plugin_bundle "$bundle_path" "ci-fields-test"
 install_and_enable_plugin "$bundle_path" "ci-fields-test"
 output=$(bash "$TF" marketplace run --plugin ci-fields-test --entry main --ci 2>&1)
-has_version=$(echo "$output" | jq -e '.version' >/dev/null 2>&1 && echo "yes" || echo "no")
-has_status=$(echo "$output" | jq -e '.status' >/dev/null 2>&1 && echo "yes" || echo "no")
-has_timestamp=$(echo "$output" | jq -e '.timestamp' >/dev/null 2>&1 && echo "yes" || echo "no")
+has_version=$(json_has_field "$output" "version" && echo "yes" || echo "no")
+has_status=$(json_has_field "$output" "status" && echo "yes" || echo "no")
+has_timestamp=$(json_has_field "$output" "timestamp" && echo "yes" || echo "no")
 if [[ "$has_version" == "yes" && "$has_status" == "yes" && "$has_timestamp" == "yes" ]]; then
     pass
 else
@@ -709,7 +749,7 @@ echo -n "  [R.H3] Kill --ci produces valid JSON... "
 run_test
 cleanup_registry
 output=$(bash "$TF" marketplace kill --plugin nonexistent --ci 2>&1) && rc=0 || rc=$?
-if echo "$output" | jq . >/dev/null 2>&1; then
+if json_valid "$output"; then
     pass
 else
     fail "Output is not valid JSON"

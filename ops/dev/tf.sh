@@ -2095,12 +2095,27 @@ cmd_marketplace() {
         remove)   cmd_marketplace_remove "$@" ;;
         list)     cmd_marketplace_list "$@" ;;
         inspect)  cmd_marketplace_inspect "$@" ;;
+        run)      cmd_marketplace_run "$@" ;;
+        kill)     cmd_marketplace_kill "$@" ;;
         ""|-h|--help|help)
-            echo "Usage: tf marketplace <install|enable|disable|remove|list|inspect> [options]"
+            echo "Usage: tf marketplace <command> [options]"
+            echo ""
+            echo "Lifecycle Commands:"
+            echo "  install   Install a plugin bundle"
+            echo "  enable    Enable an installed plugin"
+            echo "  disable   Disable an enabled plugin"
+            echo "  remove    Remove an installed plugin"
+            echo "  list      List installed plugins"
+            echo "  inspect   Show plugin details"
+            echo ""
+            echo "Runtime Commands:"
+            echo "  run       Execute a plugin entrypoint"
+            echo "  kill      Terminate a running plugin"
             echo ""
             echo "Examples:"
             echo "  tf marketplace install --bundle /path/to/plugin_bundle"
             echo "  tf marketplace enable --plugin my-plugin"
+            echo "  tf marketplace run --plugin my-plugin --entry main"
             echo "  tf marketplace list"
             return 0
             ;;
@@ -2650,6 +2665,434 @@ print(f"Manifest Hash: {plugin_data.get('manifest_hash')}")
 PY
     fi
     
+    return $?
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Marketplace Runtime Execution (Phase 2)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Audit directory initialization
+_mp_audit_init() {
+    local plugin_id="$1"
+    mkdir -p "$MARKETPLACE_DIR/audit/$plugin_id"
+}
+
+# Write audit log entry
+_mp_write_audit_log() {
+    local plugin_id="$1"
+    local plugin_version="$2"
+    local entrypoint="$3"
+    local capabilities="$4"
+    local started_at="$5"
+    local ended_at="$6"
+    local duration_ms="$7"
+    local timeout_s="$8"
+    local outcome="$9"
+    local exit_code="${10}"
+    local reason="${11:-null}"
+    
+    local audit_file="$MARKETPLACE_DIR/audit/$plugin_id/$(echo "$started_at" | tr ':' '-').json"
+    
+    cat > "$audit_file" << EOF
+{
+  "version": "1.0.0",
+  "plugin_id": "$plugin_id",
+  "plugin_version": "$plugin_version",
+  "entrypoint": "$entrypoint",
+  "capabilities_declared": $capabilities,
+  "started_at": "$started_at",
+  "ended_at": "$ended_at",
+  "duration_ms": $duration_ms,
+  "timeout_limit_s": $timeout_s,
+  "outcome": "$outcome",
+  "exit_code": $exit_code,
+  "reason": $reason,
+  "host_version": "1.0.0"
+}
+EOF
+}
+
+# Check if capability is in declared list
+_mp_capability_check() {
+    local invoked="$1"
+    local declared_json="$2"
+    
+    # Check if invoked capability is in declared list
+    echo "$declared_json" | python3 -c "
+import json,sys
+caps = json.load(sys.stdin)
+invoked = '$invoked'
+# Check allowlist first
+allowed = ['ui.panel', 'ui.command', 'data.read', 'data.write', 'gis.read', 'gis.render']
+if invoked not in allowed:
+    sys.exit(1)  # Forbidden capability
+if invoked not in caps:
+    sys.exit(2)  # Not declared
+sys.exit(0)
+" 2>/dev/null
+    return $?
+}
+
+# Quarantine a plugin
+_mp_quarantine_plugin() {
+    local plugin_id="$1"
+    local reason="$2"
+    local ts
+    ts="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+    
+    python3 - "$MARKETPLACE_REGISTRY" "$plugin_id" "$reason" "$ts" << 'PY'
+import json,sys
+reg_path, pid, reason, ts = sys.argv[1:5]
+reg = json.load(open(reg_path))
+plugins = reg.get("plugins") or []
+
+for p in plugins:
+    if p.get("id") == pid:
+        p["status"] = "quarantined"
+        p["enabled"] = False
+        p["quarantine_reason"] = reason
+        p["quarantined_at"] = ts
+
+reg["updated_at"] = ts
+with open(reg_path, "w") as f:
+    json.dump(reg, f, indent=2, sort_keys=True)
+    f.write("\n")
+PY
+}
+
+# Track running plugins (PID file based)
+PLUGIN_RUN_DIR="${PLUGIN_RUN_DIR:-$MARKETPLACE_DIR/run}"
+
+_mp_running_plugins_init() {
+    mkdir -p "$PLUGIN_RUN_DIR"
+}
+
+_mp_mark_running() {
+    local plugin_id="$1"
+    local pid="$2"
+    echo "$pid" > "$PLUGIN_RUN_DIR/$plugin_id.pid"
+}
+
+_mp_mark_stopped() {
+    local plugin_id="$1"
+    rm -f "$PLUGIN_RUN_DIR/$plugin_id.pid"
+}
+
+_mp_is_running() {
+    local plugin_id="$1"
+    local pid_file="$PLUGIN_RUN_DIR/$plugin_id.pid"
+    if [[ -f "$pid_file" ]]; then
+        local pid
+        pid=$(cat "$pid_file")
+        if kill -0 "$pid" 2>/dev/null; then
+            return 0
+        fi
+        # Stale PID file
+        rm -f "$pid_file"
+    fi
+    return 1
+}
+
+_mp_get_running_pid() {
+    local plugin_id="$1"
+    local pid_file="$PLUGIN_RUN_DIR/$plugin_id.pid"
+    if [[ -f "$pid_file" ]]; then
+        cat "$pid_file"
+    fi
+}
+
+cmd_marketplace_run() {
+    local plugin=""
+    local entry=""
+    local timeout_s=30
+    local ci=0
+    local dry_run=0
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --plugin) plugin="${2:-}"; shift 2 ;;
+            --entry) entry="${2:-}"; shift 2 ;;
+            --timeout) timeout_s="${2:-30}"; shift 2 ;;
+            --ci) ci=1; shift ;;
+            --dry-run) dry_run=1; shift ;;
+            -h|--help|help)
+                echo "Usage: tf marketplace run --plugin <id> --entry <name> [options]"
+                echo ""
+                echo "Options:"
+                echo "  --plugin <id>   Plugin ID (required)"
+                echo "  --entry <name>  Entrypoint from manifest (required)"
+                echo "  --timeout <s>   Timeout in seconds (default: 30)"
+                echo "  --ci            Machine-readable JSON output"
+                echo "  --dry-run       Validate without executing"
+                return 0
+                ;;
+            *)
+                _mp_fail_invalid "$ci" "Unknown flag: $1"
+                return $?
+                ;;
+        esac
+    done
+
+    # Validate required flags
+    if [[ -z "$plugin" ]]; then
+        _mp_fail_invalid "$ci" "Missing required --plugin <id>"
+        return $?
+    fi
+    
+    if [[ -z "$entry" ]]; then
+        _mp_fail_invalid "$ci" "Missing required --entry <entrypoint>"
+        return $?
+    fi
+
+    _mp_registry_init_if_missing
+    _mp_running_plugins_init
+    _mp_audit_init "$plugin"
+
+    # Check if plugin exists and is enabled
+    local plugin_data
+    plugin_data=$(python3 - "$MARKETPLACE_REGISTRY" "$plugin" << 'PY'
+import json,sys
+reg_path, pid = sys.argv[1:]
+reg = json.load(open(reg_path))
+plugins = reg.get("plugins") or []
+plugin_data = next((p for p in plugins if p.get("id") == pid), None)
+if plugin_data:
+    print(json.dumps(plugin_data))
+else:
+    sys.exit(1)
+PY
+    ) || {
+        _mp_fail "$ci" "Plugin not found in registry: $plugin" "plugin_not_found"
+        return $?
+    }
+
+    # Check if enabled
+    local enabled
+    enabled=$(echo "$plugin_data" | python3 -c "import json,sys; d=json.load(sys.stdin); print('true' if d.get('enabled') else 'false')")
+    if [[ "$enabled" != "true" ]]; then
+        _mp_fail "$ci" "Plugin not enabled. Run: tf marketplace enable --plugin $plugin" "plugin_not_enabled"
+        return $?
+    fi
+    
+    # Check if quarantined
+    local status
+    status=$(echo "$plugin_data" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('status',''))")
+    if [[ "$status" == "quarantined" ]]; then
+        _mp_fail "$ci" "Plugin is quarantined. Review audit logs and use --force to re-enable" "plugin_quarantined"
+        return $?
+    fi
+
+    # Get plugin details
+    local bundle_path version capabilities_json
+    bundle_path=$(echo "$plugin_data" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('bundle_path',''))")
+    version=$(echo "$plugin_data" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('version',''))")
+    capabilities_json=$(echo "$plugin_data" | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps(d.get('capabilities',[])))")
+
+    # Validate entrypoint exists in manifest
+    local manifest_file="$bundle_path/plugin.manifest.json"
+    if [[ ! -f "$manifest_file" ]]; then
+        _mp_fail_invalid "$ci" "Manifest not found: $manifest_file"
+        return $?
+    fi
+    
+    local entrypoint_path
+    entrypoint_path=$(python3 - "$manifest_file" "$entry" << 'PY'
+import json,sys
+manifest_path, entry_name = sys.argv[1:]
+manifest = json.load(open(manifest_path))
+entrypoints = manifest.get("entrypoints", {})
+if entry_name in entrypoints:
+    print(entrypoints[entry_name])
+else:
+    sys.exit(1)
+PY
+    ) || {
+        _mp_fail_invalid "$ci" "Entrypoint '$entry' not declared in manifest"
+        return $?
+    }
+
+    # Resolve full path
+    local full_entrypoint="$bundle_path/${entrypoint_path#./}"
+    if [[ ! -f "$full_entrypoint" ]]; then
+        _mp_fail_invalid "$ci" "Entrypoint file not found: $full_entrypoint"
+        return $?
+    fi
+
+    # Dry-run check
+    if [[ "$dry_run" == "1" ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _mp_ci_json "pass" "Dry-run validation passed for $plugin:$entry"
+        else
+            echo "Dry-run: Would execute $plugin:$entry (timeout=${timeout_s}s)"
+        fi
+        return 0
+    fi
+
+    # === EXECUTION ===
+    local started_at ended_at duration_ms outcome exit_code reason
+    started_at="$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")"
+    local start_epoch
+    start_epoch=$(date +%s%N)
+
+    # Execute in subprocess with timeout, tracking PID for potential kill
+    local exec_output_file="/tmp/tf-mp-exec-output-$$"
+    local exec_rc_file="/tmp/tf-mp-exec-rc-$$"
+    
+    # Run plugin in background so we can track PID
+    (
+        bash "$full_entrypoint" >"$exec_output_file" 2>&1
+        echo $? >"$exec_rc_file"
+    ) &
+    local plugin_pid=$!
+    
+    # Record PID for kill command
+    _mp_mark_running "$plugin" "$plugin_pid"
+    
+    # Wait with timeout
+    local exec_rc=0
+    if ! timeout "$timeout_s" tail --pid=$plugin_pid -f /dev/null 2>/dev/null; then
+        # Timeout exceeded, kill the plugin
+        kill -TERM "$plugin_pid" 2>/dev/null || true
+        sleep 0.5
+        kill -KILL "$plugin_pid" 2>/dev/null || true
+        exec_rc=124
+    else
+        wait "$plugin_pid" 2>/dev/null || true
+        exec_rc=$(cat "$exec_rc_file" 2>/dev/null || echo "1")
+    fi
+    
+    # Clean up tracking
+    _mp_mark_stopped "$plugin"
+    
+    # Read output
+    local exec_output=""
+    [[ -f "$exec_output_file" ]] && exec_output=$(cat "$exec_output_file")
+    rm -f "$exec_output_file" "$exec_rc_file"
+
+    local end_epoch
+    end_epoch=$(date +%s%N)
+    ended_at="$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")"
+    duration_ms=$(( (end_epoch - start_epoch) / 1000000 ))
+
+    # Check for capability violation in output
+    if echo "$exec_output" | grep -q "^CAPABILITY_INVOKE:"; then
+        local invoked_cap
+        invoked_cap=$(echo "$exec_output" | grep "^CAPABILITY_INVOKE:" | head -1 | cut -d: -f2)
+        
+        # Check if capability is allowed
+        if ! _mp_capability_check "$invoked_cap" "$capabilities_json" 2>/dev/null; then
+            outcome="policy_violation"
+            exit_code=1
+            reason="\"Capability violation: $invoked_cap not in allowlist\""
+            
+            # Quarantine the plugin
+            _mp_quarantine_plugin "$plugin" "Capability violation: $invoked_cap"
+            
+            # Write audit log
+            _mp_write_audit_log "$plugin" "$version" "$entry" "$capabilities_json" \
+                "$started_at" "$ended_at" "$duration_ms" "$timeout_s" \
+                "$outcome" "$exit_code" "$reason"
+            
+            _mp_fail "$ci" "Capability violation: $invoked_cap not in allowlist" "capability_violation"
+            return 1
+        fi
+    fi
+
+    # Determine outcome
+    if [[ $exec_rc -eq 124 ]] || [[ $exec_rc -eq 137 ]]; then
+        # Timeout
+        outcome="timeout"
+        exit_code=1
+        reason="\"Timeout exceeded (${timeout_s}s)\""
+    elif [[ $exec_rc -ne 0 ]]; then
+        # Crash/failure
+        outcome="crash"
+        exit_code=1
+        reason="\"Plugin exited with code $exec_rc\""
+    else
+        # Success
+        outcome="success"
+        exit_code=0
+        reason="null"
+    fi
+
+    # Write audit log
+    _mp_write_audit_log "$plugin" "$version" "$entry" "$capabilities_json" \
+        "$started_at" "$ended_at" "$duration_ms" "$timeout_s" \
+        "$outcome" "$exit_code" "$reason"
+
+    # Output result
+    if [[ "$ci" == "1" ]]; then
+        local audit_file="$MARKETPLACE_DIR/audit/$plugin/$(echo "$started_at" | tr ':' '-').json"
+        printf '%s\n' "{\"version\":\"1.0.0\",\"timestamp\":\"$ended_at\",\"command\":\"marketplace run\",\"status\":\"$([[ $exit_code -eq 0 ]] && echo "success" || echo "error")\",\"plugin_id\":\"$plugin\",\"entrypoint\":\"$entry\",\"exit_code\":$exit_code,\"audit_log\":\"$audit_file\"}"
+    else
+        if [[ $exit_code -eq 0 ]]; then
+            echo "Executed: $plugin:$entry (${duration_ms}ms)"
+        else
+            echo "ERROR: $outcome - $plugin:$entry" >&2
+        fi
+    fi
+
+    return $exit_code
+}
+
+cmd_marketplace_kill() {
+    local plugin=""
+    local ci=0
+    local force=0
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --plugin) plugin="${2:-}"; shift 2 ;;
+            --ci) ci=1; shift ;;
+            --force) force=1; shift ;;
+            -h|--help|help)
+                echo "Usage: tf marketplace kill --plugin <id> [options]"
+                echo ""
+                echo "Options:"
+                echo "  --plugin <id>   Plugin ID (required)"
+                echo "  --ci            Machine-readable JSON output"
+                echo "  --force         SIGKILL immediately (default: SIGTERM then SIGKILL)"
+                return 0
+                ;;
+            *)
+                _mp_fail_invalid "$ci" "Unknown flag: $1"
+                return $?
+                ;;
+        esac
+    done
+
+    if [[ -z "$plugin" ]]; then
+        _mp_fail_invalid "$ci" "Missing required --plugin <id>"
+        return $?
+    fi
+
+    _mp_running_plugins_init
+
+    # Check if plugin is running
+    if ! _mp_is_running "$plugin"; then
+        _mp_fail "$ci" "Plugin not running: $plugin" "plugin_not_running"
+        return $?
+    fi
+
+    local pid
+    pid=$(_mp_get_running_pid "$plugin")
+
+    # Kill the process
+    if [[ "$force" == "1" ]]; then
+        kill -9 "$pid" 2>/dev/null || true
+    else
+        kill -15 "$pid" 2>/dev/null || true
+        sleep 1
+        if kill -0 "$pid" 2>/dev/null; then
+            kill -9 "$pid" 2>/dev/null || true
+        fi
+    fi
+
+    _mp_mark_stopped "$plugin"
+
+    _mp_ok "$ci" "Killed: $plugin (PID $pid)"
     return $?
 }
 

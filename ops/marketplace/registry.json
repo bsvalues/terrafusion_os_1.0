@@ -1,5 +1,19 @@
 {
-  "version": "1.0.0",
-  "updated_at": "2025-01-01T00:00:00Z",
-  "plugins": []
+  "plugins": [
+    {
+      "bundle_path": "/tmp/tf-marketplace-test-ci-ansi-225998",
+      "capabilities": [
+        "ui.panel",
+        "data.read"
+      ],
+      "enabled": false,
+      "id": "ansi-test-plugin",
+      "installed_at": "2025-12-18T20:44:18Z",
+      "manifest_hash": "0601d69928849af394c0e5dd02cdbf5643ab88fb8ecf31f5e1763faad3ec7267",
+      "status": "installed",
+      "version": "1.0.0"
+    }
+  ],
+  "updated_at": "2025-12-18T20:44:18Z",
+  "version": "1.0.0"
 }
