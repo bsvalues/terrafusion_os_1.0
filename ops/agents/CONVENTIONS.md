@@ -5,7 +5,7 @@
 
 ## 🔒 CONSTITUTIONAL FREEZE
 
-**Gate, Agent, and Deploy Runtime semantics are constitutional.** Changes to the following require SpecLock + RFC + breaker approval + shadow review:
+**Gate, Agent, Deploy, and Marketplace Runtime semantics are constitutional.** Changes to the following require SpecLock + RFC + breaker approval + shadow review:
 
 ### Gate Subsystem (v1.0.0-gate-constitution)
 - `ops/dev/tf.sh` cmd_gate() implementation
@@ -32,6 +32,16 @@
 - Promotion/rollback semantics (forward-only promotion, version-controlled rollback)
 - CI JSON mode (--ci flag, machine-readable output)
 - Dry-run mode (--dry-run, preflight-only checks)
+
+### Marketplace Runtime Subsystem (v1.0.0-marketplace-constitution)
+- `ops/dev/tf.sh` cmd_marketplace() implementation + lifecycle commands
+- Marketplace invocation contract (exit codes: 0=success, 1=policy violation, 2=invalid)
+- Bundle validation (plugin.manifest.json, sbom.json, proofs/ directory required)
+- Manifest schema (id, name, version, entrypoints, capabilities, integrity)
+- Capability allowlist enforcement (fail-closed: ui.panel, ui.command, data.*, gis.*)
+- Registry determinism (ops/marketplace/registry.json state machine)
+- Lifecycle commands (install, enable, disable, remove, list, inspect)
+- CI JSON mode (--ci flag, machine-readable output)
 
 This governance layer is **IMMUTABLE** without explicit constitutional amendment process.
 
