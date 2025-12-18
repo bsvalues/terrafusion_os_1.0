@@ -2352,12 +2352,15 @@ cmd_marketplace_enable() {
                 return 0
                 ;;
             *)
-                return $(_mp_fail_invalid "$ci" "Unknown flag: $1")
+                _mp_fail_invalid "$ci" "Unknown flag: $1"; return $?
                 ;;
         esac
     done
 
-    [[ -n "$plugin" ]] || return $(_mp_fail_invalid "$ci" "Missing required --plugin <id>")
+    if [[ -z "$plugin" ]]; then
+        _mp_fail_invalid "$ci" "Missing required --plugin <id>"
+        return $?
+    fi
 
     _mp_registry_init_if_missing
 
@@ -2464,12 +2467,15 @@ cmd_marketplace_remove() {
                 return 0
                 ;;
             *)
-                return $(_mp_fail_invalid "$ci" "Unknown flag: $1")
+                _mp_fail_invalid "$ci" "Unknown flag: $1"; return $?
                 ;;
         esac
     done
 
-    [[ -n "$plugin" ]] || return $(_mp_fail_invalid "$ci" "Missing required --plugin <id>")
+    if [[ -z "$plugin" ]]; then
+        _mp_fail_invalid "$ci" "Missing required --plugin <id>"
+        return $?
+    fi
 
     _mp_registry_init_if_missing
 
@@ -2507,7 +2513,7 @@ cmd_marketplace_list() {
                 return 0
                 ;;
             *)
-                return $(_mp_fail_invalid "$ci" "Unknown flag: $1")
+                _mp_fail_invalid "$ci" "Unknown flag: $1"; return $?
                 ;;
         esac
     done
@@ -2581,12 +2587,15 @@ cmd_marketplace_inspect() {
                 return 0
                 ;;
             *)
-                return $(_mp_fail_invalid "$ci" "Unknown flag: $1")
+                _mp_fail_invalid "$ci" "Unknown flag: $1"; return $?
                 ;;
         esac
     done
 
-    [[ -n "$plugin" ]] || return $(_mp_fail_invalid "$ci" "Missing required --plugin <id>")
+    if [[ -z "$plugin" ]]; then
+        _mp_fail_invalid "$ci" "Missing required --plugin <id>"
+        return $?
+    fi
 
     _mp_registry_init_if_missing
 

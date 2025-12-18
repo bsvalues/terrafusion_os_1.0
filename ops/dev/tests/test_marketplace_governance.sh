@@ -429,7 +429,7 @@ bash "$TF" marketplace install --bundle "$bundle_path" >/dev/null 2>&1 || true
 output=$(bash "$TF" marketplace enable --plugin test-plugin 2>&1) && rc=0 || rc=$?
 if [[ $rc -eq 0 ]]; then
     # Check if registry shows enabled
-    if grep -q '"enabled":true' "$REGISTRY" 2>/dev/null || grep -q '"status":"enabled"' "$REGISTRY" 2>/dev/null; then
+    if grep -q '"enabled": true' "$REGISTRY" 2>/dev/null || grep -q '"status": "enabled"' "$REGISTRY" 2>/dev/null; then
         pass
     else
         fail "Exit 0 but plugin not marked enabled"

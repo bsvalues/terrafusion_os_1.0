@@ -1,16 +1,19 @@
 {
   "plugins": [
     {
-      "bundle_path": "/tmp/test-en",
-      "capabilities": [],
-      "enabled": true,
-      "id": "test-plugin",
-      "installed_at": "2025-12-18T18:37:13Z",
-      "manifest_hash": "35f2b2b4eefea154a24157fdce39afafb904a5ddeb622fb903768902f1c9ef2d",
-      "status": "enabled",
+      "bundle_path": "/tmp/tf-marketplace-test-ci-ansi-193490",
+      "capabilities": [
+        "ui.panel",
+        "data.read"
+      ],
+      "enabled": false,
+      "id": "ansi-test-plugin",
+      "installed_at": "2025-12-18T18:49:25Z",
+      "manifest_hash": "0601d69928849af394c0e5dd02cdbf5643ab88fb8ecf31f5e1763faad3ec7267",
+      "status": "installed",
       "version": "1.0.0"
     }
   ],
-  "updated_at": "2025-12-18T18:37:13Z",
+  "updated_at": "2025-12-18T18:49:25Z",
   "version": "1.0.0"
 }
