@@ -1626,6 +1626,30 @@ cmd_agent() {
                 return 2
             fi
             
+            # Prevent concurrent sessions (only one active session allowed)
+            # Check ACTIVE_SESSION marker file (written by generate-contract.py)
+            local active_marker="$AGENTS_DIR/ACTIVE_SESSION"
+            if [[ -f "$active_marker" ]]; then
+                local active_session_id
+                active_session_id=$(cat "$active_marker" 2>/dev/null || echo "")
+                if [[ -n "$active_session_id" ]]; then
+                    local session_dir="$SESSIONS_DIR/$active_session_id"
+                    local feature_name="unknown"
+                    if [[ -f "$session_dir/session.json" ]]; then
+                        feature_name=$(python3 -c "import json; print(json.load(open('$session_dir/session.json')).get('feature', 'unknown'))" 2>/dev/null || echo "unknown")
+                    fi
+                    log_error "Concurrent session detected: $feature_name"
+                    echo ""
+                    echo "Only one active session allowed at a time."
+                    echo ""
+                    echo "Remediation:"
+                    echo "  tf agent status     # Show active sessions"
+                    echo "  tf agent complete   # Mark current session complete"
+                    echo ""
+                    return 1
+                fi
+            fi
+            
             # Run gate first
             log_info "Running gate check before agent session..."
             if ! cmd_gate >/dev/null 2>&1; then

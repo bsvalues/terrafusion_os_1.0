@@ -200,9 +200,12 @@ cleanup_sessions
 echo "test-session-id" > "$ACTIVE_SESSION"
 output=$(bash "$TF" agent run --project="os-shell" --feature="concurrent-test" --print 2>&1) && rc=0 || rc=$?
 if [[ $rc -ne 0 ]]; then
-    # Should fail with active session
-    # Currently may not be enforced - this is a constitutional gap
-    echo -e "  ${YELLOW}⚠ WARN${NC} (concurrent prevention not enforced - constitutional gap)"
+    # Should fail with active session (exit 1)
+    if [[ $output == *"Concurrent"* ]] || [[ $output == *"active session"* ]]; then
+        pass
+    else
+        fail "No clear concurrent session error"
+    fi
 else
     fail "Concurrent session was allowed"
 fi
