@@ -24,6 +24,10 @@ LOG_DIR="$ROOT/ops/dev/_logs"
 LOG_FILE="$LOG_DIR/tf.log"
 K8S_NAMESPACE="terrafusion-staging"
 
+# Marketplace paths (constitutional)
+MARKETPLACE_DIR="${MARKETPLACE_DIR:-$ROOT/ops/marketplace}"
+MARKETPLACE_REGISTRY="${MARKETPLACE_REGISTRY:-$MARKETPLACE_DIR/registry.json}"
+
 # Ensure log directory exists
 mkdir -p "$LOG_DIR"
 
@@ -2077,6 +2081,570 @@ cmd_deploy_rollback() {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
+# Marketplace Constitution v1.0.0 (Phase 1: install + registry skeleton)
+# ═══════════════════════════════════════════════════════════════════════════
+
+cmd_marketplace() {
+    local subcmd="${1:-}"
+    shift || true
+
+    case "$subcmd" in
+        install)  cmd_marketplace_install "$@" ;;
+        enable)   cmd_marketplace_enable "$@" ;;
+        disable)  cmd_marketplace_disable "$@" ;;
+        remove)   cmd_marketplace_remove "$@" ;;
+        list)     cmd_marketplace_list "$@" ;;
+        inspect)  cmd_marketplace_inspect "$@" ;;
+        ""|-h|--help|help)
+            echo "Usage: tf marketplace <install|enable|disable|remove|list|inspect> [options]"
+            echo ""
+            echo "Examples:"
+            echo "  tf marketplace install --bundle /path/to/plugin_bundle"
+            echo "  tf marketplace enable --plugin my-plugin"
+            echo "  tf marketplace list"
+            return 0
+            ;;
+        *)
+            echo "ERROR: Unknown marketplace subcommand: $subcmd" >&2
+            return 2
+            ;;
+    esac
+}
+
+_mp_ci_json() {
+    # Args: status (pass|fail|error), message, error_code(optional)
+    local status="$1"; shift
+    local message="$1"; shift
+    local error_code="${1:-}"
+    local ts
+    ts="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+    if [[ -n "$error_code" ]]; then
+        printf '%s\n' "{\"version\":\"1.0.0\",\"timestamp\":\"$ts\",\"status\":\"$status\",\"error\":{\"code\":\"$error_code\",\"message\":\"$(printf '%s' "$message" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read())[1:-1])')\"}}" 
+    else
+        printf '%s\n' "{\"version\":\"1.0.0\",\"timestamp\":\"$ts\",\"status\":\"$status\",\"summary\":{\"message\":\"$(printf '%s' "$message" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read())[1:-1])')\"}}" 
+    fi
+}
+
+_mp_fail_invalid() {
+    # exit 2
+    local ci="${1:-0}"; shift
+    local msg="$1"; shift
+    if [[ "$ci" == "1" ]]; then
+        _mp_ci_json "error" "$msg" "invalid_invocation"
+    else
+        echo "ERROR: $msg" >&2
+    fi
+    return 2
+}
+
+_mp_fail() {
+    # exit 1
+    local ci="${1:-0}"; shift
+    local msg="$1"; shift
+    local code="${1:-policy_violation}"
+    if [[ "$ci" == "1" ]]; then
+        _mp_ci_json "fail" "$msg" "$code"
+    else
+        echo "ERROR: $msg" >&2
+    fi
+    return 1
+}
+
+_mp_ok() {
+    # exit 0
+    local ci="${1:-0}"; shift
+    local msg="$1"; shift
+    if [[ "$ci" == "1" ]]; then
+        _mp_ci_json "pass" "$msg"
+    else
+        echo "$msg"
+    fi
+    return 0
+}
+
+_mp_is_kebab_id() {
+    [[ "$1" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]
+}
+
+_mp_is_semver() {
+    # minimal semver: X.Y.Z with optional pre-release/build
+    [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]]
+}
+
+_mp_allowed_capability() {
+    # Constitutional allowlist v1.0.0 (fail-closed)
+    case "$1" in
+        ui.panel|ui.command|data.read|data.write|gis.read|gis.render) return 0 ;;
+        # net.http_outbound intentionally NOT allowed in v1 unless amended
+        *) return 1 ;;
+    esac
+}
+
+_mp_registry_init_if_missing() {
+    mkdir -p "$MARKETPLACE_DIR"
+    if [[ ! -f "$MARKETPLACE_REGISTRY" ]]; then
+        printf '%s\n' '{"version":"1.0.0","updated_at":null,"plugins":[]}' > "$MARKETPLACE_REGISTRY"
+    fi
+}
+
+cmd_marketplace_install() {
+    local bundle=""
+    local dry_run=0
+    local ci=0
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --bundle) bundle="${2:-}"; shift 2 ;;
+            --dry-run) dry_run=1; shift ;;
+            --ci) ci=1; shift ;;
+            -h|--help|help)
+                echo "Usage: tf marketplace install --bundle <path> [--dry-run] [--ci]"
+                return 0
+                ;;
+            *)
+                _mp_fail_invalid "$ci" "Unknown flag: $1"
+                return $?
+                ;;
+        esac
+    done
+
+    if [[ -z "$bundle" ]]; then
+        _mp_fail_invalid "$ci" "Missing required --bundle <path>"
+        return $?
+    fi
+
+    # Bundle structure validation (exit 1)
+    if [[ ! -d "$bundle" ]]; then
+        _mp_fail "$ci" "Bundle path not found or not a directory: $bundle" "missing_bundle"
+        return $?
+    fi
+
+    local manifest="$bundle/plugin.manifest.json"
+    local sbom="$bundle/sbom.json"
+    local proofs="$bundle/proofs"
+
+    if [[ ! -f "$manifest" ]]; then
+        _mp_fail "$ci" "Bundle missing plugin.manifest.json" "missing_manifest"
+        return $?
+    fi
+    if [[ ! -f "$sbom" ]]; then
+        _mp_fail "$ci" "Bundle missing sbom.json" "missing_sbom"
+        return $?
+    fi
+    if [[ ! -d "$proofs" ]]; then
+        _mp_fail "$ci" "Bundle missing proofs/ directory" "missing_proofs"
+        return $?
+    fi
+
+    # Manifest schema validation (exit 2 for schema/format)
+    local pid pname pver
+    pid="$(python3 -c 'import json; import sys; d=json.load(open(sys.argv[1])); print(d.get("id",""))' "$manifest" 2>/dev/null || echo "")"
+    pname="$(python3 -c 'import json; import sys; d=json.load(open(sys.argv[1])); print(d.get("name",""))' "$manifest" 2>/dev/null || echo "")"
+    pver="$(python3 -c 'import json; import sys; d=json.load(open(sys.argv[1])); print(d.get("version",""))' "$manifest" 2>/dev/null || echo "")"
+
+    if [[ -z "$pid" ]]; then
+        _mp_fail_invalid "$ci" "Manifest missing required field: id"
+        return $?
+    fi
+    if [[ -z "$pname" ]]; then
+        _mp_fail_invalid "$ci" "Manifest missing required field: name"
+        return $?
+    fi
+    if [[ -z "$pver" ]]; then
+        _mp_fail_invalid "$ci" "Manifest missing required field: version"
+        return $?
+    fi
+    if ! _mp_is_kebab_id "$pid"; then
+        _mp_fail_invalid "$ci" "Invalid plugin id format (must be kebab-case): $pid"
+        return $?
+    fi
+    if ! _mp_is_semver "$pver"; then
+        _mp_fail_invalid "$ci" "Invalid version (must be semver): $pver"
+        return $?
+    fi
+
+    # Required fields: entrypoints, capabilities, integrity.sha256 (schema check)
+    local has_entrypoints has_caps has_sha
+    has_entrypoints="$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print("1" if isinstance(d.get("entrypoints"), dict) and len(d.get("entrypoints"))>0 else "0")' "$manifest" 2>/dev/null || echo "0")"
+    has_caps="$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print("1" if isinstance(d.get("capabilities"), list) else "0")' "$manifest" 2>/dev/null || echo "0")"
+    has_sha="$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); i=d.get("integrity") or {}; print("1" if isinstance(i, dict) and isinstance(i.get("sha256"), str) and len(i.get("sha256"))>0 else "0")' "$manifest" 2>/dev/null || echo "0")"
+    if [[ "$has_entrypoints" != "1" ]]; then
+        _mp_fail_invalid "$ci" "Manifest missing/invalid entrypoints (must be non-empty object)"
+        return $?
+    fi
+    if [[ "$has_caps" != "1" ]]; then
+        _mp_fail_invalid "$ci" "Manifest missing/invalid capabilities (must be array)"
+        return $?
+    fi
+    if [[ "$has_sha" != "1" ]]; then
+        _mp_fail_invalid "$ci" "Manifest missing/invalid integrity.sha256"
+        return $?
+    fi
+
+    # Capability allowlist (exit 1)
+    local caps
+    caps="$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print("\n".join(d.get("capabilities") or []))' "$manifest" 2>/dev/null || true)"
+    if [[ -n "$caps" ]]; then
+        while IFS= read -r cap; do
+            [[ -z "$cap" ]] && continue
+            if ! _mp_allowed_capability "$cap"; then
+                _mp_fail "$ci" "Capability not allowed by constitution: $cap" "capability_rejected"
+                return $?
+            fi
+        done <<< "$caps"
+    fi
+
+    # Registry write (deterministic)
+    if [[ "$dry_run" == "1" ]]; then
+        _mp_ok "$ci" "Dry-run OK: $pid@$pver validated"
+        return $?
+    fi
+
+    _mp_registry_init_if_missing
+
+    local now mh
+    now="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+    mh="$(python3 -c 'import hashlib,sys; p=sys.argv[1]; b=open(p,"rb").read(); print(hashlib.sha256(b).hexdigest())' "$manifest")"
+
+    # Upsert plugin entry by id (preserve determinism: one record per id)
+    python3 - "$MARKETPLACE_REGISTRY" "$pid" "$pver" "$now" "$bundle" "$mh" "$manifest" <<'PY'
+import json,sys
+reg_path, pid, ver, now, bundle, mh, manifest_path = sys.argv[1:]
+reg = json.load(open(reg_path))
+manifest = json.load(open(manifest_path))
+caps = manifest.get("capabilities") or []
+
+plugins = reg.get("plugins") or []
+plugins = [p for p in plugins if p.get("id") != pid]
+plugins.append({
+    "id": pid,
+    "version": ver,
+    "installed_at": now,
+    "enabled": False,
+    "bundle_path": bundle,
+    "manifest_hash": mh,
+    "capabilities": caps,
+    "status": "installed"
+})
+reg["version"] = reg.get("version") or "1.0.0"
+reg["updated_at"] = now
+reg["plugins"] = sorted(plugins, key=lambda p: p.get("id",""))
+with open(reg_path,"w") as f:
+    json.dump(reg,f,indent=2,sort_keys=True)
+    f.write("\n")
+PY
+
+    _mp_ok "$ci" "Installed: $pid@$pver"
+    return $?
+}
+
+cmd_marketplace_enable() {
+    local plugin=""
+    local ci=0
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --plugin) plugin="${2:-}"; shift 2 ;;
+            --ci) ci=1; shift ;;
+            -h|--help|help)
+                echo "Usage: tf marketplace enable --plugin <id> [--ci]"
+                return 0
+                ;;
+            *)
+                return $(_mp_fail_invalid "$ci" "Unknown flag: $1")
+                ;;
+        esac
+    done
+
+    [[ -n "$plugin" ]] || return $(_mp_fail_invalid "$ci" "Missing required --plugin <id>")
+
+    _mp_registry_init_if_missing
+
+    # Check if plugin exists and update enabled status
+    local exists enabled_result
+    exists=$(python3 -c "import json,sys; reg=json.load(open(sys.argv[1])); plugins=reg.get('plugins') or []; print('1' if any(p.get('id')==sys.argv[2] for p in plugins) else '0')" "$MARKETPLACE_REGISTRY" "$plugin" 2>/dev/null || echo "0")
+    
+    if [[ "$exists" != "1" ]]; then
+        _mp_fail "$ci" "Plugin not found in registry: $plugin" "plugin_not_found"
+        return $?
+    fi
+
+    # Update registry to mark as enabled
+    python3 - "$MARKETPLACE_REGISTRY" "$plugin" <<'PY'
+import json,sys
+reg_path, pid = sys.argv[1:]
+reg = json.load(open(reg_path))
+now = __import__('datetime').datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+
+plugins = reg.get("plugins") or []
+for p in plugins:
+    if p.get("id") == pid:
+        p["enabled"] = True
+        p["status"] = "enabled"
+
+reg["updated_at"] = now
+with open(reg_path,"w") as f:
+    json.dump(reg,f,indent=2,sort_keys=True)
+    f.write("\n")
+PY
+
+    _mp_ok "$ci" "Enabled: $plugin"
+    return $?
+}
+
+cmd_marketplace_disable() {
+    local plugin=""
+    local ci=0
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --plugin) plugin="${2:-}"; shift 2 ;;
+            --ci) ci=1; shift ;;
+            -h|--help|help)
+                echo "Usage: tf marketplace disable --plugin <id> [--ci]"
+                return 0
+                ;;
+            *)
+                _mp_fail_invalid "$ci" "Unknown flag: $1"
+                return $?
+                ;;
+        esac
+    done
+
+    if [[ -z "$plugin" ]]; then
+        _mp_fail_invalid "$ci" "Missing required --plugin <id>"
+        return $?
+    fi
+
+    _mp_registry_init_if_missing
+
+    # Check if plugin exists
+    local exists
+    exists=$(python3 -c "import json,sys; reg=json.load(open(sys.argv[1])); plugins=reg.get('plugins') or []; print('1' if any(p.get('id')==sys.argv[2] for p in plugins) else '0')" "$MARKETPLACE_REGISTRY" "$plugin" 2>/dev/null || echo "0")
+    
+    if [[ "$exists" != "1" ]]; then
+        _mp_fail "$ci" "Plugin not found in registry: $plugin" "plugin_not_found"
+        return $?
+    fi
+
+    # Update registry to mark as disabled
+    python3 - "$MARKETPLACE_REGISTRY" "$plugin" <<'PY'
+import json,sys
+reg_path, pid = sys.argv[1:]
+reg = json.load(open(reg_path))
+now = __import__('datetime').datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+
+plugins = reg.get("plugins") or []
+for p in plugins:
+    if p.get("id") == pid:
+        p["enabled"] = False
+        p["status"] = "installed"
+
+reg["updated_at"] = now
+with open(reg_path,"w") as f:
+    json.dump(reg,f,indent=2,sort_keys=True)
+    f.write("\n")
+PY
+
+    _mp_ok "$ci" "Disabled: $plugin"
+    return $?
+}
+
+cmd_marketplace_remove() {
+    local plugin=""
+    local ci=0
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --plugin) plugin="${2:-}"; shift 2 ;;
+            --ci) ci=1; shift ;;
+            -h|--help|help)
+                echo "Usage: tf marketplace remove --plugin <id> [--ci]"
+                return 0
+                ;;
+            *)
+                return $(_mp_fail_invalid "$ci" "Unknown flag: $1")
+                ;;
+        esac
+    done
+
+    [[ -n "$plugin" ]] || return $(_mp_fail_invalid "$ci" "Missing required --plugin <id>")
+
+    _mp_registry_init_if_missing
+
+    # Remove plugin from registry
+    python3 - "$MARKETPLACE_REGISTRY" "$plugin" <<'PY'
+import json,sys
+reg_path, pid = sys.argv[1:]
+reg = json.load(open(reg_path))
+now = __import__('datetime').datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+
+plugins = reg.get("plugins") or []
+plugins = [p for p in plugins if p.get("id") != pid]
+
+reg["plugins"] = plugins
+reg["updated_at"] = now
+with open(reg_path,"w") as f:
+    json.dump(reg,f,indent=2,sort_keys=True)
+    f.write("\n")
+PY
+
+    _mp_ok "$ci" "Removed: $plugin"
+    return $?
+}
+
+cmd_marketplace_list() {
+    local ci=0
+    local status_filter="all"
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --status) status_filter="${2:-all}"; shift 2 ;;
+            --ci) ci=1; shift ;;
+            -h|--help|help)
+                echo "Usage: tf marketplace list [--status <installed|enabled|all>] [--ci]"
+                return 0
+                ;;
+            *)
+                return $(_mp_fail_invalid "$ci" "Unknown flag: $1")
+                ;;
+        esac
+    done
+
+    _mp_registry_init_if_missing
+
+    if [[ "$ci" == "1" ]]; then
+        # CI mode: JSON output
+        python3 - "$MARKETPLACE_REGISTRY" "$status_filter" <<'PY'
+import json,sys
+reg_path, status_filter = sys.argv[1:]
+reg = json.load(open(reg_path))
+plugins = reg.get("plugins") or []
+
+if status_filter == "enabled":
+    plugins = [p for p in plugins if p.get("enabled")]
+elif status_filter == "installed":
+    plugins = [p for p in plugins if not p.get("enabled")]
+
+now = __import__('datetime').datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+output = {
+    "version": "1.0.0",
+    "timestamp": now,
+    "status": "pass",
+    "plugins": plugins
+}
+print(json.dumps(output))
+PY
+    else
+        # Human mode: formatted output
+        echo "Installed Plugins:"
+        echo ""
+        python3 - "$MARKETPLACE_REGISTRY" "$status_filter" <<'PY'
+import json,sys
+reg_path, status_filter = sys.argv[1:]
+reg = json.load(open(reg_path))
+plugins = reg.get("plugins") or []
+
+if status_filter == "enabled":
+    plugins = [p for p in plugins if p.get("enabled")]
+elif status_filter == "installed":
+    plugins = [p for p in plugins if not p.get("enabled")]
+
+if not plugins:
+    print("  (none)")
+else:
+    for p in plugins:
+        status = "ENABLED" if p.get("enabled") else "INSTALLED"
+        print(f"  {p.get('id')} v{p.get('version')} [{status}]")
+        caps = p.get("capabilities") or []
+        if caps:
+            print(f"    Capabilities: {', '.join(caps)}")
+
+print(f"\nTotal: {len(plugins)} plugin(s)")
+PY
+    fi
+    
+    return 0
+}
+
+cmd_marketplace_inspect() {
+    local plugin=""
+    local ci=0
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --plugin) plugin="${2:-}"; shift 2 ;;
+            --ci) ci=1; shift ;;
+            -h|--help|help)
+                echo "Usage: tf marketplace inspect --plugin <id> [--ci]"
+                return 0
+                ;;
+            *)
+                return $(_mp_fail_invalid "$ci" "Unknown flag: $1")
+                ;;
+        esac
+    done
+
+    [[ -n "$plugin" ]] || return $(_mp_fail_invalid "$ci" "Missing required --plugin <id>")
+
+    _mp_registry_init_if_missing
+
+    if [[ "$ci" == "1" ]]; then
+        # CI mode: JSON output
+        python3 - "$MARKETPLACE_REGISTRY" "$plugin" <<'PY'
+import json,sys
+reg_path, pid = sys.argv[1:]
+reg = json.load(open(reg_path))
+plugins = reg.get("plugins") or []
+
+plugin_data = next((p for p in plugins if p.get("id") == pid), None)
+if not plugin_data:
+    error = {
+        "version": "1.0.0",
+        "timestamp": __import__('datetime').datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "status": "fail",
+        "error": {"code": "plugin_not_found", "message": f"Plugin not found: {pid}"}
+    }
+    print(json.dumps(error))
+    sys.exit(1)
+
+output = {
+    "version": "1.0.0",
+    "timestamp": __import__('datetime').datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+    "status": "pass",
+    "plugin": plugin_data
+}
+print(json.dumps(output))
+PY
+    else
+        # Human mode: formatted output
+        python3 - "$MARKETPLACE_REGISTRY" "$plugin" <<'PY'
+import json,sys
+reg_path, pid = sys.argv[1:]
+reg = json.load(open(reg_path))
+plugins = reg.get("plugins") or []
+
+plugin_data = next((p for p in plugins if p.get("id") == pid), None)
+if not plugin_data:
+    print(f"ERROR: Plugin not found: {pid}", file=sys.stderr)
+    sys.exit(1)
+
+print(f"Plugin: {plugin_data.get('id')}")
+print(f"Version: {plugin_data.get('version')}")
+print(f"Status: {plugin_data.get('status')}")
+print(f"Installed: {plugin_data.get('installed_at')}")
+print(f"Bundle: {plugin_data.get('bundle_path')}")
+caps = plugin_data.get("capabilities") or []
+print(f"Capabilities: {', '.join(caps) if caps else '(none)'}")
+print(f"Manifest Hash: {plugin_data.get('manifest_hash')}")
+PY
+    fi
+    
+    return $?
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
 # Main
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -2097,5 +2665,6 @@ case "$cmd" in
     hub)      cmd_hub "$@" ;;
     agent)    cmd_agent "$@" ;;
     deploy)   cmd_deploy "$@" ;;
+    marketplace) cmd_marketplace "$@" ;;
     help|*)   show_help ;;
 esac

@@ -1,0 +1,16 @@
+{
+  "plugins": [
+    {
+      "bundle_path": "/tmp/test-en",
+      "capabilities": [],
+      "enabled": true,
+      "id": "test-plugin",
+      "installed_at": "2025-12-18T18:37:13Z",
+      "manifest_hash": "35f2b2b4eefea154a24157fdce39afafb904a5ddeb622fb903768902f1c9ef2d",
+      "status": "enabled",
+      "version": "1.0.0"
+    }
+  ],
+  "updated_at": "2025-12-18T18:37:13Z",
+  "version": "1.0.0"
+}
