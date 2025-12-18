@@ -3,6 +3,16 @@
 > Invariants that all agent/breaker code MUST follow.
 > Violations will cause CI failures and breaker false positives.
 
+## 🔒 CONSTITUTIONAL FREEZE
+
+**Gate & CI semantics are constitutional.** Changes to the following require SpecLock + RFC + breaker approval:
+- `ops/dev/tf.sh` gate implementation
+- Gate semantics (checks, flags, exit codes)
+- CI/CD contracts (JSON schemas, flag behavior)
+- Timeout enforcement and exit code contracts
+
+This governance layer is **IMMUTABLE** without explicit constitutional amendment process.
+
 ---
 
 ## 1. CLI Invocation Rules
