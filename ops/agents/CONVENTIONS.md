@@ -5,13 +5,31 @@
 
 ## 🔒 CONSTITUTIONAL FREEZE
 
-**Gate & CI semantics are constitutional.** Changes to the following require SpecLock + RFC + breaker approval:
-- `ops/dev/tf.sh` gate implementation
+**Gate & Agent Runtime semantics are constitutional.** Changes to the following require SpecLock + RFC + breaker approval + shadow review:
+
+### Gate Subsystem (v1.0.0-gate-constitution)
+- `ops/dev/tf.sh` cmd_gate() implementation
 - Gate semantics (checks, flags, exit codes)
 - CI/CD contracts (JSON schemas, flag behavior)
 - Timeout enforcement and exit code contracts
 
+### Agent Runtime Subsystem (v1.0.0-agent-constitution)
+- `ops/dev/tf.sh` cmd_agent() implementation + lifecycle commands
+- Agent invocation contract (exit codes: 0=pass, 1=fail, 2=invalid)
+- Session artifact schema (SESSION.json, CONTRACT.md, SPECLOCK.md, TESTPLAN.md, NOTES.md)
+- ACTIVE_SESSION single-source-of-truth marker file
+- Session state machine (active, completed, failed, aborted)
+- Concurrent session prevention (one active session maximum)
+- Gate-first enforcement (no session without gate pass)
+
 This governance layer is **IMMUTABLE** without explicit constitutional amendment process.
+
+**Amendment Process:**
+1. Create SpecLock document defining proposed changes
+2. Submit RFC with evidence of necessity (bug, security, scale requirement)
+3. Pass breaker review (all governance tests GREEN)
+4. Conduct shadow review (run against 10+ historical sessions)
+5. Tag constitutional version bump (e.g., v1.1.0-agent-constitution)
 
 ---
 
