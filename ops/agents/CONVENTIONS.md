@@ -5,7 +5,7 @@
 
 ## 🔒 CONSTITUTIONAL FREEZE
 
-**Gate & Agent Runtime semantics are constitutional.** Changes to the following require SpecLock + RFC + breaker approval + shadow review:
+**Gate, Agent, and Deploy Runtime semantics are constitutional.** Changes to the following require SpecLock + RFC + breaker approval + shadow review:
 
 ### Gate Subsystem (v1.0.0-gate-constitution)
 - `ops/dev/tf.sh` cmd_gate() implementation
@@ -22,6 +22,17 @@
 - Concurrent session prevention (one active session maximum)
 - Gate-first enforcement (no session without gate pass)
 
+### Deploy Runtime Subsystem (v1.0.0-deploy-constitution)
+- `ops/dev/tf.sh` cmd_deploy(), cmd_deploy_promote(), cmd_deploy_rollback() implementations
+- Deploy invocation contract (exit codes: 0=success, 1=failure, 2=invalid)
+- Environment model (dev, techsupport, prod)
+- Bundle validation (manifest.json, SBOM, proofs/)
+- Gate-first enforcement (all deployments require gate pass)
+- Active session prevention (no deployment during agent sessions)
+- Promotion/rollback semantics (forward-only promotion, version-controlled rollback)
+- CI JSON mode (--ci flag, machine-readable output)
+- Dry-run mode (--dry-run, preflight-only checks)
+
 This governance layer is **IMMUTABLE** without explicit constitutional amendment process.
 
 **Amendment Process:**
@@ -29,7 +40,7 @@ This governance layer is **IMMUTABLE** without explicit constitutional amendment
 2. Submit RFC with evidence of necessity (bug, security, scale requirement)
 3. Pass breaker review (all governance tests GREEN)
 4. Conduct shadow review (run against 10+ historical sessions)
-5. Tag constitutional version bump (e.g., v1.1.0-agent-constitution)
+5. Tag constitutional version bump (e.g., v1.1.0-deploy-constitution)
 
 ---
 
