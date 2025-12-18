@@ -1613,7 +1613,7 @@ cmd_agent() {
                 echo "  --speclock=strict|advisory|off"
                 echo "  --logs=<path>      Enable log-first debugging"
                 echo "  --print            Print contract only (no session)"
-                return 1
+                return 2
             fi
             
             # Run gate first
