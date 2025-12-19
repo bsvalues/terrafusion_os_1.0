@@ -1779,10 +1779,78 @@ print(json.dumps(sessions, indent=2))
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
-# Deploy Runtime Protocol (v1.0.0 Constitution)
+# Deploy Runtime Protocol (v1.1.0 Constitution - Bundle Verification Required)
 # ═══════════════════════════════════════════════════════════════════════════
 
 ACTIVE_SESSION="$ROOT/ops/agents/ACTIVE_SESSION"
+
+# Helper: Validate and sanitize bundle path (exit 2 on invalid)
+_deploy_validate_bundle_path() {
+    local bundle_path="$1" ci_mode="$2"
+    
+    # Check for control characters (newlines, tabs, etc.)
+    if [[ "$bundle_path" =~ [$'\n\r\t'] ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","error":{"code":"INVALID_PATH","message":"Bundle path contains control characters"}}'
+        else
+            log_error "Bundle path contains invalid control characters"
+        fi
+        return 2
+    fi
+    
+    # Check for path traversal attempts
+    if [[ "$bundle_path" =~ \.\. ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","error":{"code":"PATH_TRAVERSAL","message":"Bundle path contains traversal sequences"}}'
+        else
+            log_error "Bundle path contains path traversal sequences (..)"
+        fi
+        return 2
+    fi
+    
+    return 0
+}
+
+# Helper: Verify RuntimeCert bundle (exit 1 on failure)
+_deploy_verify_bundle() {
+    local bundle_path="$1" ci_mode="$2" operation="${3:-deploy}"
+    
+    # Check bundle directory exists
+    if [[ ! -d "$bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            local sanitized_path
+            sanitized_path=$(printf '%s' "$bundle_path" | tr -d '\n\r' | sed 's/"/\\"/g')
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","operation":"'"$operation"'","bundle":"'"$sanitized_path"'","bundle_verified":false,"error":{"code":"BUNDLE_NOT_FOUND","message":"Bundle directory not found"}}'
+        else
+            log_error "Bundle directory not found: $bundle_path"
+        fi
+        return 1
+    fi
+    
+    # Execute RuntimeCert verification
+    local verify_output verify_rc
+    verify_output=$(bash "$SCRIPT_DIR/tf.sh" release verify --bundle "$bundle_path" --ci 2>&1) && verify_rc=0 || verify_rc=$?
+    
+    if [[ $verify_rc -ne 0 ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            local sanitized_path error_msg
+            sanitized_path=$(printf '%s' "$bundle_path" | tr -d '\n\r' | sed 's/"/\\"/g')
+            # Extract error from verify output if available
+            error_msg=$(echo "$verify_output" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('error',{}).get('message','Bundle verification failed'))" 2>/dev/null || echo "Bundle verification failed")
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","operation":"'"$operation"'","bundle":"'"$sanitized_path"'","bundle_verified":false,"error":{"code":"BUNDLE_VERIFY_FAILED","message":"'"$error_msg"'"}}'
+        else
+            log_error "RuntimeCert bundle verification failed"
+            echo ""
+            echo "Bundle: $bundle_path"
+            echo ""
+            echo "Run verification to see details:"
+            echo "  tf release verify --bundle $bundle_path"
+        fi
+        return 1
+    fi
+    
+    return 0
+}
 
 cmd_deploy() {
     local subcmd="${1:-deploy}"
@@ -1846,9 +1914,18 @@ cmd_deploy() {
     fi
     
     if [[ -z "$bundle_path" ]]; then
-        log_error "Missing required argument: --bundle"
-        echo ""
-        echo "Usage: tf deploy --env <env> --bundle <path>"
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"deploy","error":{"code":"MISSING_BUNDLE","message":"Missing required --bundle argument"}}'
+        else
+            log_error "Missing required argument: --bundle"
+            echo ""
+            echo "Usage: tf deploy --env <env> --bundle <path>"
+        fi
+        return 2
+    fi
+    
+    # ─── Invariant A2: Bundle Path Validation (Exit 2) ───
+    if ! _deploy_validate_bundle_path "$bundle_path" "$ci_mode"; then
         return 2
     fi
     
@@ -1895,40 +1972,18 @@ cmd_deploy() {
         return 1
     fi
     
-    # ─── Invariant D: Bundle Requirements (Exit 1) ───
-    if [[ ! -d "$bundle_path" ]]; then
-        if [[ -n "$ci_mode" ]]; then
-            echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","reason":"bundle_not_found","bundle":"'"$bundle_path"'","environment":"'"$environment"'"}'
-        else
-            log_error "Bundle path not found: $bundle_path"
-            echo ""
-            echo "Ensure bundle directory exists and contains:"
-            echo "  - manifest.json"
-            echo "  - sbom.json"
-            echo "  - proofs/"
-        fi
-        return 1
-    fi
-    
-    if [[ ! -f "$bundle_path/manifest.json" ]]; then
-        if [[ -n "$ci_mode" ]]; then
-            echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","reason":"missing_manifest","bundle":"'"$bundle_path"'","environment":"'"$environment"'"}'
-        else
-            log_error "Bundle missing required file: manifest.json"
-            echo ""
-            echo "Bundle structure:"
-            echo "  bundle/"
-            echo "    ├── manifest.json  (required)"
-            echo "    ├── sbom.json      (required)"
-            echo "    └── proofs/        (required)"
-        fi
+    # ─── Invariant D: RuntimeCert Bundle Verification (Exit 1) ── v1.1.0
+    [[ -z "$ci_mode" ]] && log_info "Verifying RuntimeCert bundle..."
+    if ! _deploy_verify_bundle "$bundle_path" "$ci_mode" "deploy"; then
         return 1
     fi
     
     # ─── Dry-Run Exit (Success) ───
     if [[ -n "$dry_run" ]]; then
         if [[ -n "$ci_mode" ]]; then
-            echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","mode":"dry_run","environment":"'"$environment"'","bundle":"'"$bundle_path"'"}'
+            local sanitized_path
+            sanitized_path=$(printf '%s' "$bundle_path" | tr -d '\n\r' | sed 's/"/\\"/g')
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","operation":"deploy","mode":"dry_run","environment":"'"$environment"'","bundle":"'"$sanitized_path"'","bundle_verified":true}'
         else
             log_success "Dry-run preflight checks passed"
             echo ""
@@ -1936,7 +1991,7 @@ cmd_deploy() {
             echo "  Bundle:       $bundle_path"
             echo "  Gate:         ✓ Passed"
             echo "  Sessions:     ✓ None active"
-            echo "  Bundle:       ✓ Valid structure"
+            echo "  Bundle:       ✓ Verified (RuntimeCert)"
             echo ""
             echo "Ready for deployment (remove --dry-run to execute)"
         fi
@@ -1960,7 +2015,7 @@ cmd_deploy() {
 }
 
 cmd_deploy_promote() {
-    local from_env="" to_env="" ci_mode=""
+    local from_env="" to_env="" bundle_path="" ci_mode=""
     
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -1968,11 +2023,13 @@ cmd_deploy_promote() {
             --from) from_env="$2"; shift ;;
             --to=*) to_env="${1#*=}" ;;
             --to) to_env="$2"; shift ;;
+            --bundle=*) bundle_path="${1#*=}" ;;
+            --bundle) bundle_path="$2"; shift ;;
             --ci) ci_mode="true" ;;
             *)
                 log_error "Unknown option: $1"
                 echo ""
-                echo "Usage: tf deploy promote --from <env> --to <env> [--ci]"
+                echo "Usage: tf deploy promote --from <env> --to <env> --bundle <path> [--ci]"
                 return 2
                 ;;
         esac
@@ -1981,9 +2038,30 @@ cmd_deploy_promote() {
     
     # Validation
     if [[ -z "$from_env" ]] || [[ -z "$to_env" ]]; then
-        log_error "Missing required arguments: --from and --to"
-        echo ""
-        echo "Usage: tf deploy promote --from <dev|techsupport> --to <techsupport|prod>"
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"MISSING_ARGS","message":"Missing required --from and --to arguments"}}'
+        else
+            log_error "Missing required arguments: --from and --to"
+            echo ""
+            echo "Usage: tf deploy promote --from <dev|techsupport> --to <techsupport|prod> --bundle <path>"
+        fi
+        return 2
+    fi
+    
+    # v1.1.0: Bundle required
+    if [[ -z "$bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"MISSING_BUNDLE","message":"Missing required --bundle argument"}}'
+        else
+            log_error "Missing required argument: --bundle"
+            echo ""
+            echo "Usage: tf deploy promote --from <env> --to <env> --bundle <path>"
+        fi
+        return 2
+    fi
+    
+    # v1.1.0: Path validation
+    if ! _deploy_validate_bundle_path "$bundle_path" "$ci_mode"; then
         return 2
     fi
     
@@ -2006,18 +2084,27 @@ cmd_deploy_promote() {
     # Gate-first check
     if ! bash "$SCRIPT_DIR/tf.sh" gate --ci >/dev/null 2>&1; then
         if [[ -n "$ci_mode" ]]; then
-            echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","reason":"gate_failed","operation":"promote","from":"'"$from_env"'","to":"'"$to_env"'"}'
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","operation":"promote","from":"'"$from_env"'","to":"'"$to_env"'","error":{"code":"GATE_FAILED","message":"Gate check failed"}}'
         else
             log_error "Gate check failed - promotion blocked"
         fi
         return 1
     fi
     
+    # v1.1.0: RuntimeCert bundle verification
+    [[ -z "$ci_mode" ]] && log_info "Verifying RuntimeCert bundle..."
+    if ! _deploy_verify_bundle "$bundle_path" "$ci_mode" "promote"; then
+        return 1
+    fi
+    
     # Placeholder for actual promotion
     if [[ -n "$ci_mode" ]]; then
-        echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","operation":"promote","from":"'"$from_env"'","to":"'"$to_env"'","note":"v1.0_placeholder"}'
+        local sanitized_path
+        sanitized_path=$(printf '%s' "$bundle_path" | tr -d '\n\r' | sed 's/"/\\"/g')
+        echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","operation":"promote","from":"'"$from_env"'","to":"'"$to_env"'","bundle":"'"$sanitized_path"'","bundle_verified":true}'
     else
         log_success "Promotion preflight complete: $from_env → $to_env"
+        echo "  Bundle: $bundle_path (verified)"
         log_warn "NOTE: Actual promotion orchestration: Phase 2"
     fi
     
@@ -2025,7 +2112,7 @@ cmd_deploy_promote() {
 }
 
 cmd_deploy_rollback() {
-    local environment="" version="" ci_mode=""
+    local environment="" version="" bundle_path="" ci_mode=""
     
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -2033,11 +2120,13 @@ cmd_deploy_rollback() {
             --env) environment="$2"; shift ;;
             --to-version=*) version="${1#*=}" ;;
             --to-version) version="$2"; shift ;;
+            --bundle=*) bundle_path="${1#*=}" ;;
+            --bundle) bundle_path="$2"; shift ;;
             --ci) ci_mode="true" ;;
             *)
                 log_error "Unknown option: $1"
                 echo ""
-                echo "Usage: tf deploy rollback --env <env> --to-version <version> [--ci]"
+                echo "Usage: tf deploy rollback --env <env> --to-version <version> --bundle <path> [--ci]"
                 return 2
                 ;;
         esac
@@ -2046,34 +2135,68 @@ cmd_deploy_rollback() {
     
     # Validation
     if [[ -z "$environment" ]] || [[ -z "$version" ]]; then
-        log_error "Missing required arguments: --env and --to-version"
-        echo ""
-        echo "Usage: tf deploy rollback --env <dev|techsupport|prod> --to-version <version>"
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"rollback","error":{"code":"MISSING_ARGS","message":"Missing required --env and --to-version arguments"}}'
+        else
+            log_error "Missing required arguments: --env and --to-version"
+            echo ""
+            echo "Usage: tf deploy rollback --env <dev|techsupport|prod> --to-version <version> --bundle <path>"
+        fi
         return 2
     fi
     
     if [[ ! "$environment" =~ ^(dev|techsupport|prod)$ ]]; then
-        log_error "Invalid environment: $environment"
-        echo ""
-        echo "Valid environments: dev, techsupport, prod"
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"rollback","error":{"code":"INVALID_ENV","message":"Invalid environment: '"$environment"'"}}'
+        else
+            log_error "Invalid environment: $environment"
+            echo ""
+            echo "Valid environments: dev, techsupport, prod"
+        fi
+        return 2
+    fi
+    
+    # v1.1.0: Bundle required
+    if [[ -z "$bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"rollback","error":{"code":"MISSING_BUNDLE","message":"Missing required --bundle argument"}}'
+        else
+            log_error "Missing required argument: --bundle"
+            echo ""
+            echo "Usage: tf deploy rollback --env <env> --to-version <version> --bundle <path>"
+        fi
+        return 2
+    fi
+    
+    # v1.1.0: Path validation
+    if ! _deploy_validate_bundle_path "$bundle_path" "$ci_mode"; then
         return 2
     fi
     
     # Gate-first check
     if ! bash "$SCRIPT_DIR/tf.sh" gate --ci >/dev/null 2>&1; then
         if [[ -n "$ci_mode" ]]; then
-            echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","reason":"gate_failed","operation":"rollback","environment":"'"$environment"'","version":"'"$version"'"}'
+            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","operation":"rollback","environment":"'"$environment"'","to_version":"'"$version"'","error":{"code":"GATE_FAILED","message":"Gate check failed"}}'
         else
             log_error "Gate check failed - rollback blocked"
         fi
         return 1
     fi
     
+    # v1.1.0: RuntimeCert bundle verification
+    [[ -z "$ci_mode" ]] && log_info "Verifying RuntimeCert bundle..."
+    if ! _deploy_verify_bundle "$bundle_path" "$ci_mode" "rollback"; then
+        return 1
+    fi
+    
     # Placeholder for actual rollback
     if [[ -n "$ci_mode" ]]; then
-        echo '{"version":"1.0.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","operation":"rollback","environment":"'"$environment"'","version":"'"$version"'","note":"v1.0_placeholder"}'
+        local sanitized_path
+        sanitized_path=$(printf '%s' "$bundle_path" | tr -d '\n\r' | sed 's/"/\\"/g')
+        echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","operation":"rollback","environment":"'"$environment"'","to_version":"'"$version"'","bundle":"'"$sanitized_path"'","bundle_verified":true}'
     else
         log_success "Rollback preflight complete: $environment → $version"
+        echo "  Bundle: $bundle_path (verified)"
         log_warn "NOTE: Actual rollback orchestration: Phase 2"
     fi
     
