@@ -22,15 +22,18 @@
 - Concurrent session prevention (one active session maximum)
 - Gate-first enforcement (no session without gate pass)
 
-### Deploy Runtime Subsystem (v1.0.0-deploy-constitution)
+### Deploy Runtime Subsystem (v1.1.0-deploy-constitution-bundle-required)
 - `ops/dev/tf.sh` cmd_deploy(), cmd_deploy_promote(), cmd_deploy_rollback() implementations
 - Deploy invocation contract (exit codes: 0=success, 1=failure, 2=invalid)
 - Environment model (dev, techsupport, prod)
 - Bundle validation (manifest.json, SBOM, proofs/)
+- **RuntimeCert bundle verification MANDATORY (v1.1.0)**: all deploy ops require verified bundle
+- **--bundle parameter REQUIRED on deploy, promote, rollback (v1.1.0)**
+- Bundle path validation (control chars, path traversal rejection)
 - Gate-first enforcement (all deployments require gate pass)
 - Active session prevention (no deployment during agent sessions)
 - Promotion/rollback semantics (forward-only promotion, version-controlled rollback)
-- CI JSON mode (--ci flag, machine-readable output)
+- CI JSON mode (--ci flag, machine-readable output, error.code on failures)
 - Dry-run mode (--dry-run, preflight-only checks)
 
 ### Marketplace Runtime Subsystem (v1.0.0-marketplace-constitution)
