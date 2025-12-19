@@ -430,6 +430,48 @@ test_H3_precreated_invalid_receipt() {
     test_result "H3" "$valid_receipt" "Invalid receipt not overwritten"
 }
 
+test_H4_symlink_attack() {
+    # Create symlink pointing to /etc
+    mkdir -p "$TEST_TMP/symlink_test"
+    ln -sf /etc "$TEST_TMP/symlink_test/bundle"
+    
+    local rc=0
+    bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_test/bundle" --ci 2>/dev/null && rc=0 || rc=$?
+    
+    # Should fail (exit 1) because symlinked dir won't have valid bundle structure
+    test_result "H4" "$([[ $rc -eq 1 ]] && echo true || echo false)" "Symlink attack not blocked (exit $rc)"
+}
+
+test_H5_verify_always_called() {
+    # Create a fresh bundle, then tamper it after creation
+    mkdir -p "$TEST_TMP/tamper_bundle/proofs"
+    
+    # Create fresh bundle (not copying from valid_bundle which may have receipt)
+    local ts
+    ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    for proof in gate agent deploy marketplace; do
+        cat > "$TEST_TMP/tamper_bundle/proofs/$proof.json" << EOF
+{"version":"1.0.0","timestamp":"$ts","status":"pass","source":"$proof","summary":{},"subsystem":"$proof","checks":[]}
+EOF
+    done
+    cat > "$TEST_TMP/tamper_bundle/manifest.json" << EOF
+{"bundle_id":"tamper-test","created_at":"$ts","mode":"dev","overall_status":"pass","schema_version":"1.0.0"}
+EOF
+    (cd "$TEST_TMP/tamper_bundle" && sha256sum manifest.json proofs/*.json 2>/dev/null | sort -k2) > "$TEST_TMP/tamper_bundle/checksums.sha256"
+    
+    # Now tamper the manifest (checksum will fail)
+    echo "tampered" >> "$TEST_TMP/tamper_bundle/manifest.json"
+    
+    local rc=0
+    bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/tamper_bundle" --ci 2>/dev/null && rc=0 || rc=$?
+    
+    # Should fail AND receipt should NOT exist (fresh bundle, no pre-existing receipt)
+    local receipt_exists=false
+    [[ -f "$TEST_TMP/tamper_bundle/proofs/deploy_receipt.json" ]] && receipt_exists=true
+    
+    test_result "H5" "$([[ $rc -eq 1 ]] && [[ "$receipt_exists" == "false" ]] && echo true || echo false)" "Verify bypass possible (rc=$rc, receipt=$receipt_exists)"
+}
+
 # ═══════════════════════════════════════════════════════════════════════════
 # MAIN
 # ═══════════════════════════════════════════════════════════════════════════
@@ -489,6 +531,8 @@ main() {
     test_H1_path_traversal_blocked
     test_H2_newline_injection_sanitized
     test_H3_precreated_invalid_receipt
+    test_H4_symlink_attack
+    test_H5_verify_always_called
     
     echo ""
     echo "═══════════════════════════════════════════════════════════════════════════"
