@@ -2040,7 +2040,7 @@ _deploy_verify_bundle() {
 cmd_deploy() {
     local subcmd="${1:-deploy}"
     
-    # Handle subcommands (promote, rollback, proof)
+    # Handle subcommands (promote, rollback, proof, apply, receipt)
     if [[ "$subcmd" == "promote" ]]; then
         shift
         cmd_deploy_promote "$@"
@@ -2052,6 +2052,14 @@ cmd_deploy() {
     elif [[ "$subcmd" == "proof" ]]; then
         shift
         cmd_deploy_proof "$@"
+        return $?
+    elif [[ "$subcmd" == "apply" ]]; then
+        shift
+        cmd_deploy_apply "$@"
+        return $?
+    elif [[ "$subcmd" == "receipt" ]]; then
+        shift
+        cmd_deploy_receipt "$@"
         return $?
     fi
     
@@ -2478,6 +2486,412 @@ cmd_deploy_proof() {
     fi
     
     [[ "$overall_status" == "fail" ]] && return 1
+    return 0
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Deploy Apply + Receipt Constitution v1.0.0 (Phase 3: RuntimeCert-driven)
+# Reference: DEPLOY_APPLY_RECEIPT_CONSTITUTION_v1.0.0_SPECLOCK.md
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Helper: emit apply error JSON
+_apply_error_json() {
+    local code="$1" msg="$2"
+    local ts
+    ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    echo '{"version":"1.0.0","timestamp":"'"$ts"'","status":"error","operation":"apply","error":{"code":"'"$code"'","message":"'"$msg"'"}}'
+}
+
+# Helper: get bundle hash (SHA256 of checksums.sha256)
+_get_bundle_hash() {
+    local bundle_dir="$1"
+    if [[ -f "$bundle_dir/checksums.sha256" ]]; then
+        sha256sum "$bundle_dir/checksums.sha256" 2>/dev/null | cut -d' ' -f1
+    else
+        echo "unknown"
+    fi
+}
+
+# Helper: atomic JSON write (temp + mv)
+_write_json_atomic() {
+    local target="$1" content="$2"
+    local tmp_file
+    tmp_file=$(mktemp)
+    echo "$content" > "$tmp_file"
+    mv "$tmp_file" "$target"
+}
+
+# Helper: build receipt JSON
+_build_receipt() {
+    local env="$1" mode="$2" bundle_path="$3" bundle_hash="$4" action="$5" status="$6"
+    local git_sha="$7" git_tag="$8" error_code="${9:-}" error_msg="${10:-}"
+    local verify_status="${11:-pass}" verify_msg="${12:-Bundle verified}"
+    local preflight_status="${13:-pass}" preflight_msg="${14:-Preflight checks passed}"
+    local execute_status="${15:-skip}" execute_msg="${16:-v1.0.0 governance-only}"
+    local health_status="${17:-skip}" health_msg="${18:-v1.0.0 governance-only}"
+    
+    local ts
+    ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    
+    # Sanitize bundle path for JSON
+    local sanitized_path
+    sanitized_path=$(printf '%s' "$bundle_path" | tr -d '\n\r' | sed 's/"/\\"/g')
+    
+    # Build error block
+    local error_block="null"
+    if [[ -n "$error_code" ]]; then
+        error_block='{"code":"'"$error_code"'","message":"'"$error_msg"'"}'
+    fi
+    
+    # Build git block
+    local git_sha_json="null" git_tag_json="null"
+    [[ -n "$git_sha" ]] && git_sha_json='"'"$git_sha"'"'
+    [[ -n "$git_tag" ]] && git_tag_json='"'"$git_tag"'"'
+    
+    cat << EOF
+{
+  "version": "1.0.0",
+  "timestamp": "$ts",
+  "environment": "$env",
+  "mode": "$mode",
+  "bundle": {
+    "path": "$sanitized_path",
+    "hash": "$bundle_hash",
+    "verified": true
+  },
+  "git": {
+    "sha": $git_sha_json,
+    "tag": $git_tag_json
+  },
+  "action": "$action",
+  "status": "$status",
+  "steps": [
+    {"name": "verify", "status": "$verify_status", "message": "$verify_msg"},
+    {"name": "preflight", "status": "$preflight_status", "message": "$preflight_msg"},
+    {"name": "execute", "status": "$execute_status", "message": "$execute_msg"},
+    {"name": "health", "status": "$health_status", "message": "$health_msg"}
+  ],
+  "error": $error_block
+}
+EOF
+}
+
+cmd_deploy_apply() {
+    local environment="" bundle_path="" ci_mode="" dry_run=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --env=*) environment="${1#*=}" ;;
+            --env) environment="${2:-}"; shift ;;
+            --bundle=*) bundle_path="${1#*=}" ;;
+            --bundle) bundle_path="${2:-}"; shift ;;
+            --ci) ci_mode="true" ;;
+            --dry-run) dry_run="true" ;;
+            -h|--help|help)
+                echo "Usage: tf deploy apply --env <dev|techsupport|prod> --bundle <path> [--dry-run] [--ci]"
+                echo ""
+                echo "Execute deployment from a verified RuntimeCert bundle."
+                echo ""
+                echo "Options:"
+                echo "  --env <env>     Target environment (required)"
+                echo "  --bundle <dir>  RuntimeCert bundle directory (required)"
+                echo "  --dry-run       Validate only, no mutations"
+                echo "  --ci            JSON-only output"
+                return 0
+                ;;
+            *)
+                if [[ -n "$ci_mode" ]]; then
+                    _apply_error_json "INVALID_FLAG" "Unknown option: $1"
+                else
+                    log_error "Unknown option: $1"
+                    echo "Usage: tf deploy apply --env <env> --bundle <path> [--dry-run] [--ci]"
+                fi
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    # ─── Invariant: Missing --env (Exit 2) ───
+    if [[ -z "$environment" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "MISSING_ENV" "Missing required --env argument"
+        else
+            log_error "Missing required argument: --env"
+            echo "Valid environments: dev, techsupport, prod"
+        fi
+        return 2
+    fi
+    
+    # ─── Invariant: Invalid --env (Exit 2) ───
+    if [[ ! "$environment" =~ ^(dev|techsupport|prod)$ ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "INVALID_ENV" "Invalid environment: $environment"
+        else
+            log_error "Invalid environment: $environment"
+            echo "Valid environments: dev, techsupport, prod"
+        fi
+        return 2
+    fi
+    
+    # ─── Invariant: Missing --bundle (Exit 2) ───
+    if [[ -z "$bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "MISSING_BUNDLE" "Missing required --bundle argument"
+        else
+            log_error "Missing required argument: --bundle"
+        fi
+        return 2
+    fi
+    
+    # ─── Invariant: Bundle path validation (Exit 2) ───
+    # Check for path traversal and control characters
+    if [[ "$bundle_path" == *".."* ]] || [[ "$bundle_path" =~ [[:cntrl:]] ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "INVALID_BUNDLE_PATH" "Invalid bundle path: contains illegal characters"
+        else
+            log_error "Invalid bundle path: contains illegal characters"
+        fi
+        return 2
+    fi
+    
+    # Resolve absolute path
+    local abs_bundle_path
+    if [[ "$bundle_path" == /* ]]; then
+        abs_bundle_path="$bundle_path"
+    else
+        abs_bundle_path="$(cd "$(dirname "$bundle_path")" 2>/dev/null && pwd)/$(basename "$bundle_path")" || abs_bundle_path="$bundle_path"
+    fi
+    
+    # ─── Invariant: Bundle exists (Exit 2) ───
+    if [[ ! -d "$abs_bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "BUNDLE_NOT_FOUND" "Bundle directory not found: $bundle_path"
+        else
+            log_error "Bundle directory not found: $bundle_path"
+        fi
+        return 2
+    fi
+    
+    # ─── Invariant A: Verify-First (Exit 1 on failure, no receipt) ───
+    [[ -z "$ci_mode" ]] && log_info "Verifying RuntimeCert bundle..."
+    local verify_output verify_rc
+    verify_output=$(bash "$SCRIPT_DIR/tf.sh" release verify --bundle "$abs_bundle_path" --ci 2>&1) && verify_rc=0 || verify_rc=$?
+    
+    if [[ $verify_rc -ne 0 ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            local error_msg
+            error_msg=$(echo "$verify_output" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('error',{}).get('message','Bundle verification failed'))" 2>/dev/null || echo "Bundle verification failed")
+            _apply_error_json "BUNDLE_VERIFY_FAILED" "$error_msg"
+        else
+            log_error "RuntimeCert bundle verification failed"
+            echo "Run: tf release verify --bundle $bundle_path"
+        fi
+        # NO RECEIPT WRITTEN on verify failure
+        return 1
+    fi
+    
+    local verify_status="pass"
+    local verify_msg="Bundle verified successfully"
+    
+    # ─── Gate-First Check (Exit 1) ───
+    [[ -z "$ci_mode" ]] && log_info "Running gate preflight..."
+    if ! bash "$SCRIPT_DIR/tf.sh" gate --ci >/dev/null 2>&1; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "GATE_FAILED" "Gate preflight check failed"
+        else
+            log_error "Gate preflight check failed"
+            echo "Run: tf gate"
+        fi
+        # NO RECEIPT WRITTEN on gate failure
+        return 1
+    fi
+    
+    # ─── No Active Sessions (Exit 1) ───
+    if [[ -f "$ACTIVE_SESSION" ]]; then
+        local session_id
+        session_id=$(cat "$ACTIVE_SESSION" 2>/dev/null || echo "unknown")
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "ACTIVE_SESSION" "Active agent session detected: $session_id"
+        else
+            log_error "Active agent session detected: $session_id"
+        fi
+        # NO RECEIPT WRITTEN with active session
+        return 1
+    fi
+    
+    # ─── Preflight: Mode Detection ───
+    local detected_mode
+    detected_mode=$(detect_mode)
+    local preflight_status="pass"
+    local preflight_msg="Mode detected: $detected_mode"
+    
+    # ─── Get bundle hash and git info ───
+    local bundle_hash git_sha git_tag
+    bundle_hash=$(_get_bundle_hash "$abs_bundle_path")
+    git_sha=$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || echo "")
+    git_tag=$(git -C "$ROOT" describe --exact-match --tags HEAD 2>/dev/null || echo "")
+    
+    # ─── Determine action and execution ───
+    local action status execute_status execute_msg health_status health_msg
+    
+    if [[ -n "$dry_run" ]]; then
+        action="dry_run"
+        status="dry_run"
+        execute_status="skip"
+        execute_msg="dry_run"
+        health_status="skip"
+        health_msg="dry_run"
+    else
+        # v1.0.0: governance-only, no actual execution
+        action="apply"
+        status="success"
+        execute_status="skip"
+        execute_msg="v1.0.0 governance-only"
+        health_status="skip"
+        health_msg="v1.0.0 governance-only"
+    fi
+    
+    # ─── Build and write receipt ───
+    local receipt
+    receipt=$(_build_receipt \
+        "$environment" "$detected_mode" "$abs_bundle_path" "$bundle_hash" \
+        "$action" "$status" "$git_sha" "$git_tag" "" "" \
+        "$verify_status" "$verify_msg" \
+        "$preflight_status" "$preflight_msg" \
+        "$execute_status" "$execute_msg" \
+        "$health_status" "$health_msg")
+    
+    local receipt_path="$abs_bundle_path/proofs/deploy_receipt.json"
+    _write_json_atomic "$receipt_path" "$receipt"
+    
+    # ─── Output ───
+    if [[ -n "$ci_mode" ]]; then
+        echo "$receipt"
+    else
+        echo ""
+        log_success "Deploy apply completed"
+        echo ""
+        echo "  Environment:  $environment"
+        echo "  Bundle:       $abs_bundle_path"
+        echo "  Mode:         $detected_mode"
+        echo "  Action:       $action"
+        echo "  Status:       $status"
+        echo ""
+        if [[ -n "$dry_run" ]]; then
+            echo "  Dry-run complete. No mutations performed."
+        else
+            echo "  NOTE: v1.0.0 governance-only (execution skipped)"
+        fi
+        echo ""
+        echo "  Receipt: $receipt_path"
+    fi
+    
+    return 0
+}
+
+cmd_deploy_receipt() {
+    local bundle_path="" ci_mode=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --bundle=*) bundle_path="${1#*=}" ;;
+            --bundle) bundle_path="${2:-}"; shift ;;
+            --ci) ci_mode="true" ;;
+            -h|--help|help)
+                echo "Usage: tf deploy receipt --bundle <path> [--ci]"
+                echo ""
+                echo "Read and display deployment receipt from bundle."
+                echo ""
+                echo "Options:"
+                echo "  --bundle <dir>  RuntimeCert bundle directory (required)"
+                echo "  --ci            JSON-only output"
+                return 0
+                ;;
+            *)
+                if [[ -n "$ci_mode" ]]; then
+                    local ts
+                    ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+                    echo '{"version":"1.0.0","timestamp":"'"$ts"'","status":"error","operation":"receipt","error":{"code":"INVALID_FLAG","message":"Unknown option: '"$1"'"}}'
+                else
+                    log_error "Unknown option: $1"
+                    echo "Usage: tf deploy receipt --bundle <path> [--ci]"
+                fi
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    # ─── Invariant: Missing --bundle (Exit 2) ───
+    if [[ -z "$bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            local ts
+            ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            echo '{"version":"1.0.0","timestamp":"'"$ts"'","status":"error","operation":"receipt","error":{"code":"MISSING_BUNDLE","message":"Missing required --bundle argument"}}'
+        else
+            log_error "Missing required argument: --bundle"
+        fi
+        return 2
+    fi
+    
+    # Resolve absolute path
+    local abs_bundle_path
+    if [[ "$bundle_path" == /* ]]; then
+        abs_bundle_path="$bundle_path"
+    else
+        abs_bundle_path="$(cd "$(dirname "$bundle_path")" 2>/dev/null && pwd)/$(basename "$bundle_path")" || abs_bundle_path="$bundle_path"
+    fi
+    
+    local receipt_path="$abs_bundle_path/proofs/deploy_receipt.json"
+    
+    # ─── Invariant: Receipt must exist (Exit 1) ───
+    if [[ ! -f "$receipt_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            local ts
+            ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            echo '{"version":"1.0.0","timestamp":"'"$ts"'","status":"error","operation":"receipt","error":{"code":"MISSING_RECEIPT","message":"Receipt not found: '"$receipt_path"'"}}'
+        else
+            log_error "Receipt not found: $receipt_path"
+            echo ""
+            echo "Run 'tf deploy apply' first to create a receipt."
+        fi
+        return 1
+    fi
+    
+    # ─── Read and output receipt (read-only) ───
+    local receipt_content
+    receipt_content=$(cat "$receipt_path")
+    
+    if [[ -n "$ci_mode" ]]; then
+        echo "$receipt_content"
+    else
+        echo ""
+        echo "  Deploy Receipt"
+        echo "  ════════════════════════════════════════"
+        echo "$receipt_content" | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+print(f\"  Environment: {d.get('environment', 'unknown')}\")
+print(f\"  Mode:        {d.get('mode', 'unknown')}\")
+print(f\"  Action:      {d.get('action', 'unknown')}\")
+print(f\"  Status:      {d.get('status', 'unknown')}\")
+print(f\"  Timestamp:   {d.get('timestamp', 'unknown')}\")
+print(f\"  Bundle:      {d.get('bundle', {}).get('path', 'unknown')}\")
+print(f\"  Verified:    {d.get('bundle', {}).get('verified', False)}\")
+print()
+print('  Steps:')
+for s in d.get('steps', []):
+    status_icon = {'pass': '✓', 'fail': '✗', 'skip': '○'}.get(s.get('status', ''), '?')
+    print(f\"    [{status_icon}] {s.get('name')}: {s.get('status')} - {s.get('message')}\")
+if d.get('error'):
+    print()
+    print(f\"  Error: {d.get('error', {}).get('code', '')} - {d.get('error', {}).get('message', '')}\")
+" 2>/dev/null || echo "$receipt_content"
+        echo "  ════════════════════════════════════════"
+        echo ""
+    fi
+    
     return 0
 }
 
