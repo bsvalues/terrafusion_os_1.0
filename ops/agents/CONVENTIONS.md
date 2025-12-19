@@ -86,6 +86,22 @@
 - Proof helpers: `_proof_init()`, `_proof_record_check()`, `_proof_emit()` in tf.sh
 - SpecLock reference: `ops/proofs/PROOF_SOURCES_OF_TRUTH_v1.0.0_SPECLOCK.md`
 
+### Deploy Apply + Receipt Subsystem (v1.0.0-deploy-apply-receipt-constitution)
+- `ops/dev/tf.sh` cmd_deploy_apply(), cmd_deploy_receipt() implementations
+- Apply command: `tf deploy apply --env <env> --bundle <dir> [--dry-run] [--ci]`
+- Receipt command: `tf deploy receipt --bundle <dir> [--ci]`
+- Invocation contract (exit codes: 0=success/dry_run, 1=failure, 2=invalid)
+- Verify-first enforcement: apply MUST run `tf release verify` before any action
+- Dry-run safety: validates without mutations, receipt status=dry_run
+- Receipt location: `<bundle>/proofs/deploy_receipt.json` (atomic write via temp+mv)
+- Receipt schema v1.0.0: version, timestamp, environment, mode, bundle.path/hash/verified, git.sha/tag, action, status, steps[], error
+- Steps array: verify, preflight, execute, health (each with name, status, message)
+- Status enum: success|failed|dry_run
+- v1.0.0 governance-only: execute/health steps skip (actual orchestration in v1.1.0)
+- CI JSON purity: no ANSI codes, valid JSON output
+- Path sanitization: control chars and path traversal blocked
+- SpecLock reference: `ops/deploy/DEPLOY_APPLY_RECEIPT_CONSTITUTION_v1.0.0_SPECLOCK.md`
+
 This governance layer is **IMMUTABLE** without explicit constitutional amendment process.
 
 **Amendment Process:**
