@@ -73,6 +73,19 @@
 - Path sanitization: control characters and newlines removed from all JSON output
 - Overwrite protection: fails on existing directory unless --force
 
+### Proof Sources of Truth Subsystem (v1.0.0-proof-sources-of-truth)
+- `ops/dev/tf.sh` proof subcommands: `agent proof`, `deploy proof`, `marketplace proof`
+- Canonical proof emitters: each subsystem MUST emit its own proof JSON directly
+- Proof schema v1.0.0: version, timestamp, subsystem, status, summary, checks[] (required)
+- Status enum: pass|warn|fail|error
+- Exit code contract: 0=pass/warn, 1=fail, 2=invalid invocation
+- CI purity: --ci flag produces JSON-only stdout, no ANSI codes, deterministic key ordering
+- Check structure: each check has id, name, status, message fields
+- Error handling: invalid invocation emits JSON with error.code and error.message
+- Integration: `tf release bundle` MUST call canonical proof commands, not synthesize
+- Proof helpers: `_proof_init()`, `_proof_record_check()`, `_proof_emit()` in tf.sh
+- SpecLock reference: `ops/proofs/PROOF_SOURCES_OF_TRUTH_v1.0.0_SPECLOCK.md`
+
 This governance layer is **IMMUTABLE** without explicit constitutional amendment process.
 
 **Amendment Process:**
