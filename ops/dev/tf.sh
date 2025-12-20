@@ -2502,6 +2502,33 @@ _apply_error_json() {
     echo '{"version":"1.0.0","timestamp":"'"$ts"'","status":"error","operation":"apply","error":{"code":"'"$code"'","message":"'"$msg"'"}}'
 }
 
+# Helper: check if path is a symlink (v1.0.1 hardening)
+# Returns 0 if not a symlink (safe), returns 2 if symlink detected
+_check_symlink_apply() {
+    local path="$1" desc="$2" ci_mode="$3"
+    if [[ -L "$path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "SYMLINK_NOT_ALLOWED" "Symlink not allowed: $desc"
+        else
+            log_error "Symlink not allowed: $desc"
+        fi
+        return 2
+    fi
+    return 0
+}
+
+# Helper: check for path escape (v1.0.1 defense-in-depth)
+# PATH_ESCAPE error code for future use if realpath detection is needed
+_check_path_escape_apply() {
+    local path="$1" ci_mode="$2"
+    # Currently handled by symlink check + existing ".." filter
+    # This is a placeholder for future realpath-based boundary checks
+    # If escape detected:
+    #   _apply_error_json "PATH_ESCAPE" "Path escapes allowed boundaries"
+    #   return 2
+    return 0
+}
+
 # Helper: get bundle hash (SHA256 of checksums.sha256)
 _get_bundle_hash() {
     local bundle_dir="$1"
@@ -2663,6 +2690,10 @@ cmd_deploy_apply() {
         abs_bundle_path="$(cd "$(dirname "$bundle_path")" 2>/dev/null && pwd)/$(basename "$bundle_path")" || abs_bundle_path="$bundle_path"
     fi
     
+    # ─── Invariant D: Explicit Symlink Detection (Exit 2) — v1.0.1 ───
+    # Check bundle root symlink BEFORE existence check
+    _check_symlink_apply "$abs_bundle_path" "bundle root" "$ci_mode" || return $?
+    
     # ─── Invariant: Bundle exists (Exit 2) ───
     if [[ ! -d "$abs_bundle_path" ]]; then
         if [[ -n "$ci_mode" ]]; then
@@ -2672,6 +2703,11 @@ cmd_deploy_apply() {
         fi
         return 2
     fi
+    
+    # ─── Invariant D (cont): Critical file symlink checks — v1.0.1 ───
+    _check_symlink_apply "$abs_bundle_path/manifest.json" "manifest.json" "$ci_mode" || return $?
+    _check_symlink_apply "$abs_bundle_path/proofs" "proofs directory" "$ci_mode" || return $?
+    _check_symlink_apply "$abs_bundle_path/checksums.sha256" "checksums.sha256" "$ci_mode" || return $?
     
     # ─── Invariant A: Verify-First (Exit 1 on failure, no receipt) ───
     [[ -z "$ci_mode" ]] && log_info "Verifying RuntimeCert bundle..."
@@ -2690,6 +2726,10 @@ cmd_deploy_apply() {
         # NO RECEIPT WRITTEN on verify failure
         return 1
     fi
+    
+    # ─── Invariant C: Capture verified hash for TOCTOU check — v1.0.1 ───
+    local verified_hash
+    verified_hash=$(_get_bundle_hash "$abs_bundle_path")
     
     local verify_status="pass"
     local verify_msg="Bundle verified successfully"
@@ -2726,9 +2766,8 @@ cmd_deploy_apply() {
     local preflight_status="pass"
     local preflight_msg="Mode detected: $detected_mode"
     
-    # ─── Get bundle hash and git info ───
-    local bundle_hash git_sha git_tag
-    bundle_hash=$(_get_bundle_hash "$abs_bundle_path")
+    # ─── Get git info (bundle hash already captured as verified_hash) ───
+    local git_sha git_tag
     git_sha=$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || echo "")
     git_tag=$(git -C "$ROOT" describe --exact-match --tags HEAD 2>/dev/null || echo "")
     
@@ -2752,10 +2791,24 @@ cmd_deploy_apply() {
         health_msg="v1.0.0 governance-only"
     fi
     
+    # ─── Invariant C: TOCTOU Mitigation — v1.0.1 ───
+    # Re-hash before receipt write to detect bundle changes since verify
+    local pre_write_hash
+    pre_write_hash=$(_get_bundle_hash "$abs_bundle_path")
+    if [[ "$verified_hash" != "$pre_write_hash" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "BUNDLE_CHANGED" "Bundle modified between verify and apply"
+        else
+            log_error "Bundle modified between verify and apply (TOCTOU detected)"
+        fi
+        # NO RECEIPT WRITTEN on TOCTOU detection
+        return 1
+    fi
+    
     # ─── Build and write receipt ───
     local receipt
     receipt=$(_build_receipt \
-        "$environment" "$detected_mode" "$abs_bundle_path" "$bundle_hash" \
+        "$environment" "$detected_mode" "$abs_bundle_path" "$verified_hash" \
         "$action" "$status" "$git_sha" "$git_tag" "" "" \
         "$verify_status" "$verify_msg" \
         "$preflight_status" "$preflight_msg" \

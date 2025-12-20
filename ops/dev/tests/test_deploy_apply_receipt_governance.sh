@@ -438,8 +438,10 @@ test_H4_symlink_attack() {
     local rc=0
     bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_test/bundle" --ci 2>/dev/null && rc=0 || rc=$?
     
-    # Should fail (exit 1) because symlinked dir won't have valid bundle structure
-    test_result "H4" "$([[ $rc -eq 1 ]] && echo true || echo false)" "Symlink attack not blocked (exit $rc)"
+    # v1.0.0: exit 1 (incidental failure - no manifest.json)
+    # v1.0.1: exit 2 (explicit symlink detection)
+    # Both are valid security behaviors
+    test_result "H4" "$([[ $rc -eq 1 ]] || [[ $rc -eq 2 ]] && echo true || echo false)" "Symlink attack not blocked (exit $rc)"
 }
 
 test_H5_verify_always_called() {
