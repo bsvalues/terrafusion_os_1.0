@@ -2,6 +2,12 @@
 # ═══════════════════════════════════════════════════════════════════════════
 # Deploy Apply + Receipt Constitution v1.0.1 — Hardening Test Suite
 # Reference: DEPLOY_APPLY_RECEIPT_CONSTITUTION_v1.0.1_SPECLOCK.md
+# 
+# NOTE: v1.1.0 SUPERSEDES THIS TEST SUITE
+#       The v1.1.0 test suite (test_deploy_k8s_apply_v1_1_0_governance.sh)
+#       includes TOCTOU regression coverage (test G1) and full k8s flow.
+#       Some tests here (I2, M1, M2) fail because they lack kubectl stubs
+#       required for v1.1.0's real k8s execution.
 # ═══════════════════════════════════════════════════════════════════════════
 set -uo pipefail
 
@@ -110,7 +116,7 @@ test_I1_bundle_modified_during_apply() {
     
     # Run apply and check if re-hash logic exists
     local rc=0 output
-    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/toctou_bundle" --ci 2>&1) && rc=0 || rc=$?
+    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/toctou_bundle" --namespace test-ns --ci 2>&1) && rc=0 || rc=$?
     
     # For RED baseline: this should PASS once TOCTOU mitigation is implemented
     # Currently v1.0.0 has no re-hash, so we check if error code BUNDLE_CHANGED
@@ -161,7 +167,7 @@ test_J1_bundle_root_symlink() {
     ln -sf "$TEST_TMP/valid_bundle" "$TEST_TMP/symlink_root_test/link_bundle"
     
     local rc=0 output
-    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_root_test/link_bundle" --ci 2>&1) && rc=0 || rc=$?
+    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_root_test/link_bundle" --namespace test-ns --ci 2>&1) && rc=0 || rc=$?
     
     # Should exit 2 with SYMLINK_NOT_ALLOWED
     local has_symlink_error=false
@@ -184,7 +190,7 @@ test_J2_manifest_symlink() {
     ln -sf "$TEST_TMP/real_manifest.json" "$TEST_TMP/symlink_manifest_test/manifest.json"
     
     local rc=0 output
-    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_manifest_test" --ci 2>&1) && rc=0 || rc=$?
+    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_manifest_test" --namespace test-ns --ci 2>&1) && rc=0 || rc=$?
     
     local has_symlink_error=false
     if echo "$output" | grep -q "SYMLINK_NOT_ALLOWED"; then
@@ -205,7 +211,7 @@ test_J3_proofs_dir_symlink() {
     ln -sf "$TEST_TMP/valid_bundle/proofs" "$TEST_TMP/symlink_proofs_test/proofs"
     
     local rc=0 output
-    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_proofs_test" --ci 2>&1) && rc=0 || rc=$?
+    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_proofs_test" --namespace test-ns --ci 2>&1) && rc=0 || rc=$?
     
     local has_symlink_error=false
     if echo "$output" | grep -q "SYMLINK_NOT_ALLOWED"; then
@@ -227,7 +233,7 @@ test_J4_checksums_symlink() {
     ln -sf "$TEST_TMP/real_checksums.sha256" "$TEST_TMP/symlink_checksums_test/checksums.sha256"
     
     local rc=0 output
-    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_checksums_test" --ci 2>&1) && rc=0 || rc=$?
+    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_checksums_test" --namespace test-ns --ci 2>&1) && rc=0 || rc=$?
     
     local has_symlink_error=false
     if echo "$output" | grep -q "SYMLINK_NOT_ALLOWED"; then
@@ -254,7 +260,7 @@ test_J5_proof_file_symlink_allowed() {
     (cd "$TEST_TMP/symlink_proof_file_test" && sha256sum manifest.json proofs/*.json 2>/dev/null | sort -k2) > "$TEST_TMP/symlink_proof_file_test/checksums.sha256"
     
     local rc=0
-    bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_proof_file_test" --ci 2>/dev/null && rc=0 || rc=$?
+    bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_proof_file_test" --namespace test-ns --ci 2>/dev/null && rc=0 || rc=$?
     
     # Per spec: individual proof files as symlinks are NOT blocked (only critical files)
     # This should exit 0 (or 1 if verify fails due to symlink-following in sha256sum)
@@ -262,7 +268,7 @@ test_J5_proof_file_symlink_allowed() {
     
     local blocked_by_symlink=false
     local output
-    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_proof_file_test" --ci 2>&1) || true
+    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/symlink_proof_file_test" --namespace test-ns --ci 2>&1) || true
     if echo "$output" | grep -q "SYMLINK_NOT_ALLOWED"; then
         blocked_by_symlink=true
     fi
@@ -280,7 +286,7 @@ test_K1_symlink_escape_to_etc() {
     ln -sf /etc "$TEST_TMP/escape_test/bundle"
     
     local rc=0 output
-    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/escape_test/bundle" --ci 2>&1) && rc=0 || rc=$?
+    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/escape_test/bundle" --namespace test-ns --ci 2>&1) && rc=0 || rc=$?
     
     # Should exit 1 or 2 (symlink blocked or path escape)
     local has_security_error=false
@@ -299,7 +305,7 @@ test_K2_nested_symlink_chain() {
     ln -sf "$TEST_TMP/chain_test/level1/level2" "$TEST_TMP/chain_test/final_link"
     
     local rc=0 output
-    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/chain_test/final_link" --ci 2>&1) && rc=0 || rc=$?
+    output=$(bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/chain_test/final_link" --namespace test-ns --ci 2>&1) && rc=0 || rc=$?
     
     # Should detect symlink chain and block
     local has_symlink_error=false
@@ -354,7 +360,7 @@ test_M1_valid_bundle_still_works() {
     rm -f "$TEST_TMP/valid_bundle/proofs/deploy_receipt.json"
     
     local rc=0
-    bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/valid_bundle" --ci 2>/dev/null && rc=0 || rc=$?
+    bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/valid_bundle" --namespace test-ns --ci 2>/dev/null && rc=0 || rc=$?
     
     test_result "M1" "$([[ $rc -eq 0 ]] && echo true || echo false)" "Valid bundle apply failed (exit $rc)"
 }
@@ -363,7 +369,7 @@ test_M2_dryrun_still_works() {
     rm -f "$TEST_TMP/valid_bundle/proofs/deploy_receipt.json"
     
     local rc=0
-    bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/valid_bundle" --dry-run --ci 2>/dev/null && rc=0 || rc=$?
+    bash "$TF" deploy apply --env dev --bundle "$TEST_TMP/valid_bundle" --namespace test-ns --dry-run --ci 2>/dev/null && rc=0 || rc=$?
     
     test_result "M2" "$([[ $rc -eq 0 ]] && echo true || echo false)" "Dry-run failed (exit $rc)"
 }

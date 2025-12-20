@@ -2548,7 +2548,7 @@ _write_json_atomic() {
     mv "$tmp_file" "$target"
 }
 
-# Helper: build receipt JSON
+# Helper: build receipt JSON (v1.1.0 with k8s enrichment)
 _build_receipt() {
     local env="$1" mode="$2" bundle_path="$3" bundle_hash="$4" action="$5" status="$6"
     local git_sha="$7" git_tag="$8" error_code="${9:-}" error_msg="${10:-}"
@@ -2556,9 +2556,18 @@ _build_receipt() {
     local preflight_status="${13:-pass}" preflight_msg="${14:-Preflight checks passed}"
     local execute_status="${15:-skip}" execute_msg="${16:-v1.0.0 governance-only}"
     local health_status="${17:-skip}" health_msg="${18:-v1.0.0 governance-only}"
+    # v1.1.0 k8s enrichment fields
+    local k8s_context="${19:-}" k8s_namespace="${20:-}"
+    local k8s_applied="${21:-[]}" k8s_rollout="${22:-[]}" k8s_timeout="${23:-120}"
     
     local ts
     ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    
+    # Determine schema version
+    local schema_version="1.0.0"
+    if [[ -n "$k8s_context" ]] || [[ -n "$k8s_namespace" ]]; then
+        schema_version="1.1.0"
+    fi
     
     # Sanitize bundle path for JSON
     local sanitized_path
@@ -2575,9 +2584,25 @@ _build_receipt() {
     [[ -n "$git_sha" ]] && git_sha_json='"'"$git_sha"'"'
     [[ -n "$git_tag" ]] && git_tag_json='"'"$git_tag"'"'
     
+    # Build k8s block (only for v1.1.0)
+    local k8s_block=""
+    if [[ "$schema_version" == "1.1.0" ]]; then
+        k8s_block=',
+  "k8s": {
+    "context": "'"$k8s_context"'",
+    "namespace": "'"$k8s_namespace"'",
+    "applied": '"$k8s_applied"',
+    "rollout": '"$k8s_rollout"',
+    "timeout_config": {
+      "per_deployment": '"$k8s_timeout"',
+      "applied": '"$k8s_timeout"'
+    }
+  }'
+    fi
+    
     cat << EOF
 {
-  "version": "1.0.0",
+  "version": "$schema_version",
   "timestamp": "$ts",
   "environment": "$env",
   "mode": "$mode",
@@ -2598,13 +2623,14 @@ _build_receipt() {
     {"name": "execute", "status": "$execute_status", "message": "$execute_msg"},
     {"name": "health", "status": "$health_status", "message": "$health_msg"}
   ],
-  "error": $error_block
+  "error": $error_block$k8s_block
 }
 EOF
 }
 
 cmd_deploy_apply() {
     local environment="" bundle_path="" ci_mode="" dry_run=""
+    local namespace="" timeout="120"  # v1.1.0: namespace and timeout
     
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -2612,18 +2638,24 @@ cmd_deploy_apply() {
             --env) environment="${2:-}"; shift ;;
             --bundle=*) bundle_path="${1#*=}" ;;
             --bundle) bundle_path="${2:-}"; shift ;;
+            --namespace=*) namespace="${1#*=}" ;;
+            --namespace) namespace="${2:-}"; shift ;;
+            --timeout=*) timeout="${1#*=}" ;;
+            --timeout) timeout="${2:-}"; shift ;;
             --ci) ci_mode="true" ;;
             --dry-run) dry_run="true" ;;
             -h|--help|help)
-                echo "Usage: tf deploy apply --env <dev|techsupport|prod> --bundle <path> [--dry-run] [--ci]"
+                echo "Usage: tf deploy apply --env <dev|techsupport|prod> --bundle <path> [--namespace <ns>] [--timeout <sec>] [--dry-run] [--ci]"
                 echo ""
-                echo "Execute deployment from a verified RuntimeCert bundle."
+                echo "Execute Kubernetes deployment from a verified RuntimeCert bundle."
                 echo ""
                 echo "Options:"
-                echo "  --env <env>     Target environment (required)"
-                echo "  --bundle <dir>  RuntimeCert bundle directory (required)"
-                echo "  --dry-run       Validate only, no mutations"
-                echo "  --ci            JSON-only output"
+                echo "  --env <env>       Target environment (required)"
+                echo "  --bundle <dir>    RuntimeCert bundle directory (required)"
+                echo "  --namespace <ns>  Target Kubernetes namespace (required for k8s)"
+                echo "  --timeout <sec>   Health check timeout per deployment (default: 120, max: 600)"
+                echo "  --dry-run         Validate only, no mutations"
+                echo "  --ci              JSON-only output"
                 return 0
                 ;;
             *)
@@ -2631,13 +2663,17 @@ cmd_deploy_apply() {
                     _apply_error_json "INVALID_FLAG" "Unknown option: $1"
                 else
                     log_error "Unknown option: $1"
-                    echo "Usage: tf deploy apply --env <env> --bundle <path> [--dry-run] [--ci]"
+                    echo "Usage: tf deploy apply --env <env> --bundle <path> [--namespace <ns>] [--timeout <sec>] [--dry-run] [--ci]"
                 fi
                 return 2
                 ;;
         esac
         shift
     done
+    
+    # ─── v1.1.0: Clamp timeout to bounds (10-600) ───
+    if [[ "$timeout" -lt 10 ]]; then timeout=10; fi
+    if [[ "$timeout" -gt 600 ]]; then timeout=600; fi
     
     # ─── Invariant: Missing --env (Exit 2) ───
     if [[ -z "$environment" ]]; then
@@ -2709,6 +2745,16 @@ cmd_deploy_apply() {
     _check_symlink_apply "$abs_bundle_path/proofs" "proofs directory" "$ci_mode" || return $?
     _check_symlink_apply "$abs_bundle_path/checksums.sha256" "checksums.sha256" "$ci_mode" || return $?
     
+    # ─── v1.1.0: Namespace Required (fail-closed) ───
+    if [[ -z "$namespace" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "NAMESPACE_REQUIRED" "The --namespace flag is required for deploy apply"
+        else
+            log_error "The --namespace flag is required for deploy apply"
+        fi
+        return 2
+    fi
+    
     # ─── Invariant A: Verify-First (Exit 1 on failure, no receipt) ───
     [[ -z "$ci_mode" ]] && log_info "Verifying RuntimeCert bundle..."
     local verify_output verify_rc
@@ -2760,19 +2806,96 @@ cmd_deploy_apply() {
         return 1
     fi
     
+    # ─── v1.1.0: kubectl Toolchain Validation (must be BEFORE mode detection) ───
+    if ! command -v kubectl &>/dev/null; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "KUBECTL_MISSING" "kubectl not found in PATH"
+        else
+            log_error "kubectl not found in PATH"
+        fi
+        return 1
+    fi
+    
     # ─── Preflight: Mode Detection ───
     local detected_mode
     detected_mode=$(detect_mode)
     local preflight_status="pass"
     local preflight_msg="Mode detected: $detected_mode"
     
+    # ─── v1.1.0: Mode Validation (k8s only) ───
+    if [[ "$detected_mode" != "k8s" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "UNSUPPORTED_MODE" "deploy apply v1.1.0 requires k8s mode (detected: $detected_mode)"
+        else
+            log_error "deploy apply v1.1.0 requires k8s mode (detected: $detected_mode)"
+        fi
+        return 2
+    fi
+    
+    # ─── v1.1.0: Kubernetes Context Validation ───
+    local kube_context
+    kube_context=$(kubectl config current-context 2>/dev/null) || {
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "KUBE_CONTEXT_UNAVAILABLE" "No active Kubernetes context"
+        else
+            log_error "No active Kubernetes context"
+        fi
+        return 1
+    }
+    
+    # ─── v1.1.0: Namespace Sanitization and Existence Check ───
+    # Sanitize namespace: lowercase, alphanumeric and hyphens only
+    local sanitized_ns
+    sanitized_ns=$(echo "$namespace" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
+    if [[ "$sanitized_ns" != "$namespace" ]]; then
+        [[ -z "$ci_mode" ]] && log_warn "Namespace sanitized from '$namespace' to '$sanitized_ns'"
+        namespace="$sanitized_ns"
+    fi
+    
+    if ! kubectl get namespace "$namespace" &>/dev/null; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "NAMESPACE_NOT_FOUND" "Namespace '$namespace' does not exist in context '$kube_context'"
+        else
+            log_error "Namespace '$namespace' does not exist in context '$kube_context'"
+        fi
+        return 1
+    fi
+    
+    # ─── v1.1.0: K8s Manifest Directory Validation ───
+    local k8s_dir="$abs_bundle_path/k8s"
+    if [[ ! -d "$k8s_dir" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "K8S_MANIFEST_MISSING" "Bundle does not contain k8s/ directory"
+        else
+            log_error "Bundle does not contain k8s/ directory"
+        fi
+        return 1
+    fi
+    
+    # Symlink check on k8s directory
+    _check_symlink_apply "$k8s_dir" "k8s directory" "$ci_mode" || return $?
+    
+    # Check for at least one manifest file
+    local manifest_count
+    manifest_count=$(find "$k8s_dir" -maxdepth 1 -name '*.yaml' -o -name '*.yml' 2>/dev/null | wc -l)
+    if [[ "$manifest_count" -eq 0 ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            _apply_error_json "K8S_MANIFEST_MISSING" "No .yaml/.yml files in k8s/ directory"
+        else
+            log_error "No .yaml/.yml files in k8s/ directory"
+        fi
+        return 1
+    fi
+    
     # ─── Get git info (bundle hash already captured as verified_hash) ───
     local git_sha git_tag
     git_sha=$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || echo "")
     git_tag=$(git -C "$ROOT" describe --exact-match --tags HEAD 2>/dev/null || echo "")
     
-    # ─── Determine action and execution ───
+    # ─── v1.1.0: Initialize K8s tracking variables ───
     local action status execute_status execute_msg health_status health_msg
+    local k8s_applied="" k8s_rollout="" apply_output="" apply_rc=0
+    local rollout_output="" rollout_rc=0
     
     if [[ -n "$dry_run" ]]; then
         action="dry_run"
@@ -2781,14 +2904,106 @@ cmd_deploy_apply() {
         execute_msg="dry_run"
         health_status="skip"
         health_msg="dry_run"
+        k8s_applied="[]"
+        k8s_rollout="[]"
     else
-        # v1.0.0: governance-only, no actual execution
         action="apply"
+        
+        # ─── v1.1.0: kubectl apply execution ───
+        [[ -z "$ci_mode" ]] && log_info "Applying K8s manifests to namespace '$namespace'..."
+        
+        apply_output=$(kubectl apply -n "$namespace" -f "$k8s_dir" --recursive 2>&1) && apply_rc=0 || apply_rc=$?
+        
+        if [[ $apply_rc -ne 0 ]]; then
+            if [[ -n "$ci_mode" ]]; then
+                local apply_err_msg
+                apply_err_msg=$(echo "$apply_output" | head -1 | sed 's/"/\\"/g')
+                _apply_error_json "APPLY_FAILED" "kubectl apply failed: $apply_err_msg"
+            else
+                log_error "kubectl apply failed:"
+                echo "$apply_output" | head -5
+            fi
+            return 1
+        fi
+        
+        # Parse applied resources for receipt
+        k8s_applied=$(echo "$apply_output" | grep -E '(created|configured|unchanged)$' | \
+            awk '{print $1}' | sort | uniq | \
+            python3 -c 'import sys,json; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))' 2>/dev/null || echo '[]')
+        
+        execute_status="pass"
+        execute_msg="kubectl apply succeeded"
+        
+        # ─── v1.1.0: Health Check (kubectl rollout status) ───
+        [[ -z "$ci_mode" ]] && log_info "Running health checks (timeout: ${timeout}s)..."
+        
+        # Find deployments and statefulsets in the applied resources
+        local deployments statefulsets
+        deployments=$(echo "$apply_output" | grep -E '^deployment\.apps/' | awk -F'/' '{print $2}' | awk '{print $1}' || true)
+        statefulsets=$(echo "$apply_output" | grep -E '^statefulset\.apps/' | awk -F'/' '{print $2}' | awk '{print $1}' || true)
+        
+        local all_rollouts_pass=true
+        local rollout_results=""
+        
+        # Check deployments
+        for deploy in $deployments; do
+            [[ -z "$deploy" ]] && continue
+            [[ -z "$ci_mode" ]] && log_info "  Waiting for deployment/$deploy..."
+            rollout_output=$(timeout "${timeout}s" kubectl rollout status "deployment/$deploy" -n "$namespace" 2>&1) && rollout_rc=0 || rollout_rc=$?
+            
+            if [[ $rollout_rc -eq 124 ]]; then
+                # Timeout
+                if [[ -n "$ci_mode" ]]; then
+                    _apply_error_json "HEALTH_TIMEOUT" "Rollout timeout for deployment/$deploy after ${timeout}s"
+                else
+                    log_error "Rollout timeout for deployment/$deploy after ${timeout}s"
+                fi
+                return 1
+            elif [[ $rollout_rc -ne 0 ]]; then
+                all_rollouts_pass=false
+                rollout_results="${rollout_results}{\"resource\":\"deployment/$deploy\",\"status\":\"fail\"},"
+            else
+                rollout_results="${rollout_results}{\"resource\":\"deployment/$deploy\",\"status\":\"pass\"},"
+            fi
+        done
+        
+        # Check statefulsets
+        for sts in $statefulsets; do
+            [[ -z "$sts" ]] && continue
+            [[ -z "$ci_mode" ]] && log_info "  Waiting for statefulset/$sts..."
+            rollout_output=$(timeout "${timeout}s" kubectl rollout status "statefulset/$sts" -n "$namespace" 2>&1) && rollout_rc=0 || rollout_rc=$?
+            
+            if [[ $rollout_rc -eq 124 ]]; then
+                if [[ -n "$ci_mode" ]]; then
+                    _apply_error_json "HEALTH_TIMEOUT" "Rollout timeout for statefulset/$sts after ${timeout}s"
+                else
+                    log_error "Rollout timeout for statefulset/$sts after ${timeout}s"
+                fi
+                return 1
+            elif [[ $rollout_rc -ne 0 ]]; then
+                all_rollouts_pass=false
+                rollout_results="${rollout_results}{\"resource\":\"statefulset/$sts\",\"status\":\"fail\"},"
+            else
+                rollout_results="${rollout_results}{\"resource\":\"statefulset/$sts\",\"status\":\"pass\"},"
+            fi
+        done
+        
+        # Build rollout JSON array
+        rollout_results="${rollout_results%,}"  # Remove trailing comma
+        k8s_rollout="[${rollout_results}]"
+        
+        if [[ "$all_rollouts_pass" == "false" ]]; then
+            if [[ -n "$ci_mode" ]]; then
+                _apply_error_json "HEALTH_FAILED" "One or more rollouts failed health checks"
+            else
+                log_error "One or more rollouts failed health checks"
+            fi
+            return 1
+        fi
+        
+        health_status="pass"
+        health_msg="All rollouts healthy"
         status="success"
-        execute_status="skip"
-        execute_msg="v1.0.0 governance-only"
-        health_status="skip"
-        health_msg="v1.0.0 governance-only"
     fi
     
     # ─── Invariant C: TOCTOU Mitigation — v1.0.1 ───
@@ -2813,7 +3028,8 @@ cmd_deploy_apply() {
         "$verify_status" "$verify_msg" \
         "$preflight_status" "$preflight_msg" \
         "$execute_status" "$execute_msg" \
-        "$health_status" "$health_msg")
+        "$health_status" "$health_msg" \
+        "$kube_context" "$namespace" "$k8s_applied" "$k8s_rollout" "$timeout")
     
     local receipt_path="$abs_bundle_path/proofs/deploy_receipt.json"
     _write_json_atomic "$receipt_path" "$receipt"
@@ -2828,13 +3044,16 @@ cmd_deploy_apply() {
         echo "  Environment:  $environment"
         echo "  Bundle:       $abs_bundle_path"
         echo "  Mode:         $detected_mode"
+        echo "  Namespace:    $namespace"
+        echo "  Context:      $kube_context"
         echo "  Action:       $action"
         echo "  Status:       $status"
         echo ""
         if [[ -n "$dry_run" ]]; then
             echo "  Dry-run complete. No mutations performed."
         else
-            echo "  NOTE: v1.0.0 governance-only (execution skipped)"
+            echo "  K8s Apply:    $execute_status"
+            echo "  Health Check: $health_status"
         fi
         echo ""
         echo "  Receipt: $receipt_path"
