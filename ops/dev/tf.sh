@@ -2040,7 +2040,7 @@ _deploy_verify_bundle() {
 cmd_deploy() {
     local subcmd="${1:-deploy}"
     
-    # Handle subcommands (promote, rollback, proof, apply, receipt)
+    # Handle subcommands (promote, rollback, proof, apply, receipt, history)
     if [[ "$subcmd" == "promote" ]]; then
         shift
         cmd_deploy_promote "$@"
@@ -2060,6 +2060,10 @@ cmd_deploy() {
     elif [[ "$subcmd" == "receipt" ]]; then
         shift
         cmd_deploy_receipt "$@"
+        return $?
+    elif [[ "$subcmd" == "history" ]]; then
+        shift
+        cmd_deploy_history "$@"
         return $?
     fi
     
@@ -2212,97 +2216,561 @@ cmd_deploy() {
 }
 
 cmd_deploy_promote() {
-    local from_env="" to_env="" bundle_path="" ci_mode=""
+    local from_env="" to_env="" bundle_path="" ci_mode="" dry_run=""
+    local namespace="" timeout="120"  # v1.2.0: namespace and timeout required
+    local env_shortcut=""  # For --env shortcut form
     
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --from=*) from_env="${1#*=}" ;;
-            --from) from_env="$2"; shift ;;
+            --from) from_env="${2:-}"; shift ;;
             --to=*) to_env="${1#*=}" ;;
-            --to) to_env="$2"; shift ;;
+            --to) to_env="${2:-}"; shift ;;
+            --env=*) env_shortcut="${1#*=}" ;;
+            --env) env_shortcut="${2:-}"; shift ;;
             --bundle=*) bundle_path="${1#*=}" ;;
-            --bundle) bundle_path="$2"; shift ;;
+            --bundle) bundle_path="${2:-}"; shift ;;
+            --namespace=*) namespace="${1#*=}" ;;
+            --namespace) namespace="${2:-}"; shift ;;
+            --timeout=*) timeout="${1#*=}" ;;
+            --timeout) timeout="${2:-}"; shift ;;
             --ci) ci_mode="true" ;;
-            *)
-                log_error "Unknown option: $1"
+            --dry-run) dry_run="true" ;;
+            -h|--help|help)
+                echo "Usage: tf deploy promote [--from <env> --to <env> | --env <env>]"
+                echo "         --bundle <path> --namespace <ns> [options]"
                 echo ""
-                echo "Usage: tf deploy promote --from <env> --to <env> --bundle <path> [--ci]"
+                echo "Promote deployment from one environment to the next."
+                echo ""
+                echo "Forms:"
+                echo "  --from dev --to techsupport    Long form (explicit)"
+                echo "  --from techsupport --to prod   Long form (explicit)"
+                echo "  --env techsupport              Short form (implies from=dev)"
+                echo "  --env prod                     Short form (implies from=techsupport)"
+                echo ""
+                echo "Options:"
+                echo "  --bundle <dir>    RuntimeCert bundle directory (required)"
+                echo "  --namespace <ns>  Target Kubernetes namespace (required)"
+                echo "  --timeout <sec>   Health check timeout (default: 120, range: 10-600)"
+                echo "  --dry-run         Validate only, no mutations"
+                echo "  --ci              JSON-only output"
+                return 0
+                ;;
+            *)
+                if [[ -n "$ci_mode" ]]; then
+                    echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_INVOCATION","message":"Unknown option: '"$1"'"}}'
+                else
+                    log_error "Unknown option: $1"
+                    echo "Usage: tf deploy promote [--from <env> --to <env> | --env <env>] --bundle <path> --namespace <ns> [--ci]"
+                fi
                 return 2
                 ;;
         esac
         shift
     done
     
-    # Validation
+    # ─── v1.2.0: Handle --env shortcut form ───
+    if [[ -n "$env_shortcut" ]]; then
+        case "$env_shortcut" in
+            techsupport)
+                from_env="dev"
+                to_env="techsupport"
+                ;;
+            prod)
+                from_env="techsupport"
+                to_env="prod"
+                ;;
+            dev)
+                if [[ -n "$ci_mode" ]]; then
+                    echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_PROMOTION","message":"Cannot promote to dev - dev is the first stage"}}'
+                else
+                    log_error "Cannot promote to dev - dev is the first stage"
+                fi
+                return 2
+                ;;
+            *)
+                if [[ -n "$ci_mode" ]]; then
+                    echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_PROMOTION","message":"Invalid environment: '"$env_shortcut"'"}}'
+                else
+                    log_error "Invalid environment: $env_shortcut"
+                fi
+                return 2
+                ;;
+        esac
+    fi
+    
+    # ─── Validation: from/to required ───
     if [[ -z "$from_env" ]] || [[ -z "$to_env" ]]; then
         if [[ -n "$ci_mode" ]]; then
-            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"MISSING_ARGS","message":"Missing required --from and --to arguments"}}'
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_INVOCATION","message":"Missing required --from/--to or --env arguments"}}'
         else
-            log_error "Missing required arguments: --from and --to"
-            echo ""
-            echo "Usage: tf deploy promote --from <dev|techsupport> --to <techsupport|prod> --bundle <path>"
+            log_error "Missing required arguments: --from/--to or --env"
+            echo "Usage: tf deploy promote [--from <env> --to <env> | --env <env>] --bundle <path> --namespace <ns>"
         fi
         return 2
     fi
     
-    # v1.1.0: Bundle required
+    # ─── v1.2.0: Bundle required ───
     if [[ -z "$bundle_path" ]]; then
         if [[ -n "$ci_mode" ]]; then
-            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"MISSING_BUNDLE","message":"Missing required --bundle argument"}}'
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_INVOCATION","message":"Missing required --bundle argument"}}'
         else
             log_error "Missing required argument: --bundle"
-            echo ""
-            echo "Usage: tf deploy promote --from <env> --to <env> --bundle <path>"
         fi
         return 2
     fi
     
-    # v1.1.0: Path validation
-    if ! _deploy_validate_bundle_path "$bundle_path" "$ci_mode"; then
+    # ─── v1.2.0: Namespace required (fail-closed) ───
+    if [[ -z "$namespace" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"NAMESPACE_REQUIRED","message":"Missing required --namespace argument"}}'
+        else
+            log_error "Missing required argument: --namespace"
+        fi
         return 2
     fi
     
-    if [[ ! "$from_env" =~ ^(dev|techsupport)$ ]] || [[ ! "$to_env" =~ ^(techsupport|prod)$ ]]; then
-        log_error "Invalid promotion path: $from_env → $to_env"
-        echo ""
-        echo "Valid paths: dev→techsupport, techsupport→prod"
+    # ─── v1.2.0: Timeout bounds (10-600) ───
+    if ! [[ "$timeout" =~ ^[0-9]+$ ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"TIMEOUT_INVALID","message":"Timeout must be numeric"}}'
+        else
+            log_error "Timeout must be numeric"
+        fi
+        return 2
+    fi
+    if [[ "$timeout" -lt 10 ]]; then timeout=10; fi
+    if [[ "$timeout" -gt 600 ]]; then timeout=600; fi
+    
+    # ─── Path validation ───
+    if [[ "$bundle_path" == *".."* ]] || [[ "$bundle_path" =~ [[:cntrl:]] ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_INVOCATION","message":"Invalid bundle path: contains illegal characters"}}'
+        else
+            log_error "Invalid bundle path: contains illegal characters"
+        fi
         return 2
     fi
     
-    # Prevent backwards promotion
-    if [[ "$from_env" == "techsupport" && "$to_env" == "dev" ]] || \
-       [[ "$from_env" == "prod" ]]; then
-        log_error "Invalid promotion direction: $from_env → $to_env"
-        echo ""
-        echo "Promotions must move forward: dev→techsupport→prod"
+    # Resolve absolute path
+    local abs_bundle_path
+    if [[ "$bundle_path" == /* ]]; then
+        abs_bundle_path="$bundle_path"
+    else
+        abs_bundle_path="$(cd "$(dirname "$bundle_path")" 2>/dev/null && pwd)/$(basename "$bundle_path")" || abs_bundle_path="$bundle_path"
+    fi
+    
+    # ─── v1.2.0: Validate promotion pair ───
+    local valid_pair=false
+    if [[ "$from_env" == "dev" && "$to_env" == "techsupport" ]]; then
+        valid_pair=true
+    elif [[ "$from_env" == "techsupport" && "$to_env" == "prod" ]]; then
+        valid_pair=true
+    fi
+    
+    if [[ "$valid_pair" == "false" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_PROMOTION","message":"Invalid promotion: '"$from_env"' → '"$to_env"'. Valid: dev→techsupport, techsupport→prod"}}'
+        else
+            log_error "Invalid promotion path: $from_env → $to_env"
+            echo "Valid paths: dev→techsupport, techsupport→prod"
+        fi
         return 2
     fi
     
-    # Gate-first check
+    # ─── v1.2.0: kubectl toolchain validation (MODE check) ───
+    if ! command -v kubectl &>/dev/null; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"KUBECTL_MISSING","message":"kubectl not found in PATH"}}'
+        else
+            log_error "kubectl not found in PATH"
+        fi
+        return 1
+    fi
+    
+    # ─── Mode detection ───
+    local detected_mode
+    detected_mode=$(detect_mode)
+    if [[ "$detected_mode" != "k8s" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"UNSUPPORTED_MODE","message":"promote requires k8s mode (detected: '"$detected_mode"')"}}'
+        else
+            log_error "promote requires k8s mode (detected: $detected_mode)"
+        fi
+        return 2
+    fi
+    
+    # ─── No active sessions (check before gate since gate also checks sessions) ───
+    if [[ -f "$ACTIVE_SESSION" ]]; then
+        local session_id
+        session_id=$(cat "$ACTIVE_SESSION" 2>/dev/null || echo "unknown")
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"ACTIVE_SESSION","message":"Active agent session: '"$session_id"'"}}'
+        else
+            log_error "Active agent session detected: $session_id"
+        fi
+        return 1
+    fi
+    
+    # ─── Gate-first check ───
     if ! bash "$SCRIPT_DIR/tf.sh" gate --ci >/dev/null 2>&1; then
         if [[ -n "$ci_mode" ]]; then
-            echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"failed","operation":"promote","from":"'"$from_env"'","to":"'"$to_env"'","error":{"code":"GATE_FAILED","message":"Gate check failed"}}'
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"GATE_FAILED","message":"Gate check failed"}}'
         else
             log_error "Gate check failed - promotion blocked"
         fi
         return 1
     fi
     
-    # v1.1.0: RuntimeCert bundle verification
-    [[ -z "$ci_mode" ]] && log_info "Verifying RuntimeCert bundle..."
-    if ! _deploy_verify_bundle "$bundle_path" "$ci_mode" "promote"; then
+    # ─── Bundle directory check ───
+    if [[ ! -d "$abs_bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"VERIFY_FAILED","message":"Bundle directory not found: '"$bundle_path"'"}}'
+        else
+            log_error "Bundle directory not found: $bundle_path"
+        fi
         return 1
     fi
     
-    # Placeholder for actual promotion
-    if [[ -n "$ci_mode" ]]; then
-        local sanitized_path
-        sanitized_path=$(printf '%s' "$bundle_path" | tr -d '\n\r' | sed 's/"/\\"/g')
-        echo '{"version":"1.1.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","operation":"promote","from":"'"$from_env"'","to":"'"$to_env"'","bundle":"'"$sanitized_path"'","bundle_verified":true}'
+    # ─── RuntimeCert bundle verification ───
+    [[ -z "$ci_mode" ]] && log_info "Verifying RuntimeCert bundle..."
+    local verify_output verify_rc
+    verify_output=$(bash "$SCRIPT_DIR/tf.sh" release verify --bundle "$abs_bundle_path" --ci 2>&1) && verify_rc=0 || verify_rc=$?
+    
+    if [[ $verify_rc -ne 0 ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            local error_msg
+            error_msg=$(echo "$verify_output" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('error',{}).get('message','Bundle verification failed'))" 2>/dev/null || echo "Bundle verification failed")
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"VERIFY_FAILED","message":"'"$error_msg"'"}}'
+        else
+            log_error "Bundle verification failed"
+        fi
+        return 1
+    fi
+    
+    # ─── v1.2.0: Ensure receipts directory exists ───
+    mkdir -p "$abs_bundle_path/receipts"
+    
+    # ─── v1.2.0: Source receipt validation ───
+    local source_receipt_path="$abs_bundle_path/receipts/apply_${from_env}.json"
+    
+    if [[ ! -f "$source_receipt_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"MISSING_SOURCE_RECEIPT","message":"Source receipt not found: receipts/apply_'"$from_env"'.json"}}'
+        else
+            log_error "Source receipt not found: receipts/apply_${from_env}.json"
+            echo "Run: tf deploy apply --env $from_env --bundle $bundle_path --namespace <ns>"
+        fi
+        return 1
+    fi
+    
+    # Validate source receipt JSON and status
+    local source_receipt_json source_receipt_status source_receipt_env
+    if ! source_receipt_json=$(cat "$source_receipt_path" 2>/dev/null); then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"SOURCE_RECEIPT_INVALID","message":"Cannot read source receipt"}}'
+        else
+            log_error "Cannot read source receipt"
+        fi
+        return 1
+    fi
+    
+    source_receipt_status=$(echo "$source_receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',''))" 2>/dev/null || echo "")
+    source_receipt_env=$(echo "$source_receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('environment',''))" 2>/dev/null || echo "")
+    
+    if [[ -z "$source_receipt_status" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"SOURCE_RECEIPT_INVALID","message":"Invalid source receipt JSON"}}'
+        else
+            log_error "Invalid source receipt JSON"
+        fi
+        return 1
+    fi
+    
+    if [[ "$source_receipt_status" != "success" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"SOURCE_RECEIPT_INVALID","message":"Source receipt status is '"$source_receipt_status"', expected success"}}'
+        else
+            log_error "Source receipt status is '$source_receipt_status', expected 'success'"
+        fi
+        return 1
+    fi
+    
+    if [[ "$source_receipt_env" != "$from_env" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"SOURCE_RECEIPT_INVALID","message":"Source receipt env mismatch: '"$source_receipt_env"' vs '"$from_env"'"}}'
+        else
+            log_error "Source receipt env mismatch: $source_receipt_env vs $from_env"
+        fi
+        return 1
+    fi
+    
+    # Compute source receipt hash
+    local source_receipt_hash
+    source_receipt_hash=$(sha256sum "$source_receipt_path" | awk '{print "sha256:"$1}')
+    local source_receipt_ts
+    source_receipt_ts=$(echo "$source_receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('timestamp',''))" 2>/dev/null || echo "")
+    
+    # ─── v1.2.0: Namespace sanitization ───
+    local sanitized_ns
+    sanitized_ns=$(echo "$namespace" | tr '[:upper:]' '[:lower:]' | tr -d '\n\r' | sed 's/[^a-z0-9-]/-/g')
+    if [[ "$sanitized_ns" != "$namespace" ]]; then
+        [[ -z "$ci_mode" ]] && log_warn "Namespace sanitized from '$namespace' to '$sanitized_ns'"
+        namespace="$sanitized_ns"
+    fi
+    
+    local ts
+    ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    local ts_compact
+    ts_compact=$(date -u +"%Y%m%dT%H%M%SZ")
+    
+    # ─── v1.2.0: Initialize tracking variables ───
+    local status="success" error_code="" error_msg=""
+    local target_receipt_path="" target_receipt_hash=""
+    local kube_context="" k8s_applied="[]" k8s_rollout="[]"
+    
+    if [[ -n "$dry_run" ]]; then
+        status="dry_run"
+        [[ -z "$ci_mode" ]] && log_info "Dry-run mode - no mutations will be performed"
     else
-        log_success "Promotion preflight complete: $from_env → $to_env"
-        echo "  Bundle: $bundle_path (verified)"
-        log_warn "NOTE: Actual promotion orchestration: Phase 2"
+        # ─── v1.2.0: Execute apply to target environment ───
+        [[ -z "$ci_mode" ]] && log_info "Promoting $from_env → $to_env (namespace: $namespace)..."
+        
+        # Get kubectl context
+        kube_context=$(kubectl config current-context 2>/dev/null) || {
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.2.0","timestamp":"'"$ts"'","status":"error","operation":"promote","error":{"code":"KUBE_CONTEXT_UNAVAILABLE","message":"No active Kubernetes context"}}'
+            else
+                log_error "No active Kubernetes context"
+            fi
+            return 1
+        }
+        
+        # Check namespace exists
+        if ! kubectl get namespace "$namespace" &>/dev/null; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.2.0","timestamp":"'"$ts"'","status":"error","operation":"promote","error":{"code":"NAMESPACE_NOT_FOUND","message":"Namespace '"$namespace"' does not exist"}}'
+            else
+                log_error "Namespace '$namespace' does not exist"
+            fi
+            return 1
+        fi
+        
+        # Check k8s manifests directory
+        local k8s_dir="$abs_bundle_path/k8s"
+        if [[ ! -d "$k8s_dir" ]]; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.2.0","timestamp":"'"$ts"'","status":"error","operation":"promote","error":{"code":"K8S_MANIFEST_MISSING","message":"Bundle does not contain k8s/ directory"}}'
+            else
+                log_error "Bundle does not contain k8s/ directory"
+            fi
+            return 1
+        fi
+        
+        local manifest_count
+        manifest_count=$(find "$k8s_dir" -maxdepth 1 \( -name '*.yaml' -o -name '*.yml' \) 2>/dev/null | wc -l)
+        if [[ "$manifest_count" -eq 0 ]]; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.2.0","timestamp":"'"$ts"'","status":"error","operation":"promote","error":{"code":"K8S_MANIFEST_MISSING","message":"No manifests in k8s/ directory"}}'
+            else
+                log_error "No manifests in k8s/ directory"
+            fi
+            return 1
+        fi
+        
+        # Execute kubectl apply
+        [[ -z "$ci_mode" ]] && log_info "Applying K8s manifests to namespace '$namespace'..."
+        local apply_output apply_rc
+        apply_output=$(kubectl apply -n "$namespace" -f "$k8s_dir" --recursive 2>&1) && apply_rc=0 || apply_rc=$?
+        
+        if [[ $apply_rc -ne 0 ]]; then
+            status="failed"
+            error_code="APPLY_FAILED"
+            error_msg=$(echo "$apply_output" | head -1 | tr -d '\n\r' | sed 's/"/\\"/g')
+            
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.2.0","timestamp":"'"$ts"'","status":"error","operation":"promote","error":{"code":"APPLY_FAILED","message":"'"$error_msg"'"}}'
+            else
+                log_error "kubectl apply failed: $error_msg"
+            fi
+            return 1
+        fi
+        
+        # Parse applied resources
+        k8s_applied=$(echo "$apply_output" | grep -E '(created|configured|unchanged)$' | \
+            awk '{print $1}' | sort | uniq | \
+            python3 -c 'import sys,json; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))' 2>/dev/null || echo '[]')
+        
+        # Health checks
+        [[ -z "$ci_mode" ]] && log_info "Running health checks (timeout: ${timeout}s)..."
+        
+        local deployments statefulsets
+        deployments=$(echo "$apply_output" | grep -E '^deployment\.apps/' | awk -F'/' '{print $2}' | awk '{print $1}' || true)
+        statefulsets=$(echo "$apply_output" | grep -E '^statefulset\.apps/' | awk -F'/' '{print $2}' | awk '{print $1}' || true)
+        
+        local all_rollouts_pass=true
+        local rollout_results=""
+        
+        for deploy in $deployments; do
+            [[ -z "$deploy" ]] && continue
+            [[ -z "$ci_mode" ]] && log_info "  Waiting for deployment/$deploy..."
+            local rollout_output rollout_rc
+            rollout_output=$(timeout "${timeout}s" kubectl rollout status "deployment/$deploy" -n "$namespace" 2>&1) && rollout_rc=0 || rollout_rc=$?
+            
+            if [[ $rollout_rc -eq 124 ]]; then
+                if [[ -n "$ci_mode" ]]; then
+                    echo '{"version":"1.2.0","timestamp":"'"$ts"'","status":"error","operation":"promote","error":{"code":"HEALTH_TIMEOUT","message":"Rollout timeout for deployment/'"$deploy"'"}}'
+                else
+                    log_error "Rollout timeout for deployment/$deploy after ${timeout}s"
+                fi
+                return 1
+            elif [[ $rollout_rc -ne 0 ]]; then
+                all_rollouts_pass=false
+                rollout_results="${rollout_results}{\"resource\":\"deployment/$deploy\",\"status\":\"fail\"},"
+            else
+                rollout_results="${rollout_results}{\"resource\":\"deployment/$deploy\",\"status\":\"pass\"},"
+            fi
+        done
+        
+        for sts in $statefulsets; do
+            [[ -z "$sts" ]] && continue
+            [[ -z "$ci_mode" ]] && log_info "  Waiting for statefulset/$sts..."
+            local rollout_output rollout_rc
+            rollout_output=$(timeout "${timeout}s" kubectl rollout status "statefulset/$sts" -n "$namespace" 2>&1) && rollout_rc=0 || rollout_rc=$?
+            
+            if [[ $rollout_rc -eq 124 ]]; then
+                if [[ -n "$ci_mode" ]]; then
+                    echo '{"version":"1.2.0","timestamp":"'"$ts"'","status":"error","operation":"promote","error":{"code":"HEALTH_TIMEOUT","message":"Rollout timeout for statefulset/'"$sts"'"}}'
+                else
+                    log_error "Rollout timeout for statefulset/$sts after ${timeout}s"
+                fi
+                return 1
+            elif [[ $rollout_rc -ne 0 ]]; then
+                all_rollouts_pass=false
+                rollout_results="${rollout_results}{\"resource\":\"statefulset/$sts\",\"status\":\"fail\"},"
+            else
+                rollout_results="${rollout_results}{\"resource\":\"statefulset/$sts\",\"status\":\"pass\"},"
+            fi
+        done
+        
+        rollout_results="${rollout_results%,}"
+        k8s_rollout="[${rollout_results}]"
+        
+        if [[ "$all_rollouts_pass" == "false" ]]; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.2.0","timestamp":"'"$ts"'","status":"error","operation":"promote","error":{"code":"HEALTH_FAILED","message":"One or more rollouts failed"}}'
+            else
+                log_error "One or more rollouts failed health checks"
+            fi
+            return 1
+        fi
+        
+        # Write target apply receipt
+        target_receipt_path="receipts/apply_${to_env}.json"
+        local target_receipt_full="$abs_bundle_path/$target_receipt_path"
+        
+        local bundle_hash
+        bundle_hash=$(_get_bundle_hash "$abs_bundle_path")
+        local git_sha git_tag
+        git_sha=$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || echo "")
+        git_tag=$(git -C "$ROOT" describe --exact-match --tags HEAD 2>/dev/null || echo "")
+        
+        local target_receipt
+        target_receipt=$(_build_receipt \
+            "$to_env" "k8s" "$abs_bundle_path" "$bundle_hash" \
+            "apply" "success" "$git_sha" "$git_tag" "" "" \
+            "pass" "Bundle verified" \
+            "pass" "Mode: k8s" \
+            "pass" "kubectl apply succeeded" \
+            "pass" "All rollouts healthy" \
+            "$kube_context" "$namespace" "$k8s_applied" "$k8s_rollout" "$timeout")
+        
+        _write_json_atomic "$target_receipt_full" "$target_receipt"
+        target_receipt_hash=$(sha256sum "$target_receipt_full" | awk '{print "sha256:"$1}')
+    fi
+    
+    # ─── v1.2.0: Write promotion receipt ───
+    local promote_receipt_name="promote_${from_env}_${to_env}_${ts_compact}.json"
+    local promote_receipt_path="$abs_bundle_path/receipts/$promote_receipt_name"
+    
+    local sanitized_bundle_path
+    sanitized_bundle_path=$(printf '%s' "$abs_bundle_path" | tr -d '\n\r' | sed 's/"/\\"/g')
+    
+    local bundle_hash_promote
+    bundle_hash_promote=$(_get_bundle_hash "$abs_bundle_path")
+    
+    local error_block="null"
+    if [[ -n "$error_code" ]]; then
+        error_block='{"code":"'"$error_code"'","message":"'"$error_msg"'"}'
+    fi
+    
+    local target_block="null"
+    if [[ -n "$target_receipt_path" ]]; then
+        target_block='{
+    "path": "'"$target_receipt_path"'",
+    "hash": "'"$target_receipt_hash"'",
+    "timestamp": "'"$ts"'"
+  }'
+    fi
+    
+    # Get kube_context for dry-run
+    if [[ -z "$kube_context" ]]; then
+        kube_context=$(kubectl config current-context 2>/dev/null || echo "unknown")
+    fi
+    
+    local promote_receipt
+    promote_receipt=$(cat << EOF
+{
+  "version": "1.2.0",
+  "timestamp": "$ts",
+  "operation": "promote",
+  "source_env": "$from_env",
+  "target_env": "$to_env",
+  "bundle": {
+    "path": "$sanitized_bundle_path",
+    "hash": "$bundle_hash_promote"
+  },
+  "source_receipt": {
+    "path": "receipts/apply_${from_env}.json",
+    "hash": "$source_receipt_hash",
+    "timestamp": "$source_receipt_ts"
+  },
+  "target_receipt": $target_block,
+  "k8s": {
+    "context": "$kube_context",
+    "namespace": "$namespace",
+    "timeout_config": {
+      "per_deployment": $timeout,
+      "applied": $timeout
+    }
+  },
+  "status": "$status",
+  "error": $error_block
+}
+EOF
+)
+    
+    _write_json_atomic "$promote_receipt_path" "$promote_receipt"
+    
+    # ─── Output ───
+    if [[ -n "$ci_mode" ]]; then
+        echo "$promote_receipt"
+    else
+        echo ""
+        log_success "Promotion complete: $from_env → $to_env"
+        echo ""
+        echo "  Source:     $from_env (receipts/apply_${from_env}.json)"
+        echo "  Target:     $to_env"
+        echo "  Namespace:  $namespace"
+        echo "  Context:    $kube_context"
+        echo "  Status:     $status"
+        echo ""
+        if [[ -n "$dry_run" ]]; then
+            echo "  Dry-run complete. No mutations performed."
+        else
+            echo "  Target receipt: receipts/apply_${to_env}.json"
+        fi
+        echo "  Promotion receipt: receipts/$promote_receipt_name"
     fi
     
     return 0
@@ -3160,6 +3628,225 @@ if d.get('error'):
     print()
     print(f\"  Error: {d.get('error', {}).get('code', '')} - {d.get('error', {}).get('message', '')}\")
 " 2>/dev/null || echo "$receipt_content"
+        echo "  ════════════════════════════════════════"
+        echo ""
+    fi
+    
+    return 0
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Deploy History v1.2.0 - Receipt Chain Audit Trail
+# ═══════════════════════════════════════════════════════════════════════════
+
+cmd_deploy_history() {
+    local bundle_path="" ci_mode="" env_filter="" limit_count="50"
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --bundle=*) bundle_path="${1#*=}" ;;
+            --bundle) bundle_path="${2:-}"; shift ;;
+            --env=*) env_filter="${1#*=}" ;;
+            --env) env_filter="${2:-}"; shift ;;
+            --limit=*) limit_count="${1#*=}" ;;
+            --limit) limit_count="${2:-}"; shift ;;
+            --ci) ci_mode="true" ;;
+            -h|--help|help)
+                echo "Usage: tf deploy history --bundle <path> [--env <env>] [--limit N] [--ci]"
+                echo ""
+                echo "Display deployment receipt chain for audit trail."
+                echo ""
+                echo "Options:"
+                echo "  --bundle <dir>   RuntimeCert bundle directory (required)"
+                echo "  --env <env>      Filter by environment (dev|techsupport|prod)"
+                echo "  --limit <N>      Maximum receipts to display (default: 50)"
+                echo "  --ci             JSON output"
+                return 0
+                ;;
+            *)
+                if [[ -n "$ci_mode" ]]; then
+                    echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"history","error":{"code":"INVALID_INVOCATION","message":"Unknown option: '"$1"'"}}'
+                else
+                    log_error "Unknown option: $1"
+                fi
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    # ─── Bundle required ───
+    if [[ -z "$bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"history","error":{"code":"INVALID_INVOCATION","message":"Missing required --bundle argument"}}'
+        else
+            log_error "Missing required argument: --bundle"
+        fi
+        return 2
+    fi
+    
+    # ─── Path validation ───
+    if [[ "$bundle_path" == *".."* ]] || [[ "$bundle_path" =~ [[:cntrl:]] ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"history","error":{"code":"INVALID_INVOCATION","message":"Invalid bundle path"}}'
+        else
+            log_error "Invalid bundle path: contains illegal characters"
+        fi
+        return 2
+    fi
+    
+    # Resolve absolute path
+    local abs_bundle_path
+    if [[ "$bundle_path" == /* ]]; then
+        abs_bundle_path="$bundle_path"
+    else
+        abs_bundle_path="$(cd "$(dirname "$bundle_path")" 2>/dev/null && pwd)/$(basename "$bundle_path")" || abs_bundle_path="$bundle_path"
+    fi
+    
+    # ─── Bundle directory check ───
+    if [[ ! -d "$abs_bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"history","error":{"code":"BUNDLE_NOT_FOUND","message":"Bundle directory not found: '"$bundle_path"'"}}'
+        else
+            log_error "Bundle directory not found: $bundle_path"
+        fi
+        return 1
+    fi
+    
+    # ─── Receipts directory check ───
+    local receipts_dir="$abs_bundle_path/receipts"
+    if [[ ! -d "$receipts_dir" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"success","operation":"history","chain":[],"total":0}'
+        else
+            log_info "No receipts directory found"
+            echo "  No deployment history available."
+        fi
+        return 0
+    fi
+    
+    # ─── Collect receipts ───
+    local apply_receipts=()
+    local promote_receipts=()
+    
+    # Find apply receipts (apply_<env>.json)
+    while IFS= read -r -d '' file; do
+        local basename_file
+        basename_file=$(basename "$file")
+        if [[ "$basename_file" =~ ^apply_([a-z]+)\.json$ ]]; then
+            local env_name="${BASH_REMATCH[1]}"
+            if [[ -z "$env_filter" ]] || [[ "$env_name" == "$env_filter" ]]; then
+                apply_receipts+=("$file")
+            fi
+        fi
+    done < <(find "$receipts_dir" -maxdepth 1 -name 'apply_*.json' -print0 2>/dev/null)
+    
+    # Find promote receipts (promote_<from>_<to>_<ts>.json)
+    while IFS= read -r -d '' file; do
+        local basename_file
+        basename_file=$(basename "$file")
+        if [[ "$basename_file" =~ ^promote_([a-z]+)_([a-z]+)_([0-9T]+Z)\.json$ ]]; then
+            local from_env="${BASH_REMATCH[1]}"
+            local to_env="${BASH_REMATCH[2]}"
+            if [[ -z "$env_filter" ]] || [[ "$from_env" == "$env_filter" ]] || [[ "$to_env" == "$env_filter" ]]; then
+                promote_receipts+=("$file")
+            fi
+        fi
+    done < <(find "$receipts_dir" -maxdepth 1 -name 'promote_*.json' -print0 2>/dev/null | sort -z)
+    
+    # ─── Build history entries ───
+    local entries=()
+    
+    # Process apply receipts
+    for receipt_file in "${apply_receipts[@]}"; do
+        local receipt_json
+        receipt_json=$(cat "$receipt_file" 2>/dev/null) || continue
+        local ts env status
+        ts=$(echo "$receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('timestamp',''))" 2>/dev/null || echo "")
+        env=$(echo "$receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('environment',''))" 2>/dev/null || echo "")
+        status=$(echo "$receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',''))" 2>/dev/null || echo "")
+        
+        if [[ -n "$ts" ]]; then
+            entries+=("$ts|apply|$env||$status|$(basename "$receipt_file")")
+        fi
+    done
+    
+    # Process promote receipts
+    for receipt_file in "${promote_receipts[@]}"; do
+        local receipt_json
+        receipt_json=$(cat "$receipt_file" 2>/dev/null) || continue
+        local ts from_env to_env status
+        ts=$(echo "$receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('timestamp',''))" 2>/dev/null || echo "")
+        from_env=$(echo "$receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('source_env',''))" 2>/dev/null || echo "")
+        to_env=$(echo "$receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('target_env',''))" 2>/dev/null || echo "")
+        status=$(echo "$receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',''))" 2>/dev/null || echo "")
+        
+        if [[ -n "$ts" ]]; then
+            entries+=("$ts|promote|$from_env|$to_env|$status|$(basename "$receipt_file")")
+        fi
+    done
+    
+    # Sort by timestamp (descending - newest first)
+    IFS=$'\n' sorted_entries=($(printf '%s\n' "${entries[@]}" | sort -t'|' -k1 -r | head -n "$limit_count"))
+    unset IFS
+    
+    local ts
+    ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    
+    if [[ -n "$ci_mode" ]]; then
+        # JSON output
+        local json_entries=""
+        for entry in "${sorted_entries[@]}"; do
+            IFS='|' read -r entry_ts op env1 env2 status filename <<< "$entry"
+            if [[ "$op" == "apply" ]]; then
+                json_entries="${json_entries}{\"timestamp\":\"$entry_ts\",\"operation\":\"apply\",\"environment\":\"$env1\",\"status\":\"$status\",\"file\":\"$filename\"},"
+            else
+                json_entries="${json_entries}{\"timestamp\":\"$entry_ts\",\"operation\":\"promote\",\"source\":\"$env1\",\"target\":\"$env2\",\"status\":\"$status\",\"file\":\"$filename\"},"
+            fi
+        done
+        json_entries="${json_entries%,}"
+        
+        echo '{"version":"1.2.0","timestamp":"'"$ts"'","status":"success","operation":"history","bundle":"'"$abs_bundle_path"'","chain":['"$json_entries"'],"total":'"${#sorted_entries[@]}"'}'
+    else
+        # Human-readable output
+        echo ""
+        echo "  Deploy History"
+        echo "  ════════════════════════════════════════"
+        echo "  Bundle: $abs_bundle_path"
+        if [[ -n "$env_filter" ]]; then
+            echo "  Filter: $env_filter"
+        fi
+        echo ""
+        
+        if [[ ${#sorted_entries[@]} -eq 0 ]]; then
+            echo "  No deployment receipts found."
+        else
+            printf "  %-24s %-10s %-20s %-10s\n" "TIMESTAMP" "OPERATION" "ENVIRONMENT" "STATUS"
+            printf "  %-24s %-10s %-20s %-10s\n" "────────────────────────" "──────────" "────────────────────" "──────────"
+            
+            for entry in "${sorted_entries[@]}"; do
+                IFS='|' read -r entry_ts op env1 env2 status filename <<< "$entry"
+                local env_display
+                if [[ "$op" == "apply" ]]; then
+                    env_display="$env1"
+                else
+                    env_display="$env1 → $env2"
+                fi
+                
+                local status_icon
+                case "$status" in
+                    success) status_icon="✓" ;;
+                    failed|error) status_icon="✗" ;;
+                    dry_run) status_icon="○" ;;
+                    *) status_icon="?" ;;
+                esac
+                
+                printf "  %-24s %-10s %-20s %s %s\n" "$entry_ts" "$op" "$env_display" "$status_icon" "$status"
+            done
+        fi
+        
+        echo ""
+        echo "  Total: ${#sorted_entries[@]} receipt(s)"
         echo "  ════════════════════════════════════════"
         echo ""
     fi
