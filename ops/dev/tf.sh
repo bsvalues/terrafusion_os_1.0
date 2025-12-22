@@ -5576,17 +5576,40 @@ cmd_release() {
         verify)
             cmd_release_verify "$@"
             ;;
+        prepare)
+            cmd_release_prepare "$@"
+            ;;
+        deploy)
+            cmd_release_deploy "$@"
+            ;;
+        promote)
+            cmd_release_promote "$@"
+            ;;
+        audit)
+            cmd_release_audit "$@"
+            ;;
+        status)
+            cmd_release_status "$@"
+            ;;
         help|--help|-h)
             echo ""
             echo "Usage: tf release <command> [options]"
             echo ""
             echo "Commands:"
-            echo "  bundle   Create release proof bundle"
-            echo "  verify   Verify release proof bundle"
+            echo "  prepare  Create and verify release bundle (bundle + verify)"
+            echo "  deploy   Deploy bundle to environment"
+            echo "  promote  Promote release between environments"
+            echo "  audit    Full chain inspection for compliance"
+            echo "  status   Quick bundle health check"
+            echo "  bundle   Create release proof bundle (low-level)"
+            echo "  verify   Verify release proof bundle (low-level)"
             echo ""
             echo "Examples:"
-            echo "  tf release bundle --out ./release-bundle"
-            echo "  tf release verify --bundle ./release-bundle"
+            echo "  tf release prepare --out ./my-release"
+            echo "  tf release deploy --bundle ./my-release --env dev --namespace tf-dev"
+            echo "  tf release promote --bundle ./my-release --to techsupport --namespace tf-ts"
+            echo "  tf release audit --bundle ./my-release --ci"
+            echo "  tf release status --bundle ./my-release"
             echo ""
             ;;
         *)
@@ -5595,6 +5618,692 @@ cmd_release() {
             return 2
             ;;
     esac
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Release Orchestration v1.0.0 - Wrapper Commands
+# ═══════════════════════════════════════════════════════════════════════════
+# These commands compose existing sealed primitives (bundle, verify, apply,
+# promote, policy, history, receipt) into operator-friendly workflows.
+# NO NEW EXECUTION LOGIC - all commands delegate to constitutional primitives.
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Helper: emit orchestration JSON
+_orch_emit_json() {
+    local operation="$1" status="$2" bundle="$3"
+    shift 3
+    local timestamp
+    timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    
+    # Build steps array from remaining args (pairs of name:status:message)
+    local steps="["
+    local first=1
+    while [[ $# -gt 0 ]]; do
+        local step_name="${1%%:*}"
+        local rest="${1#*:}"
+        local step_status="${rest%%:*}"
+        local step_message="${rest#*:}"
+        [[ $first -eq 1 ]] || steps+=","
+        first=0
+        steps+="{\"name\":\"$step_name\",\"status\":\"$step_status\",\"message\":\"$step_message\"}"
+        shift
+    done
+    steps+="]"
+    
+    echo "{\"version\":\"1.0.0\",\"timestamp\":\"$timestamp\",\"status\":\"$status\",\"operation\":\"$operation\",\"bundle\":\"$bundle\",\"steps\":$steps}"
+}
+
+# Helper: emit orchestration error JSON
+_orch_emit_error() {
+    local operation="$1" bundle="$2" code="$3" message="$4"
+    local timestamp
+    timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    echo "{\"version\":\"1.0.0\",\"timestamp\":\"$timestamp\",\"status\":\"fail\",\"operation\":\"$operation\",\"bundle\":\"$bundle\",\"error\":{\"code\":\"$code\",\"message\":\"$message\"}}"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# cmd_release_prepare - Create and verify release bundle
+# ─────────────────────────────────────────────────────────────────────────────
+cmd_release_prepare() {
+    local out_dir="" mode="dev" force="" ci=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --out=*) out_dir="${1#*=}"; shift ;;
+            --out) out_dir="${2:-}"; shift 2 ;;
+            --mode=*) mode="${1#*=}"; shift ;;
+            --mode) mode="${2:-}"; shift 2 ;;
+            --force) force="1"; shift ;;
+            --ci) ci="1"; shift ;;
+            -h|--help|help)
+                echo "Usage: tf release prepare --out <dir> [options]"
+                echo ""
+                echo "Creates and verifies a release bundle in one step."
+                echo ""
+                echo "Options:"
+                echo "  --out <dir>      Output directory (required)"
+                echo "  --mode <mode>    dev|techsupport|prod (default: dev)"
+                echo "  --force          Overwrite existing directory"
+                echo "  --ci             JSON-only output"
+                return 0
+                ;;
+            *)
+                if [[ "$ci" == "1" ]]; then
+                    _orch_emit_error "prepare" "" "INVALID_ARGS" "Unknown flag: $1"
+                else
+                    echo "ERROR: Unknown flag: $1" >&2
+                fi
+                return 2
+                ;;
+        esac
+    done
+    
+    # Validate required args
+    if [[ -z "$out_dir" ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_error "prepare" "" "MISSING_ARG" "Missing required --out <dir>"
+        else
+            echo "ERROR: Missing required --out <dir>" >&2
+        fi
+        return 2
+    fi
+    
+    # Validate mode
+    case "$mode" in
+        dev|techsupport|prod) ;;
+        *)
+            if [[ "$ci" == "1" ]]; then
+                _orch_emit_error "prepare" "" "INVALID_MODE" "Invalid --mode: $mode"
+            else
+                echo "ERROR: Invalid --mode: $mode (must be dev|techsupport|prod)" >&2
+            fi
+            return 2
+            ;;
+    esac
+    
+    local abs_out
+    abs_out=$(cd "$(dirname "$out_dir")" 2>/dev/null && pwd)/$(basename "$out_dir") || abs_out="$out_dir"
+    
+    # Step 1: Create bundle
+    local bundle_args=("--out" "$out_dir" "--mode" "$mode")
+    [[ "$force" == "1" ]] && bundle_args+=("--force")
+    [[ "$ci" == "1" ]] && bundle_args+=("--ci")
+    
+    local bundle_output bundle_rc
+    bundle_output=$(cmd_release_bundle "${bundle_args[@]}" 2>&1) && bundle_rc=0 || bundle_rc=$?
+    
+    if [[ $bundle_rc -ne 0 ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_json "prepare" "fail" "$abs_out" "bundle:fail:Bundle creation failed"
+        else
+            echo "✗ Bundle creation failed" >&2
+            echo "$bundle_output" >&2
+        fi
+        return 1
+    fi
+    
+    # Step 2: Verify bundle
+    local verify_args=("--bundle" "$out_dir")
+    [[ "$ci" == "1" ]] && verify_args+=("--ci")
+    
+    local verify_output verify_rc
+    verify_output=$(cmd_release_verify "${verify_args[@]}" 2>&1) && verify_rc=0 || verify_rc=$?
+    
+    if [[ $verify_rc -ne 0 ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_json "prepare" "fail" "$abs_out" "bundle:pass:Bundle created" "verify:fail:Verification failed"
+        else
+            echo "✓ Bundle created" >&2
+            echo "✗ Verification failed" >&2
+            echo "$verify_output" >&2
+        fi
+        return 1
+    fi
+    
+    # Success
+    if [[ "$ci" == "1" ]]; then
+        _orch_emit_json "prepare" "success" "$abs_out" "bundle:pass:Bundle created" "verify:pass:Verification passed"
+    else
+        echo "✓ Bundle created and verified: $out_dir"
+    fi
+    return 0
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# cmd_release_deploy - Deploy bundle to environment
+# ─────────────────────────────────────────────────────────────────────────────
+cmd_release_deploy() {
+    local bundle="" env="" namespace="" timeout="" dry_run="" ci=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --bundle=*) bundle="${1#*=}"; shift ;;
+            --bundle) bundle="${2:-}"; shift 2 ;;
+            --env=*) env="${1#*=}"; shift ;;
+            --env) env="${2:-}"; shift 2 ;;
+            --namespace=*) namespace="${1#*=}"; shift ;;
+            --namespace) namespace="${2:-}"; shift 2 ;;
+            --timeout=*) timeout="${1#*=}"; shift ;;
+            --timeout) timeout="${2:-}"; shift 2 ;;
+            --dry-run) dry_run="1"; shift ;;
+            --ci) ci="1"; shift ;;
+            -h|--help|help)
+                echo "Usage: tf release deploy --bundle <dir> --env <env> --namespace <ns> [options]"
+                echo ""
+                echo "Deploys a verified bundle to an environment."
+                echo ""
+                echo "Options:"
+                echo "  --bundle <dir>      Bundle directory (required)"
+                echo "  --env <env>         Environment: dev|techsupport|prod (required)"
+                echo "  --namespace <ns>    Kubernetes namespace (required)"
+                echo "  --timeout <sec>     Health check timeout (default: 300)"
+                echo "  --dry-run           Validate only, no execution"
+                echo "  --ci                JSON-only output"
+                return 0
+                ;;
+            *)
+                if [[ "$ci" == "1" ]]; then
+                    _orch_emit_error "deploy" "" "INVALID_ARGS" "Unknown flag: $1"
+                else
+                    echo "ERROR: Unknown flag: $1" >&2
+                fi
+                return 2
+                ;;
+        esac
+    done
+    
+    # Validate required args
+    if [[ -z "$bundle" ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_error "deploy" "" "MISSING_ARG" "Missing required --bundle <dir>"
+        else
+            echo "ERROR: Missing required --bundle <dir>" >&2
+        fi
+        return 2
+    fi
+    
+    if [[ -z "$env" ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_error "deploy" "$bundle" "MISSING_ARG" "Missing required --env <env>"
+        else
+            echo "ERROR: Missing required --env <env>" >&2
+        fi
+        return 2
+    fi
+    
+    if [[ -z "$namespace" ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_error "deploy" "$bundle" "MISSING_ARG" "Missing required --namespace <ns>"
+        else
+            echo "ERROR: Missing required --namespace <ns>" >&2
+        fi
+        return 2
+    fi
+    
+    local abs_bundle
+    abs_bundle=$(cd "$bundle" 2>/dev/null && pwd) || abs_bundle="$bundle"
+    
+    # Step 1: Verify bundle
+    local verify_output verify_rc
+    verify_output=$(cmd_release_verify --bundle "$bundle" ${ci:+--ci} 2>&1) && verify_rc=0 || verify_rc=$?
+    
+    if [[ $verify_rc -ne 0 ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_json "deploy" "fail" "$abs_bundle" "verify:fail:Bundle verification failed"
+        else
+            echo "✗ Bundle verification failed" >&2
+            echo "$verify_output" >&2
+        fi
+        return 1
+    fi
+    
+    # Step 2: Deploy
+    local apply_args=("--env" "$env" "--bundle" "$bundle" "--namespace" "$namespace")
+    [[ -n "$timeout" ]] && apply_args+=("--timeout" "$timeout")
+    [[ "$dry_run" == "1" ]] && apply_args+=("--dry-run")
+    [[ "$ci" == "1" ]] && apply_args+=("--ci")
+    
+    local apply_output apply_rc
+    apply_output=$(cmd_deploy_apply "${apply_args[@]}" 2>&1) && apply_rc=0 || apply_rc=$?
+    
+    local status="success"
+    [[ "$dry_run" == "1" ]] && status="dry_run"
+    [[ $apply_rc -ne 0 ]] && status="fail"
+    
+    if [[ "$ci" == "1" ]]; then
+        local apply_status="pass"
+        [[ $apply_rc -ne 0 ]] && apply_status="fail"
+        [[ "$dry_run" == "1" ]] && [[ $apply_rc -eq 0 ]] && apply_status="pass"
+        
+        local timestamp
+        timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        echo "{\"version\":\"1.0.0\",\"timestamp\":\"$timestamp\",\"status\":\"$status\",\"operation\":\"deploy\",\"bundle\":\"$abs_bundle\",\"environment\":\"$env\",\"namespace\":\"$namespace\",\"steps\":[{\"name\":\"verify\",\"status\":\"pass\",\"message\":\"Bundle verified\"},{\"name\":\"apply\",\"status\":\"$apply_status\",\"message\":\"Deploy $status\"}]}"
+    else
+        if [[ $apply_rc -eq 0 ]]; then
+            if [[ "$dry_run" == "1" ]]; then
+                echo "✓ Dry run passed for $env"
+            else
+                echo "✓ Deployed to $env"
+            fi
+        else
+            echo "✗ Deploy failed" >&2
+            echo "$apply_output" >&2
+        fi
+    fi
+    
+    return $apply_rc
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# cmd_release_promote - Forward promotion with policy
+# ─────────────────────────────────────────────────────────────────────────────
+cmd_release_promote() {
+    local bundle="" to_env="" namespace="" timeout="" skip_freshness="" dry_run="" ci=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --bundle=*) bundle="${1#*=}"; shift ;;
+            --bundle) bundle="${2:-}"; shift 2 ;;
+            --to=*) to_env="${1#*=}"; shift ;;
+            --to) to_env="${2:-}"; shift 2 ;;
+            --namespace=*) namespace="${1#*=}"; shift ;;
+            --namespace) namespace="${2:-}"; shift 2 ;;
+            --timeout=*) timeout="${1#*=}"; shift ;;
+            --timeout) timeout="${2:-}"; shift 2 ;;
+            --skip-freshness) skip_freshness="1"; shift ;;
+            --dry-run) dry_run="1"; shift ;;
+            --ci) ci="1"; shift ;;
+            -h|--help|help)
+                echo "Usage: tf release promote --bundle <dir> --to <env> --namespace <ns> [options]"
+                echo ""
+                echo "Promotes a release to the next environment with policy enforcement."
+                echo ""
+                echo "Options:"
+                echo "  --bundle <dir>      Bundle directory (required)"
+                echo "  --to <env>          Target: techsupport|prod (required)"
+                echo "  --namespace <ns>    Kubernetes namespace (required)"
+                echo "  --timeout <sec>     Health check timeout (default: 300)"
+                echo "  --skip-freshness    Skip freshness policy check"
+                echo "  --dry-run           Validate only, no execution"
+                echo "  --ci                JSON-only output"
+                echo ""
+                echo "Automatic defaults:"
+                echo "  --to techsupport implies --from dev"
+                echo "  --to prod implies --from techsupport"
+                echo "  --require-chain is always enabled"
+                echo "  --require-freshness is enabled unless --skip-freshness"
+                return 0
+                ;;
+            *)
+                if [[ "$ci" == "1" ]]; then
+                    _orch_emit_error "promote" "" "INVALID_ARGS" "Unknown flag: $1"
+                else
+                    echo "ERROR: Unknown flag: $1" >&2
+                fi
+                return 2
+                ;;
+        esac
+    done
+    
+    # Validate required args
+    if [[ -z "$bundle" ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_error "promote" "" "MISSING_ARG" "Missing required --bundle <dir>"
+        else
+            echo "ERROR: Missing required --bundle <dir>" >&2
+        fi
+        return 2
+    fi
+    
+    if [[ -z "$to_env" ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_error "promote" "$bundle" "MISSING_ARG" "Missing required --to <env>"
+        else
+            echo "ERROR: Missing required --to <env>" >&2
+        fi
+        return 2
+    fi
+    
+    if [[ -z "$namespace" ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_error "promote" "$bundle" "MISSING_ARG" "Missing required --namespace <ns>"
+        else
+            echo "ERROR: Missing required --namespace <ns>" >&2
+        fi
+        return 2
+    fi
+    
+    # Infer --from based on --to
+    local from_env=""
+    case "$to_env" in
+        techsupport) from_env="dev" ;;
+        prod) from_env="techsupport" ;;
+        *)
+            if [[ "$ci" == "1" ]]; then
+                _orch_emit_error "promote" "$bundle" "INVALID_ENV" "Invalid --to: $to_env (must be techsupport|prod)"
+            else
+                echo "ERROR: Invalid --to: $to_env (must be techsupport|prod)" >&2
+            fi
+            return 2
+            ;;
+    esac
+    
+    local abs_bundle
+    abs_bundle=$(cd "$bundle" 2>/dev/null && pwd) || abs_bundle="$bundle"
+    
+    local require_freshness="true"
+    [[ "$skip_freshness" == "1" ]] && require_freshness="false"
+    
+    # Step 1: Verify bundle
+    local verify_output verify_rc
+    verify_output=$(cmd_release_verify --bundle "$bundle" ${ci:+--ci} 2>&1) && verify_rc=0 || verify_rc=$?
+    
+    if [[ $verify_rc -ne 0 ]]; then
+        if [[ "$ci" == "1" ]]; then
+            local timestamp; timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            echo "{\"version\":\"1.0.0\",\"timestamp\":\"$timestamp\",\"status\":\"fail\",\"operation\":\"promote\",\"bundle\":\"$abs_bundle\",\"from_env\":\"$from_env\",\"to_env\":\"$to_env\",\"namespace\":\"$namespace\",\"policy\":{\"require_chain\":true,\"require_freshness\":$require_freshness},\"steps\":[{\"name\":\"verify\",\"status\":\"fail\",\"message\":\"Bundle verification failed\"}]}"
+        else
+            echo "✗ Bundle verification failed" >&2
+        fi
+        return 1
+    fi
+    
+    # Step 2: Policy check
+    local policy_output policy_rc
+    policy_output=$(cmd_deploy_policy --bundle "$bundle" ${ci:+--ci} 2>&1) && policy_rc=0 || policy_rc=$?
+    
+    if [[ $policy_rc -ne 0 ]]; then
+        if [[ "$ci" == "1" ]]; then
+            local timestamp; timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            echo "{\"version\":\"1.0.0\",\"timestamp\":\"$timestamp\",\"status\":\"fail\",\"operation\":\"promote\",\"bundle\":\"$abs_bundle\",\"from_env\":\"$from_env\",\"to_env\":\"$to_env\",\"namespace\":\"$namespace\",\"policy\":{\"require_chain\":true,\"require_freshness\":$require_freshness},\"steps\":[{\"name\":\"verify\",\"status\":\"pass\",\"message\":\"Bundle verified\"},{\"name\":\"policy\",\"status\":\"fail\",\"message\":\"Policy check failed\"}]}"
+        else
+            echo "✓ Bundle verified" >&2
+            echo "✗ Policy check failed" >&2
+        fi
+        return 1
+    fi
+    
+    # Step 3: Promote
+    local promote_args=("--bundle" "$bundle" "--from" "$from_env" "--to" "$to_env" "--namespace" "$namespace" "--require-chain")
+    [[ "$skip_freshness" != "1" ]] && promote_args+=("--require-freshness")
+    [[ -n "$timeout" ]] && promote_args+=("--timeout" "$timeout")
+    [[ "$dry_run" == "1" ]] && promote_args+=("--dry-run")
+    [[ "$ci" == "1" ]] && promote_args+=("--ci")
+    
+    local promote_output promote_rc
+    promote_output=$(cmd_deploy_promote "${promote_args[@]}" 2>&1) && promote_rc=0 || promote_rc=$?
+    
+    local status="success"
+    [[ "$dry_run" == "1" ]] && status="dry_run"
+    [[ $promote_rc -ne 0 ]] && status="fail"
+    
+    if [[ "$ci" == "1" ]]; then
+        local promote_status="pass"
+        [[ $promote_rc -ne 0 ]] && promote_status="fail"
+        
+        local timestamp; timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        echo "{\"version\":\"1.0.0\",\"timestamp\":\"$timestamp\",\"status\":\"$status\",\"operation\":\"promote\",\"bundle\":\"$abs_bundle\",\"from_env\":\"$from_env\",\"to_env\":\"$to_env\",\"namespace\":\"$namespace\",\"policy\":{\"require_chain\":true,\"require_freshness\":$require_freshness},\"steps\":[{\"name\":\"verify\",\"status\":\"pass\",\"message\":\"Bundle verified\"},{\"name\":\"policy\",\"status\":\"pass\",\"message\":\"Policy passed\"},{\"name\":\"promote\",\"status\":\"$promote_status\",\"message\":\"Promote $status\"}]}"
+    else
+        if [[ $promote_rc -eq 0 ]]; then
+            if [[ "$dry_run" == "1" ]]; then
+                echo "✓ Promotion dry run passed: $from_env → $to_env"
+            else
+                echo "✓ Promoted: $from_env → $to_env"
+            fi
+        else
+            echo "✗ Promotion failed" >&2
+            echo "$promote_output" >&2
+        fi
+    fi
+    
+    return $promote_rc
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# cmd_release_audit - Full chain inspection
+# ─────────────────────────────────────────────────────────────────────────────
+cmd_release_audit() {
+    local bundle="" ci=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --bundle=*) bundle="${1#*=}"; shift ;;
+            --bundle) bundle="${2:-}"; shift 2 ;;
+            --ci) ci="1"; shift ;;
+            -h|--help|help)
+                echo "Usage: tf release audit --bundle <dir> [options]"
+                echo ""
+                echo "Comprehensive audit of release chain for compliance."
+                echo ""
+                echo "Options:"
+                echo "  --bundle <dir>      Bundle directory (required)"
+                echo "  --ci                JSON-only output"
+                return 0
+                ;;
+            *)
+                if [[ "$ci" == "1" ]]; then
+                    _orch_emit_error "audit" "" "INVALID_ARGS" "Unknown flag: $1"
+                else
+                    echo "ERROR: Unknown flag: $1" >&2
+                fi
+                return 2
+                ;;
+        esac
+    done
+    
+    # Validate required args
+    if [[ -z "$bundle" ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_error "audit" "" "MISSING_ARG" "Missing required --bundle <dir>"
+        else
+            echo "ERROR: Missing required --bundle <dir>" >&2
+        fi
+        return 2
+    fi
+    
+    local abs_bundle
+    abs_bundle=$(cd "$bundle" 2>/dev/null && pwd) || abs_bundle="$bundle"
+    
+    local pass_count=0 fail_count=0 warn_count=0
+    local integrity_status="pass" chain_status="pass" policy_status="pass"
+    local integrity_summary="" chain_count=0 policy_summary=""
+    local environments="[]"
+    
+    # Section 1: Integrity (verify)
+    local verify_output verify_rc
+    verify_output=$(cmd_release_verify --bundle "$bundle" --ci 2>&1) && verify_rc=0 || verify_rc=$?
+    
+    if [[ $verify_rc -eq 0 ]]; then
+        integrity_status="pass"
+        integrity_summary="Bundle integrity verified"
+        pass_count=$((pass_count + 1))
+    else
+        integrity_status="fail"
+        integrity_summary="Bundle integrity check failed"
+        fail_count=$((fail_count + 1))
+    fi
+    
+    # Section 2: Chain (history)
+    local history_output history_rc
+    history_output=$(cmd_deploy_history --bundle "$bundle" --ci 2>&1) && history_rc=0 || history_rc=$?
+    
+    if [[ $history_rc -eq 0 ]]; then
+        # Try to extract count from history output
+        chain_count=$(echo "$history_output" | grep -oE '"total"[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+' | head -1) || chain_count=0
+        [[ -z "$chain_count" ]] && chain_count=0
+        
+        if [[ $chain_count -gt 0 ]]; then
+            chain_status="pass"
+            pass_count=$((pass_count + 1))
+        else
+            chain_status="warn"
+            warn_count=$((warn_count + 1))
+        fi
+        
+        # Extract environments if available
+        environments=$(echo "$history_output" | grep -oE '"environments"[[:space:]]*:[[:space:]]*\[[^\]]*\]' | sed 's/.*://' | head -1) || environments="[]"
+        [[ -z "$environments" ]] && environments="[]"
+    else
+        chain_status="fail"
+        chain_count=0
+        fail_count=$((fail_count + 1))
+    fi
+    
+    # Section 3: Policy
+    local policy_output policy_rc
+    policy_output=$(cmd_deploy_policy --bundle "$bundle" --ci 2>&1) && policy_rc=0 || policy_rc=$?
+    
+    if [[ $policy_rc -eq 0 ]]; then
+        policy_status="pass"
+        policy_summary="Policy evaluation passed"
+        pass_count=$((pass_count + 1))
+    elif [[ $policy_rc -eq 1 ]]; then
+        # Check if it's a warning or fail
+        if echo "$policy_output" | grep -qE '"status"[[:space:]]*:[[:space:]]*"warn"'; then
+            policy_status="warn"
+            policy_summary="Policy evaluation has warnings"
+            warn_count=$((warn_count + 1))
+        else
+            policy_status="fail"
+            policy_summary="Policy evaluation failed"
+            fail_count=$((fail_count + 1))
+        fi
+    else
+        policy_status="fail"
+        policy_summary="Policy evaluation failed"
+        fail_count=$((fail_count + 1))
+    fi
+    
+    local overall_status="pass"
+    [[ $fail_count -gt 0 ]] && overall_status="fail"
+    
+    if [[ "$ci" == "1" ]]; then
+        local timestamp; timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        echo "{\"version\":\"1.0.0\",\"timestamp\":\"$timestamp\",\"status\":\"$overall_status\",\"operation\":\"audit\",\"bundle\":\"$abs_bundle\",\"sections\":{\"integrity\":{\"status\":\"$integrity_status\",\"summary\":\"$integrity_summary\"},\"chain\":{\"status\":\"$chain_status\",\"count\":$chain_count,\"environments\":$environments},\"policy\":{\"status\":\"$policy_status\",\"summary\":\"$policy_summary\"}},\"overall\":{\"pass_count\":$pass_count,\"fail_count\":$fail_count,\"warn_count\":$warn_count}}"
+    else
+        echo "═══════════════════════════════════════════════════════════════════"
+        echo "  Release Audit: $bundle"
+        echo "═══════════════════════════════════════════════════════════════════"
+        echo ""
+        
+        local icon="✓"
+        [[ "$integrity_status" == "fail" ]] && icon="✗"
+        [[ "$integrity_status" == "warn" ]] && icon="⚠"
+        echo "  Integrity: $icon $integrity_summary"
+        
+        icon="✓"
+        [[ "$chain_status" == "fail" ]] && icon="✗"
+        [[ "$chain_status" == "warn" ]] && icon="⚠"
+        echo "  Chain:     $icon $chain_count receipts found"
+        
+        icon="✓"
+        [[ "$policy_status" == "fail" ]] && icon="✗"
+        [[ "$policy_status" == "warn" ]] && icon="⚠"
+        echo "  Policy:    $icon $policy_summary"
+        
+        echo ""
+        echo "───────────────────────────────────────────────────────────────────"
+        echo "  Overall: $pass_count pass, $warn_count warn, $fail_count fail"
+        echo "═══════════════════════════════════════════════════════════════════"
+    fi
+    
+    [[ $fail_count -gt 0 ]] && return 1
+    return 0
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# cmd_release_status - Quick health check
+# ─────────────────────────────────────────────────────────────────────────────
+cmd_release_status() {
+    local bundle="" ci=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --bundle=*) bundle="${1#*=}"; shift ;;
+            --bundle) bundle="${2:-}"; shift 2 ;;
+            --ci) ci="1"; shift ;;
+            -h|--help|help)
+                echo "Usage: tf release status --bundle <dir> [options]"
+                echo ""
+                echo "Quick health check for a release bundle."
+                echo ""
+                echo "Options:"
+                echo "  --bundle <dir>      Bundle directory (required)"
+                echo "  --ci                JSON-only output"
+                return 0
+                ;;
+            *)
+                if [[ "$ci" == "1" ]]; then
+                    _orch_emit_error "status" "" "INVALID_ARGS" "Unknown flag: $1"
+                else
+                    echo "ERROR: Unknown flag: $1" >&2
+                fi
+                return 2
+                ;;
+        esac
+    done
+    
+    # Validate required args
+    if [[ -z "$bundle" ]]; then
+        if [[ "$ci" == "1" ]]; then
+            _orch_emit_error "status" "" "MISSING_ARG" "Missing required --bundle <dir>"
+        else
+            echo "ERROR: Missing required --bundle <dir>" >&2
+        fi
+        return 2
+    fi
+    
+    local abs_bundle
+    abs_bundle=$(cd "$bundle" 2>/dev/null && pwd) || abs_bundle="$bundle"
+    
+    # Check integrity
+    local verify_output verify_rc
+    verify_output=$(cmd_release_verify --bundle "$bundle" --ci 2>&1) && verify_rc=0 || verify_rc=$?
+    
+    local integrity_status="pass"
+    [[ $verify_rc -ne 0 ]] && integrity_status="fail"
+    
+    # Get latest receipt
+    local latest_receipt="null"
+    local receipt_env="" receipt_ts="" receipt_status=""
+    
+    local receipt_output receipt_rc
+    receipt_output=$(cmd_deploy_receipt --bundle "$bundle" --ci 2>&1) && receipt_rc=0 || receipt_rc=$?
+    
+    if [[ $receipt_rc -eq 0 ]] && [[ -n "$receipt_output" ]]; then
+        # Try to extract latest receipt info
+        receipt_env=$(echo "$receipt_output" | grep -oE '"environment"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*:.*"\([^"]*\)".*/\1/' | head -1) || receipt_env=""
+        receipt_ts=$(echo "$receipt_output" | grep -oE '"timestamp"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*:.*"\([^"]*\)".*/\1/' | head -1) || receipt_ts=""
+        receipt_status=$(echo "$receipt_output" | grep -oE '"status"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*:.*"\([^"]*\)".*/\1/' | head -1) || receipt_status=""
+        
+        if [[ -n "$receipt_env" ]]; then
+            latest_receipt="{\"environment\":\"$receipt_env\",\"timestamp\":\"$receipt_ts\",\"status\":\"$receipt_status\"}"
+        fi
+    fi
+    
+    local overall_status="healthy"
+    [[ "$integrity_status" == "fail" ]] && overall_status="unhealthy"
+    
+    if [[ "$ci" == "1" ]]; then
+        local timestamp; timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        echo "{\"version\":\"1.0.0\",\"timestamp\":\"$timestamp\",\"status\":\"$overall_status\",\"operation\":\"status\",\"bundle\":\"$abs_bundle\",\"integrity\":{\"status\":\"$integrity_status\"},\"latest_receipt\":$latest_receipt}"
+    else
+        echo "Bundle: $bundle"
+        if [[ "$integrity_status" == "pass" ]]; then
+            echo "Status: ✓ healthy"
+        else
+            echo "Status: ✗ unhealthy (integrity check failed)"
+        fi
+        
+        if [[ "$latest_receipt" != "null" ]] && [[ -n "$receipt_env" ]]; then
+            echo "Latest: $receipt_env @ $receipt_ts ($receipt_status)"
+        else
+            echo "Latest: no receipts found"
+        fi
+    fi
+    
+    [[ "$integrity_status" == "fail" ]] && return 1
+    return 0
 }
 
 cmd_release_bundle() {
