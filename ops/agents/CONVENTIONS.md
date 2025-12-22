@@ -118,6 +118,26 @@
 - CI JSON purity: no ANSI codes, valid JSON output
 - SpecLock reference: `ops/deploy/DEPLOY_PROMOTION_POLICY_CONSTITUTION_v1.3.0_SPECLOCK.md`
 
+### Release Orchestration Subsystem (v1.0.0-release-orchestration-constitution)
+- `ops/dev/tf.sh` orchestration commands: `cmd_release_prepare()`, `cmd_release_deploy()`, `cmd_release_promote()`, `cmd_release_audit()`, `cmd_release_status()`
+- **Wrapper-only enforcement**: All commands delegate to sealed primitives with zero new execution logic
+- Composition rules:
+  - `tf release prepare`: bundle + verify (creates auditable release artifact)
+  - `tf release deploy`: verify + apply (validates then deploys to namespace)
+  - `tf release promote`: verify + policy + promote (environment progression with chain enforcement)
+  - `tf release audit`: integrity + chain + policy inspection (compliance reporting)
+  - `tf release status`: quick health check (gate + active sessions)
+- Auto-inference (promote command):
+  - `--to techsupport` implies `--from dev` if not specified
+  - `--to prod` implies `--from techsupport` if not specified
+- Default policies:
+  - `--require-chain` always enabled for promote
+  - `--require-freshness` enabled unless `--skip-freshness` specified
+- Exit code inheritance: Orchestration returns underlying primitive's exit code unchanged
+- JSON output schema version: 1.0.0
+- CI JSON purity: `--ci` flag produces JSON-only stdout
+- SpecLock reference: `ops/release/RELEASE_ORCHESTRATION_CONSTITUTION_v1.0.0_SPECLOCK.md`
+
 This governance layer is **IMMUTABLE** without explicit constitutional amendment process.
 
 **Amendment Process:**
