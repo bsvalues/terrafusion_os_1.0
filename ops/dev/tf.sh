@@ -2065,6 +2065,10 @@ cmd_deploy() {
         shift
         cmd_deploy_history "$@"
         return $?
+    elif [[ "$subcmd" == "policy" ]]; then
+        shift
+        cmd_deploy_policy "$@"
+        return $?
     fi
     
     # Main deploy command parsing
@@ -2219,6 +2223,8 @@ cmd_deploy_promote() {
     local from_env="" to_env="" bundle_path="" ci_mode="" dry_run=""
     local namespace="" timeout="120"  # v1.2.0: namespace and timeout required
     local env_shortcut=""  # For --env shortcut form
+    # v1.3.0 policy flags
+    local require_chain="" max_age="" require_freshness=""
     
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -2236,6 +2242,11 @@ cmd_deploy_promote() {
             --timeout) timeout="${2:-}"; shift ;;
             --ci) ci_mode="true" ;;
             --dry-run) dry_run="true" ;;
+            # v1.3.0 policy flags
+            --require-chain) require_chain="true" ;;
+            --max-age=*) max_age="${1#*=}" ;;
+            --max-age) max_age="${2:-}"; shift ;;
+            --require-freshness) require_freshness="true" ;;
             -h|--help|help)
                 echo "Usage: tf deploy promote [--from <env> --to <env> | --env <env>]"
                 echo "         --bundle <path> --namespace <ns> [options]"
@@ -2249,16 +2260,21 @@ cmd_deploy_promote() {
                 echo "  --env prod                     Short form (implies from=techsupport)"
                 echo ""
                 echo "Options:"
-                echo "  --bundle <dir>    RuntimeCert bundle directory (required)"
-                echo "  --namespace <ns>  Target Kubernetes namespace (required)"
-                echo "  --timeout <sec>   Health check timeout (default: 120, range: 10-600)"
-                echo "  --dry-run         Validate only, no mutations"
-                echo "  --ci              JSON-only output"
+                echo "  --bundle <dir>       RuntimeCert bundle directory (required)"
+                echo "  --namespace <ns>     Target Kubernetes namespace (required)"
+                echo "  --timeout <sec>      Health check timeout (default: 120, range: 10-600)"
+                echo "  --dry-run            Validate only, no mutations"
+                echo "  --ci                 JSON-only output"
+                echo ""
+                echo "Policy Options (v1.3.0):"
+                echo "  --require-chain      Require complete receipt chain exists"
+                echo "  --max-age <sec>      Max receipt age (60-604800); implies --require-chain"
+                echo "  --require-freshness  Alias for --max-age 86400 (24 hours)"
                 return 0
                 ;;
             *)
                 if [[ -n "$ci_mode" ]]; then
-                    echo '{"version":"1.2.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_INVOCATION","message":"Unknown option: '"$1"'"}}'
+                    echo '{"version":"1.3.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_INVOCATION","message":"Unknown option: '"$1"'"}}'
                 else
                     log_error "Unknown option: $1"
                     echo "Usage: tf deploy promote [--from <env> --to <env> | --env <env>] --bundle <path> --namespace <ns> [--ci]"
@@ -2268,6 +2284,45 @@ cmd_deploy_promote() {
         esac
         shift
     done
+    
+    # ─── v1.3.0: Expand --require-freshness ───
+    if [[ -n "$require_freshness" ]]; then
+        [[ -z "$max_age" ]] && max_age="86400"
+        require_chain="true"
+    fi
+    
+    # ─── v1.3.0: --max-age implies --require-chain ───
+    if [[ -n "$max_age" ]]; then
+        require_chain="true"
+    fi
+    
+    # ─── v1.3.0: Validate --max-age bounds ───
+    if [[ -n "$max_age" ]]; then
+        if ! [[ "$max_age" =~ ^[0-9]+$ ]]; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.3.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_INVOCATION","message":"--max-age must be a positive integer"}}'
+            else
+                log_error "--max-age must be a positive integer"
+            fi
+            return 2
+        fi
+        if [[ "$max_age" -lt 60 ]]; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.3.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_INVOCATION","message":"--max-age minimum is 60 seconds"}}'
+            else
+                log_error "--max-age minimum is 60 seconds"
+            fi
+            return 2
+        fi
+        if [[ "$max_age" -gt 604800 ]]; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.3.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"INVALID_INVOCATION","message":"--max-age maximum is 604800 seconds (7 days)"}}'
+            else
+                log_error "--max-age maximum is 604800 seconds (7 days)"
+            fi
+            return 2
+        fi
+    fi
     
     # ─── v1.2.0: Handle --env shortcut form ───
     if [[ -n "$env_shortcut" ]]; then
@@ -2510,6 +2565,59 @@ cmd_deploy_promote() {
     source_receipt_hash=$(sha256sum "$source_receipt_path" | awk '{print "sha256:"$1}')
     local source_receipt_ts
     source_receipt_ts=$(echo "$source_receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('timestamp',''))" 2>/dev/null || echo "")
+    
+    # ─── v1.3.0: Policy enforcement ───
+    
+    # Check chain required (when --require-chain is set)
+    if [[ -n "$require_chain" ]]; then
+        local receipts_dir="$abs_bundle_path/receipts"
+        
+        # For techsupport→prod, also need at least one dev→techsupport promote receipt
+        if [[ "$from_env" == "techsupport" ]] && [[ "$to_env" == "prod" ]]; then
+            local promote_count
+            promote_count=$(find "$receipts_dir" -maxdepth 1 -name 'promote_dev_techsupport_*.json' 2>/dev/null | wc -l)
+            if [[ "$promote_count" -eq 0 ]]; then
+                if [[ -n "$ci_mode" ]]; then
+                    echo '{"version":"1.3.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"MISSING_CHAIN","message":"Required promotion chain incomplete: no dev→techsupport promote receipt"}}'
+                else
+                    log_error "Missing chain: no dev→techsupport promote receipt for prod promotion"
+                fi
+                return 1
+            fi
+        fi
+    fi
+    
+    # Chain integrity (always when receipts exist)
+    if ! _validate_chain_integrity "$abs_bundle_path"; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.3.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"'"$CHAIN_ERROR_CODE"'","message":"'"$CHAIN_ERROR_MSG"'"}}'
+        else
+            log_error "Chain integrity failed: $CHAIN_ERROR_MSG"
+        fi
+        return 1
+    fi
+    
+    # Freshness check (when --max-age is set)
+    if [[ -n "$max_age" ]]; then
+        if ! _validate_chain_freshness "$abs_bundle_path" "$max_age"; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.3.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"'"$CHAIN_ERROR_CODE"'","message":"'"$CHAIN_ERROR_MSG"'","details":{"max_age":'"$max_age"'}}}'
+            else
+                log_error "Policy failed: $CHAIN_ERROR_MSG"
+            fi
+            return 1
+        fi
+    fi
+    
+    # Time skew check (always)
+    if ! _check_time_skew "$abs_bundle_path"; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.3.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"promote","error":{"code":"'"$CHAIN_ERROR_CODE"'","message":"'"$CHAIN_ERROR_MSG"'"}}'
+        else
+            log_error "Time skew detected: $CHAIN_ERROR_MSG"
+        fi
+        return 1
+    fi
     
     # ─── v1.2.0: Namespace sanitization ───
     local sanitized_ns
@@ -2776,6 +2884,209 @@ EOF
     return 0
 }
 
+# ─────────────────────────────────────────────────────────────────────────────
+# cmd_deploy_policy - v1.3.0 Read-only policy evaluator
+# ─────────────────────────────────────────────────────────────────────────────
+cmd_deploy_policy() {
+    local bundle_path="" ci_mode="" max_age=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --bundle=*) bundle_path="${1#*=}" ;;
+            --bundle) bundle_path="${2:-}"; shift ;;
+            --max-age=*) max_age="${1#*=}" ;;
+            --max-age) max_age="${2:-}"; shift ;;
+            --ci) ci_mode="true" ;;
+            -h|--help|help)
+                echo "Usage: tf deploy policy --bundle <path> [--max-age <seconds>] [--ci]"
+                echo ""
+                echo "Evaluate deployment receipt chain policy status."
+                echo ""
+                echo "Options:"
+                echo "  --bundle <dir>      RuntimeCert bundle directory (required)"
+                echo "  --max-age <sec>     Maximum age for chain freshness (60-604800)"
+                echo "  --ci                JSON-only output"
+                return 0
+                ;;
+            *)
+                if [[ -n "$ci_mode" ]]; then
+                    echo '{"version":"1.3.0","timestamp":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'","status":"error","operation":"policy","error":{"code":"INVALID_INVOCATION","message":"Unknown option: '"$1"'"}}'
+                else
+                    log_error "Unknown option: $1"
+                fi
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    local ts
+    ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    
+    # ─── Bundle required ───
+    if [[ -z "$bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.3.0","timestamp":"'"$ts"'","status":"error","operation":"policy","error":{"code":"INVALID_INVOCATION","message":"Missing required --bundle argument"}}'
+        else
+            log_error "Missing required argument: --bundle"
+        fi
+        return 2
+    fi
+    
+    # ─── Path validation ───
+    if [[ "$bundle_path" == *".."* ]] || [[ "$bundle_path" =~ [[:cntrl:]] ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.3.0","timestamp":"'"$ts"'","status":"error","operation":"policy","error":{"code":"INVALID_INVOCATION","message":"Invalid bundle path"}}'
+        else
+            log_error "Invalid bundle path: contains illegal characters"
+        fi
+        return 2
+    fi
+    
+    # ─── Validate max-age if provided ───
+    if [[ -n "$max_age" ]]; then
+        if ! [[ "$max_age" =~ ^[0-9]+$ ]]; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.3.0","timestamp":"'"$ts"'","status":"error","operation":"policy","error":{"code":"INVALID_INVOCATION","message":"--max-age must be a positive integer"}}'
+            else
+                log_error "--max-age must be a positive integer"
+            fi
+            return 2
+        fi
+        if [[ "$max_age" -lt 60 ]]; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.3.0","timestamp":"'"$ts"'","status":"error","operation":"policy","error":{"code":"INVALID_INVOCATION","message":"--max-age minimum is 60 seconds"}}'
+            else
+                log_error "--max-age minimum is 60 seconds"
+            fi
+            return 2
+        fi
+        if [[ "$max_age" -gt 604800 ]]; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.3.0","timestamp":"'"$ts"'","status":"error","operation":"policy","error":{"code":"INVALID_INVOCATION","message":"--max-age maximum is 604800 seconds (7 days)"}}'
+            else
+                log_error "--max-age maximum is 604800 seconds (7 days)"
+            fi
+            return 2
+        fi
+    fi
+    
+    # Resolve absolute path
+    local abs_bundle_path
+    if [[ "$bundle_path" == /* ]]; then
+        abs_bundle_path="$bundle_path"
+    else
+        abs_bundle_path="$(cd "$(dirname "$bundle_path")" 2>/dev/null && pwd)/$(basename "$bundle_path")" || abs_bundle_path="$bundle_path"
+    fi
+    
+    # ─── Bundle directory check ───
+    if [[ ! -d "$abs_bundle_path" ]]; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.3.0","timestamp":"'"$ts"'","status":"error","operation":"policy","error":{"code":"BUNDLE_NOT_FOUND","message":"Bundle directory not found"}}'
+        else
+            log_error "Bundle directory not found: $bundle_path"
+        fi
+        return 1
+    fi
+    
+    local receipts_dir="$abs_bundle_path/receipts"
+    local now_epoch
+    now_epoch=$(_policy_now_epoch)
+    
+    # ─── Check time skew (always) ───
+    if ! _check_time_skew "$abs_bundle_path"; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.3.0","timestamp":"'"$ts"'","status":"fail","operation":"policy","bundle":"'"$abs_bundle_path"'","policy":{"now_epoch":'"$now_epoch"'},"error":{"code":"'"$CHAIN_ERROR_CODE"'","message":"'"$CHAIN_ERROR_MSG"'"}}'
+        else
+            log_error "Policy FAILED: $CHAIN_ERROR_MSG"
+        fi
+        return 1
+    fi
+    
+    # ─── Chain integrity (always when receipts exist) ───
+    if ! _validate_chain_integrity "$abs_bundle_path"; then
+        if [[ -n "$ci_mode" ]]; then
+            echo '{"version":"1.3.0","timestamp":"'"$ts"'","status":"fail","operation":"policy","bundle":"'"$abs_bundle_path"'","policy":{"now_epoch":'"$now_epoch"'},"error":{"code":"'"$CHAIN_ERROR_CODE"'","message":"'"$CHAIN_ERROR_MSG"'"}}'
+        else
+            log_error "Policy FAILED: $CHAIN_ERROR_MSG"
+        fi
+        return 1
+    fi
+    
+    # ─── Freshness check (if max-age specified) ───
+    if [[ -n "$max_age" ]]; then
+        if ! _validate_chain_freshness "$abs_bundle_path" "$max_age"; then
+            if [[ -n "$ci_mode" ]]; then
+                echo '{"version":"1.3.0","timestamp":"'"$ts"'","status":"fail","operation":"policy","bundle":"'"$abs_bundle_path"'","policy":{"chain_required":true,"max_age":'"$max_age"',"now_epoch":'"$now_epoch"',"freshness_check":"fail"},"error":{"code":"'"$CHAIN_ERROR_CODE"'","message":"'"$CHAIN_ERROR_MSG"'"}}'
+            else
+                log_error "Policy FAILED: $CHAIN_ERROR_MSG"
+            fi
+            return 1
+        fi
+    fi
+    
+    # ─── Build success response ───
+    local chain_info=""
+    if [[ -d "$receipts_dir" ]]; then
+        # Find source apply receipt
+        local source_apply=""
+        for env in dev techsupport prod; do
+            if [[ -f "$receipts_dir/apply_${env}.json" ]]; then
+                local ts_str
+                ts_str=$(python3 -c "import sys,json; print(json.load(open('$receipts_dir/apply_${env}.json')).get('timestamp',''))" 2>/dev/null || echo "")
+                local age_seconds=0
+                if [[ -n "$ts_str" ]]; then
+                    local ts_epoch
+                    ts_epoch=$(_parse_timestamp_epoch "$ts_str")
+                    age_seconds=$((now_epoch - ts_epoch))
+                fi
+                source_apply="\"source_apply\":{\"path\":\"receipts/apply_${env}.json\",\"timestamp\":\"$ts_str\",\"age_seconds\":$age_seconds}"
+                break
+            fi
+        done
+        
+        # Find latest promote receipt
+        local latest_promote=""
+        local latest_file
+        latest_file=$(find "$receipts_dir" -maxdepth 1 -name 'promote_*.json' 2>/dev/null | sort | tail -1)
+        if [[ -n "$latest_file" ]]; then
+            local ts_str basename_file
+            basename_file=$(basename "$latest_file")
+            ts_str=$(python3 -c "import sys,json; print(json.load(open('$latest_file')).get('timestamp',''))" 2>/dev/null || echo "")
+            local age_seconds=0
+            if [[ -n "$ts_str" ]]; then
+                local ts_epoch
+                ts_epoch=$(_parse_timestamp_epoch "$ts_str")
+                age_seconds=$((now_epoch - ts_epoch))
+            fi
+            latest_promote=",\"latest_promote\":{\"path\":\"receipts/$basename_file\",\"timestamp\":\"$ts_str\",\"age_seconds\":$age_seconds}"
+        fi
+        
+        [[ -n "$source_apply" ]] && chain_info="\"chain\":{$source_apply$latest_promote},"
+    fi
+    
+    # ─── Output ───
+    if [[ -n "$ci_mode" ]]; then
+        local max_age_field="null"
+        local freshness_field="\"skip\""
+        if [[ -n "$max_age" ]]; then
+            max_age_field="$max_age"
+            freshness_field="\"pass\""
+        fi
+        echo "{\"version\":\"1.3.0\",\"timestamp\":\"$ts\",\"operation\":\"policy\",\"bundle\":\"$abs_bundle_path\",\"status\":\"pass\",\"policy\":{\"chain_required\":false,\"chain_present\":true,\"max_age\":$max_age_field,\"now_epoch\":$now_epoch,\"freshness_check\":$freshness_field},$chain_info\"error\":null}"
+    else
+        echo ""
+        log_success "Policy PASSED"
+        echo ""
+        echo "  Bundle:    $abs_bundle_path"
+        echo "  Now epoch: $now_epoch"
+        [[ -n "$max_age" ]] && echo "  Max age:   ${max_age}s (freshness enforced)"
+        echo ""
+    fi
+    
+    return 0
+}
+
 cmd_deploy_rollback() {
     local environment="" version="" bundle_path="" ci_mode=""
     
@@ -3014,6 +3325,210 @@ _write_json_atomic() {
     tmp_file=$(mktemp)
     echo "$content" > "$tmp_file"
     mv "$tmp_file" "$target"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# v1.3.0 Policy Helpers
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Helper: get current epoch (with TF_NOW_EPOCH override for testing)
+_policy_now_epoch() {
+    if [[ -n "${TF_NOW_EPOCH:-}" ]] && [[ "$TF_NOW_EPOCH" =~ ^[0-9]+$ ]]; then
+        echo "$TF_NOW_EPOCH"
+    else
+        date +%s
+    fi
+}
+
+# Helper: compute SHA256 hash of file
+_sha256_file() {
+    local file="$1"
+    sha256sum "$file" 2>/dev/null | awk '{print "sha256:"$1}'
+}
+
+# Helper: parse ISO8601 timestamp to Unix epoch
+_parse_timestamp_epoch() {
+    local ts="$1"
+    date -d "$ts" +%s 2>/dev/null || echo "0"
+}
+
+# Helper: select latest promote receipt by filename timestamp
+_select_latest_receipt() {
+    local receipts_dir="$1" from_env="$2" to_env="$3"
+    find "$receipts_dir" -maxdepth 1 -name "promote_${from_env}_${to_env}_*.json" 2>/dev/null \
+        | grep -E "promote_${from_env}_${to_env}_[0-9T]+Z\.json$" \
+        | sort \
+        | tail -1
+}
+
+# Helper: validate chain integrity
+# Returns: 0=pass, 1=fail (sets CHAIN_ERROR_CODE and CHAIN_ERROR_MSG)
+_validate_chain_integrity() {
+    local bundle_dir="$1"
+    local receipts_dir="$bundle_dir/receipts"
+    CHAIN_ERROR_CODE=""
+    CHAIN_ERROR_MSG=""
+    
+    # Find all promote receipts
+    local promote_receipts=()
+    while IFS= read -r -d '' file; do
+        promote_receipts+=("$file")
+    done < <(find "$receipts_dir" -maxdepth 1 -name 'promote_*.json' -print0 2>/dev/null | sort -z)
+    
+    [[ ${#promote_receipts[@]} -eq 0 ]] && return 0
+    
+    local prev_ts=0
+    for receipt_file in "${promote_receipts[@]}"; do
+        local receipt_json
+        receipt_json=$(cat "$receipt_file" 2>/dev/null) || continue
+        
+        # Extract source receipt reference
+        local source_path source_hash source_ts
+        source_path=$(echo "$receipt_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('source_receipt',{}).get('path',''))" 2>/dev/null || echo "")
+        source_hash=$(echo "$receipt_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('source_receipt',{}).get('hash',''))" 2>/dev/null || echo "")
+        
+        # Validate source receipt exists
+        if [[ -n "$source_path" ]] && [[ "$source_path" != "null" ]]; then
+            local full_source="$bundle_dir/$source_path"
+            if [[ ! -f "$full_source" ]]; then
+                CHAIN_ERROR_CODE="CHAIN_INTEGRITY_FAILED"
+                CHAIN_ERROR_MSG="Source receipt missing: $source_path"
+                return 1
+            fi
+            
+            # Validate source hash
+            local computed_hash
+            computed_hash=$(_sha256_file "$full_source")
+            if [[ "$computed_hash" != "$source_hash" ]]; then
+                CHAIN_ERROR_CODE="CHAIN_INTEGRITY_FAILED"
+                CHAIN_ERROR_MSG="Source receipt hash mismatch"
+                return 1
+            fi
+        fi
+        
+        # Extract target receipt reference (may be null for dry-run)
+        local target_path target_hash
+        target_path=$(echo "$receipt_json" | python3 -c "import sys,json; d=json.load(sys.stdin); t=d.get('target_receipt'); print(t.get('path','') if t else '')" 2>/dev/null || echo "")
+        target_hash=$(echo "$receipt_json" | python3 -c "import sys,json; d=json.load(sys.stdin); t=d.get('target_receipt'); print(t.get('hash','') if t else '')" 2>/dev/null || echo "")
+        
+        # Validate target receipt exists (if specified and not placeholder)
+        if [[ -n "$target_path" ]] && [[ "$target_path" != "null" ]] && [[ -n "$target_hash" ]] && [[ "$target_hash" != "sha256:placeholder" ]]; then
+            local full_target="$bundle_dir/$target_path"
+            if [[ ! -f "$full_target" ]]; then
+                CHAIN_ERROR_CODE="CHAIN_INTEGRITY_FAILED"
+                CHAIN_ERROR_MSG="Target receipt missing: $target_path"
+                return 1
+            fi
+        fi
+        
+        # Check monotonic ordering
+        local receipt_ts_str receipt_ts_epoch
+        receipt_ts_str=$(echo "$receipt_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('timestamp',''))" 2>/dev/null || echo "")
+        receipt_ts_epoch=$(_parse_timestamp_epoch "$receipt_ts_str")
+        
+        if [[ $receipt_ts_epoch -lt $prev_ts ]]; then
+            CHAIN_ERROR_CODE="CHAIN_INTEGRITY_FAILED"
+            CHAIN_ERROR_MSG="Monotonic time order violation"
+            return 1
+        fi
+        prev_ts=$receipt_ts_epoch
+    done
+    
+    return 0
+}
+
+# Helper: validate chain freshness
+# Returns: 0=pass, 1=fail (sets CHAIN_ERROR_CODE and CHAIN_ERROR_MSG)
+_validate_chain_freshness() {
+    local bundle_dir="$1" max_age="$2"
+    local receipts_dir="$bundle_dir/receipts"
+    CHAIN_ERROR_CODE=""
+    CHAIN_ERROR_MSG=""
+    
+    local now_epoch
+    now_epoch=$(_policy_now_epoch)
+    local stale_cutoff=$((now_epoch - max_age))
+    local future_tolerance=300  # 5 minutes
+    
+    # Check all apply receipts
+    for env in dev techsupport prod; do
+        local apply_file="$receipts_dir/apply_${env}.json"
+        [[ ! -f "$apply_file" ]] && continue
+        
+        local ts_str ts_epoch
+        ts_str=$(python3 -c "import sys,json; print(json.load(open('$apply_file')).get('timestamp',''))" 2>/dev/null || echo "")
+        [[ -z "$ts_str" ]] && continue
+        ts_epoch=$(_parse_timestamp_epoch "$ts_str")
+        
+        # Check for time skew (future timestamp)
+        if [[ $ts_epoch -gt $((now_epoch + future_tolerance)) ]]; then
+            CHAIN_ERROR_CODE="TIME_SKEW"
+            CHAIN_ERROR_MSG="Receipt timestamp in future: $ts_str"
+            return 1
+        fi
+        
+        # Check freshness
+        if [[ $ts_epoch -lt $stale_cutoff ]]; then
+            CHAIN_ERROR_CODE="STALE_CHAIN"
+            CHAIN_ERROR_MSG="Receipt older than max-age: $ts_str"
+            return 1
+        fi
+    done
+    
+    # Check promote receipts
+    while IFS= read -r -d '' receipt_file; do
+        local ts_str ts_epoch
+        ts_str=$(python3 -c "import sys,json; print(json.load(open('$receipt_file')).get('timestamp',''))" 2>/dev/null || echo "")
+        [[ -z "$ts_str" ]] && continue
+        ts_epoch=$(_parse_timestamp_epoch "$ts_str")
+        
+        # Check for time skew
+        if [[ $ts_epoch -gt $((now_epoch + future_tolerance)) ]]; then
+            CHAIN_ERROR_CODE="TIME_SKEW"
+            CHAIN_ERROR_MSG="Promote receipt timestamp in future"
+            return 1
+        fi
+        
+        # Check freshness
+        if [[ $ts_epoch -lt $stale_cutoff ]]; then
+            CHAIN_ERROR_CODE="STALE_CHAIN"
+            CHAIN_ERROR_MSG="Promote receipt older than max-age"
+            return 1
+        fi
+    done < <(find "$receipts_dir" -maxdepth 1 -name 'promote_*.json' -print0 2>/dev/null)
+    
+    return 0
+}
+
+# Helper: check time skew without max-age requirement
+_check_time_skew() {
+    local bundle_dir="$1"
+    local receipts_dir="$bundle_dir/receipts"
+    CHAIN_ERROR_CODE=""
+    CHAIN_ERROR_MSG=""
+    
+    local now_epoch
+    now_epoch=$(_policy_now_epoch)
+    local future_tolerance=300  # 5 minutes
+    
+    # Check all apply receipts
+    for env in dev techsupport prod; do
+        local apply_file="$receipts_dir/apply_${env}.json"
+        [[ ! -f "$apply_file" ]] && continue
+        
+        local ts_str ts_epoch
+        ts_str=$(python3 -c "import sys,json; print(json.load(open('$apply_file')).get('timestamp',''))" 2>/dev/null || echo "")
+        [[ -z "$ts_str" ]] && continue
+        ts_epoch=$(_parse_timestamp_epoch "$ts_str")
+        
+        if [[ $ts_epoch -gt $((now_epoch + future_tolerance)) ]]; then
+            CHAIN_ERROR_CODE="TIME_SKEW"
+            CHAIN_ERROR_MSG="Receipt timestamp in future: $ts_str"
+            return 1
+        fi
+    done
+    
+    return 0
 }
 
 # Helper: build receipt JSON (v1.1.0 with k8s enrichment)
