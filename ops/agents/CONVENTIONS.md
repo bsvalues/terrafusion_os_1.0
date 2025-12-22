@@ -102,6 +102,22 @@
 - Path sanitization: control chars and path traversal blocked
 - SpecLock reference: `ops/deploy/DEPLOY_APPLY_RECEIPT_CONSTITUTION_v1.0.0_SPECLOCK.md`
 
+### Deploy Promotion Policy Subsystem (v1.3.0-deploy-promotion-policy-constitution)
+- `ops/dev/tf.sh` policy helpers: `_policy_now_epoch()`, `_validate_chain_integrity()`, `_validate_chain_freshness()`, `_check_time_skew()`
+- Policy command: `tf deploy policy --bundle <dir> [--max-age <sec>] [--ci]` (read-only evaluator)
+- Extended promote: `tf deploy promote --bundle <dir> --from <env> --to <env> [--require-chain] [--max-age <sec>] [--require-freshness] [--dry-run] [--ci]`
+- Invocation contract (exit codes: 0=success/pass, 1=failure/policy violation, 2=invalid)
+- Policy rules:
+  - A. Chain required (optional): `--require-chain` blocks if no promote receipt exists
+  - B. Chain integrity (always): hash reference validation, monotonic time ordering
+  - C. Freshness (explicit): `--require-freshness` (default 86400s) or `--max-age <N>` (60-604800s range)
+  - D. Time skew detection: future timestamps >300s tolerance blocked
+- Error codes: MISSING_CHAIN, CHAIN_INTEGRITY_FAILED, STALE_CHAIN, TIME_SKEW
+- Test determinism: TF_NOW_EPOCH environment variable overrides current epoch
+- JSON output schema: policy.now_epoch, policy.max_age, chain object fields
+- CI JSON purity: no ANSI codes, valid JSON output
+- SpecLock reference: `ops/deploy/DEPLOY_PROMOTION_POLICY_CONSTITUTION_v1.3.0_SPECLOCK.md`
+
 This governance layer is **IMMUTABLE** without explicit constitutional amendment process.
 
 **Amendment Process:**
