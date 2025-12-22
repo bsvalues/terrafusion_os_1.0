@@ -138,6 +138,24 @@
 - CI JSON purity: `--ci` flag produces JSON-only stdout
 - SpecLock reference: `ops/release/RELEASE_ORCHESTRATION_CONSTITUTION_v1.0.0_SPECLOCK.md`
 
+### Release Playbooks Adoption Layer (v1.0.0-release-playbooks)
+- **Constitutional Layer**: Adoption (Docs-Only) — no execution authority expansion
+- Artifacts:
+  - `ops/release/docs/RELEASE_PLAYBOOKS.md` — 4 operator-grade playbooks
+  - `ops/release/docs/RELEASE_PLAYBOOKS_CI_EXAMPLES.md` — JSON pipeline examples
+  - `ops/release/docs/ROLE_GUIDE_OPERATOR.md` — Step-by-step operator usage
+  - `ops/release/docs/ROLE_GUIDE_AUDITOR.md` — Evidence validation without execution
+  - `ops/release/docs/ROLE_GUIDE_EXECUTIVE.md` — Non-technical posture summaries
+  - `ops/release/docs/RUNBOOK_FAQ.md` — WARN vs FAIL semantics
+- Constitutional constraints enforced:
+  - A. No New Authority: Playbooks may not introduce flags, env vars, or side effects
+  - B. Sealed Composition Only: Only calls to sealed `tf release *` commands
+  - C. Role-Scoped Narratives: Operator / Auditor / CIO views are read-only guidance
+  - D. Deterministic Outputs: Every step includes expected outputs (human + `--ci` JSON)
+  - E. Reproducible Evidence: Each playbook references receipts/proofs produced
+- Governance: `ops/dev/tests/test_release_playbooks_lint.sh` (27/27 PASS)
+- SpecLock reference: `ops/release/RELEASE_PLAYBOOKS_CONSTITUTION_v1.0.0_SPECLOCK.md`
+
 This governance layer is **IMMUTABLE** without explicit constitutional amendment process.
 
 **Amendment Process:**
