@@ -1,0 +1,267 @@
+# TerraFusion Tool Registry
+# ═══════════════════════════════════════════════════════════════════════════
+# Single source of truth for all tf CLI commands.
+# Used by: tf hub, tf help, VS Code tasks, documentation generation.
+#
+# Rules:
+#   - Every tool runs through `tf ...` (no shadow tooling)
+#   - safe: true = non-destructive, can run anytime
+#   - safe: false = destructive or resource-intensive
+# ═══════════════════════════════════════════════════════════════════════════
+
+version: 1
+
+groups:
+  # ─────────────────────────────────────────────────────────────────────────
+  - id: daily
+    title: "🌅 Daily Workflow"
+    items:
+      - id: start
+        title: "tf start"
+        desc: "Daily start (gate + verify + AI status + RAG freshness)"
+        cmd: "tf start"
+        safe: true
+        frequency: "every session start"
+        
+  # ─────────────────────────────────────────────────────────────────────────
+  - id: governance
+    title: "🛡️ Governance & Compliance"
+    items:
+      - id: gate
+        title: "tf gate"
+        desc: "Fast invariant check (8 checks, ~3s)"
+        cmd: "tf gate"
+        safe: true
+        frequency: "every session start"
+        
+      - id: gate_full
+        title: "tf gate --full"
+        desc: "Full gate with builds/tests"
+        cmd: "tf gate --full"
+        safe: true
+        frequency: "before PR"
+        
+      - id: certify
+        title: "tf certify"
+        desc: "Capture certified dev state + run gate"
+        cmd: "tf certify"
+        safe: true
+        frequency: "after major changes"
+        
+      - id: doctor
+        title: "tf doctor"
+        desc: "Comprehensive health check with remediation tips"
+        cmd: "tf doctor"
+        safe: true
+        frequency: "troubleshooting"
+        
+      - id: doctor_json
+        title: "tf doctor --json"
+        desc: "Machine-readable health output"
+        cmd: "tf doctor --json"
+        safe: true
+        frequency: "CI/automation"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  - id: runtime
+    title: "🚀 Runtime Control"
+    items:
+      - id: up
+        title: "tf up"
+        desc: "Start TerraFusion stack (auto-detects k8s/compose)"
+        cmd: "tf up"
+        safe: true
+        
+      - id: up_full
+        title: "tf up --full"
+        desc: "Start stack with monitoring services"
+        cmd: "tf up --full"
+        safe: true
+        
+      - id: down
+        title: "tf down"
+        desc: "Stop stack (preserves data)"
+        cmd: "tf down"
+        safe: true
+        
+      - id: down_prune
+        title: "tf down --prune"
+        desc: "Stop stack + prune images/cache"
+        cmd: "tf down --prune"
+        safe: false
+        
+      - id: status
+        title: "tf status"
+        desc: "Show running containers"
+        cmd: "tf status"
+        safe: true
+        
+      - id: logs
+        title: "tf logs"
+        desc: "Tail service logs (Ctrl+C to stop)"
+        cmd: "tf logs"
+        safe: true
+
+  # ─────────────────────────────────────────────────────────────────────────
+  - id: ai
+    title: "🔮 AI Lab"
+    items:
+      - id: ai_up
+        title: "tf ai up"
+        desc: "Start GPU-accelerated AI Lab (Ollama/WebUI/Chroma)"
+        cmd: "tf ai up"
+        safe: true
+        
+      - id: ai_down
+        title: "tf ai down"
+        desc: "Stop AI Lab"
+        cmd: "tf ai down"
+        safe: true
+        
+      - id: ai_status
+        title: "tf ai status"
+        desc: "Show AI Lab containers + GPU status"
+        cmd: "tf ai status"
+        safe: true
+        
+      - id: ai_logs
+        title: "tf ai logs"
+        desc: "Tail Ollama logs"
+        cmd: "tf ai logs"
+        safe: true
+        
+      - id: ai_ingest
+        title: "tf ai ingest"
+        desc: "Index docs into RAG (incremental, hash-based)"
+        cmd: "tf ai ingest"
+        safe: true
+        frequency: "daily or after doc changes"
+        
+      - id: ai_query
+        title: "tf ai query"
+        desc: "Query RAG with source citations"
+        cmd: "tf ai query"
+        safe: true
+
+  # ─────────────────────────────────────────────────────────────────────────
+  - id: maintenance
+    title: "🧹 Maintenance"
+    items:
+      - id: clean
+        title: "tf clean"
+        desc: "Safe cleanup (dangling images, build cache)"
+        cmd: "tf clean"
+        safe: true
+        frequency: "weekly"
+        
+      - id: clean_deep
+        title: "tf clean --deep"
+        desc: "Deep cleanup (includes volumes - DESTRUCTIVE)"
+        cmd: "tf clean --deep"
+        safe: false
+        frequency: "monthly or when disk critical"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  - id: info
+    title: "📋 Information"
+    items:
+      - id: help
+        title: "tf help"
+        desc: "Show CLI help"
+        cmd: "tf help"
+        safe: true
+        
+      - id: hub
+        title: "tf hub"
+        desc: "Interactive tool menu (this command)"
+        cmd: "tf hub"
+        safe: true
+        
+      - id: hub_tasks
+        title: "tf hub tasks"
+        desc: "Generate VS Code tasks from registry"
+        cmd: "tf hub tasks"
+        safe: true
+        frequency: "after registry changes"
+        
+      - id: hub_docs
+        title: "tf hub docs"
+        desc: "Generate tooling README from registry"
+        cmd: "tf hub docs"
+        safe: true
+        frequency: "after registry changes"
+        
+      - id: hub_verify
+        title: "tf hub verify"
+        desc: "Verify tasks.json matches registry (drift detection)"
+        cmd: "tf hub verify"
+        safe: true
+        frequency: "CI/gate checks"
+        
+      - id: hub_sync
+        title: "tf hub sync"
+        desc: "Regenerate all artifacts from registry"
+        cmd: "tf hub sync"
+        safe: true
+        
+      - id: hub_list
+        title: "tf hub list"
+        desc: "List all tools as JSON"
+        cmd: "tf hub list"
+        safe: true
+        
+      - id: hub_find
+        title: "tf hub find <term>"
+        desc: "Search tools by keyword"
+        cmd: "tf hub find"
+        safe: true
+
+  # ─────────────────────────────────────────────────────────────────────────
+  - id: agent
+    title: "🤖 Agent Protocol"
+    items:
+      - id: agent_run
+        title: "tf agent run"
+        desc: "Start new agent session with execution contract"
+        cmd: "tf agent run"
+        safe: true
+        frequency: "per feature"
+        
+      - id: agent_status
+        title: "tf agent status"
+        desc: "Show active agent sessions"
+        cmd: "tf agent status"
+        safe: true
+        
+      - id: agent_check
+        title: "tf agent check"
+        desc: "Verify session health (stale sessions, missing SpecLock)"
+        cmd: "tf agent check"
+        safe: true
+        frequency: "daily / tf start"
+        
+      - id: agent_break
+        title: "tf agent break"
+        desc: "Run Breaker pass (gate, lint, secrets scan, SpecLock verify)"
+        cmd: "tf agent break"
+        safe: true
+        frequency: "before completing session"
+        
+      - id: agent_notes
+        title: "tf agent notes"
+        desc: "Open notes for current session"
+        cmd: "tf agent notes"
+        safe: true
+        
+      - id: agent_complete
+        title: "tf agent complete"
+        desc: "Mark agent session as complete"
+        cmd: "tf agent complete"
+        safe: true
+        
+      - id: agent_telemetry
+        title: "tf agent telemetry"
+        desc: "Show agent protocol adoption metrics"
+        cmd: "tf agent telemetry"
+        safe: true
+        frequency: "weekly review"

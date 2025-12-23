@@ -1,0 +1,1 @@
+{"version":"1.0.0","timestamp":"2025-12-23T17:26:40Z","status":"fail","operation":"deploy","bundle":"/home/bsval/dev/terrafusion_os_1.0/ops/county-pilot/benton-pilot-v1.0.0/bundle","environment":"dev","namespace":"terrafusion-staging","steps":[{"name":"verify","status":"pass","message":"Bundle verified"},{"name":"apply","status":"fail","message":"Deploy fail"}]}

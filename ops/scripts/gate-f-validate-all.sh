@@ -173,6 +173,71 @@ else
 fi
 
 log ""
+
+# -----------------------------------------------------------------------------
+# 4) Ops/Dev Invariant Tests (gate + breaker hardening)
+# -----------------------------------------------------------------------------
+
+log "--- Ops/Dev invariant tests ---"
+
+OPS_DEV_TESTS_DIR="$ROOT_DIR/ops/dev/tests"
+
+if [ ! -d "$OPS_DEV_TESTS_DIR" ]; then
+  log "INFO: Ops/dev tests directory not found; skipping."
+else
+  # Run with minimal PATH to prove CI portability
+  MINIMAL_PATH="/usr/local/bin:/usr/bin:/bin"
+  
+  # Test: Gate CI JSON output
+  if [ -f "$OPS_DEV_TESTS_DIR/test_gate_ci.sh" ]; then
+    log "INFO: Running gate CI tests (test_gate_ci.sh)..."
+    if ! env PATH="$MINIMAL_PATH" HOME="$HOME" USER="${USER:-ci}" \
+        bash "$OPS_DEV_TESTS_DIR/test_gate_ci.sh" >>"$LOG_FILE" 2>&1; then
+      log "ERROR: Gate CI tests failed."
+      increment_error
+    else
+      log "✅ Gate CI tests succeeded."
+    fi
+  fi
+  
+  # Test: Breaker invariants (PATH hardening + set -e safety)
+  if [ -f "$OPS_DEV_TESTS_DIR/test_breaker_invariants.sh" ]; then
+    log "INFO: Running breaker invariants (test_breaker_invariants.sh)..."
+    if ! env PATH="$MINIMAL_PATH" HOME="$HOME" USER="${USER:-ci}" \
+        bash "$OPS_DEV_TESTS_DIR/test_breaker_invariants.sh" >>"$LOG_FILE" 2>&1; then
+      log "ERROR: Breaker invariants failed."
+      increment_error
+    else
+      log "✅ Breaker invariants succeeded."
+    fi
+  fi
+  
+  # Test: Agent Runtime Constitution (v1.0.0-agent-constitution)
+  if [ -f "$OPS_DEV_TESTS_DIR/test_agent_governance.sh" ]; then
+    log "INFO: Running agent governance tests (test_agent_governance.sh)..."
+    if ! env PATH="$MINIMAL_PATH" HOME="$HOME" USER="${USER:-ci}" \
+        bash "$OPS_DEV_TESTS_DIR/test_agent_governance.sh" >>"$LOG_FILE" 2>&1; then
+      log "ERROR: Agent governance tests failed."
+      increment_error
+    else
+      log "✅ Agent governance tests succeeded (11/11 GREEN)."
+    fi
+  fi
+  
+  # Health: Agent session check
+  TF_CLI="$ROOT_DIR/ops/dev/tf.sh"
+  if [ -f "$TF_CLI" ]; then
+    log "INFO: Running agent session health check (tf agent check)..."
+    if ! bash "$TF_CLI" agent check >>"$LOG_FILE" 2>&1; then
+      log "WARN: Agent session health check found issues (non-blocking)."
+      increment_warning
+    else
+      log "✅ Agent session health check passed."
+    fi
+  fi
+fi
+
+log ""
 log "════════════════════════════════════════════════════════════════"
 log "Gate F Summary: $errors error(s), $warnings warning(s)"
 log "Log written to: $LOG_FILE"

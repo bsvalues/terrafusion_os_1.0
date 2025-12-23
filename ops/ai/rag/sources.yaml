@@ -1,0 +1,49 @@
+# TerraFusion RAG Source Configuration
+# ═══════════════════════════════════════════════════════════════════════════
+# Defines what gets indexed into ChromaDB for local RAG queries.
+# Re-run `tf ai ingest` after modifying this file.
+# ═══════════════════════════════════════════════════════════════════════════
+
+collections:
+  terrafusion_docs:
+    description: "Core TerraFusion documentation and runbooks"
+    paths:
+      - docs
+      - ops/dev
+      - ops/ai
+      - README.md
+      - runbooks
+    include_ext:
+      - ".md"
+      - ".yml"
+      - ".yaml"
+    exclude_globs:
+      - "**/node_modules/**"
+      - "**/.git/**"
+      - "**/dist/**"
+      - "**/build/**"
+      - "**/.next/**"
+      - "**/.pnpm-store/**"
+      - "**/coverage/**"
+      - "**/venv/**"
+      - "**/__pycache__/**"
+    chunk:
+      size: 800
+      overlap: 120
+
+  terrafusion_specs:
+    description: "SpecLock files and architecture decisions"
+    paths:
+      - SPECLOCK
+      - SDK/COUNTY_ISOLATION_GUIDE.md
+      - config
+    include_ext:
+      - ".md"
+      - ".yaml"
+      - ".json"
+    exclude_globs:
+      - "**/node_modules/**"
+      - "**/.git/**"
+    chunk:
+      size: 600
+      overlap: 100

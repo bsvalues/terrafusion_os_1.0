@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════════════════════
+# TerraFusion Pre-Commit Hook
+# Prevents drift and ensures dev standards before commit
+# Engineering Execution Protocol Enforcement
+# ═══════════════════════════════════════════════════════════════════════════
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+TF="$ROOT/ops/dev/tf.sh"
+ACTIVE_SESSION="$ROOT/ops/agents/ACTIVE_SESSION"
+
+echo "🔒 TerraFusion Pre-Commit Gate"
+echo "───────────────────────────────────────────────────────"
+
+# Check 0: Agent Protocol Enforcement (protected scopes)
+PROTECTED_SCOPES="ops/ai/ ops/dev/ backend/ frontend/ SDK/ config/tenant."
+has_protected=false
+changed_scopes=""
+
+for file in $(git diff --cached --name-only 2>/dev/null); do
+    for scope in $PROTECTED_SCOPES; do
+        if echo "$file" | grep -q "^$scope"; then
+            has_protected=true
+            if ! echo "$changed_scopes" | grep -q "$scope"; then
+                changed_scopes="$changed_scopes $scope"
+            fi
+        fi
+    done
+done
+
+if [[ "$has_protected" == "true" ]]; then
+    echo -n "  [0/3] Agent Protocol Enforcement... "
+    if [[ -f "$ACTIVE_SESSION" ]] && [[ -n "$(cat "$ACTIVE_SESSION" 2>/dev/null)" ]]; then
+        session_id=$(cat "$ACTIVE_SESSION")
+        echo "✓ (session: ${session_id:0:20}...)"
+    else
+        echo "⚠️"
+        echo ""
+        echo "  ╔══════════════════════════════════════════════════════════════╗"
+        echo "  ║  ⚠️  PROTOCOL WARNING: Changes to protected scope           ║"
+        echo "  ║     without an active agent session                          ║"
+        echo "  ╚══════════════════════════════════════════════════════════════╝"
+        echo ""
+        echo "  Changed scopes:$changed_scopes"
+        echo ""
+        echo "  TerraFusion requires all feature work to run through the"
+        echo "  Engineering Execution Protocol for auditable quality."
+        echo ""
+        echo "  Start a session:"
+        echo "    tf agent run --project=<project> --feature=\"<description>\""
+        echo ""
+        echo "  Projects: os-shell, api-gateway, ai-lab, consciousness, terrabuild, sdk"
+        echo ""
+        echo "  To bypass (emergency only): git commit --no-verify"
+        echo ""
+        # Warning only - allow commit but make it visible
+        echo "  Proceeding with WARNING recorded..."
+        echo ""
+    fi
+else
+    echo "  [0/3] Protected scopes: ✓ (no changes)"
+fi
+
+# Check 1: Hub drift detection (fast)
+echo -n "  [1/3] Checking hub → tasks.json drift... "
+if python3 "$ROOT/ops/tooling/verify-tasks.py" >/dev/null 2>&1; then
+    echo "✓"
+else
+    echo "⚠️ (drift - run 'tf hub sync')"
+    # Warning only, not blocking
+fi
+
+# Check 2: Fast gate (invariants only, no builds)
+echo -n "  [2/3] Running fast gate check... "
+if "$TF" gate >/dev/null 2>&1; then
+    echo "✓"
+else
+    echo "❌"
+    echo ""
+    echo "  Gate check failed. Run: tf gate"
+    echo ""
+    exit 1
+fi
+
+# Check 3: Secrets scan on staged files
+echo -n "  [3/3] Secrets scan... "
+secrets_found=false
+for pattern in "password=" "api_key=" "secret_key=" "private_key" "-----BEGIN"; do
+    if git diff --cached -U0 2>/dev/null | grep -iE "^\+.*$pattern" >/dev/null 2>&1; then
+        secrets_found=true
+        break
+    fi
+done
+
+if [[ "$secrets_found" == "true" ]]; then
+    echo "❌"
+    echo ""
+    echo "  Potential secrets detected in staged changes!"
+    echo "  Review with: git diff --cached"
+    echo ""
+    exit 1
+else
+    echo "✓"
+fi
+
+echo "───────────────────────────────────────────────────────"
+echo "✓ Pre-commit passed"
+echo ""
