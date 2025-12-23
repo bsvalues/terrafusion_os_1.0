@@ -1,0 +1,59 @@
+{
+  "checks": [
+    {
+      "details": null,
+      "id": 1,
+      "message": "Bundle required enforcement active (v1.1.0)",
+      "name": "bundle_required_enforcement",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 2,
+      "message": "Environment model valid (dev, techsupport, prod)",
+      "name": "environment_model_valid",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 3,
+      "message": "Gate-first enforcement active",
+      "name": "gate_first_enforcement",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 4,
+      "message": "No active session check enforced",
+      "name": "no_active_session",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 5,
+      "message": "RuntimeCert bundle verification integrated",
+      "name": "runtimecert_verify_integration",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 6,
+      "message": "CI JSON mode available with error.code support",
+      "name": "ci_json_purity",
+      "status": "pass"
+    }
+  ],
+  "error": null,
+  "source": "deploy",
+  "status": "pass",
+  "subsystem": "deploy",
+  "summary": {
+    "failed": 0,
+    "passed": 6,
+    "skipped": 0,
+    "total": 6,
+    "warnings": 0
+  },
+  "timestamp": "2025-12-23T17:24:52Z",
+  "version": "1.0.0"
+}

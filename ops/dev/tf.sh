@@ -6705,6 +6705,525 @@ print(','.join(missing) if missing else '')
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
+# Observe Commands (Read-Only Observability Layer v1.0.0)
+# Constitution: ops/observability/OBSERVABILITY_RUNTIME_CONSTITUTION_v1.0.0_SPECLOCK.md
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Observe: Read-only aggregation of sealed CI signals
+# Invariants:
+#   1.1 Read-only by construction (no mutations)
+#   1.2 Composition only (sealed command whitelist)
+#   1.3 CI JSON only (no ANSI, deterministic)
+#   1.4 No new flags (--ci, --bundle, --help only)
+#   1.5 Time-bounded (30s timeout)
+#   1.6 No secrets in output
+
+cmd_observe() {
+    local subcmd="${1:-}"
+    shift || true
+    
+    case "$subcmd" in
+        health)  cmd_observe_health "$@" ;;
+        proofs)  cmd_observe_proofs "$@" ;;
+        bundle)  cmd_observe_bundle "$@" ;;
+        chain)   cmd_observe_chain "$@" ;;
+        summary) cmd_observe_summary "$@" ;;
+        --help)  cmd_observe_help; return 0 ;;
+        "")      cmd_observe_help; return 2 ;;
+        *)       
+            echo "Error: Unknown observe subcommand: $subcmd" >&2
+            cmd_observe_help >&2
+            return 2
+            ;;
+    esac
+}
+
+cmd_observe_help() {
+    cat << 'EOF'
+Usage: tf observe <subcommand> [options]
+
+Read-only observability layer for TerraFusion Runtime.
+Composes existing sealed CI signals into aggregated views.
+
+Subcommands:
+  health    System health snapshot (gate + doctor)
+  proofs    Subsystem proof aggregation
+  bundle    Bundle compliance summary
+  chain     Receipt chain visualization
+  summary   Executive dashboard (all signals)
+
+Options:
+  --ci      JSON output (no ANSI, deterministic)
+  --bundle  Path to RuntimeCert bundle (for bundle/chain)
+  --help    Show this help
+
+Examples:
+  tf observe health --ci
+  tf observe proofs --ci
+  tf observe bundle --bundle ./bundle --ci
+  tf observe summary --ci
+
+Constitution: v1.0.0 (Read-only by construction)
+EOF
+}
+
+# Helper: Validate bundle path (security: block traversal)
+_observe_validate_bundle_path() {
+    local path="$1"
+    
+    # Block empty path
+    if [[ -z "$path" ]]; then
+        echo '{"error":{"code":"OBS_BUNDLE_MISSING","message":"Bundle path required"}}' 
+        return 1
+    fi
+    
+    # Block path traversal patterns
+    if [[ "$path" == *".."* ]]; then
+        echo '{"error":{"code":"OBS_PATH_TRAVERSAL","message":"Path traversal blocked"}}' 
+        return 1
+    fi
+    
+    # Block URL-encoded traversal
+    if [[ "$path" == *"%2e"* ]] || [[ "$path" == *"%2f"* ]]; then
+        echo '{"error":{"code":"OBS_PATH_TRAVERSAL","message":"Encoded path traversal blocked"}}' 
+        return 1
+    fi
+    
+    # Block encoded null bytes
+    if [[ "$path" == *"%00"* ]]; then
+        echo '{"error":{"code":"OBS_NULL_BYTE","message":"Null byte injection blocked"}}' 
+        return 1
+    fi
+    
+    # Block absolute paths outside workspace (allow relative or within ROOT)
+    if [[ "$path" == /* ]] && [[ "$path" != "$ROOT"* ]]; then
+        echo '{"error":{"code":"OBS_PATH_ESCAPE","message":"Path must be within workspace"}}' 
+        return 1
+    fi
+    
+    # Block home directory escapes
+    if [[ "$path" == "~"* ]] || [[ "$path" == "$HOME"* ]]; then
+        echo '{"error":{"code":"OBS_PATH_ESCAPE","message":"Home directory access blocked"}}' 
+        return 1
+    fi
+    
+    # Check path exists
+    if [[ ! -d "$path" ]]; then
+        echo '{"error":{"code":"OBS_BUNDLE_NOT_FOUND","message":"Bundle path does not exist"}}' 
+        return 1
+    fi
+    
+    # Check manifest.json exists
+    if [[ ! -f "$path/manifest.json" ]]; then
+        echo '{"error":{"code":"OBS_BUNDLE_INVALID","message":"Bundle missing manifest.json"}}' 
+        return 1
+    fi
+    
+    return 0
+}
+
+# Helper: Strip ANSI codes from output
+_observe_strip_ansi() {
+    sed 's/\x1b\[[0-9;]*m//g' | tr -d '\r'
+}
+
+# Helper: Emit JSON timestamp
+_observe_timestamp() {
+    date -u +%Y-%m-%dT%H:%M:%SZ
+}
+
+cmd_observe_health() {
+    local ci_mode=false
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --ci) ci_mode=true ;;
+            --help) cmd_observe_help; return 0 ;;
+            *) 
+                echo '{"error":{"code":"OBS_INVALID_FLAG","message":"Unknown flag: '"$1"'"}}' >&2
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    local timestamp
+    timestamp=$(_observe_timestamp)
+    
+    # Compose: tf gate --ci
+    local gate_json gate_status="unknown" gate_passed=0 gate_total=0
+    if gate_json=$(timeout 15 "$0" gate --ci 2>/dev/null); then
+        gate_status=$(echo "$gate_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
+        gate_passed=$(echo "$gate_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('summary',{}).get('passed',0))" 2>/dev/null || echo "0")
+        gate_total=$(echo "$gate_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('summary',{}).get('total',0))" 2>/dev/null || echo "0")
+    fi
+    
+    # Compose: tf doctor --json
+    local doctor_json docker_status="unknown" k8s_available="false" ai_running="false" mode="unknown"
+    if doctor_json=$(timeout 15 "$0" doctor --json 2>/dev/null); then
+        mode=$(echo "$doctor_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('mode','unknown'))" 2>/dev/null || echo "unknown")
+        docker_status=$(echo "$doctor_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print('healthy' if d.get('docker',{}) else 'unhealthy')" 2>/dev/null || echo "unknown")
+        k8s_available=$(echo "$doctor_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(str(d.get('kubernetes',{}).get('available',False)).lower())" 2>/dev/null || echo "false")
+        ai_running=$(echo "$doctor_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(str(d.get('ai_lab',{}).get('running',False)).lower())" 2>/dev/null || echo "false")
+    fi
+    
+    # Determine overall status
+    local overall_status="pass"
+    if [[ "$gate_status" != "pass" ]]; then
+        overall_status="fail"
+    fi
+    
+    if $ci_mode; then
+        cat << EOF
+{"version":"1.0.0","timestamp":"$timestamp","command":"observe health","status":"$overall_status","components":{"gate":{"status":"$gate_status","checks":{"total":$gate_total,"passed":$gate_passed}},"doctor":{"mode":"$mode","docker":{"status":"$docker_status"},"kubernetes":{"available":$k8s_available},"ai_lab":{"running":$ai_running}}}}
+EOF
+    else
+        echo "=== TerraFusion Health Check ==="
+        echo ""
+        echo "Gate: $gate_status ($gate_passed/$gate_total checks)"
+        echo "Mode: $mode"
+        echo "Docker: $docker_status"
+        echo "Kubernetes: $k8s_available"
+        echo "AI Lab: $ai_running"
+        echo ""
+        echo "Overall: $overall_status"
+    fi
+    
+    [[ "$overall_status" == "pass" ]] && return 0 || return 1
+}
+
+cmd_observe_proofs() {
+    local ci_mode=false
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --ci) ci_mode=true ;;
+            --help) cmd_observe_help; return 0 ;;
+            *) 
+                echo '{"error":{"code":"OBS_INVALID_FLAG","message":"Unknown flag: '"$1"'"}}' >&2
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    local timestamp
+    timestamp=$(_observe_timestamp)
+    
+    # Compose: tf agent proof --ci
+    local agent_json agent_status="unknown" agent_passed=0 agent_total=0
+    if agent_json=$(timeout 10 "$0" agent proof --ci 2>/dev/null); then
+        agent_status=$(echo "$agent_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
+        agent_passed=$(echo "$agent_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('summary',{}).get('passed',0))" 2>/dev/null || echo "0")
+        agent_total=$(echo "$agent_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('summary',{}).get('total',0))" 2>/dev/null || echo "0")
+    fi
+    
+    # Compose: tf deploy proof --ci
+    local deploy_json deploy_status="unknown" deploy_passed=0 deploy_total=0
+    if deploy_json=$(timeout 10 "$0" deploy proof --ci 2>/dev/null); then
+        deploy_status=$(echo "$deploy_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
+        deploy_passed=$(echo "$deploy_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('summary',{}).get('passed',0))" 2>/dev/null || echo "0")
+        deploy_total=$(echo "$deploy_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('summary',{}).get('total',0))" 2>/dev/null || echo "0")
+    fi
+    
+    # Compose: tf marketplace proof --ci
+    local marketplace_json marketplace_status="unknown" marketplace_passed=0 marketplace_total=0
+    if marketplace_json=$(timeout 10 "$0" marketplace proof --ci 2>/dev/null); then
+        marketplace_status=$(echo "$marketplace_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
+        marketplace_passed=$(echo "$marketplace_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('summary',{}).get('passed',0))" 2>/dev/null || echo "0")
+        marketplace_total=$(echo "$marketplace_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('summary',{}).get('total',0))" 2>/dev/null || echo "0")
+    fi
+    
+    # Calculate totals
+    local total_checks=$((agent_total + deploy_total + marketplace_total))
+    local total_passed=$((agent_passed + deploy_passed + marketplace_passed))
+    local total_failed=$((total_checks - total_passed))
+    
+    # Determine overall status
+    local overall_status="pass"
+    if [[ "$agent_status" == "fail" ]] || [[ "$deploy_status" == "fail" ]] || [[ "$marketplace_status" == "fail" ]]; then
+        overall_status="fail"
+    elif [[ "$agent_status" == "warn" ]] || [[ "$deploy_status" == "warn" ]] || [[ "$marketplace_status" == "warn" ]]; then
+        overall_status="warn"
+    fi
+    
+    if $ci_mode; then
+        cat << EOF
+{"version":"1.0.0","timestamp":"$timestamp","command":"observe proofs","status":"$overall_status","proofs":{"agent":{"status":"$agent_status","checks":$agent_total,"passed":$agent_passed},"deploy":{"status":"$deploy_status","checks":$deploy_total,"passed":$deploy_passed},"marketplace":{"status":"$marketplace_status","checks":$marketplace_total,"passed":$marketplace_passed}},"summary":{"total_checks":$total_checks,"total_passed":$total_passed,"total_failed":$total_failed,"total_warnings":0}}
+EOF
+    else
+        echo "=== TerraFusion Proof Summary ==="
+        echo ""
+        echo "Agent:       $agent_status ($agent_passed/$agent_total)"
+        echo "Deploy:      $deploy_status ($deploy_passed/$deploy_total)"
+        echo "Marketplace: $marketplace_status ($marketplace_passed/$marketplace_total)"
+        echo ""
+        echo "Total: $total_passed/$total_checks passed"
+        echo "Overall: $overall_status"
+    fi
+    
+    [[ "$overall_status" == "pass" ]] && return 0 || return 1
+}
+
+cmd_observe_bundle() {
+    local ci_mode=false bundle_path=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --ci) ci_mode=true ;;
+            --bundle=*) bundle_path="${1#*=}" ;;
+            --bundle) bundle_path="$2"; shift ;;
+            --help) cmd_observe_help; return 0 ;;
+            *) 
+                echo '{"error":{"code":"OBS_INVALID_FLAG","message":"Unknown flag: '"$1"'"}}' >&2
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    # Validate bundle path (security check)
+    local validation_result
+    if ! validation_result=$(_observe_validate_bundle_path "$bundle_path"); then
+        if $ci_mode; then
+            echo "$validation_result"
+        else
+            echo "Error: $(echo "$validation_result" | python3 -c "import sys,json; print(json.load(sys.stdin).get('error',{}).get('message','Invalid bundle'))" 2>/dev/null || echo "Invalid bundle path")"
+        fi
+        return 1
+    fi
+    
+    local timestamp
+    timestamp=$(_observe_timestamp)
+    
+    # Compose: tf release status --bundle <path> --ci
+    local status_json integrity_status="unknown"
+    if status_json=$(timeout 10 "$0" release status --bundle "$bundle_path" --ci 2>/dev/null); then
+        integrity_status=$(echo "$status_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('integrity',{}).get('status','unknown'))" 2>/dev/null || echo "unknown")
+    fi
+    
+    # Compose: tf release audit --bundle <path> --ci
+    local audit_json audit_pass=0 audit_fail=0 audit_warn=0 audit_status="unknown"
+    if audit_json=$(timeout 10 "$0" release audit --bundle "$bundle_path" --ci 2>/dev/null); then
+        audit_status=$(echo "$audit_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
+        audit_pass=$(echo "$audit_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('overall',{}).get('pass_count',0))" 2>/dev/null || echo "0")
+        audit_fail=$(echo "$audit_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('overall',{}).get('fail_count',0))" 2>/dev/null || echo "0")
+        audit_warn=$(echo "$audit_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('overall',{}).get('warn_count',0))" 2>/dev/null || echo "0")
+    fi
+    
+    # Compose: tf deploy policy --bundle <path> --ci
+    local policy_json policy_status="unknown"
+    if policy_json=$(timeout 10 "$0" deploy policy --bundle "$bundle_path" --ci 2>/dev/null); then
+        policy_status=$(echo "$policy_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
+    fi
+    
+    # Determine overall status
+    local overall_status="pass"
+    if [[ "$integrity_status" != "pass" ]] || [[ "$audit_status" == "fail" ]] || [[ "$policy_status" == "fail" ]]; then
+        overall_status="fail"
+    elif [[ "$audit_status" == "warn" ]] || [[ "$policy_status" == "warn" ]]; then
+        overall_status="warn"
+    fi
+    
+    if $ci_mode; then
+        cat << EOF
+{"version":"1.0.0","timestamp":"$timestamp","command":"observe bundle","bundle":"$bundle_path","status":"$overall_status","sections":{"integrity":{"status":"$integrity_status"},"audit":{"status":"$audit_status","pass":$audit_pass,"fail":$audit_fail,"warn":$audit_warn},"policy":{"status":"$policy_status"}}}
+EOF
+    else
+        echo "=== Bundle Compliance: $bundle_path ==="
+        echo ""
+        echo "Integrity: $integrity_status"
+        echo "Audit:     $audit_status (pass:$audit_pass fail:$audit_fail warn:$audit_warn)"
+        echo "Policy:    $policy_status"
+        echo ""
+        echo "Overall: $overall_status"
+    fi
+    
+    [[ "$overall_status" == "pass" ]] && return 0 || return 1
+}
+
+cmd_observe_chain() {
+    local ci_mode=false bundle_path=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --ci) ci_mode=true ;;
+            --bundle=*) bundle_path="${1#*=}" ;;
+            --bundle) bundle_path="$2"; shift ;;
+            --help) cmd_observe_help; return 0 ;;
+            *) 
+                echo '{"error":{"code":"OBS_INVALID_FLAG","message":"Unknown flag: '"$1"'"}}' >&2
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    # Validate bundle path (security check)
+    local validation_result
+    if ! validation_result=$(_observe_validate_bundle_path "$bundle_path"); then
+        if $ci_mode; then
+            echo "$validation_result"
+        else
+            echo "Error: $(echo "$validation_result" | python3 -c "import sys,json; print(json.load(sys.stdin).get('error',{}).get('message','Invalid bundle'))" 2>/dev/null || echo "Invalid bundle path")"
+        fi
+        return 1
+    fi
+    
+    local timestamp
+    timestamp=$(_observe_timestamp)
+    
+    # Compose: tf deploy history --bundle <path> --ci
+    local history_json chain_json="[]" chain_total=0 chain_status="unknown"
+    if history_json=$(timeout 10 "$0" deploy history --bundle "$bundle_path" --ci 2>/dev/null); then
+        chain_status=$(echo "$history_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','unknown'))" 2>/dev/null || echo "unknown")
+        chain_total=$(echo "$history_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('total',0))" 2>/dev/null || echo "0")
+        chain_json=$(echo "$history_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(json.dumps(d.get('chain',[])))" 2>/dev/null || echo "[]")
+    fi
+    
+    # Check if chain is complete (has prod deployment)
+    local chain_complete="false"
+    if echo "$chain_json" | python3 -c "import sys,json; c=json.load(sys.stdin); exit(0 if any(e.get('environment')=='prod' for e in c) else 1)" 2>/dev/null; then
+        chain_complete="true"
+    fi
+    
+    # Determine overall status
+    local overall_status="$chain_status"
+    
+    if $ci_mode; then
+        cat << EOF
+{"version":"1.0.0","timestamp":"$timestamp","command":"observe chain","bundle":"$bundle_path","status":"$overall_status","chain":$chain_json,"total":$chain_total,"complete":$chain_complete}
+EOF
+    else
+        echo "=== Receipt Chain: $bundle_path ==="
+        echo ""
+        echo "Status: $chain_status"
+        echo "Deployments: $chain_total"
+        echo "Complete: $chain_complete"
+        echo ""
+        if [[ "$chain_total" -gt 0 ]]; then
+            echo "Chain:"
+            echo "$chain_json" | python3 -c "
+import sys, json
+chain = json.load(sys.stdin)
+for i, entry in enumerate(chain, 1):
+    print(f\"  {i}. [{entry.get('type','?')}] {entry.get('environment','?')} @ {entry.get('timestamp','?')[:19]} -> {entry.get('status','?')}\")
+" 2>/dev/null || echo "  (error parsing chain)"
+        fi
+    fi
+    
+    [[ "$overall_status" == "pass" ]] && return 0 || return 1
+}
+
+cmd_observe_summary() {
+    local ci_mode=false bundle_path=""
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --ci) ci_mode=true ;;
+            --bundle=*) bundle_path="${1#*=}" ;;
+            --bundle) bundle_path="$2"; shift ;;
+            --help) cmd_observe_help; return 0 ;;
+            *) 
+                echo '{"error":{"code":"OBS_INVALID_FLAG","message":"Unknown flag: '"$1"'"}}' >&2
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    local timestamp
+    timestamp=$(_observe_timestamp)
+    
+    # Compose: observe health
+    local health_json health_gate="unknown" health_doctor="unknown"
+    if health_json=$(timeout 20 "$0" observe health --ci 2>/dev/null); then
+        health_gate=$(echo "$health_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('components',{}).get('gate',{}).get('status','unknown'))" 2>/dev/null || echo "unknown")
+        health_doctor=$(echo "$health_json" | python3 -c "import sys,json; d=json.load(sys.stdin); c=d.get('components',{}).get('doctor',{}); print('healthy' if c.get('docker',{}).get('status')=='healthy' else 'unhealthy')" 2>/dev/null || echo "unknown")
+    fi
+    
+    # Compose: observe proofs
+    local proofs_json proof_agent="unknown" proof_deploy="unknown" proof_marketplace="unknown"
+    if proofs_json=$(timeout 20 "$0" observe proofs --ci 2>/dev/null); then
+        proof_agent=$(echo "$proofs_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('proofs',{}).get('agent',{}).get('status','unknown'))" 2>/dev/null || echo "unknown")
+        proof_deploy=$(echo "$proofs_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('proofs',{}).get('deploy',{}).get('status','unknown'))" 2>/dev/null || echo "unknown")
+        proof_marketplace=$(echo "$proofs_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('proofs',{}).get('marketplace',{}).get('status','unknown'))" 2>/dev/null || echo "unknown")
+    fi
+    
+    # Bundle info (optional)
+    local bundle_available="false" bundle_integrity="n/a" bundle_policy="n/a"
+    if [[ -n "$bundle_path" ]]; then
+        local validation_result
+        if validation_result=$(_observe_validate_bundle_path "$bundle_path" 2>/dev/null); then
+            bundle_available="true"
+            local bundle_json
+            if bundle_json=$(timeout 15 "$0" observe bundle --bundle "$bundle_path" --ci 2>/dev/null); then
+                bundle_integrity=$(echo "$bundle_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('sections',{}).get('integrity',{}).get('status','n/a'))" 2>/dev/null || echo "n/a")
+                bundle_policy=$(echo "$bundle_json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('sections',{}).get('policy',{}).get('status','n/a'))" 2>/dev/null || echo "n/a")
+            fi
+        fi
+    fi
+    
+    # Calculate score (0.0-1.0)
+    local score_count=0 score_pass=0
+    for status in "$health_gate" "$proof_agent" "$proof_deploy" "$proof_marketplace"; do
+        score_count=$((score_count + 1))
+        [[ "$status" == "pass" ]] && score_pass=$((score_pass + 1))
+    done
+    local score
+    score=$(echo "scale=2; $score_pass / $score_count" | bc 2>/dev/null || echo "0.00")
+    
+    # Calculate grade
+    local grade="F"
+    if (( $(echo "$score >= 0.90" | bc -l 2>/dev/null || echo 0) )); then grade="A"
+    elif (( $(echo "$score >= 0.80" | bc -l 2>/dev/null || echo 0) )); then grade="B"
+    elif (( $(echo "$score >= 0.70" | bc -l 2>/dev/null || echo 0) )); then grade="C"
+    elif (( $(echo "$score >= 0.60" | bc -l 2>/dev/null || echo 0) )); then grade="D"
+    fi
+    
+    # Determine overall status
+    local overall_status="pass"
+    if [[ "$health_gate" == "fail" ]] || [[ "$proof_agent" == "fail" ]] || [[ "$proof_deploy" == "fail" ]] || [[ "$proof_marketplace" == "fail" ]]; then
+        overall_status="fail"
+    elif [[ "$health_gate" == "warn" ]] || [[ "$proof_agent" == "warn" ]] || [[ "$proof_deploy" == "warn" ]] || [[ "$proof_marketplace" == "warn" ]]; then
+        overall_status="warn"
+    fi
+    
+    if $ci_mode; then
+        cat << EOF
+{"version":"1.0.0","timestamp":"$timestamp","command":"observe summary","status":"$overall_status","health":{"gate":"$health_gate","doctor":"$health_doctor"},"proofs":{"agent":"$proof_agent","deploy":"$proof_deploy","marketplace":"$proof_marketplace"},"bundle":{"available":$bundle_available,"integrity":"$bundle_integrity","policy":"$bundle_policy"},"overall":{"score":"$score","grade":"$grade"}}
+EOF
+    else
+        echo "=== TerraFusion Executive Summary ==="
+        echo ""
+        echo "Health:"
+        echo "  Gate:   $health_gate"
+        echo "  Doctor: $health_doctor"
+        echo ""
+        echo "Proofs:"
+        echo "  Agent:       $proof_agent"
+        echo "  Deploy:      $proof_deploy"
+        echo "  Marketplace: $proof_marketplace"
+        echo ""
+        if [[ "$bundle_available" == "true" ]]; then
+            echo "Bundle: $bundle_path"
+            echo "  Integrity: $bundle_integrity"
+            echo "  Policy:    $bundle_policy"
+            echo ""
+        fi
+        echo "Score: $score ($grade)"
+        echo "Overall: $overall_status"
+    fi
+    
+    # Exit based on grade (A/B = 0, C/D/F = 1)
+    if [[ "$grade" == "A" ]] || [[ "$grade" == "B" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
 # Main
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -6727,5 +7246,6 @@ case "$cmd" in
     deploy)   cmd_deploy "$@" ;;
     marketplace) cmd_marketplace "$@" ;;
     release)  cmd_release "$@" ;;
+    observe)  cmd_observe "$@" ;;
     help|*)   show_help ;;
 esac

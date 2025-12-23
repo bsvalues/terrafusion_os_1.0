@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "id": "20251222_204213Z_os-shell_deploy-promote-exec-v120",
+  "status": "complete",
+  "createdUtc": "2025-12-22T20:42:13Z",
+  "updatedUtc": "2025-12-22T20:44:29Z",
+  "project": "os-shell",
+  "feature": "deploy-promote-exec-v1_2_0",
+  "featureSlug": "deploy-promote-exec-v120",
+  "mode": "feature",
+  "risk": "med",
+  "diffOnly": true,
+  "specLock": "strict",
+  "tests": "all",
+  "scope": [
+    "config/tenant."
+  ],
+  "agents": {
+    "builder": "Agent A",
+    "breaker": "Agent B"
+  },
+  "git": {
+    "baseBranch": "main",
+    "workBranch": "feat/os-shell/deploy-promote-exec-v120"
+  },
+  "artifacts": {
+    "contract": "CONTRACT.md",
+    "speclock": "SPECLOCK.md",
+    "testplan": "TESTPLAN.md",
+    "attackplan": "ATTACKPLAN.md",
+    "patchlog": "PATCHLOG.md",
+    "attackReport": "ATTACK_REPORT.md",
+    "prReview": "PR_REVIEW.md",
+    "notes": "NOTES.md"
+  }
+}

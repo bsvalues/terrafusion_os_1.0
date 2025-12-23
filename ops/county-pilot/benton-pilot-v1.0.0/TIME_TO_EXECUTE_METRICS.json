@@ -1,0 +1,72 @@
+{
+  "pilot_id": "PILOT-BENTON-2025-12-23",
+  "county": "Benton County, WA",
+  "mode": "evidence-only",
+  "execution_date": "2025-12-23",
+  "protocol_version": "1.0.0",
+  "commands_executed": 7,
+  "total_duration_seconds": 420,
+  "timings": {
+    "agent_status": {
+      "command": "tf agent status",
+      "start_utc": "2025-12-23T17:23:15Z",
+      "end_utc": "2025-12-23T17:23:16Z",
+      "duration_seconds": 1,
+      "exit_code": 0
+    },
+    "gate_check": {
+      "command": "tf gate --ci",
+      "start_utc": "2025-12-23T17:23:52Z",
+      "end_utc": "2025-12-23T17:23:53Z",
+      "duration_seconds": 1,
+      "exit_code": 0
+    },
+    "release_prepare": {
+      "command": "tf release prepare --out ./bundle --mode dev --force --ci",
+      "start_utc": "2025-12-23T17:24:47Z",
+      "end_utc": "2025-12-23T17:24:52Z",
+      "duration_seconds": 5,
+      "exit_code": 0
+    },
+    "release_deploy_dryrun": {
+      "command": "tf release deploy --bundle ./bundle --env dev --namespace terrafusion-staging --dry-run --ci",
+      "start_utc": "2025-12-23T17:26:35Z",
+      "end_utc": "2025-12-23T17:26:40Z",
+      "duration_seconds": 5,
+      "exit_code": 0
+    },
+    "release_status": {
+      "command": "tf release status --bundle ./bundle --ci",
+      "start_utc": "2025-12-23T17:27:30Z",
+      "end_utc": "2025-12-23T17:27:31Z",
+      "duration_seconds": 1,
+      "exit_code": 0
+    },
+    "release_promote_dryrun": {
+      "command": "tf release promote --bundle ./bundle --to techsupport --namespace terrafusion-staging --dry-run --ci",
+      "start_utc": "2025-12-23T17:28:24Z",
+      "end_utc": "2025-12-23T17:28:29Z",
+      "duration_seconds": 5,
+      "exit_code": 0
+    },
+    "release_audit": {
+      "command": "tf release audit --bundle ./bundle --ci",
+      "start_utc": "2025-12-23T17:28:53Z",
+      "end_utc": "2025-12-23T17:28:55Z",
+      "duration_seconds": 2,
+      "exit_code": 0
+    }
+  },
+  "summary": {
+    "fastest_command_seconds": 1,
+    "slowest_command_seconds": 5,
+    "average_command_seconds": 2.86,
+    "all_commands_succeeded": true,
+    "total_exit_code_sum": 0
+  },
+  "sla_compliance": {
+    "target_response_p95_ms": 150,
+    "measured_avg_ms": 2860,
+    "note": "CLI commands; SLA applies to API endpoints not CLI orchestration"
+  }
+}

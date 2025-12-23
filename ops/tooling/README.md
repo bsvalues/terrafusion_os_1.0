@@ -1,7 +1,7 @@
 # TerraFusion Tool Hub
 
 > Auto-generated from `registry.yml` — do not edit manually.
-> Last updated: 2025-12-22 12:47
+> Last updated: 2025-12-23 10:17
 
 ## Quick Start
 
