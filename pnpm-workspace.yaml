@@ -8,8 +8,8 @@ packages:
   - 'frontend'
   - 'frontend/electron'
 
-  # Terrafusion shared libraries
-  - 'terrafusion-shared'
+  # Terrafusion shared libraries (moved to external repo)
+  # - 'terrafusion-shared'
 
   # Applications (optional, may not all have package.json)
   # - "applications/*"
