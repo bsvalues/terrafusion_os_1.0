@@ -233,7 +233,7 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
 
-      - name: � Setup .NET
+      - name: 🔧 Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
@@ -292,6 +292,40 @@ jobs:
           echo ""
           echo "✅ TerraFusion OS build complete!"
 
+      - name: Package backend artifact
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          if [ ! -d backend/bin/Release ]; then
+            echo "Backend build output missing at backend/bin/Release"
+            exit 1
+          fi
+          tar -czf artifacts/backend-release.tar.gz -C backend/bin/Release .
+
+      - name: Package frontend artifact
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          if [ ! -d frontend/dist ]; then
+            echo "Frontend build output missing at frontend/dist"
+            exit 1
+          fi
+          tar -czf artifacts/frontend-dist.tar.gz -C frontend/dist .
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-release
+          path: artifacts/backend-release.tar.gz
+          if-no-files-found: error
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: artifacts/frontend-dist.tar.gz
+          if-no-files-found: error
+
       - name: 🏛️ Government Quality Certification
         run: |
           echo "🏛️ TerraFusion OS v1.0 - Government. Transcended."
@@ -315,11 +349,56 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
 
-      - name: 🚀 Deploy to Production
+      - name: Download backend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-release
+          path: artifacts
+
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: artifacts
+
+      - name: Verify artifacts
         run: |
-          echo "🚀 TerraFusion OS deployment initiated..."
-          echo "🏛️ Government-grade deployment pipeline"
-          echo "✅ Zero-downtime deployment strategy"
-          echo "✅ AI agent coordination maintained"
-          echo "✅ County data sovereignty preserved"
-          echo "🏆 Government. Transcended."
+          set -euo pipefail
+          ls -lh artifacts
+          sha256sum artifacts/backend-release.tar.gz artifacts/frontend-dist.tar.gz
+          mkdir -p release/backend release/frontend
+          tar -xzf artifacts/backend-release.tar.gz -C release/backend
+          tar -xzf artifacts/frontend-dist.tar.gz -C release/frontend
+          test -n "$(find release/backend -type f | head -n 1)" || (echo "Backend artifact is empty" && exit 1)
+          test -n "$(find release/frontend -type f | head -n 1)" || (echo "Frontend artifact is empty" && exit 1)
+
+      - name: 🚀 Deploy to Production
+        env:
+          DEPLOY_COMMAND: ${{ secrets.PROD_DEPLOY_COMMAND }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DEPLOY_COMMAND:-}" ]; then
+            echo "Set PROD_DEPLOY_COMMAND secret (ssh/ansible/k8s deploy) to enable production deployment."
+            exit 1
+          fi
+          bash -c "$DEPLOY_COMMAND"
+
+      - name: ✅ Post-deploy health check
+        env:
+          HEALTHCHECK_URL: ${{ secrets.PROD_HEALTHCHECK_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${HEALTHCHECK_URL:-}" ]; then
+            echo "Set PROD_HEALTHCHECK_URL secret for post-deploy verification."
+            exit 1
+          fi
+          for i in {1..5}; do
+            if curl -fsS "$HEALTHCHECK_URL"; then
+              echo "Production healthcheck passed"
+              exit 0
+            fi
+            echo "Healthcheck attempt $i failed; retrying..."
+            sleep 10
+          done
+          echo "Healthcheck failed after retries."
+          exit 1
