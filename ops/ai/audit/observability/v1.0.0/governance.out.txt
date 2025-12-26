@@ -1,0 +1,75 @@
+
+==============================================
+ Observability Governance Tests
+ Constitution: v1.0.0
+ Phase: RED (tests expected to fail)
+==============================================
+
+--- Section 1: Command Existence ---
+[TEST] tf observe command exists
+[PASS] tf observe is available
+[TEST] tf observe health command exists
+[PASS] tf observe health is available
+[TEST] tf observe proofs command exists
+[PASS] tf observe proofs is available
+[TEST] tf observe bundle command exists
+[PASS] tf observe bundle is available
+[TEST] tf observe chain command exists
+[PASS] tf observe chain is available
+[TEST] tf observe summary command exists
+[PASS] tf observe summary is available
+
+--- Section 2: JSON Output ---
+[TEST] tf observe health --ci emits valid JSON
+[PASS] Output is valid JSON
+[TEST] tf observe proofs --ci emits valid JSON
+[PASS] Output is valid JSON
+[TEST] tf observe summary --ci emits valid JSON
+[PASS] Output is valid JSON
+
+--- Section 3: ANSI-Free Output ---
+[TEST] tf observe health --ci has no ANSI codes
+[PASS] Output is ANSI-free
+[TEST] tf observe summary --ci has no ANSI codes
+[PASS] Output is ANSI-free
+
+--- Section 4: Schema Compliance ---
+[TEST] tf observe health --ci has version field
+[PASS] version field present
+[TEST] tf observe health --ci has timestamp field
+[PASS] timestamp field present
+[TEST] tf observe health --ci has status field
+[PASS] status field present
+[TEST] tf observe health --ci has components field
+[PASS] components field present
+
+--- Section 5: Exit Codes ---
+[TEST] tf observe health exits 0 on healthy system
+[PASS] Exit code 0 on success
+[TEST] tf observe invalid exits 2 (invalid invocation)
+[PASS] Exit code 2 on invalid subcommand
+
+--- Section 6: Security (Read-Only) ---
+[TEST] tf observe health does not create files
+[PASS] No files created
+[TEST] tf observe commands are read-only (no mutations)
+[PASS] No state file modifications detected
+
+--- Section 7: Bundle Path Validation ---
+[TEST] tf observe bundle rejects non-existent path
+[PASS] Rejected non-existent path (exit 1)
+[TEST] tf observe bundle rejects path traversal
+[PASS] Rejected path traversal attempt
+
+--- Section 8: No Secrets ---
+[TEST] tf observe summary --ci contains no secrets
+[PASS] No secrets detected in output
+
+==============================================
+ RESULTS
+==============================================
+ PASSED: 22
+ FAILED: 0
+ SKIPPED: 0
+
+ STATUS: ALL TESTS PASSING
