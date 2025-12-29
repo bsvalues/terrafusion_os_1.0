@@ -15,6 +15,9 @@ export type { StartMenuProps } from './StartMenu';
 export { Window } from './Window';
 export type { WindowProps } from './Window';
 
+export { WindowManager } from './WindowManager';
+export type { WindowManagerProps } from './WindowManager';
+
 // Future exports:
 // export { Desktop } from './Desktop';
 // export { DesktopIcon } from './DesktopIcon';
