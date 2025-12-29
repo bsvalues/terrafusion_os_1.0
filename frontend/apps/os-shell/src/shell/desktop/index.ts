@@ -24,5 +24,7 @@ export type { DesktopProps } from './Desktop';
 export { DesktopBackground } from './DesktopBackground';
 export type { DesktopBackgroundProps } from './DesktopBackground';
 
+export { ModuleLoader } from './ModuleLoader';
+
 // Future exports:
 // export { DesktopIcon } from './DesktopIcon';
