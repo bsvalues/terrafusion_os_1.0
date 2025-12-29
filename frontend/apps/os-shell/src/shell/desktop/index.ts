@@ -1,8 +1,8 @@
 /**
  * TerraFusion OS Desktop Shell Components
- * 
+ *
  * Government-Grade Desktop Interface
- * 
+ *
  * @module shell/desktop
  */
 
@@ -12,7 +12,9 @@ export type { TaskbarProps } from './Taskbar';
 export { StartMenu } from './StartMenu';
 export type { StartMenuProps } from './StartMenu';
 
+export { Window } from './Window';
+export type { WindowProps } from './Window';
+
 // Future exports:
-// export { Window } from './Window';
 // export { Desktop } from './Desktop';
 // export { DesktopIcon } from './DesktopIcon';

@@ -1,17 +1,17 @@
 /**
  * TerraFusion OS Start Menu Component
- * 
+ *
  * Government-Grade App Launcher
  * Overlay with search, pinned apps, and all apps list.
- * 
+ *
  * @module shell/desktop/StartMenu
  * @see SUCCESS CRITERIA SC-3
  */
 
-import React, { useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
-import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useDesktopStore } from '../../stores/desktopStore';
+import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
 
 // ============================================================================
 // Subcomponents
@@ -30,32 +30,32 @@ const SearchInput: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative">
+    <div className='relative'>
       <div
-        data-testid="search-icon"
-        className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
+        data-testid='search-icon'
+        className='absolute left-3 top-1/2 -translate-y-1/2 text-white/50'
       >
         <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
+          className='w-5 h-5'
+          fill='none'
+          stroke='currentColor'
+          viewBox='0 0 24 24'
+          aria-hidden='true'
         >
           <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            strokeLinecap='round'
+            strokeLinejoin='round'
             strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
           />
         </svg>
       </div>
       <input
         ref={inputRef}
-        type="search"
-        role="searchbox"
-        aria-label="Search apps"
-        placeholder="Type to search..."
+        type='search'
+        role='searchbox'
+        aria-label='Search apps'
+        placeholder='Type to search...'
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className={cn(
@@ -92,12 +92,10 @@ const AppTile: React.FC<AppTileProps> = ({ module, onLaunch }) => {
         'active:scale-95'
       )}
     >
-      <span className="text-3xl" role="img" aria-hidden="true">
+      <span className='text-3xl' role='img' aria-hidden='true'>
         {module.icon}
       </span>
-      <span className="text-xs text-white/90 text-center line-clamp-2">
-        {module.name}
-      </span>
+      <span className='text-xs text-white/90 text-center line-clamp-2'>{module.name}</span>
     </button>
   );
 };
@@ -119,14 +117,12 @@ const AppListItem: React.FC<AppTileProps> = ({ module, onLaunch }) => {
         'active:scale-[0.98]'
       )}
     >
-      <span className="text-xl flex-shrink-0" role="img" aria-hidden="true">
+      <span className='text-xl flex-shrink-0' role='img' aria-hidden='true'>
         {module.icon}
       </span>
-      <div className="flex flex-col items-start min-w-0">
-        <span className="text-sm text-white/90 truncate w-full text-left">
-          {module.name}
-        </span>
-        <span className="text-xs text-white/50 truncate w-full text-left">
+      <div className='flex flex-col items-start min-w-0'>
+        <span className='text-sm text-white/90 truncate w-full text-left'>{module.name}</span>
+        <span className='text-xs text-white/50 truncate w-full text-left'>
           {module.description}
         </span>
       </div>
@@ -145,11 +141,11 @@ const PinnedAppsGrid: React.FC<{ onLaunch: (module: Module) => void }> = ({ onLa
   }
 
   return (
-    <div data-testid="pinned-apps" className="mb-4">
-      <h2 className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-2 px-1">
+    <div data-testid='pinned-apps' className='mb-4'>
+      <h2 className='text-xs font-semibold text-white/60 uppercase tracking-wider mb-2 px-1'>
         Pinned
       </h2>
-      <div className="grid grid-cols-4 gap-1">
+      <div className='grid grid-cols-4 gap-1'>
         {pinnedModules.map((module) => (
           <AppTile key={module.id} module={module} onLaunch={onLaunch} />
         ))}
@@ -170,18 +166,18 @@ const AllAppsList: React.FC<{ onLaunch: (module: Module) => void }> = ({ onLaunc
 
   if (filteredModules.length === 0) {
     return (
-      <div data-testid="all-apps" className="flex-1 flex items-center justify-center">
-        <p className="text-white/50 text-sm">No apps found</p>
+      <div data-testid='all-apps' className='flex-1 flex items-center justify-center'>
+        <p className='text-white/50 text-sm'>No apps found</p>
       </div>
     );
   }
 
   return (
-    <div data-testid="all-apps" className="flex-1 overflow-y-auto">
-      <h2 className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-2 px-1 sticky top-0 bg-[#0a0e1a]/95 py-1">
+    <div data-testid='all-apps' className='flex-1 overflow-y-auto'>
+      <h2 className='text-xs font-semibold text-white/60 uppercase tracking-wider mb-2 px-1 sticky top-0 bg-[#0a0e1a]/95 py-1'>
         {title}
       </h2>
-      <div className="space-y-0.5">
+      <div className='space-y-0.5'>
         {filteredModules.map((module) => (
           <AppListItem key={module.id} module={module} onLaunch={onLaunch} />
         ))}
@@ -196,7 +192,7 @@ const AllAppsList: React.FC<{ onLaunch: (module: Module) => void }> = ({ onLaunc
 const UserProfile: React.FC = () => {
   return (
     <div
-      data-testid="user-profile"
+      data-testid='user-profile'
       className={cn(
         'flex items-center gap-3 p-3 mt-auto',
         'border-t border-white/10',
@@ -206,7 +202,7 @@ const UserProfile: React.FC = () => {
       )}
     >
       <div
-        data-testid="user-avatar"
+        data-testid='user-avatar'
         className={cn(
           'w-9 h-9 rounded-full',
           'bg-gradient-to-br from-[#0099ff] to-[#00ffee]',
@@ -216,9 +212,9 @@ const UserProfile: React.FC = () => {
       >
         BC
       </div>
-      <div className="flex flex-col">
-        <span className="text-sm text-white/90 font-medium">Assessor</span>
-        <span className="text-xs text-white/50">Benton County</span>
+      <div className='flex flex-col'>
+        <span className='text-sm text-white/90 font-medium'>Assessor</span>
+        <span className='text-xs text-white/50'>Benton County</span>
       </div>
     </div>
   );
@@ -238,11 +234,14 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Handle app launch
-  const handleLaunch = useCallback((module: Module) => {
-    openWindow(module.id, module.name, module.icon);
-    clearSearch();
-    close();
-  }, [openWindow, clearSearch, close]);
+  const handleLaunch = useCallback(
+    (module: Module) => {
+      openWindow(module.id, module.name, module.icon);
+      clearSearch();
+      close();
+    },
+    [openWindow, clearSearch, close]
+  );
 
   // Handle Escape key
   useEffect(() => {
@@ -285,8 +284,8 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
   return (
     <div
       ref={menuRef}
-      role="menu"
-      aria-label="Start Menu"
+      role='menu'
+      aria-label='Start Menu'
       className={cn(
         // Position - bottom left, above taskbar
         'fixed bottom-14 left-1 z-[60]',
@@ -306,17 +305,17 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
       )}
     >
       {/* Search Section */}
-      <div className="p-3 border-b border-white/10">
+      <div className='p-3 border-b border-white/10'>
         <SearchInput />
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 p-3 flex flex-col overflow-hidden">
+      <div className='flex-1 p-3 flex flex-col overflow-hidden'>
         {/* Pinned Apps */}
         <PinnedAppsGrid onLaunch={handleLaunch} />
 
         {/* Divider */}
-        <div className="h-px bg-white/10 my-2" />
+        <div className='h-px bg-white/10 my-2' />
 
         {/* All Apps */}
         <AllAppsList onLaunch={handleLaunch} />
