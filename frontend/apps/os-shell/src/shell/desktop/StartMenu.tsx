@@ -3,14 +3,17 @@
  *
  * Government-Grade App Launcher
  * Overlay with search, pinned apps, and all apps list.
+ * Launches apps via moduleRegistryStore for proper tracking,
+ * with fallback to direct window opening for backward compatibility.
  *
  * @module shell/desktop/StartMenu
- * @see SUCCESS CRITERIA SC-3
+ * @see SUCCESS CRITERIA SC-3, SC-3.3
  */
 
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useDesktopStore } from '../../stores/desktopStore';
+import { useModuleRegistryStore } from '../../stores/moduleRegistryStore';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
 
 // ============================================================================
@@ -230,17 +233,36 @@ export interface StartMenuProps {
 
 export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
   const { isOpen, close, clearSearch } = useStartMenuStore();
-  const { openWindow } = useDesktopStore();
+  const launchModule = useModuleRegistryStore((state) => state.launchModule);
+  const isRegistryInitialized = useModuleRegistryStore((state) => state.isInitialized);
+  const openWindow = useDesktopStore((state) => state.openWindow);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Handle app launch
+  // Uses moduleRegistryStore when initialized, falls back to direct openWindow
   const handleLaunch = useCallback(
-    (module: Module) => {
-      openWindow(module.id, module.name, module.icon);
+    async (module: Module) => {
+      try {
+        if (isRegistryInitialized) {
+          // Primary path: Use module registry for proper tracking
+          // This handles load states, window management, and duplicate detection
+          await launchModule(module.id);
+        } else {
+          // Fallback: Direct window open for backward compatibility
+          // Used when registry hasn't been initialized (e.g., in tests)
+          openWindow(module.id, module.name, module.icon);
+        }
+      } catch (error) {
+        // If launchModule throws (module not in registry), fall back to direct open
+        console.warn('Module not in registry, using fallback:', module.id);
+        openWindow(module.id, module.name, module.icon);
+      }
+      
+      // Always close start menu and clear search
       clearSearch();
       close();
     },
-    [openWindow, clearSearch, close]
+    [launchModule, isRegistryInitialized, openWindow, clearSearch, close]
   );
 
   // Handle Escape key
@@ -284,6 +306,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
   return (
     <div
       ref={menuRef}
+      data-testid='start-menu'
       role='menu'
       aria-label='Start Menu'
       className={cn(

@@ -2,13 +2,14 @@
  * TerraFusion OS WindowManager Component
  *
  * Renders all windows from the desktop store, managing z-index layering.
- * This is the single source of truth for the window layer.
+ * Each window contains a ModuleLoader that renders the actual module content.
  *
  * @module shell/desktop/WindowManager
- * @see SUCCESS CRITERIA SC-4
+ * @see SUCCESS CRITERIA SC-4, SC-3.3
  */
 
 import { useDesktopStore } from '../../stores/desktopStore';
+import { ModuleLoader } from './ModuleLoader';
 import { Window } from './Window';
 
 // ============================================================================
@@ -31,6 +32,7 @@ export interface WindowManagerProps {
  * - Renders windows from desktopStore
  * - Filters out minimized windows
  * - Sorts windows by z-index (lowest first = renders first = appears behind)
+ * - Each window contains a ModuleLoader for content
  * - Provides accessible container with live region
  *
  * @example
@@ -65,7 +67,9 @@ export function WindowManager({ className = '' }: WindowManagerProps) {
       `.trim()}
     >
       {visibleWindows.map((window) => (
-        <Window key={window.id} window={window} />
+        <Window key={window.id} window={window}>
+          <ModuleLoader moduleId={window.moduleId} />
+        </Window>
       ))}
     </div>
   );
