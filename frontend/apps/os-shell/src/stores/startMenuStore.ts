@@ -1,12 +1,12 @@
 /**
  * TerraFusion OS Start Menu Store
- * 
+ *
  * Zustand store for managing Start Menu state including:
  * - Open/close state
  * - Search functionality with real-time filtering
  * - Pinned apps management
  * - All apps catalog
- * 
+ *
  * @module stores/startMenuStore
  * @see SUCCESS CRITERIA SC-3: Start Menu Component
  */
@@ -40,6 +40,7 @@ export interface StartMenuState {
   toggle: () => void;
   open: () => void;
   close: () => void;
+  clearSearch: () => void;
   setSearchQuery: (query: string) => void;
   setPinnedApps: (apps: Module[]) => void;
   setAllApps: (apps: Module[]) => void;
@@ -50,6 +51,10 @@ export interface StartMenuState {
   getFilteredApps: () => Module[];
   getActiveApps: () => Module[];
   getAppsByCategory: () => Record<string, Module[]>;
+
+  // Aliases for StartMenu component compatibility
+  getPinnedModules: () => Module[];
+  getFilteredModules: () => Module[];
 }
 
 // ============================================================================
@@ -85,6 +90,10 @@ export const useStartMenuStore = create<StartMenuState>()(
         set({ isOpen: false, searchQuery: '' });
       },
 
+      clearSearch: () => {
+        set({ searchQuery: '' });
+      },
+
       setSearchQuery: (query: string) => {
         set({ searchQuery: query.trim() });
       },
@@ -99,9 +108,9 @@ export const useStartMenuStore = create<StartMenuState>()(
 
       addPinnedApp: (app: Module) => {
         const { pinnedApps } = get();
-        
+
         // Check if already pinned
-        if (pinnedApps.some(pinned => pinned.id === app.id)) {
+        if (pinnedApps.some((pinned) => pinned.id === app.id)) {
           return;
         }
 
@@ -110,22 +119,23 @@ export const useStartMenuStore = create<StartMenuState>()(
 
       removePinnedApp: (appId: string) => {
         const { pinnedApps } = get();
-        set({ pinnedApps: pinnedApps.filter(app => app.id !== appId) });
+        set({ pinnedApps: pinnedApps.filter((app) => app.id !== appId) });
       },
 
       // Selectors
       getFilteredApps: (): Module[] => {
         const { allApps, searchQuery } = get();
-        
+
         let filtered = allApps;
-        
+
         // Filter by search query if present
         if (searchQuery) {
           const query = searchQuery.toLowerCase();
-          filtered = allApps.filter(app => 
-            app.name.toLowerCase().includes(query) ||
-            app.description.toLowerCase().includes(query) ||
-            app.category.toLowerCase().includes(query)
+          filtered = allApps.filter(
+            (app) =>
+              app.name.toLowerCase().includes(query) ||
+              app.description.toLowerCase().includes(query) ||
+              app.category.toLowerCase().includes(query)
           );
         }
 
@@ -135,20 +145,32 @@ export const useStartMenuStore = create<StartMenuState>()(
 
       getActiveApps: (): Module[] => {
         const { allApps } = get();
-        return allApps.filter(app => app.status === 'active');
+        return allApps.filter((app) => app.status === 'active');
       },
 
       getAppsByCategory: (): Record<string, Module[]> => {
         const { allApps } = get();
-        
-        return allApps.reduce((grouped, app) => {
-          const category = app.category;
-          if (!grouped[category]) {
-            grouped[category] = [];
-          }
-          grouped[category].push(app);
-          return grouped;
-        }, {} as Record<string, Module[]>);
+
+        return allApps.reduce(
+          (grouped, app) => {
+            const category = app.category;
+            if (!grouped[category]) {
+              grouped[category] = [];
+            }
+            grouped[category].push(app);
+            return grouped;
+          },
+          {} as Record<string, Module[]>
+        );
+      },
+
+      // Aliases for StartMenu component compatibility
+      getPinnedModules: (): Module[] => {
+        return get().pinnedApps;
+      },
+
+      getFilteredModules: (): Module[] => {
+        return get().getFilteredApps();
       },
     }),
     { name: 'TerraFusion-StartMenu-Store' }
@@ -182,15 +204,16 @@ export const useAllApps = () => useStartMenuStore((state) => state.allApps);
 /**
  * Hook to get Start Menu actions
  */
-export const useStartMenuActions = () => useStartMenuStore((state) => ({
-  toggle: state.toggle,
-  open: state.open,
-  close: state.close,
-  setSearchQuery: state.setSearchQuery,
-  setPinnedApps: state.setPinnedApps,
-  setAllApps: state.setAllApps,
-  addPinnedApp: state.addPinnedApp,
-  removePinnedApp: state.removePinnedApp,
-}));
+export const useStartMenuActions = () =>
+  useStartMenuStore((state) => ({
+    toggle: state.toggle,
+    open: state.open,
+    close: state.close,
+    setSearchQuery: state.setSearchQuery,
+    setPinnedApps: state.setPinnedApps,
+    setAllApps: state.setAllApps,
+    addPinnedApp: state.addPinnedApp,
+    removePinnedApp: state.removePinnedApp,
+  }));
 
 export default useStartMenuStore;

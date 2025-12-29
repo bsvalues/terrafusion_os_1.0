@@ -239,11 +239,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
 
   // Handle app launch
   const handleLaunch = useCallback((module: Module) => {
-    openWindow({
-      moduleId: module.id,
-      title: module.name,
-      icon: module.icon,
-    });
+    openWindow(module.id, module.name, module.icon);
     clearSearch();
     close();
   }, [openWindow, clearSearch, close]);
