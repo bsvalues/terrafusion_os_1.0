@@ -9,7 +9,7 @@
  */
 
 import * as matchers from '@testing-library/jest-dom/matchers';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { act } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DesktopWindow, useDesktopStore } from '../../../stores/desktopStore';
@@ -38,9 +38,7 @@ vi.mock('../Window', () => ({
 }));
 
 // Helper to create mock windows
-const createMockWindow = (
-  overrides: Partial<DesktopWindow> = {}
-): DesktopWindow => ({
+const createMockWindow = (overrides: Partial<DesktopWindow> = {}): DesktopWindow => ({
   id: `window-${Math.random().toString(36).substr(2, 9)}`,
   moduleId: 'test-module',
   title: 'Test Window',

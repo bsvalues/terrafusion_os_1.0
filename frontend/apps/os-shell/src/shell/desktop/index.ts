@@ -18,6 +18,11 @@ export type { WindowProps } from './Window';
 export { WindowManager } from './WindowManager';
 export type { WindowManagerProps } from './WindowManager';
 
+export { Desktop } from './Desktop';
+export type { DesktopProps } from './Desktop';
+
+export { DesktopBackground } from './DesktopBackground';
+export type { DesktopBackgroundProps } from './DesktopBackground';
+
 // Future exports:
-// export { Desktop } from './Desktop';
 // export { DesktopIcon } from './DesktopIcon';

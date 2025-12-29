@@ -54,10 +54,10 @@ export function WindowManager({ className = '' }: WindowManagerProps) {
 
   return (
     <div
-      data-testid="window-manager"
-      role="region"
-      aria-label="Application windows"
-      aria-live="polite"
+      data-testid='window-manager'
+      role='region'
+      aria-label='Application windows'
+      aria-live='polite'
       className={`
         absolute top-0 left-0 w-full h-[calc(100vh-48px)]
         pointer-events-none overflow-hidden
