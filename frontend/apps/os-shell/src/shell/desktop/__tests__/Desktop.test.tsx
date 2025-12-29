@@ -25,19 +25,19 @@ expect.extend(matchers);
 
 // Mock child components to isolate Desktop logic
 vi.mock('../DesktopBackground', () => ({
-  DesktopBackground: () => <div data-testid="desktop-background">Background</div>,
+  DesktopBackground: () => <div data-testid='desktop-background'>Background</div>,
 }));
 
 vi.mock('../WindowManager', () => ({
-  WindowManager: () => <div data-testid="window-manager">WindowManager</div>,
+  WindowManager: () => <div data-testid='window-manager'>WindowManager</div>,
 }));
 
 vi.mock('../Taskbar', () => ({
-  Taskbar: () => <div data-testid="taskbar">Taskbar</div>,
+  Taskbar: () => <div data-testid='taskbar'>Taskbar</div>,
 }));
 
 vi.mock('../StartMenu', () => ({
-  StartMenu: () => <div data-testid="start-menu">StartMenu</div>,
+  StartMenu: () => <div data-testid='start-menu'>StartMenu</div>,
 }));
 
 describe('Desktop', () => {
@@ -232,10 +232,7 @@ describe('Desktop', () => {
       const { unmount } = render(<Desktop />);
       unmount();
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'keydown',
-        expect.any(Function)
-      );
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
 
       removeEventListenerSpy.mockRestore();
     });

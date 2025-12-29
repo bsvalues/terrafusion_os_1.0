@@ -31,3 +31,20 @@ export {
   type ModuleStatus,
   type StartMenuState,
 } from './startMenuStore';
+
+// Module Registry - manages module definitions and loading state
+export {
+  useModuleRegistryStore,
+  useModuleRegistryInitialized,
+  useAllModules,
+  useActiveModules,
+  useCoreModules,
+  useModuleRegistryActions,
+  useIsModuleLoaded,
+  useIsModuleLoading,
+  type ModuleDefinition,
+  type ModuleLoadState,
+  type ModuleTier,
+  type ModuleRegistryState,
+  type LoadStatus,
+} from './moduleRegistryStore';

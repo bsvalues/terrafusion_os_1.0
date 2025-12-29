@@ -110,9 +110,9 @@ export function Desktop({ className = '' }: DesktopProps) {
 
   return (
     <div
-      data-testid="desktop"
-      role="main"
-      aria-label="TerraFusion Desktop"
+      data-testid='desktop'
+      role='main'
+      aria-label='TerraFusion Desktop'
       tabIndex={-1}
       className={`
         relative w-screen h-screen overflow-hidden
