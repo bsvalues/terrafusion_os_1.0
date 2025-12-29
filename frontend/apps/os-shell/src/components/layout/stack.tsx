@@ -25,7 +25,7 @@
  */
 
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 
 export interface StackProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Direction of the stack */

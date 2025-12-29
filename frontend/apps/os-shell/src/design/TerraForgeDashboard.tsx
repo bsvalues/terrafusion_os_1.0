@@ -17,7 +17,7 @@ import {
   TerraForgeSlider,
   TerraForgeWeightAdjuster,
 } from '../design/TerraForgeComponents';
-import { cn } from '../lib/utils';
+import { cn } from "../utils/cn";
 
 // Enhanced Data Types
 interface ComprehensiveEstimate {

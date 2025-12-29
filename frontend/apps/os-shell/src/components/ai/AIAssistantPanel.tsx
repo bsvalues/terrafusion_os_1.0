@@ -17,7 +17,7 @@ import {
   Input,
   Progress,
 } from '@/components/terrafusion-design-system';
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import { Brain, CheckCircle, MessageSquare, Sparkles, Zap } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 

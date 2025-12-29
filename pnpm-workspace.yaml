@@ -9,7 +9,10 @@ packages:
   - 'frontend/electron'
 
   # Terrafusion shared libraries
-  - 'terrafusion-shared'
+  # DECISION (2025-12-25): Disabled - package moved to external repo
+  # Evidence: No terrafusion-shared/ dir, no package.json, no imports reference it
+  # Regression guard: If re-enabling, ensure package.json exists AND imports work
+  # - 'terrafusion-shared'
 
   # Applications (optional, may not all have package.json)
   # - "applications/*"

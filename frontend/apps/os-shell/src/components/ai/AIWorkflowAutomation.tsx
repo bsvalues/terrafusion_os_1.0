@@ -14,7 +14,7 @@ import {
   CardHeader,
   Progress,
 } from '@/components/terrafusion-design-system';
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import {
   AlertCircle,
   Brain,

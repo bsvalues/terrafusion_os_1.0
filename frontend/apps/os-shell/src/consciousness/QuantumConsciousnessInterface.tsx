@@ -25,7 +25,7 @@ import {
 import { usePerformanceMetrics } from '@/hooks/usePerformanceMetrics';
 import { useQuantumConsciousness } from '@/hooks/useQuantumConsciousness';
 import { useResearchAnalytics } from '@/hooks/useResearchAnalytics';
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import { Line, OrbitControls, Sphere, Text } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import React, { useMemo, useRef, useState } from 'react';
