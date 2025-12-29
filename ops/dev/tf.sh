@@ -6728,6 +6728,7 @@ cmd_observe() {
         bundle)  cmd_observe_bundle "$@" ;;
         chain)   cmd_observe_chain "$@" ;;
         summary) cmd_observe_summary "$@" ;;
+        seal)    cmd_observe_seal "$@" ;;
         --help)  cmd_observe_help; return 0 ;;
         "")      cmd_observe_help; return 2 ;;
         *)       
@@ -6751,6 +6752,7 @@ Subcommands:
   bundle    Bundle compliance summary
   chain     Receipt chain visualization
   summary   Executive dashboard (all signals)
+  seal      Post-merge audit seal (governance + breaker)
 
 Options:
   --ci      JSON output (no ANSI, deterministic)
@@ -6762,6 +6764,7 @@ Examples:
   tf observe proofs --ci
   tf observe bundle --bundle ./bundle --ci
   tf observe summary --ci
+  tf observe seal --ci
 
 Constitution: v1.0.0 (Read-only by construction)
 EOF
@@ -7221,6 +7224,188 @@ EOF
     else
         return 1
     fi
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# cmd_observe_seal - Post-merge audit seal
+# Runs governance + breaker suites, emits evidence bundle
+# Exit codes: 0=seal success, 1=test failure, 2=speclock violation
+# ═══════════════════════════════════════════════════════════════════════════
+
+cmd_observe_seal() {
+    local ci_mode=false
+    local emit_bundle=false
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --ci) ci_mode=true ;;
+            --emit-bundle) emit_bundle=true ;;
+            --help) 
+                cat << 'EOF'
+Usage: tf observe seal [--ci] [--emit-bundle]
+
+Post-merge audit seal for Observability Constitution.
+Runs governance and breaker test suites, verifies SpecLock.
+
+Options:
+  --ci           JSON output (no ANSI, deterministic)
+  --emit-bundle  Write evidence bundle to ops/evidence/
+
+Exit Codes:
+  0  Audit seal successful (all tests pass)
+  1  Test failure or evidence mismatch
+  2  SpecLock violation or invalid invocation
+
+Constitution: v1.0.0 (Observability Runtime)
+EOF
+                return 0
+                ;;
+            *) 
+                echo '{"error":{"code":"OBS_INVALID_FLAG","message":"Unknown flag: '"$1"'"}}' >&2
+                return 2
+                ;;
+        esac
+        shift
+    done
+    
+    local timestamp head_commit branch
+    timestamp=$(_observe_timestamp)
+    head_commit=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+    branch=$(git branch --show-current 2>/dev/null || echo "unknown")
+    
+    # Step 1: Verify SpecLock exists and is sealed
+    local speclock_path="$ROOT/ops/observability/OBSERVABILITY_RUNTIME_CONSTITUTION_v1.0.0_SPECLOCK.md"
+    local speclock_status="pass" speclock_version="unknown"
+    
+    if [[ ! -f "$speclock_path" ]]; then
+        if $ci_mode; then
+            echo '{"version":"1.0.0","timestamp":"'"$timestamp"'","command":"observe seal","status":"error","error":{"code":"OBS_SPECLOCK_MISSING","message":"SpecLock file not found"}}'
+        else
+            echo "Error: SpecLock file not found at $speclock_path" >&2
+        fi
+        return 2
+    fi
+    
+    # Extract version from SpecLock
+    speclock_version=$(grep -E "^\*\*Version\*\*:|^> \*\*Version\*\*:" "$speclock_path" 2>/dev/null | head -1 | sed 's/.*: *//' || echo "unknown")
+    
+    # Verify SEALED status
+    if ! grep -qE "SEALED|SPECLOCK" "$speclock_path" 2>/dev/null; then
+        speclock_status="fail"
+        if $ci_mode; then
+            echo '{"version":"1.0.0","timestamp":"'"$timestamp"'","command":"observe seal","status":"error","error":{"code":"OBS_SPECLOCK_NOT_SEALED","message":"SpecLock is not sealed"}}'
+        else
+            echo "Error: SpecLock is not sealed" >&2
+        fi
+        return 2
+    fi
+    
+    # Step 2: Run governance tests
+    local governance_output governance_exit governance_passed=0 governance_total=0 governance_failed=0
+    local governance_script="$ROOT/ops/dev/tests/test_observability_governance.sh"
+    
+    if [[ -f "$governance_script" ]]; then
+        governance_output=$(timeout 180 bash "$governance_script" 2>&1) && governance_exit=0 || governance_exit=$?
+        # Use sed for POSIX compatibility (no -P flag needed)
+        governance_passed=$(echo "$governance_output" | sed -n 's/.*PASSED: *\([0-9]*\).*/\1/p' | tail -1)
+        governance_failed=$(echo "$governance_output" | sed -n 's/.*FAILED: *\([0-9]*\).*/\1/p' | tail -1)
+        governance_passed=${governance_passed:-0}
+        governance_failed=${governance_failed:-0}
+        governance_total=$((governance_passed + governance_failed))
+    else
+        governance_exit=1
+        governance_output="Governance test script not found"
+    fi
+    
+    local governance_status="pass"
+    [[ "$governance_exit" -ne 0 ]] && governance_status="fail"
+    
+    # Step 3: Run breaker tests
+    local breaker_output breaker_exit breaker_blocked=0 breaker_total=0
+    local breaker_script="$ROOT/ops/dev/tests/test_observability_breaker.sh"
+    
+    if [[ -f "$breaker_script" ]]; then
+        breaker_output=$(timeout 180 bash "$breaker_script" 2>&1) && breaker_exit=0 || breaker_exit=$?
+        # Use sed for POSIX compatibility
+        breaker_blocked=$(echo "$breaker_output" | sed -n 's/.*Attacks Blocked: *\([0-9]*\).*/\1/p' | tail -1)
+        breaker_total=$(echo "$breaker_output" | sed -n 's/.*Attacks Run: *\([0-9]*\).*/\1/p' | tail -1)
+        breaker_blocked=${breaker_blocked:-0}
+        breaker_total=${breaker_total:-0}
+    else
+        breaker_exit=1
+        breaker_output="Breaker test script not found"
+    fi
+    
+    local breaker_status="blocked"
+    local breaker_vulns=$((breaker_total - breaker_blocked))
+    [[ "$breaker_vulns" -gt 0 ]] && breaker_status="vulnerable"
+    
+    # Step 4: Calculate overall status
+    local overall_status="pass"
+    if [[ "$governance_status" != "pass" ]] || [[ "$breaker_status" != "blocked" ]]; then
+        overall_status="fail"
+    fi
+    
+    # Step 5: Emit evidence bundle (optional)
+    local evidence_path=""
+    if $emit_bundle && [[ "$overall_status" == "pass" ]]; then
+        local date_stamp
+        date_stamp=$(date -u +%Y%m%d)
+        evidence_path="$ROOT/ops/evidence/$date_stamp"
+        mkdir -p "$evidence_path"
+        
+        echo "$governance_output" > "$evidence_path/governance.out.txt"
+        echo "$breaker_output" > "$evidence_path/breaker.out.txt"
+        echo "HEAD: $head_commit" > "$evidence_path/git_meta.txt"
+        echo "Branch: $branch" >> "$evidence_path/git_meta.txt"
+        echo "Timestamp: $timestamp" >> "$evidence_path/git_meta.txt"
+        git show --stat -1 > "$evidence_path/diffstat.txt" 2>/dev/null || true
+    fi
+    
+    # Step 6: Output results
+    if $ci_mode; then
+        local evidence_json="null"
+        [[ -n "$evidence_path" ]] && evidence_json="\"$evidence_path\""
+        
+        cat << EOF
+{"version":"1.0.0","timestamp":"$timestamp","command":"observe seal","status":"$overall_status","head":"$head_commit","branch":"$branch","speclock":{"path":"$speclock_path","version":"$speclock_version","status":"$speclock_status"},"governance":{"status":"$governance_status","passed":$governance_passed,"total":$governance_total},"breaker":{"status":"$breaker_status","blocked":$breaker_blocked,"total":$breaker_total,"vulnerabilities":$breaker_vulns},"evidence":$evidence_json}
+EOF
+    else
+        echo "=== TerraFusion Observability Audit Seal ==="
+        echo ""
+        echo "Timestamp: $timestamp"
+        echo "HEAD:      $head_commit"
+        echo "Branch:    $branch"
+        echo ""
+        echo "SpecLock:"
+        echo "  Version: $speclock_version"
+        echo "  Status:  $speclock_status"
+        echo ""
+        echo "Governance Tests:"
+        echo "  Status:  $governance_status"
+        echo "  Passed:  $governance_passed/$governance_total"
+        echo ""
+        echo "Breaker Tests:"
+        echo "  Status:  $breaker_status"
+        echo "  Blocked: $breaker_blocked/$breaker_total"
+        [[ "$breaker_vulns" -gt 0 ]] && echo "  Vulns:   $breaker_vulns"
+        echo ""
+        if [[ -n "$evidence_path" ]]; then
+            echo "Evidence:  $evidence_path"
+            echo ""
+        fi
+        echo "Overall:   $overall_status"
+        
+        if [[ "$overall_status" == "pass" ]]; then
+            echo ""
+            echo "✓ AUDIT SEAL SUCCESSFUL"
+        else
+            echo ""
+            echo "✗ AUDIT SEAL FAILED"
+        fi
+    fi
+    
+    [[ "$overall_status" == "pass" ]] && return 0 || return 1
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
