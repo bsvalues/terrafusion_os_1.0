@@ -1,4 +1,8 @@
 /**
+ * @vitest-environment jsdom
+ */
+
+/**
  * TerraFusion OS Desktop Store Tests
  * 
  * Comprehensive test suite for the Zustand store managing desktop window state.
@@ -8,6 +12,7 @@
  * @see SUCCESS CRITERIA SC-4: Window Management System
  */
 
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 
 // Import will be created after tests are written
