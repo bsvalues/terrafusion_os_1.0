@@ -12,11 +12,16 @@ export {
   useWindows,
   useActiveWindowId,
   useWindowActions,
+  useSnapPreview,
+  useSnapActions,
   type DesktopWindow,
   type DesktopState,
   type WindowState,
   type Position,
   type Size,
+  type SnapZone,
+  type SnapBounds,
+  type SnapPreview,
 } from './desktopStore';
 
 // Start Menu state management
