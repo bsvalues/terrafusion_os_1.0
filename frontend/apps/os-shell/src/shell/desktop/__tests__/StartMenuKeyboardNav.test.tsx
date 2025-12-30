@@ -36,20 +36,52 @@ afterEach(() => {
 
 // Mock modules
 const mockPinnedApps: Module[] = [
-  { id: 'gov', name: 'Government Edition', icon: '🏛️', description: 'Core', category: 'core', status: 'active' },
-  { id: 'gis', name: 'GIS Pro', icon: '🗺️', description: 'Maps', category: 'mapping', status: 'active' },
-  { id: 'cost', name: 'CostForge', icon: '💰', description: 'Cost', category: 'ai', status: 'active' },
+  {
+    id: 'gov',
+    name: 'Government Edition',
+    icon: '🏛️',
+    description: 'Core',
+    category: 'core',
+    status: 'active',
+  },
+  {
+    id: 'gis',
+    name: 'GIS Pro',
+    icon: '🗺️',
+    description: 'Maps',
+    category: 'mapping',
+    status: 'active',
+  },
+  {
+    id: 'cost',
+    name: 'CostForge',
+    icon: '💰',
+    description: 'Cost',
+    category: 'ai',
+    status: 'active',
+  },
 ];
 
 const mockRecentApps: Module[] = [
-  { id: 'levy', name: 'Terra Levy', icon: '📊', description: 'Tax', category: 'tax', status: 'active' },
-  { id: 'agent', name: 'Terra Agent', icon: '🤖', description: 'AI', category: 'ai', status: 'active' },
+  {
+    id: 'levy',
+    name: 'Terra Levy',
+    icon: '📊',
+    description: 'Tax',
+    category: 'tax',
+    status: 'active',
+  },
+  {
+    id: 'agent',
+    name: 'Terra Agent',
+    icon: '🤖',
+    description: 'AI',
+    category: 'ai',
+    status: 'active',
+  },
 ];
 
-const mockAllApps: Module[] = [
-  ...mockPinnedApps,
-  ...mockRecentApps,
-];
+const mockAllApps: Module[] = [...mockPinnedApps, ...mockRecentApps];
 
 // Reset store before each test
 beforeEach(() => {
@@ -190,7 +222,7 @@ describe('StartMenu Keyboard Navigation', () => {
       const buttons = within(pinnedSection).getAllByRole('button');
 
       // Check that buttons have focus-visible classes
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         expect(button).toHaveClass('focus-visible:ring-2');
       });
     });

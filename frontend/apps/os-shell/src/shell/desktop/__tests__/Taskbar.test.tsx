@@ -233,14 +233,14 @@ describe('Taskbar Component', () => {
     it('displays AI agent status indicator', () => {
       render(<Taskbar />);
 
-      const aiStatus = screen.getByTestId('ai-status');
+      const aiStatus = screen.getByTestId('ai-status-indicator');
       expect(aiStatus).toBeInTheDocument();
     });
 
     it('displays system health indicator', () => {
       render(<Taskbar />);
 
-      const healthIndicator = screen.getByTestId('system-health');
+      const healthIndicator = screen.getByTestId('system-health-indicator');
       expect(healthIndicator).toBeInTheDocument();
     });
   });

@@ -19,7 +19,7 @@
  */
 
 import * as matchers from '@testing-library/jest-dom/matchers';
-import { cleanup, render, screen, within, fireEvent } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -63,49 +63,25 @@ beforeEach(() => {
 describe('AppContextMenu', () => {
   describe('Rendering (SC-6.13)', () => {
     it('renders context menu when visible', () => {
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
 
     it('does not render when module is null', () => {
-      render(
-        <AppContextMenu
-          module={null}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={null} position={mockPosition} onClose={vi.fn()} />);
 
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();
     });
 
     it('displays app name in menu header', () => {
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       expect(screen.getByText('Government Edition')).toBeInTheDocument();
     });
 
     it('displays app icon', () => {
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       expect(screen.getByText('🏛️')).toBeInTheDocument();
     });
@@ -113,13 +89,7 @@ describe('AppContextMenu', () => {
 
   describe('Position (SC-6.18)', () => {
     it('positions menu at cursor location', () => {
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       const menu = screen.getByRole('menu');
       expect(menu).toHaveStyle({ left: '100px', top: '200px' });
@@ -127,19 +97,11 @@ describe('AppContextMenu', () => {
 
     it('updates position when position prop changes', () => {
       const { rerender } = render(
-        <AppContextMenu
-          module={mockModule}
-          position={{ x: 100, y: 200 }}
-          onClose={vi.fn()}
-        />
+        <AppContextMenu module={mockModule} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       rerender(
-        <AppContextMenu
-          module={mockModule}
-          position={{ x: 300, y: 400 }}
-          onClose={vi.fn()}
-        />
+        <AppContextMenu module={mockModule} position={{ x: 300, y: 400 }} onClose={vi.fn()} />
       );
 
       const menu = screen.getByRole('menu');
@@ -151,13 +113,7 @@ describe('AppContextMenu', () => {
     it('shows "Pin to Start" for unpinned apps', () => {
       useStartMenuStore.setState({ pinnedApps: [] });
 
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       expect(screen.getByRole('menuitem', { name: /pin to start/i })).toBeInTheDocument();
     });
@@ -165,13 +121,7 @@ describe('AppContextMenu', () => {
     it('shows "Unpin from Start" for pinned apps', () => {
       useStartMenuStore.setState({ pinnedApps: [mockModule] });
 
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       expect(screen.getByRole('menuitem', { name: /unpin from start/i })).toBeInTheDocument();
     });
@@ -180,13 +130,7 @@ describe('AppContextMenu', () => {
       useStartMenuStore.setState({ pinnedApps: [] });
       const onClose = vi.fn();
 
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={onClose}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={onClose} />);
 
       await userEvent.click(screen.getByRole('menuitem', { name: /pin to start/i }));
 
@@ -200,13 +144,7 @@ describe('AppContextMenu', () => {
       useStartMenuStore.setState({ pinnedApps: [mockModule] });
       const onClose = vi.fn();
 
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={onClose}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={onClose} />);
 
       await userEvent.click(screen.getByRole('menuitem', { name: /unpin from start/i }));
 
@@ -221,13 +159,7 @@ describe('AppContextMenu', () => {
     it('Escape closes menu (SC-6.17)', async () => {
       const onClose = vi.fn();
 
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={onClose}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={onClose} />);
 
       await userEvent.keyboard('{Escape}');
 
@@ -239,17 +171,13 @@ describe('AppContextMenu', () => {
 
       render(
         <div>
-          <div data-testid="outside">Outside</div>
-          <AppContextMenu
-            module={mockModule}
-            position={mockPosition}
-            onClose={onClose}
-          />
+          <div data-testid='outside'>Outside</div>
+          <AppContextMenu module={mockModule} position={mockPosition} onClose={onClose} />
         </div>
       );
 
       // Wait for event listener to be attached
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       await userEvent.click(screen.getByTestId('outside'));
 
@@ -259,66 +187,36 @@ describe('AppContextMenu', () => {
 
   describe('Accessibility (SC-6.19, SC-6.20, SC-6.21)', () => {
     it('has role="menu" (SC-6.20)', () => {
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
 
     it('menu items have role="menuitem"', () => {
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       const menuItems = screen.getAllByRole('menuitem');
       expect(menuItems.length).toBeGreaterThan(0);
     });
 
     it('menu items have aria-labels (SC-6.19)', () => {
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       const menuItems = screen.getAllByRole('menuitem');
-      menuItems.forEach(item => {
+      menuItems.forEach((item) => {
         expect(item).toHaveAccessibleName();
       });
     });
 
     it('first menu item receives focus on open', () => {
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       const menuItems = screen.getAllByRole('menuitem');
       expect(menuItems[0]).toHaveFocus();
     });
 
     it('Tab keeps focus within menu (SC-6.21)', async () => {
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       // Tab through items
       for (let i = 0; i < 10; i++) {
@@ -333,13 +231,7 @@ describe('AppContextMenu', () => {
 
   describe('Keyboard Navigation', () => {
     it('Arrow Down moves to next item', async () => {
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       const menuItems = screen.getAllByRole('menuitem');
       expect(menuItems[0]).toHaveFocus();
@@ -350,13 +242,7 @@ describe('AppContextMenu', () => {
     });
 
     it('Arrow Up moves to previous item', async () => {
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={vi.fn()}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
 
       const menuItems = screen.getAllByRole('menuitem');
 
@@ -373,13 +259,7 @@ describe('AppContextMenu', () => {
       const onClose = vi.fn();
       useStartMenuStore.setState({ pinnedApps: [] });
 
-      render(
-        <AppContextMenu
-          module={mockModule}
-          position={mockPosition}
-          onClose={onClose}
-        />
-      );
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={onClose} />);
 
       await userEvent.keyboard('{Enter}');
 

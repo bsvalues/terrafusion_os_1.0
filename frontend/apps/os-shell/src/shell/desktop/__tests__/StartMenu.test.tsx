@@ -278,7 +278,9 @@ describe('StartMenu Component', () => {
       render(<StartMenu />);
 
       const recentSection = screen.getByTestId('recent-apps');
-      const appButton = within(recentSection).getByRole('button', { name: new RegExp(recentApp.name, 'i') });
+      const appButton = within(recentSection).getByRole('button', {
+        name: new RegExp(recentApp.name, 'i'),
+      });
       await userEvent.click(appButton);
 
       // Window should be opened
