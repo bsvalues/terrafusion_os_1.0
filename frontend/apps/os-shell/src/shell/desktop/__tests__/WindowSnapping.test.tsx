@@ -510,7 +510,8 @@ describe('Store Integration (snapWindow)', () => {
 
   it('unsnapping restores previous position', () => {
     const windowId = createTestWindow();
-    const { updateWindowPosition, updateWindowSize, snapWindow, restoreWindow } = useDesktopStore.getState();
+    const { updateWindowPosition, updateWindowSize, snapWindow, restoreWindow } =
+      useDesktopStore.getState();
 
     act(() => {
       // Set initial position
