@@ -7,7 +7,7 @@
  */
 
 // Core Layout
-export { Desktop } from './Desktop';
+export { Desktop, DesktopWithErrorBoundary } from './Desktop';
 export type { DesktopProps } from './Desktop';
 
 export { DesktopBackground } from './DesktopBackground';

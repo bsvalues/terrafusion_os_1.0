@@ -30,8 +30,16 @@ export { useModules } from './useModules';
 
 // Error Handling
 export {
-  useErrorReporter,
   errorTracker,
+  useErrorReporter,
   type ErrorContext,
   type ErrorReporter,
 } from './useErrorReporter';
+
+export { useErrorToast, type ErrorToastOptions, type ErrorToastReporter } from './useErrorToast';
+
+// Module Launch Integration
+export {
+  useModuleLaunchNotifications,
+  type ModuleLaunchActions,
+} from './useModuleLaunchNotifications';

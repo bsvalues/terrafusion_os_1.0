@@ -3,17 +3,20 @@
  *
  * Root orchestrator that combines all shell components into a cohesive
  * desktop environment. Handles global keyboard shortcuts and layout.
+ * Includes error boundary protection and toast notifications.
  *
  * @module shell/desktop/Desktop
- * @see SUCCESS CRITERIA SC-2.4, SC-3.1, SC-3.11, SC-5.1, SC-7
+ * @see SUCCESS CRITERIA SC-2.4, SC-3.1, SC-3.11, SC-5.1, SC-7, SC-9
  */
 
 import { useCallback, useEffect } from 'react';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { DesktopBackground } from './DesktopBackground';
+import { DesktopErrorBoundary } from './DesktopErrorBoundary';
 import { StartMenu } from './StartMenu';
 import { Taskbar } from './Taskbar';
 import { WindowManager } from './WindowManager';
+import { ToastContainer } from '../notifications/ToastContainer';
 
 // ============================================================================
 // Types
@@ -33,12 +36,15 @@ export interface DesktopProps {
  *
  * Architecture:
  * ```
- * <Desktop>
- *   ├── <DesktopBackground />  (z: 0)
- *   ├── <WindowManager />      (z: 1-999)
- *   ├── <Taskbar />            (z: 1000)
- *   └── <StartMenu />          (z: 1001, conditional)
- * </Desktop>
+ * <DesktopErrorBoundary>
+ *   <Desktop>
+ *     ├── <DesktopBackground />  (z: 0)
+ *     ├── <WindowManager />      (z: 1-999)
+ *     ├── <Taskbar />            (z: 1000)
+ *     ├── <StartMenu />          (z: 1001, conditional)
+ *     └── <ToastContainer />     (z: 50)
+ *   </Desktop>
+ * </DesktopErrorBoundary>
  * ```
  *
  * Features:
@@ -46,11 +52,13 @@ export interface DesktopProps {
  * - Click-outside to close Start Menu
  * - Full viewport coverage with overflow hidden
  * - Proper stacking context for all layers
+ * - Error boundary protection against crashes
+ * - Toast notifications for user feedback
  *
  * @example
  * ```tsx
  * // In app root
- * <Desktop />
+ * <DesktopWithErrorBoundary />
  * ```
  */
 export function Desktop({ className = '' }: DesktopProps) {
@@ -132,7 +140,24 @@ export function Desktop({ className = '' }: DesktopProps) {
 
       {/* Layer 1001: Start Menu (conditional) */}
       {isStartMenuOpen && <StartMenu />}
+
+      {/* Layer 50: Toast Notifications (bottom-right, above taskbar) */}
+      <ToastContainer />
     </div>
+  );
+}
+
+/**
+ * Desktop with Error Boundary
+ * 
+ * Wraps the Desktop in a DesktopErrorBoundary for crash protection.
+ * Use this as the main export for app entry points.
+ */
+export function DesktopWithErrorBoundary(props: DesktopProps) {
+  return (
+    <DesktopErrorBoundary>
+      <Desktop {...props} />
+    </DesktopErrorBoundary>
   );
 }
 
