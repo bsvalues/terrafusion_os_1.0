@@ -27,3 +27,11 @@ export { useSystemHealth } from './useSystemHealth';
 // Module Ecosystem
 export { useModuleEcosystem } from './useModuleEcosystem';
 export { useModules } from './useModules';
+
+// Error Handling
+export {
+  useErrorReporter,
+  errorTracker,
+  type ErrorContext,
+  type ErrorReporter,
+} from './useErrorReporter';

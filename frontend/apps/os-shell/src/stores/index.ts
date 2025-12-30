@@ -1,58 +1,74 @@
 /**
  * TerraFusion OS Stores
- * 
+ *
  * Central export for all Zustand stores used in the desktop shell.
- * 
+ *
  * @module stores
  */
 
 // Desktop window management
 export {
-  useDesktopStore,
-  useWindows,
   useActiveWindowId,
-  useWindowActions,
-  useSnapPreview,
+  useDesktopStore,
   useSnapActions,
-  type DesktopWindow,
+  useSnapPreview,
+  useWindowActions,
+  useWindows,
   type DesktopState,
-  type WindowState,
+  type DesktopWindow,
   type Position,
   type Size,
-  type SnapZone,
   type SnapBounds,
   type SnapPreview,
+  type SnapZone,
+  type WindowState,
 } from './desktopStore';
 
 // Start Menu state management
 export {
-  useStartMenuStore,
-  useStartMenuOpen,
-  useSearchQuery,
-  usePinnedApps,
-  useRecentApps,
   useAllApps,
   useFocusState,
+  usePinnedApps,
+  useRecentApps,
+  useSearchQuery,
   useStartMenuActions,
+  useStartMenuOpen,
+  useStartMenuStore,
+  type FocusedSection,
   type Module,
   type ModuleStatus,
-  type FocusedSection,
   type StartMenuState,
 } from './startMenuStore';
 
 // Module Registry - manages module definitions and loading state
 export {
-  useModuleRegistryStore,
-  useModuleRegistryInitialized,
-  useAllModules,
   useActiveModules,
+  useAllModules,
   useCoreModules,
-  useModuleRegistryActions,
   useIsModuleLoaded,
   useIsModuleLoading,
+  useModuleRegistryActions,
+  useModuleRegistryInitialized,
+  useModuleRegistryStore,
+  type LoadStatus,
   type ModuleDefinition,
   type ModuleLoadState,
-  type ModuleTier,
   type ModuleRegistryState,
-  type LoadStatus,
+  type ModuleTier,
 } from './moduleRegistryStore';
+
+// Notification system - toasts and notification history
+export {
+  MAX_NOTIFICATIONS,
+  MAX_VISIBLE_TOASTS,
+  useNotificationActions,
+  useNotificationStore,
+  useNotifications,
+  useToasts,
+  useUnreadCount,
+  type AddNotificationOptions,
+  type Notification,
+  type NotificationState,
+  type NotificationType,
+  type Toast,
+} from './notificationStore';

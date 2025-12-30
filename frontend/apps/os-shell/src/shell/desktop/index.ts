@@ -52,3 +52,10 @@ export type { ClockProps } from './Clock';
 // Snap Preview
 export { SnapPreview } from './SnapPreview';
 export type { SnapPreviewProps } from './SnapPreview';
+
+// Error Boundaries
+export { WindowErrorBoundary } from './WindowErrorBoundary';
+export type { WindowErrorBoundaryProps } from './WindowErrorBoundary';
+
+export { DesktopErrorBoundary } from './DesktopErrorBoundary';
+export type { DesktopErrorBoundaryProps } from './DesktopErrorBoundary';
