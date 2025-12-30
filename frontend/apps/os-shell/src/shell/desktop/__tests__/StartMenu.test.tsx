@@ -256,6 +256,38 @@ describe('StartMenu Component', () => {
     });
   });
 
+  describe('Recent Apps Section (SC-6.1)', () => {
+    it('renders recent apps section when there are recent apps', () => {
+      useStartMenuStore.setState({ recentApps: mockAllApps.slice(0, 3) });
+      render(<StartMenu />);
+
+      expect(screen.getByTestId('recent-apps')).toBeInTheDocument();
+      expect(screen.getByText('Recent')).toBeInTheDocument();
+    });
+
+    it('does not render recent section when no recent apps', () => {
+      useStartMenuStore.setState({ recentApps: [] });
+      render(<StartMenu />);
+
+      expect(screen.queryByTestId('recent-apps')).not.toBeInTheDocument();
+    });
+
+    it('launches app from recent section', async () => {
+      const recentApp = mockAllApps[0];
+      useStartMenuStore.setState({ recentApps: [recentApp] });
+      render(<StartMenu />);
+
+      const recentSection = screen.getByTestId('recent-apps');
+      const appButton = within(recentSection).getByRole('button', { name: new RegExp(recentApp.name, 'i') });
+      await userEvent.click(appButton);
+
+      // Window should be opened
+      const { windows } = useDesktopStore.getState();
+      expect(windows).toHaveLength(1);
+      expect(windows[0].moduleId).toBe(recentApp.id);
+    });
+  });
+
   describe('App Launch', () => {
     it('opens window when app is clicked', async () => {
       render(<StartMenu />);

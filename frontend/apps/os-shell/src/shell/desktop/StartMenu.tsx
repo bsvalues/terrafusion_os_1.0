@@ -15,6 +15,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useModuleRegistryStore } from '../../stores/moduleRegistryStore';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
+import { RecentAppsSection } from './RecentAppsSection';
 
 // ============================================================================
 // Subcomponents
@@ -257,7 +258,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
         console.warn('Module not in registry, using fallback:', module.id);
         openWindow(module.id, module.name, module.icon);
       }
-      
+
       // Always close start menu and clear search
       clearSearch();
       close();
@@ -336,6 +337,9 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
       <div className='flex-1 p-3 flex flex-col overflow-hidden'>
         {/* Pinned Apps */}
         <PinnedAppsGrid onLaunch={handleLaunch} />
+
+        {/* Recent Apps - between Pinned and All Apps (SC-6.1) */}
+        <RecentAppsSection onLaunch={handleLaunch} />
 
         {/* Divider */}
         <div className='h-px bg-white/10 my-2' />
