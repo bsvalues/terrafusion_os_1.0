@@ -5,20 +5,31 @@
  * - Open/close state
  * - Search functionality with real-time filtering
  * - Pinned apps management
+ * - Recent apps tracking
  * - All apps catalog
+ * - Keyboard navigation state
  *
  * @module stores/startMenuStore
- * @see SUCCESS CRITERIA SC-3: Start Menu Component
+ * @see SUCCESS CRITERIA SC-3: Start Menu Component, Phase 6: Enhancements
  */
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { persistenceService } from '../services/persistenceService';
+
+// ============================================================================
+// Constants
+// ============================================================================
+
+const MAX_RECENT = 10;
 
 // ============================================================================
 // Types
 // ============================================================================
 
 export type ModuleStatus = 'active' | 'inactive' | 'loading' | 'error';
+
+export type FocusedSection = 'search' | 'pinned' | 'recent' | 'all';
 
 export interface Module {
   id: string;
@@ -34,7 +45,12 @@ export interface StartMenuState {
   isOpen: boolean;
   searchQuery: string;
   pinnedApps: Module[];
+  recentApps: Module[];
   allApps: Module[];
+  
+  // Keyboard navigation state
+  focusedIndex: number;
+  focusedSection: FocusedSection;
 
   // Actions
   toggle: () => void;
@@ -46,11 +62,22 @@ export interface StartMenuState {
   setAllApps: (apps: Module[]) => void;
   addPinnedApp: (app: Module) => void;
   removePinnedApp: (appId: string) => void;
+  
+  // Recent apps actions
+  addRecentApp: (app: Module) => void;
+  setRecentApps: (apps: Module[]) => void;
+  clearRecentApps: () => void;
+  
+  // Keyboard navigation actions
+  setFocusedIndex: (index: number) => void;
+  setFocusedSection: (section: FocusedSection) => void;
+  resetFocus: () => void;
 
   // Selectors (computed values as functions)
   getFilteredApps: () => Module[];
   getActiveApps: () => Module[];
   getAppsByCategory: () => Record<string, Module[]>;
+  getRecentModules: () => Module[];
 
   // Aliases for StartMenu component compatibility
   getPinnedModules: () => Module[];
@@ -68,14 +95,17 @@ export const useStartMenuStore = create<StartMenuState>()(
       isOpen: false,
       searchQuery: '',
       pinnedApps: [],
+      recentApps: [],
       allApps: [],
+      focusedIndex: -1,
+      focusedSection: 'search',
 
       // Actions
       toggle: () => {
         const { isOpen } = get();
         if (isOpen) {
-          // Closing - clear search query
-          set({ isOpen: false, searchQuery: '' });
+          // Closing - clear search query and reset focus
+          set({ isOpen: false, searchQuery: '', focusedIndex: -1, focusedSection: 'search' });
         } else {
           // Opening
           set({ isOpen: true });
@@ -87,7 +117,7 @@ export const useStartMenuStore = create<StartMenuState>()(
       },
 
       close: () => {
-        set({ isOpen: false, searchQuery: '' });
+        set({ isOpen: false, searchQuery: '', focusedIndex: -1, focusedSection: 'search' });
       },
 
       clearSearch: () => {
@@ -120,6 +150,50 @@ export const useStartMenuStore = create<StartMenuState>()(
       removePinnedApp: (appId: string) => {
         const { pinnedApps } = get();
         set({ pinnedApps: pinnedApps.filter((app) => app.id !== appId) });
+      },
+
+      // Recent apps actions
+      addRecentApp: (app: Module) => {
+        const { recentApps } = get();
+        
+        // Remove if already exists (will re-add at front)
+        const filtered = recentApps.filter(a => a.id !== app.id);
+        
+        // Add to front
+        const updated = [app, ...filtered];
+        
+        // Limit to MAX_RECENT
+        const limited = updated.slice(0, MAX_RECENT);
+        
+        set({ recentApps: limited });
+        
+        // Persist to localStorage
+        try {
+          persistenceService.addRecentModule(app.id);
+        } catch {
+          // Ignore persistence errors
+        }
+      },
+
+      setRecentApps: (apps: Module[]) => {
+        set({ recentApps: apps.slice(0, MAX_RECENT) });
+      },
+
+      clearRecentApps: () => {
+        set({ recentApps: [] });
+      },
+
+      // Keyboard navigation actions
+      setFocusedIndex: (index: number) => {
+        set({ focusedIndex: index });
+      },
+
+      setFocusedSection: (section: FocusedSection) => {
+        set({ focusedSection: section, focusedIndex: 0 });
+      },
+
+      resetFocus: () => {
+        set({ focusedIndex: -1, focusedSection: 'search' });
       },
 
       // Selectors
@@ -164,6 +238,10 @@ export const useStartMenuStore = create<StartMenuState>()(
         );
       },
 
+      getRecentModules: (): Module[] => {
+        return get().recentApps;
+      },
+
       // Aliases for StartMenu component compatibility
       getPinnedModules: (): Module[] => {
         return get().pinnedApps;
@@ -197,9 +275,22 @@ export const useSearchQuery = () => useStartMenuStore((state) => state.searchQue
 export const usePinnedApps = () => useStartMenuStore((state) => state.pinnedApps);
 
 /**
+ * Hook to get recent apps
+ */
+export const useRecentApps = () => useStartMenuStore((state) => state.recentApps);
+
+/**
  * Hook to get all apps
  */
 export const useAllApps = () => useStartMenuStore((state) => state.allApps);
+
+/**
+ * Hook to get keyboard navigation state
+ */
+export const useFocusState = () => useStartMenuStore((state) => ({
+  focusedIndex: state.focusedIndex,
+  focusedSection: state.focusedSection,
+}));
 
 /**
  * Hook to get Start Menu actions
@@ -210,10 +301,17 @@ export const useStartMenuActions = () =>
     open: state.open,
     close: state.close,
     setSearchQuery: state.setSearchQuery,
+    clearSearch: state.clearSearch,
     setPinnedApps: state.setPinnedApps,
     setAllApps: state.setAllApps,
     addPinnedApp: state.addPinnedApp,
     removePinnedApp: state.removePinnedApp,
+    addRecentApp: state.addRecentApp,
+    setRecentApps: state.setRecentApps,
+    clearRecentApps: state.clearRecentApps,
+    setFocusedIndex: state.setFocusedIndex,
+    setFocusedSection: state.setFocusedSection,
+    resetFocus: state.resetFocus,
   }));
 
 export default useStartMenuStore;

@@ -1,19 +1,19 @@
 /**
  * TerraFusion OS Hooks Index
- * 
+ *
  * Re-exports all custom hooks for the OS Shell.
- * 
+ *
  * @module hooks
  */
 
 // Hydration & Persistence
 export {
-  useHydration,
   useDesktopPersistence,
-  useStartMenuPersistence,
+  useHydration,
   useRecentModules,
-  type HydrationState,
+  useStartMenuPersistence,
   type HydrationResult,
+  type HydrationState,
 } from './useHydration';
 
 // Connection Hooks
@@ -21,9 +21,9 @@ export { useBackendConnection } from './useBackendConnection';
 export { useOSConnection } from './useOSConnection';
 
 // System Hooks
-export { useSystemHealth } from './useSystemHealth';
 export { useAgentSwarmStatus } from './useAgentSwarmStatus';
+export { useSystemHealth } from './useSystemHealth';
 
 // Module Ecosystem
-export { useModules } from './useModules';
 export { useModuleEcosystem } from './useModuleEcosystem';
+export { useModules } from './useModules';

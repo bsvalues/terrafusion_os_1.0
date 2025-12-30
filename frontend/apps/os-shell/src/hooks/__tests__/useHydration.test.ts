@@ -205,9 +205,9 @@ describe('useHydration', () => {
 
       // Only valid window should be restored
       const { windows } = useDesktopStore.getState();
-      const levyWindows = windows.filter(w => w.moduleId === 'terra-levy');
-      const nonexistentWindows = windows.filter(w => w.moduleId === 'nonexistent-module');
-      
+      const levyWindows = windows.filter((w) => w.moduleId === 'terra-levy');
+      const nonexistentWindows = windows.filter((w) => w.moduleId === 'nonexistent-module');
+
       expect(nonexistentWindows).toHaveLength(0); // Missing module skipped
       expect(levyWindows).toHaveLength(1); // Valid module restored
 
@@ -383,7 +383,7 @@ describe('useHydration', () => {
       });
 
       const { windows } = useDesktopStore.getState();
-      const levyWindows = windows.filter(w => w.moduleId === 'terra-levy');
+      const levyWindows = windows.filter((w) => w.moduleId === 'terra-levy');
       expect(levyWindows).toHaveLength(1);
     });
   });

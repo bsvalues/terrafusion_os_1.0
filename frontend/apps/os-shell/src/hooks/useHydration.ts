@@ -70,7 +70,7 @@ export function useHydration(): HydrationResult {
     isHydrated: false,
     error: null,
   });
-  
+
   // Prevent multiple hydrations
   const hasHydratedRef = useRef(false);
 
@@ -145,42 +145,45 @@ export function useHydration(): HydrationResult {
    * Main hydration function
    * @param force - If true, forces re-hydration even if already hydrated
    */
-  const hydrate = useCallback(async (force = false) => {
-    // Prevent multiple hydrations unless forced
-    if (hasHydratedRef.current && !force) {
-      return;
-    }
-    hasHydratedRef.current = true;
-    
-    setState({ isHydrating: true, isHydrated: false, error: null });
-
-    try {
-      // Check for version migration
-      persistenceService.migrateIfNeeded();
-
-      // Load persisted state
-      const desktopState = persistenceService.loadDesktopState();
-      const startMenuState = persistenceService.loadStartMenuState();
-
-      // Hydrate stores
-      if (desktopState) {
-        hydrateDesktop(desktopState);
+  const hydrate = useCallback(
+    async (force = false) => {
+      // Prevent multiple hydrations unless forced
+      if (hasHydratedRef.current && !force) {
+        return;
       }
+      hasHydratedRef.current = true;
 
-      if (startMenuState) {
-        hydrateStartMenu(startMenuState);
+      setState({ isHydrating: true, isHydrated: false, error: null });
+
+      try {
+        // Check for version migration
+        persistenceService.migrateIfNeeded();
+
+        // Load persisted state
+        const desktopState = persistenceService.loadDesktopState();
+        const startMenuState = persistenceService.loadStartMenuState();
+
+        // Hydrate stores
+        if (desktopState) {
+          hydrateDesktop(desktopState);
+        }
+
+        if (startMenuState) {
+          hydrateStartMenu(startMenuState);
+        }
+
+        setState({ isHydrating: false, isHydrated: true, error: null });
+      } catch (error) {
+        console.error('[Hydration] Failed to hydrate state:', error);
+        setState({
+          isHydrating: false,
+          isHydrated: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        });
       }
-
-      setState({ isHydrating: false, isHydrated: true, error: null });
-    } catch (error) {
-      console.error('[Hydration] Failed to hydrate state:', error);
-      setState({
-        isHydrating: false,
-        isHydrated: false,
-        error: error instanceof Error ? error : new Error(String(error)),
-      });
-    }
-  }, [hydrateDesktop, hydrateStartMenu]);
+    },
+    [hydrateDesktop, hydrateStartMenu]
+  );
 
   /**
    * Reset all persisted state

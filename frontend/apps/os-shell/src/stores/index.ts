@@ -30,10 +30,13 @@ export {
   useStartMenuOpen,
   useSearchQuery,
   usePinnedApps,
+  useRecentApps,
   useAllApps,
+  useFocusState,
   useStartMenuActions,
   type Module,
   type ModuleStatus,
+  type FocusedSection,
   type StartMenuState,
 } from './startMenuStore';
 
