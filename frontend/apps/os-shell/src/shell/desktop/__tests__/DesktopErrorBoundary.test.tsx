@@ -1,19 +1,19 @@
 /**
  * TerraFusion OS Desktop Error Boundary Tests
- * 
+ *
  * Tests for top-level error boundary:
  * - Catches catastrophic errors
  * - Shows full-screen recovery UI
  * - Restart functionality
- * 
+ *
  * @module shell/desktop/__tests__/DesktopErrorBoundary.test
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import * as matchers from '@testing-library/jest-dom/matchers';
+import { cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DesktopErrorBoundary } from '../DesktopErrorBoundary';
 
@@ -42,10 +42,10 @@ describe('DesktopErrorBoundary', () => {
     it('renders children when no error', () => {
       render(
         <DesktopErrorBoundary>
-          <div data-testid="desktop-content">Desktop Content</div>
+          <div data-testid='desktop-content'>Desktop Content</div>
         </DesktopErrorBoundary>
       );
-      
+
       expect(screen.getByTestId('desktop-content')).toBeInTheDocument();
     });
 
@@ -55,7 +55,7 @@ describe('DesktopErrorBoundary', () => {
           <div>Desktop Content</div>
         </DesktopErrorBoundary>
       );
-      
+
       expect(screen.queryByTestId('desktop-error-fallback')).not.toBeInTheDocument();
     });
   });
@@ -67,7 +67,7 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
+
       expect(screen.getByTestId('desktop-error-fallback')).toBeInTheDocument();
     });
 
@@ -77,7 +77,7 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
+
       const fallback = screen.getByTestId('desktop-error-fallback');
       // Should take full viewport
       expect(fallback).toHaveClass('w-screen', 'h-screen');
@@ -89,8 +89,10 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
-      expect(screen.getByText(/TerraFusion/i)).toBeInTheDocument();
+
+      // TerraFusion appears in multiple places (header, button, footer)
+      const brandingElements = screen.getAllByText(/TerraFusion/i);
+      expect(brandingElements.length).toBeGreaterThan(0);
     });
 
     it('displays recovery message', () => {
@@ -99,7 +101,7 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
+
       expect(screen.getByText(/encountered an error/i)).toBeInTheDocument();
     });
 
@@ -109,7 +111,7 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
+
       expect(console.error).toHaveBeenCalled();
     });
   });
@@ -121,8 +123,9 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
-      expect(screen.getByRole('button', { name: /restart/i })).toBeInTheDocument();
+
+      // Use specific aria-label to avoid matching "Clear Data & Restart" button
+      expect(screen.getByRole('button', { name: /restart terrafusion os/i })).toBeInTheDocument();
     });
 
     it('restart button triggers page reload', async () => {
@@ -138,9 +141,10 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
-      await userEvent.click(screen.getByRole('button', { name: /restart/i }));
-      
+
+      // Use specific aria-label to avoid matching "Clear Data & Restart" button
+      await userEvent.click(screen.getByRole('button', { name: /restart terrafusion os/i }));
+
       expect(reloadMock).toHaveBeenCalled();
     });
 
@@ -150,7 +154,7 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
+
       expect(screen.getByRole('button', { name: /clear data/i })).toBeInTheDocument();
     });
 
@@ -174,9 +178,9 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
+
       await userEvent.click(screen.getByRole('button', { name: /clear data/i }));
-      
+
       expect(clearMock).toHaveBeenCalled();
       expect(reloadMock).toHaveBeenCalled();
     });
@@ -189,7 +193,7 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
+
       expect(screen.getByText(/Technical Details/i)).toBeInTheDocument();
     });
 
@@ -199,8 +203,10 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
-      expect(screen.getByText(/Catastrophic system failure/i)).toBeInTheDocument();
+
+      // Error message appears both in the error text and stack trace
+      const elements = screen.getAllByText(/Catastrophic system failure/i);
+      expect(elements.length).toBeGreaterThan(0);
     });
   });
 
@@ -211,7 +217,7 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
+
       expect(screen.getByRole('alert')).toBeInTheDocument();
     });
 
@@ -221,8 +227,9 @@ describe('DesktopErrorBoundary', () => {
           <CatastrophicError />
         </DesktopErrorBoundary>
       );
-      
-      const restartButton = screen.getByRole('button', { name: /restart/i });
+
+      // Use specific aria-label to avoid matching "Clear Data & Restart" button
+      const restartButton = screen.getByRole('button', { name: /restart terrafusion os/i });
       restartButton.focus();
       expect(document.activeElement).toBe(restartButton);
     });
