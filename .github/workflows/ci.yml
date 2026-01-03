@@ -279,15 +279,8 @@ jobs:
   seal-gate:
     name: 🔒 TerraFusion Seal Gate
     runs-on: ubuntu-latest
-    needs:
-      [
-        backend-tests,
-        frontend-tests,
-        ai-validation,
-        security-scan,
-        build-and-package,
-        performance-test,
-      ]
+    if: always() # Run even if dependent jobs fail - we need to report status
+    needs: [quality-gate, backend-tests, frontend-tests, ai-validation, security-scan]
 
     env:
       RUNTIMECERT_COUNTY: benton
@@ -313,7 +306,18 @@ jobs:
       - name: 📦 Restore .NET Dependencies
         run: dotnet restore backend/TerraFusion.sln || dotnet restore backend/ || echo "Backend restore skipped"
 
+      - name: ✅ Check Quality Gate Status
+        id: check-quality
+        run: |
+          echo "Quality Gate result: ${{ needs.quality-gate.result }}"
+          if [ "${{ needs.quality-gate.result }}" != "success" ]; then
+            echo "❌ Quality Gate did not pass"
+            exit 1
+          fi
+          echo "✅ Quality Gate passed"
+
       - name: 🔒 TerraFusion Seal Gate
+        if: steps.check-quality.outcome == 'success'
         shell: pwsh
         run: pwsh -NoProfile -File scripts/ci-seal-gate.ps1
 
