@@ -285,6 +285,7 @@ jobs:
     env:
       RUNTIMECERT_COUNTY: benton
       RUNTIMECERT_STRICT: 'true'
+      SEAL_GATE_BOOTSTRAP: 'true' # Enable bootstrap mode for initial setup
       # RUNTIMECERT_BASE_URL: ${{ secrets.PROD_API_URL }}  # Enable for live certification
 
     steps:
