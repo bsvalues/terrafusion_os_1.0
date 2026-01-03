@@ -48,6 +48,9 @@ export interface StartMenuState {
   recentApps: Module[];
   allApps: Module[];
   
+  // Module launch state (for integration with ModuleLoader)
+  selectedModuleId: string | null;
+  
   // Keyboard navigation state
   focusedIndex: number;
   focusedSection: FocusedSection;
@@ -73,6 +76,10 @@ export interface StartMenuState {
   setFocusedSection: (section: FocusedSection) => void;
   resetFocus: () => void;
 
+  // Module launch actions
+  launchModule: (moduleId: string) => void;
+  clearSelectedModule: () => void;
+
   // Selectors (computed values as functions)
   getFilteredApps: () => Module[];
   getActiveApps: () => Module[];
@@ -97,6 +104,7 @@ export const useStartMenuStore = create<StartMenuState>()(
       pinnedApps: [],
       recentApps: [],
       allApps: [],
+      selectedModuleId: null,
       focusedIndex: -1,
       focusedSection: 'search',
 
@@ -194,6 +202,22 @@ export const useStartMenuStore = create<StartMenuState>()(
 
       resetFocus: () => {
         set({ focusedIndex: -1, focusedSection: 'search' });
+      },
+
+      // Module launch actions
+      launchModule: (moduleId: string) => {
+        // Set the selected module and close the menu
+        set({ 
+          selectedModuleId: moduleId,
+          isOpen: false,
+          searchQuery: '',
+          focusedIndex: -1,
+          focusedSection: 'search'
+        });
+      },
+
+      clearSelectedModule: () => {
+        set({ selectedModuleId: null });
       },
 
       // Selectors
@@ -312,6 +336,14 @@ export const useStartMenuActions = () =>
     setFocusedIndex: state.setFocusedIndex,
     setFocusedSection: state.setFocusedSection,
     resetFocus: state.resetFocus,
+    launchModule: state.launchModule,
+    clearSelectedModule: state.clearSelectedModule,
   }));
+
+/**
+ * Hook to get the currently selected module ID (for ModuleLoader integration)
+ */
+export const useSelectedModuleId = () => 
+  useStartMenuStore((state) => state.selectedModuleId);
 
 export default useStartMenuStore;
