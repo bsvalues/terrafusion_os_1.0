@@ -4,26 +4,24 @@
  * Tests for the window layer manager that renders all windows from store.
  *
  * @module shell/desktop/__tests__/WindowManager.test
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  * @see SUCCESS CRITERIA SC-4
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import { act } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DesktopWindow, useDesktopStore } from '../../../stores/desktopStore';
 import { WindowManager } from '../WindowManager';
 
-// Extend expect with jest-dom matchers
-expect.extend(matchers);
+// jest-dom matchers are extended globally via setupTests.ts
 
 // ============================================================================
 // Test Setup
 // ============================================================================
 
 // Mock Window component to simplify testing WindowManager logic
-vi.mock('../Window', () => ({
+jest.mock('../Window', () => ({
   Window: ({ window }: { window: DesktopWindow }) => (
     <div
       data-testid={`window-${window.id}`}
@@ -62,7 +60,7 @@ describe('WindowManager', () => {
 
   afterEach(() => {
     cleanup();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ============================================================================
@@ -214,11 +212,8 @@ describe('WindowManager', () => {
       expect(screen.queryByTestId('window-new-win')).not.toBeInTheDocument();
 
       act(() => {
-        useDesktopStore.getState().openWindow({
-          moduleId: 'test',
-          title: 'New Window',
-          icon: '📋',
-        });
+        // openWindow signature: (moduleId: string, title: string, icon: string)
+        useDesktopStore.getState().openWindow('test', 'New Window', '📋');
       });
 
       // After opening, a window should appear
@@ -365,22 +360,10 @@ describe('WindowManager', () => {
       render(<WindowManager />);
 
       act(() => {
-        // Open 3 windows rapidly
-        useDesktopStore.getState().openWindow({
-          moduleId: 'test',
-          title: 'Rapid 1',
-          icon: '📋',
-        });
-        useDesktopStore.getState().openWindow({
-          moduleId: 'test',
-          title: 'Rapid 2',
-          icon: '📋',
-        });
-        useDesktopStore.getState().openWindow({
-          moduleId: 'test',
-          title: 'Rapid 3',
-          icon: '📋',
-        });
+        // Open 3 windows rapidly - openWindow signature: (moduleId, title, icon)
+        useDesktopStore.getState().openWindow('test', 'Rapid 1', '📋');
+        useDesktopStore.getState().openWindow('test', 'Rapid 2', '📋');
+        useDesktopStore.getState().openWindow('test', 'Rapid 3', '📋');
       });
 
       const container = screen.getByTestId('window-manager');

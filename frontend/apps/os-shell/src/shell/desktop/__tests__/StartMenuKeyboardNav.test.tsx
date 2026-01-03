@@ -12,26 +12,24 @@
  * - SC-6.12: Focus starts on search, then first pinned app
  *
  * @module shell/desktop/__tests__/StartMenuKeyboardNav.test
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useDesktopStore } from '../../../stores/desktopStore';
 import { useStartMenuStore, type Module } from '../../../stores/startMenuStore';
 import { StartMenu } from '../StartMenu';
 
-// Extend vitest expect with jest-dom matchers
-expect.extend(matchers);
+// jest-dom matchers are extended globally via setupTests.ts
 
 // Clean up after each test
 afterEach(() => {
   cleanup();
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 // Mock modules

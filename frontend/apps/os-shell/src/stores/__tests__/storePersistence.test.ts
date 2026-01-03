@@ -13,7 +13,7 @@
  */
 
 import { act } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
 import {
   persistenceService,
   STORAGE_KEYS,
@@ -47,19 +47,19 @@ beforeEach(() => {
 
   // Reset localStorage mock
   mockStorage = {};
-  vi.spyOn(Storage.prototype, 'getItem').mockImplementation(
+  jest.spyOn(Storage.prototype, 'getItem').mockImplementation(
     (key: string) => mockStorage[key] ?? null
   );
-  vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string, value: string) => {
+  jest.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string, value: string) => {
     mockStorage[key] = value;
   });
-  vi.spyOn(Storage.prototype, 'removeItem').mockImplementation((key: string) => {
+  jest.spyOn(Storage.prototype, 'removeItem').mockImplementation((key: string) => {
     delete mockStorage[key];
   });
 });
 
 afterEach(() => {
-  vi.restoreAllMocks();
+  jest.restoreAllMocks();
 });
 
 // Test data

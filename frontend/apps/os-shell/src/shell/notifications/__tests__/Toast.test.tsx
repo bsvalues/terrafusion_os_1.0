@@ -9,18 +9,17 @@
  * - Accessibility
  *
  * @module shell/notifications/__tests__/Toast.test
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { NotificationType } from '../../../stores/notificationStore';
 import { Toast, type ToastProps } from '../Toast';
 
-expect.extend(matchers);
+// jest-dom matchers are extended globally via setupTests.ts
 
 // Mock toast data
 const createToast = (overrides: Partial<ToastProps['toast']> = {}): ToastProps['toast'] => ({
@@ -35,11 +34,11 @@ const createToast = (overrides: Partial<ToastProps['toast']> = {}): ToastProps['
 });
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
 });
 
 afterEach(() => {
-  vi.useRealTimers();
+  jest.useRealTimers();
   cleanup();
 });
 
@@ -145,31 +144,31 @@ describe('Toast Component', () => {
 
   describe('Auto-Dismiss', () => {
     it('calls onDismiss after duration expires', async () => {
-      const onDismiss = vi.fn();
+      const onDismiss = jest.fn();
       render(<Toast toast={createToast({ duration: 5000 })} onDismiss={onDismiss} />);
 
       expect(onDismiss).not.toHaveBeenCalled();
 
       act(() => {
-        vi.advanceTimersByTime(5000);
+        jest.advanceTimersByTime(5000);
       });
 
       expect(onDismiss).toHaveBeenCalledWith('toast-1');
     });
 
     it('does not auto-dismiss when duration is 0', () => {
-      const onDismiss = vi.fn();
+      const onDismiss = jest.fn();
       render(<Toast toast={createToast({ duration: 0 })} onDismiss={onDismiss} />);
 
       act(() => {
-        vi.advanceTimersByTime(10000);
+        jest.advanceTimersByTime(10000);
       });
 
       expect(onDismiss).not.toHaveBeenCalled();
     });
 
     it('clears timeout on unmount', () => {
-      const onDismiss = vi.fn();
+      const onDismiss = jest.fn();
       const { unmount } = render(
         <Toast toast={createToast({ duration: 5000 })} onDismiss={onDismiss} />
       );
@@ -177,7 +176,7 @@ describe('Toast Component', () => {
       unmount();
 
       act(() => {
-        vi.advanceTimersByTime(5000);
+        jest.advanceTimersByTime(5000);
       });
 
       expect(onDismiss).not.toHaveBeenCalled();
@@ -186,8 +185,8 @@ describe('Toast Component', () => {
 
   describe('Manual Dismiss', () => {
     it('calls onDismiss when dismiss button clicked', async () => {
-      vi.useRealTimers(); // Use real timers for userEvent
-      const onDismiss = vi.fn();
+      jest.useRealTimers(); // Use real timers for userEvent
+      const onDismiss = jest.fn();
       render(<Toast toast={createToast()} onDismiss={onDismiss} />);
 
       await userEvent.click(screen.getByRole('button', { name: /dismiss/i }));
@@ -198,15 +197,15 @@ describe('Toast Component', () => {
 
   describe('Action Button', () => {
     it('renders action button when action provided', () => {
-      const action = { label: 'View Details', onClick: vi.fn() };
+      const action = { label: 'View Details', onClick: jest.fn() };
       render(<Toast toast={createToast({ action })} onDismiss={() => {}} />);
 
       expect(screen.getByRole('button', { name: 'View Details' })).toBeInTheDocument();
     });
 
     it('calls action onClick when action button clicked', async () => {
-      vi.useRealTimers();
-      const onClick = vi.fn();
+      jest.useRealTimers();
+      const onClick = jest.fn();
       const action = { label: 'View Details', onClick };
       render(<Toast toast={createToast({ action })} onDismiss={() => {}} />);
 

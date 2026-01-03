@@ -14,11 +14,12 @@
 import * as matchers from '@testing-library/jest-dom/matchers';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+// Vitest imports removed - Jest globals used
+import '@testing-library/jest-dom';
 
 import { SystemHealthIndicator, SystemHealthPanel } from '../SystemHealthPanel';
 
-expect.extend(matchers);
+
 
 // Mock health data
 const mockHealthStatus = {
@@ -44,7 +45,7 @@ const mockCriticalStatus = {
 };
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 afterEach(() => {
@@ -201,7 +202,7 @@ describe('SystemHealthPanel', () => {
 
   describe('Close Behavior', () => {
     it('calls onClose when close button clicked', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
       render(<SystemHealthPanel status={mockHealthStatus} onClose={onClose} />);
 
       await userEvent.click(screen.getByRole('button', { name: /close/i }));
@@ -210,7 +211,7 @@ describe('SystemHealthPanel', () => {
     });
 
     it('calls onClose on Escape key', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
       render(<SystemHealthPanel status={mockHealthStatus} onClose={onClose} />);
 
       await userEvent.keyboard('{Escape}');

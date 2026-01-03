@@ -11,13 +11,14 @@
 import * as matchers from '@testing-library/jest-dom/matchers';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+// Vitest imports removed - Jest globals used
+import '@testing-library/jest-dom';
 import { useDesktopStore } from '../../../stores/desktopStore';
 import { useStartMenuStore } from '../../../stores/startMenuStore';
 import { Taskbar } from '../Taskbar';
 
 // Extend vitest expect with jest-dom matchers
-expect.extend(matchers);
+
 
 // Clean up DOM after each test
 afterEach(() => {

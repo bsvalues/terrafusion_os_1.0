@@ -11,24 +11,22 @@
  * - SC-6.5: Empty state when no recent apps
  *
  * @module shell/desktop/__tests__/RecentAppsSection.test
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useStartMenuStore, type Module } from '../../../stores/startMenuStore';
 import { RecentAppsSection } from '../RecentAppsSection';
 
-// Extend vitest expect with jest-dom matchers
-expect.extend(matchers);
+// jest-dom matchers are extended globally via setupTests.ts
 
 // Clean up after each test
 afterEach(() => {
   cleanup();
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 // Mock modules
@@ -77,7 +75,7 @@ describe('RecentAppsSection', () => {
     it('renders section with "Recent" label when there are recent apps', () => {
       useStartMenuStore.setState({ recentApps: mockRecentApps });
 
-      render(<RecentAppsSection onLaunch={vi.fn()} />);
+      render(<RecentAppsSection onLaunch={jest.fn()} />);
 
       expect(screen.getByText('Recent')).toBeInTheDocument();
       expect(screen.getByTestId('recent-apps')).toBeInTheDocument();
@@ -86,7 +84,7 @@ describe('RecentAppsSection', () => {
     it('does not render when there are no recent apps (SC-6.5)', () => {
       useStartMenuStore.setState({ recentApps: [] });
 
-      render(<RecentAppsSection onLaunch={vi.fn()} />);
+      render(<RecentAppsSection onLaunch={jest.fn()} />);
 
       expect(screen.queryByTestId('recent-apps')).not.toBeInTheDocument();
       expect(screen.queryByText('Recent')).not.toBeInTheDocument();
@@ -95,7 +93,7 @@ describe('RecentAppsSection', () => {
     it('displays clock icon in section header', () => {
       useStartMenuStore.setState({ recentApps: mockRecentApps });
 
-      render(<RecentAppsSection onLaunch={vi.fn()} />);
+      render(<RecentAppsSection onLaunch={jest.fn()} />);
 
       expect(screen.getByTestId('recent-clock-icon')).toBeInTheDocument();
     });
@@ -105,7 +103,7 @@ describe('RecentAppsSection', () => {
     it('shows recent apps in horizontal scroll layout', () => {
       useStartMenuStore.setState({ recentApps: mockRecentApps });
 
-      render(<RecentAppsSection onLaunch={vi.fn()} />);
+      render(<RecentAppsSection onLaunch={jest.fn()} />);
 
       const container = screen.getByTestId('recent-apps-container');
       expect(container).toHaveClass('overflow-x-auto');
@@ -114,7 +112,7 @@ describe('RecentAppsSection', () => {
     it('displays apps in most-recent-first order', () => {
       useStartMenuStore.setState({ recentApps: mockRecentApps });
 
-      render(<RecentAppsSection onLaunch={vi.fn()} />);
+      render(<RecentAppsSection onLaunch={jest.fn()} />);
 
       const buttons = screen.getAllByRole('button');
       // First button should be the most recent (first in array)
@@ -124,7 +122,7 @@ describe('RecentAppsSection', () => {
     it('displays app icon and name for each recent app', () => {
       useStartMenuStore.setState({ recentApps: mockRecentApps });
 
-      render(<RecentAppsSection onLaunch={vi.fn()} />);
+      render(<RecentAppsSection onLaunch={jest.fn()} />);
 
       expect(screen.getByText('🏛️')).toBeInTheDocument();
       expect(screen.getByText('Government Edition')).toBeInTheDocument();
@@ -144,7 +142,7 @@ describe('RecentAppsSection', () => {
       }));
       useStartMenuStore.setState({ recentApps: manyApps });
 
-      render(<RecentAppsSection onLaunch={vi.fn()} />);
+      render(<RecentAppsSection onLaunch={jest.fn()} />);
 
       const buttons = screen.getAllByRole('button');
       // Should show only first 10
@@ -154,7 +152,7 @@ describe('RecentAppsSection', () => {
 
   describe('App Launch (SC-6.4)', () => {
     it('calls onLaunch when app is clicked', async () => {
-      const onLaunch = vi.fn();
+      const onLaunch = jest.fn();
       useStartMenuStore.setState({ recentApps: mockRecentApps });
 
       render(<RecentAppsSection onLaunch={onLaunch} />);
@@ -166,7 +164,7 @@ describe('RecentAppsSection', () => {
     });
 
     it('calls onLaunch with correct module data', async () => {
-      const onLaunch = vi.fn();
+      const onLaunch = jest.fn();
       useStartMenuStore.setState({ recentApps: mockRecentApps });
 
       render(<RecentAppsSection onLaunch={onLaunch} />);
@@ -187,7 +185,7 @@ describe('RecentAppsSection', () => {
     it('app buttons are focusable via Tab', async () => {
       useStartMenuStore.setState({ recentApps: mockRecentApps });
 
-      render(<RecentAppsSection onLaunch={vi.fn()} />);
+      render(<RecentAppsSection onLaunch={jest.fn()} />);
 
       await userEvent.tab();
 
@@ -198,7 +196,7 @@ describe('RecentAppsSection', () => {
     it('app buttons have visible focus indicator', () => {
       useStartMenuStore.setState({ recentApps: mockRecentApps });
 
-      render(<RecentAppsSection onLaunch={vi.fn()} />);
+      render(<RecentAppsSection onLaunch={jest.fn()} />);
 
       const button = screen.getByRole('button', { name: /government edition/i });
       expect(button).toHaveClass('focus-visible:ring-2');
@@ -209,7 +207,7 @@ describe('RecentAppsSection', () => {
     it('buttons have aria-label with app name', () => {
       useStartMenuStore.setState({ recentApps: mockRecentApps });
 
-      render(<RecentAppsSection onLaunch={vi.fn()} />);
+      render(<RecentAppsSection onLaunch={jest.fn()} />);
 
       const govButton = screen.getByRole('button', { name: /government edition/i });
       expect(govButton).toHaveAccessibleName('Government Edition');
@@ -218,7 +216,7 @@ describe('RecentAppsSection', () => {
     it('icons have aria-hidden attribute', () => {
       useStartMenuStore.setState({ recentApps: mockRecentApps });
 
-      render(<RecentAppsSection onLaunch={vi.fn()} />);
+      render(<RecentAppsSection onLaunch={jest.fn()} />);
 
       // Icons should be marked as decorative
       const icons = screen.getAllByRole('img', { hidden: true });

@@ -1,5 +1,5 @@
 /**
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  *
  * Window Snapping Tests
  *
@@ -25,15 +25,14 @@
  * @module shell/desktop/__tests__/WindowSnapping.test
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useDesktopStore } from '../../../stores/desktopStore';
 import { SnapPreview } from '../SnapPreview';
 import { detectSnapZone, getSnapDimensions, SNAP_THRESHOLD } from '../snapUtils';
 
-expect.extend(matchers);
+// jest-dom matchers are extended globally via setupTests.ts
 
 // ============================================================================
 // Test Setup
@@ -56,7 +55,7 @@ beforeEach(() => {
     snapPreview: null,
   });
 
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 afterEach(() => {

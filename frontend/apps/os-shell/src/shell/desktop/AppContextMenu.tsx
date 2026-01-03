@@ -133,7 +133,7 @@ export const AppContextMenu: React.FC<AppContextMenuProps> = ({ module, position
             return next;
           });
           break;
-        case 'Tab':
+        case 'Tab': {
           e.preventDefault();
           // Trap focus in menu
           const direction = e.shiftKey ? -1 : 1;
@@ -145,6 +145,7 @@ export const AppContextMenu: React.FC<AppContextMenuProps> = ({ module, position
             return next;
           });
           break;
+        }
       }
     };
 

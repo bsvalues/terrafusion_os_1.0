@@ -4,39 +4,37 @@
  * Tests for the root desktop orchestrator that combines all shell components.
  *
  * @module shell/desktop/__tests__/Desktop.test
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  * @see SUCCESS CRITERIA SC-2.4, SC-3.1, SC-3.11, SC-5.1, SC-7
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { act } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDesktopStore } from '../../../stores/desktopStore';
 import { useStartMenuStore } from '../../../stores/startMenuStore';
 import { Desktop } from '../Desktop';
 
-// Extend expect with jest-dom matchers
-expect.extend(matchers);
+// jest-dom matchers are extended globally via setupTests.ts
 
 // ============================================================================
 // Test Setup
 // ============================================================================
 
 // Mock child components to isolate Desktop logic
-vi.mock('../DesktopBackground', () => ({
+jest.mock('../DesktopBackground', () => ({
   DesktopBackground: () => <div data-testid='desktop-background'>Background</div>,
 }));
 
-vi.mock('../WindowManager', () => ({
+jest.mock('../WindowManager', () => ({
   WindowManager: () => <div data-testid='window-manager'>WindowManager</div>,
 }));
 
-vi.mock('../Taskbar', () => ({
+jest.mock('../Taskbar', () => ({
   Taskbar: () => <div data-testid='taskbar'>Taskbar</div>,
 }));
 
-vi.mock('../StartMenu', () => ({
+jest.mock('../StartMenu', () => ({
   StartMenu: () => <div data-testid='start-menu'>StartMenu</div>,
 }));
 
@@ -58,7 +56,7 @@ describe('Desktop', () => {
 
   afterEach(() => {
     cleanup();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ============================================================================
@@ -227,7 +225,7 @@ describe('Desktop', () => {
     });
 
     it('cleans up keyboard listener on unmount', () => {
-      const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+      const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
 
       const { unmount } = render(<Desktop />);
       unmount();

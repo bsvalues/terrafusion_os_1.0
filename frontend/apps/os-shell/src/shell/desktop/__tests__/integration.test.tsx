@@ -10,7 +10,8 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+// Vitest imports removed - Jest globals used
+import '@testing-library/jest-dom';
 import { render, screen, cleanup, waitFor, within, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as matchers from '@testing-library/jest-dom/matchers';
@@ -22,7 +23,7 @@ import { useDesktopStore, type DesktopWindow } from '../../../stores/desktopStor
 import { useStartMenuStore } from '../../../stores/startMenuStore';
 import { useModuleRegistryStore, type ModuleDefinition } from '../../../stores/moduleRegistryStore';
 
-expect.extend(matchers);
+
 
 // Mock modules matching the real TerraFusion modules
 const mockModules: ModuleDefinition[] = [
@@ -95,7 +96,7 @@ beforeEach(() => {
     initError: null,
   });
 
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 afterEach(() => {
@@ -355,7 +356,7 @@ describe('Integration: Error handling', () => {
       ]),
     });
     
-    const launchSpy = vi.spyOn(useModuleRegistryStore.getState(), 'launchModule');
+    const launchSpy = jest.spyOn(useModuleRegistryStore.getState(), 'launchModule');
     
     render(<ModuleLoader moduleId="government-edition" />);
     

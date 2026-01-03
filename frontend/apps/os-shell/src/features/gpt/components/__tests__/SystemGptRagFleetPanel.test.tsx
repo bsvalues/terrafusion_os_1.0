@@ -7,27 +7,24 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+// Vitest imports removed - Jest globals used
+import '@testing-library/jest-dom';
 import type { RagFleetReadiness } from '../../../../api/systemDiagnosticsApi';
 import { SystemGptRagFleetPanel } from '../SystemGptRagFleetPanel';
 
-// Mock the fetch API
-vi.mock('../../../../api/systemDiagnosticsApi', async () => {
-  const actual = await vi.importActual('../../../../api/systemDiagnosticsApi');
-  return {
-    ...actual,
-    fetchRagFleetReadiness: vi.fn(),
-  };
-});
+// Mock the systemDiagnosticsApi module entirely (avoids import.meta.env issues)
+jest.mock('../../../../api/systemDiagnosticsApi', () => ({
+  fetchRagFleetReadiness: jest.fn(),
+}));
 
 describe('SystemGptRagFleetPanel', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
-    vi.useRealTimers();
-    vi.restoreAllMocks();
+    jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
   // ═══════════════════════════════════════════════════════════════
@@ -81,7 +78,8 @@ describe('SystemGptRagFleetPanel', () => {
 
       expect(screen.getByText(/Total Counties/i)).toBeInTheDocument();
       expect(screen.getByText(/Configured/i)).toBeInTheDocument();
-      expect(screen.getByText(/Ready/i)).toBeInTheDocument();
+      // "Ready" appears both as a stat label and as a status badge - use getAllByText
+      expect(screen.getAllByText(/Ready/i).length).toBeGreaterThan(0);
     });
 
     it('displays county name in table', () => {
@@ -127,7 +125,8 @@ describe('SystemGptRagFleetPanel', () => {
 
       render(<SystemGptRagFleetPanel fleetReadiness={mediumRiskData} />);
 
-      expect(screen.getByText(/DRIFT DETECTED/i)).toBeInTheDocument();
+      // May appear in badge and drift conditions section
+      expect(screen.getAllByText(/DRIFT DETECTED/i).length).toBeGreaterThan(0);
     });
 
     it('shows HIGH DRIFT for High risk', () => {
@@ -144,7 +143,8 @@ describe('SystemGptRagFleetPanel', () => {
 
       render(<SystemGptRagFleetPanel fleetReadiness={highRiskData} />);
 
-      expect(screen.getByText(/HIGH DRIFT/i)).toBeInTheDocument();
+      // May appear in badge and drift conditions section
+      expect(screen.getAllByText(/HIGH DRIFT/i).length).toBeGreaterThan(0);
     });
   });
 

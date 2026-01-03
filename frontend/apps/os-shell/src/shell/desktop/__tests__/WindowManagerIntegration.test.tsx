@@ -10,7 +10,8 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+// Vitest imports removed - Jest globals used
+import '@testing-library/jest-dom';
 import { render, screen, cleanup, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as matchers from '@testing-library/jest-dom/matchers';
@@ -21,12 +22,12 @@ import { useDesktopStore } from '../../../stores/desktopStore';
 import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { useNotificationStore } from '../../../stores/notificationStore';
 
-expect.extend(matchers);
+
 
 // Suppress console.error for error boundary tests
 const originalError = console.error;
 beforeEach(() => {
-  console.error = vi.fn();
+  console.error = jest.fn();
   
   // Reset stores
   act(() => {

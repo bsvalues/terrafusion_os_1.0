@@ -10,7 +10,7 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
 import { act } from '@testing-library/react';
 
 import { useDesktopStore, type SnapZone } from '../desktopStore';

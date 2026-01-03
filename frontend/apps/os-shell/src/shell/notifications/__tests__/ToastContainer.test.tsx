@@ -7,29 +7,28 @@
  * - Integrates with notification store
  *
  * @module shell/notifications/__tests__/ToastContainer.test
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useNotificationStore } from '../../../stores/notificationStore';
 import { ToastContainer } from '../ToastContainer';
 
-expect.extend(matchers);
+// jest-dom matchers are extended globally via setupTests.ts
 
 // Reset store before each test
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
   act(() => {
     useNotificationStore.getState().clearAll();
   });
 });
 
 afterEach(() => {
-  vi.useRealTimers();
+  jest.useRealTimers();
   cleanup();
 });
 
@@ -133,7 +132,7 @@ describe('ToastContainer', () => {
 
   describe('Toast Dismissal', () => {
     it('removes toast when dismiss clicked', async () => {
-      vi.useRealTimers();
+      jest.useRealTimers();
       render(<ToastContainer />);
 
       act(() => {
@@ -169,7 +168,7 @@ describe('ToastContainer', () => {
       expect(screen.getByText('Auto Dismiss')).toBeInTheDocument();
 
       act(() => {
-        vi.advanceTimersByTime(3000);
+        jest.advanceTimersByTime(3000);
       });
 
       expect(screen.queryByText('Auto Dismiss')).not.toBeInTheDocument();

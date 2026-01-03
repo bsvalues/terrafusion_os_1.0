@@ -10,7 +10,7 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
 import { act } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 
@@ -48,7 +48,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 // Helper to register a test module

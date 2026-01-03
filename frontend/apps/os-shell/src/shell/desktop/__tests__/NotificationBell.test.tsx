@@ -12,14 +12,15 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+// Vitest imports removed - Jest globals used
+import '@testing-library/jest-dom';
 import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as matchers from '@testing-library/jest-dom/matchers';
 
 import { NotificationBell, NotificationPanel, type Notification } from '../NotificationBell';
 
-expect.extend(matchers);
+
 
 // Mock notifications
 const mockNotifications: Notification[] = [
@@ -50,7 +51,7 @@ const mockNotifications: Notification[] = [
 ];
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 afterEach(() => {
@@ -190,7 +191,7 @@ describe('NotificationPanel', () => {
 
   describe('Actions', () => {
     it('calls onClearAll when clear all clicked', async () => {
-      const onClearAll = vi.fn();
+      const onClearAll = jest.fn();
       render(
         <NotificationPanel 
           notifications={mockNotifications} 
@@ -205,7 +206,7 @@ describe('NotificationPanel', () => {
     });
 
     it('calls onNotificationClick when notification clicked', async () => {
-      const onNotificationClick = vi.fn();
+      const onNotificationClick = jest.fn();
       render(
         <NotificationPanel 
           notifications={mockNotifications} 
@@ -220,7 +221,7 @@ describe('NotificationPanel', () => {
     });
 
     it('calls onDismiss when dismiss button clicked', async () => {
-      const onDismiss = vi.fn();
+      const onDismiss = jest.fn();
       render(
         <NotificationPanel 
           notifications={mockNotifications} 
@@ -238,7 +239,7 @@ describe('NotificationPanel', () => {
 
   describe('Close Behavior', () => {
     it('calls onClose when close button clicked', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
       render(<NotificationPanel notifications={mockNotifications} onClose={onClose} />);
       
       await userEvent.click(screen.getByRole('button', { name: /close/i }));
@@ -247,7 +248,7 @@ describe('NotificationPanel', () => {
     });
 
     it('calls onClose on Escape key', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
       render(<NotificationPanel notifications={mockNotifications} onClose={onClose} />);
       
       await userEvent.keyboard('{Escape}');

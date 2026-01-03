@@ -72,19 +72,18 @@ const WindowControlButton: React.FC<WindowControlButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'w-3 h-3 rounded-full',
+        'w-4 h-4 rounded-full',
         'flex items-center justify-center',
-        'text-[8px] font-bold text-black/70',
-        'opacity-0 group-hover/controls:opacity-100',
+        'text-[10px] font-bold text-white',
+        'opacity-70 hover:opacity-100',  // Always visible for government-grade UX
         'transition-all duration-150',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
+        'hover:scale-110',
         colors[variant],
         disabled && 'opacity-50 cursor-not-allowed'
       )}
     >
-      <span className='opacity-0 group-hover/controls:opacity-100 transition-opacity'>
-        {icons[variant]}
-      </span>
+      <span>{icons[variant]}</span>
     </button>
   );
 };
@@ -113,16 +112,19 @@ const TitleBar: React.FC<TitleBarProps> = ({
 }) => {
   const handleMinimize = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     onMinimize();
   };
 
   const handleMaximize = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     onMaximize();
   };
 
   const handleClose = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     onClose();
   };
 
@@ -135,12 +137,11 @@ const TitleBar: React.FC<TitleBarProps> = ({
   return (
     <div
       data-testid='window-titlebar'
-      onDoubleClick={handleDoubleClick}
       className={cn(
-        'window-drag-handle',
         'h-10 px-3',
         'flex items-center justify-between',
         'select-none cursor-default',
+        'relative', // For positioning the drag handle
         // Background gradient
         isActive ? 'bg-gradient-to-r from-[#0a0e1a] via-[#1a1a2e] to-[#0a0e1a]' : 'bg-[#1a1a2e]/80',
         // Border
@@ -149,8 +150,17 @@ const TitleBar: React.FC<TitleBarProps> = ({
         'rounded-t-lg'
       )}
     >
-      {/* Window Controls (left) */}
-      <div className='group/controls flex items-center gap-2' data-testid='window-controls'>
+      {/* Drag handle - covers most of title bar but NOT the controls */}
+      <div
+        className='window-drag-handle absolute inset-0 left-[90px] rounded-t-lg'
+        onDoubleClick={handleDoubleClick}
+      />
+
+      {/* Window Controls (left) - NOT inside drag handle, so clicks work */}
+      <div
+        className='group/controls flex items-center gap-2 relative z-50 pointer-events-auto'
+        data-testid='window-controls'
+      >
         <WindowControlButton label='Close' onClick={handleClose} variant='close' />
         <WindowControlButton label='Minimize' onClick={handleMinimize} variant='minimize' />
         <WindowControlButton
@@ -160,8 +170,8 @@ const TitleBar: React.FC<TitleBarProps> = ({
         />
       </div>
 
-      {/* Title (center) */}
-      <div className='flex items-center gap-2 absolute left-1/2 -translate-x-1/2'>
+      {/* Title (center) - pointer-events-none so it doesn't block */}
+      <div className='flex items-center gap-2 absolute left-1/2 -translate-x-1/2 pointer-events-none z-10'>
         <span className='text-base' role='img' aria-hidden='true'>
           {icon}
         </span>
@@ -252,7 +262,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   const position = isMaximized ? { x: 0, y: 0 } : windowData.position;
 
   const size = isMaximized
-    ? { width: '100%', height: 'calc(100% - 48px)' } // 48px for taskbar
+    ? { width: '100%', height: '100%' } // Parent already accounts for taskbar
     : { width: windowData.size.width, height: windowData.size.height };
 
   return (
@@ -266,6 +276,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
       minHeight={MIN_HEIGHT}
       bounds='parent'
       dragHandleClassName='window-drag-handle'
+      cancel='[data-testid="window-controls"], [data-testid="window-controls"] *'
       disableDragging={isMaximized}
       enableResizing={!isMaximized}
       onDragStop={handleDragStop}
@@ -275,6 +286,8 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
         zIndex: windowData.zIndex,
       }}
       className={cn(
+        // CRITICAL: Re-enable pointer events (parent has pointer-events-none)
+        'pointer-events-auto',
         // Base styles
         'flex flex-col',
         // Glass morphism

@@ -15,24 +15,22 @@
  * - SC-6.21: Focus trapped in menu when open
  *
  * @module shell/desktop/__tests__/AppContextMenu.test
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useStartMenuStore, type Module } from '../../../stores/startMenuStore';
 import { AppContextMenu, type ContextMenuPosition } from '../AppContextMenu';
 
-// Extend vitest expect with jest-dom matchers
-expect.extend(matchers);
+// jest-dom matchers are extended globally via setupTests.ts
 
 // Clean up after each test
 afterEach(() => {
   cleanup();
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 // Mock module
@@ -63,25 +61,25 @@ beforeEach(() => {
 describe('AppContextMenu', () => {
   describe('Rendering (SC-6.13)', () => {
     it('renders context menu when visible', () => {
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
 
     it('does not render when module is null', () => {
-      render(<AppContextMenu module={null} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={null} position={mockPosition} onClose={jest.fn()} />);
 
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();
     });
 
     it('displays app name in menu header', () => {
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       expect(screen.getByText('Government Edition')).toBeInTheDocument();
     });
 
     it('displays app icon', () => {
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       expect(screen.getByText('🏛️')).toBeInTheDocument();
     });
@@ -89,7 +87,7 @@ describe('AppContextMenu', () => {
 
   describe('Position (SC-6.18)', () => {
     it('positions menu at cursor location', () => {
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       const menu = screen.getByRole('menu');
       expect(menu).toHaveStyle({ left: '100px', top: '200px' });
@@ -97,11 +95,11 @@ describe('AppContextMenu', () => {
 
     it('updates position when position prop changes', () => {
       const { rerender } = render(
-        <AppContextMenu module={mockModule} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
+        <AppContextMenu module={mockModule} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
       );
 
       rerender(
-        <AppContextMenu module={mockModule} position={{ x: 300, y: 400 }} onClose={vi.fn()} />
+        <AppContextMenu module={mockModule} position={{ x: 300, y: 400 }} onClose={jest.fn()} />
       );
 
       const menu = screen.getByRole('menu');
@@ -113,7 +111,7 @@ describe('AppContextMenu', () => {
     it('shows "Pin to Start" for unpinned apps', () => {
       useStartMenuStore.setState({ pinnedApps: [] });
 
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       expect(screen.getByRole('menuitem', { name: /pin to start/i })).toBeInTheDocument();
     });
@@ -121,14 +119,14 @@ describe('AppContextMenu', () => {
     it('shows "Unpin from Start" for pinned apps', () => {
       useStartMenuStore.setState({ pinnedApps: [mockModule] });
 
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       expect(screen.getByRole('menuitem', { name: /unpin from start/i })).toBeInTheDocument();
     });
 
     it('clicking "Pin to Start" adds app to pinned', async () => {
       useStartMenuStore.setState({ pinnedApps: [] });
-      const onClose = vi.fn();
+      const onClose = jest.fn();
 
       render(<AppContextMenu module={mockModule} position={mockPosition} onClose={onClose} />);
 
@@ -142,7 +140,7 @@ describe('AppContextMenu', () => {
 
     it('clicking "Unpin from Start" removes app from pinned', async () => {
       useStartMenuStore.setState({ pinnedApps: [mockModule] });
-      const onClose = vi.fn();
+      const onClose = jest.fn();
 
       render(<AppContextMenu module={mockModule} position={mockPosition} onClose={onClose} />);
 
@@ -157,7 +155,7 @@ describe('AppContextMenu', () => {
 
   describe('Close Behavior', () => {
     it('Escape closes menu (SC-6.17)', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
 
       render(<AppContextMenu module={mockModule} position={mockPosition} onClose={onClose} />);
 
@@ -167,7 +165,7 @@ describe('AppContextMenu', () => {
     });
 
     it('click outside closes menu (SC-6.16)', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
 
       render(
         <div>
@@ -187,20 +185,20 @@ describe('AppContextMenu', () => {
 
   describe('Accessibility (SC-6.19, SC-6.20, SC-6.21)', () => {
     it('has role="menu" (SC-6.20)', () => {
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
 
     it('menu items have role="menuitem"', () => {
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       const menuItems = screen.getAllByRole('menuitem');
       expect(menuItems.length).toBeGreaterThan(0);
     });
 
     it('menu items have aria-labels (SC-6.19)', () => {
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       const menuItems = screen.getAllByRole('menuitem');
       menuItems.forEach((item) => {
@@ -209,14 +207,14 @@ describe('AppContextMenu', () => {
     });
 
     it('first menu item receives focus on open', () => {
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       const menuItems = screen.getAllByRole('menuitem');
       expect(menuItems[0]).toHaveFocus();
     });
 
     it('Tab keeps focus within menu (SC-6.21)', async () => {
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       // Tab through items
       for (let i = 0; i < 10; i++) {
@@ -231,7 +229,7 @@ describe('AppContextMenu', () => {
 
   describe('Keyboard Navigation', () => {
     it('Arrow Down moves to next item', async () => {
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       const menuItems = screen.getAllByRole('menuitem');
       expect(menuItems[0]).toHaveFocus();
@@ -242,7 +240,7 @@ describe('AppContextMenu', () => {
     });
 
     it('Arrow Up moves to previous item', async () => {
-      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={vi.fn()} />);
+      render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
       const menuItems = screen.getAllByRole('menuitem');
 
@@ -256,7 +254,7 @@ describe('AppContextMenu', () => {
     });
 
     it('Enter activates focused item', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
       useStartMenuStore.setState({ pinnedApps: [] });
 
       render(<AppContextMenu module={mockModule} position={mockPosition} onClose={onClose} />);

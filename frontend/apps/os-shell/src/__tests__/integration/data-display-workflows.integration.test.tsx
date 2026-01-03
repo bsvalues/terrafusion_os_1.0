@@ -5,10 +5,13 @@
  * @testCategory Integration Testing
  */
 
-import React, { useState } from 'react';
-import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { axe } from 'jest-axe';
+import { Avatar } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -18,13 +21,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Progress } from '@/components/ui/progress';
-import { Skeleton } from '@/components/ui/skeleton';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
+import React, { useState } from 'react';
 
 // ============================================================================
 // TEST COMPONENTS - Realistic Data Display Examples
@@ -153,10 +153,7 @@ const UserCard = ({ user }: { user: User }) => {
   return (
     <Card>
       <CardHeader className='flex flex-row items-center gap-4'>
-        <Avatar>
-          <AvatarImage src={`https://avatar.vercel.sh/${user.name}`} />
-          <AvatarFallback>{user.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-        </Avatar>
+        <Avatar fallback={user.name.slice(0, 2).toUpperCase()} />
         <div className='flex-1'>
           <CardTitle>{user.name}</CardTitle>
           <CardDescription>{user.email}</CardDescription>
@@ -381,12 +378,10 @@ describe('Integration: Table + Sorting + Selection Workflow', () => {
       const user = userEvent.setup();
       render(<UserTable />);
 
-      await user.click(screen.getByRole('button', { name: /name/i }));
-
       const rows = screen.getAllByRole('row');
       const firstDataRow = within(rows[1]).getAllByRole('cell');
 
-      // First user should be Alice (alphabetically first)
+      // Default sort is by name ascending, so first user should be Alice.
       expect(firstDataRow[1]).toHaveTextContent(/alice williams/i);
     });
 
@@ -396,13 +391,16 @@ describe('Integration: Table + Sorting + Selection Workflow', () => {
 
       const nameButton = screen.getByRole('button', { name: /name/i });
 
-      // First click - ascending
-      await user.click(nameButton);
+      // Initial state is ascending
       expect(nameButton).toHaveTextContent(/↑/);
 
-      // Second click - descending
+      // First click toggles to descending
       await user.click(nameButton);
       expect(nameButton).toHaveTextContent(/↓/);
+
+      // Second click toggles back to ascending
+      await user.click(nameButton);
+      expect(nameButton).toHaveTextContent(/↑/);
     });
 
     it('should sort by different columns', async () => {
@@ -429,7 +427,10 @@ describe('Integration: Table + Sorting + Selection Workflow', () => {
       const rows = screen.getAllByRole('row');
       await user.click(rows[1]); // Click first data row
 
-      expect(handleRowClick).toHaveBeenCalledWith(expect.objectContaining({ name: 'John Doe' }));
+      // With default sorting (name asc), the first row is Alice.
+      expect(handleRowClick).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'Alice Williams' })
+      );
     });
   });
 
@@ -475,7 +476,7 @@ describe('Integration: Card + Avatar + Badge Composition', () => {
     it('should integrate Avatar component in card header', () => {
       render(<UserCard user={mockUser} />);
 
-      const avatar = screen.getByText('JO'); // Fallback initials
+      const avatar = screen.getByText('JO'); // Avatar fallback
       expect(avatar).toBeInTheDocument();
     });
 
@@ -483,7 +484,7 @@ describe('Integration: Card + Avatar + Badge Composition', () => {
       render(<UserCard user={mockUser} />);
 
       const badge = screen.getByText(/active/i);
-      expect(badge).toHaveClass('badge'); // Or whatever class your Badge has
+      expect(badge).toHaveClass('bg-primary');
     });
 
     it('should display user details in card content', () => {
@@ -521,8 +522,8 @@ describe('Integration: Card + Avatar + Badge Composition', () => {
     it('should display different badge variants for status', () => {
       render(<UserGrid users={mockUsers} />);
 
-      const activeBadges = screen.getAllByText(/active/i);
-      const inactiveBadges = screen.getAllByText(/inactive/i);
+      const activeBadges = screen.getAllByText(/^active$/i);
+      const inactiveBadges = screen.getAllByText(/^inactive$/i);
 
       expect(activeBadges).toHaveLength(2);
       expect(inactiveBadges).toHaveLength(1);
@@ -648,11 +649,17 @@ describe('Integration: Data Dashboard Combined Workflow', () => {
 
       await screen.findByRole('heading', { name: /dashboard overview/i }, { timeout: 2000 });
 
-      expect(screen.getByText(/total users/i)).toBeInTheDocument();
-      expect(screen.getByText('2')).toBeInTheDocument(); // Total users
+      const totalUsersBlock = screen.getByText(/total users/i, { selector: 'p' }).closest('div');
+      expect(totalUsersBlock).not.toBeNull();
+      expect(within(totalUsersBlock as HTMLElement).getByText('2')).toBeInTheDocument();
 
-      const activeCount = screen.getAllByText('2').length;
-      expect(activeCount).toBeGreaterThan(0); // Active users
+      const activeUsersBlock = screen.getByText(/^active$/i, { selector: 'p' }).closest('div');
+      expect(activeUsersBlock).not.toBeNull();
+      expect(within(activeUsersBlock as HTMLElement).getByText('2')).toBeInTheDocument();
+
+      const inactiveUsersBlock = screen.getByText(/^inactive$/i, { selector: 'p' }).closest('div');
+      expect(inactiveUsersBlock).not.toBeNull();
+      expect(within(inactiveUsersBlock as HTMLElement).getByText('0')).toBeInTheDocument();
     });
   });
 

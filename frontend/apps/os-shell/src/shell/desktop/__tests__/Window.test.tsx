@@ -4,27 +4,25 @@
  * Tests for the draggable/resizable window component.
  *
  * @module shell/desktop/__tests__/Window.test
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  * @see SUCCESS CRITERIA SC-4
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DesktopWindow, useDesktopStore } from '../../../stores/desktopStore';
 import { Window } from '../Window';
 
-// Extend expect with jest-dom matchers
-expect.extend(matchers);
+// jest-dom matchers are extended globally via setupTests.ts
 
 // ============================================================================
 // Test Setup
 // ============================================================================
 
 // Mock react-rnd since it requires actual DOM measurements
-vi.mock('react-rnd', () => ({
+jest.mock('react-rnd', () => ({
   Rnd: ({ children, className, style, onMouseDown, position, size, ...props }: any) => (
     <div
       data-testid='window'
@@ -70,7 +68,7 @@ describe('Window Component', () => {
 
   afterEach(() => {
     cleanup();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ============================================================================
@@ -397,8 +395,11 @@ describe('Window Component', () => {
 
       render(<Window window={mockWindow} />);
 
+      // Double-click the drag handle area (which has the onDoubleClick handler)
       const titleBar = screen.getByTestId('window-titlebar');
-      fireEvent.doubleClick(titleBar);
+      const dragHandle = titleBar.querySelector('.window-drag-handle');
+      expect(dragHandle).toBeInTheDocument();
+      fireEvent.doubleClick(dragHandle!);
 
       const updatedWindow = useDesktopStore.getState().windows[0];
       expect(updatedWindow.state).toBe('maximized');
@@ -545,7 +546,7 @@ describe('Window Component', () => {
   describe('Event Propagation', () => {
     it('stops propagation on close button click', async () => {
       const mockWindow = createMockWindow();
-      const windowClickHandler = vi.fn();
+      const windowClickHandler = jest.fn();
 
       act(() => {
         useDesktopStore.setState({
@@ -568,7 +569,7 @@ describe('Window Component', () => {
 
     it('stops propagation on minimize button click', async () => {
       const mockWindow = createMockWindow();
-      const windowClickHandler = vi.fn();
+      const windowClickHandler = jest.fn();
 
       act(() => {
         useDesktopStore.setState({

@@ -12,7 +12,7 @@
  */
 
 import { act, renderHook } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
 
 import { useNotificationStore } from '../../stores/notificationStore';
 import { errorTracker } from '../useErrorReporter';
@@ -23,8 +23,8 @@ const originalError = console.error;
 const originalWarn = console.warn;
 
 beforeEach(() => {
-  console.error = vi.fn();
-  console.warn = vi.fn();
+  console.error = jest.fn();
+  console.warn = jest.fn();
 
   // Clear stores
   errorTracker.clear();

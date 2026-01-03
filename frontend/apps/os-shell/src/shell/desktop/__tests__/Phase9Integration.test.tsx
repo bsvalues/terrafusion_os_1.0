@@ -10,12 +10,11 @@
  * - Error reporting flow
  *
  * @module shell/desktop/__tests__/Phase9Integration.test
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { errorTracker } from '../../../hooks/useErrorReporter';
 import { useDesktopStore } from '../../../stores/desktopStore';
@@ -24,7 +23,7 @@ import { useNotificationStore } from '../../../stores/notificationStore';
 import { useStartMenuStore } from '../../../stores/startMenuStore';
 import { DesktopWithErrorBoundary } from '../Desktop';
 
-expect.extend(matchers);
+// jest-dom matchers are extended globally via setupTests.ts
 
 // ============================================================================
 // Test Data
@@ -94,8 +93,8 @@ const originalError = console.error;
 const originalWarn = console.warn;
 
 beforeEach(() => {
-  console.error = vi.fn();
-  console.warn = vi.fn();
+  console.error = jest.fn();
+  console.warn = jest.fn();
 
   // Reset all stores
   act(() => {
@@ -109,11 +108,11 @@ beforeEach(() => {
     useStartMenuStore.setState({
       isOpen: false,
       searchQuery: '',
-      pinnedModuleIds: ['government-edition', 'costforge-ai'],
+      pinnedApps: mockStartMenuModules.filter((m) => m.isPinned),
       recentApps: [],
       focusedIndex: -1,
       focusedSection: 'search',
-      modules: mockStartMenuModules,
+      allApps: mockStartMenuModules,
     });
 
     useModuleRegistryStore.setState({

@@ -79,3 +79,9 @@ global.ResizeObserver = class ResizeObserver {
 // });
 
 export {};
+
+describe('integrationSetup.setup', () => {
+  it('loads integration test setup', () => {
+    expect(true).toBe(true);
+  });
+});

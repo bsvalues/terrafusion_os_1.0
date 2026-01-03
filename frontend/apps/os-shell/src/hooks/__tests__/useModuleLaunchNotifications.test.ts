@@ -12,7 +12,7 @@
  */
 
 import { act, renderHook } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
 
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useModuleRegistryStore, type ModuleDefinition } from '../../stores/moduleRegistryStore';
@@ -80,7 +80,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 describe('useModuleLaunchNotifications', () => {
@@ -121,7 +121,7 @@ describe('useModuleLaunchNotifications', () => {
       const originalLaunch = useModuleRegistryStore.getState().launchModule;
       useModuleRegistryStore.setState({
         ...useModuleRegistryStore.getState(),
-        launchModule: vi.fn().mockRejectedValue(new Error('Network timeout')),
+        launchModule: jest.fn().mockRejectedValue(new Error('Network timeout')),
       });
 
       const { result } = renderHook(() => useModuleLaunchNotifications());
@@ -150,7 +150,7 @@ describe('useModuleLaunchNotifications', () => {
       const originalLaunch = useModuleRegistryStore.getState().launchModule;
       useModuleRegistryStore.setState({
         ...useModuleRegistryStore.getState(),
-        launchModule: vi.fn().mockRejectedValue(new Error('Failed')),
+        launchModule: jest.fn().mockRejectedValue(new Error('Failed')),
       });
 
       const { result } = renderHook(() => useModuleLaunchNotifications());

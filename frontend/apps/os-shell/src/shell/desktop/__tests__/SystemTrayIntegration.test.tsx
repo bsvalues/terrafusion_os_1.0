@@ -13,30 +13,31 @@
 import * as matchers from '@testing-library/jest-dom/matchers';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+// Vitest imports removed - Jest globals used
+import '@testing-library/jest-dom';
 
 import { Taskbar } from '../Taskbar';
 
-expect.extend(matchers);
+
 
 // Mock stores
-vi.mock('../../../stores/desktopStore', () => ({
-  useDesktopStore: vi.fn(() => ({
+jest.mock('../../../stores/desktopStore', () => ({
+  useDesktopStore: jest.fn(() => ({
     windows: [],
     activeWindowId: null,
-    focusWindow: vi.fn(),
+    focusWindow: jest.fn(),
   })),
 }));
 
-vi.mock('../../../stores/startMenuStore', () => ({
-  useStartMenuStore: vi.fn(() => ({
+jest.mock('../../../stores/startMenuStore', () => ({
+  useStartMenuStore: jest.fn(() => ({
     isOpen: false,
-    toggle: vi.fn(),
+    toggle: jest.fn(),
   })),
 }));
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 afterEach(() => {

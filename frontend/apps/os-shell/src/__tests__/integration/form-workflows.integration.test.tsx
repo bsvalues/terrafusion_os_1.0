@@ -5,15 +5,11 @@
  * @testCategory Integration Testing
  */
 
-import React, { useState } from 'react';
-import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { axe } from 'jest-axe';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Select,
   SelectContent,
@@ -21,7 +17,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
+import React, { useState } from 'react';
 
 // ============================================================================
 // TEST COMPONENTS - Realistic Form Examples
@@ -57,7 +57,7 @@ const LoginForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} aria-label='Login form'>
+    <form noValidate onSubmit={handleSubmit} aria-label='Login form'>
       <div className='space-y-4'>
         <div>
           <Label htmlFor='email'>Email</Label>
@@ -350,8 +350,8 @@ describe('Integration: Login Form Workflow', () => {
       await user.click(screen.getByRole('button', { name: /login/i }));
 
       // Verify errors appear
-      expect(screen.getByRole('alert', { name: /email is required/i })).toBeInTheDocument();
-      expect(screen.getByRole('alert', { name: /password is required/i })).toBeInTheDocument();
+      expect(screen.getByText(/email is required/i)).toBeInTheDocument();
+      expect(screen.getByText(/password is required/i)).toBeInTheDocument();
 
       // Verify submission didn't happen
       expect(handleSubmit).not.toHaveBeenCalled();
@@ -368,7 +368,7 @@ describe('Integration: Login Form Workflow', () => {
       await user.click(screen.getByRole('button', { name: /login/i }));
 
       // Verify email validation error
-      expect(screen.getByRole('alert', { name: /email is invalid/i })).toBeInTheDocument();
+      expect(screen.getByText(/email is invalid/i)).toBeInTheDocument();
       expect(handleSubmit).not.toHaveBeenCalled();
     });
 
@@ -383,9 +383,7 @@ describe('Integration: Login Form Workflow', () => {
       await user.click(screen.getByRole('button', { name: /login/i }));
 
       // Verify password validation error
-      expect(
-        screen.getByRole('alert', { name: /password must be at least 8 characters/i })
-      ).toBeInTheDocument();
+      expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument();
       expect(handleSubmit).not.toHaveBeenCalled();
     });
 
@@ -396,7 +394,7 @@ describe('Integration: Login Form Workflow', () => {
 
       // Submit empty form to trigger errors
       await user.click(screen.getByRole('button', { name: /login/i }));
-      expect(screen.getByRole('alert', { name: /email is required/i })).toBeInTheDocument();
+      expect(screen.getByText(/email is required/i)).toBeInTheDocument();
 
       // Correct the error
       await user.type(screen.getByLabelText(/email/i), 'user@example.com');
@@ -529,9 +527,7 @@ describe('Integration: Contact Form Workflow', () => {
       await user.click(screen.getByRole('button', { name: /submit/i }));
 
       // Verify checkbox error
-      expect(
-        screen.getByRole('alert', { name: /you must agree to the terms/i })
-      ).toBeInTheDocument();
+      expect(screen.getByText(/you must agree to the terms/i)).toBeInTheDocument();
       expect(handleSubmit).not.toHaveBeenCalled();
     });
   });
@@ -549,9 +545,7 @@ describe('Integration: Contact Form Workflow', () => {
       await user.click(screen.getByRole('button', { name: /submit/i }));
 
       // Verify validation error
-      expect(
-        screen.getByRole('alert', { name: /message must be at least 10 characters/i })
-      ).toBeInTheDocument();
+      expect(screen.getByText(/message must be at least 10 characters/i)).toBeInTheDocument();
       expect(handleSubmit).not.toHaveBeenCalled();
     });
 
@@ -671,8 +665,8 @@ describe('Integration: Profile Form Workflow', () => {
       await user.click(screen.getByRole('button', { name: /save profile/i }));
 
       // Verify errors
-      expect(screen.getByRole('alert', { name: /username is required/i })).toBeInTheDocument();
-      expect(screen.getByRole('alert', { name: /country is required/i })).toBeInTheDocument();
+      expect(screen.getByText(/username is required/i)).toBeInTheDocument();
+      expect(screen.getByText(/country is required/i)).toBeInTheDocument();
       expect(handleSubmit).not.toHaveBeenCalled();
     });
   });

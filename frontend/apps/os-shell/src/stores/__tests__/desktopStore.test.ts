@@ -12,7 +12,7 @@
  * @see SUCCESS CRITERIA SC-4: Window Management System
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
 import { act, renderHook } from '@testing-library/react';
 
 // Import will be created after tests are written

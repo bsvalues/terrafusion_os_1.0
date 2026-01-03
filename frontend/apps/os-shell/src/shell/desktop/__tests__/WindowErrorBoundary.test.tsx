@@ -14,16 +14,17 @@
 import * as matchers from '@testing-library/jest-dom/matchers';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+// Vitest imports removed - Jest globals used
+import '@testing-library/jest-dom';
 
 import { WindowErrorBoundary } from '../WindowErrorBoundary';
 
-expect.extend(matchers);
+
 
 // Suppress console.error for error boundary tests
 const originalError = console.error;
 beforeEach(() => {
-  console.error = vi.fn();
+  console.error = jest.fn();
 });
 
 afterEach(() => {
@@ -146,7 +147,7 @@ describe('WindowErrorBoundary', () => {
     });
 
     it('calls onReload when reload button clicked', async () => {
-      const onReload = vi.fn();
+      const onReload = jest.fn();
 
       render(
         <WindowErrorBoundary windowId='test-window' moduleName='Test Module' onReload={onReload}>
@@ -206,7 +207,7 @@ describe('WindowErrorBoundary', () => {
     });
 
     it('calls onClose when close button clicked', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
 
       render(
         <WindowErrorBoundary windowId='test-window' moduleName='Test Module' onClose={onClose}>

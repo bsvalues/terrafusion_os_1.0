@@ -8,92 +8,102 @@ describe('Progress', () => {
   describe('Rendering', () => {
     it('renders progress bar', () => {
       const { container } = render(<Progress value={50} />);
-      const progressBar = container.firstChild;
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toBeInTheDocument();
     });
 
     it('applies default styling', () => {
-      const { container } = render(<Progress value={50} />);
-      const progressBar = container.firstChild;
+      render(<Progress value={50} />);
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveClass('h-2', 'w-full', 'rounded-full', 'bg-primary/20');
     });
 
     it('renders with custom className', () => {
-      const { container } = render(<Progress value={50} className='custom-progress' />);
-      const progressBar = container.firstChild;
+      render(<Progress value={50} className='custom-progress' />);
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveClass('custom-progress');
     });
 
     it('renders indicator element', () => {
-      const { container } = render(<Progress value={50} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={50} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toBeInTheDocument();
+      expect(indicator).toHaveAttribute('data-state');
     });
   });
 
   describe('Value Handling', () => {
     it('renders with 0% progress', () => {
-      const { container } = render(<Progress value={0} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={0} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toHaveStyle({ transform: 'translateX(-100%)' });
     });
 
     it('renders with 25% progress', () => {
-      const { container } = render(<Progress value={25} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={25} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toHaveStyle({ transform: 'translateX(-75%)' });
     });
 
     it('renders with 50% progress', () => {
-      const { container } = render(<Progress value={50} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={50} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toHaveStyle({ transform: 'translateX(-50%)' });
     });
 
     it('renders with 75% progress', () => {
-      const { container } = render(<Progress value={75} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={75} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toHaveStyle({ transform: 'translateX(-25%)' });
     });
 
     it('renders with 100% progress', () => {
-      const { container } = render(<Progress value={100} />);
-      const indicator = container.querySelector('[data-state]');
-      expect(indicator).toHaveStyle({ transform: 'translateX(-0%)' });
+      render(<Progress value={100} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
+      expect(indicator).toHaveStyle({ transform: 'translateX(0%)' });
     });
 
     it('handles undefined value (defaults to 0)', () => {
-      const { container } = render(<Progress />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toHaveStyle({ transform: 'translateX(-100%)' });
     });
 
     it('handles null value', () => {
-      const { container } = render(<Progress value={null as any} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={null as any} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toHaveStyle({ transform: 'translateX(-100%)' });
     });
   });
 
   describe('Max Value', () => {
     it('uses default max value of 100', () => {
-      const { container } = render(<Progress value={50} />);
-      const progressBar = container.firstChild;
+      render(<Progress value={50} />);
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('data-max', '100');
     });
 
     it('accepts custom max value', () => {
-      const { container } = render(<Progress value={50} max={200} />);
-      const progressBar = container.firstChild;
+      render(<Progress value={50} max={200} />);
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('data-max', '200');
     });
 
     it('calculates percentage with custom max', () => {
       // value=50 of max=200 = 25%
-      const { container } = render(<Progress value={50} max={200} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={50} max={200} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       // Should show 25% progress (translateX(-75%))
-      expect(indicator).toBeInTheDocument();
+      expect(indicator).toHaveStyle({ transform: 'translateX(-75%)' });
     });
   });
 
@@ -170,52 +180,56 @@ describe('Progress', () => {
 
   describe('Visual States', () => {
     it('shows empty state at 0%', () => {
-      const { container } = render(<Progress value={0} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={0} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toHaveStyle({ transform: 'translateX(-100%)' });
     });
 
     it('shows partial fill at mid values', () => {
-      const { container } = render(<Progress value={50} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={50} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toHaveStyle({ transform: 'translateX(-50%)' });
     });
 
     it('shows full state at 100%', () => {
-      const { container } = render(<Progress value={100} />);
-      const indicator = container.querySelector('[data-state]');
-      expect(indicator).toHaveStyle({ transform: 'translateX(-0%)' });
+      render(<Progress value={100} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
+      expect(indicator).toHaveStyle({ transform: 'translateX(0%)' });
     });
 
     it('has data-state attribute on indicator', () => {
-      const { container } = render(<Progress value={50} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={50} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toHaveAttribute('data-state');
     });
   });
 
   describe('Custom Styling', () => {
     it('applies custom height', () => {
-      const { container } = render(<Progress value={50} className='h-4' />);
-      const progressBar = container.firstChild;
+      render(<Progress value={50} className='h-4' />);
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveClass('h-4');
     });
 
     it('applies custom width', () => {
-      const { container } = render(<Progress value={50} className='w-1/2' />);
-      const progressBar = container.firstChild;
+      render(<Progress value={50} className='w-1/2' />);
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveClass('w-1/2');
     });
 
     it('applies custom colors', () => {
-      const { container } = render(<Progress value={50} className='bg-slate-200' />);
-      const progressBar = container.firstChild;
+      render(<Progress value={50} className='bg-slate-200' />);
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveClass('bg-slate-200');
     });
 
     it('applies rounded variants', () => {
-      const { container } = render(<Progress value={50} className='rounded-lg' />);
-      const progressBar = container.firstChild;
+      render(<Progress value={50} className='rounded-lg' />);
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveClass('rounded-lg');
     });
   });
@@ -248,53 +262,58 @@ describe('Progress', () => {
 
   describe('Edge Cases', () => {
     it('handles negative values (treats as 0)', () => {
-      const { container } = render(<Progress value={-10} />);
-      const indicator = container.querySelector('[data-state]');
-      // Negative values should be clamped or treated as 0
-      expect(indicator).toBeInTheDocument();
+      render(<Progress value={-10} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
+      // Negative values should be clamped to 0
+      expect(indicator).toHaveStyle({ transform: 'translateX(-100%)' });
     });
 
     it('handles values over 100 (treats as 100)', () => {
-      const { container } = render(<Progress value={150} />);
-      const indicator = container.querySelector('[data-state]');
-      // Values over max should be handled appropriately
-      expect(indicator).toBeInTheDocument();
+      render(<Progress value={150} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
+      // Values over max should be clamped
+      expect(indicator).toHaveStyle({ transform: 'translateX(0%)' });
     });
 
     it('handles decimal values', () => {
-      const { container } = render(<Progress value={33.33} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={33.33} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toHaveStyle({ transform: 'translateX(-66.67%)' });
     });
 
     it('handles very small values', () => {
-      const { container } = render(<Progress value={0.1} />);
-      const indicator = container.querySelector('[data-state]');
+      render(<Progress value={0.1} />);
+      const progressBar = screen.getByRole('progressbar');
+      const indicator = progressBar.firstElementChild;
       expect(indicator).toHaveStyle({ transform: 'translateX(-99.9%)' });
     });
 
     it('renders without crash when value is NaN', () => {
-      const { container } = render(<Progress value={NaN} />);
-      expect(container.firstChild).toBeInTheDocument();
+      render(<Progress value={NaN} />);
+      const progressBar = screen.getByRole('progressbar');
+      expect(progressBar).toBeInTheDocument();
     });
   });
 
   describe('Data Attributes', () => {
     it('has data-state attribute on root', () => {
-      const { container } = render(<Progress value={50} />);
-      const progressBar = container.firstChild;
+      render(<Progress value={50} />);
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('data-state');
     });
 
     it('has data-value attribute', () => {
-      const { container } = render(<Progress value={50} />);
-      const progressBar = container.firstChild;
+      render(<Progress value={50} />);
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('data-value', '50');
     });
 
     it('has data-max attribute', () => {
-      const { container } = render(<Progress value={50} />);
-      const progressBar = container.firstChild;
+      render(<Progress value={50} />);
+      const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('data-max', '100');
     });
   });

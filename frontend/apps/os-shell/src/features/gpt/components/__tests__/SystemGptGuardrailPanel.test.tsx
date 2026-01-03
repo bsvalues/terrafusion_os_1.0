@@ -7,7 +7,8 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+// Vitest imports removed - Jest globals used
+import '@testing-library/jest-dom';
 import { LastGuardrailDecision } from '../../../../api/systemDiagnosticsApi';
 import { SystemGptGuardrailPanel } from '../SystemGptGuardrailPanel';
 

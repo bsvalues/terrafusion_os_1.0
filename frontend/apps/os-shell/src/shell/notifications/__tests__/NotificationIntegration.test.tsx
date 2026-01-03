@@ -7,22 +7,21 @@
  * - NotificationBell reads from store
  *
  * @module shell/notifications/__tests__/NotificationIntegration.test
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useDesktopStore } from '../../../stores/desktopStore';
 import { useNotificationStore } from '../../../stores/notificationStore';
 import { ToastContainer } from '../ToastContainer';
 
-expect.extend(matchers);
+// jest-dom matchers are extended globally via setupTests.ts
 
 // Reset stores before each test
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
   act(() => {
     useNotificationStore.getState().clearAll();
     useDesktopStore.setState({
@@ -34,7 +33,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  vi.useRealTimers();
+  jest.useRealTimers();
   cleanup();
 });
 
@@ -156,7 +155,7 @@ describe('Notification Integration', () => {
 
       // Wait for auto-dismiss
       act(() => {
-        vi.advanceTimersByTime(1000);
+        jest.advanceTimersByTime(1000);
       });
 
       // Toast gone
@@ -209,8 +208,8 @@ describe('Notification Integration', () => {
 
   describe('Notification Actions', () => {
     it('action callback can open a module', async () => {
-      vi.useRealTimers();
-      const openWindowMock = vi.fn();
+      jest.useRealTimers();
+      const openWindowMock = jest.fn();
 
       render(<ToastContainer />);
 
