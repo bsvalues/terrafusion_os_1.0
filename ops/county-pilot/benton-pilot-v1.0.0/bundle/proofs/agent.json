@@ -1,0 +1,52 @@
+{
+  "checks": [
+    {
+      "details": null,
+      "id": 1,
+      "message": "Gate-first check enforced in agent run",
+      "name": "gate_first_enforcement",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 2,
+      "message": "No active session",
+      "name": "active_session_state",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 3,
+      "message": "Session registry valid (4 sessions)",
+      "name": "session_registry_valid",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 4,
+      "message": "Contract generator available",
+      "name": "contract_generator",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 5,
+      "message": "Concurrent session prevention enforced",
+      "name": "concurrent_session_prevention",
+      "status": "pass"
+    }
+  ],
+  "error": null,
+  "source": "agent",
+  "status": "pass",
+  "subsystem": "agent",
+  "summary": {
+    "failed": 0,
+    "passed": 5,
+    "skipped": 0,
+    "total": 5,
+    "warnings": 0
+  },
+  "timestamp": "2025-12-23T17:24:51Z",
+  "version": "1.0.0"
+}

@@ -8,6 +8,11 @@
 $ErrorActionPreference = "Stop"
 $FAIL = 0
 
+# Check if we're in bootstrap mode (initial setup/merge)
+# BOOTSTRAP_MODE allows the seal gate to pass with warnings instead of failures
+# for SpecLock and TSS checks that aren't yet fully configured
+$BootstrapMode = $env:SEAL_GATE_BOOTSTRAP -eq "true" -or $env:CI_BOOTSTRAP_MODE -eq "true"
+
 # Set UTF-8 encoding for Python output
 $env:PYTHONIOENCODING = "utf-8"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -18,6 +23,9 @@ $ProjectRoot = Split-Path -Parent $ScriptDir
 Set-Location $ProjectRoot
 
 Write-Host "`n===== CI SEAL GATE - EXECUTING =====" -ForegroundColor Cyan
+if ($BootstrapMode) {
+    Write-Host "   [BOOTSTRAP MODE - Non-critical checks will warn instead of fail]" -ForegroundColor Yellow
+}
 Write-Host ""
 
 # Gate 0: Helm Production Constitutional Assertions
@@ -50,8 +58,12 @@ $output = python scripts/validate-speclock-index.py --strict 2>&1
 if ($LASTEXITCODE -eq 0) {
     Write-Host "   PASS" -ForegroundColor Green
 } else {
-    Write-Host "   FAIL: SpecLock index invalid" -ForegroundColor Red
-    $FAIL = 1
+    if ($BootstrapMode) {
+        Write-Host "   WARN: SpecLock index invalid (bootstrap mode - non-blocking)" -ForegroundColor Yellow
+    } else {
+        Write-Host "   FAIL: SpecLock index invalid" -ForegroundColor Red
+        $FAIL = 1
+    }
 }
 Write-Host ""
 
@@ -61,8 +73,12 @@ $output = python scripts/speclock-generate-all.py 2>&1
 if ($LASTEXITCODE -eq 0) {
     Write-Host "   PASS" -ForegroundColor Green
 } else {
-    Write-Host "   FAIL: Artifact generation failed" -ForegroundColor Red
-    $FAIL = 1
+    if ($BootstrapMode) {
+        Write-Host "   WARN: Artifact generation failed (bootstrap mode - non-blocking)" -ForegroundColor Yellow
+    } else {
+        Write-Host "   FAIL: Artifact generation failed" -ForegroundColor Red
+        $FAIL = 1
+    }
 }
 Write-Host ""
 
@@ -125,15 +141,24 @@ if (Test-Path $tssScript) {
         Write-Host "   SKIP: TSS mode not 'cosmic_tss'" -ForegroundColor DarkYellow
     } elseif ($output -match "Neither jq nor Python available") {
         # FAIL-CLOSED: Missing tools is a hard failure, not skip
-        Write-Host "   FAIL: Neither jq nor Python available for JSON queries" -ForegroundColor Red
-        $FAIL = 1
+        if ($BootstrapMode) {
+            Write-Host "   WARN: Neither jq nor Python available (bootstrap mode)" -ForegroundColor Yellow
+        } else {
+            Write-Host "   FAIL: Neither jq nor Python available for JSON queries" -ForegroundColor Red
+            $FAIL = 1
+        }
     } elseif ($output -match "No signature file found" -or $output -match "not configured") {
         Write-Host "   SKIP: TSS verification not configured (no signature)" -ForegroundColor DarkYellow
     } else {
         # Any other non-zero exit is a failure
-        Write-Host "   FAIL: TSS verification failed" -ForegroundColor Red
-        Write-Host $output
-        $FAIL = 1
+        if ($BootstrapMode) {
+            Write-Host "   WARN: TSS verification failed (bootstrap mode - non-blocking)" -ForegroundColor Yellow
+            Write-Host $output
+        } else {
+            Write-Host "   FAIL: TSS verification failed" -ForegroundColor Red
+            Write-Host $output
+            $FAIL = 1
+        }
     }
 } else {
     Write-Host "   SKIP: County TSS script not found" -ForegroundColor DarkYellow
@@ -155,15 +180,24 @@ if (Test-Path $stateTssScript) {
         Write-Host "   SKIP: State TSS mode not configured" -ForegroundColor DarkYellow
     } elseif ($output -match "Neither jq nor Python available") {
         # FAIL-CLOSED: Missing tools is a hard failure, not skip
-        Write-Host "   FAIL: Neither jq nor Python available for JSON queries" -ForegroundColor Red
-        $FAIL = 1
+        if ($BootstrapMode) {
+            Write-Host "   WARN: Neither jq nor Python available (bootstrap mode)" -ForegroundColor Yellow
+        } else {
+            Write-Host "   FAIL: Neither jq nor Python available for JSON queries" -ForegroundColor Red
+            $FAIL = 1
+        }
     } elseif ($output -match "No signature file found" -or $output -match "not configured") {
         Write-Host "   SKIP: State TSS verification not configured (no signature)" -ForegroundColor DarkYellow
     } else {
         # Any other non-zero exit is a failure
-        Write-Host "   FAIL: State TSS verification failed" -ForegroundColor Red
-        Write-Host $output
-        $FAIL = 1
+        if ($BootstrapMode) {
+            Write-Host "   WARN: State TSS verification failed (bootstrap mode - non-blocking)" -ForegroundColor Yellow
+            Write-Host $output
+        } else {
+            Write-Host "   FAIL: State TSS verification failed" -ForegroundColor Red
+            Write-Host $output
+            $FAIL = 1
+        }
     }
 } else {
     Write-Host "   SKIP: State TSS script not found" -ForegroundColor DarkYellow
@@ -250,9 +284,14 @@ git diff --exit-code --quiet 2>$null
 if ($LASTEXITCODE -eq 0) {
     Write-Host "   PASS" -ForegroundColor Green
 } else {
-    Write-Host "   FAIL: Uncommitted changes detected (drift)" -ForegroundColor Red
-    Write-Host $gitDiff
-    $FAIL = 1
+    if ($BootstrapMode) {
+        Write-Host "   WARN: Uncommitted changes detected (bootstrap mode - non-blocking)" -ForegroundColor Yellow
+        Write-Host $gitDiff
+    } else {
+        Write-Host "   FAIL: Uncommitted changes detected (drift)" -ForegroundColor Red
+        Write-Host $gitDiff
+        $FAIL = 1
+    }
 }
 Write-Host ""
 

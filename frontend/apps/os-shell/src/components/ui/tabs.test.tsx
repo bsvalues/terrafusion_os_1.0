@@ -6,13 +6,22 @@
  * Built on @radix-ui/react-tabs.
  */
 
-import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
+import React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
 
 expect.extend(toHaveNoViolations);
+
+// Helper to check element is not visible (handles null elements from queryBy*)
+const expectNotVisible = (element: HTMLElement | null) => {
+  if (element) {
+    expect(element).not.toBeVisible();
+  } else {
+    expect(element).toBeNull();
+  }
+};
 
 describe('Tabs', () => {
   /**
@@ -69,7 +78,13 @@ describe('Tabs', () => {
       );
 
       expect(screen.getByText('Content 1')).toBeVisible();
-      expect(screen.queryByText('Content 2')).not.toBeVisible();
+      // Inactive tab content may not be in DOM or may be hidden
+      const content2 = screen.queryByText('Content 2');
+      if (content2) {
+        expect(content2).not.toBeVisible();
+      } else {
+        expect(content2).toBeNull();
+      }
     });
 
     it('renders tabs with custom className', () => {
@@ -125,13 +140,13 @@ describe('Tabs', () => {
       );
 
       expect(screen.getByText('Content 1')).toBeVisible();
-      expect(screen.queryByText('Content 2')).not.toBeVisible();
+      expectNotVisible(screen.queryByText('Content 2'));
 
       const tab2 = screen.getByText('Tab 2');
       await user.click(tab2);
 
       await waitFor(() => {
-        expect(screen.queryByText('Content 1')).not.toBeVisible();
+        expectNotVisible(screen.queryByText('Content 1'));
         expect(screen.getByText('Content 2')).toBeVisible();
       });
     });
@@ -210,21 +225,21 @@ describe('Tabs', () => {
       await user.click(screen.getByText('Tab 2'));
       await waitFor(() => {
         expect(screen.getByText('Content 2')).toBeVisible();
-        expect(screen.queryByText('Content 1')).not.toBeVisible();
+        expectNotVisible(screen.queryByText('Content 1'));
       });
 
       // Switch to tab3
       await user.click(screen.getByText('Tab 3'));
       await waitFor(() => {
         expect(screen.getByText('Content 3')).toBeVisible();
-        expect(screen.queryByText('Content 2')).not.toBeVisible();
+        expectNotVisible(screen.queryByText('Content 2'));
       });
 
       // Switch back to tab1
       await user.click(screen.getByText('Tab 1'));
       await waitFor(() => {
         expect(screen.getByText('Content 1')).toBeVisible();
-        expect(screen.queryByText('Content 3')).not.toBeVisible();
+        expectNotVisible(screen.queryByText('Content 3'));
       });
     });
   });
@@ -398,7 +413,7 @@ describe('Tabs', () => {
 
       expect(screen.getByText('Tab 2')).toHaveAttribute('data-state', 'active');
       expect(screen.getByText('Content 2')).toBeVisible();
-      expect(screen.queryByText('Content 1')).not.toBeVisible();
+      expectNotVisible(screen.queryByText('Content 1'));
     });
 
     it('calls onValueChange when tab is clicked', async () => {
@@ -451,7 +466,7 @@ describe('Tabs', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Content 2')).toBeVisible();
-        expect(screen.queryByText('Content 1')).not.toBeVisible();
+        expectNotVisible(screen.queryByText('Content 1'));
       });
     });
 
@@ -526,7 +541,7 @@ describe('Tabs', () => {
 
       // Content 1 should still be visible
       expect(screen.getByText('Content 1')).toBeVisible();
-      expect(screen.queryByText('Content 2')).not.toBeVisible();
+      expectNotVisible(screen.queryByText('Content 2'));
     });
 
     it('skips disabled tab during keyboard navigation', async () => {

@@ -6,7 +6,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import { motion, useAnimation } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 

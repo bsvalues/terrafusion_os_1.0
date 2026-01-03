@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "certified_at": "2025-12-16T19:09:30-08:00",
+  "machine": {
+    "hostname": "Omen",
+    "user": "bsval",
+    "wsl_mem_cap": "8GB",
+    "wsl_mem_used_gb": 4,
+    "wsl_mem_total_gb": 7
+  },
+  "git": {
+    "sha": "51c7b7489",
+    "branch": "main"
+  },
+  "vscode": {
+    "extension_count": 14
+  },
+  "docker": {
+    "disk_usage": "27.47GB"
+  },
+  "kubernetes": {
+    "namespace": "terrafusion-staging",
+    "pod_count": 5
+  },
+  "ai_lab": {
+    "running": true,
+    "models": [
+      "nomic-embed-text:latest",
+      "codellama:7b",
+      "llama3.2:3b"
+    ]
+  },
+  "rag": {
+    "indexed_files": 798,
+    "last_ingest": "2025-12-16T18:56:25.591379"
+  },
+  "gate_status": "passed"
+}

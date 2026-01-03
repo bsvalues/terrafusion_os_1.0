@@ -77,6 +77,25 @@ export interface ApiResponse<T> {
   };
 }
 
+// Type aliases for backward compatibility
+export type GPTConfigurationDto = GPTConfiguration;
+export type ConversationDto = GPTConversation;
+export type GPTMessageDto = GPTMessage;
+
+// RAG-related types
+export interface RagDatasetStatus {
+  id: string;
+  name: string;
+  status: 'indexed' | 'indexing' | 'not_indexed' | 'error';
+  documentCount: number;
+  lastIndexed: string | null;
+}
+
+export interface RagHealthResponse {
+  status: string;
+  datasets: RagDatasetStatus[];
+}
+
 // ═══════════════════════════════════════════════════════════════
 // API CLIENT FUNCTIONS
 // ═══════════════════════════════════════════════════════════════
@@ -98,6 +117,9 @@ export async function getSystemGPTs(): Promise<GPTConfiguration[]> {
 
   return response.json();
 }
+
+// Alias for backward compatibility
+export const getSystemGpts = getSystemGPTs;
 
 /**
  * Get a specific system GPT by key (e.g., 'property-assessor')
@@ -259,8 +281,45 @@ export async function checkGPTHealth(): Promise<boolean> {
   }
 }
 
+/**
+ * Get RAG health status
+ */
+export async function getRagHealth(): Promise<RagHealthResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/gpt/rag/health`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch RAG health: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Index a RAG dataset
+ */
+export async function indexRagDataset(datasetId: string): Promise<RagDatasetStatus> {
+  const response = await fetch(`${API_BASE_URL}/api/gpt/rag/datasets/${datasetId}/index`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to index dataset: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
 export default {
   getSystemGPTs,
+  getSystemGpts,
   getSystemGPT,
   createConversation,
   getConversation,
@@ -269,4 +328,6 @@ export default {
   getUserConversations,
   checkAPIHealth,
   checkGPTHealth,
+  getRagHealth,
+  indexRagDataset,
 };

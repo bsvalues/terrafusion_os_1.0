@@ -6,7 +6,7 @@
  */
 
 import { TerraSphere } from '@/components/brand/TerraSphere';
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import * as React from 'react';
 import { useState } from 'react';
 import './QuantumNavigation.css';

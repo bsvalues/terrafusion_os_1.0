@@ -7,32 +7,29 @@
  */
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+// Vitest imports removed - Jest globals used
+import '@testing-library/jest-dom';
 import type { SystemGptAtlasResponse } from '../../../../api/systemDiagnosticsApi';
 import { SystemGptAtlasPanel } from '../SystemGptAtlasPanel';
 
-// Mock the fetch API
-vi.mock('../../../../api/systemDiagnosticsApi', async () => {
-  const actual = await vi.importActual('../../../../api/systemDiagnosticsApi');
-  return {
-    ...actual,
-    fetchSystemGptAtlas: vi.fn(),
-  };
-});
-
-import { fetchSystemGptAtlas } from '../../../../api/systemDiagnosticsApi';
+// Mock the systemDiagnosticsApi module entirely (avoids import.meta.env issues)
+const mockFetchSystemGptAtlas = jest.fn();
+jest.mock('../../../../api/systemDiagnosticsApi', () => ({
+  fetchSystemGptAtlas: (...args: any[]) => mockFetchSystemGptAtlas(...args),
+}));
 
 describe('SystemGptAtlasPanel', () => {
-  const mockOnCountySelect = vi.fn();
+  const mockOnCountySelect = jest.fn();
 
   beforeEach(() => {
-    vi.useFakeTimers();
+    jest.useFakeTimers();
     mockOnCountySelect.mockClear();
+    mockFetchSystemGptAtlas.mockClear();
   });
 
   afterEach(() => {
-    vi.useRealTimers();
-    vi.restoreAllMocks();
+    jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
   // ═══════════════════════════════════════════════════════════════
@@ -93,7 +90,7 @@ describe('SystemGptAtlasPanel', () => {
 
   describe('loading state', () => {
     it('shows loading indicator initially', () => {
-      (fetchSystemGptAtlas as ReturnType<typeof vi.fn>).mockImplementation(
+      mockFetchSystemGptAtlas.mockImplementation(
         () => new Promise(() => {}) // Never resolves
       );
 
@@ -109,7 +106,7 @@ describe('SystemGptAtlasPanel', () => {
 
   describe('when data loads successfully', () => {
     beforeEach(() => {
-      (fetchSystemGptAtlas as ReturnType<typeof vi.fn>).mockResolvedValue(healthyAtlasData);
+      mockFetchSystemGptAtlas.mockResolvedValue(healthyAtlasData);
     });
 
     it('displays Atlas header', async () => {
@@ -143,9 +140,10 @@ describe('SystemGptAtlasPanel', () => {
 
       await waitFor(() => {
         expect(screen.getByText(/Legend/i)).toBeInTheDocument();
-        expect(screen.getByText(/Healthy/)).toBeInTheDocument();
-        expect(screen.getByText(/Degraded/)).toBeInTheDocument();
-        expect(screen.getByText(/Unhealthy/)).toBeInTheDocument();
+        // Use getAllByText because these labels appear in both Legend and Fleet Stats
+        expect(screen.getAllByText(/Healthy/).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/Degraded/).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/Unhealthy/).length).toBeGreaterThan(0);
       });
     });
 
@@ -165,7 +163,7 @@ describe('SystemGptAtlasPanel', () => {
 
   describe('county node interactions', () => {
     beforeEach(() => {
-      (fetchSystemGptAtlas as ReturnType<typeof vi.fn>).mockResolvedValue(healthyAtlasData);
+      mockFetchSystemGptAtlas.mockResolvedValue(healthyAtlasData);
     });
 
     it('calls onCountySelect when clicking a county node', async () => {
@@ -197,7 +195,7 @@ describe('SystemGptAtlasPanel', () => {
 
   describe('RAG status display', () => {
     beforeEach(() => {
-      (fetchSystemGptAtlas as ReturnType<typeof vi.fn>).mockResolvedValue(healthyAtlasData);
+      mockFetchSystemGptAtlas.mockResolvedValue(healthyAtlasData);
     });
 
     it('displays RAG status badges for each county', async () => {
@@ -217,7 +215,7 @@ describe('SystemGptAtlasPanel', () => {
 
   describe('warning indicators', () => {
     beforeEach(() => {
-      (fetchSystemGptAtlas as ReturnType<typeof vi.fn>).mockResolvedValue(healthyAtlasData);
+      mockFetchSystemGptAtlas.mockResolvedValue(healthyAtlasData);
     });
 
     it('displays guardrail denial indicator for affected county', async () => {
@@ -245,9 +243,7 @@ describe('SystemGptAtlasPanel', () => {
 
   describe('error state', () => {
     it('displays error message when fetch fails', async () => {
-      (fetchSystemGptAtlas as ReturnType<typeof vi.fn>).mockRejectedValue(
-        new Error('Network error')
-      );
+      mockFetchSystemGptAtlas.mockRejectedValue(new Error('Network error'));
 
       render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
 
@@ -258,9 +254,7 @@ describe('SystemGptAtlasPanel', () => {
     });
 
     it('shows retry button on error', async () => {
-      (fetchSystemGptAtlas as ReturnType<typeof vi.fn>).mockRejectedValue(
-        new Error('Network error')
-      );
+      mockFetchSystemGptAtlas.mockRejectedValue(new Error('Network error'));
 
       render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
 
@@ -276,7 +270,7 @@ describe('SystemGptAtlasPanel', () => {
 
   describe('empty state', () => {
     it('displays empty message when no nodes', async () => {
-      (fetchSystemGptAtlas as ReturnType<typeof vi.fn>).mockResolvedValue({
+      mockFetchSystemGptAtlas.mockResolvedValue({
         generatedAtUtc: new Date().toISOString(),
         nodes: [],
       });

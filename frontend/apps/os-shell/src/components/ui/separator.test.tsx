@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
+import React from 'react';
 import { Separator } from './separator';
 expect.extend(toHaveNoViolations);
 describe('Separator', () => {
@@ -56,10 +57,12 @@ describe('Separator', () => {
       const separator = container.firstChild;
       expect(separator).toHaveAttribute('role', 'separator');
     });
-    it('applies aria-orientation when semantic horizontal', () => {
+    // Radix Separator doesn't set aria-orientation for horizontal (it's the default)
+    it('does not set aria-orientation for horizontal (it is the default)', () => {
       const { container } = render(<Separator decorative={false} orientation='horizontal' />);
       const separator = container.firstChild;
-      expect(separator).toHaveAttribute('aria-orientation', 'horizontal');
+      // Horizontal is the default, so aria-orientation is not set
+      expect(separator).not.toHaveAttribute('aria-orientation');
     });
     it('applies aria-orientation when semantic vertical', () => {
       const { container } = render(<Separator decorative={false} orientation='vertical' />);
@@ -81,7 +84,8 @@ describe('Separator', () => {
     it('does not have role when decorative', () => {
       const { container } = render(<Separator decorative={true} />);
       const separator = container.firstChild;
-      expect(separator).not.toHaveAttribute('role');
+      // Radix UI Separator sets role="none" when decorative, not removing the attribute
+      expect(separator).toHaveAttribute('role', 'none');
     });
     it('combines with other ARIA attributes when semantic', () => {
       const { container } = render(<Separator decorative={false} aria-label='Section divider' />);
@@ -266,8 +270,8 @@ describe('Separator', () => {
     it('is hidden from screen readers when decorative', () => {
       const { container } = render(<Separator decorative={true} />);
       const separator = container.firstChild;
-      // Decorative separators don't have role="separator", so they're not announced
-      expect(separator).not.toHaveAttribute('role');
+      // Decorative separators have role="none" in Radix UI
+      expect(separator).toHaveAttribute('role', 'none');
     });
     it('is announced to screen readers when semantic', () => {
       const { container } = render(<Separator decorative={false} aria-label='Section divider' />);

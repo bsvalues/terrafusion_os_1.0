@@ -15,8 +15,8 @@ on:
         default: 'staging'
         type: choice
         options:
-        - staging
-        - production
+          - staging
+          - production
       force_deploy:
         description: 'Force deployment (skip checks)'
         required: false
@@ -26,7 +26,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
   DOTNET_VERSION: '8.0'
   PYTHON_VERSION: '3.11'
 
@@ -65,19 +65,19 @@ jobs:
             echo "❌ Production authentication service not found"
             exit 1
           fi
-          
+
           # Verify audit logging
           if ! grep -r "AuditLog" backend/; then
             echo "❌ Audit logging not properly implemented"
             exit 1
           fi
-          
+
           # Check encryption configuration
           if ! grep -r "encryption" backend/ --include="*.cs"; then
             echo "❌ Encryption configuration missing"
             exit 1
           fi
-          
+
           echo "✅ FISMA compliance checks passed"
 
       - name: SAST with CodeQL
@@ -197,8 +197,8 @@ jobs:
 
       - name: Run integration tests
         env:
-          ConnectionStrings__DefaultConnection: "Server=localhost;Port=5432;Database=test_db;User Id=test_user;Password=test_password;"
-          ConnectionStrings__Redis: "localhost:6379"
+          ConnectionStrings__DefaultConnection: 'Server=localhost;Port=5432;Database=test_db;User Id=test_user;Password=test_password;'
+          ConnectionStrings__Redis: 'localhost:6379'
         run: |
           cd backend
           dotnet test TerraFusion.API.Tests --configuration Release --logger trx --results-directory TestResults/
@@ -297,12 +297,12 @@ jobs:
           # Start backend API
           cd backend/publish
           nohup dotnet TerraFusion.API.dll &
-          
+
           # Start frontend dev server
           cd ../../frontend
           npm install
           nohup npm run preview &
-          
+
           # Wait for services to start
           sleep 30
 
@@ -407,7 +407,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [container-build]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production' || github.event.inputs.deploy_environment != ''
-    environment: 
+    environment:
       name: ${{ github.event.inputs.deploy_environment || (github.ref == 'refs/heads/production' && 'production' || 'staging') }}
     permissions:
       contents: read
@@ -465,15 +465,15 @@ jobs:
           # Install ArgoCD CLI
           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-          
+
           # Login to ArgoCD
           argocd login argocd.terrafusionmarket.com --username admin --password ${{ secrets.ARGOCD_PASSWORD }}
-          
+
           # Deploy applications
           argocd app sync terrafusion-api
           argocd app sync terrafusion-frontend
           argocd app sync terrafusion-ai-swarm
-          
+
           # Wait for deployment
           argocd app wait terrafusion-api --health
           argocd app wait terrafusion-frontend --health
@@ -492,13 +492,13 @@ jobs:
         run: |
           # Wait for deployment to stabilize
           sleep 60
-          
+
           # Check API health
           curl -f https://api.terrafusionmarket.com/health || exit 1
-          
+
           # Check AI Swarm health
           curl -f https://api.terrafusionmarket.com/ai-swarm/health || exit 1
-          
+
           # Verify 1,008 agents are active
           AGENT_COUNT=$(curl -s https://api.terrafusionmarket.com/ai-swarm/agents/count | jq '.count')
           if [ "$AGENT_COUNT" -ne 1008 ]; then
@@ -515,7 +515,7 @@ jobs:
         run: |
           # Verify HTTPS is enforced
           curl -I http://api.terrafusionmarket.com | grep -q "301\|302" || exit 1
-          
+
           # Check security headers
           curl -I https://api.terrafusionmarket.com | grep -q "Strict-Transport-Security" || exit 1
 
@@ -533,12 +533,12 @@ jobs:
           status: success
           text: |
             🚀 TerraFusion OS Production Deployment Successful!
-            
+
             ✅ 39 modules deployed
             ✅ 1,008 AI agents operational
             ✅ Government-grade security active
             ✅ All health checks passed
-            
+
             Environment: Production
             Commit: ${{ github.sha }}
             Build: #${{ github.run_number }}
@@ -552,11 +552,11 @@ jobs:
           status: failure
           text: |
             ❌ TerraFusion OS Deployment Failed
-            
+
             Environment: Production
             Commit: ${{ github.sha }}
             Build: #${{ github.run_number }}
-            
+
             Please check the logs and retry deployment.
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

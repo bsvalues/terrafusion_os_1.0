@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { explainContext } from '../../api/explainApi';
-import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
 import {
   ConversationDto,
   createConversation,
@@ -12,7 +11,9 @@ import {
   indexRagDataset,
   RagDatasetStatus,
   sendMessage,
-} from '../../lib/api/gptClient';
+} from '../../api/gptClient';
+import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
+import { PropertyAssessmentFlows } from './components/PropertyAssessmentFlows';
 
 type LoadState = 'idle' | 'loading' | 'error';
 
@@ -69,8 +70,7 @@ export const GptStudioView: React.FC = () => {
     if (propertyGpt) {
       void handleSelectGpt(propertyGpt);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gpts]);
+  }, [gpts, selectedGpt]);
 
   // Load RAG health when PropertyAssessmentGPT is selected
   useEffect(() => {
