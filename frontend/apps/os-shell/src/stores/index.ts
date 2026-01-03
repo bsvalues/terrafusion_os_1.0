@@ -72,3 +72,13 @@ export {
   type NotificationType,
   type Toast,
 } from './notificationStore';
+
+// Module Loader - state machine for module loading lifecycle (Phase 2)
+export {
+  useModuleLoaderActions,
+  useModuleLoaderStore,
+  useModuleLoadState,
+  type ModuleLoadState as LoaderModuleLoadState,
+  type ModuleLoaderState,
+  type ModuleStatus as LoaderModuleStatus,
+} from './moduleLoaderStore';

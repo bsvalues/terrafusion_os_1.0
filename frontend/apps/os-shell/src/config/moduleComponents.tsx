@@ -12,6 +12,87 @@
 import React, { lazy, Suspense } from 'react';
 
 // ============================================================================
+// Module Aliases - Maps legacy/short IDs to canonical IDs (Phase 2)
+// ============================================================================
+
+/**
+ * Maps legacy module IDs and short aliases to canonical IDs.
+ * This allows backward compatibility and user-friendly shortcuts.
+ */
+export const MODULE_ALIASES: Record<string, string> = {
+  // Legacy aliases
+  terrabuild: 'costforge',
+  'terra-build': 'costforge',
+  property: 'costforge',
+  assessment: 'costforge',
+
+  // Short aliases
+  gaia: 'terra-gaia',
+  ai: 'atlas-ai',
+  atlas: 'atlas-ai',
+  analytics: 'reporting',
+  reports: 'reporting',
+  levy: 'levy-calculator',
+  gis: 'gis-viewer',
+  map: 'gis-viewer',
+  docs: 'document-manager',
+  documents: 'document-manager',
+  store: 'marketplace',
+  apps: 'marketplace',
+  config: 'settings',
+  preferences: 'settings',
+};
+
+/**
+ * Normalizes a module ID by resolving aliases to canonical IDs.
+ * @param moduleId - The module ID (may be alias or canonical)
+ * @returns The canonical module ID
+ */
+export function normalizeModuleId(moduleId: string): string {
+  const lowered = moduleId.toLowerCase().trim();
+  return MODULE_ALIASES[lowered] ?? lowered;
+}
+
+// ============================================================================
+// Module Registry - Single source of truth for registered modules (Phase 2)
+// ============================================================================
+
+/**
+ * Set of all registered canonical module IDs.
+ * ModuleRenderer switch cases must match these IDs.
+ */
+export const MODULE_REGISTRY = new Set<string>([
+  'costforge',
+  'terra-gaia',
+  'levy-calculator',
+  'gis-viewer',
+  'document-manager',
+  'reporting',
+  'atlas-ai',
+  'marketplace',
+  'counties',
+  'government-architecture',
+  'settings',
+]);
+
+/**
+ * Checks if a module ID (after normalization) is registered.
+ * @param moduleId - The module ID to check (will be normalized)
+ * @returns True if the module is registered
+ */
+export function isModuleRegistered(moduleId: string): boolean {
+  return MODULE_REGISTRY.has(normalizeModuleId(moduleId));
+}
+
+/**
+ * Gets all registered module IDs.
+ * @returns Array of canonical module IDs
+ */
+export function getRegisteredModules(): string[] {
+  return Array.from(MODULE_REGISTRY);
+}
+
+// ============================================================================
 // Lazy-loaded Module Components
 // ============================================================================
 
