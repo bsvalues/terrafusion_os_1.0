@@ -2,17 +2,36 @@
 import '@testing-library/jest-dom';
 import { act, render, screen, waitFor } from '@testing-library/react';
 
-// Mock the API client before importing the component
-jest.mock('../../lib/api/gptClient', () => ({
+// Mock all API modules that use import.meta.env BEFORE any imports
+jest.mock('../../api/explainApi', () => ({
+  explainContext: jest.fn().mockResolvedValue({
+    explanation: 'Mock explanation',
+    summary: 'Mock summary',
+    keyPoints: ['Point 1'],
+    relatedActions: [],
+    contextType: 'Mock',
+    processingTimeMs: 10,
+    confidence: 0.95,
+  }),
+}));
+
+// Mock the correct path that GptStudioView imports from
+jest.mock('../../api/gptClient', () => ({
   getSystemGpts: jest.fn(),
   createConversation: jest.fn(),
   sendMessage: jest.fn(),
   getMessages: jest.fn(),
+  API_BASE_URL: 'http://localhost:5000',
 }));
 
-// Import after mocking
+// Mock PropertyAssessmentFlows component
+jest.mock('../../features/gpt/components/PropertyAssessmentFlows', () => ({
+  PropertyAssessmentFlows: () => <div data-testid='mock-flows'>Mock Flows</div>,
+}));
+
+// Import after mocking - use the correct path
+import * as gptClient from '../../api/gptClient';
 import { GptStudioView } from '../../features/gpt/GptStudioView';
-import * as gptClient from '../../lib/api/gptClient';
 
 const mockGpts = [
   {

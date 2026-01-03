@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion';
 
 expect.extend(toHaveNoViolations);
 
@@ -75,7 +75,9 @@ describe('Accordion', () => {
       );
 
       const button = screen.getByRole('button');
-      const item = button.closest('[data-state]');
+      // AccordionItem wraps the Header which wraps the Trigger
+      // Find the AccordionItem by going up from button -> header -> item
+      const item = button.parentElement?.parentElement;
       expect(item).toHaveClass('custom-class');
     });
 

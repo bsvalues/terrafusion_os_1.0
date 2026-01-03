@@ -1,295 +1,189 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { Avatar, AvatarImage, AvatarFallback } from './avatar';
+import { Avatar } from './avatar';
 
 expect.extend(toHaveNoViolations);
 
 describe('Avatar', () => {
   describe('Rendering', () => {
     it('renders avatar container', () => {
-      render(
-        <Avatar>
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-      );
-
-      const fallback = screen.getByText('JD');
-      expect(fallback).toBeInTheDocument();
+      const { container } = render(<Avatar fallback='JD' />);
+      expect(container.firstChild).toBeInTheDocument();
     });
 
     it('renders with custom className', () => {
-      const { container } = render(
-        <Avatar className='custom-avatar'>
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-      );
-
+      const { container } = render(<Avatar className='custom-avatar' fallback='JD' />);
       const avatar = container.firstChild;
       expect(avatar).toHaveClass('custom-avatar');
     });
 
-    it('applies default size classes', () => {
-      const { container } = render(
-        <Avatar>
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-      );
-
+    it('applies default size classes (md)', () => {
+      const { container } = render(<Avatar fallback='JD' />);
       const avatar = container.firstChild;
       expect(avatar).toHaveClass('h-10', 'w-10', 'rounded-full');
     });
+
+    it('applies default fallback character when none provided', () => {
+      render(<Avatar />);
+      expect(screen.getByText('?')).toBeInTheDocument();
+    });
   });
 
-  describe('AvatarImage', () => {
-    it('renders image when src is provided', async () => {
-      render(
-        <Avatar>
-          <AvatarImage src='https://example.com/avatar.jpg' alt='John Doe' />
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-      );
-
-      const image = screen.getByRole('img', { name: /john doe/i });
+  describe('Image Rendering', () => {
+    it('renders image when src is provided', () => {
+      render(<Avatar src='https://example.com/avatar.jpg' fallback='JD' />);
+      const image = screen.getByRole('img');
       expect(image).toBeInTheDocument();
       expect(image).toHaveAttribute('src', 'https://example.com/avatar.jpg');
     });
 
-    it('renders with custom className', () => {
-      render(
-        <Avatar>
-          <AvatarImage src='https://example.com/avatar.jpg' alt='User' className='custom-image' />
-          <AvatarFallback>U</AvatarFallback>
-        </Avatar>
-      );
-
+    it('image has correct aspect ratio classes', () => {
+      render(<Avatar src='https://example.com/avatar.jpg' />);
       const image = screen.getByRole('img');
-      expect(image).toHaveClass('custom-image');
+      expect(image).toHaveClass('aspect-square', 'h-full', 'w-full', 'object-cover');
     });
 
-    it('has correct aspect ratio classes', () => {
-      render(
-        <Avatar>
-          <AvatarImage src='https://example.com/avatar.jpg' alt='User' />
-          <AvatarFallback>U</AvatarFallback>
-        </Avatar>
-      );
-
+    it('image has default alt text', () => {
+      render(<Avatar src='https://example.com/avatar.jpg' />);
       const image = screen.getByRole('img');
-      expect(image).toHaveClass('aspect-square', 'h-full', 'w-full');
+      expect(image).toHaveAttribute('alt', 'Avatar');
     });
   });
 
-  describe('AvatarFallback', () => {
-    it('renders fallback text', () => {
-      render(
-        <Avatar>
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-      );
-
+  describe('Fallback Rendering', () => {
+    it('renders fallback text when no src', () => {
+      render(<Avatar fallback='JD' />);
       expect(screen.getByText('JD')).toBeInTheDocument();
     });
 
-    it('renders fallback with custom className', () => {
-      render(
-        <Avatar>
-          <AvatarFallback className='custom-fallback'>JD</AvatarFallback>
-        </Avatar>
-      );
-
-      const fallback = screen.getByText('JD');
-      expect(fallback).toHaveClass('custom-fallback');
-    });
-
-    it('applies default fallback styling', () => {
-      render(
-        <Avatar>
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-      );
-
-      const fallback = screen.getByText('JD');
-      expect(fallback).toHaveClass('rounded-full', 'bg-muted');
-    });
-
-    it('shows fallback when image fails to load', async () => {
-      render(
-        <Avatar>
-          <AvatarImage src='https://example.com/invalid.jpg' alt='User' />
-          <AvatarFallback>U</AvatarFallback>
-        </Avatar>
-      );
-
-      // Radix Avatar will show fallback when image fails
-      await waitFor(() => {
-        expect(screen.getByText('U')).toBeInTheDocument();
-      });
-    });
-  });
-
-  describe('Different Fallback Content', () => {
     it('renders single letter fallback', () => {
-      render(
-        <Avatar>
-          <AvatarFallback>J</AvatarFallback>
-        </Avatar>
-      );
-
+      render(<Avatar fallback='J' />);
       expect(screen.getByText('J')).toBeInTheDocument();
     });
 
     it('renders two letter fallback (initials)', () => {
-      render(
-        <Avatar>
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-      );
-
+      render(<Avatar fallback='JD' />);
       expect(screen.getByText('JD')).toBeInTheDocument();
     });
 
-    it('renders icon as fallback', () => {
-      const UserIcon = () => <svg data-testid='user-icon' />;
+    it('renders default ? when fallback is undefined', () => {
+      render(<Avatar />);
+      expect(screen.getByText('?')).toBeInTheDocument();
+    });
 
-      render(
-        <Avatar>
-          <AvatarFallback>
-            <UserIcon />
-          </AvatarFallback>
-        </Avatar>
-      );
-
-      expect(screen.getByTestId('user-icon')).toBeInTheDocument();
+    it('shows fallback instead of image when src is not provided', () => {
+      render(<Avatar fallback='U' />);
+      expect(screen.getByText('U')).toBeInTheDocument();
+      expect(screen.queryByRole('img')).not.toBeInTheDocument();
     });
   });
 
-  describe('Image and Fallback Combination', () => {
-    it('shows image when loaded successfully', () => {
-      render(
-        <Avatar>
-          <AvatarImage src='https://example.com/avatar.jpg' alt='John Doe' />
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-      );
-
-      const image = screen.getByRole('img');
-      expect(image).toBeInTheDocument();
+  describe('Size Variants', () => {
+    it('renders small size (sm)', () => {
+      const { container } = render(<Avatar size='sm' fallback='SM' />);
+      const avatar = container.firstChild;
+      expect(avatar).toHaveClass('h-8', 'w-8', 'text-xs');
     });
 
-    it('provides alt text for image', () => {
-      render(
-        <Avatar>
-          <AvatarImage src='https://example.com/avatar.jpg' alt='Profile picture' />
-          <AvatarFallback>PP</AvatarFallback>
-        </Avatar>
-      );
+    it('renders medium size (md) - default', () => {
+      const { container } = render(<Avatar size='md' fallback='MD' />);
+      const avatar = container.firstChild;
+      expect(avatar).toHaveClass('h-10', 'w-10', 'text-sm');
+    });
 
-      const image = screen.getByRole('img', { name: /profile picture/i });
-      expect(image).toBeInTheDocument();
+    it('renders large size (lg)', () => {
+      const { container } = render(<Avatar size='lg' fallback='LG' />);
+      const avatar = container.firstChild;
+      expect(avatar).toHaveClass('h-12', 'w-12', 'text-base');
+    });
+
+    it('renders extra large size (xl)', () => {
+      const { container } = render(<Avatar size='xl' fallback='XL' />);
+      const avatar = container.firstChild;
+      expect(avatar).toHaveClass('h-16', 'w-16', 'text-lg');
+    });
+  });
+
+  describe('Glow Effect', () => {
+    it('applies glow classes when glow is true', () => {
+      const { container } = render(<Avatar glow fallback='GL' />);
+      const avatar = container.firstChild;
+      expect(avatar).toHaveClass('ring-2');
+    });
+
+    it('does not apply glow classes when glow is false', () => {
+      const { container } = render(<Avatar glow={false} fallback='NG' />);
+      const avatar = container.firstChild;
+      expect(avatar).not.toHaveClass('ring-2');
+    });
+
+    it('does not apply glow classes by default', () => {
+      const { container } = render(<Avatar fallback='DF' />);
+      const avatar = container.firstChild;
+      expect(avatar).not.toHaveClass('ring-2');
     });
   });
 
   describe('Accessibility', () => {
     it('has no accessibility violations with fallback only', async () => {
-      const { container } = render(
-        <Avatar>
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-      );
-
+      const { container } = render(<Avatar fallback='JD' />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
-    it('has no accessibility violations with image and alt text', async () => {
-      const { container } = render(
-        <Avatar>
-          <AvatarImage src='https://example.com/avatar.jpg' alt='John Doe' />
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-      );
-
+    it('has no accessibility violations with image', async () => {
+      const { container } = render(<Avatar src='https://example.com/avatar.jpg' fallback='JD' />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
-    it('has no accessibility violations with custom styling', async () => {
-      const { container } = render(
-        <Avatar className='h-12 w-12'>
-          <AvatarImage src='https://example.com/avatar.jpg' alt='User avatar' />
-          <AvatarFallback className='text-lg'>UA</AvatarFallback>
-        </Avatar>
-      );
-
+    it('has no accessibility violations with glow effect', async () => {
+      const { container } = render(<Avatar glow fallback='GL' />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
-    });
-
-    it('provides meaningful alt text for images', () => {
-      render(
-        <Avatar>
-          <AvatarImage src='https://example.com/avatar.jpg' alt='Profile picture of John Doe' />
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-      );
-
-      const image = screen.getByRole('img');
-      expect(image).toHaveAttribute('alt', 'Profile picture of John Doe');
-    });
-  });
-
-  describe('Custom Sizes', () => {
-    it('applies custom size classes', () => {
-      const { container } = render(
-        <Avatar className='h-20 w-20'>
-          <AvatarFallback>XL</AvatarFallback>
-        </Avatar>
-      );
-
-      const avatar = container.firstChild;
-      expect(avatar).toHaveClass('h-20', 'w-20');
-    });
-
-    it('applies small size classes', () => {
-      const { container } = render(
-        <Avatar className='h-8 w-8'>
-          <AvatarFallback className='text-xs'>SM</AvatarFallback>
-        </Avatar>
-      );
-
-      const avatar = container.firstChild;
-      expect(avatar).toHaveClass('h-8', 'w-8');
-
-      const fallback = screen.getByText('SM');
-      expect(fallback).toHaveClass('text-xs');
     });
   });
 
   describe('Edge Cases', () => {
-    it('renders without crashing when no children provided', () => {
+    it('renders without crashing when no props provided', () => {
       const { container } = render(<Avatar />);
       expect(container.firstChild).toBeInTheDocument();
     });
 
-    it('handles empty fallback text', () => {
-      render(
-        <Avatar>
-          <AvatarFallback></AvatarFallback>
-        </Avatar>
-      );
-
-      const fallback = screen.getByText('', { selector: 'span' });
-      expect(fallback).toBeInTheDocument();
+    it('handles empty string fallback', () => {
+      render(<Avatar fallback='' />);
+      // Empty string is falsy, so default '?' should show
+      expect(screen.getByText('?')).toBeInTheDocument();
     });
 
-    it('handles long fallback text gracefully', () => {
-      render(
-        <Avatar>
-          <AvatarFallback>LONGTEXT</AvatarFallback>
-        </Avatar>
-      );
-
+    it('handles long fallback text', () => {
+      render(<Avatar fallback='LONGTEXT' />);
       expect(screen.getByText('LONGTEXT')).toBeInTheDocument();
+    });
+
+    it('custom className does not override core styles', () => {
+      const { container } = render(<Avatar className='custom-class' fallback='JD' />);
+      const avatar = container.firstChild;
+      expect(avatar).toHaveClass('rounded-full', 'overflow-hidden', 'custom-class');
+    });
+  });
+
+  describe('Real-world Use Cases', () => {
+    it('renders user profile avatar', () => {
+      render(<Avatar src='https://example.com/john.jpg' size='lg' />);
+      const image = screen.getByRole('img');
+      expect(image).toHaveAttribute('src', 'https://example.com/john.jpg');
+    });
+
+    it('renders initials when user has no profile picture', () => {
+      render(<Avatar fallback='JD' size='md' />);
+      expect(screen.getByText('JD')).toBeInTheDocument();
+    });
+
+    it('renders with glow for online status indicator', () => {
+      const { container } = render(<Avatar src='https://example.com/user.jpg' glow size='sm' />);
+      const avatar = container.firstChild;
+      expect(avatar).toHaveClass('ring-2');
     });
   });
 });

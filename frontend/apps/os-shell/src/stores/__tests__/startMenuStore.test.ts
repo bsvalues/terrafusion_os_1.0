@@ -1,14 +1,19 @@
 /**
+ * @vitest-environment jsdom
+ */
+
+/**
  * TerraFusion OS Start Menu Store Tests
- * 
+ *
  * Comprehensive test suite for the Zustand store managing Start Menu state.
  * Following TDD principles - tests written BEFORE implementation.
- * 
+ *
  * @module stores/__tests__/startMenuStore.test
  * @see SUCCESS CRITERIA SC-3: Start Menu Component
  */
 
 import { act, renderHook } from '@testing-library/react';
+// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
 
 import { useStartMenuStore, type Module } from '../startMenuStore';
 
@@ -92,9 +97,9 @@ describe('Start Menu Store', () => {
   describe('toggle', () => {
     it('opens menu when closed', () => {
       const { toggle } = useStartMenuStore.getState();
-      
+
       expect(useStartMenuStore.getState().isOpen).toBe(false);
-      
+
       act(() => {
         toggle();
       });
@@ -105,9 +110,9 @@ describe('Start Menu Store', () => {
     it('closes menu when open', () => {
       // Set initial state to open
       useStartMenuStore.setState({ isOpen: true });
-      
+
       const { toggle } = useStartMenuStore.getState();
-      
+
       act(() => {
         toggle();
       });
@@ -117,9 +122,9 @@ describe('Start Menu Store', () => {
 
     it('clears search query when closing', () => {
       useStartMenuStore.setState({ isOpen: true, searchQuery: 'test query' });
-      
+
       const { toggle } = useStartMenuStore.getState();
-      
+
       act(() => {
         toggle();
       });
@@ -131,7 +136,7 @@ describe('Start Menu Store', () => {
   describe('open', () => {
     it('sets isOpen to true', () => {
       const { open } = useStartMenuStore.getState();
-      
+
       act(() => {
         open();
       });
@@ -141,9 +146,9 @@ describe('Start Menu Store', () => {
 
     it('does nothing if already open', () => {
       useStartMenuStore.setState({ isOpen: true });
-      
+
       const { open } = useStartMenuStore.getState();
-      
+
       act(() => {
         open();
       });
@@ -155,9 +160,9 @@ describe('Start Menu Store', () => {
   describe('close', () => {
     it('sets isOpen to false', () => {
       useStartMenuStore.setState({ isOpen: true });
-      
+
       const { close } = useStartMenuStore.getState();
-      
+
       act(() => {
         close();
       });
@@ -167,9 +172,9 @@ describe('Start Menu Store', () => {
 
     it('clears search query when closing', () => {
       useStartMenuStore.setState({ isOpen: true, searchQuery: 'test' });
-      
+
       const { close } = useStartMenuStore.getState();
-      
+
       act(() => {
         close();
       });
@@ -179,7 +184,7 @@ describe('Start Menu Store', () => {
 
     it('does nothing if already closed', () => {
       const { close } = useStartMenuStore.getState();
-      
+
       act(() => {
         close();
       });
@@ -191,7 +196,7 @@ describe('Start Menu Store', () => {
   describe('setSearchQuery', () => {
     it('updates search query', () => {
       const { setSearchQuery } = useStartMenuStore.getState();
-      
+
       act(() => {
         setSearchQuery('government');
       });
@@ -201,9 +206,9 @@ describe('Start Menu Store', () => {
 
     it('handles empty string', () => {
       useStartMenuStore.setState({ searchQuery: 'previous' });
-      
+
       const { setSearchQuery } = useStartMenuStore.getState();
-      
+
       act(() => {
         setSearchQuery('');
       });
@@ -213,7 +218,7 @@ describe('Start Menu Store', () => {
 
     it('trims whitespace from query', () => {
       const { setSearchQuery } = useStartMenuStore.getState();
-      
+
       act(() => {
         setSearchQuery('  government  ');
       });
@@ -226,7 +231,7 @@ describe('Start Menu Store', () => {
     it('sets pinned apps array', () => {
       const { setPinnedApps } = useStartMenuStore.getState();
       const pinnedApps = mockModules.slice(0, 3);
-      
+
       act(() => {
         setPinnedApps(pinnedApps);
       });
@@ -237,10 +242,10 @@ describe('Start Menu Store', () => {
 
     it('replaces existing pinned apps', () => {
       useStartMenuStore.setState({ pinnedApps: mockModules.slice(0, 2) });
-      
+
       const { setPinnedApps } = useStartMenuStore.getState();
       const newPinnedApps = mockModules.slice(2, 4);
-      
+
       act(() => {
         setPinnedApps(newPinnedApps);
       });
@@ -252,7 +257,7 @@ describe('Start Menu Store', () => {
   describe('setAllApps', () => {
     it('sets all apps array', () => {
       const { setAllApps } = useStartMenuStore.getState();
-      
+
       act(() => {
         setAllApps(mockModules);
       });
@@ -263,10 +268,10 @@ describe('Start Menu Store', () => {
 
     it('replaces existing all apps', () => {
       useStartMenuStore.setState({ allApps: mockModules });
-      
+
       const { setAllApps } = useStartMenuStore.getState();
       const newApps = mockModules.slice(0, 2);
-      
+
       act(() => {
         setAllApps(newApps);
       });
@@ -278,7 +283,7 @@ describe('Start Menu Store', () => {
   describe('addPinnedApp', () => {
     it('adds app to pinned apps', () => {
       const { addPinnedApp } = useStartMenuStore.getState();
-      
+
       act(() => {
         addPinnedApp(mockModules[0]);
       });
@@ -289,9 +294,9 @@ describe('Start Menu Store', () => {
 
     it('does not add duplicate app', () => {
       useStartMenuStore.setState({ pinnedApps: [mockModules[0]] });
-      
+
       const { addPinnedApp } = useStartMenuStore.getState();
-      
+
       act(() => {
         addPinnedApp(mockModules[0]);
       });
@@ -301,9 +306,9 @@ describe('Start Menu Store', () => {
 
     it('adds app to end of pinned list', () => {
       useStartMenuStore.setState({ pinnedApps: [mockModules[0]] });
-      
+
       const { addPinnedApp } = useStartMenuStore.getState();
-      
+
       act(() => {
         addPinnedApp(mockModules[1]);
       });
@@ -317,23 +322,23 @@ describe('Start Menu Store', () => {
   describe('removePinnedApp', () => {
     it('removes app from pinned apps', () => {
       useStartMenuStore.setState({ pinnedApps: mockModules.slice(0, 3) });
-      
+
       const { removePinnedApp } = useStartMenuStore.getState();
-      
+
       act(() => {
         removePinnedApp('costforge-ai');
       });
 
       const { pinnedApps } = useStartMenuStore.getState();
       expect(pinnedApps).toHaveLength(2);
-      expect(pinnedApps.find(app => app.id === 'costforge-ai')).toBeUndefined();
+      expect(pinnedApps.find((app) => app.id === 'costforge-ai')).toBeUndefined();
     });
 
     it('does nothing if app not in pinned apps', () => {
       useStartMenuStore.setState({ pinnedApps: mockModules.slice(0, 2) });
-      
+
       const { removePinnedApp } = useStartMenuStore.getState();
-      
+
       act(() => {
         removePinnedApp('non-existent-app');
       });
@@ -349,64 +354,64 @@ describe('Start Menu Store', () => {
 
     it('returns all apps when search query is empty', () => {
       const filteredApps = useStartMenuStore.getState().getFilteredApps();
-      
+
       expect(filteredApps).toHaveLength(5);
     });
 
     it('filters apps by name (case-insensitive)', () => {
       useStartMenuStore.setState({ searchQuery: 'GOVERNMENT' });
-      
+
       const filteredApps = useStartMenuStore.getState().getFilteredApps();
-      
+
       expect(filteredApps).toHaveLength(1);
       expect(filteredApps[0].id).toBe('government-edition');
     });
 
     it('filters apps by partial name match', () => {
       useStartMenuStore.setState({ searchQuery: 'terra' });
-      
+
       const filteredApps = useStartMenuStore.getState().getFilteredApps();
-      
+
       expect(filteredApps).toHaveLength(2);
-      expect(filteredApps.map(app => app.id)).toContain('terra-flow');
-      expect(filteredApps.map(app => app.id)).toContain('terra-levy');
+      expect(filteredApps.map((app) => app.id)).toContain('terra-flow');
+      expect(filteredApps.map((app) => app.id)).toContain('terra-levy');
     });
 
     it('filters apps by description', () => {
       useStartMenuStore.setState({ searchQuery: 'workflow' });
-      
+
       const filteredApps = useStartMenuStore.getState().getFilteredApps();
-      
+
       expect(filteredApps).toHaveLength(1);
       expect(filteredApps[0].id).toBe('terra-flow');
     });
 
     it('filters apps by category', () => {
       useStartMenuStore.setState({ searchQuery: 'ai' });
-      
+
       const filteredApps = useStartMenuStore.getState().getFilteredApps();
-      
+
       // Should match 'CostForge AI' (name) and category 'ai'
       expect(filteredApps.length).toBeGreaterThanOrEqual(1);
-      expect(filteredApps.map(app => app.id)).toContain('costforge-ai');
+      expect(filteredApps.map((app) => app.id)).toContain('costforge-ai');
     });
 
     it('returns empty array when no matches', () => {
       useStartMenuStore.setState({ searchQuery: 'zzzznonexistent' });
-      
+
       const filteredApps = useStartMenuStore.getState().getFilteredApps();
-      
+
       expect(filteredApps).toHaveLength(0);
     });
 
     it('returns apps sorted alphabetically by name', () => {
       useStartMenuStore.setState({ searchQuery: '' });
-      
+
       const filteredApps = useStartMenuStore.getState().getFilteredApps();
-      
-      const names = filteredApps.map(app => app.name);
+
+      const names = filteredApps.map((app) => app.name);
       const sortedNames = [...names].sort((a, b) => a.localeCompare(b));
-      
+
       expect(names).toEqual(sortedNames);
     });
   });
@@ -418,15 +423,15 @@ describe('Start Menu Store', () => {
 
     it('returns only apps with active status', () => {
       const activeApps = useStartMenuStore.getState().getActiveApps();
-      
+
       expect(activeApps).toHaveLength(4);
-      expect(activeApps.every(app => app.status === 'active')).toBe(true);
+      expect(activeApps.every((app) => app.status === 'active')).toBe(true);
     });
 
     it('excludes inactive apps', () => {
       const activeApps = useStartMenuStore.getState().getActiveApps();
-      
-      expect(activeApps.find(app => app.id === 'terra-levy')).toBeUndefined();
+
+      expect(activeApps.find((app) => app.id === 'terra-levy')).toBeUndefined();
     });
   });
 
@@ -437,7 +442,7 @@ describe('Start Menu Store', () => {
 
     it('returns apps grouped by category', () => {
       const grouped = useStartMenuStore.getState().getAppsByCategory();
-      
+
       expect(grouped).toHaveProperty('core');
       expect(grouped).toHaveProperty('ai');
       expect(grouped).toHaveProperty('automation');
@@ -447,7 +452,7 @@ describe('Start Menu Store', () => {
 
     it('groups apps correctly', () => {
       const grouped = useStartMenuStore.getState().getAppsByCategory();
-      
+
       expect(grouped.core).toHaveLength(1);
       expect(grouped.core[0].id).toBe('government-edition');
       expect(grouped.ai).toHaveLength(1);
@@ -458,7 +463,7 @@ describe('Start Menu Store', () => {
   describe('React Hook Integration', () => {
     it('re-renders when isOpen changes', () => {
       const { result } = renderHook(() => useStartMenuStore((state) => state.isOpen));
-      
+
       expect(result.current).toBe(false);
 
       act(() => {
@@ -470,7 +475,7 @@ describe('Start Menu Store', () => {
 
     it('re-renders when searchQuery changes', () => {
       const { result } = renderHook(() => useStartMenuStore((state) => state.searchQuery));
-      
+
       expect(result.current).toBe('');
 
       act(() => {
@@ -481,7 +486,7 @@ describe('Start Menu Store', () => {
     });
 
     it('provides stable action references', () => {
-      const { result, rerender } = renderHook(() => 
+      const { result, rerender } = renderHook(() =>
         useStartMenuStore((state) => ({
           toggle: state.toggle,
           open: state.open,
@@ -504,9 +509,9 @@ describe('Start Menu Store', () => {
   describe('Keyboard Shortcut Support', () => {
     it('provides isOpen state for keyboard listeners', () => {
       const { isOpen, toggle } = useStartMenuStore.getState();
-      
+
       expect(isOpen).toBe(false);
-      
+
       // Simulate Windows key press (handled by component, but store provides state)
       act(() => {
         toggle();

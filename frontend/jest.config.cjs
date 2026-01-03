@@ -6,6 +6,20 @@ const config = {
   // Setup files to run after Jest is initialized
   setupFilesAfterEnv: ['<rootDir>/apps/os-shell/src/setupTests.ts'],
 
+  // Global variables available in all tests
+  globals: {
+    'import.meta': {
+      env: {
+        VITE_API_URL: 'http://localhost:5000',
+        VITE_COUNTY_NAME: 'Benton County',
+        VITE_COUNTY_CODE: 'benton',
+        DEV: true,
+        PROD: false,
+        MODE: 'test',
+      },
+    },
+  },
+
   // Module name mapping for path aliases and static assets
   moduleNameMapper: {
     // Path aliases from tsconfig
@@ -24,7 +38,7 @@ const config = {
     '\\.(mp4|webm|ogg|mp3|wav|flac|aac)$': '<rootDir>/apps/os-shell/src/__mocks__/fileMock.ts',
   },
 
-  // Transform files with ts-jest
+  // Transform files with ts-jest and import.meta handling
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',
@@ -38,6 +52,9 @@ const config = {
       },
     ],
   },
+
+  // Inline transform for import.meta.env (runs before ts-jest)
+  transformIgnorePatterns: ['/node_modules/(?!(@radix-ui|class-variance-authority)/)'],
 
   // ESM support
   extensionsToTreatAsEsm: ['.ts', '.tsx'],

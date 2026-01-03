@@ -1,16 +1,28 @@
 // frontend/apps/os-shell/src/features/gpt/__tests__/GptStudioView.test.tsx
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import * as gptClient from '../../../lib/api/gptClient';
-import { GptStudioView } from '../GptStudioView';
 
-// Mock the GPT API client
-jest.mock('../../../lib/api/gptClient', () => ({
+// Mock all API modules to avoid import.meta.env issues
+jest.mock('../../../api/explainApi', () => ({
+  explainContext: jest.fn(),
+}));
+
+// Mock PropertyAssessmentFlows to avoid undefined errors
+jest.mock('../components/PropertyAssessmentFlows', () => ({
+  PropertyAssessmentFlows: () => <div data-testid='mock-flows'>Mock Flows</div>,
+}));
+
+jest.mock('../../../api/gptClient', () => ({
   getSystemGpts: jest.fn(),
   createConversation: jest.fn(),
   getMessages: jest.fn(),
   sendMessage: jest.fn(),
+  getRagHealth: jest.fn().mockResolvedValue({ healthy: true }),
+  indexRagDataset: jest.fn(),
 }));
+
+import * as gptClient from '../../../api/gptClient';
+import { GptStudioView } from '../GptStudioView';
 
 const mockGpts = [
   {

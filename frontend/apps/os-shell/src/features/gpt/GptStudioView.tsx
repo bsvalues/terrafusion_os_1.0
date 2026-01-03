@@ -13,6 +13,7 @@ import {
   sendMessage,
 } from '../../api/gptClient';
 import { ExplainPanel, ExplainPanelState } from '../../components/common/ExplainPanel';
+import { PropertyAssessmentFlows } from './components/PropertyAssessmentFlows';
 
 type LoadState = 'idle' | 'loading' | 'error';
 

@@ -1155,3 +1155,5 @@ export const TerraGaiaDashboard: React.FC = () => {
     </div>
   );
 };
+
+export default TerraGaiaDashboard;

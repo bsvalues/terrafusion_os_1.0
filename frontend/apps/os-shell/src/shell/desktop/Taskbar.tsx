@@ -5,14 +5,48 @@
  * Fixed position at bottom of screen with Start button, running apps, and system tray.
  * 
  * @module shell/desktop/Taskbar
- * @see SUCCESS CRITERIA SC-2
+ * @see SUCCESS CRITERIA SC-2, Phase 7
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
-import { brandColors, semanticColors, gradients } from '@/design-system/tokens/colors';
+import { AIStatusIndicator, defaultAIStatus, type AIStatus } from './AIStatusPanel';
+import { SystemHealthIndicator, defaultHealthStatus, type SystemHealthStatus } from './SystemHealthPanel';
+import { NotificationBell, type Notification } from './NotificationBell';
+import { Clock } from './Clock';
+
+// ============================================================================
+// Default Demo Data
+// ============================================================================
+
+const defaultNotifications: Notification[] = [
+  {
+    id: 'notif-1',
+    title: 'Assessment Complete',
+    message: 'Property assessment for 123 Main St has been completed successfully.',
+    type: 'success',
+    timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+    read: false,
+  },
+  {
+    id: 'notif-2',
+    title: 'AI Analysis Ready',
+    message: 'CostForge AI has finished analyzing the Q4 data. View results now.',
+    type: 'info',
+    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+    read: false,
+  },
+  {
+    id: 'notif-3',
+    title: 'System Update Available',
+    message: 'TerraFusion OS v2.1 is ready to install. Restart to apply updates.',
+    type: 'warning',
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    read: true,
+  },
+];
 
 // ============================================================================
 // Subcomponents
@@ -151,90 +185,25 @@ const RunningAppsBar: React.FC = () => {
 };
 
 /**
- * Clock Display
+ * System Tray - Enhanced with AI Status, Health, Notifications, Clock
  */
-const Clock: React.FC = () => {
-  const [time, setTime] = useState(new Date());
+interface SystemTrayProps {
+  aiStatus?: AIStatus;
+  healthStatus?: SystemHealthStatus;
+  notifications?: Notification[];
+  onNotificationClick?: (notification: Notification) => void;
+  onNotificationDismiss?: (id: string) => void;
+  onNotificationClearAll?: () => void;
+}
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 60000); // Update every minute
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const formattedTime = time.toLocaleTimeString([], {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-
-  const formattedDate = time.toLocaleDateString([], {
-    month: 'short',
-    day: 'numeric',
-  });
-
-  return (
-    <div
-      data-testid="clock"
-      className="flex flex-col items-end text-right px-2"
-    >
-      <span className="text-sm text-white/90 font-medium">{formattedTime}</span>
-      <span className="text-xs text-white/60">{formattedDate}</span>
-    </div>
-  );
-};
-
-/**
- * AI Status Indicator
- */
-const AIStatusIndicator: React.FC = () => {
-  return (
-    <div
-      data-testid="ai-status"
-      className={cn(
-        'flex items-center gap-1.5 px-2 py-1 rounded-md',
-        'bg-gradient-to-r from-[#00ffee]/10 to-transparent',
-        'hover:bg-white/5 cursor-pointer',
-        'transition-colors duration-150'
-      )}
-      title="AI Swarm Status: 1,008 agents active"
-    >
-      <div className="relative">
-        <span className="text-lg">🧠</span>
-        {/* Pulse indicator */}
-        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#00ffaa] rounded-full animate-pulse" />
-      </div>
-      <span className="text-xs text-[#00ffee] font-medium hidden sm:inline">1,008</span>
-    </div>
-  );
-};
-
-/**
- * System Health Indicator
- */
-const SystemHealthIndicator: React.FC = () => {
-  return (
-    <div
-      data-testid="system-health"
-      className={cn(
-        'flex items-center gap-1.5 px-2 py-1 rounded-md',
-        'hover:bg-white/5 cursor-pointer',
-        'transition-colors duration-150'
-      )}
-      title="System Health: Optimal"
-    >
-      <span className="w-2 h-2 bg-[#00ffaa] rounded-full shadow-[0_0_6px_rgba(0,255,170,0.6)]" />
-      <span className="text-xs text-white/70 hidden sm:inline">Healthy</span>
-    </div>
-  );
-};
-
-/**
- * System Tray
- */
-const SystemTray: React.FC = () => {
+const SystemTray: React.FC<SystemTrayProps> = ({
+  aiStatus = defaultAIStatus,
+  healthStatus = defaultHealthStatus,
+  notifications = defaultNotifications,
+  onNotificationClick,
+  onNotificationDismiss,
+  onNotificationClearAll,
+}) => {
   return (
     <div
       data-testid="system-tray"
@@ -242,8 +211,24 @@ const SystemTray: React.FC = () => {
       role="group"
       aria-label="System tray"
     >
-      <AIStatusIndicator />
-      <SystemHealthIndicator />
+      {/* AI Status */}
+      <AIStatusIndicator status={aiStatus} />
+      
+      {/* System Health */}
+      <SystemHealthIndicator status={healthStatus} />
+      
+      {/* Divider */}
+      <div className="w-px h-6 bg-white/10 mx-1" />
+      
+      {/* Notifications */}
+      <NotificationBell
+        notifications={notifications}
+        onNotificationClick={onNotificationClick}
+        onDismiss={onNotificationDismiss}
+        onClearAll={onNotificationClearAll}
+      />
+      
+      {/* Clock */}
       <Clock />
     </div>
   );
@@ -254,10 +239,24 @@ const SystemTray: React.FC = () => {
 // ============================================================================
 
 export interface TaskbarProps {
+  aiStatus?: AIStatus;
+  healthStatus?: SystemHealthStatus;
+  notifications?: Notification[];
+  onNotificationClick?: (notification: Notification) => void;
+  onNotificationDismiss?: (id: string) => void;
+  onNotificationClearAll?: () => void;
   className?: string;
 }
 
-export const Taskbar: React.FC<TaskbarProps> = ({ className }) => {
+export const Taskbar: React.FC<TaskbarProps> = ({
+  aiStatus,
+  healthStatus,
+  notifications,
+  onNotificationClick,
+  onNotificationDismiss,
+  onNotificationClearAll,
+  className,
+}) => {
   return (
     <nav
       role="navigation"
@@ -288,7 +287,14 @@ export const Taskbar: React.FC<TaskbarProps> = ({ className }) => {
       <RunningAppsBar />
       
       {/* System Tray */}
-      <SystemTray />
+      <SystemTray
+        aiStatus={aiStatus}
+        healthStatus={healthStatus}
+        notifications={notifications}
+        onNotificationClick={onNotificationClick}
+        onNotificationDismiss={onNotificationDismiss}
+        onNotificationClearAll={onNotificationClearAll}
+      />
     </nav>
   );
 };
