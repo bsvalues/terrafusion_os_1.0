@@ -193,7 +193,7 @@ export const ModuleHost: React.FC<ModuleHostProps> = ({ moduleId, onClose, class
       data-testid='module-host'
       data-module-id={normalizedId}
       data-load-state={loadState.status}
-      className={`w-full h-full overflow-hidden bg-slate-900 ${className}`.trim()}
+      className={`w-full h-full overflow-auto bg-slate-900 ${className}`.trim()}
     >
       {loadState.status === 'loading' && <ModuleLoadingState moduleId={normalizedId} />}
 

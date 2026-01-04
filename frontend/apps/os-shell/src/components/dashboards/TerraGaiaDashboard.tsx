@@ -489,7 +489,7 @@ export const TerraGaiaDashboard: React.FC = () => {
   ];
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-[#0b1020] via-[#1a2332] to-[#0b1020] text-white'>
+    <div className='min-h-full bg-gradient-to-br from-[#0b1020] via-[#1a2332] to-[#0b1020] text-white'>
       {/* TerraGaia Header */}
       <div className='relative overflow-hidden'>
         <div className='tf-quantum-grid absolute inset-0 opacity-10' />

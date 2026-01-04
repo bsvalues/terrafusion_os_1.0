@@ -239,8 +239,8 @@ const GovernmentArchitecture: React.FC = () => {
         fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
         background: 'linear-gradient(135deg, #0a0e27 0%, #151932 100%)',
         color: '#fff',
-        minHeight: '100vh',
-        overflow: 'hidden',
+        minHeight: '100%',
+        overflow: 'auto',
       }}
     >
       {/* Championship Header */}
