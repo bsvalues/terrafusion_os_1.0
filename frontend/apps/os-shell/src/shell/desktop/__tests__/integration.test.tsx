@@ -1,11 +1,11 @@
 /**
  * TerraFusion OS Integration Tests
- * 
+ *
  * Tests verifying the integration between stores and components:
  * - moduleRegistryStore + desktopStore
  * - launchModule flow
  * - Window + ModuleLoader integration
- * 
+ *
  * @module shell/desktop/__tests__/integration.test
  * @vitest-environment jsdom
  */
@@ -13,7 +13,6 @@
 // Vitest imports removed - Jest globals used
 import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { useDesktopStore, type DesktopWindow } from '../../../stores/desktopStore';
 import { useModuleRegistryStore, type ModuleDefinition } from '../../../stores/moduleRegistryStore';
@@ -21,8 +20,6 @@ import { useStartMenuStore } from '../../../stores/startMenuStore';
 import { ModuleLoader } from '../ModuleLoader';
 import { Window } from '../Window';
 import { WindowManager } from '../WindowManager';
-
-
 
 // Mock modules matching the real TerraFusion modules
 const mockModules: ModuleDefinition[] = [
@@ -111,11 +108,11 @@ describe('Integration: Store to Store', () => {
   describe('moduleRegistryStore → desktopStore', () => {
     it('launchModule creates window in desktopStore', async () => {
       initializeModuleRegistry();
-      
+
       await act(async () => {
         await useModuleRegistryStore.getState().launchModule('government-edition');
       });
-      
+
       const windows = useDesktopStore.getState().windows;
       expect(windows.length).toBe(1);
       expect(windows[0].moduleId).toBe('government-edition');
@@ -124,56 +121,64 @@ describe('Integration: Store to Store', () => {
 
     it('launchModule updates loadState to loaded', async () => {
       initializeModuleRegistry();
-      
+
       await act(async () => {
         await useModuleRegistryStore.getState().launchModule('government-edition');
       });
-      
+
       const loadState = useModuleRegistryStore.getState().loadStates.get('government-edition');
       expect(loadState?.status).toBe('loaded');
     });
 
     it('launchModule stores windowId in loadState', async () => {
       initializeModuleRegistry();
-      
+
       const windowId = await useModuleRegistryStore.getState().launchModule('government-edition');
-      
+
       const loadState = useModuleRegistryStore.getState().loadStates.get('government-edition');
       expect(loadState?.windowId).toBe(windowId);
     });
 
     it('launching same module twice returns same windowId', async () => {
       initializeModuleRegistry();
-      
+
       const windowId1 = await useModuleRegistryStore.getState().launchModule('government-edition');
       const windowId2 = await useModuleRegistryStore.getState().launchModule('government-edition');
-      
+
       expect(windowId2).toBe(windowId1);
       expect(useDesktopStore.getState().windows.length).toBe(1);
     });
 
     it('can open multiple different modules', async () => {
       initializeModuleRegistry();
-      
+
       await useModuleRegistryStore.getState().launchModule('government-edition');
       await useModuleRegistryStore.getState().launchModule('costforge-ai');
       await useModuleRegistryStore.getState().launchModule('gispro');
-      
+
       const windows = useDesktopStore.getState().windows;
       expect(windows.length).toBe(3);
-      expect(windows.map(w => w.moduleId)).toEqual(['government-edition', 'costforge-ai', 'gispro']);
+      expect(windows.map((w) => w.moduleId)).toEqual([
+        'government-edition',
+        'costforge-ai',
+        'gispro',
+      ]);
     });
   });
 
   describe('closeModule flow', () => {
     it('closeModule resets loadState to idle', async () => {
       initializeModuleRegistry();
-      
+
       await useModuleRegistryStore.getState().launchModule('government-edition');
-      expect(useModuleRegistryStore.getState().loadStates.get('government-edition')?.status).toBe('loaded');
-      
+      expect(useModuleRegistryStore.getState().loadStates.get('government-edition')?.status).toBe(
+        'loaded'
+      );
+
       useModuleRegistryStore.getState().closeModule('government-edition');
-      expect(useModuleRegistryStore.getState().loadStates.get('government-edition')?.status).toBe('idle');
+      expect(useModuleRegistryStore.getState().loadStates.get('government-edition')?.status).toBe(
+        'idle'
+      );
     });
   });
 });
@@ -181,7 +186,7 @@ describe('Integration: Store to Store', () => {
 describe('Integration: Window + ModuleLoader', () => {
   it('Window renders ModuleLoader when passed as children', () => {
     initializeModuleRegistry();
-    
+
     // Set up a loaded module state
     useModuleRegistryStore.setState({
       ...useModuleRegistryStore.getState(),
@@ -189,7 +194,7 @@ describe('Integration: Window + ModuleLoader', () => {
         ['government-edition', { status: 'loaded', error: null, windowId: 'win-1' }],
       ]),
     });
-    
+
     const windowData: DesktopWindow = {
       id: 'win-1',
       moduleId: 'government-edition',
@@ -200,22 +205,25 @@ describe('Integration: Window + ModuleLoader', () => {
       state: 'normal',
       zIndex: 1,
     };
-    
+
     render(
       <Window window={windowData}>
-        <ModuleLoader moduleId="government-edition" />
+        <ModuleLoader moduleId='government-edition' />
       </Window>
     );
-    
+
     expect(screen.getByTestId('window')).toBeInTheDocument();
     expect(screen.getByTestId('module-loader')).toBeInTheDocument();
     // ModuleLoader now renders ModuleRenderer directly (no iframe)
-    expect(screen.getByTestId('module-loader')).toHaveAttribute('data-module-id', 'government-edition');
+    expect(screen.getByTestId('module-loader')).toHaveAttribute(
+      'data-module-id',
+      'government-edition'
+    );
   });
 
   it('ModuleLoader shows not found state for unregistered module', () => {
     // Don't initialize registry - module won't be found
-    
+
     const windowData: DesktopWindow = {
       id: 'win-1',
       moduleId: 'unknown-module',
@@ -226,13 +234,13 @@ describe('Integration: Window + ModuleLoader', () => {
       state: 'normal',
       zIndex: 1,
     };
-    
+
     render(
       <Window window={windowData}>
-        <ModuleLoader moduleId="unknown-module" />
+        <ModuleLoader moduleId='unknown-module' />
       </Window>
     );
-    
+
     expect(screen.getByTestId('module-not-found')).toBeInTheDocument();
     expect(screen.getByText(/Module Not Found/i)).toBeInTheDocument();
   });
@@ -241,12 +249,12 @@ describe('Integration: Window + ModuleLoader', () => {
 describe('Integration: WindowManager renders with ModuleLoader', () => {
   it('WindowManager includes ModuleLoader in each window', async () => {
     initializeModuleRegistry();
-    
+
     // Launch a module to create a window
     await useModuleRegistryStore.getState().launchModule('government-edition');
-    
+
     render(<WindowManager />);
-    
+
     expect(screen.getByTestId('window-manager')).toBeInTheDocument();
     expect(screen.getByTestId('window')).toBeInTheDocument();
     expect(screen.getByTestId('module-loader')).toBeInTheDocument();
@@ -254,26 +262,26 @@ describe('Integration: WindowManager renders with ModuleLoader', () => {
 
   it('multiple windows each have their own ModuleLoader', async () => {
     initializeModuleRegistry();
-    
+
     await useModuleRegistryStore.getState().launchModule('government-edition');
     await useModuleRegistryStore.getState().launchModule('costforge-ai');
-    
+
     render(<WindowManager />);
-    
+
     const windows = screen.getAllByTestId('window');
     const loaders = screen.getAllByTestId('module-loader');
-    
+
     expect(windows.length).toBe(2);
     expect(loaders.length).toBe(2);
   });
 
   it('ModuleLoader has correct module ID attribute', async () => {
     initializeModuleRegistry();
-    
+
     await useModuleRegistryStore.getState().launchModule('gispro');
-    
+
     render(<WindowManager />);
-    
+
     const loader = screen.getByTestId('module-loader');
     expect(loader).toHaveAttribute('data-module-id', 'gispro');
   });
@@ -282,17 +290,17 @@ describe('Integration: WindowManager renders with ModuleLoader', () => {
 describe('Integration: Z-Index ordering', () => {
   it('windows have correct z-index based on open order', async () => {
     initializeModuleRegistry();
-    
+
     await useModuleRegistryStore.getState().launchModule('government-edition');
     await useModuleRegistryStore.getState().launchModule('costforge-ai');
     await useModuleRegistryStore.getState().launchModule('gispro');
-    
+
     const windows = useDesktopStore.getState().windows;
-    
-    const gov = windows.find(w => w.moduleId === 'government-edition');
-    const cost = windows.find(w => w.moduleId === 'costforge-ai');
-    const gis = windows.find(w => w.moduleId === 'gispro');
-    
+
+    const gov = windows.find((w) => w.moduleId === 'government-edition');
+    const cost = windows.find((w) => w.moduleId === 'costforge-ai');
+    const gis = windows.find((w) => w.moduleId === 'gispro');
+
     // Later opened windows have higher z-index
     expect(gov!.zIndex).toBeLessThan(cost!.zIndex);
     expect(cost!.zIndex).toBeLessThan(gis!.zIndex);
@@ -300,21 +308,29 @@ describe('Integration: Z-Index ordering', () => {
 
   it('focusWindow updates z-index', async () => {
     initializeModuleRegistry();
-    
+
     await useModuleRegistryStore.getState().launchModule('government-edition');
     await useModuleRegistryStore.getState().launchModule('costforge-ai');
-    
-    const govWindowBefore = useDesktopStore.getState().windows.find(w => w.moduleId === 'government-edition');
-    const costWindowBefore = useDesktopStore.getState().windows.find(w => w.moduleId === 'costforge-ai');
-    
+
+    const govWindowBefore = useDesktopStore
+      .getState()
+      .windows.find((w) => w.moduleId === 'government-edition');
+    const costWindowBefore = useDesktopStore
+      .getState()
+      .windows.find((w) => w.moduleId === 'costforge-ai');
+
     expect(govWindowBefore!.zIndex).toBeLessThan(costWindowBefore!.zIndex);
-    
+
     // Focus the first window
     useDesktopStore.getState().focusWindow(govWindowBefore!.id);
-    
-    const govWindowAfter = useDesktopStore.getState().windows.find(w => w.moduleId === 'government-edition');
-    const costWindowAfter = useDesktopStore.getState().windows.find(w => w.moduleId === 'costforge-ai');
-    
+
+    const govWindowAfter = useDesktopStore
+      .getState()
+      .windows.find((w) => w.moduleId === 'government-edition');
+    const costWindowAfter = useDesktopStore
+      .getState()
+      .windows.find((w) => w.moduleId === 'costforge-ai');
+
     // Now government-edition should have higher z-index
     expect(govWindowAfter!.zIndex).toBeGreaterThan(costWindowAfter!.zIndex);
   });
@@ -323,9 +339,9 @@ describe('Integration: Z-Index ordering', () => {
 describe('Integration: Error handling', () => {
   it('ModuleLoader shows not found for unregistered module', () => {
     // Don't call initializeModuleRegistry() - leave registry empty
-    
-    render(<ModuleLoader moduleId="nonexistent-module" />);
-    
+
+    render(<ModuleLoader moduleId='nonexistent-module' />);
+
     expect(screen.getByTestId('module-not-found')).toBeInTheDocument();
     expect(screen.getByText(/Module Not Found/i)).toBeInTheDocument();
     expect(screen.getByText(/nonexistent-module/)).toBeInTheDocument();
@@ -333,9 +349,9 @@ describe('Integration: Error handling', () => {
 
   it('not found state displays module ID in error message', () => {
     // Don't call initializeModuleRegistry() - leave registry empty
-    
-    render(<ModuleLoader moduleId="special-module-id" />);
-    
+
+    render(<ModuleLoader moduleId='special-module-id' />);
+
     expect(screen.getByText(/special-module-id/)).toBeInTheDocument();
   });
 });

@@ -2,7 +2,7 @@
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - EMERGENCY ELITE QUANTUM INTERFACE TESTS
  * Championship-Level Testing for Government Operations
- * 
+ *
  * NOTE: Component has been refactored into modular components.
  * Tests skipped pending new component architecture.
  * ═══════════════════════════════════════════════════════════════

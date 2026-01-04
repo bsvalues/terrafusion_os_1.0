@@ -16,7 +16,20 @@
 
 import { cn } from '@/lib/utils';
 import React from 'react';
+import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
+
+// ============================================================================
+// Hooks
+// ============================================================================
+
+/**
+ * Hook to check if a module has an open window (is "running").
+ */
+function useIsModuleRunning(moduleId: string): boolean {
+  const windows = useDesktopStore((state) => state.windows);
+  return windows.some((w) => w.moduleId === moduleId);
+}
 
 // ============================================================================
 // Types
@@ -60,6 +73,17 @@ const ClockIcon: React.FC = () => (
 );
 
 /**
+ * Running Indicator for recent apps
+ */
+const RunningIndicator: React.FC = () => (
+  <span
+    data-testid='running-indicator'
+    aria-label='running'
+    className='absolute top-0.5 right-0.5 w-2 h-2 bg-green-400 rounded-full text-green-400'
+  />
+);
+
+/**
  * Individual recent app tile
  */
 interface RecentAppTileProps {
@@ -68,12 +92,14 @@ interface RecentAppTileProps {
 }
 
 const RecentAppTile: React.FC<RecentAppTileProps> = ({ module, onLaunch }) => {
+  const isRunning = useIsModuleRunning(module.id);
+
   return (
     <button
       onClick={() => onLaunch(module)}
       aria-label={module.name}
       className={cn(
-        'flex flex-col items-center gap-1.5 p-2',
+        'flex flex-col items-center gap-1.5 p-2 relative',
         'min-w-[64px]',
         'rounded-lg',
         'transition-all duration-150',
@@ -82,6 +108,7 @@ const RecentAppTile: React.FC<RecentAppTileProps> = ({ module, onLaunch }) => {
         'active:scale-95'
       )}
     >
+      {isRunning && <RunningIndicator />}
       <span className='text-2xl' role='img' aria-hidden='true'>
         {module.icon}
       </span>

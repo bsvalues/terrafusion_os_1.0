@@ -12,14 +12,39 @@
 
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useRef } from 'react';
+import { activateModule } from '../../orchestration/moduleActivation';
 import { useDesktopStore } from '../../stores/desktopStore';
-import { useModuleRegistryStore } from '../../stores/moduleRegistryStore';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
 import { RecentAppsSection } from './RecentAppsSection';
 
 // ============================================================================
+// Hooks
+// ============================================================================
+
+/**
+ * Hook to check if a module has an open window (is "running").
+ * Checks desktopStore.windows for a window with matching moduleId.
+ */
+function useIsModuleRunning(moduleId: string): boolean {
+  const windows = useDesktopStore((state) => state.windows);
+  return windows.some((w) => w.moduleId === moduleId);
+}
+
+// ============================================================================
 // Subcomponents
 // ============================================================================
+
+/**
+ * Running Indicator - green dot showing module is open
+ * Phase 6: Open Indicator feature
+ */
+const RunningIndicator: React.FC = () => (
+  <span
+    data-testid='running-indicator'
+    aria-label='running'
+    className='absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full text-green-400'
+  />
+);
 
 /**
  * Search Input
@@ -83,12 +108,14 @@ interface AppTileProps {
 }
 
 const AppTile: React.FC<AppTileProps> = ({ module, onLaunch }) => {
+  const isRunning = useIsModuleRunning(module.id);
+
   return (
     <button
       onClick={() => onLaunch(module)}
       aria-label={module.name}
       className={cn(
-        'flex flex-col items-center gap-2 p-3',
+        'flex flex-col items-center gap-2 p-3 relative',
         'rounded-lg',
         'transition-all duration-150',
         'hover:bg-white/10',
@@ -96,6 +123,7 @@ const AppTile: React.FC<AppTileProps> = ({ module, onLaunch }) => {
         'active:scale-95'
       )}
     >
+      {isRunning && <RunningIndicator />}
       <span className='text-3xl' role='img' aria-hidden='true'>
         {module.icon}
       </span>
@@ -108,12 +136,14 @@ const AppTile: React.FC<AppTileProps> = ({ module, onLaunch }) => {
  * App List Item for all apps
  */
 const AppListItem: React.FC<AppTileProps> = ({ module, onLaunch }) => {
+  const isRunning = useIsModuleRunning(module.id);
+
   return (
     <button
       onClick={() => onLaunch(module)}
       aria-label={module.name}
       className={cn(
-        'flex items-center gap-3 w-full px-3 py-2',
+        'flex items-center gap-3 w-full px-3 py-2 relative',
         'rounded-lg',
         'transition-all duration-150',
         'hover:bg-white/10',
@@ -121,10 +151,11 @@ const AppListItem: React.FC<AppTileProps> = ({ module, onLaunch }) => {
         'active:scale-[0.98]'
       )}
     >
+      {isRunning && <RunningIndicator />}
       <span className='text-xl flex-shrink-0' role='img' aria-hidden='true'>
         {module.icon}
       </span>
-      <div className='flex flex-col items-start min-w-0'>
+      <div className='flex flex-col items-start min-w-0 flex-1'>
         <span className='text-sm text-white/90 truncate w-full text-left'>{module.name}</span>
         <span className='text-xs text-white/50 truncate w-full text-left'>
           {module.description}
@@ -233,37 +264,32 @@ export interface StartMenuProps {
 }
 
 export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
-  const { isOpen, close, clearSearch } = useStartMenuStore();
-  const launchModule = useModuleRegistryStore((state) => state.launchModule);
-  const isRegistryInitialized = useModuleRegistryStore((state) => state.isInitialized);
-  const openWindow = useDesktopStore((state) => state.openWindow);
+  const { isOpen, close, clearSearch, addRecentApp } = useStartMenuStore();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Handle app launch
-  // Uses moduleRegistryStore when initialized, falls back to direct openWindow
+  // Handle app launch - uses activateModule() as THE canonical entry point (Phase 5)
   const handleLaunch = useCallback(
     async (module: Module) => {
       try {
-        if (isRegistryInitialized) {
-          // Primary path: Use module registry for proper tracking
-          // This handles load states, window management, and duplicate detection
-          await launchModule(module.id);
-        } else {
-          // Fallback: Direct window open for backward compatibility
-          // Used when registry hasn't been initialized (e.g., in tests)
-          openWindow(module.id, module.name, module.icon);
-        }
+        // Call the canonical orchestrator with start_menu source
+        await activateModule(module.id, {
+          source: 'start_menu',
+          focusIfOpen: true,
+          warmLoad: true,
+        });
+
+        // Add to recent apps on successful launch
+        addRecentApp(module);
       } catch (error) {
-        // If launchModule throws (module not in registry), fall back to direct open
-        console.warn('Module not in registry, using fallback:', module.id);
-        openWindow(module.id, module.name, module.icon);
+        // Log error but don't interrupt UI flow
+        console.error('[StartMenu] Failed to activate module:', module.id, error);
       }
 
-      // Always close start menu and clear search
+      // Always close start menu and clear search, even on error
       clearSearch();
       close();
     },
-    [launchModule, isRegistryInitialized, openWindow, clearSearch, close]
+    [clearSearch, close, addRecentApp]
   );
 
   // Handle Escape key
