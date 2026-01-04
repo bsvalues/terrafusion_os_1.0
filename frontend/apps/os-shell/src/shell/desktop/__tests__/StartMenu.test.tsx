@@ -8,7 +8,6 @@
  * @vitest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 // Vitest imports removed - Jest globals used
@@ -19,41 +18,42 @@ import { StartMenu } from '../StartMenu';
 
 // Extend vitest expect with jest-dom matchers
 
-
 // Clean up DOM after each test
 afterEach(() => {
   cleanup();
 });
 
-// Mock modules for testing - compatible with startMenuStore API
+// Mock modules for testing - USE REGISTERED MODULE IDs from MODULE_REGISTRY
+// Registry: costforge, terra-gaia, levy-calculator, gis-viewer, document-manager,
+//          reporting, atlas-ai, marketplace, counties, government-architecture, settings
 const mockPinnedApps = [
   {
-    id: 'government-edition',
-    name: 'Government Edition',
+    id: 'government-architecture',
+    name: 'Government Architecture',
     icon: '🏛️',
-    description: 'Core government',
+    description: 'System architecture overview',
     category: 'government',
     status: 'active' as const,
   },
   {
-    id: 'costforge-ai',
-    name: 'CostForge AI',
-    icon: '💰',
-    description: 'Cost analysis',
-    category: 'finance',
+    id: 'costforge',
+    name: 'CostForge',
+    icon: '💎',
+    description: 'Property assessment',
+    category: 'assessment',
     status: 'active' as const,
   },
   {
-    id: 'terra-levy',
-    name: 'Terra Levy',
+    id: 'levy-calculator',
+    name: 'Levy Calculator',
     icon: '📊',
     description: 'Tax levy',
-    category: 'finance',
+    category: 'tax',
     status: 'active' as const,
   },
   {
-    id: 'gis-pro',
-    name: 'GIS Professional',
+    id: 'gis-viewer',
+    name: 'GIS Viewer',
     icon: '🗺️',
     description: 'Geographic info',
     category: 'mapping',
@@ -64,19 +64,19 @@ const mockPinnedApps = [
 const mockAllApps = [
   ...mockPinnedApps,
   {
-    id: 'terra-agent',
-    name: 'Terra Agent',
+    id: 'atlas-ai',
+    name: 'ATLAS Intelligence',
     icon: '🤖',
-    description: 'AI agents',
+    description: 'AI assistant',
     category: 'ai',
     status: 'active' as const,
   },
   {
-    id: 'audit-tracker',
-    name: 'Audit Tracker',
-    icon: '📝',
-    description: 'Audit trails',
-    category: 'compliance',
+    id: 'reporting',
+    name: 'Analytics',
+    icon: '📈',
+    description: 'Reports',
+    category: 'analytics',
     status: 'active' as const,
   },
 ];
@@ -150,14 +150,13 @@ describe('StartMenu Component', () => {
       render(<StartMenu />);
 
       const searchInput = screen.getByRole('searchbox', { name: /search apps/i });
-      await userEvent.type(searchInput, 'terra');
+      await userEvent.type(searchInput, 'atlas');
 
       // When searching, check the all-apps section for filtered results
       const allAppsSection = screen.getByTestId('all-apps');
-      expect(within(allAppsSection).getByText('Terra Levy')).toBeInTheDocument();
-      expect(within(allAppsSection).getByText('Terra Agent')).toBeInTheDocument();
-      // Government Edition should not appear in search results
-      expect(within(allAppsSection).queryByText('Government Edition')).not.toBeInTheDocument();
+      expect(within(allAppsSection).getByText('ATLAS Intelligence')).toBeInTheDocument();
+      // Government Architecture should not appear in search results for "atlas"
+      expect(within(allAppsSection).queryByText('Government Architecture')).not.toBeInTheDocument();
     });
 
     it('shows "no results" message when search has no matches', async () => {
@@ -223,7 +222,7 @@ describe('StartMenu Component', () => {
       const pinnedSection = screen.getByTestId('pinned-apps');
       // Scope to pinned section to avoid matching duplicates in all-apps
       expect(within(pinnedSection).getByText('🏛️')).toBeInTheDocument();
-      expect(within(pinnedSection).getByText('Government Edition')).toBeInTheDocument();
+      expect(within(pinnedSection).getByText('Government Architecture')).toBeInTheDocument();
     });
   });
 
@@ -297,13 +296,15 @@ describe('StartMenu Component', () => {
 
       // Scope to pinned section to get a unique button
       const pinnedSection = screen.getByTestId('pinned-apps');
-      const govButton = within(pinnedSection).getByRole('button', { name: /government edition/i });
+      const govButton = within(pinnedSection).getByRole('button', {
+        name: /government architecture/i,
+      });
       await userEvent.click(govButton);
 
       // Window should be opened
       const { windows } = useDesktopStore.getState();
       expect(windows).toHaveLength(1);
-      expect(windows[0].moduleId).toBe('government-edition');
+      expect(windows[0].moduleId).toBe('government-architecture');
     });
 
     it('closes start menu after launching app', async () => {
@@ -311,7 +312,9 @@ describe('StartMenu Component', () => {
 
       // Scope to pinned section to get a unique button
       const pinnedSection = screen.getByTestId('pinned-apps');
-      const govButton = within(pinnedSection).getByRole('button', { name: /government edition/i });
+      const govButton = within(pinnedSection).getByRole('button', {
+        name: /government architecture/i,
+      });
       await userEvent.click(govButton);
 
       expect(useStartMenuStore.getState().isOpen).toBe(false);
@@ -323,7 +326,9 @@ describe('StartMenu Component', () => {
 
       // When searching, the app appears in all-apps section
       const allAppsSection = screen.getByTestId('all-apps');
-      const govButton = within(allAppsSection).getByRole('button', { name: /government edition/i });
+      const govButton = within(allAppsSection).getByRole('button', {
+        name: /government architecture/i,
+      });
       await userEvent.click(govButton);
 
       expect(useStartMenuStore.getState().searchQuery).toBe('');

@@ -12,16 +12,15 @@
 
 // Vitest imports removed - Jest globals used
 import '@testing-library/jest-dom';
-import { render, screen, cleanup, waitFor, within, act } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import * as matchers from '@testing-library/jest-dom/matchers';
 
+import { useDesktopStore, type DesktopWindow } from '../../../stores/desktopStore';
+import { useModuleRegistryStore, type ModuleDefinition } from '../../../stores/moduleRegistryStore';
+import { useStartMenuStore } from '../../../stores/startMenuStore';
+import { ModuleLoader } from '../ModuleLoader';
 import { Window } from '../Window';
 import { WindowManager } from '../WindowManager';
-import { ModuleLoader } from '../ModuleLoader';
-import { useDesktopStore, type DesktopWindow } from '../../../stores/desktopStore';
-import { useStartMenuStore } from '../../../stores/startMenuStore';
-import { useModuleRegistryStore, type ModuleDefinition } from '../../../stores/moduleRegistryStore';
 
 
 
@@ -210,25 +209,18 @@ describe('Integration: Window + ModuleLoader', () => {
     
     expect(screen.getByTestId('window')).toBeInTheDocument();
     expect(screen.getByTestId('module-loader')).toBeInTheDocument();
-    expect(screen.getByTestId('module-iframe')).toBeInTheDocument();
+    // ModuleLoader now renders ModuleRenderer directly (no iframe)
+    expect(screen.getByTestId('module-loader')).toHaveAttribute('data-module-id', 'government-edition');
   });
 
-  it('ModuleLoader shows loading when status is loading', () => {
-    initializeModuleRegistry();
-    
-    // Set module to loading state
-    useModuleRegistryStore.setState({
-      ...useModuleRegistryStore.getState(),
-      loadStates: new Map([
-        ['government-edition', { status: 'loading', error: null, windowId: null }],
-      ]),
-    });
+  it('ModuleLoader shows not found state for unregistered module', () => {
+    // Don't initialize registry - module won't be found
     
     const windowData: DesktopWindow = {
       id: 'win-1',
-      moduleId: 'government-edition',
-      title: 'Government Edition',
-      icon: '🏛️',
+      moduleId: 'unknown-module',
+      title: 'Unknown',
+      icon: '❓',
       position: { x: 100, y: 100 },
       size: { width: 800, height: 600 },
       state: 'normal',
@@ -237,12 +229,12 @@ describe('Integration: Window + ModuleLoader', () => {
     
     render(
       <Window window={windowData}>
-        <ModuleLoader moduleId="government-edition" />
+        <ModuleLoader moduleId="unknown-module" />
       </Window>
     );
     
-    expect(screen.getByTestId('module-loading')).toBeInTheDocument();
-    expect(screen.queryByTestId('module-iframe')).not.toBeInTheDocument();
+    expect(screen.getByTestId('module-not-found')).toBeInTheDocument();
+    expect(screen.getByText(/Module Not Found/i)).toBeInTheDocument();
   });
 });
 
@@ -275,15 +267,15 @@ describe('Integration: WindowManager renders with ModuleLoader', () => {
     expect(loaders.length).toBe(2);
   });
 
-  it('iframe src matches module launchPath', async () => {
+  it('ModuleLoader has correct module ID attribute', async () => {
     initializeModuleRegistry();
     
     await useModuleRegistryStore.getState().launchModule('gispro');
     
     render(<WindowManager />);
     
-    const iframe = screen.getByTestId('module-iframe');
-    expect(iframe).toHaveAttribute('src', '/modules/gispro');
+    const loader = screen.getByTestId('module-loader');
+    expect(loader).toHaveAttribute('data-module-id', 'gispro');
   });
 });
 
@@ -329,39 +321,21 @@ describe('Integration: Z-Index ordering', () => {
 });
 
 describe('Integration: Error handling', () => {
-  it('ModuleLoader shows error state when loadState has error', () => {
-    initializeModuleRegistry();
+  it('ModuleLoader shows not found for unregistered module', () => {
+    // Don't call initializeModuleRegistry() - leave registry empty
     
-    useModuleRegistryStore.setState({
-      ...useModuleRegistryStore.getState(),
-      loadStates: new Map([
-        ['government-edition', { status: 'error', error: 'Network timeout', windowId: null }],
-      ]),
-    });
+    render(<ModuleLoader moduleId="nonexistent-module" />);
     
-    render(<ModuleLoader moduleId="government-edition" />);
-    
-    expect(screen.getByTestId('module-error')).toBeInTheDocument();
-    expect(screen.getByText(/Network timeout/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+    expect(screen.getByTestId('module-not-found')).toBeInTheDocument();
+    expect(screen.getByText(/Module Not Found/i)).toBeInTheDocument();
+    expect(screen.getByText(/nonexistent-module/)).toBeInTheDocument();
   });
 
-  it('retry button calls launchModule again', async () => {
-    initializeModuleRegistry();
+  it('not found state displays module ID in error message', () => {
+    // Don't call initializeModuleRegistry() - leave registry empty
     
-    useModuleRegistryStore.setState({
-      ...useModuleRegistryStore.getState(),
-      loadStates: new Map([
-        ['government-edition', { status: 'error', error: 'Failed', windowId: null }],
-      ]),
-    });
+    render(<ModuleLoader moduleId="special-module-id" />);
     
-    const launchSpy = jest.spyOn(useModuleRegistryStore.getState(), 'launchModule');
-    
-    render(<ModuleLoader moduleId="government-edition" />);
-    
-    await userEvent.click(screen.getByRole('button', { name: /retry/i }));
-    
-    expect(launchSpy).toHaveBeenCalledWith('government-edition');
+    expect(screen.getByText(/special-module-id/)).toBeInTheDocument();
   });
 });

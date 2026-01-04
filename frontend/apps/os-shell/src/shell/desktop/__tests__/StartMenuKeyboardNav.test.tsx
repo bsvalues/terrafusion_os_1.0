@@ -32,46 +32,48 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-// Mock modules
+// Mock modules - USE REGISTERED MODULE IDs from MODULE_REGISTRY
+// Registry: costforge, terra-gaia, levy-calculator, gis-viewer, document-manager,
+//          reporting, atlas-ai, marketplace, counties, government-architecture, settings
 const mockPinnedApps: Module[] = [
   {
-    id: 'gov',
-    name: 'Government Edition',
+    id: 'government-architecture',
+    name: 'Government Architecture',
     icon: '🏛️',
     description: 'Core',
     category: 'core',
     status: 'active',
   },
   {
-    id: 'gis',
-    name: 'GIS Pro',
+    id: 'gis-viewer',
+    name: 'GIS Viewer',
     icon: '🗺️',
     description: 'Maps',
     category: 'mapping',
     status: 'active',
   },
   {
-    id: 'cost',
+    id: 'costforge',
     name: 'CostForge',
-    icon: '💰',
-    description: 'Cost',
-    category: 'ai',
+    icon: '💎',
+    description: 'Assessment',
+    category: 'assessment',
     status: 'active',
   },
 ];
 
 const mockRecentApps: Module[] = [
   {
-    id: 'levy',
-    name: 'Terra Levy',
+    id: 'levy-calculator',
+    name: 'Levy Calculator',
     icon: '📊',
     description: 'Tax',
     category: 'tax',
     status: 'active',
   },
   {
-    id: 'agent',
-    name: 'Terra Agent',
+    id: 'atlas-ai',
+    name: 'ATLAS Intelligence',
     icon: '🤖',
     description: 'AI',
     category: 'ai',
