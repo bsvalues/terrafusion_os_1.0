@@ -10,13 +10,14 @@
  */
 
 import { useCallback, useEffect } from 'react';
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useStartMenuStore } from '../../stores/startMenuStore';
+import { ToastContainer } from '../notifications/ToastContainer';
 import { DesktopBackground } from './DesktopBackground';
 import { DesktopErrorBoundary } from './DesktopErrorBoundary';
 import { StartMenu } from './StartMenu';
 import { Taskbar } from './Taskbar';
 import { WindowManager } from './WindowManager';
-import { ToastContainer } from '../notifications/ToastContainer';
 
 // ============================================================================
 // Types
@@ -65,13 +66,20 @@ export function Desktop({ className = '' }: DesktopProps) {
   // Subscribe to Start Menu state
   const isStartMenuOpen = useStartMenuStore((state) => state.isOpen);
   const toggleStartMenu = useStartMenuStore((state) => state.toggle);
-  const closeStartMenu = useStartMenuStore((state) => state.close);
+  const closeStartMenu = useStartMenuStore((state) => state.close); // Used by click-outside handler
 
   // ============================================================================
-  // Keyboard Shortcut Handler
+  // Global Keyboard Shortcuts (Priority 2)
+  // Ctrl+1..7 for modules, Ctrl+` for Start Menu, Escape to close
+  // ============================================================================
+  useKeyboardShortcuts();
+
+  // ============================================================================
+  // Keyboard Shortcut Handler (Meta/Windows key only)
+  // Note: Ctrl+1..7, Ctrl+`, and Escape are handled by useKeyboardShortcuts()
   // ============================================================================
 
-  const handleKeyDown = useCallback(
+  const handleMetaKey = useCallback(
     (event: KeyboardEvent) => {
       // Meta (Windows key) or OS key - toggle Start Menu
       if (event.key === 'Meta' || event.key === 'OS') {
@@ -79,24 +87,17 @@ export function Desktop({ className = '' }: DesktopProps) {
         toggleStartMenu();
         return;
       }
-
-      // Escape - close Start Menu if open
-      if (event.key === 'Escape' && isStartMenuOpen) {
-        event.preventDefault();
-        closeStartMenu();
-        return;
-      }
     },
-    [isStartMenuOpen, toggleStartMenu, closeStartMenu]
+    [toggleStartMenu]
   );
 
-  // Register global keyboard listener
+  // Register Meta key listener (separate from useKeyboardShortcuts)
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleMetaKey);
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleMetaKey);
     };
-  }, [handleKeyDown]);
+  }, [handleMetaKey]);
 
   // ============================================================================
   // Click Outside Handler
@@ -149,7 +150,7 @@ export function Desktop({ className = '' }: DesktopProps) {
 
 /**
  * Desktop with Error Boundary
- * 
+ *
  * Wraps the Desktop in a DesktopErrorBoundary for crash protection.
  * Use this as the main export for app entry points.
  */

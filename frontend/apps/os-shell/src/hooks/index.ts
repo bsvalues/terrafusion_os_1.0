@@ -43,3 +43,6 @@ export {
   useModuleLaunchNotifications,
   type ModuleLaunchActions,
 } from './useModuleLaunchNotifications';
+
+// Keyboard Shortcuts
+export { useKeyboardShortcuts } from './useKeyboardShortcuts';
