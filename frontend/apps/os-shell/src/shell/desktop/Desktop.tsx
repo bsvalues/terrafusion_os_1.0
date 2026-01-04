@@ -15,6 +15,7 @@ import { useStartMenuStore } from '../../stores/startMenuStore';
 import { ToastContainer } from '../notifications/ToastContainer';
 import { DesktopBackground } from './DesktopBackground';
 import { DesktopErrorBoundary } from './DesktopErrorBoundary';
+import { DesktopIconGrid } from './DesktopIconGrid';
 import { StartMenu } from './StartMenu';
 import { Taskbar } from './Taskbar';
 import { WindowManager } from './WindowManager';
@@ -132,6 +133,9 @@ export function Desktop({ className = '' }: DesktopProps) {
     >
       {/* Layer 0: Background */}
       <DesktopBackground />
+
+      {/* Layer 0.5: Desktop Icons (Priority 3) */}
+      <DesktopIconGrid className="absolute top-4 left-4 z-[1]" />
 
       {/* Layer 1-999: Windows */}
       <WindowManager />
