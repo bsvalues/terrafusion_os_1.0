@@ -1,7 +1,6 @@
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
-import { VitePWA } from 'vite-plugin-pwa';
 import { securityPlugin } from './apps/os-shell/src/middleware/security-plugin';
 
 // https://vitejs.dev/config/
@@ -11,28 +10,28 @@ export default defineConfig(({ mode }) => {
   const plugins = [
     react(),
     securityPlugin(), // Security headers and CSP
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
-      manifest: {
-        name: 'TerraFusion OS',
-        short_name: 'TerraFusion',
-        description: 'Government Operating System - Complete County Management Platform',
-        theme_color: '#0891b2',
-        icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-        ],
-      },
-    }),
+    // VitePWA({
+    //   registerType: 'autoUpdate',
+    //   includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+    //   manifest: {
+    //     name: 'TerraFusion OS',
+    //     short_name: 'TerraFusion',
+    //     description: 'Government Operating System - Complete County Management Platform',
+    //     theme_color: '#0891b2',
+    //     icons: [
+    //       {
+    //         src: 'pwa-192x192.png',
+    //         sizes: '192x192',
+    //         type: 'image/png',
+    //       },
+    //       {
+    //         src: 'pwa-512x512.png',
+    //         sizes: '512x512',
+    //         type: 'image/png',
+    //       },
+    //     ],
+    //   },
+    // }),
   ];
 
   // Add bundle analyzer only in analyze mode

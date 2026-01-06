@@ -605,7 +605,7 @@ Government. Transcended. Beyond. | 1,008 AI Agents Demand Excellence.
     }
 
     .tf-card-advanced {
-      box-shadow: 0 0 0 1px #ccc !important;
+      box-shadow: 0 0 0 1px var(--gray-300) !important;
       backdrop-filter: none !important;
       break-inside: avoid;
     }

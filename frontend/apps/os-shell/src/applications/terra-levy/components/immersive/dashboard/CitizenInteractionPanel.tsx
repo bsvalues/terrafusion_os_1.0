@@ -37,15 +37,15 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
   const getInteractionColor = (interaction: CitizenInteraction): Color => {
     switch (interaction.type) {
       case 'payment':
-        return new Color('#00ff88');
+        return new Color('var(--success-green)');
       case 'inquiry':
-        return new Color('#88aaff');
+        return new Color('var(--tf-network-light)');
       case 'dispute':
-        return new Color('#ff8888');
+        return new Color('var(--tf-error-light)');
       case 'appeal':
-        return new Color('#ffaa44');
+        return new Color('var(--tf-warning-amber)');
       default:
-        return new Color('#ffffff');
+        return new Color('var(--tf-text-primary)fff');
     }
   };
 
@@ -67,7 +67,7 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
       {/* Panel Background */}
       <RoundedBox args={[8, 6, 0.2]} radius={0.1} smoothness={4}>
         <meshStandardMaterial
-          color='#1a1a2e'
+          color='var(--tf-surface-darker)'
           transparent
           opacity={0.9}
           metalness={0.3}
@@ -79,7 +79,7 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
       <Text
         position={[0, 2.5, 0.2]}
         fontSize={0.4}
-        color='#00ff88'
+        color='var(--success-green)'
         anchorX='center'
         anchorY='middle'
         font='/fonts/QuantumFont.woff'
@@ -92,12 +92,12 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
         <group position={[3.5, 2.5, 0.2]}>
           <mesh>
             <sphereGeometry args={[0.1]} />
-            <meshStandardMaterial color='#00ffff' emissive='#004444' />
+            <meshStandardMaterial color='var(--tf-quantum-cyan)' emissive='var(--tf-surface-darker)' />
           </mesh>
           <Text
             position={[0.3, 0, 0]}
             fontSize={0.15}
-            color='#00ffff'
+            color='var(--tf-quantum-cyan)'
             anchorX='left'
             anchorY='middle'
           >
@@ -126,7 +126,7 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
               onClick={() => handleCitizenClick(interaction.citizenId)}
             >
               <meshStandardMaterial
-                color={isSelected ? '#333366' : isHovered ? '#222244' : '#16213e'}
+                color={isSelected ? 'var(--tf-bg-surface)366' : isHovered ? 'var(--tf-surface-darker)' : 'var(--tf-surface-darker)'}
                 transparent
                 opacity={0.8}
               />
@@ -136,7 +136,7 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
             <Text
               position={[-3, 0, 0.01]}
               fontSize={0.12}
-              color='#ffffff'
+              color='var(--tf-text-primary)fff'
               anchorX='left'
               anchorY='middle'
               maxWidth={1.5}
@@ -160,7 +160,7 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
               <Text
                 position={[1, 0, 0.01]}
                 fontSize={0.1}
-                color='#88ff88'
+                color='var(--tf-success-light)'
                 anchorX='center'
                 anchorY='middle'
               >
@@ -172,7 +172,7 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
             <Text
               position={[2.8, 0, 0.01]}
               fontSize={0.08}
-              color='#aaaaaa'
+              color='var(--gray-400)'
               anchorX='right'
               anchorY='middle'
             >
@@ -183,7 +183,7 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
             {aiEnhanced && interaction.aiRecommendation && (
               <mesh position={[3.2, 0, 0.01]}>
                 <sphereGeometry args={[0.03]} />
-                <meshStandardMaterial color='#ffaa00' emissive='#442200' />
+                <meshStandardMaterial color='var(--warning-amber)' emissive='var(--tf-surface-dark)' />
               </mesh>
             )}
 
@@ -193,17 +193,17 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
               <meshStandardMaterial
                 color={
                   interaction.urgency === 'high'
-                    ? '#ff4444'
+                    ? 'var(--error-red)'
                     : interaction.urgency === 'medium'
-                      ? '#ffaa44'
-                      : '#44ff44'
+                      ? 'var(--tf-warning-amber)'
+                      : 'var(--tf-accent-success)'
                 }
                 emissive={
                   interaction.urgency === 'high'
-                    ? '#441111'
+                    ? 'var(--tf-surface-darker)'
                     : interaction.urgency === 'medium'
-                      ? '#442211'
-                      : '#114411'
+                      ? 'var(--tf-surface-darker)'
+                      : 'var(--tf-success-dark)'
                 }
               />
             </mesh>
@@ -215,13 +215,13 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
       {selectedCitizen && (
         <group position={[0, -2.5, 0.2]}>
           <RoundedBox args={[7, 1.5, 0.1]} radius={0.05}>
-            <meshStandardMaterial color='#2a2a3e' transparent opacity={0.95} />
+            <meshStandardMaterial color='var(--tf-surface-card)' transparent opacity={0.95} />
           </RoundedBox>
 
           <Text
             position={[0, 0.5, 0.1]}
             fontSize={0.15}
-            color='#00ff88'
+            color='var(--success-green)'
             anchorX='center'
             anchorY='middle'
           >
@@ -233,7 +233,7 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
             <Text
               position={[0, 0, 0.1]}
               fontSize={0.1}
-              color='#ffaa88'
+              color='var(--tf-accent-pink)'
               anchorX='center'
               anchorY='middle'
               maxWidth={6}
@@ -248,9 +248,9 @@ export const CitizenInteractionPanel: React.FC<CitizenInteractionPanelProps> = (
       <group position={[-3.5, -2.8, 0.2]}>
         <mesh>
           <sphereGeometry args={[0.05]} />
-          <meshStandardMaterial color='#00ff00' emissive='#004400' />
+          <meshStandardMaterial color='var(--tf-success-green)' emissive='var(--tf-success-dark)' />
         </mesh>
-        <Text position={[0.2, 0, 0]} fontSize={0.1} color='#00ff00' anchorX='left' anchorY='middle'>
+        <Text position={[0.2, 0, 0]} fontSize={0.1} color='var(--tf-success-green)' anchorX='left' anchorY='middle'>
           Live Updates
         </Text>
       </group>

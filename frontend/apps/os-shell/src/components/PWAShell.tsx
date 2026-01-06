@@ -376,14 +376,14 @@ const PWAShell: React.FC = () => {
                   <stop
                     offset='0%'
                     style={{
-                      stopColor: '#0099ff',
+                      stopColor: 'var(--terra-blue)',
                       stopOpacity: 1,
                     }}
                   />
                   <stop
                     offset='100%'
                     style={{
-                      stopColor: '#00ffaa',
+                      stopColor: 'var(--success-green)',
                       stopOpacity: 1,
                     }}
                   />
@@ -407,7 +407,7 @@ const PWAShell: React.FC = () => {
             style={{
               fontSize: '2.5rem',
               fontWeight: 900,
-              background: 'linear-gradient(135deg, #0099ff, #00ffee, #00ffaa)',
+              background: 'linear-gradient(135deg, var(--terra-blue), var(--terra-cyan), var(--success-green))',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -448,7 +448,7 @@ const PWAShell: React.FC = () => {
             <div
               style={{
                 height: '100%',
-                background: 'linear-gradient(90deg, #0099ff, #00ffee, #00ffaa)',
+                background: 'linear-gradient(90deg, var(--terra-blue), var(--terra-cyan), var(--success-green))',
                 animation: 'loading 2s ease-in-out infinite',
                 borderRadius: '2px',
               }}
@@ -456,7 +456,7 @@ const PWAShell: React.FC = () => {
           </div>
           <p
             style={{
-              color: realDataConnected ? '#00ffaa' : '#00ffee',
+              color: realDataConnected ? 'var(--success-green)' : 'var(--terra-cyan)',
               fontSize: '1rem',
               marginTop: '1rem',
             }}
@@ -466,7 +466,7 @@ const PWAShell: React.FC = () => {
           {realDataConnected && (
             <div
               style={{
-                color: '#00ffaa',
+                color: 'var(--success-green)',
                 fontSize: '0.9rem',
                 marginTop: '0.5rem',
               }}
@@ -497,7 +497,7 @@ const PWAShell: React.FC = () => {
           </button>
           <h2
             style={{
-              color: '#fff',
+              color: 'white',
               fontSize: '1.5rem',
               fontWeight: 700,
               margin: 0,
@@ -520,7 +520,7 @@ const PWAShell: React.FC = () => {
             style={{
               fontSize: '1.5rem',
               fontWeight: 700,
-              background: 'linear-gradient(135deg, #0099ff, #00ffee, #00ffaa)',
+              background: 'linear-gradient(135deg, var(--terra-blue), var(--terra-cyan), var(--success-green))',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -557,7 +557,7 @@ const PWAShell: React.FC = () => {
         <div
           style={{
             background: realDataConnected ? 'rgba(0,255,170,0.1)' : 'rgba(255,165,0,0.1)',
-            border: `1px solid ${realDataConnected ? '#00ffaa' : '#ffa500'}`,
+            border: `1px solid ${realDataConnected ? 'var(--success-green)' : 'var(--warning-amber)'}`,
           }}
           className='text-center'
         >
@@ -565,7 +565,7 @@ const PWAShell: React.FC = () => {
             <div className='flex items-center gap-4'>
               <div
                 style={{
-                  color: realDataConnected ? '#00ffaa' : '#ffa500',
+                  color: realDataConnected ? 'var(--success-green)' : 'var(--warning-amber)',
                   fontSize: '1.2rem',
                   fontWeight: 700,
                 }}
@@ -624,7 +624,7 @@ const PWAShell: React.FC = () => {
                 if (module.enabled) {
                   e.currentTarget.style.transform = 'translateY(-5px)';
                   e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,255,238,0.3)';
-                  e.currentTarget.style.borderColor = '#00ffee';
+                  e.currentTarget.style.borderColor = 'var(--terra-cyan)';
                 }
               }}
               onMouseLeave={(e) => {
@@ -643,7 +643,7 @@ const PWAShell: React.FC = () => {
                   left: 0,
                   right: 0,
                   height: '4px',
-                  background: 'linear-gradient(90deg, #00ffee, transparent)',
+                  background: 'linear-gradient(90deg, var(--terra-cyan), transparent)',
                 }}
               />
 
@@ -654,7 +654,7 @@ const PWAShell: React.FC = () => {
                     style={{
                       fontSize: '1.3rem',
                       fontWeight: 700,
-                      color: '#fff',
+                      color: 'white',
                       margin: '0 0 0.5rem 0',
                     }}
                   >
@@ -682,3 +682,4 @@ const PWAShell: React.FC = () => {
   );
 };
 export default PWAShell;
+

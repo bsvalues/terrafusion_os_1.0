@@ -3,7 +3,7 @@
   position: relative;
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(135deg, #0f0f23 0%, #16213e 50%, #1a1a2e 100%);
+  background: linear-gradient(135deg, #0f0f23 0%, var(--tf-surface-darker) 50%, var(--tf-surface-darker) 100%);
   overflow: hidden;
   font-family: 'Quantum UI', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -14,7 +14,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  color: #00ff88;
+  color: var(--success-green);
 }
 
 .loading-text {
@@ -31,17 +31,17 @@
   display: flex;
   align-items: center;
   background: rgba(0, 255, 136, 0.1);
-  border: 1px solid #00ff88;
+  border: 1px solid var(--success-green);
   border-radius: 20px;
   padding: 10px 15px;
-  color: #00ff88;
+  color: var(--success-green);
   font-size: 14px;
 }
 
 .pulse-animation {
   width: 12px;
   height: 12px;
-  background: #00ff88;
+  background: var(--success-green);
   border-radius: 50%;
   margin-right: 10px;
   animation: pulse 1s ease-in-out infinite;
@@ -67,7 +67,7 @@
   flex-direction: column;
   gap: 15px;
   background: rgba(22, 33, 62, 0.9);
-  border: 1px solid #00ff88;
+  border: 1px solid var(--success-green);
   border-radius: 10px;
   padding: 20px;
   backdrop-filter: blur(10px);
@@ -75,7 +75,7 @@
 
 .immersion-slider label {
   display: block;
-  color: #00ff88;
+  color: var(--success-green);
   font-size: 12px;
   margin-bottom: 5px;
   text-transform: uppercase;
@@ -85,7 +85,7 @@
 .immersion-slider input[type='range'] {
   width: 200px;
   height: 4px;
-  background: linear-gradient(to right, #16213e, #00ff88);
+  background: linear-gradient(to right, var(--tf-surface-darker), var(--success-green));
   border-radius: 2px;
   outline: none;
   -webkit-appearance: none;
@@ -95,7 +95,7 @@
   appearance: none;
   width: 16px;
   height: 16px;
-  background: #00ff88;
+  background: var(--success-green);
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
@@ -128,15 +128,15 @@
 
 .quantum-toggle.active {
   background: rgba(255, 136, 0, 0.2);
-  border-color: #ff8800;
-  color: #ff8800;
+  border-color: var(--tf-accent-orange);
+  color: var(--tf-accent-orange);
   box-shadow: 0 0 20px rgba(255, 136, 0, 0.4);
 }
 
 .ai-toggle.active {
   background: rgba(0, 255, 136, 0.2);
-  border-color: #00ff88;
-  color: #00ff88;
+  border-color: var(--success-green);
+  color: var(--success-green);
   box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
 }
 
@@ -169,19 +169,19 @@
 .fps-counter::before {
   content: '⚡';
   margin-right: 5px;
-  color: #00ff88;
+  color: var(--success-green);
 }
 
 .response-time::before {
   content: '⏱️';
   margin-right: 5px;
-  color: #ffaa00;
+  color: var(--warning-amber);
 }
 
 .accuracy-indicator::before {
   content: '🎯';
   margin-right: 5px;
-  color: #ff6600;
+  color: var(--tf-retro-orange);
 }
 
 /* Animations */

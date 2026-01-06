@@ -195,13 +195,13 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
     return (
       <div className='flex items-center gap-2'>
         {isHealthy ? (
-          <CheckCircle className='w-5 h-5 text-[#00ffaa]' />
+          <CheckCircle className='w-5 h-5 text-[var(--tf-accent-success)]' />
         ) : (
           <AlertCircle className='w-5 h-5 text-red-500' />
         )}
         <Badge
           variant={isHealthy ? 'default' : 'destructive'}
-          className={isHealthy ? 'bg-[#00ffaa]/20 text-[#00ffaa] border-[#00ffaa]/30' : ''}
+          className={isHealthy ? 'bg-[var(--tf-accent-success)]/20 text-[var(--tf-accent-success)] border-[var(--tf-accent-success)]/30' : ''}
         >
           {status || 'Unknown'}
         </Badge>
@@ -212,8 +212,8 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
   // Performance score visualization
   const PerformanceScore = ({ score }: { score: number }) => {
     const getScoreColor = (score: number) => {
-      if (score >= 0.95) return 'text-[#00ffaa]';
-      if (score >= 0.8) return 'text-[#00ffee]';
+      if (score >= 0.95) return 'text-[var(--tf-accent-success)]';
+      if (score >= 0.8) return 'text-[var(--tf-transcend-highlight)]';
       return 'text-yellow-500';
     };
 
@@ -232,8 +232,8 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
       {/* Header Controls */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-3'>
-          <Zap className='w-6 h-6 text-[#00ffee]' />
-          <h2 className='text-2xl font-bold bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] bg-clip-text text-transparent'>
+          <Zap className='w-6 h-6 text-[var(--tf-transcend-highlight)]' />
+          <h2 className='text-2xl font-bold bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] bg-clip-text text-transparent'>
             COSTFORGE INTEGRATION
           </h2>
         </div>
@@ -243,7 +243,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
             onClick={() => setAutoRefresh(!autoRefresh)}
             variant={autoRefresh ? 'default' : 'outline'}
             size='sm'
-            className={autoRefresh ? 'bg-[#00ffee]/20 text-[#00ffee] border-[#00ffee]/30' : ''}
+            className={autoRefresh ? 'bg-[var(--tf-transcend-highlight)]/20 text-[var(--tf-transcend-highlight)] border-[var(--tf-transcend-highlight)]/30' : ''}
           >
             Auto-Refresh {autoRefresh ? 'ON' : 'OFF'}
           </Button>
@@ -252,7 +252,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
             onClick={loadSystemData}
             disabled={loading}
             size='sm'
-            className='bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] text-white'
+            className='bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white'
           >
             {loading ? 'SYNCING...' : 'REFRESH STATUS'}
           </Button>
@@ -294,11 +294,11 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
       {/* System Status Overview */}
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
         <Card
-          className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'
+          className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'
           aria-label='Connection Status'
         >
           <CardHeader className='pb-2'>
-            <CardTitle className='text-sm text-[#00ffee] flex items-center gap-2'>
+            <CardTitle className='text-sm text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
               <Activity className='w-4 h-4' />
               System Status
             </CardTitle>
@@ -310,20 +310,20 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
             {/* Show Auto-Recovery message for reconnecting status */}
             {currentConnectionStatus === 'reconnecting' && (
-              <div className='mt-2 text-sm text-[#00ffee]'>Auto-Recovery Active</div>
+              <div className='mt-2 text-sm text-[var(--tf-transcend-highlight)]'>Auto-Recovery Active</div>
             )}
           </CardContent>
         </Card>
 
-        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
           <CardHeader className='pb-2'>
-            <CardTitle className='text-sm text-[#00ffee] flex items-center gap-2'>
+            <CardTitle className='text-sm text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
               <Database className='w-4 h-4' />
               Active Agents
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-mono text-[#00ffaa]'>
+            <div className='text-2xl font-mono text-[var(--tf-accent-success)]'>
               {systemStatus?.activeAgents?.toLocaleString() ||
                 agentStatus?.activeAgents?.toLocaleString() ||
                 '---'}
@@ -332,11 +332,11 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
         </Card>
 
         <Card
-          className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'
+          className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'
           aria-label='Performance Metrics'
         >
           <CardHeader className='pb-2'>
-            <CardTitle className='text-sm text-[#00ffee] flex items-center gap-2'>
+            <CardTitle className='text-sm text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
               <Zap className='w-4 h-4' />
               Performance
             </CardTitle>
@@ -349,18 +349,18 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
         </Card>
 
         <Card
-          className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'
+          className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'
           aria-label='System Health'
         >
           <CardHeader className='pb-2'>
-            <CardTitle className='text-sm text-[#00ffee] flex items-center gap-2'>
+            <CardTitle className='text-sm text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
               <Cloud className='w-4 h-4' />
               System Health
             </CardTitle>
           </CardHeader>
           <CardContent data-contrast-compliant='true'>
             <div className='space-y-2'>
-              <div className='text-lg font-mono text-[#00ffaa]'>99.7%</div>
+              <div className='text-lg font-mono text-[var(--tf-accent-success)]'>99.7%</div>
               <div className='text-xs text-gray-400'>Uptime</div>
               <div className='text-xs text-gray-400'>Memory: 42.1%</div>
             </div>
@@ -370,29 +370,29 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
       {/* Performance Metrics Detail */}
       {performanceMetrics && (
-        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
           <CardHeader>
-            <CardTitle className='text-[#00ffee]'>Performance Analytics</CardTitle>
+            <CardTitle className='text-[var(--tf-transcend-highlight)]'>Performance Analytics</CardTitle>
           </CardHeader>
           <CardContent>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
               <div className='space-y-2'>
                 <div className='text-sm text-gray-400'>Requests Per Second</div>
-                <div className='text-xl font-mono text-[#00ffaa]'>
+                <div className='text-xl font-mono text-[var(--tf-accent-success)]'>
                   {performanceMetrics.requestsPerSecond?.toLocaleString()}
                 </div>
               </div>
 
               <div className='space-y-2'>
                 <div className='text-sm text-gray-400'>Total Calculations</div>
-                <div className='text-xl font-mono text-[#00ffaa]'>
+                <div className='text-xl font-mono text-[var(--tf-accent-success)]'>
                   {performanceMetrics.totalCalculations?.toLocaleString()}
                 </div>
               </div>
 
               <div className='space-y-2'>
                 <div className='text-sm text-gray-400'>Accuracy Rate</div>
-                <div className='text-xl font-mono text-[#00ffaa]'>
+                <div className='text-xl font-mono text-[var(--tf-accent-success)]'>
                   {(performanceMetrics.accuracyRate * 100).toFixed(2)}%
                 </div>
               </div>
@@ -403,27 +403,27 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
       {/* �️ TerraFusion Backend Integration Status */}
       <Card
-        className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'
+        className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'
         data-contrast-compliant='true'
       >
         <CardHeader>
-          <CardTitle className='text-[#00ffee]'>TerraFusion.API Backend Status</CardTitle>
+          <CardTitle className='text-[var(--tf-transcend-highlight)]'>TerraFusion.API Backend Status</CardTitle>
         </CardHeader>
         <CardContent className='space-y-4'>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Connection</div>
-              <div className='text-lg font-mono text-[#00ffaa]'>Active</div>
+              <div className='text-lg font-mono text-[var(--tf-accent-success)]'>Active</div>
             </div>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Security</div>
-              <div className='text-lg font-mono text-[#00ffaa]'>
+              <div className='text-lg font-mono text-[var(--tf-accent-success)]'>
                 Government-Grade Security Active
               </div>
             </div>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>SLA Status</div>
-              <div className='text-lg font-mono text-[#00ffaa]'>SLA Compliant</div>
+              <div className='text-lg font-mono text-[var(--tf-accent-success)]'>SLA Compliant</div>
             </div>
           </div>
         </CardContent>
@@ -431,23 +431,23 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
       {/* �🏆 Championship Integration Testing & Validation */}
       <Card
-        className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'
+        className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'
         data-contrast-compliant='true'
       >
         <CardHeader>
-          <CardTitle className='text-[#00ffee]'>Integration Testing & Quality Assurance</CardTitle>
+          <CardTitle className='text-[var(--tf-transcend-highlight)]'>Integration Testing & Quality Assurance</CardTitle>
         </CardHeader>
         <CardContent className='space-y-4'>
           {/* County Validation Input */}
           <div className='space-y-3'>
-            <label htmlFor='county-validation-input' className='text-sm text-[#00ffee]'>
+            <label htmlFor='county-validation-input' className='text-sm text-[var(--tf-transcend-highlight)]'>
               County Verification:
             </label>
             <input
               id='county-validation-input'
               type='text'
               placeholder='Enter county name for validation'
-              className='w-full p-2 bg-white/10 border border-[#00ffee]/30 rounded-md text-white placeholder-gray-400'
+              className='w-full p-2 bg-white/10 border border-[var(--tf-transcend-highlight)]/30 rounded-md text-white placeholder-gray-400'
               aria-label='County Validation'
               value={countyValidation}
               onChange={(e) => setCountyValidation(e.target.value)}
@@ -456,9 +456,9 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
             {/* County validation results */}
             {countyValidation.toLowerCase().includes('king') && (
               <div className='space-y-1 text-sm'>
-                <div className='text-[#00ffaa]'>King County Assessor</div>
-                <div className='text-[#00ffaa]'>Multiplier: 1.35</div>
-                <div className='text-[#00ffaa]'>Status: Verified</div>
+                <div className='text-[var(--tf-accent-success)]'>King County Assessor</div>
+                <div className='text-[var(--tf-accent-success)]'>Multiplier: 1.35</div>
+                <div className='text-[var(--tf-accent-success)]'>Status: Verified</div>
               </div>
             )}
           </div>
@@ -497,7 +497,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
                   });
                 }
               }}
-              className='bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] text-white'
+              className='bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white'
               size='sm'
             >
               Run Integration Test
@@ -512,7 +512,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
                   suggestion: 'Use valid Washington State county',
                 });
               }}
-              className='bg-[#00ffee]/20 text-[#00ffee] border border-[#00ffee]/30 hover:bg-[#00ffee]/30'
+              className='bg-[var(--tf-transcend-highlight)]/20 text-[var(--tf-transcend-highlight)] border border-[var(--tf-transcend-highlight)]/30 hover:bg-[var(--tf-transcend-highlight)]/30'
               size='sm'
             >
               Verify Data
@@ -524,10 +524,10 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
             <div className='space-y-2'>
               {calculationResults.amount && (
                 <>
-                  <div className='text-lg font-mono text-[#00ffaa]'>
+                  <div className='text-lg font-mono text-[var(--tf-accent-success)]'>
                     {calculationResults.amount}
                   </div>
-                  <div className='text-sm text-[#00ffaa]'>{calculationResults.confidence}</div>
+                  <div className='text-sm text-[var(--tf-accent-success)]'>{calculationResults.confidence}</div>
                   <div className='text-xs text-gray-400'>{calculationResults.id}</div>
                 </>
               )}
@@ -543,9 +543,9 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
           {/* Government Compliance Indicators */}
           <div className='space-y-2'>
-            <div className='text-sm text-[#00ffaa]'>✓ FISMA Compliant</div>
-            <div className='text-sm text-[#00ffaa]'>✓ Audit Trail Active</div>
-            <div className='text-sm text-[#00ffaa]'>✓ Data Sovereignty Protected</div>
+            <div className='text-sm text-[var(--tf-accent-success)]'>✓ FISMA Compliant</div>
+            <div className='text-sm text-[var(--tf-accent-success)]'>✓ Audit Trail Active</div>
+            <div className='text-sm text-[var(--tf-accent-success)]'>✓ Data Sovereignty Protected</div>
           </div>
 
           {/* Error states that tests expect */}
@@ -563,33 +563,33 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
       {/* 📊 Performance History & Analytics */}
       <Card
-        className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'
+        className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'
         data-contrast-compliant='true'
       >
         <CardHeader>
-          <CardTitle className='text-[#00ffee]'>Performance History</CardTitle>
+          <CardTitle className='text-[var(--tf-transcend-highlight)]'>Performance History</CardTitle>
         </CardHeader>
         <CardContent className='space-y-4'>
           <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Latest</div>
-              <div className='text-lg font-mono text-[#00ffaa]'>95ms</div>
+              <div className='text-lg font-mono text-[var(--tf-accent-success)]'>95ms</div>
             </div>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Previous</div>
-              <div className='text-lg font-mono text-[#00ffaa]'>120ms</div>
+              <div className='text-lg font-mono text-[var(--tf-accent-success)]'>120ms</div>
             </div>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Best</div>
-              <div className='text-lg font-mono text-[#00ffaa]'>85ms</div>
+              <div className='text-lg font-mono text-[var(--tf-accent-success)]'>85ms</div>
             </div>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Average</div>
-              <div className='text-lg font-mono text-[#00ffaa]'>88ms</div>
+              <div className='text-lg font-mono text-[var(--tf-accent-success)]'>88ms</div>
             </div>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Additional</div>
-              <div className='text-lg font-mono text-[#00ffaa]'>92ms</div>
+              <div className='text-lg font-mono text-[var(--tf-accent-success)]'>92ms</div>
             </div>
           </div>
 
@@ -597,15 +597,15 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4 text-sm'>
             <div className='text-center'>
               <div className='text-gray-400'>Throughput</div>
-              <div className='text-[#00ffaa]'>850 req/s</div>
+              <div className='text-[var(--tf-accent-success)]'>850 req/s</div>
             </div>
             <div className='text-center'>
               <div className='text-gray-400'>Accuracy</div>
-              <div className='text-[#00ffaa]'>99.8%</div>
+              <div className='text-[var(--tf-accent-success)]'>99.8%</div>
             </div>
             <div className='text-center'>
               <div className='text-gray-400'>Agents</div>
-              <div className='text-[#00ffaa]'>15 Active</div>
+              <div className='text-[var(--tf-accent-success)]'>15 Active</div>
             </div>
           </div>
         </CardContent>
@@ -613,25 +613,25 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
       {/* 🎯 SLA Compliance Monitoring */}
       <Card
-        className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'
+        className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'
         data-contrast-compliant='true'
       >
         <CardHeader>
-          <CardTitle className='text-[#00ffee]'>SLA Compliance</CardTitle>
+          <CardTitle className='text-[var(--tf-transcend-highlight)]'>SLA Compliance</CardTitle>
         </CardHeader>
         <CardContent className='space-y-4'>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Current</div>
-              <div className='text-2xl font-mono text-[#00ffaa]'>99.9%</div>
+              <div className='text-2xl font-mono text-[var(--tf-accent-success)]'>99.9%</div>
             </div>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Target: 99.5%</div>
-              <div className='text-lg font-mono text-[#00ffee]'>✓ EXCEEDED</div>
+              <div className='text-lg font-mono text-[var(--tf-transcend-highlight)]'>✓ EXCEEDED</div>
             </div>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Uptime</div>
-              <div className='text-lg font-mono text-[#00ffaa]'>99.98%</div>
+              <div className='text-lg font-mono text-[var(--tf-accent-success)]'>99.98%</div>
             </div>
           </div>
         </CardContent>
@@ -639,25 +639,25 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
       {/* ⚡ Cache Performance Monitoring */}
       <Card
-        className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'
+        className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'
         data-contrast-compliant='true'
       >
         <CardHeader>
-          <CardTitle className='text-[#00ffee]'>Cache Performance</CardTitle>
+          <CardTitle className='text-[var(--tf-transcend-highlight)]'>Cache Performance</CardTitle>
         </CardHeader>
         <CardContent className='space-y-4'>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Hit Rate</div>
-              <div className='text-xl font-mono text-[#00ffaa]'>85.2%</div>
+              <div className='text-xl font-mono text-[var(--tf-accent-success)]'>85.2%</div>
             </div>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Cache Size</div>
-              <div className='text-xl font-mono text-[#00ffaa]'>24.7MB</div>
+              <div className='text-xl font-mono text-[var(--tf-accent-success)]'>24.7MB</div>
             </div>
             <div className='text-center'>
               <div className='text-sm text-gray-400'>Evictions/sec</div>
-              <div className='text-xl font-mono text-[#00ffaa]'>12.4</div>
+              <div className='text-xl font-mono text-[var(--tf-accent-success)]'>12.4</div>
             </div>
           </div>
         </CardContent>
@@ -665,22 +665,22 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
       {/* AI Agent Management */}
       {agentStatus && (
-        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
           <CardHeader>
-            <CardTitle className='text-[#00ffee]'>AI Agent Swarm Control</CardTitle>
+            <CardTitle className='text-[var(--tf-transcend-highlight)]'>AI Agent Swarm Control</CardTitle>
           </CardHeader>
           <CardContent className='space-y-4'>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
               <div className='space-y-2'>
                 <div className='text-sm text-gray-400'>Total Agents</div>
-                <div className='text-xl font-mono text-[#00ffaa]'>
+                <div className='text-xl font-mono text-[var(--tf-accent-success)]'>
                   {agentStatus.totalAgents?.toLocaleString()}
                 </div>
               </div>
 
               <div className='space-y-2'>
                 <div className='text-sm text-gray-400'>Active Agents</div>
-                <div className='text-xl font-mono text-[#00ffaa]'>
+                <div className='text-xl font-mono text-[var(--tf-accent-success)]'>
                   {agentStatus.activeAgents?.toLocaleString()}
                 </div>
               </div>
@@ -696,7 +696,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
             <div className='flex items-center gap-3 pt-4'>
               <Button
                 onClick={() => handleScaleAgents(agentStatus.totalAgents + 1000)}
-                className='bg-[#00ffee]/20 text-[#00ffee] border border-[#00ffee]/30 hover:bg-[#00ffee]/30'
+                className='bg-[var(--tf-transcend-highlight)]/20 text-[var(--tf-transcend-highlight)] border border-[var(--tf-transcend-highlight)]/30 hover:bg-[var(--tf-transcend-highlight)]/30'
                 size='sm'
               >
                 SCALE UP (+1K)
@@ -715,16 +715,16 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
       )}
 
       {/* Government Data Sync */}
-      <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+      <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
         <CardHeader>
-          <CardTitle className='text-[#00ffee]'>Government Data Integration</CardTitle>
+          <CardTitle className='text-[var(--tf-transcend-highlight)]'>Government Data Integration</CardTitle>
         </CardHeader>
         <CardContent>
           <div className='space-y-4'>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
               <Button
                 onClick={() => handleHarrisSync('benton')}
-                className='bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] text-white'
+                className='bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white'
                 disabled={loading}
               >
                 SYNC BENTON COUNTY
@@ -732,7 +732,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
               <Button
                 onClick={() => handleHarrisSync('franklin')}
-                className='bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] text-white'
+                className='bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white'
                 disabled={loading}
               >
                 SYNC FRANKLIN COUNTY
@@ -740,7 +740,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
               <Button
                 onClick={() => handleHarrisSync('yakima')}
-                className='bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] text-white'
+                className='bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white'
                 disabled={loading}
               >
                 SYNC YAKIMA COUNTY
@@ -758,21 +758,21 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
       {/* 🏆 TerraFusion Elite Quantum Status Display */}
       <Card
-        className='tf-glass-card tf-quantum-display bg-white/10 backdrop-blur-lg border border-[#00ffee]/20 relative overflow-hidden'
+        className='tf-glass-card tf-quantum-display bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20 relative overflow-hidden'
         data-contrast-compliant='true'
       >
-        <div className='tf-scan-line animate-tf-scan absolute inset-0 bg-gradient-to-r from-transparent via-[#00ffee]/20 to-transparent'></div>
+        <div className='tf-scan-line animate-tf-scan absolute inset-0 bg-gradient-to-r from-transparent via-[var(--tf-transcend-highlight)]/20 to-transparent'></div>
         <CardContent className='p-6 relative z-10'>
           <div className='text-center space-y-3'>
-            <div className='text-2xl font-bold bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] bg-clip-text text-transparent'>
+            <div className='text-2xl font-bold bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] bg-clip-text text-transparent'>
               QUANTUM CONNECTED
             </div>
-            <div className='text-lg text-[#00ffee]'>Championship-Level Performance</div>
+            <div className='text-lg text-[var(--tf-transcend-highlight)]'>Championship-Level Performance</div>
             <div className='flex items-center justify-center gap-2'>
-              <div className='w-2 h-2 bg-[#00ffaa] rounded-full animate-pulse'></div>
-              <span className='text-[#00ffaa]'>TerraFusion Elite Backend Integration Active</span>
+              <div className='w-2 h-2 bg-[var(--tf-accent-success)] rounded-full animate-pulse'></div>
+              <span className='text-[var(--tf-accent-success)]'>TerraFusion Elite Backend Integration Active</span>
             </div>
-            <div className='text-[#00ffee]'>
+            <div className='text-[var(--tf-transcend-highlight)]'>
               Government. Transcended. • Infinite Scale Operational
             </div>
 
@@ -780,14 +780,14 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
             {connectionStatus === 'connecting' && (
               <div className='space-y-1 text-sm'>
                 <div className='text-yellow-400'>Reconnecting</div>
-                <div className='text-[#00ffee]'>Auto-Recovery Active</div>
+                <div className='text-[var(--tf-transcend-highlight)]'>Auto-Recovery Active</div>
               </div>
             )}
 
             {connectionStatus === 'reconnecting' && (
               <div className='space-y-1 text-sm'>
                 <div className='text-yellow-400'>Reconnecting</div>
-                <div className='text-[#00ffee]'>Auto-Recovery Active</div>
+                <div className='text-[var(--tf-transcend-highlight)]'>Auto-Recovery Active</div>
               </div>
             )}
 

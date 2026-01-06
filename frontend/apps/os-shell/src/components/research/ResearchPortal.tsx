@@ -454,7 +454,7 @@ export const ResearchPortal: React.FC = () => {
       style={{
         width: '100vw',
         height: '100vh',
-        background: 'linear-gradient(135deg, #0A0E1A 0%, #1E293B 100%)',
+        background: 'linear-gradient(135deg, var(--tf-bg-void) 0%, var(--terra-slate) 100%)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -485,7 +485,7 @@ export const ResearchPortal: React.FC = () => {
               style={{
                 fontSize: '1.618rem',
                 fontWeight: 700,
-                background: 'linear-gradient(135deg, #00FFFF 0%, #0080FF 100%)',
+                background: 'linear-gradient(135deg, var(--tf-transcend-cyan) 0%, var(--tf-network-blue) 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 margin: 0,
@@ -497,7 +497,7 @@ export const ResearchPortal: React.FC = () => {
             <p
               style={{
                 fontSize: '0.875rem',
-                color: '#94A3B8',
+                color: 'var(--tf-text-secondary)',
                 margin: 0,
               }}
             >
@@ -511,14 +511,14 @@ export const ResearchPortal: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.875rem',
-                  color: '#00FFFF',
+                  color: 'var(--tf-transcend-cyan)',
                   fontWeight: 600,
                   marginBottom: '0.25rem',
                 }}
               >
                 {session?.researcherName || 'Loading...'}
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--tf-text-secondary)' }}>
                 {session?.institutionName || 'Initializing session...'}
               </div>
             </div>
@@ -532,10 +532,10 @@ export const ResearchPortal: React.FC = () => {
                 border: '1px solid rgba(0, 255, 255, 0.3)',
               }}
             >
-              <div style={{ fontSize: '0.75rem', color: '#94A3B8', marginBottom: '0.25rem' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--tf-text-secondary)', marginBottom: '0.25rem' }}>
                 Session Duration
               </div>
-              <div style={{ fontSize: '1rem', color: '#00FFFF', fontWeight: 700 }}>
+              <div style={{ fontSize: '1rem', color: 'var(--tf-transcend-cyan)', fontWeight: 700 }}>
                 {formatDuration(sessionDuration)}
               </div>
             </div>
@@ -547,7 +547,7 @@ export const ResearchPortal: React.FC = () => {
                 alignItems: 'center',
                 gap: '0.5rem',
                 fontSize: '0.75rem',
-                color: autoSaveEnabled ? '#00FF00' : '#94A3B8',
+                color: autoSaveEnabled ? 'var(--tf-accent-success)' : 'var(--tf-text-secondary)',
               }}
             >
               <div
@@ -555,8 +555,8 @@ export const ResearchPortal: React.FC = () => {
                   width: '8px',
                   height: '8px',
                   borderRadius: '50%',
-                  background: autoSaveEnabled ? '#00FF00' : '#94A3B8',
-                  boxShadow: autoSaveEnabled ? '0 0 10px #00FF00' : 'none',
+                  background: autoSaveEnabled ? 'var(--tf-accent-success)' : 'var(--tf-text-secondary)',
+                  boxShadow: autoSaveEnabled ? '0 0 10px var(--tf-accent-success)' : 'none',
                 }}
               />
               {autoSaveEnabled ? 'Auto-Save Active' : 'Auto-Save Paused'}
@@ -589,7 +589,7 @@ export const ResearchPortal: React.FC = () => {
                     : '1px solid rgba(148, 163, 184, 0.3)',
                 borderRadius: '8px',
                 padding: '0.75rem 1.5rem',
-                color: activePanel === panel.id ? '#00FFFF' : '#94A3B8',
+                color: activePanel === panel.id ? 'var(--tf-transcend-cyan)' : 'var(--tf-text-secondary)',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 fontSize: '0.875rem',
@@ -621,7 +621,7 @@ export const ResearchPortal: React.FC = () => {
             borderBottom: '1px solid rgba(0, 128, 255, 0.3)',
             padding: '0.75rem 2rem',
             fontSize: '0.875rem',
-            color: '#00FFFF',
+            color: 'var(--tf-transcend-cyan)',
             display: 'flex',
             alignItems: 'center',
             gap: '1rem',
@@ -635,7 +635,7 @@ export const ResearchPortal: React.FC = () => {
               marginLeft: 'auto',
               background: 'none',
               border: 'none',
-              color: '#94A3B8',
+              color: 'var(--tf-text-secondary)',
               cursor: 'pointer',
               fontSize: '1.25rem',
             }}
@@ -678,28 +678,28 @@ export const ResearchPortal: React.FC = () => {
           alignItems: 'center',
         }}
       >
-        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: '#94A3B8' }}>
+        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: 'var(--tf-text-secondary)' }}>
           <span>
             Active Agents:{' '}
-            <strong style={{ color: '#00FFFF' }}>
+            <strong style={{ color: 'var(--tf-transcend-cyan)' }}>
               {session?.aiSwarmMetrics.activeAgents.toLocaleString() || '0'}
             </strong>
           </span>
           <span>
             Quantum Coherence:{' '}
-            <strong style={{ color: '#00FFFF' }}>
+            <strong style={{ color: 'var(--tf-transcend-cyan)' }}>
               {((session?.quantumParameters.quantumCoherence || 0) * 100).toFixed(1)}%
             </strong>
           </span>
           <span>
             Swarm Efficiency:{' '}
-            <strong style={{ color: '#00FFFF' }}>
+            <strong style={{ color: 'var(--tf-transcend-cyan)' }}>
               {((session?.aiSwarmMetrics.swarmEfficiency || 0) * 100).toFixed(1)}%
             </strong>
           </span>
           <span>
             Panel Switch:{' '}
-            <strong style={{ color: '#00FFFF' }}>{panelSwitchTimeRef.current.toFixed(2)}ms</strong>
+            <strong style={{ color: 'var(--tf-transcend-cyan)' }}>{panelSwitchTimeRef.current.toFixed(2)}ms</strong>
           </span>
         </div>
 
@@ -720,7 +720,7 @@ export const ResearchPortal: React.FC = () => {
               border: '1px solid rgba(0, 255, 255, 0.3)',
               borderRadius: '6px',
               padding: '0.5rem 1rem',
-              color: '#00FFFF',
+              color: 'var(--tf-transcend-cyan)',
               cursor: 'pointer',
               fontSize: '0.75rem',
               fontWeight: 600,
@@ -746,7 +746,7 @@ export const ResearchPortal: React.FC = () => {
               border: '1px solid rgba(0, 255, 255, 0.5)',
               borderRadius: '6px',
               padding: '0.5rem 1rem',
-              color: '#00FFFF',
+              color: 'var(--tf-transcend-cyan)',
               cursor: 'pointer',
               fontSize: '0.75rem',
               fontWeight: 600,
@@ -762,7 +762,7 @@ export const ResearchPortal: React.FC = () => {
               border: '1px solid rgba(148, 163, 184, 0.3)',
               borderRadius: '6px',
               padding: '0.5rem 1rem',
-              color: '#94A3B8',
+              color: 'var(--tf-text-secondary)',
               cursor: 'pointer',
               fontSize: '0.75rem',
               fontWeight: 600,

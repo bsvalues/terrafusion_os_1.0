@@ -220,21 +220,21 @@ const ChampionshipDeployment: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE':
-        return '#00e676';
+        return 'var(--tf-accent-success)';
       case 'CONNECTED':
       case 'SYNCED':
       case 'OPTIMIZED':
-        return '#ffd700';
+        return 'var(--tf-accent-warning)';
       default:
-        return '#8e9eab';
+        return 'var(--tf-text-secondary)';
     }
   };
   return (
     <div
       style={{
         fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
-        background: 'linear-gradient(135deg, #0a0e27 0%, #151932 100%)',
-        color: '#fff',
+        background: 'linear-gradient(135deg, var(--tf-bg-void) 0%, var(--tf-bg-surface) 100%)',
+        color: 'var(--tf-text-primary)',
         minHeight: '100vh',
         overflowX: 'hidden',
       }}
@@ -242,7 +242,7 @@ const ChampionshipDeployment: React.FC = () => {
       {/* Supreme Header */}
       <div
         style={{
-          background: 'linear-gradient(90deg, #1e3c72 0%, #2a5298 100%)',
+          background: 'linear-gradient(90deg, var(--tf-network-blue) 0%, var(--tf-network-light) 100%)',
           padding: '20px',
           boxShadow: '0 4px 30px rgba(0, 0, 0, 0.5)',
           position: 'relative',
@@ -257,7 +257,7 @@ const ChampionshipDeployment: React.FC = () => {
                 fontWeight: 900,
                 textTransform: 'uppercase',
                 letterSpacing: '2px',
-                background: 'linear-gradient(90deg, #fff, #4fc3f7)',
+                background: 'linear-gradient(90deg, var(--tf-text-primary), var(--tf-network-blue))',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -278,8 +278,8 @@ const ChampionshipDeployment: React.FC = () => {
           </div>
           <div
             style={{
-              background: '#00e676',
-              color: '#000',
+              background: 'var(--tf-accent-success)',
+              color: 'var(--tf-void-black)',
               padding: '8px 20px',
               borderRadius: '25px',
               fontWeight: 'bold',
@@ -297,7 +297,7 @@ const ChampionshipDeployment: React.FC = () => {
         <div
           style={{
             fontSize: '1.5em',
-            color: '#4fc3f7',
+            color: 'var(--tf-network-blue)',
             marginBottom: '10px',
           }}
         >
@@ -307,7 +307,7 @@ const ChampionshipDeployment: React.FC = () => {
           style={{
             fontSize: '3em',
             fontWeight: 900,
-            background: 'linear-gradient(90deg, #ffd700, #00e676, #4fc3f7)',
+            background: 'linear-gradient(90deg, var(--tf-accent-warning), var(--tf-accent-success), var(--tf-network-blue))',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -317,7 +317,7 @@ const ChampionshipDeployment: React.FC = () => {
         </div>
         <div
           style={{
-            color: '#8e9eab',
+            color: 'var(--tf-text-secondary)',
             marginTop: '10px',
           }}
         >
@@ -350,7 +350,7 @@ const ChampionshipDeployment: React.FC = () => {
               style={{
                 fontSize: '1.3em',
                 fontWeight: 'bold',
-                color: '#4fc3f7',
+                color: 'var(--tf-network-blue)',
               }}
             >
               🎖️ SUPREME COMMANDER
@@ -361,7 +361,7 @@ const ChampionshipDeployment: React.FC = () => {
             style={{
               fontSize: '2em',
               fontWeight: 900,
-              color: '#00e676',
+              color: 'var(--tf-accent-success)',
               margin: '10px 0',
             }}
           >
@@ -369,7 +369,7 @@ const ChampionshipDeployment: React.FC = () => {
           </div>
           <div
             style={{
-              color: '#8e9eab',
+              color: 'var(--tf-text-secondary)',
             }}
           >
             Status: COMMANDING
@@ -403,7 +403,7 @@ const ChampionshipDeployment: React.FC = () => {
               style={{
                 fontSize: '1.3em',
                 fontWeight: 'bold',
-                color: '#4fc3f7',
+                color: 'var(--tf-network-blue)',
               }}
             >
               ⚡ SWARM AGENTS
@@ -414,7 +414,7 @@ const ChampionshipDeployment: React.FC = () => {
             style={{
               fontSize: '2em',
               fontWeight: 900,
-              color: '#00e676',
+              color: 'var(--tf-accent-success)',
               margin: '10px 0',
             }}
           >
@@ -422,7 +422,7 @@ const ChampionshipDeployment: React.FC = () => {
           </div>
           <div
             style={{
-              color: '#8e9eab',
+              color: 'var(--tf-text-secondary)',
             }}
           >
             Deployment Status
@@ -439,7 +439,7 @@ const ChampionshipDeployment: React.FC = () => {
             <div
               style={{
                 height: '100%',
-                background: 'linear-gradient(90deg, #4fc3f7, #00e676)',
+                background: 'linear-gradient(90deg, var(--tf-network-blue), var(--tf-accent-success))',
                 borderRadius: '5px',
                 width: `${(agentCount / 164) * 100}%`,
                 transition: 'width 1s ease',
@@ -464,7 +464,7 @@ const ChampionshipDeployment: React.FC = () => {
               style={{
                 fontSize: '1.3em',
                 fontWeight: 'bold',
-                color: '#4fc3f7',
+                color: 'var(--tf-network-blue)',
               }}
             >
               🚀 RESPONSE TIME
@@ -475,7 +475,7 @@ const ChampionshipDeployment: React.FC = () => {
             style={{
               fontSize: '2em',
               fontWeight: 900,
-              color: responseTime <= 100 ? '#00e676' : '#4fc3f7',
+              color: responseTime <= 100 ? 'var(--tf-accent-success)' : 'var(--tf-network-blue)',
               margin: '10px 0',
             }}
           >
@@ -483,7 +483,7 @@ const ChampionshipDeployment: React.FC = () => {
           </div>
           <div
             style={{
-              color: '#8e9eab',
+              color: 'var(--tf-text-secondary)',
             }}
           >
             Target: &lt;100ms
@@ -517,7 +517,7 @@ const ChampionshipDeployment: React.FC = () => {
               style={{
                 fontSize: '1.3em',
                 fontWeight: 'bold',
-                color: '#4fc3f7',
+                color: 'var(--tf-network-blue)',
               }}
             >
               🎯 RESOLUTION RATE
@@ -528,7 +528,7 @@ const ChampionshipDeployment: React.FC = () => {
             style={{
               fontSize: '2em',
               fontWeight: 900,
-              color: '#00e676',
+              color: 'var(--tf-accent-success)',
               margin: '10px 0',
             }}
           >
@@ -536,7 +536,7 @@ const ChampionshipDeployment: React.FC = () => {
           </div>
           <div
             style={{
-              color: '#8e9eab',
+              color: 'var(--tf-text-secondary)',
             }}
           >
             Target: 99.9%
@@ -553,7 +553,7 @@ const ChampionshipDeployment: React.FC = () => {
             <div
               style={{
                 height: '100%',
-                background: 'linear-gradient(90deg, #4fc3f7, #00e676)',
+                background: 'linear-gradient(90deg, var(--tf-network-blue), var(--tf-accent-success))',
                 borderRadius: '5px',
                 width: `${resolutionRate}%`,
                 transition: 'width 1s ease',
@@ -578,7 +578,7 @@ const ChampionshipDeployment: React.FC = () => {
               style={{
                 fontSize: '1.3em',
                 fontWeight: 'bold',
-                color: '#4fc3f7',
+                color: 'var(--tf-network-blue)',
               }}
             >
               🛡️ SECURITY STATUS
@@ -589,7 +589,7 @@ const ChampionshipDeployment: React.FC = () => {
             style={{
               fontSize: '2em',
               fontWeight: 900,
-              color: '#00e676',
+              color: 'var(--tf-accent-success)',
               margin: '10px 0',
             }}
           >
@@ -597,7 +597,7 @@ const ChampionshipDeployment: React.FC = () => {
           </div>
           <div
             style={{
-              color: '#8e9eab',
+              color: 'var(--tf-text-secondary)',
             }}
           >
             Government Grade Active
@@ -631,7 +631,7 @@ const ChampionshipDeployment: React.FC = () => {
               style={{
                 fontSize: '1.3em',
                 fontWeight: 'bold',
-                color: '#4fc3f7',
+                color: 'var(--tf-network-blue)',
               }}
             >
               📊 AVAILABILITY
@@ -642,7 +642,7 @@ const ChampionshipDeployment: React.FC = () => {
             style={{
               fontSize: '2em',
               fontWeight: 900,
-              color: '#00e676',
+              color: 'var(--tf-accent-success)',
               margin: '10px 0',
             }}
           >
@@ -650,7 +650,7 @@ const ChampionshipDeployment: React.FC = () => {
           </div>
           <div
             style={{
-              color: '#8e9eab',
+              color: 'var(--tf-text-secondary)',
             }}
           >
             Target: 99.99%
@@ -667,7 +667,7 @@ const ChampionshipDeployment: React.FC = () => {
             <div
               style={{
                 height: '100%',
-                background: 'linear-gradient(90deg, #4fc3f7, #00e676)',
+                background: 'linear-gradient(90deg, var(--tf-network-blue), var(--tf-accent-success))',
                 borderRadius: '5px',
                 width: `${availability}%`,
                 transition: 'width 1s ease',
@@ -690,7 +690,7 @@ const ChampionshipDeployment: React.FC = () => {
       >
         <h2
           style={{
-            color: '#4fc3f7',
+            color: 'var(--tf-network-blue)',
             marginBottom: '20px',
             margin: '0 0 20px 0',
           }}
@@ -730,20 +730,20 @@ const ChampionshipDeployment: React.FC = () => {
                 top: `${node.y}px`,
                 background:
                   node.type === 'supreme'
-                    ? 'linear-gradient(135deg, #ffd700, #ffed4e)'
+                    ? 'linear-gradient(135deg, var(--tf-accent-warning), var(--tf-accent-yellow))'
                     : node.type === 'brady'
-                      ? 'linear-gradient(135deg, #00e676, #69f0ae)'
+                      ? 'linear-gradient(135deg, var(--tf-accent-success), var(--tf-accent-success))'
                       : node.type === 'squad'
-                        ? 'linear-gradient(135deg, #ff6b6b, #ff8787)'
-                        : '#4fc3f7',
+                        ? 'linear-gradient(135deg, var(--tf-accent-error), var(--tf-error-light))'
+                        : 'var(--tf-network-blue)',
                 boxShadow:
                   node.type === 'supreme'
-                    ? '0 0 30px #ffd700'
+                    ? '0 0 30px var(--tf-accent-warning)'
                     : node.type === 'brady'
-                      ? '0 0 20px #00e676'
+                      ? '0 0 20px var(--tf-accent-success)'
                       : node.type === 'squad'
-                        ? '0 0 15px #ff6b6b'
-                        : '0 0 10px #4fc3f7',
+                        ? '0 0 15px var(--tf-accent-error)'
+                        : '0 0 10px var(--tf-network-blue)',
                 animation: `float ${4 + Math.random() * 2}s infinite ease-in-out`,
                 animationDelay: `${Math.random() * 4}s`,
               }}
@@ -791,7 +791,7 @@ const ChampionshipDeployment: React.FC = () => {
             <div
               style={{
                 fontSize: '0.9em',
-                color: '#8e9eab',
+                color: 'var(--tf-text-secondary)',
                 marginBottom: '5px',
               }}
             >
@@ -830,8 +830,8 @@ const ChampionshipDeployment: React.FC = () => {
             key={index}
             onClick={button.action}
             style={{
-              background: 'linear-gradient(135deg, #4fc3f7, #00e676)',
-              color: '#000',
+              background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-accent-success))',
+              color: 'var(--tf-void-black)',
               border: 'none',
               padding: '12px 30px',
               borderRadius: '25px',
@@ -861,7 +861,7 @@ const ChampionshipDeployment: React.FC = () => {
       <div
         style={{
           background: 'rgba(10, 14, 39, 0.9)',
-          border: '1px solid #4fc3f7',
+          border: '1px solid var(--tf-network-blue)',
           borderRadius: '10px',
           padding: '20px',
           margin: '20px',
@@ -871,7 +871,7 @@ const ChampionshipDeployment: React.FC = () => {
       >
         <h3
           style={{
-            color: '#4fc3f7',
+            color: 'var(--tf-network-blue)',
             marginBottom: '10px',
             margin: '0 0 10px 0',
           }}
@@ -885,7 +885,7 @@ const ChampionshipDeployment: React.FC = () => {
               padding: '8px',
               margin: '5px 0',
               background: 'rgba(79, 195, 247, 0.1)',
-              borderLeft: `3px solid ${entry.type === 'success' ? '#00e676' : entry.type === 'warning' ? '#ffd700' : '#4fc3f7'}`,
+              borderLeft: `3px solid ${entry.type === 'success' ? 'var(--tf-accent-success)' : entry.type === 'warning' ? 'var(--tf-accent-warning)' : 'var(--tf-network-blue)'}`,
               fontFamily: "'Courier New', monospace",
               fontSize: '0.9em',
               animation: 'slide-in 0.5s ease',

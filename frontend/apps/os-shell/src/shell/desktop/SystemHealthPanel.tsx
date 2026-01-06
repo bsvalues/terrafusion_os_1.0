@@ -1,15 +1,18 @@
 /**
  * TerraFusion OS System Health Panel
- * 
+ *
  * System tray component showing system health metrics.
  * Click to open detailed panel with CPU, Memory, Network, Storage.
- * 
+ *
  * @module shell/desktop/SystemHealthPanel
  * @see SUCCESS CRITERIA Phase 7: System Tray
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import { type TFunction } from 'i18next';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNetworkStore } from '../../stores/networkStore';
 
 // ============================================================================
 // Types
@@ -53,34 +56,34 @@ export const defaultHealthStatus: SystemHealthStatus = {
 // ============================================================================
 
 const getUsageColor = (percentage: number): string => {
-  if (percentage < 50) return 'bg-[#00ffaa]';
-  if (percentage < 80) return 'bg-[#ffaa00]';
-  return 'bg-[#ff4444]';
+  if (percentage < 50) return 'bg-[var(--tf-accent-success)]';
+  if (percentage < 80) return 'bg-[var(--warning-amber)]';
+  return 'bg-[var(--error-red)]';
 };
 
 const getStatusColor = (status: 'healthy' | 'warning' | 'critical'): string => {
   switch (status) {
     case 'healthy':
-      return 'bg-[#00ffaa]';
+      return 'bg-[var(--tf-accent-success)]';
     case 'warning':
-      return 'bg-[#ffaa00]';
+      return 'bg-[var(--warning-amber)]';
     case 'critical':
-      return 'bg-[#ff4444]';
+      return 'bg-[var(--error-red)]';
     default:
-      return 'bg-[#888888]';
+      return 'bg-[var(--gray-400)]';
   }
 };
 
-const getStatusText = (status: 'healthy' | 'warning' | 'critical'): string => {
+const getStatusText = (status: 'healthy' | 'warning' | 'critical', t: TFunction): string => {
   switch (status) {
     case 'healthy':
-      return 'Healthy';
+      return t('systemHealth.status.healthy');
     case 'warning':
-      return 'Warning';
+      return t('systemHealth.status.warning');
     case 'critical':
-      return 'Critical';
+      return t('systemHealth.status.critical');
     default:
-      return 'Unknown';
+      return t('systemHealth.status.unknown');
   }
 };
 
@@ -98,14 +101,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ percentage, testId, className
   <div className={cn('h-1.5 bg-white/10 rounded-full overflow-hidden', className)}>
     <div
       data-testid={testId || 'progress-bar'}
-      role="progressbar"
+      role='progressbar'
       aria-valuenow={percentage}
       aria-valuemin={0}
       aria-valuemax={100}
-      className={cn(
-        'h-full rounded-full transition-all duration-500',
-        getUsageColor(percentage)
-      )}
+      className={cn('h-full rounded-full transition-all duration-500', getUsageColor(percentage))}
       style={{ width: `${Math.min(100, percentage)}%` }}
     />
   </div>
@@ -120,7 +120,9 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
   onClose,
   className,
 }) => {
+  const { t } = useTranslation();
   const panelRef = useRef<HTMLDivElement>(null);
+  const isOnline = useNetworkStore((state) => state.isOnline);
 
   // Handle Escape key
   useEffect(() => {
@@ -155,92 +157,93 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
   return (
     <div
       ref={panelRef}
-      data-testid="system-health-panel"
-      role="dialog"
-      aria-label="System Health"
+      data-testid='system-health-panel'
+      role='dialog'
+      aria-label={t('systemHealth.title')}
       className={cn(
         'absolute bottom-full right-0 mb-2',
         'w-72 rounded-lg overflow-hidden',
-        'bg-[#0a0e1a]/95 backdrop-blur-xl',
-        'border border-[#00ffee]/20',
+        'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
+        'border border-[var(--tf-transcend-highlight)]/20',
         'shadow-[0_-8px_30px_rgba(0,0,0,0.5),0_0_40px_rgba(0,255,238,0.1)]',
         className
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <span className="text-lg">💚</span>
-          <h3 className="text-sm font-semibold text-white">System Health</h3>
+      <div className='flex items-center justify-between p-3 border-b border-white/10'>
+        <div className='flex items-center gap-2'>
+          <span className='text-lg'>💚</span>
+          <h3 className='text-sm font-semibold text-white'>{t('systemHealth.title')}</h3>
         </div>
         <button
           onClick={onClose}
-          aria-label="Close panel"
-          className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+          aria-label={t('systemHealth.closePanel')}
+          className='w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors'
         >
           ✕
         </button>
       </div>
 
       {/* Metrics */}
-      <div className="p-3 space-y-4">
+      <div className='p-3 space-y-4'>
         {/* CPU */}
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-sm text-white/70">CPU</span>
-            <span className="text-sm font-medium text-white">{status.cpu.usage}%</span>
+          <div className='flex items-center justify-between mb-1'>
+            <span className='text-sm text-white/70'>{t('systemHealth.cpu')}</span>
+            <span className='text-sm font-medium text-white'>{status.cpu.usage}%</span>
           </div>
-          <ProgressBar percentage={status.cpu.usage} testId="cpu-progress-bar" />
-          <div className="text-xs text-white/50 mt-0.5">{status.cpu.cores} cores</div>
+          <ProgressBar percentage={status.cpu.usage} testId='cpu-progress-bar' />
+          <div className='text-xs text-white/50 mt-0.5'>
+            {status.cpu.cores} {t('systemHealth.cores')}
+          </div>
         </div>
 
         {/* Memory */}
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-sm text-white/70">Memory</span>
-            <span className="text-sm font-medium text-white">
+          <div className='flex items-center justify-between mb-1'>
+            <span className='text-sm text-white/70'>{t('systemHealth.memory')}</span>
+            <span className='text-sm font-medium text-white'>
               {status.memory.used} / {status.memory.total} GB
             </span>
           </div>
-          <ProgressBar percentage={status.memory.percentage} testId="memory-progress-bar" />
+          <ProgressBar percentage={status.memory.percentage} testId='memory-progress-bar' />
         </div>
 
         {/* Network */}
         <div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-white/70">Network</span>
-            <div className="flex items-center gap-2">
+          <div className='flex items-center justify-between'>
+            <span className='text-sm text-white/70'>{t('systemHealth.network')}</span>
+            <div className='flex items-center gap-2'>
               <span
-                className={cn(
-                  'w-2 h-2 rounded-full',
-                  status.network.status === 'connected' && 'bg-[#00ffaa]',
-                  status.network.status === 'limited' && 'bg-[#ffaa00]',
-                  status.network.status === 'disconnected' && 'bg-[#ff4444]'
-                )}
+                className={cn('w-2 h-2 rounded-full', isOnline ? 'bg-[var(--tf-accent-success)]' : 'bg-[var(--error-red)]')}
               />
-              <span className="text-sm text-white capitalize">{status.network.status}</span>
-              <span className="text-xs text-white/50">{status.network.latency}ms</span>
+              <span className='text-sm text-white capitalize'>
+                {isOnline ? t('systemHealth.status.connected') : t('systemHealth.status.offline')}
+              </span>
+              <span className='text-xs text-white/50'>
+                {isOnline ? `${status.network.latency}ms` : '-'}
+              </span>
             </div>
           </div>
         </div>
 
         {/* Storage */}
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-sm text-white/70">Storage</span>
-            <span className="text-sm font-medium text-white">
+          <div className='flex items-center justify-between mb-1'>
+            <span className='text-sm text-white/70'>{t('systemHealth.storage')}</span>
+            <span className='text-sm font-medium text-white'>
               {status.storage.used} / {status.storage.total} GB
             </span>
           </div>
-          <ProgressBar percentage={status.storage.percentage} testId="storage-progress-bar" />
+          <ProgressBar percentage={status.storage.percentage} testId='storage-progress-bar' />
         </div>
       </div>
 
       {/* Footer - Uptime */}
-      <div className="px-3 py-2 bg-[#00ffee]/5 border-t border-white/10">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-white/50">Uptime</span>
-          <span className="text-white/70">{status.uptime}</span>
+      <div className='px-3 py-2 bg-[var(--tf-transcend-highlight)]/5 border-t border-white/10'>
+        <div className='flex items-center justify-between text-xs'>
+          <span className='text-white/50'>{t('systemHealth.uptime')}</span>
+          <span className='text-white/70'>{status.uptime}</span>
         </div>
       </div>
     </div>
@@ -255,7 +258,9 @@ export const SystemHealthIndicator: React.FC<SystemHealthIndicatorProps> = ({
   status,
   className,
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const isOnline = useNetworkStore((state) => state.isOnline);
 
   const togglePanel = useCallback(() => {
     setIsOpen((prev) => !prev);
@@ -268,28 +273,30 @@ export const SystemHealthIndicator: React.FC<SystemHealthIndicatorProps> = ({
   return (
     <div className={cn('relative', className)}>
       <button
-        data-testid="system-health-indicator"
+        data-testid='system-health-indicator'
         onClick={togglePanel}
-        aria-label="System Health - Click to view details"
+        aria-label={t('systemHealth.ariaLabel')}
         aria-expanded={isOpen}
-        aria-haspopup="dialog"
+        aria-haspopup='dialog'
         className={cn(
           'flex items-center gap-1.5 px-2 py-1 rounded-md',
           'hover:bg-white/10 cursor-pointer',
           'transition-colors duration-150',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00ffee]',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
           isOpen && 'bg-white/10'
         )}
       >
         <span
-          data-testid="health-status-dot"
+          data-testid='health-status-dot'
           className={cn(
             'w-2 h-2 rounded-full',
             'shadow-[0_0_6px_currentColor]',
-            getStatusColor(status.overallStatus)
+            getStatusColor(isOnline ? status.overallStatus : 'critical')
           )}
         />
-        <span className="text-xs text-white/70">{getStatusText(status.overallStatus)}</span>
+        <span className='text-xs text-white/70'>
+          {isOnline ? getStatusText(status.overallStatus, t) : t('systemHealth.status.offline')}
+        </span>
       </button>
 
       {/* Panel */}

@@ -188,7 +188,7 @@ export const AppContextMenu: React.FC<AppContextMenuProps> = ({ module, position
       className={cn(
         'fixed z-[100]',
         'min-w-[180px]',
-        'bg-[#1a1f2e]/98 backdrop-blur-xl',
+        'bg-[var(--tf-bg-surface)]/98 backdrop-blur-xl',
         'border border-white/10 rounded-lg',
         'shadow-[0_4px_20px_rgba(0,0,0,0.5)]',
         'py-1',

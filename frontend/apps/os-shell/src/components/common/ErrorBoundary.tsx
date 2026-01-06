@@ -374,7 +374,7 @@ export class AsyncErrorBoundary extends Component<Props, State> {
             onClick={this.resetErrorBoundary}
             style={{
               padding: '0.5rem 1rem',
-              backgroundColor: '#007bff',
+              backgroundColor: 'var(--tf-network-blue)',
               color: 'white',
               border: 'none',
               borderRadius: '4px',

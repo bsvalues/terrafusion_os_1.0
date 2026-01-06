@@ -81,7 +81,7 @@ const ExperimentVisualization: React.FC<{
       {/* Quantum Experiment Space */}
       <mesh>
         <boxGeometry args={[60, 60, 60]} />
-        <meshBasicMaterial color='#00FFFF' transparent opacity={0.03} wireframe />
+        <meshBasicMaterial color='var(--tf-transcend-cyan)' transparent opacity={0.03} wireframe />
       </mesh>
 
       {/* Agent Positions */}
@@ -103,7 +103,7 @@ const ExperimentVisualization: React.FC<{
           {/* Agent status indicator */}
           {agent.status === 'active' && (
             <Sphere args={[0.6, 8, 8]}>
-              <meshBasicMaterial color='#00FFFF' transparent opacity={0.2} wireframe />
+              <meshBasicMaterial color='var(--tf-transcend-cyan)' transparent opacity={0.2} wireframe />
             </Sphere>
           )}
         </group>
@@ -114,7 +114,7 @@ const ExperimentVisualization: React.FC<{
         <Line
           key={index}
           points={[connection.from, connection.to]}
-          color='#00FFFF'
+          color='var(--tf-transcend-cyan)'
           lineWidth={connection.strength * 3}
           transparent
           opacity={connection.strength * 0.7}
@@ -123,7 +123,7 @@ const ExperimentVisualization: React.FC<{
 
       {/* Experiment Progress Visualization */}
       {experimentRun && experimentRun.progress && (
-        <Text position={[0, 25, 0]} fontSize={2} color='#00FFFF' anchorX='center' anchorY='middle'>
+        <Text position={[0, 25, 0]} fontSize={2} color='var(--tf-transcend-cyan)' anchorX='center' anchorY='middle'>
           {experimentRun.phase || 'Elite Experiment'}\n{experimentRun.progress}% Complete
         </Text>
       )}
@@ -134,7 +134,7 @@ const ExperimentVisualization: React.FC<{
           [-30, 0, 0],
           [30, 0, 0],
         ]}
-        color='#FF0000'
+        color='var(--tf-accent-error)'
         lineWidth={1}
       />
       <Line
@@ -142,7 +142,7 @@ const ExperimentVisualization: React.FC<{
           [0, -30, 0],
           [0, 30, 0],
         ]}
-        color='#00FF00'
+        color='var(--tf-accent-success)'
         lineWidth={1}
       />
       <Line
@@ -150,7 +150,7 @@ const ExperimentVisualization: React.FC<{
           [0, 0, -30],
           [0, 0, 30],
         ]}
-        color='#0000FF'
+        color='var(--tf-blueprint-blue)'
         lineWidth={1}
       />
     </>
@@ -497,8 +497,8 @@ export const EliteExperimentalInterface: React.FC<EliteExperimentalInterfaceProp
             <CardBody className='p-0 h-full'>
               <Canvas camera={{ position: [30, 30, 30], fov: 60 }}>
                 <ambientLight intensity={0.3} />
-                <pointLight position={[15, 15, 15]} intensity={0.8} color='#00FFFF' />
-                <pointLight position={[-15, -15, -15]} intensity={0.4} color='#0080FF' />
+                <pointLight position={[15, 15, 15]} intensity={0.8} color='var(--tf-transcend-cyan)' />
+                <pointLight position={[-15, -15, -15]} intensity={0.4} color='var(--tf-network-blue)' />
 
                 <ExperimentVisualization
                   experimentRun={activeRun}

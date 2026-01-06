@@ -427,6 +427,22 @@ describe('StartMenu Component', () => {
       // Default county
       expect(screen.getByText(/benton county/i)).toBeInTheDocument();
     });
+
+    it('renders shortcuts button', () => {
+      render(<StartMenu />);
+      const shortcutsBtn = screen.getByRole('button', { name: /keyboard shortcuts/i });
+      expect(shortcutsBtn).toBeInTheDocument();
+    });
+
+    it('launches shortcuts help on click', async () => {
+      render(<StartMenu />);
+      const shortcutsBtn = screen.getByRole('button', { name: /keyboard shortcuts/i });
+      await userEvent.click(shortcutsBtn);
+
+      const { windows } = useDesktopStore.getState();
+      expect(windows).toHaveLength(1);
+      expect(windows[0].moduleId).toBe('shortcuts-help');
+    });
   });
 
   describe('Animation', () => {

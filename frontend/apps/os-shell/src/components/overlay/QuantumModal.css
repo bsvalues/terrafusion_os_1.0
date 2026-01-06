@@ -137,7 +137,7 @@
 .quantum-modal-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--gray-100);
   margin: 0;
   line-height: 1.5;
 }
@@ -149,12 +149,12 @@
 
 .quantum-modal-close {
   flex-shrink: 0;
-  color: #94a3b8;
+  color: var(--gray-400);
   transition: all 0.2s ease;
 }
 
 .quantum-modal-close:hover {
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   background: rgba(0, 255, 255, 0.1);
   transform: scale(1.05);
 }
@@ -247,15 +247,15 @@
 }
 
 .text-yellow-400 {
-  color: #facc15;
+  color: var(--tf-accent-yellow);
 }
 
 .text-red-400 {
-  color: #f87171;
+  color: var(--tf-status-red-light);
 }
 
 .text-blue-400 {
-  color: #60a5fa;
+  color: var(--tf-status-blue-light);
 }
 
 /* Focus Management */
@@ -272,16 +272,16 @@
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
   .quantum-modal {
-    border: 2px solid #00ffff;
+    border: 2px solid var(--tf-quantum-cyan);
     background: rgba(10, 14, 26, 0.98);
   }
 
   .quantum-modal-header {
-    border-bottom-color: #00ffff;
+    border-bottom-color: var(--tf-quantum-cyan);
   }
 
   .quantum-modal-footer {
-    border-top-color: #00ffff;
+    border-top-color: var(--tf-quantum-cyan);
   }
 
   .quantum-modal-title {

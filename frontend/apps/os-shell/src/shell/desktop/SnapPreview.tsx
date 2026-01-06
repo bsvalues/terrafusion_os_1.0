@@ -70,8 +70,8 @@ export const SnapPreview: React.FC<SnapPreviewProps> = ({
         'z-[999]', // Above windows, below taskbar
 
         // TerraFusion brand styling
-        'border-2 border-[#00ffee]/60',
-        'bg-[#00ffee]/10',
+        'border-2 border-[var(--tf-transcend-highlight)]/60',
+        'bg-[var(--tf-transcend-highlight)]/10',
         'backdrop-blur-sm',
         'rounded-lg',
 
@@ -96,15 +96,15 @@ export const SnapPreview: React.FC<SnapPreviewProps> = ({
         className={cn(
           'absolute inset-0',
           'rounded-lg',
-          'bg-gradient-to-br from-[#00ffee]/5 to-transparent'
+          'bg-gradient-to-br from-[var(--tf-transcend-highlight)]/5 to-transparent'
         )}
       />
 
       {/* Corner accents */}
-      <div className='absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-[#00ffee]/40 rounded-tl' />
-      <div className='absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-[#00ffee]/40 rounded-tr' />
-      <div className='absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-[#00ffee]/40 rounded-bl' />
-      <div className='absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[#00ffee]/40 rounded-br' />
+      <div className='absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-[var(--tf-transcend-highlight)]/40 rounded-tl' />
+      <div className='absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-[var(--tf-transcend-highlight)]/40 rounded-tr' />
+      <div className='absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-[var(--tf-transcend-highlight)]/40 rounded-bl' />
+      <div className='absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[var(--tf-transcend-highlight)]/40 rounded-br' />
     </div>
   );
 };

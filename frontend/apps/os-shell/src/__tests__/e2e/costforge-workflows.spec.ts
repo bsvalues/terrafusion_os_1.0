@@ -158,7 +158,7 @@ test.describe('TerraFusion CostForge - Government-Grade E2E Testing', () => {
 
       // Check for transcendent cyan color scheme
       const quantumButton = page.locator('[data-testid="quantum-calculate-button"]');
-      await expect(quantumButton).toHaveCSS('background-image', /gradient.*#00ffee/);
+      await expect(quantumButton).toHaveCSS('background-image', /gradient.*var(--tf-transcend-highlight)/);
 
       // Verify scan-line animations
       const scanLines = page.locator('.tf-scan-line');

@@ -47,18 +47,18 @@ const DesktopErrorFallback: React.FC<DesktopErrorFallbackProps> = ({
       className={cn(
         'w-screen h-screen',
         'flex flex-col items-center justify-center',
-        'bg-gradient-to-b from-[#0a0e1a] via-[#1a0a1a] to-[#0a0e1a]',
+        'bg-gradient-to-b from-[var(--tf-void-black)] via-[var(--tf-surface-darker)] to-[var(--tf-void-black)]',
         'p-8 text-center'
       )}
     >
       {/* TerraFusion Logo */}
       <div className={cn(
         'w-20 h-20 rounded-2xl mb-6',
-        'bg-gradient-to-br from-[#0099ff] to-[#00ffee]',
+        'bg-gradient-to-br from-[var(--tf-network-blue)] to-[var(--tf-transcend-highlight)]',
         'flex items-center justify-center',
         'shadow-[0_0_40px_rgba(0,255,238,0.3)]'
       )}>
-        <span className="text-3xl font-bold text-[#0a0e1a]">TF</span>
+        <span className="text-3xl font-bold text-[var(--tf-void-black)]">TF</span>
       </div>
 
       {/* Error Title */}
@@ -83,10 +83,10 @@ const DesktopErrorFallback: React.FC<DesktopErrorFallbackProps> = ({
           aria-label="Restart TerraFusion OS"
           className={cn(
             'px-6 py-3 rounded-lg font-medium',
-            'bg-[#00ffee] text-[#0a0e1a]',
-            'hover:bg-[#00ddcc] transition-colors',
+            'bg-[var(--tf-transcend-highlight)] text-[var(--tf-void-black)]',
+            'hover:bg-[var(--tf-accent-teal)] transition-colors',
             'shadow-[0_0_20px_rgba(0,255,238,0.3)]',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00ffee] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0e1a]'
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--tf-void-black)]'
           )}
         >
           🔄 Restart TerraFusion

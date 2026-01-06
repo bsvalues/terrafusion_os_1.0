@@ -4,10 +4,12 @@
  * Phase 7: Global keyboard shortcuts for module activation
  * Ctrl+1..7 → Launch/Focus modules via activateModule()
  * Ctrl+` → Toggle Start Menu
- * Escape → Close Start Menu
+ * Ctrl+K → Toggle Command Palette
+ * Escape → Close Start Menu / Command Palette
  *
  * @module hooks/__tests__/useKeyboardShortcuts.test
  * @see Phase 7: Keyboard Shortcuts
+ * @see Priority 10: Global Search
  */
 
 import { act, renderHook } from '@testing-library/react';
@@ -24,16 +26,32 @@ jest.mock('../../orchestration/moduleActivation', () => ({
 }));
 
 // Mock startMenuStore
-const mockToggle = jest.fn();
-const mockClose = jest.fn();
-let mockIsOpen = false;
+const mockToggleStartMenu = jest.fn();
+const mockCloseStartMenu = jest.fn();
+let mockIsStartMenuOpen = false;
 
 jest.mock('../../stores/startMenuStore', () => ({
   useStartMenuStore: jest.fn((selector) => {
     const state = {
-      isOpen: mockIsOpen,
-      toggle: mockToggle,
-      close: mockClose,
+      isOpen: mockIsStartMenuOpen,
+      toggle: mockToggleStartMenu,
+      close: mockCloseStartMenu,
+    };
+    return typeof selector === 'function' ? selector(state) : state;
+  }),
+}));
+
+// Mock commandPaletteStore
+const mockToggleCommandPalette = jest.fn();
+const mockCloseCommandPalette = jest.fn();
+let mockIsCommandPaletteOpen = false;
+
+jest.mock('../../stores/commandPaletteStore', () => ({
+  useCommandPaletteStore: jest.fn((selector) => {
+    const state = {
+      isOpen: mockIsCommandPaletteOpen,
+      toggle: mockToggleCommandPalette,
+      close: mockCloseCommandPalette,
     };
     return typeof selector === 'function' ? selector(state) : state;
   }),
@@ -75,7 +93,8 @@ describe('useKeyboardShortcuts', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockIsOpen = false;
+    mockIsStartMenuOpen = false;
+    mockIsCommandPaletteOpen = false;
     // Reset document.activeElement to body
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
@@ -162,57 +181,125 @@ describe('useKeyboardShortcuts', () => {
         fireCtrlKey('`');
       });
 
-      expect(mockToggle).toHaveBeenCalledTimes(1);
+      expect(mockToggleStartMenu).toHaveBeenCalledTimes(1);
     });
 
     test('Ctrl+` works when Start Menu is closed', async () => {
-      mockIsOpen = false;
+      mockIsStartMenuOpen = false;
       renderHook(() => useKeyboardShortcuts());
 
       await act(async () => {
         fireCtrlKey('`');
       });
 
-      expect(mockToggle).toHaveBeenCalledTimes(1);
+      expect(mockToggleStartMenu).toHaveBeenCalledTimes(1);
     });
 
     test('Ctrl+` works when Start Menu is open', async () => {
-      mockIsOpen = true;
+      mockIsStartMenuOpen = true;
       renderHook(() => useKeyboardShortcuts());
 
       await act(async () => {
         fireCtrlKey('`');
       });
 
-      expect(mockToggle).toHaveBeenCalledTimes(1);
+      expect(mockToggleStartMenu).toHaveBeenCalledTimes(1);
     });
   });
 
   // ==========================================================================
-  // SC-7.5: Escape closes Start Menu
+  // SC-12.1: Ctrl+K toggles Command Palette
+  // ==========================================================================
+
+  describe('Command Palette Toggle (Ctrl+K)', () => {
+    test('Ctrl+K calls toggle on commandPaletteStore', async () => {
+      renderHook(() => useKeyboardShortcuts());
+
+      await act(async () => {
+        fireCtrlKey('k');
+      });
+
+      expect(mockToggleCommandPalette).toHaveBeenCalledTimes(1);
+    });
+
+    test('Ctrl+K works when Command Palette is closed', async () => {
+      mockIsCommandPaletteOpen = false;
+      renderHook(() => useKeyboardShortcuts());
+
+      await act(async () => {
+        fireCtrlKey('k');
+      });
+
+      expect(mockToggleCommandPalette).toHaveBeenCalledTimes(1);
+    });
+
+    test('Ctrl+K works when Command Palette is open', async () => {
+      mockIsCommandPaletteOpen = true;
+      renderHook(() => useKeyboardShortcuts());
+
+      await act(async () => {
+        fireCtrlKey('k');
+      });
+
+      expect(mockToggleCommandPalette).toHaveBeenCalledTimes(1);
+    });
+
+    test('Ctrl+K works even when typing in input (global override)', async () => {
+      renderHook(() => useKeyboardShortcuts());
+
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      input.focus();
+
+      await act(async () => {
+        fireCtrlKey('k');
+      });
+
+      expect(mockToggleCommandPalette).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // ==========================================================================
+  // SC-7.5: Escape closes Start Menu or Command Palette
   // ==========================================================================
 
   describe('Escape Key', () => {
-    test('Escape closes Start Menu when open', async () => {
-      mockIsOpen = true;
+    test('Escape closes Command Palette when open (priority over Start Menu)', async () => {
+      mockIsCommandPaletteOpen = true;
+      mockIsStartMenuOpen = true;
       renderHook(() => useKeyboardShortcuts());
 
       await act(async () => {
         fireKeydown('Escape');
       });
 
-      expect(mockClose).toHaveBeenCalledTimes(1);
+      expect(mockCloseCommandPalette).toHaveBeenCalledTimes(1);
+      expect(mockCloseStartMenu).not.toHaveBeenCalled();
     });
 
-    test('Escape does nothing when Start Menu is closed', async () => {
-      mockIsOpen = false;
+    test('Escape closes Start Menu when open and Command Palette closed', async () => {
+      mockIsCommandPaletteOpen = false;
+      mockIsStartMenuOpen = true;
       renderHook(() => useKeyboardShortcuts());
 
       await act(async () => {
         fireKeydown('Escape');
       });
 
-      expect(mockClose).not.toHaveBeenCalled();
+      expect(mockCloseStartMenu).toHaveBeenCalledTimes(1);
+    });
+
+    test('Escape does nothing when both are closed', async () => {
+      mockIsCommandPaletteOpen = false;
+      mockIsStartMenuOpen = false;
+      renderHook(() => useKeyboardShortcuts());
+
+      await act(async () => {
+        fireKeydown('Escape');
+      });
+
+      expect(mockCloseCommandPalette).not.toHaveBeenCalled();
+      expect(mockCloseStartMenu).not.toHaveBeenCalled();
     });
   });
 
@@ -285,7 +372,7 @@ describe('useKeyboardShortcuts', () => {
       });
 
       // Start menu toggle should STILL work as it's a global OS shortcut
-      expect(mockToggle).toHaveBeenCalledTimes(1);
+      expect(mockToggleStartMenu).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -327,6 +414,42 @@ describe('useKeyboardShortcuts', () => {
         focusIfOpen: true,
       });
       expect(mockActivateModule).toHaveBeenNthCalledWith(3, 'atlas-ai', {
+        source: 'keyboard_shortcut',
+        focusIfOpen: true,
+      });
+    });
+  });
+
+  // ==========================================================================
+  // SC-11.3: Ctrl+, opens Settings
+  // ==========================================================================
+
+  describe('Settings Shortcut (Ctrl+,)', () => {
+    test('Ctrl+, opens Settings module', async () => {
+      renderHook(() => useKeyboardShortcuts());
+
+      await act(async () => {
+        fireCtrlKey(',');
+      });
+
+      expect(mockActivateModule).toHaveBeenCalledWith('settings', {
+        source: 'keyboard_shortcut',
+        focusIfOpen: true,
+      });
+    });
+
+    test('Ctrl+, works even when typing in input (global override)', async () => {
+      renderHook(() => useKeyboardShortcuts());
+
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      input.focus();
+
+      await act(async () => {
+        fireCtrlKey(',');
+      });
+
+      expect(mockActivateModule).toHaveBeenCalledWith('settings', {
         source: 'keyboard_shortcut',
         focusIfOpen: true,
       });

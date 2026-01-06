@@ -165,7 +165,7 @@ export const MultipleOpen: Story = {
           <a
             href='https://ui.shadcn.com/docs/components/accordion'
             style={{
-              color: '#0099ff',
+              color: 'var(--tf-network-blue)',
               textDecoration: 'underline',
             }}
           >
@@ -195,7 +195,7 @@ export const WithIcons: Story = {
             <Info
               className='h-4 w-4'
               style={{
-                color: '#0099ff',
+                color: 'var(--tf-network-blue)',
               }}
             />
             <span>General Information</span>
@@ -246,7 +246,7 @@ export const WithIcons: Story = {
             <FileText
               className='h-4 w-4'
               style={{
-                color: '#22c55e',
+                color: 'var(--tf-success-green)',
               }}
             />
             <span>Documentation</span>
@@ -436,7 +436,7 @@ export const FAQExample: Story = {
           fontSize: '32px',
           fontWeight: 700,
           marginBottom: '12px',
-          background: 'linear-gradient(135deg, #0099ff, #00ccff)',
+          background: 'linear-gradient(135deg, var(--tf-network-blue), #00ccff)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}
@@ -446,7 +446,7 @@ export const FAQExample: Story = {
       <p
         style={{
           fontSize: '16px',
-          color: '#888',
+          color: 'var(--gray-400)',
           marginBottom: '32px',
         }}
       >
@@ -460,7 +460,7 @@ export const FAQExample: Story = {
               <HelpCircle
                 className='h-5 w-5'
                 style={{
-                  color: '#0099ff',
+                  color: 'var(--tf-network-blue)',
                 }}
               />
               <span
@@ -491,7 +491,7 @@ export const FAQExample: Story = {
               <HelpCircle
                 className='h-5 w-5'
                 style={{
-                  color: '#0099ff',
+                  color: 'var(--tf-network-blue)',
                 }}
               />
               <span
@@ -522,7 +522,7 @@ export const FAQExample: Story = {
               <HelpCircle
                 className='h-5 w-5'
                 style={{
-                  color: '#0099ff',
+                  color: 'var(--tf-network-blue)',
                 }}
               />
               <span
@@ -553,7 +553,7 @@ export const FAQExample: Story = {
               <HelpCircle
                 className='h-5 w-5'
                 style={{
-                  color: '#0099ff',
+                  color: 'var(--tf-network-blue)',
                 }}
               />
               <span
@@ -584,7 +584,7 @@ export const FAQExample: Story = {
               <HelpCircle
                 className='h-5 w-5'
                 style={{
-                  color: '#0099ff',
+                  color: 'var(--tf-network-blue)',
                 }}
               />
               <span
@@ -615,7 +615,7 @@ export const FAQExample: Story = {
               <HelpCircle
                 className='h-5 w-5'
                 style={{
-                  color: '#0099ff',
+                  color: 'var(--tf-network-blue)',
                 }}
               />
               <span
@@ -647,13 +647,13 @@ export const FAQExample: Story = {
           padding: '24px',
           backgroundColor: '#1a1a1a',
           borderRadius: '8px',
-          borderLeft: '4px solid #0099ff',
+          borderLeft: '4px solid var(--tf-network-blue)',
         }}
       >
         <p
           style={{
             fontSize: '14px',
-            color: '#ccc',
+            color: 'var(--gray-300)',
             margin: 0,
           }}
         >
@@ -661,7 +661,7 @@ export const FAQExample: Story = {
           <a
             href='mailto:support@example.com'
             style={{
-              color: '#0099ff',
+              color: 'var(--tf-network-blue)',
               textDecoration: 'none',
             }}
           >
@@ -671,7 +671,7 @@ export const FAQExample: Story = {
           <a
             href='#'
             style={{
-              color: '#0099ff',
+              color: 'var(--tf-network-blue)',
               textDecoration: 'none',
             }}
           >
@@ -721,7 +721,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -750,7 +750,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -778,7 +778,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -806,7 +806,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -850,7 +850,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -878,7 +878,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -906,7 +906,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -934,7 +934,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >

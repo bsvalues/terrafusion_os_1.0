@@ -172,19 +172,19 @@ const ProfessionalDashboard: React.FC = () => {
               const featureMap = [
                 {
                   icon: Business,
-                  color: '#0891b2',
+                  color: 'var(--tf-network-blue)',
                 },
                 {
                   icon: CloudDone,
-                  color: '#00d2ff',
+                  color: 'var(--tf-transcend-cyan)',
                 },
                 {
                   icon: Security,
-                  color: '#667eea',
+                  color: 'var(--tf-accent-quantum)',
                 },
                 {
                   icon: TrendingUp,
-                  color: '#00ffaa',
+                  color: 'var(--tf-accent-success)',
                 },
               ];
               return {
@@ -219,28 +219,28 @@ const ProfessionalDashboard: React.FC = () => {
               value: healthInfo.ModuleCount || '32',
               icon: Business,
               growth: ``,
-              color: '#0891b2',
+              color: 'var(--tf-network-blue)',
             },
             {
               label: 'AI Accuracy',
               value: '99.7%',
               icon: Analytics,
               growth: '+0.3%',
-              color: '#00d2ff',
+              color: 'var(--tf-transcend-cyan)',
             },
             {
               label: 'Database Status',
               value: healthInfo.Database.Status || 'Operational',
               icon: AttachMoney,
               growth: ``,
-              color: '#00ffaa',
+              color: 'var(--tf-accent-success)',
             },
             {
               label: 'API Response',
               value: `${healthInfo.ApiResponseTime || '6'}ms`,
               icon: Speed,
               growth: ``,
-              color: '#667eea',
+              color: 'var(--tf-accent-quantum)',
             },
           ];
           setMetrics(newMetrics);
@@ -285,7 +285,7 @@ const ProfessionalDashboard: React.FC = () => {
         PaperProps={{
           sx: {
             height: '90vh',
-            background: 'linear-gradient(135deg, #0a0f1c, #1a2332)',
+            background: 'linear-gradient(135deg, var(--tf-void-black), var(--tf-bg-surface))',
             border: '1px solid rgba(0, 210, 255, 0.2)',
             borderRadius: '16px',
           },
@@ -449,7 +449,7 @@ const ProfessionalDashboard: React.FC = () => {
             <Typography
               variant='h3'
               sx={{
-                color: '#00d2ff',
+                color: 'var(--tf-transcend-cyan)',
                 fontWeight: 700,
                 fontFamily: 'monospace',
               }}
@@ -556,7 +556,7 @@ const ProfessionalDashboard: React.FC = () => {
                         background: metric.growth.startsWith('+')
                           ? 'rgba(0, 255, 170, 0.15)'
                           : 'rgba(255, 100, 100, 0.15)',
-                        color: metric.growth.startsWith('+') ? '#00ffaa' : '#ff6464',
+                        color: metric.growth.startsWith('+') ? 'var(--tf-accent-success)' : 'var(--tf-error-light)',
                         border: `1px solid ${metric.growth.startsWith('+') ? 'rgba(0, 255, 170, 0.3)' : 'rgba(255, 100, 100, 0.3)'}`,
                       }}
                     />

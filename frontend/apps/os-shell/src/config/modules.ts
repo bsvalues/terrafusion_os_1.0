@@ -3,7 +3,7 @@
  *
  * Defines the core government modules available in the operating system.
  * These definitions drive the Start Menu, Taskbar, and Window Manager.
- * 
+ *
  * NOTE: CostForge is the upgraded replacement for TerraBuild.
  * The name was changed to better reflect its purpose as an
  * AI-powered cost/valuation system for property assessment.
@@ -15,7 +15,23 @@ export const TERRAFUSION_MODULES: ModuleDefinition[] = [
   // ============================================================================
   // Tier 1: Core Government Operations
   // ============================================================================
-  
+
+  // Federation Dashboard - Global Government Federation
+  {
+    id: 'federation-dashboard',
+    name: 'federation-dashboard',
+    displayName: 'Federation Dashboard',
+    description: 'Global Government Federation & Swarm Telemetry',
+    icon: '🌐',
+    launchPath: '/modules/federation',
+    category: 'System',
+    tier: 'Tier1',
+    status: 'active',
+    version: '1.0.0',
+    isCore: true,
+    priority: 0,
+  },
+
   // CostForge - Primary Property Assessment System (formerly TerraBuild)
   {
     id: 'costforge',
@@ -31,7 +47,7 @@ export const TERRAFUSION_MODULES: ModuleDefinition[] = [
     isCore: true,
     priority: 1,
   },
-  
+
   // Levy Calculator - Tax Management
   {
     id: 'levy-calculator',
@@ -47,7 +63,7 @@ export const TERRAFUSION_MODULES: ModuleDefinition[] = [
     isCore: true,
     priority: 2,
   },
-  
+
   // GIS Viewer - Geographic Information
   {
     id: 'gis-viewer',
@@ -64,10 +80,26 @@ export const TERRAFUSION_MODULES: ModuleDefinition[] = [
     priority: 3,
   },
 
+  // AxiomFS - The Lattice File System
+  {
+    id: 'axiom-fs',
+    name: 'axiom-fs',
+    displayName: 'AxiomFS',
+    description: 'Sovereign File Lattice & Data Management',
+    icon: '🌀',
+    launchPath: '/modules/axiomfs',
+    category: 'System',
+    tier: 'Tier1',
+    status: 'active',
+    version: '1.0.0',
+    isCore: true,
+    priority: 8,
+  },
+
   // ============================================================================
   // Tier 2: Document & Records Management
   // ============================================================================
-  
+
   {
     id: 'document-manager',
     name: 'document-manager',
@@ -82,7 +114,7 @@ export const TERRAFUSION_MODULES: ModuleDefinition[] = [
     isCore: false,
     priority: 4,
   },
-  
+
   {
     id: 'reporting',
     name: 'reporting',
@@ -101,7 +133,7 @@ export const TERRAFUSION_MODULES: ModuleDefinition[] = [
   // ============================================================================
   // AI & Intelligence Modules
   // ============================================================================
-  
+
   {
     id: 'atlas-ai',
     name: 'atlas-ai',
@@ -116,7 +148,7 @@ export const TERRAFUSION_MODULES: ModuleDefinition[] = [
     isCore: false,
     priority: 6,
   },
-  
+
   {
     id: 'terra-gaia',
     name: 'terra-gaia',
@@ -135,7 +167,7 @@ export const TERRAFUSION_MODULES: ModuleDefinition[] = [
   // ============================================================================
   // System & Administration
   // ============================================================================
-  
+
   {
     id: 'settings',
     name: 'settings',
@@ -149,5 +181,35 @@ export const TERRAFUSION_MODULES: ModuleDefinition[] = [
     version: '1.0.0',
     isCore: false,
     priority: 99,
+  },
+
+  {
+    id: 'shortcuts-help',
+    name: 'shortcuts-help',
+    displayName: 'Keyboard Shortcuts',
+    description: 'View available keyboard shortcuts',
+    icon: '⌨️',
+    launchPath: '/modules/shortcuts',
+    category: 'System',
+    tier: 'Tier2',
+    status: 'active',
+    version: '1.0.0',
+    isCore: false,
+    priority: 100,
+  },
+
+  {
+    id: 'plugin-manager',
+    name: 'plugin-manager',
+    displayName: 'Plugin Manager',
+    description: 'Manage external plugins and extensions',
+    icon: '🧩',
+    launchPath: '/modules/plugins',
+    category: 'System',
+    tier: 'Tier2',
+    status: 'active',
+    version: '1.0.0',
+    isCore: false,
+    priority: 101,
   },
 ];

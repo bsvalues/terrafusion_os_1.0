@@ -56,7 +56,7 @@ export const LevyStatusVisualization: React.FC<LevyStatusVisualizationProps> = (
   return (
     <group ref={groupRef} position={position}>
       {/* Title */}
-      <Text position={[0, 4, 0]} fontSize={0.5} color='#00ff88' anchorX='center' anchorY='middle'>
+      <Text position={[0, 4, 0]} fontSize={0.5} color='var(--success-green)' anchorX='center' anchorY='middle'>
         Levy Status Overview
       </Text>
 
@@ -81,7 +81,7 @@ export const LevyStatusVisualization: React.FC<LevyStatusVisualizationProps> = (
           <Text
             position={[0, levy.scale + 0.5, 0]}
             fontSize={0.2}
-            color='#ffffff'
+            color='var(--tf-text-primary)fff'
             anchorX='center'
             anchorY='bottom'
           >
@@ -93,17 +93,17 @@ export const LevyStatusVisualization: React.FC<LevyStatusVisualizationProps> = (
             <meshStandardMaterial
               color={
                 levy.status === 'paid'
-                  ? '#00ff00'
+                  ? 'var(--tf-success-green)'
                   : levy.status === 'pending'
-                    ? '#ffff00'
-                    : '#ff0000'
+                    ? 'var(--tf-text-primary)f00'
+                    : 'var(--tf-error-red)'
               }
               emissive={
                 levy.status === 'paid'
-                  ? '#004400'
+                  ? 'var(--tf-success-dark)'
                   : levy.status === 'pending'
-                    ? '#444400'
-                    : '#440000'
+                    ? 'var(--tf-warning-dark)'
+                    : 'var(--tf-error-dark)'
               }
             />
           </Sphere>
@@ -116,7 +116,7 @@ export const LevyStatusVisualization: React.FC<LevyStatusVisualizationProps> = (
           {/* Quantum Field Visualization */}
           <mesh>
             <sphereGeometry args={[8, 32, 32]} />
-            <meshStandardMaterial color='#0088ff' transparent opacity={0.1} wireframe />
+            <meshStandardMaterial color='var(--tf-network-blue)' transparent opacity={0.1} wireframe />
           </mesh>
         </group>
       )}

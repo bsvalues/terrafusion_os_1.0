@@ -228,7 +228,7 @@
 }
 
 .conversation-area::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--gray-100);
   border-radius: 3px;
 }
 
@@ -238,7 +238,7 @@
 }
 
 .conversation-area::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--gray-400);
 }
 
 /* Messages */
@@ -272,7 +272,7 @@
 
 .message.assistant .message-content {
   background: #f8fafc;
-  color: #334155;
+  color: var(--gray-700);
   padding: 12px 16px;
   border-radius: 18px 18px 18px 4px;
   border: 1px solid #e2e8f0;
@@ -532,7 +532,7 @@
   }
 
   .conversation-area::-webkit-scrollbar-track {
-    background: #1e293b;
+    background: var(--terra-slate);
   }
 
   .conversation-area::-webkit-scrollbar-thumb {
@@ -540,20 +540,20 @@
   }
 
   .message.assistant .message-content {
-    background: #1e293b;
+    background: var(--terra-slate);
     color: #e2e8f0;
-    border-color: #334155;
+    border-color: var(--gray-700);
   }
 
   .input-area {
     background: #0f172a;
-    border-color: #334155;
+    border-color: var(--gray-700);
   }
 
   .message-input {
-    background: #1e293b;
+    background: var(--terra-slate);
     color: #e2e8f0;
-    border-color: #334155;
+    border-color: var(--gray-700);
   }
 
   .message-input:focus {
@@ -561,17 +561,17 @@
   }
 
   .quick-actions button {
-    background: #1e293b;
+    background: var(--terra-slate);
     color: #667eea;
-    border-color: #334155;
+    border-color: var(--gray-700);
   }
 
   .quick-actions button:hover:not(:disabled) {
-    background: #334155;
+    background: var(--gray-700);
   }
 
   .action-button {
-    background: #1e293b;
+    background: var(--terra-slate);
     border-color: #667eea;
   }
 }

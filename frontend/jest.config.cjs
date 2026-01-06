@@ -99,6 +99,9 @@ const config = {
     '<rootDir>/build/',
     '<rootDir>/coverage/',
     '<rootDir>/tests/integration/',
+    '<rootDir>/tests/accessibility/',
+    '/tests/accessibility/',
+    'tests/accessibility/',
     '\\.spec\\.ts$', // Playwright uses .spec.ts convention
   ],
 

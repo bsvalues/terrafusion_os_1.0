@@ -344,28 +344,28 @@ export function CodexTrendAnalysis({
                 <AreaChart data={trendData}>
                   <defs>
                     <linearGradient id="ultimatePowerGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00FFFF" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#00FFFF" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--tf-transcend-cyan)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="var(--tf-transcend-cyan)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--tf-bg-surface)" />
                   <XAxis
                     dataKey="date"
-                    stroke="#888"
-                    tick={{ fill: '#888' }}
+                    stroke="var(--gray-400)"
+                    tick={{ fill: 'var(--gray-400)' }}
                   />
                   <YAxis
                     domain={[0, 12]}
-                    stroke="#888"
-                    tick={{ fill: '#888' }}
+                    stroke="var(--gray-400)"
+                    tick={{ fill: 'var(--gray-400)' }}
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#0A0E1A',
-                      border: '1px solid #333',
+                      backgroundColor: 'var(--tf-bg-void)',
+                      border: '1px solid var(--tf-bg-surface)',
                       borderRadius: '8px',
                     }}
-                    labelStyle={{ color: '#fff' }}
+                    labelStyle={{ color: 'var(--tf-text-primary)' }}
                   />
                   <Legend />
 
@@ -373,12 +373,12 @@ export function CodexTrendAnalysis({
                   <ReferenceArea
                     y1={CODEX_CONSTANTS.DIVINE_BALANCE_MIN}
                     y2={CODEX_CONSTANTS.DIVINE_BALANCE_MAX}
-                    fill="#00FFFF"
+                    fill="var(--tf-transcend-cyan)"
                     fillOpacity={0.1}
                     label={{
                       value: 'Divine Balance',
                       position: 'insideTopRight',
-                      fill: '#00FFFF',
+                      fill: 'var(--tf-transcend-cyan)',
                     }}
                   />
 
@@ -386,38 +386,38 @@ export function CodexTrendAnalysis({
                   <ReferenceArea
                     y1={CODEX_CONSTANTS.CHAMPIONSHIP_MIN}
                     y2={CODEX_CONSTANTS.DIVINE_BALANCE_MIN}
-                    fill="#0099ff"
+                    fill="var(--tf-network-blue)"
                     fillOpacity={0.05}
                   />
 
                   {/* Target Line */}
                   <ReferenceLine
                     y={12}
-                    stroke="#00FFFF"
+                    stroke="var(--tf-transcend-cyan)"
                     strokeDasharray="3 3"
                     label={{
                       value: 'Perfect Balance (12.0)',
                       position: 'right',
-                      fill: '#00FFFF',
+                      fill: 'var(--tf-transcend-cyan)',
                     }}
                   />
 
                   {/* Championship Line */}
                   <ReferenceLine
                     y={10}
-                    stroke="#0099ff"
+                    stroke="var(--tf-network-blue)"
                     strokeDasharray="3 3"
                     label={{
                       value: 'Championship (10.0)',
                       position: 'right',
-                      fill: '#0099ff',
+                      fill: 'var(--tf-network-blue)',
                     }}
                   />
 
                   <Area
                     type="monotone"
                     dataKey="ultimatePowerScore"
-                    stroke="#00FFFF"
+                    stroke="var(--tf-transcend-cyan)"
                     strokeWidth={2}
                     fill="url(#ultimatePowerGradient)"
                     name="Ultimate Power Score"
@@ -437,13 +437,13 @@ export function CodexTrendAnalysis({
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={trendData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                  <XAxis dataKey="date" stroke="#888" tick={{ fill: '#888' }} />
-                  <YAxis domain={[0, 12]} stroke="#888" tick={{ fill: '#888' }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--tf-bg-surface)" />
+                  <XAxis dataKey="date" stroke="var(--gray-400)" tick={{ fill: 'var(--gray-400)' }} />
+                  <YAxis domain={[0, 12]} stroke="var(--gray-400)" tick={{ fill: 'var(--gray-400)' }} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#0A0E1A',
-                      border: '1px solid #333',
+                      backgroundColor: 'var(--tf-bg-void)',
+                      border: '1px solid var(--tf-bg-surface)',
                       borderRadius: '8px',
                     }}
                   />
@@ -452,7 +452,7 @@ export function CodexTrendAnalysis({
                   <Line
                     type="monotone"
                     dataKey="systemPerformance"
-                    stroke="#00FF00"
+                    stroke="var(--tf-accent-success)"
                     strokeWidth={2}
                     name="System Performance"
                     dot={false}
@@ -460,7 +460,7 @@ export function CodexTrendAnalysis({
                   <Line
                     type="monotone"
                     dataKey="codeQuality"
-                    stroke="#FF00FF"
+                    stroke="var(--tf-retro-magenta)"
                     strokeWidth={2}
                     name="Code Quality"
                     dot={false}
@@ -468,7 +468,7 @@ export function CodexTrendAnalysis({
                   <Line
                     type="monotone"
                     dataKey="compliance"
-                    stroke="#FFFF00"
+                    stroke="var(--tf-retro-yellow)"
                     strokeWidth={2}
                     name="Compliance"
                     dot={false}
@@ -476,13 +476,13 @@ export function CodexTrendAnalysis({
                   <Line
                     type="monotone"
                     dataKey="userExperience"
-                    stroke="#FF6600"
+                    stroke="var(--tf-retro-orange)"
                     strokeWidth={2}
                     name="User Experience"
                     dot={false}
                   />
 
-                  <ReferenceLine y={12} stroke="#00FFFF" strokeDasharray="3 3" />
+                  <ReferenceLine y={12} stroke="var(--tf-transcend-cyan)" strokeDasharray="3 3" />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
@@ -614,17 +614,17 @@ function ScoreDistributionChart({ data }: { data: TrendDataPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={distribution}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-        <XAxis dataKey="range" stroke="#888" tick={{ fill: '#888' }} />
-        <YAxis stroke="#888" tick={{ fill: '#888' }} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--tf-bg-surface)" />
+        <XAxis dataKey="range" stroke="var(--gray-400)" tick={{ fill: 'var(--gray-400)' }} />
+        <YAxis stroke="var(--gray-400)" tick={{ fill: 'var(--gray-400)' }} />
         <Tooltip
           contentStyle={{
-            backgroundColor: '#0A0E1A',
-            border: '1px solid #333',
+            backgroundColor: 'var(--tf-bg-void)',
+            border: '1px solid var(--tf-bg-surface)',
             borderRadius: '8px',
           }}
         />
-        <Bar dataKey="count" fill="#00FFFF" name="Occurrences" />
+        <Bar dataKey="count" fill="var(--tf-transcend-cyan)" name="Occurrences" />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -691,44 +691,44 @@ function ForecastChart({
   return (
     <ResponsiveContainer width="100%" height={400}>
       <LineChart data={combinedData}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-        <XAxis dataKey="date" stroke="#888" tick={{ fill: '#888' }} />
-        <YAxis domain={[0, 12]} stroke="#888" tick={{ fill: '#888' }} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--tf-bg-surface)" />
+        <XAxis dataKey="date" stroke="var(--gray-400)" tick={{ fill: 'var(--gray-400)' }} />
+        <YAxis domain={[0, 12]} stroke="var(--gray-400)" tick={{ fill: 'var(--gray-400)' }} />
         <Tooltip
           contentStyle={{
-            backgroundColor: '#0A0E1A',
-            border: '1px solid #333',
+            backgroundColor: 'var(--tf-bg-void)',
+            border: '1px solid var(--tf-bg-surface)',
             borderRadius: '8px',
           }}
         />
         <Legend />
 
-        <ReferenceLine y={12} stroke="#00FFFF" strokeDasharray="3 3" />
-        <ReferenceLine y={10} stroke="#0099ff" strokeDasharray="3 3" />
+        <ReferenceLine y={12} stroke="var(--tf-transcend-cyan)" strokeDasharray="3 3" />
+        <ReferenceLine y={10} stroke="var(--tf-network-blue)" strokeDasharray="3 3" />
 
         <Line
           type="monotone"
           dataKey="actual"
-          stroke="#00FFFF"
+          stroke="var(--tf-transcend-cyan)"
           strokeWidth={2}
           name="Actual"
-          dot={{ fill: '#00FFFF', r: 4 }}
+          dot={{ fill: 'var(--tf-transcend-cyan)', r: 4 }}
         />
 
         <Line
           type="monotone"
           dataKey="forecast"
-          stroke="#FF6600"
+          stroke="var(--tf-retro-orange)"
           strokeWidth={2}
           strokeDasharray="5 5"
           name="Forecast"
-          dot={{ fill: '#FF6600', r: 4 }}
+          dot={{ fill: 'var(--tf-retro-orange)', r: 4 }}
         />
 
         <Line
           type="monotone"
           dataKey="upperBound"
-          stroke="#888"
+          stroke="var(--gray-400)"
           strokeWidth={1}
           strokeDasharray="2 2"
           name="Upper Bound"
@@ -738,7 +738,7 @@ function ForecastChart({
         <Line
           type="monotone"
           dataKey="lowerBound"
-          stroke="#888"
+          stroke="var(--gray-400)"
           strokeWidth={1}
           strokeDasharray="2 2"
           name="Lower Bound"

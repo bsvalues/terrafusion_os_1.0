@@ -273,8 +273,8 @@ describe('Window Component', () => {
 
       render(<Window window={mockWindow} />);
 
-      const window = screen.getByTestId('window');
-      expect(window.className).toContain('border-[#00ffee]');
+      const windowVisuals = screen.getByTestId('window-visuals');
+      expect(windowVisuals.className).toContain('border-[var(--tf-transcend-highlight)]');
     });
 
     it('shows inactive styling when window is not active', () => {
@@ -289,8 +289,8 @@ describe('Window Component', () => {
 
       render(<Window window={mockWindow} />);
 
-      const window = screen.getByTestId('window');
-      expect(window.className).toContain('border-white/10');
+      const windowVisuals = screen.getByTestId('window-visuals');
+      expect(windowVisuals.className).toContain('border-white/10');
     });
 
     it('calls focusWindow when clicking window', async () => {
@@ -484,24 +484,24 @@ describe('Window Component', () => {
       const mockWindow = createMockWindow();
       render(<Window window={mockWindow} />);
 
-      const window = screen.getByTestId('window');
-      expect(window.className).toContain('backdrop-blur');
+      const windowVisuals = screen.getByTestId('window-visuals');
+      expect(windowVisuals.className).toContain('backdrop-blur');
     });
 
     it('has rounded corners', () => {
       const mockWindow = createMockWindow();
       render(<Window window={mockWindow} />);
 
-      const window = screen.getByTestId('window');
-      expect(window.className).toContain('rounded-lg');
+      const windowVisuals = screen.getByTestId('window-visuals');
+      expect(windowVisuals.className).toContain('rounded-lg');
     });
 
     it('has shadow effect', () => {
       const mockWindow = createMockWindow();
       render(<Window window={mockWindow} />);
 
-      const window = screen.getByTestId('window');
-      expect(window.className).toContain('shadow-');
+      const windowVisuals = screen.getByTestId('window-visuals');
+      expect(windowVisuals.className).toContain('shadow-');
     });
   });
 

@@ -66,7 +66,7 @@ export const DesktopShell: React.FC = () => {
     <Box
       sx={{
         height: '100vh',
-        background: 'linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%)',
+        background: 'linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-transcend-highlight) 50%, var(--tf-accent-success) 100%)',
         overflow: 'hidden',
       }}
     >
@@ -87,8 +87,8 @@ export const DesktopShell: React.FC = () => {
           <Avatar
             sx={{
               mr: 2,
-              background: 'linear-gradient(135deg, #0099ff, #00ffee)',
-              color: '#0b1020',
+              background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight))',
+              color: 'var(--tf-bg-surface)',
               fontWeight: 'bold',
               boxShadow: '0 0 20px rgba(0, 255, 238, 0.4)',
             }}
@@ -101,7 +101,7 @@ export const DesktopShell: React.FC = () => {
             component='div'
             sx={{
               flexGrow: 1,
-              background: 'linear-gradient(135deg, #0099ff, #00ffee)',
+              background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight))',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -171,7 +171,7 @@ export const DesktopShell: React.FC = () => {
                   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    borderColor: '#00ffee',
+                    borderColor: 'var(--tf-transcend-highlight)',
                     boxShadow:
                       '0 25px 50px rgba(0, 229, 255, 0.15), 0 0 80px rgba(0, 255, 238, 0.4)',
                   },
@@ -182,7 +182,7 @@ export const DesktopShell: React.FC = () => {
                     variant='h4'
                     gutterBottom
                     sx={{
-                      background: 'linear-gradient(135deg, #0099ff, #00ffee)',
+                      background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight))',
                       backgroundClip: 'text',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',

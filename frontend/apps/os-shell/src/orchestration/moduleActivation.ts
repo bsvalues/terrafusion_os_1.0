@@ -24,6 +24,7 @@
 import { normalizeModuleId, isModuleRegistered } from '../config/moduleComponents';
 import { useDesktopStore } from '../stores/desktopStore';
 import { useModuleLoaderStore } from '../stores/moduleLoaderStore';
+import { useNotificationStore } from '../stores/notificationStore';
 import { telemetry } from '../services/telemetry';
 
 // ============================================================================
@@ -34,12 +35,14 @@ import { telemetry } from '../services/telemetry';
  * Sources from which module activation can be triggered.
  */
 export type ModuleActivationSource =
-  | 'start_menu'   // User clicked in Start Menu
-  | 'desktop'      // User double-clicked desktop icon
-  | 'route'        // URL route navigation
-  | 'shortcut'     // Keyboard shortcut
-  | 'deep_link'    // External deep link
-  | 'system';      // System/automation trigger
+  | 'start_menu'       // User clicked in Start Menu
+  | 'desktop'          // User double-clicked desktop icon
+  | 'route'            // URL route navigation
+  | 'shortcut'         // Keyboard shortcut
+  | 'keyboard_shortcut' // Keyboard shortcut (alias)
+  | 'deep_link'        // External deep link
+  | 'context_menu'     // Right-click context menu
+  | 'system';          // System/automation trigger
 
 /**
  * Options for activateModule().
@@ -53,6 +56,9 @@ export interface ActivateModuleOptions {
   
   /** Whether to trigger warm load after opening window. Default: true */
   warmLoad?: boolean;
+  
+  /** Whether to show toast notification on open. Default: true */
+  showNotification?: boolean;
   
   /** Additional metadata for telemetry and deep link context */
   metadata?: Record<string, unknown>;
@@ -152,7 +158,7 @@ export async function activateModule(
   moduleId: string,
   options: ActivateModuleOptions
 ): Promise<void> {
-  const { source, focusIfOpen = true, warmLoad = true, metadata } = options;
+  const { source, focusIfOpen = true, warmLoad = true, showNotification = true, metadata } = options;
 
   // -------------------------------------------------------------------------
   // Step 1: Normalize alias → canonical ID
@@ -208,14 +214,30 @@ export async function activateModule(
 
   // No existing window - open new one
   const { openWindow } = useDesktopStore.getState();
+  const displayName = getModuleDisplayName(canonicalId);
   openWindow(
     canonicalId,
-    getModuleDisplayName(canonicalId),
+    displayName,
     getModuleIcon(canonicalId)
   );
 
   // -------------------------------------------------------------------------
-  // Step 5: Warm load (fire-and-forget, non-blocking)
+  // Step 5: Show notification (if enabled)
+  // -------------------------------------------------------------------------
+  if (showNotification) {
+    const { addNotification } = useNotificationStore.getState();
+    addNotification(
+      {
+        title: 'Module Opened',
+        message: `${displayName} is now ready.`,
+        type: 'success',
+      },
+      { duration: 3000 }
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Step 6: Warm load (fire-and-forget, non-blocking)
   // -------------------------------------------------------------------------
   if (warmLoad) {
     const { loadModule } = useModuleLoaderStore.getState();

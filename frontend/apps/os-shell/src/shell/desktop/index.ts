@@ -17,6 +17,9 @@ export type { DesktopBackgroundProps } from './DesktopBackground';
 export { Taskbar } from './Taskbar';
 export type { TaskbarProps } from './Taskbar';
 
+export { TaskbarWithNotifications } from './TaskbarWithNotifications';
+export type { TaskbarWithNotificationsProps } from './TaskbarWithNotifications';
+
 // Start Menu
 export { StartMenu } from './StartMenu';
 export type { StartMenuProps } from './StartMenu';
@@ -26,6 +29,9 @@ export type { RecentAppsSectionProps } from './RecentAppsSection';
 
 export { AppContextMenu } from './AppContextMenu';
 export type { AppContextMenuProps } from './AppContextMenu';
+
+export { DesktopContextMenu } from './DesktopContextMenu';
+export type { DesktopContextMenuProps } from './DesktopContextMenu';
 
 // Window System
 export { Window } from './Window';

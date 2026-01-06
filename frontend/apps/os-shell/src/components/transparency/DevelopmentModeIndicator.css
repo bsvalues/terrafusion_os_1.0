@@ -48,11 +48,11 @@
 }
 
 .indicator-badge.mock-mode {
-  background: linear-gradient(135deg, #f39c12, #e67e22);
+  background: linear-gradient(135deg, var(--tf-warning-amber), #e67e22);
 }
 
 .indicator-badge.production-mode {
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  background: linear-gradient(135deg, var(--tf-success-green), #27ae60);
 }
 
 .status-icon {
@@ -107,7 +107,7 @@
 .detail-header h4 {
   margin: 0 0 4px 0;
   font-size: 14px;
-  color: #00ff88;
+  color: var(--success-green);
   font-weight: bold;
 }
 
@@ -115,7 +115,7 @@
   margin: 0;
   font-size: 11px;
   opacity: 0.8;
-  color: #cccccc;
+  color: var(--gray-300);
 }
 
 .status-grid {
@@ -135,7 +135,7 @@
 .status-label {
   font-size: 11px;
   opacity: 0.8;
-  color: #cccccc;
+  color: var(--gray-300);
 }
 
 .status-value {
@@ -144,19 +144,19 @@
 }
 
 .status-value.mock {
-  color: #f39c12;
+  color: var(--tf-warning-amber);
 }
 
 .status-value.real {
-  color: #2ecc71;
+  color: var(--tf-success-green);
 }
 
 .status-value.connected {
-  color: #2ecc71;
+  color: var(--tf-success-green);
 }
 
 .status-value.disconnected {
-  color: #e74c3c;
+  color: var(--tf-error-red);
 }
 
 .audit-notice {
@@ -170,7 +170,7 @@
 .audit-notice h5 {
   margin: 0 0 8px 0;
   font-size: 12px;
-  color: #00ff88;
+  color: var(--success-green);
   font-weight: bold;
 }
 
@@ -189,7 +189,7 @@
   border-radius: 6px;
   font-size: 10px;
   line-height: 1.4;
-  color: #f39c12;
+  color: var(--tf-warning-amber);
 }
 
 .connection-actions {
@@ -224,7 +224,7 @@
 .connection-stats small {
   font-size: 10px;
   opacity: 0.7;
-  color: #cccccc;
+  color: var(--gray-300);
 }
 
 .development-info {

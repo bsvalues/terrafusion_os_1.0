@@ -5,7 +5,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #0a0e1a;
+  background: var(--tf-void-black);
   color: #ffffff;
   overflow: auto;
 }
@@ -19,10 +19,10 @@
   font-weight: bold;
 }
 .tf-progressive-test-cyan {
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 .tf-progressive-test-red {
-  color: #ff4444;
+  color: var(--error-red);
 }
 .tf-progressive-test-desc {
   margin-bottom: 1rem;
@@ -41,10 +41,10 @@
   margin-top: 1rem;
 }
 .tf-progressive-test-btn-cyan {
-  background: #00ffff;
-  color: #0a0e1a;
+  background: var(--tf-quantum-cyan);
+  color: var(--tf-void-black);
 }
 .tf-progressive-test-btn-red {
-  background: #ff4444;
+  background: var(--error-red);
   color: #ffffff;
 }

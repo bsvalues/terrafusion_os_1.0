@@ -85,11 +85,11 @@ export const AIMarketplaceHero: React.FC = () => {
   ];
 
   return (
-    <div className='relative min-h-screen bg-gradient-to-br from-[#0b1020] via-[#1a2332] to-[#0b1020] overflow-hidden'>
+    <div className='relative min-h-screen bg-gradient-to-br from-[var(--tf-bg-surface)] via-[var(--tf-bg-surface)] to-[var(--tf-bg-surface)] overflow-hidden'>
       {/* Quantum Grid Background */}
       <div className='absolute inset-0 opacity-20'>
-        <div className='absolute inset-0 bg-gradient-to-r from-transparent via-[#00ffee]/10 to-transparent transform -skew-y-12'></div>
-        <div className='absolute inset-0 bg-gradient-to-b from-transparent via-[#0099ff]/5 to-transparent'></div>
+        <div className='absolute inset-0 bg-gradient-to-r from-transparent via-[var(--tf-transcend-highlight)]/10 to-transparent transform -skew-y-12'></div>
+        <div className='absolute inset-0 bg-gradient-to-b from-transparent via-[var(--tf-network-blue)]/5 to-transparent'></div>
       </div>
 
       {/* Floating AI Consciousness Particles */}
@@ -97,7 +97,7 @@ export const AIMarketplaceHero: React.FC = () => {
         {[...Array(20)].map((_, i) => (
           <div
             key={i}
-            className='absolute w-1 h-1 bg-[#00ffee] rounded-full animate-pulse'
+            className='absolute w-1 h-1 bg-[var(--tf-transcend-highlight)] rounded-full animate-pulse'
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -112,24 +112,24 @@ export const AIMarketplaceHero: React.FC = () => {
         <div className='text-center mb-16'>
           {/* Revolutionary Header */}
           <div className='mb-8'>
-            <div className='inline-flex items-center gap-3 bg-gradient-to-r from-[#0099ff]/20 to-[#00ffee]/20 backdrop-blur-sm border border-[#00ffee]/30 rounded-full px-6 py-3 mb-6'>
-              <Rocket className='w-5 h-5 text-[#00ffee]' />
-              <span className='text-[#00ffee] font-semibold uppercase tracking-wider'>
+            <div className='inline-flex items-center gap-3 bg-gradient-to-r from-[var(--tf-network-blue)]/20 to-[var(--tf-transcend-highlight)]/20 backdrop-blur-sm border border-[var(--tf-transcend-highlight)]/30 rounded-full px-6 py-3 mb-6'>
+              <Rocket className='w-5 h-5 text-[var(--tf-transcend-highlight)]' />
+              <span className='text-[var(--tf-transcend-highlight)] font-semibold uppercase tracking-wider'>
                 WORLD'S FIRST AI-NATIVE APP STORE
               </span>
-              <AutoAwesome className='w-5 h-5 text-[#00ffee]' />
+              <AutoAwesome className='w-5 h-5 text-[var(--tf-transcend-highlight)]' />
             </div>
           </div>
 
           <h1 className='text-7xl md:text-8xl font-black mb-6'>
-            <span className='block bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] bg-clip-text text-transparent'>
+            <span className='block bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] bg-clip-text text-transparent'>
               TERRAFUSION
             </span>
             <span className='block text-white mt-2'>MARKETPLACE</span>
           </h1>
 
           <div className='max-w-4xl mx-auto mb-12'>
-            <p className='text-2xl text-[#00ffee] font-bold mb-4'>THE FIRST AI-NATIVE APP STORE</p>
+            <p className='text-2xl text-[var(--tf-transcend-highlight)] font-bold mb-4'>THE FIRST AI-NATIVE APP STORE</p>
             <p className='text-xl text-gray-300 mb-4'>
               For the First AI-Native Government Operating System
             </p>
@@ -138,74 +138,74 @@ export const AIMarketplaceHero: React.FC = () => {
 
           {/* Live AI Consciousness Metrics */}
           <div className='grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 max-w-6xl mx-auto'>
-            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[#00ffee]/20 rounded-2xl p-6 hover:transform hover:-translate-y-1 transition-all duration-500'>
-              <div className='text-4xl font-black text-[#00ffee] mb-2'>
+            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20 rounded-2xl p-6 hover:transform hover:-translate-y-1 transition-all duration-500'>
+              <div className='text-4xl font-black text-[var(--tf-transcend-highlight)] mb-2'>
                 {metrics.totalAgents.toLocaleString()}+
               </div>
               <div className='text-gray-300 text-sm uppercase tracking-wider'>AI Agents Active</div>
               <div className='w-full bg-gray-700 rounded-full h-2 mt-3'>
                 <div
-                  className='bg-gradient-to-r from-[#0099ff] to-[#00ffee] h-2 rounded-full transition-all duration-1000'
+                  className='bg-gradient-to-r from-[var(--tf-network-blue)] to-[var(--tf-transcend-highlight)] h-2 rounded-full transition-all duration-1000'
                   style={{ width: `${Math.min(100, consciousness + 70)}%` }}
                 />
               </div>
             </div>
 
-            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[#0099ff]/20 rounded-2xl p-6 hover:transform hover:-translate-y-1 transition-all duration-500'>
-              <div className='text-4xl font-black text-[#0099ff] mb-2'>
+            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[var(--tf-network-blue)]/20 rounded-2xl p-6 hover:transform hover:-translate-y-1 transition-all duration-500'>
+              <div className='text-4xl font-black text-[var(--tf-network-blue)] mb-2'>
                 {metrics.activeModules.toLocaleString()}
               </div>
               <div className='text-gray-300 text-sm uppercase tracking-wider'>AI Modules</div>
               <div className='flex items-center mt-3'>
-                <TrendingUp className='w-4 h-4 text-[#00ffaa] mr-1' />
-                <span className='text-[#00ffaa] text-xs'>
+                <TrendingUp className='w-4 h-4 text-[var(--tf-accent-success)] mr-1' />
+                <span className='text-[var(--tf-accent-success)] text-xs'>
                   +{Math.floor(Math.random() * 10)}% growth
                 </span>
               </div>
             </div>
 
-            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[#00ffaa]/20 rounded-2xl p-6 hover:transform hover:-translate-y-1 transition-all duration-500'>
-              <div className='text-4xl font-black text-[#00ffaa] mb-2'>{metrics.realTimeOps}</div>
+            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[var(--tf-accent-success)]/20 rounded-2xl p-6 hover:transform hover:-translate-y-1 transition-all duration-500'>
+              <div className='text-4xl font-black text-[var(--tf-accent-success)] mb-2'>{metrics.realTimeOps}</div>
               <div className='text-gray-300 text-sm uppercase tracking-wider'>Scale Capacity</div>
               <div className='flex items-center mt-3'>
-                <Speed className='w-4 h-4 text-[#00ffaa] mr-1' />
-                <span className='text-[#00ffaa] text-xs'>Self-Scaling</span>
+                <Speed className='w-4 h-4 text-[var(--tf-accent-success)] mr-1' />
+                <span className='text-[var(--tf-accent-success)] text-xs'>Self-Scaling</span>
               </div>
             </div>
 
-            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[#ff6b6b]/20 rounded-2xl p-6 hover:transform hover:-translate-y-1 transition-all duration-500'>
-              <div className='text-4xl font-black text-[#ff6b6b] mb-2'>99.5%</div>
+            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[var(--tf-accent-error)]/20 rounded-2xl p-6 hover:transform hover:-translate-y-1 transition-all duration-500'>
+              <div className='text-4xl font-black text-[var(--tf-accent-error)] mb-2'>99.5%</div>
               <div className='text-gray-300 text-sm uppercase tracking-wider'>Accuracy Rate</div>
               <div className='flex items-center mt-3'>
-                <Security className='w-4 h-4 text-[#ff6b6b] mr-1' />
-                <span className='text-[#ff6b6b] text-xs'>Championship</span>
+                <Security className='w-4 h-4 text-[var(--tf-accent-error)] mr-1' />
+                <span className='text-[var(--tf-accent-error)] text-xs'>Championship</span>
               </div>
             </div>
           </div>
 
           {/* Revolutionary Features Showcase */}
           <div className='relative mb-16'>
-            <div className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/30 rounded-3xl p-8 max-w-4xl mx-auto'>
+            <div className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/30 rounded-3xl p-8 max-w-4xl mx-auto'>
               <div className='flex items-center justify-center mb-6'>
                 {demoFeatures[currentDemo].icon}
                 <div className='ml-4 text-left'>
                   <h3 className='text-2xl font-bold text-white'>
                     {demoFeatures[currentDemo].title}
                   </h3>
-                  <p className='text-[#00ffee]'>{demoFeatures[currentDemo].description}</p>
+                  <p className='text-[var(--tf-transcend-highlight)]'>{demoFeatures[currentDemo].description}</p>
                 </div>
               </div>
 
               {/* Quantum Processing Visualization */}
-              <div className='relative h-32 bg-gradient-to-r from-[#0099ff]/20 via-[#00ffee]/20 to-[#00ffaa]/20 rounded-2xl overflow-hidden'>
+              <div className='relative h-32 bg-gradient-to-r from-[var(--tf-network-blue)]/20 via-[var(--tf-transcend-highlight)]/20 to-[var(--tf-accent-success)]/20 rounded-2xl overflow-hidden'>
                 <div className='absolute inset-0 flex items-center justify-center'>
                   <div className='text-center'>
-                    <Psychology className='w-12 h-12 text-[#00ffee] mx-auto mb-2 animate-pulse' />
-                    <div className='text-[#00ffee] font-bold'>AI CONSCIOUSNESS ACTIVE</div>
+                    <Psychology className='w-12 h-12 text-[var(--tf-transcend-highlight)] mx-auto mb-2 animate-pulse' />
+                    <div className='text-[var(--tf-transcend-highlight)] font-bold'>AI CONSCIOUSNESS ACTIVE</div>
                   </div>
                 </div>
                 <div
-                  className='absolute bottom-0 left-0 h-1 bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] transition-all duration-2000'
+                  className='absolute bottom-0 left-0 h-1 bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] transition-all duration-2000'
                   style={{ width: `${consciousness}%` }}
                 />
               </div>
@@ -214,11 +214,11 @@ export const AIMarketplaceHero: React.FC = () => {
 
           {/* Call-to-Action */}
           <div className='flex flex-col md:flex-row gap-6 justify-center items-center'>
-            <button className='tf-clarity-button bg-gradient-to-br from-[#0099ff] via-[#00ffee] to-[#00ffaa] text-white uppercase font-semibold rounded-full px-12 py-4 shadow-lg hover:shadow-2xl hover:transform hover:-translate-y-1 transition-all duration-300 border border-[#00ffee]/30 backdrop-blur-sm text-lg'>
+            <button className='tf-clarity-button bg-gradient-to-br from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white uppercase font-semibold rounded-full px-12 py-4 shadow-lg hover:shadow-2xl hover:transform hover:-translate-y-1 transition-all duration-300 border border-[var(--tf-transcend-highlight)]/30 backdrop-blur-sm text-lg'>
               EXPLORE AI AGENTS
             </button>
 
-            <button className='bg-transparent border-2 border-[#00ffee]/50 text-[#00ffee] uppercase font-semibold rounded-full px-12 py-4 hover:bg-[#00ffee]/10 hover:transform hover:-translate-y-1 transition-all duration-300 text-lg'>
+            <button className='bg-transparent border-2 border-[var(--tf-transcend-highlight)]/50 text-[var(--tf-transcend-highlight)] uppercase font-semibold rounded-full px-12 py-4 hover:bg-[var(--tf-transcend-highlight)]/10 hover:transform hover:-translate-y-1 transition-all duration-300 text-lg'>
               VIEW CONSCIOUSNESS DASHBOARD
             </button>
           </div>
@@ -237,7 +237,7 @@ export const AIMarketplaceHero: React.FC = () => {
       </div>
 
       {/* Scan Line Effect */}
-      <div className='tf-scan-line absolute inset-0 bg-gradient-to-r from-transparent via-[#00ffee]/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-2000' />
+      <div className='tf-scan-line absolute inset-0 bg-gradient-to-r from-transparent via-[var(--tf-transcend-highlight)]/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-2000' />
     </div>
   );
 };

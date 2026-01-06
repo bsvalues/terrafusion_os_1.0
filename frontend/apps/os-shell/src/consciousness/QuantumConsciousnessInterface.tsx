@@ -122,7 +122,7 @@ const ConsciousnessVisualization: React.FC<{
     <group ref={meshRef}>
       {/* Quantum Field Background */}
       <Sphere args={[25, 64, 64]} position={[0, 0, 0]}>
-        <meshBasicMaterial color='#001122' transparent opacity={0.1} wireframe />
+        <meshBasicMaterial color='var(--tf-void-black)' transparent opacity={0.1} wireframe />
       </Sphere>
 
       {/* AI Agent Nodes */}
@@ -153,7 +153,7 @@ const ConsciousnessVisualization: React.FC<{
             <Text
               position={[0, 0.5, 0]}
               fontSize={0.1}
-              color='#00FFFF'
+              color='var(--tf-transcend-cyan)'
               anchorX='center'
               anchorY='middle'
             >
@@ -188,7 +188,7 @@ const ConsciousnessVisualization: React.FC<{
                 (Math.random() - 0.5) * 30,
               ]}
             >
-              <meshBasicMaterial color='#00FFFF' transparent opacity={0.6} />
+              <meshBasicMaterial color='var(--tf-transcend-cyan)' transparent opacity={0.6} />
             </Sphere>
           ))}
         </>
@@ -556,10 +556,10 @@ const getConsciousnessColor = (
   specialization: ConsciousnessAgent['specialization']
 ): string => {
   const baseColors = {
-    quantum: '#00FFFF', // Terra Cyan
-    statistics: '#0080FF', // Terra Blue
-    modeling: '#00FF80', // Terra Green
-    validation: '#FF8000', // Terra Orange
+    quantum: 'var(--tf-transcend-cyan)', // Terra Cyan
+    statistics: 'var(--tf-network-blue)', // Terra Blue
+    modeling: 'var(--tf-accent-success)', // Terra Green
+    validation: 'var(--tf-accent-orange)', // Terra Orange
   };
 
   const intensity = 0.3 + level * 0.7; // Scale intensity with consciousness level
@@ -735,8 +735,8 @@ export const QuantumConsciousnessInterface: React.FC = () => {
                     >
                       <OrbitControls enablePan enableZoom enableRotate />
                       <ambientLight intensity={0.2} />
-                      <pointLight position={[10, 10, 10]} intensity={0.8} color='#00FFFF' />
-                      <pointLight position={[-10, -10, -10]} intensity={0.4} color='#0080FF' />
+                      <pointLight position={[10, 10, 10]} intensity={0.8} color='var(--tf-transcend-cyan)' />
+                      <pointLight position={[-10, -10, -10]} intensity={0.4} color='var(--tf-network-blue)' />
 
                       <ConsciousnessVisualization
                         agents={mockAgents}

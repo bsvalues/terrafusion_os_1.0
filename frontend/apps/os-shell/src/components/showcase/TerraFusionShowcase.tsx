@@ -35,12 +35,12 @@ import {
 
 // ═══ SAMPLE DATA ═══
 const chartData = [
-  { label: 'Jan', value: 65, color: '#00FFFF' },
-  { label: 'Feb', value: 78, color: '#0080FF' },
-  { label: 'Mar', value: 52, color: '#00CCCC' },
-  { label: 'Apr', value: 91, color: '#0099FF' },
-  { label: 'May', value: 87, color: '#00AAAA' },
-  { label: 'Jun', value: 94, color: '#0066FF' },
+  { label: 'Jan', value: 65, color: 'var(--tf-transcend-cyan)' },
+  { label: 'Feb', value: 78, color: 'var(--tf-network-blue)' },
+  { label: 'Mar', value: 52, color: 'var(--tf-accent-cyan)' },
+  { label: 'Apr', value: 91, color: 'var(--tf-network-blue)' },
+  { label: 'May', value: 87, color: 'var(--tf-accent-teal)' },
+  { label: 'Jun', value: 94, color: 'var(--tf-network-blue)' },
 ];
 
 const gridData = [

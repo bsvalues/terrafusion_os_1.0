@@ -5,7 +5,7 @@
   padding: 16px;
   margin: 16px 0;
   font-family: 'Courier New', monospace;
-  color: #00ff00;
+  color: var(--tf-success-green);
 }
 
 .header {
@@ -22,7 +22,7 @@
   align-items: center;
   font-size: 16px;
   font-weight: bold;
-  color: #00ff00;
+  color: var(--tf-success-green);
 }
 
 .logo {
@@ -39,12 +39,12 @@
 
 .online {
   background: #1a4d1a;
-  color: #00ff00;
+  color: var(--tf-success-green);
 }
 
 .offline {
   background: #4d1a1a;
-  color: #ff4444;
+  color: var(--error-red);
 }
 
 .metricsGrid {
@@ -64,12 +64,12 @@
 }
 
 .metricCard:hover {
-  border-color: #00ff00;
+  border-color: var(--tf-success-green);
   box-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
 }
 
 .metricCard.warning {
-  border-color: #ff4444;
+  border-color: var(--error-red);
   background: #2a1a1a;
 }
 
@@ -79,7 +79,7 @@
 
 .metricLabel {
   font-size: 11px;
-  color: #888;
+  color: var(--gray-400);
   margin-bottom: 4px;
   text-transform: uppercase;
 }
@@ -87,28 +87,28 @@
 .metricValue {
   font-size: 18px;
   font-weight: bold;
-  color: #00ff00;
+  color: var(--tf-success-green);
 }
 
 .metricCard.warning .metricValue {
-  color: #ff4444;
+  color: var(--error-red);
 }
 
 .metricUnit {
   font-size: 12px;
-  color: #666;
+  color: var(--gray-500);
   margin-left: 2px;
 }
 
 .errorAlert {
   background: #2a1a1a;
-  border: 1px solid #ff4444;
+  border: 1px solid var(--error-red);
   border-radius: 4px;
   padding: 8px 12px;
   margin-bottom: 16px;
   display: flex;
   align-items: center;
-  color: #ff4444;
+  color: var(--error-red);
   font-size: 12px;
 }
 
@@ -121,17 +121,17 @@
   justify-content: space-between;
   align-items: center;
   font-size: 11px;
-  color: #666;
+  color: var(--gray-500);
   border-top: 1px solid #333;
   padding-top: 12px;
 }
 
 .footerText {
-  color: #888;
+  color: var(--gray-400);
 }
 
 .timestamp {
-  color: #666;
+  color: var(--gray-500);
 }
 
 /* Database Status Section */
@@ -145,7 +145,7 @@
 
 .databaseStatus h4 {
   margin: 0 0 12px 0;
-  color: #00ff00;
+  color: var(--tf-success-green);
   font-size: 14px;
   font-weight: bold;
 }
@@ -184,7 +184,7 @@
 
 .dbName {
   font-weight: bold;
-  color: #888;
+  color: var(--gray-400);
   flex: 1;
   font-size: 12px;
 }
@@ -195,9 +195,9 @@
 }
 
 .connected .dbStatus {
-  color: #00ff00;
+  color: var(--tf-success-green);
 }
 
 .disconnected .dbStatus {
-  color: #ff4444;
+  color: var(--error-red);
 }

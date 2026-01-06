@@ -41,6 +41,7 @@ const createMockWindow = (overrides: Partial<DesktopWindow> = {}): DesktopWindow
   moduleId: 'test-module',
   title: 'Test Window',
   icon: '📋',
+  desktopId: 'desktop-1',
   position: { x: 100, y: 50 },
   size: { width: 800, height: 600 },
   state: 'normal',

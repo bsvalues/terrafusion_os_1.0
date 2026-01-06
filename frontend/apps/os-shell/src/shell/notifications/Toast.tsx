@@ -34,7 +34,7 @@ const TypeIcon: React.FC<{ type: ToastType['type'] }> = ({ type }) => {
     info: (
       <svg
         data-testid='toast-icon-info'
-        className='w-5 h-5 text-[#00aaff]'
+        className='w-5 h-5 text-[var(--tf-network-blue)]'
         fill='none'
         stroke='currentColor'
         viewBox='0 0 24 24'
@@ -50,7 +50,7 @@ const TypeIcon: React.FC<{ type: ToastType['type'] }> = ({ type }) => {
     success: (
       <svg
         data-testid='toast-icon-success'
-        className='w-5 h-5 text-[#00ffaa]'
+        className='w-5 h-5 text-[var(--tf-accent-success)]'
         fill='none'
         stroke='currentColor'
         viewBox='0 0 24 24'
@@ -66,7 +66,7 @@ const TypeIcon: React.FC<{ type: ToastType['type'] }> = ({ type }) => {
     warning: (
       <svg
         data-testid='toast-icon-warning'
-        className='w-5 h-5 text-[#ffaa00]'
+        className='w-5 h-5 text-[var(--warning-amber)]'
         fill='none'
         stroke='currentColor'
         viewBox='0 0 24 24'
@@ -82,7 +82,7 @@ const TypeIcon: React.FC<{ type: ToastType['type'] }> = ({ type }) => {
     error: (
       <svg
         data-testid='toast-icon-error'
-        className='w-5 h-5 text-[#ff4444]'
+        className='w-5 h-5 text-[var(--error-red)]'
         fill='none'
         stroke='currentColor'
         viewBox='0 0 24 24'
@@ -128,18 +128,18 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss, className }) => 
 
   // Border color based on type
   const borderColors = {
-    info: 'border-l-[#00aaff]',
-    success: 'border-l-[#00ffaa]',
-    warning: 'border-l-[#ffaa00]',
-    error: 'border-l-[#ff4444]',
+    info: 'border-l-[var(--tf-network-blue)]',
+    success: 'border-l-[var(--tf-accent-success)]',
+    warning: 'border-l-[var(--warning-amber)]',
+    error: 'border-l-[var(--error-red)]',
   };
 
   // Progress bar color based on type
   const progressColors = {
-    info: 'bg-[#00aaff]',
-    success: 'bg-[#00ffaa]',
-    warning: 'bg-[#ffaa00]',
-    error: 'bg-[#ff4444]',
+    info: 'bg-[var(--tf-network-blue)]',
+    success: 'bg-[var(--tf-accent-success)]',
+    warning: 'bg-[var(--warning-amber)]',
+    error: 'bg-[var(--error-red)]',
   };
 
   return (
@@ -151,7 +151,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss, className }) => 
       className={cn(
         // Base styles
         'relative w-80 overflow-hidden rounded-lg',
-        'bg-[#0a0e1a]/95 backdrop-blur-xl',
+        'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
         'border border-white/10',
         'border-l-4',
         borderColors[toast.type],
@@ -179,7 +179,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss, className }) => 
               onClick={toast.action.onClick}
               className={cn(
                 'mt-2 text-xs font-medium',
-                'text-[#00ffee] hover:text-[#00ffff]',
+                'text-[var(--tf-transcend-highlight)] hover:text-[var(--tf-quantum-cyan)]',
                 'transition-colors duration-150'
               )}
             >

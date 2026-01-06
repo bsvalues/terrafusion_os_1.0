@@ -216,7 +216,7 @@ export function QuantumChartWidget({
                 <div
                   className='quantum-chart-bar'
                   data-height={`${(point.value / maxValue) * 100}%`}
-                  data-color={point.color || '#00FFFF'}
+                  data-color={point.color || 'var(--tf-transcend-cyan)'}
                 />
                 <div className='quantum-chart-bar-label'>{point.label}</div>
               </div>
@@ -242,7 +242,7 @@ export function QuantumChartWidget({
                     y1={`${y1}%`}
                     x2={`${x2}%`}
                     y2={`${y2}%`}
-                    stroke='#00FFFF'
+                    stroke='var(--tf-transcend-cyan)'
                     strokeWidth='2'
                     className='quantum-chart-line-segment'
                   />
@@ -254,7 +254,7 @@ export function QuantumChartWidget({
                   cx={`${(index / (data.length - 1)) * 100}%`}
                   cy={`${100 - (point.value / maxValue) * 80}%`}
                   r='4'
-                  fill='#00FFFF'
+                  fill='var(--tf-transcend-cyan)'
                   className='quantum-chart-point'
                 />
               ))}
@@ -304,7 +304,7 @@ export function QuantumChartWidget({
         <div className='quantum-chart-legend'>
           {data.map((point, index) => (
             <div key={index} className='quantum-chart-legend-item'>
-              <div className='quantum-chart-legend-color' data-color={point.color || '#00FFFF'} />
+              <div className='quantum-chart-legend-color' data-color={point.color || 'var(--tf-transcend-cyan)'} />
               <span className='quantum-chart-legend-label'>{point.label}</span>
               <span className='quantum-chart-legend-value'>{point.value}</span>
             </div>

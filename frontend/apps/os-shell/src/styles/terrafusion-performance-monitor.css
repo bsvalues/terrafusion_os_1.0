@@ -57,7 +57,7 @@ Real-Time Government-Grade System Reliability Metrics
   padding: 16px;
   font-family: 'Cascadia Code', monospace;
   font-size: 11px;
-  color: #00ffee;
+  color: var(--tf-transcend-highlight);
   z-index: 10000;
 
   /* Performance indicator based on overall system health */

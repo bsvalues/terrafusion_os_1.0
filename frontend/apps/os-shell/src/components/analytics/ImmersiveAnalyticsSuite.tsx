@@ -103,7 +103,7 @@ const QuantumDataVisualization: React.FC<{
       {/* Quantum Consciousness Field */}
       <mesh>
         <sphereGeometry args={[50, 32, 32]} />
-        <meshBasicMaterial color='#00FFFF' transparent opacity={0.05} wireframe />
+        <meshBasicMaterial color='var(--tf-transcend-cyan)' transparent opacity={0.05} wireframe />
       </mesh>
 
       {/* Data Points with Consciousness Auras */}
@@ -131,7 +131,7 @@ const QuantumDataVisualization: React.FC<{
           {/* Consciousness Aura */}
           <Sphere args={[point.magnitude * 1.5, 16, 16]}>
             <meshBasicMaterial
-              color='#00FFFF'
+              color='var(--tf-transcend-cyan)'
               transparent
               opacity={point.consciousness * 0.2}
               wireframe
@@ -143,7 +143,7 @@ const QuantumDataVisualization: React.FC<{
             <Text
               position={[point.magnitude + 1, point.magnitude + 1, 0]}
               fontSize={0.5}
-              color='#00FFFF'
+              color='var(--tf-transcend-cyan)'
               anchorX='left'
               anchorY='middle'
             >
@@ -158,7 +158,7 @@ const QuantumDataVisualization: React.FC<{
         <Line
           key={index}
           points={[line.start, line.end]}
-          color='#00FFFF'
+          color='var(--tf-transcend-cyan)'
           lineWidth={line.strength * 2}
           transparent
           opacity={line.strength * 0.6}
@@ -171,7 +171,7 @@ const QuantumDataVisualization: React.FC<{
           [-25, 0, 0],
           [25, 0, 0],
         ]}
-        color='#FF0000'
+        color='var(--tf-accent-error)'
         lineWidth={2}
       />
       <Line
@@ -179,7 +179,7 @@ const QuantumDataVisualization: React.FC<{
           [0, -25, 0],
           [0, 25, 0],
         ]}
-        color='#00FF00'
+        color='var(--tf-accent-success)'
         lineWidth={2}
       />
       <Line
@@ -187,7 +187,7 @@ const QuantumDataVisualization: React.FC<{
           [0, 0, -25],
           [0, 0, 25],
         ]}
-        color='#0000FF'
+        color='var(--tf-blueprint-blue)'
         lineWidth={2}
       />
 
@@ -195,7 +195,7 @@ const QuantumDataVisualization: React.FC<{
       {Array.from({ length: 21 }, (_, i) => i - 10).map((x) =>
         Array.from({ length: 21 }, (_, j) => j - 10).map((z) => (
           <Box key={`${x}-${z}`} args={[0.1, 0.1, 0.1]} position={[x * 2, -10, z * 2]}>
-            <meshBasicMaterial color='#00FFFF' transparent opacity={0.1} />
+            <meshBasicMaterial color='var(--tf-transcend-cyan)' transparent opacity={0.1} />
           </Box>
         ))
       )}
@@ -522,8 +522,8 @@ export const ImmersiveAnalyticsSuite: React.FC<ImmersiveAnalyticsSuiteProps> = (
                 >
                   <Canvas camera={{ position: [20, 20, 20], fov: 60 }}>
                     <ambientLight intensity={0.3} />
-                    <pointLight position={[10, 10, 10]} intensity={1} color='#00FFFF' />
-                    <pointLight position={[-10, -10, -10]} intensity={0.5} color='#0080FF' />
+                    <pointLight position={[10, 10, 10]} intensity={1} color='var(--tf-transcend-cyan)' />
+                    <pointLight position={[-10, -10, -10]} intensity={0.5} color='var(--tf-network-blue)' />
 
                     <QuantumDataVisualization
                       dataPoints={quantumDataPoints}

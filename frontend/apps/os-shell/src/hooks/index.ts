@@ -46,3 +46,6 @@ export {
 
 // Keyboard Shortcuts
 export { useKeyboardShortcuts } from './useKeyboardShortcuts';
+
+// Context Menu
+export { useContextMenu, type ContextMenuPosition, type UseContextMenuReturn } from './useContextMenu';

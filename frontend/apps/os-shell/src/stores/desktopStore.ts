@@ -52,11 +52,17 @@ export interface SnapPreview {
   bounds: SnapBounds;
 }
 
+export interface VirtualDesktop {
+  id: string;
+  name: string;
+}
+
 export interface DesktopWindow {
   id: string;
   moduleId: string;
   title: string;
   icon: string;
+  desktopId: string;
   position: Position;
   size: Size;
   state: WindowState;
@@ -64,6 +70,7 @@ export interface DesktopWindow {
   previousPosition?: Position;
   previousSize?: Size;
   snapZone?: SnapZone;
+  metadata?: Record<string, any>; // Deep Context Payload
 }
 
 export interface DesktopState {
@@ -72,9 +79,16 @@ export interface DesktopState {
   activeWindowId: string | null;
   nextZIndex: number;
   snapPreview: SnapPreview | null;
+  currentDesktopId: string;
+  desktops: VirtualDesktop[];
 
   // Actions
-  openWindow: (moduleId: string, title: string, icon: string) => string;
+  openWindow: (
+    moduleId: string,
+    title: string,
+    icon: string,
+    metadata?: Record<string, any>
+  ) => string;
   closeWindow: (windowId: string) => void;
   minimizeWindow: (windowId: string) => void;
   maximizeWindow: (windowId: string) => void;
@@ -82,6 +96,14 @@ export interface DesktopState {
   focusWindow: (windowId: string) => void;
   updateWindowPosition: (windowId: string, position: Position) => void;
   updateWindowSize: (windowId: string, size: Size) => void;
+
+  // Virtual Desktop Actions
+  addDesktop: () => void;
+  removeDesktop: (desktopId: string) => void;
+  switchDesktop: (desktopId: string) => void;
+  nextDesktop: () => void;
+  previousDesktop: () => void;
+  moveWindowToDesktop: (windowId: string, desktopId: string) => void;
 
   // Snap Actions
   detectSnapZone: (
@@ -210,21 +232,35 @@ export const useDesktopStore = create<DesktopState>()(
       activeWindowId: null,
       nextZIndex: 1,
       snapPreview: null,
+      currentDesktopId: 'desktop-1',
+      desktops: [
+        { id: 'desktop-1', name: 'Desktop 1' },
+        { id: 'desktop-2', name: 'Desktop 2' },
+        { id: 'desktop-3', name: 'Desktop 3' },
+        { id: 'desktop-4', name: 'Desktop 4' },
+      ],
 
       // Actions
-      openWindow: (moduleId: string, title: string, icon: string): string => {
+      openWindow: (
+        moduleId: string,
+        title: string,
+        icon: string,
+        metadata?: Record<string, any>
+      ): string => {
         const id = generateWindowId();
-        const { windows, nextZIndex } = get();
+        const { windows, nextZIndex, currentDesktopId } = get();
 
         const newWindow: DesktopWindow = {
           id,
           moduleId,
           title,
           icon,
+          desktopId: currentDesktopId,
           position: calculateNewWindowPosition(windows.length),
           size: { ...DEFAULT_WINDOW_SIZE },
           state: 'normal',
           zIndex: nextZIndex,
+          metadata, // INJECTED
         };
 
         set({
@@ -400,6 +436,89 @@ export const useDesktopStore = create<DesktopState>()(
       },
 
       // ========================================================================
+      // Virtual Desktop Actions
+      // ========================================================================
+
+      addDesktop: () => {
+        const { desktops } = get();
+        const newId = `desktop-${Date.now()}`;
+        const newDesktop: VirtualDesktop = {
+          id: newId,
+          name: `Desktop ${desktops.length + 1}`,
+        };
+        set({ desktops: [...desktops, newDesktop] });
+      },
+
+      removeDesktop: (desktopId: string) => {
+        const { desktops, windows, currentDesktopId } = get();
+        if (desktops.length <= 1) return; // Cannot remove last desktop
+
+        const newDesktops = desktops.filter((d) => d.id !== desktopId);
+
+        // Move windows from removed desktop to the first available desktop
+        const targetDesktopId = newDesktops[0].id;
+        const newWindows = windows.map((w) =>
+          w.desktopId === desktopId ? { ...w, desktopId: targetDesktopId } : w
+        );
+
+        // If we removed the current desktop, switch to the target
+        const newCurrentId = currentDesktopId === desktopId ? targetDesktopId : currentDesktopId;
+
+        set({
+          desktops: newDesktops,
+          windows: newWindows,
+          currentDesktopId: newCurrentId,
+        });
+      },
+
+      switchDesktop: (desktopId: string) => {
+        const { desktops, windows } = get();
+        if (!desktops.find((d) => d.id === desktopId)) return;
+
+        // Find the top non-minimized window on the target desktop
+        const desktopWindows = windows.filter((w) => w.desktopId === desktopId);
+        const topWindow = findTopNonMinimizedWindow(desktopWindows);
+
+        set({
+          currentDesktopId: desktopId,
+          activeWindowId: topWindow?.id || null,
+        });
+      },
+
+      nextDesktop: () => {
+        const { desktops, currentDesktopId } = get();
+        const currentIndex = desktops.findIndex((d) => d.id === currentDesktopId);
+        const nextIndex = (currentIndex + 1) % desktops.length;
+        get().switchDesktop(desktops[nextIndex].id);
+      },
+
+      previousDesktop: () => {
+        const { desktops, currentDesktopId } = get();
+        const currentIndex = desktops.findIndex((d) => d.id === currentDesktopId);
+        const prevIndex = (currentIndex - 1 + desktops.length) % desktops.length;
+        get().switchDesktop(desktops[prevIndex].id);
+      },
+
+      moveWindowToDesktop: (windowId: string, desktopId: string) => {
+        const { windows, desktops, currentDesktopId, activeWindowId } = get();
+        if (!desktops.find((d) => d.id === desktopId)) return;
+
+        const newWindows = windows.map((w) => (w.id === windowId ? { ...w, desktopId } : w));
+
+        // If we moved the active window off the current desktop, find a new active window
+        let newActiveWindowId = activeWindowId;
+        if (windowId === activeWindowId && desktopId !== currentDesktopId) {
+          const remainingWindows = newWindows.filter(
+            (w) => w.desktopId === currentDesktopId && w.id !== windowId
+          );
+          const topWindow = findTopNonMinimizedWindow(remainingWindows);
+          newActiveWindowId = topWindow?.id || null;
+        }
+
+        set({ windows: newWindows, activeWindowId: newActiveWindowId });
+      },
+
+      // ========================================================================
       // Snap Actions
       // ========================================================================
 
@@ -509,11 +628,15 @@ export const useDesktopStore = create<DesktopState>()(
       },
 
       getNonMinimizedWindows: (): DesktopWindow[] => {
-        return get().windows.filter((w) => w.state !== 'minimized');
+        const { windows, currentDesktopId } = get();
+        return windows.filter((w) => w.state !== 'minimized' && w.desktopId === currentDesktopId);
       },
 
       getWindowsSortedByZIndex: (): DesktopWindow[] => {
-        return [...get().windows].sort((a, b) => a.zIndex - b.zIndex);
+        const { windows, currentDesktopId } = get();
+        return [...windows]
+          .filter((w) => w.desktopId === currentDesktopId)
+          .sort((a, b) => a.zIndex - b.zIndex);
       },
     }),
     { name: 'TerraFusion-Desktop-Store' }
@@ -565,6 +688,19 @@ export const useSnapActions = () =>
     snapWindow: state.snapWindow,
     snapActiveWindowLeft: state.snapActiveWindowLeft,
     snapActiveWindowRight: state.snapActiveWindowRight,
+  }));
+
+/**
+ * Hook to get virtual desktop state and actions
+ */
+export const useVirtualDesktops = () =>
+  useDesktopStore((state) => ({
+    currentDesktopId: state.currentDesktopId,
+    desktops: state.desktops,
+    addDesktop: state.addDesktop,
+    removeDesktop: state.removeDesktop,
+    switchDesktop: state.switchDesktop,
+    moveWindowToDesktop: state.moveWindowToDesktop,
   }));
 
 export default useDesktopStore;

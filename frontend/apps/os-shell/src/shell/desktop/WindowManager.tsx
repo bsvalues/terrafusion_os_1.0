@@ -52,19 +52,20 @@ export interface WindowManagerProps {
 export function WindowManager({ className = '' }: WindowManagerProps) {
   // Subscribe to windows from store
   const windows = useDesktopStore((state) => state.windows);
+  const currentDesktopId = useDesktopStore((state) => state.currentDesktopId);
   const closeWindow = useDesktopStore((state) => state.closeWindow);
-  
+
   // Module registry for relaunching
   const launchModule = useModuleRegistryStore((state) => state.launchModule);
   const getModuleById = useModuleRegistryStore((state) => state.getModuleById);
-  
+
   // Notifications for user feedback
   const addNotification = useNotificationStore((state) => state.addNotification);
 
-  // Filter out minimized windows and sort by z-index (ascending)
+  // Filter out minimized windows, filter by current desktop, and sort by z-index
   // Lower z-index renders first = appears behind higher z-index windows
   const visibleWindows = windows
-    .filter((w) => w.state !== 'minimized')
+    .filter((w) => w.state !== 'minimized' && w.desktopId === currentDesktopId)
     .sort((a, b) => a.zIndex - b.zIndex);
 
   /**
@@ -85,7 +86,7 @@ export function WindowManager({ className = '' }: WindowManagerProps) {
       try {
         // Relaunch the module
         await launchModule(window.moduleId);
-        
+
         addNotification(
           {
             title: 'Module Reloaded',
@@ -138,7 +139,7 @@ export function WindowManager({ className = '' }: WindowManagerProps) {
             onReload={handleReloadModule}
             onClose={handleCloseWindow}
           >
-            <ModuleLoader moduleId={window.moduleId} />
+            <ModuleLoader moduleId={window.moduleId} metadata={window.metadata} />
           </WindowErrorBoundary>
         </Window>
       ))}

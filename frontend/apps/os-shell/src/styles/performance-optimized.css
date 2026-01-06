@@ -15,7 +15,7 @@ Advanced CSS Performance, Critical Path Optimization, and Web Vitals Enhancement
     sans-serif;
   line-height: 1.6;
   color: #ffffff;
-  background: linear-gradient(135deg, #0a0f1c 0%, #1a2332 100%);
+  background: linear-gradient(135deg, var(--tf-void-black) 0%, #1a2332 100%);
   margin: 0;
   padding: 0;
 }
@@ -215,8 +215,8 @@ Advanced CSS Performance, Critical Path Optimization, and Web Vitals Enhancement
 /* Leverage browser caching with CSS custom properties */
 .cached-styles {
   /* Store commonly used values in CSS custom properties */
-  --primary-color: #0099ff;
-  --secondary-color: #00ffee;
+  --primary-color: var(--tf-network-blue);
+  --secondary-color: var(--tf-transcend-highlight);
   --border-radius: 8px;
   --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 

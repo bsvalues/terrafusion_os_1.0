@@ -187,6 +187,109 @@ Over 10 development phases, we built a **government-grade desktop environment** 
 
 ---
 
+### Phase 12: User Preferences & Theming (18 tests)
+
+**Goal:** Accessibility compliance and user customization.
+
+**Delivered:**
+- `themeStore` - Theme state management
+- `useThemeEffect` - DOM manipulation for themes
+- `SettingsPanel` - UI for preferences
+- High Contrast & Reduced Motion support
+- Font size scaling (75% - 200%)
+
+**Key Decisions:**
+- CSS variables for theming
+- Root-level font scaling
+- Persisted to localStorage
+
+---
+
+### Phase 13: Keyboard Shortcuts (3 tests)
+
+**Goal:** Power user efficiency and discoverability.
+
+**Delivered:**
+- `ShortcutsPanel` - Visual cheat sheet
+- `shortcuts-help` module registration
+- `Ctrl + /` global trigger
+- Start Menu shortcut button
+
+**Key Decisions:**
+- Module-based help (draggable window)
+- Global hook integration
+- Visual key caps in UI
+
+---
+
+### Phase 14: Virtual Desktops (7 tests)
+
+**Goal:** Multiple workspaces for better organization.
+
+**Delivered:**
+- `VirtualDesktopSwitcher` - UI for managing desktops
+- `desktopStore` updates - Multi-desktop state
+- Taskbar integration - Task View button
+- Window filtering - Only show windows on current desktop
+
+**Key Decisions:**
+- Desktops are dynamic (add/remove)
+- Windows move to default desktop if current is removed
+- Taskbar only shows apps on current desktop
+
+---
+
+### Phase 15: Module Communication (3 tests)
+
+**Goal:** Decoupled inter-module messaging system.
+
+**Delivered:**
+- `messageBusStore` - Pub/Sub event bus
+- `useModuleMessaging` - Hook for easy integration
+- Broadcast and Direct messaging support
+- Self-message filtering
+
+**Key Decisions:**
+- Zustand for message state
+- Event-based architecture
+- Support for targeted messages (security/privacy)
+
+---
+
+### Phase 16: Offline Support (3 tests)
+
+**Goal:** Enable offline functionality and PWA support.
+
+**Delivered:**
+- `networkStore` - Connectivity state tracking
+- `SystemHealthPanel` updates - Real-time network status
+- `pwa.ts` - Service Worker registration & updates
+- Notification integration for "Update Available"
+
+**Key Decisions:**
+- `vite-plugin-pwa` for Service Worker generation
+- Integrated with Notification system for updates
+- Visual indicators in System Tray
+
+---
+
+### Phase 17: Real-time Sync (3 tests)
+
+**Goal:** Sync user preferences and pinned apps across multiple tabs.
+
+**Delivered:**
+- `syncStore` - Queue management for offline actions
+- `syncService` - BroadcastChannel implementation
+- `useSyncIntegration` - Hook to bind stores to sync service
+- Offline queue processing
+
+**Key Decisions:**
+- `BroadcastChannel` for tab-to-tab sync
+- Lazy initialization to support testing
+- `isApplyingSync` flag to prevent infinite loops
+
+---
+
 ## Test Coverage Summary
 
 | Phase | Tests | Cumulative |
@@ -200,7 +303,13 @@ Over 10 development phases, we built a **government-grade desktop environment** 
 | 7 | 82 | 660 |
 | 8 | 128 | 788 |
 | 9 | 50 | 838 |
-| **Total** | **600+** | **600+** |
+| 12 | 18 | 856 |
+| 13 | 3 | 859 |
+| 14 | 7 | 866 |
+| 15 | 3 | 869 |
+| 16 | 3 | 872 |
+| 17 | 3 | 875 |
+| **Total** | **600+** | **875+** |
 
 *Note: Some tests were consolidated/reorganized across phases*
 
@@ -239,6 +348,9 @@ Over 10 development phases, we built a **government-grade desktop environment** 
 - `stores/startMenuStore.ts`
 - `stores/moduleRegistryStore.ts`
 - `stores/notificationStore.ts`
+- `stores/messageBusStore.ts`
+- `stores/networkStore.ts`
+- `stores/syncStore.ts`
 
 ### Components
 - `shell/desktop/Desktop.tsx`
@@ -262,10 +374,13 @@ Over 10 development phases, we built a **government-grade desktop environment** 
 - `hooks/useErrorReporter.ts`
 - `hooks/useErrorToast.ts`
 - `hooks/useModuleLaunchNotifications.ts`
+- `hooks/useModuleMessaging.ts`
+- `hooks/useSyncIntegration.ts`
 
 ### Services
 - `services/persistenceService.ts`
 - `services/moduleNotifications.ts`
+- `services/syncService.ts`
 
 ---
 
@@ -285,18 +400,18 @@ Over 10 development phases, we built a **government-grade desktop environment** 
 ## Future Roadmap
 
 ### Near-term
-- [ ] Settings Panel - User preferences
-- [ ] Keyboard Shortcuts Panel - Win+?
-- [ ] Theme System - Light/dark mode
+- [x] Settings Panel - User preferences
+- [x] Keyboard Shortcuts Panel - Win+?
+- [x] Theme System - Light/dark mode
 
 ### Medium-term
-- [ ] Desktop Icons - Shortcuts on background
-- [ ] Virtual Desktops - Multiple workspaces
-- [ ] Module Communication - Cross-module messaging
+- [x] Desktop Icons - Shortcuts on background
+- [x] Virtual Desktops - Multiple workspaces
+- [x] Module Communication - Cross-module messaging
 
 ### Long-term
-- [ ] Offline Support - Service worker
-- [ ] Real-time Sync - Multi-device state
+- [x] Offline Support - Service worker
+- [x] Real-time Sync - Multi-device state
 - [ ] Plugin System - Third-party modules
 
 ---

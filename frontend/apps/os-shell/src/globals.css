@@ -6,6 +6,7 @@
 @import './styles/terrafusion-quantum-animations.css';
 @import './styles/terrafusion-layout-fixes.css';
 @import './styles/atlas.css';
+@import './ui/theme/focus.css';
 /* Temporarily disabled due to CSS syntax errors:
 @import "./styles/terrafusion-performance-monitor.css"; */
 

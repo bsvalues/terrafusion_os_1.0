@@ -41,6 +41,13 @@ export const MODULE_ALIASES: Record<string, string> = {
   apps: 'marketplace',
   config: 'settings',
   preferences: 'settings',
+  help: 'shortcuts-help',
+  shortcuts: 'shortcuts-help',
+
+  // Phase C3: Sovereign Dashboard aliases
+  dashboard: 'sovereign-dashboard',
+  'doc-viewer': 'sovereign-dashboard',
+  'document-viewer': 'sovereign-dashboard',
 };
 
 /**
@@ -62,6 +69,7 @@ export function normalizeModuleId(moduleId: string): string {
  * ModuleRenderer switch cases must match these IDs.
  */
 export const MODULE_REGISTRY = new Set<string>([
+  'federation-dashboard',
   'costforge',
   'terra-gaia',
   'levy-calculator',
@@ -73,6 +81,10 @@ export const MODULE_REGISTRY = new Set<string>([
   'counties',
   'government-architecture',
   'settings',
+  'shortcuts-help',
+  'plugin-manager',
+  'axiom-fs',
+  'sovereign-dashboard', // Phase C3: Sovereign Dashboard
 ]);
 
 /**
@@ -96,6 +108,11 @@ export function getRegisteredModules(): string[] {
 // Lazy-loaded Module Components
 // ============================================================================
 
+// Federation Dashboard - Global Government Federation
+const FederationDashboard = lazy(
+  () => import('../applications/federation-dashboard/FederationDashboard')
+);
+
 // CostForge - Primary Property Assessment System (has full implementation)
 const CostForgeQuantumDashboard = lazy(
   () => import('../components/costforge/CostForgeQuantumDashboard')
@@ -118,6 +135,33 @@ const CountiesHub = lazy(() => import('../components/CountiesHub'));
 
 // Government Architecture - System Overview
 const GovernmentArchitecture = lazy(() => import('../components/GovernmentArchitecture'));
+
+// Settings Panel
+const SettingsPanel = lazy(() =>
+  import('../shell/settings/SettingsPanel').then((module) => ({ default: module.SettingsPanel }))
+);
+
+// Shortcuts Panel
+const ShortcutsPanel = lazy(() =>
+  import('../shell/shortcuts/ShortcutsPanel').then((module) => ({ default: module.ShortcutsPanel }))
+);
+
+// Plugin Manager
+const PluginManager = lazy(() =>
+  import('../shell/desktop/PluginManager').then((module) => ({ default: module.PluginManager }))
+);
+
+// AxiomFS - The Lattice File System
+const AxiomFSWindow = lazy(() =>
+  import('../modules/axiomfs/AxiomFSWindow').then((module) => ({ default: module.AxiomFSWindow }))
+);
+
+// Sovereign Dashboard - Document Viewer & AI Assessment (Phase C3)
+const SovereignDashboardWindow = lazy(() =>
+  import('../modules/dashboard/SovereignDashboardWindow').then((module) => ({
+    default: module.SovereignDashboardWindow,
+  }))
+);
 
 // ============================================================================
 // Placeholder for modules under development
@@ -174,17 +218,27 @@ const ModuleLoadingFallback: React.FC = () => (
 
 interface ModuleRendererProps {
   moduleId: string;
+  /** Optional metadata passed to module (e.g., objectId for sovereign-dashboard) */
+  metadata?: Record<string, unknown>;
 }
 
 /**
  * Renders the appropriate component for a given module ID.
  * Wraps lazy components in Suspense with loading fallback.
  */
-export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ moduleId }) => {
+export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ moduleId, metadata }) => {
   switch (moduleId) {
     // ========================================================================
     // WORKING MODULES (Full Implementation)
     // ========================================================================
+
+    // Federation Dashboard - Global Government Federation
+    case 'federation-dashboard':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <FederationDashboard />
+        </Suspense>
+      );
 
     // CostForge - Property Assessment & Valuation (formerly TerraBuild)
     case 'costforge':
@@ -278,12 +332,49 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ moduleId }) => {
 
     case 'settings':
       return (
-        <PlaceholderModule
-          name='System Settings'
-          icon='⚙️'
-          description='TerraFusion OS Configuration & Preferences.'
-          status='coming-soon'
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <SettingsPanel />
+        </Suspense>
+      );
+
+    case 'shortcuts-help':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <ShortcutsPanel />
+        </Suspense>
+      );
+
+    case 'plugin-manager':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <PluginManager />
+        </Suspense>
+      );
+
+    // AxiomFS - The Lattice File System
+    case 'axiom-fs':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <AxiomFSWindow />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // PHASE C3: SOVEREIGN DASHBOARD
+    // ========================================================================
+
+    // Sovereign Dashboard - Document Viewer & AI Assessment
+    case 'sovereign-dashboard':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <SovereignDashboardWindow
+            metadata={
+              metadata as
+                | { objectId: string; objectType?: string; objectLabel?: string }
+                | undefined
+            }
+          />
+        </Suspense>
       );
 
     // ========================================================================

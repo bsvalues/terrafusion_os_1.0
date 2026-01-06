@@ -104,7 +104,7 @@ const DatabaseStatus: React.FC = () => {
     <div
       style={{
         background: 'rgba(255, 255, 255, 0.05)',
-        border: `1px solid ${status.isConnected ? '#00ffaa' : '#ff4444'}`,
+        border: `1px solid ${status.isConnected ? 'var(--tf-accent-success)' : 'var(--error-red)'}`,
         borderRadius: '12px',
         padding: '1.5rem',
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -114,7 +114,7 @@ const DatabaseStatus: React.FC = () => {
       <div className='flex items-center justify-between'>
         <h3
           style={{
-            color: status.isConnected ? '#00ffaa' : '#ff4444',
+            color: status.isConnected ? 'var(--tf-accent-success)' : 'var(--error-red)',
           }}
           className='flex items-center gap-2'
         >
@@ -123,7 +123,7 @@ const DatabaseStatus: React.FC = () => {
         <div
           style={{
             background: status.isConnected ? 'rgba(0, 255, 170, 0.2)' : 'rgba(255, 68, 68, 0.2)',
-            color: status.isConnected ? '#00ffaa' : '#ff4444',
+            color: status.isConnected ? 'var(--tf-accent-success)' : 'var(--error-red)',
             padding: '0.3rem 0.8rem',
             borderRadius: '15px',
             fontSize: '0.8rem',
@@ -141,7 +141,7 @@ const DatabaseStatus: React.FC = () => {
             style={{
               fontSize: '1.5rem',
               fontWeight: 'bold',
-              color: '#00d2ff',
+              color: 'var(--tf-transcend-cyan)',
               marginBottom: '0.2rem',
             }}
           >
@@ -162,7 +162,7 @@ const DatabaseStatus: React.FC = () => {
             style={{
               fontSize: '1.5rem',
               fontWeight: 'bold',
-              color: '#00ffaa',
+              color: 'var(--tf-accent-success)',
               marginBottom: '0.2rem',
             }}
           >
@@ -183,7 +183,7 @@ const DatabaseStatus: React.FC = () => {
             style={{
               fontSize: '1.5rem',
               fontWeight: 'bold',
-              color: '#ffaa00',
+              color: 'var(--warning-amber)',
               marginBottom: '0.2rem',
             }}
           >
@@ -204,7 +204,7 @@ const DatabaseStatus: React.FC = () => {
             style={{
               fontSize: '1.5rem',
               fontWeight: 'bold',
-              color: '#00ffee',
+              color: 'var(--tf-transcend-highlight)',
               marginBottom: '0.2rem',
             }}
           >
@@ -228,7 +228,7 @@ const DatabaseStatus: React.FC = () => {
             style={{
               fontSize: '0.9rem',
               fontWeight: 'bold',
-              color: '#00d2ff',
+              color: 'var(--tf-transcend-cyan)',
             }}
           >
             🏛️ Harris PACS Integration
@@ -236,7 +236,7 @@ const DatabaseStatus: React.FC = () => {
           <div
             style={{
               fontSize: '0.8rem',
-              color: status.harrisSync.status === 'active' ? '#00ffaa' : '#ffaa00',
+              color: status.harrisSync.status === 'active' ? 'var(--tf-accent-success)' : 'var(--warning-amber)',
             }}
           >
             {status.harrisSync.status.toUpperCase()}
@@ -257,7 +257,7 @@ const DatabaseStatus: React.FC = () => {
         <div className='text-center'>
           <div
             style={{
-              color: '#00d2ff',
+              color: 'var(--tf-transcend-cyan)',
               fontWeight: 'bold',
             }}
           >
@@ -268,7 +268,7 @@ const DatabaseStatus: React.FC = () => {
         <div className='text-center'>
           <div
             style={{
-              color: '#00ffaa',
+              color: 'var(--tf-accent-success)',
               fontWeight: 'bold',
             }}
           >
@@ -279,7 +279,7 @@ const DatabaseStatus: React.FC = () => {
         <div className='text-center'>
           <div
             style={{
-              color: status.performance.errors === 0 ? '#00ffaa' : '#ff4444',
+              color: status.performance.errors === 0 ? 'var(--tf-accent-success)' : 'var(--error-red)',
               fontWeight: 'bold',
             }}
           >

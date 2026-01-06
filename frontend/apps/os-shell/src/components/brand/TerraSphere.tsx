@@ -90,7 +90,7 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
 
         {/* Quantum particles */}
         <g className='terra-sphere-particles'>
-          <circle cx='30' cy='30' r='1' fill='#00FFFF' opacity='0.8'>
+          <circle cx='30' cy='30' r='1' fill='var(--tf-transcend-cyan)' opacity='0.8'>
             <animate
               attributeName='opacity'
               values='0.8;0.2;0.8'
@@ -98,7 +98,7 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
               repeatCount='indefinite'
             />
           </circle>
-          <circle cx='70' cy='35' r='1' fill='#0080FF' opacity='0.6'>
+          <circle cx='70' cy='35' r='1' fill='var(--tf-network-blue)' opacity='0.6'>
             <animate
               attributeName='opacity'
               values='0.6;0.1;0.6'
@@ -106,7 +106,7 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
               repeatCount='indefinite'
             />
           </circle>
-          <circle cx='35' cy='70' r='1' fill='#8844FF' opacity='0.7'>
+          <circle cx='35' cy='70' r='1' fill='var(--tf-accent-quantum)' opacity='0.7'>
             <animate
               attributeName='opacity'
               values='0.7;0.2;0.7'
@@ -114,7 +114,7 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
               repeatCount='indefinite'
             />
           </circle>
-          <circle cx='65' cy='65' r='1' fill='#00FF88' opacity='0.5'>
+          <circle cx='65' cy='65' r='1' fill='var(--tf-accent-success)' opacity='0.5'>
             <animate
               attributeName='opacity'
               values='0.5;0.1;0.5'
@@ -155,48 +155,48 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
         <defs>
           {/* Main sphere gradient */}
           <radialGradient id='sphereGradient' cx='0.3' cy='0.3' r='0.8'>
-            <stop offset='0%' stopColor='#00FFFF' stopOpacity='0.9' />
-            <stop offset='40%' stopColor='#0080FF' stopOpacity='0.7' />
-            <stop offset='70%' stopColor='#1E293B' stopOpacity='0.8' />
-            <stop offset='100%' stopColor='#0A0E1A' stopOpacity='0.95' />
+            <stop offset='0%' stopColor='var(--tf-transcend-cyan)' stopOpacity='0.9' />
+            <stop offset='40%' stopColor='var(--tf-network-blue)' stopOpacity='0.7' />
+            <stop offset='70%' stopColor='var(--terra-slate)' stopOpacity='0.8' />
+            <stop offset='100%' stopColor='var(--tf-bg-void)' stopOpacity='0.95' />
           </radialGradient>
 
           {/* Core gradient */}
           <radialGradient id='coreGradient' cx='0.5' cy='0.5' r='0.6'>
-            <stop offset='0%' stopColor='#00FFFF' stopOpacity='1' />
-            <stop offset='50%' stopColor='#0080FF' stopOpacity='0.9' />
-            <stop offset='100%' stopColor='#8844FF' stopOpacity='0.8' />
+            <stop offset='0%' stopColor='var(--tf-transcend-cyan)' stopOpacity='1' />
+            <stop offset='50%' stopColor='var(--tf-network-blue)' stopOpacity='0.9' />
+            <stop offset='100%' stopColor='var(--tf-accent-quantum)' stopOpacity='0.8' />
           </radialGradient>
 
           {/* Rim glow */}
           <linearGradient id='rimGlow'>
-            <stop offset='0%' stopColor='#00FFFF' stopOpacity='1' />
-            <stop offset='50%' stopColor='#0080FF' stopOpacity='0.8' />
-            <stop offset='100%' stopColor='#8844FF' stopOpacity='0.6' />
+            <stop offset='0%' stopColor='var(--tf-transcend-cyan)' stopOpacity='1' />
+            <stop offset='50%' stopColor='var(--tf-network-blue)' stopOpacity='0.8' />
+            <stop offset='100%' stopColor='var(--tf-accent-quantum)' stopOpacity='0.6' />
           </linearGradient>
 
           {/* Outer glow */}
           <linearGradient id='outerGlow'>
-            <stop offset='0%' stopColor='#00FFFF' stopOpacity='0.6' />
-            <stop offset='100%' stopColor='#0080FF' stopOpacity='0.2' />
+            <stop offset='0%' stopColor='var(--tf-transcend-cyan)' stopOpacity='0.6' />
+            <stop offset='100%' stopColor='var(--tf-network-blue)' stopOpacity='0.2' />
           </linearGradient>
 
           {/* Inner rings */}
           <linearGradient id='innerRing1'>
-            <stop offset='0%' stopColor='#00FFFF' stopOpacity='0.4' />
-            <stop offset='100%' stopColor='#0080FF' stopOpacity='0.2' />
+            <stop offset='0%' stopColor='var(--tf-transcend-cyan)' stopOpacity='0.4' />
+            <stop offset='100%' stopColor='var(--tf-network-blue)' stopOpacity='0.2' />
           </linearGradient>
 
           <linearGradient id='innerRing2'>
-            <stop offset='0%' stopColor='#0080FF' stopOpacity='0.6' />
-            <stop offset='100%' stopColor='#8844FF' stopOpacity='0.3' />
+            <stop offset='0%' stopColor='var(--tf-network-blue)' stopOpacity='0.6' />
+            <stop offset='100%' stopColor='var(--tf-accent-quantum)' stopOpacity='0.3' />
           </linearGradient>
 
           {/* Orbital ring */}
           <linearGradient id='orbitalRing'>
-            <stop offset='0%' stopColor='#00FFFF' stopOpacity='0.3' />
-            <stop offset='50%' stopColor='#0080FF' stopOpacity='0.6' />
-            <stop offset='100%' stopColor='#8844FF' stopOpacity='0.3' />
+            <stop offset='0%' stopColor='var(--tf-transcend-cyan)' stopOpacity='0.3' />
+            <stop offset='50%' stopColor='var(--tf-network-blue)' stopOpacity='0.6' />
+            <stop offset='100%' stopColor='var(--tf-accent-quantum)' stopOpacity='0.3' />
           </linearGradient>
 
           {/* Glow filter */}

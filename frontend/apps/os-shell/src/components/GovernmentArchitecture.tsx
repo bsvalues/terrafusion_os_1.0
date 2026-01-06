@@ -237,8 +237,8 @@ const GovernmentArchitecture: React.FC = () => {
     <div
       style={{
         fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
-        background: 'linear-gradient(135deg, #0a0e27 0%, #151932 100%)',
-        color: '#fff',
+        background: 'linear-gradient(135deg, var(--tf-bg-void) 0%, var(--tf-bg-surface) 100%)',
+        color: 'var(--tf-text-primary)',
         minHeight: '100%',
         overflow: 'auto',
       }}
@@ -253,7 +253,7 @@ const GovernmentArchitecture: React.FC = () => {
             fontWeight: 900,
             textTransform: 'uppercase',
             letterSpacing: '3px',
-            background: 'linear-gradient(90deg, #fff, #4fc3f7, #00e676)',
+            background: 'linear-gradient(90deg, var(--tf-text-primary), var(--tf-network-blue), var(--tf-accent-success))',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -267,7 +267,7 @@ const GovernmentArchitecture: React.FC = () => {
         <div
           style={{
             fontSize: '1.5em',
-            color: '#00e676',
+            color: 'var(--tf-accent-success)',
             textTransform: 'uppercase',
             letterSpacing: '2px',
           }}
@@ -281,7 +281,7 @@ const GovernmentArchitecture: React.FC = () => {
         <div
           style={{
             fontSize: '1.5em',
-            color: '#ffd700',
+            color: 'var(--tf-accent-warning)',
             marginBottom: '10px',
           }}
         >
@@ -291,7 +291,7 @@ const GovernmentArchitecture: React.FC = () => {
           style={{
             fontSize: '4em',
             fontWeight: 900,
-            background: 'linear-gradient(135deg, #4fc3f7 0%, #00e676 100%)',
+            background: 'linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-accent-success) 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -302,7 +302,7 @@ const GovernmentArchitecture: React.FC = () => {
         </div>
         <div
           style={{
-            color: '#8e9eab',
+            color: 'var(--tf-text-secondary)',
           }}
         >
           vs. Legacy Government Systems
@@ -322,7 +322,7 @@ const GovernmentArchitecture: React.FC = () => {
         <div
           style={{
             background: 'rgba(30, 40, 60, 0.95)',
-            border: '2px solid #4fc3f7',
+            border: '2px solid var(--tf-network-blue)',
             borderRadius: '15px',
             padding: '25px',
             backdropFilter: 'blur(10px)',
@@ -346,8 +346,8 @@ const GovernmentArchitecture: React.FC = () => {
                 <span>{tech.name}</span>
                 <span
                   style={{
-                    background: '#00e676',
-                    color: '#000',
+                    background: 'var(--tf-accent-success)',
+                    color: 'var(--tf-void-black)',
                     padding: '4px 12px',
                     borderRadius: '20px',
                     fontWeight: 'bold',
@@ -367,7 +367,7 @@ const GovernmentArchitecture: React.FC = () => {
                 position: 'absolute',
                 top: '5px',
                 right: '10px',
-                color: '#4fc3f7',
+                color: 'var(--tf-network-blue)',
                 fontSize: '0.8em',
                 textTransform: 'uppercase',
               }}
@@ -377,7 +377,7 @@ const GovernmentArchitecture: React.FC = () => {
             <pre
               style={{
                 margin: 0,
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
               }}
             >{`// WebView2 Launcher (WPF)
 public class TerraFusionLauncher {
@@ -403,7 +403,7 @@ public class TerraFusionLauncher {
         <div
           style={{
             background: 'rgba(30, 40, 60, 0.95)',
-            border: '2px solid #4fc3f7',
+            border: '2px solid var(--tf-network-blue)',
             borderRadius: '15px',
             padding: '25px',
             backdropFilter: 'blur(10px)',
@@ -443,7 +443,7 @@ public class TerraFusionLauncher {
                 position: 'absolute',
                 top: '5px',
                 right: '10px',
-                color: '#4fc3f7',
+                color: 'var(--tf-network-blue)',
                 fontSize: '0.8em',
                 textTransform: 'uppercase',
               }}
@@ -453,7 +453,7 @@ public class TerraFusionLauncher {
             <pre
               style={{
                 margin: 0,
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
               }}
             >{`Content-Security-Policy:
   default-src 'self';
@@ -470,7 +470,7 @@ public class TerraFusionLauncher {
       <div
         style={{
           background: 'rgba(10, 14, 39, 0.95)',
-          border: '2px solid #ffd700',
+          border: '2px solid var(--tf-accent-warning)',
           borderRadius: '15px',
           padding: '30px',
           margin: '30px',
@@ -494,7 +494,7 @@ public class TerraFusionLauncher {
                 position: 'absolute',
                 right: '20px',
                 fontSize: '2em',
-                color: index === 4 ? '#00e676' : '#ffd700',
+                color: index === 4 ? 'var(--tf-accent-success)' : 'var(--tf-accent-warning)',
                 animation: index === 4 ? 'none' : 'arrowPulse 1s infinite',
               }}
             >
@@ -507,7 +507,7 @@ public class TerraFusionLauncher {
       {/* Swarm Visualization */}
       <div
         style={{
-          background: '#060818',
+          background: 'var(--tf-void-black)',
           borderRadius: '15px',
           padding: '30px',
           margin: '30px',
@@ -542,7 +542,7 @@ public class TerraFusionLauncher {
                 style={{
                   fontSize: '2em',
                   fontWeight: 'bold',
-                  color: '#00e676',
+                  color: 'var(--tf-accent-success)',
                 }}
               >
                 {agent.count}
@@ -550,7 +550,7 @@ public class TerraFusionLauncher {
               <div
                 style={{
                   fontSize: '0.9em',
-                  color: '#8e9eab',
+                  color: 'var(--tf-text-secondary)',
                   marginTop: '5px',
                 }}
               >
@@ -565,7 +565,7 @@ public class TerraFusionLauncher {
       <div
         style={{
           background: 'rgba(30, 40, 60, 0.95)',
-          border: '2px solid #4fc3f7',
+          border: '2px solid var(--tf-network-blue)',
           borderRadius: '15px',
           padding: '25px',
           margin: '30px auto',
@@ -597,7 +597,7 @@ public class TerraFusionLauncher {
               <div
                 style={{
                   fontWeight: 'bold',
-                  color: '#4fc3f7',
+                  color: 'var(--tf-network-blue)',
                 }}
               >
                 {module.name}
@@ -611,7 +611,7 @@ public class TerraFusionLauncher {
       <div
         style={{
           background: 'rgba(0, 230, 118, 0.05)',
-          border: '2px solid #00e676',
+          border: '2px solid var(--tf-accent-success)',
           borderRadius: '15px',
           padding: '25px',
           margin: '30px',
@@ -625,7 +625,7 @@ public class TerraFusionLauncher {
           <div key={index} className='flex items-center'>
             <span
               style={{
-                color: '#00e676',
+                color: 'var(--tf-accent-success)',
                 fontSize: '1.5em',
                 fontWeight: 'bold',
                 marginRight: '15px',
@@ -643,8 +643,8 @@ public class TerraFusionLauncher {
         <button
           onClick={deployChampionship}
           style={{
-            background: 'linear-gradient(135deg, #4fc3f7 0%, #00e676 100%)',
-            color: '#000',
+            background: 'linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-accent-success) 100%)',
+            color: 'var(--tf-void-black)',
             border: 'none',
             padding: '15px 40px',
             borderRadius: '30px',
@@ -671,8 +671,8 @@ public class TerraFusionLauncher {
         <button
           onClick={activateSwarm}
           style={{
-            background: 'linear-gradient(135deg, #4fc3f7 0%, #00e676 100%)',
-            color: '#000',
+            background: 'linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-accent-success) 100%)',
+            color: 'var(--tf-void-black)',
             border: 'none',
             padding: '15px 40px',
             borderRadius: '30px',
@@ -694,8 +694,8 @@ public class TerraFusionLauncher {
         <button
           onClick={validateCompliance}
           style={{
-            background: 'linear-gradient(135deg, #4fc3f7 0%, #00e676 100%)',
-            color: '#000',
+            background: 'linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-accent-success) 100%)',
+            color: 'var(--tf-void-black)',
             border: 'none',
             padding: '15px 40px',
             borderRadius: '30px',
@@ -738,7 +738,7 @@ public class TerraFusionLauncher {
         
         .module-tile:hover {
           transform: translateY(-5px);
-          border-color: #00e676;
+          border-color: var(--tf-accent-success);
           box-shadow: 0 10px 30px rgba(0, 230, 118, 0.3);
         }
         

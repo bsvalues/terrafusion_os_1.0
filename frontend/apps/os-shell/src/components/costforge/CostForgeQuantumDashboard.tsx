@@ -24,11 +24,11 @@ import {
 
 // CostForge TerraFusion Color System
 const costForgeColors = {
-  trustBlue: '#0099ff',
-  transcendCyan: '#00ffee',
-  successGreen: '#00ffaa',
-  deepSpace: '#0b1020',
-  clarity: 'linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%)',
+  trustBlue: 'var(--tf-network-blue)',
+  transcendCyan: 'var(--tf-transcend-highlight)',
+  successGreen: 'var(--tf-accent-success)',
+  deepSpace: 'var(--tf-bg-surface)',
+  clarity: 'linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-transcend-highlight) 50%, var(--tf-accent-success) 100%)',
 };
 
 // Mock analytics data for CostForge dashboard
@@ -156,22 +156,22 @@ export function CostForgeQuantumDashboard() {
               <AreaChart data={quantumAnalytics}>
                 <defs>
                   <linearGradient id='costForgeGradient' x1='0%' y1='0%' x2='100%' y2='0%'>
-                    <stop offset='0%' stopColor='#0099ff' stopOpacity={0.8} />
-                    <stop offset='50%' stopColor='#00ffee' stopOpacity={1} />
-                    <stop offset='100%' stopColor='#00ffaa' stopOpacity={0.8} />
+                    <stop offset='0%' stopColor='var(--tf-network-blue)' stopOpacity={0.8} />
+                    <stop offset='50%' stopColor='var(--tf-transcend-highlight)' stopOpacity={1} />
+                    <stop offset='100%' stopColor='var(--tf-accent-success)' stopOpacity={0.8} />
                   </linearGradient>
                   <linearGradient id='areaGradient' x1='0' y1='0' x2='0' y2='1'>
-                    <stop offset='5%' stopColor='#00ffee' stopOpacity={0.8} />
-                    <stop offset='95%' stopColor='#00ffee' stopOpacity={0.1} />
+                    <stop offset='5%' stopColor='var(--tf-transcend-highlight)' stopOpacity={0.8} />
+                    <stop offset='95%' stopColor='var(--tf-transcend-highlight)' stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray='3 3' stroke='#334155' />
-                <XAxis dataKey='name' stroke='#64748b' />
-                <YAxis stroke='#64748b' domain={[95, 100]} />
+                <CartesianGrid strokeDasharray='3 3' stroke='var(--gray-700)' />
+                <XAxis dataKey='name' stroke='var(--tf-text-secondary)' />
+                <YAxis stroke='var(--tf-text-secondary)' domain={[95, 100]} />
                 <Area
                   type='monotone'
                   dataKey='accuracy'
-                  stroke='#00ffee'
+                  stroke='var(--tf-transcend-highlight)'
                   fillOpacity={1}
                   fill='url(#areaGradient)'
                   strokeWidth={3}
@@ -179,9 +179,9 @@ export function CostForgeQuantumDashboard() {
                 <Line
                   type='monotone'
                   dataKey='performance'
-                  stroke='#0099ff'
+                  stroke='var(--tf-network-blue)'
                   strokeWidth={2}
-                  dot={{ fill: '#0099ff', r: 6, strokeWidth: 2, stroke: '#00ffaa' }}
+                  dot={{ fill: 'var(--tf-network-blue)', r: 6, strokeWidth: 2, stroke: 'var(--tf-accent-success)' }}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -197,21 +197,21 @@ export function CostForgeQuantumDashboard() {
             </h3>
             <ResponsiveContainer width='100%' height={300}>
               <BarChart data={costForgePerformance}>
-                <CartesianGrid strokeDasharray='3 3' stroke='#334155' />
-                <XAxis dataKey='name' stroke='#64748b' />
-                <YAxis stroke='#64748b' />
+                <CartesianGrid strokeDasharray='3 3' stroke='var(--gray-700)' />
+                <XAxis dataKey='name' stroke='var(--tf-text-secondary)' />
+                <YAxis stroke='var(--tf-text-secondary)' />
                 <Bar dataKey='calculations' radius={[4, 4, 0, 0]}>
                   {costForgePerformance.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={
                         index % 4 === 0
-                          ? '#0099ff'
+                          ? 'var(--tf-network-blue)'
                           : index % 4 === 1
-                            ? '#00ffee'
+                            ? 'var(--tf-transcend-highlight)'
                             : index % 4 === 2
-                              ? '#00ffaa'
-                              : '#ff6b9d'
+                              ? 'var(--tf-accent-success)'
+                              : 'var(--tf-accent-pink)'
                       }
                     />
                   ))}
@@ -231,24 +231,24 @@ export function CostForgeQuantumDashboard() {
           </h3>
           <ResponsiveContainer width='100%' height={200}>
             <LineChart data={realTimeMetrics}>
-              <CartesianGrid strokeDasharray='3 3' stroke='#334155' />
-              <XAxis dataKey='time' stroke='#64748b' />
-              <YAxis yAxisId='left' stroke='#64748b' />
-              <YAxis yAxisId='right' orientation='right' stroke='#64748b' />
+              <CartesianGrid strokeDasharray='3 3' stroke='var(--gray-700)' />
+              <XAxis dataKey='time' stroke='var(--tf-text-secondary)' />
+              <YAxis yAxisId='left' stroke='var(--tf-text-secondary)' />
+              <YAxis yAxisId='right' orientation='right' stroke='var(--tf-text-secondary)' />
               <Line
                 yAxisId='left'
                 type='monotone'
                 dataKey='estimates'
-                stroke='#00ffee'
+                stroke='var(--tf-transcend-highlight)'
                 strokeWidth={3}
-                dot={{ fill: '#00ffee', r: 4 }}
-                activeDot={{ r: 8, stroke: '#00ffaa', strokeWidth: 2 }}
+                dot={{ fill: 'var(--tf-transcend-highlight)', r: 4 }}
+                activeDot={{ r: 8, stroke: 'var(--tf-accent-success)', strokeWidth: 2 }}
               />
               <Line
                 yAxisId='right'
                 type='monotone'
                 dataKey='accuracy'
-                stroke='#ff6b9d'
+                stroke='var(--tf-accent-pink)'
                 strokeWidth={2}
                 strokeDasharray='5 5'
               />

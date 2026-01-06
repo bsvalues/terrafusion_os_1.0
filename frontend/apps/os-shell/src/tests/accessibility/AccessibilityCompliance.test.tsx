@@ -327,8 +327,8 @@ describe('Accessibility - Keyboard Navigation', () => {
 describe('Accessibility - Color Contrast', () => {
   test('should meet WCAG AA contrast ratio for normal text (4.5:1)', () => {
     // TerraFusion Design System colors
-    const terraCyan = '#00FFFF';
-    const terraMidnight = '#0A0E1A';
+    const terraCyan = 'var(--tf-transcend-cyan)';
+    const terraMidnight = 'var(--tf-bg-void)';
 
     const contrastRatio = getContrastRatio(terraCyan, terraMidnight);
 
@@ -339,8 +339,8 @@ describe('Accessibility - Color Contrast', () => {
   });
 
   test('should meet WCAG AA contrast ratio for large text (3:1)', () => {
-    const terraCyan = '#00FFFF';
-    const terraSlate = '#1E293B';
+    const terraCyan = 'var(--tf-transcend-cyan)';
+    const terraSlate = 'var(--terra-slate)';
 
     const contrastRatio = getContrastRatio(terraCyan, terraSlate);
 
@@ -352,10 +352,10 @@ describe('Accessibility - Color Contrast', () => {
 
   test('should validate all design system color combinations', () => {
     const colors = {
-      primary: '#00FFFF', // Terra-cyan
-      background: '#0A0E1A', // Terra-midnight
-      surface: '#1E293B', // Terra-slate
-      text: '#FFFFFF', // White
+      primary: 'var(--tf-transcend-cyan)', // Terra-cyan
+      background: 'var(--tf-bg-void)', // Terra-midnight
+      surface: 'var(--terra-slate)', // Terra-slate
+      text: 'var(--tf-text-primary)', // White
       error: '#EF4444', // Red
       success: '#10B981', // Green
     };

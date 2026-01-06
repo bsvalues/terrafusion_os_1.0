@@ -9,13 +9,13 @@ const StyledSpeedDial = styled(SpeedDial)(() => ({
   right: 32,
   zIndex: 1300,
   '& .MuiFab-primary': {
-    background: 'linear-gradient(135deg, #00d2ff, #667eea)',
+    background: 'linear-gradient(135deg, var(--tf-transcend-cyan), var(--tf-accent-quantum))',
     color: 'white',
     width: 64,
     height: 64,
     boxShadow: '0 8px 32px rgba(0, 210, 255, 0.4)',
     '&:hover': {
-      background: 'linear-gradient(135deg, #0891b2, #00d2ff)',
+      background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-cyan))',
       boxShadow: '0 12px 40px rgba(0, 210, 255, 0.6)',
       transform: 'scale(1.1)',
     },
@@ -55,31 +55,31 @@ const FloatingActionMenu: React.FC<FloatingActionMenuProps> = ({
       icon: <Business />,
       name: 'New Property Assessment',
       onClick: onNewAssessment,
-      color: '#0891b2',
+      color: 'var(--tf-network-blue)',
     },
     {
       icon: <Search />,
       name: 'Search Properties',
       onClick: onSearch,
-      color: '#00d2ff',
+      color: 'var(--tf-transcend-cyan)',
     },
     {
       icon: <Analytics />,
       name: 'View Analytics',
       onClick: onAnalytics,
-      color: '#667eea',
+      color: 'var(--tf-accent-quantum)',
     },
     {
       icon: <Security />,
       name: 'Security Dashboard',
       onClick: onSecurity,
-      color: '#00ffaa',
+      color: 'var(--tf-accent-success)',
     },
     {
       icon: <CloudDownload />,
       name: 'Export Data',
       onClick: onExport,
-      color: '#ffa500',
+      color: 'var(--tf-warning-amber)',
     },
   ];
 

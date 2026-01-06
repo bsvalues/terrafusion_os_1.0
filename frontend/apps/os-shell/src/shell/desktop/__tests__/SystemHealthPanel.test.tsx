@@ -11,15 +11,18 @@
  * @vitest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 // Vitest imports removed - Jest globals used
 import '@testing-library/jest-dom';
 
+import { useNetworkStore } from '../../../stores/networkStore';
 import { SystemHealthIndicator, SystemHealthPanel } from '../SystemHealthPanel';
 
-
+// Mock the network store
+jest.mock('../../../stores/networkStore', () => ({
+  useNetworkStore: jest.fn(),
+}));
 
 // Mock health data
 const mockHealthStatus = {
@@ -46,6 +49,10 @@ const mockCriticalStatus = {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // Default to online
+  (useNetworkStore as unknown as jest.Mock).mockImplementation((selector) =>
+    selector({ isOnline: true })
+  );
 });
 
 afterEach(() => {
@@ -64,21 +71,21 @@ describe('SystemHealthIndicator', () => {
       render(<SystemHealthIndicator status={mockHealthStatus} />);
 
       const dot = screen.getByTestId('health-status-dot');
-      expect(dot).toHaveClass('bg-[#00ffaa]');
+      expect(dot).toHaveClass('bg-[var(--tf-accent-success)]');
     });
 
     it('shows yellow dot when warning', () => {
       render(<SystemHealthIndicator status={mockWarningStatus} />);
 
       const dot = screen.getByTestId('health-status-dot');
-      expect(dot).toHaveClass('bg-[#ffaa00]');
+      expect(dot).toHaveClass('bg-[var(--warning-amber)]');
     });
 
     it('shows red dot when critical', () => {
       render(<SystemHealthIndicator status={mockCriticalStatus} />);
 
       const dot = screen.getByTestId('health-status-dot');
-      expect(dot).toHaveClass('bg-[#ff4444]');
+      expect(dot).toHaveClass('bg-[var(--error-red)]');
     });
 
     it('displays status text', () => {
@@ -146,6 +153,16 @@ describe('SystemHealthPanel', () => {
       expect(screen.getByText(/12ms/i)).toBeInTheDocument();
     });
 
+    it('displays Offline status when network is down', () => {
+      (useNetworkStore as unknown as jest.Mock).mockImplementation((selector) =>
+        selector({ isOnline: false })
+      );
+      render(<SystemHealthPanel status={mockHealthStatus} onClose={() => {}} />);
+
+      expect(screen.getByText(/Offline/i)).toBeInTheDocument();
+      expect(screen.getByText(/-/)).toBeInTheDocument(); // Latency placeholder
+    });
+
     it('displays Storage usage', () => {
       render(<SystemHealthPanel status={mockHealthStatus} onClose={() => {}} />);
 
@@ -176,7 +193,7 @@ describe('SystemHealthPanel', () => {
       render(<SystemHealthPanel status={mockHealthStatus} onClose={() => {}} />);
 
       const cpuBar = screen.getByTestId('cpu-progress-bar');
-      expect(cpuBar).toHaveClass('bg-[#00ffaa]');
+      expect(cpuBar).toHaveClass('bg-[var(--tf-accent-success)]');
     });
 
     it('shows yellow progress bar when warning level', () => {
@@ -189,14 +206,14 @@ describe('SystemHealthPanel', () => {
       render(<SystemHealthPanel status={warningStatus} onClose={() => {}} />);
 
       const cpuBar = screen.getByTestId('cpu-progress-bar');
-      expect(cpuBar).toHaveClass('bg-[#ffaa00]');
+      expect(cpuBar).toHaveClass('bg-[var(--warning-amber)]');
     });
 
     it('shows red progress bar when critical level', () => {
       render(<SystemHealthPanel status={mockCriticalStatus} onClose={() => {}} />);
 
       const cpuBar = screen.getByTestId('cpu-progress-bar');
-      expect(cpuBar).toHaveClass('bg-[#ff4444]');
+      expect(cpuBar).toHaveClass('bg-[var(--error-red)]');
     });
   });
 

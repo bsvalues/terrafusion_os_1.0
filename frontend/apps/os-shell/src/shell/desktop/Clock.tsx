@@ -1,15 +1,16 @@
 /**
  * TerraFusion OS Clock Component
- * 
+ *
  * System tray clock showing time and date.
  * Tooltip shows full date on hover.
- * 
+ *
  * @module shell/desktop/Clock
  * @see SUCCESS CRITERIA Phase 7: System Tray
  */
 
-import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // ============================================================================
 // Types
@@ -24,6 +25,7 @@ export interface ClockProps {
 // ============================================================================
 
 export const Clock: React.FC<ClockProps> = ({ className }) => {
+  const { t, i18n } = useTranslation();
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -45,18 +47,18 @@ export const Clock: React.FC<ClockProps> = ({ className }) => {
   }, []);
 
   // Formatted strings
-  const formattedTime = time.toLocaleTimeString([], {
+  const formattedTime = time.toLocaleTimeString(i18n.language, {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
   });
 
-  const formattedShortDate = time.toLocaleDateString([], {
+  const formattedShortDate = time.toLocaleDateString(i18n.language, {
     month: 'short',
     day: 'numeric',
   });
 
-  const formattedFullDate = time.toLocaleDateString([], {
+  const formattedFullDate = time.toLocaleDateString(i18n.language, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -65,11 +67,11 @@ export const Clock: React.FC<ClockProps> = ({ className }) => {
 
   const isoDateTime = time.toISOString();
 
-  const ariaLabel = `Current time: ${formattedTime}, ${formattedFullDate}`;
+  const ariaLabel = t('clock.currentTime', { time: formattedTime, date: formattedFullDate });
 
   return (
     <div
-      data-testid="clock"
+      data-testid='clock'
       title={formattedFullDate}
       aria-label={ariaLabel}
       className={cn(
@@ -78,17 +80,11 @@ export const Clock: React.FC<ClockProps> = ({ className }) => {
         className
       )}
     >
-      <time dateTime={isoDateTime} role="time">
-        <span 
-          data-testid="clock-time"
-          className="text-sm text-white/90 font-medium"
-        >
+      <time dateTime={isoDateTime} role='time'>
+        <span data-testid='clock-time' className='text-sm text-white/90 font-medium'>
           {formattedTime}
         </span>
-        <span 
-          data-testid="clock-date"
-          className="block text-xs text-white/60"
-        >
+        <span data-testid='clock-date' className='block text-xs text-white/60'>
           {formattedShortDate}
         </span>
       </time>

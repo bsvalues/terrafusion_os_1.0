@@ -17,6 +17,7 @@
 import { useEffect } from 'react';
 import './App.css';
 import { TERRAFUSION_MODULES } from './config/modules';
+import { useSyncIntegration } from './hooks/useSyncIntegration';
 import { DesktopWithErrorBoundary } from './shell/desktop';
 import { useModuleRegistryStore } from './stores/moduleRegistryStore';
 import { useStartMenuStore } from './stores/startMenuStore';
@@ -46,6 +47,9 @@ function App() {
   const registerModules = useModuleRegistryStore((state) => state.registerModules);
   const setAllApps = useStartMenuStore((state) => state.setAllApps);
   const setPinnedApps = useStartMenuStore((state) => state.setPinnedApps);
+
+  // Enable Real-time Sync
+  useSyncIntegration();
 
   // Initialize module registry and start menu on mount
   useEffect(() => {

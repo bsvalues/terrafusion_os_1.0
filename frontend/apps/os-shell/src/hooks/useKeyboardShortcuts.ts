@@ -6,14 +6,18 @@
  * Shortcuts:
  * - Ctrl+1..7: Launch/Focus modules via activateModule()
  * - Ctrl+`: Toggle Start Menu
+ * - Ctrl+K: Toggle Command Palette
+ * - Ctrl+,: Open Settings
  * - Escape: Close Start Menu (if open)
  *
  * @module hooks/useKeyboardShortcuts
  * @see Phase 7: Keyboard Shortcuts
+ * @see Priority 10: Global Search
  */
 
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { activateModule } from '../orchestration/moduleActivation';
+import { useCommandPaletteStore } from '../stores/commandPaletteStore';
 import { useStartMenuStore } from '../stores/startMenuStore';
 
 /**
@@ -68,22 +72,41 @@ function isInputElement(element: Element | null): boolean {
  */
 export function useKeyboardShortcuts(): void {
   // Get start menu actions
-  const toggle = useStartMenuStore((state) => state.toggle);
-  const close = useStartMenuStore((state) => state.close);
-  const isOpen = useStartMenuStore((state) => state.isOpen);
+  const toggleStartMenu = useStartMenuStore((state) => state.toggle);
+  const closeStartMenu = useStartMenuStore((state) => state.close);
+  const isStartMenuOpen = useStartMenuStore((state) => state.isOpen);
+
+  // Get command palette actions
+  const toggleCommandPalette = useCommandPaletteStore((state) => state.toggle);
+  const closeCommandPalette = useCommandPaletteStore((state) => state.close);
+  const isCommandPaletteOpen = useCommandPaletteStore((state) => state.isOpen);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const { key, ctrlKey, altKey, shiftKey, metaKey } = event;
 
       // ========================================
-      // Escape: Close Start Menu (no modifiers)
+      // Escape: Close Command Palette or Start Menu (no modifiers)
       // ========================================
       if (key === 'Escape' && !ctrlKey && !altKey && !shiftKey && !metaKey) {
-        if (isOpen) {
+        if (isCommandPaletteOpen) {
           event.preventDefault();
-          close();
+          closeCommandPalette();
+          return;
         }
+        if (isStartMenuOpen) {
+          event.preventDefault();
+          closeStartMenu();
+        }
+        return;
+      }
+
+      // ========================================
+      // Ctrl+K : Toggle Command Palette (global, works even in inputs)
+      // ========================================
+      if (key === 'k' && ctrlKey && !altKey && !shiftKey && !metaKey) {
+        event.preventDefault();
+        toggleCommandPalette();
         return;
       }
 
@@ -92,7 +115,31 @@ export function useKeyboardShortcuts(): void {
       // ========================================
       if (key === '`' && ctrlKey && !altKey && !shiftKey && !metaKey) {
         event.preventDefault();
-        toggle();
+        toggleStartMenu();
+        return;
+      }
+
+      // ========================================
+      // Ctrl+, : Open Settings (global, works even in inputs)
+      // ========================================
+      if (key === ',' && ctrlKey && !altKey && !shiftKey && !metaKey) {
+        event.preventDefault();
+        activateModule('settings', {
+          source: 'keyboard_shortcut',
+          focusIfOpen: true,
+        });
+        return;
+      }
+
+      // ========================================
+      // Ctrl+/ : Show Keyboard Shortcuts (global)
+      // ========================================
+      if (key === '/' && ctrlKey && !altKey && !shiftKey && !metaKey) {
+        event.preventDefault();
+        activateModule('shortcuts-help', {
+          source: 'keyboard_shortcut',
+          focusIfOpen: true,
+        });
         return;
       }
 
@@ -110,15 +157,22 @@ export function useKeyboardShortcuts(): void {
         const moduleId = MODULE_SHORTCUTS[key];
         if (moduleId) {
           event.preventDefault();
-          activateModule(moduleId, { 
+          activateModule(moduleId, {
             source: 'keyboard_shortcut',
-            focusIfOpen: true,  // SC-7.2: Focus existing window if already open
+            focusIfOpen: true, // SC-7.2: Focus existing window if already open
           });
           return;
         }
       }
     },
-    [isOpen, toggle, close]
+    [
+      isStartMenuOpen,
+      toggleStartMenu,
+      closeStartMenu,
+      isCommandPaletteOpen,
+      toggleCommandPalette,
+      closeCommandPalette,
+    ]
   );
 
   useEffect(() => {

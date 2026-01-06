@@ -834,21 +834,21 @@
   background:
     radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.2) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
-    linear-gradient(135deg, #0a0e1a 0%, #1e293b 50%, #0a0e1a 100%);
+    linear-gradient(135deg, var(--tf-void-black) 0%, var(--terra-slate) 50%, var(--tf-void-black) 100%);
 }
 
 .tf-consciousness-aware {
   background:
     radial-gradient(circle at 20% 80%, rgba(0, 128, 255, 0.25) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.2) 0%, transparent 50%),
-    linear-gradient(135deg, #0a0e1a 0%, #1e293b 50%, #0a0e1a 100%);
+    linear-gradient(135deg, var(--tf-void-black) 0%, var(--terra-slate) 50%, var(--tf-void-black) 100%);
 }
 
 .tf-consciousness-transcendent {
   background:
     radial-gradient(circle at 20% 80%, rgba(0, 255, 170, 0.3) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.25) 0%, transparent 50%),
-    linear-gradient(135deg, #0a0e1a 0%, #1e293b 50%, #0a0e1a 100%);
+    linear-gradient(135deg, var(--tf-void-black) 0%, var(--terra-slate) 50%, var(--tf-void-black) 100%);
 }
 
 /* Quantum grid patterns for different states */
@@ -873,11 +873,11 @@
 
 /* Logo gradients for different consciousness states */
 .tf-logo-awakening {
-  background: linear-gradient(135deg, var(--terra-cyan), #0080ff);
+  background: linear-gradient(135deg, var(--terra-cyan), var(--tf-network-blue));
 }
 
 .tf-logo-aware {
-  background: linear-gradient(135deg, #0080ff, var(--terra-cyan));
+  background: linear-gradient(135deg, var(--tf-network-blue), var(--terra-cyan));
 }
 
 .tf-logo-transcendent {
@@ -891,7 +891,7 @@
 }
 
 .tf-orb-aware {
-  background: radial-gradient(circle at 30% 30%, #0080ff, rgba(0, 128, 255, 0.8));
+  background: radial-gradient(circle at 30% 30%, var(--tf-network-blue), rgba(0, 128, 255, 0.8));
 }
 
 .tf-orb-transcendent {

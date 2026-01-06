@@ -55,11 +55,11 @@ export function TerraFusionExcellenceProvider({ children }: TerraFusionExcellenc
     <div
       className='terrafusion-excellence-provider-elite'
       style={{
-        background: 'linear-gradient(135deg, #00FFFF 0%, #0080FF 50%, #00FFFF 100%)',
-        color: '#0A0E1A',
+        background: 'linear-gradient(135deg, var(--tf-transcend-cyan) 0%, var(--tf-network-blue) 50%, var(--tf-transcend-cyan) 100%)',
+        color: 'var(--tf-bg-void)',
         padding: '15px',
         textAlign: 'center',
-        border: '2px solid #00FFFF',
+        border: '2px solid var(--tf-transcend-cyan)',
         borderRadius: '12px',
         margin: '8px',
         boxShadow: '0 0 20px rgba(0, 255, 255, 0.3)',

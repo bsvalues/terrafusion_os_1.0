@@ -201,7 +201,7 @@ const Marketplace: React.FC = () => {
           style={{
             fontSize: '2.5rem',
             fontWeight: 900,
-            background: 'linear-gradient(135deg, #0099ff, #00ffee, #00ffaa)',
+            background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight), var(--tf-accent-success))',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -235,7 +235,7 @@ const Marketplace: React.FC = () => {
             background: 'rgba(255,255,255,0.1)',
             border: '1px solid rgba(0,255,238,0.3)',
             borderRadius: '25px',
-            color: '#fff',
+            color: 'var(--tf-text-primary)',
             fontSize: '0.9rem',
             outline: 'none',
           }}
@@ -251,9 +251,9 @@ const Marketplace: React.FC = () => {
             style={{
               background:
                 selectedCategory === category.id
-                  ? 'linear-gradient(135deg, #0099ff, #00ffee)'
+                  ? 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight))'
                   : 'rgba(0,153,255,0.1)',
-              color: selectedCategory === category.id ? '#000' : '#00ffee',
+              color: selectedCategory === category.id ? 'var(--tf-void-black)' : 'var(--tf-transcend-highlight)',
             }}
             className='font-semibold flex items-center gap-2'
           >
@@ -286,7 +286,7 @@ const Marketplace: React.FC = () => {
                 style={{
                   background: 'rgba(0,0,0,0.6)',
                   backdropFilter: 'blur(20px)',
-                  border: '2px solid #00ffaa',
+                  border: '2px solid var(--tf-accent-success)',
                   borderRadius: '20px',
                   padding: '1.5rem',
                   transition: 'all 0.3s ease',
@@ -307,8 +307,8 @@ const Marketplace: React.FC = () => {
                     position: 'absolute',
                     top: '1rem',
                     right: '1rem',
-                    background: 'linear-gradient(135deg, #00ffaa, #00ffee)',
-                    color: '#000',
+                    background: 'linear-gradient(135deg, var(--tf-accent-success), var(--tf-transcend-highlight))',
+                    color: 'var(--tf-void-black)',
                     padding: '0.3rem 0.8rem',
                     borderRadius: '15px',
                     fontSize: '0.75rem',
@@ -325,7 +325,7 @@ const Marketplace: React.FC = () => {
                       style={{
                         fontSize: '1.3rem',
                         fontWeight: 700,
-                        color: '#fff',
+                        color: 'var(--tf-text-primary)',
                         margin: '0 0 0.3rem 0',
                       }}
                     >
@@ -359,7 +359,7 @@ const Marketplace: React.FC = () => {
                     style={{
                       fontSize: '1.2rem',
                       fontWeight: 700,
-                      color: '#00ffaa',
+                      color: 'var(--tf-accent-success)',
                     }}
                   >
                     {item.price}
@@ -443,7 +443,7 @@ const Marketplace: React.FC = () => {
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-3px)';
                 e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,255,238,0.2)';
-                e.currentTarget.style.borderColor = '#00ffee';
+                e.currentTarget.style.borderColor = 'var(--tf-transcend-highlight)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
@@ -457,8 +457,8 @@ const Marketplace: React.FC = () => {
                     position: 'absolute',
                     top: '0.8rem',
                     right: '0.8rem',
-                    background: '#00ffaa',
-                    color: '#000',
+                    background: 'var(--tf-accent-success)',
+                    color: 'var(--tf-void-black)',
                     padding: '0.2rem 0.5rem',
                     borderRadius: '10px',
                     fontSize: '0.7rem',
@@ -476,7 +476,7 @@ const Marketplace: React.FC = () => {
                     style={{
                       fontSize: '1.1rem',
                       fontWeight: 700,
-                      color: '#fff',
+                      color: 'var(--tf-text-primary)',
                       margin: '0 0 0.2rem 0',
                     }}
                   >
@@ -515,7 +515,7 @@ const Marketplace: React.FC = () => {
                   style={{
                     fontSize: '1rem',
                     fontWeight: 700,
-                    color: '#00ffee',
+                    color: 'var(--tf-transcend-highlight)',
                   }}
                 >
                   {item.price}
@@ -571,7 +571,7 @@ const Marketplace: React.FC = () => {
                 style={{
                   fontSize: '1.8rem',
                   fontWeight: 900,
-                  color: '#00ffee',
+                  color: 'var(--tf-transcend-highlight)',
                   marginBottom: '0.3rem',
                 }}
               >

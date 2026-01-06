@@ -112,14 +112,14 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
         className={cn(
           'absolute bottom-full right-0 mb-2',
           'w-72 p-4 rounded-lg',
-          'bg-[#0a0e1a]/95 backdrop-blur-xl',
-          'border border-[#00ffee]/20',
+          'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
+          'border border-[var(--tf-transcend-highlight)]/20',
           'shadow-[0_-8px_30px_rgba(0,0,0,0.5),0_0_40px_rgba(0,255,238,0.1)]',
           className
         )}
       >
         <div className="flex items-center justify-center py-8">
-          <div className="w-6 h-6 border-2 border-[#00ffee] border-t-transparent rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-[var(--tf-transcend-highlight)] border-t-transparent rounded-full animate-spin" />
           <span className="ml-2 text-white/70">Loading...</span>
         </div>
       </div>
@@ -137,7 +137,7 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
         className={cn(
           'absolute bottom-full right-0 mb-2',
           'w-72 p-4 rounded-lg',
-          'bg-[#0a0e1a]/95 backdrop-blur-xl',
+          'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
           'border border-red-500/30',
           'shadow-[0_-8px_30px_rgba(0,0,0,0.5)]',
           className
@@ -169,8 +169,8 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
       className={cn(
         'absolute bottom-full right-0 mb-2',
         'w-80 rounded-lg overflow-hidden',
-        'bg-[#0a0e1a]/95 backdrop-blur-xl',
-        'border border-[#00ffee]/20',
+        'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
+        'border border-[var(--tf-transcend-highlight)]/20',
         'shadow-[0_-8px_30px_rgba(0,0,0,0.5),0_0_40px_rgba(0,255,238,0.1)]',
         className
       )}
@@ -193,13 +193,13 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
       {/* Stats Row */}
       <div className="grid grid-cols-2 gap-3 p-3 border-b border-white/10">
         <div className="text-center">
-          <div className="text-2xl font-bold text-[#00ffee]">
+          <div className="text-2xl font-bold text-[var(--tf-transcend-highlight)]">
             {status.totalAgents.toLocaleString()}
           </div>
           <div className="text-xs text-white/60">Total Agents</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-[#00ffaa]">
+          <div className="text-2xl font-bold text-[var(--tf-accent-success)]">
             {status.activeAgents.toLocaleString()}
           </div>
           <div className="text-xs text-white/60">Active</div>
@@ -216,9 +216,9 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
           <div
             className={cn(
               'h-full rounded-full transition-all duration-500',
-              loadPercentage < 50 && 'bg-[#00ffaa]',
-              loadPercentage >= 50 && loadPercentage < 80 && 'bg-[#ffaa00]',
-              loadPercentage >= 80 && 'bg-[#ff4444]'
+              loadPercentage < 50 && 'bg-[var(--tf-accent-success)]',
+              loadPercentage >= 50 && loadPercentage < 80 && 'bg-[var(--warning-amber)]',
+              loadPercentage >= 80 && 'bg-[var(--error-red)]'
             )}
             style={{ width: `${loadPercentage}%` }}
           />
@@ -241,9 +241,9 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
                   data-testid={`category-status-${category.status}`}
                   className={cn(
                     'w-2 h-2 rounded-full',
-                    category.status === 'active' && 'bg-[#00ffaa] shadow-[0_0_6px_rgba(0,255,170,0.6)]',
-                    category.status === 'idle' && 'bg-[#888888]',
-                    category.status === 'error' && 'bg-[#ff4444]'
+                    category.status === 'active' && 'bg-[var(--tf-accent-success)] shadow-[0_0_6px_rgba(0,255,170,0.6)]',
+                    category.status === 'idle' && 'bg-[var(--gray-400)]',
+                    category.status === 'error' && 'bg-[var(--error-red)]'
                   )}
                 />
                 <span className="text-sm text-white/90">{category.name}</span>
@@ -257,9 +257,9 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-2 bg-[#00ffee]/5 border-t border-white/10">
+      <div className="px-3 py-2 bg-[var(--tf-transcend-highlight)]/5 border-t border-white/10">
         <div className="flex items-center gap-1.5 text-xs text-white/50">
-          <span className="w-1.5 h-1.5 bg-[#00ffaa] rounded-full animate-pulse" />
+          <span className="w-1.5 h-1.5 bg-[var(--tf-accent-success)] rounded-full animate-pulse" />
           <span>Live • Last update: just now</span>
         </div>
       </div>
@@ -295,10 +295,10 @@ export const AIStatusIndicator: React.FC<AIStatusIndicatorProps> = ({
         aria-haspopup="dialog"
         className={cn(
           'flex items-center gap-1.5 px-2 py-1 rounded-md',
-          'bg-gradient-to-r from-[#00ffee]/10 to-transparent',
+          'bg-gradient-to-r from-[var(--tf-transcend-highlight)]/10 to-transparent',
           'hover:bg-white/10 cursor-pointer',
           'transition-colors duration-150',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00ffee]',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
           isOpen && 'bg-white/10'
         )}
       >
@@ -307,10 +307,10 @@ export const AIStatusIndicator: React.FC<AIStatusIndicatorProps> = ({
           {/* Pulse indicator */}
           <span
             data-testid="ai-pulse"
-            className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#00ffaa] rounded-full animate-pulse"
+            className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[var(--tf-accent-success)] rounded-full animate-pulse"
           />
         </div>
-        <span className="text-xs text-[#00ffee] font-medium">
+        <span className="text-xs text-[var(--tf-transcend-highlight)] font-medium">
           {status.totalAgents.toLocaleString()}
         </span>
       </button>

@@ -82,3 +82,38 @@ export {
   type ModuleLoaderState,
   type ModuleStatus as LoaderModuleStatus,
 } from './moduleLoaderStore';
+
+// Settings - user preferences and notification settings
+export {
+  useSettingsStore,
+  useNotificationPreferences,
+  useKeyboardShortcutsConfig,
+  useNotificationPreferenceActions,
+  type SettingsState,
+  type NotificationPreferences,
+  type KeyboardShortcut,
+} from './settingsStore';
+
+// Command Palette - global search state
+export {
+  useCommandPaletteStore,
+  useCommandPaletteOpen,
+  useCommandPaletteSearch,
+  useRecentCommands,
+  useCommandPaletteActions,
+  MAX_RECENT_COMMANDS,
+  type CommandPaletteState,
+  type CommandCategory,
+} from './commandPaletteStore';
+
+// Window Peek - taskbar preview state
+export {
+  useWindowPeekStore,
+  useWindowPeekVisible,
+  useWindowPeekTarget,
+  useWindowPeekPosition,
+  useWindowPeekActions,
+  PEEK_DELAY_MS,
+  PEEK_HIDE_DELAY_MS,
+  type WindowPeekState,
+} from './windowPeekStore';

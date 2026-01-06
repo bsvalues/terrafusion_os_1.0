@@ -18,6 +18,7 @@ import { useModuleRegistryStore } from '../../stores/moduleRegistryStore';
 
 interface ModuleLoaderProps {
   moduleId: string;
+  metadata?: Record<string, any>;
 }
 
 // ============================================================================
@@ -79,7 +80,7 @@ const NotFoundState: React.FC<{ moduleId: string }> = ({ moduleId }) => (
  * - Accessible with aria attributes
  * - Full integration with OS state
  */
-export const ModuleLoader: React.FC<ModuleLoaderProps> = ({ moduleId }) => {
+export const ModuleLoader: React.FC<ModuleLoaderProps> = ({ moduleId, metadata }) => {
   // Get module from registry store
   const module = useModuleRegistryStore((state) => state.getModuleById(moduleId));
 
@@ -90,12 +91,12 @@ export const ModuleLoader: React.FC<ModuleLoaderProps> = ({ moduleId }) => {
 
   // Render the module component directly
   return (
-    <div 
-      data-testid='module-loader' 
+    <div
+      data-testid='module-loader'
       data-module-id={moduleId}
       className='w-full h-full bg-slate-900 overflow-auto'
     >
-      <ModuleRenderer moduleId={moduleId} />
+      <ModuleRenderer moduleId={moduleId} metadata={metadata} />
     </div>
   );
 };

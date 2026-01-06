@@ -154,22 +154,22 @@ export const GovernmentComplianceDashboard: React.FC = () => {
     label: string;
   }) => {
     const getStatusColor = (score: number) => {
-      if (score >= 0.98) return 'text-[#00ffaa]';
-      if (score >= 0.95) return 'text-[#00ffee]';
+      if (score >= 0.98) return 'text-[var(--tf-accent-success)]';
+      if (score >= 0.95) return 'text-[var(--tf-transcend-highlight)]';
       if (score >= 0.9) return 'text-yellow-500';
       return 'text-red-500';
     };
 
     const getStatusIcon = (isCompliant: boolean) => {
       return isCompliant ? (
-        <CheckCircle className='w-5 h-5 text-[#00ffaa]' />
+        <CheckCircle className='w-5 h-5 text-[var(--tf-accent-success)]' />
       ) : (
         <AlertTriangle className='w-5 h-5 text-red-500' />
       );
     };
 
     return (
-      <div className='flex items-center justify-between p-4 bg-white/5 rounded-lg border border-[#00ffee]/20'>
+      <div className='flex items-center justify-between p-4 bg-white/5 rounded-lg border border-[var(--tf-transcend-highlight)]/20'>
         <div className='flex items-center gap-3'>
           {getStatusIcon(status.isCompliant)}
           <div>
@@ -194,12 +194,12 @@ export const GovernmentComplianceDashboard: React.FC = () => {
       {/* Header Section */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-4'>
-          <Shield className='w-8 h-8 text-[#00ffee]' />
+          <Shield className='w-8 h-8 text-[var(--tf-transcend-highlight)]' />
           <div>
-            <h1 className='text-3xl font-bold bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] bg-clip-text text-transparent'>
+            <h1 className='text-3xl font-bold bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] bg-clip-text text-transparent'>
               GOVERNMENT COMPLIANCE DASHBOARD
             </h1>
-            <p className='text-lg text-[#00ffee]'>
+            <p className='text-lg text-[var(--tf-transcend-highlight)]'>
               TIER 3 Championship Excellence - Government. Transcended.
             </p>
           </div>
@@ -210,7 +210,7 @@ export const GovernmentComplianceDashboard: React.FC = () => {
             onClick={() => setAutoRefresh(!autoRefresh)}
             variant={autoRefresh ? 'default' : 'outline'}
             size='sm'
-            className={autoRefresh ? 'bg-[#00ffee]/20 text-[#00ffee] border-[#00ffee]/30' : ''}
+            className={autoRefresh ? 'bg-[var(--tf-transcend-highlight)]/20 text-[var(--tf-transcend-highlight)] border-[var(--tf-transcend-highlight)]/30' : ''}
           >
             Auto-Refresh {autoRefresh ? 'ON' : 'OFF'}
           </Button>
@@ -219,7 +219,7 @@ export const GovernmentComplianceDashboard: React.FC = () => {
             onClick={loadComplianceDashboard}
             disabled={loading}
             size='sm'
-            className='bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] text-white'
+            className='bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white'
           >
             {loading ? 'VALIDATING...' : 'REFRESH COMPLIANCE'}
           </Button>
@@ -228,17 +228,17 @@ export const GovernmentComplianceDashboard: React.FC = () => {
 
       {/* Overall Status Card */}
       {complianceDashboard && (
-        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20 relative overflow-hidden'>
-          <div className='tf-scan-line animate-tf-scan absolute inset-0 bg-gradient-to-r from-transparent via-[#00ffee]/20 to-transparent' />
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20 relative overflow-hidden'>
+          <div className='tf-scan-line animate-tf-scan absolute inset-0 bg-gradient-to-r from-transparent via-[var(--tf-transcend-highlight)]/20 to-transparent' />
           <CardContent className='p-6 relative z-10'>
             <div className='text-center space-y-4'>
               <div className='flex items-center justify-center gap-3'>
-                <Trophy className='w-12 h-12 text-[#00ffaa]' />
+                <Trophy className='w-12 h-12 text-[var(--tf-accent-success)]' />
                 <div>
-                  <h2 className='text-4xl font-bold text-[#00ffaa]'>
+                  <h2 className='text-4xl font-bold text-[var(--tf-accent-success)]'>
                     {(complianceDashboard.overallScore * 100).toFixed(1)}%
                   </h2>
-                  <p className='text-xl text-[#00ffee]'>{complianceDashboard.certificationLevel}</p>
+                  <p className='text-xl text-[var(--tf-transcend-highlight)]'>{complianceDashboard.certificationLevel}</p>
                 </div>
               </div>
 
@@ -246,32 +246,32 @@ export const GovernmentComplianceDashboard: React.FC = () => {
                 variant={complianceDashboard.overallCompliant ? 'default' : 'destructive'}
                 className={
                   complianceDashboard.overallCompliant
-                    ? 'bg-[#00ffaa]/20 text-[#00ffaa] border-[#00ffaa]/30 text-lg px-6 py-2'
+                    ? 'bg-[var(--tf-accent-success)]/20 text-[var(--tf-accent-success)] border-[var(--tf-accent-success)]/30 text-lg px-6 py-2'
                     : 'text-lg px-6 py-2'
                 }
               >
                 {complianceDashboard.overallCompliant ? '✅ FULLY COMPLIANT' : '⚠️ NON-COMPLIANT'}
               </Badge>
 
-              <div className='text-[#00ffee] font-semibold text-lg'>
+              <div className='text-[var(--tf-transcend-highlight)] font-semibold text-lg'>
                 {complianceDashboard.governmentClassification}
               </div>
 
               <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mt-6'>
                 <div className='text-center'>
-                  <div className='text-2xl font-mono text-[#00ffaa]'>
+                  <div className='text-2xl font-mono text-[var(--tf-accent-success)]'>
                     {complianceDashboard.totalViolations}
                   </div>
                   <div className='text-sm text-gray-400'>Total Violations</div>
                 </div>
                 <div className='text-center'>
-                  <div className='text-2xl font-mono text-[#00ffaa]'>
+                  <div className='text-2xl font-mono text-[var(--tf-accent-success)]'>
                     {complianceDashboard.criticalViolations}
                   </div>
                   <div className='text-sm text-gray-400'>Critical Violations</div>
                 </div>
                 <div className='text-center'>
-                  <div className='text-2xl font-mono text-[#00ffaa]'>39</div>
+                  <div className='text-2xl font-mono text-[var(--tf-accent-success)]'>39</div>
                   <div className='text-sm text-gray-400'>Counties Compliant</div>
                 </div>
               </div>
@@ -283,9 +283,9 @@ export const GovernmentComplianceDashboard: React.FC = () => {
       {/* Compliance Standards Grid */}
       {complianceDashboard && (
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
             <CardHeader>
-              <CardTitle className='text-[#00ffee] flex items-center gap-2'>
+              <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
                 <Shield className='w-5 h-5' />
                 FISMA Security Compliance
               </CardTitle>
@@ -298,27 +298,27 @@ export const GovernmentComplianceDashboard: React.FC = () => {
               <div className='mt-4 space-y-2 text-sm'>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Access Control (AC)</span>
-                  <span className='text-[#00ffaa]'>✓ Compliant</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Audit & Accountability (AU)</span>
-                  <span className='text-[#00ffaa]'>✓ Compliant</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Configuration Management (CM)</span>
-                  <span className='text-[#00ffaa]'>✓ Compliant</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>System Protection (SC)</span>
-                  <span className='text-[#00ffaa]'>✓ Compliant</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
             <CardHeader>
-              <CardTitle className='text-[#00ffee] flex items-center gap-2'>
+              <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
                 <Activity className='w-5 h-5' />
                 WCAG 2.1 AA Accessibility
               </CardTitle>
@@ -331,27 +331,27 @@ export const GovernmentComplianceDashboard: React.FC = () => {
               <div className='mt-4 space-y-2 text-sm'>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Perceivable (13 criteria)</span>
-                  <span className='text-[#00ffaa]'>✓ 13/13</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ 13/13</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Operable (9 criteria)</span>
-                  <span className='text-[#00ffaa]'>✓ 9/9</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ 9/9</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Understandable (6 criteria)</span>
-                  <span className='text-[#00ffaa]'>✓ 6/6</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ 6/6</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Robust (2 criteria)</span>
-                  <span className='text-[#00ffaa]'>✓ 2/2</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ 2/2</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
             <CardHeader>
-              <CardTitle className='text-[#00ffee] flex items-center gap-2'>
+              <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
                 <Database className='w-5 h-5' />
                 Washington State Multi-County
               </CardTitle>
@@ -364,27 +364,27 @@ export const GovernmentComplianceDashboard: React.FC = () => {
               <div className='mt-4 space-y-2 text-sm'>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Data Sovereignty</span>
-                  <span className='text-[#00ffaa]'>✓ Protected</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ Protected</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Public Records (RCW 42.56)</span>
-                  <span className='text-[#00ffaa]'>✓ Compliant</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Open Government (RCW 42.30)</span>
-                  <span className='text-[#00ffaa]'>✓ Compliant</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Counties Deployed</span>
-                  <span className='text-[#00ffaa]'>✓ 39/39</span>
+                  <span className='text-[var(--tf-accent-success)]'>✓ 39/39</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
             <CardHeader>
-              <CardTitle className='text-[#00ffee] flex items-center gap-2'>
+              <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
                 <Zap className='w-5 h-5' />
                 AI Agent Swarm Compliance
               </CardTitle>
@@ -397,19 +397,19 @@ export const GovernmentComplianceDashboard: React.FC = () => {
               <div className='mt-4 space-y-2 text-sm'>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Ethics Score</span>
-                  <span className='text-[#00ffaa]'>99.2%</span>
+                  <span className='text-[var(--tf-accent-success)]'>99.2%</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Transparency Score</span>
-                  <span className='text-[#00ffaa]'>98.8%</span>
+                  <span className='text-[var(--tf-accent-success)]'>98.8%</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Bias Monitoring</span>
-                  <span className='text-[#00ffaa]'>99.5%</span>
+                  <span className='text-[var(--tf-accent-success)]'>99.5%</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-400'>Active Agents</span>
-                  <span className='text-[#00ffaa]'>50,123/50,247</span>
+                  <span className='text-[var(--tf-accent-success)]'>50,123/50,247</span>
                 </div>
               </div>
             </CardContent>
@@ -419,37 +419,37 @@ export const GovernmentComplianceDashboard: React.FC = () => {
 
       {/* Government Certification Status */}
       {certificationStatus && (
-        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
           <CardHeader>
-            <CardTitle className='text-[#00ffee] flex items-center gap-2'>
-              <Trophy className='w-6 h-6 text-[#00ffaa]' />
+            <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
+              <Trophy className='w-6 h-6 text-[var(--tf-accent-success)]' />
               Government Excellence Certification
             </CardTitle>
           </CardHeader>
           <CardContent className='space-y-6'>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
               <div className='space-y-3'>
-                <h4 className='font-semibold text-[#00ffee]'>Certification Details</h4>
+                <h4 className='font-semibold text-[var(--tf-transcend-highlight)]'>Certification Details</h4>
                 <div className='space-y-2 text-sm'>
                   <div className='flex justify-between'>
                     <span className='text-gray-400'>Level:</span>
-                    <span className='text-[#00ffaa] font-semibold'>
+                    <span className='text-[var(--tf-accent-success)] font-semibold'>
                       {certificationStatus.certificationLevel}
                     </span>
                   </div>
                   <div className='flex justify-between'>
                     <span className='text-gray-400'>Certificate ID:</span>
-                    <span className='text-[#00ffaa] font-mono'>
+                    <span className='text-[var(--tf-accent-success)] font-mono'>
                       {certificationStatus.certificationId}
                     </span>
                   </div>
                   <div className='flex justify-between'>
                     <span className='text-gray-400'>Authority:</span>
-                    <span className='text-[#00ffaa]'>WA State GTS</span>
+                    <span className='text-[var(--tf-accent-success)]'>WA State GTS</span>
                   </div>
                   <div className='flex justify-between'>
                     <span className='text-gray-400'>Next Review:</span>
-                    <span className='text-[#00ffaa]'>
+                    <span className='text-[var(--tf-accent-success)]'>
                       {new Date(certificationStatus.nextReview).toLocaleDateString()}
                     </span>
                   </div>
@@ -457,13 +457,13 @@ export const GovernmentComplianceDashboard: React.FC = () => {
               </div>
 
               <div className='space-y-3'>
-                <h4 className='font-semibold text-[#00ffee]'>Certified Capabilities</h4>
+                <h4 className='font-semibold text-[var(--tf-transcend-highlight)]'>Certified Capabilities</h4>
                 <div className='grid grid-cols-1 gap-1'>
                   {certificationStatus.capabilitiesCertified
                     .slice(0, 4)
                     .map((capability, index) => (
                       <div key={index} className='flex items-center gap-2 text-sm'>
-                        <CheckCircle className='w-4 h-4 text-[#00ffaa]' />
+                        <CheckCircle className='w-4 h-4 text-[var(--tf-accent-success)]' />
                         <span className='text-gray-300'>{capability}</span>
                       </div>
                     ))}
@@ -471,8 +471,8 @@ export const GovernmentComplianceDashboard: React.FC = () => {
               </div>
             </div>
 
-            <div className='text-center p-4 bg-[#00ffee]/10 rounded-lg border border-[#00ffee]/30'>
-              <p className='text-lg font-semibold text-[#00ffee]'>
+            <div className='text-center p-4 bg-[var(--tf-transcend-highlight)]/10 rounded-lg border border-[var(--tf-transcend-highlight)]/30'>
+              <p className='text-lg font-semibold text-[var(--tf-transcend-highlight)]'>
                 {certificationStatus.governmentEndorsement}
               </p>
             </div>

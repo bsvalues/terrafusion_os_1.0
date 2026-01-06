@@ -398,7 +398,7 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
                   legend: {
                     position: 'top' as const,
                     labels: {
-                      color: '#00FFFF',
+                      color: 'var(--tf-transcend-cyan)',
                     },
                   },
                 },
@@ -406,12 +406,12 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
                   y: {
                     beginAtZero: true,
                     ticks: {
-                      color: '#64748b',
+                      color: 'var(--tf-text-secondary)',
                     },
                   },
                   x: {
                     ticks: {
-                      color: '#64748b',
+                      color: 'var(--tf-text-secondary)',
                     },
                   },
                 },
@@ -433,7 +433,7 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
                   legend: {
                     position: 'bottom' as const,
                     labels: {
-                      color: '#00FFFF',
+                      color: 'var(--tf-transcend-cyan)',
                     },
                   },
                 },

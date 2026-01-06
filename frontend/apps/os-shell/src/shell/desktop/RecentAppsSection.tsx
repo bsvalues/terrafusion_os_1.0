@@ -16,6 +16,7 @@
 
 import { cn } from '@/lib/utils';
 import React from 'react';
+import { colors } from '../../design-system/tokens/colors';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
 
@@ -104,9 +105,14 @@ const RecentAppTile: React.FC<RecentAppTileProps> = ({ module, onLaunch }) => {
         'rounded-lg',
         'transition-all duration-150',
         'hover:bg-white/10',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00ffee] focus-visible:ring-offset-1 focus-visible:ring-offset-transparent',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-transparent',
         'active:scale-95'
       )}
+      style={
+        {
+          '--tw-ring-color': colors.brand.transcend[500],
+        } as React.CSSProperties
+      }
     >
       {isRunning && <RunningIndicator />}
       <span className='text-2xl' role='img' aria-hidden='true'>

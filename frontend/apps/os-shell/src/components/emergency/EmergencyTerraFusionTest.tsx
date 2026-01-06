@@ -23,8 +23,8 @@ export function EmergencyTerraFusionTest() {
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'linear-gradient(135deg, #0a0e1a 0%, #1a202c 100%)',
-        color: '#00ffff',
+        background: 'linear-gradient(135deg, var(--tf-void-black) 0%, var(--tf-surface-darker) 100%)',
+        color: 'var(--tf-quantum-cyan)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -41,7 +41,7 @@ export function EmergencyTerraFusionTest() {
           fontWeight: 'bold',
           marginBottom: '2rem',
           textAlign: 'center',
-          background: 'linear-gradient(135deg, #00ffff, #0099ff)',
+          background: 'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue))',
           backgroundClip: 'text',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -57,7 +57,7 @@ export function EmergencyTerraFusionTest() {
           fontSize: '1.5rem',
           marginBottom: '2rem',
           padding: '1rem 2rem',
-          border: '2px solid #00ffff',
+          border: '2px solid var(--tf-quantum-cyan)',
           borderRadius: '12px',
           background: 'rgba(0, 255, 255, 0.1)',
           backdropFilter: 'blur(10px)',
@@ -67,7 +67,7 @@ export function EmergencyTerraFusionTest() {
         <div>🔬 MIT PhD SYSTEMS DIAGNOSIS</div>
         <div style={{ marginTop: '0.5rem', fontSize: '1.2rem' }}>
           React Mount Status:{' '}
-          <span style={{ color: mounted ? '#00ffaa' : '#ffaa00' }}>
+          <span style={{ color: mounted ? 'var(--tf-accent-success)' : 'var(--warning-amber)' }}>
             {mounted ? '✅ OPERATIONAL' : '⏳ INITIALIZING'}
           </span>
         </div>
@@ -79,8 +79,8 @@ export function EmergencyTerraFusionTest() {
         style={{
           fontSize: '1.2rem',
           padding: '1rem 2rem',
-          background: 'linear-gradient(135deg, #00ffff, #0099ff)',
-          color: '#0a0e1a',
+          background: 'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue))',
+          color: 'var(--tf-void-black)',
           border: 'none',
           borderRadius: '8px',
           fontWeight: 'bold',

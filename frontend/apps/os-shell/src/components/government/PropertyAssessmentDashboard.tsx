@@ -81,7 +81,7 @@ const SAMPLE_PROPERTIES: Property[] = [
     assessedValue: 4 * (await DynamicPropertyService.GetPropertyCountAsync(countyCode)),
     lastAssessment: new Date('2024-01-15'),
     status: 'current',
-    assessor: 'AI Agent #447',
+    assessor: 'AI Agent var(--tf-chart-1)',
     confidence: 94.5,
     aiProcessed: true,
   },
@@ -93,7 +93,7 @@ const SAMPLE_PROPERTIES: Property[] = [
     assessedValue: 320000,
     lastAssessment: new Date('2024-01-14'),
     status: 'pending',
-    assessor: 'AI Agent #892',
+    assessor: 'AI Agent var(--tf-chart-2)',
     confidence: 98.2,
     aiProcessed: true,
   },
@@ -129,9 +129,9 @@ const VALUE_TREND_DATA = [
 ];
 
 const ASSESSMENT_DISTRIBUTION = [
-  { name: 'AI Processed', value: 78, color: '#1976d2' },
-  { name: 'Human Review', value: 15, color: '#9c27b0' },
-  { name: 'Pending', value: 7, color: '#ed6c02' },
+  { name: 'AI Processed', value: 78, color: 'var(--tf-info-blue)' },
+  { name: 'Human Review', value: 15, color: 'var(--tf-accent-quantum)' },
+  { name: 'Pending', value: 7, color: 'var(--tf-warning-dark)' },
 ];
 
 export const PropertyAssessmentDashboard: React.FC = () => {
@@ -424,14 +424,14 @@ export const PropertyAssessmentDashboard: React.FC = () => {
                   <Line
                     type='monotone'
                     dataKey='avgValue'
-                    stroke='#1976d2'
+                    stroke='var(--tf-info-blue)'
                     strokeWidth={2}
                     name='Average Value'
                   />
                   <Line
                     type='monotone'
                     dataKey='aiProcessed'
-                    stroke='#9c27b0'
+                    stroke='var(--tf-accent-quantum)'
                     strokeWidth={2}
                     name='AI Processed'
                   />

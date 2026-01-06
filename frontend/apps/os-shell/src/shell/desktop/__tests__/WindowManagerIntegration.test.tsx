@@ -1,34 +1,30 @@
 /**
  * TerraFusion OS WindowManager Integration Tests
- * 
+ *
  * Tests for WindowManager with error boundaries integrated:
  * - Windows wrapped in error boundaries
  * - Error isolation between windows
  * - Recovery actions
- * 
+ *
  * @module shell/desktop/__tests__/WindowManagerIntegration.test
  * @vitest-environment jsdom
  */
 
 // Vitest imports removed - Jest globals used
 import '@testing-library/jest-dom';
-import { render, screen, cleanup, act } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import * as matchers from '@testing-library/jest-dom/matchers';
-import React from 'react';
 
-import { WindowManager } from '../WindowManager';
 import { useDesktopStore } from '../../../stores/desktopStore';
 import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { useNotificationStore } from '../../../stores/notificationStore';
-
-
+import { WindowManager } from '../WindowManager';
 
 // Suppress console.error for error boundary tests
 const originalError = console.error;
 beforeEach(() => {
   console.error = jest.fn();
-  
+
   // Reset stores
   act(() => {
     useDesktopStore.getState().windows = [];
@@ -58,6 +54,7 @@ const addTestWindow = (id: string, moduleId: string, title: string) => {
         size: { width: 800, height: 600 },
         state: 'normal' as const,
         zIndex: store.nextZIndex++,
+        desktopId: 'desktop-1',
       },
     ];
   });
@@ -92,9 +89,9 @@ describe('WindowManager Integration', () => {
     it('renders windows with error boundary protection', () => {
       registerTestModule('test-module', 'Test Module');
       addTestWindow('window-1', 'test-module', 'Test Window');
-      
+
       render(<WindowManager />);
-      
+
       // Window should render
       expect(screen.getByTestId('window-manager')).toBeInTheDocument();
       expect(screen.getByTestId('window')).toBeInTheDocument();
@@ -105,9 +102,9 @@ describe('WindowManager Integration', () => {
       registerTestModule('module-2', 'Module 2');
       addTestWindow('window-1', 'module-1', 'Window 1');
       addTestWindow('window-2', 'module-2', 'Window 2');
-      
+
       render(<WindowManager />);
-      
+
       const windows = screen.getAllByTestId('window');
       expect(windows).toHaveLength(2);
     });
@@ -117,16 +114,16 @@ describe('WindowManager Integration', () => {
     it('close button removes window from store', async () => {
       registerTestModule('test-module', 'Test Module');
       addTestWindow('window-1', 'test-module', 'Test Window');
-      
+
       render(<WindowManager />);
-      
+
       // Verify window exists
       expect(screen.getByTestId('window')).toBeInTheDocument();
-      
+
       // Click close button
       const closeButton = screen.getByRole('button', { name: /close/i });
       await userEvent.click(closeButton);
-      
+
       // Window should be removed
       expect(screen.queryByTestId('window')).not.toBeInTheDocument();
     });
@@ -135,7 +132,7 @@ describe('WindowManager Integration', () => {
   describe('Minimized Windows', () => {
     it('does not render minimized windows', () => {
       registerTestModule('test-module', 'Test Module');
-      
+
       act(() => {
         const store = useDesktopStore.getState();
         store.windows = [
@@ -148,12 +145,13 @@ describe('WindowManager Integration', () => {
             size: { width: 800, height: 600 },
             state: 'minimized' as const,
             zIndex: 1,
+            desktopId: 'desktop-1',
           },
         ];
       });
-      
+
       render(<WindowManager />);
-      
+
       expect(screen.queryByTestId('window')).not.toBeInTheDocument();
     });
   });
@@ -162,7 +160,7 @@ describe('WindowManager Integration', () => {
     it('renders windows in z-index order', () => {
       registerTestModule('module-1', 'Module 1');
       registerTestModule('module-2', 'Module 2');
-      
+
       act(() => {
         const store = useDesktopStore.getState();
         store.windows = [
@@ -175,6 +173,7 @@ describe('WindowManager Integration', () => {
             size: { width: 800, height: 600 },
             state: 'normal' as const,
             zIndex: 1,
+            desktopId: 'desktop-1',
           },
           {
             id: 'window-front',
@@ -185,12 +184,13 @@ describe('WindowManager Integration', () => {
             size: { width: 800, height: 600 },
             state: 'normal' as const,
             zIndex: 2,
+            desktopId: 'desktop-1',
           },
         ];
       });
-      
+
       render(<WindowManager />);
-      
+
       const windows = screen.getAllByTestId('window');
       expect(windows).toHaveLength(2);
     });
@@ -199,7 +199,7 @@ describe('WindowManager Integration', () => {
   describe('Accessibility', () => {
     it('window manager has proper region role', () => {
       render(<WindowManager />);
-      
+
       const manager = screen.getByTestId('window-manager');
       expect(manager).toHaveAttribute('role', 'region');
       expect(manager).toHaveAttribute('aria-label', 'Application windows');
@@ -207,7 +207,7 @@ describe('WindowManager Integration', () => {
 
     it('has live region for dynamic updates', () => {
       render(<WindowManager />);
-      
+
       const manager = screen.getByTestId('window-manager');
       expect(manager).toHaveAttribute('aria-live', 'polite');
     });

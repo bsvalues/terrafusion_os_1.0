@@ -27,6 +27,7 @@ import TerraFusionQuantumComputing from './components/quantum/TerraFusionQuantum
 import { AIHealthStatusChip } from './components/status/AIHealthStatusChip';
 import { GovernmentExcellenceStatus } from './components/status/GovernmentExcellenceStatus';
 import EliteSystemValidator from './components/validation/EliteSystemValidator';
+import { colors } from './design-system/tokens/colors';
 import { GptStudioView } from './features/gpt/GptStudioView';
 import { SystemGptConsoleView } from './features/gpt/SystemGptConsoleView';
 import TerraFusionExcellenceProvider from './providers/TerraFusionExcellenceProvider.tsx';
@@ -139,7 +140,7 @@ export function TerraFusionQuantumOS() {
     canvas.height = 400;
 
     // Render quantum wave function
-    ctx.strokeStyle = '#00FFFF';
+    ctx.strokeStyle = colors.brand.quantum[500];
     ctx.lineWidth = 2;
     ctx.beginPath();
 
@@ -343,394 +344,427 @@ export function TerraFusionQuantumOS() {
   };
 
   // Elite Quantum Analytics Interface for PhD-level users
-  const renderQuantumAnalytics = () => (
-    <div
-      className='quantum-os-container'
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'linear-gradient(135deg, #0a0e1a 0%, #1a202c 100%)',
-        color: '#00ffff',
-        fontFamily: 'Inter, system-ui, sans-serif',
-        overflow: 'auto',
-        zIndex: 1,
-      }}
-    >
-      {/* Elite Header */}
-      <header
+  const renderQuantumAnalytics = () => {
+    const commonPanelStyle = {
+      background: colors.utils.withOpacity(colors.brand.quantum[500], 0.05),
+      border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
+      borderRadius: '12px',
+      padding: '1.5rem',
+    };
+
+    return (
+      <div
+        className='quantum-os-container'
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '1rem 2rem',
-          borderBottom: '1px solid rgba(0, 255, 255, 0.2)',
-          backdropFilter: 'blur(10px)',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: colors.gradient.void,
+          color: colors.brand.quantum[500],
+          fontFamily: 'Inter, system-ui, sans-serif',
+          overflow: 'auto',
+          zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ fontSize: '2rem', color: '#00ffff' }}>◉</div>
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>
-              TERRAFUSION QUANTUM OS
-            </h1>
-            <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.8 }}>
-              Elite Analytics Interface • Harvard PhD/MIT Post-Graduate Level
-            </p>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: '2rem' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Quantum Factor</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-              {systemAnalytics.quantumOptimization}
-            </div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Coherence</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-              {(systemAnalytics.swarmCoherence * 100).toFixed(3)}%
-            </div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Accuracy</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-              {(systemAnalytics.realTimeAccuracy * 100).toFixed(3)}%
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Analytics Dashboard */}
-      <main
-        style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}
-      >
-        {/* Quantum Visualization Panel */}
-        <section
+        {/* Elite Header */}
+        <header
           style={{
-            background: 'rgba(0, 255, 255, 0.05)',
-            border: '1px solid rgba(0, 255, 255, 0.2)',
-            borderRadius: '12px',
-            padding: '1.5rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '1rem 2rem',
+            borderBottom: '1px solid rgba(0, 255, 255, 0.2)',
+            backdropFilter: 'blur(10px)',
           }}
         >
-          <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>Quantum State Analysis</h2>
-          <canvas
-            ref={canvasRef}
-            style={{
-              width: '100%',
-              maxWidth: '800px',
-              height: '200px',
-              border: '1px solid rgba(0, 255, 255, 0.3)',
-            }}
-          ></canvas>
-          <div
-            style={{
-              marginTop: '1rem',
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr',
-              gap: '1rem',
-            }}
-          >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ fontSize: '2rem', color: colors.brand.quantum[500] }}>◉</div>
             <div>
-              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Wave Function Amplitude</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                Ψ = {quantumState.fidelity.toFixed(6)}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Entanglement Coefficient</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                ε = {quantumState.entanglement.toFixed(6)}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Coherence Time (τ)</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                τ = {quantumState.coherenceTime.toFixed(6)}ms
-              </div>
+              <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>
+                TERRAFUSION QUANTUM OS
+              </h1>
+              <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.8 }}>
+                Elite Analytics Interface • Harvard PhD/MIT Post-Graduate Level
+              </p>
             </div>
           </div>
-        </section>
-
-        {/* ML Model Performance Analysis */}
-        <section
-          style={{
-            background: 'rgba(0, 255, 255, 0.05)',
-            border: '1px solid rgba(0, 255, 255, 0.2)',
-            borderRadius: '12px',
-            padding: '1.5rem',
-          }}
-        >
-          <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>ML Model Performance Matrix</h2>
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            {mlModels.map((model, index) => (
-              <div
-                key={index}
-                style={{
-                  background: 'rgba(0, 255, 255, 0.08)',
-                  border: '1px solid rgba(0, 255, 255, 0.15)',
-                  borderRadius: '8px',
-                  padding: '1rem',
-                }}
-              >
-                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>{model.name}</h3>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '0.5rem',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  <div>
-                    Accuracy: <strong>{(model.accuracy * 100).toFixed(3)}%</strong>
-                  </div>
-                  <div>
-                    F1 Score: <strong>{model.f1Score.toFixed(6)}</strong>
-                  </div>
-                  <div>
-                    Loss Function: <strong>{model.lossFunction.toFixed(6)}</strong>
-                  </div>
-                  <div>
-                    ∇ Magnitude: <strong>{model.gradientMagnitude.toFixed(6)}</strong>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Agent Swarm Coordination */}
-        <section
-          style={{
-            background: 'rgba(0, 255, 255, 0.05)',
-            border: '1px solid rgba(0, 255, 255, 0.2)',
-            borderRadius: '12px',
-            padding: '1.5rem',
-            gridColumn: '1 / -1',
-          }}
-        >
-          <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>
-            Agent Swarm Coordination Matrix (1,008 Agents)
-          </h2>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '1rem',
-              marginBottom: '1rem',
-            }}
-          >
+          <div style={{ display: 'flex', gap: '2rem' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Total Agents</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>1,008</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Active Agents</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                {agentSwarmMetrics.length}
+              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Quantum Factor</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                {systemAnalytics.quantumOptimization}
               </div>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Avg Efficiency</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                {agentSwarmMetrics.length > 0
-                  ? (
-                      (agentSwarmMetrics.reduce((sum, agent) => sum + agent.efficiency, 0) /
-                        agentSwarmMetrics.length) *
-                      100
-                    ).toFixed(2)
-                  : '0'}
-                %
-              </div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Swarm Coherence</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Coherence</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
                 {(systemAnalytics.swarmCoherence * 100).toFixed(3)}%
               </div>
             </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
-            {agentSwarmMetrics.slice(0, 8).map((agent, index) => (
-              <div
-                key={agent.id}
-                style={{
-                  background: 'rgba(0, 255, 255, 0.08)',
-                  border: '1px solid rgba(0, 255, 255, 0.15)',
-                  borderRadius: '8px',
-                  padding: '1rem',
-                }}
-              >
-                <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>{agent.id}</h4>
-                <div style={{ fontSize: '0.8rem' }}>
-                  <div>
-                    Efficiency: <strong>{(agent.efficiency * 100).toFixed(2)}%</strong>
-                  </div>
-                  <div>
-                    Accuracy: <strong>{(agent.accuracy * 100).toFixed(2)}%</strong>
-                  </div>
-                  <div>
-                    Latency: <strong>{agent.processingLatency.toFixed(1)}ms</strong>
-                  </div>
-                  <div>
-                    Q-Coherence: <strong>{(agent.quantumCoherence * 100).toFixed(1)}%</strong>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Advanced Statistics Panel */}
-        <section
-          style={{
-            background: 'rgba(0, 255, 255, 0.05)',
-            border: '1px solid rgba(0, 255, 255, 0.2)',
-            borderRadius: '12px',
-            padding: '1.5rem',
-            gridColumn: '1 / -1',
-          }}
-        >
-          <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>
-            Advanced Statistical Analysis
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
             <div style={{ textAlign: 'center' }}>
-              <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>Emergent Intelligence</h3>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#00ff88' }}>
-                {(systemAnalytics.emergentIntelligence * 100).toFixed(3)}%
-              </div>
-              <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
-                Collective intelligence from 1,008 agent interactions
-              </p>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>Quantum Optimization</h3>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#00ffff' }}>
-                {systemAnalytics.quantumOptimization}
-              </div>
-              <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
-                Mathematical coefficient φ² × 360
-              </p>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>System Entropy</h3>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ff8800' }}>0.0023</div>
-              <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
-                Information entropy across network
-              </p>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>Predictive Accuracy</h3>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#8800ff' }}>
+              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Accuracy</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
                 {(systemAnalytics.realTimeAccuracy * 100).toFixed(3)}%
               </div>
-              <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
-                Real-time prediction accuracy
-              </p>
             </div>
           </div>
-        </section>
-      </main>
+        </header>
 
-      {/* Elite Controls Footer */}
-      <footer
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: '1rem 2rem',
-          background: 'rgba(10, 14, 26, 0.9)',
-          backdropFilter: 'blur(10px)',
-          borderTop: '1px solid rgba(0, 255, 255, 0.2)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <button
+        {/* Main Analytics Dashboard */}
+        <main
+          style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}
+        >
+          {/* Quantum Visualization Panel */}
+          <section
             style={{
-              padding: '0.75rem 1.5rem',
-              background: 'linear-gradient(135deg, #00ffff, #0099ff)',
-              color: '#0a0e1a',
-              border: 'none',
-              borderRadius: '8px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
+              background: 'rgba(0, 255, 255, 0.05)',
+              border: '1px solid rgba(0, 255, 255, 0.2)',
+              borderRadius: '12px',
+              padding: '1.5rem',
             }}
           >
-            🔬 Deep Analysis Mode
-          </button>
-          <button
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: 'rgba(0, 255, 255, 0.1)',
-              color: '#00ffff',
-              border: '1px solid rgba(0, 255, 255, 0.3)',
-              borderRadius: '8px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            }}
-          >
-            ⚡ Quantum Optimization
-          </button>
-          <button
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: 'rgba(0, 255, 255, 0.1)',
-              color: '#00ffff',
-              border: '1px solid rgba(0, 255, 255, 0.3)',
-              borderRadius: '8px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            }}
-          >
-            🧠 Model Fine-Tuning
-          </button>
-          <button
-            onClick={() => setShowEliteToolset(!showEliteToolset)}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: showEliteToolset
-                ? 'linear-gradient(135deg, #00ff88, #00ffff)'
-                : 'rgba(0, 255, 136, 0.1)',
-              color: showEliteToolset ? '#0a0e1a' : '#00ff88',
-              border: '1px solid rgba(0, 255, 136, 0.3)',
-              borderRadius: '8px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            }}
-          >
-            📊 Elite Analytics Toolset
-          </button>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>Quantum State Analysis</h2>
+            <canvas
+              ref={canvasRef}
+              style={{
+                width: '100%',
+                maxWidth: '800px',
+                height: '200px',
+                border: '1px solid rgba(0, 255, 255, 0.3)',
+              }}
+            ></canvas>
             <div
               style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: '#00ffff',
-                animation: 'pulse 2s infinite',
+                marginTop: '1rem',
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr 1fr',
+                gap: '1rem',
               }}
-            ></div>
-            <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>QUANTUM COHERENCE ACTIVE</span>
+            >
+              <div>
+                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Wave Function Amplitude</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                  Ψ = {quantumState.fidelity.toFixed(6)}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Entanglement Coefficient</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                  ε = {quantumState.entanglement.toFixed(6)}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Coherence Time (τ)</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                  τ = {quantumState.coherenceTime.toFixed(6)}ms
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ML Model Performance Analysis */}
+          <section
+            style={{
+              background: 'rgba(0, 255, 255, 0.05)',
+              border: '1px solid rgba(0, 255, 255, 0.2)',
+              borderRadius: '12px',
+              padding: '1.5rem',
+            }}
+          >
+            <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>
+              ML Model Performance Matrix
+            </h2>
+            <div style={{ display: 'grid', gap: '1rem' }}>
+              {mlModels.map((model, index) => (
+                <div
+                  key={index}
+                  style={{
+                    background: 'rgba(0, 255, 255, 0.08)',
+                    border: '1px solid rgba(0, 255, 255, 0.15)',
+                    borderRadius: '8px',
+                    padding: '1rem',
+                  }}
+                >
+                  <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>{model.name}</h3>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: '0.5rem',
+                      fontSize: '0.9rem',
+                    }}
+                  >
+                    <div>
+                      Accuracy: <strong>{(model.accuracy * 100).toFixed(3)}%</strong>
+                    </div>
+                    <div>
+                      F1 Score: <strong>{model.f1Score.toFixed(6)}</strong>
+                    </div>
+                    <div>
+                      Loss Function: <strong>{model.lossFunction.toFixed(6)}</strong>
+                    </div>
+                    <div>
+                      ∇ Magnitude: <strong>{model.gradientMagnitude.toFixed(6)}</strong>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Agent Swarm Coordination */}
+          <section
+            style={{
+              background: 'rgba(0, 255, 255, 0.05)',
+              border: '1px solid rgba(0, 255, 255, 0.2)',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              gridColumn: '1 / -1',
+            }}
+          >
+            <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>
+              Agent Swarm Coordination Matrix (1,008 Agents)
+            </h2>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '1rem',
+                marginBottom: '1rem',
+              }}
+            >
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Total Agents</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>1,008</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Active Agents</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                  {agentSwarmMetrics.length}
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Avg Efficiency</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                  {agentSwarmMetrics.length > 0
+                    ? (
+                        (agentSwarmMetrics.reduce((sum, agent) => sum + agent.efficiency, 0) /
+                          agentSwarmMetrics.length) *
+                        100
+                      ).toFixed(2)
+                    : '0'}
+                  %
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>Swarm Coherence</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                  {(systemAnalytics.swarmCoherence * 100).toFixed(3)}%
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+              {agentSwarmMetrics.slice(0, 8).map((agent, index) => (
+                <div
+                  key={agent.id}
+                  style={{
+                    background: 'rgba(0, 255, 255, 0.08)',
+                    border: '1px solid rgba(0, 255, 255, 0.15)',
+                    borderRadius: '8px',
+                    padding: '1rem',
+                  }}
+                >
+                  <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>{agent.id}</h4>
+                  <div style={{ fontSize: '0.8rem' }}>
+                    <div>
+                      Efficiency: <strong>{(agent.efficiency * 100).toFixed(2)}%</strong>
+                    </div>
+                    <div>
+                      Accuracy: <strong>{(agent.accuracy * 100).toFixed(2)}%</strong>
+                    </div>
+                    <div>
+                      Latency: <strong>{agent.processingLatency.toFixed(1)}ms</strong>
+                    </div>
+                    <div>
+                      Q-Coherence: <strong>{(agent.quantumCoherence * 100).toFixed(1)}%</strong>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Advanced Statistics Panel */}
+          <section
+            style={{
+              background: 'rgba(0, 255, 255, 0.05)',
+              border: '1px solid rgba(0, 255, 255, 0.2)',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              gridColumn: '1 / -1',
+            }}
+          >
+            <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>
+              Advanced Statistical Analysis
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
+              <div style={{ textAlign: 'center' }}>
+                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>Emergent Intelligence</h3>
+                <div
+                  style={{ fontSize: '2rem', fontWeight: 'bold', color: colors.brand.accent[500] }}
+                >
+                  {(systemAnalytics.emergentIntelligence * 100).toFixed(3)}%
+                </div>
+                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
+                  Collective intelligence from 1,008 agent interactions
+                </p>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>Quantum Optimization</h3>
+                <div
+                  style={{ fontSize: '2rem', fontWeight: 'bold', color: colors.brand.quantum[500] }}
+                >
+                  {systemAnalytics.quantumOptimization}
+                </div>
+                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
+                  Mathematical coefficient φ² × 360
+                </p>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>System Entropy</h3>
+                <div
+                  style={{
+                    fontSize: '2rem',
+                    fontWeight: 'bold',
+                    color: colors.visualization.chart[6],
+                  }}
+                >
+                  0.0023
+                </div>
+                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
+                  Information entropy across network
+                </p>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>Predictive Accuracy</h3>
+                <div
+                  style={{
+                    fontSize: '2rem',
+                    fontWeight: 'bold',
+                    color: colors.visualization.chart[2],
+                  }}
+                >
+                  {(systemAnalytics.realTimeAccuracy * 100).toFixed(3)}%
+                </div>
+                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
+                  Real-time prediction accuracy
+                </p>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        {/* Elite Controls Footer */}
+        <footer
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: '1rem 2rem',
+            background: 'rgba(10, 14, 26, 0.9)',
+            backdropFilter: 'blur(10px)',
+            borderTop: '1px solid rgba(0, 255, 255, 0.2)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: colors.gradient.primary,
+                color: colors.semantic.background.void,
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              🔬 Deep Analysis Mode
+            </button>
+            <button
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                color: colors.brand.quantum[500],
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              ⚡ Quantum Optimization
+            </button>
+            <button
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                color: colors.brand.quantum[500],
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              🧠 Model Fine-Tuning
+            </button>
+            <button
+              onClick={() => setShowEliteToolset(!showEliteToolset)}
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: showEliteToolset
+                  ? `linear-gradient(135deg, ${colors.brand.accent[500]}, ${colors.brand.quantum[500]})`
+                  : colors.utils.withOpacity(colors.brand.accent[500], 0.1),
+                color: showEliteToolset
+                  ? colors.semantic.background.void
+                  : colors.brand.accent[500],
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.accent[500], 0.3)}`,
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              📊 Elite Analytics Toolset
+            </button>
           </div>
-          <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>
-            TerraFusion OS • Elite Analytics • Harvard PhD/MIT Level Interface
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: colors.brand.quantum[500],
+                  animation: 'pulse 2s infinite',
+                }}
+              ></div>
+              <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>
+                QUANTUM COHERENCE ACTIVE
+              </span>
+            </div>
+            <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>
+              TerraFusion OS • Elite Analytics • Harvard PhD/MIT Level Interface
+            </div>
           </div>
-        </div>
-      </footer>
-    </div>
-  );
+        </footer>
+      </div>
+    );
+  };
 
   return (
     <TerraFusionExcellenceProvider>
@@ -742,8 +776,8 @@ export function TerraFusionQuantumOS() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'linear-gradient(135deg, #0a0e1a 0%, #1a202c 50%, #0f172a 100%)',
-          color: '#00ffff',
+          background: colors.gradient.void,
+          color: colors.brand.quantum[500],
           fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
           overflow: 'hidden',
           display: 'flex',
@@ -772,14 +806,14 @@ export function TerraFusionQuantumOS() {
               style={{
                 width: '48px',
                 height: '48px',
-                background: 'linear-gradient(135deg, #00ffff, #0099ff)',
+                background: colors.gradient.primary,
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '24px',
                 fontWeight: 'bold',
-                color: '#0a0e1a',
+                color: colors.semantic.background.secondary,
                 boxShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
               }}
             >
@@ -791,7 +825,7 @@ export function TerraFusionQuantumOS() {
                   margin: 0,
                   fontSize: '1.8rem',
                   fontWeight: '700',
-                  background: 'linear-gradient(135deg, #00ffff, #ffffff)',
+                  background: `linear-gradient(135deg, ${colors.brand.quantum[500]}, ${colors.semantic.text.primary})`,
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   color: 'transparent',
@@ -804,7 +838,7 @@ export function TerraFusionQuantumOS() {
                   margin: 0,
                   fontSize: '0.9rem',
                   opacity: 0.8,
-                  color: '#00ffaa',
+                  color: colors.brand.accent[500],
                 }}
               >
                 Benton County, WA • await DynamicPropertyService.GetPropertyCountAsync("benton")
@@ -816,22 +850,34 @@ export function TerraFusionQuantumOS() {
           {/* System Status Indicators */}
           <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#00ffaa' }}>
+              <div style={{ fontSize: '0.8rem', opacity: 0.7, color: colors.brand.accent[500] }}>
                 Parcels Synced
               </div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#00ffff' }}>
+              <div
+                style={{ fontSize: '1.4rem', fontWeight: 'bold', color: colors.brand.quantum[500] }}
+              >
                 await DynamicPropertyService.GetPropertyCountAsync("benton")
               </div>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#00ffaa' }}>PACS Version</div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#00ffff' }}>
+              <div style={{ fontSize: '0.8rem', opacity: 0.7, color: colors.brand.accent[500] }}>
+                PACS Version
+              </div>
+              <div
+                style={{ fontSize: '1.2rem', fontWeight: 'bold', color: colors.brand.quantum[500] }}
+              >
                 v12.4.7
               </div>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#00ffaa' }}>Sync Status</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#00ff88' }}>LIVE</div>
+              <div style={{ fontSize: '0.8rem', opacity: 0.7, color: colors.brand.accent[500] }}>
+                Sync Status
+              </div>
+              <div
+                style={{ fontSize: '1.4rem', fontWeight: 'bold', color: colors.brand.accent[500] }}
+              >
+                LIVE
+              </div>
             </div>
 
             {/* AI Health Status - Phase 15.3 */}
@@ -873,7 +919,7 @@ export function TerraFusionQuantumOS() {
               style={{
                 margin: '0 0 1rem 0',
                 fontSize: '1.1rem',
-                color: '#00ffaa',
+                color: colors.brand.accent[500],
                 textTransform: 'uppercase',
                 letterSpacing: '1px',
               }}
@@ -959,10 +1005,13 @@ export function TerraFusionQuantumOS() {
                   padding: '1rem',
                   background:
                     viewMode === item.mode
-                      ? 'linear-gradient(135deg, #00ffff, #0099ff)'
-                      : 'rgba(0, 255, 255, 0.1)',
-                  color: viewMode === item.mode ? '#0a0e1a' : '#00ffff',
-                  border: `1px solid ${viewMode === item.mode ? '#00ffff' : 'rgba(0, 255, 255, 0.3)'}`,
+                      ? `linear-gradient(135deg, ${colors.brand.quantum[500]}, ${colors.brand.primary[500]})`
+                      : colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                  color:
+                    viewMode === item.mode
+                      ? colors.semantic.background.secondary
+                      : colors.brand.quantum[500],
+                  border: `1px solid ${viewMode === item.mode ? colors.brand.quantum[500] : colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
                   borderRadius: '8px',
                   cursor: 'pointer',
                   fontWeight: viewMode === item.mode ? 'bold' : 'normal',
@@ -975,12 +1024,18 @@ export function TerraFusionQuantumOS() {
                 }}
                 onMouseEnter={(e) => {
                   if (viewMode !== item.mode) {
-                    e.currentTarget.style.background = 'rgba(0, 255, 255, 0.2)';
+                    e.currentTarget.style.background = colors.utils.withOpacity(
+                      colors.brand.quantum[500],
+                      0.2
+                    );
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (viewMode !== item.mode) {
-                    e.currentTarget.style.background = 'rgba(0, 255, 255, 0.1)';
+                    e.currentTarget.style.background = colors.utils.withOpacity(
+                      colors.brand.quantum[500],
+                      0.1
+                    );
                   }
                 }}
               >
@@ -1054,10 +1109,12 @@ export function TerraFusionQuantumOS() {
               style={{
                 padding: '0.5rem 1rem',
                 background: showEliteToolset
-                  ? 'linear-gradient(135deg, #00ffff, #0099ff)'
-                  : 'rgba(0, 255, 255, 0.1)',
-                color: showEliteToolset ? '#0a0e1a' : '#00ffff',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
+                  ? `linear-gradient(135deg, ${colors.brand.quantum[500]}, ${colors.brand.primary[500]})`
+                  : colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                color: showEliteToolset
+                  ? colors.semantic.background.void
+                  : colors.brand.quantum[500],
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
                 borderRadius: '6px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
@@ -1069,9 +1126,9 @@ export function TerraFusionQuantumOS() {
             <button
               style={{
                 padding: '0.5rem 1rem',
-                background: 'rgba(0, 255, 136, 0.1)',
-                color: '#00ff88',
-                border: '1px solid rgba(0, 255, 136, 0.3)',
+                background: colors.utils.withOpacity(colors.brand.accent[500], 0.1),
+                color: colors.brand.accent[500],
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.accent[500], 0.3)}`,
                 borderRadius: '6px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
@@ -1092,11 +1149,13 @@ export function TerraFusionQuantumOS() {
                     width: '8px',
                     height: '8px',
                     borderRadius: '50%',
-                    background: '#00ff88',
-                    boxShadow: '0 0 10px rgba(0, 255, 136, 0.6)',
+                    background: colors.brand.accent[500],
+                    boxShadow: `0 0 10px ${colors.utils.withOpacity(colors.brand.accent[500], 0.6)}`,
                   }}
                 ></div>
-                <span style={{ fontSize: '0.8rem', color: '#00ff88' }}>API Active</span>
+                <span style={{ fontSize: '0.8rem', color: colors.brand.accent[500] }}>
+                  API Active
+                </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <div
@@ -1104,16 +1163,18 @@ export function TerraFusionQuantumOS() {
                     width: '8px',
                     height: '8px',
                     borderRadius: '50%',
-                    background: '#00ffff',
-                    boxShadow: '0 0 10px rgba(0, 255, 255, 0.6)',
+                    background: colors.brand.quantum[500],
+                    boxShadow: `0 0 10px ${colors.utils.withOpacity(colors.brand.quantum[500], 0.6)}`,
                   }}
                 ></div>
-                <span style={{ fontSize: '0.8rem', color: '#00ffff' }}>AI Conscious</span>
+                <span style={{ fontSize: '0.8rem', color: colors.brand.quantum[500] }}>
+                  AI Conscious
+                </span>
               </div>
             </div>
 
             {/* System Info */}
-            <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#00ffaa' }}>
+            <div style={{ fontSize: '0.8rem', opacity: 0.7, color: colors.brand.accent[500] }}>
               Benton County Assessment System • TerraFusion OS v1.0 • Government. Transcended.
             </div>
           </div>
@@ -1134,7 +1195,7 @@ export function TerraFusionQuantumOS() {
               right: '0',
               bottom: '0',
               zIndex: 1000,
-              background: 'rgba(0, 0, 0, 0.9)',
+              background: colors.semantic.background.overlay,
               backdropFilter: 'blur(10px)',
               display: 'flex',
               alignItems: 'center',
@@ -1145,8 +1206,8 @@ export function TerraFusionQuantumOS() {
           >
             <div
               style={{
-                background: 'linear-gradient(135deg, #0a0e1a 0%, #1a202c 100%)',
-                border: '2px solid rgba(0, 255, 255, 0.3)',
+                background: colors.gradient.void,
+                border: `2px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
                 borderRadius: '16px',
                 padding: '2rem',
                 maxWidth: '95vw',
@@ -1162,9 +1223,9 @@ export function TerraFusionQuantumOS() {
                   position: 'absolute',
                   top: '1rem',
                   right: '1rem',
-                  background: 'rgba(255, 0, 0, 0.2)',
-                  color: '#ff6b6b',
-                  border: '1px solid rgba(255, 0, 0, 0.3)',
+                  background: colors.utils.withOpacity(colors.state.error[500], 0.2),
+                  color: colors.state.error[300],
+                  border: `1px solid ${colors.utils.withOpacity(colors.state.error[500], 0.3)}`,
                   borderRadius: '50%',
                   width: '40px',
                   height: '40px',

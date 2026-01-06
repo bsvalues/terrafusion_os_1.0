@@ -10,7 +10,6 @@
  * @vitest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 // Vitest imports removed - Jest globals used
@@ -18,14 +17,19 @@ import '@testing-library/jest-dom';
 
 import { Taskbar } from '../Taskbar';
 
-
-
 // Mock stores
 jest.mock('../../../stores/desktopStore', () => ({
   useDesktopStore: jest.fn(() => ({
     windows: [],
     activeWindowId: null,
     focusWindow: jest.fn(),
+  })),
+  useVirtualDesktops: jest.fn(() => ({
+    currentDesktopId: 'desktop-1',
+    desktops: [{ id: 'desktop-1', name: 'Desktop 1' }],
+    addDesktop: jest.fn(),
+    removeDesktop: jest.fn(),
+    switchDesktop: jest.fn(),
   })),
 }));
 
@@ -181,7 +185,7 @@ describe('System Tray Integration', () => {
 
       const systemTray = screen.getByTestId('system-tray');
       expect(systemTray).toHaveAttribute('role', 'group');
-      expect(systemTray).toHaveAttribute('aria-label', 'System tray');
+      expect(systemTray).toHaveAttribute('aria-label', 'System Tray');
     });
 
     it('all indicators are keyboard accessible', () => {

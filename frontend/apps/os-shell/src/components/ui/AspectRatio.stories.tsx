@@ -97,7 +97,7 @@ export const Default: Story = {
         style={{
           marginTop: '12px',
           fontSize: '14px',
-          color: '#888',
+          color: 'var(--gray-400)',
         }}
       >
         Standard HD video format - perfect for YouTube, presentations, and modern displays
@@ -131,7 +131,7 @@ export const CommonRatios: Story = {
           style={{
             marginTop: '8px',
             fontSize: '13px',
-            color: '#888',
+            color: 'var(--gray-400)',
           }}
         >
           HD Video / Modern displays
@@ -150,7 +150,7 @@ export const CommonRatios: Story = {
           style={{
             marginTop: '8px',
             fontSize: '13px',
-            color: '#888',
+            color: 'var(--gray-400)',
           }}
         >
           Classic photos / Old TV
@@ -169,7 +169,7 @@ export const CommonRatios: Story = {
           style={{
             marginTop: '8px',
             fontSize: '13px',
-            color: '#888',
+            color: 'var(--gray-400)',
           }}
         >
           Square / Profile avatars
@@ -188,7 +188,7 @@ export const CommonRatios: Story = {
           style={{
             marginTop: '8px',
             fontSize: '13px',
-            color: '#888',
+            color: 'var(--gray-400)',
           }}
         >
           Cinema / Ultra-wide monitors
@@ -207,7 +207,7 @@ export const CommonRatios: Story = {
           style={{
             marginTop: '8px',
             fontSize: '13px',
-            color: '#888',
+            color: 'var(--gray-400)',
           }}
         >
           DSLR cameras / Standard prints
@@ -230,7 +230,7 @@ export const CommonRatios: Story = {
           style={{
             marginTop: '8px',
             fontSize: '13px',
-            color: '#888',
+            color: 'var(--gray-400)',
           }}
         >
           Vertical video / Stories
@@ -313,7 +313,7 @@ export const VideoEmbed: Story = {
         style={{
           marginTop: '12px',
           fontSize: '14px',
-          color: '#888',
+          color: 'var(--gray-400)',
         }}
       >
         AspectRatio ensures embedded videos maintain proper proportions without black bars or
@@ -362,10 +362,10 @@ export const WithOverlay: Story = {
               <button
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#0099ff',
+                  backgroundColor: 'var(--tf-network-blue)',
                   border: 'none',
                   borderRadius: '6px',
-                  color: '#fff',
+                  color: 'var(--tf-text-primary)',
                   fontWeight: 500,
                   cursor: 'pointer',
                 }}
@@ -378,7 +378,7 @@ export const WithOverlay: Story = {
                   backgroundColor: 'rgba(255,255,255,0.2)',
                   border: '1px solid rgba(255,255,255,0.3)',
                   borderRadius: '6px',
-                  color: '#fff',
+                  color: 'var(--tf-text-primary)',
                   fontWeight: 500,
                   cursor: 'pointer',
                   backdropFilter: 'blur(10px)',
@@ -419,7 +419,7 @@ export const RealWorldGallery: Story = {
       <p
         style={{
           fontSize: '16px',
-          color: '#888',
+          color: 'var(--gray-400)',
           marginBottom: '32px',
         }}
       >
@@ -485,7 +485,7 @@ export const RealWorldGallery: Story = {
             <p
               style={{
                 fontSize: '12px',
-                color: '#888',
+                color: 'var(--gray-400)',
                 marginTop: '4px',
               }}
             >
@@ -535,7 +535,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -564,7 +564,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -592,7 +592,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -620,7 +620,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -663,7 +663,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -691,7 +691,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -719,7 +719,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -747,7 +747,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -895,7 +895,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   1.778
@@ -931,7 +931,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   1.333
@@ -967,7 +967,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   1.0
@@ -1003,7 +1003,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   2.333
@@ -1039,7 +1039,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   1.5
@@ -1071,7 +1071,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   0.5625

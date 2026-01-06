@@ -44,7 +44,7 @@ export function DesktopBackground({ className = '' }: DesktopBackgroundProps) {
       data-testid='desktop-background'
       className={`
         absolute inset-0 w-full h-full
-        bg-gradient-to-br from-[#0a0e1a] via-[#0d1117] to-[#161b22]
+        bg-gradient-to-br from-[var(--tf-void-black)] via-[var(--tf-surface-dark)] to-[var(--tf-surface-darker)]
         ${className}
       `.trim()}
       aria-hidden='true'

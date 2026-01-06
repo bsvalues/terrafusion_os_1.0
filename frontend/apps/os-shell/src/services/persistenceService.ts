@@ -1,14 +1,14 @@
 /**
  * TerraFusion OS Persistence Service
- * 
+ *
  * Handles saving and loading desktop state to/from localStorage.
  * Provides error handling, version migration, and debounced saves.
- * 
+ *
  * @module services/persistenceService
  * @see SUCCESS CRITERIA Phase 5: State Persistence
  */
 
-import type { WindowState, SnapZone, Position, Size } from '../stores/desktopStore';
+import type { Position, Size, SnapZone, WindowState } from '../stores/desktopStore';
 
 // ============================================================================
 // Constants
@@ -17,6 +17,7 @@ import type { WindowState, SnapZone, Position, Size } from '../stores/desktopSto
 export const STORAGE_KEYS = {
   DESKTOP: 'terrafusion:desktop',
   START_MENU: 'terrafusion:startmenu',
+  THEME: 'terrafusion:theme',
   VERSION: 'terrafusion:version',
 } as const;
 
@@ -27,6 +28,16 @@ const DEBOUNCE_MS = 300;
 // ============================================================================
 // Types
 // ============================================================================
+
+/**
+ * Persisted theme state
+ */
+export interface PersistedThemeState {
+  theme: 'light' | 'dark' | 'system';
+  highContrast: boolean;
+  reducedMotion: boolean;
+  fontSize: number;
+}
 
 /**
  * Persisted window state (stripped of runtime properties)
@@ -74,7 +85,7 @@ function debounce<T extends (...args: Parameters<T>) => void>(
   delay: number
 ): (...args: Parameters<T>) => void {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  
+
   return (...args: Parameters<T>) => {
     if (timeoutId) {
       clearTimeout(timeoutId);
@@ -95,10 +106,10 @@ function debounce<T extends (...args: Parameters<T>) => void>(
  */
 function isValidDesktopState(data: unknown): data is PersistedDesktopState {
   if (!data || typeof data !== 'object') return false;
-  
+
   const obj = data as Record<string, unknown>;
   if (!Array.isArray(obj.windows)) return false;
-  
+
   // Validate each window has required properties
   return obj.windows.every((w: unknown) => {
     if (!w || typeof w !== 'object') return false;
@@ -119,11 +130,24 @@ function isValidDesktopState(data: unknown): data is PersistedDesktopState {
  */
 function isValidStartMenuState(data: unknown): data is PersistedStartMenuState {
   if (!data || typeof data !== 'object') return false;
-  
+
+  const obj = data as Record<string, unknown>;
+  return Array.isArray(obj.pinnedAppIds) && Array.isArray(obj.recentModuleIds);
+}
+
+/**
+ * Validate theme state structure
+ */
+function isValidThemeState(data: unknown): data is PersistedThemeState {
+  if (!data || typeof data !== 'object') return false;
+
   const obj = data as Record<string, unknown>;
   return (
-    Array.isArray(obj.pinnedAppIds) &&
-    Array.isArray(obj.recentModuleIds)
+    typeof obj.theme === 'string' &&
+    ['light', 'dark', 'system'].includes(obj.theme as string) &&
+    typeof obj.highContrast === 'boolean' &&
+    typeof obj.reducedMotion === 'boolean' &&
+    typeof obj.fontSize === 'number'
   );
 }
 
@@ -153,7 +177,7 @@ class PersistenceService {
     try {
       // Strip runtime-only properties from windows
       const cleaned: PersistedDesktopState = {
-        windows: state.windows.map(w => ({
+        windows: state.windows.map((w) => ({
           moduleId: w.moduleId,
           title: w.title,
           icon: w.icon,
@@ -188,7 +212,7 @@ class PersistenceService {
       if (!raw) return null;
 
       const parsed = JSON.parse(raw);
-      
+
       if (!isValidDesktopState(parsed)) {
         console.warn('[PersistenceService] Invalid desktop state schema');
         return null;
@@ -230,7 +254,7 @@ class PersistenceService {
       if (!raw) return null;
 
       const parsed = JSON.parse(raw);
-      
+
       if (!isValidStartMenuState(parsed)) {
         console.warn('[PersistenceService] Invalid start menu state schema');
         return null;
@@ -239,6 +263,48 @@ class PersistenceService {
       return parsed;
     } catch (error) {
       console.warn('[PersistenceService] Failed to load start menu state:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Save theme state to localStorage
+   */
+  saveThemeState(state: PersistedThemeState): void {
+    try {
+      localStorage.setItem(STORAGE_KEYS.THEME, JSON.stringify(state));
+      localStorage.setItem(STORAGE_KEYS.VERSION, String(CURRENT_VERSION));
+    } catch (error) {
+      console.warn('[PersistenceService] Failed to save theme state:', error);
+    }
+  }
+
+  /**
+   * Debounced version of saveThemeState
+   */
+  saveThemeStateDebounced = debounce(
+    (state: PersistedThemeState) => this.saveThemeState(state),
+    DEBOUNCE_MS
+  );
+
+  /**
+   * Load theme state from localStorage
+   */
+  loadThemeState(): PersistedThemeState | null {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.THEME);
+      if (!raw) return null;
+
+      const parsed = JSON.parse(raw);
+
+      if (!isValidThemeState(parsed)) {
+        console.warn('[PersistenceService] Invalid theme state schema');
+        return null;
+      }
+
+      return parsed;
+    } catch (error) {
+      console.warn('[PersistenceService] Failed to load theme state:', error);
       return null;
     }
   }
@@ -254,11 +320,11 @@ class PersistenceService {
       };
 
       // Remove if already exists (will re-add at front)
-      const filtered = state.recentModuleIds.filter(id => id !== moduleId);
-      
+      const filtered = state.recentModuleIds.filter((id) => id !== moduleId);
+
       // Add to front
       const updated = [moduleId, ...filtered];
-      
+
       // Limit to MAX_RECENT
       const limited = updated.slice(0, MAX_RECENT_MODULES);
 
@@ -278,6 +344,7 @@ class PersistenceService {
     try {
       localStorage.removeItem(STORAGE_KEYS.DESKTOP);
       localStorage.removeItem(STORAGE_KEYS.START_MENU);
+      localStorage.removeItem(STORAGE_KEYS.THEME);
       localStorage.removeItem(STORAGE_KEYS.VERSION);
     } catch (error) {
       console.warn('[PersistenceService] Failed to clear state:', error);
@@ -291,7 +358,7 @@ class PersistenceService {
     try {
       const storedVersion = localStorage.getItem(STORAGE_KEYS.VERSION);
       if (!storedVersion) return false;
-      
+
       return parseInt(storedVersion, 10) < CURRENT_VERSION;
     } catch {
       return false;

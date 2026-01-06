@@ -672,11 +672,11 @@ MIT-Grade CSS Engineering & Performance Optimization
 @media print {
   .tf-card-advanced {
     box-shadow: none;
-    border: 1px solid #000;
+    border: 1px solid var(--tf-void-black);
   }
 
   .tf-button {
     box-shadow: none;
-    border: 1px solid #000;
+    border: 1px solid var(--tf-void-black);
   }
 }

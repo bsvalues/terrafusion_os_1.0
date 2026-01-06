@@ -186,14 +186,14 @@ export const ModuleLauncher: React.FC = () => {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      'AI Assistant': '#1976d2',
-      Automation: '#9c27b0',
-      'Property Management': '#2e7d32',
-      Financial: '#ed6c02',
-      Geographic: '#0288d1',
-      Compliance: '#d32f2f',
+      'AI Assistant': 'var(--tf-info-blue)',
+      Automation: 'var(--tf-accent-quantum)',
+      'Property Management': 'var(--tf-success-dark)',
+      Financial: 'var(--tf-warning-dark)',
+      Geographic: 'var(--tf-info-light)',
+      Compliance: 'var(--tf-error-dark)',
     };
-    return colors[category] || '#757575';
+    return colors[category] || 'var(--gray-500)';
   };
 
   const getStatusColor = (status: string) => {

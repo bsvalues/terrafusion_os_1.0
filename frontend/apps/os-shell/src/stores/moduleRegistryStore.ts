@@ -1,12 +1,12 @@
 /**
  * TerraFusion OS Module Registry Store
- * 
+ *
  * Zustand store for managing the module registry including:
  * - Module definitions from API
  * - Loading states per module
  * - Integration with desktopStore for window management
  * - Selectors for filtering/grouping modules
- * 
+ *
  * @module stores/moduleRegistryStore
  * @see SUCCESS CRITERIA Phase 3.1
  */
@@ -54,6 +54,7 @@ export interface ModuleRegistryState {
 
   // Actions
   registerModules: (modules: ModuleDefinition[]) => void;
+  registerModule: (module: ModuleDefinition) => void;
   launchModule: (moduleId: string) => Promise<string | null>;
   closeModule: (moduleId: string) => void;
   setModuleError: (moduleId: string, error: string) => void;
@@ -88,7 +89,7 @@ export const useModuleRegistryStore = create<ModuleRegistryState>()(
         const modulesMap = new Map<string, ModuleDefinition>();
         const loadStatesMap = new Map<string, ModuleLoadState>();
 
-        modules.forEach(module => {
+        modules.forEach((module) => {
           modulesMap.set(module.id, module);
           loadStatesMap.set(module.id, {
             status: 'idle',
@@ -102,6 +103,26 @@ export const useModuleRegistryStore = create<ModuleRegistryState>()(
           loadStates: loadStatesMap,
           isInitialized: true,
           initError: null,
+        });
+      },
+
+      registerModule: (module: ModuleDefinition) => {
+        const { modules, loadStates } = get();
+
+        // Create new maps to ensure immutability
+        const newModules = new Map(modules);
+        const newLoadStates = new Map(loadStates);
+
+        newModules.set(module.id, module);
+        newLoadStates.set(module.id, {
+          status: 'idle',
+          error: null,
+          windowId: null,
+        });
+
+        set({
+          modules: newModules,
+          loadStates: newLoadStates,
         });
       },
 
@@ -139,11 +160,7 @@ export const useModuleRegistryStore = create<ModuleRegistryState>()(
         try {
           // Open window in desktop store
           const desktopState = useDesktopStore.getState();
-          const windowId = desktopState.openWindow(
-            module.id,
-            module.displayName,
-            module.icon
-          );
+          const windowId = desktopState.openWindow(module.id, module.displayName, module.icon);
 
           // Update load state to loaded
           set({
@@ -171,7 +188,7 @@ export const useModuleRegistryStore = create<ModuleRegistryState>()(
 
       closeModule: (moduleId: string) => {
         const { loadStates } = get();
-        
+
         if (!loadStates.has(moduleId)) {
           return; // Module not registered, do nothing
         }
@@ -187,7 +204,7 @@ export const useModuleRegistryStore = create<ModuleRegistryState>()(
 
       setModuleError: (moduleId: string, error: string) => {
         const { loadStates } = get();
-        
+
         set({
           loadStates: new Map(loadStates).set(moduleId, {
             status: 'error',
@@ -206,7 +223,7 @@ export const useModuleRegistryStore = create<ModuleRegistryState>()(
         const { modules } = get();
         const grouped: Record<string, ModuleDefinition[]> = {};
 
-        modules.forEach(module => {
+        modules.forEach((module) => {
           if (!grouped[module.category]) {
             grouped[module.category] = [];
           }
@@ -218,17 +235,17 @@ export const useModuleRegistryStore = create<ModuleRegistryState>()(
 
       getModulesByTier: (tier: ModuleTier): ModuleDefinition[] => {
         const { modules } = get();
-        return Array.from(modules.values()).filter(m => m.tier === tier);
+        return Array.from(modules.values()).filter((m) => m.tier === tier);
       },
 
       getActiveModules: (): ModuleDefinition[] => {
         const { modules } = get();
-        return Array.from(modules.values()).filter(m => m.status === 'active');
+        return Array.from(modules.values()).filter((m) => m.status === 'active');
       },
 
       getCoreModules: (): ModuleDefinition[] => {
         const { modules } = get();
-        return Array.from(modules.values()).filter(m => m.isCore === true);
+        return Array.from(modules.values()).filter((m) => m.isCore === true);
       },
 
       getAllModulesArray: (): ModuleDefinition[] => {
@@ -262,31 +279,28 @@ export const useModuleRegistryStore = create<ModuleRegistryState>()(
 /**
  * Hook to get initialization status
  */
-export const useModuleRegistryInitialized = () => 
+export const useModuleRegistryInitialized = () =>
   useModuleRegistryStore((state) => state.isInitialized);
 
 /**
  * Hook to get all modules as array
  */
-export const useAllModules = () => 
-  useModuleRegistryStore((state) => state.getAllModulesArray());
+export const useAllModules = () => useModuleRegistryStore((state) => state.getAllModulesArray());
 
 /**
  * Hook to get active modules
  */
-export const useActiveModules = () => 
-  useModuleRegistryStore((state) => state.getActiveModules());
+export const useActiveModules = () => useModuleRegistryStore((state) => state.getActiveModules());
 
 /**
  * Hook to get core modules
  */
-export const useCoreModules = () => 
-  useModuleRegistryStore((state) => state.getCoreModules());
+export const useCoreModules = () => useModuleRegistryStore((state) => state.getCoreModules());
 
 /**
  * Hook to get module registry actions
  */
-export const useModuleRegistryActions = () => 
+export const useModuleRegistryActions = () =>
   useModuleRegistryStore((state) => ({
     registerModules: state.registerModules,
     launchModule: state.launchModule,
@@ -297,13 +311,13 @@ export const useModuleRegistryActions = () =>
 /**
  * Hook to check if a specific module is loaded
  */
-export const useIsModuleLoaded = (moduleId: string) => 
+export const useIsModuleLoaded = (moduleId: string) =>
   useModuleRegistryStore((state) => state.isModuleLoaded(moduleId));
 
 /**
  * Hook to check if a specific module is loading
  */
-export const useIsModuleLoading = (moduleId: string) => 
+export const useIsModuleLoading = (moduleId: string) =>
   useModuleRegistryStore((state) => state.isModuleLoading(moduleId));
 
 export default useModuleRegistryStore;

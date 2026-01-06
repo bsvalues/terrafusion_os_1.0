@@ -29,28 +29,28 @@ export const HarvardMITFramework: React.FC<HarvardMITFrameworkProps> = ({
       algorithms: ['Bayesian Inference', 'Causal Inference', 'Time Series Analysis'],
       accuracy: 0.995,
       position: [0, 2, 0] as [number, number, number],
-      color: '#8B0000',
+      color: 'var(--tf-error-dark)',
     },
     {
       name: 'MIT Quantum Computing',
       algorithms: ['QAOA', 'VQE', 'Quantum Machine Learning'],
       accuracy: 0.998,
       position: [0, 0, 0] as [number, number, number],
-      color: '#FF6B35',
+      color: 'var(--tf-accent-orange)',
     },
     {
       name: 'Advanced Analytics',
       algorithms: ['Neural Networks', 'Ensemble Methods', 'Deep Learning'],
       accuracy: 0.992,
       position: [0, -2, 0] as [number, number, number],
-      color: '#004080',
+      color: 'var(--tf-network-dark)',
     },
   ];
 
   return (
     <group ref={frameworkRef} position={position}>
       {/* Framework Title */}
-      <Text position={[0, 4, 0]} fontSize={0.4} color='#FFD700' anchorX='center' anchorY='middle'>
+      <Text position={[0, 4, 0]} fontSize={0.4} color='var(--tf-accent-yellow)' anchorX='center' anchorY='middle'>
         Harvard/MIT Framework
       </Text>
 
@@ -58,12 +58,12 @@ export const HarvardMITFramework: React.FC<HarvardMITFrameworkProps> = ({
       {researchMode && (
         <group position={[3, 3.5, 0]}>
           <Sphere args={[0.1]}>
-            <meshStandardMaterial color='#FFD700' emissive='#CC8800' />
+            <meshStandardMaterial color='var(--tf-accent-yellow)' emissive='var(--tf-warning-dark)' />
           </Sphere>
           <Text
             position={[0.3, 0, 0]}
             fontSize={0.15}
-            color='#FFD700'
+            color='var(--tf-accent-yellow)'
             anchorX='left'
             anchorY='middle'
           >
@@ -90,7 +90,7 @@ export const HarvardMITFramework: React.FC<HarvardMITFrameworkProps> = ({
           <Text
             position={[0, 0.5, 0.2]}
             fontSize={0.2}
-            color='#FFFFFF'
+            color='var(--tf-text-primary)'
             anchorX='center'
             anchorY='middle'
             maxWidth={3.5}
@@ -102,7 +102,7 @@ export const HarvardMITFramework: React.FC<HarvardMITFrameworkProps> = ({
           <Text
             position={[0, 0.2, 0.2]}
             fontSize={0.15}
-            color='#00FF88'
+            color='var(--tf-accent-success)'
             anchorX='center'
             anchorY='middle'
           >
@@ -115,7 +115,7 @@ export const HarvardMITFramework: React.FC<HarvardMITFrameworkProps> = ({
               key={algorithm}
               position={[0, -0.1 - algIndex * 0.15, 0.2]}
               fontSize={0.08}
-              color='#CCCCCC'
+              color='var(--gray-300)'
               anchorX='center'
               anchorY='middle'
               maxWidth={3.5}
@@ -128,12 +128,12 @@ export const HarvardMITFramework: React.FC<HarvardMITFrameworkProps> = ({
           {quantumEnhanced && framework.name.includes('MIT') && (
             <group position={[1.8, 0.5, 0.2]}>
               <Sphere args={[0.05]}>
-                <meshStandardMaterial color='#00FFFF' emissive='#0088AA' />
+                <meshStandardMaterial color='var(--tf-transcend-cyan)' emissive='var(--tf-network-dark)' />
               </Sphere>
               <Text
                 position={[0.15, 0, 0]}
                 fontSize={0.06}
-                color='#00FFFF'
+                color='var(--tf-transcend-cyan)'
                 anchorX='left'
                 anchorY='middle'
               >
@@ -150,7 +150,7 @@ export const HarvardMITFramework: React.FC<HarvardMITFrameworkProps> = ({
           <Text
             position={[0, 0.3, 0]}
             fontSize={0.15}
-            color='#FFD700'
+            color='var(--tf-accent-yellow)'
             anchorX='center'
             anchorY='middle'
           >
@@ -160,7 +160,7 @@ export const HarvardMITFramework: React.FC<HarvardMITFrameworkProps> = ({
           <Text
             position={[0, 0, 0]}
             fontSize={0.1}
-            color='#00FF88'
+            color='var(--tf-accent-success)'
             anchorX='center'
             anchorY='middle'
           >
@@ -170,7 +170,7 @@ export const HarvardMITFramework: React.FC<HarvardMITFrameworkProps> = ({
           <Text
             position={[0, -0.2, 0]}
             fontSize={0.1}
-            color='#00FF88'
+            color='var(--tf-accent-success)'
             anchorX='center'
             anchorY='middle'
           >
@@ -180,7 +180,7 @@ export const HarvardMITFramework: React.FC<HarvardMITFrameworkProps> = ({
           <Text
             position={[0, -0.4, 0]}
             fontSize={0.1}
-            color='#FFAA00'
+            color='var(--tf-accent-warning)'
             anchorX='center'
             anchorY='middle'
           >

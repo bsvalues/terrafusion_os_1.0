@@ -61,7 +61,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
       role="alert"
       className={cn(
         'w-full h-full flex flex-col items-center justify-center',
-        'bg-gradient-to-b from-[#1a0a0a] to-[#0a0e1a]',
+        'bg-gradient-to-b from-[var(--tf-surface-darker)] to-[var(--tf-void-black)]',
         'p-6 text-center'
       )}
     >
@@ -93,7 +93,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
       </h3>
 
       {/* Module Name */}
-      <p className="text-[#00ffee] font-medium mb-2">
+      <p className="text-[var(--tf-transcend-highlight)] font-medium mb-2">
         {moduleName}
       </p>
 
@@ -109,9 +109,9 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
           aria-label="Reload module"
           className={cn(
             'px-4 py-2 rounded-md',
-            'bg-[#00ffee]/20 text-[#00ffee] border border-[#00ffee]/30',
-            'hover:bg-[#00ffee]/30 transition-colors',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00ffee]'
+            'bg-[var(--tf-transcend-highlight)]/20 text-[var(--tf-transcend-highlight)] border border-[var(--tf-transcend-highlight)]/30',
+            'hover:bg-[var(--tf-transcend-highlight)]/30 transition-colors',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
           )}
         >
           🔄 Reload Module

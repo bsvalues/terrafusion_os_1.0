@@ -166,7 +166,7 @@ MIT PhD-Level Machine Learning CSS Architecture
   }
 
   /* Simplify colors */
-  --tf-primary: #0066cc;
+  --tf-primary: var(--tf-network-blue);
   --tf-gradient-hero: var(--tf-primary);
 }
 

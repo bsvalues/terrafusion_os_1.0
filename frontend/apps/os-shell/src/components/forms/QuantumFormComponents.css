@@ -15,7 +15,7 @@
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   margin-bottom: 0.5rem;
 }
 
@@ -39,16 +39,16 @@
 
 .quantum-select-trigger:focus {
   outline: none;
-  border-color: #00ffff;
+  border-color: var(--tf-quantum-cyan);
   box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.5);
 }
 
 .quantum-select-trigger.quantum-select-error {
-  border-color: #ff4444;
+  border-color: var(--error-red);
 }
 
 .quantum-select-trigger.quantum-select-error:focus {
-  border-color: #ff4444;
+  border-color: var(--error-red);
   box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.5);
 }
 
@@ -67,7 +67,7 @@
 }
 
 .quantum-select-trigger.quantum-select-open {
-  border-color: #00ffff;
+  border-color: var(--tf-quantum-cyan);
   box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.5);
 }
 
@@ -77,11 +77,11 @@
 }
 
 .quantum-select-placeholder {
-  color: #94a3b8;
+  color: var(--gray-400);
 }
 
 .quantum-select-chevron {
-  color: #94a3b8;
+  color: var(--gray-400);
   transition: transform 200ms ease;
 }
 
@@ -96,7 +96,7 @@
   right: 0;
   z-index: 50;
   margin-top: 0.25rem;
-  background: #1e293b;
+  background: var(--terra-slate);
   border: 1px solid #475569;
   border-radius: 0.5rem;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
@@ -122,17 +122,17 @@
 }
 
 .quantum-select-option:hover {
-  background-color: #334155;
+  background-color: var(--gray-700);
 }
 
 .quantum-select-option:focus {
   outline: none;
-  background-color: #334155;
+  background-color: var(--gray-700);
 }
 
 .quantum-select-option-selected {
   background-color: rgba(0, 255, 255, 0.2);
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .quantum-select-option-disabled {
@@ -165,7 +165,7 @@
 }
 
 .quantum-checkbox-label.quantum-checkbox-error {
-  color: #ff4444;
+  color: var(--error-red);
 }
 
 .quantum-checkbox-wrapper {
@@ -192,7 +192,7 @@
 }
 
 .quantum-checkbox-box.quantum-checkbox-checked {
-  border-color: #00ffff;
+  border-color: var(--tf-quantum-cyan);
   background: rgba(0, 255, 255, 0.2);
 }
 
@@ -206,7 +206,7 @@
 }
 
 .quantum-checkbox-checkmark {
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .quantum-checkbox-text {
@@ -216,7 +216,7 @@
 
 /* ═══ FORM ERROR STYLES ═══ */
 .quantum-form-error {
-  color: #ff4444;
+  color: var(--error-red);
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
@@ -231,7 +231,7 @@
 .quantum-radio-group-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   margin-bottom: 0.75rem;
 }
 
@@ -289,7 +289,7 @@
 }
 
 .quantum-radio-circle.quantum-radio-selected {
-  border-color: #00ffff;
+  border-color: var(--tf-quantum-cyan);
   background: rgba(0, 255, 255, 0.2);
 }
 
@@ -305,7 +305,7 @@
 .quantum-radio-dot {
   width: 0.5rem;
   height: 0.5rem;
-  background: #00ffff;
+  background: var(--tf-quantum-cyan);
   border-radius: 50%;
 }
 
@@ -326,7 +326,7 @@
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   margin-bottom: 0.5rem;
 }
 
@@ -343,7 +343,7 @@
 }
 
 .quantum-textarea::placeholder {
-  color: #94a3b8;
+  color: var(--gray-400);
 }
 
 .quantum-textarea:hover {
@@ -352,16 +352,16 @@
 
 .quantum-textarea:focus {
   outline: none;
-  border-color: #00ffff;
+  border-color: var(--tf-quantum-cyan);
   box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.5);
 }
 
 .quantum-textarea.quantum-textarea-error {
-  border-color: #ff4444;
+  border-color: var(--error-red);
 }
 
 .quantum-textarea.quantum-textarea-error:focus {
-  border-color: #ff4444;
+  border-color: var(--error-red);
   box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.5);
 }
 
@@ -423,11 +423,11 @@
 .quantum-form-group-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .quantum-form-group-description {
-  color: #9ca3af;
+  color: var(--gray-400);
   font-size: 0.875rem;
 }
 
@@ -486,7 +486,7 @@
 
 .quantum-switch-track.quantum-switch-checked {
   background: rgba(0, 255, 255, 0.3);
-  border-color: #00ffff;
+  border-color: var(--tf-quantum-cyan);
 }
 
 .quantum-switch-track.quantum-switch-glow {
@@ -523,7 +523,7 @@
 }
 
 .quantum-switch-checked .quantum-switch-thumb {
-  background: #00ffff;
+  background: var(--tf-quantum-cyan);
 }
 
 .quantum-switch-sm.quantum-switch-checked .quantum-switch-thumb {

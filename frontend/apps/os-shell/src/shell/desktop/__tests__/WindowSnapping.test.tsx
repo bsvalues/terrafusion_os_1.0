@@ -185,7 +185,7 @@ describe('SnapPreview Component', () => {
       const preview = screen.getByTestId('snap-preview');
 
       // Should have cyan border (TerraFusion brand)
-      expect(preview.className).toMatch(/border-cyan|border-\[#00ffee\]/);
+      expect(preview.className).toMatch(/border-cyan|border-\[var(--tf-transcend-highlight)\]/);
     });
 
     it('has translucent background', () => {

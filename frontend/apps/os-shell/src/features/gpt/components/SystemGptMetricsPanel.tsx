@@ -8,6 +8,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { colors } from '@/design-system/tokens/colors';
 import { useEffect, useMemo, useState } from 'react';
 import {
   type CountyId,
@@ -32,7 +33,12 @@ interface SparklineProps {
  * Simple SVG sparkline chart for metrics visualization.
  * No external charting library needed - just minimal SVG.
  */
-function Sparkline({ series, width = 120, height = 32, color = '#00FFFF' }: SparklineProps) {
+function Sparkline({
+  series,
+  width = 120,
+  height = 32,
+  color = colors.brand.transcend[500],
+}: SparklineProps) {
   const points = series.points;
 
   if (points.length === 0) {
@@ -319,7 +325,7 @@ export function SystemGptMetricsPanel({
               <div className='text-[0.65rem] text-slate-500 mb-2'>GPT Latency (avg)</div>
               <Sparkline
                 series={seriesByName['gpt_latency_ms_avg']}
-                color='#00FFFF'
+                color={colors.visualization.sparkline.latency}
                 width={140}
                 height={36}
               />
@@ -332,7 +338,7 @@ export function SystemGptMetricsPanel({
               <div className='text-[0.65rem] text-slate-500 mb-2'>Throughput</div>
               <Sparkline
                 series={seriesByName['requests_per_minute']}
-                color='#00FF88'
+                color={colors.visualization.sparkline.throughput}
                 width={140}
                 height={36}
               />
@@ -345,7 +351,7 @@ export function SystemGptMetricsPanel({
               <div className='text-[0.65rem] text-slate-500 mb-2'>Error Rate</div>
               <Sparkline
                 series={seriesByName['error_rate_percent']}
-                color='#FF6B6B'
+                color={colors.visualization.sparkline.error}
                 width={140}
                 height={36}
               />

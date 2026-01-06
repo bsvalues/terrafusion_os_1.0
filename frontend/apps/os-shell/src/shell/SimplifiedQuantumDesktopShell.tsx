@@ -16,8 +16,8 @@ export function QuantumDesktopShell() {
         left: 0,
         right: 0,
         bottom: 0,
-        background: '#0a0e1a',
-        color: '#00ffff',
+        background: 'var(--tf-void-black)',
+        color: 'var(--tf-quantum-cyan)',
         fontFamily: 'Inter, sans-serif',
         overflow: 'hidden',
       }}
@@ -46,11 +46,11 @@ export function QuantumDesktopShell() {
               width: '48px',
               height: '48px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #00ffff, #0080ff)',
+              background: 'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#0a0e1a',
+              color: 'var(--tf-void-black)',
               fontWeight: 'bold',
               fontSize: '18px',
             }}
@@ -70,7 +70,7 @@ export function QuantumDesktopShell() {
                 width: '12px',
                 height: '12px',
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #00ffff, #0080ff)',
+                background: 'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue))',
                 animation: 'pulse 2s ease-in-out infinite',
               }}
             />
@@ -81,11 +81,11 @@ export function QuantumDesktopShell() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '12px', opacity: 0.7 }}>Performance</div>
-              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#00ff88' }}>120fps</div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--success-green)' }}>120fps</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '12px', opacity: 0.7 }}>Security</div>
-              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#00ff88' }}>MAX</div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--success-green)' }}>MAX</div>
             </div>
           </div>
         </div>
@@ -108,7 +108,7 @@ export function QuantumDesktopShell() {
           style={{
             fontSize: '4rem',
             fontWeight: 'bold',
-            background: 'linear-gradient(135deg, #00ffff, #0080ff, #00ff88)',
+            background: 'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue), var(--success-green))',
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -204,7 +204,7 @@ export function QuantumDesktopShell() {
                   fontSize: '1.2rem',
                   fontWeight: 'bold',
                   marginBottom: '8px',
-                  color: '#00ffff',
+                  color: 'var(--tf-quantum-cyan)',
                 }}
               >
                 {module.name}
@@ -221,9 +221,9 @@ export function QuantumDesktopShell() {
                   fontWeight: 'bold',
                   background:
                     module.status === 'ACTIVE'
-                      ? 'linear-gradient(135deg, #00ff88, #00ffaa)'
-                      : 'linear-gradient(135deg, #ffaa00, #ff8800)',
-                  color: '#0a0e1a',
+                      ? 'linear-gradient(135deg, var(--success-green), var(--tf-accent-success))'
+                      : 'linear-gradient(135deg, var(--warning-amber), var(--tf-accent-orange))',
+                  color: 'var(--tf-void-black)',
                 }}
               >
                 {module.status}

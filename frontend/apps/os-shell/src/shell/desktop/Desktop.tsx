@@ -9,16 +9,25 @@
  * @see SUCCESS CRITERIA SC-2.4, SC-3.1, SC-3.11, SC-5.1, SC-7, SC-9
  */
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { colors } from '../../design-system/tokens/colors';
+import { useContextMenu } from '../../hooks/useContextMenu';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
+import { useAltTabStore } from '../../stores/altTabStore';
+import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
+import { SovereignMenu } from '../../ui/navigation/SovereignMenu';
+import { CommandPalette } from '../command-palette/CommandPalette';
 import { ToastContainer } from '../notifications/ToastContainer';
+import { AltTabSwitcher } from './AltTabSwitcher';
 import { DesktopBackground } from './DesktopBackground';
+import { DesktopContextMenu } from './DesktopContextMenu';
 import { DesktopErrorBoundary } from './DesktopErrorBoundary';
 import { DesktopIconGrid } from './DesktopIconGrid';
 import { StartMenu } from './StartMenu';
-import { Taskbar } from './Taskbar';
+import { TaskbarWithNotifications } from './TaskbarWithNotifications';
 import { WindowManager } from './WindowManager';
+import { WindowPeek } from './WindowPeek';
 
 // ============================================================================
 // Types
@@ -69,6 +78,37 @@ export function Desktop({ className = '' }: DesktopProps) {
   const toggleStartMenu = useStartMenuStore((state) => state.toggle);
   const closeStartMenu = useStartMenuStore((state) => state.close); // Used by click-outside handler
 
+  // Subscribe to virtual desktop actions (Priority 9)
+  const nextDesktop = useDesktopStore((state) => state.nextDesktop);
+  const previousDesktop = useDesktopStore((state) => state.previousDesktop);
+
+  // Subscribe to desktop state for Alt+Tab (Priority 14)
+  const windows = useDesktopStore((state) => state.windows);
+  const currentDesktopId = useDesktopStore((state) => state.currentDesktopId);
+  const activeWindowId = useDesktopStore((state) => state.activeWindowId);
+  const focusWindow = useDesktopStore((state) => state.focusWindow);
+
+  // Subscribe to Alt+Tab store (Priority 14)
+  const isAltTabOpen = useAltTabStore((state) => state.isOpen);
+  const openAltTab = useAltTabStore((state) => state.open);
+  const nextAltTab = useAltTabStore((state) => state.next);
+  const prevAltTab = useAltTabStore((state) => state.prev);
+  const commitAltTab = useAltTabStore((state) => state.commit);
+  const cancelAltTab = useAltTabStore((state) => state.cancel);
+
+  // Track Alt key state for Alt+Tab (Priority 14)
+  const altKeyDownRef = useRef(false);
+
+  // ============================================================================
+  // Desktop Context Menu (Priority 6)
+  // ============================================================================
+  const {
+    isOpen: isContextMenuOpen,
+    position: contextMenuPosition,
+    handleContextMenu,
+    closeMenu: closeContextMenu,
+  } = useContextMenu();
+
   // ============================================================================
   // Global Keyboard Shortcuts (Priority 2)
   // Ctrl+1..7 for modules, Ctrl+` for Start Menu, Escape to close
@@ -76,29 +116,141 @@ export function Desktop({ className = '' }: DesktopProps) {
   useKeyboardShortcuts();
 
   // ============================================================================
-  // Keyboard Shortcut Handler (Meta/Windows key only)
+  // Theme Effect (Phase 12)
+  // Applies theme classes and font size to document root
+  // ============================================+ Virtual Desktop switching)
   // Note: Ctrl+1..7, Ctrl+`, and Escape are handled by useKeyboardShortcuts()
+  // Priority 9: Ctrl+Win+Left/Right for virtual desktop switching
+  // Priority 14: Alt+Tab/Shift+Alt+Tab for window switching
   // ============================================================================
+
+  /**
+   * Build candidate window list for Alt+Tab switcher
+   * MVP: Only windows on currentDesktopId, non-minimized, sorted by zIndex descending
+   */
+  const buildAltTabCandidates = useCallback(() => {
+    const eligibleWindows = windows.filter(
+      (w) => w.desktopId === currentDesktopId && w.state !== 'minimized'
+    );
+
+    // Sort by zIndex descending (highest first)
+    eligibleWindows.sort((a, b) => b.zIndex - a.zIndex);
+
+    return eligibleWindows.map((w) => w.id);
+  }, [windows, currentDesktopId]);
 
   const handleMetaKey = useCallback(
     (event: KeyboardEvent) => {
+      // Skip if user is typing in an input field
+      const target = event.target as HTMLElement;
+      if (target && target.tagName) {
+        const tagName = target.tagName.toLowerCase();
+        if (tagName === 'input' || tagName === 'textarea' || target.isContentEditable) {
+          return;
+        }
+      }
+
+      // Alt+Tab - Open Alt+Tab switcher (Priority 14)
+      if (event.altKey && event.key === 'Tab' && !isAltTabOpen) {
+        event.preventDefault();
+        const candidates = buildAltTabCandidates();
+        if (candidates.length > 0) {
+          openAltTab(candidates, activeWindowId);
+          altKeyDownRef.current = true;
+        }
+        return;
+      }
+
+      // Tab - Cycle forward in Alt+Tab (Priority 14)
+      if (isAltTabOpen && event.key === 'Tab' && !event.shiftKey) {
+        event.preventDefault();
+        nextAltTab();
+        return;
+      }
+
+      // Shift+Tab - Cycle backward in Alt+Tab (Priority 14)
+      if (isAltTabOpen && event.key === 'Tab' && event.shiftKey) {
+        event.preventDefault();
+        prevAltTab();
+        return;
+      }
+
+      // Escape - Cancel Alt+Tab (Priority 14)
+      if (isAltTabOpen && event.key === 'Escape') {
+        event.preventDefault();
+        const restoredWindowId = cancelAltTab();
+        altKeyDownRef.current = false;
+        if (restoredWindowId) {
+          focusWindow(restoredWindowId);
+        }
+        return;
+      }
+
       // Meta (Windows key) or OS key - toggle Start Menu
       if (event.key === 'Meta' || event.key === 'OS') {
         event.preventDefault();
         toggleStartMenu();
         return;
       }
+
+      // Ctrl+Win+Left - Previous Desktop (Priority 9)
+      if (event.ctrlKey && (event.metaKey || event.key === 'Meta') && event.key === 'ArrowLeft') {
+        event.preventDefault();
+        previousDesktop();
+        return;
+      }
+
+      // Ctrl+Win+Right - Next Desktop (Priority 9)
+      if (event.ctrlKey && (event.metaKey || event.key === 'Meta') && event.key === 'ArrowRight') {
+        event.preventDefault();
+        nextDesktop();
+        return;
+      }
     },
-    [toggleStartMenu]
+    [
+      toggleStartMenu,
+      nextDesktop,
+      previousDesktop,
+      isAltTabOpen,
+      openAltTab,
+      nextAltTab,
+      prevAltTab,
+      commitAltTab,
+      cancelAltTab,
+      buildAltTabCandidates,
+      activeWindowId,
+      focusWindow,
+    ]
+  );
+
+  /**
+   * Handle Alt key release for committing Alt+Tab selection
+   */
+  const handleKeyUp = useCallback(
+    (event: KeyboardEvent) => {
+      // Alt key released - commit Alt+Tab selection (Priority 14)
+      if (event.key === 'Alt' && isAltTabOpen && altKeyDownRef.current) {
+        event.preventDefault();
+        const selectedWindowId = commitAltTab();
+        altKeyDownRef.current = false;
+        if (selectedWindowId) {
+          focusWindow(selectedWindowId);
+        }
+        return;
+      }
+    },
+    [isAltTabOpen, commitAltTab, focusWindow]
   );
 
   // Register Meta key listener (separate from useKeyboardShortcuts)
   useEffect(() => {
     document.addEventListener('keydown', handleMetaKey);
+    document.addEventListener('keyup', handleKeyUp);
     return () => {
       document.removeEventListener('keydown', handleMetaKey);
+      document.removeEventListener('keyup', handleKeyUp);
     };
-  }, [handleMetaKey]);
+  }, [handleMetaKey, handleKeyUp]);
 
   // ============================================================================
   // Click Outside Handler
@@ -126,28 +278,50 @@ export function Desktop({ className = '' }: DesktopProps) {
       tabIndex={-1}
       className={`
         relative w-screen h-screen overflow-hidden
-        bg-[#0a0e1a]
         ${className}
       `.trim()}
+      style={{
+        backgroundColor: colors.semantic.background.void,
+      }}
       onMouseDown={handleDesktopClick}
+      onContextMenu={handleContextMenu}
     >
       {/* Layer 0: Background */}
       <DesktopBackground />
 
       {/* Layer 0.5: Desktop Icons (Priority 3) */}
-      <DesktopIconGrid className="absolute top-4 left-4 z-[1]" />
+      <DesktopIconGrid className='absolute top-4 left-4 z-[1]' />
 
       {/* Layer 1-999: Windows */}
       <WindowManager />
 
-      {/* Layer 1000: Taskbar */}
-      <Taskbar />
+      {/* Layer 1000: Taskbar (with live notifications) */}
+      <TaskbarWithNotifications />
 
       {/* Layer 1001: Start Menu (conditional) */}
       {isStartMenuOpen && <StartMenu />}
 
+      {/* Layer 1002: Sovereign Menu (Orbital Launcher) */}
+      <div className='absolute bottom-4 left-4 z-[1002]'>
+        <SovereignMenu />
+      </div>
+
       {/* Layer 50: Toast Notifications (bottom-right, above taskbar) */}
       <ToastContainer />
+
+      {/* Layer 100: Context Menu (Priority 6) */}
+      {isContextMenuOpen && (
+        <DesktopContextMenu position={contextMenuPosition} onClose={closeContextMenu} />
+      )}
+
+      {/* Layer 10000: Command Palette (Priority 10) */}
+      <CommandPalette />
+
+      {/* Layer 9998: Alt+Tab Switcher (Priority 14) */}
+      <AltTabSwitcher />
+
+      {/* Layer 9999: Window Peek Preview (Priority 13) */}
+      <WindowPeek />
     </div>
   );
 }

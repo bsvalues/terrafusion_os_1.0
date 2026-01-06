@@ -284,7 +284,7 @@ describe('ResearchPortal - Panel Navigation', () => {
     // Verify active panel changed
     await waitFor(() => {
       const tabElement = consciousnessTuningTab.closest('button');
-      expect(tabElement).toHaveStyle({ color: '#00FFFF' });
+      expect(tabElement).toHaveStyle({ color: 'var(--tf-transcend-cyan)' });
     });
   });
 
@@ -302,7 +302,7 @@ describe('ResearchPortal - Panel Navigation', () => {
     // Verify panel switched
     await waitFor(() => {
       const tab = screen.getByText(/Consciousness Tuning/i).closest('button');
-      expect(tab).toHaveStyle({ color: '#00FFFF' });
+      expect(tab).toHaveStyle({ color: 'var(--tf-transcend-cyan)' });
     });
   });
 

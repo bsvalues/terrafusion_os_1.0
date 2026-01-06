@@ -239,7 +239,7 @@ export default function GptStudioView() {
               border: '1px solid rgba(0, 255, 255, 0.3)',
               borderRadius: '8px',
               padding: '0.5rem 1rem',
-              color: '#00ffff',
+              color: 'var(--tf-quantum-cyan)',
               cursor: 'pointer',
               fontSize: '0.9rem',
             }}
@@ -252,7 +252,7 @@ export default function GptStudioView() {
             style={{
               margin: 0,
               fontSize: '1.5rem',
-              color: '#00ffff',
+              color: 'var(--tf-quantum-cyan)',
               letterSpacing: '1px',
             }}
           >
@@ -276,7 +276,7 @@ export default function GptStudioView() {
             alignItems: 'center',
             gap: '0.5rem',
             fontSize: '0.8rem',
-            color: state.apiHealthy ? '#00ff88' : '#ff4444',
+            color: state.apiHealthy ? 'var(--success-green)' : 'var(--error-red)',
           }}
         >
           <span
@@ -284,7 +284,7 @@ export default function GptStudioView() {
               width: '8px',
               height: '8px',
               borderRadius: '50%',
-              background: state.apiHealthy ? '#00ff88' : '#ff4444',
+              background: state.apiHealthy ? 'var(--success-green)' : 'var(--error-red)',
             }}
           />
           {state.apiHealthy ? 'API Connected' : 'API Offline'}
@@ -301,7 +301,7 @@ export default function GptStudioView() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#00ffff',
+              color: 'var(--tf-quantum-cyan)',
             }}
           >
             <div style={{ textAlign: 'center' }}>
@@ -319,7 +319,7 @@ export default function GptStudioView() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#ff4444',
+              color: 'var(--error-red)',
               padding: '2rem',
             }}
           >
@@ -330,10 +330,10 @@ export default function GptStudioView() {
                 onClick={() => window.location.reload()}
                 style={{
                   background: 'rgba(255, 68, 68, 0.2)',
-                  border: '1px solid #ff4444',
+                  border: '1px solid var(--error-red)',
                   borderRadius: '8px',
                   padding: '0.5rem 1rem',
-                  color: '#ff4444',
+                  color: 'var(--error-red)',
                   cursor: 'pointer',
                 }}
               >
@@ -356,7 +356,7 @@ export default function GptStudioView() {
               style={{
                 margin: '0 0 1.5rem',
                 fontSize: '1.2rem',
-                color: '#00ffaa',
+                color: 'var(--tf-accent-success)',
               }}
             >
               Available System GPTs
@@ -405,7 +405,7 @@ export default function GptStudioView() {
                       style={{
                         margin: 0,
                         fontSize: '1.1rem',
-                        color: '#00ffff',
+                        color: 'var(--tf-quantum-cyan)',
                       }}
                     >
                       {gpt.displayName}
@@ -432,7 +432,7 @@ export default function GptStudioView() {
                       style={{
                         fontSize: '0.75rem',
                         background: 'rgba(0, 255, 170, 0.2)',
-                        color: '#00ffaa',
+                        color: 'var(--tf-accent-success)',
                         padding: '0.25rem 0.5rem',
                         borderRadius: '4px',
                       }}
@@ -444,7 +444,7 @@ export default function GptStudioView() {
                         style={{
                           fontSize: '0.75rem',
                           background: 'rgba(0, 153, 255, 0.2)',
-                          color: '#0099ff',
+                          color: 'var(--tf-network-blue)',
                           padding: '0.25rem 0.5rem',
                           borderRadius: '4px',
                         }}
@@ -457,7 +457,7 @@ export default function GptStudioView() {
                         style={{
                           fontSize: '0.75rem',
                           background: 'rgba(255, 170, 0, 0.2)',
-                          color: '#ffaa00',
+                          color: 'var(--warning-amber)',
                           padding: '0.25rem 0.5rem',
                           borderRadius: '4px',
                         }}
@@ -505,7 +505,7 @@ export default function GptStudioView() {
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
                     {state.selectedGpt.category === 'Property' ? '🏠' : '🤖'}
                   </div>
-                  <h3 style={{ margin: '0 0 0.5rem', color: '#00ffff' }}>
+                  <h3 style={{ margin: '0 0 0.5rem', color: 'var(--tf-quantum-cyan)' }}>
                     {state.selectedGpt.displayName}
                   </h3>
                   <p style={{ margin: 0 }}>
@@ -530,9 +530,9 @@ export default function GptStudioView() {
                       borderRadius: '12px',
                       background:
                         msg.role === 'user'
-                          ? 'linear-gradient(135deg, #0099ff, #00ffff)'
+                          ? 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-quantum-cyan))'
                           : 'rgba(0, 255, 255, 0.1)',
-                      color: msg.role === 'user' ? '#0a0e1a' : '#ffffff',
+                      color: msg.role === 'user' ? 'var(--tf-void-black)' : 'var(--tf-text-primary)fff',
                       border:
                         msg.role === 'assistant'
                           ? '1px solid rgba(0, 255, 255, 0.3)'
@@ -575,7 +575,7 @@ export default function GptStudioView() {
                       borderRadius: '12px',
                       background: 'rgba(0, 255, 255, 0.1)',
                       border: '1px solid rgba(0, 255, 255, 0.3)',
-                      color: '#00ffff',
+                      color: 'var(--tf-quantum-cyan)',
                     }}
                   >
                     <span style={{ animation: 'pulse 1.5s infinite' }}>
@@ -604,7 +604,7 @@ export default function GptStudioView() {
                     background: 'rgba(255, 68, 68, 0.1)',
                     border: '1px solid rgba(255, 68, 68, 0.3)',
                     borderRadius: '8px',
-                    color: '#ff4444',
+                    color: 'var(--error-red)',
                     fontSize: '0.85rem',
                   }}
                 >
@@ -628,7 +628,7 @@ export default function GptStudioView() {
                     background: 'rgba(0, 255, 255, 0.05)',
                     border: '2px solid rgba(0, 255, 255, 0.3)',
                     borderRadius: '8px',
-                    color: '#ffffff',
+                    color: 'var(--tf-text-primary)fff',
                     fontSize: '1rem',
                     outline: 'none',
                   }}
@@ -645,13 +645,13 @@ export default function GptStudioView() {
                     background:
                       state.isSending || !state.inputValue.trim()
                         ? 'rgba(0, 255, 255, 0.2)'
-                        : 'linear-gradient(135deg, #00ffff, #0099ff)',
+                        : 'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue))',
                     border: 'none',
                     borderRadius: '8px',
                     color:
                       state.isSending || !state.inputValue.trim()
                         ? 'rgba(0, 255, 255, 0.5)'
-                        : '#0a0e1a',
+                        : 'var(--tf-void-black)',
                     fontSize: '1rem',
                     fontWeight: 'bold',
                     cursor:

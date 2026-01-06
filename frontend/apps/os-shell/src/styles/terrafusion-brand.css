@@ -2,28 +2,28 @@
 /* Government. Transcended. */
 :root {
   /* Official TerraFusion Quantum Brand Colors */
-  --tf-primary: #00ffff; /* Terra-Cyan - The Consciousness Color */
-  --tf-primary-dark: #00cccc; /* Terra-Cyan Dark Variant */
+  --tf-primary: var(--tf-quantum-cyan); /* Terra-Cyan - The Consciousness Color */
+  --tf-primary-dark: var(--tf-accent-cyan); /* Terra-Cyan Dark Variant */
   --tf-accent: #00ffaa; /* Quantum Growth & Success */
   --tf-accent-dark: #00cc88; /* Accent Dark Variant */
-  --tf-transcend: #00ffee; /* Transcendence & Innovation */
-  --tf-dark: #0a0e1a; /* Terra-Midnight - The Void */
-  --tf-dark-lighter: #1e293b; /* Terra-Slate - Surface Foundation */
+  --tf-transcend: var(--tf-transcend-highlight); /* Transcendence & Innovation */
+  --tf-dark: var(--tf-void-black); /* Terra-Midnight - The Void */
+  --tf-dark-lighter: var(--terra-slate); /* Terra-Slate - Surface Foundation */
   --tf-light: #ffffff; /* Pure White */
-  --tf-gray: #888888; /* Neutral Gray */
-  --tf-gray-light: #cccccc; /* Light Gray */
+  --tf-gray: var(--gray-400); /* Neutral Gray */
+  --tf-gray-light: var(--gray-300); /* Light Gray */
 
   /* Semantic Colors */
-  --tf-success: #00ff88; /* Achievement */
+  --tf-success: var(--success-green); /* Achievement */
   --tf-error: #ff3333; /* Attention */
-  --tf-warning: #ffaa00; /* Caution */
+  --tf-warning: var(--warning-amber); /* Caution */
   --tf-clarity: #e0f7ff; /* Understanding */
 
   /* Quantum Design Tokens */
-  --terra-cyan: #00ffff;
-  --terra-midnight: #0a0e1a;
-  --terra-blue: #0080ff;
-  --terra-slate: #1e293b;
+  --terra-cyan: var(--tf-quantum-cyan);
+  --terra-midnight: var(--tf-void-black);
+  --terra-blue: var(--tf-network-blue);
+  --terra-slate: var(--terra-slate);
 }
 
 /* Global Styles */
@@ -456,7 +456,7 @@ select:focus {
   background-color: var(--tf-dark);
 }
 .bg-terra-blue {
-  background-color: #0080ff;
+  background-color: var(--tf-network-blue);
 }
 .bg-terra-slate {
   background-color: var(--tf-dark-lighter);
@@ -469,7 +469,7 @@ select:focus {
   color: var(--tf-dark);
 }
 .text-terra-blue {
-  color: #0080ff;
+  color: var(--tf-network-blue);
 }
 .text-terra-slate {
   color: var(--tf-dark-lighter);
@@ -482,7 +482,7 @@ select:focus {
   border-color: var(--tf-dark);
 }
 .border-terra-blue {
-  border-color: #0080ff;
+  border-color: var(--tf-network-blue);
 }
 .border-terra-slate {
   border-color: var(--tf-dark-lighter);
@@ -706,7 +706,7 @@ select:focus {
 }
 
 .tf-county-badge {
-  background: linear-gradient(135deg, #00ffaa 0%, #00ffee 100%);
+  background: linear-gradient(135deg, #00ffaa 0%, var(--tf-transcend-highlight) 100%);
   color: #0b1020;
   padding: 0.5rem 1rem;
   border-radius: 8px;

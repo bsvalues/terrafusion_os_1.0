@@ -76,7 +76,7 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   letter-spacing: -0.01em;
 }
 
@@ -134,7 +134,7 @@
   padding: 0.75rem 1rem;
   border: 1px solid rgba(0, 255, 255, 0.3);
   background: rgba(0, 255, 255, 0.1);
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -156,14 +156,14 @@
 
 .quantum-action-btn.active {
   background: rgba(0, 255, 255, 0.3);
-  border-color: #00ffff;
+  border-color: var(--tf-quantum-cyan);
   box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
 }
 
 .quantum-action-btn.success {
   border-color: rgba(34, 197, 94, 0.5);
   background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
+  color: var(--tf-success-green);
 }
 
 .quantum-action-btn.success:hover {
@@ -231,7 +231,7 @@
   height: 32px;
   border: 1px solid rgba(0, 255, 255, 0.3);
   background: rgba(0, 255, 255, 0.1);
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -312,7 +312,7 @@
 .quantum-checkbox {
   width: 18px;
   height: 18px;
-  accent-color: #00ffff;
+  accent-color: var(--tf-quantum-cyan);
   cursor: pointer;
 }
 
@@ -329,13 +329,13 @@
   border-radius: 3px;
   background: rgba(100, 116, 139, 0.3);
   outline: none;
-  accent-color: #00ffff;
+  accent-color: var(--tf-quantum-cyan);
   cursor: pointer;
 }
 
 .quantum-range-value {
   font-size: 0.875rem;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   font-weight: 500;
   text-align: center;
 }
@@ -356,7 +356,7 @@
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   background: rgba(255, 165, 0, 0.9);
-  color: #0a0e1a;
+  color: var(--tf-void-black);
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.875rem;
@@ -367,7 +367,7 @@
 .quantum-pulse {
   width: 8px;
   height: 8px;
-  background: #0a0e1a;
+  background: var(--tf-void-black);
   border-radius: 50%;
   animation: pulse 1.5s ease-in-out infinite;
 }
@@ -423,7 +423,7 @@
 .quantum-widget-toggle:focus,
 .quantum-manager-close:focus,
 .quantum-advanced-toggle:focus {
-  outline: 2px solid #00ffff;
+  outline: 2px solid var(--tf-quantum-cyan);
   outline-offset: 2px;
 }
 
