@@ -80,41 +80,9 @@ public sealed class StateMeshGuardHostedService : IHostedService
         {
             // Native Parsing - Zero allocations context-aware
             var json = await File.ReadAllTextAsync(authPath, ct);
-            using var doc = JsonDocument.Parse(json);
-            var root = doc.RootElement;
-
-            // 1. Validate Mesh Type
-            if (!root.TryGetProperty("mesh", out var mesh) || 
-                !mesh.TryGetProperty("type", out var type) ||
-                !type.ValueEquals("federated_quorum"))
-            {
-                throw new InvalidOperationException("Invalid mesh.type (expected: federated_quorum)");
-            }
-
-            // 2. Validate Counties exist
-            if (!root.TryGetProperty("counties", out var counties) || 
-                counties.ValueKind != JsonValueKind.Array ||
-                counties.GetArrayLength() == 0)
-            {
-                throw new InvalidOperationException("No counties defined in State Authority");
-            }
-
-            // 3. Validate at least one active signer
-            bool hasActive = false;
-            foreach (var county in counties.EnumerateArray())
-            {
-                if (county.TryGetProperty("status", out var status) && 
-                    status.ValueEquals("active"))
-                {
-                    hasActive = true;
-                    break;
-                }
-            }
-
-            if (!hasActive)
-            {
-                throw new InvalidOperationException("No active counties found in State Authority");
-            }
+            
+            // Delegate logic to verified utility
+            TerraFusion.API.Utilities.StateMeshGuard.ValidateAuthorityState(json);
 
             Verified = true;
             FailureReason = "";

@@ -28,6 +28,7 @@ using TerraFusion.API.Services.Marketplace;
 // Conditional DB providers
 using Npgsql;
 using Microsoft.Data.Sqlite;
+using Microsoft.Data.SqlClient;
 using TerraFusion.API.Contracts;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -251,8 +252,13 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(TerraFusion.Core
 builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
+    var provider = builder.Configuration["DatabaseProvider"];
 
-    if (connectionString.Contains("Host="))
+    if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
+    {
+        options.UseSqlServer(connectionString);
+    }
+    else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
     {
         // PostgreSQL for production
         options.UseNpgsql(connectionString);
@@ -268,8 +274,13 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
 builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
+    var provider = builder.Configuration["DatabaseProvider"];
 
-    if (connectionString.Contains("Host="))
+    if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
+    {
+        options.UseSqlServer(connectionString);
+    }
+    else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
     {
         options.UseNpgsql(connectionString);
     }
@@ -288,7 +299,13 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 {
     var cfg = sp.GetRequiredService<IConfiguration>();
     var connStr = cfg.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
-    if (connStr.Contains("Host="))
+    var provider = cfg["DatabaseProvider"];
+
+    if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
+    {
+        return new SqlConnection(connStr);
+    }
+    else if (connStr.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
     {
         return new NpgsqlConnection(connStr);
     }
@@ -409,6 +426,13 @@ builder.Services.AddDbContext<LevyDbContext>(options =>
     var levyConn = Environment.GetEnvironmentVariable("LEVY_DATABASE_URL")
                   ?? builder.Configuration.GetConnectionString("LevyDatabase")
                   ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+    var provider = builder.Configuration["DatabaseProvider"];
+
+    if (!string.IsNullOrWhiteSpace(levyConn) && string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
+    {
+        options.UseSqlServer(levyConn);
+        return;
+    }
 
     if (string.IsNullOrWhiteSpace(levyConn))
     {

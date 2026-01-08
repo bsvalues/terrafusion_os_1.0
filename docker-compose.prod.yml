@@ -35,7 +35,6 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
       - OTEL_SERVICE_NAME=terrafusion-iron
     volumes:
-
       - ./docs:/app/docs
       - ./scripts:/app/scripts
     ports:
