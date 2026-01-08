@@ -34,9 +34,8 @@ services:
       - Redis__Configuration=redis:6379
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
       - OTEL_SERVICE_NAME=terrafusion-iron
-
-    command: ['--urls', 'http://+:5000']
     volumes:
+
       - ./docs:/app/docs
       - ./scripts:/app/scripts
     ports:

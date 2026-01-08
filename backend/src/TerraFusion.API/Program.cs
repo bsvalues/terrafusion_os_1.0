@@ -29,8 +29,26 @@ using TerraFusion.API.Services.Marketplace;
 using Npgsql;
 using Microsoft.Data.Sqlite;
 using TerraFusion.API.Contracts;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// 🔍 TELEMETRY: Phase 9.1 Nervous System
+var serviceName = "terrafusion-iron";
+var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? "http://otel-collector:4317";
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(r => r.AddService(serviceName))
+    .WithTracing(t => t
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter(o => o.Endpoint = new Uri(otlpEndpoint)))
+    .WithMetrics(m => m
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter(o => o.Endpoint = new Uri(otlpEndpoint)));
 
 // Relax DI validation for local/dev to allow graceful fallbacks
 builder.Host.UseDefaultServiceProvider(options =>
@@ -61,22 +79,11 @@ catch (Exception ex)
     Console.WriteLine("⚠️  Redis unavailable: {0} - using NoOp cache", ex.Message);
 }
 
-// 🎯 DYNAMIC PORT ALLOCATION - NO MORE HARDCODING
-// If no port specified, let OS choose an available port (0 = OS picks)
-// If user's laptop has port conflicts, this solves it automatically
-var requestedPort = builder.Configuration["Port"] ?? "0"; // 0 = dynamic allocation
-if (args.Length == 0 || !args.Any(a => a.Contains("--urls")))
-{
-    var port = int.Parse(requestedPort);
-    if (port == 0)
-    {
-        // Get an available port from OS
-        port = ServiceRegistry.GetAvailablePort();
-        Console.WriteLine($"🔍 No port specified, dynamically allocated port: {port}");
-    }
-    builder.WebHost.UseUrls($"http://localhost:{port}");
-}
-// else: Command line --urls takes precedence
+// 🎯 SOVEREIGN BINDING (Phase 9.2)
+// No more "Dynamic Port Allocation" or "Laptop Logic"
+// We trust ASPNETCORE_URLS from the environment.
+// builder.WebHost.UseUrls() is NOT called manually.
+
 
 // Configure logging
 builder.Logging.ClearProviders();
@@ -1128,7 +1135,7 @@ Console.WriteLine("   • GET  /api/swarm/modules         - Active AI modules");
 Console.WriteLine("   • GET  /api/swarm/mcp-tools       - MCP tools integration status (87 tools)");
 Console.WriteLine("   • POST /api/swarm/execute         - Execute AI command");
 Console.WriteLine("   • WS   /hubs/oscore               - SignalR hub for module hot-reload");
-Console.WriteLine("📋 Server configuration: Using command line --urls parameter");
+Console.WriteLine("📋 Server configuration: Using ASPNETCORE_URLS environment variable");
 // Console.WriteLine("🧩 Module System: 15 production modules configured");
 // Console.WriteLine("🤖 AI Swarm: 1,008 agents with 87 MCP tools");
 Console.WriteLine("💾 Database: SQLite fallback with background initialization");
