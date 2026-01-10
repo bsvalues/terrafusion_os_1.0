@@ -43,3 +43,5 @@ yarn.lock
 CHANGELOG.md
 LICENSE
 *.md
+
+_archive/

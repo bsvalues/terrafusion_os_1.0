@@ -36,3 +36,5 @@ package-lock.json
 # Test files (if needed)
 # *.test.ts
 # *.spec.ts
+
+_archive/
