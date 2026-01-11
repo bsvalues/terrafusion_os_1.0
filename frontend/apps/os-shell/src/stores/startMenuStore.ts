@@ -35,6 +35,7 @@ export interface StartMenuState {
   searchQuery: string;
   pinnedApps: Module[];
   allApps: Module[];
+  selectedModuleId: string | null;  // Phase 3.2: Selected module for loading
 
   // Actions
   toggle: () => void;
@@ -45,6 +46,8 @@ export interface StartMenuState {
   setAllApps: (apps: Module[]) => void;
   addPinnedApp: (app: Module) => void;
   removePinnedApp: (appId: string) => void;
+  launchModule: (moduleId: string) => void;  // Phase 3.2: Launch module
+  clearSelectedModule: () => void;            // Phase 3.2: Clear selection
 
   // Selectors (computed values as functions)
   getFilteredApps: () => Module[];
@@ -64,6 +67,7 @@ export const useStartMenuStore = create<StartMenuState>()(
       searchQuery: '',
       pinnedApps: [],
       allApps: [],
+      selectedModuleId: null,  // Phase 3.2: No module selected initially
 
       // Actions
       toggle: () => {
@@ -111,6 +115,20 @@ export const useStartMenuStore = create<StartMenuState>()(
       removePinnedApp: (appId: string) => {
         const { pinnedApps } = get();
         set({ pinnedApps: pinnedApps.filter(app => app.id !== appId) });
+      },
+
+      // Phase 3.2: Module Launch Actions
+      launchModule: (moduleId: string) => {
+        // Atomically: set selected module, close menu, clear search
+        set({ 
+          selectedModuleId: moduleId,
+          isOpen: false,
+          searchQuery: '',
+        });
+      },
+
+      clearSelectedModule: () => {
+        set({ selectedModuleId: null });
       },
 
       // Selectors
@@ -191,6 +209,13 @@ export const useStartMenuActions = () => useStartMenuStore((state) => ({
   setAllApps: state.setAllApps,
   addPinnedApp: state.addPinnedApp,
   removePinnedApp: state.removePinnedApp,
+  launchModule: state.launchModule,
+  clearSelectedModule: state.clearSelectedModule,
 }));
+
+/**
+ * Hook to get selected module ID (Phase 3.2)
+ */
+export const useSelectedModuleId = () => useStartMenuStore((state) => state.selectedModuleId);
 
 export default useStartMenuStore;

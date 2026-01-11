@@ -515,4 +515,109 @@ describe('Start Menu Store', () => {
       expect(useStartMenuStore.getState().isOpen).toBe(true);
     });
   });
+
+  // --------------------------------------------------------------------------
+  // Phase 3.2: Module Launch Integration (INT-001)
+  // --------------------------------------------------------------------------
+  describe('Module Launch Integration (Phase 3.2)', () => {
+    beforeEach(() => {
+      // Reset both stores
+      useStartMenuStore.setState({
+        isOpen: true,
+        searchQuery: 'test',
+        pinnedApps: [],
+        allApps: mockModules,
+        selectedModuleId: null,
+      });
+    });
+
+    describe('launchModule action', () => {
+      it('sets selectedModuleId when launching a module', () => {
+        const { launchModule } = useStartMenuStore.getState();
+
+        act(() => {
+          launchModule('government-edition');
+        });
+
+        expect(useStartMenuStore.getState().selectedModuleId).toBe('government-edition');
+      });
+
+      it('closes the start menu when launching a module', () => {
+        const { launchModule } = useStartMenuStore.getState();
+        useStartMenuStore.setState({ isOpen: true });
+
+        act(() => {
+          launchModule('costforge-ai');
+        });
+
+        expect(useStartMenuStore.getState().isOpen).toBe(false);
+      });
+
+      it('clears search query when launching a module', () => {
+        const { launchModule } = useStartMenuStore.getState();
+        useStartMenuStore.setState({ searchQuery: 'test query' });
+
+        act(() => {
+          launchModule('terra-flow');
+        });
+
+        expect(useStartMenuStore.getState().searchQuery).toBe('');
+      });
+
+      it('performs all side effects atomically', () => {
+        const { launchModule } = useStartMenuStore.getState();
+        useStartMenuStore.setState({ 
+          isOpen: true, 
+          searchQuery: 'search term',
+          selectedModuleId: null,
+        });
+
+        act(() => {
+          launchModule('test-module');
+        });
+
+        const state = useStartMenuStore.getState();
+        expect(state.selectedModuleId).toBe('test-module');
+        expect(state.isOpen).toBe(false);
+        expect(state.searchQuery).toBe('');
+      });
+    });
+
+    describe('selectedModuleId state', () => {
+      it('starts as null by default', () => {
+        useStartMenuStore.setState({ selectedModuleId: null });
+        expect(useStartMenuStore.getState().selectedModuleId).toBeNull();
+      });
+
+      it('can be cleared by setting to null', () => {
+        act(() => {
+          useStartMenuStore.getState().launchModule('test-module');
+        });
+
+        expect(useStartMenuStore.getState().selectedModuleId).toBe('test-module');
+
+        act(() => {
+          useStartMenuStore.setState({ selectedModuleId: null });
+        });
+
+        expect(useStartMenuStore.getState().selectedModuleId).toBeNull();
+      });
+    });
+
+    describe('clearSelectedModule action', () => {
+      it('clears the selected module ID', () => {
+        act(() => {
+          useStartMenuStore.getState().launchModule('test-module');
+        });
+
+        expect(useStartMenuStore.getState().selectedModuleId).toBe('test-module');
+
+        act(() => {
+          useStartMenuStore.getState().clearSelectedModule();
+        });
+
+        expect(useStartMenuStore.getState().selectedModuleId).toBeNull();
+      });
+    });
+  });
 });

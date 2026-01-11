@@ -6,6 +6,7 @@
   "author": "Terrafusion Technologies",
   "license": "Proprietary",
   "scripts": {
+    "test": "echo 'Electron workspace: no unit tests (integration tests only)' && exit 0",
     "electron": "electron .",
     "electron:dev": "cross-env NODE_ENV=development electron .",
     "build": "electron-builder",

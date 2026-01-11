@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "id": "20251229_234501Z_os-shell_phase-32-moduleloader-startmenu-integration",
+  "status": "active",
+  "createdUtc": "2025-12-29T23:45:01Z",
+  "updatedUtc": "2025-12-29T23:45:01Z",
+  "project": "os-shell",
+  "feature": "phase-3.2-moduleloader-startmenu-integration",
+  "featureSlug": "phase-32-moduleloader-startmenu-integration",
+  "mode": "feature",
+  "risk": "med",
+  "diffOnly": true,
+  "specLock": "strict",
+  "tests": "all",
+  "scope": [
+    "config/tenant."
+  ],
+  "agents": {
+    "builder": "Agent A",
+    "breaker": "Agent B"
+  },
+  "git": {
+    "baseBranch": "main",
+    "workBranch": "feat/os-shell/phase-32-moduleloader-startmenu-integration"
+  },
+  "artifacts": {
+    "contract": "CONTRACT.md",
+    "speclock": "SPECLOCK.md",
+    "testplan": "TESTPLAN.md",
+    "attackplan": "ATTACKPLAN.md",
+    "patchlog": "PATCHLOG.md",
+    "attackReport": "ATTACK_REPORT.md",
+    "prReview": "PR_REVIEW.md",
+    "notes": "NOTES.md"
+  }
+}

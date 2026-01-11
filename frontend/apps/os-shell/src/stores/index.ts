@@ -31,3 +31,18 @@ export {
   type ModuleStatus,
   type StartMenuState,
 } from './startMenuStore';
+
+// Module Registry - lazy loading and caching
+export {
+  useModuleRegistryStore,
+  useModuleDefinitions,
+  useLoadedModules,
+  useModuleLoadingState,
+  useModuleError,
+  useModuleRegistryActions,
+  type ModuleDefinition,
+  type LoadedModule,
+  type ModuleLoadState,
+  type ModuleLoader,
+  type ModuleRegistryState,
+} from './moduleRegistryStore';
