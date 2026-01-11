@@ -25,8 +25,8 @@ const CONFIG = {
   port: 5000,
   database: {
     hostname: Deno.env.get('POSTGRES_HOST') || 'localhost',
-    port: parseInt(Deno.env.get('POSTGRES_PORT') || '5433'),
-    database: Deno.env.get('POSTGRES_DB') || 'postgres',
+    port: parseInt(Deno.env.get('POSTGRES_PORT') || '5432'),
+    database: Deno.env.get('POSTGRES_DB') || 'terrafusion',
     user: Deno.env.get('POSTGRES_USER') || 'postgres',
     password: Deno.env.get('POSTGRES_PASSWORD') || 'postgres',
   },
