@@ -38,3 +38,5 @@ package-lock.json
 # *.spec.ts
 
 _archive/
+
+os-kernel/api/main.ts

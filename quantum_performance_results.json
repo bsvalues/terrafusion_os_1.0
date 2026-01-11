@@ -1,6 +1,6 @@
 {
-  "classical_time_ms": 253.85117530822754,
-  "quantum_time_ms": 0.6563663482666016,
-  "improvement_factor": 386.75227025063566,
-  "performance_gain": "387x faster"
+  "classical_time_ms": 250.2310276031494,
+  "quantum_time_ms": 0.5247592926025391,
+  "improvement_factor": 476.84915947296685,
+  "performance_gain": "477x faster"
 }
