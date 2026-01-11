@@ -1,0 +1,11 @@
+﻿{
+    "apps":  [
+                 {
+                     "status":  "active",
+                     "path":  "applications/terra-permit",
+                     "port":  3006,
+                     "id":  "terra-permit",
+                     "type":  "node-hybrid"
+                 }
+             ]
+}

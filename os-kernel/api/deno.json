@@ -1,0 +1,31 @@
+{
+  "name": "@terrafusion/os-kernel-api",
+  "version": "1.0.0",
+  "tasks": {
+    "dev": "deno run --allow-net --allow-env --allow-read --watch main.ts",
+    "start": "deno run --allow-net --allow-env --allow-read main.ts",
+    "test": "deno test --allow-net --allow-env --allow-read",
+    "fmt": "deno fmt",
+    "lint": "deno lint"
+  },
+  "imports": {
+    "std/": "https://deno.land/std@0.220.0/",
+    "oak": "https://deno.land/x/oak@v12.6.1/mod.ts",
+    "postgres": "https://deno.land/x/postgres@v0.17.0/mod.ts",
+    "dotenv": "https://deno.land/std@0.220.0/dotenv/mod.ts"
+  },
+  "compilerOptions": {
+    "lib": ["deno.window"]
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "singleQuote": true
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  }
+}
