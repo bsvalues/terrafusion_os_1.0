@@ -15,8 +15,9 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-import { Application, Router, Context, Next } from 'https://deno.land/x/oak@v12.6.1/mod.ts';
+import 'https://deno.land/std@0.220.0/dotenv/load.ts';
 import { oakCors } from 'https://deno.land/x/cors@v1.2.2/mod.ts';
+import { Application, Context, Next, Router } from 'https://deno.land/x/oak@v12.6.1/mod.ts';
 import { Client } from 'https://deno.land/x/postgres@v0.17.0/mod.ts';
 
 // ═══════════════════════════════════════════════════════════════════════════
