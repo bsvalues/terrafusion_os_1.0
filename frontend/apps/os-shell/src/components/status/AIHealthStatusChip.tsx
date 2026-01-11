@@ -102,28 +102,28 @@ export const AIHealthStatusChip: React.FC<AIHealthStatusChipProps> = ({
         return {
           bg: 'rgba(0, 255, 136, 0.15)',
           border: 'rgba(0, 255, 136, 0.5)',
-          text: '#00ff88',
+          text: 'var(--success-green)',
           glow: '0 0 10px rgba(0, 255, 136, 0.3)',
         };
       case 'degraded':
         return {
           bg: 'rgba(255, 200, 0, 0.15)',
           border: 'rgba(255, 200, 0, 0.5)',
-          text: '#ffc800',
+          text: 'var(--tf-warning-amber)',
           glow: '0 0 10px rgba(255, 200, 0, 0.3)',
         };
       case 'unhealthy':
         return {
           bg: 'rgba(255, 80, 80, 0.15)',
           border: 'rgba(255, 80, 80, 0.5)',
-          text: '#ff5050',
+          text: 'var(--tf-error-red)',
           glow: '0 0 10px rgba(255, 80, 80, 0.3)',
         };
       default:
         return {
           bg: 'rgba(128, 128, 128, 0.15)',
           border: 'rgba(128, 128, 128, 0.5)',
-          text: '#888888',
+          text: 'var(--gray-400)',
           glow: 'none',
         };
     }

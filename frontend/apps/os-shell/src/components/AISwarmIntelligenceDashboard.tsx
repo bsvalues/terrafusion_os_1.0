@@ -137,13 +137,13 @@ export const AISwarmIntelligenceDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20 rounded-2xl p-8 text-center'>
-        <div className='tf-scan-line absolute inset-0 bg-gradient-to-r from-transparent via-[#00ffee]/20 to-transparent animate-pulse' />
-        <Sparkles className='w-16 h-16 text-[#00ffee] mx-auto mb-4 animate-spin' />
-        <h2 className='text-2xl font-bold bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] bg-clip-text text-transparent'>
+      <div className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20 rounded-2xl p-8 text-center'>
+        <div className='tf-scan-line absolute inset-0 bg-gradient-to-r from-transparent via-[var(--tf-transcend-highlight)]/20 to-transparent animate-pulse' />
+        <Sparkles className='w-16 h-16 text-[var(--tf-transcend-highlight)] mx-auto mb-4 animate-spin' />
+        <h2 className='text-2xl font-bold bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] bg-clip-text text-transparent'>
           QUANTUM ALGORITHMS COMPUTING
         </h2>
-        <p className='text-[#00ffee]/80 mt-2'>Initializing 100,000+ Agent Coordination</p>
+        <p className='text-[var(--tf-transcend-highlight)]/80 mt-2'>Initializing 100,000+ Agent Coordination</p>
       </div>
     );
   }
@@ -170,23 +170,23 @@ export const AISwarmIntelligenceDashboard: React.FC = () => {
   return (
     <div className='space-y-6'>
       {/* 🎯 TIER 4+ Championship Header */}
-      <Card className='tf-glass-card bg-gradient-to-br from-[#0b1020] to-[#1a2332] border-2 border-[#00ffee]/30 relative overflow-hidden'>
+      <Card className='tf-glass-card bg-gradient-to-br from-[var(--tf-bg-surface)] to-[var(--tf-bg-surface)] border-2 border-[var(--tf-transcend-highlight)]/30 relative overflow-hidden'>
         <div className='tf-quantum-grid absolute inset-0 opacity-10' />
         <CardHeader className='relative z-10'>
           <div className='flex items-center justify-between'>
             <div>
-              <CardTitle className='text-3xl font-black bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] bg-clip-text text-transparent'>
+              <CardTitle className='text-3xl font-black bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] bg-clip-text text-transparent'>
                 🤖 TIER 4+ AI SWARM INTELLIGENCE
               </CardTitle>
-              <p className='text-[#00ffee]/80 text-lg mt-1'>
+              <p className='text-[var(--tf-transcend-highlight)]/80 text-lg mt-1'>
                 Government. Transcended. - Elite AI Coordination
               </p>
             </div>
             <div className='text-right'>
-              <div className='text-4xl font-black text-[#00ffee]'>
+              <div className='text-4xl font-black text-[var(--tf-transcend-highlight)]'>
                 {status.totalAgents.toLocaleString()}+
               </div>
-              <div className='text-sm text-[#00ffee]/60'>AGENTS COORDINATED</div>
+              <div className='text-sm text-[var(--tf-transcend-highlight)]/60'>AGENTS COORDINATED</div>
             </div>
           </div>
         </CardHeader>
@@ -194,63 +194,63 @@ export const AISwarmIntelligenceDashboard: React.FC = () => {
 
       {/* 📊 Championship Metrics Grid */}
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#0099ff]/20 hover:border-[#0099ff]/40 transition-all duration-300'>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-network-blue)]/20 hover:border-[var(--tf-network-blue)]/40 transition-all duration-300'>
           <CardContent className='p-4'>
             <div className='flex items-center justify-between'>
               <div>
                 <p className='text-sm text-gray-400'>Active Agents</p>
-                <p className='text-2xl font-bold text-[#0099ff]'>
+                <p className='text-2xl font-bold text-[var(--tf-network-blue)]'>
                   {status.activeAgents.toLocaleString()}
                 </p>
               </div>
-              <Activity className='w-8 h-8 text-[#0099ff]' />
+              <Activity className='w-8 h-8 text-[var(--tf-network-blue)]' />
             </div>
             <Progress value={(status.activeAgents / status.totalAgents) * 100} className='mt-2' />
           </CardContent>
         </Card>
 
-        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20 hover:border-[#00ffee]/40 transition-all duration-300'>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20 hover:border-[var(--tf-transcend-highlight)]/40 transition-all duration-300'>
           <CardContent className='p-4'>
             <div className='flex items-center justify-between'>
               <div>
                 <p className='text-sm text-gray-400'>Response Time</p>
-                <p className='text-2xl font-bold text-[#00ffee]'>{status.averageResponseTime}ms</p>
+                <p className='text-2xl font-bold text-[var(--tf-transcend-highlight)]'>{status.averageResponseTime}ms</p>
               </div>
-              <Zap className='w-8 h-8 text-[#00ffee]' />
+              <Zap className='w-8 h-8 text-[var(--tf-transcend-highlight)]' />
             </div>
-            <Badge variant='secondary' className='mt-2 bg-[#00ffee]/20 text-[#00ffee]'>
+            <Badge variant='secondary' className='mt-2 bg-[var(--tf-transcend-highlight)]/20 text-[var(--tf-transcend-highlight)]'>
               QUANTUM SPEED
             </Badge>
           </CardContent>
         </Card>
 
-        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffaa]/20 hover:border-[#00ffaa]/40 transition-all duration-300'>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-accent-success)]/20 hover:border-[var(--tf-accent-success)]/40 transition-all duration-300'>
           <CardContent className='p-4'>
             <div className='flex items-center justify-between'>
               <div>
                 <p className='text-sm text-gray-400'>Health Score</p>
-                <p className='text-2xl font-bold text-[#00ffaa]'>
+                <p className='text-2xl font-bold text-[var(--tf-accent-success)]'>
                   {(status.overallHealthScore * 100).toFixed(1)}%
                 </p>
               </div>
-              <Shield className='w-8 h-8 text-[#00ffaa]' />
+              <Shield className='w-8 h-8 text-[var(--tf-accent-success)]' />
             </div>
             <Progress value={status.overallHealthScore * 100} className='mt-2' />
           </CardContent>
         </Card>
 
-        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#ff6b6b]/20 hover:border-[#ff6b6b]/40 transition-all duration-300'>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-accent-error)]/20 hover:border-[var(--tf-accent-error)]/40 transition-all duration-300'>
           <CardContent className='p-4'>
             <div className='flex items-center justify-between'>
               <div>
                 <p className='text-sm text-gray-400'>Throughput</p>
-                <p className='text-2xl font-bold text-[#ff6b6b]'>
+                <p className='text-2xl font-bold text-[var(--tf-accent-error)]'>
                   {status.throughputPerSecond.toFixed(1)}/s
                 </p>
               </div>
-              <TrendingUp className='w-8 h-8 text-[#ff6b6b]' />
+              <TrendingUp className='w-8 h-8 text-[var(--tf-accent-error)]' />
             </div>
-            <Badge variant='secondary' className='mt-2 bg-[#ff6b6b]/20 text-[#ff6b6b]'>
+            <Badge variant='secondary' className='mt-2 bg-[var(--tf-accent-error)]/20 text-[var(--tf-accent-error)]'>
               CHAMPIONSHIP LEVEL
             </Badge>
           </CardContent>
@@ -258,9 +258,9 @@ export const AISwarmIntelligenceDashboard: React.FC = () => {
       </div>
 
       {/* 🏆 Championship Metrics */}
-      <Card className='tf-glass-card bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-[#00ffee]/30'>
+      <Card className='tf-glass-card bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-[var(--tf-transcend-highlight)]/30'>
         <CardHeader>
-          <CardTitle className='flex items-center gap-2 text-[#00ffee]'>
+          <CardTitle className='flex items-center gap-2 text-[var(--tf-transcend-highlight)]'>
             <Sparkles className='w-6 h-6' />
             Championship Excellence Metrics
           </CardTitle>
@@ -269,15 +269,15 @@ export const AISwarmIntelligenceDashboard: React.FC = () => {
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
             <div className='p-3 bg-white/5 rounded-lg'>
               <p className='text-sm text-gray-400'>Efficiency Rating</p>
-              <p className='font-bold text-[#00ffaa]'>{championshipMetrics.efficiencyRating}</p>
+              <p className='font-bold text-[var(--tf-accent-success)]'>{championshipMetrics.efficiencyRating}</p>
             </div>
             <div className='p-3 bg-white/5 rounded-lg'>
               <p className='text-sm text-gray-400'>Intelligence Level</p>
-              <p className='font-bold text-[#0099ff]'>{championshipMetrics.intelligenceLevel}</p>
+              <p className='font-bold text-[var(--tf-network-blue)]'>{championshipMetrics.intelligenceLevel}</p>
             </div>
             <div className='p-3 bg-white/5 rounded-lg'>
               <p className='text-sm text-gray-400'>Scale Capability</p>
-              <p className='font-bold text-[#00ffee]'>{championshipMetrics.scaleCapability}</p>
+              <p className='font-bold text-[var(--tf-transcend-highlight)]'>{championshipMetrics.scaleCapability}</p>
             </div>
             <div className='p-3 bg-white/5 rounded-lg'>
               <p className='text-sm text-gray-400'>Auto-Healing</p>
@@ -298,9 +298,9 @@ export const AISwarmIntelligenceDashboard: React.FC = () => {
       </Card>
 
       {/* 🔧 Cluster Details */}
-      <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+      <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
         <CardHeader>
-          <CardTitle className='flex items-center gap-2 text-[#00ffee]'>
+          <CardTitle className='flex items-center gap-2 text-[var(--tf-transcend-highlight)]'>
             <Network className='w-6 h-6' />
             Elite Swarm Clusters ({status.totalClusters} Active)
           </CardTitle>
@@ -310,11 +310,11 @@ export const AISwarmIntelligenceDashboard: React.FC = () => {
             {status.clusterDetails.map((cluster) => (
               <div
                 key={cluster.id}
-                className='p-4 bg-white/5 rounded-lg border border-[#00ffee]/10'
+                className='p-4 bg-white/5 rounded-lg border border-[var(--tf-transcend-highlight)]/10'
               >
                 <div className='flex items-center justify-between mb-2'>
                   <div>
-                    <h4 className='font-bold text-[#00ffee]'>{cluster.name}</h4>
+                    <h4 className='font-bold text-[var(--tf-transcend-highlight)]'>{cluster.name}</h4>
                     <p className='text-sm text-gray-400'>{cluster.specialization}</p>
                   </div>
                   <div className='text-right'>
@@ -331,12 +331,12 @@ export const AISwarmIntelligenceDashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className='flex items-center gap-4 text-sm'>
-                  <span className='text-[#0099ff]'>
+                  <span className='text-[var(--tf-network-blue)]'>
                     <Cpu className='w-4 h-4 inline mr-1' />
                     {cluster.activeAgents.toLocaleString()}/{cluster.maxCapacity.toLocaleString()}{' '}
                     agents
                   </span>
-                  <span className='text-[#00ffaa]'>
+                  <span className='text-[var(--tf-accent-success)]'>
                     Load: {(cluster.currentLoad * 100).toFixed(1)}%
                   </span>
                 </div>
@@ -360,7 +360,7 @@ export const AISwarmIntelligenceDashboard: React.FC = () => {
             <Button
               onClick={() => executeEmergencyCommand('PERFORMANCE_OPTIMIZATION')}
               disabled={isExecutingCommand}
-              className='tf-clarity-button bg-gradient-to-br from-[#0099ff] via-[#00ffee] to-[#00ffaa] text-white font-semibold'
+              className='tf-clarity-button bg-gradient-to-br from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white font-semibold'
             >
               {isExecutingCommand ? 'DEPLOYING...' : 'QUANTUM OPTIMIZE'}
             </Button>

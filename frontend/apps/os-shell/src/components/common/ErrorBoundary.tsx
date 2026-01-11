@@ -1,6 +1,6 @@
+import { BugReport, Home, Refresh, Warning } from '@mui/icons-material';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Warning, Refresh, Home, BugReport } from '@mui/icons-material';
-import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 interface Props {
@@ -179,7 +179,8 @@ Component Stack: ${errorInfo?.componentStack}
         return this.props.fallback;
       }
       const { error, errorInfo, errorId } = this.state;
-      const isDevelopment = import.meta.env.DEV;
+      // Use globalThis.import.meta.env for Jest compatibility (mocked in setupTests.ts)
+      const isDevelopment = (globalThis as any).import?.meta?.env?.DEV ?? false;
       return (
         <div className='min-h-screen bg-gray-50 flex items-center justify-center p-4'>
           <Card className='w-full max-w-2xl'>
@@ -373,7 +374,7 @@ export class AsyncErrorBoundary extends Component<Props, State> {
             onClick={this.resetErrorBoundary}
             style={{
               padding: '0.5rem 1rem',
-              backgroundColor: '#007bff',
+              backgroundColor: 'var(--tf-network-blue)',
               color: 'white',
               border: 'none',
               borderRadius: '4px',

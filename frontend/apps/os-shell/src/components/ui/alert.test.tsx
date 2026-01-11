@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { Alert, AlertTitle, AlertDescription } from './alert';
+import React from 'react';
+import { Alert, AlertDescription, AlertTitle } from './alert';
 
 expect.extend(toHaveNoViolations);
 
@@ -307,14 +308,15 @@ describe('Alert', () => {
 
     it('is announced to screen readers', () => {
       render(
-        <Alert>
+        <Alert aria-label='Important alert'>
           <AlertTitle>Important</AlertTitle>
           <AlertDescription>This is important information</AlertDescription>
         </Alert>
       );
 
       const alert = screen.getByRole('alert');
-      expect(alert).toHaveAccessibleName();
+      // Alert with aria-label has accessible name
+      expect(alert).toHaveAccessibleName('Important alert');
     });
 
     it('supports aria-label', () => {

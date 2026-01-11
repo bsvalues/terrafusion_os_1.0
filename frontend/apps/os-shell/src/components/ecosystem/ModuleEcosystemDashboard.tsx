@@ -117,28 +117,28 @@ const ModuleEcosystemDashboard: React.FC = () => {
   const getHealthColor = (health: string) => {
     switch (health) {
       case 'Healthy':
-        return '#4caf50';
+        return 'var(--tf-accent-success)';
       case 'Warning':
-        return '#ff9800';
+        return 'var(--tf-accent-warning)';
       case 'Critical':
-        return '#f44336';
+        return 'var(--tf-accent-error)';
       case 'Offline':
-        return '#9e9e9e';
+        return 'var(--gray-500)';
       default:
-        return '#9e9e9e';
+        return 'var(--gray-500)';
     }
   };
 
   const getHealthIcon = (health: string) => {
     switch (health) {
       case 'Healthy':
-        return <CheckCircleIcon sx={{ color: '#4caf50' }} />;
+        return <CheckCircleIcon sx={{ color: 'var(--tf-accent-success)' }} />;
       case 'Warning':
-        return <WarningIcon sx={{ color: '#ff9800' }} />;
+        return <WarningIcon sx={{ color: 'var(--tf-accent-warning)' }} />;
       case 'Critical':
-        return <ErrorIcon sx={{ color: '#f44336' }} />;
+        return <ErrorIcon sx={{ color: 'var(--tf-accent-error)' }} />;
       default:
-        return <ErrorIcon sx={{ color: '#9e9e9e' }} />;
+        return <ErrorIcon sx={{ color: 'var(--gray-500)' }} />;
     }
   };
 
@@ -310,14 +310,14 @@ const ModuleEcosystemDashboard: React.FC = () => {
                     <Line
                       type='monotone'
                       dataKey='performance'
-                      stroke='#2196f3'
+                      stroke='var(--tf-network-blue)'
                       strokeWidth={2}
                       name='Performance %'
                     />
                     <Line
                       type='monotone'
                       dataKey='memory'
-                      stroke='#ff9800'
+                      stroke='var(--tf-accent-warning)'
                       strokeWidth={2}
                       name='Memory %'
                     />
@@ -345,17 +345,17 @@ const ModuleEcosystemDashboard: React.FC = () => {
                         {
                           name: 'Tier 1 (Core)',
                           value: moduleDistribution.tier1,
-                          color: '#4caf50',
+                          color: 'var(--tf-accent-success)',
                         },
                         {
                           name: 'Tier 2 (Essential)',
                           value: moduleDistribution.tier2,
-                          color: '#2196f3',
+                          color: 'var(--tf-network-blue)',
                         },
                         {
                           name: 'Tier 3 (Extended)',
                           value: moduleDistribution.tier3,
-                          color: '#ff9800',
+                          color: 'var(--tf-accent-warning)',
                         },
                       ]}
                       cx='50%'
@@ -363,13 +363,13 @@ const ModuleEcosystemDashboard: React.FC = () => {
                       labelLine={false}
                       label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                       outerRadius={80}
-                      fill='#8884d8'
+                      fill='var(--tf-chart-1)'
                       dataKey='value'
                     >
                       {[
-                        { name: 'Tier 1', value: moduleDistribution.tier1, color: '#4caf50' },
-                        { name: 'Tier 2', value: moduleDistribution.tier2, color: '#2196f3' },
-                        { name: 'Tier 3', value: moduleDistribution.tier3, color: '#ff9800' },
+                        { name: 'Tier 1', value: moduleDistribution.tier1, color: 'var(--tf-accent-success)' },
+                        { name: 'Tier 2', value: moduleDistribution.tier2, color: 'var(--tf-network-blue)' },
+                        { name: 'Tier 3', value: moduleDistribution.tier3, color: 'var(--tf-accent-warning)' },
                       ].map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}

@@ -3,14 +3,14 @@
 
 /* Core TerraFusion Color System */
 :root {
-  --terra-cyan: #00ffff;
-  --terra-midnight: #0a0e1a;
-  --terra-blue: #0080ff;
-  --terra-slate: #1e293b;
-  --terra-transcend: #00ffee;
-  --terra-success: #00ff88;
-  --terra-warning: #ffaa00;
-  --terra-error: #ff4444;
+  --terra-cyan: var(--tf-quantum-cyan);
+  --terra-midnight: var(--tf-void-black);
+  --terra-blue: var(--tf-network-blue);
+  --terra-slate: var(--terra-slate);
+  --terra-transcend: var(--tf-transcend-highlight);
+  --terra-success: var(--success-green);
+  --terra-warning: var(--warning-amber);
+  --terra-error: var(--error-red);
   --terra-glow: rgba(0, 255, 255, 0.4);
 
   /* Golden Ratio Typography Scale */
@@ -52,7 +52,7 @@
 /* Legacy Support for Quantum OS */
 .terrafusion-quantum-os {
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--terra-midnight) 0%, #1a202c 50%, #0f172a 100%);
+  background: linear-gradient(135deg, var(--terra-midnight) 0%, var(--tf-surface-darker) 50%, #0f172a 100%);
   color: #ffffff;
   font-family:
     'Inter',
@@ -78,7 +78,7 @@
     'Segoe UI',
     sans-serif;
   color: #ffffff;
-  background: linear-gradient(135deg, var(--terra-midnight) 0%, #1a202c 50%, #0f172a 100%);
+  background: linear-gradient(135deg, var(--terra-midnight) 0%, var(--tf-surface-darker) 50%, #0f172a 100%);
   position: fixed;
   top: 0;
   left: 0;
@@ -697,4 +697,68 @@
     padding: 1rem !important;
     background: transparent !important;
   }
+}
+
+/* ========================================
+   HIGH CONTRAST THEME (WCAG 2.1 AA)
+   ======================================== */
+
+.high-contrast {
+  --terra-cyan: var(--tf-quantum-cyan);
+  --terra-midnight: #000000;
+  --terra-blue: var(--tf-blueprint-blue);
+  --terra-slate: #ffffff;
+  --terra-transcend: var(--tf-retro-yellow);
+  --terra-success: var(--tf-success-green);
+  --terra-warning: var(--warning-amber);
+  --terra-error: var(--tf-error-red);
+
+  /* Disable glass effects */
+  --glass-bg: #000000;
+  --glass-border: #ffffff;
+  --glass-blur: none;
+
+  /* Disable shadows */
+  --shadow-glow: none;
+  --shadow-quantum: none;
+  --shadow-soft: none;
+  --shadow-elite: none;
+}
+
+.high-contrast .terrafusion-os-container,
+.high-contrast .terrafusion-quantum-os {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+.high-contrast .terrafusion-os-header,
+.high-contrast .terrafusion-os-taskbar,
+.high-contrast .terrafusion-os-navigation,
+.high-contrast .terrafusion-os-content,
+.high-contrast .terra-glass,
+.high-contrast .quantum-grid-item {
+  background: #000000 !important;
+  border: 2px solid #ffffff !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.high-contrast button,
+.high-contrast input,
+.high-contrast select {
+  border: 2px solid #ffffff !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+.high-contrast button:hover,
+.high-contrast button:focus {
+  background: #ffffff !important;
+  color: #000000 !important;
+  outline: 2px solid var(--tf-retro-yellow) !important;
+}
+
+.high-contrast .text-terra-cyan,
+.high-contrast .text-terra-transcend {
+  color: var(--tf-retro-yellow) !important; /* Yellow for high contrast highlight */
 }

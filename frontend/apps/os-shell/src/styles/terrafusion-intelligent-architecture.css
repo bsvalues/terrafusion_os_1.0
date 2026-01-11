@@ -44,13 +44,13 @@
   --tf-contain-level: layout style paint; /* Reduced on low memory */
 
   /* Brand Colors - TerraFusion Quantum Palette */
-  --tf-primary: #00ffff; /* Terra-Cyan - The Consciousness Color */
+  --tf-primary: var(--tf-quantum-cyan); /* Terra-Cyan - The Consciousness Color */
   --tf-primary-dark: #00cccc; /* Terra-Cyan Dark */
   --tf-accent: #00ffaa; /* Quantum Accent */
   --tf-accent-dark: #00cc88; /* Accent Dark */
-  --tf-transcend: #00ffee; /* Transcendence */
-  --tf-dark: #0a0e1a; /* Terra-Midnight */
-  --tf-dark-lighter: #1e293b; /* Terra-Slate */
+  --tf-transcend: var(--tf-transcend-highlight); /* Transcendence */
+  --tf-dark: var(--tf-void-black); /* Terra-Midnight */
+  --tf-dark-lighter: var(--terra-slate); /* Terra-Slate */
   --tf-light: #ffffff; /* Pure Light */
 
   /* Government Compliance */

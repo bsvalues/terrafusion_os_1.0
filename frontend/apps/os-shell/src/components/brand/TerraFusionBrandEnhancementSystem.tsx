@@ -68,28 +68,28 @@ export function TerraFusionBrandEnhancementSystem({
     const root = document.documentElement;
 
     // Core Brand Colors from TerraFusion Brand Codex
-    root.style.setProperty('--terra-cyan', '#00FFFF');
-    root.style.setProperty('--terra-midnight', '#0A0E1A');
-    root.style.setProperty('--terra-blue', '#0080FF');
-    root.style.setProperty('--terra-slate', '#1E293B');
-    root.style.setProperty('--success-green', '#00FF88');
-    root.style.setProperty('--warning-amber', '#FFAA00');
-    root.style.setProperty('--error-red', '#FF4444');
-    root.style.setProperty('--info-purple', '#8844FF');
+    root.style.setProperty('--terra-cyan', 'var(--tf-transcend-cyan)');
+    root.style.setProperty('--terra-midnight', 'var(--tf-bg-void)');
+    root.style.setProperty('--terra-blue', 'var(--tf-network-blue)');
+    root.style.setProperty('--terra-slate', 'var(--terra-slate)');
+    root.style.setProperty('--success-green', 'var(--tf-accent-success)');
+    root.style.setProperty('--warning-amber', 'var(--tf-accent-warning)');
+    root.style.setProperty('--error-red', 'var(--tf-accent-error)');
+    root.style.setProperty('--info-purple', 'var(--tf-accent-quantum)');
 
     // TerraFusion Gradients
     root.style.setProperty(
       '--gradient-primary',
-      'linear-gradient(135deg, #00FFFF 0%, #0080FF 100%)'
+      'linear-gradient(135deg, var(--tf-transcend-cyan) 0%, var(--tf-network-blue) 100%)'
     );
-    root.style.setProperty('--gradient-dark', 'linear-gradient(135deg, #0A0E1A 0%, #1E293B 100%)');
+    root.style.setProperty('--gradient-dark', 'linear-gradient(135deg, var(--tf-bg-void) 0%, var(--terra-slate) 100%)');
     root.style.setProperty(
       '--gradient-aurora',
-      'linear-gradient(90deg, #00FFFF, #00FF88, #8844FF)'
+      'linear-gradient(90deg, var(--tf-transcend-cyan), var(--tf-accent-success), var(--tf-accent-quantum))'
     );
     root.style.setProperty(
       '--gradient-quantum',
-      'linear-gradient(45deg, #00FFFF, #0080FF, #8844FF, #00FF88)'
+      'linear-gradient(45deg, var(--tf-transcend-cyan), var(--tf-network-blue), var(--tf-accent-quantum), var(--tf-accent-success))'
     );
 
     // Typography System (Golden Ratio)
@@ -360,7 +360,7 @@ export function TerraFusionBrandEnhancementSystem({
       .terra-input {
         background: var(--glass-bg);
         border: 1px solid var(--glass-border);
-        color: #F1F5F9;
+        color: var(--gray-100);
         padding: 0.75rem 1rem;
         border-radius: var(--radius-md);
         font-size: var(--text-base);

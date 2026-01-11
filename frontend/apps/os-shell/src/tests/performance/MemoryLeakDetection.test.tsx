@@ -26,6 +26,29 @@
 import { render } from '@testing-library/react';
 import React, { useEffect, useState } from 'react';
 
+// Mock PerformanceObserver for jsdom environment
+if (typeof PerformanceObserver === 'undefined') {
+  (global as any).PerformanceObserver = class MockPerformanceObserver {
+    private callback: PerformanceObserverCallback;
+
+    constructor(callback: PerformanceObserverCallback) {
+      this.callback = callback;
+    }
+
+    observe(_options: PerformanceObserverInit) {
+      // Mock implementation - do nothing in test environment
+    }
+
+    disconnect() {
+      // Mock implementation - do nothing in test environment
+    }
+
+    takeRecords(): PerformanceEntryList {
+      return [];
+    }
+  };
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // MEMORY MONITORING UTILITIES
 // ═══════════════════════════════════════════════════════════════════════════════

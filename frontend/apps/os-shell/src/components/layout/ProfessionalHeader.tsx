@@ -35,11 +35,11 @@ const LogoContainer = styled(Box)(({ theme }) => ({
 
 const StatusChip = styled(Chip)(({ theme }) => ({
   background: 'rgba(0, 255, 170, 0.15)',
-  color: '#00ffaa',
+  color: 'var(--tf-accent-success)',
   border: '1px solid rgba(0, 255, 170, 0.3)',
   fontWeight: 600,
   '& .MuiChip-icon': {
-    color: '#00ffaa',
+    color: 'var(--tf-accent-success)',
   },
 }));
 
@@ -58,7 +58,7 @@ const ProfessionalHeader: React.FC = () => {
             sx={{
               width: 48,
               height: 48,
-              background: 'linear-gradient(135deg, #00d2ff, #667eea)',
+              background: 'linear-gradient(135deg, var(--tf-transcend-cyan), var(--tf-accent-quantum))',
               borderRadius: '12px',
               display: 'flex',
               alignItems: 'center',
@@ -124,7 +124,7 @@ const ProfessionalHeader: React.FC = () => {
 
           <Avatar
             sx={{
-              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+              background: 'linear-gradient(135deg, var(--tf-accent-quantum), var(--tf-accent-quantum))',
               ml: 1,
             }}
           >

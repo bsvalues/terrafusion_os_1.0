@@ -6,8 +6,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { ExplainPanel, ExplainPanelState } from '../ExplainPanel';
 
 describe('ExplainPanel', () => {
@@ -153,7 +152,6 @@ describe('ExplainPanel', () => {
 
   describe('interactions', () => {
     it('calls onClose when close button is clicked', async () => {
-      const user = userEvent.setup();
       const state: ExplainPanelState = {
         status: 'ready',
         text: 'Test explanation',
@@ -161,18 +159,17 @@ describe('ExplainPanel', () => {
 
       render(<ExplainPanel state={state} onClose={mockOnClose} />);
 
-      await user.click(screen.getByLabelText('Close explanation'));
+      fireEvent.click(screen.getByLabelText('Close explanation'));
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
     it('calls onClose from loading state', async () => {
-      const user = userEvent.setup();
       const state: ExplainPanelState = { status: 'loading' };
 
       render(<ExplainPanel state={state} onClose={mockOnClose} />);
 
-      await user.click(screen.getByLabelText('Close explanation'));
+      fireEvent.click(screen.getByLabelText('Close explanation'));
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });

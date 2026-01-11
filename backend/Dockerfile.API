@@ -17,21 +17,28 @@ WORKDIR /src
 
 # Copy solution and project files for dependency restoration
 COPY ["TerraFusion.sln", "./"]
-COPY ["TerraFusion.API/TerraFusion.API.csproj", "TerraFusion.API/"]
-COPY ["TerraFusion.AI/TerraFusion.AI.csproj", "TerraFusion.AI/"]
-COPY ["TerraFusion.Data/TerraFusion.Data.csproj", "TerraFusion.Data/"]
-COPY ["TerraFusion.Consciousness/TerraFusion.Consciousness.csproj", "TerraFusion.Consciousness/"]
+COPY ["Directory.Packages.props", "./"]
+COPY ["src/Directory.Build.targets", "src/"]
+COPY ["src/TerraFusion.API/TerraFusion.API.csproj", "src/TerraFusion.API/"]
+COPY ["src/TerraFusion.AI/TerraFusion.AI.csproj", "src/TerraFusion.AI/"]
+COPY ["src/TerraFusion.Data/TerraFusion.Data.csproj", "src/TerraFusion.Data/"]
+COPY ["src/TerraFusion.Consciousness/TerraFusion.Consciousness.csproj", "src/TerraFusion.Consciousness/"]
+COPY ["src/TerraFusion.Operations/TerraFusion.Operations.csproj", "src/TerraFusion.Operations/"]
+COPY ["src/TerraFusion.Core/TerraFusion.Core.csproj", "src/TerraFusion.Core/"]
+COPY ["src/TerraFusion.Abstractions/TerraFusion.Abstractions.csproj", "src/TerraFusion.Abstractions/"]
+COPY ["src/TerraFusion.Levy/TerraFusion.Levy.csproj", "src/TerraFusion.Levy/"]
+COPY ["src/TerraFusion.CostForge/TerraFusion.CostForge.csproj", "src/TerraFusion.CostForge/"]
+COPY ["src/TerraFusion.Sync/TerraFusion.Sync.csproj", "src/TerraFusion.Sync/"]
 COPY ["TerraFusion.Gateway/TerraFusion.Gateway.csproj", "TerraFusion.Gateway/"]
-COPY ["TerraFusion.Operations/TerraFusion.Operations.csproj", "TerraFusion.Operations/"]
 
 # Restore NuGet packages with caching optimization
-RUN dotnet restore "TerraFusion.API/TerraFusion.API.csproj" --runtime linux-x64
+RUN dotnet restore "src/TerraFusion.API/TerraFusion.API.csproj" --runtime linux-x64
 
 # Copy all source code
 COPY . .
 
 # Build application in Release mode with optimization
-WORKDIR "/src/TerraFusion.API"
+WORKDIR "/src/src/TerraFusion.API"
 RUN dotnet build "TerraFusion.API.csproj" -c Release -o /app/build --runtime linux-x64 --no-restore
 
 # ============================================================================
@@ -42,10 +49,12 @@ RUN dotnet publish "TerraFusion.API.csproj" -c Release -o /app/publish \
     --runtime linux-x64 \
     --self-contained false \
     --no-restore \
-    /p:PublishReadyToRun=true \
+    /p:PublishReadyToRun=false \
     /p:PublishSingleFile=false \
     /p:DebugType=None \
-    /p:DebugSymbols=false
+    /p:DebugSymbols=false \
+    /p:TreatWarningsAsErrors=false \
+    /p:NoWarn=1591
 
 # ============================================================================
 # Stage 3: Runtime Stage - Minimal Production Image

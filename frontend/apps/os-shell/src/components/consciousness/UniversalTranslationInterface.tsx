@@ -106,7 +106,7 @@ const UniversalTranslationInterface: React.FC = () => {
   return (
     <StyledCard>
       <CardContent>
-        <Typography variant='h6' sx={{ color: '#d1c4e9', fontWeight: 600, mb: 3 }}>
+        <Typography variant='h6' sx={{ color: 'var(--tf-accent-quantum)', fontWeight: 600, mb: 3 }}>
           Universal Translation Protocol
         </Typography>
         <Grid container spacing={2}>
@@ -122,16 +122,16 @@ const UniversalTranslationInterface: React.FC = () => {
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': { borderColor: 'rgba(200, 150, 255, 0.3)' },
-                  '&:hover fieldset': { borderColor: '#c5a6ff' },
+                  '&:hover fieldset': { borderColor: 'var(--tf-accent-quantum)' },
                 },
-                '& .MuiInputLabel-root': { color: '#d1c4e9' },
+                '& .MuiInputLabel-root': { color: 'var(--tf-accent-quantum)' },
                 '& .MuiInputBase-input': { color: 'white' },
               }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth variant='outlined'>
-              <InputLabel sx={{ color: '#d1c4e9' }}>Source Species</InputLabel>
+              <InputLabel sx={{ color: 'var(--tf-accent-quantum)' }}>Source Species</InputLabel>
               <Select
                 value={sourceSpecies}
                 onChange={(e) => setSourceSpecies(e.target.value as SpeciesType)}
@@ -150,7 +150,7 @@ const UniversalTranslationInterface: React.FC = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth variant='outlined'>
-              <InputLabel sx={{ color: '#d1c4e9' }}>Target Species</InputLabel>
+              <InputLabel sx={{ color: 'var(--tf-accent-quantum)' }}>Target Species</InputLabel>
               <Select
                 value={targetSpecies}
                 onChange={(e) => setTargetSpecies(e.target.value as SpeciesType)}
@@ -175,7 +175,7 @@ const UniversalTranslationInterface: React.FC = () => {
               disabled={isLoading}
               sx={{
                 py: 1.5,
-                background: 'linear-gradient(135deg, #764ba2, #667eea)',
+                background: 'linear-gradient(135deg, var(--tf-accent-quantum), var(--tf-accent-quantum))',
                 '&:hover': {
                   boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)',
                 },
@@ -188,7 +188,7 @@ const UniversalTranslationInterface: React.FC = () => {
 
         {translatedMessage && (
           <Paper elevation={3} sx={{ mt: 3, p: 2, background: 'rgba(0,0,0,0.2)' }}>
-            <Typography variant='h6' sx={{ color: '#c5a6ff', mb: 2 }}>
+            <Typography variant='h6' sx={{ color: 'var(--tf-accent-quantum)', mb: 2 }}>
               Translation Output
             </Typography>
             {translatedMessage.error ? (

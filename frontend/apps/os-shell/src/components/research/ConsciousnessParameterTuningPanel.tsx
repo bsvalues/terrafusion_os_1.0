@@ -140,8 +140,8 @@ const ParameterSlider: React.FC<ParameterSliderProps> = ({
           )}
           style={{
             background: `linear-gradient(to right,
-              #00FFFF 0%,
-              #00FFFF ${percentage}%,
+              var(--tf-transcend-cyan) 0%,
+              var(--tf-transcend-cyan) ${percentage}%,
               rgba(30, 41, 59, 0.3) ${percentage}%,
               rgba(30, 41, 59, 0.3) 100%)`,
           }}
@@ -679,7 +679,7 @@ export const ConsciousnessParameterTuningPanel: React.FC = () => {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: #00ffff;
+          background: var(--tf-quantum-cyan);
           cursor: pointer;
           box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
           transition: all 0.2s;
@@ -694,7 +694,7 @@ export const ConsciousnessParameterTuningPanel: React.FC = () => {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: #00ffff;
+          background: var(--tf-quantum-cyan);
           cursor: pointer;
           box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
           border: none;

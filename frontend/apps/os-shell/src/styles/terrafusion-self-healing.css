@@ -14,7 +14,7 @@ Government Reliability Through Autonomous CSS Recovery
   --tf-healing-fault-tolerance: 0.95;
 
   /* Backup System Values */
-  --tf-fallback-primary: #0066cc;
+  --tf-fallback-primary: var(--tf-network-blue);
   --tf-fallback-background: #1a1a1a;
   --tf-fallback-text: #ffffff;
   --tf-fallback-spacing: 16px;
@@ -40,11 +40,11 @@ Government Reliability Through Autonomous CSS Recovery
   color: var(--tf-primary, var(--tf-fallback-primary));
 
   /* Fallback for older browsers */
-  color: #0099ff;
+  color: var(--tf-network-blue);
 
   /* Advanced feature detection fallback */
   color: color-mix(in srgb, var(--tf-primary) 100%, transparent);
-  color: var(--tf-primary, #0099ff);
+  color: var(--tf-primary, var(--tf-network-blue));
 }
 
 /* Background System with Progressive Enhancement */
@@ -53,7 +53,7 @@ Government Reliability Through Autonomous CSS Recovery
   background: var(--tf-fallback-background);
 
   /* Enhanced gradient with fallback */
-  background: var(--tf-gradient-dark, linear-gradient(180deg, #0b1020 0%, #0a0f1c 100%));
+  background: var(--tf-gradient-dark, linear-gradient(180deg, #0b1020 0%, var(--tf-void-black) 100%));
 
   /* Modern features with feature detection */
   @supports (background: color-mix(in srgb, red 50%, blue)) {
@@ -349,14 +349,14 @@ Government Reliability Through Autonomous CSS Recovery
   /* Multi-layer fallback system */
 
   /* Level 1: Modern CSS with fallback */
-  background: var(--tf-primary, #0099ff);
+  background: var(--tf-primary, var(--tf-network-blue));
   background: color-mix(in srgb, var(--tf-primary) 90%, transparent);
 
   /* Level 2: Intermediate fallback */
   background: rgba(0, 153, 255, 0.9);
 
   /* Level 3: Basic fallback */
-  background: #0099ff;
+  background: var(--tf-network-blue);
 
   /* Feature detection cascading */
   @supports (color-mix(in srgb, red 50%, blue)) {
@@ -375,7 +375,7 @@ Government Reliability Through Autonomous CSS Recovery
   display: block;
   padding: 16px;
   margin: 8px;
-  background: #0099ff;
+  background: var(--tf-network-blue);
   color: white;
   border-radius: 4px;
 

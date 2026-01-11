@@ -90,7 +90,7 @@ const QuantumPointCloud: React.FC<{
       positions[i * 3 + 2] = point.z;
 
       // Parse color (terra-cyan primary)
-      const color = new THREE.Color(point.color || '#00FFFF');
+      const color = new THREE.Color(point.color || 'var(--tf-transcend-cyan)');
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
@@ -171,7 +171,7 @@ const QuantumConnections: React.FC<{
               />
             </bufferGeometry>
             <lineBasicMaterial
-              color='#00FFFF'
+              color='var(--tf-transcend-cyan)'
               transparent
               opacity={0.3 * conn.strength}
               blending={THREE.AdditiveBlending}
@@ -211,7 +211,7 @@ const AmbientQuantumParticles: React.FC = () => {
 
   return (
     <points ref={particlesRef} geometry={particleGeometry}>
-      <pointsMaterial size={0.02} color='#00FFFF' transparent opacity={0.3} sizeAttenuation />
+      <pointsMaterial size={0.02} color='var(--tf-transcend-cyan)' transparent opacity={0.3} sizeAttenuation />
     </points>
   );
 };
@@ -239,18 +239,18 @@ const QuantumScene: React.FC<{
 
       {/* Lighting setup for quantum visualization */}
       <ambientLight intensity={0.3} />
-      <pointLight position={[10, 10, 10]} intensity={0.8} color='#00FFFF' />
-      <pointLight position={[-10, -10, -10]} intensity={0.4} color='#0080FF' />
+      <pointLight position={[10, 10, 10]} intensity={0.8} color='var(--tf-transcend-cyan)' />
+      <pointLight position={[-10, -10, -10]} intensity={0.4} color='var(--tf-network-blue)' />
 
       {/* Grid for spatial reference */}
       <Grid
         args={[20, 20]}
         cellSize={0.5}
         cellThickness={0.5}
-        cellColor='#00FFFF'
+        cellColor='var(--tf-transcend-cyan)'
         sectionSize={2}
         sectionThickness={1}
-        sectionColor='#0080FF'
+        sectionColor='var(--tf-network-blue)'
         fadeDistance={30}
         fadeStrength={1}
         followCamera={false}

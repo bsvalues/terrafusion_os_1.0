@@ -13,8 +13,9 @@
  * - Accessibility
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+// Vitest imports removed - Jest globals used
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   Select,
@@ -29,7 +30,7 @@ import {
 // Helper component for testing
 function SelectDemo({
   defaultValue = '',
-  onValueChange = vi.fn(),
+  onValueChange = jest.fn(),
   disabled = false,
 }: {
   defaultValue?: string;
@@ -124,13 +125,14 @@ describe('Select Component', () => {
   describe('Selection', () => {
     it('should select an option when clicked', async () => {
       const user = userEvent.setup();
-      const onValueChange = vi.fn();
+      const onValueChange = jest.fn();
       render(<SelectDemo onValueChange={onValueChange} />);
 
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
 
-      const option = screen.getByText('Banana');
+      const listbox = await screen.findByRole('listbox');
+      const option = within(listbox).getByRole('option', { name: 'Banana' });
       await user.click(option);
 
       expect(onValueChange).toHaveBeenCalledWith('banana');
@@ -151,7 +153,7 @@ describe('Select Component', () => {
 
     it('should change selection when different option clicked', async () => {
       const user = userEvent.setup();
-      const onValueChange = vi.fn();
+      const onValueChange = jest.fn();
       render(<SelectDemo defaultValue='apple' onValueChange={onValueChange} />);
 
       const trigger = screen.getByRole('combobox');
@@ -249,7 +251,7 @@ describe('Select Component', () => {
 
     it('should select focused option on Enter', async () => {
       const user = userEvent.setup();
-      const onValueChange = vi.fn();
+      const onValueChange = jest.fn();
       render(<SelectDemo onValueChange={onValueChange} />);
 
       const trigger = screen.getByRole('combobox');
@@ -372,7 +374,7 @@ describe('Select Component', () => {
   // Category 6: Form Integration
   describe('Form Integration', () => {
     it('should work with form submission', async () => {
-      const handleSubmit = vi.fn((e) => e.preventDefault());
+      const handleSubmit = jest.fn((e) => e.preventDefault());
       const user = userEvent.setup();
 
       render(
@@ -385,7 +387,8 @@ describe('Select Component', () => {
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
 
-      const option = screen.getByText('Banana');
+      const listbox = await screen.findByRole('listbox');
+      const option = within(listbox).getByRole('option', { name: 'Banana' });
       await user.click(option);
 
       const submitButton = screen.getByRole('button', { name: 'Submit' });
@@ -395,7 +398,7 @@ describe('Select Component', () => {
     });
 
     it('should work with controlled component', () => {
-      const onValueChange = vi.fn();
+      const onValueChange = jest.fn();
       const { rerender } = render(
         <Select value='apple' onValueChange={onValueChange}>
           <SelectTrigger>
@@ -426,35 +429,45 @@ describe('Select Component', () => {
     });
 
     it('should have name attribute for form submission', () => {
-      render(
-        <Select name='fruit'>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='apple'>Apple</SelectItem>
-          </SelectContent>
-        </Select>
+      const { container } = render(
+        <form>
+          <Select name='fruit'>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='apple'>Apple</SelectItem>
+            </SelectContent>
+          </Select>
+        </form>
       );
 
-      const trigger = screen.getByRole('combobox');
-      expect(trigger).toHaveAttribute('name', 'fruit');
+      // Radix Select uses a hidden native form control for submission.
+      const hiddenControl =
+        container.querySelector('select[name="fruit"]') ||
+        container.querySelector('input[name="fruit"]');
+      expect(hiddenControl).toBeTruthy();
     });
 
     it('should work with required attribute', () => {
-      render(
-        <Select required>
-          <SelectTrigger>
-            <SelectValue placeholder='Select (required)' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='apple'>Apple</SelectItem>
-          </SelectContent>
-        </Select>
+      const { container } = render(
+        <form>
+          <Select name='fruit' required>
+            <SelectTrigger>
+              <SelectValue placeholder='Select (required)' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='apple'>Apple</SelectItem>
+            </SelectContent>
+          </Select>
+        </form>
       );
 
-      const trigger = screen.getByRole('combobox');
-      expect(trigger).toHaveAttribute('required');
+      const hiddenSelect = container.querySelector(
+        'select[aria-hidden="true"]'
+      ) as HTMLSelectElement | null;
+      expect(hiddenSelect).toBeTruthy();
+      expect(hiddenSelect?.required).toBe(true);
     });
   });
 
@@ -476,12 +489,11 @@ describe('Select Component', () => {
     it('should maintain focus management', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
 
-      // Focus should be on the content after opening
-      expect(document.activeElement).toBeTruthy();
+      const listbox = await screen.findByRole('listbox');
+      expect(listbox).toBeInTheDocument();
     });
 
     it('should have visible focus indicator', () => {
@@ -540,9 +552,10 @@ describe('Select Component', () => {
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
 
-      // Selected item should have a check icon
-      const selectedItem = screen.getByText('Apple').closest('[data-state="checked"]');
-      expect(selectedItem).toBeTruthy();
+      // Selected item should be marked checked (and renders a check indicator)
+      const listbox = screen.getByRole('listbox');
+      const appleOption = within(listbox).getByRole('option', { name: 'Apple' });
+      expect(appleOption).toHaveAttribute('data-state', 'checked');
     });
 
     it('should apply hover styles to trigger', () => {

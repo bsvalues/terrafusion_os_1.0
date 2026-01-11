@@ -15,11 +15,11 @@ const getCSSVar = (property: string): string => {
 export const championshipTokens = {
   colors: {
     primary: {
-      trust: 'var(--tf-trust-blue, #0099ff)',
-      transcend: 'var(--tf-transcend-cyan, #00ffee)',
-      success: 'var(--tf-success-green, #00ffaa)',
-      deepSpace: 'var(--tf-deep-space, #0b1020)',
-      midnight: 'var(--tf-midnight, #1a1f3a)',
+      trust: 'var(--tf-trust-blue, var(--tf-network-blue))',
+      transcend: 'var(--tf-transcend-cyan, var(--tf-transcend-highlight))',
+      success: 'var(--tf-success-green, var(--tf-accent-success))',
+      deepSpace: 'var(--tf-deep-space, var(--tf-bg-surface))',
+      midnight: 'var(--tf-midnight, var(--tf-bg-surface))',
     },
     gradients: {
       clarity: 'var(--tf-gradient-clarity)',
@@ -64,24 +64,24 @@ export const muiTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#0099ff', // tf-trust-blue
-      light: '#00ffee', // tf-transcend-cyan
-      dark: '#0066cc',
+      main: 'var(--tf-network-blue)', // tf-trust-blue
+      light: 'var(--tf-transcend-highlight)', // tf-transcend-cyan
+      dark: 'var(--tf-network-blue)',
     },
     secondary: {
-      main: '#00ffaa', // tf-success-green
-      light: '#33ffbb',
-      dark: '#00cc88',
+      main: 'var(--tf-accent-success)', // tf-success-green
+      light: 'var(--tf-accent-teal)',
+      dark: 'var(--tf-transcend-cyan)',
     },
     background: {
-      default: '#0b1020', // tf-deep-space
+      default: 'var(--tf-bg-surface)', // tf-deep-space
       paper: 'rgba(255, 255, 255, 0.03)', // tf-glass
     },
     error: {
-      main: '#ff4444', // tf-alert-red
+      main: 'var(--error-red)', // tf-alert-red
     },
     warning: {
-      main: '#ffaa00', // tf-caution-amber
+      main: 'var(--warning-amber)', // tf-caution-amber
     },
   },
 

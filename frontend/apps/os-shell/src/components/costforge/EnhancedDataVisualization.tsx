@@ -41,16 +41,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 // CostForge Analytics colors - TerraFusion Design System
 const COSTFORGE_ANALYTICS_COLORS = {
-  trustBlue: '#0099ff',
-  transcendCyan: '#00ffee',
-  successGreen: '#00ffaa',
-  warningAmber: '#ffaa00',
-  criticalRed: '#ff4444',
-  deepSpace: '#0b1020',
-  surfaceGray: '#1e293b',
+  trustBlue: 'var(--tf-network-blue)',
+  transcendCyan: 'var(--tf-transcend-highlight)',
+  successGreen: 'var(--tf-accent-success)',
+  warningAmber: 'var(--warning-amber)',
+  criticalRed: 'var(--error-red)',
+  deepSpace: 'var(--tf-bg-surface)',
+  surfaceGray: 'var(--tf-bg-surface)',
 };
 
-const CHART_COLORS = ['#00ffee', '#0099ff', '#00ffaa', '#ffaa00', '#ff6b9d', '#4ecdc4'];
+const CHART_COLORS = ['var(--tf-transcend-highlight)', 'var(--tf-network-blue)', 'var(--tf-accent-success)', 'var(--warning-amber)', 'var(--tf-accent-pink)', 'var(--tf-accent-teal)'];
 
 interface TimeSeriesDataPoint {
   date: string;
@@ -431,26 +431,26 @@ export const EnhancedDataVisualization: React.FC = () => {
                       <AreaChart data={timeSeriesData}>
                         <defs>
                           <linearGradient id='costGradient' x1='0' y1='0' x2='0' y2='1'>
-                            <stop offset='5%' stopColor='#00ffee' stopOpacity={0.8} />
-                            <stop offset='95%' stopColor='#00ffee' stopOpacity={0.1} />
+                            <stop offset='5%' stopColor='var(--tf-transcend-highlight)' stopOpacity={0.8} />
+                            <stop offset='95%' stopColor='var(--tf-transcend-highlight)' stopOpacity={0.1} />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray='3 3' stroke='#334155' />
-                        <XAxis dataKey='date' stroke='#94a3b8' />
-                        <YAxis stroke='#94a3b8' />
+                        <CartesianGrid strokeDasharray='3 3' stroke='var(--gray-700)' />
+                        <XAxis dataKey='date' stroke='var(--gray-400)' />
+                        <YAxis stroke='var(--gray-400)' />
                         <Tooltip
                           formatter={(value, name) => [`$${Number(value).toFixed(0)}`, 'Cost/SqFt']}
                           contentStyle={{
                             backgroundColor: 'rgba(15, 23, 42, 0.9)',
                             border: '1px solid rgba(0, 255, 238, 0.3)',
                             borderRadius: '8px',
-                            color: '#fff',
+                            color: 'var(--tf-text-primary)',
                           }}
                         />
                         <Area
                           type='monotone'
                           dataKey='value'
-                          stroke='#00ffee'
+                          stroke='var(--tf-transcend-highlight)'
                           fillOpacity={1}
                           fill='url(#costGradient)'
                           strokeWidth={2}
@@ -458,7 +458,7 @@ export const EnhancedDataVisualization: React.FC = () => {
                         <Line
                           type='monotone'
                           dataKey='projected'
-                          stroke='#0099ff'
+                          stroke='var(--tf-network-blue)'
                           strokeDasharray='5 5'
                           strokeWidth={1}
                         />
@@ -490,9 +490,9 @@ export const EnhancedDataVisualization: React.FC = () => {
                 <div className='h-96'>
                   <ResponsiveContainer width='100%' height='100%'>
                     <LineChart data={timeSeriesData}>
-                      <CartesianGrid strokeDasharray='3 3' stroke='#334155' />
-                      <XAxis dataKey='date' stroke='#94a3b8' />
-                      <YAxis stroke='#94a3b8' />
+                      <CartesianGrid strokeDasharray='3 3' stroke='var(--gray-700)' />
+                      <XAxis dataKey='date' stroke='var(--gray-400)' />
+                      <YAxis stroke='var(--gray-400)' />
                       <Tooltip
                         formatter={(value, name) => [
                           name === 'confidence'
@@ -508,7 +508,7 @@ export const EnhancedDataVisualization: React.FC = () => {
                           backgroundColor: 'rgba(15, 23, 42, 0.9)',
                           border: '1px solid rgba(0, 255, 238, 0.3)',
                           borderRadius: '8px',
-                          color: '#fff',
+                          color: 'var(--tf-text-primary)',
                         }}
                       />
                       <Legend />
@@ -516,15 +516,15 @@ export const EnhancedDataVisualization: React.FC = () => {
                         type='monotone'
                         dataKey='value'
                         name='Actual Cost'
-                        stroke='#00ffee'
+                        stroke='var(--tf-transcend-highlight)'
                         strokeWidth={3}
-                        activeDot={{ r: 6, fill: '#00ffee' }}
+                        activeDot={{ r: 6, fill: 'var(--tf-transcend-highlight)' }}
                       />
                       <Line
                         type='monotone'
                         dataKey='projected'
                         name='Projected'
-                        stroke='#0099ff'
+                        stroke='var(--tf-network-blue)'
                         strokeWidth={2}
                         strokeDasharray='5 5'
                       />
@@ -532,7 +532,7 @@ export const EnhancedDataVisualization: React.FC = () => {
                         type='monotone'
                         dataKey='confidence'
                         name='Confidence %'
-                        stroke='#00ffaa'
+                        stroke='var(--tf-accent-success)'
                         strokeWidth={1}
                         yAxisId='right'
                       />
@@ -566,9 +566,9 @@ export const EnhancedDataVisualization: React.FC = () => {
                       data={regionalComparison}
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                     >
-                      <CartesianGrid strokeDasharray='3 3' stroke='#334155' />
-                      <XAxis dataKey='name' stroke='#94a3b8' />
-                      <YAxis stroke='#94a3b8' />
+                      <CartesianGrid strokeDasharray='3 3' stroke='var(--gray-700)' />
+                      <XAxis dataKey='name' stroke='var(--gray-400)' />
+                      <YAxis stroke='var(--gray-400)' />
                       <Tooltip
                         formatter={(value, name) => [
                           `$${Number(value).toFixed(0)}/sqft`,
@@ -578,7 +578,7 @@ export const EnhancedDataVisualization: React.FC = () => {
                           backgroundColor: 'rgba(15, 23, 42, 0.9)',
                           border: '1px solid rgba(0, 255, 238, 0.3)',
                           borderRadius: '8px',
-                          color: '#fff',
+                          color: 'var(--tf-text-primary)',
                         }}
                       />
                       <Bar dataKey='value' radius={[4, 4, 0, 0]}>
@@ -587,10 +587,10 @@ export const EnhancedDataVisualization: React.FC = () => {
                             key={`cell-${index}`}
                             fill={
                               entry.trend === 'up'
-                                ? '#00ffaa'
+                                ? 'var(--tf-accent-success)'
                                 : entry.trend === 'down'
-                                  ? '#ff6b9d'
-                                  : '#00ffee'
+                                  ? 'var(--tf-accent-pink)'
+                                  : 'var(--tf-transcend-highlight)'
                             }
                           />
                         ))}
@@ -661,7 +661,7 @@ export const EnhancedDataVisualization: React.FC = () => {
                           labelLine={true}
                           label={({ category, percentage }) => `${category}: ${percentage}%`}
                           outerRadius={80}
-                          fill='#8884d8'
+                          fill='var(--tf-chart-1)'
                           dataKey='amount'
                         >
                           {costBreakdown.map((entry, index) => (
@@ -680,7 +680,7 @@ export const EnhancedDataVisualization: React.FC = () => {
                             backgroundColor: 'rgba(15, 23, 42, 0.9)',
                             border: '1px solid rgba(0, 255, 238, 0.3)',
                             borderRadius: '8px',
-                            color: '#fff',
+                            color: 'var(--tf-text-primary)',
                           }}
                         />
                       </PieChart>
@@ -783,21 +783,21 @@ export const EnhancedDataVisualization: React.FC = () => {
                 <div className='h-80'>
                   <ResponsiveContainer width='100%' height='100%'>
                     <BarChart data={marketIntelligence.slice(0, 6)}>
-                      <CartesianGrid strokeDasharray='3 3' stroke='#334155' />
-                      <XAxis dataKey='region' stroke='#94a3b8' />
-                      <YAxis stroke='#94a3b8' />
+                      <CartesianGrid strokeDasharray='3 3' stroke='var(--gray-700)' />
+                      <XAxis dataKey='region' stroke='var(--gray-400)' />
+                      <YAxis stroke='var(--gray-400)' />
                       <Tooltip
                         contentStyle={{
                           backgroundColor: 'rgba(15, 23, 42, 0.9)',
                           border: '1px solid rgba(0, 255, 238, 0.3)',
                           borderRadius: '8px',
-                          color: '#fff',
+                          color: 'var(--tf-text-primary)',
                         }}
                       />
                       <Legend />
-                      <Bar dataKey='materialCosts' name='Material Costs %' fill='#00ffee' />
-                      <Bar dataKey='laborRates' name='Labor Rates %' fill='#0099ff' />
-                      <Bar dataKey='demandIndex' name='Demand Index' fill='#00ffaa' />
+                      <Bar dataKey='materialCosts' name='Material Costs %' fill='var(--tf-transcend-highlight)' />
+                      <Bar dataKey='laborRates' name='Labor Rates %' fill='var(--tf-network-blue)' />
+                      <Bar dataKey='demandIndex' name='Demand Index' fill='var(--tf-accent-success)' />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

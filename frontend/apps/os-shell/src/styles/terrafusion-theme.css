@@ -17,19 +17,19 @@ CUTTING-EDGE FEATURES:
 
 :root {
   /* Official Brand Colors - Direct from Brand Kit */
-  --tf-primary: #0099ff;
+  --tf-primary: var(--tf-network-blue);
   --tf-primary-dark: #0077cc;
   --tf-accent: #00ffaa;
   --tf-accent-dark: #00cc88;
-  --tf-transcend: #00ffee;
+  --tf-transcend: var(--tf-transcend-highlight);
   --tf-dark: #0b1020;
   --tf-dark-lighter: #1a1f3a;
   --tf-light: #ffffff;
-  --tf-gray: #888888;
-  --tf-gray-light: #cccccc;
-  --tf-error: #ff3333;
-  --tf-success: #00ff88;
-  --tf-warning: #ffaa00;
+  --tf-gray: var(--gray-400);
+  --tf-gray-light: var(--gray-300);
+  --tf-error: var(--tf-error-red);
+  --tf-success: var(--success-green);
+  --tf-warning: var(--warning-amber);
   --tf-clarity: #e0f7ff;
 
   /* Official Brand Gradients */
@@ -39,7 +39,7 @@ CUTTING-EDGE FEATURES:
     var(--tf-transcend) 50%,
     var(--tf-accent) 100%
   );
-  --tf-gradient-dark: linear-gradient(180deg, var(--tf-dark) 0%, #0a0f1c 100%);
+  --tf-gradient-dark: linear-gradient(180deg, var(--tf-dark) 0%, var(--tf-void-black) 100%);
   --tf-gradient-glass: linear-gradient(
     135deg,
     rgba(0, 255, 238, 0.1) 0%,
@@ -186,7 +186,7 @@ body {
 
 /* Error Button */
 .tf-button-error {
-  background: linear-gradient(135deg, var(--tf-error) 0%, #ff6666 100%);
+  background: linear-gradient(135deg, var(--tf-error) 0%, var(--tf-error-light) 100%);
 }
 
 /* Input Fields - Government Grade */
@@ -403,8 +403,8 @@ body {
 /* High Contrast Mode Support */
 @media (prefers-contrast: high) {
   :root {
-    --tf-primary: #0066cc;
-    --tf-transcend: #00cccc;
+    --tf-primary: var(--tf-network-blue);
+    --tf-transcend: var(--tf-accent-cyan);
     --tf-accent: #00aa00;
   }
 

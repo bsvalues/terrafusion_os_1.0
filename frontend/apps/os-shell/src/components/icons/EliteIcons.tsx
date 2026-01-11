@@ -373,7 +373,7 @@ export const EliteQuantumIcon: React.FC<
 > = ({
   iconType,
   className = 'w-6 h-6',
-  color = '#00FFFF',
+  color = 'var(--tf-transcend-cyan)',
   glowIntensity = 'medium',
   ...props
 }) => {

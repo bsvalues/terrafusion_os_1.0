@@ -53,11 +53,11 @@ const DevelopmentModeIndicator: React.FC<DevelopmentModeIndicatorProps> = ({
 
   const getStatusColor = () => {
     if (!mockMode && healthStatus?.backend_connected) {
-      return '#2ecc71'; // Green - Real backend
+      return 'var(--tf-success-green)'; // Green - Real backend
     } else if (mockMode) {
-      return '#f39c12'; // Orange - Mock mode
+      return 'var(--tf-warning-amber)'; // Orange - Mock mode
     } else {
-      return '#e74c3c'; // Red - Connection issues
+      return 'var(--tf-error-red)'; // Red - Connection issues
     }
   };
 

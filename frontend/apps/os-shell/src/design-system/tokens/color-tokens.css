@@ -14,7 +14,7 @@
   background-color: #1aa3ff;
 }
 .tf-color-bg-primary-500 {
-  background-color: #0099ff;
+  background-color: var(--tf-network-blue);
 }
 .tf-color-bg-primary-600 {
   background-color: #007acc;
@@ -44,7 +44,7 @@
   background-color: #1affef;
 }
 .tf-color-bg-transcend-500 {
-  background-color: #00ffee;
+  background-color: var(--tf-transcend-highlight);
 }
 .tf-color-bg-transcend-600 {
   background-color: #00ccbe;
@@ -106,7 +106,7 @@
   background-color: #000000;
 }
 .tf-color-bg-semantic-text-link {
-  background-color: #0099ff;
+  background-color: var(--tf-network-blue);
 }
 .tf-color-bg-semantic-text-link-hover {
   background-color: #1aa3ff;
@@ -139,10 +139,10 @@
   background-color: #4d4d4d;
 }
 .tf-color-bg-semantic-border-interactive {
-  background-color: #0099ff;
+  background-color: var(--tf-network-blue);
 }
 .tf-color-bg-semantic-border-focus {
-  background-color: #00ffee;
+  background-color: var(--tf-transcend-highlight);
 }
 .tf-color-bg-semantic-surface-default {
   background-color: #0a0a0a;
@@ -221,7 +221,7 @@
   background-color: #ff1a1a;
 }
 .tf-color-bg-state-error-500 {
-  background-color: #ff0000;
+  background-color: var(--tf-error-red);
 }
 .tf-color-bg-state-error-600 {
   background-color: #cc0000;
@@ -303,7 +303,7 @@
   background-color: #1aa3ff;
 }
 .tf-color-bg-state-info-500 {
-  background-color: #0099ff;
+  background-color: var(--tf-network-blue);
 }
 .tf-color-bg-state-info-600 {
   background-color: #007acc;
@@ -318,7 +318,7 @@
   background-color: #001f33;
 }
 .tf-color-bg-state-info-text {
-  background-color: #0099ff;
+  background-color: var(--tf-network-blue);
 }
 .tf-color-bg-state-info-background {
   background-color: rgba(0, 153, 255, 0.1);
@@ -329,7 +329,7 @@
 
 /* Component Colors: Button */
 .tf-color-bg-component-button-primary-background {
-  background-color: #0099ff;
+  background-color: var(--tf-network-blue);
 }
 .tf-color-bg-component-button-primary-hover {
   background-color: #1aa3ff;
@@ -356,10 +356,10 @@
   background-color: transparent;
 }
 .tf-color-bg-component-button-secondary-text {
-  background-color: #0099ff;
+  background-color: var(--tf-network-blue);
 }
 .tf-color-bg-component-button-secondary-border {
-  background-color: #0099ff;
+  background-color: var(--tf-network-blue);
 }
 .tf-color-bg-component-button-ghost-background {
   background-color: transparent;
@@ -374,7 +374,7 @@
   background-color: #ffffff;
 }
 .tf-color-bg-component-button-danger-background {
-  background-color: #ff0000;
+  background-color: var(--tf-error-red);
 }
 .tf-color-bg-component-button-danger-hover {
   background-color: #ff1a1a;
@@ -394,7 +394,7 @@
   background-color: #333333;
 }
 .tf-color-bg-component-input-border-focus {
-  background-color: #0099ff;
+  background-color: var(--tf-network-blue);
 }
 .tf-color-bg-component-input-placeholder {
   background-color: #808080;
@@ -434,7 +434,7 @@
   background-color: #1a1a1a;
 }
 .tf-color-bg-component-navigation-active {
-  background-color: #0099ff;
+  background-color: var(--tf-network-blue);
 }
 .tf-color-bg-component-navigation-hover {
   background-color: #1a1a1a;
@@ -459,7 +459,7 @@
 
 /* Component Colors: Badge */
 .tf-color-bg-component-badge-primary-background {
-  background-color: #0099ff;
+  background-color: var(--tf-network-blue);
 }
 .tf-color-bg-component-badge-primary-text {
   background-color: #ffffff;
@@ -477,7 +477,7 @@
   background-color: #000000;
 }
 .tf-color-bg-component-badge-error-background {
-  background-color: #ff0000;
+  background-color: var(--tf-error-red);
 }
 .tf-color-bg-component-badge-error-text {
   background-color: #ffffff;

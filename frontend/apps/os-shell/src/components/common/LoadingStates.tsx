@@ -84,7 +84,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
         style={{
           fontSize: '1.25rem',
           fontWeight: 600,
-          color: '#00FFFF',
+          color: 'var(--tf-transcend-cyan)',
           marginBottom: '0.5rem',
           marginTop: '2rem',
           textAlign: 'center',
@@ -169,7 +169,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   progress,
   showPercentage = false,
   height = '6px',
-  color = 'linear-gradient(90deg, #00FFFF 0%, #0080FF 100%)',
+  color = 'linear-gradient(90deg, var(--tf-transcend-cyan) 0%, var(--tf-network-blue) 100%)',
 }) => (
   <div style={{ width: '100%' }}>
     <div
@@ -196,7 +196,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
       <div
         style={{
           fontSize: '0.875rem',
-          color: '#94A3B8',
+          color: 'var(--tf-text-secondary)',
           marginTop: '0.5rem',
           textAlign: 'center',
         }}
@@ -253,8 +253,8 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
       />
       <defs>
         <linearGradient id='gradient' x1='0%' y1='0%' x2='100%' y2='100%'>
-          <stop offset='0%' stopColor='#00FFFF' />
-          <stop offset='100%' stopColor='#0080FF' />
+          <stop offset='0%' stopColor='var(--tf-transcend-cyan)' />
+          <stop offset='100%' stopColor='var(--tf-network-blue)' />
         </linearGradient>
       </defs>
       <style>

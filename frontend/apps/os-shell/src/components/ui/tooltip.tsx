@@ -1,3 +1,4 @@
+import { Slot } from '@radix-ui/react-slot';
 import { cn } from '@utils/cn';
 import * as React from 'react';
 
@@ -40,6 +41,7 @@ interface TooltipTriggerProps {
 const TooltipTrigger: React.FC<TooltipTriggerProps> = ({
   children,
   className,
+  asChild = false,
   disabled = false,
 }) => {
   const context = React.useContext(TooltipContext);
@@ -74,11 +76,12 @@ const TooltipTrigger: React.FC<TooltipTriggerProps> = ({
     }
   };
 
+  const Comp = asChild ? Slot : 'button';
+
   return (
-    <button
-      type='button'
+    <Comp
+      {...(!asChild ? { type: 'button', disabled } : {})}
       className={cn('cursor-pointer', disabled && 'opacity-50 cursor-not-allowed', className)}
-      disabled={disabled}
       aria-describedby={context?.isOpen ? context.tooltipId : undefined}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -87,7 +90,7 @@ const TooltipTrigger: React.FC<TooltipTriggerProps> = ({
       onKeyDown={handleKeyDown}
     >
       {children}
-    </button>
+    </Comp>
   );
 };
 
@@ -108,6 +111,7 @@ const TooltipContent: React.FC<TooltipContentProps> = ({ children, className }) 
     <div
       id={context.tooltipId}
       role='tooltip'
+      aria-hidden={!context.isOpen}
       className={cn(
         'absolute z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground shadow-lg border border-slate-700',
         context.isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',

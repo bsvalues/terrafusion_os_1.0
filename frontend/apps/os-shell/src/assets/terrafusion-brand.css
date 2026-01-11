@@ -6,7 +6,7 @@
   --tf-primary: #00ced1; /* Cyan gradient start */
   --tf-secondary: #008b8b; /* Teal gradient end */
   --tf-dark: #0a1628; /* Background navy */
-  --tf-accent: #00ffff; /* Glow/highlight */
+  --tf-accent: var(--tf-quantum-cyan); /* Glow/highlight */
   --tf-trust-blue: #0077be; /* Government trust */
   --tf-success-green: #4caf50; /* Operational status */
   --tf-transcend-cyan: #40e0d0; /* Transcendence theme */
@@ -235,7 +235,7 @@
 
 .tf-glitch::after {
   animation: glitch-2 0.5s infinite;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   z-index: -2;
 }
 

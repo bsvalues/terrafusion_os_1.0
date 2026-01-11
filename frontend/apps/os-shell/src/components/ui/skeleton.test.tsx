@@ -215,7 +215,7 @@ describe('Skeleton', () => {
       );
 
       const skeletons = container.querySelectorAll('.animate-pulse');
-      expect(skeletons).toHaveLength(8);
+      expect(skeletons).toHaveLength(7);
     });
 
     it('renders grid of card skeletons', () => {

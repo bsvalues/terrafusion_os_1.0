@@ -109,7 +109,7 @@ const BudgetLandscape: React.FC<{
               color={color}
               transparent
               opacity={selectedCategory === category.id ? 1.0 : 0.8}
-              emissive={selectedCategory === category.id ? '#222222' : '#000000'}
+              emissive={selectedCategory === category.id ? 'var(--tf-surface-darker)' : 'var(--tf-bg-void)'}
             />
           </Box>
 
@@ -118,14 +118,14 @@ const BudgetLandscape: React.FC<{
             args={[2.2, height * utilization, 2.2]}
             position={[0, (height * utilization) / 2, 0]}
           >
-            <meshStandardMaterial color='#00ff88' transparent opacity={0.6} wireframe />
+            <meshStandardMaterial color='var(--success-green)' transparent opacity={0.6} wireframe />
           </Box>
 
           {/* Category label */}
           <Text
             position={[0, height + 1, 0]}
             fontSize={0.5}
-            color='#ffffff'
+            color='var(--tf-text-primary)fff'
             anchorX='center'
             anchorY='bottom'
             maxWidth={4}
@@ -146,8 +146,8 @@ const BudgetLandscape: React.FC<{
           {category.quantumProjection && (
             <Sphere args={[0.3]} position={[2.5, height + 0.5, 0]}>
               <meshStandardMaterial
-                color='#ff6600'
-                emissive='#ff3300'
+                color='var(--tf-retro-orange)'
+                emissive='var(--tf-error-red)'
                 emissiveIntensity={Math.sin(Date.now() * 0.01) * 0.5 + 0.5}
               />
             </Sphere>
@@ -156,7 +156,7 @@ const BudgetLandscape: React.FC<{
           {/* Priority indicator */}
           {category.priority === 'high' && (
             <Sphere args={[0.2]} position={[-2.5, height + 0.5, 0]}>
-              <meshStandardMaterial color='#ff4444' emissive='#ff2222' />
+              <meshStandardMaterial color='var(--error-red)' emissive='var(--tf-error-red)' />
             </Sphere>
           )}
         </group>
@@ -169,7 +169,7 @@ const BudgetLandscape: React.FC<{
     <group ref={groupRef}>
       {/* Ground plane */}
       <Plane args={[50, 50]} rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]}>
-        <meshStandardMaterial color='#1a1a3a' transparent opacity={0.5} wireframe />
+        <meshStandardMaterial color='var(--tf-surface-darker)' transparent opacity={0.5} wireframe />
       </Plane>
 
       {/* Budget category visualizations */}
@@ -179,10 +179,10 @@ const BudgetLandscape: React.FC<{
       {Array.from({ length: 11 }, (_, i) => (
         <React.Fragment key={`grid-${i}`}>
           <Box args={[0.05, 0.1, 50]} position={[i * 5 - 25, 0, 0]}>
-            <meshBasicMaterial color='#333366' />
+            <meshBasicMaterial color='var(--tf-bg-surface)366' />
           </Box>
           <Box args={[50, 0.1, 0.05]} position={[0, 0, i * 5 - 25]}>
-            <meshBasicMaterial color='#333366' />
+            <meshBasicMaterial color='var(--tf-bg-surface)366' />
           </Box>
         </React.Fragment>
       ))}
@@ -198,7 +198,7 @@ const ScenarioPlanning: React.FC<{
 }> = ({ scenarios, onScenarioSelect, selectedScenario }) => {
   return (
     <group position={[30, 0, 0]}>
-      <Text position={[0, 15, 0]} fontSize={1.5} color='#ffaa00' anchorX='center'>
+      <Text position={[0, 15, 0]} fontSize={1.5} color='var(--warning-amber)' anchorX='center'>
         Scenario Planning
       </Text>
 
@@ -210,17 +210,17 @@ const ScenarioPlanning: React.FC<{
         >
           <Box args={[8, 1.5, 0.2]}>
             <meshStandardMaterial
-              color={selectedScenario === scenario.id ? '#ffaa00' : '#0088ff'}
+              color={selectedScenario === scenario.id ? 'var(--warning-amber)' : 'var(--tf-network-blue)'}
               transparent
               opacity={0.8}
             />
           </Box>
 
-          <Text position={[0, 0, 0.2]} fontSize={0.4} color='#ffffff' anchorX='center' maxWidth={7}>
+          <Text position={[0, 0, 0.2]} fontSize={0.4} color='var(--tf-text-primary)fff' anchorX='center' maxWidth={7}>
             {scenario.name}
           </Text>
 
-          <Text position={[0, -0.8, 0.2]} fontSize={0.3} color='#00ff88' anchorX='center'>
+          <Text position={[0, -0.8, 0.2]} fontSize={0.3} color='var(--success-green)' anchorX='center'>
             {(scenario.probability * 100).toFixed(1)}% | $
             {(scenario.projectedAmount / 1000000).toFixed(1)}M
           </Text>
@@ -238,7 +238,7 @@ const JurisdictionOverview: React.FC<{
 }> = ({ jurisdictions, onJurisdictionSelect, selectedJurisdiction }) => {
   return (
     <group position={[-30, 0, 0]}>
-      <Text position={[0, 15, 0]} fontSize={1.5} color='#aa88ff' anchorX='center'>
+      <Text position={[0, 15, 0]} fontSize={1.5} color='var(--tf-accent-purple)' anchorX='center'>
         Multi-Jurisdictional View
       </Text>
 
@@ -259,14 +259,14 @@ const JurisdictionOverview: React.FC<{
                 color={jurisdiction.color}
                 transparent
                 opacity={selectedJurisdiction === jurisdiction.id ? 1.0 : 0.7}
-                emissive={selectedJurisdiction === jurisdiction.id ? '#222222' : '#000000'}
+                emissive={selectedJurisdiction === jurisdiction.id ? 'var(--tf-surface-darker)' : 'var(--tf-bg-void)'}
               />
             </Sphere>
 
             <Text
               position={[0, radius + 1, 0]}
               fontSize={0.4}
-              color='#ffffff'
+              color='var(--tf-text-primary)fff'
               anchorX='center'
               maxWidth={4}
             >
@@ -293,7 +293,7 @@ const CollaborativeIndicators: React.FC<{
 }> = ({ collaborators, currentUser }) => {
   return (
     <group position={[0, 20, 0]}>
-      <Text position={[0, 2, 0]} fontSize={1} color='#00aaff' anchorX='center'>
+      <Text position={[0, 2, 0]} fontSize={1} color='var(--tf-network-blue)' anchorX='center'>
         Active Collaborators
       </Text>
 
@@ -303,23 +303,23 @@ const CollaborativeIndicators: React.FC<{
             <meshStandardMaterial
               color={
                 collaborator.status === 'active'
-                  ? '#00ff88'
+                  ? 'var(--success-green)'
                   : collaborator.status === 'editing'
-                    ? '#ffaa00'
-                    : '#666666'
+                    ? 'var(--warning-amber)'
+                    : 'var(--gray-500)'
               }
-              emissive={collaborator.status === 'editing' ? '#ff6600' : '#000000'}
+              emissive={collaborator.status === 'editing' ? 'var(--tf-retro-orange)' : 'var(--tf-bg-void)'}
             />
           </Sphere>
 
-          <Text position={[0, -1, 0]} fontSize={0.3} color='#ffffff' anchorX='center' maxWidth={2}>
+          <Text position={[0, -1, 0]} fontSize={0.3} color='var(--tf-text-primary)fff' anchorX='center' maxWidth={2}>
             {collaborator.name}
           </Text>
 
           <Text
             position={[0, -1.5, 0]}
             fontSize={0.2}
-            color='#cccccc'
+            color='var(--gray-300)'
             anchorX='center'
             maxWidth={2}
           >
@@ -471,7 +471,7 @@ export const BudgetVisualization3D: React.FC = () => {
         population: 275000,
         taxBase: 12500000000,
         position: new Vector3(0, 0, 0),
-        color: '#0088ff',
+        color: 'var(--tf-network-blue)',
         collaborators: [],
       },
       {
@@ -481,7 +481,7 @@ export const BudgetVisualization3D: React.FC = () => {
         population: 125000,
         taxBase: 8200000000,
         position: new Vector3(-15, 0, -15),
-        color: '#00ff88',
+        color: 'var(--success-green)',
         collaborators: [],
       },
       {
@@ -491,7 +491,7 @@ export const BudgetVisualization3D: React.FC = () => {
         population: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
         taxBase: 2100000000,
         position: new Vector3(15, 0, -15),
-        color: '#ffaa00',
+        color: 'var(--warning-amber)',
         collaborators: [],
       },
     ],
@@ -660,8 +660,8 @@ export const BudgetVisualization3D: React.FC = () => {
         >
           <ambientLight intensity={0.4} />
           <directionalLight position={[20, 20, 10]} intensity={1.2} />
-          <pointLight position={[-20, 15, -10]} intensity={0.8} color='#0088ff' />
-          <pointLight position={[20, 15, 10]} intensity={0.6} color='#ff6600' />
+          <pointLight position={[-20, 15, -10]} intensity={0.8} color='var(--tf-network-blue)' />
+          <pointLight position={[20, 15, 10]} intensity={0.6} color='var(--tf-retro-orange)' />
 
           <OrbitControls
             enablePan={true}

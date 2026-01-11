@@ -8,7 +8,7 @@ import PlaygroundTester from '../components/playground/PlaygroundTester';
 
 export const PlaygroundTestPage: React.FC = () => {
   return (
-    <div className='min-h-screen bg-[#0A0E1A] p-8'>
+    <div className='min-h-screen bg-[var(--tf-bg-void)] p-8'>
       <PlaygroundTester />
     </div>
   );

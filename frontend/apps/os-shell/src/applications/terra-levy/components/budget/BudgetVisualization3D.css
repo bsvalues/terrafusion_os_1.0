@@ -3,7 +3,7 @@
   display: flex;
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+  background: linear-gradient(135deg, #0a0a1a 0%, var(--tf-surface-darker) 50%, var(--tf-surface-darker) 100%);
   color: #ffffff;
   font-family: 'Quantum UI', 'Segoe UI', sans-serif;
   overflow: hidden;
@@ -14,7 +14,7 @@
 .budget-controls {
   width: 320px;
   background: rgba(26, 26, 58, 0.95);
-  border-right: 2px solid #0088ff;
+  border-right: 2px solid var(--tf-network-blue);
   padding: 20px;
   overflow-y: auto;
   -webkit-backdrop-filter: blur(15px);
@@ -35,12 +35,12 @@
 }
 
 .control-section h3 {
-  color: #0088ff;
+  color: var(--tf-network-blue);
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 2px;
   margin: 0 0 15px 0;
-  border-bottom: 1px solid #0088ff;
+  border-bottom: 1px solid var(--tf-network-blue);
   padding-bottom: 8px;
 }
 
@@ -65,13 +65,13 @@
 }
 
 .view-buttons button:hover {
-  border-color: #0088ff;
+  border-color: var(--tf-network-blue);
   background: rgba(0, 136, 255, 0.15);
   transform: translateX(3px);
 }
 
 .view-buttons button.active {
-  border-color: #0088ff;
+  border-color: var(--tf-network-blue);
   background: rgba(0, 136, 255, 0.25);
   box-shadow: 0 0 15px rgba(0, 136, 255, 0.3);
   color: #00aaff;
@@ -99,7 +99,7 @@
 
 .quantum-toggle:hover,
 .sync-toggle:hover {
-  border-color: #00ff88;
+  border-color: var(--success-green);
   background: rgba(0, 255, 136, 0.1);
 }
 
@@ -145,12 +145,12 @@
 }
 
 .detail-row span:first-child {
-  color: #cccccc;
+  color: var(--gray-300);
   font-weight: 500;
 }
 
 .detail-row span:last-child {
-  color: #00ff88;
+  color: var(--success-green);
   font-weight: bold;
 }
 
@@ -164,7 +164,7 @@
 /* HTML Overlays within 3D Scene */
 .budget-info-popup {
   background: rgba(26, 26, 58, 0.95);
-  border: 1px solid #0088ff;
+  border: 1px solid var(--tf-network-blue);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 11px;
@@ -177,25 +177,25 @@
 }
 
 .budget-info-popup .allocated {
-  color: #0088ff;
+  color: var(--tf-network-blue);
   font-weight: bold;
   margin-bottom: 2px;
 }
 
 .budget-info-popup .spent {
-  color: #00ff88;
+  color: var(--success-green);
   font-weight: bold;
   margin-bottom: 2px;
 }
 
 .budget-info-popup .utilization {
-  color: #ffaa00;
+  color: var(--warning-amber);
   font-size: 10px;
 }
 
 .jurisdiction-info {
   background: rgba(170, 136, 255, 0.9);
-  border: 1px solid #aa88ff;
+  border: 1px solid var(--tf-accent-purple);
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 10px;
@@ -207,12 +207,12 @@
 
 .jurisdiction-info div:first-child {
   font-weight: bold;
-  color: #aa88ff;
+  color: var(--tf-accent-purple);
 }
 
 .jurisdiction-info div:last-child {
   font-size: 9px;
-  color: #cccccc;
+  color: var(--gray-300);
 }
 
 /* AI Recommendations Panel */
@@ -222,7 +222,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: rgba(26, 26, 58, 0.95);
-  border: 2px solid #00ff88;
+  border: 2px solid var(--success-green);
   border-radius: 15px;
   padding: 20px;
   -webkit-backdrop-filter: blur(15px);
@@ -235,12 +235,12 @@
 }
 
 .ai-recommendations h3 {
-  color: #00ff88;
+  color: var(--success-green);
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 2px;
   margin: 0 0 15px 0;
-  border-bottom: 1px solid #00ff88;
+  border-bottom: 1px solid var(--success-green);
   padding-bottom: 8px;
 }
 
@@ -262,7 +262,7 @@
 }
 
 .recommendation-item:hover {
-  border-color: #00ff88;
+  border-color: var(--success-green);
   background: rgba(0, 255, 136, 0.1);
 }
 
@@ -275,7 +275,7 @@
 }
 
 .apply-recommendation {
-  background: linear-gradient(45deg, #00ff88, #00cc66);
+  background: linear-gradient(45deg, var(--success-green), #00cc66);
   border: none;
   border-radius: 15px;
   color: #000000;
@@ -303,7 +303,7 @@
   flex-direction: column;
   gap: 12px;
   background: rgba(26, 26, 58, 0.95);
-  border: 2px solid #ffaa00;
+  border: 2px solid var(--warning-amber);
   border-radius: 12px;
   padding: 15px;
   -webkit-backdrop-filter: blur(15px);
@@ -324,7 +324,7 @@
 }
 
 .metric-label {
-  color: #cccccc;
+  color: var(--gray-300);
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -332,7 +332,7 @@
 }
 
 .metric-value {
-  color: #ffaa00;
+  color: var(--warning-amber);
   font-size: 16px;
   font-weight: bold;
 }
@@ -413,7 +413,7 @@
     width: 100%;
     height: 180px;
     border-right: none;
-    border-bottom: 2px solid #0088ff;
+    border-bottom: 2px solid var(--tf-network-blue);
     display: flex;
     flex-direction: row;
     gap: 20px;

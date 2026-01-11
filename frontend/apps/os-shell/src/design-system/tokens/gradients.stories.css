@@ -1,5 +1,5 @@
 .tf-color-heading {
-  color: #fff;
+  color: var(--tf-text-primary);
   margin-bottom: 24px;
   font-size: 24px;
   font-weight: 700;
@@ -18,7 +18,7 @@
 }
 .tf-gradient-label {
   margin-top: 12px;
-  color: #fff;
+  color: var(--tf-text-primary);
 }
 .tf-gradient-value {
   font-family: monospace;
@@ -27,10 +27,10 @@
 
 /* Gradient backgrounds for championship compliance */
 .tf-gradient-bg-primary {
-  background: linear-gradient(135deg, #0099ff 0%, #00ffee 100%);
+  background: linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-transcend-highlight) 100%);
 }
 .tf-gradient-bg-transcend {
-  background: linear-gradient(135deg, #00ffee 0%, #00ffaa 100%);
+  background: linear-gradient(135deg, var(--tf-transcend-highlight) 0%, #00ffaa 100%);
 }
 .tf-gradient-bg-dark {
   background: linear-gradient(180deg, #000000 0%, #0a0a0a 100%);

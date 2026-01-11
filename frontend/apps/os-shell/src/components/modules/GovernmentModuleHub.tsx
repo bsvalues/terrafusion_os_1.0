@@ -141,26 +141,26 @@ export default function GovernmentModuleHub() {
   const getTierColor = (tier: string): string => {
     switch (tier) {
       case 'Tier1':
-        return '#00ffff'; // Terra-cyan for core
+        return 'var(--tf-quantum-cyan)'; // Terra-cyan for core
       case 'Tier2':
-        return '#00ff88'; // Terra-green for essential
+        return 'var(--success-green)'; // Terra-green for essential
       case 'Tier3':
-        return '#0099ff'; // Terra-blue for extended
+        return 'var(--tf-network-blue)'; // Terra-blue for extended
       default:
-        return '#ffffff';
+        return 'var(--tf-text-primary)fff';
     }
   };
 
   const getStatusColor = (status: string): string => {
     switch (status) {
       case 'active':
-        return '#00ff88';
+        return 'var(--success-green)';
       case 'loading':
-        return '#ffaa00';
+        return 'var(--warning-amber)';
       case 'error':
-        return '#ff4444';
+        return 'var(--error-red)';
       default:
-        return '#666666';
+        return 'var(--gray-500)';
     }
   };
 

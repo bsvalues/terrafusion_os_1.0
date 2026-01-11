@@ -85,7 +85,7 @@ const SystemDiagnostics: React.FC = () => {
 
       <div className='tf-osdiag-metric'>
         <span>SECURITY:</span>
-        <span className='tf-osdiag-value' style={{ color: '#00ff88' }}>
+        <span className='tf-osdiag-value' style={{ color: 'var(--success-green)' }}>
           {metrics.securityStatus}
         </span>
       </div>

@@ -5,10 +5,10 @@
 
 :root {
   /* TerraFusion Brand Colors */
-  --terra-cyan: #00ffff;
-  --terra-midnight: #0a0e1a;
-  --terra-blue: #0080ff;
-  --terra-slate: #1e293b;
+  --terra-cyan: var(--tf-quantum-cyan);
+  --terra-midnight: var(--tf-void-black);
+  --terra-blue: var(--tf-network-blue);
+  --terra-slate: var(--terra-slate);
   --terra-accent: #00ffaa;
 
   /* Apple OS Glass Effects */
@@ -46,7 +46,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-system);
-  background: linear-gradient(135deg, var(--terra-midnight) 0%, #0f172a 50%, #1e293b 100%);
+  background: linear-gradient(135deg, var(--terra-midnight) 0%, #0f172a 50%, var(--terra-slate) 100%);
   color: #f8fafc;
   overflow: hidden; /* Prevent body scrolling */
   position: fixed; /* Lock body position */
@@ -464,7 +464,7 @@ body,
     var(--terra-cyan) 0%,
     var(--terra-blue) 30%,
     var(--terra-accent) 60%,
-    #8844ff 100%
+    var(--info-purple) 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -556,8 +556,8 @@ body,
   padding: 1px;
   background: linear-gradient(135deg, var(--terra-cyan), var(--terra-blue));
   mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
+    linear-gradient(var(--tf-text-primary) 0 0) content-box,
+    linear-gradient(var(--tf-text-primary) 0 0);
   -webkit-mask-composite: exclude;
   mask-composite: exclude;
   opacity: 0;
@@ -656,14 +656,14 @@ body,
   margin-bottom: 2rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #00ffee;
+  color: var(--tf-transcend-highlight);
 }
 
 .hero-title {
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 900;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #0099ff, #00ffee, #00ffaa);
+  background: linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight), #00ffaa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -685,13 +685,13 @@ body,
 }
 
 .hero-button {
-  background: linear-gradient(135deg, #0099ff, #00ffee);
+  background: linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight));
   border: none;
   border-radius: 50px;
   padding: 1rem 2rem;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #000;
+  color: var(--tf-void-black);
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 10px 30px rgba(0, 255, 238, 0.3);
@@ -708,7 +708,7 @@ body,
   padding: 1rem 2rem;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #00ffee;
+  color: var(--tf-transcend-highlight);
   cursor: pointer;
   transition: all 0.3s ease;
 }

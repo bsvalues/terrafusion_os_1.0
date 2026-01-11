@@ -121,9 +121,9 @@ export function CodexDashboard() {
     const circumference = 2 * Math.PI * 90;
     const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
-    let color = '#ef4444'; // red
-    if (power >= 10) color = '#22c55e'; // green
-    else if (power >= 8) color = '#eab308'; // yellow
+    let color = 'var(--tf-accent-error)'; // red
+    if (power >= 10) color = 'var(--tf-success-green)'; // green
+    else if (power >= 8) color = 'var(--tf-warning-amber)'; // yellow
 
     return (
       <div className="relative w-64 h-64 mx-auto">
@@ -133,7 +133,7 @@ export function CodexDashboard() {
             cx="128"
             cy="128"
             r="90"
-            stroke="#e5e7eb"
+            stroke="var(--gray-200)"
             strokeWidth="20"
             fill="none"
           />

@@ -127,11 +127,11 @@ const ABTestingFramework: React.FC = () => {
   };
   const getCountyTheme = (county: string) => {
     const themes: Record<string, string> = {
-      benton: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)',
-      clark: 'linear-gradient(135deg, #004d40 0%, #00695c 100%)',
-      king: 'linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%)',
-      snohomish: 'linear-gradient(135deg, #b71c1c 0%, #c62828 100%)',
-      pierce: 'linear-gradient(135deg, #e65100 0%, #f57c00 100%)',
+      benton: 'linear-gradient(135deg, var(--tf-accent-indigo-dark) 0%, var(--tf-accent-blue-dark) 100%)',
+      clark: 'linear-gradient(135deg, var(--tf-accent-teal-dark) 0%, var(--tf-accent-teal-dark) 100%)',
+      king: 'linear-gradient(135deg, var(--tf-accent-purple-dark) 0%, var(--tf-accent-purple) 100%)',
+      snohomish: 'linear-gradient(135deg, var(--tf-error-dark) 0%, var(--tf-error-red) 100%)',
+      pierce: 'linear-gradient(135deg, var(--tf-warning-dark) 0%, var(--tf-warning-amber) 100%)',
     };
     return themes[county] || themes.benton;
   };
@@ -160,7 +160,7 @@ const ABTestingFramework: React.FC = () => {
                 fontWeight: 300,
                 marginBottom: '24px',
                 lineHeight: 1.1,
-                background: 'linear-gradient(135deg, #ff6b6b 0%, #ffd93d 100%)',
+                background: 'linear-gradient(135deg, var(--tf-accent-error) 0%, var(--tf-accent-yellow) 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -265,14 +265,14 @@ const ABTestingFramework: React.FC = () => {
                     background: 'rgba(0, 255, 238, 0.1)',
                     padding: '20px',
                     borderRadius: '12px',
-                    border: '1px solid #00ffee',
+                    border: '1px solid var(--tf-transcend-highlight)',
                   }}
                 >
                   <div
                     style={{
                       fontSize: '36px',
                       fontWeight: 'bold',
-                      color: '#00ffee',
+                      color: 'var(--tf-transcend-highlight)',
                     }}
                   >
                     {metric.number}
@@ -332,14 +332,14 @@ const ABTestingFramework: React.FC = () => {
             <div
               style={{
                 background: 'rgba(255, 0, 0, 0.1)',
-                border: '2px solid #ff3333',
+                border: '2px solid var(--tf-error-red)',
                 padding: '15px 30px',
                 borderRadius: '50px',
                 display: 'inline-block',
                 margin: '20px 0',
                 fontSize: '20px',
                 fontWeight: 'bold',
-                color: '#ff6666',
+                color: 'var(--tf-error-light)',
               }}
             >
               Offer expires in: {String(countdown.hours).padStart(2, '0')}:
@@ -364,7 +364,7 @@ const ABTestingFramework: React.FC = () => {
               style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
                 fontWeight: 300,
-                color: '#ff6666',
+                color: 'var(--tf-error-light)',
                 marginBottom: '48px',
                 maxWidth: '800px',
                 margin: '0 auto 48px',
@@ -469,7 +469,7 @@ const ABTestingFramework: React.FC = () => {
     <div
       style={{
         fontFamily: "'Segoe UI', -apple-system, system-ui, sans-serif",
-        background: '#0b1020',
+        background: 'var(--tf-bg-surface)',
         color: 'white',
         minHeight: '100vh',
         overflowX: 'hidden',
@@ -484,7 +484,7 @@ const ABTestingFramework: React.FC = () => {
           background: 'rgba(26, 31, 58, 0.95)',
           padding: '20px',
           borderRadius: '12px',
-          border: '1px solid #00ffee',
+          border: '1px solid var(--tf-transcend-highlight)',
           zIndex: 1000,
           backdropFilter: 'blur(10px)',
           minWidth: '300px',
@@ -492,7 +492,7 @@ const ABTestingFramework: React.FC = () => {
       >
         <h3
           style={{
-            color: '#00ffee',
+            color: 'var(--tf-transcend-highlight)',
             marginBottom: '15px',
             fontSize: '14px',
             textTransform: 'uppercase',
@@ -532,9 +532,9 @@ const ABTestingFramework: React.FC = () => {
                 flex: '1',
                 minWidth: '60px',
                 padding: '8px',
-                background: currentVariant === variant ? '#00ffaa' : '#0b1020',
-                color: currentVariant === variant ? '#0b1020' : '#00ffaa',
-                border: '1px solid #00ffaa',
+                background: currentVariant === variant ? 'var(--tf-accent-success)' : 'var(--tf-bg-surface)',
+                color: currentVariant === variant ? 'var(--tf-bg-surface)' : 'var(--tf-accent-success)',
+                border: '1px solid var(--tf-accent-success)',
                 borderRadius: '6px',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
@@ -559,7 +559,7 @@ const ABTestingFramework: React.FC = () => {
             <span>Engagement Rate:</span>
             <span
               style={{
-                color: '#00ffee',
+                color: 'var(--tf-transcend-highlight)',
                 fontWeight: 'bold',
               }}
             >
@@ -570,7 +570,7 @@ const ABTestingFramework: React.FC = () => {
             <span>Time on Page:</span>
             <span
               style={{
-                color: '#00ffee',
+                color: 'var(--tf-transcend-highlight)',
                 fontWeight: 'bold',
               }}
             >
@@ -581,7 +581,7 @@ const ABTestingFramework: React.FC = () => {
             <span>CTA Clicks:</span>
             <span
               style={{
-                color: '#00ffee',
+                color: 'var(--tf-transcend-highlight)',
                 fontWeight: 'bold',
               }}
             >
@@ -592,7 +592,7 @@ const ABTestingFramework: React.FC = () => {
             <span>Conversion Rate:</span>
             <span
               style={{
-                color: '#00ffee',
+                color: 'var(--tf-transcend-highlight)',
                 fontWeight: 'bold',
               }}
             >
@@ -629,8 +629,8 @@ const ABTestingFramework: React.FC = () => {
             bottom: '20px',
             left: '50%',
             transform: 'translateX(-50%)',
-            background: '#00ffaa',
-            color: '#0b1020',
+            background: 'var(--tf-accent-success)',
+            color: 'var(--tf-bg-surface)',
             padding: '15px 30px',
             borderRadius: '50px',
             fontWeight: 'bold',

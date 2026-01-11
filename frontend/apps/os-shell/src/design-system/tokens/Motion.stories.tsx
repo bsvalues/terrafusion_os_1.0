@@ -43,7 +43,7 @@ export const Durations: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '32px',
           fontSize: '24px',
           fontWeight: 700,
@@ -101,7 +101,7 @@ export const Easings: Story = {
       <div>
         <h2
           style={{
-            color: '#fff',
+            color: 'var(--tf-text-primary)',
             marginBottom: '32px',
             fontSize: '24px',
             fontWeight: 700,
@@ -175,7 +175,7 @@ export const FadeAnimations: Story = {
       <div>
         <h2
           style={{
-            color: '#fff',
+            color: 'var(--tf-text-primary)',
             marginBottom: '32px',
             fontSize: '24px',
             fontWeight: 700,
@@ -227,7 +227,7 @@ export const ContinuousAnimations: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '32px',
           fontSize: '24px',
           fontWeight: 700,
@@ -309,7 +309,7 @@ export const InteractiveTransitions: Story = {
       <div>
         <h2
           style={{
-            color: '#fff',
+            color: 'var(--tf-text-primary)',
             marginBottom: '32px',
             fontSize: '24px',
             fontWeight: 700,
@@ -341,7 +341,7 @@ export const LoadingStates: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '32px',
           fontSize: '24px',
           fontWeight: 700,
@@ -432,7 +432,7 @@ export const UsageGuidelines: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '24px',
           fontSize: '24px',
           fontWeight: 700,

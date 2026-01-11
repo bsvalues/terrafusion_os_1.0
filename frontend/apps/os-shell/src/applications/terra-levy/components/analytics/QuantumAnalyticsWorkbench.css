@@ -3,7 +3,7 @@
   height: 100vh;
   width: 100vw;
   position: relative;
-  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #2a2a4a 100%);
+  background: linear-gradient(135deg, #0a0a1a 0%, var(--tf-surface-darker) 50%, #2a2a4a 100%);
   overflow: hidden;
   font-family: 'Quantum UI', 'Courier New', monospace;
   color: #ffffff;
@@ -15,7 +15,7 @@
   top: 20px;
   width: 320px;
   background: rgba(26, 26, 58, 0.95);
-  border: 2px solid #00ff88;
+  border: 2px solid var(--success-green);
   border-radius: 15px;
   padding: 20px;
   -webkit-backdrop-filter: blur(15px);
@@ -24,12 +24,12 @@
 }
 
 .analytics-controls h3 {
-  color: #00ff88;
+  color: var(--success-green);
   font-size: 16px;
   margin: 0 0 15px 0;
   text-transform: uppercase;
   letter-spacing: 2px;
-  border-bottom: 1px solid #00ff88;
+  border-bottom: 1px solid var(--success-green);
   padding-bottom: 8px;
 }
 
@@ -54,7 +54,7 @@
 }
 
 .model-option.active {
-  border-color: #00ff88;
+  border-color: var(--success-green);
   background: rgba(0, 255, 136, 0.15);
   box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
 }
@@ -69,16 +69,16 @@
 .model-accuracy,
 .model-confidence {
   font-size: 11px;
-  color: #cccccc;
+  color: var(--gray-300);
   margin-bottom: 2px;
 }
 
 .model-accuracy {
-  color: #00ff88;
+  color: var(--success-green);
 }
 
 .model-confidence {
-  color: #ffaa00;
+  color: var(--warning-amber);
 }
 
 .quantum-controls {
@@ -92,9 +92,9 @@
 .research-toggle {
   padding: 10px 16px;
   background: rgba(0, 136, 255, 0.1);
-  border: 1px solid #0088ff;
+  border: 1px solid var(--tf-network-blue);
   border-radius: 25px;
-  color: #0088ff;
+  color: var(--tf-network-blue);
   font-size: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -112,15 +112,15 @@
 
 .quantum-toggle.active {
   background: rgba(255, 102, 0, 0.2);
-  border-color: #ff6600;
-  color: #ff6600;
+  border-color: var(--tf-retro-orange);
+  color: var(--tf-retro-orange);
   box-shadow: 0 0 20px rgba(255, 102, 0, 0.4);
 }
 
 .research-toggle.active {
   background: rgba(255, 215, 0, 0.2);
-  border-color: #ffd700;
-  color: #ffd700;
+  border-color: var(--tf-accent-yellow);
+  color: var(--tf-accent-yellow);
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
@@ -131,7 +131,7 @@
 }
 
 .visualization-controls label {
-  color: #00ff88;
+  color: var(--success-green);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -151,7 +151,7 @@
 
 .visualization-controls select:focus {
   outline: none;
-  border-color: #00ff88;
+  border-color: var(--success-green);
   box-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
 }
 
@@ -163,7 +163,7 @@
   flex-direction: column;
   gap: 15px;
   background: rgba(26, 26, 58, 0.95);
-  border: 2px solid #ffaa00;
+  border: 2px solid var(--warning-amber);
   border-radius: 15px;
   padding: 20px;
   -webkit-backdrop-filter: blur(15px);
@@ -182,7 +182,7 @@
 }
 
 .metric-label {
-  color: #cccccc;
+  color: var(--gray-300);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -190,14 +190,14 @@
 }
 
 .metric-value {
-  color: #00ff88;
+  color: var(--success-green);
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 3px;
 }
 
 .target-indicator {
-  color: #ffaa00;
+  color: var(--warning-amber);
   font-size: 10px;
 }
 
@@ -206,7 +206,7 @@
 }
 
 .quantum-advantage .metric-value {
-  color: #ff6600;
+  color: var(--tf-retro-orange);
 }
 
 .research-panel {
@@ -215,7 +215,7 @@
   left: 20px;
   right: 20px;
   background: rgba(26, 26, 58, 0.95);
-  border: 2px solid #ffd700;
+  border: 2px solid var(--tf-accent-yellow);
   border-radius: 15px;
   padding: 20px;
   -webkit-backdrop-filter: blur(15px);
@@ -223,7 +223,7 @@
 }
 
 .research-panel h3 {
-  color: #ffd700;
+  color: var(--tf-accent-yellow);
   font-size: 16px;
   margin: 0 0 15px 0;
   text-transform: uppercase;
@@ -239,17 +239,17 @@
 
 .connection {
   background: rgba(255, 215, 0, 0.1);
-  border: 1px solid #ffd700;
+  border: 1px solid var(--tf-accent-yellow);
   border-radius: 20px;
   padding: 8px 16px;
-  color: #ffd700;
+  color: var(--tf-accent-yellow);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .research-action {
-  background: linear-gradient(45deg, #ffd700, #ffaa00);
+  background: linear-gradient(45deg, var(--tf-accent-yellow), var(--warning-amber));
   border: none;
   border-radius: 25px;
   color: #000000;

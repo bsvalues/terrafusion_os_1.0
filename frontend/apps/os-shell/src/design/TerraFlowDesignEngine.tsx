@@ -243,7 +243,7 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
       animate={controls}
       className={cn('relative rounded-full flex items-center justify-center', sizeClasses[size])}
       style={{
-        background: `conic-gradient(from 0deg, ${getTerraGlow(systemHealth)}, #4338ca, ${getTerraGlow(systemHealth)})`,
+        background: `conic-gradient(from 0deg, ${getTerraGlow(systemHealth)}, var(--tf-accent-indigo), ${getTerraGlow(systemHealth)})`,
         zIndex: terraDepth.terraSphere,
       }}
     >

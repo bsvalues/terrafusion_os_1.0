@@ -257,7 +257,7 @@
 
 /* Dynamic Sphere Backgrounds */
 .terra-sphere-high {
-  background: conic-gradient(from 0deg, var(--tf-cyan), #4338ca, var(--tf-cyan));
+  background: conic-gradient(from 0deg, var(--tf-cyan), var(--tf-accent-indigo), var(--tf-cyan));
 }
 
 .terra-sphere-medium {

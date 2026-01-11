@@ -5,12 +5,12 @@
 
 :root {
   /* Core Brand Colors */
-  --terra-cyan: #00ffff;
-  --terra-midnight: #0a0e1a;
-  --terra-blue: #0080ff;
+  --terra-cyan: var(--tf-quantum-cyan);
+  --terra-midnight: var(--tf-void-black);
+  --terra-blue: var(--tf-network-blue);
   --terra-slate: #1e293b;
   --terra-accent: #00ffaa;
-  --terra-transcend: #00ffee;
+  --terra-transcend: var(--tf-transcend-highlight);
 
   /* Semantic Colors */
   --success-green: #00ff88;

@@ -161,7 +161,7 @@
 
 .tf-transcendent-button {
   position: relative;
-  background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+  background: linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-transcend-highlight) 50%, #00ffaa 100%);
   background-size: 200% 200%;
   color: white;
   font-weight: 700;
@@ -326,7 +326,7 @@
   background:
     radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.03) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(0, 128, 255, 0.03) 0%, transparent 50%),
-    linear-gradient(135deg, #0a0e1a 0%, #1e293b 100%);
+    linear-gradient(135deg, var(--tf-void-black) 0%, var(--terra-slate) 100%);
   min-height: 100vh;
 }
 
@@ -347,7 +347,7 @@
 .tf-metric-value {
   font-size: 3rem;
   font-weight: 900;
-  background: linear-gradient(135deg, #00ffff, #00ffaa);
+  background: linear-gradient(135deg, var(--tf-quantum-cyan), #00ffaa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -410,7 +410,7 @@
 }
 
 .tf-node-count {
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   font-weight: 700;
   font-size: 1.125rem;
 }
@@ -485,7 +485,7 @@
 }
 
 .tf-focus-visible:focus-visible {
-  outline: 2px solid #00ffff;
+  outline: 2px solid var(--tf-quantum-cyan);
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(0, 255, 255, 0.2);
 }
@@ -497,7 +497,7 @@
 @media (prefers-contrast: high) {
   .tf-quantum-interface {
     border-width: 2px;
-    border-color: #00ffff;
+    border-color: var(--tf-quantum-cyan);
   }
 
   .tf-transcendent-button {
@@ -505,6 +505,6 @@
   }
 
   .tf-consciousness-orb {
-    border: 2px solid #00ffff;
+    border: 2px solid var(--tf-quantum-cyan);
   }
 }

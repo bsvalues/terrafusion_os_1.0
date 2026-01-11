@@ -66,7 +66,7 @@ const WebGLTranscendence: React.FC = () => {
       varying vec2 vUv;
       
       void main() {
-        // Terrafusion brand colors: primary #0099ff, transcend #00ffee, accent #00ffaa
+        // Terrafusion brand colors: primary var(--tf-network-blue), transcend var(--tf-transcend-highlight), accent var(--tf-accent-success)
         vec3 primaryColor = vec3(0.0, 0.6, 1.0);    // --tf-primary
         vec3 transcendColor = vec3(0.0, 1.0, 0.93); // --tf-transcend
         vec3 accentColor = vec3(0.0, 1.0, 0.67);    // --tf-accent

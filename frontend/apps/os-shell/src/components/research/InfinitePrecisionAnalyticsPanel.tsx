@@ -308,8 +308,8 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
       style={{
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(135deg, #0A0E1A 0%, #1E293B 100%)',
-        color: '#FFFFFF',
+        background: `linear-gradient(135deg, ${colors.background.void} 0%, ${colors.background.secondary} 100%)`,
+        color: colors.semantic.text.primary,
         fontFamily: "'Inter', system-ui, sans-serif",
         overflow: 'auto',
         padding: '2rem',
@@ -323,20 +323,20 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
         style={{
           marginBottom: '2rem',
           padding: '1.5rem',
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: colors.utils.withOpacity(colors.background.secondary, 0.3),
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 255, 255, 0.2)',
+          border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
           borderRadius: '1rem',
-          boxShadow: '0 0 40px rgba(0, 255, 255, 0.2)',
+          boxShadow: `0 0 40px ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
         }}
       >
         <h2
           style={{
             fontSize: '2rem',
             fontWeight: 700,
-            color: '#00FFFF',
+            color: colors.brand.quantum[500],
             marginBottom: '0.5rem',
-            textShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
+            textShadow: `0 0 20px ${colors.utils.withOpacity(colors.brand.quantum[500], 0.5)}`,
           }}
         >
           Infinite-Precision Analytics Workbench
@@ -360,9 +360,9 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
         style={{
           marginBottom: '2rem',
           padding: '1.5rem',
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: colors.utils.withOpacity(colors.background.secondary, 0.3),
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 255, 255, 0.2)',
+          border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
           borderRadius: '1rem',
         }}
       >
@@ -370,7 +370,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
           style={{
             fontSize: '1.25rem',
             fontWeight: 600,
-            color: '#00FFFF',
+            color: colors.brand.quantum[500],
             marginBottom: '1rem',
           }}
         >
@@ -394,11 +394,11 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                 cursor: 'pointer',
                 padding: '0.5rem 1rem',
                 background: selectedVariables.includes(variable)
-                  ? 'rgba(0, 255, 255, 0.2)'
-                  : 'rgba(30, 41, 59, 0.5)',
+                  ? colors.utils.withOpacity(colors.brand.quantum[500], 0.2)
+                  : colors.utils.withOpacity(colors.background.secondary, 0.5),
                 border: selectedVariables.includes(variable)
-                  ? '1px solid #00FFFF'
-                  : '1px solid rgba(255, 255, 255, 0.1)',
+                  ? `1px solid ${colors.brand.quantum[500]}`
+                  : `1px solid ${colors.utils.withOpacity(colors.semantic.text.primary, 0.1)}`,
                 borderRadius: '0.5rem',
                 transition: 'all 0.3s ease',
               }}
@@ -413,10 +413,12 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                     setSelectedVariables(selectedVariables.filter((v) => v !== variable));
                   }
                 }}
-                style={{ accentColor: '#00FFFF' }}
+                style={{ accentColor: colors.brand.quantum[500] }}
                 aria-label={`Select ${variable} variable`}
               />
-              <span style={{ color: '#FFFFFF', fontSize: '0.875rem' }}>{variable}</span>
+              <span style={{ color: colors.semantic.text.primary, fontSize: '0.875rem' }}>
+                {variable}
+              </span>
             </label>
           ))}
         </div>
@@ -430,9 +432,9 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
         style={{
           marginBottom: '2rem',
           padding: '1.5rem',
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: colors.utils.withOpacity(colors.background.secondary, 0.3),
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 255, 255, 0.2)',
+          border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
           borderRadius: '1rem',
         }}
       >
@@ -448,7 +450,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             style={{
               fontSize: '1.25rem',
               fontWeight: 600,
-              color: '#00FFFF',
+              color: colors.brand.quantum[500],
               margin: 0,
             }}
           >
@@ -462,10 +464,10 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
               }
               style={{
                 padding: '0.5rem 1rem',
-                background: 'rgba(10, 14, 26, 0.8)',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
+                background: colors.utils.withOpacity(colors.background.void, 0.8),
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
                 borderRadius: '0.5rem',
-                color: '#FFFFFF',
+                color: colors.semantic.text.primary,
                 fontSize: '0.875rem',
                 cursor: 'pointer',
               }}
@@ -481,15 +483,17 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
               style={{
                 padding: '0.5rem 1.5rem',
                 background: isCalculating
-                  ? 'rgba(128, 128, 128, 0.3)'
-                  : 'linear-gradient(135deg, #00FFFF 0%, #0080FF 100%)',
+                  ? colors.utils.withOpacity(colors.semantic.text.tertiary, 0.3)
+                  : `linear-gradient(135deg, ${colors.brand.quantum[500]} 0%, ${colors.brand.primary[500]} 100%)`,
                 border: 'none',
                 borderRadius: '0.5rem',
-                color: '#FFFFFF',
+                color: colors.semantic.text.primary,
                 fontSize: '0.875rem',
                 fontWeight: 600,
                 cursor: isCalculating ? 'not-allowed' : 'pointer',
-                boxShadow: isCalculating ? 'none' : '0 0 20px rgba(0, 255, 255, 0.3)',
+                boxShadow: isCalculating
+                  ? 'none'
+                  : `0 0 20px ${colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
                 transition: 'all 0.3s ease',
               }}
             >
@@ -503,7 +507,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
           <div
             style={{
               height: '400px',
-              background: 'rgba(10, 14, 26, 0.5)',
+              background: colors.utils.withOpacity(colors.background.void, 0.5),
               borderRadius: '0.5rem',
               overflow: 'hidden',
             }}
@@ -512,7 +516,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
               <PerspectiveCamera makeDefault position={[3, 3, 3]} />
               <OrbitControls enableDamping dampingFactor={0.05} />
               <ambientLight intensity={0.5} />
-              <pointLight position={[10, 10, 10]} intensity={1} color='#00FFFF' />
+              <pointLight position={[10, 10, 10]} intensity={1} color={colors.brand.quantum[500]} />
               <CorrelationHeatmap3D correlationMatrix={correlationMatrix} />
             </Canvas>
           </div>
@@ -533,8 +537,8 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                   <th
                     style={{
                       padding: '0.5rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
-                      border: '1px solid rgba(0, 255, 255, 0.2)',
+                      background: colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                      border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                     }}
                   >
                     Variable
@@ -544,8 +548,8 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                       key={variable}
                       style={{
                         padding: '0.5rem',
-                        background: 'rgba(0, 255, 255, 0.1)',
-                        border: '1px solid rgba(0, 255, 255, 0.2)',
+                        background: colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                        border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                       }}
                     >
                       {variable}
@@ -559,8 +563,8 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                     <td
                       style={{
                         padding: '0.5rem',
-                        background: 'rgba(0, 255, 255, 0.1)',
-                        border: '1px solid rgba(0, 255, 255, 0.2)',
+                        background: colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                        border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                         fontWeight: 600,
                       }}
                     >
@@ -571,23 +575,23 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                       const significance = correlationMatrix.significance[i][j];
                       const bgColor =
                         correlation > 0.7
-                          ? 'rgba(0, 255, 255, 0.3)'
+                          ? colors.utils.withOpacity(colors.brand.quantum[500], 0.3)
                           : correlation < -0.7
-                            ? 'rgba(255, 0, 0, 0.3)'
-                            : 'rgba(30, 41, 59, 0.3)';
+                            ? colors.utils.withOpacity(colors.state.error[500], 0.3)
+                            : colors.utils.withOpacity(colors.background.secondary, 0.3);
                       return (
                         <td
                           key={colVar}
                           style={{
                             padding: '0.5rem',
-                            border: '1px solid rgba(0, 255, 255, 0.2)',
+                            border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                             textAlign: 'center',
                             background: bgColor,
                           }}
                         >
                           <div>{correlation.toFixed(4)}</div>
                           {significance < 0.05 && (
-                            <div style={{ fontSize: '0.625rem', color: '#00FFFF' }}>
+                            <div style={{ fontSize: '0.625rem', color: colors.brand.quantum[500] }}>
                               p&lt;{significance.toFixed(4)}
                             </div>
                           )}
@@ -610,9 +614,9 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
         style={{
           marginBottom: '2rem',
           padding: '1.5rem',
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: colors.utils.withOpacity(colors.background.secondary, 0.3),
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 255, 255, 0.2)',
+          border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
           borderRadius: '1rem',
         }}
       >
@@ -628,7 +632,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             style={{
               fontSize: '1.25rem',
               fontWeight: 600,
-              color: '#00FFFF',
+              color: colors.brand.quantum[500],
               margin: 0,
             }}
           >
@@ -640,10 +644,10 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
               onChange={(e) => setSelectedTestType(e.target.value as any)}
               style={{
                 padding: '0.5rem 1rem',
-                background: 'rgba(10, 14, 26, 0.8)',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
+                background: colors.utils.withOpacity(colors.background.void, 0.8),
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
                 borderRadius: '0.5rem',
-                color: '#FFFFFF',
+                color: colors.semantic.text.primary,
                 fontSize: '0.875rem',
                 cursor: 'pointer',
               }}
@@ -662,15 +666,17 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                 padding: '0.5rem 1.5rem',
                 background:
                   isCalculating || selectedVariables.length < 2
-                    ? 'rgba(128, 128, 128, 0.3)'
-                    : 'linear-gradient(135deg, #00FFFF 0%, #0080FF 100%)',
+                    ? colors.utils.withOpacity(colors.semantic.text.tertiary, 0.3)
+                    : `linear-gradient(135deg, ${colors.brand.quantum[500]} 0%, ${colors.brand.primary[500]} 100%)`,
                 border: 'none',
                 borderRadius: '0.5rem',
-                color: '#FFFFFF',
+                color: colors.semantic.text.primary,
                 fontSize: '0.875rem',
                 fontWeight: 600,
                 cursor: isCalculating || selectedVariables.length < 2 ? 'not-allowed' : 'pointer',
-                boxShadow: isCalculating ? 'none' : '0 0 20px rgba(0, 255, 255, 0.3)',
+                boxShadow: isCalculating
+                  ? 'none'
+                  : `0 0 20px ${colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
                 transition: 'all 0.3s ease',
               }}
             >
@@ -691,36 +697,38 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.25rem',
                 }}
               >
                 Test Statistic
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#00FFFF' }}>
+              <div
+                style={{ fontSize: '1.5rem', fontWeight: 700, color: colors.brand.quantum[500] }}
+              >
                 {hypothesisTestResult.statistic.toFixed(6)}
               </div>
             </div>
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.25rem',
                 }}
               >
@@ -730,7 +738,10 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                 style={{
                   fontSize: '1.5rem',
                   fontWeight: 700,
-                  color: hypothesisTestResult.pValue < 0.05 ? '#00FF00' : '#FF0000',
+                  color:
+                    hypothesisTestResult.pValue < 0.05
+                      ? colors.state.success[500]
+                      : colors.state.error[500],
                 }}
               >
                 {hypothesisTestResult.pValue < 0.001
@@ -741,36 +752,38 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.25rem',
                 }}
               >
                 Effect Size
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#00FFFF' }}>
+              <div
+                style={{ fontSize: '1.5rem', fontWeight: 700, color: colors.brand.quantum[500] }}
+              >
                 {hypothesisTestResult.effectSize.toFixed(4)}
               </div>
             </div>
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.25rem',
                 }}
               >
@@ -780,7 +793,10 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                 style={{
                   fontSize: '1.5rem',
                   fontWeight: 700,
-                  color: hypothesisTestResult.powerAchieved >= 0.8 ? '#00FF00' : '#FFA500',
+                  color:
+                    hypothesisTestResult.powerAchieved >= 0.8
+                      ? colors.state.success[500]
+                      : colors.state.warning[500],
                 }}
               >
                 {(hypothesisTestResult.powerAchieved * 100).toFixed(1)}%
@@ -789,22 +805,24 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                 gridColumn: 'span 2',
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.5rem',
                 }}
               >
                 95% Confidence Interval
               </div>
-              <div style={{ fontSize: '1rem', fontWeight: 600, color: '#FFFFFF' }}>
+              <div
+                style={{ fontSize: '1rem', fontWeight: 600, color: colors.semantic.text.primary }}
+              >
                 [{hypothesisTestResult.confidenceInterval.lower.toFixed(6)},{' '}
                 {hypothesisTestResult.confidenceInterval.upper.toFixed(6)}]
               </div>
@@ -812,22 +830,28 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                 gridColumn: 'span 2',
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.5rem',
                 }}
               >
                 Conclusion
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#FFFFFF', lineHeight: 1.6 }}>
+              <div
+                style={{
+                  fontSize: '0.875rem',
+                  color: colors.semantic.text.primary,
+                  lineHeight: 1.6,
+                }}
+              >
                 {hypothesisTestResult.conclusion}
               </div>
             </div>
@@ -843,9 +867,9 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
         style={{
           marginBottom: '2rem',
           padding: '1.5rem',
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: colors.utils.withOpacity(colors.background.secondary, 0.3),
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 255, 255, 0.2)',
+          border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
           borderRadius: '1rem',
         }}
       >
@@ -861,7 +885,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             style={{
               fontSize: '1.25rem',
               fontWeight: 600,
-              color: '#00FFFF',
+              color: colors.brand.quantum[500],
               margin: 0,
             }}
           >
@@ -873,15 +897,17 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             style={{
               padding: '0.5rem 1.5rem',
               background: isCalculating
-                ? 'rgba(128, 128, 128, 0.3)'
-                : 'linear-gradient(135deg, #00FFFF 0%, #0080FF 100%)',
+                ? colors.utils.withOpacity(colors.semantic.text.tertiary, 0.3)
+                : `linear-gradient(135deg, ${colors.brand.quantum[500]} 0%, ${colors.brand.primary[500]} 100%)`,
               border: 'none',
               borderRadius: '0.5rem',
-              color: '#FFFFFF',
+              color: colors.semantic.text.primary,
               fontSize: '0.875rem',
               fontWeight: 600,
               cursor: isCalculating ? 'not-allowed' : 'pointer',
-              boxShadow: isCalculating ? 'none' : '0 0 20px rgba(0, 255, 255, 0.3)',
+              boxShadow: isCalculating
+                ? 'none'
+                : `0 0 20px ${colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
               transition: 'all 0.3s ease',
             }}
           >
@@ -900,36 +926,38 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.25rem',
                 }}
               >
                 Required Sample Size
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#00FFFF' }}>
+              <div
+                style={{ fontSize: '1.5rem', fontWeight: 700, color: colors.brand.quantum[500] }}
+              >
                 {powerAnalysis.requiredSampleSize}
               </div>
             </div>
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.25rem',
                 }}
               >
@@ -939,7 +967,10 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                 style={{
                   fontSize: '1.5rem',
                   fontWeight: 700,
-                  color: powerAnalysis.currentPower >= 0.8 ? '#00FF00' : '#FFA500',
+                  color:
+                    powerAnalysis.currentPower >= 0.8
+                      ? colors.state.success[500]
+                      : colors.state.warning[500],
                 }}
               >
                 {(powerAnalysis.currentPower * 100).toFixed(1)}%
@@ -948,37 +979,39 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.25rem',
                 }}
               >
                 Effect Size
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#00FFFF' }}>
+              <div
+                style={{ fontSize: '1.5rem', fontWeight: 700, color: colors.brand.quantum[500] }}
+              >
                 {powerAnalysis.effectSize.toFixed(3)}
               </div>
             </div>
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                 gridColumn: 'span 2',
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.5rem',
                 }}
               >
@@ -988,7 +1021,10 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                 style={{ margin: 0, paddingLeft: '1.5rem', fontSize: '0.875rem', lineHeight: 1.6 }}
               >
                 {powerAnalysis.recommendations.map((rec, index) => (
-                  <li key={index} style={{ color: '#FFFFFF', marginBottom: '0.25rem' }}>
+                  <li
+                    key={index}
+                    style={{ color: colors.semantic.text.primary, marginBottom: '0.25rem' }}
+                  >
                     {rec}
                   </li>
                 ))}
@@ -1006,9 +1042,9 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
         style={{
           marginBottom: '2rem',
           padding: '1.5rem',
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: colors.utils.withOpacity(colors.background.secondary, 0.3),
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 255, 255, 0.2)',
+          border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
           borderRadius: '1rem',
         }}
       >
@@ -1024,7 +1060,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             style={{
               fontSize: '1.25rem',
               fontWeight: 600,
-              color: '#00FFFF',
+              color: colors.brand.quantum[500],
               margin: 0,
             }}
           >
@@ -1037,15 +1073,17 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
               padding: '0.5rem 1.5rem',
               background:
                 isCalculating || selectedVariables.length === 0
-                  ? 'rgba(128, 128, 128, 0.3)'
-                  : 'linear-gradient(135deg, #00FFFF 0%, #0080FF 100%)',
+                  ? colors.utils.withOpacity(colors.semantic.text.tertiary, 0.3)
+                  : `linear-gradient(135deg, ${colors.brand.quantum[500]} 0%, ${colors.brand.primary[500]} 100%)`,
               border: 'none',
               borderRadius: '0.5rem',
-              color: '#FFFFFF',
+              color: colors.semantic.text.primary,
               fontSize: '0.875rem',
               fontWeight: 600,
               cursor: isCalculating || selectedVariables.length === 0 ? 'not-allowed' : 'pointer',
-              boxShadow: isCalculating ? 'none' : '0 0 20px rgba(0, 255, 255, 0.3)',
+              boxShadow: isCalculating
+                ? 'none'
+                : `0 0 20px ${colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
               transition: 'all 0.3s ease',
             }}
           >
@@ -1064,21 +1102,23 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.25rem',
                 }}
               >
                 Prior Mean ± SD
               </div>
-              <div style={{ fontSize: '1rem', fontWeight: 600, color: '#FFFFFF' }}>
+              <div
+                style={{ fontSize: '1rem', fontWeight: 600, color: colors.semantic.text.primary }}
+              >
                 {bayesianInference.priorMean.toFixed(4)} ±{' '}
                 {bayesianInference.priorStdDev.toFixed(4)}
               </div>
@@ -1086,21 +1126,21 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.25rem',
                 }}
               >
                 Posterior Mean ± SD
               </div>
-              <div style={{ fontSize: '1rem', fontWeight: 600, color: '#00FFFF' }}>
+              <div style={{ fontSize: '1rem', fontWeight: 600, color: colors.brand.quantum[500] }}>
                 {bayesianInference.posteriorMean.toFixed(4)} ±{' '}
                 {bayesianInference.posteriorStdDev.toFixed(4)}
               </div>
@@ -1108,15 +1148,15 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.25rem',
                 }}
               >
@@ -1128,10 +1168,10 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                   fontWeight: 700,
                   color:
                     bayesianInference.bayesFactor > 3
-                      ? '#00FF00'
+                      ? colors.state.success[500]
                       : bayesianInference.bayesFactor > 1
-                        ? '#FFA500'
-                        : '#FF0000',
+                        ? colors.state.warning[500]
+                        : colors.state.error[500],
                 }}
               >
                 {bayesianInference.bayesFactor.toFixed(2)}
@@ -1140,22 +1180,24 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                 gridColumn: 'span 2',
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.5rem',
                 }}
               >
                 95% Credible Interval
               </div>
-              <div style={{ fontSize: '1rem', fontWeight: 600, color: '#FFFFFF' }}>
+              <div
+                style={{ fontSize: '1rem', fontWeight: 600, color: colors.semantic.text.primary }}
+              >
                 [{bayesianInference.credibleInterval.lower.toFixed(6)},{' '}
                 {bayesianInference.credibleInterval.upper.toFixed(6)}]
               </div>
@@ -1163,22 +1205,28 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: colors.utils.withOpacity(colors.background.void, 0.5),
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                 gridColumn: 'span 3',
               }}
             >
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: colors.utils.withOpacity(colors.semantic.text.primary, 0.6),
                   marginBottom: '0.5rem',
                 }}
               >
                 Interpretation
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#FFFFFF', lineHeight: 1.6 }}>
+              <div
+                style={{
+                  fontSize: '0.875rem',
+                  color: colors.semantic.text.primary,
+                  lineHeight: 1.6,
+                }}
+              >
                 {bayesianInference.interpretation}
               </div>
             </div>
@@ -1193,9 +1241,9 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
       <div
         style={{
           padding: '1.5rem',
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: colors.utils.withOpacity(colors.background.secondary, 0.3),
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 255, 255, 0.2)',
+          border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
           borderRadius: '1rem',
         }}
       >
@@ -1211,7 +1259,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             style={{
               fontSize: '1.25rem',
               fontWeight: 600,
-              color: '#00FFFF',
+              color: colors.brand.quantum[500],
               margin: 0,
             }}
           >
@@ -1223,15 +1271,17 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
             style={{
               padding: '0.5rem 1.5rem',
               background: isCalculating
-                ? 'rgba(128, 128, 128, 0.3)'
-                : 'linear-gradient(135deg, #00FFFF 0%, #0080FF 100%)',
+                ? colors.utils.withOpacity(colors.semantic.text.tertiary, 0.3)
+                : `linear-gradient(135deg, ${colors.brand.quantum[500]} 0%, ${colors.brand.primary[500]} 100%)`,
               border: 'none',
               borderRadius: '0.5rem',
-              color: '#FFFFFF',
+              color: colors.semantic.text.primary,
               fontSize: '0.875rem',
               fontWeight: 600,
               cursor: isCalculating ? 'not-allowed' : 'pointer',
-              boxShadow: isCalculating ? 'none' : '0 0 20px rgba(0, 255, 255, 0.3)',
+              boxShadow: isCalculating
+                ? 'none'
+                : `0 0 20px ${colors.utils.withOpacity(colors.brand.quantum[500], 0.3)}`,
               transition: 'all 0.3s ease',
             }}
           >
@@ -1253,8 +1303,8 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
-                      border: '1px solid rgba(0, 255, 255, 0.2)',
+                      background: colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                      border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                       textAlign: 'left',
                     }}
                   >
@@ -1263,8 +1313,8 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
-                      border: '1px solid rgba(0, 255, 255, 0.2)',
+                      background: colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                      border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                       textAlign: 'right',
                     }}
                   >
@@ -1273,8 +1323,8 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
-                      border: '1px solid rgba(0, 255, 255, 0.2)',
+                      background: colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                      border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                       textAlign: 'right',
                     }}
                   >
@@ -1283,8 +1333,8 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
-                      border: '1px solid rgba(0, 255, 255, 0.2)',
+                      background: colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                      border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                       textAlign: 'right',
                     }}
                   >
@@ -1293,8 +1343,8 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
-                      border: '1px solid rgba(0, 255, 255, 0.2)',
+                      background: colors.utils.withOpacity(colors.brand.quantum[500], 0.1),
+                      border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                       textAlign: 'right',
                     }}
                   >
@@ -1308,7 +1358,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                     <td
                       style={{
                         padding: '0.75rem',
-                        border: '1px solid rgba(0, 255, 255, 0.2)',
+                        border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                         fontWeight: 600,
                       }}
                     >
@@ -1317,10 +1367,10 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                     <td
                       style={{
                         padding: '0.75rem',
-                        border: '1px solid rgba(0, 255, 255, 0.2)',
+                        border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                         textAlign: 'right',
                         fontFamily: 'monospace',
-                        color: '#00FFFF',
+                        color: colors.brand.quantum[500],
                       }}
                     >
                       {measurement.value.toFixed(measurement.precision)}
@@ -1328,7 +1378,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                     <td
                       style={{
                         padding: '0.75rem',
-                        border: '1px solid rgba(0, 255, 255, 0.2)',
+                        border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                         textAlign: 'right',
                         fontFamily: 'monospace',
                       }}
@@ -1338,7 +1388,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                     <td
                       style={{
                         padding: '0.75rem',
-                        border: '1px solid rgba(0, 255, 255, 0.2)',
+                        border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                         textAlign: 'right',
                         fontFamily: 'monospace',
                         fontSize: '0.7rem',
@@ -1350,7 +1400,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
                     <td
                       style={{
                         padding: '0.75rem',
-                        border: '1px solid rgba(0, 255, 255, 0.2)',
+                        border: `1px solid ${colors.utils.withOpacity(colors.brand.quantum[500], 0.2)}`,
                         textAlign: 'right',
                       }}
                     >

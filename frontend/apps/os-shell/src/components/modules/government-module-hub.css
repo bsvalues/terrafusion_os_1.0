@@ -10,7 +10,7 @@
 .tf-government-module-hub {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0e1a 0%, #1a2332 100%);
+  background: linear-gradient(135deg, var(--tf-void-black) 0%, #1a2332 100%);
   color: #ffffff;
   font-family:
     'Inter',
@@ -25,19 +25,19 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0e1a 0%, #1a2332 100%);
+  background: linear-gradient(135deg, var(--tf-void-black) 0%, #1a2332 100%);
 }
 
 .tf-quantum-loader {
   text-align: center;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .tf-loader-ring {
   width: 60px;
   height: 60px;
   border: 3px solid rgba(0, 255, 255, 0.2);
-  border-top: 3px solid #00ffff;
+  border-top: 3px solid var(--tf-quantum-cyan);
   border-radius: 50%;
   animation: tf-spin 1s linear infinite;
   margin: 0 auto 1rem auto;
@@ -86,7 +86,7 @@
 
 .tf-hub-icon {
   font-size: 3rem;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   text-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
 }
 
@@ -94,7 +94,7 @@
   margin: 0;
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #00ffff, #00ff88);
+  background: linear-gradient(135deg, var(--tf-quantum-cyan), var(--success-green));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -127,7 +127,7 @@
 .tf-metric-value {
   font-size: 1.8rem;
   font-weight: 900;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   margin-bottom: 0.25rem;
 }
 
@@ -163,7 +163,7 @@
 
 .tf-search-input:focus {
   outline: none;
-  border-color: #00ffff;
+  border-color: var(--tf-quantum-cyan);
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
   background: rgba(0, 255, 255, 0.08);
 }
@@ -206,7 +206,7 @@
 
 .tf-filter-select:focus {
   outline: none;
-  border-color: #00ffff;
+  border-color: var(--tf-quantum-cyan);
   box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
 }
 
@@ -255,11 +255,11 @@
 .tf-module-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 20px 40px rgba(0, 255, 255, 0.15);
-  border-color: #00ffff;
+  border-color: var(--tf-quantum-cyan);
 }
 
 .tf-module-card.tf-active {
-  border-color: #00ff88;
+  border-color: var(--success-green);
   background: rgba(0, 255, 136, 0.1);
 }
 
@@ -270,7 +270,7 @@
   right: 1rem;
   width: 10px;
   height: 10px;
-  background: #00ff88;
+  background: var(--success-green);
   border-radius: 50%;
   box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
   animation: tf-pulse 2s infinite;
@@ -354,13 +354,13 @@
 
 .tf-category-badge {
   background: rgba(0, 153, 255, 0.2);
-  color: #0099ff;
+  color: var(--tf-network-blue);
   border: 1px solid currentColor;
 }
 
 .tf-quantum-badge {
   background: rgba(255, 170, 0, 0.2);
-  color: #ffaa00;
+  color: var(--warning-amber);
   border: 1px solid currentColor;
 }
 
@@ -387,7 +387,7 @@
   margin: 0 0 0.75rem 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .tf-detail-section ul {
@@ -408,7 +408,7 @@
   content: '▸';
   position: absolute;
   left: 0;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .tf-permission-tags,
@@ -424,14 +424,14 @@
   font-weight: 500;
   padding: 0.25rem 0.5rem;
   background: rgba(0, 255, 255, 0.1);
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   border: 1px solid rgba(0, 255, 255, 0.3);
   border-radius: 4px;
 }
 
 .tf-county-tag {
   background: rgba(0, 255, 136, 0.1);
-  color: #00ff88;
+  color: var(--success-green);
   border-color: rgba(0, 255, 136, 0.3);
 }
 
@@ -455,8 +455,8 @@
 }
 
 .tf-launch-btn {
-  background: linear-gradient(135deg, #00ffff, #00ff88);
-  color: #0a0e1a;
+  background: linear-gradient(135deg, var(--tf-quantum-cyan), var(--success-green));
+  color: var(--tf-void-black);
 }
 
 .tf-launch-btn:hover:not(:disabled) {
@@ -471,7 +471,7 @@
 
 .tf-stop-btn {
   background: rgba(255, 68, 68, 0.2);
-  color: #ff4444;
+  color: var(--error-red);
   border: 1px solid rgba(255, 68, 68, 0.4);
 }
 

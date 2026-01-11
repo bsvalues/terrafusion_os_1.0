@@ -87,11 +87,11 @@ export function SwarmVisualization3D({
     const animate = () => {
       if (!isPlaying) return;
 
-      ctx.fillStyle = '#0f172a'; // slate-900
+      ctx.fillStyle = 'var(--tf-bg-void)'; // slate-900
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw grid
-      ctx.strokeStyle = '#1e293b'; // slate-800
+      ctx.strokeStyle = 'var(--tf-bg-surface)'; // slate-800
       ctx.lineWidth = 1;
       for (let x = 0; x < canvas.width; x += 50) {
         ctx.beginPath();
@@ -141,18 +141,18 @@ export function SwarmVisualization3D({
       }
 
       // Center text
-      ctx.fillStyle = '#22d3ee'; // cyan-400
+      ctx.fillStyle = 'var(--tf-transcend-cyan)'; // cyan-400
       ctx.font = 'bold 24px monospace';
       ctx.textAlign = 'center';
       ctx.fillText(`${agentCount.toLocaleString()} Agents`, canvas.width / 2, canvas.height / 2 - 40);
 
       ctx.font = '16px monospace';
-      ctx.fillStyle = '#94a3b8'; // slate-400
+      ctx.fillStyle = 'var(--gray-400)'; // slate-400
       ctx.fillText(`Coherence: ${(coherence * 100).toFixed(1)}%`, canvas.width / 2, canvas.height / 2 - 10);
       ctx.fillText(`Harmony: ${(harmony * 100).toFixed(1)}%`, canvas.width / 2, canvas.height / 2 + 15);
 
       ctx.font = '12px monospace';
-      ctx.fillStyle = '#64748b'; // slate-500
+      ctx.fillStyle = 'var(--tf-text-secondary)'; // slate-500
       ctx.fillText('Phase 1: Placeholder Visualization', canvas.width / 2, canvas.height / 2 + 40);
       ctx.fillText('Phase 2: Full 3D WebGL Rendering @ 60 FPS', canvas.width / 2, canvas.height / 2 + 60);
 

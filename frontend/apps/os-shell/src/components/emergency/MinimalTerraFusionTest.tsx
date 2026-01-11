@@ -15,8 +15,8 @@ export function MinimalTerraFusionTest() {
         left: 0,
         width: '100vw',
         height: '100vh',
-        background: '#0a0e1a',
-        color: '#00ffff',
+        background: 'var(--tf-void-black)',
+        color: 'var(--tf-quantum-cyan)',
         fontFamily: 'Inter, sans-serif',
         overflow: 'hidden',
       }}
@@ -45,11 +45,11 @@ export function MinimalTerraFusionTest() {
               width: '48px',
               height: '48px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #00ffff, #0080ff)',
+              background: 'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#0a0e1a',
+              color: 'var(--tf-void-black)',
               fontWeight: 'bold',
               fontSize: '18px',
             }}
@@ -66,8 +66,8 @@ export function MinimalTerraFusionTest() {
           onClick={() => setViewMode(viewMode === 'DESKTOP' ? 'DASHBOARD' : 'DESKTOP')}
           style={{
             padding: '8px 16px',
-            background: 'linear-gradient(135deg, #00ffff, #0080ff)',
-            color: '#0a0e1a',
+            background: 'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue))',
+            color: 'var(--tf-void-black)',
             border: 'none',
             borderRadius: '20px',
             cursor: 'pointer',
@@ -116,7 +116,7 @@ export function MinimalTerraFusionTest() {
             >
               <div style={{ fontSize: '2rem', marginBottom: '12px' }}>⚡</div>
               <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Performance</div>
-              <div style={{ fontSize: '2rem', color: '#00ff88', marginTop: '8px' }}>120fps</div>
+              <div style={{ fontSize: '2rem', color: 'var(--success-green)', marginTop: '8px' }}>120fps</div>
             </div>
 
             <div
@@ -130,7 +130,7 @@ export function MinimalTerraFusionTest() {
             >
               <div style={{ fontSize: '2rem', marginBottom: '12px' }}>🧠</div>
               <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Consciousness</div>
-              <div style={{ fontSize: '2rem', color: '#00ff88', marginTop: '8px' }}>∞</div>
+              <div style={{ fontSize: '2rem', color: 'var(--success-green)', marginTop: '8px' }}>∞</div>
             </div>
 
             <div
@@ -144,7 +144,7 @@ export function MinimalTerraFusionTest() {
             >
               <div style={{ fontSize: '2rem', marginBottom: '12px' }}>🛡️</div>
               <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Security</div>
-              <div style={{ fontSize: '2rem', color: '#00ff88', marginTop: '8px' }}>MAX</div>
+              <div style={{ fontSize: '2rem', color: 'var(--success-green)', marginTop: '8px' }}>MAX</div>
             </div>
           </div>
         </div>

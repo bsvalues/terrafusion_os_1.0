@@ -2,7 +2,7 @@
 .data-science-laboratory {
   padding: 24px;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, var(--gray-100) 100%);
   font-family:
     'Inter',
     -apple-system,
@@ -32,7 +32,7 @@
 
 .header-title h1 {
   margin: 0;
-  color: #1e293b;
+  color: var(--terra-slate);
   font-weight: 700;
   font-size: 28px;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
@@ -88,7 +88,7 @@
 }
 
 .tabs button[data-value]:hover {
-  background: #f1f5f9;
+  background: var(--gray-100);
   color: #3b82f6;
 }
 
@@ -117,7 +117,7 @@
 }
 
 .jupyter-placeholder {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, var(--gray-100) 100%);
   border-radius: 12px;
   padding: 48px 32px;
   text-align: center;
@@ -126,7 +126,7 @@
 
 .jupyter-placeholder h4 {
   margin: 16px 0 8px 0;
-  color: #1e293b;
+  color: var(--terra-slate);
   font-weight: 600;
   font-size: 20px;
 }
@@ -230,7 +230,7 @@
 
 .notebook-item .notebook-details h4 {
   margin: 0 0 4px 0;
-  color: #1e293b;
+  color: var(--terra-slate);
   font-weight: 600;
   font-size: 16px;
 }
@@ -276,7 +276,7 @@
 
 .kernel-header h4 {
   margin: 0;
-  color: #1e293b;
+  color: var(--terra-slate);
   font-weight: 600;
   font-size: 16px;
 }
@@ -387,7 +387,7 @@
 
 .collaborative-session h4 {
   margin: 0 0 8px 0;
-  color: #1e3a8a;
+  color: var(--tf-status-blue-dark);
   font-weight: 600;
   font-size: 16px;
 }
@@ -427,7 +427,7 @@
 
 .academic-header h4 {
   margin: 0;
-  color: #1e293b;
+  color: var(--terra-slate);
   font-weight: 600;
   font-size: 16px;
 }
@@ -489,7 +489,7 @@ button[variant='outline']:hover:not(:disabled) {
 /* Secondary Button */
 button.btn-secondary,
 button[variant='secondary'] {
-  background: #f1f5f9;
+  background: var(--gray-100);
   color: #475569;
   border: 1px solid #e2e8f0;
 }
@@ -497,7 +497,7 @@ button[variant='secondary'] {
 button.btn-secondary:hover:not(:disabled),
 button[variant='secondary']:hover:not(:disabled) {
   background: #e2e8f0;
-  color: #334155;
+  color: var(--gray-700);
 }
 
 /* Disabled Button */
@@ -555,7 +555,7 @@ span[variant='outline'] {
 }
 
 span[variant='secondary'] {
-  background: #f1f5f9;
+  background: var(--gray-100);
   color: #475569;
   border: 1px solid #e2e8f0;
   font-weight: 500;
@@ -594,7 +594,7 @@ span[variant='destructive'] {
   width: 48px;
   height: 48px;
   margin: 0 auto 16px;
-  color: #9ca3af;
+  color: var(--gray-400);
 }
 
 .empty-state h4 {
@@ -606,7 +606,7 @@ span[variant='destructive'] {
 
 .empty-state p {
   margin: 0 0 24px 0;
-  color: #9ca3af;
+  color: var(--gray-400);
   font-size: 16px;
   max-width: 400px;
   margin-left: auto;
@@ -731,34 +731,34 @@ span[variant='destructive'] {
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .data-science-laboratory {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: #f1f5f9;
+    background: linear-gradient(135deg, #0f172a 0%, var(--terra-slate) 100%);
+    color: var(--gray-100);
   }
 
   .lab-header {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    background: linear-gradient(135deg, var(--terra-slate) 0%, var(--gray-700) 100%);
     border-color: rgba(59, 130, 246, 0.2);
   }
 
   .header-title h1 {
-    color: #f1f5f9;
+    color: var(--gray-100);
   }
 
   .header-title p {
-    color: #94a3b8;
+    color: var(--gray-400);
   }
 
   .jupyter-placeholder {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    background: linear-gradient(135deg, var(--terra-slate) 0%, var(--gray-700) 100%);
     border-color: #475569;
   }
 
   .jupyter-placeholder h4 {
-    color: #f1f5f9;
+    color: var(--gray-100);
   }
 
   .jupyter-placeholder p {
-    color: #94a3b8;
+    color: var(--gray-400);
   }
 
   .border {
@@ -773,7 +773,7 @@ span[variant='destructive'] {
   .algorithm-card,
   .kernel-card,
   .academic-card {
-    background: #1e293b;
+    background: var(--terra-slate);
     border-color: #475569;
   }
 
@@ -781,13 +781,13 @@ span[variant='destructive'] {
   .algorithm-card h4,
   .kernel-card h4,
   .academic-card h4 {
-    color: #f1f5f9;
+    color: var(--gray-100);
   }
 
   .dataset-meta,
   .algorithm-description,
   .kernel-stats,
   .academic-description {
-    color: #94a3b8;
+    color: var(--gray-400);
   }
 }
