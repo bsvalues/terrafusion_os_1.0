@@ -508,3 +508,11 @@ docs/Dev/
 os-kernel/engines/data-pipeline/exports/
 os-kernel/engines/data-pipeline/project_data/
 
+
+# Native Shell UI Build Artifacts
+native-shell/ui/dist/
+native-shell/ui/build/
+native-shell/ui/.next/
+native-shell/ui/out/
+native-shell/ui/node_modules/
+native-shell/ui/*.tsbuildinfo
