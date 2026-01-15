@@ -529,3 +529,6 @@ native-shell/ui/workbox-*.js
 native-shell/ui/registerSW.js
 native-shell/ui/service-worker.js
 native-shell/ui/manifest*.webmanifest
+
+# generated benchmark output
+quantum_performance_results.json
