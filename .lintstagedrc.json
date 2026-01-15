@@ -1,5 +1,6 @@
 {
-  "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+  "src/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+  "tests/**/*.{js,jsx,ts,tsx}": ["prettier --write"],
   "*.{json,md,yml,yaml}": ["prettier --write"],
   "*.cs": ["dotnet format --include"],
   "*.{css,scss,less}": ["prettier --write"]
