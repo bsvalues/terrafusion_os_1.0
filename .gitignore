@@ -524,4 +524,8 @@ native-shell/ui/assets/*.ttf
 native-shell/ui/assets/*.png
 native-shell/ui/assets/*.svg
 native-shell/ui/sw.js
+native-shell/ui/*.map
+native-shell/ui/workbox-*.js
+native-shell/ui/registerSW.js
+native-shell/ui/service-worker.js
 native-shell/ui/manifest*.webmanifest
