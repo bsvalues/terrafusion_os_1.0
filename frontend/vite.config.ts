@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
       plugins.push(
         visualizer({
           open: true,
-          filename: 'dist/stats.html',
+          filename: path.resolve(__dirname, '../native-shell/ui/dist/stats.html'),
           gzipSize: true,
           brotliSize: true,
           template: 'treemap',
@@ -70,8 +70,8 @@ export default defineConfig(({ mode }) => {
     },
 
     build: {
-      // Build directly to native shell UI directory!
-      outDir: path.resolve(__dirname, '../native-shell/ui'),
+      // Build directly to native shell UI dist directory.
+      outDir: path.resolve(__dirname, '../native-shell/ui/dist'),
       emptyOutDir: true,
 
       // Optimize for production

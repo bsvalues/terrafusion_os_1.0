@@ -595,8 +595,8 @@ app.UseCors();
 app.UseHttpMetrics();
 
 // Authentication & Authorization
-// Serve static files from native-shell/ui BEFORE other middleware
-var uiPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "native-shell", "ui"));
+// Serve static files from native-shell/ui/dist BEFORE other middleware
+var uiPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "native-shell", "ui", "dist"));
 Console.WriteLine($"[STARTUP] Looking for UI at: {uiPath}");
 Console.WriteLine($"[STARTUP] UI path exists: {Directory.Exists(uiPath)}");
 
@@ -1211,6 +1211,5 @@ catch (Exception ex)
     Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
     throw;
 }
-
 
 

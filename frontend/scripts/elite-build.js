@@ -15,6 +15,7 @@ const path = require('path');
 class EliteBuildSystem {
   constructor() {
     this.startTime = Date.now();
+    this.distPath = path.resolve(__dirname, '../../native-shell/ui/dist');
     this.metrics = {
       buildTime: 0,
       bundleSize: 0,
@@ -44,8 +45,8 @@ class EliteBuildSystem {
 
       // Clean previous build
       this.log('Cleaning previous build artifacts...', 'info');
-      if (fs.existsSync('dist')) {
-        fs.rmSync('dist', { recursive: true });
+      if (fs.existsSync(this.distPath)) {
+        fs.rmSync(this.distPath, { recursive: true });
       }
 
       // Run TypeScript check
@@ -86,7 +87,7 @@ class EliteBuildSystem {
 
   async analyzeBuild() {
     try {
-      const distPath = path.join(process.cwd(), 'dist');
+      const distPath = this.distPath;
 
       if (!fs.existsSync(distPath)) {
         throw new Error('Build output not found');
@@ -202,8 +203,9 @@ Build completed with THE TERRAFUSION WAY excellence!
     this.log(report, 'elite');
 
     // Save report to file
-    fs.writeFileSync('dist/elite-build-report.txt', report);
-    this.log('Build report saved to dist/elite-build-report.txt', 'success');
+    const reportPath = path.join(this.distPath, 'elite-build-report.txt');
+    fs.writeFileSync(reportPath, report);
+    this.log(`Build report saved to ${reportPath}`, 'success');
   }
 }
 

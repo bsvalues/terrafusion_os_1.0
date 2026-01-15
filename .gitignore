@@ -509,26 +509,8 @@ os-kernel/engines/data-pipeline/exports/
 os-kernel/engines/data-pipeline/project_data/
 
 
-# Native Shell UI Build Artifacts
+# Native Shell UI build output
 native-shell/ui/dist/
-native-shell/ui/build/
-native-shell/ui/.next/
-native-shell/ui/out/
-native-shell/ui/node_modules/
-native-shell/ui/*.tsbuildinfo
-native-shell/ui/assets/*.js
-native-shell/ui/assets/*.css
-native-shell/ui/assets/*.map
-native-shell/ui/assets/*.woff*
-native-shell/ui/assets/*.ttf
-native-shell/ui/assets/*.png
-native-shell/ui/assets/*.svg
-native-shell/ui/sw.js
-native-shell/ui/*.map
-native-shell/ui/workbox-*.js
-native-shell/ui/registerSW.js
-native-shell/ui/service-worker.js
-native-shell/ui/manifest*.webmanifest
 
 # generated benchmark output
 quantum_performance_results.json

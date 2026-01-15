@@ -54,7 +54,7 @@ Write-Host ""
 Write-Host "📋 DEPLOYMENT COMPONENTS SUMMARY:" -ForegroundColor Cyan
 
 # Check Frontend Build
-if (Test-Path "../native-shell/ui/index.html") {
+if (Test-Path "../native-shell/ui/dist/index.html") {
     Write-Host "   • Frontend Deployment: ✅ DEPLOYED (React 18 + Quantum UI)" -ForegroundColor Green
 } else {
     Write-Host "   • Frontend Deployment: ⚠️ Build files not found" -ForegroundColor Yellow

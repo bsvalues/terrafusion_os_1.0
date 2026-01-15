@@ -77,9 +77,9 @@ function Start-QuantumBuild {
     Write-Elite "🔬 Initiating quantum-enhanced build process..." "QUANTUM"
 
     # Clean previous builds
-    if (Test-Path "../native-shell/ui") {
+    if (Test-Path "../native-shell/ui/dist") {
         Write-Elite "🧹 Cleaning previous build artifacts..." "INFO"
-        Remove-Item "../native-shell/ui/*" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item "../native-shell/ui/dist/*" -Recurse -Force -ErrorAction SilentlyContinue
     }
 
     # Build command with optional analysis
@@ -106,7 +106,7 @@ function Start-EliteServer {
     Write-Elite "🚀 Deploying TerraFusion Elite Server on port $Port..." "QUANTUM"
 
     # Navigate to build output
-    Push-Location "../native-shell/ui"
+    Push-Location "../native-shell/ui/dist"
 
     try {
         # Check if port is available

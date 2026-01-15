@@ -29,7 +29,7 @@ TerraFusion operates as a complete operating system with three core service tier
 
 4. **Frontend** - Port 3000
    - React 18.3 + TypeScript 5.3 with Vite 5
-   - Builds to `native-shell/ui` (NOT `dist/`) for Electron desktop deployment
+   - Builds to `native-shell/ui/dist` (NOT `dist/`) for Electron desktop deployment
    - SignalR client connects to backend hubs
    - Vite proxy routes `/api` requests to port 5000
 
@@ -53,7 +53,7 @@ terrafusion_os_1.0/
 │   ├── src/services/           # API clients + SignalR
 │   ├── src/hooks/              # Custom React hooks (useBackendConnection)
 │   ├── electron/               # Electron main process
-│   └── vite.config.ts          # Builds to ../native-shell/ui
+│   └── vite.config.ts          # Builds to ../native-shell/ui/dist
 │
 ├── native-shell/               # C# WPF desktop shell
 │   └── ui/                     # Frontend build output (deployed here)
@@ -112,7 +112,7 @@ cd frontend
 npm run dev                    # Vite dev server (port 3000)
 npm run electron:dev           # Electron desktop app
 
-# Building (outputs to ../native-shell/ui)
+# Building (outputs to ../native-shell/ui/dist)
 npm run build
 npm run build:analyze          # With bundle analysis
 
@@ -199,12 +199,12 @@ var agents = await _aiCommandService.GetActiveAgentsAsync();
 
 ### 4. Frontend Build Architecture
 
-**CRITICAL**: Frontend builds to `native-shell/ui`, NOT `dist/`:
+**CRITICAL**: Frontend builds to `native-shell/ui/dist`, NOT `dist/`:
 
 ```typescript
 // vite.config.ts
 build: {
-  outDir: '../native-shell/ui',
+  outDir: '../native-shell/ui/dist',
   emptyOutDir: true,
 }
 ```

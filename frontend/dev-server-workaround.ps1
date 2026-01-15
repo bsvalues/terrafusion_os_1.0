@@ -15,7 +15,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "`n🚀 Starting backup development server on port 8002..." -ForegroundColor Yellow
 
     # Navigate to build output
-    Set-Location ../native-shell/ui
+    Set-Location ../native-shell/ui/dist
 
     # Start Node.js serve
     npx serve . -l 8002 --single
