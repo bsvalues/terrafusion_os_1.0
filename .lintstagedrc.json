@@ -2,6 +2,6 @@
   "src/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
   "tests/**/*.{js,jsx,ts,tsx}": ["prettier --write"],
   "*.{json,md,yml,yaml}": ["prettier --write"],
-  "*.cs": ["dotnet format --include"],
+  "*.cs": ["dotnet format backend/TerraFusion.sln --include"],
   "*.{css,scss,less}": ["prettier --write"]
 }
