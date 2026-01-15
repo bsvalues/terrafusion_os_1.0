@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { AxiomFSDetailPanel } from '../../../fs/components/AxiomFSDetailPanel';
-import { useAxiomFsStore } from '../../../fs/store/axiomFsStore';
+import { AxiomFSDetailPanel } from '@/fs/components/AxiomFSDetailPanel';
+import { useAxiomFsStore } from '@/fs/store/axiomFsStore';
 import { useDesktopStore } from '../../../stores/desktopStore';
 
 // Mock the openWindow action from desktopStore

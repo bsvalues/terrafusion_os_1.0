@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { TERRAFUSION_MODULES } from '../../../config/modules';
-import { useAxiomFsStore } from '../../../fs/store/axiomFsStore';
+import { useAxiomFsStore } from '@/fs/store/axiomFsStore';
 import { useDesktopStore } from '../../../stores/desktopStore';
 import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { Desktop } from '../Desktop';

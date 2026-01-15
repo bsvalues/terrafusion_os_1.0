@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { AxiomSpinner } from '../../../fs/components/AxiomSpinner';
-import { useAxiomFsStore } from '../../../fs/store/axiomFsStore';
+import { AxiomSpinner } from '@/fs/components/AxiomSpinner';
+import { useAxiomFsStore } from '@/fs/store/axiomFsStore';
 
 interface Props {
   windowId: string;
