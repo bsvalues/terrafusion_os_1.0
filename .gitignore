@@ -500,3 +500,11 @@ workspaces/**/*.tsbuildinfo
 # TS build cache
 frontend/.tsbuildinfo
 
+# local / scratch (untracked)
+Dev/
+Dev - Copy (2)/
+applications/valuator-pro-studio/
+docs/Dev/
+os-kernel/engines/data-pipeline/exports/
+os-kernel/engines/data-pipeline/project_data/
+
