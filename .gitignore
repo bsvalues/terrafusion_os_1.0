@@ -516,3 +516,12 @@ native-shell/ui/.next/
 native-shell/ui/out/
 native-shell/ui/node_modules/
 native-shell/ui/*.tsbuildinfo
+native-shell/ui/assets/*.js
+native-shell/ui/assets/*.css
+native-shell/ui/assets/*.map
+native-shell/ui/assets/*.woff*
+native-shell/ui/assets/*.ttf
+native-shell/ui/assets/*.png
+native-shell/ui/assets/*.svg
+native-shell/ui/sw.js
+native-shell/ui/manifest*.webmanifest
