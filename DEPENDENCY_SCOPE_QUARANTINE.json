@@ -2158,9 +2158,9 @@
     "root": "deployment/production",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 6,
+      "score": 9,
       "scoreLocal": 5,
-      "scoreTotal": 6,
+      "scoreTotal": 9,
       "buildableLocal": true,
       "markers": ["Cargo.toml", "package.json:buildOrTest", "vite"],
       "markerOrigins": [
@@ -2322,7 +2322,7 @@
         }
       ],
       "inherited": ["pnpm-lock.yaml"],
-      "wiring": [],
+      "wiring": ["kernel-gateway-ref"],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -2660,9 +2660,9 @@
     "root": "infrastructure/monitoring",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 4,
+      "score": 7,
       "scoreLocal": 3,
-      "scoreTotal": 4,
+      "scoreTotal": 7,
       "buildableLocal": true,
       "markers": ["docker", "python"],
       "markerOrigins": [
@@ -2676,7 +2676,7 @@
         }
       ],
       "inherited": ["pnpm-lock.yaml"],
-      "wiring": [],
+      "wiring": ["compose-ref"],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -3907,9 +3907,9 @@
     "root": "os-platform/specialized",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 7,
+      "score": 9,
       "scoreLocal": 6,
-      "scoreTotal": 7,
+      "scoreTotal": 9,
       "buildableLocal": true,
       "markers": ["Cargo.toml", "package.json:buildOrTest", "python", "vite"],
       "markerOrigins": [
@@ -4046,7 +4046,7 @@
           "foundAt": "os-platform/specialized/web-audit-tracker/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4717,34 +4717,12 @@
     }
   },
   {
-    "root": "tools/scope-classifier",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 5,
-      "scoreLocal": 2,
-      "scoreTotal": 5,
-      "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
-      "markerOrigins": [
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "tools/scope-classifier/package.json"
-        }
-      ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
     "root": "tools/speclock-tss",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 3,
+      "score": 6,
       "scoreLocal": 2,
-      "scoreTotal": 3,
+      "scoreTotal": 6,
       "buildableLocal": true,
       "markers": ["Cargo.toml"],
       "markerOrigins": [
@@ -4754,7 +4732,7 @@
         }
       ],
       "inherited": ["pnpm-lock.yaml"],
-      "wiring": [],
+      "wiring": ["kernel-gateway-ref"],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -5317,14 +5295,14 @@
     "root": "workspaces/marketplace",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 1,
+      "score": 4,
       "scoreLocal": 0,
-      "scoreTotal": 1,
+      "scoreTotal": 4,
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
       "inherited": ["pnpm-lock.yaml"],
-      "wiring": [],
+      "wiring": ["compose-ref"],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []

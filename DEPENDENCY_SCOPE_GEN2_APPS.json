@@ -67,9 +67,9 @@
     "root": "os-platform/development",
     "bucket": "GEN2_APPS",
     "evidence": {
-      "score": 8,
+      "score": 11,
       "scoreLocal": 7,
-      "scoreTotal": 8,
+      "scoreTotal": 11,
       "buildableLocal": true,
       "markers": ["docker", "dotnet", "package.json:buildOrTest", "vite"],
       "markerOrigins": [
@@ -143,6 +143,28 @@
         }
       ],
       "inherited": ["pnpm-lock.yaml"],
+      "wiring": ["compose-ref"],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "tools/scope-classifier",
+    "bucket": "GEN2_APPS",
+    "evidence": {
+      "score": 5,
+      "scoreLocal": 2,
+      "scoreTotal": 5,
+      "buildableLocal": true,
+      "markers": ["package.json:buildOrTest"],
+      "markerOrigins": [
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tools/scope-classifier/package.json"
+        }
+      ],
+      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
       "wiring": [],
       "touchedRelease": true,
       "touchedDev": true,

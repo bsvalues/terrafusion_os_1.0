@@ -1,14 +1,14 @@
 # TerraFusion Scope Report
 
-Generated: 2026-01-16T04:34:21.693Z
+Generated: 2026-01-16T04:55:23.454Z
 SOLID_BASE: 567fbcec5
 ARCH_ANCHOR: 9af5bb291
 
 ## Totals
 - CORE_OS_RUNTIME: 16
 - CORE_OS_TOOLING: 6
-- GEN2_APPS: 5
-- QUARANTINE: 140
+- GEN2_APPS: 6
+- QUARANTINE: 139
 
 ## Top Evidence Samples
 - . -> CORE_OS_TOOLING (local=4; total=6; wiring=none)
