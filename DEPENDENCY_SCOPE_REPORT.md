@@ -1,6 +1,6 @@
 # TerraFusion Scope Report
 
-Generated: 2026-01-16T04:55:23.454Z
+Generated: 2026-01-16T05:27:45.499Z
 SOLID_BASE: 567fbcec5
 ARCH_ANCHOR: 9af5bb291
 
@@ -12,8 +12,8 @@ ARCH_ANCHOR: 9af5bb291
 
 ## Top Evidence Samples
 - . -> CORE_OS_TOOLING (local=4; total=6; wiring=none)
-- .ai -> QUARANTINE (local=2; total=6; wiring=kernel-gateway-ref)
-- .ci_artifacts_local -> QUARANTINE (local=2; total=5; wiring=none)
+- .ai -> QUARANTINE (local=0; total=0; wiring=kernel-gateway-ref)
+- .ci_artifacts_local -> QUARANTINE (local=0; total=0; wiring=none)
 - BS_PACS -> QUARANTINE (local=2; total=3; wiring=none)
 - CONSOLIDATED_20250915_062012 -> QUARANTINE (local=2; total=3; wiring=none)
 - Dev -> CORE_OS_RUNTIME (local=8; total=16; wiring=kernel-gateway-ref,os-shell-mount-ref)

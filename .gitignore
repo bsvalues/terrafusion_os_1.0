@@ -497,6 +497,9 @@ workspaces/**/*.tsbuildinfo
 # Snyk Security Extension - AI Rules (auto-generated)
 .github/instructions/snyk_rules.instructions.md
 
+# Workspace-local GitHub instructions (not governed)
+workspaces/**/.github/instructions/
+
 # TS build cache
 frontend/.tsbuildinfo
 

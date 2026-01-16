@@ -3,6 +3,8 @@ export const QUARANTINE_PATTERNS = [
   /^Dev - Copy\//,
   /^_pre_restore_safety_/,
   /^node_modules\//,
+  /^\.[^/]+/,
+  /^workspaces\/[^/]+\/\.github\/instructions/,
 ];
 
 export const PRIVACY_TIER_ONLY_MARKERS = [
