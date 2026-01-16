@@ -1,5 +1,40 @@
 [
   {
+    "root": "_CLEAN_BUILD_ZONE",
+    "bucket": "QUARANTINE",
+    "evidence": {
+      "score": 4,
+      "scoreLocal": 3,
+      "scoreTotal": 4,
+      "buildableLocal": true,
+      "markers": [
+        "package.json:buildOrTest",
+        "vite"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "_CLEAN_BUILD_ZONE/electron/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "_CLEAN_BUILD_ZONE/package.json"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "_CLEAN_BUILD_ZONE/vite.config.ts"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
     "root": "_pre_restore_safety_20260108_144218",
     "bucket": "QUARANTINE",
     "evidence": {
@@ -7,7 +42,11 @@
       "scoreLocal": 0,
       "scoreTotal": 0,
       "buildableLocal": false,
-      "markers": ["docker", "package.json:buildOrTest", "python"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -26,7 +65,9 @@
           "foundAt": "_pre_restore_safety_20260108_144218/data/county-templates/benton-county/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -41,15 +82,21 @@
       "scoreLocal": 0,
       "scoreTotal": 0,
       "buildableLocal": false,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
           "foundAt": ".ai/claude-flow/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["kernel-gateway-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "kernel-gateway-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -63,14 +110,19 @@
       "scoreLocal": 0,
       "scoreTotal": 0,
       "buildableLocal": false,
-      "markers": ["docker"],
+      "markers": [
+        "docker"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
           "foundAt": ".ci_artifacts_local/docker-compose.dev.yml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -85,14 +137,18 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "agents/terrafusion-phd-systems-agent/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -107,14 +163,18 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "ai-workspace-companion/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -129,7 +189,11 @@
       "scoreLocal": 5,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -148,7 +212,9 @@
           "foundAt": "applications/bcbs-gis-pro-production/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -163,7 +229,10 @@
       "scoreLocal": 3,
       "scoreTotal": 4,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest", "vite"],
+      "markers": [
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -174,7 +243,9 @@
           "foundAt": "applications/bcbs-webhub-production/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -189,7 +260,10 @@
       "scoreLocal": 3,
       "scoreTotal": 4,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest", "vite"],
+      "markers": [
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -200,7 +274,9 @@
           "foundAt": "applications/bs-income-valuation-production/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -215,7 +291,10 @@
       "scoreLocal": 3,
       "scoreTotal": 4,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest", "vite"],
+      "markers": [
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -226,7 +305,9 @@
           "foundAt": "applications/costforge-ai/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -241,7 +322,11 @@
       "scoreLocal": 5,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "python"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -304,7 +389,9 @@
           "foundAt": "applications/mcp-servers-production/src/time/pyproject.toml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -319,7 +406,10 @@
       "scoreLocal": 3,
       "scoreTotal": 4,
       "buildableLocal": true,
-      "markers": ["docker", "python"],
+      "markers": [
+        "docker",
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -346,7 +436,9 @@
           "foundAt": "applications/terra-agent-production/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -394,7 +486,9 @@
           "foundAt": "applications/terra-assessor-production/TerraFusionAssessor/pnpm-lock.yaml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -441,7 +535,9 @@
           "foundAt": "applications/terra-assistant-production/TerraFusionAssistant/archive/old_configs/pyproject.toml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -619,7 +715,9 @@
           "foundAt": "applications/terra-build-actual/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -741,7 +839,9 @@
           "foundAt": "applications/terra-build-actual-backup-20251103-185401/TerraFusion_Build_PRODUCTION/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -863,7 +963,9 @@
           "foundAt": "applications/terra-build-actual-backup-20251103-191224/TerraFusion_Build_PRODUCTION/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -878,7 +980,11 @@
       "scoreLocal": 5,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -905,7 +1011,9 @@
           "foundAt": "applications/terra-dashboard-production/TerraFusionDashboard/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -973,7 +1081,9 @@
           "foundAt": "applications/terra-flow-production/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1032,7 +1142,11 @@
       "scoreLocal": 5,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["dotnet", "package.json:buildOrTest", "python"],
+      "markers": [
+        "dotnet",
+        "package.json:buildOrTest",
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "dotnet",
@@ -1051,7 +1165,9 @@
           "foundAt": "applications/terra-levy/analytics/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1066,7 +1182,10 @@
       "scoreLocal": 3,
       "scoreTotal": 4,
       "buildableLocal": true,
-      "markers": ["docker", "python"],
+      "markers": [
+        "docker",
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -1081,7 +1200,9 @@
           "foundAt": "applications/terra-miner-production/TerraMiner/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1096,7 +1217,11 @@
       "scoreLocal": 5,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -1115,7 +1240,9 @@
           "foundAt": "applications/terra-pilt-production/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1237,7 +1364,9 @@
           "foundAt": "applications/terra-playground-main/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1359,7 +1488,9 @@
           "foundAt": "applications/terra-playground-production/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1374,7 +1505,10 @@
       "scoreLocal": 3,
       "scoreTotal": 4,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest", "vite"],
+      "markers": [
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -1385,7 +1519,9 @@
           "foundAt": "applications/terra-primeview-production/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1473,7 +1609,9 @@
           "foundAt": "applications/terra-pro-production/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1488,7 +1626,11 @@
       "scoreLocal": 6,
       "scoreTotal": 7,
       "buildableLocal": true,
-      "markers": ["Cargo.toml", "docker", "package.json:buildOrTest"],
+      "markers": [
+        "Cargo.toml",
+        "docker",
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "Cargo.toml",
@@ -1623,7 +1765,9 @@
           "foundAt": "applications/terra-prof-production/packages/web-client/src/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1638,7 +1782,11 @@
       "scoreLocal": 5,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -1677,7 +1825,9 @@
           "foundAt": "applications/terra-proplus-production/packages/client/vite.config.js"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1745,7 +1895,9 @@
           "foundAt": "applications/terra-sync-production/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1864,7 +2016,9 @@
           "foundAt": "applications/valuator-pro-studio/tests/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1881,8 +2035,15 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -1896,7 +2057,9 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["dotnet"],
+      "markers": [
+        "dotnet"
+      ],
       "markerOrigins": [
         {
           "marker": "dotnet",
@@ -1915,7 +2078,9 @@
           "foundAt": "BS_PACS/DatabaseProjectpacs_oltp/DatabaseProjectpacs_oltp.sln"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1940,7 +2105,10 @@
       "scoreLocal": 3,
       "scoreTotal": 4,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest", "vite"],
+      "markers": [
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -1959,7 +2127,9 @@
           "foundAt": "consciousness-isolated-workspace/client/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1974,14 +2144,18 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["docker"],
+      "markers": [
+        "docker"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
           "foundAt": "CONSOLIDATED_20250915_062012/terrafusion-ops/benton/compose/docker-compose.demo.yml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -1996,15 +2170,23 @@
       "scoreLocal": 1,
       "scoreTotal": 11,
       "buildableLocal": false,
-      "markers": ["python"],
+      "markers": [
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "python",
           "foundAt": "costforge-ai/python-services/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -2018,7 +2200,12 @@
       "scoreLocal": 6,
       "scoreTotal": 7,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "python", "vite"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "python",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -2053,7 +2240,9 @@
           "foundAt": "costforge-ai-workspace/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -2068,7 +2257,10 @@
       "scoreLocal": 4,
       "scoreTotal": 5,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -2079,7 +2271,9 @@
           "foundAt": "deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Commercial_Software/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -2094,7 +2288,11 @@
       "scoreLocal": 5,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "python"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -2125,7 +2323,9 @@
           "foundAt": "deployment/benton-county/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -2140,14 +2340,18 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["docker"],
+      "markers": [
+        "docker"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
           "foundAt": "deployment/installers/docker/docker-compose.yml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -2162,7 +2366,11 @@
       "scoreLocal": 5,
       "scoreTotal": 9,
       "buildableLocal": true,
-      "markers": ["Cargo.toml", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "Cargo.toml",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "Cargo.toml",
@@ -2321,8 +2529,12 @@
           "foundAt": "deployment/production/modules/13-marketplace/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["kernel-gateway-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "kernel-gateway-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -2336,7 +2548,10 @@
       "scoreLocal": 4,
       "scoreTotal": 5,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -2355,7 +2570,9 @@
           "foundAt": "deployment/web-demo/api/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -2399,7 +2616,9 @@
           "foundAt": "Dev - Copy/Archive/TerraFusionMono/TerraFusionMono/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -2471,7 +2690,9 @@
           "foundAt": "Dev - Copy (2)/Archive/TerraFusionMono/TerraFusionMono/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -2486,15 +2707,22 @@
       "scoreLocal": 1,
       "scoreTotal": 8,
       "buildableLocal": false,
-      "markers": ["python"],
+      "markers": [
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "python",
           "foundAt": "distributions/terrafusion-core-team/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -2508,14 +2736,18 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["docker"],
+      "markers": [
+        "docker"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
           "foundAt": "infrastructure/cache/docker-compose-redis.yml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -2530,14 +2762,18 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["docker"],
+      "markers": [
+        "docker"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
           "foundAt": "infrastructure/database/docker-compose-postgresql.yml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -2552,7 +2788,11 @@
       "scoreLocal": 5,
       "scoreTotal": 9,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -2567,8 +2807,12 @@
           "foundAt": "infrastructure/marketplace-enhanced/ui/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["compose-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "compose-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -2582,7 +2826,10 @@
       "scoreLocal": 3,
       "scoreTotal": 4,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest", "vite"],
+      "markers": [
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -2649,7 +2896,9 @@
           "foundAt": "infrastructure/marketplace-unified/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -2664,7 +2913,10 @@
       "scoreLocal": 3,
       "scoreTotal": 7,
       "buildableLocal": true,
-      "markers": ["docker", "python"],
+      "markers": [
+        "docker",
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -2675,8 +2927,12 @@
           "foundAt": "infrastructure/monitoring/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["compose-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "compose-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -2690,15 +2946,22 @@
       "scoreLocal": 2,
       "scoreTotal": 8,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "kubernetes/resilience/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["kernel-gateway-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "kernel-gateway-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -2712,7 +2975,10 @@
       "scoreLocal": 4,
       "scoreTotal": 5,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -2723,7 +2989,9 @@
           "foundAt": "marketplace/autonomous-research-engine/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -2738,7 +3006,12 @@
       "scoreLocal": 7,
       "scoreTotal": 8,
       "buildableLocal": true,
-      "markers": ["Cargo.toml", "docker", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "Cargo.toml",
+        "docker",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "Cargo.toml",
@@ -2841,7 +3114,9 @@
           "foundAt": "marketplace/commercial/marketplace-champion/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -3195,7 +3470,9 @@
           "foundAt": "marketplace/government-core/TerraFusionPermit/TerraFusionPermit/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -3243,7 +3520,9 @@
           "foundAt": "marketplace/shock-and-awe/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -3258,7 +3537,11 @@
       "scoreLocal": 6,
       "scoreTotal": 7,
       "buildableLocal": true,
-      "markers": ["Cargo.toml", "docker", "package.json:buildOrTest"],
+      "markers": [
+        "Cargo.toml",
+        "docker",
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "Cargo.toml",
@@ -3341,7 +3624,9 @@
           "foundAt": "monorepo-scaffolding/packages/terrafusion-sdk/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -3356,15 +3641,21 @@
       "scoreLocal": 1,
       "scoreTotal": 5,
       "buildableLocal": false,
-      "markers": ["python"],
+      "markers": [
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "python",
           "foundAt": "os-kernel/engines/data-pipeline/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["compose-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "compose-ref"
+      ],
       "touchedRelease": true,
       "touchedDev": true,
       "pathFlags": []
@@ -3660,8 +3951,13 @@
           "foundAt": "os-platform/specialized/web-audit-tracker/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -3675,7 +3971,12 @@
       "scoreLocal": 6,
       "scoreTotal": 7,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "python", "vite"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "python",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -3818,7 +4119,9 @@
           "foundAt": "os-platform/ai-systems/ai-systems/ai-command-brain/app/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -3833,14 +4136,18 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "os-platform/consciousness/service/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -3855,7 +4162,9 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -3870,7 +4179,9 @@
           "foundAt": "os-platform/infrastructure/plugins-beyond-plugins/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -3885,7 +4196,9 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -3896,7 +4209,9 @@
           "foundAt": "os-platform/performance/quantum-optimizer/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -3911,7 +4226,12 @@
       "scoreLocal": 6,
       "scoreTotal": 9,
       "buildableLocal": true,
-      "markers": ["Cargo.toml", "package.json:buildOrTest", "python", "vite"],
+      "markers": [
+        "Cargo.toml",
+        "package.json:buildOrTest",
+        "python",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "Cargo.toml",
@@ -4046,7 +4366,10 @@
           "foundAt": "os-platform/specialized/web-audit-tracker/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4061,7 +4384,11 @@
       "scoreLocal": 5,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["Cargo.toml", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "Cargo.toml",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "Cargo.toml",
@@ -4220,7 +4547,9 @@
           "foundAt": "packages/commercial/modules/13-marketplace/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4235,7 +4564,12 @@
       "scoreLocal": 6,
       "scoreTotal": 7,
       "buildableLocal": true,
-      "markers": ["dotnet", "package.json:buildOrTest", "python", "vite"],
+      "markers": [
+        "dotnet",
+        "package.json:buildOrTest",
+        "python",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "dotnet",
@@ -4274,7 +4608,9 @@
           "foundAt": "packages/government-edition/PWA/vite.config.js"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4289,7 +4625,11 @@
       "scoreLocal": 5,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["Cargo.toml", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "Cargo.toml",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "Cargo.toml",
@@ -4448,7 +4788,9 @@
           "foundAt": "packages/government-edition-enhanced-MARKED-FOR-REVIEW/13-marketplace/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4463,7 +4805,10 @@
       "scoreLocal": 3,
       "scoreTotal": 4,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest", "vite"],
+      "markers": [
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -4474,7 +4819,9 @@
           "foundAt": "packages/shock-and-awe/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4489,7 +4836,10 @@
       "scoreLocal": 3,
       "scoreTotal": 4,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest", "vite"],
+      "markers": [
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -4500,7 +4850,9 @@
           "foundAt": "pacs-quantum-ui/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4517,7 +4869,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4615,7 +4969,9 @@
           "foundAt": "TerraFusion_Command_Portal_Starter/terrafusion-command-portal/frontend/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4630,7 +4986,10 @@
       "scoreLocal": 4,
       "scoreTotal": 10,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -4653,8 +5012,13 @@
           "foundAt": "terrafusion-cos/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -4668,7 +5032,9 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["dotnet"],
+      "markers": [
+        "dotnet"
+      ],
       "markerOrigins": [
         {
           "marker": "dotnet",
@@ -4683,7 +5049,9 @@
           "foundAt": "terrafusion-native-shell/TerraFusion.Native.sln"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4698,7 +5066,9 @@
       "scoreLocal": 2,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["docker"],
+      "markers": [
+        "docker"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -4709,8 +5079,12 @@
           "foundAt": "terrafusion-ops-tools/docker/docker-compose.yml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["kernel-gateway-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "kernel-gateway-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -4724,15 +5098,21 @@
       "scoreLocal": 2,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["Cargo.toml"],
+      "markers": [
+        "Cargo.toml"
+      ],
       "markerOrigins": [
         {
           "marker": "Cargo.toml",
           "foundAt": "tools/speclock-tss/Cargo.toml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["kernel-gateway-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "kernel-gateway-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -4746,7 +5126,9 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -4761,7 +5143,9 @@
           "foundAt": "tools/tdc/packages/transparency-engine/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4776,14 +5160,19 @@
       "scoreLocal": 2,
       "scoreTotal": 5,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "tools/tf-designctl-node/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4798,14 +5187,19 @@
       "scoreLocal": 2,
       "scoreTotal": 5,
       "buildableLocal": true,
-      "markers": ["Cargo.toml"],
+      "markers": [
+        "Cargo.toml"
+      ],
       "markerOrigins": [
         {
           "marker": "Cargo.toml",
           "foundAt": "tools/tf-designctl-rust/Cargo.toml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4822,7 +5216,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4837,15 +5233,23 @@
       "scoreLocal": 1,
       "scoreTotal": 10,
       "buildableLocal": false,
-      "markers": ["python"],
+      "markers": [
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "python",
           "foundAt": "validation/ai-platform/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -4859,14 +5263,18 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "workspace-explorer/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4883,7 +5291,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4900,7 +5310,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4917,7 +5329,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4934,7 +5348,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4951,7 +5367,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4968,7 +5386,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -4985,7 +5405,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5002,7 +5424,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5019,7 +5443,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5036,7 +5462,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5053,7 +5481,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5070,7 +5500,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5087,7 +5519,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5104,7 +5538,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5119,7 +5555,9 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -5130,7 +5568,9 @@
           "foundAt": "workspaces/enhancements/ui-components/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5147,7 +5587,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5164,7 +5606,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5181,7 +5625,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5198,7 +5644,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5215,7 +5663,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5232,7 +5682,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5267,7 +5719,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5284,7 +5738,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5301,8 +5757,12 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["compose-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "compose-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -5318,7 +5778,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5335,7 +5797,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5352,7 +5816,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5369,7 +5835,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5386,7 +5854,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5401,7 +5871,10 @@
       "scoreLocal": 3,
       "scoreTotal": 4,
       "buildableLocal": true,
-      "markers": ["next:config", "package.json:buildOrTest"],
+      "markers": [
+        "next:config",
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "next:config",
@@ -5412,7 +5885,9 @@
           "foundAt": "workspaces/portal/apps/terrafusion-web/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5429,7 +5904,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5446,7 +5923,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5463,7 +5942,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5480,7 +5961,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5497,7 +5980,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5514,7 +5999,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5531,7 +6018,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5548,7 +6037,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5565,7 +6056,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5582,7 +6075,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5599,7 +6094,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5616,7 +6113,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5633,7 +6132,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5650,7 +6151,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5667,7 +6170,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5684,7 +6189,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5701,7 +6208,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5718,7 +6227,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5735,7 +6246,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5752,7 +6265,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5769,7 +6284,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5786,7 +6303,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5803,7 +6322,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5820,7 +6341,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5837,7 +6360,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5854,7 +6379,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5871,7 +6398,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5888,7 +6417,9 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
@@ -5903,7 +6434,9 @@
       "scoreLocal": 2,
       "scoreTotal": 3,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -5918,7 +6451,9 @@
           "foundAt": "workspaces/workspaces/terra-intelligence-hub/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,

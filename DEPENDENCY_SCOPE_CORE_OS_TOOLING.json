@@ -1,35 +1,5 @@
 [
   {
-    "root": "_CLEAN_BUILD_ZONE",
-    "bucket": "CORE_OS_TOOLING",
-    "evidence": {
-      "score": 4,
-      "scoreLocal": 3,
-      "scoreTotal": 4,
-      "buildableLocal": true,
-      "markers": ["package.json:buildOrTest", "vite"],
-      "markerOrigins": [
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "_CLEAN_BUILD_ZONE/electron/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "_CLEAN_BUILD_ZONE/package.json"
-        },
-        {
-          "marker": "vite",
-          "foundAt": "_CLEAN_BUILD_ZONE/vite.config.ts"
-        }
-      ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": [],
-      "touchedRelease": true,
-      "touchedDev": true,
-      "pathFlags": []
-    }
-  },
-  {
     "root": ".",
     "bucket": "CORE_OS_TOOLING",
     "evidence": {
@@ -109,7 +79,11 @@
       "scoreLocal": 4,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "pnpm-lock.yaml"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "pnpm-lock.yaml"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -147,7 +121,10 @@
       "scoreLocal": 3,
       "scoreTotal": 12,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest", "vite"],
+      "markers": [
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
@@ -206,8 +183,14 @@
           "foundAt": "SDK/modules/terra-playground/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -287,7 +270,9 @@
           "foundAt": "terrabuild-modernization/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": true,
       "touchedDev": true,
@@ -368,7 +353,9 @@
           "foundAt": "terrabuild-modernization-backup-20251019-105910.archived/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
