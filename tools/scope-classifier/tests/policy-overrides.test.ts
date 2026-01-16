@@ -17,9 +17,9 @@ describe("policy overrides", () => {
     expect(result.bucket).toBe("CORE_OS_TOOLING");
   });
 
-  it("forces clean build zone to CORE_OS_TOOLING", () => {
+  it("forces clean build zone to QUARANTINE", () => {
     const result = classifyRoot({ root: "_CLEAN_BUILD_ZONE", ...base });
-    expect(result.bucket).toBe("CORE_OS_TOOLING");
+    expect(result.bucket).toBe("QUARANTINE");
   });
 
   it("forces dot folders to QUARANTINE", () => {

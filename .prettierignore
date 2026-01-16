@@ -10,6 +10,8 @@ coverage/
 *.generated.*
 *.min.js
 *.min.css
+DEPENDENCY_SCOPE_*.json
+DEPENDENCY_SCOPE_REPORT.md
 
 # Package files
 package-lock.json

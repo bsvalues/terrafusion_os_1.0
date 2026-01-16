@@ -43,7 +43,7 @@ export type Bucket =
 
 export const FORCE_BUCKETS: Record<string, Bucket> = {
   ".": "CORE_OS_TOOLING",
-  "_CLEAN_BUILD_ZONE": "CORE_OS_TOOLING",
+  "_CLEAN_BUILD_ZONE": "QUARANTINE",
   SDK: "CORE_OS_TOOLING",
   "ecosystem/intake": "CORE_OS_TOOLING",
 };
