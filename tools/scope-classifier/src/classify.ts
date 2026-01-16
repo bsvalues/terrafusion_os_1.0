@@ -116,7 +116,9 @@ export function classifyRoot(facts: RootFacts): Classification {
 
   let bucket: Bucket = "QUARANTINE";
 
-  if (!buildableLocal) {
+  if (forcedBucket) {
+    bucket = forcedBucket;
+  } else if (!buildableLocal) {
     bucket = "QUARANTINE";
   } else if (wiringScore >= 6) {
     bucket = "CORE_OS_RUNTIME";
@@ -126,10 +128,6 @@ export function classifyRoot(facts: RootFacts): Classification {
     bucket = "GEN2_APPS";
   } else {
     bucket = "QUARANTINE";
-  }
-
-  if (forcedBucket) {
-    bucket = forcedBucket;
   }
 
   return {

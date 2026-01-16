@@ -70,8 +70,10 @@ function buildTokens(root: string): string[] {
   tokens.add(`./${normalized}`);
   tokens.add(normalized.replace(/\//g, "\\"));
   if (!normalized.includes("/")) {
-    const last = normalized.split("/").pop() ?? "";
-    if (last.length >= 5) tokens.add(last);
+    tokens.add(`${normalized}/`);
+    tokens.add(`${normalized}\\`);
+    tokens.add(`./${normalized}/`);
+    tokens.add(`./${normalized}\\`);
   }
   return Array.from(tokens).filter(Boolean);
 }
@@ -84,7 +86,9 @@ function matchesToken(text: string, token: string): boolean {
   const escaped = escapeRegex(token);
   const boundary = "[\\s\"'()\\[\\]{}:=]";
   if (token.includes("/") || token.includes("\\")) {
-    const re = new RegExp(`(^|${boundary})${escaped}($|${boundary})`);
+    const pathBoundary = `${boundary}|[\\\\/]`;
+    const endBoundary = token.endsWith("/") || token.endsWith("\\") ? "" : `($|${pathBoundary})`;
+    const re = new RegExp(`(^|${pathBoundary})${escaped}${endBoundary}`);
     return re.test(text);
   }
   const re = new RegExp(`(^|${boundary}|[\\\\/])${escaped}($|${boundary}|[\\\\/])`);
