@@ -37,10 +37,10 @@
     "root": ".ai",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 6,
-      "scoreLocal": 2,
-      "scoreTotal": 6,
-      "buildableLocal": true,
+      "score": 0,
+      "scoreLocal": 0,
+      "scoreTotal": 0,
+      "buildableLocal": false,
       "markers": ["package.json:buildOrTest"],
       "markerOrigins": [
         {
@@ -59,10 +59,10 @@
     "root": ".ci_artifacts_local",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 5,
-      "scoreLocal": 2,
-      "scoreTotal": 5,
-      "buildableLocal": true,
+      "score": 0,
+      "scoreLocal": 0,
+      "scoreTotal": 0,
+      "buildableLocal": false,
       "markers": ["docker"],
       "markerOrigins": [
         {
