@@ -62,7 +62,6 @@ export function writeScopeOutputs(
   const md = [
     "# TerraFusion Scope Report",
     "",
-    `Generated: ${new Date().toISOString()}`,
     `SOLID_BASE: ${anchors.release}`,
     `ARCH_ANCHOR: ${anchors.dev}`,
     "",

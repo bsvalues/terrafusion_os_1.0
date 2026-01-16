@@ -7,15 +7,23 @@
       "scoreLocal": 2,
       "scoreTotal": 11,
       "buildableLocal": true,
-      "markers": ["docker"],
+      "markers": [
+        "docker"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
           "foundAt": "artifacts/docker-compose.prod.yml.bak"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -29,7 +37,12 @@
       "scoreLocal": 7,
       "scoreTotal": 21,
       "buildableLocal": true,
-      "markers": ["docker", "dotnet", "package.json:buildOrTest", "python"],
+      "markers": [
+        "docker",
+        "dotnet",
+        "package.json:buildOrTest",
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -224,8 +237,16 @@
           "foundAt": "backend/terrafusion-bridge/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "renovate-ref", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "renovate-ref",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": true,
       "touchedDev": true,
       "pathFlags": []
@@ -239,7 +260,10 @@
       "scoreLocal": 4,
       "scoreTotal": 16,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -298,8 +322,15 @@
           "foundAt": "compose/ai-services/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -313,7 +344,9 @@
       "scoreLocal": 2,
       "scoreTotal": 16,
       "buildableLocal": true,
-      "markers": ["docker"],
+      "markers": [
+        "docker"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -356,8 +389,16 @@
           "foundAt": "config/docker/docker-compose.ultimate-ide.yml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "renovate-ref", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "renovate-ref",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": true,
       "touchedDev": false,
       "pathFlags": []
@@ -371,15 +412,23 @@
       "scoreLocal": 2,
       "scoreTotal": 12,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "consciousness/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -393,15 +442,23 @@
       "scoreLocal": 2,
       "scoreTotal": 11,
       "buildableLocal": true,
-      "markers": ["docker"],
+      "markers": [
+        "docker"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
           "foundAt": "counties/benton/docker-compose.county.yml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -415,7 +472,11 @@
       "scoreLocal": 5,
       "scoreTotal": 17,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "python"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -434,8 +495,15 @@
           "foundAt": "data/county-templates/benton-county/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -449,7 +517,12 @@
       "scoreLocal": 6,
       "scoreTotal": 18,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "python", "vite"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "python",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -612,8 +685,15 @@
           "foundAt": "deployment/production/modules/13-marketplace/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -734,8 +814,13 @@
           "foundAt": "Dev/Archive/TerraFusionMono/TerraFusionMono/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -749,15 +834,23 @@
       "scoreLocal": 2,
       "scoreTotal": 11,
       "buildableLocal": true,
-      "markers": ["docker"],
+      "markers": [
+        "docker"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
           "foundAt": "docker/Dockerfile"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -771,7 +864,10 @@
       "scoreLocal": 4,
       "scoreTotal": 16,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -910,8 +1006,15 @@
           "foundAt": "docs/marketplace/unified-system.md/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": true,
       "touchedDev": true,
       "pathFlags": []
@@ -961,8 +1064,15 @@
           "foundAt": "frontend/vite.config.ts"
         }
       ],
-      "inherited": ["renovate-ref", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "renovate-ref",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": true,
       "touchedDev": true,
       "pathFlags": []
@@ -976,7 +1086,10 @@
       "scoreLocal": 3,
       "scoreTotal": 15,
       "buildableLocal": true,
-      "markers": ["docker", "python"],
+      "markers": [
+        "docker",
+        "python"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -991,8 +1104,15 @@
           "foundAt": "monitoring/services/ai-swarm-metrics-collector/requirements.txt"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -1006,7 +1126,9 @@
       "scoreLocal": 2,
       "scoreTotal": 14,
       "buildableLocal": true,
-      "markers": ["docker"],
+      "markers": [
+        "docker"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -1017,8 +1139,15 @@
           "foundAt": "ops/prod/docker-compose.prod.server.yml"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": true,
       "touchedDev": false,
       "pathFlags": []
@@ -1032,7 +1161,11 @@
       "scoreLocal": 6,
       "scoreTotal": 15,
       "buildableLocal": true,
-      "markers": ["docker", "dotnet", "package.json:buildOrTest"],
+      "markers": [
+        "docker",
+        "dotnet",
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -1463,8 +1596,14 @@
           "foundAt": "tests/marketplace/unified-system/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": true,
       "touchedDev": true,
       "pathFlags": []
@@ -1478,7 +1617,10 @@
       "scoreLocal": 4,
       "scoreTotal": 16,
       "buildableLocal": true,
-      "markers": ["Cargo.toml", "package.json:buildOrTest"],
+      "markers": [
+        "Cargo.toml",
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "Cargo.toml",
@@ -1509,8 +1651,15 @@
           "foundAt": "tools/tf-designctl-node/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
-      "wiring": ["compose-ref", "kernel-gateway-ref", "os-shell-mount-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []

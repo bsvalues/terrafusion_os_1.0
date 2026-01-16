@@ -7,7 +7,12 @@
       "scoreLocal": 6,
       "scoreTotal": 7,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "python", "vite"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "python",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -34,7 +39,9 @@
           "foundAt": "applications/terra-permit/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": true,
       "touchedDev": false,
@@ -49,15 +56,21 @@
       "scoreLocal": 2,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["dotnet"],
+      "markers": [
+        "dotnet"
+      ],
       "markerOrigins": [
         {
           "marker": "dotnet",
           "foundAt": "native-shell/Terrafusion.Shell.csproj"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["kernel-gateway-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "kernel-gateway-ref"
+      ],
       "touchedRelease": true,
       "touchedDev": true,
       "pathFlags": []
@@ -71,7 +84,12 @@
       "scoreLocal": 7,
       "scoreTotal": 11,
       "buildableLocal": true,
-      "markers": ["docker", "dotnet", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "docker",
+        "dotnet",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -142,8 +160,12 @@
           "foundAt": "os-platform/development/tools/TerraFusionIDE/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
-      "wiring": ["compose-ref"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "compose-ref"
+      ],
       "touchedRelease": true,
       "touchedDev": true,
       "pathFlags": []
@@ -157,14 +179,19 @@
       "scoreLocal": 2,
       "scoreTotal": 5,
       "buildableLocal": true,
-      "markers": ["package.json:buildOrTest"],
+      "markers": [
+        "package.json:buildOrTest"
+      ],
       "markerOrigins": [
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "tools/scope-classifier/package.json"
         }
       ],
-      "inherited": ["pnpm-lock.yaml", "workflow-ref"],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
       "wiring": [],
       "touchedRelease": true,
       "touchedDev": true,
@@ -179,7 +206,11 @@
       "scoreLocal": 5,
       "scoreTotal": 6,
       "buildableLocal": true,
-      "markers": ["docker", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "docker",
@@ -198,7 +229,9 @@
           "foundAt": "workspaces/AIDATACONNECT/AIDataConnect/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": true,
       "touchedDev": true,
@@ -213,7 +246,12 @@
       "scoreLocal": 6,
       "scoreTotal": 7,
       "buildableLocal": true,
-      "markers": ["dotnet", "next:config", "package.json:buildOrTest", "vite"],
+      "markers": [
+        "dotnet",
+        "next:config",
+        "package.json:buildOrTest",
+        "vite"
+      ],
       "markerOrigins": [
         {
           "marker": "dotnet",
@@ -240,7 +278,9 @@
           "foundAt": "workspaces/PACS/TADownloads/pacs-quantum-ui/vite.config.ts"
         }
       ],
-      "inherited": ["pnpm-lock.yaml"],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
       "wiring": [],
       "touchedRelease": true,
       "touchedDev": true,

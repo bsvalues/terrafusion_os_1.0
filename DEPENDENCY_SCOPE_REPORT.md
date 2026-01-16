@@ -1,14 +1,13 @@
 # TerraFusion Scope Report
 
-Generated: 2026-01-16T05:27:45.499Z
 SOLID_BASE: 567fbcec5
 ARCH_ANCHOR: 9af5bb291
 
 ## Totals
 - CORE_OS_RUNTIME: 16
-- CORE_OS_TOOLING: 6
+- CORE_OS_TOOLING: 5
 - GEN2_APPS: 6
-- QUARANTINE: 139
+- QUARANTINE: 140
 
 ## Top Evidence Samples
 - . -> CORE_OS_TOOLING (local=4; total=6; wiring=none)
@@ -21,7 +20,7 @@ ARCH_ANCHOR: 9af5bb291
 - Dev - Copy (2) -> QUARANTINE (local=5; total=7; wiring=none)
 - SDK -> CORE_OS_TOOLING (local=3; total=12; wiring=compose-ref,kernel-gateway-ref)
 - TerraFusion_Command_Portal_Starter -> QUARANTINE (local=8; total=10; wiring=none)
-- _CLEAN_BUILD_ZONE -> CORE_OS_TOOLING (local=3; total=4; wiring=none)
+- _CLEAN_BUILD_ZONE -> QUARANTINE (local=3; total=4; wiring=none)
 - _pre_restore_safety_20260108_144218 -> QUARANTINE (local=0; total=0; wiring=none)
 - agents/terrafusion-phd-systems-agent -> QUARANTINE (local=2; total=3; wiring=none)
 - ai-workspace-companion -> QUARANTINE (local=2; total=3; wiring=none)
