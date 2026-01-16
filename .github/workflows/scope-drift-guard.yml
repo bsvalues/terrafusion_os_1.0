@@ -10,25 +10,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
         with:
           version: 9
-      - name: Install scope-classifier deps
-        run: pnpm -C tools/scope-classifier install
-      - name: Generate scopes
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Scope classifier tests
+        run: pnpm -C tools/scope-classifier test
+
+      - name: Generate deterministic scope outputs
         run: pnpm tf:scope -- --solidBase=567fbcec5 --archAnchor=9af5bb291
-      - name: Verify scope outputs are committed
-        run: >
-          git diff --exit-code --
-          DEPENDENCY_SCOPE_CORE_OS_RUNTIME.json
-          DEPENDENCY_SCOPE_CORE_OS_TOOLING.json
-          DEPENDENCY_SCOPE_GEN2_APPS.json
-          DEPENDENCY_SCOPE_SOLIDIFIED_OS.json
-          DEPENDENCY_SCOPE_QUARANTINE.json
-          DEPENDENCY_SCOPE_LEGACY_QUARANTINE.json
-          DEPENDENCY_SCOPE_REPORT.md
+
+      - name: Drift guard (must be clean)
+        run: git diff --exit-code
