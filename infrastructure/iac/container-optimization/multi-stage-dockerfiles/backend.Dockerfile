@@ -35,7 +35,7 @@ COPY --from=builder /app/target/release/terrafusion-backend /scan/
 RUN trivy fs --format json --output /scan/security-report.json /scan/
 
 # Runtime stage
-FROM alpine:3.19 AS runtime
+FROM alpine:3.23.2 AS runtime
 
 # Install runtime dependencies
 RUN apk add --no-cache \
