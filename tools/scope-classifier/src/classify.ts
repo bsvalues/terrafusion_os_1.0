@@ -36,8 +36,11 @@ export type Classification = {
 };
 
 export function classifyRoot(facts: RootFacts): Classification {
-  const forcedBucket = FORCE_BUCKETS[facts.root] ?? FORCE_BUCKET_PATTERNS.find((rule) => rule.pattern.test(facts.root))?.bucket;
-  if (QUARANTINE_PATTERNS.some((re) => re.test(facts.root))) {
+  const forcedBucket =
+    FORCE_BUCKETS[facts.root] ??
+    FORCE_BUCKET_PATTERNS.find((rule) => rule.pattern.test(facts.root))?.bucket;
+  const skipQuarantine = Boolean(forcedBucket && forcedBucket !== "QUARANTINE");
+  if (!skipQuarantine && QUARANTINE_PATTERNS.some((re) => re.test(facts.root))) {
     return {
       bucket: "QUARANTINE",
       evidence: {
@@ -56,7 +59,7 @@ export function classifyRoot(facts: RootFacts): Classification {
     };
   }
 
-  if (facts.pathFlags.includes("privacy-tier-only")) {
+  if (!skipQuarantine && facts.pathFlags.includes("privacy-tier-only")) {
     return {
       bucket: "QUARANTINE",
       evidence: {
