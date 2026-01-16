@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "scope": "tsx src/cli.ts",
-    "test": "vitest -c vitest.config.ts",
-    "test:watch": "vitest"
+    "test": "vitest run -c vitest.config.ts",
+    "test:watch": "vitest -c vitest.config.ts"
   },
   "devDependencies": {
     "tsx": "^3.14.0",
