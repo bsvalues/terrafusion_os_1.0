@@ -1,0 +1,228 @@
+[
+  {
+    "root": "applications/terra-permit",
+    "bucket": "GEN2_APPS",
+    "evidence": {
+      "score": 7,
+      "scoreLocal": 6,
+      "scoreTotal": 7,
+      "buildableLocal": true,
+      "markers": ["docker", "package.json:buildOrTest", "python", "vite"],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "applications/terra-permit/archive/unused-configs/docker-compose.production.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "applications/terra-permit/archive/unused-configs/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "applications/terra-permit/archive/unused-configs/Dockerfile"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "applications/terra-permit/package.json"
+        },
+        {
+          "marker": "python",
+          "foundAt": "applications/terra-permit/archive/unused-configs/pyproject.toml"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "applications/terra-permit/vite.config.ts"
+        }
+      ],
+      "inherited": ["pnpm-lock.yaml"],
+      "wiring": [],
+      "touchedRelease": true,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "native-shell",
+    "bucket": "GEN2_APPS",
+    "evidence": {
+      "score": 6,
+      "scoreLocal": 2,
+      "scoreTotal": 6,
+      "buildableLocal": true,
+      "markers": ["dotnet"],
+      "markerOrigins": [
+        {
+          "marker": "dotnet",
+          "foundAt": "native-shell/Terrafusion.Shell.csproj"
+        }
+      ],
+      "inherited": ["pnpm-lock.yaml"],
+      "wiring": ["kernel-gateway-ref"],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "os-platform/development",
+    "bucket": "GEN2_APPS",
+    "evidence": {
+      "score": 8,
+      "scoreLocal": 7,
+      "scoreTotal": 8,
+      "buildableLocal": true,
+      "markers": ["docker", "dotnet", "package.json:buildOrTest", "vite"],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "os-platform/development/tools/TerraFusion-PublicRecords/deployment-20250814_161526/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "os-platform/development/tools/TerraFusion-PublicRecords/deployment-20250814_161526/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "os-platform/development/tools/TerraFusionIDE/docker-compose.production.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "os-platform/development/tools/TerraFusionIDE/Docker/docker-compose.production.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "os-platform/development/tools/TerraFusionIDE/Docker/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "os-platform/development/tools/TerraFusionIDE/Dockerfile"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "os-platform/development/tools/IDEGateway/IDEGateway.csproj"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/test-hot-reload/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/testing-suite/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/tools/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/tools/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/tools/TerraFusion-AICommandBrain/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/tools/TerraFusion-PublicRecords/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/tools/TerraFusionIDE/package.json"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "os-platform/development/tools/TerraFusion-AICommandBrain/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "os-platform/development/tools/TerraFusion-PublicRecords/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "os-platform/development/tools/TerraFusionIDE/vite.config.ts"
+        }
+      ],
+      "inherited": ["pnpm-lock.yaml"],
+      "wiring": [],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "workspaces/AIDATACONNECT",
+    "bucket": "GEN2_APPS",
+    "evidence": {
+      "score": 6,
+      "scoreLocal": 5,
+      "scoreTotal": 6,
+      "buildableLocal": true,
+      "markers": ["docker", "package.json:buildOrTest", "vite"],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "workspaces/AIDATACONNECT/AIDataConnect/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "workspaces/AIDATACONNECT/AIDataConnect/Dockerfile"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "workspaces/AIDATACONNECT/AIDataConnect/package.json"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "workspaces/AIDATACONNECT/AIDataConnect/vite.config.ts"
+        }
+      ],
+      "inherited": ["pnpm-lock.yaml"],
+      "wiring": [],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "workspaces/PACS",
+    "bucket": "GEN2_APPS",
+    "evidence": {
+      "score": 7,
+      "scoreLocal": 6,
+      "scoreTotal": 7,
+      "buildableLocal": true,
+      "markers": ["dotnet", "next:config", "package.json:buildOrTest", "vite"],
+      "markerOrigins": [
+        {
+          "marker": "dotnet",
+          "foundAt": "workspaces/PACS/TADownloads/TA XML/SimpleWorkflow/SimpleWorkflow.csproj"
+        },
+        {
+          "marker": "next:config",
+          "foundAt": "workspaces/PACS/Other Files for Review/next.config.js"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "workspaces/PACS/Other Files for Review/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "workspaces/PACS/TADownloads/pacs-quantum-ui/package.json"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "workspaces/PACS/Other Files for Review/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "workspaces/PACS/TADownloads/pacs-quantum-ui/vite.config.ts"
+        }
+      ],
+      "inherited": ["pnpm-lock.yaml"],
+      "wiring": [],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  }
+]
