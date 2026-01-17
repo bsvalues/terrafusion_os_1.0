@@ -175,9 +175,9 @@
     "root": "tools/scope-classifier",
     "bucket": "GEN2_APPS",
     "evidence": {
-      "score": 5,
+      "score": 3,
       "scoreLocal": 2,
-      "scoreTotal": 5,
+      "scoreTotal": 3,
       "buildableLocal": true,
       "markers": [
         "package.json:buildOrTest"
@@ -189,8 +189,7 @@
         }
       ],
       "inherited": [
-        "pnpm-lock.yaml",
-        "workflow-ref"
+        "pnpm-lock.yaml"
       ],
       "wiring": [],
       "touchedRelease": true,

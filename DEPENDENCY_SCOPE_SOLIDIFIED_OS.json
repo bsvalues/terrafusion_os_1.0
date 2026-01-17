@@ -33,9 +33,9 @@
     "root": "backend",
     "bucket": "CORE_OS_RUNTIME",
     "evidence": {
-      "score": 21,
+      "score": 19,
       "scoreLocal": 7,
-      "scoreTotal": 21,
+      "scoreTotal": 19,
       "buildableLocal": true,
       "markers": [
         "docker",
@@ -239,7 +239,6 @@
       ],
       "inherited": [
         "pnpm-lock.yaml",
-        "renovate-ref",
         "workflow-ref"
       ],
       "wiring": [
@@ -340,9 +339,9 @@
     "root": "config",
     "bucket": "CORE_OS_RUNTIME",
     "evidence": {
-      "score": 16,
+      "score": 14,
       "scoreLocal": 2,
-      "scoreTotal": 16,
+      "scoreTotal": 14,
       "buildableLocal": true,
       "markers": [
         "docker"
@@ -391,7 +390,6 @@
       ],
       "inherited": [
         "pnpm-lock.yaml",
-        "renovate-ref",
         "workflow-ref"
       ],
       "wiring": [
@@ -1024,9 +1022,9 @@
     "root": "frontend",
     "bucket": "CORE_OS_RUNTIME",
     "evidence": {
-      "score": 20,
+      "score": 18,
       "scoreLocal": 5,
-      "scoreTotal": 20,
+      "scoreTotal": 18,
       "buildableLocal": true,
       "markers": [
         "docker",
@@ -1065,7 +1063,6 @@
         }
       ],
       "inherited": [
-        "renovate-ref",
         "workflow-ref"
       ],
       "wiring": [

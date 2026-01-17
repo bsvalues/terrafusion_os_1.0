@@ -14,22 +14,20 @@ jobs:
           fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
 
+      - name: CI tooling preflight
+        run: |
+          node --version
+          echo "Running zero-dependency preflight check..."
+          node scripts/ci/toolingPreflight.js
+
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      - name: Scope classifier tests
-        run: pnpm -C tools/scope-classifier test
-
-      - name: Generate deterministic scope outputs
-        run: pnpm tf:scope -- --solidBase=567fbcec5 --archAnchor=9af5bb291
-
-      - name: Drift guard (must be clean)
-        run: git diff --exit-code
+      - name: Scope Proof (Tests + Generation + Drift Check)
+        run: pnpm run ci:scope-proof
