@@ -189,62 +189,40 @@ export function runSentinel(repoRoot = process.cwd()) {
  * CLI entry point
  */
 function main() {
-  const result = runSentinel();
+  let result;
+
+  try {
+    result = runSentinel();
+  } catch (err) {
+    // If runSentinel throws, we still want to generate an artifact if possible
+    result = {
+      status: 'ERROR',
+      reasons: [String(err)],
+      snapshot: { contract: null, actual: null },
+      timestamp: new Date().toISOString(),
+    };
+  }
 
   // Output structured JSON for audit capture (stdout)
   console.log(JSON.stringify(result, null, 2));
 
-  // Write snapshot artifact to disk for persistence/audit
-  // We write the *full result* or just the snapshot? The requirements typically want the snapshot.
-  // The drill expects `const s = JSON.parse(fs.readFileSync('governance-snapshot.json', ...))`
-  // and asserts s.required_status_checks etc.
-  // The result object has `snapshot: { contract, actual }`.
-  // The validation logic in user prompt: `s.required_status_checks ?? s.branchProtection?.required_status_checks ...`
-  // Actually, looking at user's node script: `const required = s.required_status_checks ?? ...`
-  // The result.snapshot structure in my script is `{ contract, actual }`.
-  // The user's verification script looks for `s.required_status_checks` at top level OR nested.
-  // It seems the user expects the snapshot to conform to GitHub API response structure OR a unified structure.
-
-  // Let's write nested structure but ensure property names match what verification expects.
-  // The script produces: `snapshot: { contract: { expected: ... }, actual: { required_status_checks: [], ... } }`
-
-  // If I write `result.snapshot` to disk:
-  // s = { contract: {...}, actual: {...} }
-  // s.required_status_checks is undefined.
-  // s.actual.required_status_checks is defined.
-
-  // User verification script: `s.required_status_checks ?? s.branchProtection?.required_status_checks ?? s.protection?.required_status_checks`
-
-  // It doesn't look for `s.actual.required_status_checks`.
-  // Maybe I should write `result.snapshot.actual` as the root of `governance-snapshot.json`?
-  // But if actual is null (fetch fail), that's bad.
-
-  // Let's write the `result.snapshot` fully, but maybe I mis-interpreted the user's verification script logic or the script implementation.
-  // User script: `const required = s.required_status_checks ?? ...`
-
-  // If I write `result.snapshot` as the file content, the user script will fail to find `required_status_checks` at top level.
-  // UNLESS `result.snapshot` itself has `required_status_checks`.
-  // In `validate`:
-  // const snapshot = { contract: ..., actual: ... };
-
-  // So I should probably write `result.snapshot` AND modify the user's verification script in my mind?
-  // No, I must pass the user's supplied verification script.
-  // The user script supports: `s.required_status_checks` OR `s.branchProtection` OR `s.protection`.
-
-  // So I should structure `governance-snapshot.json` such that it has `branchProtection` (which is `result.snapshot.actual`).
-
+  // Write snapshot artifact to disk in a finally-like block logic
   const artifact = {
-    branchProtection: result.snapshot.actual,
-    contract: result.snapshot.contract,
-    timestamp: result.timestamp,
+    branchProtection: result.snapshot?.actual || null,
+    contract: result.snapshot?.contract || null,
+    timestamp: result.timestamp || new Date().toISOString(),
     status: result.status,
+    error: result.status === 'ERROR' ? result.reasons.join('; ') : undefined,
+    // Add top-level fields for flat access if needed by simple scripts
+    required_status_checks: result.snapshot?.actual?.required_status_checks || undefined,
+    strict: result.snapshot?.actual?.strict || undefined,
+    enforce_admins: result.snapshot?.actual?.enforce_admins || undefined,
   };
 
   try {
     fs.writeFileSync('governance-snapshot.json', JSON.stringify(artifact, null, 2));
   } catch (e) {
     console.error('GOVERNANCE_ARTIFACT_FAIL: Could not write governance-snapshot.json');
-    // Don't fail the exit code just for artifact if strictness varies, but usually we should.
   }
 
   // Exit with appropriate code
@@ -255,7 +233,8 @@ function main() {
     console.error(`\nGOVERNANCE_DRIFT_FAIL: ${result.reasons.join('; ')}`);
     process.exit(1);
   } else {
-    console.error(`\nGOVERNANCE_FETCH_FAIL: ${result.reasons.join('; ')}`);
+    // status === 'ERROR'
+    console.error(`\nGOVERNANCE_FETCH_FAIL: ${result.reasons?.join('; ') ?? 'Unknown Error'}`);
     process.exit(2);
   }
 }
