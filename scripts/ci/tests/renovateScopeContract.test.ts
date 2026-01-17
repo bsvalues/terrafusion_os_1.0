@@ -1,6 +1,7 @@
 // scripts/ci/tests/renovateScopeContract.test.ts
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
+import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 
 describe("Renovate Scope Contract", () => {
