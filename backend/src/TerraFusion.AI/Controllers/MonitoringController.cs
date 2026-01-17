@@ -1,4 +1,4 @@
-/**
+﻿/*
  * MonitoringController - REST API for Advanced Monitoring
  *
  * Provides endpoints for system metrics, performance monitoring,

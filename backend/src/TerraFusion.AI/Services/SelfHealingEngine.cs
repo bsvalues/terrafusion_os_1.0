@@ -1,4 +1,4 @@
-/**
+﻿/*
  * SelfHealingEngine - Advanced Self-Healing and Recovery System
  *
  * Provides comprehensive self-healing capabilities with advanced recovery procedures:

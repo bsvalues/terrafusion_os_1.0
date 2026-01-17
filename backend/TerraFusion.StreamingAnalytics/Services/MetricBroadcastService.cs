@@ -1,4 +1,4 @@
-/**
+﻿/*
  * MetricBroadcastService
  *
  * Background service that periodically broadcasts metrics to all SignalR clients.

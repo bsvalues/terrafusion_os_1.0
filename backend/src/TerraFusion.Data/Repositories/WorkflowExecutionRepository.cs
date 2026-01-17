@@ -1,4 +1,4 @@
-/**
+﻿/*
  * WorkflowExecutionRepository Implementation
  *
  * Concrete implementation of IWorkflowExecutionRepository using Entity Framework Core.

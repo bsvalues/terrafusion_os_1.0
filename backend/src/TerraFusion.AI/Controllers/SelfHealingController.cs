@@ -1,4 +1,4 @@
-/**
+﻿/*
  * SelfHealingController - REST API for Advanced Self-Healing Operations
  *
  * Provides comprehensive self-healing and recovery orchestration endpoints:

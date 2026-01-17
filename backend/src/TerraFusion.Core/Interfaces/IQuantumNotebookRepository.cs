@@ -1,4 +1,4 @@
-/**
+﻿/*
  * IQuantumNotebookRepository Interface
  *
  * Repository interface for QuantumNotebook entity data access.

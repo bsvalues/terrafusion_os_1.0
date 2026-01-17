@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - AI ORCHESTRATION CONTROLLER
  * Championship-Level API Endpoints for 1,008 Agent Management

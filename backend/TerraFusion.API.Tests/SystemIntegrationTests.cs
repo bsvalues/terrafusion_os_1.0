@@ -1,4 +1,4 @@
-/**
+﻿/*
  * SystemIntegrationTests - Comprehensive Integration Testing Suite
  *
  * End-to-end integration tests validating all Phase 3 subsystems working together:

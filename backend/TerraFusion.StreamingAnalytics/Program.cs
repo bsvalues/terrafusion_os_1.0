@@ -1,4 +1,4 @@
-/**
+﻿/*
  * TerraFusion.StreamingAnalytics Microservice
  *
  * Real-time streaming analytics service for TerraFlow Quantum Command Center.

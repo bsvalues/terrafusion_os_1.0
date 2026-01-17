@@ -1,4 +1,4 @@
-/**
+﻿/*
  * QuantumNotebookRepository Implementation
  *
  * Concrete implementation of IQuantumNotebookRepository using Entity Framework Core.

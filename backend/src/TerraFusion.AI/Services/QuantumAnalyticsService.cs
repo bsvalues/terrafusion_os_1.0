@@ -1,4 +1,4 @@
-/**
+﻿/*
  * QuantumAnalyticsService Implementation
  *
  * Service implementation for quantum analytics operations.

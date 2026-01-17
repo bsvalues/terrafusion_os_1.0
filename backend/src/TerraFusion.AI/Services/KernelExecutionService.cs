@@ -1,4 +1,4 @@
-/**
+﻿/*
  * KernelExecutionService - Code Execution with Streaming Output
  *
  * Production-ready service for executing code cells with streaming output,

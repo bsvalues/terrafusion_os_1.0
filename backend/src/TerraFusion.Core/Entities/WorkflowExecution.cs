@@ -1,4 +1,4 @@
-/**
+﻿/*
  * WorkflowExecution Entity
  *
  * Tracks individual workflow execution runs with status, timing, and results.

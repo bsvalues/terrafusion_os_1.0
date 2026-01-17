@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - RESEARCH ANALYTICS API CONTROLLER
  * Elite PhD-Level Research Environment Backend Services

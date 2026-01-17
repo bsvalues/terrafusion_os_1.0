@@ -8,10 +8,8 @@ using Microsoft.Extensions.Logging;
 
 namespace TerraFusion.API.Services
 {
-  /// <summary>
-  /// 🚀 QUANTUM COGNITIVE DATA STRUCTURES - TIER 5+ Quantum Computing Infrastructure
-  /// Revolutionary quantum data structures supporting quantum-enhanced cognitive processing
-  /// </summary>
+  // 🚀 QUANTUM COGNITIVE DATA STRUCTURES - TIER 5+ Quantum Computing Infrastructure
+  // Revolutionary quantum data structures supporting quantum-enhanced cognitive processing
 
   #region Quantum Task Models
 

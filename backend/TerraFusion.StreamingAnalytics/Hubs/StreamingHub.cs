@@ -1,4 +1,4 @@
-/**
+﻿/*
  * StreamingHub
  *
  * SignalR hub for real-time metric streaming and live data visualization.

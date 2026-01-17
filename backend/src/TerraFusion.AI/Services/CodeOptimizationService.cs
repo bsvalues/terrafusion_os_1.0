@@ -1,4 +1,4 @@
-/**
+﻿/*
  * CodeOptimizationService - Automated Code Optimization Engine
  *
  * Production-ready service providing automated code optimization suggestions,

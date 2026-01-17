@@ -1,4 +1,4 @@
-/**
+﻿/*
  * DocumentationGeneratorService - Intelligent Code Documentation Engine
  *
  * Production-ready service providing automatic documentation generation,
