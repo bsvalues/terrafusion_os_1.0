@@ -72,15 +72,11 @@ jobs:
             exit $EXIT_CODE
           fi
 
-          # If chain passed, capture pure JSON snapshot for artifact
-          # (ci:governance print output is mixed with other pnpm logs)
-          node scripts/ci/governanceSentinel.js > governance-snapshot.json
-
           echo "## ✅ GOVERNANCE_OK" >> $GITHUB_STEP_SUMMARY
           echo "All governance checks passed." >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Governance Snapshot
-        if: success()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: governance-snapshot-${{ github.run_id }}

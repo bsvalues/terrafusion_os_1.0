@@ -155,6 +155,11 @@ export function validate(contract, protection) {
  * @returns {SentinelResult}
  */
 export function runSentinel(repoRoot = process.cwd()) {
+  // Failpoint for contract testing failure paths
+  if (process.env.TF_GOV_FAILPOINT === '1') {
+    throw new Error('FAILPOINT: forced failure for contract test');
+  }
+
   // Load contract
   const contract = loadContract(repoRoot);
 
