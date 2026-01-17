@@ -29,8 +29,10 @@ describe('Governance Snapshot Content Contract', () => {
       const bp = snapshot.branchProtection;
       const requiredChecks = bp.required_status_checks || [];
 
-      // Scope Drift Guard must be present
-      expect(requiredChecks).toContain('scope-drift-guard');
+      // Required checks (Order-independent set)
+      expect(requiredChecks).toEqual(
+        expect.arrayContaining(['scope-drift-guard', 'governance-proof'])
+      );
 
       // Strict mode
       expect(bp.strict).toBe(true);

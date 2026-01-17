@@ -120,12 +120,13 @@ export function validate(contract, protection) {
   const actualChecks = protection.required_status_checks?.contexts ?? [];
   const expectedChecks = contract.expected.required_status_checks;
 
-  for (const check of expectedChecks) {
-    if (!actualChecks.includes(check)) {
-      reasons.push(
-        `MISSING_REQUIRED_CHECK: "${check}" not in required contexts [${actualChecks.join(', ')}]`
-      );
-    }
+  // Validate as sets (exact match not required, but strict subset enforcement)
+  const missingChecks = expectedChecks.filter(c => !actualChecks.includes(c));
+
+  if (missingChecks.length > 0) {
+    reasons.push(
+      `MISSING_REQUIRED_CHECKS: Missing [${missingChecks.join(', ')}]. Actual: [${actualChecks.join(', ')}]`
+    );
   }
 
   // Check: Strict mode
