@@ -264,15 +264,15 @@ namespace TerraFusion.API.Services
         }
 
         public async Task<bool> ProcessRequestAsync(object request)
-        {await Task.CompletedTask;
+        {
+            await Task.CompletedTask;
             // Handle GIS-specific requests (mapping, spatial analysis, etc.)
             return true;
         }
 
         public async Task<bool> ShutdownAsync()
         {
-            await Task.CompletedTask;ublic async Task<bool> ShutdownAsync()
-        {
+            await Task.CompletedTask;
             Status = ConfigModels.ModuleStatus.Stopped;
             return true;
         }
@@ -298,9 +298,9 @@ namespace TerraFusion.API.Services
         public string ModuleName => "Levy Management Module";
         public ConfigModels.ModuleStatus Status { get; private set; } = ConfigModels.ModuleStatus.Initializing;
 
-        publawait Task.CompletedTask;
-            ic async Task<bool> InitializeAsync()
+        public async Task<bool> InitializeAsync()
         {
+            await Task.CompletedTask;
             _logger.LogInformation("💰 Initializing Levy Management Module");
 
             // Initialize tax calculation engines, compliance validators, financial processors
@@ -309,7 +309,10 @@ namespace TerraFusion.API.Services
             _logger.LogInformation("✅ Levy Management Module Initialized Successfully");
             return true;
         }
-await Task.CompletedTask;
+
+        public async Task<bool> ProcessRequestAsync(object request)
+        {
+            await Task.CompletedTask;
             // Handle levy management requests (tax calculations, exemptions, etc.)
             return true;
         }
@@ -317,9 +320,6 @@ await Task.CompletedTask;
         public async Task<bool> ShutdownAsync()
         {
             await Task.CompletedTask;
-
-        public async Task<bool> ShutdownAsync()
-        {
             Status = ConfigModels.ModuleStatus.Stopped;
             return true;
         }
@@ -344,10 +344,10 @@ await Task.CompletedTask;
         public string ModuleId => "valuation-tools";
         public string ModuleName => "Property Valuation Tools";
         public ConfigModels.ModuleStatus Status { get; private set; } = ConfigModels.ModuleStatus.Initializing;
-await Task.CompletedTask;
-            
+
         public async Task<bool> InitializeAsync()
         {
+            await Task.CompletedTask;
             _logger.LogInformation("🏠 Initializing Property Valuation Tools Module");
 
             // Initialize valuation engines, IAAO compliance validators, quantum algorithms
@@ -355,18 +355,18 @@ await Task.CompletedTask;
 
             _logger.LogInformation("✅ Property Valuation Tools Module Initialized Successfully");
             return true;
-        }await Task.CompletedTask;
+        }
+
+        public async Task<bool> ProcessRequestAsync(object request)
+        {
+            await Task.CompletedTask;
             // Handle property valuation requests
             return true;
         }
 
         public async Task<bool> ShutdownAsync()
         {
-            await Task.CompletedTask;   return true;
-        }
-
-        public async Task<bool> ShutdownAsync()
-        {
+            await Task.CompletedTask;
             Status = ConfigModels.ModuleStatus.Stopped;
             return true;
         }
