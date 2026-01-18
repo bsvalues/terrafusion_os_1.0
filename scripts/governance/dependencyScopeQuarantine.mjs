@@ -9,7 +9,33 @@ const CONFIG = {
   logPath: path.resolve('ci_dependency_scope_quarantine.log'),
   baselinePath: path.resolve('scripts/governance/dependency-scope-quarantine-baseline.json'),
   budgetPath: path.resolve('scripts/governance/dependency-scope-quarantine-budget.json'),
+  promotionsDir: path.resolve('governance/dependency-scope/promotions'),
 };
+
+/**
+ * Loads valid promotions from JSON files in the promotions directory.
+ */
+function loadPromotions() {
+    const promotions = {};
+    if (!fs.existsSync(CONFIG.promotionsDir)) return promotions;
+
+    const files = fs.readdirSync(CONFIG.promotionsDir).filter(f => f.endsWith('.json'));
+    for (const file of files) {
+        try {
+            const content = JSON.parse(fs.readFileSync(path.join(CONFIG.promotionsDir, file), 'utf8'));
+            if (content.promotions && Array.isArray(content.promotions)) {
+                for (const promo of content.promotions) {
+                    if (promo.package && promo.target) {
+                        promotions[promo.package] = promo.target;
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn(`[Warning] Failed to load promotions from ${file}: ${e.message}`);
+        }
+    }
+    return promotions;
+}
 
 /**
  * Parses the DEPENDENCY_SCOPE_REPORT.md content.
@@ -17,6 +43,9 @@ const CONFIG = {
  * @returns {{ totals: Record<string, number>, samples: Array<any> }}
  */
 export function parseReport(content) {
+  const promotions = loadPromotions();
+  console.log(`[Quarantine] Loaded ${Object.keys(promotions).length} promotion rules.`);
+
   const lines = content.split(/\r?\n/);
   const samples = [];
   const totals = {};
@@ -44,9 +73,17 @@ export function parseReport(content) {
       // Format: - Name -> Category (local=X; total=Y; wiring=Z)
       const match = line.match(/- (.*?) -> (.*?) \(local=(\d+); total=(\d+); wiring=(.*?)\)/);
       if (match) {
+        const pkgName = match[1];
+        let bucket = match[2];
+        
+        // Apply Promotion Rule
+        if (promotions[pkgName]) {
+            bucket = promotions[pkgName];
+        }
+
         samples.push({
-          package: match[1],
-          bucket: match[2],
+          package: pkgName,
+          bucket: bucket,
           localUsage: parseInt(match[3], 10),
           totalUsage: parseInt(match[4], 10),
           wiring: match[5],
@@ -54,7 +91,18 @@ export function parseReport(content) {
       }
     }
   }
-  return { totals, samples };
+
+  // Recalculate totals based on active buckets (since promotions override original report totals)
+  const newTotals = {};
+  samples.forEach(s => {
+      newTotals[s.bucket] = (newTotals[s.bucket] || 0) + 1;
+  });
+  // Note: Only samples are fully available in the report "Top Evidence Samples" section. 
+  // We assume the Totals section acts as a summary, BUT since we are reclassifying,
+  // we must rely on the samples list for our Quarantine Inventory.
+  // The 'totals' returned here is the recalculation based on parsed samples.
+
+  return { totals: newTotals, samples };
 }
 
 /**
