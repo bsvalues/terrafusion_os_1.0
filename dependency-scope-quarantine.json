@@ -1,0 +1,126 @@
+{
+  "generatedAt": "2026-01-18T01:44:19.040Z",
+  "totalQuarantine": 140,
+  "items": [
+    {
+      "package": "_CLEAN_BUILD_ZONE",
+      "bucket": "QUARANTINE",
+      "localUsage": 3,
+      "totalUsage": 4,
+      "wiring": "none"
+    },
+    {
+      "package": "_pre_restore_safety_20260108_144218",
+      "bucket": "QUARANTINE",
+      "localUsage": 0,
+      "totalUsage": 0,
+      "wiring": "none"
+    },
+    {
+      "package": ".ai",
+      "bucket": "QUARANTINE",
+      "localUsage": 0,
+      "totalUsage": 0,
+      "wiring": "kernel-gateway-ref"
+    },
+    {
+      "package": ".ci_artifacts_local",
+      "bucket": "QUARANTINE",
+      "localUsage": 0,
+      "totalUsage": 0,
+      "wiring": "none"
+    },
+    {
+      "package": "agents/terrafusion-phd-systems-agent",
+      "bucket": "QUARANTINE",
+      "localUsage": 2,
+      "totalUsage": 3,
+      "wiring": "none"
+    },
+    {
+      "package": "ai-workspace-companion",
+      "bucket": "QUARANTINE",
+      "localUsage": 2,
+      "totalUsage": 3,
+      "wiring": "none"
+    },
+    {
+      "package": "applications/bcbs-gis-pro-production",
+      "bucket": "QUARANTINE",
+      "localUsage": 5,
+      "totalUsage": 6,
+      "wiring": "none"
+    },
+    {
+      "package": "applications/bcbs-webhub-production",
+      "bucket": "QUARANTINE",
+      "localUsage": 3,
+      "totalUsage": 4,
+      "wiring": "none"
+    },
+    {
+      "package": "applications/bs-income-valuation-production",
+      "bucket": "QUARANTINE",
+      "localUsage": 3,
+      "totalUsage": 4,
+      "wiring": "none"
+    },
+    {
+      "package": "applications/costforge-ai",
+      "bucket": "QUARANTINE",
+      "localUsage": 3,
+      "totalUsage": 4,
+      "wiring": "none"
+    },
+    {
+      "package": "applications/mcp-servers-production",
+      "bucket": "QUARANTINE",
+      "localUsage": 5,
+      "totalUsage": 6,
+      "wiring": "none"
+    },
+    {
+      "package": "applications/terra-agent-production",
+      "bucket": "QUARANTINE",
+      "localUsage": 3,
+      "totalUsage": 4,
+      "wiring": "none"
+    },
+    {
+      "package": "BS_PACS",
+      "bucket": "QUARANTINE",
+      "localUsage": 2,
+      "totalUsage": 3,
+      "wiring": "none"
+    },
+    {
+      "package": "CONSOLIDATED_20250915_062012",
+      "bucket": "QUARANTINE",
+      "localUsage": 2,
+      "totalUsage": 3,
+      "wiring": "none"
+    },
+    {
+      "package": "Dev - Copy",
+      "bucket": "QUARANTINE",
+      "localUsage": 5,
+      "totalUsage": 7,
+      "wiring": "none"
+    },
+    {
+      "package": "Dev - Copy (2)",
+      "bucket": "QUARANTINE",
+      "localUsage": 5,
+      "totalUsage": 7,
+      "wiring": "none"
+    },
+    {
+      "package": "TerraFusion_Command_Portal_Starter",
+      "bucket": "QUARANTINE",
+      "localUsage": 8,
+      "totalUsage": 10,
+      "wiring": "none"
+    }
+  ],
+  "hash": "468159f6ceb567ac59ac83d2a50e51decf4e7ac8dfe5f57f5d56578f9d018078"
+}
