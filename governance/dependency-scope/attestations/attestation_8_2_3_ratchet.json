@@ -1,0 +1,11 @@
+{
+  "id": "ATT-8.2.3.1",
+  "date": "2026-01-18",
+  "author": "GitHub Copilot",
+  "action": "RATCHET_BASELINE",
+  "rationale": "Ratcheting down quarantine baseline to 0 after successful safe promotions of Dev tranche.",
+  "metrics": {
+    "fromCount": 140,
+    "toCount": 0
+  }
+}

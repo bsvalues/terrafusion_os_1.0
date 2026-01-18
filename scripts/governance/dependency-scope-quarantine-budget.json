@@ -1,4 +1,4 @@
 {
   "maxNewQuarantineItems": 0,
-  "allowDrift": true
+  "allowDrift": false
 }
