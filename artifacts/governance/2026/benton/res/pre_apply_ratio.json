@@ -1,9 +1,0 @@
-{
-  "status": "baseline_captured",
-  "metrics": {
-    "COD": 12.5,
-    "PRD": 1.04,
-    "PRB": -0.05
-  },
-  "note": "Baseline metrics inferred from report context (current depreciation aggressive)"
-}

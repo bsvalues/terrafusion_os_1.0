@@ -1,4 +1,4 @@
-﻿/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - CODEX 3-6-9 AI AGENT INTEGRATION
  * 1,008 AI Agents Operating in Divine Balance

@@ -1,4 +1,4 @@
-/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * WORKFLOW AUTOMATION CONTROLLER - REST API
  * TerraFusion OS Workflow API Gateway

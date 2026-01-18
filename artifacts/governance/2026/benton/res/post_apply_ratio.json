@@ -1,9 +1,0 @@
-{
-  "status": "projected",
-  "metrics": {
-    "COD": 11.8,
-    "PRD": 1.01,
-    "PRB": -0.01
-  },
-  "note": "Projected improvement based on Table 2 calibration curves"
-}

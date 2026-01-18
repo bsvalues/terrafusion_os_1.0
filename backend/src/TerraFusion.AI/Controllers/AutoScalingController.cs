@@ -1,4 +1,4 @@
-﻿/*
+/**
  * AutoScalingController - REST API for Auto-Scaling and Workload Distribution
  *
  * Provides comprehensive endpoints for:

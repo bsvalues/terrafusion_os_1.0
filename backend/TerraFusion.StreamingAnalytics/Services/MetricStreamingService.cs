@@ -1,4 +1,4 @@
-﻿/*
+/**
  * MetricStreamingService
  *
  * Implementation of real-time metric streaming service.

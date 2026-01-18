@@ -1,4 +1,4 @@
-/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - QUANTUM METRICS BACKGROUND SERVICE
  * Real-time Government Operations Broadcasting Service

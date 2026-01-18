@@ -1,4 +1,4 @@
-﻿/*
+/**
  * WorkloadDistributionService - Intelligent Workload Distribution Engine
  *
  * Provides advanced workload distribution capabilities:

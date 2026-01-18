@@ -1,4 +1,4 @@
-/*
+/**
  * QuantumAnalyticsController
  *
  * API controller for quantum analytics operations including notebooks,

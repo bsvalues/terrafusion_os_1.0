@@ -1,4 +1,4 @@
-﻿/*
+/**
  * AIOrchestrationController - REST API for AI Swarm Orchestration
  *
  * Provides endpoints for orchestration status, agent performance, task distribution,

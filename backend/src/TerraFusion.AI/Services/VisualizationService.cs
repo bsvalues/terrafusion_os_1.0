@@ -1,4 +1,4 @@
-﻿/*
+/**
  * VisualizationService - Intelligent Data Visualization Engine
  *
  * Production-ready service providing automatic visualization type detection,

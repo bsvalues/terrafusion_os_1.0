@@ -1,4 +1,4 @@
-/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - LEVY CALCULATION CONTROLLER
  * Championship-Level Tax Levy Rate Calculation with Quantum Optimization
@@ -29,8 +29,8 @@ namespace TerraFusion.API.Controllers;
 /// - Revenue projection with confidence intervals
 /// 
 /// Research Foundation:
-/// - Public Finance Theory (Musgrave &amp; Musgrave, 1989)
-/// - Tax Policy Analysis (Rosen &amp; Gayer, 2014)
+/// - Public Finance Theory (Musgrave & Musgrave, 1989)
+/// - Tax Policy Analysis (Rosen & Gayer, 2014)
 /// - Washington State Tax Law (RCW 84.52, 84.55)
 /// </summary>
 [ApiController]

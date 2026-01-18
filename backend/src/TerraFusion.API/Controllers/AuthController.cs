@@ -144,7 +144,6 @@ public class AuthController : ControllerBase
     {
         try
         {
-            await Task.CompletedTask;
             var email = User.FindFirst("email")?.Value;
             var roles = User.FindAll("role").Select(c => c.Value).ToArray();
 

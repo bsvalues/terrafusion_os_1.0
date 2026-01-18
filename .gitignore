@@ -517,12 +517,3 @@ native-shell/ui/dist/
 
 # generated benchmark output
 quantum_performance_results.json
-
-# Local CI Artifacts (Governance/Determinism)
-governance-snapshot.json
-governance-renovate-scope-snapshot.json
-ci_governance_proof.log
-ci_determinism.log
-.ci_artifacts_local/
-
-dotnet-warning-taxonomy.json

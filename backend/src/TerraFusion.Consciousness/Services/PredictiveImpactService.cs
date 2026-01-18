@@ -12,6 +12,7 @@ using System.Collections.Concurrent;
 namespace TerraFusion.Consciousness.Services;
 
 /// <summary>
+/// <summary>
 /// Predictive Impact Service using ML.NET for parameter impact forecasting
 ///
 /// ML Architecture:

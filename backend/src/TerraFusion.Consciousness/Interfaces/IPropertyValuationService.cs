@@ -1,4 +1,4 @@
-﻿/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * PROPERTY VALUATION SERVICE INTERFACE
  * TerraFusion.Consciousness - Property Assessment AI

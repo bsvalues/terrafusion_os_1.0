@@ -1,4 +1,4 @@
-/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - SHARED DATA TRANSFER OBJECTS
  * References canonical DTOs from TerraFusion.Abstractions

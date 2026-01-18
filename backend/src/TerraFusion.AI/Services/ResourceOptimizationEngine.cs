@@ -1,4 +1,4 @@
-﻿/*
+/**
  * ResourceOptimizationEngine - Advanced Resource Optimization System
  *
  * Provides intelligent resource optimization capabilities:

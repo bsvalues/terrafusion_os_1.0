@@ -1,4 +1,4 @@
-﻿/*
+/**
  * AIErrorPredictionService - Predictive Error Analysis
  *
  * Production-ready AI service that analyzes code before execution to predict

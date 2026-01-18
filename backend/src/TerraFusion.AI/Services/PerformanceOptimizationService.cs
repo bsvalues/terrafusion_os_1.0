@@ -1,4 +1,4 @@
-﻿/*
+/**
  * PerformanceOptimizationService - Enterprise Performance Optimization & Intelligent Caching
  *
  * Advanced performance optimization platform with intelligent caching strategies,
