@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base"],
+  "includePaths": [
+    "package.json",
+    "pnpm-workspace.yaml",
+    "frontend/**",
+    "tools/**",
+    "backend/**",
+    "SDK/**",
+    "os-platform/**",
+    "terrabuild-modernization/**",
+    ".github/workflows/**"
+  ],
+  "ignorePaths": [
+    "DEPENDENCY_SCOPE_*.json",
+    "DEPENDENCY_SCOPE_REPORT.md",
+    "**/node_modules/**"
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "description": "Automerge non-major updates to keep noise low, but subject to branch protection"
+    }
+  ],
+  "dependencyDashboard": true,
+  "rangeStrategy": "pin"
+}

@@ -1,0 +1,44 @@
+{
+  "id": "INCREMENT_8_4_1_PLUGIN",
+  "description": "Promotion of 20 low-risk application modules to PLUGIN scope",
+  "promotions": [
+    { "package": "applications/terra-assessor-production", "target": "PLUGIN" },
+    {
+      "package": "applications/terra-assistant-production",
+      "target": "PLUGIN"
+    },
+    { "package": "applications/terra-build-actual", "target": "PLUGIN" },
+    {
+      "package": "applications/terra-build-actual-backup-20251103-185401",
+      "target": "PLUGIN"
+    },
+    {
+      "package": "applications/terra-build-actual-backup-20251103-191224",
+      "target": "PLUGIN"
+    },
+    {
+      "package": "applications/terra-dashboard-production",
+      "target": "PLUGIN"
+    },
+    { "package": "applications/terra-flow-production", "target": "PLUGIN" },
+    { "package": "applications/terra-gama-production", "target": "PLUGIN" },
+    { "package": "applications/terra-levy", "target": "PLUGIN" },
+    { "package": "applications/terra-miner-production", "target": "PLUGIN" },
+    { "package": "applications/terra-pilt-production", "target": "PLUGIN" },
+    { "package": "applications/terra-playground-main", "target": "PLUGIN" },
+    {
+      "package": "applications/terra-playground-production",
+      "target": "PLUGIN"
+    },
+    {
+      "package": "applications/terra-primeview-production",
+      "target": "PLUGIN"
+    },
+    { "package": "applications/terra-pro-production", "target": "PLUGIN" },
+    { "package": "applications/terra-prof-production", "target": "PLUGIN" },
+    { "package": "applications/terra-proplus-production", "target": "PLUGIN" },
+    { "package": "applications/terra-sync-production", "target": "PLUGIN" },
+    { "package": "applications/terra-v0demo-production", "target": "PLUGIN" },
+    { "package": "applications/valuator-pro-studio", "target": "PLUGIN" }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "increment": "8.4.6",
+  "name": "Validation & Tooling Promotion",
+  "description": "Promoting development workspaces, agents, and local tooling environments to CORE_OS_TOOLING.",
+  "promotions": [
+    {
+      "package": ".venv",
+      "target": "CORE_OS_TOOLING",
+      "justification": "Local python virtual environment root."
+    },
+    {
+      "package": "ai-workspace-companion",
+      "target": "CORE_OS_TOOLING",
+      "justification": "Developer productivity sidecar tool."
+    },
+    {
+      "package": "workspace-explorer",
+      "target": "CORE_OS_TOOLING",
+      "justification": "IDE extension for workspace navigation."
+    },
+    {
+      "package": "workspaces/workspaces",
+      "target": "CORE_OS_TOOLING",
+      "justification": "VS Code multi-root workspace definitions."
+    },
+    {
+      "package": "agents/terrafusion-phd-systems-agent",
+      "target": "CORE_OS_TOOLING",
+      "justification": "Development-time automated agent."
+    },
+    {
+      "package": "terrafusion-native-shell",
+      "target": "CORE_OS_TOOLING",
+      "justification": "Local CLI entry point for OS operations."
+    },
+    {
+      "package": "consciousness-isolated-workspace",
+      "target": "CORE_OS_TOOLING",
+      "justification": "Isolated development environment definition."
+    },
+    {
+      "package": "costforge-ai-workspace",
+      "target": "CORE_OS_TOOLING",
+      "justification": "Isolated development environment definition."
+    },
+    {
+      "package": "TerraFusion_Command_Portal_Starter",
+      "target": "PLUGIN",
+      "justification": "Scaffold/Template for command portal."
+    }
+  ]
+}

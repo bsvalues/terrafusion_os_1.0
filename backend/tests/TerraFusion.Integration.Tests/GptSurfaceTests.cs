@@ -1,4 +1,4 @@
-/**
+﻿/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION GPT SURFACE INTEGRATION TESTS
  * Elite Government AI Assistant Platform Validation

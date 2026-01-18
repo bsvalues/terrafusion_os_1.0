@@ -1,4 +1,4 @@
-/**
+﻿/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - MINIMAL ELITE EXPERIMENTS PROGRAM
  * Quantum Consciousness Research Bootstrap - Simplified

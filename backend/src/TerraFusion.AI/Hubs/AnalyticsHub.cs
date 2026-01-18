@@ -1,4 +1,4 @@
-/**
+﻿/*
  * AnalyticsHub - Real-Time Analytics Updates
  *
  * SignalR hub for streaming analysis results, live data updates,

@@ -1,4 +1,4 @@
-/**
+﻿/*
  * CollaborationHub - Multi-User Collaboration Management
  *
  * SignalR hub for multi-user sessions, presence tracking,

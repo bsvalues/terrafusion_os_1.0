@@ -1,4 +1,4 @@
-/**
+﻿/*
  * IAnalysisResultRepository Interface
  *
  * Repository interface for AnalysisResult entity data access.

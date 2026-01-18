@@ -1,4 +1,4 @@
-/**
+﻿/*
  * ═══════════════════════════════════════════════════════════════
  * TEST MODELS - Stub Types for Integration Tests
  * TerraFusion.AI - Elite Government AI Integration

@@ -1,4 +1,4 @@
-/**
+﻿/*
  * ═══════════════════════════════════════════════════════════════
  * AI MESSAGE MODELS - Request/Response DTOs
  * TerraFusion.AI - Elite Government AI Integration

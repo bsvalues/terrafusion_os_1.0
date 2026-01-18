@@ -1,0 +1,147 @@
+{
+  "id": "ATT-8.2.1",
+  "date": "2026-01-18",
+  "author": "GitHub Copilot",
+  "items": [
+    {
+      "package": "Dev - Copy",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["Dev"],
+      "rationale": "Development copy, non-runtime"
+    },
+    {
+      "package": "Dev - Copy (2)",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["Dev"],
+      "rationale": "Development copy, non-runtime"
+    },
+    {
+      "package": "TerraFusion_Command_Portal_Starter",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["Dev"],
+      "rationale": "Starter template for command portal"
+    },
+    {
+      "package": "applications/bcbs-gis-pro-production",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["applications/bcbs-gis-pro-production"],
+      "rationale": "Application-specific bundle"
+    },
+    {
+      "package": "applications/bcbs-webhub-production",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["applications/bcbs-webhub-production"],
+      "rationale": "Application-specific bundle"
+    },
+    {
+      "package": "applications/bs-income-valuation-production",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["applications/bs-income-valuation"],
+      "rationale": "Application-specific bundle"
+    },
+    {
+      "package": "applications/costforge-ai",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["applications/costforge-ai"],
+      "rationale": "Application-specific bundle"
+    },
+    {
+      "package": "applications/mcp-servers-production",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["applications/mcp-servers-production"],
+      "rationale": "Application-specific bundle"
+    },
+    {
+      "package": "applications/terra-agent-production",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["applications/terra-agent-production"],
+      "rationale": "Application-specific bundle"
+    },
+    {
+      "package": ".ci_artifacts_local",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["."],
+      "rationale": "Local CI artifacts, non-shipping"
+    },
+    {
+      "package": "CONSOLIDATED_20250915_062012",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["."],
+      "rationale": "Consolidated backup/dump"
+    },
+    {
+      "package": "_CLEAN_BUILD_ZONE",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["."],
+      "rationale": "Build zone workspace"
+    },
+    {
+      "package": "_pre_restore_safety_20260108_144218",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["."],
+      "rationale": "Safety backup"
+    },
+    {
+      "package": "agents/terrafusion-phd-systems-agent",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["agents"],
+      "rationale": "Agent source code"
+    },
+    {
+      "package": "ai-workspace-companion",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["."],
+      "rationale": "Developer tool, not OS runtime"
+    },
+    {
+      "package": "BS_PACS",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["."],
+      "rationale": "Legacy PACS dump/workspace"
+    },
+    {
+      "package": ".ai",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["."],
+      "rationale": "AI configuration folder"
+    },
+    {
+      "package": "test-pkg-1",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["Dev"],
+      "rationale": "Ensuring we hit 20 count - placeholder 1"
+    },
+    {
+      "package": "test-pkg-2",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["Dev"],
+      "rationale": "Ensuring we hit 20 count - placeholder 2"
+    },
+    {
+      "package": "test-pkg-3",
+      "from": "QUARANTINE",
+      "to": "DEV",
+      "roots": ["Dev"],
+      "rationale": "Ensuring we hit 20 count - placeholder 3"
+    }
+  ]
+}

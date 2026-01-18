@@ -1,0 +1,115 @@
+# Governance Sentinel
+# Detects drift in branch protection settings against the declared governance contract.
+# Runs on schedule and when workflow/governance files change.
+# Validates full scope integrity via ci:governance-proof before ensuring Github settings.
+
+name: governance-sentinel
+
+on:
+  schedule:
+    # Daily at 09:00 UTC
+    - cron: '0 9 * * *'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'docs/ci/GOVERNANCE_CONTRACT.json'
+      - 'docs/ci/GOVERNANCE_LOCK_RUNBOOK.md'
+      - 'scripts/ci/governanceSentinel.js'
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'docs/ci/GOVERNANCE_CONTRACT.json'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual run'
+        required: false
+        default: 'Manual governance audit'
+
+permissions:
+  contents: read
+
+jobs:
+  governance-sentinel:
+    name: governance-sentinel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Install pnpm (no version pinning to satisfy preflight)
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+
+      - name: Verify Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Governance Proof
+        id: proof
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          # Run the full proof chain
+          echo "::group::Governance Proof Chain"
+          pnpm run ci:governance-proof:log
+          EXIT_CODE=$?
+          echo "::endgroup::"
+
+          # Display the log for debugging
+          cat ci_governance_proof.log
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "## ❌ GOVERNANCE_PROOF_FAIL" >> $GITHUB_STEP_SUMMARY
+            echo "Full governance proof chain failed." >> $GITHUB_STEP_SUMMARY
+            exit $EXIT_CODE
+          fi
+
+          echo "## ✅ GOVERNANCE_OK" >> $GITHUB_STEP_SUMMARY
+          echo "All governance checks passed." >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Governance Snapshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-snapshot-${{ github.run_id }}
+          path: governance-snapshot.json
+          retention-days: 90
+
+      - name: Upload Proof Log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: proof-log-${{ github.run_id }}
+          path: ci_governance_proof.log
+          retention-days: 90
+
+      - name: Upload Determinism Audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: determinism-log-${{ github.run_id }}
+          path: ci_determinism.log
+          retention-days: 90
+
+      - name: Upload Renovate Audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: renovate-audit-${{ github.run_id }}
+          path: |
+            ci_renovate_scope.log
+            governance-renovate-scope-snapshot.json
+          retention-days: 90
+
+      - name: Annotate on Drift
+        if: failure()
+        run: |
+          echo "::error file=docs/ci/GOVERNANCE_CONTRACT.json::Governance drift detected! Branch protection does not match contract. See workflow logs for details."

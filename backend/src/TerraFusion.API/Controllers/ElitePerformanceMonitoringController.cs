@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - ELITE PERFORMANCE MONITORING CONTROLLER
  * Championship-Level Performance Analytics API

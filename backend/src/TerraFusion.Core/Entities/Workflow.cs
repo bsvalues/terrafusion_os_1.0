@@ -1,4 +1,4 @@
-/**
+﻿/*
  * Workflow Entity
  *
  * Represents a visual workflow for AI agent orchestration and data processing.

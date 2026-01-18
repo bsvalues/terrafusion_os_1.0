@@ -1,4 +1,4 @@
-/**
+﻿/*
  * IMetricStreamingService Interface
  *
  * Service interface for real-time metric streaming.

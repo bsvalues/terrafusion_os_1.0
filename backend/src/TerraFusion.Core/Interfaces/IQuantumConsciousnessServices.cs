@@ -1,4 +1,4 @@
-/**
+﻿/*
  * TerraFusion Core Interfaces for Quantum Consciousness System
  * 
  * Elite interface definitions for PhD-level quantum consciousness research

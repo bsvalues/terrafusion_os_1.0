@@ -165,9 +165,9 @@ namespace TerraFusion.CostForge.Middleware
         }
     }
 
-    /// <summary>
-    /// Ultimate performance monitoring middleware
-    /// </summary>
+    // <summary>
+    // Ultimate performance monitoring middleware
+    // </summary>
     // public class UltimatePerformanceMonitoringMiddleware
     // {
     //     private readonly RequestDelegate _next;

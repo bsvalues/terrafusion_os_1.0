@@ -1,4 +1,4 @@
-/**
+﻿/*
  * TestDbContextFactory
  *
  * Factory for creating test database contexts with proper IConfiguration mock.

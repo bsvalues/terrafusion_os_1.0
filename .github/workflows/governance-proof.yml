@@ -1,0 +1,93 @@
+# Governance Proof
+# Required PR Gate.
+# Enforces system determinism, scope integrity, and governance compliance on every PR.
+# This workflow must pass before merging to protected branches.
+
+name: governance-proof
+
+on:
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  governance-proof:
+    name: governance-proof
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Install pnpm (no version pinning to satisfy preflight)
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+
+      - name: Verify Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Governance Proof
+        id: proof
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          # Run the full proof chain
+          echo "::group::Governance Proof Chain"
+          pnpm run ci:governance-proof:log
+          EXIT_CODE=$?
+          echo "::endgroup::"
+
+          # Display the log for debugging
+          cat ci_governance_proof.log
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "## ❌ GOVERNANCE_PROOF_FAIL" >> $GITHUB_STEP_SUMMARY
+            echo "Full governance proof chain failed." >> $GITHUB_STEP_SUMMARY
+            exit $EXIT_CODE
+          fi
+
+          echo "## ✅ GOVERNANCE_OK" >> $GITHUB_STEP_SUMMARY
+          echo "All governance checks passed." >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Governance Snapshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-snapshot-${{ github.run_id }}
+          path: governance-snapshot.json
+          retention-days: 90
+
+      - name: Upload Proof Log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: proof-log-${{ github.run_id }}
+          path: ci_governance_proof.log
+          retention-days: 90
+
+      - name: Upload Determinism Audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: determinism-log-${{ github.run_id }}
+          path: ci_determinism.log
+          retention-days: 90
+
+      - name: Upload Renovate Audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: renovate-audit-${{ github.run_id }}
+          path: |
+            ci_renovate_scope.log
+            governance-renovate-scope-snapshot.json
+          retention-days: 90

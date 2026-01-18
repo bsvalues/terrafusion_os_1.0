@@ -7,12 +7,13 @@ ARCH_ANCHOR: 9af5bb291
 - CORE_OS_RUNTIME: 16
 - CORE_OS_TOOLING: 5
 - GEN2_APPS: 6
-- QUARANTINE: 140
+- QUARANTINE: 141
 
 ## Top Evidence Samples
 - . -> CORE_OS_TOOLING (local=4; total=6; wiring=none)
 - .ai -> QUARANTINE (local=0; total=0; wiring=kernel-gateway-ref)
 - .ci_artifacts_local -> QUARANTINE (local=0; total=0; wiring=none)
+- .venv -> QUARANTINE (local=0; total=0; wiring=none)
 - BS_PACS -> QUARANTINE (local=2; total=3; wiring=none)
 - CONSOLIDATED_20250915_062012 -> QUARANTINE (local=2; total=3; wiring=none)
 - Dev -> CORE_OS_RUNTIME (local=8; total=16; wiring=kernel-gateway-ref,os-shell-mount-ref)
@@ -29,4 +30,3 @@ ARCH_ANCHOR: 9af5bb291
 - applications/bs-income-valuation-production -> QUARANTINE (local=3; total=4; wiring=none)
 - applications/costforge-ai -> QUARANTINE (local=3; total=4; wiring=none)
 - applications/mcp-servers-production -> QUARANTINE (local=5; total=6; wiring=none)
-- applications/terra-agent-production -> QUARANTINE (local=3; total=4; wiring=none)

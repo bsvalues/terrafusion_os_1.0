@@ -1,4 +1,4 @@
-/**
+﻿/*
  * AdvancedMonitoringService - Enterprise Monitoring & Observability Engine
  *
  * Production-grade monitoring with Prometheus-style metrics, real-time system tracking,

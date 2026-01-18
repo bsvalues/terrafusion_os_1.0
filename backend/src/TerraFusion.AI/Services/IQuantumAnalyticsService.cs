@@ -1,4 +1,4 @@
-/**
+﻿/*
  * IQuantumAnalyticsService Interface
  *
  * Service interface for quantum analytics operations including notebooks,

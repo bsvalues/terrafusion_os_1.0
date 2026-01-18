@@ -1,4 +1,4 @@
-/**
+﻿/*
  * ═══════════════════════════════════════════════════════════════
  * AI ASSISTANT SERVICE - Backend Consciousness Coordination
  * TerraFusion.AI - Elite Government AI Integration

@@ -1,4 +1,4 @@
-/**
+﻿/*
  * IAgentTelemetryService Interface
  *
  * Service interface for AI agent telemetry collection and streaming.

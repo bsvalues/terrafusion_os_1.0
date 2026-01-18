@@ -1,0 +1,13 @@
+{
+  "id": "attestation_8_4_4_plugin",
+  "trancheId": "INCREMENT_8_4_4_PLUGIN",
+  "rationale": "Promotion of 20 remaining workspace shells to PLUGIN scope. These are non-code organizational containers.",
+  "counts": {
+    "before": 81,
+    "after": 61
+  },
+  "artifacts": [
+    "dependency-scope-quarantine.json",
+    "scripts/governance/promotions/INCREMENT_8_4_4_PLUGIN.json"
+  ]
+}

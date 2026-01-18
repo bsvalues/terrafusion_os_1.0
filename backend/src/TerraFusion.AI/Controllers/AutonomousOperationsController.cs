@@ -1,4 +1,4 @@
-/**
+﻿/*
  * AutonomousOperationsController - REST API for Autonomous Operations
  *
  * Provides endpoints for autonomous operations monitoring and management:

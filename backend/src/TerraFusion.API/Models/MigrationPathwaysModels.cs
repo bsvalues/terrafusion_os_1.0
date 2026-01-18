@@ -2,13 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TerraFusion.API.Models
 {
-    /// <summary>
-    /// COUNTY MIGRATION PATHWAYS MODELS: Comprehensive Data Models
-    ///
-    /// These sophisticated models support zero-disruption county migration from Harris PACS
-    /// to pure TerraFusion OS with predictive analytics, rollback capabilities, and
-    /// comprehensive progress tracking.
-    /// </summary>
+    // <summary>
+    // COUNTY MIGRATION PATHWAYS MODELS: Comprehensive Data Models
+    //
+    // These sophisticated models support zero-disruption county migration from Harris PACS
+    // to pure TerraFusion OS with predictive analytics, rollback capabilities, and
+    // comprehensive progress tracking.
+    // </summary>
 
     #region Migration Assessment Models
 

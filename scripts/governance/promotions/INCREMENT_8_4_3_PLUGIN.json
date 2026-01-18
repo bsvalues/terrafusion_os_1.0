@@ -1,0 +1,26 @@
+{
+  "id": "INCREMENT_8_4_3_PLUGIN",
+  "description": "Promotion of 20 low-risk workspace shells to PLUGIN scope (Tranche 3)",
+  "promotions": [
+    { "package": "workspaces/enhancements", "target": "PLUGIN" },
+    { "package": "workspaces/infrastructure", "target": "PLUGIN" },
+    { "package": "workspaces/JCHARRISPACS", "target": "PLUGIN" },
+    { "package": "workspaces/LeafScope", "target": "PLUGIN" },
+    { "package": "workspaces/legal-judicial", "target": "PLUGIN" },
+    { "package": "workspaces/marketplace-frontend", "target": "PLUGIN" },
+    { "package": "workspaces/monitoring", "target": "PLUGIN" },
+    { "package": "workspaces/performance", "target": "PLUGIN" },
+    { "package": "workspaces/platform", "target": "PLUGIN" },
+    { "package": "workspaces/plugins", "target": "PLUGIN" },
+    { "package": "workspaces/portal", "target": "PLUGIN" },
+    { "package": "workspaces/property-workbench", "target": "PLUGIN" },
+    { "package": "workspaces/public-health", "target": "PLUGIN" },
+    { "package": "workspaces/public-works", "target": "PLUGIN" },
+    { "package": "workspaces/RAGPanel", "target": "PLUGIN" },
+    { "package": "workspaces/revenue", "target": "PLUGIN" },
+    { "package": "workspaces/security", "target": "PLUGIN" },
+    { "package": "workspaces/services", "target": "PLUGIN" },
+    { "package": "workspaces/shock-and-awe", "target": "PLUGIN" },
+    { "package": "workspaces/specialized", "target": "PLUGIN" }
+  ]
+}
