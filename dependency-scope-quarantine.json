@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-18T06:37:59.308Z",
+  "generatedAt": "2026-01-18T06:47:46.088Z",
   "source": "full_json",
-  "totalQuarantine": 37,
+  "totalQuarantine": 28,
   "items": [
     {
       "package": ".ai",
@@ -9,27 +9,6 @@
       "localUsage": 0,
       "totalUsage": 0,
       "wiring": "kernel-gateway-ref"
-    },
-    {
-      "package": ".venv",
-      "bucket": "QUARANTINE",
-      "localUsage": 0,
-      "totalUsage": 0,
-      "wiring": "none"
-    },
-    {
-      "package": "agents/terrafusion-phd-systems-agent",
-      "bucket": "QUARANTINE",
-      "localUsage": 2,
-      "totalUsage": 3,
-      "wiring": "none"
-    },
-    {
-      "package": "ai-workspace-companion",
-      "bucket": "QUARANTINE",
-      "localUsage": 2,
-      "totalUsage": 3,
-      "wiring": "none"
     },
     {
       "package": "applications/bcbs-gis-pro-production",
@@ -88,25 +67,11 @@
       "wiring": "none"
     },
     {
-      "package": "consciousness-isolated-workspace",
-      "bucket": "QUARANTINE",
-      "localUsage": 3,
-      "totalUsage": 4,
-      "wiring": "none"
-    },
-    {
       "package": "costforge-ai",
       "bucket": "QUARANTINE",
       "localUsage": 1,
       "totalUsage": 11,
       "wiring": "compose-ref,kernel-gateway-ref,os-shell-mount-ref"
-    },
-    {
-      "package": "costforge-ai-workspace",
-      "bucket": "QUARANTINE",
-      "localUsage": 6,
-      "totalUsage": 7,
-      "wiring": "none"
     },
     {
       "package": "distributions",
@@ -228,40 +193,12 @@
       "wiring": "none"
     },
     {
-      "package": "TerraFusion_Command_Portal_Starter",
-      "bucket": "QUARANTINE",
-      "localUsage": 8,
-      "totalUsage": 10,
-      "wiring": "none"
-    },
-    {
-      "package": "terrafusion-native-shell",
-      "bucket": "QUARANTINE",
-      "localUsage": 2,
-      "totalUsage": 3,
-      "wiring": "none"
-    },
-    {
       "package": "validation",
       "bucket": "QUARANTINE",
       "localUsage": 1,
       "totalUsage": 10,
       "wiring": "kernel-gateway-ref,os-shell-mount-ref"
-    },
-    {
-      "package": "workspace-explorer",
-      "bucket": "QUARANTINE",
-      "localUsage": 2,
-      "totalUsage": 3,
-      "wiring": "none"
-    },
-    {
-      "package": "workspaces/workspaces",
-      "bucket": "QUARANTINE",
-      "localUsage": 2,
-      "totalUsage": 3,
-      "wiring": "none"
     }
   ],
-  "hash": "1e26d597e67fdbf36c7c7400c72ec04304027a2495b93376d7976cd324a8572a"
+  "hash": "efe071f3a319cadb6c3afa5da7aa07c13debcb9c4006b3ded2e7b7fc519886e9"
 }

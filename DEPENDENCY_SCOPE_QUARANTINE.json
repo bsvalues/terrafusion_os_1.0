@@ -132,6 +132,32 @@
   {
     "bucket": "QUARANTINE",
     "evidence": {
+      "buildableLocal": false,
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "markerOrigins": [
+        {
+          "foundAt": ".venv/Lib/site-packages/pandas/pyproject.toml",
+          "marker": "python"
+        }
+      ],
+      "markers": [
+        "python"
+      ],
+      "pathFlags": [],
+      "score": 0,
+      "scoreLocal": 0,
+      "scoreTotal": 0,
+      "touchedDev": false,
+      "touchedRelease": false,
+      "wiring": []
+    },
+    "root": ".venv"
+  },
+  {
+    "bucket": "QUARANTINE",
+    "evidence": {
       "buildableLocal": true,
       "inherited": [
         "pnpm-lock.yaml"
