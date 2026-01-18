@@ -1,8 +1,8 @@
 # Governance Decision: GO
 
-**Date:** 2026-01-18T17:53:43.955966+00:00
+**Date:** 2026-01-18T18:00:24.378795+00:00
 **Context:** Benton County 2026 Residential Market Calibration
-**Patch Hash:** `189f9ea8de82d0e7edf09d451c2f67ea80b1df236dafa296ffab84c11239627d`
+**Patch Hash:** `9a5e4d57e83d1c24a175e67e12eb0c2bf96e5a4b47acadd4ce29872790989da0`
 
 ## Validation Summary
 *   **Methodology:** Fixed-Effect Hedonic Model (Approved)
