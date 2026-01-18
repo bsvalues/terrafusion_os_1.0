@@ -20,8 +20,8 @@
       "score": 11,
       "scoreLocal": 2,
       "scoreTotal": 11,
-      "touchedDev": true,
-      "touchedRelease": true,
+      "touchedDev": false,
+      "touchedRelease": false,
       "wiring": [
         "compose-ref",
         "kernel-gateway-ref"
