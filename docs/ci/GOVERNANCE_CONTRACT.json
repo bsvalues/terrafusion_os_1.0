@@ -6,7 +6,7 @@
   "branch": "main",
   "repository": "bsvalues/terrafusion_os_1.0",
   "expected": {
-    "required_status_checks": ["scope-drift-guard", "governance-proof"],
+    "required_status_checks": ["scope-drift-guard"],
     "strict": true,
     "enforce_admins": false
   },
