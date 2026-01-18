@@ -1,21 +1,8 @@
 {
-  "generatedAt": "2026-01-18T01:44:19.040Z",
-  "totalQuarantine": 140,
+  "generatedAt": "2026-01-18T06:37:59.308Z",
+  "source": "full_json",
+  "totalQuarantine": 37,
   "items": [
-    {
-      "package": "_CLEAN_BUILD_ZONE",
-      "bucket": "QUARANTINE",
-      "localUsage": 3,
-      "totalUsage": 4,
-      "wiring": "none"
-    },
-    {
-      "package": "_pre_restore_safety_20260108_144218",
-      "bucket": "QUARANTINE",
-      "localUsage": 0,
-      "totalUsage": 0,
-      "wiring": "none"
-    },
     {
       "package": ".ai",
       "bucket": "QUARANTINE",
@@ -24,7 +11,7 @@
       "wiring": "kernel-gateway-ref"
     },
     {
-      "package": ".ci_artifacts_local",
+      "package": ".venv",
       "bucket": "QUARANTINE",
       "localUsage": 0,
       "totalUsage": 0,
@@ -87,6 +74,13 @@
       "wiring": "none"
     },
     {
+      "package": "apps",
+      "bucket": "QUARANTINE",
+      "localUsage": 0,
+      "totalUsage": 12,
+      "wiring": "compose-ref,kernel-gateway-ref,os-shell-mount-ref"
+    },
+    {
       "package": "BS_PACS",
       "bucket": "QUARANTINE",
       "localUsage": 2,
@@ -94,24 +88,143 @@
       "wiring": "none"
     },
     {
-      "package": "CONSOLIDATED_20250915_062012",
+      "package": "consciousness-isolated-workspace",
+      "bucket": "QUARANTINE",
+      "localUsage": 3,
+      "totalUsage": 4,
+      "wiring": "none"
+    },
+    {
+      "package": "costforge-ai",
+      "bucket": "QUARANTINE",
+      "localUsage": 1,
+      "totalUsage": 11,
+      "wiring": "compose-ref,kernel-gateway-ref,os-shell-mount-ref"
+    },
+    {
+      "package": "costforge-ai-workspace",
+      "bucket": "QUARANTINE",
+      "localUsage": 6,
+      "totalUsage": 7,
+      "wiring": "none"
+    },
+    {
+      "package": "distributions",
+      "bucket": "QUARANTINE",
+      "localUsage": 1,
+      "totalUsage": 8,
+      "wiring": "kernel-gateway-ref,os-shell-mount-ref"
+    },
+    {
+      "package": "marketplace/autonomous-research-engine",
+      "bucket": "QUARANTINE",
+      "localUsage": 4,
+      "totalUsage": 5,
+      "wiring": "none"
+    },
+    {
+      "package": "marketplace/commercial",
+      "bucket": "QUARANTINE",
+      "localUsage": 7,
+      "totalUsage": 8,
+      "wiring": "none"
+    },
+    {
+      "package": "marketplace/government-core",
+      "bucket": "QUARANTINE",
+      "localUsage": 9,
+      "totalUsage": 10,
+      "wiring": "none"
+    },
+    {
+      "package": "marketplace/shock-and-awe",
+      "bucket": "QUARANTINE",
+      "localUsage": 8,
+      "totalUsage": 9,
+      "wiring": "none"
+    },
+    {
+      "package": "os-kernel",
+      "bucket": "QUARANTINE",
+      "localUsage": 1,
+      "totalUsage": 5,
+      "wiring": "compose-ref"
+    },
+    {
+      "package": "os-platform",
+      "bucket": "QUARANTINE",
+      "localUsage": 10,
+      "totalUsage": 16,
+      "wiring": "compose-ref"
+    },
+    {
+      "package": "os-platform/ai-systems",
+      "bucket": "QUARANTINE",
+      "localUsage": 6,
+      "totalUsage": 7,
+      "wiring": "none"
+    },
+    {
+      "package": "os-platform/consciousness",
       "bucket": "QUARANTINE",
       "localUsage": 2,
       "totalUsage": 3,
       "wiring": "none"
     },
     {
-      "package": "Dev - Copy",
+      "package": "os-platform/infrastructure",
+      "bucket": "QUARANTINE",
+      "localUsage": 2,
+      "totalUsage": 3,
+      "wiring": "none"
+    },
+    {
+      "package": "os-platform/performance",
+      "bucket": "QUARANTINE",
+      "localUsage": 2,
+      "totalUsage": 3,
+      "wiring": "none"
+    },
+    {
+      "package": "os-platform/specialized",
+      "bucket": "QUARANTINE",
+      "localUsage": 6,
+      "totalUsage": 9,
+      "wiring": "none"
+    },
+    {
+      "package": "packages/commercial",
       "bucket": "QUARANTINE",
       "localUsage": 5,
+      "totalUsage": 6,
+      "wiring": "none"
+    },
+    {
+      "package": "packages/government-edition",
+      "bucket": "QUARANTINE",
+      "localUsage": 6,
       "totalUsage": 7,
       "wiring": "none"
     },
     {
-      "package": "Dev - Copy (2)",
+      "package": "packages/government-edition-enhanced-MARKED-FOR-REVIEW",
       "bucket": "QUARANTINE",
       "localUsage": 5,
-      "totalUsage": 7,
+      "totalUsage": 6,
+      "wiring": "none"
+    },
+    {
+      "package": "packages/shock-and-awe",
+      "bucket": "QUARANTINE",
+      "localUsage": 3,
+      "totalUsage": 4,
+      "wiring": "none"
+    },
+    {
+      "package": "pacs-quantum-ui",
+      "bucket": "QUARANTINE",
+      "localUsage": 3,
+      "totalUsage": 4,
       "wiring": "none"
     },
     {
@@ -120,7 +233,35 @@
       "localUsage": 8,
       "totalUsage": 10,
       "wiring": "none"
+    },
+    {
+      "package": "terrafusion-native-shell",
+      "bucket": "QUARANTINE",
+      "localUsage": 2,
+      "totalUsage": 3,
+      "wiring": "none"
+    },
+    {
+      "package": "validation",
+      "bucket": "QUARANTINE",
+      "localUsage": 1,
+      "totalUsage": 10,
+      "wiring": "kernel-gateway-ref,os-shell-mount-ref"
+    },
+    {
+      "package": "workspace-explorer",
+      "bucket": "QUARANTINE",
+      "localUsage": 2,
+      "totalUsage": 3,
+      "wiring": "none"
+    },
+    {
+      "package": "workspaces/workspaces",
+      "bucket": "QUARANTINE",
+      "localUsage": 2,
+      "totalUsage": 3,
+      "wiring": "none"
     }
   ],
-  "hash": "468159f6ceb567ac59ac83d2a50e51decf4e7ac8dfe5f57f5d56578f9d018078"
+  "hash": "1e26d597e67fdbf36c7c7400c72ec04304027a2495b93376d7976cd324a8572a"
 }
