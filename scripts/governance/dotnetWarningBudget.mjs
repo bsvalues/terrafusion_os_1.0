@@ -1,5 +1,5 @@
-import fs from 'fs';
 import { execSync } from 'child_process';
+import fs from 'fs';
 import path from 'path';
 
 const CONFIG = {
@@ -7,7 +7,7 @@ const CONFIG = {
   budgetPath: path.resolve('governance/dotnet-warning-budget.json'),
   snapshotPath: path.resolve('dotnet-warning-snapshot.json'),
   logPath: path.resolve('ci_dotnet_warning_budget.log'),
-  solution: 'backend/TerraFusion.sln'
+  solution: 'backend/TerraFusion.sln',
 };
 
 function log(message) {
@@ -32,7 +32,7 @@ try {
     throw new Error(`Baseline file not found: ${CONFIG.baselinePath}`);
   }
   const baseline = JSON.parse(fs.readFileSync(CONFIG.baselinePath, 'utf8'));
-  
+
   let budget = { allowedIncrease: 0 };
   if (fs.existsSync(CONFIG.budgetPath)) {
     budget = JSON.parse(fs.readFileSync(CONFIG.budgetPath, 'utf8'));
@@ -47,18 +47,18 @@ try {
   try {
     // Using standard build to ensure output format matches regex
     // Using --no-incremental to get the true count regardless of previous builds
-    buildOutput = execSync(`dotnet build ${CONFIG.solution} --no-incremental`, { 
-      encoding: 'utf8', 
+    buildOutput = execSync(`dotnet build ${CONFIG.solution} --no-incremental`, {
+      encoding: 'utf8',
       stdio: 'pipe',
-      maxBuffer: 10 * 1024 * 1024 // 10MB buffer to handle 2000+ warnings
+      maxBuffer: 10 * 1024 * 1024, // 10MB buffer to handle 2000+ warnings
     });
   } catch (e) {
     buildOutput = e.stdout ? e.stdout.toString() : '';
     // If we have output, we try to parse it even if exit code was non-zero (build error)
     // But usually build error means we failed anyway.
     if (!buildOutput) {
-         log('Build failed with no output.');
-         throw e;
+      log('Build failed with no output.');
+      throw e;
     }
   }
 
@@ -69,7 +69,7 @@ try {
   // 4. Compare
   const delta = currentWarnings - baseline.totalWarnings;
   const passed = delta <= budget.allowedIncrease;
-  
+
   const status = passed ? 'PASS' : 'FAIL';
   log(`Check Status: ${status} (Delta: ${delta > 0 ? '+' : ''}${delta})`);
 
@@ -80,7 +80,7 @@ try {
     totalWarnings: currentWarnings,
     baseline: baseline.totalWarnings,
     delta: delta,
-    status: status
+    status: status,
   };
   fs.writeFileSync(CONFIG.snapshotPath, JSON.stringify(snapshot, null, 2));
   log(`Snapshot written to ${CONFIG.snapshotPath}`);
@@ -92,12 +92,11 @@ try {
     log('✅ Warning budget verified.');
     process.exit(0);
   }
-
 } catch (error) {
   log(`🔥 Fatal Error: ${error.message}`);
   try {
-     const errorSnapshot = { error: error.message, generatedAt: new Date().toISOString() };
-     fs.writeFileSync(CONFIG.snapshotPath, JSON.stringify(errorSnapshot, null, 2));
-  } catch (e) {} 
+    const errorSnapshot = { error: error.message, generatedAt: new Date().toISOString() };
+    fs.writeFileSync(CONFIG.snapshotPath, JSON.stringify(errorSnapshot, null, 2));
+  } catch (e) {}
   process.exit(2);
 }

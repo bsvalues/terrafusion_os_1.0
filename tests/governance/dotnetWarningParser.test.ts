@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 // Replicating logic from dotnetWarningBudget.mjs to test it in isolation
 const parseWarnings = output => {
