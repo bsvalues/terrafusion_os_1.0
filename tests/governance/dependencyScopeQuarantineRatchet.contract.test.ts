@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
+import { describe, expect, it } from 'vitest';
 
 describe('Dependency Scope Quarantine Baseline Contract', () => {
   const baselinePath = path.resolve(
