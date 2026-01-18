@@ -366,8 +366,8 @@ namespace TerraFusion.CostForge.Services
     }
 
     public async Task<AgentLifecycleResult> ManageAgentLifecycleAsync()
-      await Task.CompletedTask;
     {
+      await Task.CompletedTask;
       _logger.LogInformation("Managing Agent Lifecycle and Autonomous Healing");
 
       try
@@ -442,8 +442,8 @@ namespace TerraFusion.CostForge.Services
     }
 
     public async Task<MillionAgentMetricsDto> GetMillionAgentMetricsAsync()
-      await Task.CompletedTask;
     {
+      await Task.CompletedTask;
       _logger.LogInformation("Retrieving Million Agent Metrics");
 
       try
@@ -519,9 +519,9 @@ namespace TerraFusion.CostForge.Services
       }
     }
 
-      await Task.CompletedTask;
     public async Task<NetworkOptimizationResult> ExecuteNetworkOptimizationAsync()
     {
+      await Task.CompletedTask;
       _logger.LogInformation("Executing Network Optimization");
 
       try
