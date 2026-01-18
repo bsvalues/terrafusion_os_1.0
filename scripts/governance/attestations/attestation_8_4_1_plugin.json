@@ -1,0 +1,13 @@
+{
+  "id": "attestation_8_4_1_plugin",
+  "trancheId": "INCREMENT_8_4_1_PLUGIN",
+  "rationale": "Batched promotion of 20 low-risk application modules to PLUGIN scope. These are leaf nodes or independent apps identified as 'applications/*' in the quarantine inventory.",
+  "counts": {
+    "before": 123,
+    "after": 121
+  },
+  "artifacts": [
+    "dependency-scope-quarantine.json",
+    "scripts/governance/promotions/INCREMENT_8_4_1_PLUGIN.json"
+  ]
+}

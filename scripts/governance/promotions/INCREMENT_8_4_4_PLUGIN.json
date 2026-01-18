@@ -1,0 +1,26 @@
+{
+  "id": "INCREMENT_8_4_4_PLUGIN",
+  "description": "Promotion of 20 remaining workspace shells to PLUGIN scope (Tranche 4)",
+  "promotions": [
+    { "package": "workspaces/marketplace", "target": "PLUGIN" },
+    { "package": "workspaces/store", "target": "PLUGIN" },
+    { "package": "workspaces/submissions", "target": "PLUGIN" },
+    { "package": "workspaces/templates", "target": "PLUGIN" },
+    { "package": "workspaces/terra-bank", "target": "PLUGIN" },
+    { "package": "workspaces/terra-collections", "target": "PLUGIN" },
+    { "package": "workspaces/terra-flow", "target": "PLUGIN" },
+    { "package": "workspaces/terra-fusion-dashboard", "target": "PLUGIN" },
+    { "package": "workspaces/terra-fusion-sync", "target": "PLUGIN" },
+    { "package": "workspaces/terra-insight", "target": "PLUGIN" },
+    { "package": "workspaces/terra-justice", "target": "PLUGIN" },
+    { "package": "workspaces/terra-levy", "target": "PLUGIN" },
+    { "package": "workspaces/terra-net", "target": "PLUGIN" },
+    { "package": "workspaces/terra-sync", "target": "PLUGIN" },
+    { "package": "workspaces/terra-university", "target": "PLUGIN" },
+    { "package": "workspaces/TerraFusion-PublicRecords", "target": "PLUGIN" },
+    { "package": "workspaces/TerraFusionIDE", "target": "PLUGIN" },
+    { "package": "workspaces/testing", "target": "PLUGIN" },
+    { "package": "workspaces/trust", "target": "PLUGIN" },
+    { "package": "workspaces/unified-system", "target": "PLUGIN" }
+  ]
+}
