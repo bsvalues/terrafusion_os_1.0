@@ -192,8 +192,6 @@ export function scanRootMarkers(
     if (markerCmp !== 0) return markerCmp;
     return a.foundAt.localeCompare(b.foundAt);
   });
-  
-  pathFlags.sort();
 
   return { root: relRoot, markers: markerList, markerOrigins: markerOriginsSorted, pathFlags };
 }

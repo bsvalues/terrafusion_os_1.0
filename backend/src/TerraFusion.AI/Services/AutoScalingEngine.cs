@@ -1,4 +1,4 @@
-﻿/*
+/**
  * AutoScalingEngine - Advanced Predictive Auto-Scaling System
  *
  * Provides intelligent auto-scaling capabilities with:

@@ -1,4 +1,4 @@
-﻿/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - AUDIT LOG ENTRY MODEL
  * FISMA-HIGH Compliance Audit Trail Entry

@@ -1,4 +1,4 @@
-﻿/*
+/**
  * AnalysisResultRepository Implementation
  *
  * Concrete implementation of IAnalysisResultRepository using Entity Framework Core.

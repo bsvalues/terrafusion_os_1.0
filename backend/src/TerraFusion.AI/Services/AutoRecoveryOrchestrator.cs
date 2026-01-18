@@ -1,4 +1,4 @@
-﻿/*
+/**
  * AutoRecoveryOrchestrator - Multi-Step Recovery Coordination Engine
  *
  * Orchestrates complex recovery workflows with:

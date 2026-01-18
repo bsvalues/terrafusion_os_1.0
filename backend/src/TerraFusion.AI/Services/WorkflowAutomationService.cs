@@ -1,4 +1,4 @@
-﻿/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * WORKFLOW AUTOMATION SERVICE - Backend AI Orchestration
  * TerraFusion OS Workflow Intelligence Engine

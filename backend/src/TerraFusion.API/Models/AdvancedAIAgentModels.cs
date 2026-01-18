@@ -1,4 +1,4 @@
-/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - ADVANCED AI AGENT ORCHESTRATION MODELS
  * Championship-Level AI Orchestration Data Models

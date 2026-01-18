@@ -1,4 +1,4 @@
-﻿/*
+/**
  * WorkflowHub - Real-Time Workflow Execution Monitoring
  *
  * SignalR hub for real-time workflow execution monitoring,

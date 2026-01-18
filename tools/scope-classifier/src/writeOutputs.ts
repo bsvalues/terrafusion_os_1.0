@@ -21,43 +21,9 @@ export type Classified = {
   };
 };
 
-function sortKeysWrapper(key: string, value: any) {
-  if (value instanceof Object && !(value instanceof Array)) {
-    return Object.keys(value)
-      .sort()
-      .reduce((sorted: any, key: string) => {
-        sorted[key] = value[key];
-        return sorted;
-      }, {});
-  }
-  return value;
-}
-
 export function writeJson(p: string, obj: unknown) {
   fs.mkdirSync(path.dirname(p), { recursive: true });
-  // Use a temporary object-sorter replacer or pre-sort the object
-  // JSON.stringify(obj, replacer) isn't enough for deep key sort in all engines, 
-  // but creating a new object with sorted keys works.
-  
-  // Actually, a simple deep sort function is better.
-  const sortedObj = deepSortKeys(obj);
-  fs.writeFileSync(p, JSON.stringify(sortedObj, null, 2) + "\n", "utf8");
-}
-
-function deepSortKeys(obj: any): any {
-  if (Array.isArray(obj)) {
-    return obj.map(deepSortKeys); // Process arrays but don't sort the array itself (order might matter)
-  }
-  if (obj && typeof obj === "object") {
-    const sorted: any = {};
-    Object.keys(obj)
-      .sort()
-      .forEach((key) => {
-        sorted[key] = deepSortKeys(obj[key]);
-      });
-    return sorted;
-  }
-  return obj;
+  fs.writeFileSync(p, JSON.stringify(obj, null, 2) + "\n", "utf8");
 }
 
 export function writeMarkdown(p: string, md: string) {

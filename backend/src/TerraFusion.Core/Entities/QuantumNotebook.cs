@@ -1,4 +1,4 @@
-﻿/*
+/**
  * QuantumNotebook Entity
  *
  * Represents a Jupyter-style notebook for PhD-level data analysis.

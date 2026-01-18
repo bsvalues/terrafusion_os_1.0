@@ -1,4 +1,4 @@
-/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * AI ASSISTANT CONTROLLER - API Endpoints for County Employees
  * TerraFusion.API - Elite Government AI Integration

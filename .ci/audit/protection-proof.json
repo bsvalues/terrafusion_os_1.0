@@ -1,5 +1,0 @@
-{
-  "enforce_admins": false,
-  "required_status_checks": ["scope-drift-guard"],
-  "strict": true
-}

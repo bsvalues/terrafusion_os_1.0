@@ -1,4 +1,4 @@
-/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - ROBUST BACKGROUND SERVICE WRAPPER
  * Prevents hosted service cancellation from triggering host shutdown

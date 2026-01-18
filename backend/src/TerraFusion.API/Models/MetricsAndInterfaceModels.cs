@@ -6,9 +6,7 @@ namespace TerraFusion.API.Models.Metrics;
 // NOTE: This file contains only unique metrics classes
 // Interfaces are in TerraFusion.API.Interfaces.IMigrationServices.cs
 // TerraFusionHub is in TerraFusion.API.Hubs.HarrisPACSEnhancementHub.cs
-// Migration result types are in TerraFusion.API.Interfaces.IMigrationServices.cs
-
-/// <summary>
+// Migration result types are in TerraFusion.API.Interfaces.IMigrationServices.cs/// <summary>
 /// AI Agent Metrics for performance tracking
 /// </summary>
 public class AIAgentMetrics

@@ -1,4 +1,4 @@
-﻿/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * COMPLIANCE SERVICE INTERFACE
  * TerraFusion.Consciousness - Government Compliance Validation

@@ -1,4 +1,4 @@
-﻿/*
+/**
  * QuantumNotebook Entity Configuration
  *
  * EF Core Fluent API configuration for QuantumNotebook entity.

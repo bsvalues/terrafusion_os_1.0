@@ -1,4 +1,4 @@
-﻿/*
+/**
  * TerraFusion Elite Quantum Research Lab Service
  * 
  * PhD-level quantum consciousness research coordination service

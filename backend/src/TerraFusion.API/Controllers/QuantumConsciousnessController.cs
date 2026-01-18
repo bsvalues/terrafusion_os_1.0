@@ -1,4 +1,4 @@
-/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - QUANTUM CONSCIOUSNESS CONTROLLER
  * Elite PhD-Level Interface for 1,008+ Agent Parameter Management
@@ -27,8 +27,8 @@ namespace TerraFusion.API.Controllers;
 /// and AI swarm coordination across 1,008+ agents with 99.9%+ accuracy targets
 ///
 /// Research Foundation:
-/// - Quantum Computing Principles (Nielsen &amp; Chuang, 2010)
-/// - Swarm Intelligence Algorithms (Kennedy &amp; Eberhart, 1995)
+/// - Quantum Computing Principles (Nielsen & Chuang, 2010)
+/// - Swarm Intelligence Algorithms (Kennedy & Eberhart, 1995)
 /// - Multi-Agent Coordination (Wooldridge, 2009)
 /// </summary>
 [ApiController]
@@ -202,8 +202,8 @@ public class QuantumConsciousnessController : ControllerBase
     /// - Immutable audit trail (append-only)
     ///
     /// Performance SLA:
-    /// - Recalibration time: &lt;30 seconds for 1,008 agents
-    /// - Target: &lt;100ms P95 latency after recalibration
+    /// - Recalibration time: <30 seconds for 1,008 agents
+    /// - Target: <100ms P95 latency after recalibration
     /// </remarks>
     /// <param name="parameterName">Parameter to adjust (coherenceLevel, entanglementStrength, consciousnessLevel, optimizationFactor)</param>
     /// <param name="request">New parameter value</param>
@@ -326,7 +326,7 @@ public class QuantumConsciousnessController : ControllerBase
     /// <remarks>
     /// Championship presets:
     /// - Maximum Accuracy (99.9%+ target, optimized for valuation precision)
-    /// - Maximum Performance (&lt;5ms P95, optimized for throughput)
+    /// - Maximum Performance (<5ms P95, optimized for throughput)
     /// - Balanced Elite (optimal accuracy/performance trade-off)
     /// - Research Mode (unrestricted parameter ranges for experimentation)
     /// </remarks>
@@ -683,9 +683,9 @@ public class PresetApplicationResultDto
     public required DateTime Timestamp { get; set; }
 }
 
-// <summary>
-// Audit log entry for FISMA-HIGH compliance
-// </summary>
+/// <summary>
+/// Audit log entry for FISMA-HIGH compliance
+/// </summary>
 // AuditLogEntry moved to TerraFusion.Core.Models
 
 #endregion

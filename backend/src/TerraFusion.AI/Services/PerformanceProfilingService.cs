@@ -1,4 +1,4 @@
-﻿/*
+/**
  * PerformanceProfilingService - Intelligent Code Performance Analysis
  *
  * Production-ready service providing performance profiling, bottleneck detection,

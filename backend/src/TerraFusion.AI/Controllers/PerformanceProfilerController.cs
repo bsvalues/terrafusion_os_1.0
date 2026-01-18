@@ -1,4 +1,4 @@
-﻿/*
+/**
  * PerformanceProfilerController - REST API for Performance Profiling
  *
  * Provides endpoints for code profiling, bottleneck detection,

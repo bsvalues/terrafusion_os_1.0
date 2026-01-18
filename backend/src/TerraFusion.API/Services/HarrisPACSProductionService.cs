@@ -1,4 +1,4 @@
-/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - HARRIS PACS INTEGRATION SERVICE
  * Real Benton County Schema Integration with Championship AI

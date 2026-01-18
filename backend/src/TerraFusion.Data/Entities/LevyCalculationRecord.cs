@@ -1,4 +1,4 @@
-﻿/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - LEVY CALCULATION RECORD ENTITY
  * Government Tax Levy Calculation History with RCW Compliance

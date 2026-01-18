@@ -1,4 +1,4 @@
-﻿/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - PROPERTY ASSESSMENT ENTITY MODEL
  * Benton County Property Assessment Entity (await DynamicPropertyService.GetPropertyCountAsync("benton") parcels)

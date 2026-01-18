@@ -1,4 +1,4 @@
-﻿/*
+/**
  * AICodeCompletionService - Intelligent Code Completion Engine
  *
  * Production-ready AI service providing context-aware code completion,

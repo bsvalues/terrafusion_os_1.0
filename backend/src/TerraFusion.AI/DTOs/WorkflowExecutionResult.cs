@@ -1,4 +1,4 @@
-﻿/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - WORKFLOW EXECUTION RESULT DTO
  * Elite AI Workflow Automation with Quantum Enhancement

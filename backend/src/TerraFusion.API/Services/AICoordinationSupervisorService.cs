@@ -1,4 +1,4 @@
-/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - AI COORDINATION SERVICE MONITOR
  * Monitors and restarts AI coordination services that fail

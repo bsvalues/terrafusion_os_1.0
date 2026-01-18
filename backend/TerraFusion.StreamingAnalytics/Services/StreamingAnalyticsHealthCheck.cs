@@ -1,4 +1,4 @@
-﻿/*
+/**
  * StreamingAnalyticsHealthCheck
  *
  * Health check for TerraFusion.StreamingAnalytics microservice.

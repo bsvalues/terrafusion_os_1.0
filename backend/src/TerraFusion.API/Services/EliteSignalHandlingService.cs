@@ -1,4 +1,4 @@
-/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - ELITE SIGNAL HANDLING SERVICE
  * Championship-Level Process Signal Management and Graceful Shutdown

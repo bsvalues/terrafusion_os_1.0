@@ -1,4 +1,4 @@
-﻿/*
+/**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - AUDIT LOG SERVICE INTERFACE
  * FISMA-HIGH Compliance Audit Trail (NIST 800-53 AU-3, AU-11)
