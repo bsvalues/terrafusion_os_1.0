@@ -52,6 +52,7 @@
     "ci:governance-proof": "pnpm run ci:scope-proof && pnpm run ci:renovate-scope:log && pnpm run ci:governance",
     "ci:governance-proof:log": "pnpm run ci:governance-proof > ci_governance_proof.log 2>&1 || (type ci_governance_proof.log && exit 1)",
     "ci:dotnet-warning-budget:log": "node scripts/governance/dotnetWarningBudget.mjs",
+    "ci:dotnet-warning-taxonomy:log": "node scripts/governance/dotnetWarningTaxonomy.mjs",
     "ci:test": "vitest run -c scripts/ci/vitest.config.ts --reporter=basic",
     "ci:test:log": "vitest run -c scripts/ci/vitest.config.ts --reporter=basic > ci_test.log 2>&1 || (type ci_test.log && exit 1)",
     "ci:test:determinism": "node scripts/ci/verifyScopeDeterminism.js",
