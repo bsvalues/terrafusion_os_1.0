@@ -397,9 +397,9 @@ What specific task would you like me to help with?";
 
     public class AIAssistantRequest
     {
-        public string CountyId { get; set; } = string.Empty;
-        public string EmployeeRole { get; set; } = string.Empty;
-        public string Message { get; set; } = string.Empty;
+        public required string CountyId { get; set; }
+        public required string EmployeeRole { get; set; }
+        public required string Message { get; set; }
         public Dictionary<string, object> Context { get; set; } = new();
     }
 

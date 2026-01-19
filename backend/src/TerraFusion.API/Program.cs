@@ -143,6 +143,14 @@ builder.Services.AddHostedService<TerraFusion.Core.Services.HarrisPACSSyncBackgr
 // TIER 4+ Services - Advanced AI Excellence
 builder.Services.AddScoped<IAISwarmIntelligenceOrchestrator, AISwarmIntelligenceOrchestrator>();
 builder.Services.AddScoped<IAdvancedSecurityFrameworkService, AdvancedSecurityFrameworkService>();
+// ✅ RE-ENABLED: Registration of workflow and assistant services needed for Controllers
+builder.Services.AddScoped<TerraFusion.AI.Services.IWorkflowAutomationService, TerraFusion.AI.Services.WorkflowAutomationService>();
+builder.Services.AddScoped<TerraFusion.AI.Services.IAIAssistantService, TerraFusion.AI.Services.AIAssistantService>();
+// ✅ STUB: Consciousness Engine stub for DI resolution
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
+// ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services
+builder.Services.AddScoped<TerraFusion.AI.Services.IPropertyValuationService, TerraFusion.AI.Services.PropertyValuationService>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceService, TerraFusion.Consciousness.Services.ComplianceServiceStub>();
 
 // TIER 5+ Services - TerraGaia Ultimate AI Consciousness
 // RE-ENABLED: Changed from Singleton → Scoped to properly resolve TerraFusionContext (scoped DbContext) and IAuditLogger (scoped)

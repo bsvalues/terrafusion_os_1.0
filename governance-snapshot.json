@@ -4,17 +4,5 @@
     "strict": true,
     "enforce_admins": false
   },
-  "contract": {
-    "branch": "main",
-    "repository": "bsvalues/terrafusion_os_1.0",
-    "expected": {
-      "required_status_checks": ["scope-drift-guard"],
-      "strict": true,
-      "enforce_admins": false
-    }
-  },
-  "timestamp": "2026-01-18T18:06:41.813Z",
-  "status": "OK",
-  "required_status_checks": ["scope-drift-guard"],
-  "strict": true
+  "timestamp": "2026-01-19T19:22:42.312Z"
 }

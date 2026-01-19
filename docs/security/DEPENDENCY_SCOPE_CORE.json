@@ -1,0 +1,14 @@
+{
+  "policyVersion": "2026-01-19-CORE",
+  "governance": {
+    "status": "SOLIDIFIED",
+    "anchor": "v1.1.0-sov",
+    "description": "Critical OS infrastructure. Must use pnpm and strictly governed contracts."
+  },
+  "roots": [
+    "./",
+    "frontend/",
+    "backend/",
+    "frontend/electron/"
+  ]
+}

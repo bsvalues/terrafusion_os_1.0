@@ -39,6 +39,7 @@ namespace TerraFusion.API.Controllers
         /// <param name="request">AI assistant request</param>
         /// <returns>AI-generated response with suggestions</returns>
         [HttpPost("message")]
+        // [AllowAnonymous] // REMOVED: Restore security after smoke testing
         [ProducesResponseType(typeof(AIAssistantResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]

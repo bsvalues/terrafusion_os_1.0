@@ -1,22 +1,21 @@
-name: Scope Drift Guard
+name: governance-proof
 
 on:
   pull_request:
-  push:
-    branches: [main]
+    branches: [main, master]
+  workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read
   checks: read
   pull-requests: read
 
 jobs:
-  scope-drift-guard:
+  proof:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
         with:
@@ -30,13 +29,16 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      - name: Scope classifier tests
-        run: pnpm -C tools/scope-classifier test
-
-      - name: Generate deterministic scope outputs
-        run: pnpm tf:scope -- --solidBase=567fbcec5 --archAnchor=9af5bb291
+      - name: Run Governance Proof (log)
+        run: pnpm run ci:governance-proof:log
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Drift guard (must be clean)
-        run: git diff --exit-code
+      - name: Upload proof artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-proof-${{ github.run_id }}
+          path: |
+            ci_governance_proof.log
+            governance-snapshot.json

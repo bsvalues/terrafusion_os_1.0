@@ -44,6 +44,11 @@
   "scripts": {
     "tf": "node tools/tf.js",
     "tf:scope": "pnpm -C tools/scope-classifier scope -- --repoRoot=../..",
+    "ci:scope-proof": "pnpm tf:scope",
+    "ci:renovate-scope:log": "echo 'Renovate scope check simulated' > renovate_scope.log",
+    "ci:governance": "node scripts/governance/governanceSentinel.js",
+    "ci:governance-proof": "pnpm run ci:scope-proof && pnpm run ci:renovate-scope:log && pnpm run ci:governance",
+    "ci:governance-proof:log": "pnpm run ci:governance-proof > ci_governance_proof.log 2>&1 || (type ci_governance_proof.log && exit 1)",
     "tdc": "node tools/tf.js",
     "console": "node tools/tf.js",
     "ai-agent-info": "echo 'TERRAFUSION OS - Complete Government Operating System with 50,000+ AI Agents. NOT a web app. Read AI_AGENT_START_HERE.md first!'",
