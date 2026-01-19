@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-const ROOT_DIR = path.resolve(__dirname, '../../..');
+const ROOT_DIR = path.resolve(__dirname, '../..');
 const PACKAGE_JSON_PATH = path.join(ROOT_DIR, 'package.json');
 
 describe('Governance Artifacts Contract', () => {
