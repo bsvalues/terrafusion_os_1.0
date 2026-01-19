@@ -49,7 +49,7 @@ namespace TerraFusion.AI.Functions
             return ArgumentValidationResult.Valid();
         }
 
-        public override async Task<string> ExecuteAsync(
+        public override async System.Threading.Tasks.Task<string> ExecuteAsync(
             JsonElement arguments,
             SecurityContext securityContext)
         {
@@ -131,7 +131,7 @@ namespace TerraFusion.AI.Functions
             }
         }
 
-        private async Task<Property?> FindPropertyAsync(string propertyId, int? countyIdInt)
+        private async System.Threading.Tasks.Task<Property?> FindPropertyAsync(string propertyId, int? countyIdInt)
         {
             // Convert int? to Guid if possible (for legacy compatibility)
             Guid? countyId = null;

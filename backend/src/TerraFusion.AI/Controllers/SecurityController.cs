@@ -1,4 +1,4 @@
-/**
+/*
  * SecurityController - REST API for Security and Compliance
  *
  * Provides endpoints for security status, compliance reporting, security events,

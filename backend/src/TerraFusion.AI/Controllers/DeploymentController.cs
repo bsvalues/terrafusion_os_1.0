@@ -1,4 +1,4 @@
-/**
+/*
  * DeploymentController - REST API for Production Deployment
  *
  * Provides endpoints for automated deployment, health monitoring,

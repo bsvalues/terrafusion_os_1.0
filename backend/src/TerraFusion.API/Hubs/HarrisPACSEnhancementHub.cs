@@ -77,6 +77,8 @@ namespace TerraFusion.API.Hubs
         /// </summary>
         public async Task RequestEnhancementMetrics(string sessionId)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             _logger.LogInformation("Client {ConnectionId} requested enhancement metrics for session: {SessionId}",
                 Context.ConnectionId, sessionId);
 

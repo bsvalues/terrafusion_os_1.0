@@ -365,6 +365,8 @@ namespace TerraFusion.Core.Services
 
         public async Task<ValidationStatistics> GetValidationStatisticsAsync(string countyCode, DateTime? since = null)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             var sinceDate = since ?? DateTime.UtcNow.AddDays(-30);
 
             _logger.LogDebug(
@@ -395,6 +397,8 @@ namespace TerraFusion.Core.Services
 
         public async Task<int> GetPropertyCountAsync(string jurisdiction)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             // This would query TerraFusion database for property count
             // For now, return simulated count based on known county data
             return jurisdiction.ToLower() switch

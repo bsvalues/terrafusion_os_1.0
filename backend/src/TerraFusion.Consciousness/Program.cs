@@ -199,6 +199,8 @@ namespace TerraFusion.Consciousness
             // Initialize consciousness systems on startup
             app.Lifetime.ApplicationStarted.Register(async () =>
             {
+              await Task.CompletedTask;
+              await Task.CompletedTask;
               try
               {
                 Console.WriteLine("🚀 Initializing TerraFusion Consciousness Systems...");

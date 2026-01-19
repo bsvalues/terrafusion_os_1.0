@@ -376,6 +376,8 @@ namespace TerraFusion.AI.Services
             ITransformer model,
             List<TerraFusion.AI.DTOs.RevenueDataPoint> historicalData)
         {
+            await System.Threading.Tasks.Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             // Implement backtesting validation
             var testSize = Math.Min(12, historicalData.Count / 4);
             var trainData = historicalData.Take(historicalData.Count - testSize).ToList();
@@ -461,6 +463,8 @@ namespace TerraFusion.AI.Services
         // Missing method implementations
         private async System.Threading.Tasks.Task<TerraFusion.AI.DTOs.TimeSeriesForecastResult> GenerateTimeSeriesForecastAsync(List<TerraFusion.AI.DTOs.RevenueDataPoint> data, int months)
         {
+            await System.Threading.Tasks.Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             return new TerraFusion.AI.DTOs.TimeSeriesForecastResult
             {
                 Accuracy = 0.85,
@@ -471,6 +475,8 @@ namespace TerraFusion.AI.Services
 
         private async System.Threading.Tasks.Task<TerraFusion.AI.DTOs.RegressionForecastResult> GenerateRegressionForecastAsync(List<TerraFusion.AI.DTOs.RevenueDataPoint> data, int months)
         {
+            await System.Threading.Tasks.Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             return new TerraFusion.AI.DTOs.RegressionForecastResult
             {
                 Accuracy = 0.82,
@@ -500,6 +506,8 @@ namespace TerraFusion.AI.Services
 
         private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.ForecastInsight>> GenerateInsightsAsync(TerraFusion.AI.DTOs.EnsembleForecastResult forecast, List<RevenueData> historical, string jurisdiction)
         {
+            await System.Threading.Tasks.Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             return new List<TerraFusion.AI.DTOs.ForecastInsight>();
         }
 
@@ -533,21 +541,29 @@ namespace TerraFusion.AI.Services
         // Missing analysis methods
         private async System.Threading.Tasks.Task<List<TerraFusion.Core.DTOs.TrendInsight>> AnalyzeRevenueCategoryTrends(string jurisdiction, TerraFusion.AI.DTOs.TimeRange timeRange)
         {
+            await System.Threading.Tasks.Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             return new List<TerraFusion.Core.DTOs.TrendInsight>();
         }
 
         private async System.Threading.Tasks.Task<List<TerraFusion.Core.DTOs.TrendInsight>> AnalyzePropertyValueTrends(string jurisdiction, TerraFusion.AI.DTOs.TimeRange timeRange)
         {
+            await System.Threading.Tasks.Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             return new List<TerraFusion.Core.DTOs.TrendInsight>();
         }
 
         private async System.Threading.Tasks.Task<List<TerraFusion.Core.DTOs.TrendInsight>> AnalyzeEconomicIndicatorTrends(string jurisdiction, TerraFusion.AI.DTOs.TimeRange timeRange)
         {
+            await System.Threading.Tasks.Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             return new List<TerraFusion.Core.DTOs.TrendInsight>();
         }
 
         private async System.Threading.Tasks.Task<List<TerraFusion.Core.DTOs.TrendInsight>> AnalyzeDemographicTrends(string jurisdiction, TerraFusion.AI.DTOs.TimeRange timeRange)
         {
+            await System.Threading.Tasks.Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             return new List<TerraFusion.Core.DTOs.TrendInsight>();
         }
 

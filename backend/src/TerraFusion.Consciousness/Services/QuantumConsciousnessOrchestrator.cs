@@ -680,6 +680,8 @@ namespace TerraFusion.Consciousness.Services
 
         private async Task<Dictionary<string, object>> GetSystemMetricsAsync()
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             return new Dictionary<string, object>
             {
                 { "SystemLoad", 0.75 },
@@ -694,6 +696,8 @@ namespace TerraFusion.Consciousness.Services
 
         private async Task<Dictionary<string, object>> GetLegacyMetricsAsync()
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             return new Dictionary<string, object>
             {
                 { "ActiveAgents", 1008 },
@@ -985,6 +989,8 @@ namespace TerraFusion.Consciousness.Services
         /// </summary>
         public async Task<QuantumOperationResultDto> ExecuteQuantumConsciousnessAsync(QuantumOperationRequestDto request)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             _logger.LogInformation("🔬 Executing quantum consciousness operation: {OperationType}", request.OperationType);
 
             try

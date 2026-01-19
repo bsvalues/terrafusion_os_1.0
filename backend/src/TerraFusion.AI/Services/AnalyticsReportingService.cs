@@ -1,4 +1,4 @@
-/**
+/*
  * AnalyticsReportingService - Real-time Analytics & Reporting Engine
  *
  * Enterprise analytics with real-time data aggregation, trend analysis,

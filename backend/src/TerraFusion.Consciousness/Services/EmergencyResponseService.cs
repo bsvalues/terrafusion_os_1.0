@@ -214,6 +214,8 @@ namespace TerraFusion.Consciousness.Services
 
         private async Task<List<string>> ExecuteCriticalEmergencyProtocolsAsync(EmergencyRequestDto request)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             return new List<string>
             {
                 "System isolation activated",
@@ -226,6 +228,8 @@ namespace TerraFusion.Consciousness.Services
 
         private async Task<List<string>> ExecuteHighPriorityProtocolsAsync(EmergencyRequestDto request)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             return new List<string>
             {
                 "High priority response activated",
@@ -237,6 +241,8 @@ namespace TerraFusion.Consciousness.Services
 
         private async Task<List<string>> ExecuteMediumPriorityProtocolsAsync(EmergencyRequestDto request)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             return new List<string>
             {
                 "Medium priority response activated",

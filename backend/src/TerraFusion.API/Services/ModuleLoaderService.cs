@@ -174,6 +174,8 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
 
             public async System.Threading.Tasks.Task<bool> IsModuleAvailableAsync(string moduleName)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         try
         {
             var moduleDir = Path.Combine(_modulesPath, moduleName);

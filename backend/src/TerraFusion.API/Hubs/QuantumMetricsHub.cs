@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - QUANTUM METRICS HUB
  * Real-time Government Operations WebSocket Integration

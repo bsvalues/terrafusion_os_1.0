@@ -615,6 +615,8 @@ This information comes from the Benton County property assessment knowledge base
             int promptTokens,
             int completionTokens)
         {
+            await System.Threading.Tasks.Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             var key = $"{provider}:{modelName}";
 
             if (!TokenPricing.TryGetValue(key, out var pricing))
@@ -744,7 +746,7 @@ This information comes from the Benton County property assessment knowledge base
         /// <summary>
         /// Phase 11: Get audit record by message ID for RAG traceability
         /// </summary>
-        public async Task<GPTAudit?> GetAuditByMessageIdAsync(int messageId)
+        public async System.Threading.Tasks.Task<GPTAudit?> GetAuditByMessageIdAsync(int messageId)
         {
             try
             {

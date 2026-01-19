@@ -237,6 +237,8 @@ namespace TerraFusion.Consciousness.Services
 
         public async Task<CitizenServicesDataDto> GetCitizenServicesDataAsync(CitizenServicesRequestDto request)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             EnsureInitialized();
 
             _logger.LogInformation("👥 Retrieving citizen services data for Benton County: {Request}",
@@ -321,6 +323,8 @@ namespace TerraFusion.Consciousness.Services
 
         public async Task<EmergencyResponseDataDto> GetEmergencyResponseDataAsync(EmergencyDataRequestDto request)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             EnsureInitialized();
 
             _logger.LogInformation("🚨 Retrieving emergency response data for Benton County: {Request}",

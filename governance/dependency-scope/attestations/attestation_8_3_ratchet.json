@@ -1,0 +1,16 @@
+{
+  "id": "ATT-8.3.1",
+  "date": "2026-01-18",
+  "author": "GitHub Copilot",
+  "action": "LOCK_GOVERNANCE_STATE",
+  "rationale": "Confirming strict governance lock. Baseline is 0. Drift is disabled (allowDrift: false). Any increase in quarantine will now fail the build.",
+  "metrics": {
+    "baselineCount": 0,
+    "allowDrift": false
+  },
+  "evidenceArtifacts": [
+    "ci_dependency_scope_quarantine.log",
+    "scripts/governance/dependency-scope-quarantine-baseline.json",
+    "scripts/governance/dependency-scope-quarantine-budget.json"
+  ]
+}

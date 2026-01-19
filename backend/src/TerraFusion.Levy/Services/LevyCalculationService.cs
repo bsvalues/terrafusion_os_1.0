@@ -29,6 +29,8 @@ namespace TerraFusion.Levy.Services
             LevyMeasure measure,
             bool useQuantumOptimization = true)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             _logger.LogInformation(
                 "Calculating optimal rate for levy measure {MeasureId} ({MeasureName}) with quantum optimization: {QuantumEnabled}",
                 measure.Id, measure.Name, useQuantumOptimization);
@@ -86,6 +88,8 @@ namespace TerraFusion.Levy.Services
 
         public async Task<decimal> CalculateLevyAmountAsync(decimal assessedValue, decimal rate)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             return assessedValue * rate;
         }
 
@@ -161,6 +165,8 @@ namespace TerraFusion.Levy.Services
             LevyMeasure measure,
             decimal proposedRate)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             var result = new LevyComplianceResult
             {
                 ProposedRate = proposedRate,
@@ -205,6 +211,8 @@ namespace TerraFusion.Levy.Services
             decimal levyAmount,
             decimal collectionRate)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             // Ensure collection rate is within valid range
             if (collectionRate < 0 || collectionRate > 1)
             {

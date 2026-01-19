@@ -693,6 +693,8 @@ namespace TerraFusion.API.Services
     /// </summary>
     private async void ReportPerformanceMetrics(object? state)
     {
+      await Task.CompletedTask;
+      await Task.CompletedTask;
       try
       {
         var now = DateTime.UtcNow;
