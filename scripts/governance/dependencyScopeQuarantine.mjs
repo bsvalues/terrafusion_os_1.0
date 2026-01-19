@@ -33,19 +33,28 @@ function main() {
   console.log(`Baseline Quarantine Count: ${baselineCount}`);
 
   // Create the requested snapshot/output
-  fs.writeFileSync(SNAPSHOT_FILE, JSON.stringify({
-    timestamp: new Date().toISOString(),
-    status: currentCount <= baselineCount ? 'PASS' : 'FAIL',
-    metrics: {
-        current: currentCount,
-        baseline: baselineCount
-    },
-    quarantineList: quarantineData.map(q => q.root)
-  }, null, 2));
+  fs.writeFileSync(
+    SNAPSHOT_FILE,
+    JSON.stringify(
+      {
+        timestamp: new Date().toISOString(),
+        status: currentCount <= baselineCount ? 'PASS' : 'FAIL',
+        metrics: {
+          current: currentCount,
+          baseline: baselineCount,
+        },
+        quarantineList: quarantineData.map(q => q.root),
+      },
+      null,
+      2
+    )
+  );
   console.log(`Snapshot written to ${SNAPSHOT_FILE}`);
 
   if (currentCount > baselineCount) {
-    console.error(`FAILURE: Quarantine count (${currentCount}) exceeds baseline (${baselineCount}).`);
+    console.error(
+      `FAILURE: Quarantine count (${currentCount}) exceeds baseline (${baselineCount}).`
+    );
     process.exit(1);
   }
 

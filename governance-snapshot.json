@@ -1,8 +1,10 @@
 {
   "branchProtection": {
-    "required_status_checks": ["scope-drift-guard"],
+    "required_status_checks": [
+      "scope-drift-guard"
+    ],
     "strict": true,
     "enforce_admins": false
   },
-  "timestamp": "2026-01-19T19:22:42.312Z"
+  "timestamp": "2026-01-19T19:34:57.926Z"
 }
