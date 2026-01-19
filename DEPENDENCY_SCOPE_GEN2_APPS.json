@@ -3,9 +3,9 @@
     "root": "applications/terra-permit",
     "bucket": "GEN2_APPS",
     "evidence": {
-      "score": 7,
+      "score": 9,
       "scoreLocal": 6,
-      "scoreTotal": 7,
+      "scoreTotal": 9,
       "buildableLocal": true,
       "markers": [
         "docker",
@@ -40,7 +40,8 @@
         }
       ],
       "inherited": [
-        "pnpm-lock.yaml"
+        "pnpm-lock.yaml",
+        "renovate-ref"
       ],
       "wiring": [],
       "touchedRelease": true,

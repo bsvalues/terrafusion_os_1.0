@@ -124,6 +124,32 @@
         "workflow-ref"
       ],
       "wiring": [],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": ".venv",
+    "bucket": "QUARANTINE",
+    "evidence": {
+      "score": 0,
+      "scoreLocal": 0,
+      "scoreTotal": 0,
+      "buildableLocal": false,
+      "markers": [
+        "python"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "python",
+          "foundAt": ".venv/Lib/site-packages/pandas/pyproject.toml"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -449,9 +475,9 @@
     "root": "applications/terra-assessor-production",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 7,
+      "score": 9,
       "scoreLocal": 5,
-      "scoreTotal": 7,
+      "scoreTotal": 9,
       "buildableLocal": true,
       "markers": [
         "docker",
@@ -487,7 +513,8 @@
         }
       ],
       "inherited": [
-        "pnpm-lock.yaml"
+        "pnpm-lock.yaml",
+        "renovate-ref"
       ],
       "wiring": [],
       "touchedRelease": false,

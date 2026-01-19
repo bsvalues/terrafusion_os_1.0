@@ -1866,9 +1866,9 @@
     "root": "terrabuild-modernization",
     "bucket": "CORE_OS_TOOLING",
     "evidence": {
-      "score": 9,
+      "score": 11,
       "scoreLocal": 7,
-      "scoreTotal": 9,
+      "scoreTotal": 11,
       "buildableLocal": true,
       "markers": [
         "docker",
@@ -1937,7 +1937,8 @@
         }
       ],
       "inherited": [
-        "pnpm-lock.yaml"
+        "pnpm-lock.yaml",
+        "renovate-ref"
       ],
       "wiring": [],
       "touchedRelease": true,
