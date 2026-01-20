@@ -55,36 +55,36 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install Node.js dependencies
-        run: |
-          cd frontend
-          npm ci --prefer-offline --no-audit
+      - name: Install dependencies (workspace)
+        run: pnpm install --frozen-lockfile
 
       - name: Restore .NET dependencies
         run: |
           cd backend
           dotnet restore
 
-      - name: Run ESLint
-        run: |
-          cd frontend
-          npm run lint
+      - name: Frontend lint
+        run: pnpm -C frontend run lint
 
-      - name: Run TypeScript type checking
-        run: |
-          cd frontend
-          npm run type-check
+      - name: Frontend type-check
+        run: pnpm -C frontend run type-check
 
       - name: Run .NET code analysis
         run: |
@@ -99,11 +99,12 @@ jobs:
       - name: CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
-      - name: Run dependency vulnerability scan
+      - name: pnpm audit (workspace)
+        run: pnpm audit --audit-level=high
+
+      - name: Backend vulnerable packages
         run: |
-          cd frontend
-          npm audit --audit-level moderate
-          cd ../backend
+          cd backend
           dotnet list package --vulnerable --include-transitive
 
   # Unit and Integration Tests
