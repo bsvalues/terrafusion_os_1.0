@@ -9,7 +9,7 @@
  * Runtime: Deno 2.x
  * Framework: Oak
  * Database: PostgreSQL (via pg driver)
- * AI: OpenAI GPT-4 (with heuristic fallback)
+ * [OS-KERNEL] AI: OpenAI GPT-4 (with heuristic fallback)
  *
  * THE SOUL HAS BEEN INJECTED.
  * ═══════════════════════════════════════════════════════════════════════════
