@@ -3,36 +3,18 @@
     "root": "applications/terra-permit",
     "bucket": "GEN2_APPS",
     "evidence": {
-      "score": 9,
-      "scoreLocal": 6,
-      "scoreTotal": 9,
+      "score": 6,
+      "scoreLocal": 3,
+      "scoreTotal": 6,
       "buildableLocal": true,
       "markers": [
-        "docker",
         "package.json:buildOrTest",
-        "python",
         "vite"
       ],
       "markerOrigins": [
         {
-          "marker": "docker",
-          "foundAt": "applications/terra-permit/archive/unused-configs/docker-compose.production.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-permit/archive/unused-configs/docker-compose.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-permit/archive/unused-configs/Dockerfile"
-        },
-        {
           "marker": "package.json:buildOrTest",
           "foundAt": "applications/terra-permit/package.json"
-        },
-        {
-          "marker": "python",
-          "foundAt": "applications/terra-permit/archive/unused-configs/pyproject.toml"
         },
         {
           "marker": "vite",

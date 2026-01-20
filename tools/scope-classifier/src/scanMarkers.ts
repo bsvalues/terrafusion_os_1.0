@@ -17,6 +17,7 @@ export type ScanOptions = {
   recursive?: boolean;
   maxDepth?: number;
   maxFiles?: number;
+  trackedDirs?: Set<string> | null;
 };
 
 const SKIP_DIRS = new Set([
@@ -29,6 +30,12 @@ const SKIP_DIRS = new Set([
   "coverage",
   ".next",
   ".turbo",
+  "artifacts",
+  "_artifacts",
+  ".ci_artifacts_local",
+  "Dev",
+  "Dev - Copy",
+  "Dev - Copy (2)",
 ]);
 
 function exists(p: string) {
@@ -70,6 +77,7 @@ export function scanRootMarkers(
   const recursive = options.recursive ?? true;
   const maxDepth = options.maxDepth ?? 3;
   const maxFiles = options.maxFiles ?? 5000;
+  const trackedDirs = options.trackedDirs ?? null;
 
   const rootEntries = exists(abs) ? fs.readdirSync(abs, { withFileTypes: true }) : [];
   const hasTier = rootEntries.some(
@@ -93,6 +101,12 @@ export function scanRootMarkers(
     markerOrigins.push({ marker, foundAt });
   }
 
+  function isTrackedDir(dir: string): boolean {
+    if (!trackedDirs) return true;
+    const rel = toRel(repoRoot, dir);
+    return trackedDirs.has(rel === "" ? "." : rel);
+  }
+
   function scanDir(dir: string, depth: number) {
     if (!exists(dir)) return;
     let entries: fs.Dirent[] = [];
@@ -109,6 +123,7 @@ export function scanRootMarkers(
 
       if (entry.isDirectory()) {
         if (SKIP_DIRS.has(entry.name)) continue;
+        if (!isTrackedDir(full)) continue;
         if (entry.name === "api" && path.basename(path.dirname(full)) === "app") {
           addMarker("next:appApiRoutes", toRel(repoRoot, full));
         }

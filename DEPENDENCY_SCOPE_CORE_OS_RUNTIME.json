@@ -1,35 +1,5 @@
 [
   {
-    "root": "artifacts",
-    "bucket": "CORE_OS_RUNTIME",
-    "evidence": {
-      "score": 11,
-      "scoreLocal": 2,
-      "scoreTotal": 11,
-      "buildableLocal": true,
-      "markers": [
-        "docker"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "docker",
-          "foundAt": "artifacts/docker-compose.prod.yml.bak"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml",
-        "workflow-ref"
-      ],
-      "wiring": [
-        "compose-ref",
-        "kernel-gateway-ref"
-      ],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
     "root": "backend",
     "bucket": "CORE_OS_RUNTIME",
     "evidence": {
@@ -700,133 +670,6 @@
     }
   },
   {
-    "root": "Dev",
-    "bucket": "CORE_OS_RUNTIME",
-    "evidence": {
-      "score": 16,
-      "scoreLocal": 8,
-      "scoreTotal": 16,
-      "buildableLocal": true,
-      "markers": [
-        "Cargo.toml",
-        "docker",
-        "next:config",
-        "package.json:buildOrTest",
-        "pnpm-lock.yaml",
-        "pnpm-workspace.yaml",
-        "vite"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/backend/ai-engine/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/backend/auth-service/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/backend/data-engine/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/backend/qc-engine/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/backend/valuator-api/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/backend/valuator-core/Cargo.toml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev/Archive/TerraFusionMono/TerraFusionMono/docker-compose.dev.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/infrastructure/docker-compose.dev.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/infrastructure/docker-compose.production.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/infrastructure/docker-compose.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/docker-compose.benton.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/docker-compose.database.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/docker-compose.elite.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/docker-compose.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/Dockerfile"
-        },
-        {
-          "marker": "next:config",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/frontend/valuator-studio/next.config.mjs"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "Dev/Archive/TerraFusionMono/TerraFusionMono/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/frontend/valuator-studio/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "Dev/TerraFusion-Valuator-Pro-Studio_MIGRATED_20260112_193614/tests/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/package.json"
-        },
-        {
-          "marker": "pnpm-lock.yaml",
-          "foundAt": "Dev/Archive/TerraFusionMono/TerraFusionMono/pnpm-lock.yaml"
-        },
-        {
-          "marker": "pnpm-workspace.yaml",
-          "foundAt": "Dev/Archive/TerraFusionMono/TerraFusionMono/pnpm-workspace.yaml"
-        },
-        {
-          "marker": "pnpm-workspace.yaml",
-          "foundAt": "Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/pnpm-workspace.yaml"
-        },
-        {
-          "marker": "vite",
-          "foundAt": "Dev/Archive/TerraFusionMono/TerraFusionMono/vite.config.ts"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [
-        "kernel-gateway-ref",
-        "os-shell-mount-ref"
-      ],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
     "root": "docker",
     "bucket": "CORE_OS_RUNTIME",
     "evidence": {
@@ -1122,9 +965,9 @@
     "root": "ops",
     "bucket": "CORE_OS_RUNTIME",
     "evidence": {
-      "score": 14,
+      "score": 11,
       "scoreLocal": 2,
-      "scoreTotal": 14,
+      "scoreTotal": 11,
       "buildableLocal": true,
       "markers": [
         "docker"
@@ -1144,7 +987,6 @@
         "workflow-ref"
       ],
       "wiring": [
-        "compose-ref",
         "kernel-gateway-ref",
         "os-shell-mount-ref"
       ],
