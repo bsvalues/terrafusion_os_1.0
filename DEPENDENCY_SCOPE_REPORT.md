@@ -6,8 +6,8 @@ ARCH_ANCHOR: 9af5bb291
 ## Totals
 - CORE_OS_RUNTIME: 16
 - CORE_OS_TOOLING: 5
-- GEN2_APPS: 6
-- QUARANTINE: 141
+- GEN2_APPS: 10
+- QUARANTINE: 137
 
 ## Top Evidence Samples
 - . -> CORE_OS_TOOLING (local=4; total=6; wiring=none)
