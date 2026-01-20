@@ -75,21 +75,17 @@ jobs:
       - name: Install dependencies (workspace)
         run: pnpm install --frozen-lockfile
 
-      - name: Restore .NET dependencies
+      - name: Backend restore/build (pinned)
         run: |
-          cd backend
-          dotnet restore
+          dotnet --info
+          dotnet restore backend/TerraFusion.sln
+          dotnet build backend/TerraFusion.sln -c Release --no-restore
 
       - name: Frontend lint
         run: pnpm -C frontend run lint
 
       - name: Frontend type-check
         run: pnpm -C frontend run type-check
-
-      - name: Run .NET code analysis
-        run: |
-          cd backend
-          dotnet build --configuration Release --no-restore --verbosity normal
 
       - name: Run security scan with CodeQL
         uses: github/codeql-action/init@v3
@@ -104,8 +100,7 @@ jobs:
 
       - name: Backend vulnerable packages
         run: |
-          cd backend
-          dotnet list package --vulnerable --include-transitive
+          dotnet list backend/TerraFusion.sln package --vulnerable --include-transitive
 
   # Unit and Integration Tests
   test:
