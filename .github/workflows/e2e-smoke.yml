@@ -28,11 +28,13 @@ jobs:
             terrafusion-cos/e2e/pnpm-lock.yaml
 
       - name: Install frontend deps
+        if: ${{ hashFiles('terrafusion-cos/ui/index.html') == '' }}
         working-directory: terrafusion-cos/frontend_engine
         run: |
           pnpm install --frozen-lockfile --ignore-workspace
 
       - name: Build frontend
+        if: ${{ hashFiles('terrafusion-cos/ui/index.html') == '' }}
         working-directory: terrafusion-cos/frontend_engine
         run: |
           pnpm run build
