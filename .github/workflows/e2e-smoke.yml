@@ -10,31 +10,47 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: pnpm
+          cache-dependency-path: |
+            terrafusion-cos/frontend_engine/pnpm-lock.yaml
+            terrafusion-cos/e2e/pnpm-lock.yaml
 
       - name: Install frontend deps
         working-directory: terrafusion-cos/frontend_engine
         run: |
-          npm ci
+          pnpm install --frozen-lockfile
 
       - name: Build frontend
         working-directory: terrafusion-cos/frontend_engine
         run: |
-          npm run ci:build
+          pnpm run build
+
+      - name: Install E2E deps
+        working-directory: terrafusion-cos/e2e
+        run: |
+          pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        working-directory: terrafusion-cos/frontend_engine
+        working-directory: terrafusion-cos/e2e
         run: |
-          npx playwright install --with-deps
+          pnpm exec playwright install --with-deps
 
       - name: Run smoke test
         working-directory: terrafusion-cos/e2e
         run: |
-          npx playwright test smoke.spec.js --config=playwright.config.js --project=chromium
+          pnpm exec playwright test smoke.spec.js --config=playwright.config.js --project=chromium
         env:
           CI: true
 
