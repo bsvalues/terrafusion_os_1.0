@@ -524,3 +524,7 @@ quantum_performance_results.json
 !frontend/apps/os-shell/src/lib/**/*
 !frontend/apps/os-shell/src/data/
 !frontend/apps/os-shell/src/data/**/*
+
+# Local operator intel outputs
+STATUS.md
+TODO_INTEL.json
