@@ -37,7 +37,8 @@ function collectFiles(
   root: string,
   predicate: (p: string) => boolean,
   repoRoot: string,
-  trackedDirs?: Set<string> | null
+  trackedDirs?: Set<string> | null,
+  trackedFiles?: Set<string> | null
 ): string[] {
   const files: string[] = [];
   const stack = [root];
@@ -62,6 +63,10 @@ function collectFiles(
         continue;
       }
       if (entry.isFile() && predicate(full)) {
+        if (trackedFiles) {
+          const rel = path.relative(repoRoot, full).replace(/\\/g, "/");
+          if (!trackedFiles.has(rel)) continue;
+        }
         files.push(full);
       }
     }
@@ -129,7 +134,8 @@ function matchRoots(
 export function scanRefs(
   repoRoot: string,
   roots: string[],
-  trackedDirs?: Set<string> | null
+  trackedDirs?: Set<string> | null,
+  trackedFiles?: Set<string> | null
 ): Record<string, RefScan> {
   const result: Record<string, RefScan> = {};
   for (const root of roots) {
@@ -151,7 +157,8 @@ export function scanRefs(
         workflowDir,
         (p) => p.endsWith(".yml") || p.endsWith(".yaml"),
         repoRoot,
-        trackedDirs
+        trackedDirs,
+        trackedFiles
       )
     : [];
 
@@ -163,7 +170,8 @@ export function scanRefs(
         serviceRegistryDir,
         (p) => p.endsWith(".json") || p.endsWith(".yml") || p.endsWith(".yaml"),
         repoRoot,
-        trackedDirs
+        trackedDirs,
+        trackedFiles
       )
     );
   }
@@ -177,7 +185,8 @@ export function scanRefs(
       return name.startsWith("docker-compose") || name === "compose.yml" || name === "compose.yaml";
     },
     repoRoot,
-    trackedDirs
+    trackedDirs,
+    trackedFiles
   );
 
   const osShellDir = path.join(repoRoot, "frontend", "apps", "os-shell");
@@ -192,7 +201,8 @@ export function scanRefs(
           p.endsWith(".yml") ||
           p.endsWith(".yaml"),
         repoRoot,
-        trackedDirs
+        trackedDirs,
+        trackedFiles
       )
     : [];
 
@@ -202,7 +212,8 @@ export function scanRefs(
         backendDir,
         (p) => p.endsWith(".ts") || p.endsWith(".cs") || p.endsWith(".json") || p.endsWith(".yml") || p.endsWith(".yaml"),
         repoRoot,
-        trackedDirs
+        trackedDirs,
+        trackedFiles
       )
     : [];
 

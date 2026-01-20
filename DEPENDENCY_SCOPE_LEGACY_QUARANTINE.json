@@ -2891,9 +2891,9 @@
     "root": "os-kernel",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 5,
+      "score": 2,
       "scoreLocal": 1,
-      "scoreTotal": 5,
+      "scoreTotal": 2,
       "buildableLocal": false,
       "markers": [
         "python"
@@ -2907,9 +2907,7 @@
       "inherited": [
         "pnpm-lock.yaml"
       ],
-      "wiring": [
-        "compose-ref"
-      ],
+      "wiring": [],
       "touchedRelease": true,
       "touchedDev": true,
       "pathFlags": []
@@ -4866,7 +4864,6 @@
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": [
-        "scan:fileCapExceeded",
         "scan:fileCapExceeded",
         "scan:fileCapExceeded",
         "scan:fileCapExceeded",

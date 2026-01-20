@@ -18,6 +18,7 @@ export type ScanOptions = {
   maxDepth?: number;
   maxFiles?: number;
   trackedDirs?: Set<string> | null;
+  trackedFiles?: Set<string> | null;
 };
 
 const SKIP_DIRS = new Set([
@@ -78,6 +79,7 @@ export function scanRootMarkers(
   const maxDepth = options.maxDepth ?? 3;
   const maxFiles = options.maxFiles ?? 5000;
   const trackedDirs = options.trackedDirs ?? null;
+  const trackedFiles = options.trackedFiles ?? null;
 
   const rootEntries = exists(abs) ? fs.readdirSync(abs, { withFileTypes: true }) : [];
   const hasTier = rootEntries.some(
@@ -134,6 +136,11 @@ export function scanRootMarkers(
       }
 
       if (!entry.isFile()) continue;
+
+      if (trackedFiles) {
+        const rel = toRel(repoRoot, full);
+        if (!trackedFiles.has(rel)) continue;
+      }
 
       fileCount += 1;
       if (fileCount > maxFiles) {

@@ -1,7 +1,12 @@
 import { execSync } from "node:child_process";
 import path from "node:path";
 
-export function getTrackedDirs(repoRoot: string): Set<string> | null {
+export type TrackedIndex = {
+  dirs: Set<string>;
+  files: Set<string>;
+};
+
+export function getTrackedIndex(repoRoot: string): TrackedIndex | null {
   try {
     const output = execSync("git ls-files -z", {
       cwd: repoRoot,
@@ -13,8 +18,10 @@ export function getTrackedDirs(repoRoot: string): Set<string> | null {
       .filter(Boolean);
 
     const dirs = new Set<string>(["."]);
+    const files = new Set<string>();
     for (const file of output) {
       const normalized = file.replace(/\\/g, "/");
+      files.add(normalized);
       let dir = path.posix.dirname(normalized);
       while (dir && dir !== "." && dir !== "/") {
         dirs.add(dir);
@@ -25,7 +32,7 @@ export function getTrackedDirs(repoRoot: string): Set<string> | null {
       dirs.add(dir === "." ? "." : dir);
     }
 
-    return dirs;
+    return { dirs, files };
   } catch {
     return null;
   }

@@ -429,8 +429,8 @@
         "kernel-gateway-ref",
         "os-shell-mount-ref"
       ],
-      "touchedRelease": false,
-      "touchedDev": false,
+      "touchedRelease": true,
+      "touchedDev": true,
       "pathFlags": []
     }
   },
@@ -1546,10 +1546,6 @@
         {
           "marker": "docker",
           "foundAt": "docker-compose.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "docker-compose.yml.backup"
         },
         {
           "marker": "docker",
