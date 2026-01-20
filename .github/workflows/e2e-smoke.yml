@@ -30,7 +30,7 @@ jobs:
       - name: Install frontend deps
         working-directory: terrafusion-cos/frontend_engine
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install --frozen-lockfile --ignore-workspace
 
       - name: Build frontend
         working-directory: terrafusion-cos/frontend_engine
@@ -40,7 +40,7 @@ jobs:
       - name: Install E2E deps
         working-directory: terrafusion-cos/e2e
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install --frozen-lockfile --ignore-workspace
 
       - name: Install Playwright browsers
         working-directory: terrafusion-cos/e2e
