@@ -75,7 +75,7 @@ jobs:
       - name: Install pinned moto and test deps
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; else pip install pytest requests boto3 moto==4.1.0; fi
 
       - name: Create bundle for artifacts
         if: always()
@@ -95,4 +95,3 @@ jobs:
 
       - name: Run S3 bundle test
         run: pytest -q tests/test_bundle_s3.py
-
