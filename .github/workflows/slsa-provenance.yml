@@ -12,6 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
   id-token: write # Required for OIDC token (Sigstore)
   packages: write # Required for container registry
@@ -188,10 +189,6 @@ jobs:
     needs: [build-backend]
     if: github.event_name != 'pull_request'
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
-    permissions:
-      id-token: write # OIDC for signing
-      contents: read
-      actions: read
     with:
       base64-subjects: ${{ needs.build-backend.outputs.base64_subjects }}
       provenance-name: backend-provenance.intoto.jsonl
@@ -201,10 +198,6 @@ jobs:
     needs: [build-frontend]
     if: github.event_name != 'pull_request'
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
-    permissions:
-      id-token: write
-      contents: read
-      actions: read
     with:
       base64-subjects: ${{ needs.build-frontend.outputs.base64_subjects }}
       provenance-name: frontend-provenance.intoto.jsonl
