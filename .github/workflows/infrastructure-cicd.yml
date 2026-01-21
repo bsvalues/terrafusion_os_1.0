@@ -97,6 +97,13 @@ jobs:
         helm repo add grafana https://grafana.github.io/helm-charts
         helm repo update
 
+    - name: Build Helm dependencies
+      run: |
+        helm dependency build charts/terrafusion-backend
+        helm dependency build charts/terrafusion-frontend
+        helm dependency build charts/terrafusion-ai-swarm
+        helm dependency build charts/terrafusion
+
     - name: Lint Helm charts
       run: |
         helm lint charts/terrafusion-backend
