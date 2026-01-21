@@ -29,11 +29,11 @@ jobs:
   build-backend:
     name: Build Backend (Python)
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('pyproject.toml', 'setup.py', 'setup.cfg') != '' }}
     permissions:
       contents: read
       packages: write
     outputs:
+      has_python_package: ${{ steps.detect_py.outputs.found }}
       image_digest: ${{ steps.push.outputs.digest }}
       base64_subjects: ${{ steps.hash.outputs.base64_subjects }}
 
@@ -43,24 +43,37 @@ jobs:
         with:
           fetch-depth: 0 # Full history for provenance
 
+      - name: Detect Python package
+        id: detect_py
+        run: |
+          if [ -f pyproject.toml ] || [ -f setup.py ] || [ -f setup.cfg ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Python
+        if: steps.detect_py.outputs.found == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
 
       - name: Install dependencies
+        if: steps.detect_py.outputs.found == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install build wheel
 
       - name: Build Python package
+        if: steps.detect_py.outputs.found == 'true'
         run: |
           python -m build
           ls -lh dist/
 
       - name: Generate artifact hash
         id: hash
+        if: steps.detect_py.outputs.found == 'true'
         run: |
           cd dist
           sha256sum *.whl *.tar.gz > checksums.txt
@@ -69,6 +82,7 @@ jobs:
           echo "base64_subjects=$(base64 -w0 checksums.txt)" >> $GITHUB_OUTPUT
 
       - name: Upload build artifacts
+        if: steps.detect_py.outputs.found == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: python-packages
@@ -194,7 +208,7 @@ jobs:
   provenance-backend:
     name: Generate SLSA Provenance (Backend)
     needs: [build-backend]
-    if: ${{ github.event_name != 'pull_request' && needs.build-backend.result == 'success' }}
+    if: ${{ github.event_name != 'pull_request' && needs.build-backend.outputs.has_python_package == 'true' }}
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
     permissions:
       actions: read
