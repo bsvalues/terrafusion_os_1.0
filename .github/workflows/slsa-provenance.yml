@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       image_digest: ${{ steps.push.outputs.digest }}
+      base64_subjects: ${{ steps.hash.outputs.base64_subjects }}
 
     steps:
       - name: Checkout code
@@ -60,6 +61,7 @@ jobs:
           sha256sum *.whl *.tar.gz > checksums.txt
           cat checksums.txt
           echo "artifact-hash=$(sha256sum *.whl | awk '{print $1}')" >> $GITHUB_OUTPUT
+          echo "base64_subjects=$(base64 -w0 checksums.txt)" >> $GITHUB_OUTPUT
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -106,6 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       image_digest: ${{ steps.push.outputs.digest }}
+      base64_subjects: ${{ steps.hash.outputs.base64_subjects }}
 
     steps:
       - name: Checkout code
@@ -139,6 +142,7 @@ jobs:
           cd native-shell/ui/dist
           find . -type f -exec sha256sum {} \; > checksums.txt
           cat checksums.txt
+          echo "base64_subjects=$(base64 -w0 checksums.txt)" >> $GITHUB_OUTPUT
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -183,83 +187,27 @@ jobs:
     name: Generate SLSA Provenance (Backend)
     needs: [build-backend]
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
     permissions:
-      id-token: write # OIDC for Sigstore
-      contents: write # Attest artifacts
-      packages: write
-
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: python-packages
-          path: ./dist
-
-      - name: Generate SLSA provenance
-        uses: slsa-framework/slsa-github-generator@v1.9.0
-        with:
-          artifact-path: ./dist/*.whl
-          provenance-name: backend-provenance.intoto.jsonl
-
-      - name: Sign provenance with Sigstore
-        uses: sigstore/cosign-installer@v3.3.0
-
-      - name: Attest container image
-        run: |
-          cosign attest \
-            --predicate ./backend-provenance.intoto.jsonl \
-            --type slsaprovenance \
-            --yes \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend@${{ needs.build-backend.outputs.image_digest }}
-
-      - name: Upload provenance
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-provenance
-          path: backend-provenance.intoto.jsonl
-          retention-days: 365 # 1 year retention for compliance
+      id-token: write # OIDC for signing
+      contents: read
+      actions: read
+    with:
+      base64-subjects: ${{ needs.build-backend.outputs.base64_subjects }}
+      provenance-name: backend-provenance.intoto.jsonl
 
   provenance-frontend:
     name: Generate SLSA Provenance (Frontend)
     needs: [build-frontend]
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
     permissions:
       id-token: write
-      contents: write
-      packages: write
-
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-build
-          path: ./dist
-
-      - name: Generate SLSA provenance
-        uses: slsa-framework/slsa-github-generator@v1.9.0
-        with:
-          artifact-path: ./dist
-          provenance-name: frontend-provenance.intoto.jsonl
-
-      - name: Sign provenance with Sigstore
-        uses: sigstore/cosign-installer@v3.3.0
-
-      - name: Attest container image
-        run: |
-          cosign attest \
-            --predicate ./frontend-provenance.intoto.jsonl \
-            --type slsaprovenance \
-            --yes \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend@${{ needs.build-frontend.outputs.image_digest }}
-
-      - name: Upload provenance
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-provenance
-          path: frontend-provenance.intoto.jsonl
-          retention-days: 365
+      contents: read
+      actions: read
+    with:
+      base64-subjects: ${{ needs.build-frontend.outputs.base64_subjects }}
+      provenance-name: frontend-provenance.intoto.jsonl
 
   # ===========================================================================
   # Verify SLSA Provenance (Deployment Gate)
@@ -277,8 +225,9 @@ jobs:
       - name: Download provenance files
         uses: actions/download-artifact@v4
         with:
-          pattern: '*-provenance'
+          pattern: '*provenance*.intoto.jsonl'
           path: ./provenance
+          merge-multiple: true
 
       - name: Install SLSA verifier
         run: |
@@ -289,14 +238,14 @@ jobs:
       - name: Verify backend provenance
         run: |
           slsa-verifier verify-artifact \
-            --provenance-path ./provenance/backend-provenance/backend-provenance.intoto.jsonl \
+            --provenance-path ./provenance/backend-provenance.intoto.jsonl \
             --source-uri github.com/${{ github.repository }} \
             --source-tag ${{ github.ref_name }}
 
       - name: Verify frontend provenance
         run: |
           slsa-verifier verify-artifact \
-            --provenance-path ./provenance/frontend-provenance/frontend-provenance.intoto.jsonl \
+            --provenance-path ./provenance/frontend-provenance.intoto.jsonl \
             --source-uri github.com/${{ github.repository }} \
             --source-tag ${{ github.ref_name }}
 
@@ -309,7 +258,7 @@ jobs:
 
           # Verify provenance against policy
           opa eval --data ops/security/policies/slsa-attestation.policy.rego \
-            --input ./provenance/backend-provenance/backend-provenance.intoto.jsonl \
+            --input ./provenance/backend-provenance.intoto.jsonl \
             "data.slsa.allow"
 
       - name: Generate verification report
