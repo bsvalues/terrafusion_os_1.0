@@ -30,7 +30,7 @@ jobs:
     name: Build Backend (Python)
     runs-on: ubuntu-latest
     outputs:
-      image-digest: ${{ steps.push.outputs.digest }}
+      image_digest: ${{ steps.push.outputs.digest }}
 
     steps:
       - name: Checkout code
@@ -106,7 +106,7 @@ jobs:
     name: Build Frontend (TypeScript)
     runs-on: ubuntu-latest
     outputs:
-      image-digest: ${{ steps.push.outputs.digest }}
+      image_digest: ${{ steps.push.outputs.digest }}
 
     steps:
       - name: Checkout code
@@ -213,7 +213,7 @@ jobs:
             --predicate ./backend-provenance.intoto.jsonl \
             --type slsaprovenance \
             --yes \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend@${{ needs.build-backend.outputs.image-digest }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend@${{ needs.build-backend.outputs.image_digest }}
 
       - name: Upload provenance
         uses: actions/upload-artifact@v4
@@ -255,7 +255,7 @@ jobs:
             --predicate ./frontend-provenance.intoto.jsonl \
             --type slsaprovenance \
             --yes \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend@${{ needs.build-frontend.outputs.image-digest }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend@${{ needs.build-frontend.outputs.image_digest }}
 
       - name: Upload provenance
         uses: actions/upload-artifact@v4
