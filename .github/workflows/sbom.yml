@@ -11,13 +11,13 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 6 * * *'  # Daily at 6 AM UTC
+    - cron: '0 6 * * *' # Daily at 6 AM UTC
   workflow_dispatch:
 
 permissions:
   contents: read
-  security-events: write  # Required for SARIF upload
-  id-token: write  # Required for OIDC token
+  security-events: write # Required for SARIF upload
+  id-token: write # Required for OIDC token
 
 env:
   REGISTRY: ghcr.io
@@ -27,57 +27,57 @@ jobs:
   # ===========================================================================
   # Generate SBOM (Python Backend)
   # ===========================================================================
-  
+
   sbom-backend:
     name: Generate SBOM (Backend)
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Install Syft
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
           syft version
-      
+
       - name: Generate SBOM (SPDX format)
         run: |
           # SBOM from source
           syft dir:. -o spdx-json=sbom-backend-spdx.json
-          
+
           # SBOM from requirements.txt
           syft file:requirements.txt -o cyclonedx-json=sbom-backend-cyclonedx.json
-          
+
           # Summary
           echo "## SBOM Summary (Backend)" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           syft dir:. -o table >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-      
+
       - name: Generate SBOM (Container image)
         if: github.event_name != 'pull_request'
         run: |
           # Build temporary image for SBOM generation
           docker build -t backend-temp:latest -f Dockerfile.backend .
-          
+
           # Generate SBOM from container
           syft backend-temp:latest -o spdx-json=sbom-backend-container-spdx.json
           syft backend-temp:latest -o cyclonedx-json=sbom-backend-container-cyclonedx.json
-      
+
       - name: Upload SBOM artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sbom-backend
           path: |
             sbom-backend-*.json
-          retention-days: 365  # 1 year retention for compliance
-      
+          retention-days: 365 # 1 year retention for compliance
+
       - name: Attest SBOM to container
         if: github.event_name != 'pull_request'
         uses: actions/attest-sbom@v1
@@ -86,50 +86,50 @@ jobs:
           subject-digest: ${{ needs.build-backend.outputs.image-digest }}
           sbom-path: sbom-backend-container-spdx.json
           push-to-registry: true
-  
+
   # ===========================================================================
   # Generate SBOM (Frontend)
   # ===========================================================================
-  
+
   sbom-frontend:
     name: Generate SBOM (Frontend)
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      
+
       - name: Install Syft
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
           syft version
-      
+
       - name: Generate SBOM (SPDX format)
         run: |
           # SBOM from source
           syft dir:. -o spdx-json=sbom-frontend-spdx.json
-          
+
           # SBOM from package.json
           syft file:package.json -o cyclonedx-json=sbom-frontend-cyclonedx.json
-          
+
           # Summary
           echo "## SBOM Summary (Frontend)" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           syft dir:. -o table >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-      
+
       - name: Generate SBOM (Container image)
         if: github.event_name != 'pull_request'
         run: |
           docker build -t frontend-temp:latest -f Dockerfile.frontend .
           syft frontend-temp:latest -o spdx-json=sbom-frontend-container-spdx.json
           syft frontend-temp:latest -o cyclonedx-json=sbom-frontend-container-cyclonedx.json
-      
+
       - name: Upload SBOM artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -137,7 +137,7 @@ jobs:
           path: |
             sbom-frontend-*.json
           retention-days: 365
-      
+
       - name: Attest SBOM to container
         if: github.event_name != 'pull_request'
         uses: actions/attest-sbom@v1
@@ -146,73 +146,73 @@ jobs:
           subject-digest: ${{ needs.build-frontend.outputs.image-digest }}
           sbom-path: sbom-frontend-container-spdx.json
           push-to-registry: true
-  
+
   # ===========================================================================
   # Vulnerability Scanning (Backend)
   # ===========================================================================
-  
+
   scan-backend:
     name: Vulnerability Scan (Backend)
     needs: [sbom-backend]
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Download SBOM
         uses: actions/download-artifact@v4
         with:
           name: sbom-backend
           path: ./sbom
-      
+
       - name: Install Grype
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
           grype version
-      
+
       - name: Scan for vulnerabilities
         run: |
           # Scan SBOM
           grype sbom:./sbom/sbom-backend-spdx.json \
             -o json \
             --file backend-vulnerabilities.json
-          
+
           # Scan with severity filter
           grype sbom:./sbom/sbom-backend-spdx.json \
             --fail-on high \
             -o table
-      
+
       - name: Generate SARIF report
         run: |
           grype sbom:./sbom/sbom-backend-spdx.json \
             -o sarif \
             --file backend-vulnerabilities.sarif
-      
+
       - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: backend-vulnerabilities.sarif
           category: backend-dependencies
-      
+
       - name: Generate vulnerability summary
         run: |
           echo "## Vulnerability Scan Results (Backend)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # Count by severity
           CRITICAL=$(jq '[.matches[] | select(.vulnerability.severity=="Critical")] | length' backend-vulnerabilities.json)
           HIGH=$(jq '[.matches[] | select(.vulnerability.severity=="High")] | length' backend-vulnerabilities.json)
           MEDIUM=$(jq '[.matches[] | select(.vulnerability.severity=="Medium")] | length' backend-vulnerabilities.json)
           LOW=$(jq '[.matches[] | select(.vulnerability.severity=="Low")] | length' backend-vulnerabilities.json)
-          
+
           echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| Critical | $CRITICAL |" >> $GITHUB_STEP_SUMMARY
           echo "| High     | $HIGH |" >> $GITHUB_STEP_SUMMARY
           echo "| Medium   | $MEDIUM |" >> $GITHUB_STEP_SUMMARY
           echo "| Low      | $LOW |" >> $GITHUB_STEP_SUMMARY
-          
+
           # Fail if critical or high vulnerabilities
           if [ $CRITICAL -gt 0 ] || [ $HIGH -gt 0 ]; then
             echo "❌ **SECURITY GATE FAILED**: Critical or High vulnerabilities detected" >> $GITHUB_STEP_SUMMARY
@@ -220,7 +220,7 @@ jobs:
           else
             echo "✅ **SECURITY GATE PASSED**: No Critical or High vulnerabilities" >> $GITHUB_STEP_SUMMARY
           fi
-      
+
       - name: Upload vulnerability report
         uses: actions/upload-artifact@v4
         with:
@@ -229,76 +229,76 @@ jobs:
             backend-vulnerabilities.json
             backend-vulnerabilities.sarif
           retention-days: 90
-  
+
   # ===========================================================================
   # Vulnerability Scanning (Frontend)
   # ===========================================================================
-  
+
   scan-frontend:
     name: Vulnerability Scan (Frontend)
     needs: [sbom-frontend]
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Download SBOM
         uses: actions/download-artifact@v4
         with:
           name: sbom-frontend
           path: ./sbom
-      
+
       - name: Install Grype
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
-      
+
       - name: Scan for vulnerabilities
         run: |
           grype sbom:./sbom/sbom-frontend-spdx.json \
             -o json \
             --file frontend-vulnerabilities.json
-          
+
           grype sbom:./sbom/sbom-frontend-spdx.json \
             --fail-on high \
             -o table
-      
+
       - name: Generate SARIF report
         run: |
           grype sbom:./sbom/sbom-frontend-spdx.json \
             -o sarif \
             --file frontend-vulnerabilities.sarif
-      
+
       - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: frontend-vulnerabilities.sarif
           category: frontend-dependencies
-      
+
       - name: Generate vulnerability summary
         run: |
           echo "## Vulnerability Scan Results (Frontend)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           CRITICAL=$(jq '[.matches[] | select(.vulnerability.severity=="Critical")] | length' frontend-vulnerabilities.json)
           HIGH=$(jq '[.matches[] | select(.vulnerability.severity=="High")] | length' frontend-vulnerabilities.json)
           MEDIUM=$(jq '[.matches[] | select(.vulnerability.severity=="Medium")] | length' frontend-vulnerabilities.json)
           LOW=$(jq '[.matches[] | select(.vulnerability.severity=="Low")] | length' frontend-vulnerabilities.json)
-          
+
           echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| Critical | $CRITICAL |" >> $GITHUB_STEP_SUMMARY
           echo "| High     | $HIGH |" >> $GITHUB_STEP_SUMMARY
           echo "| Medium   | $MEDIUM |" >> $GITHUB_STEP_SUMMARY
           echo "| Low      | $LOW |" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ $CRITICAL -gt 0 ] || [ $HIGH -gt 0 ]; then
             echo "❌ **SECURITY GATE FAILED**: Critical or High vulnerabilities detected" >> $GITHUB_STEP_SUMMARY
             exit 1
           else
             echo "✅ **SECURITY GATE PASSED**: No Critical or High vulnerabilities" >> $GITHUB_STEP_SUMMARY
           fi
-      
+
       - name: Upload vulnerability report
         uses: actions/upload-artifact@v4
         with:
@@ -307,102 +307,102 @@ jobs:
             frontend-vulnerabilities.json
             frontend-vulnerabilities.sarif
           retention-days: 90
-  
+
   # ===========================================================================
   # License Compliance Check
   # ===========================================================================
-  
+
   license-check:
     name: License Compliance
     needs: [sbom-backend, sbom-frontend]
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Download SBOMs
         uses: actions/download-artifact@v4
         with:
           pattern: sbom-*
           path: ./sboms
-      
+
       - name: Install license checker
         run: |
           pip install license-expression pip-licenses
-      
+
       - name: Check backend licenses
         run: |
           echo "## License Compliance (Backend)" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          
+
           # Extract licenses from SBOM
           jq -r '.packages[] | "\(.name) - \(.licenseConcluded // "UNKNOWN")"' \
             sboms/sbom-backend/sbom-backend-spdx.json | head -20 >> $GITHUB_STEP_SUMMARY
-          
+
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          
+
           # Check for prohibited licenses (GPL, AGPL)
           PROHIBITED=$(jq -r '.packages[] | select(.licenseConcluded | test("GPL|AGPL")) | .name' \
             sboms/sbom-backend/sbom-backend-spdx.json | wc -l)
-          
+
           if [ $PROHIBITED -gt 0 ]; then
             echo "⚠️ **WARNING**: $PROHIBITED packages with prohibited licenses (GPL/AGPL)" >> $GITHUB_STEP_SUMMARY
           else
             echo "✅ **PASS**: No prohibited licenses detected" >> $GITHUB_STEP_SUMMARY
           fi
-      
+
       - name: Check frontend licenses
         run: |
           echo "## License Compliance (Frontend)" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          
+
           jq -r '.packages[] | "\(.name) - \(.licenseConcluded // "UNKNOWN")"' \
             sboms/sbom-frontend/sbom-frontend-spdx.json | head -20 >> $GITHUB_STEP_SUMMARY
-          
+
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          
+
           PROHIBITED=$(jq -r '.packages[] | select(.licenseConcluded | test("GPL|AGPL")) | .name' \
             sboms/sbom-frontend/sbom-frontend-spdx.json | wc -l)
-          
+
           if [ $PROHIBITED -gt 0 ]; then
             echo "⚠️ **WARNING**: $PROHIBITED packages with prohibited licenses (GPL/AGPL)" >> $GITHUB_STEP_SUMMARY
           else
             echo "✅ **PASS**: No prohibited licenses detected" >> $GITHUB_STEP_SUMMARY
           fi
-  
+
   # ===========================================================================
   # Security Score Calculation
   # ===========================================================================
-  
+
   security-score:
     name: Calculate Security Score
     needs: [scan-backend, scan-frontend, license-check]
     if: always()
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Download vulnerability reports
         uses: actions/download-artifact@v4
         with:
           pattern: '*-vulnerability-report'
           path: ./reports
-      
+
       - name: Calculate security score
         run: |
           python3 <<EOF
           import json
-          
+
           # Load vulnerability reports
           with open('reports/backend-vulnerability-report/backend-vulnerabilities.json') as f:
               backend = json.load(f)
-          
+
           with open('reports/frontend-vulnerability-report/frontend-vulnerabilities.json') as f:
               frontend = json.load(f)
-          
+
           # Count vulnerabilities
           def count_by_severity(report):
               counts = {'Critical': 0, 'High': 0, 'Medium': 0, 'Low': 0}
@@ -411,10 +411,10 @@ jobs:
                   if severity in counts:
                       counts[severity] += 1
               return counts
-          
+
           backend_counts = count_by_severity(backend)
           frontend_counts = count_by_severity(frontend)
-          
+
           # Calculate security score (0.0 - 1.0)
           # Base: 1.0, subtract points for vulnerabilities
           score = 1.0
@@ -424,9 +424,9 @@ jobs:
           score -= frontend_counts['Critical'] * 0.10
           score -= frontend_counts['High'] * 0.05
           score -= frontend_counts['Medium'] * 0.02
-          
+
           score = max(0.0, score)  # Floor at 0.0
-          
+
           print(f"## Security Score: {score:.2f}")
           print(f"\n**Backend Vulnerabilities:**")
           print(f"- Critical: {backend_counts['Critical']}")
@@ -438,32 +438,32 @@ jobs:
           print(f"- High: {frontend_counts['High']}")
           print(f"- Medium: {frontend_counts['Medium']}")
           print(f"- Low: {frontend_counts['Low']}")
-          
+
           # Save score
           with open('security-score.txt', 'w') as f:
               f.write(f"{score:.2f}")
           EOF
-      
+
       - name: Add score to summary
         run: |
           cat security-score.txt >> $GITHUB_STEP_SUMMARY
-      
+
       - name: Upload security score
         uses: actions/upload-artifact@v4
         with:
           name: security-score
           path: security-score.txt
-  
+
   # ===========================================================================
   # Deploy Gate (Block if vulnerabilities detected)
   # ===========================================================================
-  
+
   deploy-gate:
     name: Security Deployment Gate
     needs: [scan-backend, scan-frontend, security-score]
     if: always()
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Check scan results
         run: |
@@ -474,18 +474,18 @@ jobs:
           else
             echo "✅ Security scans passed - DEPLOYMENT APPROVED"
           fi
-      
+
       - name: Download security score
         uses: actions/download-artifact@v4
         with:
           name: security-score
           path: ./
-      
+
       - name: Check minimum security score
         run: |
           SCORE=$(cat security-score.txt)
           MIN_SCORE=0.85
-          
+
           if (( $(echo "$SCORE < $MIN_SCORE" | bc -l) )); then
             echo "❌ Security score $SCORE < minimum $MIN_SCORE - BLOCKING DEPLOYMENT"
             exit 1
@@ -493,16 +493,16 @@ jobs:
             echo "✅ Security score $SCORE >= minimum $MIN_SCORE - DEPLOYMENT APPROVED"
           fi
 
-# ===========================================================================
-# Notifications
-# ===========================================================================
+  # ===========================================================================
+  # Notifications
+  # ===========================================================================
 
   notify:
     name: Notify Security Team
     needs: [deploy-gate]
-    if: failure()
+    if: failure() && secrets.SLACK_SECURITY_WEBHOOK_URL != ''
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Slack notification (failure)
         uses: slackapi/slack-github-action@v1.25.0

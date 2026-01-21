@@ -97,7 +97,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       role='button'
       tabIndex={0}
       aria-label={`Open ${name}`}
-      aria-selected={isSelected}
+      aria-pressed={isSelected}
       className={`
         flex flex-col items-center justify-center
         w-20 h-24 p-2 rounded-lg cursor-pointer
