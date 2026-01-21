@@ -29,6 +29,7 @@ jobs:
   build-backend:
     name: Build Backend (Python)
     runs-on: ubuntu-latest
+    if: ${{ hashFiles('pyproject.toml', 'setup.py', 'setup.cfg') != '' }}
     permissions:
       contents: read
       packages: write
@@ -193,7 +194,7 @@ jobs:
   provenance-backend:
     name: Generate SLSA Provenance (Backend)
     needs: [build-backend]
-    if: github.event_name != 'pull_request'
+    if: ${{ github.event_name != 'pull_request' && needs.build-backend.result == 'success' }}
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
     permissions:
       actions: read
@@ -224,6 +225,7 @@ jobs:
     name: Verify SLSA Provenance
     needs: [provenance-backend, provenance-frontend]
     runs-on: ubuntu-latest
+    if: ${{ needs.provenance-frontend.result == 'success' && (needs.provenance-backend.result == 'success' || needs.provenance-backend.result == 'skipped') }}
     permissions:
       contents: read
 
@@ -245,6 +247,7 @@ jobs:
           sudo mv slsa-verifier /usr/local/bin/
 
       - name: Verify backend provenance
+        if: ${{ needs.provenance-backend.result == 'success' }}
         run: |
           slsa-verifier verify-artifact \
             --provenance-path ./provenance/backend-provenance.intoto.jsonl \
@@ -259,6 +262,7 @@ jobs:
             --source-tag ${{ github.ref_name }}
 
       - name: Policy check (OPA)
+        if: ${{ needs.provenance-backend.result == 'success' }}
         run: |
           # Install OPA
           curl -Lo opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
