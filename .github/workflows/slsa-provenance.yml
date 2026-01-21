@@ -15,7 +15,6 @@ permissions:
   contents: read
   id-token: write # Required for OIDC token (Sigstore)
   packages: write # Required for container registry
-  attestations: write # Required for artifact attestations
 
 env:
   REGISTRY: ghcr.io
