@@ -13,7 +13,7 @@ on:
 
 permissions:
   actions: read
-  contents: read
+  contents: write
   id-token: write # Required for OIDC token (Sigstore)
   packages: write # Required for container registry
 
@@ -29,6 +29,9 @@ jobs:
   build-backend:
     name: Build Backend (Python)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     outputs:
       image_digest: ${{ steps.push.outputs.digest }}
       base64_subjects: ${{ steps.hash.outputs.base64_subjects }}
@@ -107,6 +110,9 @@ jobs:
   build-frontend:
     name: Build Frontend (TypeScript)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     outputs:
       image_digest: ${{ steps.push.outputs.digest }}
       base64_subjects: ${{ steps.hash.outputs.base64_subjects }}
@@ -218,6 +224,8 @@ jobs:
     name: Verify SLSA Provenance
     needs: [provenance-backend, provenance-frontend]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout policy
@@ -353,6 +361,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    permissions:
+      contents: read
 
     steps:
       - name: Slack notification
