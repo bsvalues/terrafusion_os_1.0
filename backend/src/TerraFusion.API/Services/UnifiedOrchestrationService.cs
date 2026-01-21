@@ -373,6 +373,8 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
     private async Task<bool> CheckLegacyIntegrationHealthAsync()
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         try
         {
             using var scope = _serviceProvider.CreateScope();

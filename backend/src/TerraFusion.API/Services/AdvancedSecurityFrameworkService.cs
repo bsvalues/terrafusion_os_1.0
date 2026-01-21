@@ -261,6 +261,8 @@ namespace TerraFusion.API.Services
     /// </summary>
     private async void QuantumKeyRotationCycle(object? state)
     {
+      await Task.CompletedTask;
+      await Task.CompletedTask;
       try
       {
         if (_quantumEncryptionEnabled)

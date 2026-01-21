@@ -2,13 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TerraFusion.API.Models
 {
-    /// <summary>
-    /// COUNTY MIGRATION PATHWAYS MODELS: Comprehensive Data Models
-    ///
-    /// These sophisticated models support zero-disruption county migration from Harris PACS
-    /// to pure TerraFusion OS with predictive analytics, rollback capabilities, and
-    /// comprehensive progress tracking.
-    /// </summary>
+    // <summary>
+    // COUNTY MIGRATION PATHWAYS MODELS: Comprehensive Data Models
+    //
+    // These sophisticated models support zero-disruption county migration from Harris PACS
+    // to pure TerraFusion OS with predictive analytics, rollback capabilities, and
+    // comprehensive progress tracking.
+    // </summary>
 
     #region Migration Assessment Models
 
@@ -416,10 +416,10 @@ namespace TerraFusion.API.Models
         public Dictionary<string, object> AdditionalSettings { get; set; } = new();
     }
 
-    /// <summary>
-    /// Security Validation Result - Migration security assessment
-    /// NOTE: This type is now defined in GovernmentSecurityModels.cs to avoid duplication
-    /// </summary>
+    // <summary>
+    // Security Validation Result - Migration security assessment
+    // NOTE: This type is now defined in GovernmentSecurityModels.cs to avoid duplication
+    // </summary>
     // Removed duplicate - use TerraFusion.API.Models.SecurityValidationResult from GovernmentSecurityModels.cs
 
     #endregion

@@ -19,7 +19,6 @@ on:
 env:
   DOTNET_VERSION: '8.0.x'
   NODE_VERSION: '20.x'
-  PNPM_VERSION: '9'
 
 jobs:
   # ==========================================================================
@@ -41,8 +40,6 @@ jobs:
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Setup Node.js
         uses: actions/setup-node@v4
@@ -146,8 +143,6 @@ jobs:
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: 💾 Get pnpm store directory
         shell: bash
@@ -276,8 +271,6 @@ jobs:
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Build Complete System
         run: |

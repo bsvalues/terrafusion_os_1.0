@@ -1,4 +1,4 @@
-/**
+/*
  * Workflow Entity Configuration
  *
  * EF Core Fluent API configuration for Workflow entity.

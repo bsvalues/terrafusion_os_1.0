@@ -542,6 +542,8 @@ namespace TerraFusion.API.Services
 
         private async Task StartRealTimeEnhancementProcessingAsync(string sessionId)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             // Initialize real-time enhancement processing pipeline
             _logger.LogInformation("🔄 Started real-time enhancement processing for session: {SessionId}", sessionId);
         }

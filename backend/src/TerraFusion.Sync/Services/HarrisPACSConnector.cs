@@ -253,6 +253,8 @@ namespace TerraFusion.Sync.Services
 
         private async Task<Dictionary<string, object>> TransformRecordAsync(Dictionary<string, object> rawRecord)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             var transformedRecord = new Dictionary<string, object>();
 
             // DNA: Apply field mappings from Python implementation

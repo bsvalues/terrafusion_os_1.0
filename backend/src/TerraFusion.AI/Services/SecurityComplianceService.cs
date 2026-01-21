@@ -1,4 +1,4 @@
-/**
+/*
  * SecurityComplianceService - Advanced Security & Compliance Automation
  *
  * Enterprise security platform with real-time threat detection, FISMA-HIGH compliance,

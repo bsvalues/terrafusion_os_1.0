@@ -165,9 +165,9 @@ namespace TerraFusion.CostForge.Middleware
         }
     }
 
-    /// <summary>
-    /// Ultimate performance monitoring middleware
-    /// </summary>
+    // <summary>
+    // Ultimate performance monitoring middleware
+    // </summary>
     // public class UltimatePerformanceMonitoringMiddleware
     // {
     //     private readonly RequestDelegate _next;
@@ -195,9 +195,9 @@ namespace TerraFusion.CostForge.Middleware
     //     }
     // }
 
-    /// <summary>
-    /// Ultimate security middleware for quantum-level protection
-    /// </summary>
+    // <summary>
+    // Ultimate security middleware for quantum-level protection
+    // </summary>
 // public class UltimateSecurityMiddleware
 // {
 //     private readonly RequestDelegate _next;

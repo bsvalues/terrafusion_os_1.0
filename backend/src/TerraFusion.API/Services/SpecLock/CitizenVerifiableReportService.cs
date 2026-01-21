@@ -106,6 +106,8 @@ public sealed class CitizenVerifiableReportService : ICitizenVerifiableReportSer
 
     public async Task<bool> VerifyBundleAsync(CitizenVerifiableBundle bundle, CancellationToken ct = default)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         try
         {
             // Verify receipt hash

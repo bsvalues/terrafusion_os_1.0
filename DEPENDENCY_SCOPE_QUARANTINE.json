@@ -35,46 +35,6 @@
     }
   },
   {
-    "root": "_pre_restore_safety_20260108_144218",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 0,
-      "scoreLocal": 0,
-      "scoreTotal": 0,
-      "buildableLocal": false,
-      "markers": [
-        "docker",
-        "package.json:buildOrTest",
-        "python"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "docker",
-          "foundAt": "_pre_restore_safety_20260108_144218/data/county-templates/benton-county/docker-compose.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "_pre_restore_safety_20260108_144218/data/county-templates/benton-county/Dockerfile"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "_pre_restore_safety_20260108_144218/data/cost-matrices/package.json"
-        },
-        {
-          "marker": "python",
-          "foundAt": "_pre_restore_safety_20260108_144218/data/county-templates/benton-county/requirements.txt"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
     "root": ".ai",
     "bucket": "QUARANTINE",
     "evidence": {
@@ -97,33 +57,6 @@
       "wiring": [
         "kernel-gateway-ref"
       ],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
-    "root": ".ci_artifacts_local",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 0,
-      "scoreLocal": 0,
-      "scoreTotal": 0,
-      "buildableLocal": false,
-      "markers": [
-        "docker"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "docker",
-          "foundAt": ".ci_artifacts_local/docker-compose.dev.yml"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml",
-        "workflow-ref"
-      ],
-      "wiring": [],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -185,20 +118,15 @@
     "root": "applications/bcbs-gis-pro-production",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 6,
-      "scoreLocal": 5,
-      "scoreTotal": 6,
+      "score": 4,
+      "scoreLocal": 3,
+      "scoreTotal": 4,
       "buildableLocal": true,
       "markers": [
-        "docker",
         "package.json:buildOrTest",
         "vite"
       ],
       "markerOrigins": [
-        {
-          "marker": "docker",
-          "foundAt": "applications/bcbs-gis-pro-production/archive/reference-docs/Dockerfile"
-        },
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "applications/bcbs-gis-pro-production/package.json"
@@ -449,9 +377,9 @@
     "root": "applications/terra-assessor-production",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 7,
+      "score": 9,
       "scoreLocal": 5,
-      "scoreTotal": 7,
+      "scoreTotal": 9,
       "buildableLocal": true,
       "markers": [
         "docker",
@@ -487,7 +415,8 @@
         }
       ],
       "inherited": [
-        "pnpm-lock.yaml"
+        "pnpm-lock.yaml",
+        "renovate-ref"
       ],
       "wiring": [],
       "touchedRelease": false,
@@ -499,15 +428,13 @@
     "root": "applications/terra-assistant-production",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 6,
-      "scoreLocal": 5,
-      "scoreTotal": 6,
+      "score": 5,
+      "scoreLocal": 4,
+      "scoreTotal": 5,
       "buildableLocal": true,
       "markers": [
         "docker",
-        "package.json:buildOrTest",
-        "pnpm-workspace.yaml",
-        "python"
+        "package.json:buildOrTest"
       ],
       "markerOrigins": [
         {
@@ -525,14 +452,6 @@
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "applications/terra-assistant-production/TerraFusionAssistant/server/package.json"
-        },
-        {
-          "marker": "pnpm-workspace.yaml",
-          "foundAt": "applications/terra-assistant-production/TerraFusionAssistant/archive/old_configs/pnpm-workspace.yaml"
-        },
-        {
-          "marker": "python",
-          "foundAt": "applications/terra-assistant-production/TerraFusionAssistant/archive/old_configs/pyproject.toml"
         }
       ],
       "inherited": [
@@ -569,14 +488,6 @@
         {
           "marker": "Cargo.toml",
           "foundAt": "applications/terra-build-actual/deployment/tauri-launcher/src-tauri/Cargo.toml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual/archive/cleanup_2025_06_07/config_files/docker-compose.monitoring.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual/archive/cleanup_2025_06_07/config_files/docker-compose.yml"
         },
         {
           "marker": "docker",
@@ -713,254 +624,6 @@
         {
           "marker": "vite",
           "foundAt": "applications/terra-build-actual/vite.config.ts"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
-    "root": "applications/terra-build-actual-backup-20251103-185401",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 11,
-      "scoreLocal": 9,
-      "scoreTotal": 11,
-      "buildableLocal": true,
-      "markers": [
-        "Cargo.toml",
-        "docker",
-        "next:config",
-        "package.json:buildOrTest",
-        "pnpm-lock.yaml",
-        "python",
-        "vite"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/backend/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/deployment/tauri-launcher/src-tauri/Cargo.toml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/archive/cleanup_2025_06_07/config_files/docker-compose.monitoring.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/archive/cleanup_2025_06_07/config_files/docker-compose.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/backend/Dockerfile"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/frontend/Dockerfile"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/TerraFusion_Build_PRODUCTION/docker-compose.enterprise.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/TerraFusion_Build_PRODUCTION/docker-compose.prod.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/TerraFusion_Build_PRODUCTION/Dockerfile"
-        },
-        {
-          "marker": "next:config",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/frontend/next.config.js"
-        },
-        {
-          "marker": "next:config",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/terrafusion/next.config.mjs"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/deployment/desktop-app/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/deployment/enterprise-launcher/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/frontend/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/TerraFusion_Build_PRODUCTION/deployment/desktop-app/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/TerraFusion_Build_PRODUCTION/deployment/enterprise-launcher/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/TerraFusion_Build_PRODUCTION/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/terrafusion/functions/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/terrafusion/package.json"
-        },
-        {
-          "marker": "pnpm-lock.yaml",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/terrafusion/pnpm-lock.yaml"
-        },
-        {
-          "marker": "python",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/rcn-devops-kit/requirements.txt"
-        },
-        {
-          "marker": "python",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/TerraFusion_Build_PRODUCTION/pyproject.toml"
-        },
-        {
-          "marker": "python",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/TerraFusion_Build_PRODUCTION/requirements.txt"
-        },
-        {
-          "marker": "vite",
-          "foundAt": "applications/terra-build-actual-backup-20251103-185401/TerraFusion_Build_PRODUCTION/vite.config.ts"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
-    "root": "applications/terra-build-actual-backup-20251103-191224",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 11,
-      "scoreLocal": 9,
-      "scoreTotal": 11,
-      "buildableLocal": true,
-      "markers": [
-        "Cargo.toml",
-        "docker",
-        "next:config",
-        "package.json:buildOrTest",
-        "pnpm-lock.yaml",
-        "python",
-        "vite"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/backend/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/deployment/tauri-launcher/src-tauri/Cargo.toml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/archive/cleanup_2025_06_07/config_files/docker-compose.monitoring.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/archive/cleanup_2025_06_07/config_files/docker-compose.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/backend/Dockerfile"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/frontend/Dockerfile"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/TerraFusion_Build_PRODUCTION/docker-compose.enterprise.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/TerraFusion_Build_PRODUCTION/docker-compose.prod.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/TerraFusion_Build_PRODUCTION/Dockerfile"
-        },
-        {
-          "marker": "next:config",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/frontend/next.config.js"
-        },
-        {
-          "marker": "next:config",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/terrafusion/next.config.mjs"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/deployment/desktop-app/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/deployment/enterprise-launcher/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/frontend/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/TerraFusion_Build_PRODUCTION/deployment/desktop-app/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/TerraFusion_Build_PRODUCTION/deployment/enterprise-launcher/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/TerraFusion_Build_PRODUCTION/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/terrafusion/functions/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/terrafusion/package.json"
-        },
-        {
-          "marker": "pnpm-lock.yaml",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/terrafusion/pnpm-lock.yaml"
-        },
-        {
-          "marker": "python",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/rcn-devops-kit/requirements.txt"
-        },
-        {
-          "marker": "python",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/TerraFusion_Build_PRODUCTION/pyproject.toml"
-        },
-        {
-          "marker": "python",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/TerraFusion_Build_PRODUCTION/requirements.txt"
-        },
-        {
-          "marker": "vite",
-          "foundAt": "applications/terra-build-actual-backup-20251103-191224/TerraFusion_Build_PRODUCTION/vite.config.ts"
         }
       ],
       "inherited": [
@@ -1253,15 +916,14 @@
     "root": "applications/terra-playground-main",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 9,
+      "score": 8,
       "scoreLocal": 7,
-      "scoreTotal": 9,
+      "scoreTotal": 8,
       "buildableLocal": true,
       "markers": [
         "docker",
         "next:config",
         "package.json:buildOrTest",
-        "pnpm-lock.yaml",
         "pnpm-workspace.yaml",
         "python",
         "vite"
@@ -1285,15 +947,7 @@
         },
         {
           "marker": "next:config",
-          "foundAt": "applications/terra-playground-main/archive/temp_repo/next.config.mjs"
-        },
-        {
-          "marker": "next:config",
           "foundAt": "applications/terra-playground-main/next.config.js"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-playground-main/archive/temp_repo/package.json"
         },
         {
           "marker": "package.json:buildOrTest",
@@ -1344,10 +998,6 @@
           "foundAt": "applications/terra-playground-main/TerraFusionPlayground_bundle/package.json"
         },
         {
-          "marker": "pnpm-lock.yaml",
-          "foundAt": "applications/terra-playground-main/archive/temp_repo/pnpm-lock.yaml"
-        },
-        {
           "marker": "pnpm-workspace.yaml",
           "foundAt": "applications/terra-playground-main/config/pnpm-workspace.yaml"
         },
@@ -1377,15 +1027,14 @@
     "root": "applications/terra-playground-production",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 9,
+      "score": 8,
       "scoreLocal": 7,
-      "scoreTotal": 9,
+      "scoreTotal": 8,
       "buildableLocal": true,
       "markers": [
         "docker",
         "next:config",
         "package.json:buildOrTest",
-        "pnpm-lock.yaml",
         "pnpm-workspace.yaml",
         "python",
         "vite"
@@ -1409,15 +1058,7 @@
         },
         {
           "marker": "next:config",
-          "foundAt": "applications/terra-playground-production/archive/temp_repo/next.config.mjs"
-        },
-        {
-          "marker": "next:config",
           "foundAt": "applications/terra-playground-production/next.config.js"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-playground-production/archive/temp_repo/package.json"
         },
         {
           "marker": "package.json:buildOrTest",
@@ -1466,10 +1107,6 @@
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "applications/terra-playground-production/TerraFusionPlayground_bundle/package.json"
-        },
-        {
-          "marker": "pnpm-lock.yaml",
-          "foundAt": "applications/terra-playground-production/archive/temp_repo/pnpm-lock.yaml"
         },
         {
           "marker": "pnpm-workspace.yaml",
@@ -1555,10 +1192,6 @@
         {
           "marker": "Cargo.toml",
           "foundAt": "applications/terra-pro-production/terrafusion_rust/Cargo.toml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/terra-pro-production/archive/deprecated/temp/docker-compose.yml"
         },
         {
           "marker": "docker",
@@ -1838,22 +1471,15 @@
     "root": "applications/terra-sync-production",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 8,
-      "scoreLocal": 7,
-      "scoreTotal": 8,
+      "score": 4,
+      "scoreLocal": 3,
+      "scoreTotal": 4,
       "buildableLocal": true,
       "markers": [
-        "Cargo.toml",
         "docker",
-        "package.json:buildOrTest",
-        "pnpm-workspace.yaml",
         "python"
       ],
       "markerOrigins": [
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "applications/terra-sync-production/archive/directories/terrarust/Cargo.toml"
-        },
         {
           "marker": "docker",
           "foundAt": "applications/terra-sync-production/docker-compose.yml"
@@ -1861,30 +1487,6 @@
         {
           "marker": "docker",
           "foundAt": "applications/terra-sync-production/Dockerfile"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-sync-production/archive/directories/frontend/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/terra-sync-production/archive/files/package.json"
-        },
-        {
-          "marker": "pnpm-workspace.yaml",
-          "foundAt": "applications/terra-sync-production/archive/files/pnpm-workspace.yaml"
-        },
-        {
-          "marker": "python",
-          "foundAt": "applications/terra-sync-production/archive/files/pyproject.toml"
-        },
-        {
-          "marker": "python",
-          "foundAt": "applications/terra-sync-production/archive/files/requirements.txt"
-        },
-        {
-          "marker": "python",
-          "foundAt": "applications/terra-sync-production/Lib/site-packages/pandas/pyproject.toml"
         },
         {
           "marker": "python",
@@ -1953,79 +1555,6 @@
     }
   },
   {
-    "root": "applications/valuator-pro-studio",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 8,
-      "scoreLocal": 7,
-      "scoreTotal": 8,
-      "buildableLocal": true,
-      "markers": [
-        "Cargo.toml",
-        "docker",
-        "next:config",
-        "package.json:buildOrTest"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "applications/valuator-pro-studio/backend/ai-engine/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "applications/valuator-pro-studio/backend/auth-service/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "applications/valuator-pro-studio/backend/data-engine/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "applications/valuator-pro-studio/backend/qc-engine/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "applications/valuator-pro-studio/backend/valuator-api/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "applications/valuator-pro-studio/backend/valuator-core/Cargo.toml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/valuator-pro-studio/infrastructure/docker-compose.dev.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/valuator-pro-studio/infrastructure/docker-compose.production.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "applications/valuator-pro-studio/infrastructure/docker-compose.yml"
-        },
-        {
-          "marker": "next:config",
-          "foundAt": "applications/valuator-pro-studio/frontend/valuator-studio/next.config.mjs"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/valuator-pro-studio/frontend/valuator-studio/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "applications/valuator-pro-studio/tests/package.json"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
     "root": "apps",
     "bucket": "QUARANTINE",
     "evidence": {
@@ -2085,7 +1614,6 @@
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": [
-        "scan:fileCapExceeded",
         "scan:fileCapExceeded",
         "scan:fileCapExceeded",
         "scan:fileCapExceeded",
@@ -2568,126 +2096,6 @@
         {
           "marker": "package.json:buildOrTest",
           "foundAt": "deployment/web-demo/api/package.json"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
-    "root": "Dev - Copy",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 7,
-      "scoreLocal": 5,
-      "scoreTotal": 7,
-      "buildableLocal": true,
-      "markers": [
-        "docker",
-        "package.json:buildOrTest",
-        "pnpm-lock.yaml",
-        "pnpm-workspace.yaml",
-        "vite"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "docker",
-          "foundAt": "Dev - Copy/Archive/TerraFusionMono/TerraFusionMono/docker-compose.dev.yml"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "Dev - Copy/Archive/TerraFusionMono/TerraFusionMono/package.json"
-        },
-        {
-          "marker": "pnpm-lock.yaml",
-          "foundAt": "Dev - Copy/Archive/TerraFusionMono/TerraFusionMono/pnpm-lock.yaml"
-        },
-        {
-          "marker": "pnpm-workspace.yaml",
-          "foundAt": "Dev - Copy/Archive/TerraFusionMono/TerraFusionMono/pnpm-workspace.yaml"
-        },
-        {
-          "marker": "vite",
-          "foundAt": "Dev - Copy/Archive/TerraFusionMono/TerraFusionMono/vite.config.ts"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
-    "root": "Dev - Copy (2)",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 7,
-      "scoreLocal": 5,
-      "scoreTotal": 7,
-      "buildableLocal": true,
-      "markers": [
-        "docker",
-        "package.json:buildOrTest",
-        "pnpm-lock.yaml",
-        "pnpm-workspace.yaml",
-        "vite"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "docker",
-          "foundAt": "Dev - Copy (2)/Archive/TerraFusionMono/TerraFusionMono/docker-compose.dev.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/docker-compose.benton.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/docker-compose.database.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/docker-compose.elite.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/docker-compose.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/Dockerfile"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "Dev - Copy (2)/Archive/TerraFusionMono/TerraFusionMono/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/package.json"
-        },
-        {
-          "marker": "pnpm-lock.yaml",
-          "foundAt": "Dev - Copy (2)/Archive/TerraFusionMono/TerraFusionMono/pnpm-lock.yaml"
-        },
-        {
-          "marker": "pnpm-workspace.yaml",
-          "foundAt": "Dev - Copy (2)/Archive/TerraFusionMono/TerraFusionMono/pnpm-workspace.yaml"
-        },
-        {
-          "marker": "pnpm-workspace.yaml",
-          "foundAt": "Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/pnpm-workspace.yaml"
-        },
-        {
-          "marker": "vite",
-          "foundAt": "Dev - Copy (2)/Archive/TerraFusionMono/TerraFusionMono/vite.config.ts"
         }
       ],
       "inherited": [
@@ -3480,166 +2888,12 @@
     }
   },
   {
-    "root": "marketplace/shock-and-awe",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 9,
-      "scoreLocal": 8,
-      "scoreTotal": 9,
-      "buildableLocal": true,
-      "markers": [
-        "Cargo.toml",
-        "docker",
-        "package.json:buildOrTest",
-        "python",
-        "vite"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "marketplace/shock-and-awe/demos/county-demo-system/Cargo.toml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "marketplace/shock-and-awe/monitoring/docker-compose.monitoring.yml"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "marketplace/shock-and-awe/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "marketplace/shock-and-awe/server/package.json"
-        },
-        {
-          "marker": "python",
-          "foundAt": "marketplace/shock-and-awe/demos/county-demo-system/requirements.txt"
-        },
-        {
-          "marker": "vite",
-          "foundAt": "marketplace/shock-and-awe/vite.config.ts"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
-    "root": "monorepo-scaffolding",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 7,
-      "scoreLocal": 6,
-      "scoreTotal": 7,
-      "buildableLocal": true,
-      "markers": [
-        "Cargo.toml",
-        "docker",
-        "package.json:buildOrTest"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "monorepo-scaffolding/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "monorepo-scaffolding/services/county-isolation/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "monorepo-scaffolding/services/government-compliance/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "monorepo-scaffolding/services/harris-pacs-bridge/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "monorepo-scaffolding/services/os-consciousness/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "monorepo-scaffolding/services/os-core/Cargo.toml"
-        },
-        {
-          "marker": "Cargo.toml",
-          "foundAt": "monorepo-scaffolding/services/quantum-optimizer/Cargo.toml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "monorepo-scaffolding/docker-compose.yml"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "monorepo-scaffolding/services/api-gateway/Dockerfile"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "monorepo-scaffolding/services/county-isolation/Dockerfile"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "monorepo-scaffolding/services/government-compliance/Dockerfile"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "monorepo-scaffolding/services/harris-pacs-bridge/Dockerfile"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "monorepo-scaffolding/services/os-consciousness/Dockerfile"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "monorepo-scaffolding/services/os-core/Dockerfile"
-        },
-        {
-          "marker": "docker",
-          "foundAt": "monorepo-scaffolding/services/quantum-optimizer/Dockerfile"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "monorepo-scaffolding/apps/government-dashboard/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "monorepo-scaffolding/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "monorepo-scaffolding/packages/terrafusion-ai/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "monorepo-scaffolding/packages/terrafusion-db/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "monorepo-scaffolding/packages/terrafusion-sdk/package.json"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
     "root": "os-kernel",
     "bucket": "QUARANTINE",
     "evidence": {
-      "score": 5,
+      "score": 2,
       "scoreLocal": 1,
-      "scoreTotal": 5,
+      "scoreTotal": 2,
       "buildableLocal": false,
       "markers": [
         "python"
@@ -3653,9 +2907,7 @@
       "inherited": [
         "pnpm-lock.yaml"
       ],
-      "wiring": [
-        "compose-ref"
-      ],
+      "wiring": [],
       "touchedRelease": true,
       "touchedDev": true,
       "pathFlags": []
@@ -4798,37 +4050,6 @@
     }
   },
   {
-    "root": "packages/shock-and-awe",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 4,
-      "scoreLocal": 3,
-      "scoreTotal": 4,
-      "buildableLocal": true,
-      "markers": [
-        "package.json:buildOrTest",
-        "vite"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "packages/shock-and-awe/server/package.json"
-        },
-        {
-          "marker": "vite",
-          "foundAt": "packages/shock-and-awe/vite.config.ts"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
     "root": "pacs-quantum-ui",
     "bucket": "QUARANTINE",
     "evidence": {
@@ -4973,52 +4194,6 @@
         "pnpm-lock.yaml"
       ],
       "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
-    "root": "terrafusion-cos",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 10,
-      "scoreLocal": 4,
-      "scoreTotal": 10,
-      "buildableLocal": true,
-      "markers": [
-        "docker",
-        "package.json:buildOrTest"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "docker",
-          "foundAt": "terrafusion-cos/monitoring/docker-compose.monitoring.yml"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "terrafusion-cos/desktop/electron-desktop-shell/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "terrafusion-cos/electron/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "terrafusion-cos/frontend_engine/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "terrafusion-cos/package.json"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml",
-        "workflow-ref"
-      ],
-      "wiring": [
-        "compose-ref"
-      ],
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
@@ -5689,12 +4864,6 @@
       "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": [
-        "scan:fileCapExceeded",
-        "scan:fileCapExceeded",
-        "scan:fileCapExceeded",
-        "scan:fileCapExceeded",
-        "scan:fileCapExceeded",
-        "scan:fileCapExceeded",
         "scan:fileCapExceeded",
         "scan:fileCapExceeded",
         "scan:fileCapExceeded",
@@ -6417,40 +5586,6 @@
       "buildableLocal": false,
       "markers": [],
       "markerOrigins": [],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [],
-      "touchedRelease": false,
-      "touchedDev": false,
-      "pathFlags": []
-    }
-  },
-  {
-    "root": "workspaces/workspaces",
-    "bucket": "QUARANTINE",
-    "evidence": {
-      "score": 3,
-      "scoreLocal": 2,
-      "scoreTotal": 3,
-      "buildableLocal": true,
-      "markers": [
-        "package.json:buildOrTest"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "workspaces/workspaces/terra-api-services/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "workspaces/workspaces/terra-citizen-portal/package.json"
-        },
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "workspaces/workspaces/terra-intelligence-hub/package.json"
-        }
-      ],
       "inherited": [
         "pnpm-lock.yaml"
       ],

@@ -5,6 +5,11 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  checks: read
+  pull-requests: read
+
 jobs:
   scope-drift-guard:
     runs-on: ubuntu-latest
@@ -14,8 +19,6 @@ jobs:
           fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -30,6 +33,8 @@ jobs:
 
       - name: Generate deterministic scope outputs
         run: pnpm tf:scope -- --solidBase=567fbcec5 --archAnchor=9af5bb291
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Drift guard (must be clean)
         run: git diff --exit-code

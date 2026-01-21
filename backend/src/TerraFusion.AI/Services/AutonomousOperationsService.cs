@@ -1,4 +1,4 @@
-/**
+/*
  * AutonomousOperationsService - Self-Healing and Autonomous System Management
  *
  * Provides autonomous operations capabilities for TerraFusion OS including:

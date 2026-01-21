@@ -218,6 +218,7 @@ celerybeat-schedule
 .env
 .venv
 env/
+
 venv/
 ENV/
 env.bak/
@@ -517,3 +518,13 @@ native-shell/ui/dist/
 
 # generated benchmark output
 quantum_performance_results.json
+
+# --- Exceptions: OS Shell source assets must be tracked ---
+!frontend/apps/os-shell/src/lib/
+!frontend/apps/os-shell/src/lib/**/*
+!frontend/apps/os-shell/src/data/
+!frontend/apps/os-shell/src/data/**/*
+
+# Local operator intel outputs
+STATUS.md
+TODO_INTEL.json

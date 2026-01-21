@@ -1,4 +1,4 @@
-/**
+/*
  * AgentTelemetryService
  *
  * Implementation of agent telemetry collection and management.

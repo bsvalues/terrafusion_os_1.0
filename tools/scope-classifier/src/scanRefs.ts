@@ -16,6 +16,12 @@ const SKIP_DIRS = new Set([
   "coverage",
   ".next",
   ".turbo",
+  "artifacts",
+  "_artifacts",
+  ".ci_artifacts_local",
+  "Dev",
+  "Dev - Copy",
+  "Dev - Copy (2)",
 ]);
 
 function exists(p: string): boolean {
@@ -27,7 +33,13 @@ function exists(p: string): boolean {
   }
 }
 
-function collectFiles(root: string, predicate: (p: string) => boolean): string[] {
+function collectFiles(
+  root: string,
+  predicate: (p: string) => boolean,
+  repoRoot: string,
+  trackedDirs?: Set<string> | null,
+  trackedFiles?: Set<string> | null
+): string[] {
   const files: string[] = [];
   const stack = [root];
   while (stack.length) {
@@ -43,10 +55,18 @@ function collectFiles(root: string, predicate: (p: string) => boolean): string[]
       const full = path.join(current, entry.name);
       if (entry.isDirectory()) {
         if (SKIP_DIRS.has(entry.name)) continue;
+        if (trackedDirs) {
+          const rel = path.relative(repoRoot, full).replace(/\\/g, "/");
+          if (!trackedDirs.has(rel === "" ? "." : rel)) continue;
+        }
         stack.push(full);
         continue;
       }
       if (entry.isFile() && predicate(full)) {
+        if (trackedFiles) {
+          const rel = path.relative(repoRoot, full).replace(/\\/g, "/");
+          if (!trackedFiles.has(rel)) continue;
+        }
         files.push(full);
       }
     }
@@ -111,7 +131,12 @@ function matchRoots(
   return matches;
 }
 
-export function scanRefs(repoRoot: string, roots: string[]): Record<string, RefScan> {
+export function scanRefs(
+  repoRoot: string,
+  roots: string[],
+  trackedDirs?: Set<string> | null,
+  trackedFiles?: Set<string> | null
+): Record<string, RefScan> {
   const result: Record<string, RefScan> = {};
   for (const root of roots) {
     result[root] = { inheritedMarkers: [], wiring: [] };
@@ -128,30 +153,68 @@ export function scanRefs(repoRoot: string, roots: string[]): Record<string, RefS
 
   const workflowDir = path.join(repoRoot, ".github", "workflows");
   const workflowFiles = exists(workflowDir)
-    ? collectFiles(workflowDir, (p) => p.endsWith(".yml") || p.endsWith(".yaml"))
+    ? collectFiles(
+        workflowDir,
+        (p) => p.endsWith(".yml") || p.endsWith(".yaml"),
+        repoRoot,
+        trackedDirs,
+        trackedFiles
+      )
     : [];
 
   const serviceRegistryDir = path.join(repoRoot, "config", "service-registry");
   const serviceRegistryFiles: string[] = [];
   if (exists(serviceRegistryDir)) {
-    serviceRegistryFiles.push(...collectFiles(serviceRegistryDir, (p) => p.endsWith(".json") || p.endsWith(".yml") || p.endsWith(".yaml")));
+    serviceRegistryFiles.push(
+      ...collectFiles(
+        serviceRegistryDir,
+        (p) => p.endsWith(".json") || p.endsWith(".yml") || p.endsWith(".yaml"),
+        repoRoot,
+        trackedDirs,
+        trackedFiles
+      )
+    );
   }
   const rootRegistry = path.join(repoRoot, "registry.json");
   if (exists(rootRegistry)) serviceRegistryFiles.push(rootRegistry);
 
-  const composeFiles = collectFiles(repoRoot, (p) => {
-    const name = path.basename(p).toLowerCase();
-    return name.startsWith("docker-compose") || name === "compose.yml" || name === "compose.yaml";
-  });
+  const composeFiles = collectFiles(
+    repoRoot,
+    (p) => {
+      const name = path.basename(p).toLowerCase();
+      return name.startsWith("docker-compose") || name === "compose.yml" || name === "compose.yaml";
+    },
+    repoRoot,
+    trackedDirs,
+    trackedFiles
+  );
 
   const osShellDir = path.join(repoRoot, "frontend", "apps", "os-shell");
   const osShellFiles = exists(osShellDir)
-    ? collectFiles(osShellDir, (p) => p.endsWith(".ts") || p.endsWith(".tsx") || p.endsWith(".js") || p.endsWith(".json") || p.endsWith(".yml") || p.endsWith(".yaml"))
+    ? collectFiles(
+        osShellDir,
+        (p) =>
+          p.endsWith(".ts") ||
+          p.endsWith(".tsx") ||
+          p.endsWith(".js") ||
+          p.endsWith(".json") ||
+          p.endsWith(".yml") ||
+          p.endsWith(".yaml"),
+        repoRoot,
+        trackedDirs,
+        trackedFiles
+      )
     : [];
 
   const backendDir = path.join(repoRoot, "backend");
   const backendFiles = exists(backendDir)
-    ? collectFiles(backendDir, (p) => p.endsWith(".ts") || p.endsWith(".cs") || p.endsWith(".json") || p.endsWith(".yml") || p.endsWith(".yaml"))
+    ? collectFiles(
+        backendDir,
+        (p) => p.endsWith(".ts") || p.endsWith(".cs") || p.endsWith(".json") || p.endsWith(".yml") || p.endsWith(".yaml"),
+        repoRoot,
+        trackedDirs,
+        trackedFiles
+      )
     : [];
 
   for (const root of roots) {

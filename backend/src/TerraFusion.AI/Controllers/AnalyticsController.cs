@@ -1,4 +1,4 @@
-/**
+/*
  * AnalyticsController - REST API for Analytics & Reporting
  *
  * Provides endpoints for analytics summaries, trend analysis, custom reports,

@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - CODEX 3-6-9 FRAMEWORK DTOs
  * Divine Mathematical Balance for Government Operations

@@ -502,8 +502,8 @@ importers:
         specifier: ^5.16.4
         version: 5.17.0
       '@testing-library/react':
-        specifier: 14.3.1
-        version: 14.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^13.4.0
+        version: 13.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/user-event':
         specifier: ^14.5.2
         version: 14.5.2(@testing-library/dom@10.4.0)
@@ -5992,12 +5992,12 @@ packages:
       }
     engines: { node: '>=18' }
 
-  '@testing-library/dom@9.3.4':
+  '@testing-library/dom@8.20.1':
     resolution:
       {
-        integrity: sha512-FlS4ZWlp97iiNWig0Muq8p+3rVDjRiYE+YKGbAqXOu9nwJFFOdL00kFpz42M+4huzYi86vAK1sOOfyOG45muIQ==,
+        integrity: sha512-/DiOQ5xBxgdYRC8LNk7U+RWat0S3qRLeIw3ZIkMQ9kkVlRmwD/Eg8k8CqIpD6GW7u20JIUOfMKbxtiLutpjQ4g==,
       }
-    engines: { node: '>=14' }
+    engines: { node: '>=12' }
 
   '@testing-library/jest-dom@5.17.0':
     resolution:
@@ -6020,12 +6020,12 @@ packages:
       }
     engines: { node: '>=14', npm: '>=6', yarn: '>=1' }
 
-  '@testing-library/react@14.3.1':
+  '@testing-library/react@13.4.0':
     resolution:
       {
-        integrity: sha512-H99XjUhWQw0lTgyMN05W3xQG1Nh4lq574D8keFf1dDoNTJgp66VbJozRaczoF+wsiaPJNt/TcnfpLGufGxSrZQ==,
+        integrity: sha512-sXOGON+WNTh3MLE9rve97ftaZukN3oNf2KjDy7YTx6hcTO2uuLHuCGynMDhFwGw/jYf4OJ2Qk0i4i79qMNNkyw==,
       }
-    engines: { node: '>=14' }
+    engines: { node: '>=12' }
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
@@ -22802,7 +22802,7 @@ snapshots:
       lz-string: 1.5.0
       pretty-format: 27.5.1
 
-  '@testing-library/dom@9.3.4':
+  '@testing-library/dom@8.20.1':
     dependencies:
       '@babel/code-frame': 7.27.1
       '@babel/runtime': 7.28.4
@@ -22844,10 +22844,10 @@ snapshots:
       picocolors: 1.1.1
       redent: 3.0.0
 
-  '@testing-library/react@14.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@testing-library/react@13.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.4
-      '@testing-library/dom': 9.3.4
+      '@testing-library/dom': 8.20.1
       '@types/react-dom': 18.3.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)

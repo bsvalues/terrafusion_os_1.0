@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * WORKFLOW AUTOMATION CONTROLLER - REST API
  * TerraFusion OS Workflow API Gateway
@@ -37,6 +37,7 @@ namespace TerraFusion.API.Controllers
         /// Execute a workflow with AI optimization
         /// </summary>
         [HttpPost("execute")]
+        // [AllowAnonymous] // REMOVED: Restore security after smoke testing
         [ProducesResponseType(typeof(TerraFusion.AI.DTOs.WorkflowExecutionResult), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
@@ -53,6 +54,11 @@ namespace TerraFusion.API.Controllers
                     request.CountyId);
 
                 return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Workflow execution failed: Workflow ID {WorkflowId} not found", request.WorkflowId);
+                return NotFound(new { error = ex.Message });
             }
             catch (Exception ex)
             {
@@ -110,6 +116,7 @@ namespace TerraFusion.API.Controllers
         /// Analyze workflow efficiency and get optimization suggestions
         /// </summary>
         [HttpPost("analyze")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(WorkflowOptimizationSuggestion), 200)]
         public async Task<IActionResult> AnalyzeWorkflow([FromBody] AnalyzeWorkflowRequest request)
         {
@@ -120,6 +127,11 @@ namespace TerraFusion.API.Controllers
                     request.CountyId);
 
                 return Ok(suggestion);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Analysis failed: Workflow ID {WorkflowId} not found", request.WorkflowId);
+                return NotFound(new { error = ex.Message });
             }
             catch (Exception ex)
             {

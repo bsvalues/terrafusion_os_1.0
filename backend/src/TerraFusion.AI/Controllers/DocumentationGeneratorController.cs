@@ -1,4 +1,4 @@
-/**
+/*
  * DocumentationGeneratorController - REST API for Documentation Generation
  *
  * Provides endpoints for automatic documentation generation,

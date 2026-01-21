@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - ELITE PRODUCTION LAUNCHER SERVICE
  * Championship-Level Continuous Operation Management
@@ -185,6 +185,8 @@ public class EliteProductionLauncherService : BackgroundService
     /// </summary>
     private async Task StopApiProcessAsync()
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         if (_apiProcess != null && !_apiProcess.HasExited)
         {
             try

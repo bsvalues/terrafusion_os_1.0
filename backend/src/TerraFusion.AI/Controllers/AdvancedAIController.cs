@@ -357,9 +357,9 @@ namespace TerraFusion.AI.Controllers
             return new AdvancedAIRequest
             {
                 RequestId = dto.RequestId ?? Guid.NewGuid().ToString(),
-                TextInput = dto.TextInput,
-                ImageData = string.IsNullOrEmpty(dto.AudioData) ? new byte[0] : System.Text.Encoding.UTF8.GetBytes(dto.AudioData),
-                AudioData = string.IsNullOrEmpty(dto.AudioData) ? new byte[0] : System.Text.Encoding.UTF8.GetBytes(dto.AudioData),
+                TextInput = dto.TextInput ?? string.Empty,
+                ImageData = dto.ImageData ?? Array.Empty<byte>(),
+                AudioData = string.IsNullOrEmpty(dto.AudioData) ? Array.Empty<byte>() : System.Text.Encoding.UTF8.GetBytes(dto.AudioData),
                 SpatialData = dto.SpatialData ?? new Dictionary<string, object>(),
                 Context = new Dictionary<string, object>(),
                 RequestType = ParseRequestType(dto.RequestType),
@@ -386,15 +386,15 @@ namespace TerraFusion.AI.Controllers
                 Confidence = response.Confidence,
                 ProcessingTime = response.ProcessingTime,
                 // Explanation = response.Explanation, // TODO: Type mismatch - needs DecisionExplanation object
-                QuantumResponse = response.QuantumResponse,
-                EmergentBehaviors = response.EmergentBehaviors,
-                EmergentPatterns = response.EmergentPatterns,
+                QuantumResponse = response.QuantumResponse ?? new(),
+                EmergentBehaviors = response.EmergentBehaviors ?? new(),
+                EmergentPatterns = response.EmergentPatterns ?? new(),
                 // EthicalValidation = response.EthicalValidation, // TODO: Type mismatch - needs EthicalValidation object
-                Sources = response.Sources,
-                QualityMetrics = response.QualityMetrics,
-                ModelUsed = response.ModelUsed,
-                AgentsInvolved = response.AgentsInvolved,
-                ErrorMessage = response.ErrorMessage,
+                Sources = response.Sources ?? new(),
+                QualityMetrics = response.QualityMetrics ?? new(),
+                ModelUsed = response.ModelUsed ?? string.Empty,
+                AgentsInvolved = response.AgentsInvolved ?? new(),
+                ErrorMessage = response.ErrorMessage ?? string.Empty,
                 Timestamp = DateTime.UtcNow
             };
         }
@@ -571,7 +571,7 @@ namespace TerraFusion.AI.Controllers
         {
             public bool IsAvailable { get; set; }
             public double QuantumAdvantage { get; set; }
-            public string[] SupportedOptimizations { get; set; }
+            public string[] SupportedOptimizations { get; set; } = Array.Empty<string>();
         }
 
         public class SwarmCapabilities
@@ -603,9 +603,9 @@ namespace TerraFusion.AI.Controllers
 
         public class ErrorResponse
         {
-            public string Error { get; set; }
-            public string Message { get; set; }
-            public string Details { get; set; }
+            public string Error { get; set; } = string.Empty;
+            public string Message { get; set; } = string.Empty;
+            public string Details { get; set; } = string.Empty;
             public DateTime Timestamp { get; set; }
         }
 
@@ -616,42 +616,42 @@ namespace TerraFusion.AI.Controllers
         public class AdvancedAIRequestDto
         {
             [Required]
-            public string RequestId { get; set; }
+            public string RequestId { get; set; } = string.Empty;
 
-            public string TextInput { get; set; }
-            public byte[] ImageData { get; set; }
-            public string AudioData { get; set; }
-            public Dictionary<string, object> SpatialData { get; set; }
-            public RequestContext Context { get; set; }
+            public string TextInput { get; set; } = string.Empty;
+            public byte[] ImageData { get; set; } = Array.Empty<byte>();
+            public string AudioData { get; set; } = string.Empty;
+            public Dictionary<string, object> SpatialData { get; set; } = new();
+            public RequestContext Context { get; set; } = new();
 
             [Required]
-            public string RequestType { get; set; }
+            public string RequestType { get; set; } = string.Empty;
 
             public bool RequiresQuantumOptimization { get; set; }
-            public string OptimizationType { get; set; }
-            public Dictionary<string, double> OptimizationParameters { get; set; }
-            public List<Constraint> Constraints { get; set; }
+            public string OptimizationType { get; set; } = string.Empty;
+            public Dictionary<string, double> OptimizationParameters { get; set; } = new();
+            public List<Constraint> Constraints { get; set; } = new();
             public int? MaxIterations { get; set; }
             public RequestPriority? Priority { get; set; }
         }
 
         public class AdvancedAIResponseDto
         {
-            public string RequestId { get; set; }
+            public string RequestId { get; set; } = string.Empty;
             public bool Success { get; set; }
-            public string Response { get; set; }
+            public string Response { get; set; } = string.Empty;
             public double Confidence { get; set; }
             public TimeSpan ProcessingTime { get; set; }
-            public DecisionExplanation Explanation { get; set; }
-            public QuantumAIResponse QuantumResponse { get; set; }
-            public List<TerraFusion.AI.DTOs.EmergentBehavior> EmergentBehaviors { get; set; }
-            public List<TerraFusion.Core.DTOs.EmergentPattern> EmergentPatterns { get; set; }
-            public EthicalValidation EthicalValidation { get; set; }
-            public List<string> Sources { get; set; }
-            public QualityMetrics QualityMetrics { get; set; }
-            public string ModelUsed { get; set; }
-            public List<string> AgentsInvolved { get; set; }
-            public string ErrorMessage { get; set; }
+            public DecisionExplanation Explanation { get; set; } = new();
+            public QuantumAIResponse QuantumResponse { get; set; } = new();
+            public List<TerraFusion.AI.DTOs.EmergentBehavior> EmergentBehaviors { get; set; } = new();
+            public List<TerraFusion.Core.DTOs.EmergentPattern> EmergentPatterns { get; set; } = new();
+            public EthicalValidation EthicalValidation { get; set; } = new();
+            public List<string> Sources { get; set; } = new();
+            public QualityMetrics QualityMetrics { get; set; } = new();
+            public string ModelUsed { get; set; } = string.Empty;
+            public List<string> AgentsInvolved { get; set; } = new();
+            public string ErrorMessage { get; set; } = string.Empty;
             public DateTime Timestamp { get; set; }
         }
 

@@ -7,7 +7,7 @@ namespace TerraFusion.Core.Interfaces
     /// <summary>
     /// Elite Property Valuation AI Enhancement Service Interface
     /// Coordinates all 7 TerraFusion AI services for championship-level property assessment
-    /// Target: 99.9% IAAO accuracy, <2 second calculation time
+    /// Target: 99.9% IAAO accuracy, &lt;2 second calculation time
     /// </summary>
     public interface IPropertyValuationAIEnhancementService
     {
@@ -40,8 +40,8 @@ namespace TerraFusion.Core.Interfaces
 
         /// <summary>
         /// Step 4: Execute CostForge AI valuation calculation
-        /// Quantum-enhanced building cost estimation with Marshall & Swift integration
-        /// Target: <2 second calculation time, 99.9% IAAO accuracy
+        /// Quantum-enhanced building cost estimation with Marshall &amp; Swift integration
+        /// Target: &lt;2 second calculation time, 99.9% IAAO accuracy
         /// </summary>
         Task<CostForgeValuationResult> ExecuteCostForgeValuationAsync(PropertyData propertyData, AISwarmAnalysisResult swarmAnalysis);
 

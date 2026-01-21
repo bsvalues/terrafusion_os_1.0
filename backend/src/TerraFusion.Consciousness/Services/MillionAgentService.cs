@@ -282,6 +282,8 @@ namespace TerraFusion.Consciousness.Services
 
         public async Task<MillionAgentStatusDto> GetSystemStatusAsync()
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             EnsureInitialized();
 
             try

@@ -1,9 +1,7 @@
 // TerraFusionGPT Suite: Budget Alert Service
 // Elite Government OS Engineering - Alert Management
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -252,7 +250,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Send alert email
         /// </summary>
-        private async System.Threading.Tasks.Task<bool> SendAlertEmailAsync(
+        private System.Threading.Tasks.Task<bool> SendAlertEmailAsync(
             GPTBudget budget,
             GPTBudgetAlert alert)
         {
@@ -268,7 +266,7 @@ namespace TerraFusion.AI.Services
                 if (!recipients.Any())
                 {
                     _logger.LogWarning("No valid email recipients");
-                    return false;
+                    return System.Threading.Tasks.Task.FromResult(false);
                 }
 
                 // Generate email content
@@ -285,12 +283,12 @@ namespace TerraFusion.AI.Services
                 // For now, just log the alert
                 _logger.LogWarning("Email service not configured - alert logged only");
 
-                return true; // Return true when email service is implemented
+                return System.Threading.Tasks.Task.FromResult(true); // Return true when email service is implemented
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending alert email");
-                return false;
+                return System.Threading.Tasks.Task.FromResult(false);
             }
         }
 

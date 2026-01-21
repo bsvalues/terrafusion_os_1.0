@@ -1,4 +1,4 @@
-/**
+/*
  * AutoRecoveryOrchestrator - Multi-Step Recovery Coordination Engine
  *
  * Orchestrates complex recovery workflows with:
@@ -756,18 +756,18 @@ namespace TerraFusion.AI.Services
         public int FailedWorkflows { get; set; }
         public double SuccessRate { get; set; }
         public double AverageWorkflowDuration { get; set; }
-        public List<RecoveryWorkflowExecution> ActiveWorkflows { get; set; }
+        public List<RecoveryWorkflowExecution> ActiveWorkflows { get; set; } = new();
         public double DependencyGraphHealth { get; set; }
-        public OrchestrationCapabilities OrchestrationCapabilities { get; set; }
-        public List<RecoveryWorkflowHistory> RecentWorkflows { get; set; }
+        public OrchestrationCapabilities OrchestrationCapabilities { get; set; } = new();
+        public List<RecoveryWorkflowHistory> RecentWorkflows { get; set; } = new();
     }
 
     public class RecoveryWorkflow
     {
-        public string WorkflowId { get; set; }
-        public string WorkflowType { get; set; }
-        public List<RecoveryStage> RecoveryStages { get; set; }
-        public string CoordinationMode { get; set; }
+        public string WorkflowId { get; set; } = string.Empty;
+        public string WorkflowType { get; set; } = string.Empty;
+        public List<RecoveryStage> RecoveryStages { get; set; } = new();
+        public string CoordinationMode { get; set; } = string.Empty;
         public double EstimatedDuration { get; set; }
         public bool RollbackSupported { get; set; }
     }
@@ -775,9 +775,9 @@ namespace TerraFusion.AI.Services
     public class RecoveryStage
     {
         public int StageNumber { get; set; }
-        public string StageName { get; set; }
-        public List<string> TargetSubsystems { get; set; }
-        public string ExecutionMode { get; set; }
+        public string StageName { get; set; } = string.Empty;
+        public List<string> TargetSubsystems { get; set; } = new();
+        public string ExecutionMode { get; set; } = string.Empty;
         public bool AllowFailure { get; set; }
         public int DelayAfterStage { get; set; }
         public bool ValidationRequired { get; set; }
@@ -785,93 +785,93 @@ namespace TerraFusion.AI.Services
 
     public class OrchestratedRecoveryResult
     {
-        public string WorkflowId { get; set; }
-        public string Status { get; set; }
-        public string WorkflowType { get; set; }
-        public List<ExecutedRecoveryStage> ExecutedStages { get; set; }
+        public string WorkflowId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string WorkflowType { get; set; } = string.Empty;
+        public List<ExecutedRecoveryStage> ExecutedStages { get; set; } = new();
         public int TotalRecoveriesExecuted { get; set; }
         public int ParallelRecoveriesExecuted { get; set; }
         public double TotalDuration { get; set; }
-        public RecoveryImpactAnalysis ImpactAnalysis { get; set; }
+        public RecoveryImpactAnalysis ImpactAnalysis { get; set; } = new();
         public int SubsystemsRecovered { get; set; }
         public double OverallHealthImprovement { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public DateTime CompletedAt { get; set; }
     }
 
     public class ExecutedRecoveryStage
     {
         public int StageNumber { get; set; }
-        public string StageName { get; set; }
+        public string StageName { get; set; } = string.Empty;
         public bool Success { get; set; }
         public int RecoveriesExecuted { get; set; }
         public int SuccessfulRecoveries { get; set; }
         public int FailedRecoveries { get; set; }
         public int ParallelRecoveriesExecuted { get; set; }
         public double Duration { get; set; }
-        public List<SelfHealingRecoveryResult> RecoveryResults { get; set; }
+        public List<SelfHealingRecoveryResult> RecoveryResults { get; set; } = new();
     }
 
     public class RecoveryWorkflowExecution
     {
-        public string WorkflowId { get; set; }
-        public string WorkflowType { get; set; }
+        public string WorkflowId { get; set; } = string.Empty;
+        public string WorkflowType { get; set; } = string.Empty;
         public DateTime StartTime { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public int CurrentStage { get; set; }
         public int TotalStages { get; set; }
-        public List<string> AffectedSubsystems { get; set; }
+        public List<string> AffectedSubsystems { get; set; } = new();
     }
 
     public class SubsystemDependency
     {
-        public string SubsystemId { get; set; }
-        public List<string> DependsOn { get; set; }
-        public string DependencyType { get; set; }
-        public string FailureImpact { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public List<string> DependsOn { get; set; } = new();
+        public string DependencyType { get; set; } = string.Empty;
+        public string FailureImpact { get; set; } = string.Empty;
         public int RecoveryPriority { get; set; }
     }
 
     public class DependencyGraph
     {
-        public List<SubsystemDependency> Subsystems { get; set; }
+        public List<SubsystemDependency> Subsystems { get; set; } = new();
         public int TotalSubsystems { get; set; }
         public int MaxDependencyDepth { get; set; }
-        public List<string> CriticalSubsystems { get; set; }
+        public List<string> CriticalSubsystems { get; set; } = new();
         public double GraphHealth { get; set; }
     }
 
     public class RecoveryImpactAnalysis
     {
-        public string WorkflowId { get; set; }
-        public List<string> DirectlyAffectedSubsystems { get; set; }
-        public List<string> IndirectlyAffectedSubsystems { get; set; }
+        public string WorkflowId { get; set; } = string.Empty;
+        public List<string> DirectlyAffectedSubsystems { get; set; } = new();
+        public List<string> IndirectlyAffectedSubsystems { get; set; } = new();
         public int TotalAffectedSubsystems { get; set; }
         public double ExpectedDowntimeMinutes { get; set; }
         public int AffectedUsers { get; set; }
-        public string BusinessImpact { get; set; }
-        public string RiskLevel { get; set; }
-        public List<string> RecommendedActions { get; set; }
+        public string BusinessImpact { get; set; } = string.Empty;
+        public string RiskLevel { get; set; } = string.Empty;
+        public List<string> RecommendedActions { get; set; } = new();
         public DateTime AnalyzedAt { get; set; }
     }
 
     public class CascadePreventionResult
     {
-        public string InitiatingSubsystem { get; set; }
-        public List<string> ProtectedSubsystems { get; set; }
-        public List<PreventionAction> PreventionActions { get; set; }
+        public string InitiatingSubsystem { get; set; } = string.Empty;
+        public List<string> ProtectedSubsystems { get; set; } = new();
+        public List<PreventionAction> PreventionActions { get; set; } = new();
         public int TotalProtectedSubsystems { get; set; }
         public bool Success { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public DateTime ExecutedAt { get; set; }
     }
 
     public class PreventionAction
     {
-        public string SubsystemId { get; set; }
-        public string ActionType { get; set; }
-        public string Status { get; set; }
-        public string Description { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public string ActionType { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public DateTime ExecutedAt { get; set; }
     }
 
@@ -887,9 +887,9 @@ namespace TerraFusion.AI.Services
 
     public class RecoveryWorkflowHistory
     {
-        public string WorkflowId { get; set; }
-        public string WorkflowType { get; set; }
-        public List<string> AffectedSubsystems { get; set; }
+        public string WorkflowId { get; set; } = string.Empty;
+        public string WorkflowType { get; set; } = string.Empty;
+        public List<string> AffectedSubsystems { get; set; } = new();
         public DateTime ExecutionTimestamp { get; set; }
         public bool Success { get; set; }
         public double TotalDuration { get; set; }

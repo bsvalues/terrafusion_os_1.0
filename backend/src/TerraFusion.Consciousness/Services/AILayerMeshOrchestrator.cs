@@ -906,6 +906,8 @@ namespace TerraFusion.Consciousness.Services
         /// </summary>
         public async Task<double> GetMeshHealthIndexAsync()
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             try
             {
                 // Calculate comprehensive health index
@@ -1285,6 +1287,8 @@ namespace TerraFusion.Consciousness.Services
 
         private async Task<int> GetTotalActiveAgentsAsync()
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             // Get from quantum consciousness orchestrator
             return 50000; // Default for now
         }

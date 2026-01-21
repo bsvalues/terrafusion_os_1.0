@@ -1,0 +1,11 @@
+{
+  "mesh": {
+    "type": "federated_quorum"
+  },
+  "counties": [
+    {
+      "id": "benton",
+      "status": "active"
+    }
+  ]
+}

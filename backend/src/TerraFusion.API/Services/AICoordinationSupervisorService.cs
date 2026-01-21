@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - AI COORDINATION SERVICE MONITOR
  * Monitors and restarts AI coordination services that fail
@@ -93,6 +93,8 @@ public class AICoordinationSupervisorService : BackgroundService
     /// </summary>
     private async Task MonitorAICoordinationHealthAsync()
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         try
         {
             using var scope = _serviceProvider.CreateScope();
@@ -200,6 +202,8 @@ public class AICoordinationSupervisorService : BackgroundService
     /// </summary>
     private async Task AttemptAIServiceRestartAsync(Exception? triggeringException)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         // Check cooldown period
         var timeSinceLastRestart = DateTime.UtcNow - _lastRestartAttempt;
         if (timeSinceLastRestart < _restartCooldown)

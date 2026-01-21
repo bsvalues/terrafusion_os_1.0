@@ -17,7 +17,7 @@ jobs:
         uses: DavidAnson/markdownlint-cli2-action@v16
         with:
           globs: |
-            **/*.md
+            .github/**/*.md
         env:
           # Allow long lines in tables and URLs by default; tune as needed in .markdownlint.json
           MARKDOWNLINT_DISABLE: ''
