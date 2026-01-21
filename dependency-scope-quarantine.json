@@ -1,16 +1,13 @@
 {
-  "timestamp": "2026-01-19T19:34:35.905Z",
+  "timestamp": "2026-01-21T17:15:01.206Z",
   "status": "PASS",
   "metrics": {
-    "current": 141,
+    "current": 128,
     "baseline": 141
   },
   "quarantineList": [
     "_CLEAN_BUILD_ZONE",
-    "_pre_restore_safety_20260108_144218",
     ".ai",
-    ".ci_artifacts_local",
-    ".venv",
     "agents/terrafusion-phd-systems-agent",
     "ai-workspace-companion",
     "applications/bcbs-gis-pro-production",
@@ -22,8 +19,6 @@
     "applications/terra-assessor-production",
     "applications/terra-assistant-production",
     "applications/terra-build-actual",
-    "applications/terra-build-actual-backup-20251103-185401",
-    "applications/terra-build-actual-backup-20251103-191224",
     "applications/terra-dashboard-production",
     "applications/terra-flow-production",
     "applications/terra-gama-production",
@@ -38,7 +33,6 @@
     "applications/terra-proplus-production",
     "applications/terra-sync-production",
     "applications/terra-v0demo-production",
-    "applications/valuator-pro-studio",
     "apps",
     "BS_PACS",
     "consciousness-isolated-workspace",
@@ -50,8 +44,6 @@
     "deployment/installers",
     "deployment/production",
     "deployment/web-demo",
-    "Dev - Copy",
-    "Dev - Copy (2)",
     "distributions",
     "infrastructure/cache",
     "infrastructure/database",
@@ -62,8 +54,6 @@
     "marketplace/autonomous-research-engine",
     "marketplace/commercial",
     "marketplace/government-core",
-    "marketplace/shock-and-awe",
-    "monorepo-scaffolding",
     "os-kernel",
     "os-platform",
     "os-platform/ai-systems",
@@ -74,11 +64,9 @@
     "packages/commercial",
     "packages/government-edition",
     "packages/government-edition-enhanced-MARKED-FOR-REVIEW",
-    "packages/shock-and-awe",
     "pacs-quantum-ui",
     "progress-monitor",
     "TerraFusion_Command_Portal_Starter",
-    "terrafusion-cos",
     "terrafusion-native-shell",
     "terrafusion-ops-tools",
     "tools/speclock-tss",
@@ -145,7 +133,6 @@
     "workspaces/TerraFusionIDE",
     "workspaces/testing",
     "workspaces/trust",
-    "workspaces/unified-system",
-    "workspaces/workspaces"
+    "workspaces/unified-system"
   ]
 }

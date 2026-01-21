@@ -311,37 +311,6 @@
     }
   },
   {
-    "root": "packages/shock-and-awe",
-    "bucket": "GEN2_APPS",
-    "evidence": {
-      "score": 4,
-      "scoreLocal": 3,
-      "scoreTotal": 4,
-      "buildableLocal": true,
-      "markers": [
-        "package.json:buildOrTest",
-        "vite"
-      ],
-      "markerOrigins": [
-        {
-          "marker": "package.json:buildOrTest",
-          "foundAt": "packages/shock-and-awe/server/package.json"
-        },
-        {
-          "marker": "vite",
-          "foundAt": "packages/shock-and-awe/vite.config.ts"
-        }
-      ],
-      "inherited": [
-        "pnpm-lock.yaml"
-      ],
-      "wiring": [],
-      "touchedRelease": true,
-      "touchedDev": true,
-      "pathFlags": []
-    }
-  },
-  {
     "root": "terrafusion-cos",
     "bucket": "GEN2_APPS",
     "evidence": {
@@ -501,6 +470,40 @@
         {
           "marker": "vite",
           "foundAt": "workspaces/PACS/TADownloads/pacs-quantum-ui/vite.config.ts"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "workspaces/workspaces",
+    "bucket": "GEN2_APPS",
+    "evidence": {
+      "score": 3,
+      "scoreLocal": 2,
+      "scoreTotal": 3,
+      "buildableLocal": true,
+      "markers": [
+        "package.json:buildOrTest"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "workspaces/workspaces/terra-api-services/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "workspaces/workspaces/terra-citizen-portal/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "workspaces/workspaces/terra-intelligence-hub/package.json"
         }
       ],
       "inherited": [
