@@ -328,7 +328,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Trivy config scan
-        continue-on-error: true  # Trivy IaC parser can panic on complex Terraform
+        continue-on-error: true # Trivy IaC parser can panic on complex Terraform
         run: |
           echo "::group::Trivy IaC Configuration Scan"
 

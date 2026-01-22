@@ -76,6 +76,7 @@ jobs:
             http://localhost:4173/research-portal
           configPath: './frontend/lighthouserc.cjs'
           uploadArtifacts: true
+          artifactName: lighthouse-results-${{ github.run_id }}
           temporaryPublicStorage: true
 
       - name: Comment PR with Lighthouse results
