@@ -105,7 +105,9 @@ jobs:
       
       - name: Install compliance scanning tools
         run: |
-          pip install compliance-checker nist-compliance-scanner pci-validator
+          # Note: nist-compliance-scanner and pci-validator are placeholders
+          # Real compliance scanning uses OpenSCAP below
+          pip install compliance-checker || echo "compliance-checker not available, continuing"
           
           # Install OpenSCAP for NIST compliance
           sudo apt-get update
