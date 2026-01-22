@@ -11,6 +11,9 @@ SDK/
 **/dist/
 **/build/
 
+# Ignore agent-generated documentation
+.github/agents/
+
 # Ignore generated/archived files
 *.backup.md
 ARCHIVE*/
