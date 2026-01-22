@@ -48,21 +48,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         working-directory: ./frontend
 
       - name: Build production bundle
-        run: npm run build
+        run: pnpm run build
         working-directory: ./frontend
         env:
           NODE_ENV: production
 
       - name: Start preview server
         run: |
-          npm run preview &
+          pnpm run preview &
           npx wait-on http://localhost:4173 -t 60000
         working-directory: ./frontend
 
@@ -115,14 +120,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         working-directory: ./frontend
 
       - name: Build PR bundle
-        run: npm run build
+        run: pnpm run build
         working-directory: ./frontend
         env:
           NODE_ENV: production
@@ -142,11 +152,11 @@ jobs:
           path: main-branch
 
       - name: Install main dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         working-directory: ./main-branch/frontend
 
       - name: Build main bundle
-        run: npm run build
+        run: pnpm run build
         working-directory: ./main-branch/frontend
         env:
           NODE_ENV: production
@@ -224,20 +234,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         working-directory: ./frontend
 
       - name: Run performance benchmark suite
-        run: npm test -- --testPathPattern=performance --coverage=false
+        run: pnpm test -- --testPathPattern=performance --coverage=false
         working-directory: ./frontend
         env:
           NODE_OPTIONS: --expose-gc
 
       - name: Upload benchmark results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: performance-benchmarks
           path: frontend/performance-results.json
@@ -257,14 +272,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         working-directory: ./frontend
 
       - name: Run memory leak detection tests
-        run: npm test -- --testPathPattern=MemoryLeakDetection --coverage=false
+        run: pnpm test -- --testPathPattern=MemoryLeakDetection --coverage=false
         working-directory: ./frontend
         env:
           NODE_OPTIONS: --expose-gc --max-old-space-size=4096

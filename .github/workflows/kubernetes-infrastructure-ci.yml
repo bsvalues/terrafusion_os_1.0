@@ -154,7 +154,7 @@ jobs:
       
       - name: Upload lint results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lint-results
           path: |
@@ -242,7 +242,7 @@ jobs:
       
       - name: Upload OPA test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: opa-test-results
           path: opa-results-*.json
@@ -370,7 +370,7 @@ jobs:
       
       - name: Upload security scan results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-scan-results
           path: |
@@ -493,7 +493,7 @@ jobs:
           echo "::endgroup::"
       
       - name: Upload packaged charts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: helm-charts
           path: packaged-charts/*.tgz
@@ -554,7 +554,7 @@ jobs:
           kubectl label namespace staging environment=staging --overwrite
       
       - name: Download packaged charts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: helm-charts
           path: packaged-charts/
@@ -717,7 +717,7 @@ jobs:
       
       - name: Upload test report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: integration-test-report
           path: test-report.md
@@ -768,7 +768,7 @@ jobs:
           kubectl label namespace production environment=production --overwrite
       
       - name: Download packaged charts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: helm-charts
           path: packaged-charts/

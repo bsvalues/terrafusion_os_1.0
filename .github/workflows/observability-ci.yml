@@ -258,7 +258,7 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
       
       - name: Upload validation report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dashboard-validation-report
           path: dashboard-validation-report.md
@@ -394,7 +394,7 @@ jobs:
           cat prometheus-rules-report.md
       
       - name: Upload rules report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: prometheus-rules-report
           path: prometheus-rules-report.md
@@ -563,7 +563,7 @@ jobs:
           cat alert-validation-report.md
       
       - name: Upload alerts report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: alert-validation-report
           path: alert-validation-report.md
@@ -656,7 +656,7 @@ jobs:
           echo "::endgroup::"
       
       - name: Upload packaged configs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: observability-configs
           path: |
@@ -704,7 +704,7 @@ jobs:
           kubectl label namespace ${{ env.MONITORING_NAMESPACE }} environment=staging --overwrite
       
       - name: Download packaged configs
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: observability-configs
           path: packaged/
@@ -878,7 +878,7 @@ jobs:
       
       - name: Upload test report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: integration-test-report-observability
           path: integration-test-report.md
@@ -924,7 +924,7 @@ jobs:
           kubectl label namespace production-monitoring environment=production --overwrite
       
       - name: Download packaged configs
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: observability-configs
           path: packaged/
