@@ -663,20 +663,73 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Start application (local)
+        id: start-app
+        run: |
+          set -euo pipefail
+
+          # Try to start frontend for ZAP target
+          if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
+            echo "Starting frontend..."
+            cd frontend
+            npm ci --legacy-peer-deps 2>/dev/null || npm install --legacy-peer-deps
+            npm run build 2>/dev/null || true
+            npm run preview -- --host 127.0.0.1 --port 4173 >/tmp/frontend.log 2>&1 &
+            echo "app_started=true" >> "$GITHUB_OUTPUT"
+            echo "target_url=http://127.0.0.1:4173" >> "$GITHUB_OUTPUT"
+            cd ..
+          else
+            echo "No frontend found, using placeholder"
+            echo "app_started=false" >> "$GITHUB_OUTPUT"
+            echo "target_url=http://127.0.0.1:4173" >> "$GITHUB_OUTPUT"
+          fi
+        continue-on-error: true
+
+      - name: Wait for app
+        if: steps.start-app.outputs.app_started == 'true'
+        run: |
+          set -euo pipefail
+          echo "Waiting for app to be ready..."
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; then
+              echo "✅ Frontend is up and ready"
+              exit 0
+            fi
+            echo "Attempt $i/60 - waiting..."
+            sleep 2
+          done
+          echo "::warning::Frontend did not become ready in time"
+          exit 0
+        continue-on-error: true
+
       - name: OWASP ZAP Baseline Scan
         run: |
           echo "::group::OWASP ZAP Baseline Scan"
           mkdir -p zap-report
 
-          # Run ZAP via official Docker image (no install needed)
-          docker run --rm -t \
-            -v "${{ github.workspace }}:/zap/wrk:rw" \
+          # Pull latest ZAP image
+          docker pull ghcr.io/zaproxy/zaproxy:stable
+
+          # Run ZAP via official Docker image with host networking
+          docker run --rm --network host \
+            -v "$(pwd)/zap-report:/zap/wrk:rw" \
             -u root \
-            zaproxy/zap-stable \
+            ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py \
-              -t "${TARGET_URL:-http://localhost:8080}" \
-              -r zap-report/zap_baseline.html \
-              -J zap-report/zap_baseline.json \
+              -t "${{ steps.start-app.outputs.target_url || 'http://127.0.0.1:4173' }}" \
+              -r zap_baseline.html \
+              -J zap_baseline.json \
               -I \
             || echo "::warning::ZAP scan completed with findings"
 
