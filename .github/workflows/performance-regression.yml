@@ -75,7 +75,7 @@ jobs:
           urls: |
             http://localhost:4173
             http://localhost:4173/research-portal
-          configPath: './frontend/lighthouserc.js'
+          configPath: './frontend/lighthouserc.cjs'
           uploadArtifacts: true
           temporaryPublicStorage: true
 
