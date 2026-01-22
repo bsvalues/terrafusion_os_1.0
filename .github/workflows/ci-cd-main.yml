@@ -237,6 +237,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: csharp, javascript, typescript
+          config-file: ./.github/codeql/codeql-config.yml
 
       - name: 🏗️ Build for Analysis
         run: |

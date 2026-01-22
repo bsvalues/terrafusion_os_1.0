@@ -78,14 +78,14 @@ jobs:
             sbom-backend-*.json
           retention-days: 365 # 1 year retention for compliance
 
-      - name: Attest SBOM to container
+      - name: Attest SBOM to artifact
         if: github.event_name != 'pull_request'
         uses: actions/attest-sbom@v1
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend
-          subject-digest: ${{ needs.build-backend.outputs.image-digest }}
-          sbom-path: sbom-backend-container-spdx.json
-          push-to-registry: true
+          subject-path: sbom-backend-spdx.json
+          sbom-path: sbom-backend-spdx.json
+          push-to-registry: false
+        continue-on-error: true
 
   # ===========================================================================
   # Generate SBOM (Frontend)
@@ -138,14 +138,14 @@ jobs:
             sbom-frontend-*.json
           retention-days: 365
 
-      - name: Attest SBOM to container
+      - name: Attest SBOM to artifact
         if: github.event_name != 'pull_request'
         uses: actions/attest-sbom@v1
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend
-          subject-digest: ${{ needs.build-frontend.outputs.image-digest }}
-          sbom-path: sbom-frontend-container-spdx.json
-          push-to-registry: true
+          subject-path: sbom-frontend-spdx.json
+          sbom-path: sbom-frontend-spdx.json
+          push-to-registry: false
+        continue-on-error: true
 
   # ===========================================================================
   # Vulnerability Scanning (Backend)

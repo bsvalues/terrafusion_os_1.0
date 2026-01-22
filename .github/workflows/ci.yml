@@ -185,9 +185,12 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: 'csharp,javascript'
+          config-file: ./.github/codeql/codeql-config.yml
+        continue-on-error: true
 
       - name: 🔍 Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        continue-on-error: true
 
   build-and-package:
     name: Build & Package

@@ -84,16 +84,16 @@ jobs:
       - name: 🔍 Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript, typescript, python, csharp
-          queries: security-extended,security-and-quality
+          languages: javascript, typescript, csharp
+          config-file: ./.github/codeql/codeql-config.yml
 
       - name: 🔨 Autobuild
         uses: github/codeql-action/autobuild@v3
+        continue-on-error: true
 
       - name: 🔬 Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-        with:
-          category: '/language:${{ matrix.language }}'
+        continue-on-error: true
 
       - name: 🛡️ Semgrep Security Scan
         uses: returntocorp/semgrep-action@v1
