@@ -921,30 +921,41 @@ jobs:
     runs-on: ubuntu-latest
     needs: [compliance-scan, vulnerability-scan, policy-validation, compliance-reporting]
     # Only run on main branch when Azure credentials are configured
-    if: |
-      github.event_name == 'push' && 
-      github.ref == 'refs/heads/main' && 
-      secrets.AZURE_CREDENTIALS != ''
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     timeout-minutes: 15
     environment:
       name: production-security
       url: https://security.terrafusion.io
 
     steps:
+      - name: Check Azure credentials
+        id: check-creds
+        run: |
+          if [ -n "${{ secrets.AZURE_CREDENTIALS }}" ]; then
+            echo "has_creds=true" >> $GITHUB_OUTPUT
+          else
+            echo "::warning::AZURE_CREDENTIALS not configured. Skipping deployment steps."
+            echo "has_creds=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout code
+        if: steps.check-creds.outputs.has_creds == 'true'
         uses: actions/checkout@v4
 
       - name: Set up kubectl
+        if: steps.check-creds.outputs.has_creds == 'true'
         uses: azure/setup-kubectl@v3
         with:
           version: 'v1.28.0'
 
       - name: Azure Login
+        if: steps.check-creds.outputs.has_creds == 'true'
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Get AKS credentials
+        if: steps.check-creds.outputs.has_creds == 'true'
         run: |
           az aks get-credentials \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
@@ -952,6 +963,7 @@ jobs:
             --overwrite-existing
 
       - name: Deploy OPA/Kyverno policies
+        if: steps.check-creds.outputs.has_creds == 'true'
         run: |
           echo "::group::Deploy Security Policies"
 
@@ -974,6 +986,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Deploy security baselines
+        if: steps.check-creds.outputs.has_creds == 'true'
         run: |
           echo "::group::Deploy Security Baselines"
 
@@ -984,6 +997,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Verify deployment
+        if: steps.check-creds.outputs.has_creds == 'true'
         run: |
           echo "::group::Verify Security Deployment"
 
