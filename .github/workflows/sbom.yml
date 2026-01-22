@@ -500,7 +500,7 @@ jobs:
   notify:
     name: Notify Security Team
     needs: [deploy-gate]
-    if: failure() && secrets.SLACK_SECURITY_WEBHOOK_URL != ''
+    if: failure()
     runs-on: ubuntu-latest
 
     steps:
@@ -522,3 +522,4 @@ jobs:
                 }
               ]
             }
+        continue-on-error: true
