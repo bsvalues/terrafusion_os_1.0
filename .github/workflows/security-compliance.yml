@@ -282,29 +282,32 @@ jobs:
           echo "🏛️ Validating NIST SP 800-53 compliance..."
           pnpm run compliance:nist -- --framework=800-53 --revision=5 || echo "::notice::NIST compliance script not configured"
         continue-on-error: true
-      
+
       - name: 🔒 SOC 2 Type II Compliance Check
         run: |
           echo "🔒 Validating SOC 2 Type II compliance..."
           pnpm run compliance:soc2 -- --type=2 --trust-services=all || echo "::notice::SOC2 compliance script not configured"
         continue-on-error: true
-      
+
       - name: 🏥 HIPAA Compliance Check
         run: |
           echo "🏥 Validating HIPAA compliance..."
           pnpm run compliance:hipaa -- --rules=privacy,security,breach-notification || echo "::notice::HIPAA compliance script not configured"
         continue-on-error: true
-      
+
       - name: 🌍 GDPR Compliance Check
         run: |
           echo "🌍 Validating GDPR compliance..."
           pnpm run compliance:gdpr -- --articles=all --data-protection=maximum || echo "::notice::GDPR compliance script not configured"
         continue-on-error: true
-      
+
       - name: 💳 PCI-DSS Compliance Check
         run: |
           echo "💳 Validating PCI-DSS compliance..."
           pnpm run compliance:pci -- --version=4.0 --requirements=all || echo "::notice::PCI-DSS compliance script not configured"
+        continue-on-error: true
+
+      - name: 📊 Compliance Summary
         run: |
           echo "📊 Compliance Validation Results:"
           echo "================================="
