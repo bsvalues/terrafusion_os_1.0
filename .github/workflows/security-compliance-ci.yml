@@ -667,7 +667,7 @@ jobs:
         run: |
           echo "::group::OWASP ZAP Baseline Scan"
           mkdir -p zap-report
-          
+
           # Run ZAP via official Docker image (no install needed)
           docker run --rm -t \
             -v "${{ github.workspace }}:/zap/wrk:rw" \
@@ -679,7 +679,7 @@ jobs:
               -J zap-report/zap_baseline.json \
               -I \
             || echo "::warning::ZAP scan completed with findings"
-          
+
           echo "::endgroup::"
         continue-on-error: true
 
