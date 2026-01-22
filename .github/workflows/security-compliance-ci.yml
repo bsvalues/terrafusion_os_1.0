@@ -744,7 +744,7 @@ jobs:
       - name: Install Nuclei
         run: |
           wget https://github.com/projectdiscovery/nuclei/releases/download/v${{ env.NUCLEI_VERSION }}/nuclei_${{ env.NUCLEI_VERSION }}_linux_amd64.zip
-          unzip nuclei_*.zip
+          unzip -o nuclei_*.zip
           sudo mv nuclei /usr/local/bin/
           nuclei -version
 
@@ -933,7 +933,7 @@ jobs:
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
-          version: '1.28.0'
+          version: 'v1.28.0'
 
       - name: Azure Login
         uses: azure/login@v1
