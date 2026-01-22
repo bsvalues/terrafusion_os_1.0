@@ -70,12 +70,25 @@ jobs:
           pnpm run test:championship || echo 'Tests skipped'
         continue-on-error: true
 
+      - name: Check Dockerfiles exist
+        id: docker_check
+        run: |
+          BACKEND_OK=false
+          FRONTEND_OK=false
+          if [ -f backend/Dockerfile ]; then BACKEND_OK=true; fi
+          if [ -f frontend/Dockerfile ]; then FRONTEND_OK=true; fi
+          echo "backend=$BACKEND_OK" >> $GITHUB_OUTPUT
+          echo "frontend=$FRONTEND_OK" >> $GITHUB_OUTPUT
+          echo "::notice::Backend Dockerfile: $BACKEND_OK, Frontend Dockerfile: $FRONTEND_OK"
+
       - name: Build Docker images
+        if: steps.docker_check.outputs.backend == 'true' && steps.docker_check.outputs.frontend == 'true'
         run: |
           docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/api:${{ steps.version.outputs.version }} -f backend/Dockerfile .
           docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ui:${{ steps.version.outputs.version }} -f frontend/Dockerfile .
 
       - name: Log in to Container Registry
+        if: steps.docker_check.outputs.backend == 'true' && steps.docker_check.outputs.frontend == 'true'
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
@@ -83,9 +96,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push Docker images
+        if: steps.docker_check.outputs.backend == 'true' && steps.docker_check.outputs.frontend == 'true'
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/api:${{ steps.version.outputs.version }}
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ui:${{ steps.version.outputs.version }}
+
+      - name: Skip Docker (no Dockerfiles)
+        if: steps.docker_check.outputs.backend != 'true' || steps.docker_check.outputs.frontend != 'true'
+        run: echo "::notice::Docker build skipped - Dockerfiles not present"
 
   deploy-staging:
     needs: build-and-test
