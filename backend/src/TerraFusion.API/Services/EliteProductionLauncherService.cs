@@ -27,7 +27,6 @@ public class EliteProductionLauncherService : BackgroundService
 
     private readonly TimeSpan _healthCheckInterval = TimeSpan.FromMinutes(2);
     private readonly TimeSpan _restartDelay = TimeSpan.FromSeconds(10);
-    private readonly int _maxConsecutiveFailures = 3;
 
     private Process? _apiProcess;
     private DateTime _lastHealthCheck = DateTime.MinValue;

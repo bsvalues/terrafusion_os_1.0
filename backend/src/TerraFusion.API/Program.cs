@@ -23,6 +23,7 @@ using TerraFusion.Levy.Models;
 using TerraFusion.Levy.Services;
 using System.Data;
 using TerraFusion.Core.Services;
+using TerraFusion.Core.PACS;
 using TerraFusion.API.Services.SpecLock;
 using TerraFusion.API.Services.Marketplace;
 // Conditional DB providers
@@ -199,9 +200,8 @@ builder.Services.AddScoped<TerraFusion.Core.Services.HarrisPacsLegacyService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, TerraFusion.Core.Services.DynamicPropertyService>();
 
 
-// 🏛️ Register Harris PACS Integration Service - Elite government property assessment system integration
-// Provides real-time bidirectional sync with Harris PACS v12.4.7 for property data, assessments, and tax records
-builder.Services.AddScoped<TerraFusion.Core.Services.IHarrisPACSIntegrationService, TerraFusion.Core.Services.HarrisPACSIntegrationService>();
+// 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
+builder.Services.AddPacsAdapter();
 // Conditionally register Redis-backed cache or NoOp fallback
 if (redisAvailable)
 {
@@ -1219,5 +1219,4 @@ catch (Exception ex)
     Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
     throw;
 }
-
 
