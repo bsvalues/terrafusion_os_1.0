@@ -150,7 +150,8 @@ public class CoPilotService : ICoPilotService
         );
 
         // Parse response into code blocks
-        var codeBlocks = ParseCodeBlocks(response.Content);
+        var responseContent = response.Content ?? string.Empty;
+        var codeBlocks = ParseCodeBlocks(responseContent);
 
         // Validate county isolation in generated code
         foreach (var block in codeBlocks)
@@ -233,10 +234,11 @@ public class CoPilotService : ICoPilotService
         var response = await _chatService.GetChatMessageContentAsync(chatHistory);
 
         // Save to history
-        chatHistory.AddAssistantMessage(response.Content);
+        var responseContent = response.Content ?? string.Empty;
+        chatHistory.AddAssistantMessage(responseContent);
         await SaveConversationHistoryAsync(conversationId, chatHistory);
 
-        return response.Content;
+        return responseContent;
     }
 
     private string BuildSystemPrompt(GenerationContext context)
@@ -372,7 +374,7 @@ Add: .Where(x => x.CountyId == countyId)
 Return ONLY the modified code.";
 
         var response = await _chatService.GetChatMessageContentAsync(prompt);
-        return response.Content;
+        return response.Content ?? string.Empty;
     }
 
     private async Task<string> AddCountyIdPropertyAsync(string code, int lineNumber)
@@ -389,7 +391,7 @@ Add: public Guid CountyId {{ get; set; }}
 Return ONLY the modified code.";
 
         var response = await _chatService.GetChatMessageContentAsync(prompt);
-        return response.Content;
+        return response.Content ?? string.Empty;
     }
 
     private async Task<string> RefactorForComplexityAsync(string code)
@@ -404,7 +406,7 @@ Extract methods, simplify conditionals, apply SOLID principles.
 Return ONLY the refactored code.";
 
         var response = await _chatService.GetChatMessageContentAsync(prompt);
-        return response.Content;
+        return response.Content ?? string.Empty;
     }
 
     private async Task<string> AddCachingAsync(string code)
@@ -419,7 +421,7 @@ Use IDistributedCache, MessagePack serialization, appropriate cache key and expi
 Return ONLY the modified code.";
 
         var response = await _chatService.GetChatMessageContentAsync(prompt);
-        return response.Content;
+        return response.Content ?? string.Empty;
     }
 
     private List<CodeSuggestion> GenerateSuggestionsFromViolations(List<Violation> violations, string type)
