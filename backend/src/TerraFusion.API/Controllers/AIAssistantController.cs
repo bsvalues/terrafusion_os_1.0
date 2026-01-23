@@ -96,7 +96,7 @@ namespace TerraFusion.API.Controllers
         [ProducesResponseType(typeof(System.Collections.Generic.List<TerraFusion.AI.Models.AIRecommendation>), 200)]
         public async Task<ActionResult> GetRecommendations(
             string countyId,
-            [FromQuery] string context = null)
+            [FromQuery] string? context = null)
         {
             try
             {

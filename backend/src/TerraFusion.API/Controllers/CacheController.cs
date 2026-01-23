@@ -72,7 +72,7 @@ namespace TerraFusion.API.Controllers
                 await _cacheService.RemoveAsync(key);
                 await _apiCacheService.InvalidateCacheAsync(key);
                 
-                _logger.LogInformation("Cache invalidated for key: {Key} by user: {User}", key, User.Identity.Name);
+                _logger.LogInformation("Cache invalidated for key: {Key} by user: {User}", key, User.Identity?.Name ?? "anonymous");
                 return Ok(new { message = $"Cache invalidated for key: {key}" });
             }
             catch (Exception ex)
@@ -95,7 +95,7 @@ namespace TerraFusion.API.Controllers
                 await _apiCacheService.InvalidateByPatternAsync(request.Pattern);
                 
                 _logger.LogInformation("Cache invalidated for pattern: {Pattern} by user: {User}", 
-                    request.Pattern, User.Identity.Name);
+                    request.Pattern, User.Identity?.Name ?? "anonymous");
                 
                 return Ok(new { message = $"Cache invalidated for pattern: {request.Pattern}" });
             }
@@ -118,7 +118,7 @@ namespace TerraFusion.API.Controllers
                 await _cacheService.InvalidateTagAsync(tag);
                 await _apiCacheService.InvalidateByTagAsync(tag);
                 
-                _logger.LogInformation("Cache invalidated for tag: {Tag} by user: {User}", tag, User.Identity.Name);
+                _logger.LogInformation("Cache invalidated for tag: {Tag} by user: {User}", tag, User.Identity?.Name ?? "anonymous");
                 return Ok(new { message = $"Cache invalidated for tag: {tag}" });
             }
             catch (Exception ex)
@@ -140,7 +140,7 @@ namespace TerraFusion.API.Controllers
                 await _apiCacheService.WarmupCacheAsync(request.Items);
                 
                 _logger.LogInformation("Cache warmup initiated for {Count} items by user: {User}", 
-                    request.Items.Count, User.Identity.Name);
+                    request.Items.Count, User.Identity?.Name ?? "anonymous");
                 
                 return Ok(new { message = $"Cache warmup initiated for {request.Items.Count} items" });
             }
@@ -156,7 +156,7 @@ namespace TerraFusion.API.Controllers
         /// </summary>
         [HttpGet("items")]
         [Authorize(Roles = "Admin,SystemMonitor")]
-        public async Task<ActionResult<List<CachedItem>>> GetCachedItems([FromQuery] string pattern = null)
+        public async Task<ActionResult<List<CachedItem>>> GetCachedItems([FromQuery] string? pattern = null)
         {
             try
             {
@@ -195,7 +195,7 @@ namespace TerraFusion.API.Controllers
                 if (success)
                 {
                     _logger.LogInformation("Caching rules set for path: {Path} by user: {User}", 
-                        request.Path, User.Identity.Name);
+                        request.Path, User.Identity?.Name ?? "anonymous");
                     return Ok(new { message = $"Caching rules set for path: {request.Path}" });
                 }
                 else
@@ -264,7 +264,7 @@ namespace TerraFusion.API.Controllers
                 
                 if (success)
                 {
-                    _logger.LogWarning("CDN purge all executed by user: {User}", User.Identity.Name);
+                    _logger.LogWarning("CDN purge all executed by user: {User}", User.Identity?.Name ?? "anonymous");
                     return Ok(new { message = "All CDN content purged successfully" });
                 }
                 else

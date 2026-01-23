@@ -172,18 +172,18 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
         }
     }
 
-            public async System.Threading.Tasks.Task<bool> IsModuleAvailableAsync(string moduleName)
+            public System.Threading.Tasks.Task<bool> IsModuleAvailableAsync(string moduleName)
     {
         try
         {
             var moduleDir = Path.Combine(_modulesPath, moduleName);
             var manifestPath = Path.Combine(moduleDir, "module.manifest.json");
-            
-            return Directory.Exists(moduleDir) && File.Exists(manifestPath);
+
+            return System.Threading.Tasks.Task.FromResult(Directory.Exists(moduleDir) && File.Exists(manifestPath));
         }
         catch
         {
-            return false;
+            return System.Threading.Tasks.Task.FromResult(false);
         }
     }
 

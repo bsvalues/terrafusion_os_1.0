@@ -41,7 +41,6 @@ namespace TerraFusion.Consciousness.Services
         /// <param name="millionAgentService">Service for managing million-agent coordination</param>
         /// <param name="quantumSecurityService">Quantum security and encryption service</param>
         /// <param name="bentonCountyDataService">Benton County data integration service</param>
-        /// <param name="hybridConsciousnessManager">Manager for hybrid consciousness operations</param>
         /// <param name="complianceValidator">Service for compliance validation</param>
         /// <param name="legacyConsciousnessService">Optional legacy consciousness service for backwards compatibility</param>
         public QuantumConsciousnessOrchestrator(

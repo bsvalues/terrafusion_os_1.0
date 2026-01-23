@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Consciousness.Interfaces;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 namespace TerraFusion.Consciousness.Services
 {
     public class ComplianceServiceStub : IComplianceService
