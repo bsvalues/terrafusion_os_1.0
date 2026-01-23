@@ -8,6 +8,7 @@ using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Metrics;
 using TerraFusion.Abstractions.Interfaces;
+using TerraFusion.Core.PACS;
 // Resolve type ambiguity: Use all property valuation types from interface namespace
 using PropertyValuationRequest = TerraFusion.Core.Models.PropertyValuationRequest;
 using PropertyValuationResult = TerraFusion.Core.Models.PropertyValuationResult;
@@ -33,7 +34,7 @@ namespace TerraFusion.Core.Services
     public class PropertyValuationAIEnhancementService : IPropertyValuationAIEnhancementService
     {
         private readonly ILogger<PropertyValuationAIEnhancementService> _logger;
-        private readonly IHarrisPACSIntegrationService _harrisPACSService;
+        private readonly IPacsAdapter _pacsAdapter;
         private readonly IPropertyDataValidationService _validationService;
         private readonly IRedisCacheService _cacheService;
         private readonly TerraFusionMetricsExporter _metricsExporter;
@@ -45,7 +46,7 @@ namespace TerraFusion.Core.Services
 
         public PropertyValuationAIEnhancementService(
             ILogger<PropertyValuationAIEnhancementService> logger,
-            IHarrisPACSIntegrationService harrisPACSService,
+            IPacsAdapter pacsAdapter,
             IPropertyDataValidationService validationService,
             IRedisCacheService cacheService,
             TerraFusionMetricsExporter metricsExporter,
@@ -53,7 +54,7 @@ namespace TerraFusion.Core.Services
             ITerraFusionSyncService terraSyncService)
         {
             _logger = logger;
-            _harrisPACSService = harrisPACSService;
+            _pacsAdapter = pacsAdapter;
             _validationService = validationService;
             _cacheService = cacheService;
             _metricsExporter = metricsExporter;
@@ -288,7 +289,7 @@ namespace TerraFusion.Core.Services
                 _logger.LogInformation("🔄 Cache MISS - Fetching from Harris PACS...");
 
                 // Fetch from Harris PACS (primary source)
-                var pacsProperty = await _harrisPACSService.GetPropertyByParcelAsync(countyCode, parcelId);
+                var pacsProperty = await GetPacsPropertyAsync(parcelId);
 
                 if (pacsProperty == null)
                 {
@@ -780,33 +781,77 @@ namespace TerraFusion.Core.Services
 
         #region Helper Methods
 
-        private PropertyData MapPACSToPropertyData(dynamic pacsProperty, string countyCode)
+        private PropertyData MapPACSToPropertyData(PacsPropertyCore pacsProperty, string countyCode)
         {
             // Map Harris PACS property to internal PropertyData model
             return new PropertyData
             {
                 CountyCode = countyCode,
-                ParcelId = pacsProperty.ParcelId ?? "",
+                ParcelId = GetParcelId(pacsProperty),
                 PropertyType = DeterminePropertyType(pacsProperty),
-                SquareFootage = pacsProperty.SquareFootage ?? 0,
-                YearBuilt = pacsProperty.YearBuilt ?? 1900,
-                Bedrooms = pacsProperty.Bedrooms ?? 0,
-                Bathrooms = pacsProperty.Bathrooms ?? 0,
-                Quality = pacsProperty.Quality ?? "Average",
-                Condition = pacsProperty.Condition ?? "Average",
-                LandAcres = pacsProperty.LandAcres ?? 0.25m,
-                Zoning = pacsProperty.Zoning ?? "Residential"
+                SquareFootage = 0,
+                YearBuilt = 1900,
+                Bedrooms = 0,
+                Bathrooms = 0,
+                Quality = "Average",
+                Condition = "Average",
+                LandAcres = 0,
+                Zoning = "Residential",
+                AdditionalAttributes = new Dictionary<string, object>
+                {
+                    ["propId"] = pacsProperty.PropId,
+                    ["geoId"] = pacsProperty.GeoId,
+                    ["situsAddress"] = pacsProperty.SitusAddr ?? string.Empty,
+                    ["situsCity"] = pacsProperty.SitusCity ?? string.Empty,
+                    ["situsZip"] = pacsProperty.SitusZip ?? string.Empty,
+                    ["legalDescription"] = pacsProperty.LegalDesc ?? string.Empty,
+                    ["assessedValue"] = pacsProperty.AssessedVal ?? 0m,
+                    ["marketValue"] = pacsProperty.MarketVal ?? 0m,
+                    ["landValue"] = pacsProperty.LandVal ?? 0m,
+                    ["improvementValue"] = pacsProperty.ImprvVal ?? 0m,
+                    ["appraisalYear"] = pacsProperty.ApprYear ?? 0,
+                    ["lastModified"] = pacsProperty.LastModified ?? DateTime.MinValue
+                }
             };
         }
 
-        private string DeterminePropertyType(dynamic pacsProperty)
+        private string DeterminePropertyType(PacsPropertyCore pacsProperty)
         {
             // Determine property type from PACS data
-            var useCode = pacsProperty.UseCode?.ToString() ?? "";
-            if (useCode.StartsWith("1")) return "Residential";
-            if (useCode.StartsWith("2")) return "Commercial";
-            if (useCode.StartsWith("3")) return "Industrial";
+            var typeCode = pacsProperty.PropTypeCd?.Trim() ?? string.Empty;
+            if (typeCode.StartsWith("1", StringComparison.OrdinalIgnoreCase) ||
+                typeCode.StartsWith("R", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Residential";
+            }
+            if (typeCode.StartsWith("2", StringComparison.OrdinalIgnoreCase) ||
+                typeCode.StartsWith("C", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Commercial";
+            }
+            if (typeCode.StartsWith("3", StringComparison.OrdinalIgnoreCase) ||
+                typeCode.StartsWith("I", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Industrial";
+            }
             return "Residential";
+        }
+
+        private async Task<PacsPropertyCore?> GetPacsPropertyAsync(string parcelId)
+        {
+            if (int.TryParse(parcelId, out var propId))
+            {
+                return await _pacsAdapter.GetPropertyByIdAsync(propId);
+            }
+
+            return await _pacsAdapter.GetPropertyByGeoIdAsync(parcelId);
+        }
+
+        private static string GetParcelId(PacsPropertyCore pacsProperty)
+        {
+            return string.IsNullOrWhiteSpace(pacsProperty.GeoId)
+                ? pacsProperty.PropId.ToString()
+                : pacsProperty.GeoId;
         }
 
         private decimal CalculateDataCompletenessScore(PropertyData propertyData)
