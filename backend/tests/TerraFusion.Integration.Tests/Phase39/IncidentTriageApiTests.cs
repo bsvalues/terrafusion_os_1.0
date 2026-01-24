@@ -9,8 +9,12 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Xunit;
 using FluentAssertions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using TerraFusion.Operations.Incidents;
+using TerraFusion.Integration.Tests.Infrastructure;
 
 namespace TerraFusion.Integration.Tests.Phase39;
 
@@ -33,8 +37,23 @@ public class IncidentTriageApiTests : IClassFixture<WebApplicationFactory<Progra
 
     public IncidentTriageApiTests(WebApplicationFactory<Program> factory)
     {
-        _factory = factory;
-        _client = factory.CreateClient();
+        _factory = factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureTestServices(services =>
+            {
+                services.AddAuthentication("Test")
+                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", _ => { });
+
+                services.AddAuthorization(options =>
+                {
+                    options.DefaultPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder("Test")
+                        .RequireAuthenticatedUser()
+                        .Build();
+                });
+            });
+        });
+
+        _client = _factory.CreateClient();
     }
 
     // =========================================================================

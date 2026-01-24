@@ -472,6 +472,8 @@ public sealed class GrafanaDashboardValidationPhase45Tests
                 if (line.Equals("Allowed metric names:", StringComparison.Ordinal))
                 {
                     i++;
+                    while (i < lines.Length && string.IsNullOrWhiteSpace(lines[i]))
+                        i++;
                     while (i < lines.Length && lines[i].TrimStart().StartsWith("-", StringComparison.Ordinal))
                     {
                         var m = ExtractBackticked(lines[i]);
@@ -485,6 +487,8 @@ public sealed class GrafanaDashboardValidationPhase45Tests
                 if (line.StartsWith("Banned labels anywhere", StringComparison.Ordinal))
                 {
                     i++;
+                    while (i < lines.Length && string.IsNullOrWhiteSpace(lines[i]))
+                        i++;
                     while (i < lines.Length && lines[i].TrimStart().StartsWith("-", StringComparison.Ordinal))
                     {
                         var l = ExtractBackticked(lines[i]);
