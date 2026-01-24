@@ -549,6 +549,8 @@ public sealed class GrafanaDashboardValidationPhase45Tests
                 if (line.StartsWith("Dashboard UID", StringComparison.Ordinal))
                 {
                     index++;
+                    while (index < lines.Length && string.IsNullOrWhiteSpace(lines[index]))
+                        index++;
                     uid = ExtractBackticked(lines[index]);
                     index++;
                     continue;
@@ -558,6 +560,8 @@ public sealed class GrafanaDashboardValidationPhase45Tests
                 if (line.StartsWith("Dashboard Title", StringComparison.Ordinal))
                 {
                     index++;
+                    while (index < lines.Length && string.IsNullOrWhiteSpace(lines[index]))
+                        index++;
                     title = ExtractBackticked(lines[index]);
                     index++;
                     continue;
@@ -607,6 +611,8 @@ public sealed class GrafanaDashboardValidationPhase45Tests
                 if (line.Equals("Title:", StringComparison.Ordinal))
                 {
                     index++;
+                    while (index < lines.Length && string.IsNullOrWhiteSpace(lines[index]))
+                        index++;
                     var bullet = lines[index];
                     var t = ExtractBackticked(bullet);
                     index++;
