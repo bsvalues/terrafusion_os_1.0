@@ -381,19 +381,61 @@ jobs:
               per_page: 100
             });
 
-            const failedJobs = jobs.data.jobs
-              .filter(job => job.conclusion === 'failure')
-              .map(job => `- [${job.name}](${job.html_url})`);
-
-            const failedBlock = failedJobs.length
-              ? ['**Failed jobs:**', ...failedJobs].join('\n')
-              : '';
-
-            const firstFailedJob = jobs.data.jobs.find(
+            const failedJobs = jobs.data.jobs.filter(
               job => job.conclusion === 'failure'
             );
-            const firstFailedLine = firstFailedJob
-              ? `**First failing job:** [${firstFailedJob.name}](${firstFailedJob.html_url})`
+
+            const failedJobLines = failedJobs.map(
+              job => `- [${job.name}](${job.html_url})`
+            );
+
+            const failedBlock = failedJobLines.length
+              ? ['**Failed jobs:**', ...failedJobLines].join('\n')
+              : '';
+
+            const priorityRules = [
+              {
+                keys: ['drift', 'guard'],
+                hint:
+                  'Workflow drift detected—use the reusable dotnet-test workflow (no direct dotnet test).'
+              },
+              {
+                keys: ['dotnet-test', 'build-backend', 'test'],
+                hint:
+                  'Backend tests failed—see failing tests and coverage summary below.'
+              },
+              {
+                keys: ['code-quality', 'quality-gate', 'lint'],
+                hint: 'Quality gate failed—check formatting/lint/analyzers.'
+              },
+              {
+                keys: ['build-frontend', 'frontend'],
+                hint: 'Frontend build failed—check node/pnpm logs and artifacts.'
+              }
+            ];
+
+            const pickPrimaryFailure = jobsList => {
+              const lower = name => name.toLowerCase();
+
+              for (const rule of priorityRules) {
+                const hit = jobsList.find(job =>
+                  rule.keys.some(key => lower(job.name).includes(key))
+                );
+                if (hit) {
+                  return { job: hit, hint: rule.hint };
+                }
+              }
+
+              if (jobsList.length) {
+                return { job: jobsList[0], hint: 'See failed job logs below.' };
+              }
+
+              return null;
+            };
+
+            const primaryFailure = pickPrimaryFailure(failedJobs);
+            const primaryFailureLine = primaryFailure
+              ? `**Primary failure:** [${primaryFailure.job.name}](${primaryFailure.job.html_url}) — ${primaryFailure.hint}`
               : '';
 
             const testsSummary = (process.env.TESTS_SUMMARY || '').trim();
@@ -412,8 +454,8 @@ jobs:
               ''
             ];
 
-            if (firstFailedLine) {
-              bodyLines.push(firstFailedLine);
+            if (primaryFailureLine) {
+              bodyLines.push(primaryFailureLine);
               bodyLines.push('');
             }
 
