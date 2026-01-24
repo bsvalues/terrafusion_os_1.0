@@ -207,8 +207,8 @@ jobs:
   pr_failure_comment:
     name: PR failure summary comment
     runs-on: ubuntu-latest
-    needs: [build-backend]
-    if: ${{ always() && github.event_name == 'pull_request' && needs.build-backend.result == 'failure' }}
+    needs: [build-backend, build-frontend, code-quality]
+    if: ${{ always() && github.event_name == 'pull_request' && !cancelled() && contains(needs.*.result, 'failure') }}
     permissions:
       pull-requests: write
       issues: write
@@ -236,10 +236,17 @@ jobs:
 
             const failedJobs = jobs.data.jobs
               .filter(job => job.conclusion === 'failure')
-              .map(job => `- ${job.name}`);
+              .map(job => `- [${job.name}](${job.html_url})`);
 
             const failedBlock = failedJobs.length
               ? ['**Failed jobs:**', ...failedJobs].join('\n')
+              : '';
+
+            const firstFailedJob = jobs.data.jobs.find(
+              job => job.conclusion === 'failure'
+            );
+            const firstFailedLine = firstFailedJob
+              ? `**First failing job:** [${firstFailedJob.name}](${firstFailedJob.html_url})`
               : '';
 
             const bodyLines = [
@@ -250,6 +257,11 @@ jobs:
               `**SHA:** \`${sha}\``,
               ''
             ];
+
+            if (firstFailedLine) {
+              bodyLines.push(firstFailedLine);
+              bodyLines.push('');
+            }
 
             if (failedBlock) {
               bodyLines.push(failedBlock);
