@@ -5,7 +5,7 @@ namespace TerraFusion.API.Utilities;
 
 public static class StateMeshGuard
 {
-    public static bool IsStateHealthy(string jsonState)
+    public static bool IsStateHealthy(string? jsonState)
     {
         if (string.IsNullOrWhiteSpace(jsonState))
             return false;

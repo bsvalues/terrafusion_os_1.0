@@ -56,28 +56,22 @@ public sealed class RuntimeCertBreakerTests
             "Script must check result for FAIL status before exit"
         );
 
-        // ATTACK: Verify no early return 0 bypasses exist
-        var lines = content.Split('\n');
-        var inCertCommand = false;
-        var foundExitZeroBeforeResult = false;
+        // ATTACK: Verify no early return 0 bypasses exist inside cmd_cert
+        var cmdCertStart = content.IndexOf("def cmd_cert", StringComparison.Ordinal);
+        var cmdCertEnd = content.IndexOf("def main", StringComparison.Ordinal);
+        var cmdCertBlock = cmdCertStart >= 0 && cmdCertEnd > cmdCertStart
+            ? content.Substring(cmdCertStart, cmdCertEnd - cmdCertStart)
+            : content;
 
-        foreach (var line in lines)
+        var exitZeroIndex = cmdCertBlock.IndexOf("sys.exit(0)", StringComparison.Ordinal);
+        var resultIndex = cmdCertBlock.IndexOf("report[\"result\"]", StringComparison.Ordinal);
+        if (resultIndex < 0)
+            resultIndex = cmdCertBlock.IndexOf("report['result']", StringComparison.Ordinal);
+
+        if (exitZeroIndex >= 0 && resultIndex >= 0)
         {
-            if (line.Contains("def cmd_cert"))
-                inCertCommand = true;
-
-            if (inCertCommand)
-            {
-                // Check for premature exit(0) before result calculation
-                if (line.Contains("sys.exit(0)") && !line.TrimStart().StartsWith("#"))
-                {
-                    // This is OK only if it's after the result check
-                    if (!content.IndexOf("sys.exit(0)").ToString().Contains("result"))
-                    {
-                        // Need to verify it's after the result == PASS check
-                    }
-                }
-            }
+            Assert.True(exitZeroIndex > resultIndex,
+                "sys.exit(0) must only occur after result evaluation in cmd_cert");
         }
 
         // Must have ERROR -> exit(2) mapping
@@ -150,7 +144,7 @@ public sealed class RuntimeCertBreakerTests
                 content.Contains("sanitize") ||
                 content.Contains("^[a-zA-Z0-9_-]+$")
             ),
-            $"BREACH: County argument may be vulnerable to {attackName} attack. " +
+            $"BREACH: County argument '{attackInput}' may be vulnerable to {attackName} attack. " +
             "Script must validate county input as alphanumeric."
         );
     }
@@ -171,7 +165,7 @@ public sealed class RuntimeCertBreakerTests
         Assert.True(
             content.Contains("http://") || content.Contains("https://") ||
             content.Contains("startswith") || content.Contains("urlparse"),
-            $"BREACH: Base URL may be vulnerable to {attackName} attack. " +
+            $"BREACH: Base URL '{attackUrl}' may be vulnerable to {attackName} attack. " +
             "Script must validate URL protocol."
         );
     }
