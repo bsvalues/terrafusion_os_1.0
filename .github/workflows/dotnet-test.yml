@@ -94,14 +94,14 @@ jobs:
             --results-directory ./artifacts/test-results
 
       - name: Upload test results (trx)
-        if: ${{ inputs.upload_test_results }}
+        if: ${{ always() && inputs.upload_test_results }}
         uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: artifacts/test-results
 
       - name: Upload coverage
-        if: ${{ inputs.upload_coverage }}
+        if: ${{ always() && inputs.upload_coverage }}
         uses: actions/upload-artifact@v4
         with:
           name: coverage
