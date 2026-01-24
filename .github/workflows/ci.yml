@@ -59,48 +59,14 @@ jobs:
         run: npm run validate:ai-models || echo "AI validation skipped (optional step)"
 
   backend-tests:
-    name: Backend API Tests
-    runs-on: ubuntu-latest
+    name: Backend .NET Tests
     needs: quality-gate
-
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: terrafusion_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-      - name: 🔄 Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 🔵 Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: 📦 Restore Dependencies
-        run: dotnet restore backend/TerraFusion.sln || dotnet restore backend/
-        working-directory: ${{ github.workspace }}
-
-      - name: 🔨 Build Backend
-        run: dotnet build backend/TerraFusion.sln --no-restore || dotnet build backend/ --no-restore
-
-      - name: 🧪 Run Backend Tests (Release)
-        run: dotnet test TerraFusion.sln -c Release -v:minimal /nologo
-        env:
-          ConnectionStrings__DefaultConnection: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
-
-      - name: 📊 Generate Coverage Report
-        run: |
-          dotnet test --collect:"XPlat Code Coverage"
-          dotnet tool install -g dotnet-reportgenerator-globaltool
-          reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coverage" -reporttypes:Html
+    uses: ./.github/workflows/dotnet-test.yml
+    with:
+      dotnet_version: ${{ env.DOTNET_VERSION }}
+      configuration: Release
+      solution: TerraFusion.sln
+      connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
 
   frontend-tests:
     name: Frontend React Tests

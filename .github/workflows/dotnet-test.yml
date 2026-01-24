@@ -1,0 +1,68 @@
+name: Canonical .NET Tests
+
+on:
+  workflow_call:
+    inputs:
+      dotnet_version:
+        description: '.NET SDK version'
+        required: false
+        type: string
+        default: '8.0.x'
+      configuration:
+        description: 'Build configuration'
+        required: false
+        type: string
+        default: 'Release'
+      solution:
+        description: 'Solution path'
+        required: false
+        type: string
+        default: 'TerraFusion.sln'
+      connection_string:
+        description: 'Default connection string for test runs'
+        required: false
+        type: string
+        default: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
+
+jobs:
+  dotnet-tests:
+    name: Canonical .NET Test Run
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: terrafusion_test
+          POSTGRES_DB: terrafusion_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet_version }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('backend/**/*.csproj', '**/*.sln') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ inputs.solution }}
+
+      - name: Test (Release)
+        env:
+          ConnectionStrings__DefaultConnection: ${{ inputs.connection_string }}
+        run: dotnet test ${{ inputs.solution }} -c ${{ inputs.configuration }} -v:minimal /nologo

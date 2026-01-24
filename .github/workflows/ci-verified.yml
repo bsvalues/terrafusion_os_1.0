@@ -13,44 +13,12 @@ env:
 jobs:
   build-backend:
     name: Build .NET Backend
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('backend/**/*.csproj', 'backend/**/*.sln') }}
-          restore-keys: nuget-${{ runner.os }}-
-
-      - name: Restore dependencies
-        run: dotnet restore backend/TerraFusion.sln
-
-      - name: Build solution
-        run: dotnet build backend/TerraFusion.sln --no-restore --configuration Release
-
-      - name: Run backend tests
-        run: dotnet test backend/TerraFusion.sln --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage"
-        continue-on-error: false
-
-      - name: Publish test results
-        if: always()
-        uses: dorny/test-reporter@v1
-        with:
-          name: Backend Test Results
-          path: '**/test-results.trx'
-          reporter: dotnet-trx
+    uses: ./.github/workflows/dotnet-test.yml
+    with:
+      dotnet_version: ${{ env.DOTNET_VERSION }}
+      configuration: Release
+      solution: TerraFusion.sln
+      connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=terrafusion_test'
 
   build-frontend:
     name: Build React Frontend
