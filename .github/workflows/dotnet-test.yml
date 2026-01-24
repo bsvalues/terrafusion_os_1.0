@@ -23,6 +23,21 @@ on:
         required: false
         type: string
         default: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
+      enable_coverage:
+        description: 'Enable test coverage collection'
+        required: false
+        type: boolean
+        default: false
+      upload_test_results:
+        description: 'Upload test result artifacts'
+        required: false
+        type: boolean
+        default: false
+      upload_coverage:
+        description: 'Upload coverage artifacts'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   dotnet-tests:
@@ -62,7 +77,32 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore ${{ inputs.solution }}
 
-      - name: Test (Release)
+      - name: Canonical tests (Release)
+        if: ${{ !inputs.enable_coverage }}
         env:
           ConnectionStrings__DefaultConnection: ${{ inputs.connection_string }}
         run: dotnet test ${{ inputs.solution }} -c ${{ inputs.configuration }} -v:minimal /nologo
+
+      - name: Tests with coverage (Release)
+        if: ${{ inputs.enable_coverage }}
+        env:
+          ConnectionStrings__DefaultConnection: ${{ inputs.connection_string }}
+        run: |
+          dotnet test ${{ inputs.solution }} -c ${{ inputs.configuration }} -v:minimal /nologo \
+            --collect:"XPlat Code Coverage" \
+            --logger "trx;LogFileName=test-results.trx" \
+            --results-directory ./artifacts/test-results
+
+      - name: Upload test results (trx)
+        if: ${{ inputs.upload_test_results }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: artifacts/test-results
+
+      - name: Upload coverage
+        if: ${{ inputs.upload_coverage }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: artifacts/test-results/**/coverage.cobertura.xml
