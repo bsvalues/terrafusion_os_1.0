@@ -1207,7 +1207,9 @@ try
     Console.WriteLine($"⏳ Calling app.Run()... This should block until shutdown");
     Console.WriteLine($"   Time: {DateTime.Now:HH:mm:ss.fff}");
 
-    app.Run();
+app.Run();
+
+public partial class Program { }
 
     Console.WriteLine($"⚠️ app.Run() returned! This means shutdown was requested.");
     Console.WriteLine($"   Time: {DateTime.Now:HH:mm:ss.fff}");
@@ -1219,4 +1221,3 @@ catch (Exception ex)
     Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
     throw;
 }
-
