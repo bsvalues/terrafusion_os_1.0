@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
+    <IsTestProject>false</IsTestProject>
     <!-- Avoid duplicate assembly attributes: project has manual AssemblyInfo -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <!-- Avoid duplicate TargetFramework attribute due to custom assembly attribute sources -->
