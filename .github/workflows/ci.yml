@@ -91,8 +91,8 @@ jobs:
       - name: 🔨 Build Backend
         run: dotnet build backend/TerraFusion.sln --no-restore || dotnet build backend/ --no-restore
 
-      - name: 🧪 Run Integration Tests
-        run: dotnet test --no-build --verbosity normal
+      - name: 🧪 Run Backend Tests (Release)
+        run: dotnet test TerraFusion.sln -c Release -v:minimal /nologo
         env:
           ConnectionStrings__DefaultConnection: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
 
