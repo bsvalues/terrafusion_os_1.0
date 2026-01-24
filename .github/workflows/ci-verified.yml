@@ -214,7 +214,148 @@ jobs:
       issues: write
 
     steps:
+      - name: Download test results artifact
+        if: ${{ always() && needs.build-backend.outputs.upload_test_results == 'true' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+          path: artifacts/pr-test-results
+        continue-on-error: true
+
+      - name: Download coverage artifact
+        if: ${{ always() && needs.build-backend.outputs.upload_coverage == 'true' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage
+          path: artifacts/pr-coverage
+        continue-on-error: true
+
+      - name: Parse TRX summary
+        id: parse_trx
+        if: ${{ always() && needs.build-backend.outputs.upload_test_results == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import glob
+          import os
+          import xml.etree.ElementTree as ET
+
+          output = os.environ.get("GITHUB_OUTPUT")
+          if not output:
+              raise SystemExit(0)
+
+          files = glob.glob("artifacts/pr-test-results/**/*.trx", recursive=True)
+          if not files:
+              with open(output, "a", encoding="utf-8") as f:
+                  f.write("tests_summary<<EOF\n\nEOF\n")
+                  f.write("failed_tests_md<<EOF\n\nEOF\n")
+              raise SystemExit(0)
+
+          total = 0
+          failed = 0
+          failed_names = []
+
+          for path in files:
+              try:
+                  root = ET.parse(path).getroot()
+              except Exception:
+                  continue
+
+              counters = root.find(".//{*}Counters")
+              if counters is not None:
+                  total_attr = counters.attrib.get("total", "0")
+                  executed_attr = counters.attrib.get("executed", "0")
+                  total_val = int(total_attr) if total_attr.isdigit() else 0
+                  if total_val == 0:
+                      total_val = int(executed_attr) if executed_attr.isdigit() else 0
+                  total += total_val
+                  for key in ("failed", "error", "timeout", "aborted"):
+                      val = counters.attrib.get(key, "0")
+                      failed += int(val) if val.isdigit() else 0
+
+              for result in root.findall(".//{*}UnitTestResult"):
+                  if result.attrib.get("outcome") == "Failed":
+                      name = result.attrib.get("testName") or "UnknownTest"
+                      if name not in failed_names:
+                          failed_names.append(name)
+
+          summary = ""
+          if total:
+              summary = f"Tests: {failed} failed / {total} total"
+          elif failed:
+              summary = f"Tests: {failed} failed"
+
+          failed_list = ""
+          if failed_names:
+              top = failed_names[:5]
+              failed_list = "\n".join(f"- ❌ {name}" for name in top)
+
+          with open(output, "a", encoding="utf-8") as f:
+              f.write("tests_summary<<EOF\n")
+              f.write(summary + "\n")
+              f.write("EOF\n")
+              f.write("failed_tests_md<<EOF\n")
+              f.write(failed_list + "\n")
+              f.write("EOF\n")
+          PY
+
+      - name: Parse coverage summary
+        id: parse_coverage
+        if: ${{ always() && needs.build-backend.outputs.upload_coverage == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import glob
+          import os
+          import xml.etree.ElementTree as ET
+
+          output = os.environ.get("GITHUB_OUTPUT")
+          if not output:
+              raise SystemExit(0)
+
+          files = glob.glob("artifacts/pr-coverage/**/coverage.cobertura.xml", recursive=True)
+          if not files:
+              with open(output, "a", encoding="utf-8") as f:
+                  f.write("coverage_summary<<EOF\n\nEOF\n")
+              raise SystemExit(0)
+
+          path = files[0]
+          root = ET.parse(path).getroot()
+          line_rate = root.attrib.get("line-rate")
+          branch_rate = root.attrib.get("branch-rate")
+          lines_valid = root.attrib.get("lines-valid")
+          lines_covered = root.attrib.get("lines-covered")
+
+          def to_percent(value):
+              try:
+                  return f"{float(value) * 100:.2f}%"
+              except Exception:
+                  return "N/A"
+
+          line_pct = to_percent(line_rate) if line_rate is not None else "N/A"
+          branch_pct = to_percent(branch_rate) if branch_rate is not None else None
+
+          parts = [f"Line coverage: {line_pct}"]
+          if branch_pct is not None:
+              parts.append(f"Branch coverage: {branch_pct}")
+          if lines_covered or lines_valid:
+              parts.append(f"Lines covered/valid: {lines_covered or 'N/A'}/{lines_valid or 'N/A'}")
+
+          summary = " | ".join(parts)
+
+          with open(output, "a", encoding="utf-8") as f:
+              f.write("coverage_summary<<EOF\n")
+              f.write(summary + "\n")
+              f.write("EOF\n")
+          PY
+
       - uses: actions/github-script@v7
+        env:
+          TESTS_SUMMARY: ${{ steps.parse_trx.outputs.tests_summary }}
+          FAILED_TESTS_MD: ${{ steps.parse_trx.outputs.failed_tests_md }}
+          COVERAGE_SUMMARY: ${{ steps.parse_coverage.outputs.coverage_summary }}
         with:
           script: |
             const marker = '<!-- TF_CI_SUMMARY -->';
@@ -249,6 +390,10 @@ jobs:
               ? `**First failing job:** [${firstFailedJob.name}](${firstFailedJob.html_url})`
               : '';
 
+            const testsSummary = (process.env.TESTS_SUMMARY || '').trim();
+            const failedTests = (process.env.FAILED_TESTS_MD || '').trim();
+            const coverageSummary = (process.env.COVERAGE_SUMMARY || '').trim();
+
             const bodyLines = [
               marker,
               '## ❌ CI failed (verified)',
@@ -265,6 +410,24 @@ jobs:
 
             if (failedBlock) {
               bodyLines.push(failedBlock);
+              bodyLines.push('');
+            }
+
+            if (testsSummary || failedTests) {
+              bodyLines.push('### Tests');
+              if (testsSummary) {
+                bodyLines.push(testsSummary);
+              }
+              if (failedTests) {
+                bodyLines.push('');
+                bodyLines.push(failedTests);
+              }
+              bodyLines.push('');
+            }
+
+            if (coverageSummary) {
+              bodyLines.push('### Coverage');
+              bodyLines.push(coverageSummary);
               bodyLines.push('');
             }
 

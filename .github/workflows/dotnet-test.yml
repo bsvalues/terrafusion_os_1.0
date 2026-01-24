@@ -48,11 +48,29 @@ on:
         required: false
         type: boolean
         default: false
+    outputs:
+      enable_coverage:
+        description: 'Whether coverage was enabled'
+        value: ${{ jobs.dotnet-tests.outputs.enable_coverage }}
+      upload_test_results:
+        description: 'Whether test results upload was requested'
+        value: ${{ jobs.dotnet-tests.outputs.upload_test_results }}
+      upload_coverage:
+        description: 'Whether coverage upload was requested'
+        value: ${{ jobs.dotnet-tests.outputs.upload_coverage }}
+      publish_coverage_summary:
+        description: 'Whether coverage summary was requested'
+        value: ${{ jobs.dotnet-tests.outputs.publish_coverage_summary }}
 
 jobs:
   dotnet-tests:
     name: Canonical .NET Test Run
     runs-on: ubuntu-latest
+    outputs:
+      enable_coverage: ${{ steps.expose-inputs.outputs.enable_coverage }}
+      upload_test_results: ${{ steps.expose-inputs.outputs.upload_test_results }}
+      upload_coverage: ${{ steps.expose-inputs.outputs.upload_coverage }}
+      publish_coverage_summary: ${{ steps.expose-inputs.outputs.publish_coverage_summary }}
 
     services:
       postgres:
@@ -69,6 +87,14 @@ jobs:
           - 5432:5432
 
     steps:
+      - name: Expose inputs
+        id: expose-inputs
+        run: |
+          echo "enable_coverage=${{ inputs.enable_coverage }}" >> $GITHUB_OUTPUT
+          echo "upload_test_results=${{ inputs.upload_test_results }}" >> $GITHUB_OUTPUT
+          echo "upload_coverage=${{ inputs.upload_coverage }}" >> $GITHUB_OUTPUT
+          echo "publish_coverage_summary=${{ inputs.publish_coverage_summary }}" >> $GITHUB_OUTPUT
+
       - name: Checkout code
         uses: actions/checkout@v4
 
