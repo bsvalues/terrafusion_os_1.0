@@ -250,6 +250,7 @@ jobs:
               with open(output, "a", encoding="utf-8") as f:
                   f.write("tests_summary<<EOF\n\nEOF\n")
                   f.write("failed_tests_md<<EOF\n\nEOF\n")
+                  f.write("tests_artifacts_missing<<EOF\ntrue\nEOF\n")
               raise SystemExit(0)
 
           total = 0
@@ -298,6 +299,7 @@ jobs:
               f.write("failed_tests_md<<EOF\n")
               f.write(failed_list + "\n")
               f.write("EOF\n")
+              f.write("tests_artifacts_missing<<EOF\nfalse\nEOF\n")
           PY
 
       - name: Parse coverage summary
@@ -319,6 +321,7 @@ jobs:
           if not files:
               with open(output, "a", encoding="utf-8") as f:
                   f.write("coverage_summary<<EOF\n\nEOF\n")
+                  f.write("coverage_artifacts_missing<<EOF\ntrue\nEOF\n")
               raise SystemExit(0)
 
           path = files[0]
@@ -349,6 +352,7 @@ jobs:
               f.write("coverage_summary<<EOF\n")
               f.write(summary + "\n")
               f.write("EOF\n")
+              f.write("coverage_artifacts_missing<<EOF\nfalse\nEOF\n")
           PY
 
       - uses: actions/github-script@v7
@@ -356,6 +360,8 @@ jobs:
           TESTS_SUMMARY: ${{ steps.parse_trx.outputs.tests_summary }}
           FAILED_TESTS_MD: ${{ steps.parse_trx.outputs.failed_tests_md }}
           COVERAGE_SUMMARY: ${{ steps.parse_coverage.outputs.coverage_summary }}
+          TESTS_ARTIFACTS_MISSING: ${{ steps.parse_trx.outputs.tests_artifacts_missing }}
+          COVERAGE_ARTIFACTS_MISSING: ${{ steps.parse_coverage.outputs.coverage_artifacts_missing }}
         with:
           script: |
             const marker = '<!-- TF_CI_SUMMARY -->';
@@ -393,6 +399,9 @@ jobs:
             const testsSummary = (process.env.TESTS_SUMMARY || '').trim();
             const failedTests = (process.env.FAILED_TESTS_MD || '').trim();
             const coverageSummary = (process.env.COVERAGE_SUMMARY || '').trim();
+            const testsArtifactsMissing = (process.env.TESTS_ARTIFACTS_MISSING || '').trim() === 'true';
+            const coverageArtifactsMissing =
+              (process.env.COVERAGE_ARTIFACTS_MISSING || '').trim() === 'true';
 
             const bodyLines = [
               marker,
@@ -428,6 +437,21 @@ jobs:
             if (coverageSummary) {
               bodyLines.push('### Coverage');
               bodyLines.push(coverageSummary);
+              bodyLines.push('');
+            }
+
+            if (testsArtifactsMissing || coverageArtifactsMissing) {
+              bodyLines.push('### Artifacts');
+              if (testsArtifactsMissing) {
+                bodyLines.push(
+                  '- Test results were expected, but no TRX artifacts were found.'
+                );
+              }
+              if (coverageArtifactsMissing) {
+                bodyLines.push(
+                  '- Coverage was enabled, but no Cobertura artifact was found.'
+                );
+              }
               bodyLines.push('');
             }
 
