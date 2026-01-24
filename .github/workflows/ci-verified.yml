@@ -19,6 +19,9 @@ jobs:
       configuration: Release
       solution: TerraFusion.sln
       connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=terrafusion_test'
+      enable_coverage: true
+      upload_test_results: true
+      upload_coverage: true
 
   build-frontend:
     name: Build React Frontend
