@@ -23,6 +23,7 @@ jobs:
       upload_test_results: true
       upload_coverage: true
       publish_coverage_summary: true
+      require_coverage_outputs: true
 
   build-frontend:
     name: Build React Frontend

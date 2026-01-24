@@ -43,6 +43,11 @@ on:
         required: false
         type: boolean
         default: false
+      require_coverage_outputs:
+        description: 'Fail if coverage artifacts are missing when coverage is enabled'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   dotnet-tests:
@@ -97,6 +102,26 @@ jobs:
             --collect:"XPlat Code Coverage" \
             --logger "trx;LogFileName=test-results.trx" \
             --results-directory ./artifacts/test-results
+
+      - name: Verify coverage outputs
+        if: ${{ inputs.enable_coverage && inputs.require_coverage_outputs }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=$(ls -1 artifacts/test-results/**/coverage.cobertura.xml 2>/dev/null | head -n 1 || true)
+
+          if [[ -z "$file" ]]; then
+            echo "❌ Coverage guard: no cobertura file found under ./artifacts/test-results/**/coverage.cobertura.xml"
+            echo "   Check coverage collector output path and test results directory."
+            exit 1
+          fi
+
+          if [[ ! -s "$file" ]]; then
+            echo "❌ Coverage guard: cobertura file exists but is empty: $file"
+            exit 1
+          fi
+
+          echo "✅ Coverage guard: found $file"
 
       - name: Upload test results (trx)
         if: ${{ always() && inputs.upload_test_results }}
