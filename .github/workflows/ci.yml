@@ -11,6 +11,55 @@ env:
   DOTNET_VERSION: '8.0.x'
 
 jobs:
+  drift_guard:
+    name: Drift Guard (dotnet canonical)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Forbid direct 'dotnet test' in workflows (except dotnet-test.yml)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          hits=$(rg -n --glob '.github/workflows/*.yml' --glob '!.github/workflows/dotnet-test.yml' '(^|\s)dotnet\s+test(\s|$)' .github/workflows || true)
+
+          if [[ -n "$hits" ]]; then
+            echo "❌ Drift Guard: direct 'dotnet test' detected in workflow files."
+            echo "$hits"
+            echo
+            echo "Use the reusable workflow: ./.github/workflows/dotnet-test.yml"
+            exit 1
+          fi
+
+          echo "✅ Drift Guard: no direct 'dotnet test' calls found outside dotnet-test.yml"
+
+      - name: Ensure main workflows call dotnet-test reusable workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          required_files=(
+            ".github/workflows/ci.yml"
+            ".github/workflows/ci-cd-main.yml"
+            ".github/workflows/ci-verified.yml"
+          )
+
+          for f in "${required_files[@]}"; do
+            if [[ ! -f "$f" ]]; then
+              echo "❌ Missing required workflow file: $f"
+              exit 1
+            fi
+
+            if ! rg -q 'uses:\s*\./\.github/workflows/dotnet-test\.yml' "$f"; then
+              echo "❌ Drift Guard: $f does not call the reusable dotnet-test workflow."
+              echo "Expected to find: uses: ./.github/workflows/dotnet-test.yml"
+              exit 1
+            fi
+          done
+
+          echo "✅ Drift Guard: all required workflows call dotnet-test.yml"
+
   quality-gate:
     name: Quality Gate Validation
     runs-on: ubuntu-latest
@@ -60,7 +109,7 @@ jobs:
 
   backend-tests:
     name: Backend .NET Tests
-    needs: quality-gate
+    needs: [quality-gate, drift_guard]
     uses: ./.github/workflows/dotnet-test.yml
     with:
       dotnet_version: ${{ env.DOTNET_VERSION }}
