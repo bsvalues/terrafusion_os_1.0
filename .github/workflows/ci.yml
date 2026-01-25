@@ -86,6 +86,24 @@ jobs:
 
           echo "✅ Hint Drift Guard: no inline drift/guard heuristics found in ci-verified.yml"
 
+      - name: Require TerraFusion.CiHints invocation in ci-verified.yml
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE=".github/workflows/ci-verified.yml"
+
+          # Ensure ci-verified.yml invokes the tested hint helper.
+          # This complements the negative guard above: we forbid heuristics AND require the helper.
+          if ! grep -q "TerraFusion\.CiHints" "$FILE"; then
+            echo "❌ Hint Drift Guard: TerraFusion.CiHints invocation not found in $FILE."
+            echo
+            echo "PR failure hints must be generated via 'dotnet run --project backend/tools/TerraFusion.CiHints/...'"
+            echo "Do not remove or bypass the helper invocation."
+            exit 1
+          fi
+
+          echo "✅ Hint Drift Guard: TerraFusion.CiHints invocation confirmed in ci-verified.yml"
+
   quality-gate:
     name: Quality Gate Validation
     runs-on: ubuntu-latest
