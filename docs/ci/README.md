@@ -13,6 +13,7 @@ This directory contains CI governance documentation for TerraFusion OS.
 | Document | Purpose |
 |----------|---------|
 | [CANONICAL_DOTNET_TESTING.md](CANONICAL_DOTNET_TESTING.md) | Canonical test command, workflows, drift guards, single-source locations |
+| [BRANCH_HYGIENE.md](BRANCH_HYGIENE.md) | Snyk branch cleanup, authoritative manifest policy, duplicate PR handling |
 
 ## Quick Reference
 
