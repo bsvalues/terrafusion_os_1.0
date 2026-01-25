@@ -214,6 +214,14 @@ jobs:
       issues: write
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET (for CI hint)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
       - name: Download test results artifact
         if: ${{ always() && needs.build-backend.outputs.upload_test_results == 'true' }}
         uses: actions/download-artifact@v4
@@ -396,8 +404,7 @@ jobs:
             const priorityRules = [
               {
                 keys: ['drift', 'guard'],
-                hint:
-                  'Workflow drift detected—use the reusable dotnet-test workflow (no direct dotnet test).'
+                hint: null // Hint comes from tested CiFailureHint helper
               },
               {
                 keys: ['dotnet-test', 'build-backend', 'test'],
@@ -435,16 +442,31 @@ jobs:
 
             const primaryFailure = pickPrimaryFailure(failedJobs);
             const primaryFailureLine = primaryFailure
-              ? `**Primary failure:** [${primaryFailure.job.name}](${primaryFailure.job.html_url}) — ${primaryFailure.hint}`
+              ? `**Primary failure:** [${primaryFailure.job.name}](${primaryFailure.job.html_url})${primaryFailure.hint ? ` — ${primaryFailure.hint}` : ''}`
               : '';
-            const primaryFailureName = primaryFailure
-              ? primaryFailure.job.name.toLowerCase()
-              : '';
-            const driftGuardHint =
-              primaryFailureName.includes('drift') &&
-              primaryFailureName.includes('guard')
-                ? 'Rerun hint: remove any direct dotnet test from workflows and call dotnet-test.yml only.'
-                : '';
+            let driftGuardHint = '';
+
+            if (primaryFailure) {
+              try {
+                const { execFileSync } = require('child_process');
+                driftGuardHint = execFileSync(
+                  'dotnet',
+                  [
+                    'run',
+                    '--project',
+                    'backend/tools/TerraFusion.CiHints/TerraFusion.CiHints.csproj',
+                    '--',
+                    primaryFailure.job.name
+                  ],
+                  { encoding: 'utf8' }
+                ).trim();
+              } catch (error) {
+                console.warn(
+                  'Failed to compute rerun hint from TerraFusion.CiHints:',
+                  error.message || error
+                );
+              }
+            }
 
             const testsSummary = (process.env.TESTS_SUMMARY || '').trim();
             const failedTests = (process.env.FAILED_TESTS_MD || '').trim();

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using TerraFusion.CiHints;
 using Xunit;
 
 namespace TerraFusion.Unit.Tests.CI;

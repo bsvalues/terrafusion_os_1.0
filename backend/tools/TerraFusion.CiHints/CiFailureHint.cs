@@ -1,11 +1,11 @@
-namespace TerraFusion.Unit.Tests.CI;
+namespace TerraFusion.CiHints;
 
-internal static class CiFailureHint
+public static class CiFailureHint
 {
-    internal const string DriftGuardHint =
+    public const string DriftGuardHint =
         "Rerun hint: remove any direct dotnet test from workflows and call dotnet-test.yml only.";
 
-    internal static string? Decide(string? primaryFailedJobName)
+    public static string? Decide(string? primaryFailedJobName)
     {
         if (string.IsNullOrWhiteSpace(primaryFailedJobName))
         {
