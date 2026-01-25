@@ -92,12 +92,15 @@ jobs:
           set -euo pipefail
           FILE=".github/workflows/ci-verified.yml"
 
-          # Ensure ci-verified.yml invokes the tested hint helper.
+          # Ensure ci-verified.yml invokes the tested hint helper via dotnet run.
           # This complements the negative guard above: we forbid heuristics AND require the helper.
-          if ! grep -q "TerraFusion\.CiHints" "$FILE"; then
+          # Match the project path pattern (multi-line JS array, so we match the .csproj reference).
+          if ! grep -qE "TerraFusion\.CiHints\.csproj" "$FILE"; then
             echo "❌ Hint Drift Guard: TerraFusion.CiHints invocation not found in $FILE."
             echo
-            echo "PR failure hints must be generated via 'dotnet run --project backend/tools/TerraFusion.CiHints/...'"
+            echo "Expected: dotnet run --project backend/tools/TerraFusion.CiHints/TerraFusion.CiHints.csproj -- <job-name>"
+            echo
+            echo "PR failure hints must be generated via the tested CiFailureHint.Decide() helper."
             echo "Do not remove or bypass the helper invocation."
             exit 1
           fi
