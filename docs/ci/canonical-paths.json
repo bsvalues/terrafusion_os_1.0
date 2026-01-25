@@ -61,5 +61,15 @@
       "pr": 104,
       "path": "applications/terra-build-actual/"
     }
+  },
+
+  "dotnet": {
+    "reusableWorkflow": ".github/workflows/dotnet-test.yml",
+    "requiredCallers": [
+      ".github/workflows/ci.yml",
+      ".github/workflows/ci-cd-main.yml",
+      ".github/workflows/ci-verified.yml"
+    ],
+    "allowedDirectTestWorkflows": ["dotnet-test"]
   }
 }
