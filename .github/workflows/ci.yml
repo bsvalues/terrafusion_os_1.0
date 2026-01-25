@@ -107,6 +107,60 @@ jobs:
 
           echo "✅ Hint Drift Guard: TerraFusion.CiHints invocation confirmed in ci-verified.yml"
 
+  snyk_drift_guard:
+    name: Snyk Drift Guard (exclusions intact)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify .snyk file exists
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ ! -f ".snyk" ]]; then
+            echo "❌ Snyk Drift Guard: .snyk file not found."
+            echo
+            echo "The .snyk policy file is required to prevent duplicate Snyk PRs."
+            echo "See docs/ci/BRANCH_HYGIENE.md for authoritative manifest policy."
+            exit 1
+          fi
+
+          echo "✅ Snyk Drift Guard: .snyk file exists"
+
+      - name: Verify critical exclusion patterns present
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # These patterns must exist to prevent duplicate PRs from derived paths.
+          # If any are missing, Snyk will flood us with PRs for copied modules.
+          required_patterns=(
+            "deployment/\*\*/package.json"
+            "championship-deployment"
+            "government-edition-enhanced-MARKED-FOR-REVIEW"
+            "PRODUCTION"
+            "08-costforge-ai"
+          )
+
+          missing=0
+          for pattern in "${required_patterns[@]}"; do
+            if ! grep -q "$pattern" .snyk; then
+              echo "❌ Missing required exclusion pattern: $pattern"
+              missing=1
+            fi
+          done
+
+          if [[ $missing -eq 1 ]]; then
+            echo
+            echo "❌ Snyk Drift Guard: Critical exclusion patterns missing from .snyk."
+            echo "See docs/ci/BRANCH_HYGIENE.md for required patterns."
+            exit 1
+          fi
+
+          echo "✅ Snyk Drift Guard: all critical exclusion patterns present"
+
   quality-gate:
     name: Quality Gate Validation
     runs-on: ubuntu-latest
