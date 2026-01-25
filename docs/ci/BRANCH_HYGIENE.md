@@ -71,13 +71,37 @@ authoritative manifest registry.
 3. [ ] Close duplicate PR
 4. [ ] Verify keeper PR remains open
 
-## Prevention (Future)
+## Keeper Registry (January 2026)
 
-Consider implementing:
+Current keeper PRs for consolidated dependency upgrades:
 
-1. **Snyk ignore paths** for known derived directories
-2. **CI guard** that fails PRs touching non-authoritative manifests
-3. **Scheduled stale-branch report** for branches without open PRs
+| Dependency | Keeper PR | Canonical Path | Verified |
+|------------|-----------|----------------|----------|
+| fabric 5.5.2→6.0.0 | #150 | `packages/commercial/modules/09-property-workbench/` | — |
+| sinon 20.0.0→21.0.1 | #153 | `terrabuild-modernization/` | Documented deliverable |
+| nginx 1.25→1.29.4 | #117 | `infrastructure/docker/Dockerfile.frontend` | CI reference |
+| jspdf (costforge) | #113 | `marketplace/government-core/costforge-ai-enhanced/` | Government-core path |
+| jspdf (terra-build) | #104 | `applications/terra-build-actual/` | Applications path |
+
+## Prevention
+
+### Snyk Ignore Paths
+
+The `.snyk` file at repo root excludes derived/copied trees from scanning:
+
+```yaml
+exclude:
+  global:
+    - deployment/**/package.json
+    - packages/**/championship-deployment/**/package.json
+    - packages/government-edition-enhanced-MARKED-FOR-REVIEW/**
+    - *-PRODUCTION/**/package.json
+```
+
+### Future Enhancements
+
+1. **CI guard** that fails PRs touching non-authoritative manifests
+2. **Scheduled stale-branch report** for branches without open PRs
 
 ## Related Documents
 
