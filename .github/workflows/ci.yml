@@ -60,6 +60,32 @@ jobs:
 
           echo "✅ Drift Guard: all required workflows call dotnet-test.yml"
 
+  hint_drift_guard:
+    name: Hint Drift Guard (no inline heuristics)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Forbid inline drift/guard hint heuristics in ci-verified.yml
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE=".github/workflows/ci-verified.yml"
+
+          # Fail if ci-verified.yml contains inline heuristic patterns.
+          # We forbid YAML contains('drift') / contains('guard') logic
+          # so hint behavior is single-sourced via TerraFusion.CiHints/CiFailureHint.Decide().
+          if grep -nEi "contains\([^)]*(drift|guard)" "$FILE"; then
+            echo "❌ Hint Drift Guard: Inline drift/guard hint heuristic detected in $FILE."
+            echo
+            echo "Hint logic must be single-sourced from TerraFusion.CiHints/CiFailureHint.Decide()."
+            echo "Do not use contains('drift') or contains('guard') patterns in YAML."
+            exit 1
+          fi
+
+          echo "✅ Hint Drift Guard: no inline drift/guard heuristics found in ci-verified.yml"
+
   quality-gate:
     name: Quality Gate Validation
     runs-on: ubuntu-latest
@@ -109,7 +135,7 @@ jobs:
 
   backend-tests:
     name: Backend .NET Tests
-    needs: [quality-gate, drift_guard]
+    needs: [quality-gate, drift_guard, hint_drift_guard]
     uses: ./.github/workflows/dotnet-test.yml
     with:
       dotnet_version: ${{ env.DOTNET_VERSION }}
