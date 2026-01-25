@@ -25,8 +25,11 @@ git show ci-governance-v1
 # Run canonical .NET tests
 dotnet test backend/TerraFusion.sln -c Release -v:minimal --nologo
 
-# Validate guards locally
-grep -rn "dotnet test" .github/workflows/ --include="*.yml" | grep -v "dotnet-test.yml"
+# Validate guards locally (before push)
+pwsh -File scripts/governance-self-check.ps1
+
+# Validate guards locally (show all issues)
+pwsh -File scripts/governance-self-check.ps1 -NoFailFast
 ```
 
 ## Related
@@ -34,3 +37,4 @@ grep -rn "dotnet test" .github/workflows/ --include="*.yml" | grep -v "dotnet-te
 - [BUILD_HYGIENE.md](../BUILD_HYGIENE.md) — Build hygiene practices including PR hint system
 - `.github/workflows/ci.yml` — Guard job definitions
 - `.github/workflows/dotnet-test.yml` — Reusable test workflow
+- `scripts/governance-self-check.ps1` — Local governance validation
