@@ -92,7 +92,10 @@ test('Concurrency group handles both PR and push events', () => {
   const handlesPush =
     concurrencyBlock.includes('github.ref') || concurrencyBlock.includes('github.run_id');
 
-  assert.ok(handlesPR, 'Concurrency group should handle PR events (pull_request.number or head_ref)');
+  assert.ok(
+    handlesPR,
+    'Concurrency group should handle PR events (pull_request.number or head_ref)'
+  );
   assert.ok(handlesPush, 'Concurrency group should have fallback for push events (github.ref)');
 });
 

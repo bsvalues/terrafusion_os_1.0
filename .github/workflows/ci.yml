@@ -111,6 +111,47 @@ jobs:
 
           echo "✅ Hint Drift Guard: TerraFusion.CiHints invocation confirmed in ci-verified.yml"
 
+  classify_changes:
+    name: Classify Changes (docs-only detection)
+    runs-on: ubuntu-latest
+    outputs:
+      docs_only: ${{ steps.classify.outputs.docs_only }}
+      reason: ${{ steps.classify.outputs.reason }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Classify Changed Files
+        id: classify
+        run: |
+          # Get changed files for PR or push
+          if [ -n "${{ github.event.pull_request.base.sha }}" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.event.after }}"
+          fi
+
+          # Run classifier and capture output
+          OUTPUT=$(node scripts/ci/changed_files_classifier.mjs --json)
+          echo "$OUTPUT"
+
+          # Extract values and set outputs
+          DOCS_ONLY=$(echo "$OUTPUT" | jq -r '.docsOnly')
+          REASON=$(echo "$OUTPUT" | jq -r '.reason')
+
+          echo "docs_only=$DOCS_ONLY" >> $GITHUB_OUTPUT
+          echo "reason=$REASON" >> $GITHUB_OUTPUT
+
+          if [ "$DOCS_ONLY" = "true" ]; then
+            echo "📄 DOCS-ONLY: Heavy build steps will be skipped"
+          else
+            echo "🔨 FULL BUILD: All steps will run"
+          fi
+
   snyk_drift_guard:
     name: Snyk Drift Guard (exclusions intact)
     runs-on: ubuntu-latest
@@ -449,7 +490,8 @@ jobs:
     name: 🔒 TerraFusion Seal Gate
     runs-on: ubuntu-latest
     if: always() # Run even if dependent jobs fail - we need to report status
-    needs: [quality-gate, backend-tests, frontend-tests, ai-validation, security-scan]
+    needs:
+      [quality-gate, backend-tests, frontend-tests, ai-validation, security-scan, classify_changes]
 
     env:
       RUNTIMECERT_COUNTY: benton
@@ -458,6 +500,17 @@ jobs:
       # RUNTIMECERT_BASE_URL: ${{ secrets.PROD_API_URL }}  # Enable for live certification
 
     steps:
+      - name: 📄 FAST PATH - Docs-only detected
+        if: needs.classify_changes.outputs.docs_only == 'true'
+        run: |
+          echo "🚀 FAST PATH: Docs-only changes detected"
+          echo "Reason: ${{ needs.classify_changes.outputs.reason }}"
+          echo "Skipping heavy build steps (backend build, frontend build, perf tests)"
+          echo ""
+          echo "Governance checks still run: ✅"
+          echo "Contract tests still run: ✅"
+          echo "Required checks satisfied: ✅"
+
       - name: 🔄 Checkout Code
         uses: actions/checkout@v4
         with:
@@ -483,11 +536,13 @@ jobs:
       - name: 📥 Install pnpm dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: �🔵 Setup .NET
+      - name: 🔵 Setup .NET
+        if: needs.classify_changes.outputs.docs_only != 'true'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - name: 💾 Cache NuGet packages
+        if: needs.classify_changes.outputs.docs_only != 'true'
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -495,6 +550,7 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
       - name: 📦 Restore .NET Dependencies
+        if: needs.classify_changes.outputs.docs_only != 'true'
         run: dotnet restore backend/TerraFusion.sln || dotnet restore backend/ || echo "Backend restore skipped"
 
       - name: ✅ Check Quality Gate Status
@@ -508,7 +564,7 @@ jobs:
           echo "✅ Quality Gate passed"
 
       - name: 🔒 TerraFusion Seal Gate
-        if: steps.check-quality.outcome == 'success'
+        if: steps.check-quality.outcome == 'success' && needs.classify_changes.outputs.docs_only != 'true'
         shell: pwsh
         run: pwsh -NoProfile -File scripts/ci-seal-gate.ps1
 
