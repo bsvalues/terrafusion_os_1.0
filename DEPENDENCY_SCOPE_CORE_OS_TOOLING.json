@@ -3,12 +3,13 @@
     "root": ".",
     "bucket": "CORE_OS_TOOLING",
     "evidence": {
-      "score": 6,
-      "scoreLocal": 4,
-      "scoreTotal": 6,
+      "score": 8,
+      "scoreLocal": 6,
+      "scoreTotal": 8,
       "buildableLocal": true,
       "markers": [
         "docker",
+        "dotnet",
         "package.json:buildOrTest",
         "packageManager",
         "pnpm-lock.yaml",
@@ -42,6 +43,10 @@
         {
           "marker": "docker",
           "foundAt": "Dockerfile"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "TerraFusion.sln"
         },
         {
           "marker": "package.json:buildOrTest",
