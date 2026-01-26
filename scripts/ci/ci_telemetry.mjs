@@ -18,8 +18,8 @@
  * @fileoverview Government-grade CI telemetry for throughput metrics
  */
 
-import { writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
+import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 

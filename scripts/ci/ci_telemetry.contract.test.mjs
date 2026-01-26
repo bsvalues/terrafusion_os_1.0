@@ -7,12 +7,12 @@
  * @fileoverview TDD contract test - written BEFORE implementation
  */
 
-import { spawn } from 'node:child_process';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { existsSync, unlinkSync, readFileSync } from 'node:fs';
-import test from 'node:test';
 import assert from 'node:assert';
+import { spawn } from 'node:child_process';
+import { existsSync, readFileSync, unlinkSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const scriptPath = join(__dirname, 'ci_telemetry.mjs');
@@ -53,7 +53,11 @@ test('ci_telemetry.mjs exits with code 0 and produces valid JSON output file', a
     CI_TELEMETRY_TEST: 'true', // Test mode - uses mock data
   });
 
-  assert.strictEqual(result.code, 0, `Expected exit code 0, got ${result.code}. stderr: ${result.stderr}`);
+  assert.strictEqual(
+    result.code,
+    0,
+    `Expected exit code 0, got ${result.code}. stderr: ${result.stderr}`
+  );
   assert.ok(existsSync(outputPath), 'Expected ci_telemetry.json to be created');
 
   const content = readFileSync(outputPath, 'utf8');
@@ -103,7 +107,10 @@ test('telemetry summary includes total duration', async () => {
 
   assert.ok('summary' in telemetry, 'Missing required field: summary');
   assert.ok('totalDurationMs' in telemetry.summary, 'summary missing totalDurationMs');
-  assert.ok(typeof telemetry.summary.totalDurationMs === 'number', 'totalDurationMs should be a number');
+  assert.ok(
+    typeof telemetry.summary.totalDurationMs === 'number',
+    'totalDurationMs should be a number'
+  );
 });
 
 test('no secrets leak in telemetry output', async () => {
