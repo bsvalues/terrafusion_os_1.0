@@ -144,3 +144,48 @@ test('workflow references TF_REVIEW_APP_PRIVATE_KEY secret', () => {
     'Workflow should reference app private key secret'
   );
 });
+
+// ============================================================================
+// Permission Check Fail-Closed Tests (404/403 handling)
+// ============================================================================
+
+test('permission check step uses getCollaboratorPermissionLevel', () => {
+  assert.ok(
+    workflowContent.includes('getCollaboratorPermissionLevel'),
+    'Permission check should use getCollaboratorPermissionLevel API'
+  );
+});
+
+test('permission check step handles 404 (non-collaborator) fail-closed', () => {
+  assert.ok(
+    workflowContent.includes('status === 404'),
+    'Permission check should handle 404 status code'
+  );
+  // Verify fail-closed behavior: sets has_write to false on 404
+  const has404Handling = workflowContent.match(/status\s*===\s*404[\s\S]*?hasWrite\s*=\s*false/);
+  assert.ok(has404Handling, 'Permission check should set hasWrite=false on 404');
+});
+
+test('permission check step handles 403 (forbidden) fail-closed', () => {
+  assert.ok(
+    workflowContent.includes('status === 403'),
+    'Permission check should handle 403 status code'
+  );
+  // Verify fail-closed behavior
+  const has403Handling = workflowContent.match(/status\s*===\s*403[\s\S]*?failing closed/i);
+  assert.ok(has403Handling, 'Permission check should log fail-closed on 403');
+});
+
+test('permission check step outputs permission_level', () => {
+  assert.ok(
+    workflowContent.includes("core.setOutput('permission_level'"),
+    'Permission check should output permission_level'
+  );
+});
+
+test('permission check step outputs has_write', () => {
+  assert.ok(
+    workflowContent.includes("core.setOutput('has_write'"),
+    'Permission check should output has_write'
+  );
+});
