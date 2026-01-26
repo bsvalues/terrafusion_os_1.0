@@ -509,6 +509,9 @@ jobs:
     if: always() # Run even if dependent jobs fail - we need to report status
     needs:
       [quality-gate, backend-tests, frontend-tests, ai-validation, security-scan, classify_changes]
+    permissions:
+      contents: read
+      pull-requests: write # Required for PR comment updates
 
     env:
       RUNTIMECERT_COUNTY: benton
@@ -622,6 +625,67 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TF_CLASSIFICATION: ${{ needs.classify_changes.outputs.classification }}
 
+      - name: � Generate Telemetry Comment
+        if: always() && github.event_name == 'pull_request'
+        run: node scripts/ci/ci_telemetry_comment.mjs ci_telemetry.json ci_telemetry_comment.md
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+
+      - name: 💬 Post/Update PR Comment
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'ci_telemetry_comment.md';
+
+            // Read generated comment
+            let body;
+            try {
+              body = fs.readFileSync(path, 'utf8');
+            } catch (e) {
+              console.log('No telemetry comment file found, skipping');
+              return;
+            }
+
+            // Sentinel for sticky comment identification
+            const sentinel = '<!-- TF_CI_TELEMETRY -->';
+            if (!body.includes(sentinel)) {
+              console.log('Sentinel missing from comment, skipping');
+              return;
+            }
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c => c.body && c.body.includes(sentinel));
+
+            if (existing) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: body,
+              });
+              console.log(`Updated existing comment: ${existing.id}`);
+            } else {
+              // Create new comment
+              const { data: newComment } = await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body,
+              });
+              console.log(`Created new comment: ${newComment.id}`);
+            }
+
       - name: 📤 Upload Seal Artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -631,4 +695,5 @@ jobs:
             artifacts/**
             docs/spec-lock/INDEX.md
             ci_telemetry.json
+            ci_telemetry_comment.md
           if-no-files-found: warn
