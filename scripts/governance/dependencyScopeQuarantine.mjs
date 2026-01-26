@@ -40,11 +40,12 @@ function main() {
   // FAIL if current > baseline   (regression = bad)
   // ════════════════════════════════════════════════════════════════════════════
   const isPass = currentCount <= baselineCount;
-  const policyNote = delta < 0 
-    ? `✅ Quarantine shrank by ${Math.abs(delta)} (improvement)`
-    : delta === 0 
-      ? `✅ Quarantine stable at baseline`
-      : `❌ Quarantine grew by ${delta} (regression blocked)`;
+  const policyNote =
+    delta < 0
+      ? `✅ Quarantine shrank by ${Math.abs(delta)} (improvement)`
+      : delta === 0
+        ? `✅ Quarantine stable at baseline`
+        : `❌ Quarantine grew by ${delta} (regression blocked)`;
 
   console.log(policyNote);
 
