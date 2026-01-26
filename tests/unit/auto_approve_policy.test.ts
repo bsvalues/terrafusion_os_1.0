@@ -5,23 +5,45 @@
  * low-risk PRs via GitHub App co-signer.
  *
  * @fileoverview Vitest unit tests for auto_approve_policy.mjs
+ * @version 1.1.0 - Security hardened (blocked paths, actor validation)
  */
 
 import { describe, expect, it } from 'vitest';
 
 // ============================================================================
 // Inline implementations (mirror the actual script logic for unit testing)
+// v1.1.0 Security hardening:
+// - Removed 'ci_only' from low-risk (workflow files = code execution risk)
+// - Added blocked path patterns for code execution files
+// - Added actor allowlist for break-glass labels
 // ============================================================================
 
-const LOW_RISK_CLASSIFICATIONS = ['docs_only', 'ci_only'];
+// Only docs_only is auto-approvable. ci_only removed due to code execution risk.
+const LOW_RISK_CLASSIFICATIONS = ['docs_only'];
+
 const BREAK_GLASS_LABELS = ['auto-approve', 'break-glass'];
 const REQUIRED_CHECKS = ['scope-drift-guard', 'proof', '🔒 TerraFusion Seal Gate'];
+
+// Block patterns that could enable code execution
+const BLOCKED_PATH_PATTERNS = [
+  /^\.github\/workflows\//,
+  /^scripts\//,
+  /^\.github\/actions\//,
+  /package\.json$/,
+  /package-lock\.json$/,
+  /pnpm-lock\.yaml$/,
+];
+
+// Actors allowed to use break-glass (default to empty = no one)
+const DEFAULT_BREAK_GLASS_ACTORS: string[] = [];
 
 interface PolicyParams {
   classification: string;
   labels?: string[];
   checksPassed: boolean;
   changedFiles?: string[];
+  actor?: string;
+  breakGlassActors?: string[];
 }
 
 interface AuditTrail {
@@ -32,6 +54,8 @@ interface AuditTrail {
   evaluatedAt: string;
   policyVersion: string;
   breakGlassTriggered?: boolean;
+  blockedPathsDetected?: string[];
+  actor?: string;
 }
 
 interface PolicyResult {
@@ -41,11 +65,26 @@ interface PolicyResult {
   auditTrail: AuditTrail;
 }
 
+function checkBlockedPaths(changedFiles: string[]): string[] {
+  const blocked: string[] = [];
+  for (const file of changedFiles) {
+    for (const pattern of BLOCKED_PATH_PATTERNS) {
+      if (pattern.test(file)) {
+        blocked.push(file);
+        break;
+      }
+    }
+  }
+  return blocked;
+}
+
 function evaluatePolicy({
   classification,
   labels = [],
   checksPassed,
   changedFiles = [],
+  actor = '',
+  breakGlassActors = DEFAULT_BREAK_GLASS_ACTORS,
 }: PolicyParams): PolicyResult {
   const auditTrail: AuditTrail = {
     classification,
@@ -53,7 +92,8 @@ function evaluatePolicy({
     checksPassed,
     changedFilesCount: changedFiles.length,
     evaluatedAt: new Date().toISOString(),
-    policyVersion: '1.0.0',
+    policyVersion: '1.1.0',
+    actor,
   };
 
   // GATE 1: Required checks must pass
@@ -66,10 +106,30 @@ function evaluatePolicy({
     };
   }
 
-  // GATE 2: Check for break-glass labels
+  // GATE 2: Check for blocked paths (code execution risk)
+  const blockedPaths = checkBlockedPaths(changedFiles);
+  if (blockedPaths.length > 0) {
+    return {
+      approve: false,
+      reason: `Blocked paths detected (code execution risk): ${blockedPaths.join(', ')}`,
+      scope: 'blocked-paths',
+      auditTrail: { ...auditTrail, blockedPathsDetected: blockedPaths },
+    };
+  }
+
+  // GATE 3: Check for break-glass labels (with actor restriction)
   const hasBreakGlass = labels.some(label => BREAK_GLASS_LABELS.includes(label.toLowerCase()));
 
   if (hasBreakGlass) {
+    // Actor must be in allowlist for break-glass
+    if (!breakGlassActors.includes(actor)) {
+      return {
+        approve: false,
+        reason: `Break-glass label present but actor '${actor}' not in allowlist`,
+        scope: 'break-glass-denied',
+        auditTrail: { ...auditTrail, breakGlassTriggered: false },
+      };
+    }
     return {
       approve: true,
       reason: `Break-glass label detected: ${labels.find(l => BREAK_GLASS_LABELS.includes(l.toLowerCase()))}`,
@@ -78,7 +138,7 @@ function evaluatePolicy({
     };
   }
 
-  // GATE 3: Classification-based policy
+  // GATE 4: Classification-based policy
   const isLowRisk = LOW_RISK_CLASSIFICATIONS.includes(classification);
 
   if (isLowRisk) {
@@ -136,15 +196,16 @@ describe('evaluatePolicy', () => {
       expect(result.reason).toContain('low-risk');
     });
 
-    it('ci_only + checks passed -> approve = true', () => {
+    // v1.1.0: ci_only now requires human review due to code execution risk
+    it('ci_only + checks passed -> approve = false (v1.1.0 security hardening)', () => {
       const result = evaluatePolicy({
         classification: 'ci_only',
         labels: [],
         checksPassed: true,
       });
-      expect(result.approve).toBe(true);
-      expect(result.scope).toBe('ci_only');
-      expect(result.reason).toContain('low-risk');
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('human-review');
+      expect(result.reason).toContain('requires human review');
     });
   });
 
@@ -205,12 +266,96 @@ describe('evaluatePolicy', () => {
     });
   });
 
+  // v1.1.0: Blocked paths gate
+  describe('blocked paths gate', () => {
+    it('workflow files -> approve = false (code execution risk)', () => {
+      const result = evaluatePolicy({
+        classification: 'ci_only',
+        labels: [],
+        checksPassed: true,
+        changedFiles: ['.github/workflows/ci.yml'],
+      });
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('blocked-paths');
+      expect(result.reason).toContain('Blocked paths detected');
+      expect(result.auditTrail.blockedPathsDetected).toContain('.github/workflows/ci.yml');
+    });
+
+    it('scripts directory -> approve = false', () => {
+      const result = evaluatePolicy({
+        classification: 'docs_only',
+        labels: [],
+        checksPassed: true,
+        changedFiles: ['scripts/deploy.sh'],
+      });
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('blocked-paths');
+    });
+
+    it('package.json -> approve = false', () => {
+      const result = evaluatePolicy({
+        classification: 'docs_only',
+        labels: [],
+        checksPassed: true,
+        changedFiles: ['package.json'],
+      });
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('blocked-paths');
+    });
+
+    it('github actions directory -> approve = false', () => {
+      const result = evaluatePolicy({
+        classification: 'docs_only',
+        labels: [],
+        checksPassed: true,
+        changedFiles: ['.github/actions/custom-action/action.yml'],
+      });
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('blocked-paths');
+    });
+
+    it('lock files -> approve = false', () => {
+      const result = evaluatePolicy({
+        classification: 'docs_only',
+        labels: [],
+        checksPassed: true,
+        changedFiles: ['pnpm-lock.yaml'],
+      });
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('blocked-paths');
+    });
+
+    it('docs files only -> approve = true (no blocked paths)', () => {
+      const result = evaluatePolicy({
+        classification: 'docs_only',
+        labels: [],
+        checksPassed: true,
+        changedFiles: ['README.md', 'docs/api.md'],
+      });
+      expect(result.approve).toBe(true);
+      expect(result.scope).toBe('docs_only');
+    });
+
+    it('mixed safe and blocked -> approve = false', () => {
+      const result = evaluatePolicy({
+        classification: 'docs_only',
+        labels: [],
+        checksPassed: true,
+        changedFiles: ['README.md', '.github/workflows/test.yml'],
+      });
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('blocked-paths');
+    });
+  });
+
   describe('break-glass labels', () => {
-    it('auto-approve label -> approve = true (bypasses classification)', () => {
+    it('auto-approve label + allowed actor -> approve = true', () => {
       const result = evaluatePolicy({
         classification: 'mixed',
         labels: ['auto-approve'],
         checksPassed: true,
+        actor: 'bsvalley',
+        breakGlassActors: ['bsvalley', 'admin'],
       });
       expect(result.approve).toBe(true);
       expect(result.scope).toBe('break-glass');
@@ -218,11 +363,13 @@ describe('evaluatePolicy', () => {
       expect(result.auditTrail.breakGlassTriggered).toBe(true);
     });
 
-    it('break-glass label -> approve = true', () => {
+    it('break-glass label + allowed actor -> approve = true', () => {
       const result = evaluatePolicy({
         classification: 'backend_only',
         labels: ['break-glass'],
         checksPassed: true,
+        actor: 'admin',
+        breakGlassActors: ['bsvalley', 'admin'],
       });
       expect(result.approve).toBe(true);
       expect(result.scope).toBe('break-glass');
@@ -233,6 +380,8 @@ describe('evaluatePolicy', () => {
         classification: 'mixed',
         labels: ['AUTO-APPROVE'],
         checksPassed: true,
+        actor: 'bsvalley',
+        breakGlassActors: ['bsvalley'],
       });
       expect(result.approve).toBe(true);
       expect(result.scope).toBe('break-glass');
@@ -243,6 +392,8 @@ describe('evaluatePolicy', () => {
         classification: 'mixed',
         labels: ['auto-approve'],
         checksPassed: false,
+        actor: 'bsvalley',
+        breakGlassActors: ['bsvalley'],
       });
       expect(result.approve).toBe(false);
       expect(result.scope).toBe('checks');
@@ -256,6 +407,58 @@ describe('evaluatePolicy', () => {
       });
       expect(result.approve).toBe(false);
       expect(result.scope).toBe('human-review');
+    });
+
+    // v1.1.0: Actor restriction tests
+    it('break-glass label + unauthorized actor -> approve = false', () => {
+      const result = evaluatePolicy({
+        classification: 'mixed',
+        labels: ['auto-approve'],
+        checksPassed: true,
+        actor: 'attacker',
+        breakGlassActors: ['bsvalley', 'admin'],
+      });
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('break-glass-denied');
+      expect(result.reason).toContain('not in allowlist');
+      expect(result.auditTrail.breakGlassTriggered).toBe(false);
+    });
+
+    it('break-glass label + empty allowlist -> approve = false', () => {
+      const result = evaluatePolicy({
+        classification: 'mixed',
+        labels: ['auto-approve'],
+        checksPassed: true,
+        actor: 'bsvalley',
+        breakGlassActors: [],
+      });
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('break-glass-denied');
+    });
+
+    it('break-glass label + no actor provided -> approve = false', () => {
+      const result = evaluatePolicy({
+        classification: 'mixed',
+        labels: ['auto-approve'],
+        checksPassed: true,
+        // actor defaults to ''
+        breakGlassActors: ['bsvalley'],
+      });
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('break-glass-denied');
+    });
+
+    it('break-glass blocked by paths even with allowed actor', () => {
+      const result = evaluatePolicy({
+        classification: 'mixed',
+        labels: ['auto-approve'],
+        checksPassed: true,
+        actor: 'bsvalley',
+        breakGlassActors: ['bsvalley'],
+        changedFiles: ['.github/workflows/deploy.yml'],
+      });
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('blocked-paths');
     });
   });
 
@@ -304,7 +507,7 @@ describe('evaluatePolicy', () => {
         labels: [],
         checksPassed: true,
       });
-      expect(result.auditTrail.policyVersion).toBe('1.0.0');
+      expect(result.auditTrail.policyVersion).toBe('1.1.0');
     });
 
     it('tracks changed files count when provided', () => {

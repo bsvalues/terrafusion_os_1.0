@@ -712,11 +712,18 @@ jobs:
           github.event_name == 'pull_request' &&
           vars.TF_AUTO_APPROVE_ENABLED == 'true' &&
           steps.app-token.outcome == 'success'
+        env:
+          TF_BREAK_GLASS_ACTORS: ${{ vars.TF_BREAK_GLASS_ACTORS }}
         run: |
-          # Run policy evaluation
+          # Get changed files list
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} | tr '\n' ',' | sed 's/,$//')
+
+          # Run policy evaluation with actor and files
           node scripts/ci/auto_approve_policy.mjs \
             --telemetry=ci_telemetry.json \
             --labels="${{ join(github.event.pull_request.labels.*.name, ',') }}" \
+            --actor="${{ github.actor }}" \
+            --files="$CHANGED_FILES" \
             --json > policy_result.json || true
 
           # Parse results
@@ -732,6 +739,7 @@ jobs:
           echo "  Approve: $APPROVE"
           echo "  Reason: $REASON"
           echo "  Scope: $SCOPE"
+          echo "  Actor: ${{ github.actor }}"
 
       - name: ✅ Submit Auto-Approval Review
         if: >-

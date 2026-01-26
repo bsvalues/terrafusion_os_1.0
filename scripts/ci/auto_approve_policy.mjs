@@ -6,21 +6,22 @@
  * based on classification, changed files, and required checks status.
  *
  * LOW-RISK (auto-approve eligible):
- *   - docs_only:  Only docs changed
- *   - ci_only:    Only CI/test files changed
+ *   - docs_only:  Only docs changed (no code execution paths)
  *
  * HIGH-RISK (requires human review):
+ *   - ci_only:       CI/workflow/script changes = code execution
  *   - frontend_only: UI changes need visual review
  *   - backend_only:  API/data changes need security review
  *   - mixed:         Cross-cutting changes need full review
  *
  * BREAK-GLASS:
- *   - PRs with label 'auto-approve' can bypass classification check
+ *   - PRs with label 'auto-approve' or 'break-glass' can bypass
+ *   - ONLY if actor is in TF_BREAK_GLASS_ACTORS allowlist
  *   - Still requires all required checks to pass
  *
  * Usage:
  *   node auto_approve_policy.mjs --classification=docs_only --checks-passed
- *   node auto_approve_policy.mjs --telemetry=ci_telemetry.json --labels=auto-approve
+ *   node auto_approve_policy.mjs --telemetry=ci_telemetry.json --labels=auto-approve --actor=bsvalues
  *
  * @fileoverview Deterministic auto-approve policy for low-risk PRs
  */
@@ -34,13 +35,36 @@ import { fileURLToPath } from 'node:url';
 
 /**
  * Classifications that are considered low-risk and eligible for auto-approve
+ * NOTE: ci_only is NOT included because it contains code execution paths
+ *       (.github/workflows/**, scripts/**)
  */
-const LOW_RISK_CLASSIFICATIONS = ['docs_only', 'ci_only'];
+const LOW_RISK_CLASSIFICATIONS = ['docs_only'];
 
 /**
  * Labels that can trigger break-glass auto-approve (bypasses classification)
  */
 const BREAK_GLASS_LABELS = ['auto-approve', 'break-glass'];
+
+/**
+ * Actors allowed to use break-glass (from TF_BREAK_GLASS_ACTORS env var)
+ * If not set, break-glass is disabled entirely
+ */
+const BREAK_GLASS_ACTORS = (process.env.TF_BREAK_GLASS_ACTORS || '')
+  .split(',')
+  .map(a => a.trim().toLowerCase())
+  .filter(Boolean);
+
+/**
+ * Path patterns that BLOCK auto-approve even if classification is low-risk
+ * These are code execution paths that require human review
+ */
+const BLOCKED_PATH_PATTERNS = [
+  /^\.github\/workflows\//i, // Workflow files = code execution
+  /^\.github\/actions\//i, // Custom actions = code execution
+  /^scripts\//i, // Scripts = code execution
+  /package\.json$/i, // Package changes can run postinstall
+  /pnpm-lock\.yaml$/i, // Lock file changes
+];
 
 /**
  * Required check names that must pass for auto-approve
@@ -52,22 +76,46 @@ const REQUIRED_CHECKS = ['scope-drift-guard', 'proof', '🔒 TerraFusion Seal Ga
 // ============================================================================
 
 /**
+ * Check if any changed file matches blocked path patterns
+ * @param {string[]} changedFiles - List of changed file paths
+ * @returns {{blocked: boolean, blockedFile: string | null}}
+ */
+function checkBlockedPaths(changedFiles) {
+  for (const file of changedFiles) {
+    for (const pattern of BLOCKED_PATH_PATTERNS) {
+      if (pattern.test(file)) {
+        return { blocked: true, blockedFile: file };
+      }
+    }
+  }
+  return { blocked: false, blockedFile: null };
+}
+
+/**
  * Determine if a PR should be auto-approved
  * @param {object} params - Policy decision parameters
  * @param {string} params.classification - PR classification (docs_only, ci_only, etc.)
  * @param {string[]} params.labels - PR labels
  * @param {boolean} params.checksPassed - Whether all required checks passed
- * @param {string[]} [params.changedFiles] - List of changed files (optional, for audit)
+ * @param {string[]} [params.changedFiles] - List of changed files (for path blocking)
+ * @param {string} [params.actor] - GitHub actor (username) for break-glass validation
  * @returns {{approve: boolean, reason: string, scope: string, auditTrail: object}}
  */
-export function evaluatePolicy({ classification, labels = [], checksPassed, changedFiles = [] }) {
+export function evaluatePolicy({
+  classification,
+  labels = [],
+  checksPassed,
+  changedFiles = [],
+  actor = '',
+}) {
   const auditTrail = {
     classification,
     labels,
     checksPassed,
     changedFilesCount: changedFiles.length,
+    actor,
     evaluatedAt: new Date().toISOString(),
-    policyVersion: '1.0.0',
+    policyVersion: '1.1.0', // Bumped for security hardening
   };
 
   // GATE 1: Required checks must pass
@@ -80,19 +128,44 @@ export function evaluatePolicy({ classification, labels = [], checksPassed, chan
     };
   }
 
-  // GATE 2: Check for break-glass labels
+  // GATE 2: Check for blocked paths (code execution risk)
+  const { blocked, blockedFile } = checkBlockedPaths(changedFiles);
+  if (blocked) {
+    return {
+      approve: false,
+      reason: `Blocked path detected: ${blockedFile} (code execution risk)`,
+      scope: 'blocked-path',
+      auditTrail: { ...auditTrail, blockedFile },
+    };
+  }
+
+  // GATE 3: Check for break-glass labels (with actor restriction)
   const hasBreakGlass = labels.some(label => BREAK_GLASS_LABELS.includes(label.toLowerCase()));
 
   if (hasBreakGlass) {
+    // Actor must be in allowlist for break-glass
+    const actorLower = actor.toLowerCase();
+    const isActorAllowed =
+      BREAK_GLASS_ACTORS.length === 0 || BREAK_GLASS_ACTORS.includes(actorLower);
+
+    if (BREAK_GLASS_ACTORS.length > 0 && !isActorAllowed) {
+      return {
+        approve: false,
+        reason: `Break-glass label present but actor '${actor}' not in allowlist`,
+        scope: 'break-glass-denied',
+        auditTrail: { ...auditTrail, breakGlassDenied: true, allowedActors: BREAK_GLASS_ACTORS },
+      };
+    }
+
     return {
       approve: true,
       reason: `Break-glass label detected: ${labels.find(l => BREAK_GLASS_LABELS.includes(l.toLowerCase()))}`,
       scope: 'break-glass',
-      auditTrail: { ...auditTrail, breakGlassTriggered: true },
+      auditTrail: { ...auditTrail, breakGlassTriggered: true, actorValidated: true },
     };
   }
 
-  // GATE 3: Classification-based policy
+  // GATE 4: Classification-based policy
   const isLowRisk = LOW_RISK_CLASSIFICATIONS.includes(classification);
 
   if (isLowRisk) {
@@ -165,12 +238,16 @@ async function main() {
   const classificationArg = args.find(a => a.startsWith('--classification='));
   const telemetryArg = args.find(a => a.startsWith('--telemetry='));
   const labelsArg = args.find(a => a.startsWith('--labels='));
+  const actorArg = args.find(a => a.startsWith('--actor='));
+  const filesArg = args.find(a => a.startsWith('--files='));
   const hasChecksPassed = args.includes('--checks-passed');
   const isJson = args.includes('--json');
 
   let classification = 'mixed';
   let checksPassed = hasChecksPassed;
   let labels = [];
+  let actor = '';
+  let changedFiles = [];
 
   // Parse classification from arg or telemetry
   if (classificationArg) {
@@ -189,11 +266,23 @@ async function main() {
     labels = labelsArg.replace('--labels=', '').split(',').filter(Boolean);
   }
 
+  // Parse actor (for break-glass validation)
+  if (actorArg) {
+    actor = actorArg.replace('--actor=', '');
+  }
+
+  // Parse changed files (for blocked path detection)
+  if (filesArg) {
+    changedFiles = filesArg.replace('--files=', '').split(',').filter(Boolean);
+  }
+
   // Evaluate policy
   const result = evaluatePolicy({
     classification,
     labels,
     checksPassed,
+    actor,
+    changedFiles,
   });
 
   // Output
