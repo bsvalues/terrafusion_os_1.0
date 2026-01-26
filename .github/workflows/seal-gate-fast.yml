@@ -59,13 +59,15 @@ jobs:
       docs_only: ${{ steps.classify.outputs.docs_only }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0
 
       - name: Classify changed files
         id: classify
+        shell: bash
         run: |
+          set -euo pipefail
           # Get changed files
           if [ -n "${{ github.event.pull_request.base.sha }}" ]; then
             CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.sha }} || echo "")
@@ -112,11 +114,11 @@ jobs:
     if: needs.classify.outputs.skip_frontend != 'true' && needs.classify.outputs.docs_only != 'true'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@fe02b34f77f8bc703788d5cd3f28384b59e74a29 # v4.0.0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -125,17 +127,58 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm run lint || true
+      - name: Lint (loud, temporary non-blocking)
+        id: lint
+        run: pnpm run lint
+        continue-on-error: true
 
-      - name: Type check
-        run: pnpm run type-check || pnpm run typecheck || true
+      - name: Lint escape hatch (expires 2026-02-15)
+        if: steps.lint.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::warning::Lint failed (temporarily non-blocking until 2026-02-15). Fix lint; this will become a merge blocker."
+          today="$(date -u +%F)"
+          cutoff="2026-02-15"
+          if [[ "$today" > "$cutoff" || "$today" == "$cutoff" ]]; then
+            echo "::error::Lint escape hatch expired on $cutoff. Lint must pass."
+            exit 1
+          fi
 
-      - name: Unit tests
-        run: pnpm run test:unit || pnpm test -- --passWithNoTests || true
+      - name: Type check (blocking)
+        id: typecheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          if pnpm -s run | grep -qE '(^| )type-check($| )'; then
+            pnpm run type-check
+          elif pnpm -s run | grep -qE '(^| )typecheck($| )'; then
+            pnpm run typecheck
+          else
+            echo "::error::No typecheck script found (expected type-check or typecheck)."
+            exit 1
+          fi
 
-      - name: Build
-        run: pnpm run build || true
+      - name: Unit tests (blocking)
+        id: unit-tests
+        run: pnpm run test:unit || pnpm test -- --passWithNoTests
+
+      - name: Build (blocking)
+        id: build
+        run: pnpm run build
+
+      - name: Frontend Summary
+        if: always()
+        shell: bash
+        run: |
+          echo "## 🎨 Frontend Fast Gate" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '⚠️ Soft (expires 2026-02-15)' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Type Check | ${{ steps.typecheck.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ steps.unit-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ steps.build.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Backend Fast Gate (restore + build with warnings-as-errors + unit tests)
@@ -148,14 +191,14 @@ jobs:
     if: needs.classify.outputs.skip_backend != 'true' && needs.classify.outputs.docs_only != 'true'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@6bd8b7f7774af54e05809fcc5431931b3eb1ddee # v4.0.1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Cache NuGet
-        uses: actions/cache@v4
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('backend/**/*.csproj', 'backend/**/Directory.Packages.props') }}
@@ -168,13 +211,15 @@ jobs:
         run: dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror
 
       - name: Unit tests (no DB required)
+        shell: bash
         run: |
+          set -euo pipefail
           dotnet test backend/TerraFusion.sln \
             -c Release \
             --no-build \
             --filter "Category=Unit|TestCategory=Unit" \
             -v:minimal \
-            || dotnet test backend/TerraFusion.sln -c Release --no-build -v:minimal || true
+            || dotnet test backend/TerraFusion.sln -c Release --no-build -v:minimal
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Governance Fast Gate (drift guard, scope classifier)
@@ -186,13 +231,13 @@ jobs:
     needs: classify
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@fe02b34f77f8bc703788d5cd3f28384b59e74a29 # v4.0.0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -202,7 +247,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Drift guard (dotnet canonical enforcement)
+        shell: bash
         run: |
+          set -euo pipefail
           # Forbid direct 'dotnet test' in workflows (except dotnet-test.yml)
           hits=$(grep -rn 'dotnet test' .github/workflows/*.yml | grep -v 'dotnet-test.yml' | grep -v 'seal-gate-fast.yml' || true)
           if [ -n "$hits" ]; then
@@ -211,15 +258,16 @@ jobs:
           fi
           echo "✅ Drift guard passed"
 
-      - name: Scope classifier (if exists)
-        run: |
-          if [ -d "tools/scope-classifier" ]; then
-            pnpm -C tools/scope-classifier test || true
-          fi
-          echo "✅ Scope classifier passed"
+      - name: Scope classifier (optional)
+        if: hashFiles('tools/scope-classifier/package.json') != ''
+        working-directory: tools/scope-classifier
+        run: pnpm test
+        continue-on-error: true
 
       - name: Verify critical files exist
+        shell: bash
         run: |
+          set -euo pipefail
           # Snyk policy exists
           test -f .snyk && echo "✅ .snyk exists" || echo "⚠️ .snyk missing"
           # Solution file exists
@@ -237,7 +285,9 @@ jobs:
 
     steps:
       - name: Check all gates
+        shell: bash
         run: |
+          set -euo pipefail
           echo "🔒 TerraFusion Seal Gate (fast) - Results"
           echo "========================================="
           echo ""
@@ -282,10 +332,32 @@ jobs:
           fi
 
           echo ""
+
+          # Write to GitHub Step Summary
+          echo "## 🔒 SEAL Gate Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Gate | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Classify | ${{ needs.classify.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          case "${{ needs.frontend-fast.result }}" in
+            success) echo "| Frontend | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            skipped) echo "| Frontend | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Frontend | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+          esac
+          case "${{ needs.backend-fast.result }}" in
+            success) echo "| Backend | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            skipped) echo "| Backend | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Backend | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+          esac
+          echo "| Governance | ${{ needs.governance-fast.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
           if [ $FAILED -eq 0 ]; then
             echo "🎉 SEAL GATE PASSED - Ready to merge"
+            echo "> ✅ **Ready to merge**" >> $GITHUB_STEP_SUMMARY
             exit 0
           else
             echo "🚫 SEAL GATE FAILED - Fix issues before merging"
+            echo "> ❌ **Fix issues before merging**" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
