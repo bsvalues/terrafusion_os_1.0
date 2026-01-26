@@ -65,10 +65,7 @@ test('app token step is gated on pull_request events', () => {
   const appTokenMatch = workflowContent.match(
     /Generate GitHub App Token[\s\S]*?if:\s*>-[\s\S]*?pull_request/
   );
-  assert.ok(
-    appTokenMatch,
-    'App token step should be gated on pull_request event'
-  );
+  assert.ok(appTokenMatch, 'App token step should be gated on pull_request event');
 });
 
 test('auto-approve is gated on TF_AUTO_APPROVE_ENABLED variable', () => {
@@ -97,10 +94,7 @@ test('approval step uses app token (not GITHUB_TOKEN)', () => {
   const approvalMatch = workflowContent.match(
     /Submit Auto-Approval Review[\s\S]*?github-token:\s*\$\{\{\s*steps\.app-token\.outputs\.token\s*\}\}/
   );
-  assert.ok(
-    approvalMatch,
-    'Approval step should use app token from app-token step'
-  );
+  assert.ok(approvalMatch, 'Approval step should use app token from app-token step');
 });
 
 test('approval step is gated on policy.outputs.approve', () => {
@@ -130,10 +124,7 @@ test('approval step includes audit information in body', () => {
     workflowContent.includes('Classification'),
     'Approval body should include classification'
   );
-  assert.ok(
-    workflowContent.includes('Scope'),
-    'Approval body should include scope'
-  );
+  assert.ok(workflowContent.includes('Scope'), 'Approval body should include scope');
   assert.ok(
     workflowContent.includes('Policy Version'),
     'Approval body should include policy version'

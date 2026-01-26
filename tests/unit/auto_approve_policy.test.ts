@@ -5,17 +5,18 @@
  * low-risk PRs via GitHub App co-signer.
  *
  * @fileoverview Vitest unit tests for auto_approve_policy.mjs
- * @version 1.1.0 - Security hardened (blocked paths, actor validation)
+ * @version 1.2.0 - Permission check added for break-glass (belt + suspenders)
  */
 
 import { describe, expect, it } from 'vitest';
 
 // ============================================================================
 // Inline implementations (mirror the actual script logic for unit testing)
-// v1.1.0 Security hardening:
+// v1.2.0 Security hardening:
 // - Removed 'ci_only' from low-risk (workflow files = code execution risk)
 // - Added blocked path patterns for code execution files
 // - Added actor allowlist for break-glass labels
+// - Added write permission check for break-glass (belt + suspenders)
 // ============================================================================
 
 // Only docs_only is auto-approvable. ci_only removed due to code execution risk.
@@ -44,6 +45,7 @@ interface PolicyParams {
   changedFiles?: string[];
   actor?: string;
   breakGlassActors?: string[];
+  hasWritePermission?: boolean; // v1.2.0: permission check
 }
 
 interface AuditTrail {
@@ -85,6 +87,7 @@ function evaluatePolicy({
   changedFiles = [],
   actor = '',
   breakGlassActors = DEFAULT_BREAK_GLASS_ACTORS,
+  hasWritePermission = true, // v1.2.0: default true for backward compat in tests
 }: PolicyParams): PolicyResult {
   const auditTrail: AuditTrail = {
     classification,
@@ -92,7 +95,7 @@ function evaluatePolicy({
     checksPassed,
     changedFilesCount: changedFiles.length,
     evaluatedAt: new Date().toISOString(),
-    policyVersion: '1.1.0',
+    policyVersion: '1.2.0',
     actor,
   };
 
@@ -117,11 +120,20 @@ function evaluatePolicy({
     };
   }
 
-  // GATE 3: Check for break-glass labels (with actor restriction)
+  // GATE 3: Check for break-glass labels (with permission + actor restriction)
   const hasBreakGlass = labels.some(label => BREAK_GLASS_LABELS.includes(label.toLowerCase()));
 
   if (hasBreakGlass) {
-    // Actor must be in allowlist for break-glass
+    // Belt: Actor must have write permission
+    if (!hasWritePermission) {
+      return {
+        approve: false,
+        reason: `Break-glass label present but actor '${actor}' lacks write permission`,
+        scope: 'break-glass-denied',
+        auditTrail: { ...auditTrail, breakGlassTriggered: false },
+      };
+    }
+    // Suspenders: Actor must be in allowlist
     if (!breakGlassActors.includes(actor)) {
       return {
         approve: false,
@@ -460,6 +472,34 @@ describe('evaluatePolicy', () => {
       expect(result.approve).toBe(false);
       expect(result.scope).toBe('blocked-paths');
     });
+
+    // v1.2.0: Permission check (belt + suspenders)
+    it('break-glass label + no write permission -> approve = false', () => {
+      const result = evaluatePolicy({
+        classification: 'mixed',
+        labels: ['auto-approve'],
+        checksPassed: true,
+        actor: 'bsvalley',
+        breakGlassActors: ['bsvalley'],
+        hasWritePermission: false,
+      });
+      expect(result.approve).toBe(false);
+      expect(result.scope).toBe('break-glass-denied');
+      expect(result.reason).toContain('lacks write permission');
+    });
+
+    it('break-glass label + write permission + allowed actor -> approve = true', () => {
+      const result = evaluatePolicy({
+        classification: 'mixed',
+        labels: ['auto-approve'],
+        checksPassed: true,
+        actor: 'bsvalley',
+        breakGlassActors: ['bsvalley'],
+        hasWritePermission: true,
+      });
+      expect(result.approve).toBe(true);
+      expect(result.scope).toBe('break-glass');
+    });
   });
 
   describe('audit trail', () => {
@@ -507,7 +547,7 @@ describe('evaluatePolicy', () => {
         labels: [],
         checksPassed: true,
       });
-      expect(result.auditTrail.policyVersion).toBe('1.1.0');
+      expect(result.auditTrail.policyVersion).toBe('1.2.0');
     });
 
     it('tracks changed files count when provided', () => {

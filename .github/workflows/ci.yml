@@ -705,6 +705,29 @@ jobs:
           app-id: ${{ secrets.TF_REVIEW_APP_ID }}
           private-key: ${{ secrets.TF_REVIEW_APP_PRIVATE_KEY }}
 
+      # Permission check for break-glass (belt + suspenders with actor allowlist)
+      - name: 🔐 Check Actor Permission for Break-Glass
+        id: permission-check
+        if: >-
+          always() &&
+          github.event_name == 'pull_request' &&
+          vars.TF_AUTO_APPROVE_ENABLED == 'true' &&
+          steps.app-token.outcome == 'success'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const { data: permission } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: context.actor,
+            });
+            const level = permission.permission;
+            const hasWrite = ['admin', 'maintain', 'write'].includes(level);
+            core.setOutput('has_write', hasWrite.toString());
+            core.setOutput('permission_level', level);
+            console.log(`Actor ${context.actor} has permission: ${level} (write: ${hasWrite})`);
+
       - name: 🤖 Evaluate Auto-Approve Policy
         id: policy
         if: >-
@@ -714,6 +737,7 @@ jobs:
           steps.app-token.outcome == 'success'
         env:
           TF_BREAK_GLASS_ACTORS: ${{ vars.TF_BREAK_GLASS_ACTORS }}
+          TF_ACTOR_HAS_WRITE: ${{ steps.permission-check.outputs.has_write }}
         run: |
           # Get changed files list
           CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} | tr '\n' ',' | sed 's/,$//')
@@ -763,7 +787,7 @@ jobs:
               `| Classification | \`${classification}\` |`,
               `| Scope | \`${scope}\` |`,
               `| Reason | ${reason} |`,
-              `| Policy Version | 1.0.0 |`,
+              `| Policy Version | 1.2.0 |`,
               '',
               '---',
               '*This review was submitted automatically by the TerraFusion CI Co-Signer.*',

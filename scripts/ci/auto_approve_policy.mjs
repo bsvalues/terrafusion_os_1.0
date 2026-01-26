@@ -55,6 +55,12 @@ const BREAK_GLASS_ACTORS = (process.env.TF_BREAK_GLASS_ACTORS || '')
   .filter(Boolean);
 
 /**
+ * Whether the actor has write permission (from TF_ACTOR_HAS_WRITE env var)
+ * Set by workflow after checking via GitHub API
+ */
+const ACTOR_HAS_WRITE = process.env.TF_ACTOR_HAS_WRITE === 'true';
+
+/**
  * Path patterns that BLOCK auto-approve even if classification is low-risk
  * These are code execution paths that require human review
  */
@@ -115,7 +121,7 @@ export function evaluatePolicy({
     changedFilesCount: changedFiles.length,
     actor,
     evaluatedAt: new Date().toISOString(),
-    policyVersion: '1.1.0', // Bumped for security hardening
+    policyVersion: '1.2.0', // Permission check added
   };
 
   // GATE 1: Required checks must pass
@@ -139,11 +145,21 @@ export function evaluatePolicy({
     };
   }
 
-  // GATE 3: Check for break-glass labels (with actor restriction)
+  // GATE 3: Check for break-glass labels (with actor + permission restriction)
   const hasBreakGlass = labels.some(label => BREAK_GLASS_LABELS.includes(label.toLowerCase()));
 
   if (hasBreakGlass) {
-    // Actor must be in allowlist for break-glass
+    // Belt: Actor must have write permission on the repo
+    if (!ACTOR_HAS_WRITE) {
+      return {
+        approve: false,
+        reason: `Break-glass label present but actor '${actor}' lacks write permission`,
+        scope: 'break-glass-denied',
+        auditTrail: { ...auditTrail, breakGlassDenied: true, reason: 'no-write-permission' },
+      };
+    }
+
+    // Suspenders: Actor must also be in allowlist
     const actorLower = actor.toLowerCase();
     const isActorAllowed =
       BREAK_GLASS_ACTORS.length === 0 || BREAK_GLASS_ACTORS.includes(actorLower);
@@ -161,7 +177,12 @@ export function evaluatePolicy({
       approve: true,
       reason: `Break-glass label detected: ${labels.find(l => BREAK_GLASS_LABELS.includes(l.toLowerCase()))}`,
       scope: 'break-glass',
-      auditTrail: { ...auditTrail, breakGlassTriggered: true, actorValidated: true },
+      auditTrail: {
+        ...auditTrail,
+        breakGlassTriggered: true,
+        actorValidated: true,
+        hasWritePermission: true,
+      },
     };
   }
 

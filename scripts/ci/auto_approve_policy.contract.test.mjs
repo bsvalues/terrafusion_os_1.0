@@ -112,19 +112,23 @@ test('auto_approve_policy.mjs exits with code 1 when checks not passed', () => {
 test('auto_approve_policy.mjs handles break-glass label', () => {
   setup();
   try {
-    // v1.1.0: break-glass requires actor in allowlist
-    const result = runPolicy([
-      '--classification=mixed',
-      '--labels=auto-approve',
-      '--checks-passed',
-      '--actor=testuser',
-      '--json',
-    ], {
-      env: {
-        ...process.env,
-        TF_BREAK_GLASS_ACTORS: 'testuser,admin',
-      },
-    });
+    // v1.2.0: break-glass requires actor in allowlist AND write permission
+    const result = runPolicy(
+      [
+        '--classification=mixed',
+        '--labels=auto-approve',
+        '--checks-passed',
+        '--actor=testuser',
+        '--json',
+      ],
+      {
+        env: {
+          ...process.env,
+          TF_BREAK_GLASS_ACTORS: 'testuser,admin',
+          TF_ACTOR_HAS_WRITE: 'true',
+        },
+      }
+    );
     assert.strictEqual(result.status, 0, `Expected exit code 0, got ${result.status}`);
 
     const output = JSON.parse(result.stdout);
@@ -145,7 +149,7 @@ test('auto_approve_policy.mjs output contains audit trail', () => {
     const output = JSON.parse(result.stdout);
     assert.ok(output.auditTrail, 'Output should include auditTrail');
     assert.strictEqual(output.auditTrail.classification, 'docs_only');
-    assert.strictEqual(output.auditTrail.policyVersion, '1.1.0');
+    assert.strictEqual(output.auditTrail.policyVersion, '1.2.0');
     assert.ok(output.auditTrail.evaluatedAt, 'auditTrail should include timestamp');
   } finally {
     cleanup();
@@ -232,19 +236,23 @@ test('no secrets leak in policy output from environment', () => {
 test('auto_approve_policy.mjs handles multiple labels', () => {
   setup();
   try {
-    // v1.1.0: break-glass requires actor in allowlist
-    const result = runPolicy([
-      '--classification=mixed',
-      '--labels=bug,enhancement,auto-approve',
-      '--checks-passed',
-      '--actor=admin',
-      '--json',
-    ], {
-      env: {
-        ...process.env,
-        TF_BREAK_GLASS_ACTORS: 'admin',
-      },
-    });
+    // v1.2.0: break-glass requires actor in allowlist AND write permission
+    const result = runPolicy(
+      [
+        '--classification=mixed',
+        '--labels=bug,enhancement,auto-approve',
+        '--checks-passed',
+        '--actor=admin',
+        '--json',
+      ],
+      {
+        env: {
+          ...process.env,
+          TF_BREAK_GLASS_ACTORS: 'admin',
+          TF_ACTOR_HAS_WRITE: 'true',
+        },
+      }
+    );
     assert.strictEqual(result.status, 0);
 
     const output = JSON.parse(result.stdout);
