@@ -161,6 +161,54 @@ jobs:
 
           echo "✅ Snyk Drift Guard: all critical exclusion patterns present"
 
+  warning_gate:
+    name: Warning Gate (0 warnings tolerance)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore backend/TerraFusion.sln
+
+      - name: Build backend with /warnaserror
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "🔍 Building backend with warnings treated as errors..."
+
+          # Build with warnings as errors - any warning fails the build
+          if ! dotnet build backend/TerraFusion.sln -c Release /warnaserror --no-restore 2>&1 | tee build.log; then
+            echo ""
+            echo "❌ Warning Gate: Build failed due to warnings."
+            echo "Fix all warnings before merging. See build.log above for details."
+            exit 1
+          fi
+
+          echo "✅ Warning Gate: Backend built with 0 warnings"
+
+      - name: Verify publish command (no NETSDK1194)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "🔍 Verifying project-level publish (no NETSDK1194)..."
+
+          # Publish specific project, not solution
+          output=$(dotnet publish backend/src/TerraFusion.API/TerraFusion.API.csproj -c Release -o ./dist/backend/TerraFusion.API --no-build 2>&1) || true
+
+          if echo "$output" | grep -q "NETSDK1194"; then
+            echo "❌ Warning Gate: NETSDK1194 detected in publish output."
+            echo "$output"
+            exit 1
+          fi
+
+          echo "✅ Warning Gate: Publish completed without NETSDK1194"
+
   quality-gate:
     name: Quality Gate Validation
     runs-on: ubuntu-latest
@@ -208,7 +256,7 @@ jobs:
 
   backend-tests:
     name: Backend .NET Tests
-    needs: [quality-gate, drift_guard, hint_drift_guard]
+    needs: [quality-gate, drift_guard, hint_drift_guard, warning_gate]
     uses: ./.github/workflows/dotnet-test.yml
     with:
       dotnet_version: ${{ env.DOTNET_VERSION }}
@@ -334,7 +382,7 @@ jobs:
       - name: 🔨 Build Application
         run: |
           npm run build:production || echo "Frontend build complete"
-          cd backend && dotnet publish -c Release -o ../publish || echo "Backend publish complete"
+          cd backend && dotnet build TerraFusion.sln -c Release && dotnet publish src/TerraFusion.API/TerraFusion.API.csproj -c Release -o ../publish --no-build || echo "Backend publish complete"
         continue-on-error: true
 
       - name: 🐳 Build Docker Images

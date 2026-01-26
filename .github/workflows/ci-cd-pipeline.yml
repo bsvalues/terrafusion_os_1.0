@@ -250,8 +250,9 @@ jobs:
         id: build-backend
         run: |
           cd backend
-          dotnet restore
-          dotnet publish --configuration Release --output ./publish --no-restore
+          dotnet restore TerraFusion.sln
+          dotnet build TerraFusion.sln -c Release
+          dotnet publish src/TerraFusion.API/TerraFusion.API.csproj -c Release -o ./publish --no-build
           echo "artifact-name=backend-build-${{ github.sha }}" >> $GITHUB_OUTPUT
 
       - name: Build AI Agent modules
