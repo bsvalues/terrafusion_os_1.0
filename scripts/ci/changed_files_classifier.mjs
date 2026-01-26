@@ -72,13 +72,16 @@ const BACKEND_PATTERNS = [
   /^nuget\.config$/i, // NuGet config
 ];
 
-// CI patterns
+// CI patterns (files that only affect CI/testing, not the product)
 const CI_PATTERNS = [
   /^\.github\/workflows\/.*/i, // Workflow files
   /^\.github\/actions\/.*/i, // Custom actions
   /^scripts\/ci\/.*/i, // CI scripts
   /^scripts\/governance\/.*/i, // Governance scripts
   /^\.github\/.*\.ya?ml$/i, // .github YAML files
+  /^tests\/.*/i, // Test files
+  /^\.gitignore$/i, // Git ignore file
+  /^\.npmrc$/i, // npm config
 ];
 
 // ============================================================================

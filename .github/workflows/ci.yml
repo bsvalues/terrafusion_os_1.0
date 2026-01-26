@@ -539,10 +539,9 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: � Setup pnpm
+      - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
+        # version read from package.json packageManager field
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
