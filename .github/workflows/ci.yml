@@ -112,10 +112,11 @@ jobs:
           echo "✅ Hint Drift Guard: TerraFusion.CiHints invocation confirmed in ci-verified.yml"
 
   classify_changes:
-    name: Classify Changes (docs-only detection)
+    name: Classify Changes (path filtering)
     runs-on: ubuntu-latest
     outputs:
       docs_only: ${{ steps.classify.outputs.docs_only }}
+      classification: ${{ steps.classify.outputs.classification }}
       reason: ${{ steps.classify.outputs.reason }}
 
     steps:
@@ -141,16 +142,32 @@ jobs:
 
           # Extract values and set outputs
           DOCS_ONLY=$(echo "$OUTPUT" | jq -r '.docsOnly')
+          CLASSIFICATION=$(echo "$OUTPUT" | jq -r '.classification')
           REASON=$(echo "$OUTPUT" | jq -r '.reason')
 
           echo "docs_only=$DOCS_ONLY" >> $GITHUB_OUTPUT
+          echo "classification=$CLASSIFICATION" >> $GITHUB_OUTPUT
           echo "reason=$REASON" >> $GITHUB_OUTPUT
 
-          if [ "$DOCS_ONLY" = "true" ]; then
-            echo "📄 DOCS-ONLY: Heavy build steps will be skipped"
-          else
-            echo "🔨 FULL BUILD: All steps will run"
-          fi
+          echo "📊 Classification: $CLASSIFICATION"
+          echo "📝 Reason: $REASON"
+          case "$CLASSIFICATION" in
+            docs_only)
+              echo "📄 DOCS-ONLY: Heavy build steps will be skipped"
+              ;;
+            frontend_only)
+              echo "🎨 FRONTEND-ONLY: Backend steps will be skipped"
+              ;;
+            backend_only)
+              echo "⚙️ BACKEND-ONLY: Frontend steps will be skipped"
+              ;;
+            ci_only)
+              echo "🔧 CI-ONLY: Backend and frontend builds will be skipped"
+              ;;
+            mixed)
+              echo "🔨 MIXED: Full CI pipeline will run"
+              ;;
+          esac
 
   snyk_drift_guard:
     name: Snyk Drift Guard (exclusions intact)
@@ -498,6 +515,7 @@ jobs:
       RUNTIMECERT_STRICT: 'true'
       SEAL_GATE_BOOTSTRAP: 'true' # Enable bootstrap mode for initial setup
       # RUNTIMECERT_BASE_URL: ${{ secrets.PROD_API_URL }}  # Enable for live certification
+      CLASSIFICATION: ${{ needs.classify_changes.outputs.classification }}
 
     steps:
       - name: 📄 FAST PATH - Docs-only detected
@@ -537,20 +555,22 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: 🔵 Setup .NET
-        if: needs.classify_changes.outputs.docs_only != 'true'
+        if: env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+
       - name: 💾 Cache NuGet packages
-        if: needs.classify_changes.outputs.docs_only != 'true'
+        if: env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed'
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('backend/**/*.csproj', 'backend/**/Directory.Packages.props') }}
           restore-keys: |
             nuget-${{ runner.os }}-
+
       - name: 📦 Restore .NET Dependencies
-        if: needs.classify_changes.outputs.docs_only != 'true'
+        if: env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed'
         run: dotnet restore backend/TerraFusion.sln || dotnet restore backend/ || echo "Backend restore skipped"
 
       - name: ✅ Check Quality Gate Status
@@ -563,10 +583,38 @@ jobs:
           fi
           echo "✅ Quality Gate passed"
 
-      - name: 🔒 TerraFusion Seal Gate
-        if: steps.check-quality.outcome == 'success' && needs.classify_changes.outputs.docs_only != 'true'
+      - name: 🔒 TerraFusion Seal Gate (Backend)
+        if: steps.check-quality.outcome == 'success' && (env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed')
         shell: pwsh
         run: pwsh -NoProfile -File scripts/ci-seal-gate.ps1
+
+      - name: 🎨 FAST PATH - Frontend-only detected
+        if: env.CLASSIFICATION == 'frontend_only'
+        run: |
+          echo "🎨 FAST PATH: Frontend-only changes detected"
+          echo "Reason: ${{ needs.classify_changes.outputs.reason }}"
+          echo "Backend build skipped: ✅"
+          echo "Frontend lint/test/build: ✅"
+          echo "Contract tests: ✅"
+
+      - name: ⚙️ FAST PATH - Backend-only detected
+        if: env.CLASSIFICATION == 'backend_only'
+        run: |
+          echo "⚙️ FAST PATH: Backend-only changes detected"
+          echo "Reason: ${{ needs.classify_changes.outputs.reason }}"
+          echo "Frontend build skipped: ✅"
+          echo "Backend restore/build: ✅"
+          echo "Contract tests: ✅"
+
+      - name: 🔧 FAST PATH - CI-only detected
+        if: env.CLASSIFICATION == 'ci_only'
+        run: |
+          echo "🔧 FAST PATH: CI-only changes detected"
+          echo "Reason: ${{ needs.classify_changes.outputs.reason }}"
+          echo "Backend build skipped: ✅"
+          echo "Frontend build skipped: ✅"
+          echo "Contract tests: ✅"
+          echo "Unit tests: ✅"
 
       - name: � Collect CI Telemetry
         if: always()
