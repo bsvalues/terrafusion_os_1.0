@@ -59,15 +59,19 @@
 
 ---
 
-### Claude Code (Lint) — Pending
+### Claude Code (Lint) — 2026-01-26
 
 #### Before
-- Total violations: TBD
-- Top rules: TBD
+- Total violations: 3
+- Issue: Invalid `eslint-disable` comments for undefined rule `@typescript-eslint/no-explicit-any`
 
 #### After
-- Total violations: TBD
-- Top rules: TBD
+- Total violations: 0 ✅
+- Root cause: ESLint config uses `@typescript-eslint/parser` but doesn't load `plugin:@typescript-eslint/recommended`
+- Fix: Removed invalid `eslint-disable` comments (rule not enforced anyway)
+
+#### Changes Made
+- `fix(lint): remove invalid eslint-disable comments for undefined rule`
 
 ---
 
