@@ -625,7 +625,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TF_CLASSIFICATION: ${{ needs.classify_changes.outputs.classification }}
 
-      - name: � Generate Telemetry Comment
+      - name: 📝 Generate Telemetry Comment
         if: always() && github.event_name == 'pull_request'
         run: node scripts/ci/ci_telemetry_comment.mjs ci_telemetry.json ci_telemetry_comment.md
         env:
@@ -646,14 +646,14 @@ jobs:
             try {
               body = fs.readFileSync(path, 'utf8');
             } catch (e) {
-              console.log('No telemetry comment file found, skipping');
+              core.warning('No telemetry comment file found, skipping PR comment');
               return;
             }
 
             // Sentinel for sticky comment identification
             const sentinel = '<!-- TF_CI_TELEMETRY -->';
             if (!body.includes(sentinel)) {
-              console.log('Sentinel missing from comment, skipping');
+              core.warning('Sentinel missing from comment, skipping PR comment');
               return;
             }
 
@@ -674,7 +674,7 @@ jobs:
                 comment_id: existing.id,
                 body: body,
               });
-              console.log(`Updated existing comment: ${existing.id}`);
+              console.log(`✅ Updated existing comment: ${existing.id}`);
             } else {
               // Create new comment
               const { data: newComment } = await github.rest.issues.createComment({
@@ -683,7 +683,7 @@ jobs:
                 issue_number: context.issue.number,
                 body: body,
               });
-              console.log(`Created new comment: ${newComment.id}`);
+              console.log(`✅ Created new comment: ${newComment.id}`);
             }
 
       - name: 📤 Upload Seal Artifacts

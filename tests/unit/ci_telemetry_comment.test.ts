@@ -63,8 +63,13 @@ function formatDuration(ms: number): string {
   if (typeof ms !== 'number' || isNaN(ms)) return 'N/A';
   if (ms < 1000) return `${ms}ms`;
   if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
-  const mins = Math.floor(ms / 60000);
-  const secs = Math.round((ms % 60000) / 1000);
+  let mins = Math.floor(ms / 60000);
+  let secs = Math.round((ms % 60000) / 1000);
+  // Handle rounding edge case: 59999ms -> 60s should become 1m 0s
+  if (secs === 60) {
+    mins += 1;
+    secs = 0;
+  }
   return `${mins}m ${secs}s`;
 }
 
@@ -112,7 +117,7 @@ function generateMarkdown(telemetry: Telemetry, options: GenerateOptions = {}): 
   const { runUrl = '', artifactName = 'ci-telemetry' } = options;
 
   const classification = sanitized.classification || 'mixed';
-  const totalDuration = formatDuration(sanitized.summary?.totalDurationMs ?? 0);
+  const totalDuration = formatDuration(sanitized.summary?.totalDurationMs as number); // Match source: pass undefined to get 'N/A'
   const jobCount = sanitized.summary?.totalJobs ?? 0;
   const successCount = sanitized.summary?.successCount ?? 0;
   const failureCount = sanitized.summary?.failureCount ?? 0;
@@ -219,6 +224,11 @@ describe('sanitize', () => {
     expect(sanitize('secret=abc123')).toBe('***REDACTED***');
   });
 
+  it('redacts token assignments', () => {
+    expect(sanitize('token=mytoken123')).toBe('***REDACTED***');
+    expect(sanitize('token: mytoken123')).toBe('***REDACTED***');
+  });
+
   it('redacts API key assignments', () => {
     expect(sanitize('api_key=abc123')).toBe('***REDACTED***');
     expect(sanitize('apikey: xyz789')).toBe('***REDACTED***');
@@ -272,6 +282,18 @@ describe('deepSanitize', () => {
     expect(deepSanitize(123)).toBe(123);
     expect(deepSanitize(true)).toBe(true);
   });
+
+  it('redacts camelCase keys like apiKey', () => {
+    const input = {
+      apiKey: 'should-be-redacted',
+      accessToken: 'also-secret',
+      normalField: 'keep-this',
+    };
+    const result = deepSanitize(input) as Record<string, unknown>;
+    expect(result.apiKey).toBe('***REDACTED***');
+    expect(result.accessToken).toBe('***REDACTED***');
+    expect(result.normalField).toBe('keep-this');
+  });
 });
 
 describe('formatDuration', () => {
@@ -283,13 +305,19 @@ describe('formatDuration', () => {
   it('formats seconds', () => {
     expect(formatDuration(1000)).toBe('1.0s');
     expect(formatDuration(5500)).toBe('5.5s');
-    expect(formatDuration(59999)).toBe('60.0s');
+    expect(formatDuration(59500)).toBe('59.5s');
   });
 
   it('formats minutes and seconds', () => {
     expect(formatDuration(60000)).toBe('1m 0s');
     expect(formatDuration(90000)).toBe('1m 30s');
     expect(formatDuration(300000)).toBe('5m 0s');
+  });
+
+  it('handles 60s rounding edge case', () => {
+    // 59999ms rounds to 60s, which should become 1m 0s
+    expect(formatDuration(59999)).toBe('60.0s'); // under 60000ms, so seconds format
+    expect(formatDuration(119999)).toBe('2m 0s'); // 1m 60s -> 2m 0s
   });
 
   it('handles invalid input', () => {
@@ -443,7 +471,7 @@ describe('generateMarkdown - edge cases', () => {
       classification: 'ci_only',
     };
     const md = generateMarkdown(telemetry);
-    expect(md).toContain('0ms'); // default duration
+    expect(md).toContain('N/A'); // undefined duration returns N/A
     expect(md).toContain('0/0 passed');
   });
 

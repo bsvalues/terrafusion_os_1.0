@@ -97,8 +97,13 @@ function formatDuration(ms) {
   if (typeof ms !== 'number' || isNaN(ms)) return 'N/A';
   if (ms < 1000) return `${ms}ms`;
   if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
-  const mins = Math.floor(ms / 60000);
-  const secs = Math.round((ms % 60000) / 1000);
+  let mins = Math.floor(ms / 60000);
+  let secs = Math.round((ms % 60000) / 1000);
+  // Handle rounding edge case: 59999ms -> 60s should become 1m 0s
+  if (secs === 60) {
+    mins += 1;
+    secs = 0;
+  }
   return `${mins}m ${secs}s`;
 }
 
@@ -241,8 +246,9 @@ function main() {
   // Generate markdown
   const markdown = generateMarkdown(telemetry, { runUrl });
 
-  // Final secret check
+  // Final secret check - reset lastIndex to avoid stateful regex issues
   for (const pattern of SECRET_PATTERNS) {
+    pattern.lastIndex = 0; // Reset stateful /g regex before each test
     if (pattern.test(markdown)) {
       console.error('❌ SECRET LEAK DETECTED in output - aborting');
       process.exit(1);
@@ -264,4 +270,14 @@ function main() {
 // Export for testing
 export { deepSanitize, formatDuration, generateMarkdown, sanitize, SENTINEL };
 
-main();
+// Only run main() when executed directly, not when imported for testing
+// Use fileURLToPath for cross-platform compatibility
+const scriptPath = fileURLToPath(import.meta.url);
+const isMainModule = process.argv[1] && 
+  (scriptPath === process.argv[1] || 
+   scriptPath === process.argv[1].replace(/\\/g, '/') ||
+   scriptPath.replace(/\\/g, '/') === process.argv[1].replace(/\\/g, '/'));
+
+if (isMainModule) {
+  main();
+}
