@@ -97,15 +97,12 @@ HTMLElement.prototype.scrollIntoView = jest.fn();
 
 // Polyfill Pointer Capture APIs (jsdom doesn't implement these; Radix uses them)
 if (!('hasPointerCapture' in Element.prototype)) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (Element.prototype as any).hasPointerCapture = () => false;
 }
 if (!('setPointerCapture' in Element.prototype)) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (Element.prototype as any).setPointerCapture = () => {};
 }
 if (!('releasePointerCapture' in Element.prototype)) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (Element.prototype as any).releasePointerCapture = () => {};
 }
 
