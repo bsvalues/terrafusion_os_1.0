@@ -63,7 +63,7 @@
     "electron": "npm run build:frontend && cd frontend/electron && npm run electron",
     "electron:dev": "concurrently \"npm run dev:backend\" \"cd frontend/electron && npm run electron:dev\"",
     "build": "npm run backend:build && npm run frontend:build",
-    "backend:build": "cd backend && dotnet publish TerraFusion.sln -c Release -o ../dist/backend",
+    "backend:build": "cd backend && dotnet build TerraFusion.sln -c Release && dotnet publish src/TerraFusion.API/TerraFusion.API.csproj -c Release -o ../dist/backend/TerraFusion.API --no-build",
     "frontend:build": "cd frontend && npm run build",
     "format": "prettier --write src tests",
     "format:check": "prettier --check src tests",

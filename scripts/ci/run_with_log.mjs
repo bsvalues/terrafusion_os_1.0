@@ -156,21 +156,15 @@ function redactArgs(args) {
 
 // Exports for testing
 export {
-  ALLOWED_COMMANDS,
-  SECRET_PATTERNS,
-  SECRET_FLAGS,
-  hasDangerousChars,
-  isPreQuoted,
-  quoteCmdArg,
-  quotePosixArg,
-  quoteArg,
-  redactArg,
-  redactArgs,
+    ALLOWED_COMMANDS, hasDangerousChars,
+    isPreQuoted, quoteArg, quoteCmdArg,
+    quotePosixArg, redactArg,
+    redactArgs, SECRET_FLAGS, SECRET_PATTERNS
 };
 
 // Only run CLI when invoked directly (not imported for tests)
-import { fileURLToPath } from 'node:url';
-import { resolve } from 'node:path';
+    import { resolve } from 'node:path';
+    import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const isMain = resolve(process.argv[1]) === resolve(__filename);
@@ -245,4 +239,3 @@ if (isMain) {
     process.exit(code ?? 1);
   });
 }
-

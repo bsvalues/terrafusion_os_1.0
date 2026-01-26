@@ -7,7 +7,7 @@
  * - Cross-platform argument quoting
  * - Secret redaction in audit logs
  */
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   ALLOWED_COMMANDS,
   hasDangerousChars,

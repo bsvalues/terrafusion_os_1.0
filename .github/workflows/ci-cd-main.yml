@@ -236,8 +236,8 @@ jobs:
           cd backend
           dotnet restore TerraFusion.sln
           dotnet build TerraFusion.sln --configuration Release --no-restore
-          # Publish the main API project for deployment
-          dotnet publish TerraFusion.sln --configuration Release --no-build --output ../artifacts/backend-publish || echo "⚠️ Backend publish skipped"
+          # Publish the main API project for deployment (project-level to avoid NETSDK1194)
+          dotnet publish src/TerraFusion.API/TerraFusion.API.csproj --configuration Release --no-build --output ../artifacts/backend-publish || echo "⚠️ Backend publish skipped"
           cd ..
           echo ""
           echo "🎨 Building Frontend (pnpm + Vite)..."
