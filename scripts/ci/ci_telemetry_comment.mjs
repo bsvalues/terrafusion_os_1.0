@@ -273,10 +273,11 @@ export { deepSanitize, formatDuration, generateMarkdown, sanitize, SENTINEL };
 // Only run main() when executed directly, not when imported for testing
 // Use fileURLToPath for cross-platform compatibility
 const scriptPath = fileURLToPath(import.meta.url);
-const isMainModule = process.argv[1] && 
-  (scriptPath === process.argv[1] || 
-   scriptPath === process.argv[1].replace(/\\/g, '/') ||
-   scriptPath.replace(/\\/g, '/') === process.argv[1].replace(/\\/g, '/'));
+const isMainModule =
+  process.argv[1] &&
+  (scriptPath === process.argv[1] ||
+    scriptPath === process.argv[1].replace(/\\/g, '/') ||
+    scriptPath.replace(/\\/g, '/') === process.argv[1].replace(/\\/g, '/'));
 
 if (isMainModule) {
   main();

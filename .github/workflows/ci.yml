@@ -686,6 +686,95 @@ jobs:
               console.log(`✅ Created new comment: ${newComment.id}`);
             }
 
+      # ═══════════════════════════════════════════════════════════════════════
+      # 🤖 AUTO-APPROVE FOR LOW-RISK PRs (GitHub App Co-Signer)
+      # ═══════════════════════════════════════════════════════════════════════
+      # Prerequisites:
+      # 1. Create a GitHub App with "Pull requests: Read & Write" permission
+      # 2. Install the App on this repository
+      # 3. Add secrets: TF_REVIEW_APP_ID, TF_REVIEW_APP_PRIVATE_KEY
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: 🔑 Generate GitHub App Token
+        id: app-token
+        if: >-
+          always() &&
+          github.event_name == 'pull_request' &&
+          vars.TF_AUTO_APPROVE_ENABLED == 'true'
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.TF_REVIEW_APP_ID }}
+          private-key: ${{ secrets.TF_REVIEW_APP_PRIVATE_KEY }}
+
+      - name: 🤖 Evaluate Auto-Approve Policy
+        id: policy
+        if: >-
+          always() &&
+          github.event_name == 'pull_request' &&
+          vars.TF_AUTO_APPROVE_ENABLED == 'true' &&
+          steps.app-token.outcome == 'success'
+        run: |
+          # Run policy evaluation
+          node scripts/ci/auto_approve_policy.mjs \
+            --telemetry=ci_telemetry.json \
+            --labels="${{ join(github.event.pull_request.labels.*.name, ',') }}" \
+            --json > policy_result.json || true
+
+          # Parse results
+          APPROVE=$(jq -r '.approve' policy_result.json 2>/dev/null || echo "false")
+          REASON=$(jq -r '.reason' policy_result.json 2>/dev/null || echo "Policy evaluation failed")
+          SCOPE=$(jq -r '.scope' policy_result.json 2>/dev/null || echo "unknown")
+
+          echo "approve=$APPROVE" >> $GITHUB_OUTPUT
+          echo "reason=$REASON" >> $GITHUB_OUTPUT
+          echo "scope=$SCOPE" >> $GITHUB_OUTPUT
+
+          echo "📋 Auto-Approve Policy Result:"
+          echo "  Approve: $APPROVE"
+          echo "  Reason: $REASON"
+          echo "  Scope: $SCOPE"
+
+      - name: ✅ Submit Auto-Approval Review
+        if: >-
+          always() &&
+          github.event_name == 'pull_request' &&
+          vars.TF_AUTO_APPROVE_ENABLED == 'true' &&
+          steps.policy.outputs.approve == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const reason = `${{ steps.policy.outputs.reason }}`;
+            const scope = `${{ steps.policy.outputs.scope }}`;
+            const classification = `${{ needs.classify_changes.outputs.classification }}`;
+
+            const body = [
+              '## 🤖 TerraFusion Auto-Approval',
+              '',
+              '| Field | Value |',
+              '|-------|-------|',
+              `| Classification | \`${classification}\` |`,
+              `| Scope | \`${scope}\` |`,
+              `| Reason | ${reason} |`,
+              `| Policy Version | 1.0.0 |`,
+              '',
+              '---',
+              '*This review was submitted automatically by the TerraFusion CI Co-Signer.*',
+              '*See [Auto-Approve Policy](scripts/ci/auto_approve_policy.mjs) for details.*',
+            ].join('\n');
+
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              event: 'APPROVE',
+              body: body,
+            });
+
+            console.log('✅ Auto-approval review submitted');
+            console.log(`  Classification: ${classification}`);
+            console.log(`  Scope: ${scope}`);
+            console.log(`  Reason: ${reason}`);
+
       - name: 📤 Upload Seal Artifacts
         if: always()
         uses: actions/upload-artifact@v4
