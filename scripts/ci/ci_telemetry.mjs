@@ -26,6 +26,33 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_PATH = join(__dirname, '../../ci_telemetry.json');
 
+// Valid classification values
+const VALID_CLASSIFICATIONS = ['docs_only', 'frontend_only', 'backend_only', 'ci_only', 'mixed'];
+
+/**
+ * Get classification from environment, defaulting to 'mixed'
+ * @returns {string}
+ */
+function getClassification() {
+  const classification = process.env.TF_CLASSIFICATION || 'mixed';
+  return VALID_CLASSIFICATIONS.includes(classification) ? classification : 'mixed';
+}
+
+/**
+ * Compute skip flags based on classification
+ * @param {string} classification
+ * @returns {{skippedBackend: boolean, skippedFrontend: boolean}}
+ */
+function computeSkipFlags(classification) {
+  // Backend is skipped for: docs_only, frontend_only, ci_only
+  const skippedBackend = ['docs_only', 'frontend_only', 'ci_only'].includes(classification);
+
+  // Frontend is skipped for: docs_only, backend_only, ci_only
+  const skippedFrontend = ['docs_only', 'backend_only', 'ci_only'].includes(classification);
+
+  return { skippedBackend, skippedFrontend };
+}
+
 /**
  * Redact sensitive values from telemetry
  * @param {string} value
@@ -55,6 +82,9 @@ function calculateDuration(startedAt, completedAt) {
  * @returns {object}
  */
 function getMockTelemetry() {
+  const classification = getClassification();
+  const { skippedBackend, skippedFrontend } = computeSkipFlags(classification);
+
   return {
     timestamp: new Date().toISOString(),
     runId: 'test-run-123',
@@ -62,6 +92,9 @@ function getMockTelemetry() {
     event: 'pull_request',
     ref: 'refs/heads/test-branch',
     sha: 'abc123def456',
+    classification,
+    skippedBackend,
+    skippedFrontend,
     jobs: [
       {
         name: 'quality-gate',
@@ -99,6 +132,8 @@ function fetchWorkflowTelemetry() {
   const eventName = process.env.GITHUB_EVENT_NAME || 'unknown';
   const ref = process.env.GITHUB_REF || 'unknown';
   const sha = process.env.GITHUB_SHA || 'unknown';
+  const classification = getClassification();
+  const { skippedBackend, skippedFrontend } = computeSkipFlags(classification);
 
   if (!runId || !repository) {
     console.error('⚠️  GITHUB_RUN_ID or GITHUB_REPOSITORY not set, using minimal telemetry');
@@ -109,6 +144,9 @@ function fetchWorkflowTelemetry() {
       event: eventName,
       ref: ref,
       sha: sha,
+      classification,
+      skippedBackend,
+      skippedFrontend,
       jobs: [],
       summary: {
         totalDurationMs: 0,
@@ -147,6 +185,9 @@ function fetchWorkflowTelemetry() {
       event: eventName,
       ref: redact(ref),
       sha: sha,
+      classification,
+      skippedBackend,
+      skippedFrontend,
       jobs: jobs,
       summary: {
         totalDurationMs,
@@ -164,6 +205,9 @@ function fetchWorkflowTelemetry() {
       event: eventName,
       ref: ref,
       sha: sha,
+      classification,
+      skippedBackend,
+      skippedFrontend,
       jobs: [],
       summary: {
         totalDurationMs: 0,
@@ -207,12 +251,15 @@ function main() {
 
   // Print summary
   console.log('\n📋 Summary:');
-  console.log(`   Run ID:     ${telemetry.runId}`);
-  console.log(`   Event:      ${telemetry.event}`);
-  console.log(`   Jobs:       ${telemetry.summary.totalJobs}`);
-  console.log(`   Duration:   ${(telemetry.summary.totalDurationMs / 1000).toFixed(1)}s`);
-  console.log(`   Success:    ${telemetry.summary.successCount}`);
-  console.log(`   Failures:   ${telemetry.summary.failureCount}`);
+  console.log(`   Run ID:         ${telemetry.runId}`);
+  console.log(`   Event:          ${telemetry.event}`);
+  console.log(`   Classification: ${telemetry.classification}`);
+  console.log(`   Jobs:           ${telemetry.summary.totalJobs}`);
+  console.log(`   Duration:       ${(telemetry.summary.totalDurationMs / 1000).toFixed(1)}s`);
+  console.log(`   Success:        ${telemetry.summary.successCount}`);
+  console.log(`   Failures:       ${telemetry.summary.failureCount}`);
+  console.log(`   Skipped Backend:  ${telemetry.skippedBackend}`);
+  console.log(`   Skipped Frontend: ${telemetry.skippedFrontend}`);
 
   process.exit(0);
 }

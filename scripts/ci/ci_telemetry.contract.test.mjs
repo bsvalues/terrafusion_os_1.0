@@ -127,6 +127,104 @@ test('no secrets leak in telemetry output', async () => {
   assert.ok(!content.includes('supersecret'), 'Secret value leaked in output');
 });
 
+// ============================================================================
+// Classification + skip flags tests (2D-3)
+// ============================================================================
+
+test('telemetry includes classification field from environment', async () => {
+  const result = await runTelemetryScript({
+    CI_TELEMETRY_TEST: 'true',
+    TF_CLASSIFICATION: 'frontend_only',
+  });
+
+  assert.strictEqual(result.code, 0);
+  const telemetry = JSON.parse(readFileSync(outputPath, 'utf8'));
+
+  assert.ok('classification' in telemetry, 'Missing required field: classification');
+  assert.strictEqual(telemetry.classification, 'frontend_only', 'classification should match env');
+});
+
+test('telemetry includes skip flags for frontend_only', async () => {
+  const result = await runTelemetryScript({
+    CI_TELEMETRY_TEST: 'true',
+    TF_CLASSIFICATION: 'frontend_only',
+  });
+
+  assert.strictEqual(result.code, 0);
+  const telemetry = JSON.parse(readFileSync(outputPath, 'utf8'));
+
+  assert.ok('skippedBackend' in telemetry, 'Missing field: skippedBackend');
+  assert.ok('skippedFrontend' in telemetry, 'Missing field: skippedFrontend');
+  assert.strictEqual(telemetry.skippedBackend, true, 'frontend_only should skip backend');
+  assert.strictEqual(telemetry.skippedFrontend, false, 'frontend_only should NOT skip frontend');
+});
+
+test('telemetry includes skip flags for backend_only', async () => {
+  const result = await runTelemetryScript({
+    CI_TELEMETRY_TEST: 'true',
+    TF_CLASSIFICATION: 'backend_only',
+  });
+
+  assert.strictEqual(result.code, 0);
+  const telemetry = JSON.parse(readFileSync(outputPath, 'utf8'));
+
+  assert.strictEqual(telemetry.skippedBackend, false, 'backend_only should NOT skip backend');
+  assert.strictEqual(telemetry.skippedFrontend, true, 'backend_only should skip frontend');
+});
+
+test('telemetry includes skip flags for docs_only', async () => {
+  const result = await runTelemetryScript({
+    CI_TELEMETRY_TEST: 'true',
+    TF_CLASSIFICATION: 'docs_only',
+  });
+
+  assert.strictEqual(result.code, 0);
+  const telemetry = JSON.parse(readFileSync(outputPath, 'utf8'));
+
+  assert.strictEqual(telemetry.skippedBackend, true, 'docs_only should skip backend');
+  assert.strictEqual(telemetry.skippedFrontend, true, 'docs_only should skip frontend');
+});
+
+test('telemetry includes skip flags for ci_only', async () => {
+  const result = await runTelemetryScript({
+    CI_TELEMETRY_TEST: 'true',
+    TF_CLASSIFICATION: 'ci_only',
+  });
+
+  assert.strictEqual(result.code, 0);
+  const telemetry = JSON.parse(readFileSync(outputPath, 'utf8'));
+
+  assert.strictEqual(telemetry.skippedBackend, true, 'ci_only should skip backend');
+  assert.strictEqual(telemetry.skippedFrontend, true, 'ci_only should skip frontend');
+});
+
+test('telemetry includes skip flags for mixed (no skips)', async () => {
+  const result = await runTelemetryScript({
+    CI_TELEMETRY_TEST: 'true',
+    TF_CLASSIFICATION: 'mixed',
+  });
+
+  assert.strictEqual(result.code, 0);
+  const telemetry = JSON.parse(readFileSync(outputPath, 'utf8'));
+
+  assert.strictEqual(telemetry.skippedBackend, false, 'mixed should NOT skip backend');
+  assert.strictEqual(telemetry.skippedFrontend, false, 'mixed should NOT skip frontend');
+});
+
+test('telemetry defaults to mixed when TF_CLASSIFICATION not set', async () => {
+  const result = await runTelemetryScript({
+    CI_TELEMETRY_TEST: 'true',
+    // TF_CLASSIFICATION not set
+  });
+
+  assert.strictEqual(result.code, 0);
+  const telemetry = JSON.parse(readFileSync(outputPath, 'utf8'));
+
+  assert.strictEqual(telemetry.classification, 'mixed', 'should default to mixed');
+  assert.strictEqual(telemetry.skippedBackend, false, 'default mixed should NOT skip backend');
+  assert.strictEqual(telemetry.skippedFrontend, false, 'default mixed should NOT skip frontend');
+});
+
 // Cleanup
 test.after(() => {
   if (existsSync(outputPath)) {

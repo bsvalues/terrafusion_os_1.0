@@ -616,17 +616,20 @@ jobs:
           echo "Contract tests: ✅"
           echo "Unit tests: ✅"
 
-      - name: � Collect CI Telemetry
+      - name: 📊 Collect CI Telemetry
         if: always()
         run: node scripts/ci/ci_telemetry.mjs
         env:
           GH_TOKEN: ${{ github.token }}
+          TF_CLASSIFICATION: ${{ needs.classify_changes.outputs.classification }}
 
-      - name: �📤 Upload Seal Artifacts
+      - name: 📤 Upload Seal Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: terrafusion-seal-artifacts
           path: |
             artifacts/**
-            docs/spec-lock/INDEX.md            ci_telemetry.json          if-no-files-found: warn
+            docs/spec-lock/INDEX.md
+            ci_telemetry.json
+          if-no-files-found: warn
