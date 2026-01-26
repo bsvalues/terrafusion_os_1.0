@@ -70,6 +70,7 @@
       ".github/workflows/ci-cd-main.yml",
       ".github/workflows/ci-verified.yml"
     ],
-    "allowedDirectTestWorkflows": ["dotnet-test"]
+    "allowedDirectTestWorkflows": ["dotnet-test", "ci"],
+    "$comment_allowedDirect": "ci.yml allowed because it contains the drift_guard job that must reference 'dotnet test' to detect violations"
   }
 }

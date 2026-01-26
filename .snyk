@@ -12,26 +12,26 @@ exclude:
     - deployment/**/package.json
     - deployment/**/package-lock.json
     - deployment/**/pnpm-lock.yaml
-    
+
     # Championship deployment nested copies
-    - "**/championship-deployment/**/package.json"
-    - "**/championship-deployment/**/package-lock.json"
-    
+    - '**/championship-deployment/**/package.json'
+    - '**/championship-deployment/**/package-lock.json'
+
     # Review/staging copies
     - packages/government-edition-enhanced-MARKED-FOR-REVIEW/**
-    
+
     # Build artifact subdirectories
-    - "**/*-PRODUCTION/**/package.json"
-    - "**/*-PRODUCTION/**/package-lock.json"
-    
+    - '**/*-PRODUCTION/**/package.json'
+    - '**/*-PRODUCTION/**/package-lock.json'
+
     # Duplicate infrastructure copies
     - docker/Dockerfile.*
-    - "**/devops-kit/docker/**"
+    - '**/devops-kit/docker/**'
     - infrastructure/iac/container-optimization/**
-    
+
     # Data/cost-matrices (derived workspace)
     - data/cost-matrices/**
-    
+
     # Costforge copies (authoritative: marketplace/government-core/costforge-ai-enhanced/)
     - packages/**/08-costforge-ai/**
     - infrastructure/marketplace-unified/**/08-costforge-ai/**

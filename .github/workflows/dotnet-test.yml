@@ -48,6 +48,16 @@ on:
         required: false
         type: boolean
         default: false
+      test_filter:
+        description: 'Test filter expression (e.g. "Category=Unit" or "FullyQualifiedName~MyTest")'
+        required: false
+        type: string
+        default: ''
+      test_project:
+        description: 'Specific project to test instead of solution (e.g. backend/src/MyProject/MyProject.csproj)'
+        required: false
+        type: string
+        default: ''
     outputs:
       enable_coverage:
         description: 'Whether coverage was enabled'
@@ -117,14 +127,25 @@ jobs:
         if: ${{ !inputs.enable_coverage }}
         env:
           ConnectionStrings__DefaultConnection: ${{ inputs.connection_string }}
-        run: dotnet test ${{ inputs.solution }} -c ${{ inputs.configuration }} -v:minimal /nologo
+        run: |
+          TEST_TARGET="${{ inputs.test_project || inputs.solution }}"
+          FILTER_ARG=""
+          if [ -n "${{ inputs.test_filter }}" ]; then
+            FILTER_ARG="--filter \"${{ inputs.test_filter }}\""
+          fi
+          eval dotnet test "$TEST_TARGET" -c ${{ inputs.configuration }} -v:minimal /nologo $FILTER_ARG
 
       - name: Tests with coverage (Release)
         if: ${{ inputs.enable_coverage }}
         env:
           ConnectionStrings__DefaultConnection: ${{ inputs.connection_string }}
         run: |
-          dotnet test ${{ inputs.solution }} -c ${{ inputs.configuration }} -v:minimal /nologo \
+          TEST_TARGET="${{ inputs.test_project || inputs.solution }}"
+          FILTER_ARG=""
+          if [ -n "${{ inputs.test_filter }}" ]; then
+            FILTER_ARG="--filter \"${{ inputs.test_filter }}\""
+          fi
+          eval dotnet test "$TEST_TARGET" -c ${{ inputs.configuration }} -v:minimal /nologo $FILTER_ARG \
             --collect:"XPlat Code Coverage" \
             --logger "trx;LogFileName=test-results.trx" \
             --results-directory ./artifacts/test-results

@@ -192,10 +192,8 @@ jobs:
           npm run lint || echo "Lint check complete"
           npm run type-check || echo "Type check complete"
 
-      - name: 🧪 Run Tests
-        run: |
-          npm run test:unit || echo "Unit tests complete"
-          cd backend && dotnet test --no-restore --verbosity normal || echo "Backend tests complete"
+      - name: 🧪 Run Frontend Tests
+        run: npm run test:unit || echo "Unit tests complete"
         continue-on-error: true
 
       - name: 🛡️ Security Scan

@@ -192,31 +192,6 @@ jobs:
           cd backend
           dotnet build --configuration Release --no-restore
 
-      - name: Run backend unit tests
-        run: |
-          cd backend
-          dotnet test --no-build --configuration Release --logger trx --results-directory TestResults/
-
-      - name: Run integration tests
-        env:
-          ConnectionStrings__DefaultConnection: 'Server=localhost;Port=5432;Database=test_db;User Id=test_user;Password=test_password;'
-          ConnectionStrings__Redis: 'localhost:6379'
-        run: |
-          cd backend
-          dotnet test TerraFusion.API.Tests --configuration Release --logger trx --results-directory TestResults/
-
-      - name: Generate test coverage
-        run: |
-          cd backend
-          dotnet test --collect:"XPlat Code Coverage" --results-directory ./coverage
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: backend-test-results
-          path: backend/TestResults/
-
       - name: Publish backend
         run: |
           cd backend
@@ -228,6 +203,28 @@ jobs:
           name: backend-dist
           path: backend/publish
           retention-days: 30
+
+  # Backend Unit Tests (Canonical)
+  backend-unit-tests:
+    name: Backend Unit Tests
+    needs: [security-scan]
+    uses: ./.github/workflows/dotnet-test.yml
+    with:
+      dotnet_version: '8.0.x'
+      solution: 'backend/TerraFusion.sln'
+      enable_coverage: true
+      upload_test_results: true
+
+  # Backend Integration Tests (Canonical)
+  backend-integration-tests:
+    name: Backend Integration Tests
+    needs: [security-scan]
+    uses: ./.github/workflows/dotnet-test.yml
+    with:
+      dotnet_version: '8.0.x'
+      solution: 'backend/TerraFusion.sln'
+      test_project: 'backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj'
+      connection_string: 'Server=localhost;Port=5432;Database=test_db;User Id=test_user;Password=test_password;'
 
   # AI Models Testing
   ai-models-pipeline:
@@ -267,7 +264,7 @@ jobs:
   e2e-testing:
     name: End-to-End Testing
     runs-on: ubuntu-latest
-    needs: [frontend-pipeline, backend-pipeline]
+    needs: [frontend-pipeline, backend-pipeline, backend-unit-tests, backend-integration-tests]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -322,7 +319,14 @@ jobs:
   container-build:
     name: Container Build & Registry Push
     runs-on: ubuntu-latest
-    needs: [frontend-pipeline, backend-pipeline, ai-models-pipeline]
+    needs:
+      [
+        frontend-pipeline,
+        backend-pipeline,
+        backend-unit-tests,
+        backend-integration-tests,
+        ai-models-pipeline,
+      ]
     if: github.event_name == 'push' || github.event.inputs.force_deploy == 'true'
     permissions:
       contents: read

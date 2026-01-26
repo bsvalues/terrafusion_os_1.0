@@ -171,19 +171,6 @@ jobs:
           pnpm run test:unit -- --coverage --watchAll=false
         continue-on-error: true
 
-      - name: Run backend unit tests
-        run: |
-          cd backend
-          dotnet test --configuration Release --no-restore --verbosity normal --collect:"XPlat Code Coverage"
-
-      - name: Run integration tests
-        env:
-          ConnectionStrings__DefaultConnection: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
-          ConnectionStrings__Redis: 'localhost:6379'
-        run: |
-          cd backend
-          dotnet test TerraFusion.IntegrationTests --configuration Release --verbosity normal
-
       - name: Run AI Agent tests
         run: |
           cd modules/terra-agent
@@ -198,14 +185,34 @@ jobs:
           name: test-results
           path: |
             frontend/coverage/
-            backend/TestResults/
             modules/terra-agent/coverage/
+
+  # Backend Unit Tests (Canonical)
+  backend-unit-tests:
+    name: Backend Unit Tests
+    needs: code-quality
+    uses: ./.github/workflows/dotnet-test.yml
+    with:
+      dotnet_version: '8.0.x'
+      solution: 'backend/TerraFusion.sln'
+      enable_coverage: true
+
+  # Backend Integration Tests (Canonical)
+  backend-integration-tests:
+    name: Backend Integration Tests
+    needs: code-quality
+    uses: ./.github/workflows/dotnet-test.yml
+    with:
+      dotnet_version: '8.0.x'
+      solution: 'backend/TerraFusion.sln'
+      test_project: 'backend/TerraFusion.IntegrationTests/TerraFusion.IntegrationTests.csproj'
+      connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
 
   # Build and Package
   build:
     runs-on: ubuntu-latest
     name: Build & Package
-    needs: test
+    needs: [test, backend-unit-tests, backend-integration-tests]
 
     outputs:
       frontend-artifact: ${{ steps.build-frontend.outputs.artifact-name }}
