@@ -1,9 +1,12 @@
 {
-  "timestamp": "2026-01-21T17:15:01.206Z",
+  "timestamp": "2026-01-26T01:56:59.236Z",
   "status": "PASS",
+  "policy": "monotonic-decrease-allowed",
+  "policyNote": "✅ Quarantine shrank by 13 (improvement)",
   "metrics": {
     "current": 128,
-    "baseline": 141
+    "baseline": 141,
+    "delta": -13
   },
   "quarantineList": [
     "_CLEAN_BUILD_ZONE",
