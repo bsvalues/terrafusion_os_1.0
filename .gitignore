@@ -57,6 +57,7 @@ dependency-scope-quarantine.json
 governance-snapshot.json
 ci_governance_proof.log
 ci_dependency_scope_quarantine.log
+ci_telemetry.json
 
 # Phase 3 Extraction Artifacts (archived)
 # Note: Actual extraction scripts archived in archive/phase-3-extraction/
