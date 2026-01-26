@@ -126,7 +126,9 @@ Write-Ok "Found $($workflows.Count) workflow file(s)"
 
 # -------------------------
 # Guard 1: Canonical .NET test command enforcement
-#   Rule: Required workflows must call the reusable dotnet-test.yml
+#   RULE: Only .github/workflows/dotnet-test.yml may contain actual `dotnet test` execution
+#   EXCEPTION: ci.yml allowed because it contains the drift_guard job that must reference
+#              'dotnet test' as a string to detect violations (guard logic, not execution)
 #   Legacy: other workflows with dotnet test are reported as warnings (drift)
 # -------------------------
 
@@ -150,8 +152,10 @@ if ($requiredCallers.Count -eq 0) {
   Write-Warn "Registry lacks dotnet.requiredCallers; using defaults."
 }
 
+# Canonical allowlist: dotnet-test.yml (execution) + ci.yml (guard detection logic)
 if ($allowedDirect.Count -eq 0) {
-  $allowedDirect = @("dotnet-test")
+  $allowedDirect = @("dotnet-test", "ci")
+  Write-Warn "Registry lacks dotnet.allowedDirectTestWorkflows; using defaults."
 }
 
 # Check required callers use the reusable workflow
@@ -170,6 +174,7 @@ foreach ($caller in $requiredCallers) {
 Write-Ok "Required workflows call reusable dotnet-test.yml"
 
 # Report legacy drift (warnings, not failures)
+# Any workflow matching 'dotnet test' that isn't in allowedDirect is drift
 $legacyDrift = @()
 foreach ($wf in $workflows) {
   $txt = Read-Text $wf.FullName
@@ -177,7 +182,9 @@ foreach ($wf in $workflows) {
     $name = $wf.BaseName
     $isAllowed = $false
     foreach ($token in $allowedDirect) {
-      if ($name -like "*$token*") { $isAllowed = $true; break }
+      # Exact match for 'ci' to avoid matching 'ci-cd-pipeline' etc
+      if ($token -eq "ci" -and $name -eq "ci") { $isAllowed = $true; break }
+      elseif ($token -ne "ci" -and $name -like "*$token*") { $isAllowed = $true; break }
     }
     if (-not $isAllowed) {
       $legacyDrift += $wf.Name
@@ -187,7 +194,7 @@ foreach ($wf in $workflows) {
 
 if ($legacyDrift.Count -gt 0) {
   Write-Warn "Legacy dotnet test drift in $($legacyDrift.Count) workflow(s): $($legacyDrift -join ', ')"
-  Write-Warn "Consider migrating these to use the reusable dotnet-test.yml workflow."
+  Write-Warn "Migrate to reusable dotnet-test.yml or add to allowedDirectTestWorkflows in canonical-paths.json"
 }
 
 # -------------------------
