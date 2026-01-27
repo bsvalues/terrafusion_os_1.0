@@ -3,13 +3,13 @@
  *
  * USPAP-aligned valuation approaches:
  * - Sales Comparison Approach
- * - Income Approach (TODO)
+ * - Income Approach
  * - Cost Approach (integrated via existing kernels)
  * - Reconciliation (TODO)
  */
 
+export * from './income.js';
 export * from './sales.js';
 
 // Future exports:
-// export * from './income.js';
 // export * from './reconcile.js';
