@@ -1,0 +1,142 @@
+{
+  "description": "Standard 3-comp sales comparison for residential property",
+  "input": {
+    "subjectParcelId": "BENTON-2024-00001",
+    "subjectCharacteristics": {
+      "gla": 2000,
+      "lotSize": 10000,
+      "yearBuilt": 2000,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "condition": "Good",
+      "location": "Average"
+    },
+    "comparables": [
+      {
+        "compId": "COMP-001",
+        "salePrice": 350000,
+        "saleDate": "2025-06-15",
+        "gla": 1800,
+        "lotSize": 9000,
+        "yearBuilt": 1998,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "condition": "Good",
+        "location": "Average"
+      },
+      {
+        "compId": "COMP-002",
+        "salePrice": 380000,
+        "saleDate": "2025-07-20",
+        "gla": 2200,
+        "lotSize": 11000,
+        "yearBuilt": 2005,
+        "bedrooms": 4,
+        "bathrooms": 2.5,
+        "condition": "Excellent",
+        "location": "Good"
+      },
+      {
+        "compId": "COMP-003",
+        "salePrice": 340000,
+        "saleDate": "2025-05-10",
+        "gla": 1900,
+        "lotSize": 10500,
+        "yearBuilt": 1995,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "condition": "Average",
+        "location": "Average"
+      }
+    ],
+    "adjustmentRates": {
+      "glaPerSqFt": 100,
+      "lotSizePerSqFt": 5,
+      "agePerYear": 500,
+      "bedroomAdjustment": 5000,
+      "bathroomAdjustment": 7500,
+      "conditionAdjustments": {
+        "Excellent": 20000,
+        "Good": 10000,
+        "Average": 0,
+        "Fair": -10000,
+        "Poor": -25000
+      },
+      "locationAdjustments": {
+        "Superior": 25000,
+        "Good": 12500,
+        "Average": 0,
+        "Fair": -12500,
+        "Inferior": -25000
+      }
+    }
+  },
+  "expectedOutput": {
+    "indicatedValue": 353249,
+    "valueMethod": "weighted_average",
+    "comparableAnalysis": [
+      {
+        "compId": "COMP-001",
+        "salePrice": 350000,
+        "adjustments": {
+          "gla": 20000,
+          "lotSize": 5000,
+          "age": -1000,
+          "bedrooms": 0,
+          "bathrooms": 0,
+          "condition": 0,
+          "location": 0,
+          "total": 24000
+        },
+        "adjustedPrice": 374000,
+        "grossAdjustmentPercent": 6.86,
+        "netAdjustmentPercent": 6.86
+      },
+      {
+        "compId": "COMP-002",
+        "salePrice": 380000,
+        "adjustments": {
+          "gla": -20000,
+          "lotSize": -5000,
+          "age": 2500,
+          "bedrooms": -5000,
+          "bathrooms": -3750,
+          "condition": -10000,
+          "location": -12500,
+          "total": -53750
+        },
+        "adjustedPrice": 326250,
+        "grossAdjustmentPercent": 14.14,
+        "netAdjustmentPercent": -14.14
+      },
+      {
+        "compId": "COMP-003",
+        "salePrice": 340000,
+        "adjustments": {
+          "gla": 10000,
+          "lotSize": -2500,
+          "age": -2500,
+          "bedrooms": 0,
+          "bathrooms": 0,
+          "condition": 10000,
+          "location": 0,
+          "total": 15000
+        },
+        "adjustedPrice": 355000,
+        "grossAdjustmentPercent": 4.41,
+        "netAdjustmentPercent": 4.41
+      }
+    ],
+    "statistics": {
+      "adjustedPriceRange": {
+        "min": 326250,
+        "max": 374000
+      },
+      "adjustedPriceMean": 351750,
+      "adjustedPriceMedian": 355000
+    },
+    "qualityIndicators": {
+      "confidenceLevel": "High"
+    }
+  }
+}

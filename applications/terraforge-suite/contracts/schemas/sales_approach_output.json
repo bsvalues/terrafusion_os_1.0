@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/sales_approach_output.json",
+  "title": "SalesApproachOutput",
+  "description": "Output from the USPAP-aligned Sales Comparison Approach",
+  "type": "object",
+  "properties": {
+    "subjectParcelId": {
+      "type": "string",
+      "description": "Parcel ID of the subject property"
+    },
+    "indicatedValue": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Final indicated value from sales comparison (integer, no cents)"
+    },
+    "valueMethod": {
+      "type": "string",
+      "enum": ["median", "weighted_average", "bracketed_mean"],
+      "description": "Method used to derive the indicated value"
+    },
+    "comparableAnalysis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "compId": {
+            "type": "string",
+            "description": "Comparable identifier"
+          },
+          "salePrice": {
+            "type": "integer",
+            "description": "Original sale price"
+          },
+          "adjustments": {
+            "type": "object",
+            "properties": {
+              "gla": { "type": "integer" },
+              "lotSize": { "type": "integer" },
+              "age": { "type": "integer" },
+              "bedrooms": { "type": "integer" },
+              "bathrooms": { "type": "integer" },
+              "condition": { "type": "integer" },
+              "location": { "type": "integer" },
+              "total": { "type": "integer" }
+            },
+            "required": [
+              "gla",
+              "lotSize",
+              "age",
+              "condition",
+              "location",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "adjustedPrice": {
+            "type": "integer",
+            "description": "Sale price after all adjustments"
+          },
+          "grossAdjustmentPercent": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Gross adjustment as percentage of sale price"
+          },
+          "netAdjustmentPercent": {
+            "type": "number",
+            "description": "Net adjustment as percentage of sale price"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Weight assigned to this comparable (0-1)"
+          }
+        },
+        "required": [
+          "compId",
+          "salePrice",
+          "adjustments",
+          "adjustedPrice",
+          "grossAdjustmentPercent",
+          "netAdjustmentPercent",
+          "weight"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "statistics": {
+      "type": "object",
+      "properties": {
+        "adjustedPriceRange": {
+          "type": "object",
+          "properties": {
+            "min": { "type": "integer" },
+            "max": { "type": "integer" }
+          },
+          "required": ["min", "max"],
+          "additionalProperties": false
+        },
+        "adjustedPriceMean": { "type": "integer" },
+        "adjustedPriceMedian": { "type": "integer" },
+        "standardDeviation": { "type": "integer" },
+        "coefficientOfVariation": { "type": "number" }
+      },
+      "required": [
+        "adjustedPriceRange",
+        "adjustedPriceMean",
+        "adjustedPriceMedian"
+      ],
+      "additionalProperties": false
+    },
+    "qualityIndicators": {
+      "type": "object",
+      "properties": {
+        "comparabilityScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Score indicating how comparable the sales are (0-100)"
+        },
+        "confidenceLevel": {
+          "type": "string",
+          "enum": ["High", "Moderate", "Low"],
+          "description": "Confidence level in the indicated value"
+        },
+        "flags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Any warnings or flags about the analysis"
+        }
+      },
+      "required": ["comparabilityScore", "confidenceLevel", "flags"],
+      "additionalProperties": false
+    },
+    "explanation": {
+      "type": "string",
+      "description": "Human-readable explanation of the sales comparison analysis"
+    }
+  },
+  "required": [
+    "subjectParcelId",
+    "indicatedValue",
+    "valueMethod",
+    "comparableAnalysis",
+    "statistics",
+    "qualityIndicators",
+    "explanation"
+  ],
+  "additionalProperties": false
+}
