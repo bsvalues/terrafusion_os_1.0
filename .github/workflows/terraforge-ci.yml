@@ -197,6 +197,10 @@ jobs:
       - name: Install root dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install harness dependencies
+        working-directory: applications/terraforge-suite/harness
+        run: npm ci
+
       - name: Run E2E Pipeline (Stub)
         run: pnpm run e2e:pipeline
         env:
@@ -271,6 +275,10 @@ jobs:
 
       - name: Install root dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Install harness dependencies
+        working-directory: applications/terraforge-suite/harness
+        run: npm ci
 
       - name: Run E2E Pipeline (Steel)
         run: pnpm run e2e:pipeline
