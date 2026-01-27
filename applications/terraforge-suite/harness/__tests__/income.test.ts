@@ -3,18 +3,17 @@
  * Tests direct capitalization method for USPAP compliance
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { describe, expect, it } from 'vitest';
 
 import {
-  runIncomeApproach,
-  extractCapRate,
-  type IncomeApproachInput,
-  type IncomeApproachOutput,
+    extractCapRate,
+    runIncomeApproach,
+    type IncomeApproachInput
 } from '../src/approaches/income.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -71,7 +70,9 @@ describe('Income Approach - Direct Capitalization', () => {
 
   it('calculates vacancy loss correctly', () => {
     const result = runIncomeApproach(fixture.input);
-    expect(result.output.incomeAnalysis.vacancyLoss).toBe(fixture.expected.incomeAnalysis.vacancyLoss);
+    expect(result.output.incomeAnalysis.vacancyLoss).toBe(
+      fixture.expected.incomeAnalysis.vacancyLoss
+    );
   });
 
   it('calculates EGI correctly', () => {
@@ -120,7 +121,7 @@ describe('Income Approach - Direct Capitalization', () => {
           maintenance: 300000,
         },
       },
-      capitalizationRate: { rate: 0.10 },
+      capitalizationRate: { rate: 0.1 },
     };
 
     const result = runIncomeApproach(input);
@@ -170,13 +171,15 @@ describe('Income Approach - Quality Indicators', () => {
       capitalizationRate: { rate: 0.08 },
       analysisParameters: {
         expenseRatioCheck: true,
-        typicalExpenseRatioMin: 0.30,
-        typicalExpenseRatioMax: 0.50,
+        typicalExpenseRatioMin: 0.3,
+        typicalExpenseRatioMax: 0.5,
       },
     };
 
     const result = runIncomeApproach(input);
-    expect(result.output.qualityIndicators.warnings.some((w) => w.includes('below typical range'))).toBe(true);
+    expect(
+      result.output.qualityIndicators.warnings.some(w => w.includes('below typical range'))
+    ).toBe(true);
   });
 
   it('warns when no operating expenses provided', () => {
@@ -190,7 +193,9 @@ describe('Income Approach - Quality Indicators', () => {
     };
 
     const result = runIncomeApproach(input);
-    expect(result.output.qualityIndicators.warnings.some((w) => w.includes('No operating expenses'))).toBe(true);
+    expect(
+      result.output.qualityIndicators.warnings.some(w => w.includes('No operating expenses'))
+    ).toBe(true);
     expect(result.output.qualityIndicators.dataQuality).toBe('incomplete');
     expect(result.output.qualityIndicators.confidenceLevel).toBe('low');
   });
@@ -200,7 +205,10 @@ describe('Income Approach - Quality Indicators', () => {
     const inputWeak: IncomeApproachInput = {
       subjectId: 'WEAK',
       effectiveDate: '2026-01-15',
-      incomeData: { potentialGrossIncome: 10000000, operatingExpenses: { taxes: 1500000, maintenance: 2000000 } },
+      incomeData: {
+        potentialGrossIncome: 10000000,
+        operatingExpenses: { taxes: 1500000, maintenance: 2000000 },
+      },
       capitalizationRate: { rate: 0.08, source: 'provided', supportingData: [] },
     };
     expect(runIncomeApproach(inputWeak).output.qualityIndicators.capRateSupport).toBe('weak');
@@ -214,7 +222,9 @@ describe('Income Approach - Quality Indicators', () => {
         supportingData: [{ propertyId: 'A', salePrice: 100000000, noi: 8000000 }],
       },
     };
-    expect(runIncomeApproach(inputModerate).output.qualityIndicators.capRateSupport).toBe('moderate');
+    expect(runIncomeApproach(inputModerate).output.qualityIndicators.capRateSupport).toBe(
+      'moderate'
+    );
 
     // 3+ comps = strong
     expect(runIncomeApproach(fixture.input).output.qualityIndicators.capRateSupport).toBe('strong');

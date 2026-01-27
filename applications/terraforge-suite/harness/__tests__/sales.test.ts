@@ -8,12 +8,12 @@
  * - Edge cases
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { runSalesApproach, SalesApproachInput } from '../src/approaches/sales.js';
 
@@ -89,7 +89,9 @@ describe('Sales Comparison Approach', () => {
       const comp1 = analysis.find(a => a.compId === 'COMP-001');
       expect(comp1).toBeDefined();
       expect(comp1!.adjustments.gla).toBe(expectedOutput.comparableAnalysis[0].adjustments.gla);
-      expect(comp1!.adjustments.lotSize).toBe(expectedOutput.comparableAnalysis[0].adjustments.lotSize);
+      expect(comp1!.adjustments.lotSize).toBe(
+        expectedOutput.comparableAnalysis[0].adjustments.lotSize
+      );
       expect(comp1!.adjustments.total).toBe(expectedOutput.comparableAnalysis[0].adjustments.total);
       expect(comp1!.adjustedPrice).toBe(expectedOutput.comparableAnalysis[0].adjustedPrice);
 
@@ -97,8 +99,12 @@ describe('Sales Comparison Approach', () => {
       const comp2 = analysis.find(a => a.compId === 'COMP-002');
       expect(comp2).toBeDefined();
       expect(comp2!.adjustments.gla).toBe(expectedOutput.comparableAnalysis[1].adjustments.gla);
-      expect(comp2!.adjustments.condition).toBe(expectedOutput.comparableAnalysis[1].adjustments.condition);
-      expect(comp2!.adjustments.location).toBe(expectedOutput.comparableAnalysis[1].adjustments.location);
+      expect(comp2!.adjustments.condition).toBe(
+        expectedOutput.comparableAnalysis[1].adjustments.condition
+      );
+      expect(comp2!.adjustments.location).toBe(
+        expectedOutput.comparableAnalysis[1].adjustments.location
+      );
       expect(comp2!.adjustedPrice).toBe(expectedOutput.comparableAnalysis[1].adjustedPrice);
 
       // Check COMP-003 adjustments
@@ -278,8 +284,12 @@ describe('Sales Comparison Approach', () => {
       const result2 = await runSalesApproach(input);
 
       expect(result1.data!.indicatedValue).toBe(result2.data!.indicatedValue);
-      expect(result1.data!.statistics.adjustedPriceMean).toBe(result2.data!.statistics.adjustedPriceMean);
-      expect(result1.data!.statistics.adjustedPriceMedian).toBe(result2.data!.statistics.adjustedPriceMedian);
+      expect(result1.data!.statistics.adjustedPriceMean).toBe(
+        result2.data!.statistics.adjustedPriceMean
+      );
+      expect(result1.data!.statistics.adjustedPriceMedian).toBe(
+        result2.data!.statistics.adjustedPriceMedian
+      );
 
       // Comparable analysis should be identical
       result1.data!.comparableAnalysis.forEach((comp, i) => {

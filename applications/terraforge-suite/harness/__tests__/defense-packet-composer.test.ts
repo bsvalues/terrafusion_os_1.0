@@ -4,12 +4,12 @@
  * Validates defense packet composition with approach integration
  */
 
-import { describe, it, expect } from 'vitest';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from 'vitest';
 import { composeDefensePacket, type DefensePacketInput } from '../src/defense-packet-composer.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,30 +17,18 @@ const __dirname = dirname(__filename);
 
 // Load schemas
 const inputSchema = JSON.parse(
-  readFileSync(
-    join(__dirname, '../../contracts/schemas/defense_packet_input.json'),
-    'utf-8'
-  )
+  readFileSync(join(__dirname, '../../contracts/schemas/defense_packet_input.json'), 'utf-8')
 );
 const outputSchema = JSON.parse(
-  readFileSync(
-    join(__dirname, '../../contracts/schemas/defense_packet_output.json'),
-    'utf-8'
-  )
+  readFileSync(join(__dirname, '../../contracts/schemas/defense_packet_output.json'), 'utf-8')
 );
 
 // Load fixtures
 const fixture3Approach = JSON.parse(
-  readFileSync(
-    join(__dirname, '../fixtures/defense_packet/residential_3approach.json'),
-    'utf-8'
-  )
+  readFileSync(join(__dirname, '../fixtures/defense_packet/residential_3approach.json'), 'utf-8')
 );
 const fixtureSalesOnly = JSON.parse(
-  readFileSync(
-    join(__dirname, '../fixtures/defense_packet/sales_only.json'),
-    'utf-8'
-  )
+  readFileSync(join(__dirname, '../fixtures/defense_packet/sales_only.json'), 'utf-8')
 );
 
 // Setup Ajv
@@ -92,7 +80,9 @@ describe('Defense Packet Composer', () => {
 
       expect(result.output.sections.B_sales.developed).toBe(true);
       expect(result.output.sections.C_income.developed).toBe(true);
-      expect(result.output.sections.D_reconciliation.finalValue).toBe(fixture3Approach.expected.sections.D_reconciliation.finalValue);
+      expect(result.output.sections.D_reconciliation.finalValue).toBe(
+        fixture3Approach.expected.sections.D_reconciliation.finalValue
+      );
     });
 
     it('should match sales approach indicated value', () => {
@@ -146,9 +136,11 @@ describe('Defense Packet Composer', () => {
       const costSection = result.output.sections.A_subject; // Grab any section
       // Actually check cost via the sales-only fixture
       const costResult = composeDefensePacket(fixtureSalesOnly.input);
-      
+
       // The cost section should show "Not Developed" since costApproach is not in input
-      expect(costResult.output.sections.E_exhibits.calculationSummary.costApproachDeveloped).toBe(false);
+      expect(costResult.output.sections.E_exhibits.calculationSummary.costApproachDeveloped).toBe(
+        false
+      );
     });
 
     it('should not have null holes in sections', () => {
@@ -184,9 +176,9 @@ describe('Defense Packet Composer', () => {
       const result = composeDefensePacket(fixture3Approach.input);
       const weights = result.output.sections.D_reconciliation.weights;
 
-      expect(weights.sales).toBe(0.60);
-      expect(weights.income).toBe(0.10);
-      expect(weights.cost).toBe(0.30);
+      expect(weights.sales).toBe(0.6);
+      expect(weights.income).toBe(0.1);
+      expect(weights.cost).toBe(0.3);
     });
 
     it('should generate conclusion narrative', () => {
@@ -356,7 +348,9 @@ describe('Defense Packet Composer', () => {
       const result = composeDefensePacket(fixture3Approach.input);
 
       // Income approach has a warning in the fixture
-      expect(result.output.warnings).toContain('Limited rental data for single-family in this market');
+      expect(result.output.warnings).toContain(
+        'Limited rental data for single-family in this market'
+      );
     });
   });
 

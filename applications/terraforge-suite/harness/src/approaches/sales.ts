@@ -9,8 +9,8 @@
  * All monetary values are integers (no cents) for determinism.
  */
 
-import { v4 as uuidv4 } from 'uuid';
 import * as crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 // ============================================================
 // TYPES (matching JSON Schema contracts)
@@ -223,7 +223,8 @@ function determineConfidence(
   grossAdjustmentPercents: number[],
   compCount: number
 ): ConfidenceLevel {
-  const avgGrossAdj = grossAdjustmentPercents.reduce((a, b) => a + b, 0) / grossAdjustmentPercents.length;
+  const avgGrossAdj =
+    grossAdjustmentPercents.reduce((a, b) => a + b, 0) / grossAdjustmentPercents.length;
 
   // High confidence: 3+ comps, CV < 10%, avg gross adj < 15%
   if (compCount >= 3 && cov < 10 && avgGrossAdj < 15) return 'High';
@@ -237,10 +238,7 @@ function determineConfidence(
 /**
  * Generate quality flags
  */
-function generateFlags(
-  analysis: ComparableAnalysis[],
-  cov: number
-): string[] {
+function generateFlags(analysis: ComparableAnalysis[], cov: number): string[] {
   const flags: string[] = [];
 
   // Check for high gross adjustments
@@ -256,7 +254,9 @@ function generateFlags(
 
   // Check for limited comps
   if (analysis.length < 3) {
-    flags.push(`Limited comparable sales (${analysis.length}) - recommend additional market research`);
+    flags.push(
+      `Limited comparable sales (${analysis.length}) - recommend additional market research`
+    );
   }
 
   return flags;
@@ -391,11 +391,13 @@ export async function runSalesApproach(input: SalesApproachInput): Promise<Sales
 
     // Comparability score (0-100)
     // Based on: avg gross adjustment (lower = better), CV (lower = better), comp count (more = better)
-    const avgGrossAdj = grossAdjustmentPercents.reduce((a, b) => a + b, 0) / grossAdjustmentPercents.length;
+    const avgGrossAdj =
+      grossAdjustmentPercents.reduce((a, b) => a + b, 0) / grossAdjustmentPercents.length;
     const adjScore = Math.max(0, 100 - avgGrossAdj * 2); // 0% adj = 100, 50% adj = 0
     const covScore = Math.max(0, 100 - cov * 3); // 0% CV = 100, 33% CV = 0
     const countScore = Math.min(100, analysis.length * 20); // 5+ comps = 100
-    const comparabilityScore = Math.round((adjScore * 0.4 + covScore * 0.3 + countScore * 0.3) * 10) / 10;
+    const comparabilityScore =
+      Math.round((adjScore * 0.4 + covScore * 0.3 + countScore * 0.3) * 10) / 10;
 
     const flags = generateFlags(analysis, cov);
 

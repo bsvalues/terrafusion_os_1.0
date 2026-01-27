@@ -4,12 +4,12 @@
  * Tests USPAP-aligned multi-approach value synthesis
  */
 
-import { describe, it, expect } from 'vitest';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from 'vitest';
 import { runReconciliation, type ReconciliationInput } from '../src/approaches/reconcile.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,24 +17,15 @@ const __dirname = dirname(__filename);
 
 // Load schemas
 const inputSchema = JSON.parse(
-  readFileSync(
-    join(__dirname, '../../contracts/schemas/reconciliation_input.json'),
-    'utf-8'
-  )
+  readFileSync(join(__dirname, '../../contracts/schemas/reconciliation_input.json'), 'utf-8')
 );
 const outputSchema = JSON.parse(
-  readFileSync(
-    join(__dirname, '../../contracts/schemas/reconciliation_output.json'),
-    'utf-8'
-  )
+  readFileSync(join(__dirname, '../../contracts/schemas/reconciliation_output.json'), 'utf-8')
 );
 
 // Load fixture
 const fixture = JSON.parse(
-  readFileSync(
-    join(__dirname, '../fixtures/reconciliation/residential_3approach.json'),
-    'utf-8'
-  )
+  readFileSync(join(__dirname, '../fixtures/reconciliation/residential_3approach.json'), 'utf-8')
 );
 
 // Setup Ajv
@@ -118,9 +109,7 @@ describe('Reconciliation Module', () => {
       const summary = result.output.approachSummary;
 
       const totalWeight =
-        (summary.sales?.weight ?? 0) +
-        (summary.income?.weight ?? 0) +
-        (summary.cost?.weight ?? 0);
+        (summary.sales?.weight ?? 0) + (summary.income?.weight ?? 0) + (summary.cost?.weight ?? 0);
 
       expect(totalWeight).toBeCloseTo(1.0, 4);
     });

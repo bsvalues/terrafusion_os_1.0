@@ -12,11 +12,17 @@
  * Always writes artifacts to artifacts/e2e-pipeline/<timestamp>/
  */
 
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+import AjvModule from 'ajv';
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+import addFormatsModule from 'ajv-formats';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+
+// Type-safe interop for ESM/CJS
+const Ajv = AjvModule.default ?? AjvModule;
+const addFormats = addFormatsModule.default ?? addFormatsModule;
 
 import { ModuleRunner } from './module-runner.js';
 import { CostKernel } from './stubs/cost-kernel.js';

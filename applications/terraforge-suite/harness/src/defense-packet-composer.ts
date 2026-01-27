@@ -6,7 +6,7 @@
  */
 
 import { createHash } from 'crypto';
-import type { AuditEvent } from '../types.js';
+import type { AuditEvent } from './types.js';
 
 /* ============================================================================
  * Input Types (from defense_packet_input.json)
@@ -161,6 +161,7 @@ export interface DefensePacketOutput {
   sections: {
     A_subject: SubjectSection;
     B_sales: ApproachSection;
+    B2_cost: ApproachSection;
     C_income: ApproachSection;
     D_reconciliation: ReconciliationSection;
     E_exhibits: ExhibitsSection;
@@ -584,6 +585,7 @@ export function composeDefensePacket(input: DefensePacketInput): DefensePacketCo
   const sections = {
     A_subject: buildSubjectSection(input),
     B_sales: buildSalesSection(input),
+    B2_cost: buildCostSection(input),
     C_income: buildIncomeSection(input),
     D_reconciliation: buildReconciliationSection(input),
     E_exhibits: buildExhibitsSection(input),

@@ -49,6 +49,7 @@
       "required": [
         "A_subject",
         "B_sales",
+        "B2_cost",
         "C_income",
         "D_reconciliation",
         "E_exhibits"
@@ -58,6 +59,9 @@
           "$ref": "#/definitions/SubjectSection"
         },
         "B_sales": {
+          "$ref": "#/definitions/ApproachSection"
+        },
+        "B2_cost": {
           "$ref": "#/definitions/ApproachSection"
         },
         "C_income": {

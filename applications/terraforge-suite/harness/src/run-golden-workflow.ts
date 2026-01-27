@@ -1,5 +1,7 @@
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+import AjvModule from 'ajv';
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+import addFormatsModule from 'ajv-formats';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -13,6 +15,10 @@ import { ModuleRunner } from './module-runner.js';
 // ESM __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Type-safe interop for ESM/CJS
+const Ajv = AjvModule.default ?? AjvModule;
+const addFormats = addFormatsModule.default ?? addFormatsModule;
 
 const ajv = new Ajv();
 addFormats(ajv);
@@ -89,7 +95,9 @@ async function runGoldenWorkflow() {
   }
 
   if (!costRes.success) throw new Error(costRes.error);
-  console.log(`   ✅ RCN: ${costRes.data.replacementCost}, Depr: ${costRes.data.depreciation}, RCNLD: ${costRes.data.rcnld}`);
+  console.log(
+    `   ✅ RCN: ${costRes.data.replacementCost}, Depr: ${costRes.data.depreciation}, RCNLD: ${costRes.data.rcnld}`
+  );
 
   if (!validateAudit(costRes.auditEvent)) {
     console.error('❌ Invalid Audit Event from Cost Kernel', validateAudit.errors);
