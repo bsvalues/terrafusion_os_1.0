@@ -36,21 +36,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: applications/terraforge-suite/harness/package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: applications/terraforge-suite/harness/pnpm-lock.yaml
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: TypeScript lint check
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Run unit tests
-        run: npm test
+        run: pnpm test
 
       - name: Upload test results
         if: always()
@@ -69,18 +72,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: applications/terraforge-suite/harness/package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: applications/terraforge-suite/harness/pnpm-lock.yaml
 
       - name: Install dependencies
-        run: npm ci
+        working-directory: applications/terraforge-suite/harness
+        run: pnpm install --frozen-lockfile
 
       - name: Run Golden Workflow (Stub)
-        run: npm run golden:stub
+        working-directory: applications/terraforge-suite/harness
+        run: pnpm run golden:stub
         env:
           TEST_MODE: stub
 
@@ -129,18 +139,25 @@ jobs:
           echo "✅ Rust binaries compiled successfully"
         working-directory: .
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: applications/terraforge-suite/harness/package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: applications/terraforge-suite/harness/pnpm-lock.yaml
 
       - name: Install harness dependencies
-        run: npm ci
+        working-directory: applications/terraforge-suite/harness
+        run: pnpm install --frozen-lockfile
 
       - name: Run Golden Workflow (Steel)
-        run: npm run golden:steel
+        working-directory: applications/terraforge-suite/harness
+        run: pnpm run golden:steel
         env:
           TEST_MODE: steel
 
@@ -290,7 +307,13 @@ jobs:
       - name: Validate JSON schemas
         run: |
           echo "Validating contract schemas..."
-          for schema in applications/terraforge-suite/contracts/schemas/*.json; do
+          shopt -s nullglob
+          schemas=(applications/terraforge-suite/contracts/schemas/*.json)
+          if [ ${#schemas[@]} -eq 0 ]; then
+            echo "No schemas found, skipping"
+            exit 0
+          fi
+          for schema in "${schemas[@]}"; do
             echo "  Checking: $schema"
             python3 -c "import json; json.load(open('$schema'))" || exit 1
           done
@@ -299,7 +322,13 @@ jobs:
       - name: Validate fixtures
         run: |
           echo "Validating test fixtures..."
-          for fixture in applications/terraforge-suite/harness/fixtures/**/*.json; do
+          shopt -s nullglob globstar
+          fixtures=(applications/terraforge-suite/harness/fixtures/**/*.json)
+          if [ ${#fixtures[@]} -eq 0 ]; then
+            echo "No fixtures found, skipping"
+            exit 0
+          fi
+          for fixture in "${fixtures[@]}"; do
             echo "  Checking: $fixture"
             python3 -c "import json; json.load(open('$fixture'))" || exit 1
           done
