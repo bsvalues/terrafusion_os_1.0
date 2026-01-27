@@ -5,13 +5,23 @@ on:
     branches: [main, develop]
     paths:
       - 'applications/terraforge-suite/**'
+      - 'scripts/e2e-pipeline.ts'
       - '.github/workflows/terraforge-ci.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'applications/terraforge-suite/**'
+      - 'scripts/e2e-pipeline.ts'
       - '.github/workflows/terraforge-ci.yml'
+  schedule:
+    # Nightly at 3 AM UTC - runs steel mode E2E
+    - cron: '0 3 * * *'
   workflow_dispatch:
+    inputs:
+      run_steel_e2e:
+        description: 'Run steel mode E2E pipeline'
+        type: boolean
+        default: false
 
 defaults:
   run:
@@ -150,6 +160,123 @@ jobs:
             applications/terraforge-suite/modules/**/target/release/*
             applications/terraforge-suite/harness/coverage
           retention-days: 7
+          if-no-files-found: warn
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # E2E Pipeline (Stub Mode) - PR Required, Fast Deterministic Tripwire
+  # ═══════════════════════════════════════════════════════════════════════════
+  e2e-pipeline-stub:
+    name: E2E Pipeline (Stub Mode)
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install root dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run E2E Pipeline (Stub)
+        run: pnpm run e2e:pipeline
+        env:
+          TEST_MODE: stub
+
+      - name: Upload E2E Pipeline Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-pipeline-stub
+          path: artifacts/e2e-pipeline/**
+          retention-days: 14
+          if-no-files-found: warn
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # E2E Pipeline (Steel Mode) - Nightly, Real Rust Kernels
+  # ═══════════════════════════════════════════════════════════════════════════
+  e2e-pipeline-steel:
+    name: E2E Pipeline (Steel Mode)
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    # Only run on schedule (nightly), or manual dispatch with steel flag
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_steel_e2e == true)
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache cargo registry + targets
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            applications/terraforge-suite/modules/**/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Build Cost Kernel (release)
+        working-directory: applications/terraforge-suite/modules/terraforge.kernel.cost
+        run: cargo build --release --target-dir ./target
+
+      - name: Build Valuation Kernel (release)
+        working-directory: applications/terraforge-suite/modules/terraforge.kernel.valuation
+        run: cargo build --release --target-dir ./target
+
+      - name: Verify Rust binaries exist
+        run: |
+          echo "Verifying Rust kernel binaries..."
+          ls -la applications/terraforge-suite/modules/terraforge.kernel.cost/target/release/
+          ls -la applications/terraforge-suite/modules/terraforge.kernel.valuation/target/release/
+          echo "✅ Rust binaries compiled successfully"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install root dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run E2E Pipeline (Steel)
+        run: pnpm run e2e:pipeline
+        env:
+          TEST_MODE: steel
+
+      - name: Upload E2E Pipeline Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-pipeline-steel
+          path: artifacts/e2e-pipeline/**
+          retention-days: 14
           if-no-files-found: warn
 
   schema-validation:
