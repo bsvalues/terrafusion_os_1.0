@@ -5,11 +5,10 @@
  * - Sales Comparison Approach
  * - Income Approach
  * - Cost Approach (integrated via existing kernels)
- * - Reconciliation (TODO)
+ * - Reconciliation
  */
 
 export * from './income.js';
+export * from './reconcile.js';
 export * from './sales.js';
 
-// Future exports:
-// export * from './reconcile.js';
