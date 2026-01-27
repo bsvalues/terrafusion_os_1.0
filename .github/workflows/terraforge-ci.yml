@@ -31,29 +31,29 @@ jobs:
   lint-and-test:
     name: Lint & Unit Tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: applications/terraforge-suite/harness
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
-          cache-dependency-path: applications/terraforge-suite/harness/pnpm-lock.yaml
+          cache: 'npm'
+          cache-dependency-path: applications/terraforge-suite/harness/package-lock.json
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: TypeScript lint check
-        run: pnpm run lint
+        run: npm run lint
 
       - name: Run unit tests
-        run: pnpm test
+        run: npm test
 
       - name: Upload test results
         if: always()
@@ -72,25 +72,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
-          cache-dependency-path: applications/terraforge-suite/harness/pnpm-lock.yaml
+          cache: 'npm'
+          cache-dependency-path: applications/terraforge-suite/harness/package-lock.json
 
       - name: Install dependencies
         working-directory: applications/terraforge-suite/harness
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run Golden Workflow (Stub)
         working-directory: applications/terraforge-suite/harness
-        run: pnpm run golden:stub
+        run: npm run golden:stub
         env:
           TEST_MODE: stub
 
@@ -139,25 +134,20 @@ jobs:
           echo "✅ Rust binaries compiled successfully"
         working-directory: .
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
-          cache-dependency-path: applications/terraforge-suite/harness/pnpm-lock.yaml
+          cache: 'npm'
+          cache-dependency-path: applications/terraforge-suite/harness/package-lock.json
 
       - name: Install harness dependencies
         working-directory: applications/terraforge-suite/harness
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run Golden Workflow (Steel)
         working-directory: applications/terraforge-suite/harness
-        run: pnpm run golden:steel
+        run: npm run golden:steel
         env:
           TEST_MODE: steel
 
