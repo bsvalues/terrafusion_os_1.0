@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "terra-pilt",
+  "displayName": "Terra PILT",
+  "description": "Payment in Lieu of Taxes Calculator (Legacy Production)",
+  "iconName": "Landmark",
+  "category": "tax",
+  "tier": 1,
+  "status": "legacy",
+  "pinned": false,
+  "version": "1.0.0",
+  "intent": "legacy",
+  "runnable": false,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5179/"
+  },
+  "tags": ["tax", "pilt", "federal", "legacy"],
+  "permissions": ["county:read", "tax:read"]
+}

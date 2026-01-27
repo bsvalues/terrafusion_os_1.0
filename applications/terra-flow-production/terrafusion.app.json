@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "terra-flow",
+  "displayName": "Terra Flow",
+  "description": "Workflow & Process Automation Engine",
+  "iconName": "GitBranch",
+  "category": "system",
+  "tier": 2,
+  "status": "legacy",
+  "pinned": false,
+  "version": "1.0.0",
+  "intent": "legacy",
+  "runnable": false,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5183/"
+  },
+  "tags": ["workflow", "automation", "process", "legacy"],
+  "permissions": ["system:admin"]
+}

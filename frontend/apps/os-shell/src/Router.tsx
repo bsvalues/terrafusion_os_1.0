@@ -26,6 +26,10 @@ const NotificationPreferences = lazy(
   () => import('./components/codex/NotificationPreferences')
 );
 
+// Gen2 Module Routes
+const TerraForgeGen2 = lazy(() => import('./pages/gen2/TerraForgeGen2'));
+const TerraDossierGen2 = lazy(() => import('./pages/gen2/TerraDossierGen2'));
+
 const Router: React.FC = () => {
   return (
     <BrowserRouter
@@ -43,6 +47,11 @@ const Router: React.FC = () => {
           <Route path='/experiments/create' element={<CreateExperiment />} />
           <Route path='/elite-research' element={<EliteExperimentalResearchInterface />} />
           <Route path='/codex/preferences' element={<NotificationPreferences />} />
+
+          {/* Gen2 Module Routes - Internal OS modules */}
+          <Route path='/gen2/terraforge' element={<TerraForgeGen2 />} />
+          <Route path='/gen2/dossier' element={<TerraDossierGen2 />} />
+
           <Route path='/modules/*' element={<div>Module Loading...</div>} />
         </Routes>
       </Suspense>

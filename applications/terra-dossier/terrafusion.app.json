@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "terra-dossier",
+  "displayName": "TerraDossier",
+  "description": "Gen2 Sovereign Document Management & Defense Packets",
+  "iconName": "FileSearch",
+  "category": "records",
+  "tier": 1,
+  "status": "active",
+  "pinned": true,
+  "version": "1.0.0",
+  "intent": "gen2",
+  "runnable": false,
+  "entry": {
+    "type": "route",
+    "route": "/gen2/dossier"
+  },
+  "tags": ["records", "documents", "dossier", "gen2"],
+  "permissions": ["county:read", "documents:read", "documents:write"]
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "terraforge",
+  "displayName": "TerraForge",
+  "description": "AI-Powered Cost Calculation & Valuation Modeling Suite",
+  "iconName": "Layers",
+  "category": "assessment",
+  "tier": 1,
+  "status": "active",
+  "pinned": true,
+  "version": "1.0.0",
+  "intent": "gen2",
+  "runnable": false,
+  "entry": {
+    "type": "route",
+    "route": "/gen2/terraforge"
+  },
+  "tags": ["assessment", "valuation", "cost", "ai", "gen2"],
+  "permissions": ["county:read", "property:read", "property:write"]
+}

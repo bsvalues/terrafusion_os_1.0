@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "terra-levy",
+  "displayName": "Terra Levy",
+  "description": "Tax Levy Management & Rate Calculations (Legacy Multi-Service)",
+  "iconName": "Calculator",
+  "category": "tax",
+  "tier": 1,
+  "status": "legacy",
+  "pinned": false,
+  "version": "1.5.0",
+  "intent": "legacy",
+  "runnable": false,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5177/"
+  },
+  "tags": ["tax", "levy", "rates", "legacy"],
+  "permissions": ["county:read", "tax:read", "tax:write"]
+}

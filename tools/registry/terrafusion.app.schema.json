@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.gov/schemas/terrafusion.app.schema.json",
+  "title": "TerraFusion App Manifest",
+  "description": "Schema for TerraFusion OS application manifests",
+  "type": "object",
+  "required": [
+    "id",
+    "displayName",
+    "description",
+    "iconName",
+    "category",
+    "tier",
+    "status",
+    "pinned",
+    "version",
+    "entry",
+    "intent",
+    "runnable"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Unique identifier for the module (lowercase kebab-case)"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable display name"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Brief description of the module's purpose"
+    },
+    "iconName": {
+      "type": "string",
+      "description": "Icon identifier from the icon library"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "system",
+        "assessment",
+        "tax",
+        "mapping",
+        "records",
+        "analytics",
+        "ai"
+      ],
+      "description": "Functional category for grouping"
+    },
+    "tier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3,
+      "description": "Priority tier (1=core, 2=extended, 3=optional)"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "beta", "alpha", "legacy"],
+      "description": "Current development/deployment status"
+    },
+    "pinned": {
+      "type": "boolean",
+      "description": "Whether this module appears in the default desktop view"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+",
+      "description": "Semantic version string"
+    },
+    "intent": {
+      "type": "string",
+      "enum": ["gen2", "legacy", "archive"],
+      "description": "Development intent: gen2=next-gen integrated, legacy=standalone/production, archive=deprecated"
+    },
+    "runnable": {
+      "type": "boolean",
+      "description": "Whether this module can be launched as a standalone dev server"
+    },
+    "entry": {
+      "type": "object",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "url"],
+          "properties": {
+            "type": { "const": "url" },
+            "url": { "type": "string", "format": "uri" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "route"],
+          "properties": {
+            "type": { "const": "route" },
+            "route": { "type": "string", "pattern": "^/" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "remote", "module"],
+          "properties": {
+            "type": { "const": "mf" },
+            "remote": { "type": "string" },
+            "module": { "type": "string" },
+            "export": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      ],
+      "description": "Entry point configuration"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Searchable tags for discovery"
+    },
+    "permissions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Required permissions for this module"
+    }
+  },
+  "additionalProperties": false
+}

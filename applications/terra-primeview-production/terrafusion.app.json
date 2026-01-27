@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "terra-primeview",
+  "displayName": "PrimeView",
+  "description": "Primary Property Data Viewer & Inspector",
+  "iconName": "Eye",
+  "category": "records",
+  "tier": 2,
+  "status": "legacy",
+  "pinned": false,
+  "version": "1.0.0",
+  "intent": "legacy",
+  "runnable": false,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5184/"
+  },
+  "tags": ["records", "viewer", "property", "legacy"],
+  "permissions": ["county:read", "property:read"]
+}

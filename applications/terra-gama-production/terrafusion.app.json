@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "terra-gama",
+  "displayName": "Terra GAMA",
+  "description": "Geographic Area Market Analysis",
+  "iconName": "BarChart3",
+  "category": "analytics",
+  "tier": 2,
+  "status": "legacy",
+  "pinned": false,
+  "version": "1.0.0",
+  "intent": "legacy",
+  "runnable": false,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5182/"
+  },
+  "tags": ["analytics", "market", "gama", "legacy"],
+  "permissions": ["county:read", "analytics:read"]
+}

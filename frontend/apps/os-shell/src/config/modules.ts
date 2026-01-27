@@ -1,215 +1,76 @@
-/**
- * TerraFusion OS Module Configuration
- *
- * Defines the core government modules available in the operating system.
- * These definitions drive the Start Menu, Taskbar, and Window Manager.
- *
- * NOTE: CostForge is the upgraded replacement for TerraBuild.
- * The name was changed to better reflect its purpose as an
- * AI-powered cost/valuation system for property assessment.
- */
+import type { ModuleDefinition, ModuleStatus, ModuleTier } from '../stores/moduleRegistryStore';
+import type { Entry, ModuleManifest, Intent } from './generatedModules';
+import { GENERATED_MODULES } from './generatedModules';
 
-import type { ModuleDefinition } from '../stores/moduleRegistryStore';
+function mapTier(tier: number): ModuleTier {
+  if (tier <= 1) return 'Tier1';
+  if (tier === 2) return 'Tier2';
+  return 'Tier3';
+}
 
-export const TERRAFUSION_MODULES: ModuleDefinition[] = [
-  // ============================================================================
-  // Tier 1: Core Government Operations
-  // ============================================================================
+function mapStatus(status: ModuleManifest['status'], intent: Intent): ModuleStatus {
+  // Legacy/archive modules should always show as inactive in the UI
+  if (intent === 'legacy' || intent === 'archive') {
+    return 'inactive';
+  }
+  switch (status) {
+    case 'active':
+      return 'active';
+    case 'beta':
+    case 'alpha':
+      return 'loading';
+    case 'legacy':
+      return 'inactive';
+    default:
+      return 'active';
+  }
+}
 
-  // Federation Dashboard - Global Government Federation
-  {
-    id: 'federation-dashboard',
-    name: 'federation-dashboard',
-    displayName: 'Federation Dashboard',
-    description: 'Global Government Federation & Swarm Telemetry',
-    icon: '🌐',
-    launchPath: '/modules/federation',
-    category: 'System',
-    tier: 'Tier1',
-    status: 'active',
-    version: '1.0.0',
-    isCore: true,
-    priority: 0,
-  },
+function entryToLaunchPath(entry: Entry): string {
+  switch (entry.type) {
+    case 'url':
+      return entry.url;
+    case 'route':
+      return entry.route;
+    case 'mf':
+      return `/mf/${entry.remote}/${entry.module}`;
+    default:
+      return '/';
+  }
+}
 
-  // CostForge - Primary Property Assessment System (formerly TerraBuild)
-  {
-    id: 'costforge',
-    name: 'costforge',
-    displayName: 'CostForge',
-    description: 'AI-Powered Property Assessment & Valuation System',
-    icon: '🏛️',
-    launchPath: '/modules/costforge',
-    category: 'Assessment',
-    tier: 'Tier1',
-    status: 'active',
-    version: '2.1.0',
-    isCore: true,
-    priority: 1,
-  },
+// All modules from manifests (for registry/admin purposes)
+export const ALL_MODULES: readonly ModuleDefinition[] = GENERATED_MODULES.map((m, index) => ({
+  id: m.id,
+  name: m.id,
+  displayName: m.displayName,
+  description: m.description,
+  icon: m.iconName,
+  category: m.category,
+  tier: mapTier(m.tier),
+  status: mapStatus(m.status, m.intent),
+  version: m.version,
+  launchPath: entryToLaunchPath(m.entry),
+  entry: m.entry,
+  isCore: m.pinned && m.intent === 'gen2',
+  priority: m.tier * 10 + index,
+  intent: m.intent,
+  runnable: m.runnable,
+})) as const;
 
-  // Levy Calculator - Tax Management
-  {
-    id: 'levy-calculator',
-    name: 'levy-calculator',
-    displayName: 'Levy Calculator',
-    description: 'Tax Levy Management & Calculations',
-    icon: '📊',
-    launchPath: '/modules/levy',
-    category: 'Tax',
-    tier: 'Tier1',
-    status: 'active',
-    version: '1.5.0',
-    isCore: true,
-    priority: 2,
-  },
+// Gen2 modules only (what appears in the default desktop)
+export const MODULES: readonly ModuleDefinition[] = ALL_MODULES.filter(
+  (m) => (m as any).intent === 'gen2'
+);
 
-  // GIS Viewer - Geographic Information
-  {
-    id: 'gis-viewer',
-    name: 'gis-viewer',
-    displayName: 'GIS Viewer',
-    description: 'Geographic Information System & Parcel Mapping',
-    icon: '🗺️',
-    launchPath: '/modules/gis',
-    category: 'Mapping',
-    tier: 'Tier1',
-    status: 'active',
-    version: '3.0.0',
-    isCore: true,
-    priority: 3,
-  },
+// Legacy modules (for Legacy Lab toggle)
+export const LEGACY_MODULES: readonly ModuleDefinition[] = ALL_MODULES.filter(
+  (m) => (m as any).intent === 'legacy'
+);
 
-  // AxiomFS - The Lattice File System
-  {
-    id: 'axiom-fs',
-    name: 'axiom-fs',
-    displayName: 'AxiomFS',
-    description: 'Sovereign File Lattice & Data Management',
-    icon: '🌀',
-    launchPath: '/modules/axiomfs',
-    category: 'System',
-    tier: 'Tier1',
-    status: 'active',
-    version: '1.0.0',
-    isCore: true,
-    priority: 8,
-  },
+// Archived modules (hidden by default)
+export const ARCHIVED_MODULES: readonly ModuleDefinition[] = ALL_MODULES.filter(
+  (m) => (m as any).intent === 'archive'
+);
 
-  // ============================================================================
-  // Tier 2: Document & Records Management
-  // ============================================================================
-
-  {
-    id: 'document-manager',
-    name: 'document-manager',
-    displayName: 'Document Manager',
-    description: 'County Document Repository & Records',
-    icon: '📁',
-    launchPath: '/modules/documents',
-    category: 'Records',
-    tier: 'Tier2',
-    status: 'active',
-    version: '1.2.0',
-    isCore: false,
-    priority: 4,
-  },
-
-  {
-    id: 'reporting',
-    name: 'reporting',
-    displayName: 'Reports & Analytics',
-    description: 'Government Analytics & Reporting Dashboard',
-    icon: '📈',
-    launchPath: '/modules/reports',
-    category: 'Analytics',
-    tier: 'Tier2',
-    status: 'active',
-    version: '2.0.0',
-    isCore: false,
-    priority: 5,
-  },
-
-  // ============================================================================
-  // AI & Intelligence Modules
-  // ============================================================================
-
-  {
-    id: 'atlas-ai',
-    name: 'atlas-ai',
-    displayName: 'ATLAS Intelligence',
-    description: 'Autonomous Telemetry, Learning & Analytics System',
-    icon: '🤖',
-    launchPath: '/modules/atlas',
-    category: 'AI',
-    tier: 'Tier2',
-    status: 'active',
-    version: '1.0.0',
-    isCore: false,
-    priority: 6,
-  },
-
-  {
-    id: 'terra-gaia',
-    name: 'terra-gaia',
-    displayName: 'TerraGaia',
-    description: 'Natural Language Government Intelligence Assistant',
-    icon: '🌍',
-    launchPath: '/modules/terra-gaia',
-    category: 'AI',
-    tier: 'Tier2',
-    status: 'active',
-    version: '1.0.0',
-    isCore: false,
-    priority: 7,
-  },
-
-  // ============================================================================
-  // System & Administration
-  // ============================================================================
-
-  {
-    id: 'settings',
-    name: 'settings',
-    displayName: 'System Settings',
-    description: 'TerraFusion OS Configuration & Preferences',
-    icon: '⚙️',
-    launchPath: '/modules/settings',
-    category: 'System',
-    tier: 'Tier2',
-    status: 'active',
-    version: '1.0.0',
-    isCore: false,
-    priority: 99,
-  },
-
-  {
-    id: 'shortcuts-help',
-    name: 'shortcuts-help',
-    displayName: 'Keyboard Shortcuts',
-    description: 'View available keyboard shortcuts',
-    icon: '⌨️',
-    launchPath: '/modules/shortcuts',
-    category: 'System',
-    tier: 'Tier2',
-    status: 'active',
-    version: '1.0.0',
-    isCore: false,
-    priority: 100,
-  },
-
-  {
-    id: 'plugin-manager',
-    name: 'plugin-manager',
-    displayName: 'Plugin Manager',
-    description: 'Manage external plugins and extensions',
-    icon: '🧩',
-    launchPath: '/modules/plugins',
-    category: 'System',
-    tier: 'Tier2',
-    status: 'active',
-    version: '1.0.0',
-    isCore: false,
-    priority: 101,
-  },
-];
+export const TERRAFUSION_MODULES = MODULES;
