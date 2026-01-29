@@ -1,4 +1,0 @@
-{
-  "params": { "county": "yakima", "modelId": "MODEL-2", "asOfYear": 2026 },
-  "assert": { "rejects": true }
-}

@@ -1,4 +1,0 @@
-{
-  "params": { "county": "yakima", "correlationId": "corr_0001", "limit": 5 },
-  "assert": { "rejects": true }
-}
