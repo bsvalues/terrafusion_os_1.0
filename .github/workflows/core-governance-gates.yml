@@ -1,0 +1,120 @@
+name: core-governance-gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      core: ${{ steps.filter.outputs.core }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            core:
+              - 'os-platform/core/**'
+              - 'os-platform/core/fixtures/**'
+              - 'tools/registry/**'
+              - 'tools/registry/check-generated-js.mjs'
+              - 'tsconfig.core.json'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - '.github/workflows/**'
+
+  typecheck-core:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck (core boundary)
+        run: pnpm run type-check
+
+  phase83-tools:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Phase 8.3 tool gates
+        run: node --test os-platform/core/tests/phase83-tools.test.mjs
+
+  phase85-tools:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Phase 8.5 tool gates
+        run: node --test os-platform/core/tests/phase85-tools.test.mjs
+
+  phase86-toolrunner:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Phase 8.6 ToolRunner gates
+        run: node --test os-platform/core/tests/phase86-toolrunner.test.mjs
+
+  check-generated-js:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Regenerate core JS
+        run: pnpm run build:core-js
+      - name: Generated JS matches repo
+        run: git diff --exit-code
+      - name: Generated JS in sync
+        run: pnpm run check:generated
+
+  no-relevant-changes:
+    needs: changes
+    if: needs.changes.outputs.core != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "No core governance surface changes — gates skipped."

@@ -1,0 +1,11 @@
+{
+  "params": {
+    "county": "benton",
+    "parcelId": "P-200",
+    "include": ["appeals", "sales"]
+  },
+  "assert": {
+    "resultKeys": ["summary", "highlights", "payloadRef"],
+    "noPii": true
+  }
+}
