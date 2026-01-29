@@ -1,0 +1,9 @@
+{
+  "params": {
+    "county": "yakima",
+    "caseId": "CASE-2",
+    "position": "balanced",
+    "points": ["Insufficient evidence for change"]
+  },
+  "assert": { "rejects": true }
+}

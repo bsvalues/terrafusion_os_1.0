@@ -1,0 +1,12 @@
+{
+  "params": {
+    "county": "benton",
+    "parcelId": "P-500",
+    "note": "Validated comps set; no taxpayer identifiers included.",
+    "tags": ["review"]
+  },
+  "assert": {
+    "resultKeys": ["noteId", "appended", "payloadRef"],
+    "noPii": true
+  }
+}
