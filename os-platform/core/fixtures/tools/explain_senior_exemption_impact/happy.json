@@ -1,0 +1,12 @@
+{
+  "params": {
+    "county": "benton",
+    "year": 2026,
+    "exemptionProgram": "senior",
+    "parcelId": "P-100"
+  },
+  "assert": {
+    "resultKeys": ["summary", "assumptions", "impactBands"],
+    "noPii": true
+  }
+}
