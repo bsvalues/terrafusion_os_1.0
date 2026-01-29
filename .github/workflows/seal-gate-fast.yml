@@ -68,11 +68,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Get changed files
-          if [ -n "${{ github.event.pull_request.base.sha }}" ]; then
-            CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.sha }} || echo "")
+          # Get changed files safely for PR vs push
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            CHANGED=$(git diff --name-only "${{ github.event.pull_request.base.sha }}...${{ github.sha }}" || echo "")
           else
-            CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || git ls-files)
+            # Push: compare before..after when available
+            if [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+              CHANGED=$(git diff --name-only "${{ github.event.before }}...${{ github.sha }}" || echo "")
+            else
+              # Fallback (first commit / unusual)
+              CHANGED=$(git ls-files)
+            fi
           fi
 
           echo "Changed files:"
@@ -81,7 +87,8 @@ jobs:
           # Classify
           HAS_BACKEND=$(echo "$CHANGED" | grep -E '^backend/' | head -1 || true)
           HAS_FRONTEND=$(echo "$CHANGED" | grep -E '^(src/|frontend/|package\.json|pnpm-lock\.yaml)' | head -1 || true)
-          HAS_DOCS_ONLY=$(echo "$CHANGED" | grep -vE '^(docs/|\.md$|README)' | head -1 || true)
+          # NON_DOC: anything that isn't docs, markdown, config, or meta files
+          NON_DOC=$(echo "$CHANGED" | grep -Ev '^(docs/|.*\.md$|README(\..*)?$|\.github/|\.editorconfig$|\.gitignore$|LICENSE$)' | head -1 || true)
 
           # Set outputs
           if [ -z "$HAS_BACKEND" ]; then
@@ -96,7 +103,7 @@ jobs:
             echo "skip_frontend=false" >> $GITHUB_OUTPUT
           fi
 
-          if [ -z "$HAS_DOCS_ONLY" ]; then
+          if [ -z "$NON_DOC" ]; then
             echo "docs_only=true" >> $GITHUB_OUTPUT
             echo "📄 DOCS-ONLY: Skipping heavy build steps"
           else
@@ -116,7 +123,7 @@ jobs:
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - uses: pnpm/action-setup@fe02b34f77f8bc703788d5cd3f28384b59e74a29 # v4.0.0
+      - uses: pnpm/action-setup@9fd676a19091d4595eefd76e4bd31c97133911f1 # v4.2.0
 
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.3
         with:
@@ -235,7 +242,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@fe02b34f77f8bc703788d5cd3f28384b59e74a29 # v4.0.0
+      - uses: pnpm/action-setup@9fd676a19091d4595eefd76e4bd31c97133911f1 # v4.2.0
 
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.3
         with:
@@ -246,6 +253,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Workspace sanity (no quarantined packages)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if pnpm -w list --depth 0 2>/dev/null | grep -q "MARKED-FOR-REVIEW"; then
+            echo "::error::Quarantined package included in workspace (MARKED-FOR-REVIEW)"
+            exit 1
+          fi
+          echo "✅ Workspace sanity passed"
+
       - name: Drift guard (dotnet canonical enforcement)
         shell: bash
         run: |
@@ -253,10 +270,22 @@ jobs:
           # Forbid direct 'dotnet test' in workflows (except dotnet-test.yml)
           hits=$(grep -rn 'dotnet test' .github/workflows/*.yml | grep -v 'dotnet-test.yml' | grep -v 'seal-gate-fast.yml' || true)
           if [ -n "$hits" ]; then
-            echo "⚠️ Warning: direct 'dotnet test' found (should use reusable workflow)"
+            echo "::error::Drift guard violation: direct 'dotnet test' found outside dotnet-test.yml"
             echo "$hits"
+            exit 1
           fi
           echo "✅ Drift guard passed"
+
+      - name: OS Core typecheck (runtime enforcement layer)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f packages/os-core/package.json ]; then
+            pnpm -C packages/os-core typecheck
+            echo "✅ OS Core typecheck passed"
+          else
+            echo "⚠️ OS Core not yet scaffolded (skipped)"
+          fi
 
       - name: Scope classifier (optional)
         if: hashFiles('tools/scope-classifier/package.json') != ''
@@ -268,10 +297,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Snyk policy exists
-          test -f .snyk && echo "✅ .snyk exists" || echo "⚠️ .snyk missing"
-          # Solution file exists
-          test -f backend/TerraFusion.sln && echo "✅ Solution exists" || echo "⚠️ Solution missing"
+          # Snyk policy (warn-only, optional in Solo Velocity)
+          test -f .snyk && echo "✅ .snyk exists" || echo "⚠️ .snyk missing (optional)"
+          # Solution file (CRITICAL - fail if missing)
+          test -f backend/TerraFusion.sln || { echo "::error::Missing backend/TerraFusion.sln"; exit 1; }
+          echo "✅ Solution exists"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # SEAL - Final gate (all fast checks must pass)
@@ -335,6 +365,12 @@ jobs:
 
           # Write to GitHub Step Summary
           echo "## 🔒 SEAL Gate Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Audit Trail**" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "- Ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Classification: docs_only=${{ needs.classify.outputs.docs_only }}, skip_frontend=${{ needs.classify.outputs.skip_frontend }}, skip_backend=${{ needs.classify.outputs.skip_backend }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Gate | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
