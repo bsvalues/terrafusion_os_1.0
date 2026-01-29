@@ -267,10 +267,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Forbid direct 'dotnet test' in workflows (except dotnet-test.yml)
-          hits=$(grep -rn 'dotnet test' .github/workflows/*.yml | grep -v 'dotnet-test.yml' | grep -v 'seal-gate-fast.yml' || true)
+          # Forbid direct 'dotnet test' in workflows (except canonically allowed files)
+          # Allowed: dotnet-test.yml (canonical), seal-gate-fast.yml (self), nightly.yml (heavy checks),
+          #          release-compliance.yml (release checks), ci.yml (legacy, mentions in comments)
+          hits=$(grep -rn 'dotnet test' .github/workflows/*.yml \
+            | grep -v 'dotnet-test.yml' \
+            | grep -v 'seal-gate-fast.yml' \
+            | grep -v 'nightly.yml' \
+            | grep -v 'release-compliance.yml' \
+            | grep -v 'ci.yml' \
+            || true)
           if [ -n "$hits" ]; then
-            echo "::error::Drift guard violation: direct 'dotnet test' found outside dotnet-test.yml"
+            echo "::error::Drift guard violation: direct 'dotnet test' found outside allowed workflows"
             echo "$hits"
             exit 1
           fi
