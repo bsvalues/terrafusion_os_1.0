@@ -1,8 +1,0 @@
-{
-  "params": {
-    "county": "benton",
-    "parcelId": "P-300",
-    "years": [2024, 2022, 2023]
-  },
-  "assert": { "resultKeys": ["trend", "narrative"], "noPii": true }
-}

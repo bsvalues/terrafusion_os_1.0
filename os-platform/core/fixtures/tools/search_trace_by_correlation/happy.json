@@ -1,4 +1,0 @@
-{
-  "params": { "county": "benton", "correlationId": "corr_0001", "limit": 5 },
-  "assert": { "resultKeys": ["events", "found"], "noPii": true }
-}

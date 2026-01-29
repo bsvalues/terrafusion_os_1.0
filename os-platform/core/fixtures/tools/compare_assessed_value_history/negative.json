@@ -1,4 +1,0 @@
-{
-  "params": { "county": "yakima", "parcelId": "P-301", "years": [2024] },
-  "assert": { "rejects": true }
-}

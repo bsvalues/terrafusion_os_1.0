@@ -1,4 +1,0 @@
-{
-  "params": { "county": "benton", "modelId": "MODEL-1", "asOfYear": 2026 },
-  "assert": { "resultKeys": ["inputs", "summary"], "noPii": true }
-}

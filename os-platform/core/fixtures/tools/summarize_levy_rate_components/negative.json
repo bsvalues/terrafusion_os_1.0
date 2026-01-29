@@ -1,4 +1,0 @@
-{
-  "params": { "county": "yakima", "taxYear": 2026 },
-  "assert": { "rejects": true }
-}

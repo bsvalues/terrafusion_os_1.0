@@ -1,7 +1,0 @@
-{
-  "params": { "county": "benton", "taxYear": 2026 },
-  "assert": {
-    "resultKeys": ["components", "totalRate", "explanation"],
-    "noPii": true
-  }
-}

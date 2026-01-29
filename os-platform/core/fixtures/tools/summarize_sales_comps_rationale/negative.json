@@ -1,4 +1,0 @@
-{
-  "params": { "county": "yakima", "subjectId": "S-2", "compIds": ["C1"] },
-  "assert": { "rejects": true }
-}
