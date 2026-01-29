@@ -22,7 +22,11 @@ export interface PilotContext {
 }
 
 export class ToolRunner {
-  static async execute(tool: ToolDefinition, params: any, context: PilotContext) {
+  static async execute(
+    tool: ToolDefinition,
+    params: any,
+    context: PilotContext
+  ): Promise<{ result: any; traceId: string }> {
     console.log(`[ToolRunner] 🚀 Requesting: ${tool.id} [Risk: ${tool.risk}]`);
 
     // 0) Basic invariants (fail-closed)
@@ -36,7 +40,7 @@ export class ToolRunner {
     // 1) PERMISSION CHECK (RBAC)
     const hasPerms = (tool.requiredPermissions ?? []).every(p => context.permissions.includes(p));
     if (!hasPerms) {
-      await TerraTraceService.emit({
+      const traceId = await TerraTraceService.emit({
         countyId: context.countyId,
         parcelId: context.parcelId,
         actor: { userId: context.userId, role: context.userRole },
@@ -44,7 +48,11 @@ export class ToolRunner {
         data: { inputs: { tool: tool.id, required: tool.requiredPermissions } },
         compliance: { classification: 'RESTRICTED', retention: '7_years' },
       });
-      throw new Error(`⛔ Permission Denied: Missing ${tool.requiredPermissions.join(', ')}`);
+      const error = new Error(
+        `⛔ Permission Denied: Missing ${tool.requiredPermissions.join(', ')}`
+      );
+      (error as Error & { traceId?: string }).traceId = traceId;
+      throw error;
     }
 
     // 2) RISK POLICY ENFORCEMENT (Gate 5)
@@ -82,7 +90,7 @@ export class ToolRunner {
 
       // 6) AUDIT: LOG SUCCESS
       await TerraTraceService.emitResult(traceId, result);
-      return result;
+      return { result, traceId };
     } catch (error: any) {
       // 7) AUDIT: LOG FAILURE
       await TerraTraceService.emitResult(traceId, null, error?.message ?? String(error));

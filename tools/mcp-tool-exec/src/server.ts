@@ -16,7 +16,12 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 
-import { ToolRegistry, ToolRunner, registerDefaultTools, type PilotContext } from '@terrafusion/os-core';
+import {
+    ToolRegistry,
+    ToolRunner,
+    registerDefaultTools,
+    type PilotContext,
+} from '@terrafusion/os-core';
 
 // Register demo tools on startup
 registerDefaultTools();
@@ -148,7 +153,7 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
 
     // Execute through ToolRunner (enforces permissions, risk gates, lane isolation)
     try {
-      const result = await ToolRunner.execute(tool, params, context);
+      const { result, traceId } = await ToolRunner.execute(tool, params, context);
 
       return {
         content: [
@@ -157,13 +162,14 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
             text: JSON.stringify({
               ok: true,
               toolId,
+              correlationId: traceId,
               result,
             }),
           },
         ],
       };
     } catch (err) {
-      const error = err as Error;
+      const error = err as Error & { traceId?: string };
 
       return {
         content: [
@@ -173,6 +179,7 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
               ok: false,
               toolId,
               error: error.message,
+              correlationId: error.traceId,
               // Note: ToolRunner already emits trace for permission_denied
               // No trace for invariant/risk/lane failures (fail-closed, no leak)
             }),

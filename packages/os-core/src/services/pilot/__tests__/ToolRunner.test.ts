@@ -62,9 +62,16 @@ describe('ToolRunner', () => {
     const tool = makeTool({ requiredPermissions: ['parcel:read', 'workflow:write'] });
     const ctx = makeContext({ permissions: ['parcel:read'] });
 
-    await expect(ToolRunner.execute(tool, { parcelId: 'p1' }, ctx)).rejects.toThrow(
-      /Permission Denied/i
-    );
+    let thrown: unknown;
+    try {
+      await ToolRunner.execute(tool, { parcelId: 'p1' }, ctx);
+    } catch (err) {
+      thrown = err;
+    }
+
+    expect(thrown).toBeInstanceOf(Error);
+    expect((thrown as Error).message).toMatch(/Permission Denied/i);
+    expect((thrown as Error & { traceId?: string }).traceId).toBe('trace-123');
 
     expect(TerraTraceService.emit).toHaveBeenCalledTimes(1);
     const callArg = (TerraTraceService.emit as any).mock.calls[0][0];
@@ -128,7 +135,8 @@ describe('ToolRunner', () => {
     const ctx = makeContext();
     const result = await ToolRunner.execute(tool, { parcelId: 'p1' }, ctx);
 
-    expect(result.ok).toBe(true);
+    expect(result.result.ok).toBe(true);
+    expect(result.traceId).toBe('trace-123');
 
     // Invocation trace emitted once
     expect(TerraTraceService.emit).toHaveBeenCalledTimes(1);

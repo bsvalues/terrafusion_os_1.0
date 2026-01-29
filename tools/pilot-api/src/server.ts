@@ -18,6 +18,7 @@ import {
     ToolRunner,
     registerDefaultTools,
     type PilotContext,
+    type ToolDefinition,
 } from '@terrafusion/os-core';
 import cors from 'cors';
 import express, { Application, NextFunction, Request, Response } from 'express';
@@ -36,6 +37,19 @@ const isDev = process.env.NODE_ENV !== 'production';
 // ════════════════════════════════════════════════════════════════════════════
 
 registerDefaultTools();
+
+// Dev-only: lane violation tool for smoke checks
+if (isDev && !ToolRegistry.has('atlas.parcel.badwrite')) {
+  const devLaneViolationTool: ToolDefinition = {
+    id: 'atlas.parcel.badwrite',
+    suite: 'atlas',
+    writeLane: 'dais:workflow',
+    risk: 'write_high',
+    requiredPermissions: ['parcel:write'],
+    handler: async () => ({ ok: true, mock: true }),
+  };
+  ToolRegistry.register(devLaneViolationTool);
+}
 
 // ════════════════════════════════════════════════════════════════════════════
 // Express app
@@ -61,11 +75,9 @@ interface AuthenticatedRequest extends Request {
 }
 
 const contextSchema = z.object({
-  userId: z.string().min(1),
-  countyId: z.string().min(1),
-  role: z.string().default('analyst'),
-  permissions: z.string().default(''),
-  mode: z.enum(['pilot', 'muse']).default('pilot'),
+  role: z.string().optional(),
+  permissions: z.string().optional(),
+  mode: z.enum(['pilot', 'muse']).optional(),
   parcelId: z.string().optional(),
 });
 
@@ -90,10 +102,23 @@ function deriveContext(req: Request, res: Response, next: NextFunction): void {
     return next();
   }
 
-  // Parse and validate
+  if (!rawUserId) {
+    res.status(401).json({
+      error: 'Missing identity header',
+      required: ['x-user-id'],
+    });
+    return;
+  }
+
+  if (!rawCountyId) {
+    res.status(400).json({
+      error: 'Missing required header',
+      required: ['x-county-id'],
+    });
+    return;
+  }
+
   const parsed = contextSchema.safeParse({
-    userId: rawUserId,
-    countyId: rawCountyId,
     role: rawRole,
     permissions: rawPermissions,
     mode: rawMode,
@@ -101,22 +126,21 @@ function deriveContext(req: Request, res: Response, next: NextFunction): void {
   });
 
   if (!parsed.success) {
-    res.status(401).json({
-      error: 'Missing or invalid context headers',
-      required: ['x-user-id', 'x-county-id'],
-      optional: ['x-role', 'x-permissions', 'x-mode', 'x-parcel-id'],
+    res.status(400).json({
+      error: 'Invalid context headers',
+      details: parsed.error.flatten(),
     });
     return;
   }
 
-  const { userId, countyId, role, permissions, mode, parcelId } = parsed.data;
+  const { role, permissions, mode, parcelId } = parsed.data;
 
   (req as AuthenticatedRequest).pilotContext = {
-    userId,
-    userRole: role,
+    userId: rawUserId,
+    userRole: role ?? 'analyst',
     permissions: permissions ? permissions.split(',').map(p => p.trim()) : [],
-    activeMode: mode,
-    countyId,
+    activeMode: mode ?? 'pilot',
+    countyId: rawCountyId,
     parcelId,
   };
 
@@ -182,23 +206,27 @@ app.post('/api/tools/execute', deriveContext, async (req, res) => {
     // Get tool definition from registry
     const tool = ToolRegistry.get(toolName);
     // Execute through ToolRunner (static method)
-    const result = await ToolRunner.execute(tool, input, ctx);
-    res.json(result);
+    const { result, traceId } = await ToolRunner.execute(tool, input, ctx);
+    res.json({ ok: true, correlationId: traceId, result });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
+    const error = err as Error & { traceId?: string };
+    const message = error.message || 'Unknown error';
 
     // Map error to HTTP status
     if (message.includes('Unknown tool') || message.includes('not found')) {
-      res.status(404).json({ error: message });
-    } else if (message.includes('Permission Denied') || message.includes('forbidden')) {
-      res.status(403).json({ error: message });
-    } else if (message.includes('Risk Gate') || message.includes('BLOCKED')) {
-      res.status(403).json({ error: message });
-    } else if (message.includes('Lane Violation')) {
-      res.status(403).json({ error: message });
-    } else {
-      res.status(500).json({ error: message });
+      res.status(404).json({ ok: false, error: message });
+      return;
     }
+    if (message.startsWith('⛔ Permission Denied')) {
+      res.status(403).json({ ok: false, error: message, correlationId: error.traceId });
+      return;
+    }
+    if (message.startsWith('🛡️ Risk Gate') || message.startsWith('🚧 Lane Violation')) {
+      res.status(409).json({ ok: false, error: message });
+      return;
+    }
+
+    res.status(500).json({ ok: false, error: message, correlationId: error.traceId });
   }
 });
 
