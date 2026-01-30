@@ -2,6 +2,14 @@ name: E2E Smoke - TerraFusion cOS
 
 on:
   pull_request:
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'src/**'
+      - 'apps/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/e2e-smoke.yml'
   workflow_dispatch:
 
 jobs:

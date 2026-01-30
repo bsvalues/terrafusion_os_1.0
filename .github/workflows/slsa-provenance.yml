@@ -7,8 +7,20 @@ on:
   push:
     branches: [main, release/**]
     tags: ['v*']
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/slsa-provenance.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/slsa-provenance.yml'
   workflow_dispatch:
 
 permissions:
