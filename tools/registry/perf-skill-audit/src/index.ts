@@ -58,7 +58,41 @@ const RULES_VERSION = 'vercel-react-2026-01';
 const CLI_FLAGS = {
   emitPatch: process.argv.includes('--emit-patch'),
   verbose: process.argv.includes('--verbose'),
+  scope: (process.argv.find(a => a.startsWith('--scope='))?.split('=')[1] || 'actionable') as 'actionable' | 'full',
+  allowForbidden: process.argv.includes('--allow-forbidden'),
 };
+
+// Core Governance Surface (from AGENTS.md)
+const ALLOWED_PATHS = [
+  /^os-platform\/core\/pilot\//,
+  /^os-platform\/core\/types\//,
+  /^tools\/registry\//,
+];
+
+// Forbidden paths (from AGENTS.md)
+const FORBIDDEN_PATTERNS = [
+  /\/ARCHIVE\//i,
+  /^ARCHIVE\//i,
+  /^specialized\//i,
+  /^applications\//i,
+  /\/archive\//i,
+];
+
+/**
+ * Check if a file path is in the allowed governance surface
+ */
+function isInAllowedSurface(filePath: string): boolean {
+  const normalizedPath = filePath.replace(/\\/g, '/');
+  return ALLOWED_PATHS.some(pattern => pattern.test(normalizedPath));
+}
+
+/**
+ * Check if a file path is in a forbidden zone
+ */
+function isInForbiddenZone(filePath: string): boolean {
+  const normalizedPath = filePath.replace(/\\/g, '/');
+  return FORBIDDEN_PATTERNS.some(pattern => pattern.test(normalizedPath));
+}
 
 /**
  * Recursively find all TypeScript/TSX files
@@ -225,7 +259,17 @@ function generateMarkdownReport(report: AuditReport): string {
  */
 async function runAudit(): Promise<void> {
   console.log('🔍 TerraFusion Performance Skill Audit');
-  console.log('   Phase 4G: Informational Only\n');
+  console.log('   Phase 4K: Governance-Aware Scanning\n');
+
+  if (CLI_FLAGS.scope === 'actionable') {
+    console.log('🎯 Scope: ACTIONABLE (allowed surface only)');
+  } else {
+    console.log('📊 Scope: FULL (all findings including forbidden)');
+  }
+  if (CLI_FLAGS.allowForbidden) {
+    console.log('⚠️  --allow-forbidden: Forbidden paths will be included');
+  }
+  console.log('');
 
   const startTime = Date.now();
   const config = DEFAULT_CONFIG;
@@ -292,8 +336,21 @@ async function runAudit(): Promise<void> {
   // Limit to max findings
   const limitedFindings = findings.slice(0, config.maxFindings);
 
-  // Build report
-  const report: AuditReport = {
+  // Phase 4K: Split findings into full and actionable streams
+  const actionableFindings = limitedFindings.filter(f => 
+    isInAllowedSurface(f.file) && !isInForbiddenZone(f.file)
+  );
+  const forbiddenFindings = limitedFindings.filter(f =>
+    isInForbiddenZone(f.file)
+  );
+
+  // Determine which findings to report based on scope
+  const reportFindings = CLI_FLAGS.scope === 'actionable' 
+    ? actionableFindings 
+    : limitedFindings;
+
+  // Build full report (all findings)
+  const fullReport: AuditReport = {
     run: {
       ref: getGitRef(),
       timestamp: new Date().toISOString(),
@@ -310,21 +367,41 @@ async function runAudit(): Promise<void> {
     findings: limitedFindings,
   };
 
+  // Build actionable report (allowed surface only)
+  const actionableReport: AuditReport = {
+    run: {
+      ...fullReport.run,
+    },
+    summary: {
+      critical: actionableFindings.filter(f => f.severity === 'critical').length,
+      high: actionableFindings.filter(f => f.severity === 'high').length,
+      medium: actionableFindings.filter(f => f.severity === 'medium').length,
+      total: actionableFindings.length,
+    },
+    findings: actionableFindings,
+  };
+
+  // Use scope-appropriate report for plan generation
+  const report = CLI_FLAGS.scope === 'actionable' ? actionableReport : fullReport;
+
   // Ensure output directory exists
   const outDir = path.join(__dirname, '..', 'out');
   if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true });
   }
 
-  // Write reports
-  const jsonPath = path.join(outDir, 'perf-audit-report.json');
+  // Write both report streams (Phase 4K)
+  const fullJsonPath = path.join(outDir, 'perf-audit-report.full.json');
+  const actionableJsonPath = path.join(outDir, 'perf-audit-report.actionable.json');
   const mdPath = path.join(outDir, 'perf-audit-report.md');
 
-  fs.writeFileSync(jsonPath, JSON.stringify(report, null, 2));
+  fs.writeFileSync(fullJsonPath, JSON.stringify(fullReport, null, 2));
+  fs.writeFileSync(actionableJsonPath, JSON.stringify(actionableReport, null, 2));
   fs.writeFileSync(mdPath, generateMarkdownReport(report));
 
-  // Phase 4I: Generate remediation plan for waterfall findings
-  const plan = generateRemediationPlan(limitedFindings, getGitRef(), RULES_VERSION);
+  // Phase 4I: Generate remediation plan (scope-aware by default)
+  const planFindings = CLI_FLAGS.scope === 'actionable' ? actionableFindings : limitedFindings;
+  const plan = generateRemediationPlan(planFindings, getGitRef(), RULES_VERSION);
   const planPath = path.join(outDir, 'waterfalls.plan.json');
   fs.writeFileSync(planPath, JSON.stringify(plan, null, 2));
 
@@ -367,8 +444,17 @@ async function runAudit(): Promise<void> {
   console.log(`   ─────────────────`);
   console.log(`   📝 Total:    ${report.summary.total}`);
   console.log('');
+
+  // Phase 4K: Show governance split
+  console.log('🏛️  Governance Split:');
+  console.log(`   ✅ Actionable:   ${actionableFindings.length} findings in allowed surface`);
+  console.log(`   ⛔ Forbidden:    ${forbiddenFindings.length} findings in forbidden zones`);
+  console.log(`   📊 Full scope:   ${limitedFindings.length} total findings`);
+  console.log('');
+
   console.log(`✅ Reports written to:`);
-  console.log(`   ${jsonPath}`);
+  console.log(`   ${actionableJsonPath} (${actionableReport.summary.total} items)`);
+  console.log(`   ${fullJsonPath} (${fullReport.summary.total} items)`);
   console.log(`   ${mdPath}`);
   console.log(`\n⏱️  Duration: ${report.run.durationMs}ms`);
 }

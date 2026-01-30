@@ -17,11 +17,11 @@
  * It will NEVER touch forbidden paths even if they appear in the plan.
  */
 
+import { execSync, spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { execSync, spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
-import type { RemediationPlan, PlanItem } from './scanners/types.js';
+import type { PlanItem, RemediationPlan } from './scanners/types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -71,10 +71,44 @@ Gates:
 AI-Collaboration: Ralph-Loop-4J
 Government: FISMA-aware automated refactor`;
 
+// Governance education messages
+const GOVERNANCE_EDUCATION: Record<string, string> = {
+  '/ARCHIVE/': 'AGENTS.md: DO NOT TOUCH **/ARCHIVE/**. Archive is immutable legacy code.',
+  '^ARCHIVE/': 'AGENTS.md: DO NOT TOUCH ARCHIVE/**. Archive is immutable legacy code.',
+  '^specialized/': 'AGENTS.md: specialized/** requires explicit authorization.',
+  '^applications/': 'AGENTS.md: applications/** requires explicit authorization.',
+  '/archive/': 'AGENTS.md: DO NOT TOUCH **/archive/**. Archive is immutable legacy code.',
+};
+
+/**
+ * Get governance education message for a forbidden pattern
+ */
+function getGovernanceEducation(pattern: string): string {
+  for (const [key, message] of Object.entries(GOVERNANCE_EDUCATION)) {
+    if (pattern.includes(key.replace('^', '').replace('/', ''))) {
+      return message;
+    }
+  }
+  return 'File is in a forbidden governance zone.';
+}
+
+/**
+ * Get suggested action for a forbidden path
+ */
+function getSuggestedAction(filePath: string): string {
+  if (filePath.includes('/archive/') || filePath.includes('/ARCHIVE/')) {
+    return 'To remediate: Move modern equivalent into allowed scope (os-platform/core/**, tools/registry/**)';
+  }
+  if (filePath.startsWith('applications/') || filePath.startsWith('specialized/')) {
+    return 'To remediate: Request explicit authorization or refactor into allowed scope';
+  }
+  return 'To remediate: Move code into the Core Governance Surface';
+}
+
 /**
  * Check if a file path is in a forbidden zone
  */
-function isForbiddenPath(filePath: string): { forbidden: boolean; reason?: string } {
+function isForbiddenPath(filePath: string): { forbidden: boolean; reason?: string; education?: string; suggestion?: string } {
   const normalizedPath = filePath.replace(/\\/g, '/');
 
   for (const pattern of FORBIDDEN_PATTERNS) {
@@ -82,6 +116,8 @@ function isForbiddenPath(filePath: string): { forbidden: boolean; reason?: strin
       return {
         forbidden: true,
         reason: `Path matches forbidden pattern: ${pattern.source}`,
+        education: getGovernanceEducation(pattern.source),
+        suggestion: getSuggestedAction(normalizedPath),
       };
     }
   }
@@ -210,10 +246,7 @@ function generateCommitMessage(item: PlanItem): string {
 /**
  * Apply a single patch with git apply --check
  */
-function applyPatch(
-  item: PlanItem,
-  patchContent: string
-): { applied: boolean; reason?: string } {
+function applyPatch(item: PlanItem, patchContent: string): { applied: boolean; reason?: string } {
   const patchPath = path.join(process.cwd(), '.ralph-patch.tmp');
 
   try {
@@ -285,9 +318,7 @@ async function main(): Promise<void> {
   console.log(`📋 Loaded plan: ${plan.summary.total} items, ${plan.summary.eligible} eligible`);
 
   // Filter eligible items
-  const eligibleItems = plan.items.filter(
-    item => item.eligibility.eligible && item.suggestedPatch
-  );
+  const eligibleItems = plan.items.filter(item => item.eligibility.eligible && item.suggestedPatch);
 
   if (eligibleItems.length === 0) {
     console.log('✅ No eligible items to apply.');
@@ -305,6 +336,8 @@ async function main(): Promise<void> {
     if (forbidden.forbidden) {
       console.log(`⛔ SKIP: ${item.file}`);
       console.log(`   Reason: ${forbidden.reason}`);
+      console.log(`   📜 Rule: ${forbidden.education}`);
+      console.log(`   💡 ${forbidden.suggestion}`);
       safeItems.push({ item, skipped: true, reason: forbidden.reason });
       continue;
     }
@@ -314,6 +347,7 @@ async function main(): Promise<void> {
     if (!boundary.valid) {
       console.log(`⚠️  SKIP: ${item.file}`);
       console.log(`   Reason: ${boundary.reason}`);
+      console.log(`   💡 Suggestion: Add function scope detection or fix line boundaries`);
       safeItems.push({ item, skipped: true, reason: boundary.reason });
       continue;
     }
@@ -389,9 +423,12 @@ async function main(): Promise<void> {
       console.log(commitMessage);
     }
 
-    const commitResult = runCommand(`git add "${item.file}" && git commit -m "${commitMessage.replace(/"/g, '\\"')}"`, {
-      silent: true,
-    });
+    const commitResult = runCommand(
+      `git add "${item.file}" && git commit -m "${commitMessage.replace(/"/g, '\\"')}"`,
+      {
+        silent: true,
+      }
+    );
 
     if (!commitResult.success) {
       console.log('⚠️  Commit failed (may be no changes):', commitResult.output);
@@ -405,7 +442,10 @@ async function main(): Promise<void> {
       const branchName = `ralph-auto/${item.id}`;
       runCommand(`git checkout -b ${branchName}`, { silent: true });
       runCommand(`git push -u origin ${branchName}`, { silent: true });
-      runCommand(`gh pr create --title "fix(perf): ${item.kind} optimization" --body "Auto-generated by Ralph Loop 4J"`, { silent: true });
+      runCommand(
+        `gh pr create --title "fix(perf): ${item.kind} optimization" --body "Auto-generated by Ralph Loop 4J"`,
+        { silent: true }
+      );
     }
   }
 
