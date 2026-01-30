@@ -35,7 +35,7 @@
     "@langchain/core": "^0.2.20",
     "@langchain/openai": "^0.2.5",
     "@langchain/anthropic": "^0.2.7",
-    "@langchain/community": "^0.2.25",
+    "@langchain/community": "^0.3.58",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@supabase/supabase-js": "^2.45.4",
     "axios": "^1.7.7",
