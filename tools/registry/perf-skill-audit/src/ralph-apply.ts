@@ -356,7 +356,9 @@ async function main(): Promise<void> {
       console.log(`⛔ SKIP: ${item.file}`);
       console.log(`   Reason: Not in Core Governance Surface`);
       console.log(`   📜 Rule: AGENTS.md defines allowed scope`);
-      console.log(`   💡 Allowed: os-platform/core/pilot/**, os-platform/core/types/**, tools/registry/**`);
+      console.log(
+        `   💡 Allowed: os-platform/core/pilot/**, os-platform/core/types/**, tools/registry/**`
+      );
       safeItems.push({ item, skipped: true, reason: 'Not in Core Governance Surface' });
       continue;
     }

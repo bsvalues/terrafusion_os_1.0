@@ -15,6 +15,16 @@ export type WaterfallKind =
   | 'retry-seq'; // Sequential in try/catch retry block
 
 /**
+ * Bundle/Import classification types for Phase 4M1
+ */
+export type BundleKind =
+  | 'barrel-import' // Import from barrel/index file
+  | 'barrel-file' // Index file with many re-exports
+  | 'heavy-import' // Import from known large library
+  | 'duplicate-import' // Same module imported via multiple paths
+  | 'dynamic-candidate'; // Could benefit from dynamic import
+
+/**
  * Evidence item for detailed findings
  */
 export interface EvidenceItem {
@@ -35,9 +45,13 @@ export interface Finding {
 
   // v2 additions for waterfall scanner
   functionName?: string;
-  kind?: WaterfallKind;
+  kind?: WaterfallKind | BundleKind;
   priorityScore?: number; // 0-100, higher = fix first
   evidence?: EvidenceItem[];
+
+  // Phase 4M1: Bundle scanner additions
+  importPath?: string;
+  importChain?: string[];
 }
 
 export interface ScanContext {
@@ -87,9 +101,9 @@ export interface AuditConfig {
  * P2: batch-candidate → batch interface stub
  */
 export type PatchStrategy =
-  | 'promise-all'        // P1: Convert to Promise.all()
-  | 'batch-stub'         // P2: Create batch interface TODO
-  | 'review-only';       // Not auto-fixable, needs human review
+  | 'promise-all' // P1: Convert to Promise.all()
+  | 'batch-stub' // P2: Create batch interface TODO
+  | 'review-only'; // Not auto-fixable, needs human review
 
 /**
  * Risk level for applying patch
@@ -109,28 +123,28 @@ export interface EligibilityCheck {
  * This is the handoff contract to Ralph Loop / QC-019
  */
 export interface PlanItem {
-  id: string;                    // Unique finding ID
-  file: string;                  // Relative file path
-  functionName: string;          // Function/method containing the issue
-  startLine: number;             // Start of function/await block
-  endLine: number;               // End of function/await block
-  kind: WaterfallKind;           // Classification from v2 scanner
-  priorityScore: number;         // 0-100, higher = fix first
-  patchStrategy: PatchStrategy;  // How to fix
-  risk: PatchRisk;               // Risk level
+  id: string; // Unique finding ID
+  file: string; // Relative file path
+  functionName: string; // Function/method containing the issue
+  startLine: number; // Start of function/await block
+  endLine: number; // End of function/await block
+  kind: WaterfallKind | BundleKind; // Classification from scanner
+  priorityScore: number; // 0-100, higher = fix first
+  patchStrategy: PatchStrategy; // How to fix
+  risk: PatchRisk; // Risk level
   eligibility: EligibilityCheck; // Can we auto-fix?
-  verification: string[];        // Commands to run after patch
-  evidence: EvidenceItem[];      // Line-by-line audit trail
-  suggestedPatch?: string;       // Promise.all() transformation
+  verification: string[]; // Commands to run after patch
+  evidence: EvidenceItem[]; // Line-by-line audit trail
+  suggestedPatch?: string; // Promise.all() transformation
 }
 
 /**
  * Remediation plan output
  */
 export interface RemediationPlan {
-  generated: string;             // ISO timestamp
-  ref: string;                   // Git ref
-  rulesVersion: string;          // Scanner version
+  generated: string; // ISO timestamp
+  ref: string; // Git ref
+  rulesVersion: string; // Scanner version
   summary: {
     total: number;
     eligible: number;

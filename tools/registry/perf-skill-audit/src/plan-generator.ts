@@ -155,8 +155,8 @@ function findingToPlanItem(finding: Finding, index: number): PlanItem | null {
   if (finding.rule !== 'waterfall.parallelize') {
     return null;
   }
-  
-  const kind = finding.kind || 'dependent';
+
+  const kind = (finding.kind || 'dependent') as WaterfallKind;
   const patchStrategy = determinePatchStrategy(kind);
   const risk = assessRisk(finding, kind);
   const eligibility = checkEligibility(finding);
