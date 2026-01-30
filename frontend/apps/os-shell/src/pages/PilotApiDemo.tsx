@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  checkHealth,
     executeTool,
     listTools,
     type ExecuteToolResponse,
@@ -25,6 +26,17 @@ export function PilotApiDemo(): React.ReactElement {
   const [executing, setExecuting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ExecuteToolResponse | null>(null);
+  const [healthOk, setHealthOk] = useState<boolean | null>(null);
+  const [lastChecked, setLastChecked] = useState<string | null>(null);
+  const [lastError, setLastError] = useState<string | null>(null);
+
+  const baseUrl = useMemo(
+    () =>
+      (typeof import.meta !== 'undefined' && import.meta.env?.VITE_PILOT_API_URL) ||
+      (typeof process !== 'undefined' && process.env?.PILOT_API_URL) ||
+      'http://localhost:3333',
+    []
+  );
 
   const permissionsValue = useMemo(() => {
     if (!headers.permissions) return '';
@@ -67,19 +79,59 @@ export function PilotApiDemo(): React.ReactElement {
     }
   }, [selectedTool, params, headers]);
 
+  const runHealthCheck = useCallback(async () => {
+    const response = await checkHealth(baseUrl);
+    setLastChecked(new Date().toLocaleString());
+    if (response.ok) {
+      setHealthOk(true);
+      setLastError(null);
+    } else {
+      setHealthOk(false);
+      setLastError(response.error);
+    }
+  }, [baseUrl]);
+
   useEffect(() => {
     loadTools();
-  }, []);
+  }, [loadTools]);
+
+  useEffect(() => {
+    runHealthCheck();
+  }, [runHealthCheck]);
 
   return (
     <div className='min-h-screen bg-slate-950 text-white p-6'>
       <div className='max-w-5xl mx-auto'>
-        <div className='flex flex-col gap-2 mb-6'>
-          <h1 className='text-2xl font-bold text-cyan-400'>Pilot API Demo</h1>
-          <p className='text-slate-400 text-sm'>
-            Thin HTTP client → pilot-api (no enforcement in renderer). Returns correlation IDs for
-            audit.
-          </p>
+        <div className='flex flex-col gap-3 mb-6'>
+          <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3'>
+            <div>
+              <h1 className='text-2xl font-bold text-cyan-400'>Pilot API Demo</h1>
+              <p className='text-slate-400 text-sm'>
+                Thin HTTP client → pilot-api (no enforcement in renderer). Returns correlation IDs
+                for audit.
+              </p>
+            </div>
+            <button
+              onClick={runHealthCheck}
+              className='px-3 py-2 bg-slate-800 border border-slate-600 rounded text-xs text-slate-200 hover:border-cyan-500/50 transition-colors'
+            >
+              Check now
+            </button>
+          </div>
+          <div className='text-xs text-slate-400'>
+            {healthOk === null && <span>Checking health…</span>}
+            {healthOk === true && (
+              <span className='text-green-400'>
+                Healthy ✅ {lastChecked ? `• Last checked ${lastChecked}` : ''}
+              </span>
+            )}
+            {healthOk === false && (
+              <span className='text-red-400'>
+                Unreachable ❌ {lastChecked ? `• Last checked ${lastChecked}` : ''} • {baseUrl}
+                {lastError ? ` • ${lastError}` : ''}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
@@ -212,7 +264,7 @@ export function PilotApiDemo(): React.ReactElement {
               )}
             </div>
             <div className='text-xs text-slate-500'>
-              Base URL: {import.meta.env?.VITE_PILOT_API_URL || 'http://localhost:3333'}
+              Base URL: {baseUrl}
             </div>
           </div>
         </div>

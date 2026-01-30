@@ -28,6 +28,8 @@ export type ExecuteToolResponse = {
   error?: string;
 };
 
+export type PilotHealth = { ok: true } | { ok: false; error: string };
+
 const DEFAULT_BASE_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_PILOT_API_URL) ||
   (typeof process !== 'undefined' && process.env?.PILOT_API_URL) ||
@@ -95,4 +97,26 @@ export const executeTool = async (
   }
 
   return data as ExecuteToolResponse;
+};
+
+export const checkHealth = async (
+  baseUrl: string = DEFAULT_BASE_URL,
+  timeoutMs: number = 1800
+): Promise<PilotHealth> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(`${baseUrl}/health`, { signal: controller.signal });
+    if (response.status === 200) {
+      return { ok: true };
+    }
+    const errorText = await response.text().catch(() => 'Unhealthy');
+    return { ok: false, error: errorText || `HTTP ${response.status}` };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Health check failed';
+    return { ok: false, error: message };
+  } finally {
+    clearTimeout(timeoutId);
+  }
 };
