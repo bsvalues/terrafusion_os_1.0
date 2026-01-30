@@ -105,6 +105,7 @@ git push -u origin feature/TF-123-your-feature
 - [ ] **Title:** Matches main commit format (`type(scope): summary`)
 - [ ] **Description:** Complete with context, impact, and evidence
 - [ ] **Tests:** All automated checks passing (CI/CD pipeline)
+- [ ] **Lint:** Must pass (blocking as of **2026-02-15** — do not extend without RFC)
 - [ ] **Security:** No secrets committed, security scan passed
 - [ ] **Compliance:** FISMA-High requirements verified
 - [ ] **Performance:** Impact assessment completed
