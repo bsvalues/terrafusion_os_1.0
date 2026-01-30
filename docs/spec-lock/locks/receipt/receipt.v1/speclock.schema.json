@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.io/schemas/receipt.v1.schema.json",
+  "title": "TerraFusion Receipt v1",
+  "description": "Citizen/auditor-verifiable receipt for government artifacts",
+  "type": "object",
+  "required": [
+    "artifact",
+    "exp",
+    "issued_at",
+    "nbf",
+    "proof_url",
+    "receipt_id",
+    "signing",
+    "speclock_manifest_sha256"
+  ],
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable unique identifier for the receipt"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "RFC3339 UTC timestamp when receipt was issued"
+    },
+    "nbf": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "Not Before - validity window start (RFC3339 UTC)"
+    },
+    "exp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "Expiration - validity window end (RFC3339 UTC)"
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["type", "sha256"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "assessment_notice",
+            "levy_table",
+            "gis_export",
+            "report",
+            "other"
+          ],
+          "description": "Type of artifact being receipted"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Lower-case hex SHA-256 of artifact content"
+        }
+      },
+      "additionalProperties": false
+    },
+    "speclock_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the SpecLock manifest at issuance time"
+    },
+    "policy_bundle_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the OPA policy bundle (optional)"
+    },
+    "signing": {
+      "type": "object",
+      "required": ["mode", "signature_sha256"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["mythic_cosign", "cosmic_tss"],
+          "description": "Signature mode used"
+        },
+        "group_pub_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Group public key hash (cosmic_tss only)"
+        },
+        "signature_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of the signature"
+        },
+        "participants_used": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "Participant indices used for threshold signature (cosmic_tss only)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "proof_url": {
+      "type": "string",
+      "pattern": "^/",
+      "description": "URL path to verification endpoint"
+    }
+  },
+  "additionalProperties": false
+}

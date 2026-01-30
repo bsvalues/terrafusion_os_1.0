@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => ({
     // Bundle analyzer for visualizing bundle size
     mode === 'analyze' && visualizer({
       open: true,
-      filename: 'dist/stats.html',
+      filename: path.resolve(__dirname, '../native-shell/ui/dist/stats.html'),
       gzipSize: true,
       brotliSize: true,
       template: 'treemap', // 'sunburst', 'treemap', 'network'
@@ -53,8 +53,8 @@ export default defineConfig(({ mode }) => ({
   },
 
   build: {
-    // Build directly to native shell UI directory!
-    outDir: '../native-shell/ui',
+    // Build directly to native shell UI dist directory.
+    outDir: '../native-shell/ui/dist',
     emptyOutDir: true,
 
     // Optimize for production

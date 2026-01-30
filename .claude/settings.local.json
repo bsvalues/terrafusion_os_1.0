@@ -173,7 +173,10 @@
       "Bash(zip:*)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Read(/mnt/d/**)"
+      "Read(/mnt/d/**)",
+      "Bash(test:*)",
+      "Bash(git merge:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": [],

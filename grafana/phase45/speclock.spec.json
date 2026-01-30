@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "speclock": {
+    "surface": "dashboards",
+    "version": "v1.0.0",
+    "type": "monitoring",
+    "project": "TerraFusion OS",
+    "tier": "operational"
+  },
+  "generated_at": "2025-12-12T00:00:00Z",
+  "artifacts": [
+    {
+      "id": "atlas-auto-remediation-benton-ops",
+      "path": "grafana/phase45/atlas-auto-remediation-benton-ops.json",
+      "type": "grafana-dashboard"
+    },
+    {
+      "id": "atlas-auto-remediation-governance",
+      "path": "grafana/phase45/atlas-auto-remediation-governance.json",
+      "type": "grafana-dashboard"
+    }
+  ],
+  "validation_rules": [
+    {
+      "rule": "dashboard_uid_format",
+      "pattern": "^atlas-auto-remediation-"
+    },
+    {
+      "rule": "panel_datasource",
+      "required": true
+    }
+  ]
+}

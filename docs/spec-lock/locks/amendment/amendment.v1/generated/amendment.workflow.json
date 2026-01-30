@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Amendment Workflow",
+  "description": "State machine definition for amendment lifecycle",
+  "type": "object",
+  "properties": {
+    "initial_state": {
+      "const": "proposed",
+      "description": "All amendments start in proposed state"
+    },
+    "final_states": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "effective",
+        "rejected",
+        "expired",
+        "superseded"
+      ]
+    },
+    "states": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "transitions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "guards": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "initial_state",
+    "final_states",
+    "states"
+  ],
+  "definitions": {
+    "state_machine": {
+      "proposed": {
+        "transitions": [
+          "reviewed",
+          "rejected"
+        ],
+        "guards": [
+          "valid_changeset",
+          "valid_nbf"
+        ]
+      },
+      "reviewed": {
+        "transitions": [
+          "approved",
+          "rejected"
+        ],
+        "guards": [
+          "all_gates_passed"
+        ]
+      },
+      "approved": {
+        "transitions": [
+          "effective",
+          "rejected"
+        ],
+        "guards": [
+          "quorum_met",
+          "nbf_reached"
+        ]
+      },
+      "effective": {
+        "transitions": [
+          "expired",
+          "superseded"
+        ],
+        "guards": []
+      },
+      "rejected": {
+        "transitions": [],
+        "guards": []
+      },
+      "expired": {
+        "transitions": [],
+        "guards": []
+      },
+      "superseded": {
+        "transitions": [],
+        "guards": []
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Agent Status Contract v1",
+  "type": "object",
+  "required": [
+    "executionMode",
+    "totalAgents",
+    "activeAgents",
+    "queueDepth",
+    "lastActivityUtc",
+    "uptimeSeconds",
+    "provider",
+    "warnings"
+  ],
+  "properties": {
+    "executionMode": {
+      "type": "string",
+      "enum": ["Autonomous", "HumanInLoop", "Passive"]
+    },
+    "totalAgents": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "activeAgents": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "queueDepth": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "lastActivityUtc": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "uptimeSeconds": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "provider": {
+      "type": "string"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

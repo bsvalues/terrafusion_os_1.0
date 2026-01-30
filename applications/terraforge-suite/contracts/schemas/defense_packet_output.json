@@ -1,0 +1,257 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "defense_packet_output.json",
+  "title": "Defense Packet Output",
+  "description": "Structured defense packet with approach sections",
+  "type": "object",
+  "required": [
+    "subjectId",
+    "effectiveDate",
+    "finalValue",
+    "ratio",
+    "status",
+    "sections",
+    "generatedAt",
+    "packetHash"
+  ],
+  "properties": {
+    "subjectId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "effectiveDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "propertyAddress": {
+      "type": "string"
+    },
+    "finalValue": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Final reconciled value (integer cents)"
+    },
+    "salePrice": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ratio": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Assessment ratio (finalValue / salePrice)"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["OK", "Review Required", "Appeal Likely"]
+    },
+    "sections": {
+      "type": "object",
+      "required": [
+        "A_subject",
+        "B_sales",
+        "B2_cost",
+        "C_income",
+        "D_reconciliation",
+        "E_exhibits"
+      ],
+      "properties": {
+        "A_subject": {
+          "$ref": "#/definitions/SubjectSection"
+        },
+        "B_sales": {
+          "$ref": "#/definitions/ApproachSection"
+        },
+        "B2_cost": {
+          "$ref": "#/definitions/ApproachSection"
+        },
+        "C_income": {
+          "$ref": "#/definitions/ApproachSection"
+        },
+        "D_reconciliation": {
+          "$ref": "#/definitions/ReconciliationSection"
+        },
+        "E_exhibits": {
+          "$ref": "#/definitions/ExhibitsSection"
+        }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "string",
+      "description": "Brief executive summary"
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "packetHash": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 64,
+      "description": "Deterministic hash for integrity verification"
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0.0"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "SubjectSection": {
+      "type": "object",
+      "required": ["title", "content"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "default": "Subject Property & Scope"
+        },
+        "content": {
+          "type": "object",
+          "properties": {
+            "parcelId": { "type": "string" },
+            "address": { "type": "string" },
+            "propertyType": { "type": "string" },
+            "effectiveDate": { "type": "string" },
+            "assumptions": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "narrative": { "type": "string" }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApproachSection": {
+      "type": "object",
+      "required": ["title", "developed", "indicatedValue"],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "developed": {
+          "type": "boolean",
+          "description": "Whether this approach was developed"
+        },
+        "indicatedValue": {
+          "type": ["integer", "null"],
+          "description": "Indicated value or null if not developed"
+        },
+        "notDevelopedReason": {
+          "type": "string",
+          "description": "Explanation when approach is not developed"
+        },
+        "tables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "headers": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "rows": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": { "type": ["string", "number"] }
+                }
+              }
+            }
+          },
+          "default": []
+        },
+        "narrative": {
+          "type": "string",
+          "description": "Approach-specific narrative"
+        },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        }
+      },
+      "additionalProperties": false
+    },
+    "ReconciliationSection": {
+      "type": "object",
+      "required": ["title", "finalValue", "conclusion"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "default": "Reconciliation & Final Value Opinion"
+        },
+        "finalValue": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "method": {
+          "type": "string"
+        },
+        "weights": {
+          "type": "object",
+          "properties": {
+            "sales": { "type": "number" },
+            "income": { "type": "number" },
+            "cost": { "type": "number" }
+          }
+        },
+        "conclusion": {
+          "type": "string",
+          "description": "Final conclusion narrative"
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Why each approach was weighted as it was"
+        },
+        "confidenceLevel": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ExhibitsSection": {
+      "type": "object",
+      "required": ["title"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "default": "Exhibits & Audit References"
+        },
+        "auditEventIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "modelInputs": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "calculationSummary": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "reference": { "type": "string" }
+            }
+          },
+          "default": []
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

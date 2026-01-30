@@ -1,0 +1,85 @@
+{
+  "description": "Residential property with only sales approach developed - tests 'Not Developed' language",
+  "input": {
+    "subjectId": "BENTON-2026-005678",
+    "effectiveDate": "2026-01-20",
+    "salePrice": 42000000,
+    "finalValue": 40000000,
+    "propertyAddress": "555 Cedar Avenue, Richland, WA 99352",
+    "propertyType": "residential",
+    "assumptions": ["Fee simple interest", "As-is condition"],
+    "salesApproach": {
+      "indicatedValue": 40000000,
+      "confidenceLevel": "high",
+      "comparableCount": 4,
+      "valueRange": {
+        "min": 38000000,
+        "max": 42000000
+      },
+      "keyComparables": [
+        {
+          "id": "COMP-A",
+          "address": "100 Birch Road, Richland, WA",
+          "salePrice": 41000000,
+          "adjustedPrice": 40500000,
+          "weight": 0.3
+        },
+        {
+          "id": "COMP-B",
+          "address": "200 Elm Court, Kennewick, WA",
+          "salePrice": 39500000,
+          "adjustedPrice": 40000000,
+          "weight": 0.3
+        },
+        {
+          "id": "COMP-C",
+          "address": "300 Willow Way, Pasco, WA",
+          "salePrice": 38500000,
+          "adjustedPrice": 39500000,
+          "weight": 0.2
+        },
+        {
+          "id": "COMP-D",
+          "address": "400 Spruce Lane, Richland, WA",
+          "salePrice": 41500000,
+          "adjustedPrice": 40500000,
+          "weight": 0.2
+        }
+      ],
+      "adjustmentSummary": "Four highly comparable sales selected. Adjustments for size and condition."
+    },
+    "reconciliation": {
+      "finalValue": 40000000,
+      "method": "primary_approach",
+      "weights": {
+        "sales": 1.0
+      },
+      "primaryApproach": "sales",
+      "rationale": "Primary reliance on Sales Comparison Approach. Income and Cost approaches not developed.",
+      "confidenceLevel": "high",
+      "approachAgreement": "strong"
+    },
+    "diagnostics": {
+      "pipelineVersion": "1.0.0",
+      "calculationMode": "stub"
+    }
+  },
+  "expected": {
+    "ratio": 0.95,
+    "status": "OK",
+    "sections": {
+      "B_sales": {
+        "developed": true,
+        "indicatedValue": 40000000
+      },
+      "C_income": {
+        "developed": false,
+        "indicatedValue": null,
+        "notDevelopedReasonContains": "Not Developed"
+      },
+      "D_reconciliation": {
+        "finalValue": 40000000
+      }
+    }
+  }
+}

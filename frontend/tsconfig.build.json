@@ -7,9 +7,9 @@
     "**/*.test.{ts,tsx}",
     "**/*.spec.{ts,tsx}",
     "**/*.stories.{ts,tsx}",
-    "src/tests/**/*",
-    "src/__tests__/**/*",
-    "src/test-utils.tsx"
+    "apps/os-shell/src/tests/**/*",
+    "apps/os-shell/src/__tests__/**/*",
+    "apps/os-shell/src/test-utils.tsx"
   ],
-  "include": ["src/**/*.{ts,tsx}", "vite-env.d.ts"]
+  "include": ["apps/os-shell/src/**/*.{ts,tsx}", "apps/os-shell/src/vite-env.d.ts"]
 }

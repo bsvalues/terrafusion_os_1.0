@@ -2,27 +2,27 @@
   "displayName": "TerraFusion Integration Tests",
   "preset": "ts-jest",
   "testEnvironment": "jsdom",
-  "setupFilesAfterEnv": ["<rootDir>/src/tests/setupTests.ts"],
+  "setupFilesAfterEnv": ["<rootDir>/apps/os-shell/src/tests/setupTests.ts"],
   "moduleNameMapper": {
-    "^@/(.*)$": "<rootDir>/src/$1",
-    "^@components/(.*)$": "<rootDir>/src/components/$1",
-    "^@hooks/(.*)$": "<rootDir>/src/hooks/$1",
-    "^@utils/(.*)$": "<rootDir>/src/utils/$1",
-    "^@services/(.*)$": "<rootDir>/src/services/$1",
-    "^@context/(.*)$": "<rootDir>/src/context/$1",
+    "^@/(.*)$": "<rootDir>/apps/os-shell/src/$1",
+    "^@components/(.*)$": "<rootDir>/apps/os-shell/src/components/$1",
+    "^@hooks/(.*)$": "<rootDir>/apps/os-shell/src/hooks/$1",
+    "^@utils/(.*)$": "<rootDir>/apps/os-shell/src/utils/$1",
+    "^@services/(.*)$": "<rootDir>/apps/os-shell/src/services/$1",
+    "^@context/(.*)$": "<rootDir>/apps/os-shell/src/context/$1",
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-    "\\.(jpg|jpeg|png|gif|svg)$": "<rootDir>/src/tests/__mocks__/fileMock.ts"
+    "\\.(jpg|jpeg|png|gif|svg)$": "<rootDir>/apps/os-shell/src/tests/__mocks__/fileMock.ts"
   },
   "testMatch": [
-    "<rootDir>/src/tests/integration/**/*.test.{ts,tsx}",
-    "<rootDir>/src/tests/unit/**/*.test.{ts,tsx}"
+    "<rootDir>/apps/os-shell/src/tests/integration/**/*.test.{ts,tsx}",
+    "<rootDir>/apps/os-shell/src/tests/unit/**/*.test.{ts,tsx}"
   ],
   "collectCoverageFrom": [
-    "src/**/*.{ts,tsx}",
-    "!src/**/*.d.ts",
-    "!src/**/*.stories.{ts,tsx}",
-    "!src/tests/**/*",
-    "!src/vite-env.d.ts"
+    "apps/os-shell/src/**/*.{ts,tsx}",
+    "!apps/os-shell/src/**/*.d.ts",
+    "!apps/os-shell/src/**/*.stories.{ts,tsx}",
+    "!apps/os-shell/src/tests/**/*",
+    "!apps/os-shell/src/vite-env.d.ts"
   ],
   "coverageThresholds": {
     "global": {

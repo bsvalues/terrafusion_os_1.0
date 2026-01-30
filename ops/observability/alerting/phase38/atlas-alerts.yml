@@ -1,0 +1,196 @@
+# ============================================================================
+# PHASE 38: Atlas Prometheus Alert Rules
+# AI-Aware Alerts for Forecast Engine, Orchestrator, and Anomaly Detection
+# ALERT SPEC LOCK v1.0.0 — FROZEN
+# "Government. Transcended."
+# ============================================================================
+
+groups:
+  # ==========================================================================
+  # ATLAS FORECAST ENGINE ALERTS
+  # ==========================================================================
+  - name: atlas.forecast
+    interval: 30s
+    rules:
+      # ----------------------------------------------------------------------
+      # AtlasForecastStale - Critical: No forecasts generated recently
+      # ----------------------------------------------------------------------
+      - alert: AtlasForecastStale
+        expr: |
+          (time() - atlas_forecast_orchestrator_last_run_timestamp_seconds) > 300
+        for: 5m
+        labels:
+          severity: critical
+          government: 'true'
+          component: forecast
+          citizen_impact: high
+        annotations:
+          summary: 'Atlas forecast data is stale'
+          description: 'No forecast orchestrator run completed in the last {{ $value | humanizeDuration }}. County data may be outdated.'
+          action: 'Check orchestrator health, verify database connectivity, review service logs'
+          dashboard: '/d/atlas-systemgpt-ops/atlas-systemgpt-ops-overview'
+          runbook: 'docs/runbooks/atlas-forecast-stale.md'
+
+      # ----------------------------------------------------------------------
+      # AtlasForecastErrorRateHigh - Warning: High error rate in forecasts
+      # ----------------------------------------------------------------------
+      - alert: AtlasForecastErrorRateHigh
+        expr: |
+          (
+            sum(rate(atlas_forecast_engine_errors_total[5m]))
+            /
+            (sum(rate(atlas_forecast_generated_total[5m])) + 0.001)
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          government: 'true'
+          component: forecast
+        annotations:
+          summary: 'High forecast error rate detected'
+          description: 'Forecast error rate is {{ $value | humanizePercentage }} (threshold: 5%). Some county forecasts may be failing.'
+          action: 'Review error logs, check data quality, verify model inputs'
+          dashboard: '/d/atlas-forecast-risk/atlas-forecast-risk'
+
+      # ----------------------------------------------------------------------
+      # AtlasForecastDurationSpike - Warning: Forecast computation taking too long
+      # ----------------------------------------------------------------------
+      - alert: AtlasForecastDurationSpike
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(atlas_forecast_compute_duration_seconds_bucket[5m])) by (le)
+          ) > 2.0
+        for: 5m
+        labels:
+          severity: warning
+          government: 'true'
+          component: forecast
+        annotations:
+          summary: 'Forecast computation duration spike'
+          description: 'P95 forecast compute time is {{ $value | humanizeDuration }} (threshold: 2s). Performance degradation may affect SLA.'
+          action: 'Check resource utilization, review query performance, consider scaling'
+          dashboard: '/d/atlas-forecast-risk/atlas-forecast-risk'
+
+  # ==========================================================================
+  # ATLAS ORCHESTRATOR ALERTS
+  # ==========================================================================
+  - name: atlas.orchestrator
+    interval: 30s
+    rules:
+      # ----------------------------------------------------------------------
+      # AtlasOrchestratorStall - Critical: Orchestrator not running
+      # ----------------------------------------------------------------------
+      - alert: AtlasOrchestratorStall
+        expr: |
+          increase(atlas_forecast_orchestrator_runs_total[10m]) == 0
+        for: 10m
+        labels:
+          severity: critical
+          government: 'true'
+          component: orchestrator
+          citizen_impact: high
+        annotations:
+          summary: 'Atlas orchestrator has stalled'
+          description: 'No orchestrator runs completed in the last 10 minutes. Background processing has stopped.'
+          action: 'Restart orchestrator service, check health endpoints, review scheduler'
+          dashboard: '/d/atlas-systemgpt-ops/atlas-systemgpt-ops-overview'
+          runbook: 'docs/runbooks/atlas-orchestrator-stall.md'
+
+      # ----------------------------------------------------------------------
+      # AtlasOrchestratorDurationHigh - Warning: Orchestrator cycle taking too long
+      # ----------------------------------------------------------------------
+      - alert: AtlasOrchestratorDurationHigh
+        expr: |
+          atlas_forecast_orchestrator_last_run_duration_seconds > 60
+        for: 2m
+        labels:
+          severity: warning
+          government: 'true'
+          component: orchestrator
+        annotations:
+          summary: 'Orchestrator cycle duration is high'
+          description: 'Last orchestrator run took {{ $value | humanizeDuration }} (threshold: 60s). May indicate performance issues.'
+          action: 'Review county count, check database performance, consider optimization'
+          dashboard: '/d/atlas-systemgpt-ops/atlas-systemgpt-ops-overview'
+
+  # ==========================================================================
+  # ATLAS ANOMALY DETECTION ALERTS
+  # ==========================================================================
+  - name: atlas.anomaly
+    interval: 30s
+    rules:
+      # ----------------------------------------------------------------------
+      # AtlasAnomalySpike - Warning: Unusual number of anomalies detected
+      # ----------------------------------------------------------------------
+      - alert: AtlasAnomalySpike
+        expr: |
+          sum(increase(atlas_anomaly_detected_total[5m])) > 10
+        for: 2m
+        labels:
+          severity: warning
+          government: 'true'
+          component: anomaly
+        annotations:
+          summary: 'Anomaly detection spike'
+          description: '{{ $value }} anomalies detected in the last 5 minutes (threshold: 10). Unusual system behavior detected.'
+          action: 'Review anomaly details, check data quality, investigate root cause'
+          dashboard: '/d/atlas-anomalies-telemetry/atlas-anomalies-telemetry'
+
+      # ----------------------------------------------------------------------
+      # AtlasAnomalyCritical - Critical: Critical anomaly type detected
+      # ----------------------------------------------------------------------
+      - alert: AtlasAnomalyCritical
+        expr: |
+          increase(atlas_anomaly_detected_total{anomalyType="critical"}[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          government: 'true'
+          component: anomaly
+          citizen_impact: medium
+        annotations:
+          summary: 'Critical anomaly detected'
+          description: '{{ $value }} critical anomalies detected. Immediate investigation required.'
+          action: 'Review critical anomaly details, assess impact, escalate if necessary'
+          dashboard: '/d/atlas-anomalies-telemetry/atlas-anomalies-telemetry'
+          runbook: 'docs/runbooks/atlas-critical-anomaly.md'
+
+  # ==========================================================================
+  # ATLAS TELEMETRY ALERTS
+  # ==========================================================================
+  - name: atlas.telemetry
+    interval: 30s
+    rules:
+      # ----------------------------------------------------------------------
+      # AtlasTelemetryDropRate - Warning: No telemetry being ingested
+      # ----------------------------------------------------------------------
+      - alert: AtlasTelemetryDropRate
+        expr: |
+          sum(rate(atlas_telemetry_ingest_total[5m])) == 0
+        for: 5m
+        labels:
+          severity: warning
+          government: 'true'
+          component: telemetry
+        annotations:
+          summary: 'Telemetry ingestion has stopped'
+          description: 'No telemetry data ingested in the last 5 minutes. Data pipeline may be broken.'
+          action: 'Check data sources, verify network connectivity, review ingestion service'
+          dashboard: '/d/atlas-anomalies-telemetry/atlas-anomalies-telemetry'
+
+      # ----------------------------------------------------------------------
+      # AtlasCleanupStale - Warning: Cleanup operations not running
+      # ----------------------------------------------------------------------
+      - alert: AtlasCleanupStale
+        expr: |
+          increase(atlas_forecast_cleanup_runs_total[1h]) == 0
+        for: 1h
+        labels:
+          severity: warning
+          government: 'true'
+          component: maintenance
+        annotations:
+          summary: 'Cleanup operations stale'
+          description: 'No cleanup runs in the last hour. Stale data may be accumulating.'
+          action: 'Verify cleanup scheduler, check maintenance windows'
+          dashboard: '/d/atlas-systemgpt-ops/atlas-systemgpt-ops-overview'

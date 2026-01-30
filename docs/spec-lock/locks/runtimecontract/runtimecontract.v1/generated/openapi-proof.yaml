@@ -1,0 +1,55 @@
+# Auto-generated from runtimecontract.v1 spec
+# DO NOT EDIT - regenerate with speclock-runtimecontract-gen.py
+
+paths:
+  /healthz/ready:
+    get:
+      summary: ""
+      operationId: healthz_ready
+      responses:
+        '200':
+          description: Success
+
+  /healthz/proof:
+    get:
+      summary: ""
+      operationId: healthz_proof
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: 'runtimecontract.schema.json'
+
+  /ops/speclock:
+    get:
+      summary: ""
+      operationId: ops_speclock
+      responses:
+        '200':
+          description: Success
+
+  /ops/speclock/proof:
+    get:
+      summary: ""
+      operationId: ops_speclock_proof
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: 'runtimecontract.schema.json'
+
+  /ops/speclock/state/proof:
+    get:
+      summary: ""
+      operationId: ops_speclock_state_proof
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: 'runtimecontract.schema.json'

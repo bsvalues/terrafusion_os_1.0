@@ -1,0 +1,203 @@
+.systemMonitor {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  font-family: 'Courier New', monospace;
+  color: var(--tf-success-green);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 12px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--tf-success-green);
+}
+
+.logo {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.status {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.online {
+  background: #1a4d1a;
+  color: var(--tf-success-green);
+}
+
+.offline {
+  background: #4d1a1a;
+  color: var(--error-red);
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.metricCard {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 12px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.metricCard:hover {
+  border-color: var(--tf-success-green);
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
+}
+
+.metricCard.warning {
+  border-color: var(--error-red);
+  background: #2a1a1a;
+}
+
+.metricCard.warning:hover {
+  box-shadow: 0 0 8px rgba(255, 68, 68, 0.2);
+}
+
+.metricLabel {
+  font-size: 11px;
+  color: var(--gray-400);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.metricValue {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--tf-success-green);
+}
+
+.metricCard.warning .metricValue {
+  color: var(--error-red);
+}
+
+.metricUnit {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-left: 2px;
+}
+
+.errorAlert {
+  background: #2a1a1a;
+  border: 1px solid var(--error-red);
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  color: var(--error-red);
+  font-size: 12px;
+}
+
+.errorIcon {
+  margin-right: 8px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--gray-500);
+  border-top: 1px solid #333;
+  padding-top: 12px;
+}
+
+.footerText {
+  color: var(--gray-400);
+}
+
+.timestamp {
+  color: var(--gray-500);
+}
+
+/* Database Status Section */
+.databaseStatus {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.databaseStatus h4 {
+  margin: 0 0 12px 0;
+  color: var(--tf-success-green);
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.dbStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.dbStatusItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  transition: all 0.2s;
+}
+
+.dbStatusItem.connected {
+  border-color: #1a4d1a;
+  background: #0f1f0f;
+}
+
+.dbStatusItem.disconnected {
+  border-color: #4d1a1a;
+  background: #1f0f0f;
+}
+
+.dbIcon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.dbName {
+  font-weight: bold;
+  color: var(--gray-400);
+  flex: 1;
+  font-size: 12px;
+}
+
+.dbStatus {
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.connected .dbStatus {
+  color: var(--tf-success-green);
+}
+
+.disconnected .dbStatus {
+  color: var(--error-red);
+}

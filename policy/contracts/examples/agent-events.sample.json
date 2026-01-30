@@ -1,0 +1,15 @@
+{
+  "events": [
+    {
+      "id": "b7d6a7b2-8bde-4c4d-9ee4-9b8f0c7b6c2c",
+      "tsUtc": "2026-01-27T23:01:22Z",
+      "level": "Thinking",
+      "agent": "ModuleLoader",
+      "topic": "Modules",
+      "message": "Loaded 3 gen2 manifests.",
+      "correlationId": "req-6b4f2a9e",
+      "data": { "active": 3, "total": 13 }
+    }
+  ],
+  "nextCursor": "638418132820000000:b7d6a7b2-8bde-4c4d-9ee4-9b8f0c7b6c2c"
+}

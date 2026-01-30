@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "reportTypes": {
+    "assessment-rollup": {
+      "title": "County Assessment Rollup",
+      "requiredFields": [
+        "countyId",
+        "assessmentYear",
+        "totalParcels",
+        "totalAssessedValue"
+      ],
+      "aggregations": [
+        "sum",
+        "count",
+        "average"
+      ]
+    },
+    "compliance": {
+      "title": "Compliance Status Report",
+      "requiredFields": [
+        "countyId",
+        "complianceItems",
+        "passRate"
+      ],
+      "aggregations": [
+        "count",
+        "percentage"
+      ]
+    },
+    "budget": {
+      "title": "Budget Summary Report",
+      "requiredFields": [
+        "countyId",
+        "fiscalYear",
+        "allocations",
+        "expenditures"
+      ],
+      "aggregations": [
+        "sum",
+        "delta"
+      ]
+    }
+  },
+  "stateAggregation": {
+    "method": "merge",
+    "quorumValidation": true
+  }
+}

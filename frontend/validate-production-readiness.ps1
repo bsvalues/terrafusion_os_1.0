@@ -81,12 +81,12 @@ function Test-ProjectStructure {
 
     # Check critical directories
     $RequiredDirs = @(
-        "src",
-        "src/components",
-        "src/services",
-        "src/services/monitoring",
-        "src/tests",
-        "src/tests/integration",
+        "apps/os-shell/src",
+        "apps/os-shell/src/components",
+        "apps/os-shell/src/services",
+        "apps/os-shell/src/services/monitoring",
+        "apps/os-shell/src/tests",
+        "apps/os-shell/src/tests/integration",
         ".github",
         ".github/workflows"
     )
@@ -190,7 +190,7 @@ function Test-TestCoverage {
         }
 
         # Check E2E tests exist
-        $e2eTestsExist = Test-Path "src/tests/integration/SystemIntegration.e2e.test.tsx"
+        $e2eTestsExist = Test-Path "apps/os-shell/src/tests/integration/SystemIntegration.e2e.test.tsx"
         Write-CheckResult -Check "E2E integration tests exist" -Passed $e2eTestsExist -Details $(if (-not $e2eTestsExist) { "Create SystemIntegration.e2e.test.tsx" })
     }
     else {
@@ -233,7 +233,7 @@ function Test-Security {
     )
 
     foreach ($pattern in $sensitivePatterns) {
-        $found = Get-ChildItem -Path "src" -Recurse -Include "*.ts","*.tsx","*.js" |
+        $found = Get-ChildItem -Path "apps/os-shell/src" -Recurse -Include "*.ts","*.tsx","*.js" |
                  Select-String -Pattern $pattern.Pattern -SimpleMatch:$false -Quiet
 
         Write-CheckResult -Check "No $($pattern.Name) in source code" -Passed (-not $found) -Details $(if ($found) { "Found potential sensitive data" })
@@ -380,7 +380,7 @@ function Test-Performance {
     Write-CheckResult -Check "Bundle analyzer configured" -Passed $hasBundleAnalyzer -Details "rollup-plugin-visualizer" -IsWarning (-not $hasBundleAnalyzer)
 
     # Check for performance monitoring
-    $srcFiles = Get-ChildItem -Path "src" -Recurse -Include "*.ts","*.tsx" | Get-Content -Raw
+    $srcFiles = Get-ChildItem -Path "apps/os-shell/src" -Recurse -Include "*.ts","*.tsx" | Get-Content -Raw
     $hasPerformanceMonitoring = $srcFiles -match "performance|monitoring"
     Write-CheckResult -Check "Performance monitoring implemented" -Passed $hasPerformanceMonitoring -Details "Performance tracking in source code"
 

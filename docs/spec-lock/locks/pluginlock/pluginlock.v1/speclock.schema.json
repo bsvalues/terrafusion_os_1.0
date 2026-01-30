@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.io/schemas/pluginlock.v1.schema.json",
+  "title": "TerraFusion PluginLock v1",
+  "description": "Marketplace plugin permission envelope",
+  "type": "object",
+  "required": [
+    "permissions",
+    "plugin_id",
+    "sbom_sha256",
+    "slsa_provenance_sha256",
+    "version"
+  ],
+  "properties": {
+    "plugin_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9-]*)+$",
+      "description": "Unique plugin identifier (reverse domain notation)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9]+)?(\\+[a-zA-Z0-9]+)?$",
+      "description": "Semantic version (X.Y.Z with optional prerelease/build)"
+    },
+    "permissions": {
+      "type": "object",
+      "required": ["data_scopes", "network", "storage", "compute"],
+      "properties": {
+        "data_scopes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "property_read",
+              "property_write",
+              "assessment_read",
+              "assessment_write",
+              "gis_read",
+              "gis_write",
+              "user_profile_read",
+              "audit_log_read",
+              "config_read"
+            ]
+          },
+          "uniqueItems": true,
+          "description": "Data access scopes requested"
+        },
+        "network": {
+          "type": "object",
+          "required": ["allow_domains", "deny_domains"],
+          "properties": {
+            "allow_domains": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "hostname"
+              },
+              "description": "Explicit allowlist of domains"
+            },
+            "deny_domains": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "hostname"
+              },
+              "description": "Explicit denylist (takes precedence over allow)"
+            }
+          },
+          "additionalProperties": false
+        },
+        "storage": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "local_cache",
+              "session_storage",
+              "persistent_local",
+              "cloud_blob"
+            ]
+          },
+          "uniqueItems": true,
+          "description": "Storage access types"
+        },
+        "compute": {
+          "type": "object",
+          "required": ["max_cpu_ms", "max_memory_mb"],
+          "properties": {
+            "max_cpu_ms": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 60000,
+              "description": "Maximum CPU time in milliseconds"
+            },
+            "max_memory_mb": {
+              "type": "integer",
+              "minimum": 16,
+              "maximum": 4096,
+              "description": "Maximum memory in megabytes"
+            }
+          },
+          "additionalProperties": false
+        },
+        "telemetry_required": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether telemetry reporting is required"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sbom_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of SBOM (Software Bill of Materials)"
+    },
+    "slsa_provenance_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of SLSA provenance attestation"
+    }
+  },
+  "additionalProperties": false
+}

@@ -7,15 +7,27 @@ on:
   push:
     branches: [main, release/**]
     tags: ['v*']
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/slsa-provenance.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/slsa-provenance.yml'
   workflow_dispatch:
 
 permissions:
-  contents: read
-  id-token: write  # Required for OIDC token (Sigstore)
-  packages: write  # Required for container registry
-  attestations: write  # Required for artifact attestations
+  actions: read
+  contents: write
+  id-token: write # Required for OIDC token (Sigstore)
+  packages: write # Required for container registry
 
 env:
   REGISTRY: ghcr.io
@@ -25,51 +37,71 @@ jobs:
   # ===========================================================================
   # Build Artifacts with Provenance
   # ===========================================================================
-  
+
   build-backend:
     name: Build Backend (Python)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     outputs:
-      image-digest: ${{ steps.push.outputs.digest }}
-      
+      has_python_package: ${{ steps.detect_py.outputs.found }}
+      image_digest: ${{ steps.push.outputs.digest }}
+      base64_subjects: ${{ steps.hash.outputs.base64_subjects }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for provenance
-      
+          fetch-depth: 0 # Full history for provenance
+
+      - name: Detect Python package
+        id: detect_py
+        run: |
+          if [ -f pyproject.toml ] || [ -f setup.py ] || [ -f setup.cfg ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Python
+        if: steps.detect_py.outputs.found == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
-      
+
       - name: Install dependencies
+        if: steps.detect_py.outputs.found == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install build wheel
-      
+
       - name: Build Python package
+        if: steps.detect_py.outputs.found == 'true'
         run: |
           python -m build
           ls -lh dist/
-      
+
       - name: Generate artifact hash
         id: hash
+        if: steps.detect_py.outputs.found == 'true'
         run: |
           cd dist
           sha256sum *.whl *.tar.gz > checksums.txt
           cat checksums.txt
           echo "artifact-hash=$(sha256sum *.whl | awk '{print $1}')" >> $GITHUB_OUTPUT
-      
+          echo "base64_subjects=$(base64 -w0 checksums.txt)" >> $GITHUB_OUTPUT
+
       - name: Upload build artifacts
+        if: steps.detect_py.outputs.found == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: python-packages
           path: dist/
           retention-days: 90
           if-no-files-found: error
-      
+
       - name: Log in to Container Registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
@@ -77,7 +109,13 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -89,59 +127,71 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix={{branch}}-
-      
+
       - name: Build and push container image
         id: push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile.backend
+          builder: ${{ steps.buildx.outputs.name }}
+          context: ./backend
+          file: ./backend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-  
+
   build-frontend:
     name: Build Frontend (TypeScript)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     outputs:
-      image-digest: ${{ steps.push.outputs.digest }}
-      
+      image_digest: ${{ steps.push.outputs.digest }}
+      base64_subjects: ${{ steps.hash.outputs.base64_subjects }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-      
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
       - name: Install dependencies
-        run: npm ci
-      
+        run: pnpm install --frozen-lockfile
+
       - name: Build frontend
-        run: npm run build
+        run: pnpm -C frontend run build
         env:
           NODE_ENV: production
-      
+
       - name: Generate artifact hash
         id: hash
         run: |
-          cd dist
+          cd native-shell/ui/dist
           find . -type f -exec sha256sum {} \; > checksums.txt
           cat checksums.txt
-      
+          echo "base64_subjects=$(base64 -w0 checksums.txt)" >> $GITHUB_OUTPUT
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
-          path: dist/
+          path: native-shell/ui/dist
           retention-days: 90
-      
+
       - name: Log in to Container Registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
@@ -149,203 +199,150 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Extract metadata
-        id: meta
+
+      - name: Docker meta (frontend)
+        id: meta_frontend
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend
+          images: ghcr.io/bsvalues/terrafusion_os_1.0-frontend
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=sha,prefix={{branch}}-
-      
+            type=sha,prefix=sha-
+            type=ref,event=branch,prefix=branch-
+            type=ref,event=tag
+
       - name: Build and push container image
         id: push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile.frontend
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-  
+          tags: ${{ steps.meta_frontend.outputs.tags }}
+          labels: ${{ steps.meta_frontend.outputs.labels }}
+
   # ===========================================================================
   # Generate SLSA Provenance (Level 3)
   # ===========================================================================
-  
+
   provenance-backend:
     name: Generate SLSA Provenance (Backend)
     needs: [build-backend]
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' && needs.build-backend.outputs.has_python_package == 'true' }}
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
     permissions:
-      id-token: write  # OIDC for Sigstore
-      contents: write  # Attest artifacts
-      packages: write
-      attestations: write
-    
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: python-packages
-          path: ./dist
-      
-      - name: Generate SLSA provenance
-        uses: slsa-framework/slsa-github-generator@v1.9.0
-        with:
-          artifact-path: ./dist/*.whl
-          provenance-name: backend-provenance.intoto.jsonl
-      
-      - name: Sign provenance with Sigstore
-        uses: sigstore/cosign-installer@v3.3.0
-      
-      - name: Attest container image
-        run: |
-          cosign attest \
-            --predicate ./backend-provenance.intoto.jsonl \
-            --type slsaprovenance \
-            --yes \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend@${{ needs.build-backend.outputs.image-digest }}
-      
-      - name: Upload provenance
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-provenance
-          path: backend-provenance.intoto.jsonl
-          retention-days: 365  # 1 year retention for compliance
-  
+      actions: read
+      contents: write
+      id-token: write
+    with:
+      base64-subjects: ${{ needs.build-backend.outputs.base64_subjects }}
+      provenance-name: backend-provenance.intoto.jsonl
+
   provenance-frontend:
     name: Generate SLSA Provenance (Frontend)
     needs: [build-frontend]
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
     permissions:
-      id-token: write
+      actions: read
       contents: write
-      packages: write
-      attestations: write
-    
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-build
-          path: ./dist
-      
-      - name: Generate SLSA provenance
-        uses: slsa-framework/slsa-github-generator@v1.9.0
-        with:
-          artifact-path: ./dist
-          provenance-name: frontend-provenance.intoto.jsonl
-      
-      - name: Sign provenance with Sigstore
-        uses: sigstore/cosign-installer@v3.3.0
-      
-      - name: Attest container image
-        run: |
-          cosign attest \
-            --predicate ./frontend-provenance.intoto.jsonl \
-            --type slsaprovenance \
-            --yes \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend@${{ needs.build-frontend.outputs.image-digest }}
-      
-      - name: Upload provenance
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-provenance
-          path: frontend-provenance.intoto.jsonl
-          retention-days: 365
-  
+      id-token: write
+    with:
+      base64-subjects: ${{ needs.build-frontend.outputs.base64_subjects }}
+      provenance-name: frontend-provenance.intoto.jsonl
+
   # ===========================================================================
   # Verify SLSA Provenance (Deployment Gate)
   # ===========================================================================
-  
+
   verify-provenance:
     name: Verify SLSA Provenance
     needs: [provenance-backend, provenance-frontend]
     runs-on: ubuntu-latest
-    
+    if: ${{ needs.provenance-frontend.result == 'success' && (needs.provenance-backend.result == 'success' || needs.provenance-backend.result == 'skipped') }}
+    permissions:
+      contents: read
+
     steps:
       - name: Checkout policy
         uses: actions/checkout@v4
-      
+
       - name: Download provenance files
         uses: actions/download-artifact@v4
         with:
-          pattern: '*-provenance'
+          pattern: '*provenance*.intoto.jsonl'
           path: ./provenance
-      
+          merge-multiple: true
+
       - name: Install SLSA verifier
         run: |
           curl -Lo slsa-verifier https://github.com/slsa-framework/slsa-verifier/releases/download/v2.4.1/slsa-verifier-linux-amd64
           chmod +x slsa-verifier
           sudo mv slsa-verifier /usr/local/bin/
-      
+
       - name: Verify backend provenance
+        if: ${{ needs.provenance-backend.result == 'success' }}
         run: |
           slsa-verifier verify-artifact \
-            --provenance-path ./provenance/backend-provenance/backend-provenance.intoto.jsonl \
+            --provenance-path ./provenance/backend-provenance.intoto.jsonl \
             --source-uri github.com/${{ github.repository }} \
             --source-tag ${{ github.ref_name }}
-      
+
       - name: Verify frontend provenance
         run: |
           slsa-verifier verify-artifact \
-            --provenance-path ./provenance/frontend-provenance/frontend-provenance.intoto.jsonl \
+            --provenance-path ./provenance/frontend-provenance.intoto.jsonl \
             --source-uri github.com/${{ github.repository }} \
             --source-tag ${{ github.ref_name }}
-      
+
       - name: Policy check (OPA)
+        if: ${{ needs.provenance-backend.result == 'success' }}
         run: |
           # Install OPA
           curl -Lo opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
           chmod +x opa
           sudo mv opa /usr/local/bin/
-          
+
           # Verify provenance against policy
           opa eval --data ops/security/policies/slsa-attestation.policy.rego \
-            --input ./provenance/backend-provenance/backend-provenance.intoto.jsonl \
+            --input ./provenance/backend-provenance.intoto.jsonl \
             "data.slsa.allow"
-      
+
       - name: Generate verification report
         run: |
           cat > provenance-verification-report.md <<EOF
           # SLSA Provenance Verification Report
-          
+
           **Date**: $(date -I)
           **Commit**: ${{ github.sha }}
           **Branch**: ${{ github.ref_name }}
-          
+
           ## Backend Provenance
           - **Artifact**: python-packages
           - **Provenance Level**: SLSA L3
           - **Signature**: Verified (Sigstore)
           - **Policy**: PASS
-          
+
           ## Frontend Provenance
           - **Artifact**: frontend-build
           - **Provenance Level**: SLSA L3
           - **Signature**: Verified (Sigstore)
           - **Policy**: PASS
-          
+
           ## Deployment Gate: ✅ APPROVED
           EOF
-          
+
           cat provenance-verification-report.md
-      
+
       - name: Upload verification report
         uses: actions/upload-artifact@v4
         with:
           name: provenance-verification-report
           path: provenance-verification-report.md
-  
+
   # ===========================================================================
   # Publish Release (Only on Tags)
   # ===========================================================================
-  
+
   release:
     name: Publish Release
     needs: [verify-provenance]
@@ -353,15 +350,15 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: ./artifacts
-      
+
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             ./artifacts/python-packages/*
@@ -370,11 +367,11 @@ jobs:
             ./artifacts/provenance-verification-report/*
           body: |
             ## TerraFusion OS Release ${{ github.ref_name }}
-            
+
             **SLSA Provenance**: Level 3 ✅
             **Signature**: Sigstore verified ✅
             **SBOM**: Included (see workflow artifacts)
-            
+
             ### Verification
             ```bash
             slsa-verifier verify-artifact \
@@ -382,7 +379,7 @@ jobs:
               --source-uri github.com/${{ github.repository }} \
               --source-tag ${{ github.ref_name }}
             ```
-            
+
             ### What's Changed
             ${{ github.event.head_commit.message }}
           draft: false
@@ -390,21 +387,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-# ===========================================================================
-# Notifications
-# ===========================================================================
+  # ===========================================================================
+  # Notifications
+  # ===========================================================================
 
   notify:
     name: Notify Stakeholders
     needs: [verify-provenance]
     if: always()
     runs-on: ubuntu-latest
-    
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    permissions:
+      contents: read
+
     steps:
       - name: Slack notification
+        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
         uses: slackapi/slack-github-action@v1.25.0
         with:
-          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-url: ${{ env.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
           payload: |
             {

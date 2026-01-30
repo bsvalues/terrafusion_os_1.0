@@ -1,0 +1,465 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * TERRAFLOW DESIGN TOKENS
+ * Revolutionary Design System Integration
+ * Colors, Typography, Motion, Z-Index, Blur Radii
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+/* Color Tokens - Living Telemetry System */
+:root {
+  /* Primary Terra Colors */
+  --tf-cyan: #4ae0ff;
+  --tf-green: #41ffb3;
+  --tf-amber: #ffb400;
+  --tf-graphite: #161a1d;
+  --tf-mist: rgba(255, 255, 255, 0.08);
+
+  /* Terra Glow Variants */
+  --tf-glow-high: rgba(74, 224, 255, 0.8);
+  --tf-glow-medium: rgba(65, 255, 179, 0.6);
+  --tf-glow-warning: rgba(255, 180, 0, 0.6);
+
+  /* Glass System */
+  --tf-glass-bg: rgba(30, 41, 59, 0.4);
+  --tf-glass-border: rgba(148, 163, 184, 0.2);
+  --tf-glass-blur: 12px;
+
+  /* Motion Constants */
+  --tf-duration-fast: 150ms;
+  --tf-duration-medium: 300ms;
+  --tf-duration-slow: 400ms;
+
+  /* Z-Index Layers */
+  --tf-z-background: 0;
+  --tf-z-base-cards: 100;
+  --tf-z-panels: 200;
+  --tf-z-alerts: 300;
+  --tf-z-terra-sphere: 400;
+
+  /* Spacing System */
+  --tf-space-xs: 0.25rem;
+  --tf-space-sm: 0.5rem;
+  --tf-space-md: 1rem;
+  --tf-space-lg: 1.5rem;
+  --tf-space-xl: 2rem;
+  --tf-space-2xl: 3rem;
+}
+
+/* TerraPanel Glass System */
+.terra-panel {
+  position: relative;
+  -webkit-backdrop-filter: blur(var(--tf-glass-blur));
+  backdrop-filter: blur(var(--tf-glass-blur));
+  background: linear-gradient(135deg, var(--tf-glass-bg), rgba(30, 41, 59, 0.3));
+  border: 1px solid var(--tf-glass-border);
+  border-radius: 0.75rem;
+  padding: var(--tf-space-lg);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all var(--tf-duration-medium) cubic-bezier(0.25, 0.1, 0.25, 1);
+  z-index: var(--tf-z-base-cards);
+}
+
+.terra-panel:hover {
+  transform: translateY(-2px) scale(1.01);
+}
+
+.terra-panel-active {
+  animation: terra-ripple var(--tf-duration-slow) ease-out;
+}
+
+@keyframes terra-ripple {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 20px var(--tf-cyan);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 40px var(--tf-cyan);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px var(--tf-cyan);
+  }
+}
+
+/* Dynamic Glow Classes */
+.terra-glow-high {
+  box-shadow: 0 0 20px var(--tf-glow-high);
+}
+
+.terra-glow-medium {
+  box-shadow: 0 0 20px var(--tf-glow-medium);
+}
+
+.terra-glow-warning {
+  box-shadow: 0 0 20px var(--tf-glow-warning);
+}
+
+/* Ambient Glow Overlay */
+.terra-ambient-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 0.75rem;
+  pointer-events: none;
+  opacity: 0.3;
+  transition: opacity var(--tf-duration-medium);
+}
+
+.terra-ambient-high {
+  background: radial-gradient(circle at 50% 50%, var(--tf-glow-high) 0%, transparent 70%);
+}
+
+.terra-ambient-medium {
+  background: radial-gradient(circle at 50% 50%, var(--tf-glow-medium) 0%, transparent 70%);
+}
+
+.terra-ambient-warning {
+  background: radial-gradient(circle at 50% 50%, var(--tf-glow-warning) 0%, transparent 70%);
+}
+
+/* TerraMetric Styling */
+.terra-metric {
+  text-align: center;
+}
+
+.terra-metric-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: var(--tf-space-sm);
+  transition: color var(--tf-duration-medium);
+}
+
+.terra-metric-value.high-confidence {
+  color: var(--tf-cyan);
+}
+
+.terra-metric-value.medium-confidence {
+  color: var(--tf-green);
+}
+
+.terra-metric-value.low-confidence {
+  color: var(--tf-amber);
+}
+
+.terra-metric-label {
+  font-size: 0.875rem;
+  color: rgb(148, 163, 184);
+  margin-bottom: var(--tf-space-sm);
+}
+
+/* Trend Sparkline */
+.terra-sparkline {
+  height: 2rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.terra-sparkline-bar {
+  width: 0.25rem;
+  background: linear-gradient(to top, rgb(71, 85, 105), var(--tf-cyan));
+  border-radius: 9999px;
+  min-height: 2px;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  animation: terra-bar-grow var(--tf-duration-medium) ease-out forwards;
+}
+
+@keyframes terra-bar-grow {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* TerraSphere Variants */
+.terra-sphere {
+  position: relative;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--tf-z-terra-sphere);
+  transition: all var(--tf-duration-medium);
+}
+
+.terra-sphere.terra-sphere-quantum {
+  animation:
+    terra-sphere-rotate 10s linear infinite,
+    terra-sphere-pulse 2s ease-in-out infinite;
+}
+
+.terra-sphere.terra-sphere-pulse {
+  animation: terra-sphere-pulse 2s ease-in-out infinite;
+}
+
+@keyframes terra-sphere-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes terra-sphere-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.terra-sphere.size-sm {
+  width: 2rem;
+  height: 2rem;
+}
+
+.terra-sphere.size-md {
+  width: 3rem;
+  height: 3rem;
+}
+
+.terra-sphere.size-lg {
+  width: 4rem;
+  height: 4rem;
+}
+
+.terra-sphere.size-xl {
+  width: 6rem;
+  height: 6rem;
+}
+
+.terra-sphere-inner {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.8);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.terra-sphere-content {
+  position: relative;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: color var(--tf-duration-medium);
+}
+
+/* Dynamic Sphere Backgrounds */
+.terra-sphere-high {
+  background: conic-gradient(from 0deg, var(--tf-cyan), var(--tf-accent-indigo), var(--tf-cyan));
+}
+
+.terra-sphere-medium {
+  background: conic-gradient(from 0deg, var(--tf-green), #059669, var(--tf-green));
+}
+
+.terra-sphere-warning {
+  background: conic-gradient(from 0deg, var(--tf-amber), #d97706, var(--tf-amber));
+}
+
+/* TerraChat Styling */
+.terra-chat {
+  position: relative;
+}
+
+.terra-chat-messages {
+  max-height: 24rem;
+  overflow-y: auto;
+  padding: var(--tf-space-md);
+}
+
+.terra-chat-message {
+  padding: var(--tf-space-md);
+  border-radius: 0.5rem;
+  max-width: 80%;
+  margin-bottom: var(--tf-space-md);
+  transition: all var(--tf-duration-medium);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: terra-message-enter var(--tf-duration-medium) ease-out forwards;
+}
+
+@keyframes terra-message-enter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Message animation delays */
+.terra-message-delay-0 {
+  animation-delay: 0ms;
+}
+.terra-message-delay-1 {
+  animation-delay: 100ms;
+}
+.terra-message-delay-2 {
+  animation-delay: 200ms;
+}
+.terra-message-delay-3 {
+  animation-delay: 300ms;
+}
+.terra-message-delay-4 {
+  animation-delay: 400ms;
+}
+
+/* Sparkline bar heights */
+.terra-bar-0 {
+  height: 10%;
+}
+.terra-bar-1 {
+  height: 20%;
+}
+.terra-bar-2 {
+  height: 30%;
+}
+.terra-bar-3 {
+  height: 40%;
+}
+.terra-bar-4 {
+  height: 50%;
+}
+.terra-bar-5 {
+  height: 60%;
+}
+.terra-bar-6 {
+  height: 70%;
+}
+.terra-bar-7 {
+  height: 80%;
+}
+.terra-bar-8 {
+  height: 90%;
+}
+.terra-bar-9 {
+  height: 95%;
+}
+.terra-bar-10 {
+  height: 100%;
+}
+
+.terra-chat-message.ai {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  margin-left: auto;
+}
+
+.terra-chat-message.user {
+  background: rgba(55, 65, 81, 0.6);
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  margin-right: auto;
+}
+
+.terra-chat-message.ai.high-confidence {
+  box-shadow: 0 0 10px var(--tf-glow-high);
+}
+
+.terra-chat-message.ai.medium-confidence {
+  box-shadow: 0 0 10px var(--tf-glow-medium);
+}
+
+.terra-chat-message.ai.low-confidence {
+  box-shadow: 0 0 10px var(--tf-glow-warning);
+}
+
+.terra-chat-text {
+  font-size: 0.875rem;
+  color: rgb(226, 232, 240);
+}
+
+.terra-chat-confidence {
+  font-size: 0.75rem;
+  color: rgb(148, 163, 184);
+  margin-top: var(--tf-space-xs);
+}
+
+/* MCP Channel Activity Indicator */
+.terra-mcp-indicator {
+  position: absolute;
+  top: var(--tf-space-sm);
+  right: var(--tf-space-sm);
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--tf-cyan);
+  border-radius: 50%;
+  animation: terra-pulse 1s infinite;
+}
+
+@keyframes terra-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Typing Indicator */
+.terra-typing {
+  display: flex;
+  gap: var(--tf-space-xs);
+  padding: var(--tf-space-md);
+}
+
+.terra-typing-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--tf-cyan);
+  border-radius: 50%;
+  animation: terra-bounce 0.6s infinite;
+}
+
+.terra-typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.terra-typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes terra-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.3rem);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .terra-panel {
+    padding: var(--tf-space-md);
+  }
+
+  .terra-metric-value {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .terra-panel {
+    padding: var(--tf-space-sm);
+  }
+
+  .terra-metric-value {
+    font-size: 1.25rem;
+  }
+
+  .terra-chat-message {
+    max-width: 90%;
+  }
+}

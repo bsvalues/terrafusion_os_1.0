@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.io/schemas/speclock.index.schema.json",
+  "title": "TerraFusion SpecLock Index Schema",
+  "description": "Schema for the central SpecLock index (INDEX.json)",
+  "type": "object",
+  "required": ["version", "locks"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Index schema version (semver)"
+    },
+    "updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Last update date (YYYY-MM-DD)"
+    },
+    "locks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Lock"
+      },
+      "description": "Array of registered SpecLocks"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "Lock": {
+      "type": "object",
+      "required": [
+        "id",
+        "surface",
+        "project",
+        "spec_version",
+        "path",
+        "spec_data_path",
+        "generated_artifacts",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique lock identifier"
+        },
+        "surface": {
+          "type": "string",
+          "enum": [
+            "receipt",
+            "pluginlock",
+            "amendment",
+            "openapi",
+            "grafana",
+            "alert",
+            "metrics",
+            "dashboards"
+          ],
+          "description": "Lock surface type"
+        },
+        "project": {
+          "type": "string",
+          "description": "Project this lock belongs to"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable name"
+        },
+        "owner": {
+          "type": "string",
+          "description": "Owner (team or individual)"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "deprecated", "draft", "archived"],
+          "description": "Lock status"
+        },
+        "spec_version": {
+          "type": "string",
+          "pattern": "^v?\\d+\\.\\d+\\.\\d+$",
+          "description": "Spec version (semver with optional v prefix)"
+        },
+        "path": {
+          "type": "string",
+          "description": "Path to SPEC_LOCK_*.md"
+        },
+        "spec_data_path": {
+          "type": "string",
+          "description": "Path to speclock.spec.json"
+        },
+        "generated_artifacts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Paths to generated artifacts"
+        },
+        "test_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Paths to test files"
+        },
+        "ci_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "CI/CD tags for filtering"
+        },
+        "created": {
+          "type": "string",
+          "format": "date",
+          "description": "Creation date (YYYY-MM-DD)"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date",
+          "description": "Last update date (YYYY-MM-DD)"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional notes"
+        },
+        "related": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Related lock IDs"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

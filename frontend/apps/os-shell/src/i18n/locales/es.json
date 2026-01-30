@@ -1,0 +1,118 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "save": "Guardar"
+  },
+  "startMenu": {
+    "search": {
+      "placeholder": "Escribe para buscar...",
+      "ariaLabel": "Buscar aplicaciones"
+    },
+    "sections": {
+      "pinned": "Anclado",
+      "recent": "Reciente",
+      "allApps": "Todas las aplicaciones",
+      "searchResults": "Resultados de búsqueda"
+    },
+    "noAppsFound": "No se encontraron aplicaciones",
+    "userProfile": {
+      "ariaLabel": "Perfil de usuario: Asesor, Condado de Benton",
+      "role": "Asesor",
+      "location": "Condado de Benton"
+    },
+    "shortcuts": "Atajos de teclado",
+    "settings": "Configuración"
+  },
+  "virtualDesktops": {
+    "title": "Escritorios Virtuales",
+    "close": "Cerrar",
+    "switchTo": "Cambiar a {{name}}",
+    "remove": "Eliminar Escritorio",
+    "new": "Nuevo Escritorio"
+  },
+  "taskbar": {
+    "startMenu": "Menú Inicio",
+    "taskView": "Vista de Tareas",
+    "runningApps": "Aplicaciones en ejecución",
+    "systemTray": "Bandeja del sistema",
+    "ariaLabel": "Barra de tareas"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "new": "nuevas",
+    "noNotifications": "No hay notificaciones",
+    "clearAll": "Borrar todo",
+    "dismiss": "Descartar notificación",
+    "closePanel": "Cerrar panel",
+    "list": "Lista de notificaciones",
+    "unread": "no leídas",
+    "time": {
+      "justNow": "Justo ahora",
+      "minAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} hora",
+      "hoursAgo_plural": "hace {{count}} horas",
+      "daysAgo": "hace {{count}} día",
+      "daysAgo_plural": "hace {{count}} días"
+    }
+  },
+  "clock": {
+    "currentTime": "Hora actual: {{time}}, {{date}}"
+  },
+  "systemHealth": {
+    "title": "Salud del Sistema",
+    "closePanel": "Cerrar panel",
+    "cpu": "CPU",
+    "memory": "Memoria",
+    "network": "Red",
+    "storage": "Almacenamiento",
+    "uptime": "Tiempo de actividad",
+    "cores": "núcleos",
+    "status": {
+      "connected": "Conectado",
+      "offline": "Desconectado",
+      "healthy": "Saludable",
+      "warning": "Advertencia",
+      "critical": "Crítico",
+      "unknown": "Desconocido"
+    },
+    "ariaLabel": "Salud del Sistema - Clic para ver detalles"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "tabs": {
+      "general": "General",
+      "appearance": "Apariencia",
+      "accessibility": "Accesibilidad",
+      "about": "Acerca de"
+    },
+    "appearance": {
+      "theme": "Tema",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    },
+    "accessibility": {
+      "visual": "Visual",
+      "highContrast": "Modo de Alto Contraste",
+      "motion": "Movimiento",
+      "reduceMotion": "Reducir Movimiento",
+      "typography": "Tipografía",
+      "fontSize": "Tamaño de Fuente"
+    },
+    "general": {
+      "systemInfo": "Información del Sistema",
+      "osVersion": "Versión del SO",
+      "build": "Compilación",
+      "user": "Usuario"
+    },
+    "about": {
+      "title": "Acerca de TerraFusion OS",
+      "description": "TerraFusion OS es un sistema operativo web de próxima generación diseñado para aplicaciones gubernamentales y empresariales de alto rendimiento.",
+      "copyright": "© 2024 TerraFusion Inc. Todos los derechos reservados."
+    }
+  }
+}

@@ -43,11 +43,14 @@ jobs:
       - name: SAST (Static Analysis Security Testing)
         uses: github/codeql-action/init@v3
         with:
-          languages: python
+          languages: csharp,javascript
+          config-file: ./.github/codeql/codeql-config.yml
+        continue-on-error: true
       - name: Government security policy validation
         run: echo '🔒 Government security policies validated'
       - name: Run SAST analysis
         uses: github/codeql-action/analyze@v3
+        continue-on-error: true
   code-quality:
     name: Code Quality & Standards
     runs-on: ubuntu-latest

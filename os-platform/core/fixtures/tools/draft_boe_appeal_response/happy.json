@@ -1,0 +1,12 @@
+{
+  "params": {
+    "county": "benton",
+    "caseId": "CASE-1",
+    "position": "support_assessor",
+    "points": [
+      "Comparable sales support current value",
+      "No material defects found"
+    ]
+  },
+  "assert": { "resultKeys": ["document", "payloadRef"], "noPii": true }
+}

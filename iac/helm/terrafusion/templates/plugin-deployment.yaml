@@ -1,0 +1,143 @@
+{{- if .Values.marketplace.admissionGate.enabled }}
+# =============================================================================
+# Plugin Deployment Template with Admission Gate
+# =============================================================================
+# CONSTITUTIONAL: No plugin starts without passing admission.
+# initContainer calls /ops/plugins/admission and hard-fails on deny.
+# Required env vars: TF_PLUGIN_ID, TF_PLUGIN_VERSION, TF_BUNDLE_SHA256,
+#                    TF_SBOM_SHA256, TF_SLSA_SHA256
+# =============================================================================
+#
+# Usage: When deploying a plugin, supply these values:
+#   --set plugins[0].id=my-plugin
+#   --set plugins[0].version=1.0.0
+#   --set plugins[0].bundleSha256=<sha256>
+#   --set plugins[0].sbomSha256=<sha256>
+#   --set plugins[0].slsaSha256=<sha256>
+#   --set plugins[0].image=ghcr.io/terrafusion/plugins/my-plugin:1.0.0
+#
+# =============================================================================
+
+{{- range $plugin := .Values.plugins }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "terrafusion.fullname" $ }}-plugin-{{ $plugin.id | replace "." "-" }}
+  labels:
+    {{- include "terrafusion.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: plugin
+    plugin.terrafusion.io/id: {{ $plugin.id | quote }}
+    constitution: "sealed"
+spec:
+  replicas: {{ $plugin.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ include "terrafusion.fullname" $ }}-plugin-{{ $plugin.id | replace "." "-" }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "terrafusion.fullname" $ }}-plugin-{{ $plugin.id | replace "." "-" }}
+        {{- include "terrafusion.selectorLabels" $ | nindent 8 }}
+        plugin.terrafusion.io/id: {{ $plugin.id | quote }}
+      annotations:
+        plugin.terrafusion.io/sbom-sha256: {{ $plugin.sbomSha256 | quote }}
+        plugin.terrafusion.io/slsa-sha256: {{ $plugin.slsaSha256 | quote }}
+    spec:
+      volumes:
+        - name: admission-gate
+          configMap:
+            name: {{ include "terrafusion.fullname" $ }}-plugin-admission-gate
+            defaultMode: 0755
+
+      # CONSTITUTIONAL: initContainer admission gate (NO BYPASS)
+      initContainers:
+        - name: plugin-admission-gate
+          image: curlimages/curl:8.7.1
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c", "/gate/plugin-admission-gate.sh"]
+          volumeMounts:
+            - name: admission-gate
+              mountPath: /gate
+          env:
+            - name: TF_ADMISSION_URL
+              value: {{ $.Values.marketplace.admissionGate.url | quote }}
+            - name: TF_COUNTY_ID
+              value: {{ $.Values.countyId | default "benton" | quote }}
+            - name: TF_MAX_EGRESS_KB_MIN
+              value: {{ $.Values.marketplace.admissionGate.defaults.maxEgressKbPerMin | quote }}
+            - name: TF_MAX_CPU_MS
+              value: {{ $.Values.marketplace.admissionGate.defaults.maxCpuMs | quote }}
+            - name: TF_MAX_MEM_MB
+              value: {{ $.Values.marketplace.admissionGate.defaults.maxMemoryMb | quote }}
+            # Required per-plugin (hard gate - pod fails without these)
+            - name: TF_PLUGIN_ID
+              value: {{ $plugin.id | quote }}
+            - name: TF_PLUGIN_VERSION
+              value: {{ $plugin.version | quote }}
+            - name: TF_BUNDLE_SHA256
+              value: {{ $plugin.bundleSha256 | quote }}
+            - name: TF_SBOM_SHA256
+              value: {{ $plugin.sbomSha256 | quote }}
+            - name: TF_SLSA_SHA256
+              value: {{ $plugin.slsaSha256 | quote }}
+            {{- if $plugin.dataScopes }}
+            - name: TF_DATA_SCOPES
+              value: {{ $plugin.dataScopes | quote }}
+            {{- end }}
+            {{- if $plugin.storageScopes }}
+            - name: TF_STORAGE_SCOPES
+              value: {{ $plugin.storageScopes | quote }}
+            {{- end }}
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "16Mi"
+            limits:
+              cpu: "100m"
+              memory: "64Mi"
+
+      containers:
+        - name: plugin
+          image: {{ $plugin.image | quote }}
+          imagePullPolicy: {{ $plugin.imagePullPolicy | default "IfNotPresent" }}
+          ports:
+            {{- if $plugin.port }}
+            - containerPort: {{ $plugin.port }}
+              name: http
+              protocol: TCP
+            {{- end }}
+          env:
+            - name: TF_PLUGIN_ID
+              value: {{ $plugin.id | quote }}
+            - name: TF_PLUGIN_VERSION
+              value: {{ $plugin.version | quote }}
+            - name: TF_COUNTY_ID
+              value: {{ $.Values.countyId | default "benton" | quote }}
+            {{- range $key, $value := $plugin.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          resources:
+            requests:
+              cpu: {{ $plugin.resources.requests.cpu | default "100m" | quote }}
+              memory: {{ $plugin.resources.requests.memory | default "128Mi" | quote }}
+            limits:
+              cpu: {{ $plugin.resources.limits.cpu | default "500m" | quote }}
+              memory: {{ $plugin.resources.limits.memory | default "256Mi" | quote }}
+          {{- if $plugin.healthPath }}
+          livenessProbe:
+            httpGet:
+              path: {{ $plugin.healthPath }}
+              port: {{ $plugin.port | default 8080 }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: {{ $plugin.healthPath }}
+              port: {{ $plugin.port | default 8080 }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          {{- end }}
+{{- end }}
+{{- end }}
