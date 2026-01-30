@@ -46,7 +46,6 @@ RUN dotnet build "TerraFusion.API.csproj" -c Release -o /app/build --runtime lin
 # ============================================================================
 FROM build AS publish
 RUN dotnet publish "TerraFusion.API.csproj" -c Release -o /app/publish \
-    --runtime linux-x64 \
     --self-contained false \
     --no-restore \
     /p:PublishReadyToRun=false \

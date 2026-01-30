@@ -70,6 +70,10 @@
       "type": "boolean",
       "description": "Whether this module appears in the default desktop view"
     },
+    "autostart": {
+      "type": "boolean",
+      "description": "Whether this module should be auto-started by the dev launcher"
+    },
     "version": {
       "type": "string",
       "pattern": "^\\d+\\.\\d+\\.\\d+",
@@ -84,6 +88,22 @@
       "type": "boolean",
       "description": "Whether this module can be launched as a standalone dev server"
     },
+    "runtime": {
+      "type": "string",
+      "enum": ["deno", "pnpm", "dotnet", "none", "custom"],
+      "description": "Declared runtime for dev launcher (no inference)"
+    },
+    "start": {
+      "type": "object",
+      "required": ["cmd"],
+      "properties": {
+        "cmd": { "type": "string", "minLength": 1 },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "cwd": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false,
+      "description": "Explicit start command for dev launcher"
+    },
     "entry": {
       "type": "object",
       "oneOf": [
@@ -92,7 +112,7 @@
           "required": ["type", "url"],
           "properties": {
             "type": { "const": "url" },
-            "url": { "type": "string", "format": "uri" }
+            "url": { "type": "string" }
           },
           "additionalProperties": false
         },

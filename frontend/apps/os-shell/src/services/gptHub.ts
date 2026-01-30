@@ -1,11 +1,13 @@
 // TerraFusionGPT Suite: SignalR Hub Client
 // Elite Government OS Engineering - Real-Time Communication
 
+import { getViteEnv } from '@/env/getViteEnv';
 import * as signalR from '@microsoft/signalr';
-import { GPTMessage, GPTConfiguration } from './gptAPI';
+import { GPTConfiguration, GPTMessage } from './gptAPI';
 
-const HUB_URL = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL}/hubs/gpt`
+const env = getViteEnv();
+const HUB_URL = env.VITE_API_URL
+  ? `${env.VITE_API_URL}/hubs/gpt`
   : 'http://localhost:5000/hubs/gpt';
 
 /**

@@ -95,6 +95,17 @@ window.scrollTo = jest.fn();
 // Mock HTMLElement.prototype.scrollIntoView
 HTMLElement.prototype.scrollIntoView = jest.fn();
 
+// Silence jsdom WebGL "not implemented" noise without breaking 2D canvas usage.
+const originalGetContext = HTMLCanvasElement.prototype.getContext;
+HTMLCanvasElement.prototype.getContext = function (type: any, ...args: any[]) {
+  if (type === 'webgl' || type === 'webgl2') {
+    return {
+      getExtension: () => ({ loseContext: jest.fn() }),
+    } as any;
+  }
+  return originalGetContext.call(this, type, ...args);
+} as any;
+
 // Polyfill Pointer Capture APIs (jsdom doesn't implement these; Radix uses them)
 if (!('hasPointerCapture' in Element.prototype)) {
   (Element.prototype as any).hasPointerCapture = () => false;
@@ -294,6 +305,12 @@ const shouldSuppressIntegrationBanner = (args: unknown[]) => {
   );
 };
 
+const shouldSuppressReactVersionNoise = (args: unknown[]) => {
+  const firstString = getFirstStringArg(args);
+  if (!firstString) return false;
+  return firstString.includes('react versions:') || firstString.includes('react-dom versions:');
+};
+
 beforeAll(() => {
   const verbose = process.env.TF_TEST_VERBOSE === '1';
   const showJsdmXhr = process.env.TF_TEST_SHOW_JSDOM_XHR_ERRORS === '1';
@@ -303,6 +320,7 @@ beforeAll(() => {
   const showPersistence = process.env.TF_TEST_SHOW_PERSISTENCE_LOGS === '1';
   const showIntegrationBanner = process.env.TF_TEST_SHOW_INTEGRATION_LOGS === '1';
   const showSecurityTestLogs = process.env.TF_TEST_SHOW_SECURITY_TEST_LOGS === '1';
+  const showReactVersionNoise = process.env.TF_TEST_DEBUG === '1';
 
   if (verbose) return;
 
@@ -328,6 +346,7 @@ beforeAll(() => {
   console.log = (...args: any[]) => {
     if (!showIntegrationBanner && shouldSuppressIntegrationBanner(args)) return;
     if (!showSecurityTestLogs && shouldSuppressSecurityTestNoise(args)) return;
+    if (!showReactVersionNoise && shouldSuppressReactVersionNoise(args)) return;
     originalConsole.log.call(console, ...args);
   };
 

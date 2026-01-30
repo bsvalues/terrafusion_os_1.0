@@ -36,15 +36,10 @@ function resetAllMocks() {
   mockActivateModule.mockClear();
 }
 
-const DESKTOP_MODULES = [
-  { id: 'costforge', name: 'CostForge', icon: '🏛️' },
-  { id: 'terra-gaia', name: 'TerraGaia', icon: '🌍' },
-  { id: 'atlas-ai', name: 'ATLAS', icon: '🤖' },
-  { id: 'reporting', name: 'Analytics', icon: '📈' },
-  { id: 'marketplace', name: 'Marketplace', icon: '🏪' },
-  { id: 'counties', name: 'Counties Hub', icon: '🗺️' },
-  { id: 'government-architecture', name: 'Gov Architecture', icon: '🏗️' },
-];
+// Use pinned/core modules for desktop icons
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { MODULES } = require('../../../config/modules');
+const DESKTOP_MODULES = MODULES.filter((m: { isCore: boolean }) => m.isCore);
 
 // ============================================================================
 // Tests
@@ -75,11 +70,11 @@ describe('Desktop Icons (Priority 3)', () => {
       expect(screen.getByTestId('desktop-icon-grid')).toBeInTheDocument();
     });
 
-    it('renders all 7 desktop icons', () => {
+    it('renders all desktop icons', () => {
       render(<DesktopIconGrid />);
 
-      DESKTOP_MODULES.forEach(({ name }) => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+      DESKTOP_MODULES.forEach(({ displayName }: { displayName: string }) => {
+        expect(screen.getByText(displayName)).toBeInTheDocument();
       });
     });
 
@@ -100,22 +95,22 @@ describe('Desktop Icons (Priority 3)', () => {
     it('double-click on icon calls activateModule', async () => {
       render(<DesktopIconGrid />);
 
-      const costforgeIcon = screen.getByTestId('desktop-icon-costforge');
+      const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.doubleClick(costforgeIcon);
 
-      expect(mockActivateModule).toHaveBeenCalledWith('costforge', {
+      expect(mockActivateModule).toHaveBeenCalledWith(DESKTOP_MODULES[0].id, {
         source: 'desktop',
         focusIfOpen: true,
       });
     });
 
-    it('double-click on TerraGaia launches terra-gaia', async () => {
+    it('double-click on second icon launches module', async () => {
       render(<DesktopIconGrid />);
 
-      const icon = screen.getByTestId('desktop-icon-terra-gaia');
+      const icon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[1].id}`);
       fireEvent.doubleClick(icon);
 
-      expect(mockActivateModule).toHaveBeenCalledWith('terra-gaia', {
+      expect(mockActivateModule).toHaveBeenCalledWith(DESKTOP_MODULES[1].id, {
         source: 'desktop',
         focusIfOpen: true,
       });
@@ -124,7 +119,7 @@ describe('Desktop Icons (Priority 3)', () => {
     it('single click does NOT launch module', async () => {
       render(<DesktopIconGrid />);
 
-      const costforgeIcon = screen.getByTestId('desktop-icon-costforge');
+      const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.click(costforgeIcon);
 
       expect(mockActivateModule).not.toHaveBeenCalled();
@@ -138,9 +133,15 @@ describe('Desktop Icons (Priority 3)', () => {
   describe('hover state (SC-8.3)', () => {
     it('icon has hover class on mouse enter', async () => {
       const user = userEvent.setup();
-      render(<DesktopIcon id='costforge' name='CostForge' icon='🏛️' />);
+      render(
+        <DesktopIcon
+          id={DESKTOP_MODULES[0].id}
+          name={DESKTOP_MODULES[0].displayName}
+          iconName={DESKTOP_MODULES[0].iconName ?? DESKTOP_MODULES[0].icon}
+        />
+      );
 
-      const icon = screen.getByTestId('desktop-icon-costforge');
+      const icon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       await user.hover(icon);
 
       // Hover state is typically handled by Tailwind :hover pseudo-class
@@ -157,7 +158,7 @@ describe('Desktop Icons (Priority 3)', () => {
     it('single click selects the icon', async () => {
       render(<DesktopIconGrid />);
 
-      const costforgeIcon = screen.getByTestId('desktop-icon-costforge');
+      const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.click(costforgeIcon);
 
       expect(costforgeIcon).toHaveAttribute('aria-selected', 'true');
@@ -166,8 +167,8 @@ describe('Desktop Icons (Priority 3)', () => {
     it('clicking another icon deselects previous', async () => {
       render(<DesktopIconGrid />);
 
-      const costforgeIcon = screen.getByTestId('desktop-icon-costforge');
-      const atlasIcon = screen.getByTestId('desktop-icon-atlas-ai');
+      const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
+      const atlasIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[1].id}`);
 
       fireEvent.click(costforgeIcon);
       expect(costforgeIcon).toHaveAttribute('aria-selected', 'true');
@@ -180,7 +181,7 @@ describe('Desktop Icons (Priority 3)', () => {
     it('selected icon has visual indicator', async () => {
       render(<DesktopIconGrid />);
 
-      const costforgeIcon = screen.getByTestId('desktop-icon-costforge');
+      const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.click(costforgeIcon);
 
       // Selected state should have a ring or background
@@ -193,11 +194,11 @@ describe('Desktop Icons (Priority 3)', () => {
   // --------------------------------------------------------------------------
 
   describe('module coverage (SC-8.5)', () => {
-    it.each(DESKTOP_MODULES)('has icon for $name module', ({ id, name }) => {
+    it.each(DESKTOP_MODULES)('has icon for $displayName module', ({ id, displayName }: { id: string; displayName: string }) => {
       render(<DesktopIconGrid />);
 
       expect(screen.getByTestId(`desktop-icon-${id}`)).toBeInTheDocument();
-      expect(screen.getByText(name)).toBeInTheDocument();
+      expect(screen.getByText(displayName)).toBeInTheDocument();
     });
   });
 
@@ -209,7 +210,7 @@ describe('Desktop Icons (Priority 3)', () => {
     it('activateModule called with source: desktop', async () => {
       render(<DesktopIconGrid />);
 
-      const icon = screen.getByTestId('desktop-icon-reporting');
+      const icon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.doubleClick(icon);
 
       expect(mockActivateModule).toHaveBeenCalledWith(
@@ -224,50 +225,89 @@ describe('Desktop Icons (Priority 3)', () => {
   // --------------------------------------------------------------------------
 
   describe('DesktopIcon component', () => {
-    it('renders icon emoji', () => {
-      render(<DesktopIcon id='costforge' name='CostForge' icon='🏛️' />);
+    it('renders icon svg', () => {
+      render(
+        <DesktopIcon
+          id={DESKTOP_MODULES[0].id}
+          name={DESKTOP_MODULES[0].displayName}
+          iconName={DESKTOP_MODULES[0].iconName ?? DESKTOP_MODULES[0].icon}
+        />
+      );
 
-      expect(screen.getByText('🏛️')).toBeInTheDocument();
+      const icon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
+      expect(icon.querySelector('svg')).toBeInTheDocument();
     });
 
     it('renders module name', () => {
-      render(<DesktopIcon id='costforge' name='CostForge' icon='🏛️' />);
+      render(
+        <DesktopIcon
+          id={DESKTOP_MODULES[0].id}
+          name={DESKTOP_MODULES[0].displayName}
+          iconName={DESKTOP_MODULES[0].iconName ?? DESKTOP_MODULES[0].icon}
+        />
+      );
 
-      expect(screen.getByText('CostForge')).toBeInTheDocument();
+      expect(screen.getByText(DESKTOP_MODULES[0].displayName)).toBeInTheDocument();
     });
 
     it('has accessible role', () => {
-      render(<DesktopIcon id='costforge' name='CostForge' icon='🏛️' />);
+      render(
+        <DesktopIcon
+          id={DESKTOP_MODULES[0].id}
+          name={DESKTOP_MODULES[0].displayName}
+          iconName={DESKTOP_MODULES[0].iconName ?? DESKTOP_MODULES[0].icon}
+        />
+      );
 
-      const icon = screen.getByTestId('desktop-icon-costforge');
+      const icon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       expect(icon).toHaveAttribute('role', 'button');
     });
 
     it('has accessible label', () => {
-      render(<DesktopIcon id='costforge' name='CostForge' icon='🏛️' />);
+      render(
+        <DesktopIcon
+          id={DESKTOP_MODULES[0].id}
+          name={DESKTOP_MODULES[0].displayName}
+          iconName={DESKTOP_MODULES[0].iconName ?? DESKTOP_MODULES[0].icon}
+        />
+      );
 
-      const icon = screen.getByTestId('desktop-icon-costforge');
-      expect(icon).toHaveAttribute('aria-label', 'Open CostForge');
+      const icon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
+      expect(icon).toHaveAttribute('aria-label', `Open ${DESKTOP_MODULES[0].displayName}`);
     });
 
     it('calls onSelect when clicked', () => {
       const onSelect = jest.fn();
-      render(<DesktopIcon id='costforge' name='CostForge' icon='🏛️' onSelect={onSelect} />);
+      render(
+        <DesktopIcon
+          id={DESKTOP_MODULES[0].id}
+          name={DESKTOP_MODULES[0].displayName}
+          iconName={DESKTOP_MODULES[0].iconName ?? DESKTOP_MODULES[0].icon}
+          onSelect={onSelect}
+        />
+      );
 
-      const icon = screen.getByTestId('desktop-icon-costforge');
+      const icon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.click(icon);
 
-      expect(onSelect).toHaveBeenCalledWith('costforge');
+      expect(onSelect).toHaveBeenCalledWith(DESKTOP_MODULES[0].id);
     });
 
     it('calls onLaunch when double-clicked', () => {
       const onLaunch = jest.fn();
-      render(<DesktopIcon id='costforge' name='CostForge' icon='🏛️' onLaunch={onLaunch} />);
+      render(
+        <DesktopIcon
+          id={DESKTOP_MODULES[0].id}
+          name={DESKTOP_MODULES[0].displayName}
+          iconName={DESKTOP_MODULES[0].icon}
+          onLaunch={onLaunch}
+        />
+      );
 
-      const icon = screen.getByTestId('desktop-icon-costforge');
+      const icon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.doubleClick(icon);
 
-      expect(onLaunch).toHaveBeenCalledWith('costforge');
+      expect(onLaunch).toHaveBeenCalledWith(DESKTOP_MODULES[0].id);
     });
   });
 
@@ -279,7 +319,7 @@ describe('Desktop Icons (Priority 3)', () => {
     it('Enter key launches selected icon', async () => {
       render(<DesktopIconGrid />);
 
-      const costforgeIcon = screen.getByTestId('desktop-icon-costforge');
+      const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
 
       // Select the icon first
       fireEvent.click(costforgeIcon);
@@ -287,7 +327,7 @@ describe('Desktop Icons (Priority 3)', () => {
       // Press Enter
       fireEvent.keyDown(costforgeIcon, { key: 'Enter' });
 
-      expect(mockActivateModule).toHaveBeenCalledWith('costforge', {
+      expect(mockActivateModule).toHaveBeenCalledWith(DESKTOP_MODULES[0].id, {
         source: 'desktop',
         focusIfOpen: true,
       });
@@ -296,7 +336,7 @@ describe('Desktop Icons (Priority 3)', () => {
     it('icons are focusable', () => {
       render(<DesktopIconGrid />);
 
-      const costforgeIcon = screen.getByTestId('desktop-icon-costforge');
+      const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       expect(costforgeIcon).toHaveAttribute('tabIndex', '0');
     });
   });

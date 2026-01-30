@@ -1,0 +1,16 @@
+{
+  "status": "Healthy",
+  "intentFilter": "gen2",
+  "moduleCountTotal": 13,
+  "moduleCountActive": 3,
+  "moduleCountFilteredOut": 10,
+  "moduleCount": 3,
+  "healthyModules": 3,
+  "warnings": [],
+  "systemComponents": {
+    "ModuleLoader": true,
+    "LegacyIntegration": true,
+    "AISwarm": true,
+    "TerraFusionSync": true
+  }
+}

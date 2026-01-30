@@ -37,7 +37,7 @@ afterEach(() => {
 const mockModule: Module = {
   id: 'gov',
   name: 'Government Edition',
-  icon: '🏛️',
+  icon: 'Building2',
   description: 'Core government tools',
   category: 'core',
   status: 'active',
@@ -81,7 +81,8 @@ describe('AppContextMenu', () => {
     it('displays app icon', () => {
       render(<AppContextMenu module={mockModule} position={mockPosition} onClose={jest.fn()} />);
 
-      expect(screen.getByText('🏛️')).toBeInTheDocument();
+      const menu = screen.getByRole('menu');
+      expect(menu.querySelector('svg')).toBeInTheDocument();
     });
   });
 

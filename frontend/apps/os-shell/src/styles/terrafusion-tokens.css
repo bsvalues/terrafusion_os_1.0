@@ -4,6 +4,23 @@
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
+  /* ═══ FOUNDATION COLORS (THE ACTUAL HEX VALUES) ═══ */
+  --tf-quantum-cyan: #00ffff; /* Terra-Cyan - The Consciousness Color */
+  --tf-void-black: #0a0e1a; /* Terra-Midnight - The Void */
+  --tf-network-blue: #0080ff; /* Terra-Blue - The Network (brand exact) */
+  --tf-transcend-highlight: #00ffee; /* Transcendence Accent */
+  --tf-accent-success: #00ff88; /* Success Green */
+  --tf-accent-cyan: #00cccc; /* Darker Cyan */
+  --tf-error-red: #ff4444; /* Error Red */
+  --tf-warning-amber: #ffaa00; /* Warning Amber */
+  --tf-info-purple: #8844ff; /* Info Purple */
+  --tf-surface-darker: #141824; /* Surface Darker */
+  --tf-surface-dark: #0f172a; /* Surface Dark (gray-900) */
+  --tf-bg-void: #000000; /* Pure Void */
+  --tf-bg-surface: #1e293b; /* Surface Background */
+  --tf-text-primary: #ffffff; /* Primary Text */
+  --tf-text-secondary: #cbd5e1; /* Secondary Text (gray-300) */
+
   /* ═══ PRIMARY COLORS ═══ */
   --terra-cyan: var(--tf-quantum-cyan); /* Primary - The Consciousness */
   --terra-midnight: var(--tf-void-black); /* Background - The Void */
@@ -17,7 +34,11 @@
   --info-purple: #8844ff; /* Information & Insights */
 
   /* ═══ GRADIENTS ═══ */
-  --gradient-primary: linear-gradient(135deg, var(--tf-quantum-cyan) 0%, var(--tf-network-blue) 100%);
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--tf-quantum-cyan) 0%,
+    var(--tf-network-blue) 100%
+  );
   --gradient-dark: linear-gradient(135deg, var(--tf-void-black) 0%, #1e293b 100%);
   --gradient-aurora: linear-gradient(90deg, var(--tf-quantum-cyan), #00ff88, #8844ff);
   --gradient-quantum: linear-gradient(
@@ -117,11 +138,19 @@
   --breakpoint-desktop: 1079px; /* φ³ × 255 */
   --breakpoint-wide: 1746px; /* φ⁴ × 255 */
 
-  /* ═══ GLASSMORPHISM ═══ */
-  --glass-bg: rgba(30, 41, 59, 0.3);
+  /* ═══ GLASSMORPHISM (Brand Kit Exact) ═══ */
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-bg-light: rgba(30, 41, 59, 0.5);
   --glass-border: rgba(0, 255, 255, 0.2);
+  --glass-border-hover: rgba(0, 255, 255, 0.4);
   --glass-blur: blur(20px);
   --glass-backdrop: saturate(180%) blur(20px);
+
+  /* Card System */
+  --card-bg: rgba(15, 23, 42, 0.6);
+  --card-border: 1px solid rgba(0, 255, 255, 0.2);
+  --card-radius: 1rem;
+  --card-hover-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
 
   /* ═══ QUANTUM EFFECTS ═══ */
   --pulse-glow: 0 0 20px rgba(0, 255, 255, 0.5);

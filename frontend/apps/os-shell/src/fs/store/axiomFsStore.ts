@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { FEATURES } from '../../config/features';
-import { GOLDEN_LATTICE, GOLDEN_PARCEL_ID } from '../../data/goldenParcel';
+import { FEATURES } from '@/config/features';
+import { GOLDEN_LATTICE, GOLDEN_PARCEL_ID } from '@/data/goldenParcel';
 import { ModuleContext, SovereignObject } from '../types';
 
 interface AxiomFsState {
@@ -14,6 +14,7 @@ interface AxiomFsState {
 
   // Actions
   registerObjects: (newObjects: SovereignObject[]) => void;
+  loadObject: (id: string) => void;
   selectObject: (id: string | null) => void;
   setModule: (module: ModuleContext) => void;
   setSearchQuery: (query: string) => void;
@@ -37,6 +38,23 @@ export const useAxiomFsStore = create<AxiomFsState>((set) => {
         const updated = new Map(state.objects);
         newObjects.forEach((obj) => updated.set(obj.id, obj));
         return { objects: updated };
+      }),
+    loadObject: (id) =>
+      set((state) => {
+        if (state.objects.has(id)) {
+          return {};
+        }
+        const updated = new Map(state.objects);
+        updated.set(id, {
+          id,
+          label: id,
+          type: 'document',
+          status: 'draft',
+          relations: [],
+          tags: [],
+          metadata: { source: 'placeholder' },
+        });
+        return { objects: updated, selectedId: id };
       }),
     setSearchQuery: (query) => set({ searchQuery: query }),
 

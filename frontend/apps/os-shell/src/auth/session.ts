@@ -1,3 +1,5 @@
+import { getViteEnv } from '../shared/viteEnv';
+
 export type Session = {
   userId: string;
   countyId: string;
@@ -19,24 +21,25 @@ export function getSession(): Session | null {
     }
   }
 
-  const userId = import.meta.env.VITE_DEV_USER_ID as string | undefined;
-  const countyId = import.meta.env.VITE_DEV_COUNTY_ID as string | undefined;
+  const env = getViteEnv();
+  const userId = env.VITE_DEV_USER_ID as string | undefined;
+  const countyId = env.VITE_DEV_COUNTY_ID as string | undefined;
 
   if (!userId || !countyId) return null;
 
-  const permissionsRaw = import.meta.env.VITE_DEV_PERMISSIONS as string | undefined;
+  const permissionsRaw = env.VITE_DEV_PERMISSIONS as string | undefined;
 
   return {
     userId,
     countyId,
-    role: (import.meta.env.VITE_DEV_ROLE as string | undefined) ?? 'dev',
+    role: (env.VITE_DEV_ROLE as string | undefined) ?? 'dev',
     permissions: permissionsRaw
       ? permissionsRaw
           .split(',')
-          .map((item) => item.trim())
+          .map((item: string) => item.trim())
           .filter(Boolean)
       : undefined,
-    mode: (import.meta.env.VITE_DEV_MODE as 'pilot' | 'muse' | undefined) ?? 'pilot',
+    mode: (env.VITE_DEV_MODE as 'pilot' | 'muse' | undefined) ?? 'pilot',
   };
 }
 

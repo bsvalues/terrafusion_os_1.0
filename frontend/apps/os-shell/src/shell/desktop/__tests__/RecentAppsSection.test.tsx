@@ -34,7 +34,7 @@ const mockRecentApps: Module[] = [
   {
     id: 'gov',
     name: 'Government Edition',
-    icon: '🏛️',
+    icon: 'Building2',
     description: 'Core government tools',
     category: 'core',
     status: 'active',
@@ -42,7 +42,7 @@ const mockRecentApps: Module[] = [
   {
     id: 'gis',
     name: 'GIS Pro',
-    icon: '🗺️',
+    icon: 'Map',
     description: 'Mapping tools',
     category: 'mapping',
     status: 'active',
@@ -50,7 +50,7 @@ const mockRecentApps: Module[] = [
   {
     id: 'cost',
     name: 'CostForge AI',
-    icon: '💰',
+    icon: 'Calculator',
     description: 'Cost analysis',
     category: 'ai',
     status: 'active',
@@ -124,9 +124,8 @@ describe('RecentAppsSection', () => {
 
       render(<RecentAppsSection onLaunch={jest.fn()} />);
 
-      expect(screen.getByText('🏛️')).toBeInTheDocument();
+      expect(screen.getAllByRole('img', { hidden: true }).length).toBeGreaterThan(0);
       expect(screen.getByText('Government Edition')).toBeInTheDocument();
-      expect(screen.getByText('🗺️')).toBeInTheDocument();
       expect(screen.getByText('GIS Pro')).toBeInTheDocument();
     });
 
@@ -135,7 +134,7 @@ describe('RecentAppsSection', () => {
       const manyApps: Module[] = Array.from({ length: 12 }, (_, i) => ({
         id: `app-${i}`,
         name: `App ${i}`,
-        icon: '📱',
+        icon: 'Activity',
         description: `Desc ${i}`,
         category: 'test',
         status: 'active' as const,

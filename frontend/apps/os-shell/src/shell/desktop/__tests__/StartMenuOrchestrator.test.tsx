@@ -102,7 +102,7 @@ const SAMPLE_MODULE = {
   id: 'costforge',
   name: 'CostForge',
   description: 'Property Assessment',
-  icon: '💎',
+  icon: 'Layers',
   category: 'Core',
   status: 'active' as const,
 };
@@ -111,7 +111,7 @@ const SAMPLE_MODULE_2 = {
   id: 'atlas-ai',
   name: 'ATLAS',
   description: 'AI Intelligence',
-  icon: '🤖',
+  icon: 'Brain',
   category: 'AI',
   status: 'active' as const,
 };
