@@ -62,7 +62,7 @@
     "express-session": "^1.18.2",
     "framer-motion": "^11.13.1",
     "ftp-srv": "^4.6.3",
-    "happy-dom": "^17.1.0",
+    "happy-dom": "^20.0.2",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.453.0",
     "memorystore": "^1.6.7",
