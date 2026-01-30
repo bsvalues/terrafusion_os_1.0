@@ -77,6 +77,8 @@ namespace TerraFusion.API.Hubs
         /// </summary>
         public async Task RequestEnhancementMetrics(string sessionId)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             _logger.LogInformation("Client {ConnectionId} requested enhancement metrics for session: {SessionId}",
                 Context.ConnectionId, sessionId);
 
@@ -93,7 +95,7 @@ namespace TerraFusion.API.Hubs
             await base.OnConnectedAsync();
         }
 
-        public override async Task OnDisconnectedAsync(Exception exception)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
             _logger.LogInformation("Client disconnected from Harris PACS Enhancement Hub: {ConnectionId}", Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);

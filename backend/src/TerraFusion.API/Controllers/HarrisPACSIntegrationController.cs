@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using TerraFusion.Core.PACS;
 using TerraFusion.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,14 @@ namespace TerraFusion.API.Controllers
     [Authorize]
     public class HarrisPACSIntegrationController : ControllerBase
     {
-        private readonly IHarrisPACSIntegrationService _harrisIntegrationService;
+        private readonly IPacsAdapter _pacsAdapter;
         private readonly ILogger<HarrisPACSIntegrationController> _logger;
 
         public HarrisPACSIntegrationController(
-            IHarrisPACSIntegrationService harrisIntegrationService,
+            IPacsAdapter pacsAdapter,
             ILogger<HarrisPACSIntegrationController> logger)
         {
-            _harrisIntegrationService = harrisIntegrationService;
+            _pacsAdapter = pacsAdapter;
             _logger = logger;
         }
 
@@ -28,17 +29,20 @@ namespace TerraFusion.API.Controllers
         /// </summary>
         [HttpGet("jurisdictions")]
         [Authorize(Roles = "Admin,DataManager,PropertyAssessor")]
-        public async Task<ActionResult<List<PACSJurisdiction>>> GetJurisdictions()
+        public Task<ActionResult<List<PACSJurisdiction>>> GetJurisdictions()
         {
             try
             {
-                var jurisdictions = await _harrisIntegrationService.GetAvailableJurisdictionsAsync();
-                return Ok(jurisdictions);
+                return Task.FromResult<ActionResult<List<PACSJurisdiction>>>(StatusCode(501, new
+                {
+                    error = "PACS jurisdictions not available",
+                    details = "pacscontract.v1 does not expose jurisdictions. Use PACS adapter endpoints."
+                }));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving Harris PACS jurisdictions");
-                return StatusCode(500, new { error = "Failed to retrieve jurisdictions", details = ex.Message });
+                return Task.FromResult<ActionResult<List<PACSJurisdiction>>>(StatusCode(500, new { error = "Failed to retrieve jurisdictions", details = ex.Message }));
             }
         }
 
@@ -59,7 +63,8 @@ namespace TerraFusion.API.Controllers
                     return BadRequest(new { error = "Page size cannot exceed 1000" });
                 }
 
-                var properties = await _harrisIntegrationService.GetPropertiesAsync(jurisdiction, page, pageSize);
+                var result = await _pacsAdapter.GetPropertiesAsync(page, pageSize);
+                var properties = result.Items.Select(MapProperty).ToList();
                 return Ok(properties);
             }
             catch (Exception ex)
@@ -78,14 +83,14 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
-                var property = await _harrisIntegrationService.GetPropertyByParcelAsync(jurisdiction, parcelId);
+                var propertyCore = await GetPropertyCoreAsync(parcelId);
                 
-                if (property == null)
+                if (propertyCore == null)
                 {
                     return NotFound(new { error = $"Property with parcel ID {parcelId} not found in jurisdiction {jurisdiction}" });
                 }
 
-                return Ok(property);
+                return Ok(MapProperty(propertyCore));
             }
             catch (Exception ex)
             {
@@ -103,7 +108,14 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
-                var assessments = await _harrisIntegrationService.GetAssessmentsAsync(jurisdiction, parcelId);
+                var propId = await GetPropIdAsync(parcelId);
+                if (propId == null)
+                {
+                    return NotFound(new { error = $"Property with parcel ID {parcelId} not found in jurisdiction {jurisdiction}" });
+                }
+
+                var history = await _pacsAdapter.GetAssessmentHistoryAsync(propId.Value);
+                var assessments = history.Select(h => MapAssessment(h, parcelId)).ToList();
                 return Ok(assessments);
             }
             catch (Exception ex)
@@ -122,7 +134,14 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
-                var owner = await _harrisIntegrationService.GetPropertyOwnerAsync(jurisdiction, parcelId);
+                var propId = await GetPropIdAsync(parcelId);
+                if (propId == null)
+                {
+                    return NotFound(new { error = $"Property with parcel ID {parcelId} not found in jurisdiction {jurisdiction}" });
+                }
+
+                var ownership = await _pacsAdapter.GetOwnershipAsync(propId.Value);
+                var owner = ownership != null ? MapOwner(ownership, parcelId) : null;
                 
                 if (owner == null)
                 {
@@ -143,17 +162,20 @@ namespace TerraFusion.API.Controllers
         /// </summary>
         [HttpGet("jurisdictions/{jurisdiction}/properties/{parcelId}/taxes")]
         [Authorize(Roles = "Admin,DataManager,PropertyAssessor")]
-        public async Task<ActionResult<List<PACSTaxRecord>>> GetTaxRecords(string jurisdiction, string parcelId)
+        public Task<ActionResult<List<PACSTaxRecord>>> GetTaxRecords(string jurisdiction, string parcelId)
         {
             try
             {
-                var taxRecords = await _harrisIntegrationService.GetTaxRecordsAsync(jurisdiction, parcelId);
-                return Ok(taxRecords);
+                return Task.FromResult<ActionResult<List<PACSTaxRecord>>>(StatusCode(501, new
+                {
+                    error = "Tax records not available",
+                    details = "pacscontract.v1 is read-only and does not expose tax record data."
+                }));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving tax records for parcel {ParcelId} in jurisdiction {Jurisdiction}", parcelId, jurisdiction);
-                return StatusCode(500, new { error = "Failed to retrieve tax records", details = ex.Message });
+                return Task.FromResult<ActionResult<List<PACSTaxRecord>>>(StatusCode(500, new { error = "Failed to retrieve tax records", details = ex.Message }));
             }
         }
 
@@ -162,17 +184,20 @@ namespace TerraFusion.API.Controllers
         /// </summary>
         [HttpGet("jurisdictions/{jurisdiction}/properties/{parcelId}/permits")]
         [Authorize(Roles = "Admin,DataManager,PropertyAssessor")]
-        public async Task<ActionResult<List<PACSPermit>>> GetPermits(string jurisdiction, string parcelId)
+        public Task<ActionResult<List<PACSPermit>>> GetPermits(string jurisdiction, string parcelId)
         {
             try
             {
-                var permits = await _harrisIntegrationService.GetPermitsAsync(jurisdiction, parcelId);
-                return Ok(permits);
+                return Task.FromResult<ActionResult<List<PACSPermit>>>(StatusCode(501, new
+                {
+                    error = "Permits not available",
+                    details = "pacscontract.v1 does not expose permit data."
+                }));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving permits for parcel {ParcelId} in jurisdiction {Jurisdiction}", parcelId, jurisdiction);
-                return StatusCode(500, new { error = "Failed to retrieve permits", details = ex.Message });
+                return Task.FromResult<ActionResult<List<PACSPermit>>>(StatusCode(500, new { error = "Failed to retrieve permits", details = ex.Message }));
             }
         }
 
@@ -181,19 +206,22 @@ namespace TerraFusion.API.Controllers
         /// </summary>
         [HttpGet("jurisdictions/{jurisdiction}/transactions")]
         [Authorize(Roles = "Admin,DataManager,PropertyAssessor")]
-        public async Task<ActionResult<List<PACSTransaction>>> GetTransactions(
+        public Task<ActionResult<List<PACSTransaction>>> GetTransactions(
             string jurisdiction,
             [FromQuery] DateTime? since = null)
         {
             try
             {
-                var transactions = await _harrisIntegrationService.GetRecentTransactionsAsync(jurisdiction, since);
-                return Ok(transactions);
+                return Task.FromResult<ActionResult<List<PACSTransaction>>>(StatusCode(501, new
+                {
+                    error = "Transactions not available",
+                    details = "pacscontract.v1 does not expose transaction data."
+                }));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving transactions for jurisdiction {Jurisdiction}", jurisdiction);
-                return StatusCode(500, new { error = "Failed to retrieve transactions", details = ex.Message });
+                return Task.FromResult<ActionResult<List<PACSTransaction>>>(StatusCode(500, new { error = "Failed to retrieve transactions", details = ex.Message }));
             }
         }
 
@@ -202,25 +230,20 @@ namespace TerraFusion.API.Controllers
         /// </summary>
         [HttpPost("jurisdictions/{jurisdiction}/sync")]
         [Authorize(Roles = "Admin,DataManager")]
-        public async Task<ActionResult> SyncData(string jurisdiction)
+        public Task<ActionResult> SyncData(string jurisdiction)
         {
             try
             {
-                var success = await _harrisIntegrationService.SyncPropertyDataAsync(jurisdiction);
-                
-                if (success)
+                return Task.FromResult<ActionResult>(StatusCode(501, new
                 {
-                    return Ok(new { message = $"Data synchronization initiated for jurisdiction {jurisdiction}" });
-                }
-                else
-                {
-                    return StatusCode(500, new { error = "Failed to initiate data synchronization" });
-                }
+                    error = "Sync not supported",
+                    details = "pacscontract.v1 enforces read-only access. Sync is disabled."
+                }));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error initiating sync for jurisdiction {Jurisdiction}", jurisdiction);
-                return StatusCode(500, new { error = "Failed to initiate data synchronization", details = ex.Message });
+                return Task.FromResult<ActionResult>(StatusCode(500, new { error = "Failed to initiate data synchronization", details = ex.Message }));
             }
         }
 
@@ -229,17 +252,20 @@ namespace TerraFusion.API.Controllers
         /// </summary>
         [HttpGet("jurisdictions/{jurisdiction}/sync/status")]
         [Authorize(Roles = "Admin,DataManager,PropertyAssessor")]
-        public async Task<ActionResult<PACSSyncStatus>> GetSyncStatus(string jurisdiction)
+        public Task<ActionResult<PACSSyncStatus>> GetSyncStatus(string jurisdiction)
         {
             try
             {
-                var syncStatus = await _harrisIntegrationService.GetSyncStatusAsync(jurisdiction);
-                return Ok(syncStatus);
+                return Task.FromResult<ActionResult<PACSSyncStatus>>(StatusCode(501, new
+                {
+                    error = "Sync status not available",
+                    details = "pacscontract.v1 enforces read-only access. Sync status is unavailable."
+                }));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving sync status for jurisdiction {Jurisdiction}", jurisdiction);
-                return StatusCode(500, new { error = "Failed to retrieve sync status", details = ex.Message });
+                return Task.FromResult<ActionResult<PACSSyncStatus>>(StatusCode(500, new { error = "Failed to retrieve sync status", details = ex.Message }));
             }
         }
 
@@ -252,7 +278,19 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
-                var systemStatus = await _harrisIntegrationService.GetSystemStatusAsync();
+                var connection = await _pacsAdapter.GetConnectionStatusAsync();
+                var systemStatus = new PACSSystemStatus
+                {
+                    IsOnline = connection.IsConnected,
+                    PACSVersion = null,
+                    LastHealthCheck = DateTime.UtcNow,
+                    ActiveConnections = connection.IsConnected ? 1 : 0,
+                    ResponseTime = connection.LatencyMs ?? 0,
+                    ServiceStatus = new Dictionary<string, bool>
+                    {
+                        ["PACS_DB"] = connection.IsConnected
+                    }
+                };
                 return Ok(systemStatus);
             }
             catch (Exception ex)
@@ -271,16 +309,16 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
-                var systemStatus = await _harrisIntegrationService.GetSystemStatusAsync();
+                var connection = await _pacsAdapter.GetConnectionStatusAsync();
                 
-                if (systemStatus.IsOnline)
+                if (connection.IsConnected)
                 {
                     return Ok(new 
                     { 
                         status = "healthy", 
                         timestamp = DateTime.UtcNow,
-                        pacsVersion = systemStatus.PACSVersion ?? "unknown",
-                        responseTime = systemStatus.ResponseTime
+                        pacsVersion = "unknown",
+                        responseTime = connection.LatencyMs ?? 0
                     });
                 }
                 else
@@ -303,6 +341,96 @@ namespace TerraFusion.API.Controllers
                     error = ex.Message
                 });
             }
+        }
+
+        private async Task<PacsPropertyCore?> GetPropertyCoreAsync(string parcelId)
+        {
+            if (int.TryParse(parcelId, out var propId))
+            {
+                return await _pacsAdapter.GetPropertyByIdAsync(propId);
+            }
+
+            return await _pacsAdapter.GetPropertyByGeoIdAsync(parcelId);
+        }
+
+        private async Task<int?> GetPropIdAsync(string parcelId)
+        {
+            if (int.TryParse(parcelId, out var propId))
+            {
+                return propId;
+            }
+
+            var property = await _pacsAdapter.GetPropertyByGeoIdAsync(parcelId);
+            return property?.PropId;
+        }
+
+        private static PACSProperty MapProperty(PacsPropertyCore property)
+        {
+            decimal? totalValue = property.MarketVal ?? property.AssessedVal;
+            if (!totalValue.HasValue && (property.LandVal.HasValue || property.ImprvVal.HasValue))
+            {
+                totalValue = (property.LandVal ?? 0m) + (property.ImprvVal ?? 0m);
+            }
+
+            return new PACSProperty
+            {
+                ParcelId = string.IsNullOrWhiteSpace(property.GeoId) ? property.PropId.ToString() : property.GeoId,
+                Address = property.SitusAddr,
+                City = property.SitusCity,
+                State = null,
+                ZipCode = property.SitusZip,
+                LandValue = property.LandVal.HasValue ? (double)property.LandVal.Value : null,
+                ImprovementValue = property.ImprvVal.HasValue ? (double)property.ImprvVal.Value : null,
+                TotalValue = totalValue.HasValue ? (double)totalValue.Value : null,
+                PropertyType = property.PropTypeCd,
+                Acreage = null,
+                YearBuilt = null,
+                LegalDescription = property.LegalDesc,
+                LastUpdated = property.LastModified ?? DateTime.MinValue
+            };
+        }
+
+        private static PACSOwner MapOwner(PacsPropertyOwnership ownership, string parcelId)
+        {
+            var addressParts = new[] { ownership.MailAddr1, ownership.MailAddr2 }
+                .Where(part => !string.IsNullOrWhiteSpace(part))
+                .ToArray();
+            var mailingAddress = addressParts.Length == 0 ? null : string.Join(" ", addressParts);
+
+            return new PACSOwner
+            {
+                Id = ownership.PropId.ToString(),
+                ParcelId = parcelId,
+                Name = ownership.OwnerName,
+                MailingAddress = mailingAddress,
+                City = ownership.MailCity,
+                State = ownership.MailState,
+                ZipCode = ownership.MailZip,
+                OwnershipPercentage = (double)(ownership.PctOwnership ?? 0m)
+            };
+        }
+
+        private static PACSAssessment MapAssessment(PacsAssessmentHistory history, string parcelId)
+        {
+            decimal? totalValue = history.MarketVal ?? history.AssessedVal;
+            if (!totalValue.HasValue && (history.LandVal.HasValue || history.ImprvVal.HasValue))
+            {
+                totalValue = (history.LandVal ?? 0m) + (history.ImprvVal ?? 0m);
+            }
+            var taxableValue = history.AssessedVal ?? history.MarketVal;
+
+            return new PACSAssessment
+            {
+                Id = $"{history.PropId}-{history.PropValYr}",
+                ParcelId = parcelId,
+                AssessmentYear = history.PropValYr,
+                LandValue = (double)(history.LandVal ?? 0m),
+                ImprovementValue = (double)(history.ImprvVal ?? 0m),
+                TotalValue = totalValue.HasValue ? (double)totalValue.Value : 0,
+                TaxableValue = taxableValue.HasValue ? (double)taxableValue.Value : 0,
+                AssessmentDate = history.AppraisalDt ?? DateTime.UtcNow,
+                ExemptionAmount = null
+            };
         }
     }
 }

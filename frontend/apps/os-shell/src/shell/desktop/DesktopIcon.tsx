@@ -2,12 +2,16 @@
  * TerraFusion OS Desktop Icon Component
  *
  * Individual desktop icon with hover, selection, and launch behavior.
+ * Uses TerraSphereIcon for brand-consistent 3D wireframe aesthetic.
  *
  * @module shell/desktop/DesktopIcon
  * @see Priority 3: Desktop Icons
  */
 
 import React, { useCallback } from 'react';
+import type { Category } from '../../config/generatedModules';
+import { getLucideIcon } from '../../config/iconMap';
+import { TerraSphereIcon, type TerraSphereIconVariant } from '../../ui/brand/TerraSphereIcon';
 
 // ============================================================================
 // Types
@@ -18,8 +22,10 @@ export interface DesktopIconProps {
   id: string;
   /** Display name */
   name: string;
-  /** Emoji icon */
-  icon: string;
+  /** Lucide icon name */
+  iconName: string;
+  /** Module category (maps to TerraSphere variant) */
+  category?: Category;
   /** Whether icon is selected */
   isSelected?: boolean;
   /** Callback when icon is clicked (select) */
@@ -27,6 +33,17 @@ export interface DesktopIconProps {
   /** Callback when icon is double-clicked (launch) */
   onLaunch?: (id: string) => void;
 }
+
+// Category → TerraSphereIcon variant mapping
+const categoryToVariant: Record<Category, TerraSphereIconVariant> = {
+  assessment: 'assessment',
+  records: 'records',
+  tax: 'tax',
+  mapping: 'mapping',
+  analytics: 'analytics',
+  ai: 'ai',
+  system: 'system',
+};
 
 // ============================================================================
 // Component
@@ -57,11 +74,15 @@ export interface DesktopIconProps {
 export const DesktopIcon: React.FC<DesktopIconProps> = ({
   id,
   name,
-  icon,
+  iconName,
+  category = 'system',
   isSelected = false,
   onSelect,
   onLaunch,
 }) => {
+  const Icon = getLucideIcon(iconName);
+  const variant = categoryToVariant[category] ?? 'default';
+
   // Handle single click (select)
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -97,6 +118,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       role='button'
       tabIndex={0}
       aria-label={`Open ${name}`}
+      aria-pressed={isSelected}
       aria-selected={isSelected}
       className={`
         flex flex-col items-center justify-center
@@ -109,9 +131,9 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       onDoubleClick={handleDoubleClick}
       onKeyDown={handleKeyDown}
     >
-      {/* Icon */}
-      <div className='text-4xl mb-1' aria-hidden='true'>
-        {icon}
+      {/* TerraSphere Icon with embedded glyph */}
+      <div className='mb-1' aria-hidden='true'>
+        <TerraSphereIcon size={48} variant={variant} glyph={<Icon className='h-4 w-4' />} />
       </div>
 
       {/* Label */}

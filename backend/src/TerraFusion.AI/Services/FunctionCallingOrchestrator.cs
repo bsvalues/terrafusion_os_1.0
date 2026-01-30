@@ -153,6 +153,8 @@ namespace TerraFusion.AI.Services
             string functionName,
             SecurityContext securityContext)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             // Validate security context
             if (securityContext == null)
             {

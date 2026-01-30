@@ -74,7 +74,7 @@ namespace TerraFusion.API.Controllers
         public async Task<ActionResult<List<AuditTrail>>> GetAuditTrail(
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null,
-            [FromQuery] string userId = null)
+            [FromQuery] string? userId = null)
         {
             try
             {
@@ -98,12 +98,11 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("id")?.Value;
-                var auditTrail = await _complianceService.CreateAuditTrailAsync(
-                    request.Action, 
-                    userId, 
-                    request.Data, 
-                    request.EntityType);
-                
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { error = "User identity not found" });
+                }
+                var auditTrail = await _complianceService.CreateAuditTrailAsync(request.Action, userId, request.Data, request.EntityType);
                 return Ok(auditTrail);
             }
             catch (Exception ex)
@@ -162,6 +161,10 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("id")?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { error = "User identity not found" });
+                }
                 var success = await _complianceService.RemediateViolationAsync(
                     violationId, 
                     request.RemediationAction, 

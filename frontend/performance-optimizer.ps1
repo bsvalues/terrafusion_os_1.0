@@ -27,7 +27,7 @@ function Get-BuildPerformanceMetrics {
     Write-Performance "📊 Analyzing build performance metrics..." "PERF"
 
     # Get build directory info
-    $buildDir = "../native-shell/ui"
+    $buildDir = "../native-shell/ui/dist"
     if (Test-Path $buildDir) {
         $assets = Get-ChildItem "$buildDir/assets" -ErrorAction SilentlyContinue
         $totalSize = ($assets | Measure-Object Length -Sum).Sum

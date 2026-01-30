@@ -1,0 +1,10 @@
+{
+  "executionMode": "Passive",
+  "totalAgents": 1008,
+  "activeAgents": 2,
+  "queueDepth": 5,
+  "lastActivityUtc": "2026-01-27T23:01:22Z",
+  "uptimeSeconds": 12345,
+  "provider": "TerraFusion.AI",
+  "warnings": []
+}

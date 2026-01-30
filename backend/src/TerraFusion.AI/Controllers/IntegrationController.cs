@@ -1,4 +1,4 @@
-/**
+/*
  * IntegrationController - REST API for Multi-System Integration Orchestration
  *
  * Provides endpoints for integration status, system connectors, sync operations,

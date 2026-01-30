@@ -270,6 +270,8 @@ namespace TerraFusion.API.Controllers
         [HttpGet("{sessionId}/metrics")]
         public async Task<ActionResult<EnhancementSessionMetrics>> GetEnhancementMetrics(string sessionId)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             try
             {
                 _logger.LogInformation("📈 Retrieving Enhancement Session Metrics - Session: {SessionId}", sessionId);
@@ -302,6 +304,8 @@ namespace TerraFusion.API.Controllers
         [HttpGet("sessions")]
         public async Task<ActionResult<List<EnhancementSessionSummary>>> GetActiveEnhancementSessions()
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             try
             {
                 _logger.LogInformation("📋 Retrieving Active Enhancement Sessions");
@@ -329,6 +333,8 @@ namespace TerraFusion.API.Controllers
         [HttpGet("{sessionId}/performance-comparison")]
         public async Task<ActionResult<PerformanceComparisonResult>> GetPerformanceComparison(string sessionId)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             try
             {
                 _logger.LogInformation("⚡ Retrieving Performance Comparison - Session: {SessionId}", sessionId);

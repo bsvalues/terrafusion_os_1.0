@@ -24,7 +24,6 @@ namespace TerraFusion.Core.Services
         private readonly ConcurrentDictionary<string, QuantumCircuit> _quantumCircuits;
         private readonly ConcurrentDictionary<string, QuantumState> _quantumStates;
         private bool _quantumInfrastructureReady = false;
-        private bool _quantumCryptographyEnabled = false;
         private readonly Random _random = new();
 
         public QuantumComputingService(
@@ -202,7 +201,6 @@ namespace TerraFusion.Core.Services
                 ConfigureQuantumSecureChannels()
             );
 
-            _quantumCryptographyEnabled = true;
             _logger.LogInformation("[QUANTUM-CRYPTO] ✅ Quantum cryptography enabled");
         }
 

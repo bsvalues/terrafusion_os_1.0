@@ -644,16 +644,16 @@ namespace TerraFusion.AI.Services
         }
 
         // Placeholder implementations for complex operations
-        private async System.Threading.Tasks.Task<List<SwarmNetwork>> CreateSpecializationNetworks() => new List<SwarmNetwork>();
+        private System.Threading.Tasks.Task<List<SwarmNetwork>> CreateSpecializationNetworks() => Task.FromResult(new List<SwarmNetwork>());
         private async System.Threading.Tasks.Task EstablishAgentConnections(List<SwarmNetwork> networks) => await Task.Delay(1);
-        private async System.Threading.Tasks.Task<List<KnowledgeEntry>> LoadInitialKnowledge(string category) => new List<KnowledgeEntry>();
+        private System.Threading.Tasks.Task<List<KnowledgeEntry>> LoadInitialKnowledge(string category) => Task.FromResult(new List<KnowledgeEntry>());
         private async System.Threading.Tasks.Task InitializeBehaviorDetectors() => await Task.Delay(1);
         private async System.Threading.Tasks.Task StartMonitoringSystems() => await Task.Delay(1);
-        private async System.Threading.Tasks.Task<SwarmPerformance> AnalyzeSwarmPerformance() => new SwarmPerformance();
-        private async System.Threading.Tasks.Task<List<ImprovementOpportunity>> IdentifyImprovementOpportunities(SwarmPerformance performance) => new List<ImprovementOpportunity>();
+        private System.Threading.Tasks.Task<SwarmPerformance> AnalyzeSwarmPerformance() => Task.FromResult(new SwarmPerformance());
+        private System.Threading.Tasks.Task<List<ImprovementOpportunity>> IdentifyImprovementOpportunities(SwarmPerformance performance) => Task.FromResult(new List<ImprovementOpportunity>());
         private async System.Threading.Tasks.Task ApplyEvolutionaryChanges(List<ImprovementOpportunity> improvements) => await Task.Delay(1);
-        private async System.Threading.Tasks.Task<double> CalculateSwarmCoherence() => 0.88 + (new Random().NextDouble() * 0.10); // 88-98%
-        private async System.Threading.Tasks.Task<double> CalculateCollectiveIntelligence() => 0.85 + (new Random().NextDouble() * 0.12); // 85-97%
+        private System.Threading.Tasks.Task<double> CalculateSwarmCoherence() => Task.FromResult(0.88 + (new Random().NextDouble() * 0.10)); // 88-98%
+        private System.Threading.Tasks.Task<double> CalculateCollectiveIntelligence() => Task.FromResult(0.85 + (new Random().NextDouble() * 0.12)); // 85-97%
         private async System.Threading.Tasks.Task MonitorKnowledgeSharing() => await Task.Delay(1);
         private async System.Threading.Tasks.Task FacilitateCollectiveProblemSolving() => await Task.Delay(1);
         private async System.Threading.Tasks.Task UpdateCollectiveMemory() => await Task.Delay(1);
@@ -662,20 +662,20 @@ namespace TerraFusion.AI.Services
         private async System.Threading.Tasks.Task ReportSignificantDiscoveries(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => await Task.Delay(1);
 
         // Behavior detection methods
-        private async System.Threading.Tasks.Task<List<AgentInteraction>> AnalyzeAgentInteractions() => new List<AgentInteraction>();
-        private async System.Threading.Tasks.Task<List<EmergentBehavior>> DetectCoordinationBehaviors(List<AgentInteraction> interactions) => CreateSampleBehaviors(EmergentBehaviorType.Coordination);
-        private async System.Threading.Tasks.Task<List<EmergentBehavior>> DetectSpecializationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Learning);
-        private async System.Threading.Tasks.Task<List<EmergentBehavior>> DetectAdaptationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Adaptation);
-        private async System.Threading.Tasks.Task<List<EmergentBehavior>> DetectInnovationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Emergence);
-        private async System.Threading.Tasks.Task<List<EmergentBehavior>> DetectOptimizationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Optimization);
+        private System.Threading.Tasks.Task<List<AgentInteraction>> AnalyzeAgentInteractions() => Task.FromResult(new List<AgentInteraction>());
+        private System.Threading.Tasks.Task<List<EmergentBehavior>> DetectCoordinationBehaviors(List<AgentInteraction> interactions) => Task.FromResult(CreateSampleBehaviors(EmergentBehaviorType.Coordination));
+        private System.Threading.Tasks.Task<List<EmergentBehavior>> DetectSpecializationBehaviors() => Task.FromResult(CreateSampleBehaviors(EmergentBehaviorType.Learning));
+        private System.Threading.Tasks.Task<List<EmergentBehavior>> DetectAdaptationBehaviors() => Task.FromResult(CreateSampleBehaviors(EmergentBehaviorType.Adaptation));
+        private System.Threading.Tasks.Task<List<EmergentBehavior>> DetectInnovationBehaviors() => Task.FromResult(CreateSampleBehaviors(EmergentBehaviorType.Emergence));
+        private System.Threading.Tasks.Task<List<EmergentBehavior>> DetectOptimizationBehaviors() => Task.FromResult(CreateSampleBehaviors(EmergentBehaviorType.Optimization));
 
         // Pattern analysis methods
-        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeBehavioralPatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Coordination, behaviors.Count);
-        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzePerformancePatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Trend, behaviors.Count);
-        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeLearningPatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Emergence, behaviors.Count);
-        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeCoordinationPatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Coordination, behaviors.Count);
-        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeCrossTypePatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Emergence, behaviors.Count);
-        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> ValidateAndScorePatterns(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => patterns.Where(p => p.SignificanceScore > 0.5).ToList();
+        private System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeBehavioralPatterns(List<EmergentBehavior> behaviors) => Task.FromResult(CreateSamplePatterns(PatternType.Coordination, behaviors.Count));
+        private System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzePerformancePatterns(List<EmergentBehavior> behaviors) => Task.FromResult(CreateSamplePatterns(PatternType.Trend, behaviors.Count));
+        private System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeLearningPatterns(List<EmergentBehavior> behaviors) => Task.FromResult(CreateSamplePatterns(PatternType.Emergence, behaviors.Count));
+        private System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeCoordinationPatterns(List<EmergentBehavior> behaviors) => Task.FromResult(CreateSamplePatterns(PatternType.Coordination, behaviors.Count));
+        private System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeCrossTypePatterns(List<EmergentBehavior> behaviors) => Task.FromResult(CreateSamplePatterns(PatternType.Emergence, behaviors.Count));
+        private System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> ValidateAndScorePatterns(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => Task.FromResult(patterns.Where(p => p.SignificanceScore > 0.5).ToList());
 
         private List<EmergentBehavior> CreateSampleBehaviors(EmergentBehaviorType type)
         {
@@ -763,40 +763,40 @@ namespace TerraFusion.AI.Services
 
         public class SwarmAgent
         {
-            public string AgentId { get; set; }
+            public string AgentId { get; set; } = string.Empty;
             public AgentTier Tier { get; set; }
-            public string Description { get; set; }
+            public string Description { get; set; } = string.Empty;
             public double CapabilityLevel { get; set; }
             public bool IsActive { get; set; }
             public DateTime CreationTime { get; set; }
             public DateTime LastActivity { get; set; }
-            public List<string> SpecializationAreas { get; set; }
-            public Dictionary<string, object> KnowledgeBase { get; set; }
-            public List<string> NetworkConnections { get; set; }
+            public List<string> SpecializationAreas { get; set; } = new();
+            public Dictionary<string, object> KnowledgeBase { get; set; } = new();
+            public List<string> NetworkConnections { get; set; } = new();
         }
 
         public class SwarmNetwork
         {
-            public string NetworkId { get; set; }
+            public string NetworkId { get; set; } = string.Empty;
             public NetworkType NetworkType { get; set; }
-            public List<string> Agents { get; set; }
+            public List<string> Agents { get; set; } = new();
             public DateTime CreationTime { get; set; }
             public bool IsActive { get; set; }
-            public string Purpose { get; set; }
+            public string Purpose { get; set; } = string.Empty;
             public double ConnectionStrength { get; set; }
-            public string CommunicationProtocol { get; set; }
+            public string CommunicationProtocol { get; set; } = string.Empty;
         }
 
         public class CollectiveMemory
         {
-            public string MemoryId { get; set; }
-            public string Category { get; set; }
+            public string MemoryId { get; set; } = string.Empty;
+            public string Category { get; set; } = string.Empty;
             public DateTime CreationTime { get; set; }
             public DateTime LastAccess { get; set; }
             public int AccessCount { get; set; }
             public double ConfidenceScore { get; set; }
-            public List<KnowledgeEntry> KnowledgeEntries { get; set; }
-            public List<string> ContributingAgents { get; set; }
+            public List<KnowledgeEntry> KnowledgeEntries { get; set; } = new();
+            public List<string> ContributingAgents { get; set; } = new();
             public ValidationStatus ValidationStatus { get; set; }
         }
 
@@ -836,6 +836,8 @@ namespace TerraFusion.AI.Services
 
         public async System.Threading.Tasks.Task<EmergentIntelligenceMetrics> GetMetricsAsync()
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             return new EmergentIntelligenceMetrics
             {
                 ActiveAgents = _currentActiveAgents,

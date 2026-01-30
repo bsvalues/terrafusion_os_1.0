@@ -7,30 +7,34 @@ WORKDIR /src
 # Copy solution and project files for restore
 COPY TerraFusion.sln ./
 COPY Directory.Packages.props ./
-COPY TerraFusion.Abstractions/*.csproj ./TerraFusion.Abstractions/
-COPY TerraFusion.AI/*.csproj ./TerraFusion.AI/
-COPY TerraFusion.Core/*.csproj ./TerraFusion.Core/
-COPY TerraFusion.Data/*.csproj ./TerraFusion.Data/
-COPY TerraFusion.API/*.csproj ./TerraFusion.API/
-COPY TerraFusion.Sync/*.csproj ./TerraFusion.Sync/
-COPY TerraFusion.Consciousness/*.csproj ./TerraFusion.Consciousness/
-COPY TerraFusion.CostForge/*.csproj ./TerraFusion.CostForge/
+COPY src/TerraFusion.Abstractions/*.csproj ./src/TerraFusion.Abstractions/
+COPY src/TerraFusion.AI/*.csproj ./src/TerraFusion.AI/
+COPY src/TerraFusion.Core/*.csproj ./src/TerraFusion.Core/
+COPY src/TerraFusion.Data/*.csproj ./src/TerraFusion.Data/
+COPY src/TerraFusion.API/*.csproj ./src/TerraFusion.API/
+COPY src/TerraFusion.Sync/*.csproj ./src/TerraFusion.Sync/
+COPY src/TerraFusion.Consciousness/*.csproj ./src/TerraFusion.Consciousness/
+COPY src/TerraFusion.CostForge/*.csproj ./src/TerraFusion.CostForge/
+COPY src/TerraFusion.Operations/*.csproj ./src/TerraFusion.Operations/
+COPY src/TerraFusion.Levy/*.csproj ./src/TerraFusion.Levy/
 
 # Restore dependencies
 RUN dotnet restore TerraFusion.sln --verbosity minimal
 
 # Copy source
-COPY TerraFusion.Abstractions/ ./TerraFusion.Abstractions/
-COPY TerraFusion.AI/ ./TerraFusion.AI/
-COPY TerraFusion.Core/ ./TerraFusion.Core/
-COPY TerraFusion.Data/ ./TerraFusion.Data/
-COPY TerraFusion.API/ ./TerraFusion.API/
-COPY TerraFusion.Sync/ ./TerraFusion.Sync/
-COPY TerraFusion.Consciousness/ ./TerraFusion.Consciousness/
-COPY TerraFusion.CostForge/ ./TerraFusion.CostForge/
+COPY src/TerraFusion.Abstractions/ ./src/TerraFusion.Abstractions/
+COPY src/TerraFusion.AI/ ./src/TerraFusion.AI/
+COPY src/TerraFusion.Core/ ./src/TerraFusion.Core/
+COPY src/TerraFusion.Data/ ./src/TerraFusion.Data/
+COPY src/TerraFusion.API/ ./src/TerraFusion.API/
+COPY src/TerraFusion.Sync/ ./src/TerraFusion.Sync/
+COPY src/TerraFusion.Consciousness/ ./src/TerraFusion.Consciousness/
+COPY src/TerraFusion.CostForge/ ./src/TerraFusion.CostForge/
+COPY src/TerraFusion.Operations/ ./src/TerraFusion.Operations/
+COPY src/TerraFusion.Levy/ ./src/TerraFusion.Levy/
 
 # Publish
-RUN dotnet publish TerraFusion.API/TerraFusion.API.csproj \
+RUN dotnet publish src/TerraFusion.API/TerraFusion.API.csproj \
     -c Release \
     -o /app/publish \
     --no-restore \
@@ -43,14 +47,16 @@ WORKDIR /app
 # Copy project files for restore
 COPY TerraFusion.sln ./
 COPY Directory.Packages.props ./
-COPY TerraFusion.Abstractions/*.csproj ./TerraFusion.Abstractions/
-COPY TerraFusion.AI/*.csproj ./TerraFusion.AI/
-COPY TerraFusion.Core/*.csproj ./TerraFusion.Core/
-COPY TerraFusion.Data/*.csproj ./TerraFusion.Data/
-COPY TerraFusion.API/*.csproj ./TerraFusion.API/
-COPY TerraFusion.Sync/*.csproj ./TerraFusion.Sync/
-COPY TerraFusion.Consciousness/*.csproj ./TerraFusion.Consciousness/
-COPY TerraFusion.CostForge/*.csproj ./TerraFusion.CostForge/
+COPY src/TerraFusion.Abstractions/*.csproj ./src/TerraFusion.Abstractions/
+COPY src/TerraFusion.AI/*.csproj ./src/TerraFusion.AI/
+COPY src/TerraFusion.Core/*.csproj ./src/TerraFusion.Core/
+COPY src/TerraFusion.Data/*.csproj ./src/TerraFusion.Data/
+COPY src/TerraFusion.API/*.csproj ./src/TerraFusion.API/
+COPY src/TerraFusion.Sync/*.csproj ./src/TerraFusion.Sync/
+COPY src/TerraFusion.Consciousness/*.csproj ./src/TerraFusion.Consciousness/
+COPY src/TerraFusion.CostForge/*.csproj ./src/TerraFusion.CostForge/
+COPY src/TerraFusion.Operations/*.csproj ./src/TerraFusion.Operations/
+COPY src/TerraFusion.Levy/*.csproj ./src/TerraFusion.Levy/
 
 # Restore
 RUN dotnet restore TerraFusion.sln --verbosity minimal
@@ -69,7 +75,7 @@ ENV ASPNETCORE_URLS=http://0.0.0.0:5000
 EXPOSE 5000
 
 # Use watch for hot-reload
-CMD ["dotnet", "watch", "--project", "TerraFusion.API/TerraFusion.API.csproj", "run", "--no-launch-profile"]
+CMD ["dotnet", "watch", "--project", "src/TerraFusion.API/TerraFusion.API.csproj", "run", "--no-launch-profile"]
 
 # Stage 3: Runtime (Production)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime

@@ -333,6 +333,8 @@ namespace TerraFusion.Consciousness.Controllers
         [HttpGet("status")]
         public async Task<ActionResult<object>> GetDataSourceStatus()
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             try
             {
                 // This would be implemented with actual status checks

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "os-platform/core/pilot/**/*.ts",
+    "os-platform/core/types/**/*.ts",
+    "tools/registry/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "**/ARCHIVE/**",
+    "**/archive/**",
+    "**/legacy/**",
+    "development/tools/**",
+    "specialized/**",
+    "**/*.js",
+    "**/*.mjs",
+    "**/*.cjs",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+}

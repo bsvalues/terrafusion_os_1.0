@@ -1588,7 +1588,7 @@ namespace TerraFusion.API.Controllers
 
         /// <summary>
         /// Get the AI policy configuration for a specific county.
-        /// Phase 24: AI Policy Engine - County-scoped governance for GPT, RAG, Embeddings & ExplainGPT.
+        /// Phase 24: AI Policy Engine - County-scoped governance for GPT, RAG, Embeddings &amp; ExplainGPT.
         /// Returns the policy rules that govern what AI operations are allowed for the given county.
         /// </summary>
         [HttpGet("system/policy")]

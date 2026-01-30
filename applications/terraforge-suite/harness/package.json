@@ -1,0 +1,46 @@
+{
+  "name": "terraforge-harness",
+  "version": "0.1.0",
+  "description": "TerraForge Golden Workflow Harness - Contract validation and module orchestration",
+  "private": true,
+  "type": "module",
+  "main": "dist/run-golden-workflow.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "golden": "cross-env TEST_MODE=steel tsx src/run-golden-workflow.ts",
+    "golden:stub": "cross-env TEST_MODE=stub tsx src/run-golden-workflow.ts",
+    "golden:steel": "cross-env TEST_MODE=steel tsx src/run-golden-workflow.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "tsc --noEmit",
+    "validate:schemas": "ajv validate -s ../contracts/schemas/audit_event.json -d fixtures/golden_workflow/input_set.json"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "glob": "^10.3.10",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/uuid": "^9.0.7",
+    "cross-env": "^7.0.3",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "terraforge",
+    "terrafusion",
+    "government",
+    "property-assessment",
+    "valuation"
+  ]
+}

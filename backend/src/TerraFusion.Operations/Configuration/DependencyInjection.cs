@@ -200,6 +200,8 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddScoped<IAuditLogger, Services.NoopAuditLogger>();
+
         // TODO: Register structured logging services when implementations are complete
         // services.AddScoped<IOperationalLogger, OperationalLogger>();
         // services.AddScoped<IPerformanceLogger, PerformanceLogger>();

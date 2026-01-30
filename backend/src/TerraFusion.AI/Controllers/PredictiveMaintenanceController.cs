@@ -1,4 +1,4 @@
-/**
+/*
  * PredictiveMaintenanceController - REST API for Predictive Maintenance
  *
  * Provides endpoints for ML-driven predictive maintenance operations:

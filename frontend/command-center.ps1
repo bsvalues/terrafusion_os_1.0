@@ -37,7 +37,7 @@ function Show-CommandCenter {
 
     # System Status
     $serverStatus = Test-NetConnection -ComputerName localhost -Port 8002 -WarningAction SilentlyContinue
-    $buildExists = Test-Path "../native-shell/ui/index.html"
+    $buildExists = Test-Path "../native-shell/ui/dist/index.html"
 
     Write-Host ""
     Write-Host "📊 CURRENT STATUS" -ForegroundColor Yellow
@@ -50,7 +50,7 @@ function Show-CommandCenter {
     }
 
     if ($buildExists) {
-        $buildTime = (Get-Item "../native-shell/ui/index.html").LastWriteTime
+        $buildTime = (Get-Item "../native-shell/ui/dist/index.html").LastWriteTime
         Write-Host "✅ Production Build: READY ($buildTime)" -ForegroundColor Green
     } else {
         Write-Host "❌ Production Build: NOT FOUND" -ForegroundColor Red
@@ -124,7 +124,7 @@ function Invoke-BuildCommand {
         Write-Command "✅ Build completed successfully" "SUCCESS"
 
         # Show build stats
-        $buildDir = "../native-shell/ui"
+        $buildDir = "../native-shell/ui/dist"
         if (Test-Path $buildDir) {
             $assets = Get-ChildItem "$buildDir/assets" -ErrorAction SilentlyContinue
             $totalSize = ($assets | Measure-Object Length -Sum).Sum / 1MB
@@ -143,13 +143,13 @@ function Invoke-ServerCommand {
             Write-Command "🚀 Starting TerraFusion Elite Server..." "COMMAND"
 
             # Ensure build exists
-            if (-not (Test-Path "../native-shell/ui/index.html")) {
+            if (-not (Test-Path "../native-shell/ui/dist/index.html")) {
                 Write-Command "📦 Build not found, creating production build..." "WARNING"
                 Invoke-BuildCommand
             }
 
             # Start server in new window
-            $serverPath = Resolve-Path "../native-shell/ui"
+            $serverPath = Resolve-Path "../native-shell/ui/dist"
             Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$serverPath'; npx serve . -l 8002 --single --cors"
 
             Start-Sleep -Seconds 3
@@ -243,7 +243,7 @@ function Invoke-MonitoringCommand {
             $checks += @{ Component = "Server"; Status = $serverStatus.TcpTestSucceeded }
 
             # Build check
-            $buildExists = Test-Path "../native-shell/ui/index.html"
+            $buildExists = Test-Path "../native-shell/ui/dist/index.html"
             $checks += @{ Component = "Build"; Status = $buildExists }
 
             # Dependencies check
@@ -285,7 +285,7 @@ function Invoke-QuickAccessCommand {
 
         "explorer" {
             Write-Command "📁 Opening build directory..." "COMMAND"
-            $buildPath = Resolve-Path "../native-shell/ui" -ErrorAction SilentlyContinue
+            $buildPath = Resolve-Path "../native-shell/ui/dist" -ErrorAction SilentlyContinue
             if ($buildPath) {
                 explorer $buildPath
             } else {
@@ -308,8 +308,8 @@ try {
         "build-analyze" { Invoke-BuildCommand "analyze" }
         "clean" {
             Write-Command "🧹 Cleaning build artifacts..." "COMMAND"
-            if (Test-Path "../native-shell/ui") {
-                Remove-Item "../native-shell/ui/*" -Recurse -Force
+            if (Test-Path "../native-shell/ui/dist") {
+                Remove-Item "../native-shell/ui/dist/*" -Recurse -Force
                 Write-Command "✅ Build artifacts cleaned" "SUCCESS"
             }
         }

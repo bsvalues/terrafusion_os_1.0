@@ -67,7 +67,7 @@ function Start-EliteTerraFusionServer {
     }
 
     # Navigate to UI directory
-    Push-Location "../native-shell/ui"
+    Push-Location "../native-shell/ui/dist"
     try {
         # Kill any existing processes on the port
         $existingProcess = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
@@ -117,8 +117,8 @@ function Stop-EliteTerraFusionServer {
     Write-EliteLog "🛑 Stopping TerraFusion Elite Server..." "WARNING"
 
     # Stop job if exists
-    if (Test-Path "../native-shell/ui/.terrafusion-server.pid") {
-        $jobId = Get-Content "../native-shell/ui/.terrafusion-server.pid" -ErrorAction SilentlyContinue
+    if (Test-Path "../native-shell/ui/dist/.terrafusion-server.pid") {
+        $jobId = Get-Content "../native-shell/ui/dist/.terrafusion-server.pid" -ErrorAction SilentlyContinue
         if ($jobId) {
             $job = Get-Job -Id $jobId -ErrorAction SilentlyContinue
             if ($job) {
@@ -127,7 +127,7 @@ function Stop-EliteTerraFusionServer {
                 Write-EliteLog "✅ Server job terminated" "SUCCESS"
             }
         }
-        Remove-Item "../native-shell/ui/.terrafusion-server.pid" -Force -ErrorAction SilentlyContinue
+        Remove-Item "../native-shell/ui/dist/.terrafusion-server.pid" -Force -ErrorAction SilentlyContinue
     }
 
     # Kill processes on port
@@ -171,8 +171,8 @@ function Get-TerraFusionStatus {
         $nodeProcesses = Get-Process -Name node -ErrorAction SilentlyContinue
         Write-Host "🔧 Node.js Processes: $($nodeProcesses.Count)" -ForegroundColor White
 
-        if (Test-Path "../native-shell/ui/index.html") {
-            $buildTime = (Get-Item "../native-shell/ui/index.html").LastWriteTime
+        if (Test-Path "../native-shell/ui/dist/index.html") {
+            $buildTime = (Get-Item "../native-shell/ui/dist/index.html").LastWriteTime
             Write-Host "📦 Last Build: $buildTime" -ForegroundColor White
         }
 

@@ -3,7 +3,8 @@
 
 import axios, { AxiosInstance } from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { getViteEnv } from '@/env/getViteEnv';
+const API_BASE_URL = getViteEnv().VITE_API_URL || 'http://localhost:5000';
 
 /**
  * GPT Configuration entity

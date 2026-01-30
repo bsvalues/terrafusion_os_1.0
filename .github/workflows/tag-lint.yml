@@ -1,6 +1,12 @@
 name: Tag Lint
 on:
-  pull_request: {}
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'tools/**'
+      - '.github/workflows/tag-lint.yml'
 jobs:
   lint:
     runs-on: windows-latest

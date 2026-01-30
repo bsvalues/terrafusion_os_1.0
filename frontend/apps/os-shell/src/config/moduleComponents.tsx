@@ -10,6 +10,8 @@
  */
 
 import React, { lazy, Suspense } from 'react';
+import { GenericModuleHost } from '../shell/desktop/GenericModuleHost';
+import { MODULES, type ModuleDefinition } from './modules';
 
 // ============================================================================
 // Module Aliases - Maps legacy/short IDs to canonical IDs (Phase 2)
@@ -89,11 +91,18 @@ export const MODULE_REGISTRY = new Set<string>([
 
 /**
  * Checks if a module ID (after normalization) is registered.
+ * Checks both hardcoded MODULE_REGISTRY and dynamically generated MODULES.
  * @param moduleId - The module ID to check (will be normalized)
  * @returns True if the module is registered
  */
 export function isModuleRegistered(moduleId: string): boolean {
-  return MODULE_REGISTRY.has(normalizeModuleId(moduleId));
+  const canonical = normalizeModuleId(moduleId);
+  // Check hardcoded registry first (for built-in modules)
+  if (MODULE_REGISTRY.has(canonical)) {
+    return true;
+  }
+  // Check dynamic MODULES array (for Gen2 modules from manifestfiles)
+  return MODULES.some((m) => m.id === canonical);
 }
 
 /**
@@ -164,6 +173,34 @@ const SovereignDashboardWindow = lazy(() =>
 );
 
 // ============================================================================
+// Module Entries (lazy components for bespoke modules)
+// ============================================================================
+
+export type ModuleEntry = {
+  Component?: React.LazyExoticComponent<React.ComponentType<any>>;
+};
+
+const MODULE_ENTRIES: Record<string, ModuleEntry> = {
+  'federation-dashboard': { Component: FederationDashboard },
+  costforge: { Component: CostForgeQuantumDashboard },
+  'terra-gaia': { Component: TerraGaiaDashboard },
+  reporting: { Component: AnalyticsDashboard },
+  'atlas-ai': { Component: ATLAS },
+  marketplace: { Component: Marketplace },
+  counties: { Component: CountiesHub },
+  'government-architecture': { Component: GovernmentArchitecture },
+  settings: { Component: SettingsPanel },
+  'shortcuts-help': { Component: ShortcutsPanel },
+  'plugin-manager': { Component: PluginManager },
+  'axiom-fs': { Component: AxiomFSWindow },
+  'sovereign-dashboard': { Component: SovereignDashboardWindow },
+};
+
+export function getModuleEntry(moduleId: string): ModuleEntry | undefined {
+  return MODULE_ENTRIES[moduleId];
+}
+
+// ============================================================================
 // Placeholder for modules under development
 // ============================================================================
 
@@ -181,21 +218,79 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
   status = 'coming-soon',
 }) => {
   const statusConfig = {
-    'coming-soon': { color: 'bg-yellow-500', label: 'Coming Soon' },
-    'in-development': { color: 'bg-blue-500', label: 'In Development' },
-    beta: { color: 'bg-purple-500', label: 'Beta' },
+    'coming-soon': { color: 'bg-[#FFAA00]', label: 'Coming Soon' },
+    'in-development': { color: 'bg-[#0080FF]', label: 'In Development' },
+    beta: { color: 'bg-[#8844FF]', label: 'Beta' },
   };
 
   const { color, label } = statusConfig[status];
 
   return (
-    <div className='w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 text-white p-8'>
-      <div className='text-6xl mb-6'>{icon}</div>
-      <h2 className='text-2xl font-bold text-cyan-400 mb-2'>{name}</h2>
-      <p className='text-slate-400 text-center max-w-md mb-6'>{description}</p>
-      <div className='flex items-center gap-2 text-sm text-slate-300'>
-        <div className={`w-2 h-2 ${color} rounded-full animate-pulse`} />
-        <span>{label}</span>
+    <div
+      className='w-full h-full flex flex-col items-center justify-center text-white p-8 relative overflow-hidden'
+      style={{
+        background:
+          'linear-gradient(135deg, rgba(10, 14, 26, 0.95) 0%, rgba(20, 24, 36, 0.9) 50%, rgba(10, 14, 26, 0.95) 100%)',
+      }}
+    >
+      {/* Subtle grid pattern */}
+      <div
+        className='absolute inset-0 opacity-[0.03] pointer-events-none'
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(0, 229, 255, 0.4) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 229, 255, 0.4) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+        }}
+      />
+
+      {/* Corner glow */}
+      <div
+        className='absolute top-0 left-0 w-[300px] h-[300px] opacity-20 pointer-events-none'
+        style={{
+          background:
+            'radial-gradient(circle at center, rgba(0, 229, 255, 0.3) 0%, transparent 70%)',
+        }}
+      />
+
+      {/* Icon with glow */}
+      <div
+        className='text-6xl mb-6 relative'
+        style={{
+          filter: 'drop-shadow(0 0 20px rgba(0, 229, 255, 0.4))',
+        }}
+      >
+        {icon}
+      </div>
+
+      {/* Title */}
+      <h2
+        className='text-2xl font-light mb-2'
+        style={{
+          color: '#00E5FF',
+          textShadow: '0 0 20px rgba(0, 229, 255, 0.4)',
+        }}
+      >
+        {name}
+      </h2>
+
+      {/* Description */}
+      <p className='text-white/60 text-center max-w-md mb-6'>{description}</p>
+
+      {/* Status badge */}
+      <div
+        className='flex items-center gap-2 px-4 py-2 rounded-full'
+        style={{
+          background: 'rgba(0, 229, 255, 0.1)',
+          border: '1px solid rgba(0, 229, 255, 0.2)',
+        }}
+      >
+        <div
+          className={`w-2 h-2 ${color} rounded-full animate-pulse`}
+          style={{ boxShadow: '0 0 10px currentColor' }}
+        />
+        <span className='text-sm text-white/80'>{label}</span>
       </div>
     </div>
   );
@@ -206,9 +301,24 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
 // ============================================================================
 
 const ModuleLoadingFallback: React.FC = () => (
-  <div className='w-full h-full flex flex-col items-center justify-center bg-slate-900'>
-    <div className='w-12 h-12 border-4 border-slate-700 border-t-cyan-400 rounded-full animate-spin' />
-    <p className='mt-4 text-slate-300 text-sm'>Loading module...</p>
+  <div
+    className='w-full h-full flex flex-col items-center justify-center'
+    style={{
+      background: 'linear-gradient(135deg, rgba(10, 14, 26, 0.95) 0%, rgba(20, 24, 36, 0.9) 100%)',
+    }}
+  >
+    {/* Quantum spinner */}
+    <div
+      className='w-12 h-12 rounded-full animate-spin'
+      style={{
+        border: '3px solid rgba(0, 229, 255, 0.15)',
+        borderTopColor: '#00E5FF',
+        boxShadow: '0 0 30px rgba(0, 229, 255, 0.3)',
+      }}
+    />
+    <p className='mt-4 text-sm' style={{ color: 'rgba(0, 229, 255, 0.7)' }}>
+      Loading module...
+    </p>
   </div>
 );
 
@@ -217,7 +327,7 @@ const ModuleLoadingFallback: React.FC = () => (
 // ============================================================================
 
 interface ModuleRendererProps {
-  moduleId: string;
+  module: ModuleDefinition;
   /** Optional metadata passed to module (e.g., objectId for sovereign-dashboard) */
   metadata?: Record<string, unknown>;
 }
@@ -226,8 +336,8 @@ interface ModuleRendererProps {
  * Renders the appropriate component for a given module ID.
  * Wraps lazy components in Suspense with loading fallback.
  */
-export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ moduleId, metadata }) => {
-  switch (moduleId) {
+export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata }) => {
+  switch (module.id) {
     // ========================================================================
     // WORKING MODULES (Full Implementation)
     // ========================================================================
@@ -382,14 +492,7 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ moduleId, metada
     // ========================================================================
 
     default:
-      return (
-        <PlaceholderModule
-          name='Unknown Module'
-          icon='❓'
-          description={`Module "${moduleId}" is not registered in the system.`}
-          status='coming-soon'
-        />
-      );
+      return <GenericModuleHost module={module} />;
   }
 };
 

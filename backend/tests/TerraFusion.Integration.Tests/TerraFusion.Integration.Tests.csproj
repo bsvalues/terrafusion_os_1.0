@@ -20,8 +20,8 @@
     <PackageReference Include="YamlDotNet" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../TerraFusion.Core/TerraFusion.Core.csproj" />
-    <ProjectReference Include="../../TerraFusion.Data/TerraFusion.Data.csproj" />
+    <ProjectReference Include="../../src/TerraFusion.Core/TerraFusion.Core.csproj" />
+    <ProjectReference Include="../../src/TerraFusion.Data/TerraFusion.Data.csproj" />
     <ProjectReference Include="../../src/TerraFusion.AI/TerraFusion.AI.csproj" />
     <ProjectReference Include="../../src/TerraFusion.Operations/TerraFusion.Operations.csproj" />
   </ItemGroup>

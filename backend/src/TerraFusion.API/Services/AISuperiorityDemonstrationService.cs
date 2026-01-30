@@ -468,6 +468,8 @@ namespace TerraFusion.API.Services
         /// </summary>
         private async Task GenerateSupremacyMetricsAsync(AISuperiorityDemo demo)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             _logger.LogInformation($"📊 Generating AI supremacy metrics for championship demonstration");
 
             var terraFusionResults = demo.TestResults?.Select(r => r.TerraFusionPerformance) ?? Enumerable.Empty<ScenarioPerformanceResult>();
@@ -642,6 +644,8 @@ namespace TerraFusion.API.Services
         /// </summary>
         public async Task<AIDemo.AIDemoDashboardData> GetDemoDashboardAsync(string demoId)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             if (!_activeDemos.TryGetValue(demoId, out var demo))
             {
                 throw new DemoNotFoundException($"Demo {demoId} not found or inactive");

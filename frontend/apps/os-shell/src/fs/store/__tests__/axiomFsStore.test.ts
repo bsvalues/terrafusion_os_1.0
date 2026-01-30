@@ -2,6 +2,17 @@ import { act } from '@testing-library/react';
 import { SovereignObject } from '../../types';
 import { useAxiomFsStore } from '../axiomFsStore';
 
+jest.mock('@/config/features', () => ({
+  FEATURES: {
+    ENABLE_AXIOM_FS: true,
+    ENABLE_DASHBOARD: true,
+    ENABLE_SIMULATION_ENGINE: true,
+    ENABLE_REDUCED_MOTION: false,
+    ENABLE_DEBUG_OVERLAYS: false,
+    USE_MOCK_DATA: false,
+  },
+}));
+
 describe('AxiomFS Store', () => {
   beforeEach(() => {
     // Reset store

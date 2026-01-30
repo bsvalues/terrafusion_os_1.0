@@ -1,0 +1,46 @@
+{
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "@types/node": "^20.0.0",
+    "vite": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0"
+  },
+  "main": "index.js",
+  "terrafusion": {
+    "workspace": {
+      "aiEnabled": true,
+      "type": "frontend",
+      "workforgeCompatible": true,
+      "confidenceTarget": 0.97
+    }
+  },
+  "keywords": [
+    "terrafusion",
+    "government",
+    "transcended",
+    "ai-optimized",
+    "workforge-compatible"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "dev": "vite",
+    "agents:init": "node .vscode/scripts/init-agents.js",
+    "test": "jest",
+    "format": "prettier --write .",
+    "start": "node index.js",
+    "workforge:validate": "node .vscode/scripts/validate-workforge.js",
+    "build": "vite build"
+  },
+  "name": "terra-citizen-portal",
+  "license": "MIT",
+  "author": "TerraFusion Elite Team",
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "description": "TerraFusion frontend workspace - Government. Transcended.",
+  "version": "1.0.0"
+}

@@ -4,14 +4,6 @@ exports[`App Component > Core Rendering > renders as expected 1`] = `
 <div
   data-testid="app"
 >
-  TerraFusion OS
-</div>
-`;
-
-exports[`App Component > Core Rendering > renders as expected 2`] = `
-<div
-  data-testid="app"
->
   Terrafusion OS
 </div>
 `;

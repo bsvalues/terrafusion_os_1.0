@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/cost_result.json",
+  "title": "CostResult",
+  "description": "Cost calculation output from the TerraForge cost kernel",
+  "type": "object",
+  "properties": {
+    "replacementCost": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Replacement Cost New (RCN) - full cost to rebuild"
+    },
+    "depreciation": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Accumulated depreciation amount"
+    },
+    "rcnld": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Replacement Cost New Less Depreciation"
+    }
+  },
+  "required": ["replacementCost", "depreciation", "rcnld"],
+  "additionalProperties": false
+}

@@ -30,6 +30,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:5000
+      - TF_MODULE_INTENT_FILTER=gen2
       - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
       - Redis__Configuration=redis:6379
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
@@ -37,6 +38,7 @@ services:
     volumes:
       - ./docs:/app/docs
       - ./scripts:/app/scripts
+      - ./applications:/app/applications:ro
     ports:
       - '5000:5000'
     depends_on:

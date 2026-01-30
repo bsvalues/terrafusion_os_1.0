@@ -388,6 +388,8 @@ namespace TerraFusion.Consciousness.Services
 
         public async Task<ConsciousnessModeResultDto> SwitchConsciousnessModeAsync(ConsciousnessModeRequestDto request)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             try
             {
                 _logger.LogInformation("🔄 Switching consciousness mode to {Mode} for session {SessionId}",

@@ -1,0 +1,4 @@
+vitest-results.json
+test-results/
+coverage/
+dist/

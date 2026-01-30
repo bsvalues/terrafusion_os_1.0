@@ -1,0 +1,34 @@
+{
+  "policyVersion": "2026-01-19-QUARANTINE",
+  "governance": {
+    "status": "LEGACY",
+    "description": "Roots not touched since Architecture Anchor (Jan 11, 2026) or failing governance standards."
+  },
+  "quarantinedRoots": [
+    "agents/",
+    "tools/",
+    "os-platform/",
+    "applications/bcbs-gis-pro-production/",
+    "applications/bcbs-webhub-production/",
+    "applications/bs-income-valuation-production/",
+    "applications/mcp-servers-production/",
+    "applications/system-prompts-ai-tools/",
+    "applications/terra-agent-production/",
+    "applications/terra-assistant-production/TerraFusionAssistant/",
+    "applications/terra-build-actual/",
+    "applications/terra-dashboard-production/TerraFusionDashboard/",
+    "applications/terra-enterprise/",
+    "applications/terra-miner-production/TerraMiner/",
+    "applications/terra-permit-production/",
+    "applications/terra-pilt-production/",
+    "applications/terra-playground-production/",
+    "applications/terra-primeview-production/",
+    "applications/terra-pro-production/",
+    "applications/terra-prof-production/",
+    "applications/terra-proplus-production/",
+    "applications/terra-sync-production/",
+    "applications/terra-v0demo-production/",
+    "workspaces/AIDATACONNECT/AIDataConnect/",
+    "workspaces/PACS/TADownloads/pacs-quantum-ui/"
+  ]
+}

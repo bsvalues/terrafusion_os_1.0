@@ -1,8 +1,8 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - GOVERNMENT OPERATIONS CONTROLLER
- * Benton County Government Excellence & Property Assessment
- * Real-time County Operations & Citizen Services
+ * Benton County Government Excellence &amp; Property Assessment
+ * Real-time County Operations &amp; Citizen Services
  * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
  * ═══════════════════════════════════════════════════════════════
  */

@@ -11,20 +11,21 @@
 import { cn } from '@/lib/utils';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getLucideIcon } from '../../config/iconMap';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useWindowPeek } from '../../hooks/useWindowPeek';
+import { SentinelChip } from '../../sentinel/SentinelChip';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
+import { TerraSphere } from '../../ui/brand/TerraSphere';
+import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
 import { AIStatusIndicator, defaultAIStatus, type AIStatus } from './AIStatusPanel';
 import { Clock } from './Clock';
 import { NotificationBell, type Notification } from './NotificationBell';
-import {
-  SystemHealthIndicator,
-  defaultHealthStatus,
-  type SystemHealthStatus,
-} from './SystemHealthPanel';
 import { TaskbarContextMenu } from './TaskbarContextMenu';
 import { VirtualDesktopSwitcher } from './VirtualDesktopSwitcher';
+
+const SOVEREIGN_NODES = ['Files', 'Identity', 'Finance'];
 
 // ============================================================================
 // Default Demo Data
@@ -87,21 +88,8 @@ const StartButton: React.FC = () => {
         isOpen && 'bg-white/15 shadow-[0_0_20px_rgba(0,255,238,0.3)]'
       )}
     >
-      {/* TerraFusion Logo */}
-      <div
-        className={cn(
-          'w-7 h-7 rounded-md',
-          'flex items-center justify-center',
-          'font-bold text-sm',
-          'bg-gradient-to-br from-[var(--tf-network-blue)] to-[var(--tf-transcend-highlight)]',
-          'text-[var(--tf-void-black)]',
-          'shadow-[0_0_10px_rgba(0,153,255,0.5)]',
-          'transition-transform duration-200',
-          isOpen && 'scale-110'
-        )}
-      >
-        TF
-      </div>
+      {/* TerraSphere Logo */}
+      <TerraSphere size={32} state={isOpen ? 'processing' : 'idle'} />
     </button>
   );
 };
@@ -127,6 +115,32 @@ const TaskViewButton: React.FC<{ onClick: () => void; isOpen: boolean }> = ({
     >
       <span className='text-xl'>🔲</span>
     </button>
+  );
+};
+
+const SovereignDock: React.FC = () => {
+  const { openWindow } = useDesktopStore();
+
+  const handleNodeClick = (node: string) => {
+    if (node === 'Files') {
+      openWindow('axiom-fs', 'AxiomFS', '🌀');
+    }
+  };
+
+  return (
+    <div className='flex items-center gap-2 px-2 shrink-0'>
+      {SOVEREIGN_NODES.map((node) => (
+        <button
+          key={node}
+          type='button'
+          onClick={() => handleNodeClick(node)}
+          data-testid={`sovereign-launch-${node.toLowerCase()}`}
+          className='glass-button px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-white/90'
+        >
+          {node}
+        </button>
+      ))}
+    </div>
   );
 };
 
@@ -157,6 +171,7 @@ const TaskbarAppButton: React.FC<TaskbarAppButtonProps> = ({
   onMouseLeave,
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const Icon = getLucideIcon(icon);
 
   const handleMouseEnter = () => {
     if (buttonRef.current) {
@@ -196,9 +211,9 @@ const TaskbarAppButton: React.FC<TaskbarAppButtonProps> = ({
         isMinimized && !isActive && 'opacity-60'
       )}
     >
-      <span className='text-lg flex-shrink-0' role='img' aria-hidden='true'>
-        {icon}
-      </span>
+      <div className='flex-shrink-0' role='img' aria-hidden='true'>
+        <TerraSphereIcon size={28} variant='default' glyph={<Icon className='h-3 w-3' />} />
+      </div>
       <span className='truncate'>{title}</span>
     </button>
   );
@@ -279,7 +294,6 @@ const RunningAppsBar: React.FC = () => {
  */
 interface SystemTrayProps {
   aiStatus?: AIStatus;
-  healthStatus?: SystemHealthStatus;
   notifications?: Notification[];
   onNotificationClick?: (notification: Notification) => void;
   onNotificationDismiss?: (id: string) => void;
@@ -288,7 +302,6 @@ interface SystemTrayProps {
 
 const SystemTray: React.FC<SystemTrayProps> = ({
   aiStatus = defaultAIStatus,
-  healthStatus = defaultHealthStatus,
   notifications = defaultNotifications,
   onNotificationClick,
   onNotificationDismiss,
@@ -302,11 +315,11 @@ const SystemTray: React.FC<SystemTrayProps> = ({
       role='group'
       aria-label={t('taskbar.systemTray')}
     >
-      {/* AI Status */}
-      <AIStatusIndicator status={aiStatus} />
+      {/* Backend Health (single source of truth) */}
+      <SentinelChip variant='tray' />
 
-      {/* System Health */}
-      <SystemHealthIndicator status={healthStatus} />
+      {/* Agents Online */}
+      <AIStatusIndicator status={aiStatus} />
 
       {/* Divider */}
       <div className='w-px h-6 bg-white/10 mx-1' />
@@ -331,7 +344,6 @@ const SystemTray: React.FC<SystemTrayProps> = ({
 
 export interface TaskbarProps {
   aiStatus?: AIStatus;
-  healthStatus?: SystemHealthStatus;
   notifications?: Notification[];
   onNotificationClick?: (notification: Notification) => void;
   onNotificationDismiss?: (id: string) => void;
@@ -341,7 +353,6 @@ export interface TaskbarProps {
 
 export const Taskbar: React.FC<TaskbarProps> = ({
   aiStatus,
-  healthStatus,
   notifications,
   onNotificationClick,
   onNotificationDismiss,
@@ -362,16 +373,24 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           'fixed bottom-0 left-0 right-0 z-50',
           // Size
           'h-12', // 48px
-          // Background with glass effect
-          'bg-[var(--tf-void-black)]/80 backdrop-blur-xl',
-          // Border
-          'border-t border-[var(--tf-transcend-highlight)]/20',
-          // Shadow
-          'shadow-[0_-4px_20px_rgba(0,0,0,0.5),0_0_40px_rgba(0,255,238,0.1)]',
           // Layout
           'flex items-center px-1',
+          // Glass effect class for tests/consistency
+          'backdrop-blur-xl',
           className
         )}
+        style={{
+          // Immersive Glassmorphism - floats over WebGL
+          background: 'rgba(10, 14, 26, 0.7)',
+          backdropFilter: 'saturate(200%) blur(30px)',
+          WebkitBackdropFilter: 'saturate(200%) blur(30px)',
+          borderTop: '1px solid rgba(0, 229, 255, 0.25)',
+          boxShadow: `
+            0 -8px 32px rgba(0, 0, 0, 0.4),
+            0 0 60px rgba(0, 229, 255, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.08)
+          `,
+        }}
       >
         {/* Start Button */}
         <StartButton />
@@ -387,13 +406,15 @@ export const Taskbar: React.FC<TaskbarProps> = ({
         {/* Divider */}
         <div className='w-px h-8 bg-white/10 mx-1' />
 
+        {/* Sovereign Dock */}
+        <SovereignDock />
+
         {/* Running Apps */}
         <RunningAppsBar />
 
         {/* System Tray */}
         <SystemTray
           aiStatus={aiStatus}
-          healthStatus={healthStatus}
           notifications={notifications}
           onNotificationClick={onNotificationClick}
           onNotificationDismiss={onNotificationDismiss}

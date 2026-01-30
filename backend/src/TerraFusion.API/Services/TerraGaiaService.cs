@@ -163,6 +163,8 @@ public class TerraGaiaService : ITerraGaiaService
 
     public async Task<SystemOrchestrationStatus> GetSystemOrchestrationStatusAsync()
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         return new SystemOrchestrationStatus
         {
             TotalSystemsCoordinated = 12,

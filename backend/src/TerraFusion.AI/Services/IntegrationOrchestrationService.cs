@@ -1,4 +1,4 @@
-/**
+/*
  * IntegrationOrchestrationService - Advanced Multi-System Integration Orchestration
  *
  * Enterprise integration platform with real-time multi-system coordination,

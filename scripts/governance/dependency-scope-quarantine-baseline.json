@@ -1,0 +1,5 @@
+{
+  "count": 141,
+  "lastUpdated": "2026-01-19T11:45:00.000Z",
+  "comment": "Baseline count of quarantined roots. Failing if current count exceeds this."
+}

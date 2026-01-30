@@ -244,7 +244,7 @@ public class AzureOpenAiExplainerTests
 
     [Fact]
     [Trait("Category", "Configuration")]
-    public async Task Options_IsConfiguredForAzureOpenAi_TrueWhenAllSet()
+    public void Options_IsConfiguredForAzureOpenAi_TrueWhenAllSet()
     {
         // Arrange
         var options = new RunbookExplanationOptions
@@ -261,7 +261,7 @@ public class AzureOpenAiExplainerTests
 
     [Fact]
     [Trait("Category", "Configuration")]
-    public async Task Options_IsConfiguredForAzureOpenAi_FalseWhenEndpointMissing()
+    public void Options_IsConfiguredForAzureOpenAi_FalseWhenEndpointMissing()
     {
         // Arrange
         var options = new RunbookExplanationOptions
@@ -278,7 +278,7 @@ public class AzureOpenAiExplainerTests
 
     [Fact]
     [Trait("Category", "Configuration")]
-    public async Task Options_IsConfiguredForAzureOpenAi_FalseWhenDeploymentMissing()
+    public void Options_IsConfiguredForAzureOpenAi_FalseWhenDeploymentMissing()
     {
         // Arrange
         var options = new RunbookExplanationOptions
@@ -295,7 +295,7 @@ public class AzureOpenAiExplainerTests
 
     [Fact]
     [Trait("Category", "Configuration")]
-    public async Task Options_IsConfiguredForAzureOpenAi_FalseWhenApiKeyMissing()
+    public void Options_IsConfiguredForAzureOpenAi_FalseWhenApiKeyMissing()
     {
         // Arrange
         var options = new RunbookExplanationOptions
@@ -312,7 +312,7 @@ public class AzureOpenAiExplainerTests
 
     [Fact]
     [Trait("Category", "Configuration")]
-    public async Task Options_DefaultValues_AreReasonable()
+    public void Options_DefaultValues_AreReasonable()
     {
         // Arrange
         var options = new RunbookExplanationOptions();

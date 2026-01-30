@@ -17,8 +17,12 @@ interface FeatureFlags {
 }
 
 const getEnvBool = (key: string, defaultVal: boolean = false): boolean => {
-  if (import.meta.env[key] === 'true') return true;
-  if (import.meta.env[key] === 'false') return false;
+  const env =
+    (globalThis as any).import?.meta?.env ??
+    (globalThis as any).importMeta?.env ??
+    {};
+  if (env[key] === 'true') return true;
+  if (env[key] === 'false') return false;
   return defaultVal;
 };
 

@@ -13,9 +13,12 @@
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { Category } from '../../config/generatedModules';
+import { getLucideIcon } from '../../config/iconMap';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
+import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
 import { RecentAppsSection } from './RecentAppsSection';
 
 // ============================================================================
@@ -109,8 +112,22 @@ interface AppTileProps {
   onLaunch: (module: Module) => void;
 }
 
+// Category to TerraSphereIcon variant mapping
+const categoryToVariant = {
+  assessment: 'assessment',
+  records: 'records',
+  tax: 'tax',
+  mapping: 'mapping',
+  analytics: 'analytics',
+  ai: 'ai',
+  system: 'system',
+} as const;
+
 const AppTile: React.FC<AppTileProps> = ({ module, onLaunch }) => {
   const isRunning = useIsModuleRunning(module.id);
+  const Icon = getLucideIcon((module as any).iconName ?? module.icon);
+  const category = ((module as any).category ?? 'system') as Category;
+  const variant = categoryToVariant[category] ?? 'default';
 
   return (
     <button
@@ -126,9 +143,9 @@ const AppTile: React.FC<AppTileProps> = ({ module, onLaunch }) => {
       )}
     >
       {isRunning && <RunningIndicator />}
-      <span className='text-3xl' role='img' aria-hidden='true'>
-        {module.icon}
-      </span>
+      <div role='img' aria-hidden='true'>
+        <TerraSphereIcon size={40} variant={variant} glyph={<Icon className='h-4 w-4' />} />
+      </div>
       <span className='text-xs text-white/90 text-center line-clamp-2'>{module.name}</span>
     </button>
   );
@@ -139,6 +156,9 @@ const AppTile: React.FC<AppTileProps> = ({ module, onLaunch }) => {
  */
 const AppListItem: React.FC<AppTileProps> = ({ module, onLaunch }) => {
   const isRunning = useIsModuleRunning(module.id);
+  const Icon = getLucideIcon((module as any).iconName ?? module.icon);
+  const category = ((module as any).category ?? 'system') as Category;
+  const variant = categoryToVariant[category] ?? 'default';
 
   return (
     <button
@@ -154,9 +174,9 @@ const AppListItem: React.FC<AppTileProps> = ({ module, onLaunch }) => {
       )}
     >
       {isRunning && <RunningIndicator />}
-      <span className='text-xl flex-shrink-0' role='img' aria-hidden='true'>
-        {module.icon}
-      </span>
+      <div className='flex-shrink-0' role='img' aria-hidden='true'>
+        <TerraSphereIcon size={32} variant={variant} glyph={<Icon className='h-3.5 w-3.5' />} />
+      </div>
       <div className='flex flex-col items-start min-w-0 flex-1'>
         <span className='text-sm text-white/90 truncate w-full text-left'>{module.name}</span>
         <span className='text-xs text-white/50 truncate w-full text-left'>
@@ -443,19 +463,29 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
         // Position - bottom left, above taskbar
         'fixed bottom-14 left-1 z-[60]',
         // Size
-        'w-[360px] h-[500px]',
-        // Background with glass effect
-        'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
-        // Border
-        'border border-[var(--tf-transcend-highlight)]/20 rounded-xl',
-        // Shadow
-        'shadow-[0_8px_40px_rgba(0,0,0,0.5),0_0_60px_rgba(0,255,238,0.15)]',
+        'w-[400px] h-[560px]',
         // Layout
         'flex flex-col',
+        // Glass effect class for tests/consistency
+        'backdrop-blur-xl',
         // Animation
         'animate-slideUp',
         className
       )}
+      style={{
+        // Immersive Glassmorphism - floats over WebGL
+        background: 'rgba(10, 14, 26, 0.75)',
+        backdropFilter: 'saturate(200%) blur(30px)',
+        WebkitBackdropFilter: 'saturate(200%) blur(30px)',
+        border: '1px solid rgba(0, 229, 255, 0.3)',
+        borderRadius: '1.5rem',
+        boxShadow: `
+          0 25px 60px rgba(0, 0, 0, 0.5),
+          0 0 80px rgba(0, 229, 255, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+        `,
+      }}
     >
       {/* Search Section */}
       <div className='p-3 border-b border-white/10'>

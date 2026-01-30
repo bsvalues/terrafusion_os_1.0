@@ -1,0 +1,450 @@
+/**
+ * TerraFusion OS - Tool Runner
+ *
+ * Runtime enforcement layer for Gates 4-6.
+ * Validates tool invocations before execution and traces results.
+ *
+ * Gate 4: Write-lane assertions
+ * Gate 5: RiskPolicy enforcement
+ * Gate 6: PII sanitization / trace policy
+ */
+
+import { randomUUID } from 'crypto';
+import { traceService, TraceService } from '../trace/TraceService.js';
+import type {
+    Tool,
+    ToolExecutionContext,
+    ToolExecutionInput,
+    ToolExecutionResult,
+    TraceEventInput
+} from '../types/index.js';
+import { toolRegistry, ToolRegistry } from './ToolRegistry.js';
+
+// ============================================================================
+// Error Codes
+// ============================================================================
+
+export const ErrorCodes = {
+  // Gate 4: Write Lane
+  WRITE_LANE_MISMATCH: 'WRITE_LANE_MISMATCH',
+  WRITE_LANE_REQUIRED: 'WRITE_LANE_REQUIRED',
+
+  // Gate 5: Risk Policy
+  CONFIRMATION_REQUIRED: 'CONFIRMATION_REQUIRED',
+  REASON_CODE_REQUIRED: 'REASON_CODE_REQUIRED',
+  REASON_CODE_INVALID: 'REASON_CODE_INVALID',
+  SUPERVISOR_APPROVAL_REQUIRED: 'SUPERVISOR_APPROVAL_REQUIRED',
+  SUPERVISOR_ROLE_INVALID: 'SUPERVISOR_ROLE_INVALID',
+
+  // Gate 6: PII / Trace
+  PAYLOAD_STORE_REQUIRED: 'PAYLOAD_STORE_REQUIRED',
+
+  // General
+  TOOL_NOT_FOUND: 'TOOL_NOT_FOUND',
+  MODE_MISMATCH: 'MODE_MISMATCH',
+  EXECUTION_FAILED: 'EXECUTION_FAILED',
+} as const;
+
+export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
+
+export type RunnerErrorCode =
+  | 'MODE_DENIED'
+  | 'COUNTY_MISMATCH'
+  | 'VALIDATION'
+  | 'PII_BLOCKED'
+  | 'EXECUTION_FAILED'
+  | 'TOOL_NOT_FOUND';
+
+export class ToolRunnerError extends Error {
+  constructor(
+    public readonly code: RunnerErrorCode,
+    message: string
+  ) {
+    super(message);
+    this.name = 'ToolRunnerError';
+  }
+}
+
+// ============================================================================
+// Enforcement Functions
+// ============================================================================
+
+/**
+ * Gate 4: Write-lane validation
+ */
+function enforceWriteLane(tool: Tool, context: ToolExecutionContext): string[] {
+  const violations: string[] = [];
+
+  // Read-only tools skip write lane checks
+  if (tool.risk === 'read_only') {
+    return violations;
+  }
+
+  // Write tools must have a write lane
+  if (tool.writeLane === null || tool.writeLane === undefined) {
+    violations.push(`[${ErrorCodes.WRITE_LANE_REQUIRED}] Tool ${tool.toolId} requires a writeLane`);
+    return violations;
+  }
+
+  // Write lane must match suite (or be in crossSuiteReads)
+  if (tool.writeLane !== tool.suite) {
+    if (!tool.crossSuiteReads?.includes(tool.writeLane)) {
+      violations.push(
+        `[${ErrorCodes.WRITE_LANE_MISMATCH}] Tool ${tool.toolId}: writeLane (${tool.writeLane}) must match suite (${tool.suite})`
+      );
+    }
+  }
+
+  return violations;
+}
+
+/**
+ * Gate 5: Risk policy validation
+ */
+function enforceRiskPolicy(tool: Tool, context: ToolExecutionContext): string[] {
+  const violations: string[] = [];
+
+  // Confirmation check for write_low and above
+  if (tool.requiresConfirmation && !context.confirmation) {
+    violations.push(
+      `[${ErrorCodes.CONFIRMATION_REQUIRED}] Tool ${tool.toolId} requires confirmation`
+    );
+  }
+
+  // write_high: reason code required
+  if (tool.risk === 'write_high' || tool.reasonCodeRequired) {
+    if (!context.reasonCode) {
+      violations.push(
+        `[${ErrorCodes.REASON_CODE_REQUIRED}] Tool ${tool.toolId} requires a reason code`
+      );
+    } else if (tool.reasonCodes && !tool.reasonCodes.includes(context.reasonCode)) {
+      violations.push(
+        `[${ErrorCodes.REASON_CODE_INVALID}] Reason code "${context.reasonCode}" not in allowed list: ${tool.reasonCodes.join(', ')}`
+      );
+    }
+  }
+
+  // irreversible: supervisor approval required
+  if (tool.risk === 'irreversible') {
+    if (!context.supervisorApproval) {
+      violations.push(
+        `[${ErrorCodes.SUPERVISOR_APPROVAL_REQUIRED}] Tool ${tool.toolId} requires supervisor approval`
+      );
+    } else if (tool.supervisorRoles) {
+      const approverRole = context.supervisorApproval.role;
+      if (!tool.supervisorRoles.includes(approverRole)) {
+        violations.push(
+          `[${ErrorCodes.SUPERVISOR_ROLE_INVALID}] Supervisor role "${approverRole}" not in allowed list: ${tool.supervisorRoles.join(', ')}`
+        );
+      }
+    }
+  }
+
+  return violations;
+}
+
+/**
+ * Gate 6: PII/Trace policy validation
+ */
+function enforcePiiPolicy(tool: Tool): string[] {
+  const violations: string[] = [];
+
+  // payload_ref requires payloadStore
+  if (tool.tracePolicy === 'payload_ref' && !tool.payloadStore) {
+    violations.push(
+      `[${ErrorCodes.PAYLOAD_STORE_REQUIRED}] Tool ${tool.toolId}: payload_ref trace policy requires payloadStore`
+    );
+  }
+
+  return violations;
+}
+
+// ============================================================================
+// ToolRunner Class
+// ============================================================================
+
+export type ToolHandler<TParams = unknown, TResult = unknown> = (
+  params: TParams,
+  context: ToolExecutionContext,
+  tool: Tool
+) => Promise<TResult>;
+
+export interface ToolRunnerOptions {
+  registry?: ToolRegistry;
+  trace?: TraceService;
+}
+
+export class ToolRunner {
+  private registry: ToolRegistry;
+  private trace: TraceService;
+  private handlers: Map<string, ToolHandler> = new Map();
+
+  constructor(options: ToolRunnerOptions = {}) {
+    this.registry = options.registry ?? toolRegistry;
+    this.trace = options.trace ?? traceService;
+  }
+
+  /**
+   * Canonical execution path.
+   * Centralizes mode + county enforcement and returns a normalized result shape.
+   */
+  async run<TParams = Record<string, unknown>, TResult = unknown>(
+    toolId: string,
+    params: TParams,
+    context: ToolExecutionContext
+  ): Promise<{
+    ok: true;
+    toolId: string;
+    suite: Tool['suite'];
+    mode: Tool['mode'];
+    risk: Tool['risk'];
+    result: TResult;
+    payloadRef?: string;
+    traceId?: string;
+  }> {
+    const county = (params as { county?: string }).county;
+    if (!county || typeof county !== 'string') {
+      throw new ToolRunnerError('VALIDATION', 'county is required');
+    }
+    if (!context.countyId || county.toLowerCase() !== context.countyId.toLowerCase()) {
+      throw new ToolRunnerError('COUNTY_MISMATCH', 'County mismatch');
+    }
+
+    const tool = this.registry.getTool(toolId);
+    if (!tool) {
+      throw new ToolRunnerError('TOOL_NOT_FOUND', `Tool not found: ${toolId}`);
+    }
+
+    const outcome = await this.execute({ toolId, params, context });
+    if (!outcome.ok) {
+      const failure = outcome as Extract<ToolExecutionResult<TResult>, { ok: false }>;
+      const failureCode = (Object.values(ErrorCodes) as string[]).includes(failure.errorCode)
+        ? (failure.errorCode as ErrorCode)
+        : ErrorCodes.EXECUTION_FAILED;
+      const mapped = mapErrorCode(failureCode);
+      throw new ToolRunnerError(mapped, failure.error);
+    }
+
+    const payloadRef = (outcome.result as { payloadRef?: string })?.payloadRef;
+    return {
+      ok: true,
+      toolId,
+      suite: tool.suite,
+      mode: tool.mode,
+      risk: tool.risk,
+      result: outcome.result as TResult,
+      payloadRef,
+      traceId: outcome.traceEventId,
+    };
+  }
+
+  /**
+   * Register a handler for a tool.
+   */
+  registerHandler<TParams = unknown, TResult = unknown>(
+    toolId: string,
+    handler: ToolHandler<TParams, TResult>
+  ): void {
+    if (!this.registry.isInitialized()) {
+      throw new Error('ToolRegistry must be initialized before registering handlers');
+    }
+    // Verify tool exists
+    this.registry.requireTool(toolId);
+    this.handlers.set(toolId, handler as ToolHandler);
+  }
+
+  /**
+   * Execute a tool with full enforcement and tracing.
+   */
+  async execute<TParams = unknown, TResult = unknown>(
+    input: ToolExecutionInput<TParams>
+  ): Promise<ToolExecutionResult<TResult>> {
+    const correlationId = randomUUID();
+    const { toolId, params, context } = input;
+
+    // Lookup tool
+    const tool = this.registry.getTool(toolId);
+    if (!tool) {
+      return this.fail(correlationId, ErrorCodes.TOOL_NOT_FOUND, `Tool not found: ${toolId}`);
+    }
+
+    // Mode check
+    if (tool.mode && tool.mode !== context.mode) {
+      return this.fail(
+        correlationId,
+        ErrorCodes.MODE_MISMATCH,
+        `Tool ${toolId} requires mode "${tool.mode}" but got "${context.mode}"`
+      );
+    }
+
+    // Collect all enforcement violations
+    const violations: string[] = [
+      ...enforceWriteLane(tool, context),
+      ...enforceRiskPolicy(tool, context),
+      ...enforcePiiPolicy(tool),
+    ];
+
+    if (violations.length > 0) {
+      // Trace the enforcement failure
+      this.emitTraceEvent(tool, 'tool_failed', correlationId, context, {
+        summary: `Enforcement failed: ${violations.length} violation(s)`,
+      });
+
+      return this.fail(
+        correlationId,
+        (violations[0].match(/\[([A-Z_]+)\]/)?.[1] as ErrorCode) ?? ErrorCodes.EXECUTION_FAILED,
+        violations.join('; ')
+      );
+    }
+
+    // Emit invocation trace
+    const invokeEvent = this.emitTraceEvent(tool, 'tool_invoked', correlationId, context, {
+      summary: `Invoking ${toolId} (risk: ${tool.risk})`,
+      rawPayload: params,
+    });
+
+    // Execute handler
+    const handler = this.handlers.get(toolId);
+    if (!handler) {
+      return this.fail(
+        correlationId,
+        ErrorCodes.EXECUTION_FAILED,
+        `No handler registered for ${toolId}`
+      );
+    }
+
+    try {
+      const result = await handler(params, context, tool);
+
+      // Emit success trace
+      const completeEvent = this.emitTraceEvent(tool, 'tool_completed', correlationId, context, {
+        summary: `Completed ${toolId}`,
+        rawPayload: result,
+      });
+
+      return {
+        ok: true,
+        result: result as TResult,
+        correlationId,
+        traceEventId: completeEvent.eventId,
+      };
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+
+      // Emit failure trace
+      this.emitTraceEvent(tool, 'tool_failed', correlationId, context, {
+        summary: `Failed ${toolId}: ${errorMessage}`,
+      });
+
+      return this.fail(correlationId, ErrorCodes.EXECUTION_FAILED, errorMessage);
+    }
+  }
+
+  /**
+   * Validate a tool invocation without executing.
+   * Useful for pre-flight checks.
+   */
+  validate(input: ToolExecutionInput): { valid: boolean; violations: string[] } {
+    const { toolId, context } = input;
+
+    const tool = this.registry.getTool(toolId);
+    if (!tool) {
+      return { valid: false, violations: [`Tool not found: ${toolId}`] };
+    }
+
+    if (tool.mode && tool.mode !== context.mode) {
+      return {
+        valid: false,
+        violations: [`Mode mismatch: tool requires ${tool.mode}, got ${context.mode}`],
+      };
+    }
+
+    const violations = [
+      ...enforceWriteLane(tool, context),
+      ...enforceRiskPolicy(tool, context),
+      ...enforcePiiPolicy(tool),
+    ];
+
+    return { valid: violations.length === 0, violations };
+  }
+
+  /**
+   * Get all registered handler tool IDs.
+   */
+  getRegisteredHandlers(): string[] {
+    return Array.from(this.handlers.keys());
+  }
+
+  private fail(
+    correlationId: string,
+    errorCode: ErrorCode,
+    error: string
+  ): ToolExecutionResult<never> {
+    return {
+      ok: false,
+      error,
+      errorCode,
+      correlationId,
+    };
+  }
+
+  private emitTraceEvent(
+    tool: Tool,
+    type: 'tool_invoked' | 'tool_completed' | 'tool_failed',
+    correlationId: string,
+    context: ToolExecutionContext,
+    options: { summary: string; rawPayload?: unknown }
+  ) {
+    const piiHandling = tool.piiHandling ?? 'sanitize';
+    const tracePolicy = tool.tracePolicy ?? 'summary_only';
+
+    // Decide how to handle payload based on trace policy
+    let payloadToStore: unknown | undefined;
+    let targetStore = tool.payloadStore;
+
+    if (tracePolicy === 'payload_ref' && options.rawPayload) {
+      payloadToStore = options.rawPayload;
+    } else if (tracePolicy === 'summary_only') {
+      payloadToStore = undefined;
+    } else if (tracePolicy === 'none') {
+      payloadToStore = undefined;
+    }
+
+    const input: TraceEventInput = {
+      type,
+      toolId: tool.toolId,
+      correlationId,
+      context,
+      summary: options.summary,
+    };
+
+    return this.trace.emitWithPiiHandling(input, piiHandling, payloadToStore, targetStore);
+  }
+}
+
+function mapErrorCode(code: ErrorCode): RunnerErrorCode {
+  switch (code) {
+    case ErrorCodes.MODE_MISMATCH:
+      return 'MODE_DENIED';
+    case ErrorCodes.PAYLOAD_STORE_REQUIRED:
+      return 'PII_BLOCKED';
+    case ErrorCodes.TOOL_NOT_FOUND:
+      return 'TOOL_NOT_FOUND';
+    case ErrorCodes.WRITE_LANE_MISMATCH:
+    case ErrorCodes.WRITE_LANE_REQUIRED:
+    case ErrorCodes.CONFIRMATION_REQUIRED:
+    case ErrorCodes.REASON_CODE_REQUIRED:
+    case ErrorCodes.REASON_CODE_INVALID:
+    case ErrorCodes.SUPERVISOR_APPROVAL_REQUIRED:
+    case ErrorCodes.SUPERVISOR_ROLE_INVALID:
+      return 'VALIDATION';
+    default:
+      return 'EXECUTION_FAILED';
+  }
+}
+
+// ============================================================================
+// Singleton Instance
+// ============================================================================
+
+export const toolRunner = new ToolRunner();

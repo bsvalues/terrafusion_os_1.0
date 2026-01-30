@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * AI ASSISTANT CONTROLLER - API Endpoints for County Employees
  * TerraFusion.API - Elite Government AI Integration
@@ -39,6 +39,7 @@ namespace TerraFusion.API.Controllers
         /// <param name="request">AI assistant request</param>
         /// <returns>AI-generated response with suggestions</returns>
         [HttpPost("message")]
+        // [AllowAnonymous] // REMOVED: Restore security after smoke testing
         [ProducesResponseType(typeof(AIAssistantResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
@@ -95,7 +96,7 @@ namespace TerraFusion.API.Controllers
         [ProducesResponseType(typeof(System.Collections.Generic.List<TerraFusion.AI.Models.AIRecommendation>), 200)]
         public async Task<ActionResult> GetRecommendations(
             string countyId,
-            [FromQuery] string context = null)
+            [FromQuery] string? context = null)
         {
             try
             {

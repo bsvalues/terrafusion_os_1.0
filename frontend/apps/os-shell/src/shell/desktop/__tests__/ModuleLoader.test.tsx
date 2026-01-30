@@ -16,8 +16,8 @@ import { ModuleLoader } from '../ModuleLoader';
 
 // Mock the ModuleRenderer to avoid lazy loading issues and focus on ModuleLoader logic
 jest.mock('../../../config/moduleComponents', () => ({
-  ModuleRenderer: ({ moduleId }: { moduleId: string }) => (
-    <div data-testid='mock-module-renderer'>Rendered: {moduleId}</div>
+  ModuleRenderer: ({ module }: { module: { id: string } }) => (
+    <div data-testid='mock-module-renderer'>Rendered: {module.id}</div>
   ),
 }));
 
@@ -27,7 +27,7 @@ const mockModule: ModuleDefinition = {
   name: 'Government Edition',
   displayName: 'Government Edition',
   description: 'Core government operations dashboard',
-  icon: '🏛️',
+  icon: 'Building2',
   category: 'core',
   tier: 'Tier1',
   status: 'active',

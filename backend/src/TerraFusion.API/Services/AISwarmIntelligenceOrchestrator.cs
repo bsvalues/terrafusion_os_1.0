@@ -44,7 +44,6 @@ namespace TerraFusion.API.Services
 
     // 📊 Championship Performance Metrics
     private readonly ConcurrentDictionary<string, long> _performanceCounters;
-    private long _totalAgentsManaged = 0;
     private long _totalCommandsProcessed = 0;
     private long _totalOptimizationsApplied = 0;
     private DateTime _lastPerformanceReport = DateTime.UtcNow;

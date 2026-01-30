@@ -1,4 +1,4 @@
-/**
+/*
  * WorkloadDistributionService - Intelligent Workload Distribution Engine
  *
  * Provides advanced workload distribution capabilities:
@@ -696,18 +696,18 @@ namespace TerraFusion.AI.Services
         public double AverageResponseTime { get; set; }
         public double DistributionEfficiency { get; set; }
         public int RebalancingOperations { get; set; }
-        public List<NodeUtilization> NodeUtilization { get; set; }
-        public Dictionary<string, int> WorkloadsByType { get; set; }
+        public List<NodeUtilization> NodeUtilization { get; set; } = new();
+        public Dictionary<string, int> WorkloadsByType { get; set; } = new();
         public double AverageNodeLoad { get; set; }
         public double LoadBalanceScore { get; set; }
     }
 
     public class NodeInfo
     {
-        public string NodeId { get; set; }
-        public string Region { get; set; }
-        public string AvailabilityZone { get; set; }
-        public string NodeType { get; set; }
+        public string NodeId { get; set; } = string.Empty;
+        public string Region { get; set; } = string.Empty;
+        public string AvailabilityZone { get; set; } = string.Empty;
+        public string NodeType { get; set; } = string.Empty;
         public int CpuCapacity { get; set; }
         public int MemoryCapacity { get; set; }
         public double CpuUtilization { get; set; }
@@ -716,30 +716,30 @@ namespace TerraFusion.AI.Services
         public int MaxWorkloads { get; set; }
         public int QueueDepth { get; set; }
         public double AverageResponseTime { get; set; }
-        public string Health { get; set; }
+        public string Health { get; set; } = string.Empty;
         public DateTime LastHealthCheck { get; set; }
-        public List<string> Specializations { get; set; }
+        public List<string> Specializations { get; set; } = new();
     }
 
     public class NodeUtilization
     {
-        public string NodeId { get; set; }
-        public string Region { get; set; }
+        public string NodeId { get; set; } = string.Empty;
+        public string Region { get; set; } = string.Empty;
         public double CpuUtilization { get; set; }
         public double MemoryUtilization { get; set; }
         public int ActiveWorkloads { get; set; }
         public int QueueDepth { get; set; }
-        public string Health { get; set; }
+        public string Health { get; set; } = string.Empty;
     }
 
     public class WorkloadRequest
     {
-        public string WorkloadType { get; set; }
+        public string WorkloadType { get; set; } = string.Empty;
         public int Priority { get; set; }
         public int EstimatedDurationMinutes { get; set; }
-        public ResourceAllocation ResourceRequirements { get; set; }
-        public string PreferredRegion { get; set; }
-        public Dictionary<string, string> Metadata { get; set; }
+        public ResourceAllocation ResourceRequirements { get; set; } = new();
+        public string PreferredRegion { get; set; } = string.Empty;
+        public Dictionary<string, string> Metadata { get; set; } = new();
     }
 
     public class ResourceAllocation
@@ -751,65 +751,65 @@ namespace TerraFusion.AI.Services
 
     public class NodeAssignment
     {
-        public string AssignmentId { get; set; }
-        public string Status { get; set; }
-        public string WorkloadId { get; set; }
-        public string AssignedNodeId { get; set; }
-        public string AssignedRegion { get; set; }
-        public string AssignmentAlgorithm { get; set; }
+        public string AssignmentId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string WorkloadId { get; set; } = string.Empty;
+        public string AssignedNodeId { get; set; } = string.Empty;
+        public string AssignedRegion { get; set; } = string.Empty;
+        public string AssignmentAlgorithm { get; set; } = string.Empty;
         public double ResponseTime { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public DateTime AssignedAt { get; set; }
     }
 
     public class WorkloadAssignment
     {
-        public string WorkloadId { get; set; }
-        public string WorkloadType { get; set; }
-        public string AssignedNode { get; set; }
-        public string AssignedRegion { get; set; }
+        public string WorkloadId { get; set; } = string.Empty;
+        public string WorkloadType { get; set; } = string.Empty;
+        public string AssignedNode { get; set; } = string.Empty;
+        public string AssignedRegion { get; set; } = string.Empty;
         public int Priority { get; set; }
         public DateTime StartTime { get; set; }
         public int EstimatedDuration { get; set; }
-        public ResourceAllocation ResourcesAllocated { get; set; }
-        public string Status { get; set; }
+        public ResourceAllocation ResourcesAllocated { get; set; } = new();
+        public string Status { get; set; } = string.Empty;
     }
 
     public class DistributionPolicy
     {
-        public string PolicyId { get; set; }
-        public string WorkloadType { get; set; }
-        public string Algorithm { get; set; }
-        public string Priority { get; set; }
-        public List<string> PreferredNodeTypes { get; set; }
+        public string PolicyId { get; set; } = string.Empty;
+        public string WorkloadType { get; set; } = string.Empty;
+        public string Algorithm { get; set; } = string.Empty;
+        public string Priority { get; set; } = string.Empty;
+        public List<string> PreferredNodeTypes { get; set; } = new();
         public int MaxQueueDepth { get; set; }
         public bool FailoverEnabled { get; set; }
         public bool GeoAffinity { get; set; }
         public bool FairShareEnabled { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 
     public class RebalancingResult
     {
-        public string RebalanceId { get; set; }
-        public string Status { get; set; }
+        public string RebalanceId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public int WorkloadsMigrated { get; set; }
         public int NodesRebalanced { get; set; }
-        public List<WorkloadMigration> Migrations { get; set; }
+        public List<WorkloadMigration> Migrations { get; set; } = new();
         public double PreRebalanceLoadVariance { get; set; }
         public double PostRebalanceLoadVariance { get; set; }
         public double Duration { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public DateTime CompletedAt { get; set; }
     }
 
     public class WorkloadMigration
     {
-        public string WorkloadId { get; set; }
-        public string SourceNode { get; set; }
-        public string TargetNode { get; set; }
+        public string WorkloadId { get; set; } = string.Empty;
+        public string SourceNode { get; set; } = string.Empty;
+        public string TargetNode { get; set; } = string.Empty;
         public double MigrationTime { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 
     public class NodeHealthMap
@@ -819,16 +819,16 @@ namespace TerraFusion.AI.Services
         public int HealthyNodes { get; set; }
         public int DegradedNodes { get; set; }
         public int FailedNodes { get; set; }
-        public List<NodeHealthDetail> NodeDetails { get; set; }
-        public List<RegionalNodeDistribution> RegionalDistribution { get; set; }
+        public List<NodeHealthDetail> NodeDetails { get; set; } = new();
+        public List<RegionalNodeDistribution> RegionalDistribution { get; set; } = new();
     }
 
     public class NodeHealthDetail
     {
-        public string NodeId { get; set; }
-        public string Region { get; set; }
-        public string NodeType { get; set; }
-        public string Health { get; set; }
+        public string NodeId { get; set; } = string.Empty;
+        public string Region { get; set; } = string.Empty;
+        public string NodeType { get; set; } = string.Empty;
+        public string Health { get; set; } = string.Empty;
         public double CpuUtilization { get; set; }
         public double MemoryUtilization { get; set; }
         public int ActiveWorkloads { get; set; }
@@ -839,7 +839,7 @@ namespace TerraFusion.AI.Services
 
     public class RegionalNodeDistribution
     {
-        public string Region { get; set; }
+        public string Region { get; set; } = string.Empty;
         public int TotalNodes { get; set; }
         public int HealthyNodes { get; set; }
         public int TotalWorkloads { get; set; }

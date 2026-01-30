@@ -1,4 +1,4 @@
-/**
+/*
  * AICodeAssistantController - API Endpoints for AI Code Assistant
  *
  * Production-ready ASP.NET Core controller providing REST API endpoints

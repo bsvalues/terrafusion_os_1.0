@@ -1,4 +1,4 @@
-/**
+/*
  * IWorkflowRepository Interface
  *
  * Repository interface for Workflow entity data access.

@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * PHASE 21: CAPACITY PREDICTION TESTS
  * SystemGPT Capacity Prediction & Advisory

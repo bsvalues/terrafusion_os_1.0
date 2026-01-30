@@ -1,8 +1,8 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - RESEARCH ANALYTICS API CONTROLLER
  * Elite PhD-Level Research Environment Backend Services
- * Cross-Workspace Integration & Predictive Analytics
+ * Cross-Workspace Integration &amp; Predictive Analytics
  * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -411,6 +411,8 @@ public class ResearchAnalyticsController : ControllerBase
 
     private async Task<bool> ValidateResearchCredentialsAsync(string researcherProfile)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         // Validate PhD-level research credentials
         // In production, this would integrate with institutional authentication
         var validProfiles = new[] { "harvard", "mit", "phd-general" };

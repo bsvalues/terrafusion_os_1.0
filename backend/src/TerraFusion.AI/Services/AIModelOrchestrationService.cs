@@ -109,6 +109,8 @@ public class AIModelOrchestrationService : BackgroundService
     /// </summary>
     private async System.Threading.Tasks.Task InitializeAIModels()
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         _logger.LogInformation("Initializing government-grade AI models");
 
         try

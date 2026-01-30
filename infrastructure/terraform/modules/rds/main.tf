@@ -267,12 +267,12 @@ resource "aws_db_parameter_group" "main" {
 
   parameter {
     name  = "maintenance_work_mem"
-    value = "2097152"  # 2GB
+    value = "2097152" # 2GB
   }
 
   parameter {
     name  = "work_mem"
-    value = "131072"  # 128MB
+    value = "131072" # 128MB
   }
 
   tags = {
@@ -302,19 +302,19 @@ resource "aws_db_instance" "main" {
   vpc_security_group_ids = var.security_group_ids
   parameter_group_name   = aws_db_parameter_group.main.name
 
-  multi_az               = var.multi_az
-  storage_encrypted      = var.storage_encrypted
-  kms_key_id            = aws_kms_key.rds.arn
-  deletion_protection   = var.deletion_protection
+  multi_az            = var.multi_az
+  storage_encrypted   = var.storage_encrypted
+  kms_key_id          = aws_kms_key.rds.arn
+  deletion_protection = var.deletion_protection
 
   backup_retention_period = var.backup_retention_period
-  backup_window          = var.backup_window
-  maintenance_window     = var.maintenance_window
+  backup_window           = var.backup_window
+  maintenance_window      = var.maintenance_window
 
   performance_insights_enabled          = var.performance_insights_enabled
   performance_insights_retention_period = var.performance_insights_retention_period
   monitoring_interval                   = var.monitoring_interval
-  monitoring_role_arn                  = var.monitoring_role_arn != "" ? var.monitoring_role_arn : aws_iam_role.rds_enhanced_monitoring[0].arn
+  monitoring_role_arn                   = var.monitoring_role_arn != "" ? var.monitoring_role_arn : aws_iam_role.rds_enhanced_monitoring[0].arn
 
   enabled_cloudwatch_logs_exports = [
     "postgresql",
@@ -322,7 +322,7 @@ resource "aws_db_instance" "main" {
   ]
 
   auto_minor_version_upgrade = true
-  copy_tags_to_snapshot     = true
+  copy_tags_to_snapshot      = true
 
   tags = {
     Name = "${var.project_name}-${var.environment}-rds"
@@ -390,7 +390,7 @@ resource "aws_cloudwatch_metric_alarm" "database_free_storage_space" {
   namespace           = "AWS/RDS"
   period              = "300"
   statistic           = "Average"
-  threshold           = "20000000000"  # 20GB
+  threshold           = "20000000000" # 20GB
   alarm_description   = "This metric monitors RDS free storage space"
   alarm_actions       = []
 
@@ -407,7 +407,7 @@ resource "aws_cloudwatch_metric_alarm" "database_freeable_memory" {
   namespace           = "AWS/RDS"
   period              = "300"
   statistic           = "Average"
-  threshold           = "1000000000"  # 1GB
+  threshold           = "1000000000" # 1GB
   alarm_description   = "This metric monitors RDS freeable memory"
   alarm_actions       = []
 

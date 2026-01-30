@@ -1,7 +1,7 @@
+import { useAxiomFsStore } from '@/fs/store/axiomFsStore';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { TERRAFUSION_MODULES } from '../../../config/modules';
-import { useAxiomFsStore } from '../../../fs/store/axiomFsStore';
 import { useDesktopStore } from '../../../stores/desktopStore';
+import type { ModuleDefinition } from '../../../stores/moduleRegistryStore';
 import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { Desktop } from '../Desktop';
 
@@ -34,22 +34,34 @@ describe('AxiomFS Module Integration', () => {
       selectedId: null,
     });
 
-    // Initialize module registry
-    useModuleRegistryStore.getState().registerModules(TERRAFUSION_MODULES);
+    // Initialize module registry with AxiomFS module
+    const axiomModule: ModuleDefinition = {
+      id: 'axiom-fs',
+      name: 'AxiomFS',
+      displayName: 'AxiomFS',
+      description: 'AxiomFS Lattice',
+      icon: 'Activity',
+      category: 'system',
+      tier: 'Tier1',
+      status: 'active',
+      version: '1.0.0',
+      launchPath: '/axiom-fs',
+      entry: { type: 'route', route: '/axiom-fs' },
+      isCore: true,
+      priority: 1,
+    };
+
+    useModuleRegistryStore.getState().registerModules([axiomModule]);
   });
 
   test('Launch: Can be summoned via SovereignMenu', async () => {
     render(<Desktop />);
 
-    // 1. Open Menu
-    const menuButton = screen.getByLabelText(/Toggle Sovereign Menu/i);
-    fireEvent.click(menuButton);
+    // 1. Click "FILES" in Sovereign Dock
+    const filesButton = screen.getByTestId('sovereign-launch-files');
+    fireEvent.click(filesButton);
 
-    // 2. Click "FILES"
-    const filesNode = await screen.findByText(/FILES/i);
-    fireEvent.click(filesNode);
-
-    // 3. Assert Window Creation
+    // 2. Assert Window Creation
     // The window frame renders the module component
     // Note: ModuleLoader renders AxiomFSWindow which renders AxiomFSSurface
     // We need to wait for the lazy load
