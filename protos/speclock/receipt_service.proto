@@ -1,0 +1,430 @@
+// ═══════════════════════════════════════════════════════════════════════════════
+// TerraFusion SpecLock - Verifiable Receipt Service
+// ═══════════════════════════════════════════════════════════════════════════════
+//
+// Public verification endpoints for citizen-verifiable receipts.
+// Offline-capable, minimal trust anchors, QR-code compatible.
+//
+// ═══════════════════════════════════════════════════════════════════════════════
+
+syntax = "proto3";
+
+package terrafusion.speclock.receipt.v1;
+
+option csharp_namespace = "TerraFusion.SpecLock.Receipt.V1";
+option go_package = "github.com/terrafusion/speclock/receipt/v1;receiptv1";
+
+import "google/protobuf/timestamp.proto";
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Receipt Service
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ReceiptService provides verifiable receipt operations.
+service ReceiptService {
+  // GenerateReceipt creates a new receipt for an artifact.
+  rpc GenerateReceipt(GenerateReceiptRequest) returns (GenerateReceiptResponse);
+
+  // VerifyReceipt verifies a receipt's signature and time bounds.
+  rpc VerifyReceipt(VerifyReceiptRequest) returns (VerifyReceiptResponse);
+
+  // GetReceipt retrieves a receipt by ID.
+  rpc GetReceipt(GetReceiptRequest) returns (GetReceiptResponse);
+
+  // GetTrustAnchors returns the current trust anchors for verification.
+  rpc GetTrustAnchors(GetTrustAnchorsRequest) returns (GetTrustAnchorsResponse);
+
+  // BatchVerify verifies multiple receipts in one call.
+  rpc BatchVerify(BatchVerifyRequest) returns (BatchVerifyResponse);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Generate Receipt
+// ═══════════════════════════════════════════════════════════════════════════════
+
+message GenerateReceiptRequest {
+  // Artifact information.
+  Artifact artifact = 1;
+
+  // Issuer information.
+  Issuer issuer = 2;
+
+  // Validity window.
+  google.protobuf.Timestamp not_before = 3;
+  google.protobuf.Timestamp not_after = 4;
+
+  // Optional: link to previous receipt in chain.
+  string previous_receipt_id = 5;
+
+  // Signature mode to use.
+  SignatureMode signature_mode = 6;
+
+  // Additional metadata (not signed).
+  map<string, string> metadata = 7;
+}
+
+message GenerateReceiptResponse {
+  // Generated receipt.
+  Receipt receipt = 1;
+
+  // QR code data (compact verification URL).
+  string qr_code_data = 2;
+
+  // Public verification URL.
+  string verification_url = 3;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Verify Receipt
+// ═══════════════════════════════════════════════════════════════════════════════
+
+message VerifyReceiptRequest {
+  // Receipt to verify (full receipt JSON).
+  bytes receipt_json = 1;
+
+  // OR: Receipt ID for server-side lookup.
+  string receipt_id = 2;
+
+  // Optional: artifact hash to verify matches.
+  bytes expected_artifact_hash = 3;
+}
+
+message VerifyReceiptResponse {
+  // Overall verification result.
+  bool valid = 1;
+
+  // Detailed verification results.
+  VerificationDetails details = 2;
+
+  // Timestamp of verification.
+  google.protobuf.Timestamp verified_at = 3;
+}
+
+message VerificationDetails {
+  // Signature verification.
+  bool signature_valid = 1;
+
+  // Time bounds check.
+  bool time_valid = 2;
+
+  // Artifact hash match (if provided).
+  bool artifact_hash_match = 3;
+
+  // Chain integrity (if chained).
+  bool chain_valid = 4;
+
+  // Trust anchor validation.
+  bool trust_anchor_valid = 5;
+
+  // Individual check failures (if any).
+  repeated string failures = 6;
+
+  // Warnings (non-fatal issues).
+  repeated string warnings = 7;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Get Receipt
+// ═══════════════════════════════════════════════════════════════════════════════
+
+message GetReceiptRequest {
+  // Receipt ID.
+  string receipt_id = 1;
+
+  // Include chain history.
+  bool include_chain = 2;
+}
+
+message GetReceiptResponse {
+  // Receipt.
+  Receipt receipt = 1;
+
+  // Chain history (if requested).
+  repeated Receipt chain = 2;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Trust Anchors
+// ═══════════════════════════════════════════════════════════════════════════════
+
+message GetTrustAnchorsRequest {
+  // Scope filter (county, state, etc.).
+  string scope = 1;
+}
+
+message GetTrustAnchorsResponse {
+  // Active trust anchors.
+  repeated TrustAnchor trust_anchors = 1;
+
+  // Timestamp when anchors were last updated.
+  google.protobuf.Timestamp updated_at = 2;
+}
+
+message TrustAnchor {
+  // Anchor type.
+  TrustAnchorType type = 1;
+
+  // Anchor value (hex for keys, string for domains).
+  string value = 2;
+
+  // Scope this anchor applies to.
+  string scope = 3;
+
+  // Description.
+  string description = 4;
+
+  // Valid from.
+  google.protobuf.Timestamp valid_from = 5;
+
+  // Valid until (null = no expiry).
+  google.protobuf.Timestamp valid_until = 6;
+}
+
+enum TrustAnchorType {
+  TRUST_ANCHOR_TYPE_UNSPECIFIED = 0;
+  TRUST_ANCHOR_TYPE_GROUP_PUBLIC_KEY = 1;
+  TRUST_ANCHOR_TYPE_CA_FINGERPRINT = 2;
+  TRUST_ANCHOR_TYPE_SPIFFE_TRUST_DOMAIN = 3;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Batch Verify
+// ═══════════════════════════════════════════════════════════════════════════════
+
+message BatchVerifyRequest {
+  // Receipts to verify.
+  repeated bytes receipt_jsons = 1;
+}
+
+message BatchVerifyResponse {
+  // Results for each receipt.
+  repeated BatchVerifyResult results = 1;
+
+  // Overall success (all valid).
+  bool all_valid = 2;
+
+  // Count of valid receipts.
+  uint32 valid_count = 3;
+
+  // Count of invalid receipts.
+  uint32 invalid_count = 4;
+}
+
+message BatchVerifyResult {
+  // Index in request.
+  uint32 index = 1;
+
+  // Receipt ID (if present).
+  string receipt_id = 2;
+
+  // Valid.
+  bool valid = 3;
+
+  // Error message (if invalid).
+  string error = 4;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Common Types
+// ═══════════════════════════════════════════════════════════════════════════════
+
+message Receipt {
+  // Schema version.
+  string schema_version = 1;
+
+  // Receipt ID.
+  string receipt_id = 2;
+
+  // Artifact this receipt attests to.
+  Artifact artifact = 3;
+
+  // Issuance information.
+  Issuance issuance = 4;
+
+  // Signature.
+  Signature signature = 5;
+
+  // Verification endpoints.
+  Verification verification = 6;
+
+  // Chain link (if chained).
+  ChainLink chain = 7;
+
+  // Metadata (not signed).
+  map<string, string> metadata = 8;
+}
+
+message Artifact {
+  // Artifact type.
+  ArtifactType type = 1;
+
+  // SHA-256 hash.
+  bytes hash = 2;
+
+  // Size in bytes.
+  uint64 size_bytes = 3;
+
+  // Description.
+  string description = 4;
+
+  // Internal artifact ID.
+  string artifact_id = 5;
+
+  // Content type (MIME).
+  string content_type = 6;
+}
+
+enum ArtifactType {
+  ARTIFACT_TYPE_UNSPECIFIED = 0;
+  ARTIFACT_TYPE_ASSESSMENT_NOTICE = 1;
+  ARTIFACT_TYPE_LEVY_TABLE = 2;
+  ARTIFACT_TYPE_GIS_EXPORT = 3;
+  ARTIFACT_TYPE_PERMIT_DOCUMENT = 4;
+  ARTIFACT_TYPE_POLICY_BUNDLE = 5;
+  ARTIFACT_TYPE_PLUGIN_BUNDLE = 6;
+  ARTIFACT_TYPE_MODEL_WEIGHTS = 7;
+  ARTIFACT_TYPE_SCHEMA_SNAPSHOT = 8;
+  ARTIFACT_TYPE_DEPLOYMENT_MANIFEST = 9;
+  ARTIFACT_TYPE_CUSTOM = 100;
+}
+
+message Issuer {
+  // Issuer ID.
+  string id = 1;
+
+  // Issuer name.
+  string name = 2;
+
+  // Scope.
+  IssuerScope scope = 3;
+
+  // SPIFFE ID (for service verification).
+  string spiffe_id = 4;
+}
+
+enum IssuerScope {
+  ISSUER_SCOPE_UNSPECIFIED = 0;
+  ISSUER_SCOPE_COUNTY = 1;
+  ISSUER_SCOPE_STATE = 2;
+  ISSUER_SCOPE_FEDERATION = 3;
+  ISSUER_SCOPE_VENDOR = 4;
+}
+
+message Issuance {
+  // When issued.
+  google.protobuf.Timestamp issued_at = 1;
+
+  // Not before.
+  google.protobuf.Timestamp not_before = 2;
+
+  // Expiration.
+  google.protobuf.Timestamp expiration = 3;
+
+  // Issuer.
+  Issuer issuer = 4;
+
+  // SpecLock manifest hash at issuance.
+  bytes speclock_manifest_hash = 5;
+
+  // Policy hash at issuance.
+  bytes policy_hash = 6;
+}
+
+message Signature {
+  // Signature mode.
+  SignatureMode mode = 1;
+
+  // Hash of signed payload.
+  bytes signed_payload_hash = 2;
+
+  // FROST TSS signature (if cosmic_tss).
+  CosmicTssSignature cosmic_tss = 3;
+
+  // Quorum signature (if god_tier_quorum).
+  QuorumSignature quorum = 4;
+
+  // Single signature (if mythic_single).
+  SingleSignature single = 5;
+}
+
+enum SignatureMode {
+  SIGNATURE_MODE_UNSPECIFIED = 0;
+  SIGNATURE_MODE_COSMIC_TSS = 1;
+  SIGNATURE_MODE_GOD_TIER_QUORUM = 2;
+  SIGNATURE_MODE_MYTHIC_SINGLE = 3;
+}
+
+message CosmicTssSignature {
+  // 64-byte Ed25519 signature.
+  bytes signature = 1;
+
+  // 32-byte group public key.
+  bytes group_public_key = 2;
+
+  // Threshold k.
+  uint32 threshold_k = 3;
+
+  // Total participants n.
+  uint32 participants_n = 4;
+
+  // Participants that signed.
+  repeated uint32 participants_used = 5;
+}
+
+message QuorumSignature {
+  // Individual signatures.
+  repeated AuthoritySignature signatures = 1;
+
+  // Required count.
+  uint32 required = 2;
+
+  // Actual count.
+  uint32 actual = 3;
+}
+
+message AuthoritySignature {
+  // Authority ID.
+  string authority_id = 1;
+
+  // Signature.
+  bytes signature = 2;
+
+  // Public key.
+  bytes public_key = 3;
+}
+
+message SingleSignature {
+  // Authority ID.
+  string authority_id = 1;
+
+  // Signature.
+  bytes signature = 2;
+
+  // Public key.
+  bytes public_key = 3;
+}
+
+message Verification {
+  // Public endpoint.
+  string public_endpoint = 1;
+
+  // Offline verifier binary name.
+  string offline_verifier = 2;
+
+  // QR code data.
+  string qr_code_data = 3;
+
+  // Trust anchors.
+  repeated TrustAnchor trust_anchors = 4;
+}
+
+message ChainLink {
+  // Previous receipt ID.
+  string previous_receipt_id = 1;
+
+  // Hash of previous receipt.
+  bytes previous_receipt_hash = 2;
+
+  // Depth in chain.
+  uint32 chain_depth = 3;
+}

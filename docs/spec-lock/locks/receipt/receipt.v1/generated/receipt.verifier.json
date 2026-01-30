@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "verificationEndpoint": "/ops/receipts/{receiptId}/verify",
+  "proofFields": [
+    "sha256",
+    "timestamp",
+    "countyId"
+  ],
+  "publicProofRequired": true,
+  "foiaBundleSupported": true
+}

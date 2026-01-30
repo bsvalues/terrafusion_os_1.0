@@ -1,0 +1,274 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "defense_packet_input.json",
+  "title": "Defense Packet Input",
+  "description": "Unified contract for approach results consumed by defense packet generator",
+  "type": "object",
+  "required": ["subjectId", "effectiveDate", "salePrice", "finalValue"],
+  "properties": {
+    "subjectId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Subject property identifier (parcel ID)"
+    },
+    "effectiveDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of valuation (YYYY-MM-DD)"
+    },
+    "salePrice": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sale price for ratio analysis (integer cents)"
+    },
+    "finalValue": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Final reconciled value (integer cents)"
+    },
+    "propertyAddress": {
+      "type": "string",
+      "description": "Property address for display"
+    },
+    "propertyType": {
+      "type": "string",
+      "enum": [
+        "residential",
+        "commercial",
+        "industrial",
+        "agricultural",
+        "special_purpose"
+      ],
+      "default": "residential"
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "List of appraisal assumptions"
+    },
+    "salesApproach": {
+      "$ref": "#/definitions/SalesApproachResult"
+    },
+    "incomeApproach": {
+      "$ref": "#/definitions/IncomeApproachResult"
+    },
+    "costApproach": {
+      "$ref": "#/definitions/CostApproachResult"
+    },
+    "reconciliation": {
+      "$ref": "#/definitions/ReconciliationResult"
+    },
+    "diagnostics": {
+      "type": "object",
+      "properties": {
+        "pipelineVersion": { "type": "string" },
+        "calculationMode": { "type": "string", "enum": ["stub", "steel"] },
+        "auditEventIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true,
+      "default": {}
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "SalesApproachResult": {
+      "type": "object",
+      "required": ["indicatedValue", "comparableCount"],
+      "properties": {
+        "indicatedValue": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sales approach indicated value (integer cents)"
+        },
+        "confidenceLevel": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "comparableCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "valueRange": {
+          "type": "object",
+          "properties": {
+            "min": { "type": "integer", "minimum": 0 },
+            "max": { "type": "integer", "minimum": 0 }
+          },
+          "required": ["min", "max"]
+        },
+        "keyComparables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "address": { "type": "string" },
+              "salePrice": { "type": "integer", "minimum": 0 },
+              "adjustedPrice": { "type": "integer", "minimum": 0 },
+              "weight": { "type": "number", "minimum": 0, "maximum": 1 }
+            },
+            "required": ["id", "salePrice", "adjustedPrice"]
+          }
+        },
+        "adjustmentSummary": {
+          "type": "string",
+          "description": "Brief narrative of adjustment methodology"
+        },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        }
+      },
+      "additionalProperties": false
+    },
+    "IncomeApproachResult": {
+      "type": "object",
+      "required": ["indicatedValue", "method"],
+      "properties": {
+        "indicatedValue": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Income approach indicated value (integer cents)"
+        },
+        "confidenceLevel": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "direct_capitalization",
+            "yield_capitalization",
+            "gross_rent_multiplier"
+          ]
+        },
+        "netOperatingIncome": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "NOI (integer cents)"
+        },
+        "capitalizationRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Cap rate as decimal (0.08 = 8%)"
+        },
+        "grossRentMultiplier": {
+          "type": "number",
+          "minimum": 0,
+          "description": "GRM if applicable"
+        },
+        "sensitivityAnalysis": {
+          "type": "object",
+          "properties": {
+            "capRateMinus50bp": { "type": "integer" },
+            "capRatePlus50bp": { "type": "integer" }
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        }
+      },
+      "additionalProperties": false
+    },
+    "CostApproachResult": {
+      "type": "object",
+      "required": ["indicatedValue", "landValue", "buildingValue"],
+      "properties": {
+        "indicatedValue": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Cost approach indicated value (integer cents)"
+        },
+        "confidenceLevel": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "landValue": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "buildingValue": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "RCNLD"
+        },
+        "replacementCostNew": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalDepreciation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "depreciationBreakdown": {
+          "type": "object",
+          "properties": {
+            "physical": { "type": "integer", "minimum": 0 },
+            "functional": { "type": "integer", "minimum": 0 },
+            "external": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        }
+      },
+      "additionalProperties": false
+    },
+    "ReconciliationResult": {
+      "type": "object",
+      "required": ["finalValue", "method"],
+      "properties": {
+        "finalValue": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Final reconciled value (integer cents)"
+        },
+        "method": {
+          "type": "string",
+          "enum": ["weighted_average", "bracketed", "primary_approach"]
+        },
+        "weights": {
+          "type": "object",
+          "properties": {
+            "sales": { "type": "number", "minimum": 0, "maximum": 1 },
+            "income": { "type": "number", "minimum": 0, "maximum": 1 },
+            "cost": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "primaryApproach": {
+          "type": "string",
+          "enum": ["sales", "income", "cost"]
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Narrative explanation of reconciliation reasoning"
+        },
+        "confidenceLevel": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "approachAgreement": {
+          "type": "string",
+          "enum": ["strong", "moderate", "weak"]
+        },
+        "auditTrailPointers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "References to audit events for traceability"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "startMenu": {
+    "search": {
+      "placeholder": "Type to search...",
+      "ariaLabel": "Search apps"
+    },
+    "sections": {
+      "pinned": "Pinned",
+      "recent": "Recent",
+      "allApps": "All apps",
+      "searchResults": "Search Results"
+    },
+    "noAppsFound": "No apps found",
+    "userProfile": {
+      "ariaLabel": "User Profile: Assessor, Benton County",
+      "role": "Assessor",
+      "location": "Benton County"
+    },
+    "shortcuts": "Keyboard Shortcuts",
+    "settings": "Settings"
+  },
+  "virtualDesktops": {
+    "title": "Virtual Desktops",
+    "close": "Close",
+    "switchTo": "Switch to {{name}}",
+    "remove": "Remove Desktop",
+    "new": "New Desktop"
+  },
+  "taskbar": {
+    "startMenu": "Start Menu",
+    "taskView": "Task View",
+    "runningApps": "Running applications",
+    "systemTray": "System tray",
+    "ariaLabel": "Taskbar"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "new": "new",
+    "noNotifications": "No notifications",
+    "clearAll": "Clear all",
+    "dismiss": "Dismiss notification",
+    "closePanel": "Close panel",
+    "list": "Notification list",
+    "unread": "unread",
+    "time": {
+      "justNow": "Just now",
+      "minAgo": "{{count}} min ago",
+      "hoursAgo": "{{count}} hour ago",
+      "hoursAgo_plural": "{{count}} hours ago",
+      "daysAgo": "{{count}} day ago",
+      "daysAgo_plural": "{{count}} days ago"
+    }
+  },
+  "clock": {
+    "currentTime": "Current time: {{time}}, {{date}}"
+  },
+  "systemHealth": {
+    "title": "System Health",
+    "closePanel": "Close panel",
+    "cpu": "CPU",
+    "memory": "Memory",
+    "network": "Network",
+    "storage": "Storage",
+    "uptime": "Uptime",
+    "cores": "cores",
+    "status": {
+      "connected": "Connected",
+      "offline": "Offline",
+      "healthy": "Healthy",
+      "warning": "Warning",
+      "critical": "Critical",
+      "unknown": "Unknown"
+    },
+    "ariaLabel": "System Health - Click to view details"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "tabs": {
+      "general": "General",
+      "appearance": "Appearance",
+      "accessibility": "Accessibility",
+      "about": "About"
+    },
+    "appearance": {
+      "theme": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "accessibility": {
+      "visual": "Visual",
+      "highContrast": "High Contrast Mode",
+      "motion": "Motion",
+      "reduceMotion": "Reduce Motion",
+      "typography": "Typography",
+      "fontSize": "Font Size"
+    },
+    "general": {
+      "systemInfo": "System Information",
+      "osVersion": "OS Version",
+      "build": "Build",
+      "user": "User"
+    },
+    "about": {
+      "title": "About TerraFusion OS",
+      "description": "TerraFusion OS is a next-generation web operating system designed for high-performance government and enterprise applications.",
+      "copyright": "© 2024 TerraFusion Inc. All rights reserved."
+    }
+  }
+}

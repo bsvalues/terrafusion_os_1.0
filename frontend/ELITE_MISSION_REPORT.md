@@ -33,7 +33,7 @@ npm run build  # 20.80s average, 37 modules
 
 #### **Development Server**
 ```powershell
-npx serve ./native-shell/ui -l 8002 --single --cors
+npx serve ./native-shell/ui/dist -l 8002 --single --cors
 ```
 
 #### **Elite Scripts Created**

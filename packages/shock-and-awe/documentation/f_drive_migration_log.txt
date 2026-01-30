@@ -1,108 +1,0 @@
-
--------------------------------------------------------------------------------
-   ROBOCOPY     ::     Robust File Copy for Windows                              
--------------------------------------------------------------------------------
-
-  Started : Saturday, August 9, 2025 6:58:19 PM
-   Source = f:\
-     Dest : e:\TerraFusion_Tauri_Master_Workspace\championship\f_drive_migration\
-
-    Files : *.*
-	    
-  Options : *.* /S /E /COPYALL /MT:8 /R:3 /W:1 
-
-------------------------------------------------------------------------------
-
-NOTE : Security may not be copied - Source might not support persistent ACLs.
-
-	    New File  		      56	f:\.dropbox.device100%  
-	    New File  		       1	f:\appraisal-workflow-integration.md100%  
-	    New File  		   10324	f:\branding-demo.html100%  
-	    New File  		    5473	f:\BRANDING_DEPLOYMENT_COMPLETE.md100%  
-	    New File  		   18124	f:\Cargo.lock100%  
-	    New File  		     405	f:\Cargo.toml100%  
-	    New File  		    9406	f:\CODEBASE_CLEANUP_PLAN.md100%  
-	    New File  		   14026	f:\comps-demo.html100%  
-	    New File  		    7299	f:\DAY_1_ACHIEVEMENT_REPORT.md100%  
-	    New File  		    8449	f:\deploy-branding.ps1100%  
-	    New File  		    7324	f:\deploy-production.ps1100%  
-	    New File  		    2807	f:\deploy-terrafusion.ps1100%  
-	    New File  		      60	f:\Dev_Environment.code-workspace100%  
-	    New File  		    3997	f:\docker-compose.production.yml100%  
-	    New File  		    8840	f:\FINAL_VERIFICATION_REPORT.md100%  
-	    New File  		    8300	f:\LIVE_PROGRESS_TRACKER.md100%  
-	    New File  		    8271	f:\MVP_DEMO.rs100%  
-	    New File  		    9949	f:\PRODUCTION_DEPLOYMENT_COMPLETE.md100%  
-	    New File  		    8712	f:\PRODUCTION_DEPLOYMENT_PLAN.md100%  
-	    New File  		  12.9 m	f:\rustup-init.exe 54%  100%  
-	    New File  		       1	f:\simple-deploy.ps1100%  
-	    New File  		    2806	f:\start-terrafusion-clean.ps1100%  
-	    New File  		    2940	f:\start-terrafusion.ps1100%  
-	    New File  		    7118	f:\terrafusion-brand-components.tsx100%  
-	    New File  		   10974	f:\terrafusion-brand-kit.css100%  
-	    New File  		    8080	f:\terrafusion-brand-update.md100%  
-	    New File  		   23936	f:\terrafusion-enterprise-complete.html100%  
-	    New File  		   18567	f:\terrafusion-enterprise-live.html100%  
-	    New File  		      86	f:\terrafusion-enterprise.html100%  
-	    New File  		   33112	f:\terrafusion-full-app.html100%  
-	    New File  		    7702	f:\TERRAFUSION_BRANDING_DEPLOYMENT_COMPLETE.md100%  
-	    New File  		    6853	f:\TERRAFUSION_BRANDING_DEPLOYMENT_PLAN.md100%  
-	    New File  		   10974	f:\TERRAFUSION_BRAND_KIT.css100%  
-	    New File  		    6676	f:\TERRAFUSION_BRAND_KIT_V2.css100%  
-	    New File  		    8547	f:\TERRAFUSION_CLEANUP_COMPLETE.md100%  
-	    New File  		    7303	f:\TERRAFUSION_CLEAN_SUCCESS_REPORT.md100%  
-	    New File  		    2357	f:\terrafusion_launcher.rs100%  
-	    New File  		      94	f:\TERRAFUSION_LIVE_STATUS.md100%  
-	    New File  		   13221	f:\TERRAFUSION_MASTER_PLAN.md100%  
-	    New File  		    7219	f:\TERRAFUSION_REAL_APPLICATION_STATUS.md100%  
-	    New File  		     129	f:\$RECYCLE.BIN\desktop.ini100%  
-	    New File  		     154	f:\comps-importer\.env.example100%  
-	    New File  		    1056	f:\comps-importer\.env.production100%  
-	    New File  		     214	f:\comps-importer\.gitignore100%  
-	    New File  		    1747	f:\comps-importer\agent_analytics.rs100%  
-	    New File  		    1116	f:\comps-importer\agent_analytics_service.rs100%  
-	    New File  		    1875	f:\comps-importer\AGENT_ARCHITECTURE.md100%  
-	    New File  		    9117	f:\comps-importer\agent_forecasting.rs100%  
-	    New File  		    1130	f:\comps-importer\agent_forecasting_service.rs100%  
-	    New File  		    1992	f:\comps-importer\agent_geospatial_service.rs100%  
-	    New File  		    1940	f:\comps-importer\agent_image_service.rs100%  
-	    New File  		    1231	f:\comps-importer\AGENT_MESSAGE_SCHEMA.md100%  
-	    New File  		    2072	f:\comps-importer\agent_sales_validation_service.rs100%  
-	    New File  		    1669	f:\comps-importer\agent_valuation.rs100%  
-	    New File  		    1116	f:\comps-importer\agent_valuation_service.rs100%  
-	    New File  		   11975	f:\comps-importer\APPRAISAL_SUITE_ARCHITECTURE.md100%  
-	    New File  		   12119	f:\comps-importer\auth_service.rs100%  
-	    New File  		    9413	f:\comps-importer\backend_api_server.py100%  
-	    New File  		   68677	f:\comps-importer\Cargo.lock100%  
-	    New File  		    1108	f:\comps-importer\Cargo.toml100%  
-	    New File  		    8046	f:\comps-importer\CLEANUP_COMPLETION_REPORT.md100%  
-	    New File  		  104808	f:\comps-importer\CMA_Spreadsheet (1).csv100%  
-	    New File  		    7772	f:\comps-importer\CODEBASE_CLEANUP_PLAN.md100%  
-	    New File  		     181	f:\comps-importer\comps-importer.code-workspace100%  
-	    New File  		       3	f:\comps-importer\county_data_integration.rs100%  
-	    New File  		    1825	f:\comps-importer\deployment.log100%  
-	    New File  		    4566	f:\comps-importer\DEPLOYMENT_CHECKLIST.md100%  
-	    New File  		     672	f:\comps-importer\DEVOPS_PLAN.md100%  
-	    New File  		    4552	f:\comps-importer\docker-compose.comps.yml100%  
-	    New File  		     532	f:\comps-importer\docker-compose.deploy_wizard.yml100%  
-	    New File  		    4199	f:\comps-importer\docker-compose.prod.yml100%  
-	    New File  		    4366	f:\comps-importer\docker-compose.yml100%  
-	    New File  		    1424	f:\comps-importer\Dockerfile100%  
-	    New File  		     624	f:\comps-importer\Dockerfile.agent100%  
-	    New File  		     828	f:\comps-importer\Dockerfile.backend100%  
-	    New File  		     270	f:\comps-importer\Dockerfile.mcp100%  
-	    New File  		     758	f:\comps-importer\Dockerfile.mcp.prod100%  
-	    New File  		    1496	f:\comps-importer\DOCUMENTATION_INDEX.md100%  
-	    New File  		    9494	f:\comps-importer\EXECUTION_SUMMARY.md100%  
-	    New File  		    8990	f:\comps-importer\import_redfin.rs100%  
-	    New File  		    9075	f:\comps-importer\INTEGRATION_PLAN.md100%  
-	    New File  		    9195	f:\comps-importer\LIVE_PROGRESS_TRACKER.md100%  
-	    New File  		    7498	f:\comps-importer\mcp_server.rs100%  
-	    New File  		    8912	f:\comps-importer\mcp_server_prod.rs100%  
-	    New File  		    6620	f:\comps-importer\MILESTONE_TRACKER.md100%  
-	    New File  		   10282	f:\comps-importer\mvp_demo.rs100%  
-	    New File  		    1786	f:\comps-importer\MVP_EXECUTION_PLAN.md100%  
-	    New File  		    7061	f:\comps-importer\MVP_PROGRESS_REPORTING_PLAN.md100%  
-	    New File  		    5090	f:\comps-importer\MVP_STATUS_REPORT.md100%  
-	    New File  		     140	f:\comps-importer\netlify.toml100%  
-	    New File  		   11905	f:\comps-importer\PHASE_1_IMPLEMENTATION.md

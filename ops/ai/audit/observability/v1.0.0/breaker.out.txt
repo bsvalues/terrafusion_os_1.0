@@ -1,0 +1,72 @@
+
+═══════════════════════════════════════════════════════════════════════════
+  BREAKER: Observability Runtime Constitution Attack Suite
+  Constitution: v1.0.0
+═══════════════════════════════════════════════════════════════════════════
+
+ATTACK 1: Mutation Attempts
+  Testing: Observe commands must be read-only
+
+  [1.1] Observe health should not create files...   ✓ BLOCKED - No observe files created
+  [1.2] Observe should not modify .terrafusion-state...   ✓ BLOCKED - State file unchanged
+  [1.3] Observe should not modify any registry...   ✓ BLOCKED - Registry unchanged
+
+ATTACK 2: ANSI/Terminal Escape Injection
+  Testing: CI output must be ANSI-free
+
+  [2.1] tf observe health --ci should have no ANSI...   ✓ BLOCKED - No ANSI codes in health output
+  [2.2] tf observe proofs --ci should have no ANSI...   ✓ BLOCKED - No ANSI codes in proofs output
+  [2.3] tf observe summary --ci should have no ANSI...   ✓ BLOCKED - No ANSI codes in summary output
+  [2.4] No terminal control codes (bell, carriage return)...   ✓ BLOCKED - No terminal control codes
+
+ATTACK 3: Path Traversal
+  Testing: Bundle paths must be validated
+
+  [3.1] Reject ../../../etc/passwd...   ✓ BLOCKED - Path traversal rejected (exit 1)
+  [3.2] Reject URL-encoded traversal (%2e%2e%2f)...   ✓ BLOCKED - URL-encoded traversal rejected (exit 1)
+  [3.3] Reject null byte injection...   ✓ BLOCKED - Null byte injection rejected (exit 1)
+  [3.4] Reject /etc/passwd as bundle...   ✓ BLOCKED - Absolute path rejected (exit 1)
+  [3.5] Reject ~/.ssh/id_rsa as bundle...   ✓ BLOCKED - Home escape rejected (exit 1)
+
+ATTACK 4: Secret/Credential Exposure
+  Testing: No secrets in output
+
+  [4.1] No 'password' in output...   ✓ BLOCKED - No password pattern
+  [4.2] No 'api_key' or 'apikey' in output...   ✓ BLOCKED - No API key pattern
+  [4.3] No 'token' or 'bearer' in output...   ✓ BLOCKED - No token pattern
+  [4.4] No connection strings in output...   ✓ BLOCKED - No connection string
+  [4.5] No private key patterns in output...   ✓ BLOCKED - No private key pattern
+
+ATTACK 5: Timeout/Resource Exhaustion
+  Testing: Time-bounded execution
+
+  [5.1] Large path input should timeout...   ✓ BLOCKED - Large path handled quickly (0s)
+  [5.2] Observe summary should complete within 30s...   ✓ BLOCKED - Completed in 7s
+
+ATTACK 6: Flag Injection / Command Smuggling
+  Testing: No arbitrary flag pass-through
+
+  [6.1] Shell injection in --bundle...   ✓ BLOCKED - Shell injection blocked
+  [6.2] Command substitution $(whoami) in --bundle...   ✓ BLOCKED - Command substitution blocked
+  [6.3] Backtick substitution in --bundle...   ✓ BLOCKED - Backtick substitution blocked
+  [6.4] Newline injection in arguments...   ✓ BLOCKED - Newline injection blocked
+  [6.5] Extra flag injection via bundle...   ✓ BLOCKED - Flag injection rejected
+
+ATTACK 7: Non-Sealed Command Execution
+  Testing: Only sealed commands can be composed
+
+  [7.1] Observe cannot execute arbitrary scripts...   ✓ BLOCKED - Only sealed commands executed
+
+═══════════════════════════════════════════════════════════════════════════
+
+  BREAKER SUMMARY
+  ───────────────────────────────────────────────────────────────────────
+  Constitution:    v1.0.0 (Observability Runtime)
+  Attacks Run:     25
+  Attacks Blocked: 25
+  Vulnerabilities: 0
+
+  ✓ ALL ATTACKS BLOCKED
+    Observability read-only containment is secure.
+
+═══════════════════════════════════════════════════════════════════════════

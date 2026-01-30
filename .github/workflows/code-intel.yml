@@ -2,7 +2,19 @@ name: Code Intelligence
 on:
   push:
     branches: [main]
-  pull_request: {}
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'tools/**'
+      - '.github/workflows/code-intel.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'tools/**'
+      - '.github/workflows/code-intel.yml'
   workflow_dispatch: {}
 jobs:
   scan:

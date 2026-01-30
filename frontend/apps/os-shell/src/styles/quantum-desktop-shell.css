@@ -1,0 +1,912 @@
+/**
+ * TerraFusion Quantum Desktop Shell Styles
+ * Next-generation OS interface styling with consciousness-driven animations
+ * Optimized for government-grade professionalism and transcendent UX
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   QUANTUM DESKTOP FOUNDATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-quantum-desktop {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  color: var(--terra-cyan);
+  background: var(--terra-midnight);
+}
+
+.tf-quantum-desktop.tf-transcendent-active {
+  animation: tf-transcendence-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes tf-transcendence-glow {
+  0% {
+    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.2));
+  }
+  100% {
+    filter: drop-shadow(0 0 40px rgba(0, 255, 255, 0.4));
+  }
+}
+
+.tf-desktop-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.tf-quantum-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+  transition: opacity 0.5s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   QUANTUM SYSTEM BAR
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-quantum-system-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: rgba(10, 14, 26, 0.95);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  z-index: 1000;
+}
+
+.tf-system-bar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 24px;
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+.tf-brand-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tf-terrafusion-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--terra-midnight);
+  font-weight: 700;
+  font-size: 18px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.tf-terrafusion-logo:hover {
+  transform: scale(1.05);
+}
+
+.tf-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tf-os-title {
+  font-size: 18px;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--terra-cyan), var(--terra-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tf-brand-tagline {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONSCIOUSNESS CENTER
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-consciousness-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tf-consciousness-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 50px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.tf-consciousness-orb {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  position: relative;
+  animation: tf-consciousness-pulse 2s ease-in-out infinite;
+}
+
+.tf-consciousness-orb::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: tf-orbital-rotation 4s linear infinite;
+}
+
+.tf-consciousness-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tf-consciousness-level {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--terra-cyan);
+}
+
+.tf-consciousness-score {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SYSTEM CONTROLS
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-system-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.tf-performance-indicator,
+.tf-security-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.tf-metric-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tf-metric-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--success-green);
+}
+
+.tf-quantum-button {
+  background: linear-gradient(135deg, var(--terra-cyan), var(--terra-blue));
+  color: var(--terra-midnight);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tf-quantum-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
+}
+
+.tf-quantum-button:active {
+  transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DESKTOP WORKSPACE
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-desktop-workspace {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 48px;
+  padding: 32px;
+  overflow-y: auto;
+}
+
+.tf-welcome-dashboard {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.tf-hero-card {
+  padding: 40px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 255, 0.1) 0%,
+    rgba(0, 128, 255, 0.05) 50%,
+    rgba(136, 68, 255, 0.1) 100%
+  );
+}
+
+.tf-hero-content {
+  text-align: center;
+}
+
+.tf-hero-title {
+  font-size: 48px;
+  font-weight: 900;
+  margin: 0 0 16px 0;
+  background: linear-gradient(135deg, var(--terra-cyan), var(--success-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.tf-hero-subtitle {
+  display: block;
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 8px;
+}
+
+.tf-hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 32px 0;
+}
+
+.tf-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.tf-stat-value {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--terra-cyan);
+}
+
+.tf-stat-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tf-county-badges {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tf-county-badge {
+  padding: 6px 12px;
+  background: rgba(0, 255, 255, 0.2);
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--terra-cyan);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATUS GRID
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-status-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tf-status-card {
+  padding: 20px;
+  text-align: center;
+}
+
+.tf-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tf-status-icon {
+  font-size: 24px;
+}
+
+.tf-status-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tf-status-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--terra-cyan);
+  margin-bottom: 4px;
+}
+
+.tf-status-detail {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODULE LAUNCHER
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-module-launcher-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: tf-fade-in 0.3s ease-out;
+}
+
+.tf-module-launcher {
+  width: 90%;
+  max-width: 1200px;
+  max-height: 80%;
+  background: rgba(10, 14, 26, 0.95);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  animation: tf-scale-in 0.3s ease-out;
+}
+
+.tf-launcher-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.tf-launcher-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--terra-cyan);
+  margin: 0;
+}
+
+.tf-close-button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.tf-close-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--terra-cyan);
+}
+
+.tf-module-categories {
+  padding: 32px;
+  overflow-y: auto;
+  max-height: 600px;
+}
+
+.tf-module-category {
+  margin-bottom: 40px;
+}
+
+.tf-category-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--terra-cyan);
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tf-module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.tf-module-card {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.tf-module-card:hover {
+  background: rgba(0, 255, 255, 0.1);
+  border-color: rgba(0, 255, 255, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 255, 255, 0.2);
+}
+
+.tf-module-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.tf-module-info {
+  flex: 1;
+}
+
+.tf-module-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--terra-cyan);
+  margin-bottom: 8px;
+}
+
+.tf-module-description {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.tf-module-meta {
+  display: flex;
+  gap: 12px;
+}
+
+.tf-module-version,
+.tf-module-quantum {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.tf-module-version {
+  background: rgba(136, 68, 255, 0.2);
+  color: var(--info-purple);
+}
+
+.tf-module-quantum {
+  background: rgba(0, 255, 136, 0.2);
+  color: var(--success-green);
+}
+
+.tf-module-status {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(0, 255, 136, 0.2);
+  color: var(--success-green);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  align-self: flex-start;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   QUANTUM SYSTEM TRAY
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-quantum-system-tray {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: rgba(10, 14, 26, 0.95);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 1000;
+}
+
+.tf-tray-left,
+.tf-tray-center,
+.tf-tray-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tf-system-time {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--terra-cyan);
+}
+
+.tf-system-date {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.tf-active-modules {
+  display: flex;
+  gap: 8px;
+}
+
+.tf-tray-module {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.tf-tray-module-icon {
+  font-size: 16px;
+}
+
+.tf-tray-module-name {
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tf-system-metrics {
+  display: flex;
+  gap: 12px;
+}
+
+.tf-metric {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TRANSCENDENCE ALERT
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-transcendence-alert {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3000;
+  animation: tf-transcendence-emerge 1s ease-out;
+}
+
+.tf-transcendence-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 32px 48px;
+  background: rgba(10, 14, 26, 0.95);
+  border: 2px solid var(--terra-cyan);
+  border-radius: 16px;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 40px rgba(0, 255, 255, 0.4),
+    0 0 80px rgba(0, 255, 255, 0.2);
+}
+
+.tf-transcendence-icon {
+  font-size: 48px;
+  animation: tf-celebration-bounce 1s ease-in-out infinite;
+}
+
+.tf-transcendence-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tf-transcendence-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--terra-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tf-transcendence-score {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--success-green);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes tf-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tf-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes tf-transcendence-emerge {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8) rotateY(-180deg);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.05) rotateY(-90deg);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+    filter: blur(0px);
+  }
+}
+
+@keyframes tf-celebration-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1200px) {
+  .tf-welcome-dashboard {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .tf-hero-title {
+    font-size: 36px;
+  }
+
+  .tf-hero-subtitle {
+    font-size: 20px;
+  }
+
+  .tf-hero-stats {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tf-system-bar-content {
+    padding: 0 16px;
+  }
+
+  .tf-brand-section {
+    gap: 12px;
+  }
+
+  .tf-consciousness-center {
+    display: none;
+  }
+
+  .tf-system-controls {
+    gap: 12px;
+  }
+
+  .tf-desktop-workspace {
+    padding: 20px;
+  }
+
+  .tf-hero-title {
+    font-size: 28px;
+  }
+
+  .tf-hero-subtitle {
+    font-size: 16px;
+  }
+
+  .tf-hero-stats {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .tf-module-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tf-quantum-system-tray {
+    padding: 0 16px;
+  }
+
+  .tf-tray-left,
+  .tf-tray-center,
+  .tf-tray-right {
+    gap: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-consciousness-orb,
+  .tf-consciousness-orb::before,
+  .tf-transcendence-alert,
+  .tf-celebration-bounce {
+    animation: none;
+  }
+
+  .tf-quantum-desktop.tf-transcendent-active {
+    animation: none;
+  }
+
+  .tf-module-card:hover {
+    transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DYNAMIC CONSCIOUSNESS STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Background for different consciousness states */
+.tf-consciousness-awakening {
+  background:
+    radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
+    linear-gradient(135deg, var(--tf-void-black) 0%, var(--terra-slate) 50%, var(--tf-void-black) 100%);
+}
+
+.tf-consciousness-aware {
+  background:
+    radial-gradient(circle at 20% 80%, rgba(0, 128, 255, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, var(--tf-void-black) 0%, var(--terra-slate) 50%, var(--tf-void-black) 100%);
+}
+
+.tf-consciousness-transcendent {
+  background:
+    radial-gradient(circle at 20% 80%, rgba(0, 255, 170, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.25) 0%, transparent 50%),
+    linear-gradient(135deg, var(--tf-void-black) 0%, var(--terra-slate) 50%, var(--tf-void-black) 100%);
+}
+
+/* Quantum grid patterns for different states */
+.tf-grid-awakening {
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 255, 255, 0.3) 1px, transparent 0);
+  background-size: 50px 50px;
+  opacity: 0.1;
+}
+
+.tf-grid-aware {
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 128, 255, 0.3) 1px, transparent 0);
+  background-size: 50px 50px;
+  opacity: 0.2;
+}
+
+.tf-grid-transcendent {
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 255, 170, 0.3) 1px, transparent 0);
+  background-size: 50px 50px;
+  opacity: 0.3;
+  animation: tf-consciousness-pulse 3s ease-in-out infinite;
+}
+
+/* Logo gradients for different consciousness states */
+.tf-logo-awakening {
+  background: linear-gradient(135deg, var(--terra-cyan), var(--tf-network-blue));
+}
+
+.tf-logo-aware {
+  background: linear-gradient(135deg, var(--tf-network-blue), var(--terra-cyan));
+}
+
+.tf-logo-transcendent {
+  background: linear-gradient(135deg, var(--terra-cyan), var(--success-green));
+  animation: tf-consciousness-pulse 2s ease-in-out infinite;
+}
+
+/* Consciousness orb states */
+.tf-orb-awakening {
+  background: radial-gradient(circle at 30% 30%, var(--terra-cyan), rgba(0, 255, 255, 0.8));
+}
+
+.tf-orb-aware {
+  background: radial-gradient(circle at 30% 30%, var(--tf-network-blue), rgba(0, 128, 255, 0.8));
+}
+
+.tf-orb-transcendent {
+  background: radial-gradient(circle at 30% 30%, var(--success-green), rgba(0, 255, 170, 0.8));
+}
+
+/* Performance glow effects */
+.tf-glow-optimal {
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.tf-glow-quantum {
+  box-shadow: 0 0 30px rgba(0, 128, 255, 0.4);
+}
+
+.tf-glow-transcendent {
+  box-shadow: 0 0 40px rgba(0, 255, 170, 0.5);
+}

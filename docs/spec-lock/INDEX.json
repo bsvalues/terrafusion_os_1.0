@@ -1,0 +1,260 @@
+{
+  "version": "1.0.0",
+  "updated": "2025-12-19",
+  "locks": [
+    {
+      "id": "runtimecontract.v1",
+      "surface": "runtimecontract",
+      "project": "TerraFusion OS",
+      "name": "RuntimeContract v1",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "docs/spec-lock/locks/runtimecontract/runtimecontract.v1/SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "docs/spec-lock/locks/runtimecontract/runtimecontract.v1/speclock.spec.json",
+      "generated_artifacts": [
+        "docs/spec-lock/locks/runtimecontract/runtimecontract.v1/generated/runtimecontract.schema.json",
+        "docs/spec-lock/locks/runtimecontract/runtimecontract.v1/generated/openapi-proof.yaml",
+        "docs/spec-lock/locks/runtimecontract/runtimecontract.v1/generated/k8s-readiness-snippet.yaml"
+      ],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.SmokeTests/RuntimeContractTests.cs"
+      ],
+      "ci_tags": [
+        "speclock",
+        "runtimecontract",
+        "governance",
+        "constitutional",
+        "k8s",
+        "admission"
+      ],
+      "created": "2025-12-19",
+      "updated": "2025-12-19",
+      "notes": "Shell-agnostic constitutional runtime contract - defines required endpoints, metrics, storage, and plugin admission for all deployment shells",
+      "related": [
+        "receipt.v1",
+        "pluginlock.v1",
+        "amendment.v1",
+        "statereport.v1"
+      ]
+    },
+    {
+      "id": "receipt.v1",
+      "surface": "receipt",
+      "project": "TerraFusion OS",
+      "name": "ReceiptLock v1",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "docs/spec-lock/locks/receipt/receipt.v1/SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "docs/spec-lock/locks/receipt/receipt.v1/speclock.spec.json",
+      "generated_artifacts": [
+        "docs/spec-lock/locks/receipt/receipt.v1/generated/receipt.schema.json",
+        "docs/spec-lock/locks/receipt/receipt.v1/generated/receipt.openapi.snapshot.json",
+        "docs/spec-lock/locks/receipt/receipt.v1/generated/receipt.verifier.json"
+      ],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.SmokeTests/ReceiptLockTests.cs"
+      ],
+      "ci_tags": ["speclock", "receipt", "governance", "proof", "foia"],
+      "created": "2025-12-12",
+      "updated": "2025-12-13",
+      "notes": "Citizen-verifiable receipts for government artifacts with public proof + FOIA bundle support",
+      "related": ["pluginlock.v1", "amendment.v1"]
+    },
+    {
+      "id": "pluginlock.v1",
+      "surface": "pluginlock",
+      "project": "TerraFusion OS",
+      "name": "PluginLock v1",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "docs/spec-lock/locks/pluginlock/pluginlock.v1/SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "docs/spec-lock/locks/pluginlock/pluginlock.v1/speclock.spec.json",
+      "generated_artifacts": [
+        "docs/spec-lock/locks/pluginlock/pluginlock.v1/generated/pluginlock.schema.json",
+        "docs/spec-lock/locks/pluginlock/pluginlock.v1/generated/pluginlock.permissions.json",
+        "docs/spec-lock/locks/pluginlock/pluginlock.v1/generated/pluginlock.policy.rego"
+      ],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.SmokeTests/PluginLockTests.cs"
+      ],
+      "ci_tags": ["speclock", "pluginlock", "governance", "marketplace"],
+      "created": "2025-12-12",
+      "updated": "2025-12-12",
+      "notes": "Marketplace plugin permission envelopes",
+      "related": ["receipt.v1", "amendment.v1"]
+    },
+    {
+      "id": "amendment.v1",
+      "surface": "amendment",
+      "project": "TerraFusion OS",
+      "name": "AmendmentLock v1",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "docs/spec-lock/locks/amendment/amendment.v1/SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "docs/spec-lock/locks/amendment/amendment.v1/speclock.spec.json",
+      "generated_artifacts": [
+        "docs/spec-lock/locks/amendment/amendment.v1/generated/amendment.schema.json",
+        "docs/spec-lock/locks/amendment/amendment.v1/generated/amendment.workflow.json"
+      ],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.SmokeTests/AmendmentLockTests.cs"
+      ],
+      "ci_tags": ["speclock", "amendment", "governance", "constitutional"],
+      "created": "2025-12-12",
+      "updated": "2025-12-12",
+      "notes": "Constitutional governance upgrade workflow",
+      "related": ["receipt.v1", "pluginlock.v1", "statereport.v1"]
+    },
+    {
+      "id": "statereport.v1",
+      "surface": "state-report",
+      "project": "TerraFusion OS",
+      "name": "StateReportLock v1",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "docs/spec-lock/locks/state-report/state-report.v1/SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "docs/spec-lock/locks/state-report/state-report.v1/speclock.spec.json",
+      "generated_artifacts": [
+        "docs/spec-lock/locks/state-report/state-report.v1/generated/state-report.schema.json",
+        "docs/spec-lock/locks/state-report/state-report.v1/generated/state-report.template.json"
+      ],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.SmokeTests/StateReportLockTests.cs",
+        "backend/tests/TerraFusion.Unit.SmokeTests/StateMeshBreakerTests.cs"
+      ],
+      "ci_tags": ["speclock", "state-report", "governance", "mesh", "quorum"],
+      "created": "2025-12-13",
+      "updated": "2025-12-13",
+      "notes": "Federated state-level reports requiring county quorum signatures",
+      "related": ["receipt.v1", "pluginlock.v1", "amendment.v1"]
+    },
+    {
+      "id": "tf.dashboards.atlas_auto_remediation_benton_ops",
+      "surface": "dashboards",
+      "project": "monitoring",
+      "name": "Atlas Auto-Remediation Benton Ops Dashboard",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "grafana/phase45/speclock.spec.json",
+      "generated_artifacts": [
+        "grafana/phase45/atlas-auto-remediation-benton-ops.json"
+      ],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.Tests/Phase45/GrafanaDashboardValidationPhase45Tests.cs"
+      ],
+      "ci_tags": ["speclock", "dashboards", "phase45", "benton"],
+      "created": "2025-01-15",
+      "updated": "2025-12-12",
+      "notes": "Phase 45 dashboard for Benton County auto-remediation operations",
+      "related": ["tf.dashboards.atlas_auto_remediation_governance"]
+    },
+    {
+      "id": "tf.dashboards.atlas_auto_remediation_governance",
+      "surface": "dashboards",
+      "project": "monitoring",
+      "name": "Atlas Auto-Remediation Governance Dashboard",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "grafana/phase45/speclock.spec.json",
+      "generated_artifacts": [
+        "grafana/phase45/atlas-auto-remediation-governance.json"
+      ],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.Tests/Phase45/GrafanaDashboardValidationPhase45Tests.cs"
+      ],
+      "ci_tags": ["speclock", "dashboards", "phase45", "governance"],
+      "created": "2025-01-15",
+      "updated": "2025-12-12",
+      "notes": "Phase 45 governance dashboard for policy compliance and SLO tracking",
+      "related": ["tf.dashboards.atlas_auto_remediation_benton_ops"]
+    },
+    {
+      "id": "tf.metrics.phase45_auto_remediation",
+      "surface": "metrics",
+      "project": "TerraFusion.Operations",
+      "name": "Phase 45 Auto-Remediation Metrics",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "grafana/phase45/DASHBOARD_SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "grafana/phase45/speclock.spec.json",
+      "generated_artifacts": [],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.Tests/Phase45/GrafanaDashboardValidationPhase45Tests.cs"
+      ],
+      "ci_tags": ["speclock", "metrics", "phase45"],
+      "created": "2025-01-15",
+      "updated": "2025-12-12",
+      "notes": "Allowed metrics: tf_runbook_autoexec_total, tf_runbook_autoexec_duration_seconds, tf_remediation_policy_eval_total, tf_runbook_killswitch_enabled, tf_runbook_autoexec_block_total, tf_remediation_slo_compliance_ratio",
+      "related": []
+    },
+    {
+      "id": "pacscontract.v1",
+      "surface": "pacscontract",
+      "project": "TerraFusion OS",
+      "name": "PACS Contract v1",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "docs/spec-lock/locks/pacscontract/pacscontract.v1/SPEC_LOCK_v1.0.0.md",
+      "artifact_paths": [],
+      "spec_data_path": "docs/spec-lock/locks/pacscontract/pacscontract.v1/speclock.spec.json",
+      "generated_artifacts": [
+        "docs/spec-lock/locks/pacscontract/pacscontract.v1/generated/pacscontract.schema.json",
+        "docs/spec-lock/locks/pacscontract/pacscontract.v1/generated/pacscontract.openapi.yaml"
+      ],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.SmokeTests/PacsContractTests.cs"
+      ],
+      "ci_tags": ["speclock", "pacscontract", "governance", "pacs", "database"],
+      "created": "2025-12-14",
+      "updated": "2025-12-14",
+      "notes": "Immutable contract defining TerraFusion OS dependencies on Harris PACS (TrueAutomation) database systems",
+      "related": ["runtimecontract.v1", "amendment.v1"]
+    },
+    {
+      "id": "runtimecert.v1",
+      "surface": "runtimecert",
+      "project": "TerraFusion OS",
+      "name": "Runtime Certification v1",
+      "owner": "systemgpt",
+      "status": "active",
+      "spec_version": "v1.0.0",
+      "spec_path": "docs/spec-lock/locks/runtimecert/runtimecert.v1/speclock.spec.json",
+      "artifact_paths": [],
+      "spec_data_path": "docs/spec-lock/locks/runtimecert/runtimecert.v1/speclock.spec.json",
+      "generated_artifacts": [],
+      "test_paths": [
+        "backend/tests/TerraFusion.Unit.SmokeTests/CertificationTests.cs"
+      ],
+      "ci_tags": [
+        "speclock",
+        "runtimecert",
+        "governance",
+        "certification",
+        "go-live"
+      ],
+      "created": "2025-12-14",
+      "updated": "2025-12-14",
+      "notes": "Runtime certification gate for county go-live acceptance. No cert = no go-live.",
+      "related": ["runtimecontract.v1", "pacscontract.v1"]
+    }
+  ]
+}

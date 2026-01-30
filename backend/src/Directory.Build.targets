@@ -1,0 +1,26 @@
+<Project>
+  <!--
+    SPECLOCK: Publish Artifact Deduplication
+
+    Problem: NETSDK1152 - Multiple projects have appsettings*.json files that collide
+             during publish when TerraFusion.API references TerraFusion.Operations,
+             TerraFusion.Consciousness, etc.
+
+    Solution: Only TerraFusion.API (the main entry point) should publish appsettings files.
+              All other projects remove their appsettings from Content/None during publish.
+
+    Affected projects:
+      - TerraFusion.Operations (appsettings.json, appsettings.Development.json)
+      - TerraFusion.Consciousness (appsettings.json, appsettings.Development.json)
+
+    Entry point (keeps appsettings):
+      - TerraFusion.API
+  -->
+
+  <!-- Remove appsettings from non-API Web projects to prevent NETSDK1152 -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' != 'TerraFusion.API'">
+    <Content Remove="appsettings*.json" />
+    <None Remove="appsettings*.json" />
+  </ItemGroup>
+
+</Project>

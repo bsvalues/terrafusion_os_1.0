@@ -1,0 +1,14 @@
+{
+  "bundle_id": "bundle-20251223092447-73811",
+  "created_at": "2025-12-23T17:24:47Z",
+  "mode": "dev",
+  "overall_status": "pass",
+  "proofs": {
+    "agent": { "file": "proofs/agent.json", "status": "pass" },
+    "deploy": { "file": "proofs/deploy.json", "status": "pass" },
+    "gate": { "file": "proofs/gate.json", "status": "pass" },
+    "marketplace": { "file": "proofs/marketplace.json", "status": "pass" }
+  },
+  "sbom_included": false,
+  "schema_version": "1.0.0"
+}

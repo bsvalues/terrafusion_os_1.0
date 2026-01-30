@@ -31,12 +31,12 @@ Write-Host "   ✅ Rust DLL deployed" -ForegroundColor Green
 
 # 3. Ensure React UI is built
 Write-Host "⚛️  Checking React Frontend..." -ForegroundColor Cyan
-if (!(Test-Path "native-shell/ui/index.html")) {
+if (!(Test-Path "native-shell/ui/dist/index.html")) {
     Write-Host "   Building React frontend..." -ForegroundColor Yellow
     Push-Location frontend
     npm run build
     Pop-Location
-    Write-Host "   ✅ React UI built to native-shell/ui/" -ForegroundColor Green
+    Write-Host "   ✅ React UI built to native-shell/ui/dist/" -ForegroundColor Green
 } else {
     Write-Host "   ✅ React UI already built" -ForegroundColor Green
 }

@@ -1,0 +1,28 @@
+{
+  "name": "@terrafusion/pilot-api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "HTTP bridge for TerraFusion ToolRunner (Gate 3-6 enforcement)",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@terrafusion/os-core": "workspace:*",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "cors": "^2.8.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^22.10.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

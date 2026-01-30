@@ -1,0 +1,29 @@
+groups:
+  - name: TerraFusionAlerts
+    rules:
+      - alert: IronBodyDown
+        expr: up{job="backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Iron Body (Backend) is down'
+          description: 'Service has been unreachable for more than 1 minute.'
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[1m]) > 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High Error Rate Detected'
+          description: 'More than 10 errors per second over 1 minute.'
+
+      - alert: CortexLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[1m])) > 2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High Latency Detected'
+          description: '95th percentile latency is over 2 seconds.'

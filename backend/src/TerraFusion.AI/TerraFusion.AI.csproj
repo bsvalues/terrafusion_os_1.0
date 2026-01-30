@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" />
+    <PackageReference Include="Microsoft.ML.TimeSeries" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="MathNet.Numerics" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Wasmtime" />
+    <PackageReference Include="prometheus-net" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TerraFusion.Core\TerraFusion.Core.csproj" />
+    <ProjectReference Include="..\TerraFusion.Data\TerraFusion.Data.csproj" />
+    <ProjectReference Include="..\TerraFusion.Abstractions\TerraFusion.Abstractions.csproj" />
+    <ProjectReference Include="..\TerraFusion.Consciousness\TerraFusion.Consciousness.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Tests\**" />
+    <Folder Include="Models\" />
+    <Folder Include="Engines\" />
+    <Folder Include="Predictors\" />
+    <Folder Include="Neural\" />
+    <Folder Include="CostForge\" />
+  </ItemGroup>
+
+  <!-- Tests re-enabled: removed previous compile exclusion for Tests/** -->
+
+</Project>

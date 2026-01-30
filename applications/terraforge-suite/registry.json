@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "contractPackVersion": "1.0.0",
+  "moduleApiVersion": "1.0.0",
+  "modules": {
+    "terraforge.kernel.cost": {
+      "name": "TerraForge Cost Kernel",
+      "description": "Calculates replacement cost, depreciation, and RCNLD for property assessment",
+      "version": "1.0.0",
+      "type": "executable",
+      "executable": "modules/terraforge.kernel.cost/target/release/terraforge-kernel-cost",
+      "executableWindows": "modules/terraforge.kernel.cost/target/release/terraforge-kernel-cost.exe",
+      "actions": ["calculate_cost"],
+      "inputSchema": "contracts/schemas/cost_input.json",
+      "outputSchema": "contracts/schemas/cost_result.json",
+      "auditSchema": "contracts/schemas/audit_event.json"
+    },
+    "terraforge.kernel.valuation": {
+      "name": "TerraForge Valuation Kernel",
+      "description": "Computes final property valuation from cost breakdown and land value",
+      "version": "1.0.0",
+      "type": "executable",
+      "executable": "modules/terraforge.kernel.valuation/target/release/terraforge-kernel-valuation",
+      "executableWindows": "modules/terraforge.kernel.valuation/target/release/terraforge-kernel-valuation.exe",
+      "actions": ["valuate"],
+      "inputSchema": "contracts/schemas/valuation_input.json",
+      "outputSchema": "contracts/schemas/valuation_result.json",
+      "auditSchema": "contracts/schemas/audit_event.json"
+    },
+    "terraforge.studio.defense": {
+      "name": "TerraForge Defense Studio",
+      "description": "Generates defense packets for value appeals",
+      "version": "1.0.0",
+      "type": "stub",
+      "actions": ["generate_packet"],
+      "outputSchema": "contracts/schemas/defense_packet.json",
+      "auditSchema": "contracts/schemas/audit_event.json"
+    }
+  }
+}

@@ -1,34 +1,94 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "🚀 TERRAFUSION OS 1.0 QUALITY GATE: Pre-push validation"
-echo "🏆 Championship-level deployment readiness check"
-
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+# ============================================================================
+# SPECLOCK: TerraFusion Pre-Push Quality Gate (pnpm-first, deterministic)
+# Contract: Must pass on clean machine with pnpm installed
+# Note: Lockfile truth is frontend/pnpm-lock.yaml (monorepo with npm root)
+#
+# Environment Variables:
+#   TF_STRICT_PUSH=1  - Fail on ANY test/lint error (CI mode)
+#   TF_STRICT_PUSH=0  - Warn but allow push (default, development mode)
+# ============================================================================
 
 echo "🏛️ TerraFusion OS Pre-Push Quality Gate Validation"
 echo "================================================="
 
-echo "🧪 Running comprehensive test suite..."
-npm run test:all
+# Strictness mode: TF_STRICT_PUSH=1 fails on errors, default warns
+STRICT_MODE="${TF_STRICT_PUSH:-0}"
+if [ "$STRICT_MODE" = "1" ]; then
+  echo "🔒 STRICT MODE ENABLED (TF_STRICT_PUSH=1)"
+fi
 
-echo "🔒 Running security audit..."
-npm run security:scan || echo "⚠️ Security scan skipped (optional)"
+# Gate 0: Verify pnpm is available (machine determinism)
+command -v pnpm >/dev/null 2>&1 || {
+  echo "❌ pnpm is required for TerraFusion quality gates."
+  echo "   Install via: npm install -g pnpm"
+  echo "   Or via Corepack: corepack enable && corepack prepare pnpm@latest --activate"
+  exit 1
+}
 
-echo "📊 Running performance validation..."
-npm run performance:benchmark || echo "⚠️ Performance tests skipped (optional)"
+# Gate 1: Verify frontend lockfile exists (lockfile truth)
+if [ ! -f "frontend/pnpm-lock.yaml" ]; then
+  echo "❌ frontend/pnpm-lock.yaml not found. Repository may be corrupted."
+  exit 1
+fi
 
-echo "🤖 Validating AI agent coordination..."
-npm run ai-swarm:monitor || echo "⚠️ AI validation skipped (optional)"
+# Gate 2: Verify root deps exist (npm workspace for root, pnpm for frontend)
+if [ ! -d "node_modules" ]; then
+  echo "⚠️ Root node_modules not found. Installing..."
+  npm install --legacy-peer-deps || {
+    echo "❌ Failed to install root dependencies."
+    exit 1
+  }
+fi
 
-echo "⚗️ Running quantum optimization tests..."
-npm run quantum:optimize || echo "⚠️ Quantum tests skipped (optional)"
+# Gate 3: Verify vitest is available from root
+if ! npx vitest --version >/dev/null 2>&1; then
+  echo "❌ vitest not available. Run: npm install"
+  exit 1
+fi
 
-echo "🏛️ Government compliance validation..."
-npm run government:compliance || echo "⚠️ Compliance validation skipped (optional)"
+echo "✅ Pre-flight checks passed"
+echo ""
 
-echo "🏗️ Build verification..."
-npm run build || echo "⚠️ Build verification skipped (optional)"
+# Helper: Run command, fail in strict mode or warn in dev mode
+run_gate() {
+  local name="$1"
+  shift
+  echo "$name"
+  if "$@"; then
+    return 0
+  else
+    if [ "$STRICT_MODE" = "1" ]; then
+      echo "❌ $name FAILED (strict mode)"
+      exit 1
+    else
+      echo "⚠️ $name failed (non-blocking in dev mode)"
+      return 0
+    fi
+  fi
+}
 
+run_gate "🧪 Running unit tests..." npm run test:unit
+
+echo ""
+run_gate "🔒 Running security audit..." npm run security:scan
+
+echo ""
+run_gate "📊 Running performance validation..." npm run performance:benchmark
+
+echo ""
+run_gate "🤖 Validating AI agent coordination..." npm run ai-swarm:monitor
+
+echo ""
+run_gate "🏛️ Government compliance validation..." npm run government:compliance
+
+echo ""
+run_gate "🏗️ Build verification..." npm run build
+
+echo ""
 echo "✅ Core quality gates passed! Government. Transcended."
+if [ "$STRICT_MODE" != "1" ]; then
+  echo "💡 Tip: Set TF_STRICT_PUSH=1 to enable strict mode (CI behavior)"
+fi

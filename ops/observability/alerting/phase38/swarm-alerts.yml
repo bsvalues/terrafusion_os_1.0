@@ -1,0 +1,155 @@
+# ============================================================================
+# PHASE 38: Swarm Prometheus Alert Rules
+# AI-Aware Alerts for Predictive Policy Engine and Swarm Actions
+# ALERT SPEC LOCK v1.0.0 — FROZEN
+# "Government. Transcended."
+# ============================================================================
+
+groups:
+  # ==========================================================================
+  # SWARM PREDICTIVE ACTION ALERTS
+  # ==========================================================================
+  - name: swarm.actions
+    interval: 30s
+    rules:
+      # ----------------------------------------------------------------------
+      # SwarmActionSpike - Warning: Unusual spike in swarm actions
+      # ----------------------------------------------------------------------
+      - alert: SwarmActionSpike
+        expr: |
+          sum(increase(swarm_predictive_actions_total[5m])) > 50
+        for: 2m
+        labels:
+          severity: warning
+          government: 'true'
+          component: swarm
+        annotations:
+          summary: 'Swarm action spike detected'
+          description: '{{ $value }} swarm actions triggered in the last 5 minutes (threshold: 50). AI may be overreacting.'
+          action: 'Review swarm decisions, check policy thresholds, verify input data quality'
+          dashboard: '/d/systemgpt-swarm-guardrails/systemgpt-swarm-guardrails'
+
+      # ----------------------------------------------------------------------
+      # SwarmActionsByCountyImbalance - Warning: Uneven action distribution
+      # ----------------------------------------------------------------------
+      - alert: SwarmActionsByCountyImbalance
+        expr: |
+          stddev(sum(increase(swarm_predictive_actions_total[15m])) by (countyId))
+          /
+          (avg(sum(increase(swarm_predictive_actions_total[15m])) by (countyId)) + 0.001)
+          > 2.0
+        for: 5m
+        labels:
+          severity: warning
+          government: 'true'
+          component: swarm
+        annotations:
+          summary: 'Swarm actions imbalanced across counties'
+          description: 'Action distribution coefficient of variation is {{ $value | humanize }} (threshold: 2.0). Some counties may need attention.'
+          action: 'Review per-county metrics, check for data quality issues'
+          dashboard: '/d/systemgpt-swarm-guardrails/systemgpt-swarm-guardrails'
+
+  # ==========================================================================
+  # SWARM COOLDOWN & SAFETY ALERTS
+  # ==========================================================================
+  - name: swarm.safety
+    interval: 30s
+    rules:
+      # ----------------------------------------------------------------------
+      # SwarmCooldownActivation - Info: Cooldown was triggered
+      # ----------------------------------------------------------------------
+      - alert: SwarmCooldownActivation
+        expr: |
+          increase(swarm_predictive_cooldown_activations_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: info
+          government: 'true'
+          component: swarm
+        annotations:
+          summary: 'Swarm cooldown activated'
+          description: '{{ $value }} cooldown activations in the last 5 minutes. Swarm is rate-limiting itself.'
+          action: 'Monitor for continued activations, review if expected behavior'
+          dashboard: '/d/systemgpt-swarm-guardrails/systemgpt-swarm-guardrails'
+
+      # ----------------------------------------------------------------------
+      # SwarmSafeModeTriggered - Critical: Multiple rapid cooldowns
+      # ----------------------------------------------------------------------
+      - alert: SwarmSafeModeTriggered
+        expr: |
+          sum(increase(swarm_predictive_cooldown_activations_total[1m])) > 5
+        for: 1m
+        labels:
+          severity: critical
+          government: 'true'
+          component: swarm
+          citizen_impact: medium
+        annotations:
+          summary: 'Swarm safe mode triggered'
+          description: '{{ $value }} cooldown activations in 1 minute (threshold: 5). Swarm has entered safe mode.'
+          action: 'Investigate swarm behavior, review recent policy changes, check input anomalies'
+          dashboard: '/d/systemgpt-swarm-guardrails/systemgpt-swarm-guardrails'
+          runbook: 'docs/runbooks/swarm-safe-mode.md'
+
+  # ==========================================================================
+  # SWARM POLICY EVALUATION ALERTS
+  # ==========================================================================
+  - name: swarm.policy
+    interval: 30s
+    rules:
+      # ----------------------------------------------------------------------
+      # SwarmPolicyLoadHigh - Warning: High policy evaluation load
+      # ----------------------------------------------------------------------
+      - alert: SwarmPolicyLoadHigh
+        expr: |
+          sum(rate(swarm_predictive_policy_evaluations_total[1m])) * 60 > 100
+        for: 5m
+        labels:
+          severity: warning
+          government: 'true'
+          component: swarm
+        annotations:
+          summary: 'High swarm policy evaluation load'
+          description: 'Policy evaluation rate is {{ $value | humanize }}/min (threshold: 100/min). May indicate system stress.'
+          action: 'Review policy complexity, check for loops, consider scaling'
+          dashboard: '/d/systemgpt-swarm-guardrails/systemgpt-swarm-guardrails'
+
+      # ----------------------------------------------------------------------
+      # SwarmPolicyEvaluationStall - Warning: No policy evaluations
+      # ----------------------------------------------------------------------
+      - alert: SwarmPolicyEvaluationStall
+        expr: |
+          sum(rate(swarm_predictive_policy_evaluations_total[5m])) == 0
+        for: 10m
+        labels:
+          severity: warning
+          government: 'true'
+          component: swarm
+        annotations:
+          summary: 'Swarm policy evaluation has stalled'
+          description: 'No policy evaluations in the last 10 minutes. Swarm decision-making may be offline.'
+          action: 'Check swarm service health, verify connectivity, review logs'
+          dashboard: '/d/systemgpt-swarm-guardrails/systemgpt-swarm-guardrails'
+
+      # ----------------------------------------------------------------------
+      # SwarmActionEffectivenessLow - Warning: Many evaluations, few actions
+      # ----------------------------------------------------------------------
+      - alert: SwarmActionEffectivenessLow
+        expr: |
+          (
+            sum(rate(swarm_predictive_actions_total[15m]))
+            /
+            (sum(rate(swarm_predictive_policy_evaluations_total[15m])) + 0.001)
+          ) < 0.01
+          and
+          sum(rate(swarm_predictive_policy_evaluations_total[15m])) > 0.1
+        for: 15m
+        labels:
+          severity: warning
+          government: 'true'
+          component: swarm
+        annotations:
+          summary: 'Swarm action effectiveness is low'
+          description: 'Action-to-evaluation ratio is {{ $value | humanizePercentage }}. Policies may be too conservative.'
+          action: 'Review policy thresholds, check if action criteria need adjustment'
+          dashboard: '/d/systemgpt-swarm-guardrails/systemgpt-swarm-guardrails'

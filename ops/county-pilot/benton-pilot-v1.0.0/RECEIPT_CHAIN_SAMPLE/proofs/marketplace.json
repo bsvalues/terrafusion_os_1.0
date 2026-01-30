@@ -1,0 +1,59 @@
+{
+  "checks": [
+    {
+      "details": null,
+      "id": 1,
+      "message": "Registry file valid (1 plugins)",
+      "name": "registry_validity",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 2,
+      "message": "Capability allowlist enforcement active",
+      "name": "capability_allowlist_enforcement",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 3,
+      "message": "Plugin bundle validation required",
+      "name": "bundle_validation_requirement",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 4,
+      "message": "Install state machine integrity enforced",
+      "name": "install_state_machine",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 5,
+      "message": "Execution containment active (setsid + timeout)",
+      "name": "execution_containment",
+      "status": "pass"
+    },
+    {
+      "details": null,
+      "id": 6,
+      "message": "Audit logging directory available",
+      "name": "audit_logging",
+      "status": "pass"
+    }
+  ],
+  "error": null,
+  "source": "marketplace",
+  "status": "pass",
+  "subsystem": "marketplace",
+  "summary": {
+    "failed": 0,
+    "passed": 6,
+    "skipped": 0,
+    "total": 6,
+    "warnings": 0
+  },
+  "timestamp": "2025-12-23T17:24:52Z",
+  "version": "1.0.0"
+}

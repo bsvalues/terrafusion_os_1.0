@@ -1,0 +1,222 @@
+name: Canonical .NET Tests
+
+on:
+  workflow_call:
+    inputs:
+      dotnet_version:
+        description: '.NET SDK version'
+        required: false
+        type: string
+        default: '8.0.x'
+      configuration:
+        description: 'Build configuration'
+        required: false
+        type: string
+        default: 'Release'
+      solution:
+        description: 'Solution path'
+        required: false
+        type: string
+        default: 'TerraFusion.sln'
+      connection_string:
+        description: 'Default connection string for test runs'
+        required: false
+        type: string
+        default: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
+      enable_coverage:
+        description: 'Enable test coverage collection'
+        required: false
+        type: boolean
+        default: false
+      upload_test_results:
+        description: 'Upload test result artifacts'
+        required: false
+        type: boolean
+        default: false
+      upload_coverage:
+        description: 'Upload coverage artifacts'
+        required: false
+        type: boolean
+        default: false
+      publish_coverage_summary:
+        description: 'Publish coverage summary to GitHub step summary'
+        required: false
+        type: boolean
+        default: false
+      require_coverage_outputs:
+        description: 'Fail if coverage artifacts are missing when coverage is enabled'
+        required: false
+        type: boolean
+        default: false
+      test_filter:
+        description: 'Test filter expression (e.g. "Category=Unit" or "FullyQualifiedName~MyTest")'
+        required: false
+        type: string
+        default: ''
+      test_project:
+        description: 'Specific project to test instead of solution (e.g. backend/src/MyProject/MyProject.csproj)'
+        required: false
+        type: string
+        default: ''
+    outputs:
+      enable_coverage:
+        description: 'Whether coverage was enabled'
+        value: ${{ jobs.dotnet-tests.outputs.enable_coverage }}
+      upload_test_results:
+        description: 'Whether test results upload was requested'
+        value: ${{ jobs.dotnet-tests.outputs.upload_test_results }}
+      upload_coverage:
+        description: 'Whether coverage upload was requested'
+        value: ${{ jobs.dotnet-tests.outputs.upload_coverage }}
+      publish_coverage_summary:
+        description: 'Whether coverage summary was requested'
+        value: ${{ jobs.dotnet-tests.outputs.publish_coverage_summary }}
+
+jobs:
+  dotnet-tests:
+    name: Canonical .NET Test Run
+    runs-on: ubuntu-latest
+    outputs:
+      enable_coverage: ${{ steps.expose-inputs.outputs.enable_coverage }}
+      upload_test_results: ${{ steps.expose-inputs.outputs.upload_test_results }}
+      upload_coverage: ${{ steps.expose-inputs.outputs.upload_coverage }}
+      publish_coverage_summary: ${{ steps.expose-inputs.outputs.publish_coverage_summary }}
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: terrafusion_test
+          POSTGRES_DB: terrafusion_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Expose inputs
+        id: expose-inputs
+        run: |
+          echo "enable_coverage=${{ inputs.enable_coverage }}" >> $GITHUB_OUTPUT
+          echo "upload_test_results=${{ inputs.upload_test_results }}" >> $GITHUB_OUTPUT
+          echo "upload_coverage=${{ inputs.upload_coverage }}" >> $GITHUB_OUTPUT
+          echo "publish_coverage_summary=${{ inputs.publish_coverage_summary }}" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet_version }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('backend/**/*.csproj', '**/*.sln') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ inputs.solution }}
+
+      - name: Canonical tests (Release)
+        if: ${{ !inputs.enable_coverage }}
+        env:
+          ConnectionStrings__DefaultConnection: ${{ inputs.connection_string }}
+        run: |
+          TEST_TARGET="${{ inputs.test_project || inputs.solution }}"
+          FILTER_ARG=""
+          if [ -n "${{ inputs.test_filter }}" ]; then
+            FILTER_ARG="--filter \"${{ inputs.test_filter }}\""
+          fi
+          eval dotnet test "$TEST_TARGET" -c ${{ inputs.configuration }} -v:minimal /nologo $FILTER_ARG
+
+      - name: Tests with coverage (Release)
+        if: ${{ inputs.enable_coverage }}
+        env:
+          ConnectionStrings__DefaultConnection: ${{ inputs.connection_string }}
+        run: |
+          TEST_TARGET="${{ inputs.test_project || inputs.solution }}"
+          FILTER_ARG=""
+          if [ -n "${{ inputs.test_filter }}" ]; then
+            FILTER_ARG="--filter \"${{ inputs.test_filter }}\""
+          fi
+          eval dotnet test "$TEST_TARGET" -c ${{ inputs.configuration }} -v:minimal /nologo $FILTER_ARG \
+            --collect:"XPlat Code Coverage" \
+            --logger "trx;LogFileName=test-results.trx" \
+            --results-directory ./artifacts/test-results
+
+      - name: Verify coverage outputs
+        if: ${{ inputs.enable_coverage && inputs.require_coverage_outputs }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=$(ls -1 artifacts/test-results/**/coverage.cobertura.xml 2>/dev/null | head -n 1 || true)
+
+          if [[ -z "$file" ]]; then
+            echo "❌ Coverage guard: no cobertura file found under ./artifacts/test-results/**/coverage.cobertura.xml"
+            echo "   Check coverage collector output path and test results directory."
+            exit 1
+          fi
+
+          if [[ ! -s "$file" ]]; then
+            echo "❌ Coverage guard: cobertura file exists but is empty: $file"
+            exit 1
+          fi
+
+          echo "✅ Coverage guard: found $file"
+
+      - name: Upload test results (trx)
+        if: ${{ always() && inputs.upload_test_results }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: artifacts/test-results
+
+      - name: Upload coverage
+        if: ${{ always() && inputs.upload_coverage }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: artifacts/test-results/**/coverage.cobertura.xml
+
+      - name: Publish coverage summary
+        if: ${{ inputs.enable_coverage && inputs.publish_coverage_summary }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=$(ls -1 artifacts/test-results/**/coverage.cobertura.xml 2>/dev/null | head -n 1 || true)
+
+          if [[ -z "$file" ]]; then
+            echo "Coverage summary: no cobertura file found."
+            exit 0
+          fi
+
+          script=$'import os,sys,xml.etree.ElementTree as ET\\n'
+          script+=$'path=sys.argv[1]\\n'
+          script+=$'root=ET.parse(path).getroot()\\n'
+          script+=$'line_rate=root.attrib.get(\"line-rate\")\\n'
+          script+=$'lines_valid=root.attrib.get(\"lines-valid\")\\n'
+          script+=$'lines_covered=root.attrib.get(\"lines-covered\")\\n'
+          script+=$'file_count=sum(1 for _ in root.iter(\"class\"))\\n'
+          script+=$'percent=\"N/A\"\\n'
+          script+=$'if line_rate:\\n'
+          script+=$'    try:\\n'
+          script+=$'        percent=f\"{float(line_rate)*100:.2f}%\"\\n'
+          script+=$'    except Exception:\\n'
+          script+=$'        percent=\"N/A\"\\n'
+          script+=$'summary=os.environ.get(\"GITHUB_STEP_SUMMARY\")\\n'
+          script+=$'if summary:\\n'
+          script+=$'    with open(summary,\"a\",encoding=\"utf-8\") as f:\\n'
+          script+=$'        f.write(\"## Coverage Summary\\\\n\\\\n\")\\n'
+          script+=$'        f.write(\"| Metric | Value |\\\\n\")\\n'
+          script+=$'        f.write(\"| --- | --- |\\\\n\")\\n'
+          script+=$'        f.write(f\"| Line coverage | {percent} |\\\\n\")\\n'
+          script+=$'        f.write(f\"| Lines covered | {lines_covered or \\'N/A\\'} |\\\\n\")\\n'
+          script+=$'        f.write(f\"| Lines valid | {lines_valid or \\'N/A\\'} |\\\\n\")\\n'
+          script+=$'        f.write(f\"| Files | {file_count if file_count else \\'N/A\\'} |\\\\n\")\\n'
+          python -c "$script" "$file"

@@ -55,6 +55,21 @@ CREATE TABLE IF NOT EXISTS core.properties (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Notebooks table (TerraDossier)
+CREATE TABLE IF NOT EXISTS public.notebooks (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255) NOT NULL DEFAULT 'Untitled Operation',
+    content JSONB DEFAULT '[]',
+    user_id UUID REFERENCES auth.users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_notebooks_updated_at ON public.notebooks(updated_at DESC);
+
+CREATE TRIGGER update_notebooks_updated_at BEFORE UPDATE ON public.notebooks
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- AI Conversations table
 CREATE TABLE IF NOT EXISTS ai.conversations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

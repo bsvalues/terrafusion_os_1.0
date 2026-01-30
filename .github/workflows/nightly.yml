@@ -1,0 +1,326 @@
+name: 🌙 Nightly Heavy Checks
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SOLO VELOCITY MODE - Heavy checks that run overnight (NOT on every PR)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Schedule: Nightly at 2 AM UTC
+# Required: NO (informational only)
+#
+# What's included:
+#   ✅ E2E tests (Playwright)
+#   ✅ Integration tests (with real DB)
+#   ✅ SBOM generation
+#   ✅ Container security scans (Trivy, Grype)
+#   ✅ Deep security scanning (CodeQL, Semgrep)
+#   ✅ Performance/benchmark tests
+#   ✅ Accessibility audits
+#
+# Why nightly:
+#   - These are slow (15-45 min total)
+#   - Some are flaky (E2E)
+#   - They don't block rapid iteration
+#   - You review results in the morning
+#
+# Manual trigger: workflow_dispatch
+# ═══════════════════════════════════════════════════════════════════════════════
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # 2 AM UTC daily
+  workflow_dispatch:
+    inputs:
+      run_e2e:
+        description: 'Run E2E tests'
+        type: boolean
+        default: true
+      run_security:
+        description: 'Run security scans'
+        type: boolean
+        default: true
+      run_sbom:
+        description: 'Generate SBOM'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: nightly-${{ github.workflow }}
+  cancel-in-progress: false # Don't cancel nightly runs
+
+env:
+  NODE_VERSION: '20'
+  DOTNET_VERSION: '8.0.x'
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # E2E Tests (Playwright) - slow, sometimes flaky
+  # ═══════════════════════════════════════════════════════════════════════════
+  e2e-tests:
+    name: 🎭 E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: ${{ github.event.inputs.run_e2e != 'false' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build application
+        run: pnpm run build || true
+
+      - name: Run E2E tests
+        run: pnpm run test:e2e || pnpm exec playwright test
+        continue-on-error: true
+        env:
+          CI: true
+
+      - name: Upload E2E artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-results
+          path: |
+            playwright-report/
+            test-results/
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Integration Tests (requires DB)
+  # ═══════════════════════════════════════════════════════════════════════════
+  integration-tests:
+    name: 🔌 Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: terrafusion_test
+          POSTGRES_DB: terrafusion_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore backend/TerraFusion.sln
+
+      - name: Build
+        run: dotnet build backend/TerraFusion.sln -c Release --no-restore
+
+      - name: Run integration tests
+        run: |
+          dotnet test backend/TerraFusion.sln \
+            -c Release \
+            --no-build \
+            --filter "Category=Integration|TestCategory=Integration" \
+            -v:normal
+        continue-on-error: true
+        env:
+          ConnectionStrings__DefaultConnection: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=terrafusion_test'
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Security Deep Scan (CodeQL, Semgrep, Trivy)
+  # ═══════════════════════════════════════════════════════════════════════════
+  security-scan:
+    name: 🔒 Security Deep Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: ${{ github.event.inputs.run_security != 'false' }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, typescript, csharp
+        continue-on-error: true
+
+      - name: Autobuild for CodeQL
+        uses: github/codeql-action/autobuild@v3
+        continue-on-error: true
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        continue-on-error: true
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+        continue-on-error: true
+
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+        continue-on-error: true
+
+      - name: Semgrep scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/owasp-top-ten
+            p/cwe-top-25
+        continue-on-error: true
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # SBOM Generation
+  # ═══════════════════════════════════════════════════════════════════════════
+  sbom:
+    name: 📦 SBOM Generation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: ${{ github.event.inputs.run_sbom != 'false' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Generate SBOM (SPDX)
+        run: |
+          syft dir:. -o spdx-json=sbom-spdx.json
+
+      - name: Generate SBOM (CycloneDX)
+        run: |
+          syft dir:. -o cyclonedx-json=sbom-cyclonedx.json
+
+      - name: Scan SBOM for vulnerabilities
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+          grype sbom:sbom-spdx.json -o table || true
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: |
+            sbom-*.json
+          retention-days: 90
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Accessibility Audit
+  # ═══════════════════════════════════════════════════════════════════════════
+  accessibility:
+    name: ♿ Accessibility Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build || true
+
+      - name: Run accessibility audit
+        run: pnpm run accessibility:audit || pnpm run a11y || true
+        continue-on-error: true
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Performance Tests
+  # ═══════════════════════════════════════════════════════════════════════════
+  performance:
+    name: ⚡ Performance Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run performance tests
+        run: pnpm run test:performance || pnpm run perf || true
+        continue-on-error: true
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-results
+          path: performance-reports/
+          if-no-files-found: ignore
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Nightly Summary
+  # ═══════════════════════════════════════════════════════════════════════════
+  summary:
+    name: 📊 Nightly Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [e2e-tests, integration-tests, security-scan, sbom, accessibility, performance]
+
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## 🌙 Nightly Heavy Checks Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🎭 E2E Tests | ${{ needs.e2e-tests.result == 'success' && '✅' || (needs.e2e-tests.result == 'skipped' && '⏭️' || '❌') }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔌 Integration Tests | ${{ needs.integration-tests.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔒 Security Scan | ${{ needs.security-scan.result == 'success' && '✅' || (needs.security-scan.result == 'skipped' && '⏭️' || '❌') }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📦 SBOM | ${{ needs.sbom.result == 'success' && '✅' || (needs.sbom.result == 'skipped' && '⏭️' || '❌') }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ♿ Accessibility | ${{ needs.accessibility.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⚡ Performance | ${{ needs.performance.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*These checks run nightly and are NOT required for PR merges.*" >> $GITHUB_STEP_SUMMARY
+          echo "*Review failures in the morning and fix as needed.*" >> $GITHUB_STEP_SUMMARY

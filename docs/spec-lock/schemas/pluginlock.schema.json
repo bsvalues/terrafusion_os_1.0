@@ -1,0 +1,558 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/pluginlock.schema.json",
+  "title": "TerraFusion PluginLock Schema v1.0.0",
+  "description": "Governance-controlled plugin permission model - no plugin loads without valid PluginLock",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "plugin_id",
+    "manifest",
+    "permissions",
+    "security",
+    "signatures"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "PluginLock schema version (locked)"
+    },
+    "plugin_id": {
+      "type": "string",
+      "pattern": "^tf-plugin-[a-z0-9-]+$",
+      "description": "Unique plugin identifier"
+    },
+    "manifest": {
+      "$ref": "#/$defs/manifest",
+      "description": "Plugin metadata and versioning"
+    },
+    "permissions": {
+      "$ref": "#/$defs/permissions",
+      "description": "Deterministic permission envelope"
+    },
+    "security": {
+      "$ref": "#/$defs/security",
+      "description": "Security requirements and provenance"
+    },
+    "signatures": {
+      "$ref": "#/$defs/signatures",
+      "description": "Governance signatures"
+    },
+    "validity": {
+      "$ref": "#/$defs/validity",
+      "description": "Time bounds and rotation"
+    },
+    "audit": {
+      "$ref": "#/$defs/audit",
+      "description": "Audit and telemetry requirements"
+    }
+  },
+  "$defs": {
+    "manifest": {
+      "type": "object",
+      "required": ["name", "version", "publisher", "class", "bundle_hash"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 100,
+          "description": "Human-readable plugin name"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9.]+)?$",
+          "description": "Semantic version"
+        },
+        "publisher": {
+          "type": "string",
+          "description": "Publisher identifier"
+        },
+        "class": {
+          "type": "string",
+          "enum": [
+            "county_internal",
+            "state_approved",
+            "vendor_marketplace",
+            "federation_shared"
+          ],
+          "description": "Plugin governance class"
+        },
+        "bundle_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 hash of plugin bundle"
+        },
+        "bundle_size_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Plugin bundle size"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Plugin description"
+        },
+        "homepage": {
+          "type": "string",
+          "format": "uri",
+          "description": "Plugin homepage URL"
+        },
+        "repository": {
+          "type": "string",
+          "format": "uri",
+          "description": "Source repository URL"
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "required": ["data_scopes", "compute", "network"],
+      "additionalProperties": false,
+      "properties": {
+        "data_scopes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/dataScope" },
+          "description": "Data access permissions"
+        },
+        "compute": {
+          "$ref": "#/$defs/computeLimits",
+          "description": "Compute resource limits"
+        },
+        "network": {
+          "$ref": "#/$defs/networkPolicy",
+          "description": "Network access policy"
+        },
+        "storage": {
+          "$ref": "#/$defs/storagePolicy",
+          "description": "Storage access policy"
+        },
+        "api_access": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/apiAccess" },
+          "description": "Internal API access permissions"
+        }
+      }
+    },
+    "dataScope": {
+      "type": "object",
+      "required": ["scope", "access"],
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "type": "string",
+          "enum": [
+            "parcel_public",
+            "parcel_protected",
+            "assessment_public",
+            "assessment_confidential",
+            "taxpayer_pii",
+            "financial_records",
+            "gis_layers_public",
+            "gis_layers_internal",
+            "system_config",
+            "audit_logs",
+            "model_weights",
+            "custom"
+          ],
+          "description": "Data scope identifier"
+        },
+        "access": {
+          "type": "string",
+          "enum": ["none", "read", "write", "admin"],
+          "description": "Access level"
+        },
+        "filter": {
+          "type": "string",
+          "description": "OPA/Rego filter expression for fine-grained access"
+        },
+        "county_isolation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enforce county isolation (required for PII)"
+        }
+      }
+    },
+    "computeLimits": {
+      "type": "object",
+      "required": ["cpu_millicores", "memory_mib", "timeout_seconds"],
+      "additionalProperties": false,
+      "properties": {
+        "cpu_millicores": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 8000,
+          "description": "CPU limit in millicores"
+        },
+        "memory_mib": {
+          "type": "integer",
+          "minimum": 64,
+          "maximum": 16384,
+          "description": "Memory limit in MiB"
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600,
+          "description": "Execution timeout"
+        },
+        "max_concurrent": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 10,
+          "description": "Max concurrent executions"
+        }
+      }
+    },
+    "networkPolicy": {
+      "type": "object",
+      "required": ["egress_allowed"],
+      "additionalProperties": false,
+      "properties": {
+        "egress_allowed": {
+          "type": "boolean",
+          "description": "Whether outbound network is allowed"
+        },
+        "allowed_domains": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "hostname"
+          },
+          "description": "Allowed outbound domains (if egress_allowed)"
+        },
+        "blocked_domains": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "hostname"
+          },
+          "description": "Explicitly blocked domains"
+        },
+        "internal_services": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Allowed internal service endpoints"
+        }
+      }
+    },
+    "storagePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ephemeral_mib": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10240,
+          "default": 100,
+          "description": "Ephemeral storage limit"
+        },
+        "persistent_allowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether persistent storage is allowed"
+        },
+        "persistent_mib": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 102400,
+          "description": "Persistent storage limit (if allowed)"
+        }
+      }
+    },
+    "apiAccess": {
+      "type": "object",
+      "required": ["service", "methods"],
+      "additionalProperties": false,
+      "properties": {
+        "service": {
+          "type": "string",
+          "description": "Internal service name"
+        },
+        "methods": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Allowed methods/endpoints"
+        },
+        "rate_limit_rpm": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Rate limit (requests per minute)"
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "required": ["threat_model_hash", "sbom", "slsa_provenance"],
+      "additionalProperties": false,
+      "properties": {
+        "threat_model_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 hash of threat model document"
+        },
+        "threat_model_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to threat model document"
+        },
+        "sbom": {
+          "$ref": "#/$defs/sbom",
+          "description": "Software Bill of Materials"
+        },
+        "slsa_provenance": {
+          "$ref": "#/$defs/slsaProvenance",
+          "description": "SLSA provenance attestation"
+        },
+        "vulnerability_scan": {
+          "$ref": "#/$defs/vulnerabilityScan",
+          "description": "Vulnerability scan results"
+        },
+        "sandbox_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "wasm_isolate",
+              "container_isolate",
+              "vm_isolate",
+              "seccomp",
+              "apparmor"
+            ]
+          },
+          "description": "Required sandbox mechanisms"
+        }
+      }
+    },
+    "sbom": {
+      "type": "object",
+      "required": ["format", "hash", "generated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["spdx", "cyclonedx"],
+          "description": "SBOM format"
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 hash of SBOM"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to SBOM document"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "SBOM generation timestamp"
+        },
+        "dependency_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of dependencies"
+        }
+      }
+    },
+    "slsaProvenance": {
+      "type": "object",
+      "required": ["level", "builder_id", "build_hash"],
+      "additionalProperties": false,
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4,
+          "description": "SLSA level (1-4)"
+        },
+        "builder_id": {
+          "type": "string",
+          "description": "Builder identity"
+        },
+        "build_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Build attestation hash"
+        },
+        "source_repo": {
+          "type": "string",
+          "format": "uri",
+          "description": "Source repository"
+        },
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$",
+          "description": "Source commit SHA"
+        }
+      }
+    },
+    "vulnerabilityScan": {
+      "type": "object",
+      "required": [
+        "scanner",
+        "scanned_at",
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "scanner": {
+          "type": "string",
+          "description": "Scanner used (snyk, trivy, grype, etc.)"
+        },
+        "scanned_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Scan timestamp"
+        },
+        "critical": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Critical vulnerability count (must be 0 for approval)"
+        },
+        "high": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "High vulnerability count"
+        },
+        "medium": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Medium vulnerability count"
+        },
+        "low": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Low vulnerability count"
+        },
+        "report_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Full scan report URL"
+        }
+      }
+    },
+    "signatures": {
+      "type": "object",
+      "required": ["required_scopes", "actual_signatures"],
+      "additionalProperties": false,
+      "properties": {
+        "required_scopes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["county", "state", "vendor", "federation"]
+          },
+          "minItems": 1,
+          "description": "Required signature scopes for this plugin class"
+        },
+        "actual_signatures": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/pluginSignature" },
+          "minItems": 1,
+          "description": "Actual signatures present"
+        }
+      }
+    },
+    "pluginSignature": {
+      "type": "object",
+      "required": ["scope", "authority_id", "signature_mode"],
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "type": "string",
+          "enum": ["county", "state", "vendor", "federation"],
+          "description": "Signature scope"
+        },
+        "authority_id": {
+          "type": "string",
+          "description": "Signing authority identifier"
+        },
+        "signature_mode": {
+          "type": "string",
+          "enum": ["cosmic_tss", "god_tier_quorum", "mythic_single"],
+          "description": "Signature mode used"
+        },
+        "signature": {
+          "type": "string",
+          "description": "Signature value (hex)"
+        },
+        "public_key": {
+          "type": "string",
+          "description": "Public key or group public key (hex)"
+        },
+        "signed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Signature timestamp"
+        }
+      }
+    },
+    "validity": {
+      "type": "object",
+      "required": ["nbf", "exp"],
+      "additionalProperties": false,
+      "properties": {
+        "nbf": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Not Before - validity start"
+        },
+        "exp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Expiration - validity end"
+        },
+        "renewal_policy": {
+          "type": "string",
+          "enum": ["manual", "auto_if_unchanged", "auto_rescan"],
+          "description": "How to handle expiration"
+        }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "required": ["telemetry_required", "log_level"],
+      "additionalProperties": false,
+      "properties": {
+        "telemetry_required": {
+          "type": "boolean",
+          "description": "Whether telemetry is required"
+        },
+        "log_level": {
+          "type": "string",
+          "enum": ["none", "error", "warn", "info", "debug"],
+          "description": "Required minimum log level"
+        },
+        "audit_hooks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "on_load",
+              "on_execute",
+              "on_data_access",
+              "on_network",
+              "on_unload"
+            ]
+          },
+          "description": "Required audit hook points"
+        },
+        "retention_days": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 3650,
+          "default": 365,
+          "description": "Audit log retention period"
+        }
+      }
+    }
+  }
+}

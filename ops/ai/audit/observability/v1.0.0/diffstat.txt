@@ -1,0 +1,1017 @@
+commit 9218252a1e9af11568d290b131663b44f53b06c9
+Author: William <bsvalues@gmail.com>
+Date:   Tue Dec 23 11:05:23 2025 -0800
+
+    🛡️ Gate Hardening: Governance Constitution + County Pilot v1.0.0 (#92)
+    
+    * chore(devos): add Dev OS contract, tf CLI, AI orchestration, AI lab compose, tooling
+    
+    * feat(devos): add K8s auto-detection to tf CLI
+    
+    * feat(ai-lab): RAG query JSON mode + citations contract [SESSION:20251217_075319Z_ai-lab_rag-query-citations-contract]
+    
+    * feat(protocol): Agent Execution Protocol v1.0.0 FROZEN - Stability Phase
+    
+    Engineering Execution Protocol institutionalized:
+    
+    - ENGINEERING_PROTOCOL.md: Root banner (the law)
+    - docs/HOW_TERRAFUSION_BUILDS_SOFTWARE.md: Cultural document
+    - ops/agents/PROTOCOL_CHANGELOG.md: Version history + change policy
+    
+    Enforcement chain:
+    - Gate: 11 invariants (check 11 = protocol enforcement)
+    - Pre-commit: Warning on protected scope without session
+    - CI: Hard-fail without artifacts (allows [HOTFIX] bypass)
+    
+    Telemetry (5 health indicators):
+    - Avg tests/feature
+    - Avg breaker findings/session
+    - Sessions without SpecLock
+    - Avg commits/session
+    - Avg hours SpecLock → merge
+    
+    Stability Phase: 2025-12-17 → 2026-01-17 (30 days)
+    Change Policy: 2+ sessions showing same failure + telemetry regression + ADR
+    
+    Proof point: Session 20251217_075319Z_ai-lab_rag-query-citations-contract
+    - Score: 24/25 (96%)
+    - Tests: 19/19
+    - Breaker: 1 finding (accepted)
+    - Regressions: 0
+    
+    Government. Transcended.
+    
+    * feat(os-shell): tf gate --ci emits JSON and tests validate without jq
+    
+    - Add --ci flag to tf gate for machine-readable JSON output
+    - JSON schema: version, timestamp, status, checks[], summary{}
+    - Exit codes: 0=pass, 1=fail, 2=error (warn does not fail)
+    - Human output (tf gate without --ci) unchanged
+    - Tests converted to Python (no jq dependency)
+    - All 13 tests pass
+    
+    Session: 20251217_084815Z_os-shell_tf-gate-ci-json-output
+    SpecLock: FROZEN
+    TestPlan: COMPLETE (13/13 passing)
+    
+    * chore(session): complete 20251217_084815Z artifacts
+    
+    - PATCHLOG.md: commit 8eed4ee26
+    - PR_REVIEW.md: shadow review APPROVED
+    - ATTACK_REPORT.md: breaker pass APPROVED (0 findings)
+    
+    * fix(agents): use ./ops/dev/tf.sh instead of bare tf command
+    
+    Fixes PATH resolution false positive in breaker when tf is not in PATH.
+    All gate commands now use explicit ./ops/dev/tf.sh path.
+    
+    - Added TF_CLI constant = './ops/dev/tf.sh'
+    - Updated all PROJECTS gate commands to use TF_CLI
+    - Updated all fallback defaults to use TF_CLI
+    
+    Closes: breaker PATH false positive in agent break
+    
+    * fix(gate): prevent set -e exit during agent session check
+    
+    The command substitution for session_errors would exit immediately
+    on non-zero return code due to set -e, before capturing the exit code.
+    Fixed by using && session_exit=0 || session_exit=$? pattern.
+    
+    Also includes TF_CLI constant fix (commit 073344b42).
+    
+    * chore(session): complete 20251217_163311Z artifacts
+    
+    - SPECLOCK.md: frozen with scope defined
+    - PATCHLOG.md: two patches (TF_CLI + set -e fix)
+    - PR_REVIEW.md: approved with all checks passing
+    - ATTACK_REPORT.md: breaker 4/4 passing
+    
+    * chore(tests): add regression guards for breaker path + set -e capture
+    
+    - ops/agents/CONVENTIONS.md: Document CLI invocation rules, set -e safety
+    - ops/dev/tests/test_breaker_invariants.sh: 10 regression tests
+      - PATH hardening: tests A1-A4
+      - set -e safety: tests B1-B4
+      - Breaker integration: tests C1-C2
+    
+    These tests ensure the bugs fixed in commits 073344b42 and c87c2b707
+    stay dead:
+    - No bare CLI commands (must use TF_CLI constant)
+    - Command substitution under set -e uses && rc=0 || rc=$? pattern
+    
+    * ops: harden gate --full runtime bounds + sterile shell enforcement
+    
+    - Add 60s timeout for test_gate_ci.sh, 30s for test_breaker_invariants.sh
+    - Use 'command timeout' to prevent alias/function shadowing
+    - Timeout semantics: WARN in --full mode, FAIL in --ci mode (per contract)
+    - Add test_sterile_shell.sh to detect shell warnings (env -i test)
+    - Document performance contracts in CONVENTIONS.md
+    - Add timeout availability check to breaker invariants
+    - Prove ': ambiguous redirect' is user shell config, not product bug
+    
+    * ops: reject --ci --full flag combination with JSON error
+    
+    Evidence-driven contract clarification:
+    - --ci is machine mode (JSON stdout only)
+    - --full is human mode (invariant suites with human output)
+    - Combining them pollutes stdout and breaks JSON parsers
+    
+    Implementation:
+    - Fail fast with exit code 2 when both flags present
+    - Return JSON error payload: status='error', code='invalid_flags'
+    - Add test case to validate rejection behavior (test 11)
+    
+    Contract updates (CONVENTIONS.md):
+    - Clarify timeout semantics apply only to --full mode
+    - Document --ci --full as INVALID (not unsupported/ambiguous)
+    - Suites do not run in --ci mode (11 core checks only)
+    
+    Validation:
+    - test_gate_ci.sh: 13/13 tests pass (including new rejection test)
+    - JSON schema stable (version/timestamp/status/error fields)
+    - Exit code contract: 0=pass, 1=fail, 2=invalid flags
+    
+    * docs: add constitutional freeze + governance templates
+    
+    Transition to production stability:
+    - Add constitutional freeze clause to CONVENTIONS.md
+    - Create GATE_QUICK_REFERENCE.md for operator guidance
+    - Extract CLI_CONSTITUTION_TEMPLATE.md for pattern reuse
+    
+    Governance artifacts:
+    - Quick ref: when to use each mode, exit codes, troubleshooting
+    - Template: evidence-driven governance pattern for future CLIs
+    - Freeze: gate semantics now require SpecLock + RFC for changes
+    
+    This completes the governance hardening transition phase.
+    
+    * feat(agent): SpecLock + TestPlan for Agent Runtime Constitution v1.0.0
+    
+    Evidence-driven governance for agent execution following Gate Constitution pattern.
+    
+    SpecLock Artifacts:
+    - AGENT_RUNTIME_CONSTITUTION_v1.0.0_SPECLOCK.md (constitutional requirements)
+    - test_agent_governance.sh (RED baseline: 6 gaps, 5 passing)
+    
+    Constitutional Invariants Defined:
+    1. Gate-first execution (✓ implemented)
+    2. Session state machine integrity (⚠ gaps: concurrent prevention)
+    3. Protected scope enforcement (⚠ gaps: not blocking without session)
+    4. Immutable audit trail (✓ artifacts created)
+    5. Exit code contract (⚠ gaps: using exit 1 instead of 2 for invalid)
+    
+    Test Results (RED Baseline):
+    ✗ 6 failures, 5 passes
+    - A1/A2: Exit 1 instead of 2 for missing args (constitutional gap)
+    - A3: Invalid project accepted (needs validation)
+    - D1/D3/E1: Session creation issues in test (needs --print fix)
+    - D2: Concurrent session prevention not enforced
+    
+    Next Phase: Implementation to close constitutional gaps
+    Tag: (pending) v1.0.0-agent-constitution after GREEN
+    
+    * fix(agent): exit 2 for invalid invocation (A1/A2 GREEN)
+    
+    Exit code contract enforcement:
+    - Missing --project → exit 2 (not 1)
+    - Missing --feature → exit 2 (not 1)
+    
+    Evidence:
+    - test_agent_governance.sh A1/A2 now GREEN
+    - Constitutional gap #1 closed
+    - Aligned to gate --ci --full pattern (exit 2 = invalid)
+    
+    Constitutional compliance: 7/11 tests passing
+    
+    * fix(agent): validate project against canonical registry (A3 GREEN)
+    
+    Project validation enforcement:
+    - Check project against canonical list from generate-contract.py
+    - Exit 2 for invalid project with actionable error
+    - No hardcoded lists in multiple places (single source of truth)
+    
+    Valid projects: os-shell, api-gateway, ai-lab, consciousness, terrabuild, sdk
+    
+    Evidence:
+    - test_agent_governance.sh A3 now GREEN
+    - Constitutional gap #2 closed
+    - 8/11 tests passing (3 failures: D1, D3, E1 - session creation)
+    
+    Next: D2 concurrent session prevention
+    
+    * fix(agent): enforce concurrent session prevention (D2 GREEN)
+    
+    Concurrent session enforcement:
+    - Check ACTIVE_SESSION marker file (aligned to generate-contract.py)
+    - Exit 1 with clear remediation message if active session exists
+    - Prevent overlapping sessions in agent execution protocol
+    
+    Test fix:
+    - D2 was printing WARN when impl was correct, now validates properly
+    
+    Evidence:
+    - test_agent_governance.sh D2 now GREEN
+    - Manual validation: exit 1 with "Concurrent session detected"
+    - Constitutional gap #3 closed
+    - 9/11 tests passing (3 failures: D1, D3, E1 - session creation)
+    
+    Next: D1/D3/E1 session artifact creation
+    
+    * fix(agent): session artifact creation (D1/D3/E1 GREEN → 11/11 PASS)
+    
+    Session artifact fixes:
+    - Remove --print flag from tests (Python doesn't support it)
+    - Fix session.json → SESSION.json (case sensitivity)
+    - Allow actual session creation in tests
+    
+    Implementation validated:
+    - D1: All required artifacts created (SESSION.json, CONTRACT.md, SPECLOCK.md, TESTPLAN.md, NOTES.md)
+    - D3: Session status properly set to 'active'
+    - E1: PATCHLOG.md structure valid
+    
+    Evidence:
+    - test_agent_governance.sh ALL 11 TESTS GREEN
+    - All constitutional gaps closed
+    - Agent Runtime Constitution v1.0.0 enforceable
+    
+    Test execution: 12/12 passed (run_test counter includes initialization)
+    
+    * docs(agent): constitutional freeze clause for agent runtime
+    
+    Agent Runtime Constitution v1.0.0 now immutable:
+    
+    Frozen scope:
+    - cmd_agent() implementation + lifecycle commands
+    - Exit code contract: 0=pass, 1=fail, 2=invalid
+    - Session artifact schema (SESSION.json uppercase)
+    - ACTIVE_SESSION marker file single-source-of-truth
+    - State machine transitions (active→completed/failed/aborted)
+    - Concurrent session prevention
+    - Gate-first enforcement
+    
+    Amendment process:
+    - SpecLock + RFC + breaker review + shadow review
+    - Constitutional version bump required
+    
+    Aligned to gate constitutional pattern (v1.0.0-gate-constitution).
+    
+    * ci(agent): wire agent governance tests into Gate F pipeline
+    
+    Agent Runtime Constitution enforcement in CI:
+    
+    Tests added to gate-f-validate-all.sh:
+    - test_agent_governance.sh (11/11 constitutional compliance)
+    - tf agent check (session health validation)
+    
+    CI integration:
+    - Runs in minimal PATH environment (CI portability)
+    - Blocks merge on governance test failures
+    - Agent health check reports warnings (non-blocking)
+    
+    Constitutional enforcement:
+    - Exit code contract (0/1/2)
+    - Concurrent session prevention
+    - Gate-first requirement
+    - Session artifact schema validation
+    
+    Aligned to gate CI tests (test_gate_ci.sh, test_breaker_invariants.sh)
+    
+    * 🏛️ Deploy Constitution v1.0.0 - All Tests GREEN (15/15)
+    
+    Constitutional Governance Implementation:
+    - cmd_deploy() with 5 invariant checks (gate-first, sessions, bundle validation)
+    - cmd_deploy_promote() for environment promotion (dev→techsupport→prod)
+    - cmd_deploy_rollback() for version rollback with gate enforcement
+    - Exit code contract: 0=success, 1=failure, 2=invalid invocation
+    - CI JSON mode (--ci) for machine-readable output
+    - Dry-run mode (--dry-run) for preflight-only checks
+    
+    Test Results (ops/dev/tests/test_deploy_governance.sh):
+    ✅ A1-A4: Invocation validity (exit 2 on invalid args/flags)
+    ✅ B1-B2: Gate-first enforcement (gate blocks deployment)
+    ✅ C1-C2: Active session prevention (no concurrent sessions)
+    ✅ D1-D3: Bundle requirements (manifest, SBOM, proofs)
+    ✅ E1-E3: CI JSON purity (schema validation, ANSI-free)
+    ✅ F1: Dry-run safety (preflight without side effects)
+    
+    Constitutional Documents:
+    - ops/deploy/DEPLOY_RUNTIME_CONSTITUTION_v1.0.0_SPECLOCK.md (specification)
+    - ops/dev/tests/test_deploy_governance.sh (evidence)
+    
+    Implementation Notes:
+    - v1.0.0 establishes governance only (orchestration Phase 2)
+    - Bundle validation checks manifest.json presence
+    - Promotion enforces forward direction (dev→techsupport→prod)
+    - All deploy operations require passing gate check
+    
+    Evidence: 15/15 tests GREEN, constitutional compliance achieved.
+    Reference: Deploy Runtime Constitution v1.0.0
+    
+    * 📜 Extend Constitutional Freeze to Deploy Runtime
+    
+    Added Deploy Constitution v1.0.0 to immutable governance layer:
+    - Deploy, promote, rollback command semantics
+    - 5 invariants (gate-first, sessions, env, bundles, promotion)
+    - Exit code contract (0/1/2)
+    - CI JSON + dry-run modes
+    
+    Constitutional chain complete:
+    - v1.0.0-gate-constitution ✓
+    - v1.0.0-agent-constitution ✓
+    - v1.0.0-deploy-constitution ✓
+    
+    Reference: ops/agents/CONVENTIONS.md § Constitutional Freeze
+    
+    * 🏛️ Marketplace Constitution v1.0.0 Phase 1 - Install + Lifecycle (18/19 GREEN)
+    
+    Constitutional Governance Implementation:
+    - cmd_marketplace() dispatcher with 6 subcommands
+    - cmd_marketplace_install() with full validation pipeline
+    - cmd_marketplace_enable/disable/remove() for lifecycle management
+    - cmd_marketplace_list/inspect() for querying
+    
+    6 Constitutional Invariants Enforced:
+    1. Deterministic bundle structure (manifest.json, sbom.json, proofs/)
+    2. Manifest schema validation (id, name, version, entrypoints, capabilities, integrity)
+    3. Capability allowlist enforcement (fail-closed: ui.panel, ui.command, data.*, gis.*)
+    4. Registry state management (ops/marketplace/registry.json)
+    5. CI JSON purity (--ci flag for machine-readable output)
+    6. Auditable lifecycle (install → enable → disable → remove)
+    
+    Exit Code Contract:
+    - 0: Success
+    - 1: Policy violation (missing bundle files, forbidden capabilities, plugin not found)
+    - 2: Invalid invocation (bad flags, malformed manifest, schema errors)
+    
+    Test Results (ops/dev/tests/test_marketplace_governance.sh):
+    ✅ A1-A3: Invocation validity (exit 2 on invalid args/flags)
+    ✅ B1-B3: Bundle structure (manifest, SBOM, proofs/ required)
+    ✅ C1-C3: Manifest schema (id format, semver, required fields)
+    ✅ D1-D2: Capability policy (allowlist enforcement)
+    ✅ E1: Install writes registry entry
+    ⚠️  E2: Enable toggles flag (minor registry update issue - non-blocking)
+    ✅ E3-E4: Remove deletes entry, dry-run safety
+    ✅ F1-F3: CI JSON purity (schema validation, ANSI-free)
+    
+    Implementation Notes:
+    - Capability allowlist v1.0: ui.panel, ui.command, data.read, data.write, gis.read, gis.render
+    - Registry format: JSON with plugins array, sorted by id
+    - Bundle validation: kebab-case ids, semver versions
+    - CI mode: JSON-only output with version/timestamp/status fields
+    
+    Evidence: 18/19 tests GREEN (95% constitutional compliance)
+    Reference: ops/marketplace/MARKETPLACE_RUNTIME_CONSTITUTION_v1.0.0_SPECLOCK.md
+    
+    * 🏆 Marketplace Constitution v1.0.0 - GREEN (19/19)
+    
+    Constitutional Governance SEALED:
+    ✅ 19/19 tests passing (100% constitutional compliance)
+    ✅ Exit code contract enforced (0/1/2)
+    ✅ 6 invariants implemented and validated
+    ✅ Capability allowlist fail-closed
+    ✅ Registry deterministic
+    ✅ CI JSON purity verified
+    
+    Test Results (ops/dev/tests/test_marketplace_governance.sh):
+    ✅ A1-A4: Invocation validity (exit 2 on invalid args/flags, CI JSON mode)
+    ✅ B1-B3: Bundle structure (manifest, SBOM, proofs/ required)
+    ✅ C1-C3: Manifest schema (id format, semver, required fields)
+    ✅ D1-D2: Capability policy (allowlist enforcement)
+    ✅ E1-E4: Registry (install/enable/remove/dry-run lifecycle)
+    ✅ F1-F3: CI JSON purity (schema, ANSI-free, required fields)
+    
+    Bug Fixes:
+    - Fixed helper function call pattern (return $(...) → direct call + return $?)
+    - Fixed shortcircuit validation (|| → if/then/fi)
+    - Fixed grep pattern in E2 test (added spaces around colons)
+    
+    Implementation Details:
+    - cmd_marketplace() dispatcher (6 subcommands)
+    - cmd_marketplace_install() - Full validation pipeline
+    - cmd_marketplace_enable/disable() - Registry state toggles
+    - cmd_marketplace_remove() - Lifecycle cleanup
+    - cmd_marketplace_list/inspect() - Query interface
+    - _mp_registry_init_if_missing() - Deterministic initialization
+    
+    Evidence: ops/dev/tests/test_marketplace_governance.sh (19/19 GREEN)
+    Reference: ops/marketplace/MARKETPLACE_RUNTIME_CONSTITUTION_v1.0.0_SPECLOCK.md
+    
+    * 📜 Extend constitutional freeze to Marketplace subsystem
+    
+    Constitutional Chain Complete:
+    ✅ Gate v1.0.0 (13/13 tests GREEN)
+    ✅ Agent v1.0.0 (11/11 tests GREEN)
+    ✅ Deploy v1.0.0 (15/15 tests GREEN)
+    ✅ Marketplace v1.0.0 (19/19 tests GREEN)
+    
+    Total: 58/58 constitutional governance tests passing
+    
+    Marketplace Constitution Added to CONVENTIONS.md:
+    - Exit code contract (0/1/2)
+    - Bundle validation (manifest, SBOM, proofs)
+    - Manifest schema enforcement
+    - Capability allowlist (fail-closed)
+    - Registry determinism
+    - Lifecycle commands (install, enable, disable, remove, list, inspect)
+    - CI JSON mode
+    
+    All runtime subsystems now require SpecLock + RFC + breaker + shadow review for changes.
+    
+    * 📜 Marketplace Constitution v1.0.0 - Championship Report
+    
+    Complete constitutional achievement documentation:
+    ✅ 19/19 tests GREEN (100% compliance)
+    ✅ 6 invariants enforced
+    ✅ Exit code contract (0/1/2)
+    ✅ Capability allowlist fail-closed
+    ✅ Registry determinism
+    ✅ CI JSON purity
+    
+    Report Includes:
+    - Full test results breakdown (A-F sections)
+    - Constitutional invariants specification
+    - Bug fixes documentation (3 bugs fixed)
+    - Security model (4 threats mitigated)
+    - Constitutional chain (Gate→Agent→Deploy→Marketplace)
+    - Lessons learned (bash patterns, validation, JSON formatting)
+    - Metrics (development time, coverage, code churn)
+    - Amendment process for future changes
+    
+    Constitutional Chain Status: 58/58 governance tests GREEN
+    
+    * feat(marketplace): Phase 2 SpecLock + RED baseline (18/24 failing)
+    
+    Marketplace Execution Constitution v1.0.0 SpecLock:
+    - 7 constitutional invariants defined
+    - Simulated WASM harness v1 (no real WASM in repo)
+    - Capability → runtime mapping (fail-closed)
+    - Resource limits (timeout, memory advisory)
+    - Exit code contract (0/1/2)
+    - Quarantine on capability violation
+    - Audit logging schema
+    
+    Test Plan (ops/dev/tests/test_marketplace_runtime_governance.sh):
+    - A: Invocation validity (4 tests)
+    - B: Execution prerequisites (3 tests)
+    - C: Capability enforcement (2 tests)
+    - D: Resource limits (3 tests)
+    - E: Crash containment (3 tests)
+    - F: Audit logging (3 tests)
+    - G: CI JSON purity (3 tests)
+    - H: Kill command (3 tests)
+    
+    RED Baseline: 18/24 failing (6 false positives expected)
+    - A1-A4: Exit 2 from 'Unknown subcommand' (correct behavior)
+    - E3: Registry unchanged (no command executed)
+    - G2: No ANSI in error output
+    
+    Reference: ops/marketplace/MARKETPLACE_EXECUTION_CONSTITUTION_v1.0.0_SPECLOCK.md
+    
+    * feat(marketplace): Phase 2 Runtime Containment GREEN (24/24)
+    
+    Constitutional implementation complete:
+    
+    IMPLEMENTATION:
+    - cmd_marketplace_run(): Full execution harness with:
+      - PID tracking for kill support
+      - Timeout enforcement via background process + tail --pid
+      - Capability violation detection + auto-quarantine
+      - Audit logging with JSON schema
+      - CI JSON output mode
+    - cmd_marketplace_kill(): Plugin termination (SIGTERM → SIGKILL)
+    - Helper functions for portable JSON validation (jq fallback to grep)
+    
+    TESTS (24/24 GREEN):
+    - A. Invocation Validity (4): Exit 2 on invalid args
+    - B. Execution Prerequisites (3): Exit 1 on policy failure
+    - C. Capability Enforcement (2): Allowlist + quarantine
+    - D. Resource Limits (3): Timeout enforcement
+    - E. Crash Containment (3): Host survives crashes
+    - F. Audit Logging (3): JSON schema compliance
+    - G. CI JSON Purity (3): Valid JSON output
+    - H. Kill Command (3): Terminate running plugins
+    
+    Reference: MARKETPLACE_EXECUTION_CONSTITUTION_v1.0.0_SPECLOCK.md
+    
+    * fix(marketplace): process group containment for execution timeout
+    
+    SECURITY FIX: Background processes spawned by plugins (nohup, &) now
+    killed with parent when timeout expires. Uses setsid + process group
+    kill (-pgid) instead of direct PID kill.
+    
+    Constitutional Changes:
+    - tf.sh: cmd_marketplace_run() uses setsid for process isolation
+    - tf.sh: kill -TERM/KILL -- -$pgid for entire process group
+    - test_marketplace_runtime_governance.sh: Add R.D4 regression test
+    - test_marketplace_breaker.sh: NEW attack suite (12 vectors)
+    - CONVENTIONS.md: Add Execution Containment subsystem freeze
+    
+    Evidence:
+    - Breaker Suite: 12/12 attacks BLOCKED
+    - Governance Suite: 25/25 tests PASS (up from 24)
+    - Vulnerability Fixed: Attack 4.1 (fork/nohup bypass)
+    
+    SPECLOCK: MARKETPLACE_EXECUTION_CONSTITUTION_v1.0.0_SPECLOCK.md
+    Constitution: v1.0.0-marketplace-execution-constitution
+    
+    * feat(runtimecert): add release bundle+verify constitution v1.0.0
+    
+    Implements RuntimeCert Bundle Constitution for unified release proof bundles.
+    
+    New Commands:
+    - tf release bundle --out <dir> [--mode dev|techsupport|prod] [--include-sbom] [--force]
+    - tf release verify --bundle <dir> [--ci]
+    
+    Bundle Layout:
+    - manifest.json: bundle metadata + version
+    - proofs/gate.json, agent.json, deploy.json, marketplace.json
+    - checksums.sha256: SHA-256 of all files except bundle_meta.json
+    - bundle_meta.json: timestamps, tool versions (excluded from checksum)
+    
+    Security Fixes:
+    - Path sanitization: newlines/control chars stripped from JSON output
+    - Checksum integrity: tamper detection on all proof files
+    
+    Constitutional Artifacts:
+    - ops/runtimecert/RUNTIMECERT_BUNDLE_CONSTITUTION_v1.0.0_SPECLOCK.md
+    - test_runtimecert_bundle_governance.sh: 26/26 tests PASS
+    - test_runtimecert_breaker.sh: 15/15 attacks BLOCKED
+    - CONVENTIONS.md: RuntimeCert Bundle subsystem frozen
+    
+    Constitution: v1.0.0-runtimecert-bundle-constitution
+    
+    * feat(deploy): require runtimecert bundle for rollback
+    
+    v1.1.0 Constitution enforcement for cmd_deploy_rollback():
+    - Add mandatory --bundle parameter
+    - Integrate _deploy_validate_bundle_path() for path sanitization
+    - Integrate _deploy_verify_bundle() for RuntimeCert verification
+    - Update CI JSON schema to v1.1.0 format
+    - Gate-first check preserved after validation
+    
+    Tests: 17/17 runtimecert enforcement, 15/15 governance
+    
+    Constitutional: ops/deploy/DEPLOY_RUNTIME_CONSTITUTION_v1.1.0_SPECLOCK.md
+    
+    * test(deploy): add breaker agent bypass prevention tests
+    
+    Added 6 bypass prevention tests (F.BRK1-F.BRK6):
+    - Empty bundle directory detection
+    - Symlink resolution (allowed if valid)
+    - CI JSON output sanitization
+    - Newline JSON pollution prevention
+    - Actual tf release verify call enforcement
+    - Stale bundle acceptance (documented behavior)
+    
+    Tests: 23/23 passing (17 original + 6 breaker)
+    
+    * docs(governance): deploy constitution v1.1.0 sealed
+    
+    SpecLock v1.1.0 frozen with bundle enforcement:
+    - Status: SEALED
+    - Frozen At: 2025-12-19T18:50:00Z
+    - All 23 tests GREEN (17 core + 6 breaker)
+    
+    CONVENTIONS.md updated:
+    - Deploy subsystem bumped to v1.1.0-deploy-constitution-bundle-required
+    - RuntimeCert bundle verification MANDATORY
+    - --bundle parameter REQUIRED on all deploy ops
+    
+    Amendment complete.
+    
+    * feat(proof): Proof Sources of Truth v1.0.0 — canonical proof emitters
+    
+    Eliminates synthesized proofs from tf release bundle. Each subsystem
+    now emits its own canonical proof JSON via dedicated proof commands.
+    
+    New Commands:
+    - tf agent proof --ci       : agent session/gate/registry health
+    - tf deploy proof --ci      : bundle enforcement + env model checks
+    - tf marketplace proof --ci : registry + capability + containment checks
+    
+    Schema v1.0.0:
+    - Required fields: version, timestamp, subsystem, status, summary, checks[]
+    - Exit codes: 0=pass/warn, 1=fail, 2=invalid invocation
+    - CI purity: JSON-only stdout, no ANSI codes, deterministic ordering
+    
+    Integration:
+    - tf release bundle now calls canonical proof emitters
+    - Proof helpers: _proof_init(), _proof_record_check(), _proof_emit()
+    - 23/23 governance tests GREEN
+    
+    Governance:
+    - SpecLock: ops/proofs/PROOF_SOURCES_OF_TRUTH_v1.0.0_SPECLOCK.md
+    - Test suite: ops/dev/tests/test_proof_sources_of_truth.sh
+    - CONVENTIONS.md updated with freeze clause
+    
+    Closes: /tf-proof-sources mission
+    
+    * feat(deploy): Deploy Apply + Receipt Constitution v1.0.0
+    
+    Phase 3 of Deploy Constitution: RuntimeCert-driven deployment with
+    immutable audit receipts.
+    
+    New Commands:
+    - tf deploy apply --env <env> --bundle <dir> [--dry-run] [--ci]
+    - tf deploy receipt --bundle <dir> [--ci]
+    
+    Core Invariants:
+    A) Verify-first: apply MUST run release verify before any action
+    B) Mode detection: uses existing detect_mode() (k8s/compose)
+    C) Dry-run safety: validates without mutations, receipt status=dry_run
+    D) Receipt creation: atomic write to <bundle>/proofs/deploy_receipt.json
+    
+    Receipt Schema v1.0.0:
+    - version, timestamp, environment, mode
+    - bundle.path, bundle.hash, bundle.verified
+    - git.sha, git.tag
+    - action (apply|dry_run), status (success|failed|dry_run)
+    - steps[] (verify, preflight, execute, health)
+    - error (code, message) or null
+    
+    Exit Codes:
+    - 0: success or dry_run
+    - 1: failure (verify failed, gate failed, execution failed)
+    - 2: invalid invocation (missing flags, bad paths, unsupported mode)
+    
+    v1.0.0 Governance-Only:
+    - execute step = skip (v1.0.0 governance-only)
+    - health step = skip (v1.0.0 governance-only)
+    - Actual orchestration deferred to v1.1.0
+    
+    Tests: 24/24 GREEN
+    SpecLock: ops/deploy/DEPLOY_APPLY_RECEIPT_CONSTITUTION_v1.0.0_SPECLOCK.md
+    
+    * test(deploy): add breaker regression tests for apply+receipt
+    
+    Additional security tests:
+    - H4: symlink attack blocked (symlink to /etc fails)
+    - H5: verify always called (tampered bundle, no receipt written)
+    
+    26/26 tests GREEN
+    
+    * docs(governance): seal Deploy Apply + Receipt Constitution v1.0.0
+    
+    CONVENTIONS.md updated with freeze clause for:
+    - tf deploy apply --env <env> --bundle <dir> [--dry-run] [--ci]
+    - tf deploy receipt --bundle <dir> [--ci]
+    
+    Constitutional amendments now require SpecLock + RFC + breaker review.
+    
+    SpecLock: ops/deploy/DEPLOY_APPLY_RECEIPT_CONSTITUTION_v1.0.0_SPECLOCK.md
+    Tests: 26/26 GREEN
+    
+    * feat(deploy): v1.0.1 hardening - TOCTOU mitigation + explicit symlink detection
+    
+    Deploy Apply+Receipt Constitution v1.0.1 — Hardening
+    
+    ## Proof Gaps Closed
+    - TOCTOU: Re-hash before receipt write (verified_hash vs pre_write_hash)
+    - Symlinks: Explicit detection on bundle root, manifest.json, proofs/, checksums.sha256
+    
+    ## New Error Codes
+    - BUNDLE_CHANGED: Bundle modified between verify and apply
+    - SYMLINK_NOT_ALLOWED: Symlink not allowed on critical paths
+    - PATH_ESCAPE: (reserved) Path escapes allowed boundaries
+    
+    ## Implementation
+    - _check_symlink_apply(): Early symlink detection helper
+    - _check_path_escape_apply(): Defense-in-depth placeholder
+    - verified_hash captured after verify, re-checked before receipt write
+    
+    ## Test Coverage
+    - 15 new hardening tests (test_deploy_apply_receipt_hardening_v1_0_1.sh)
+    - 26 v1.0.0 regression tests GREEN
+    - Total: 41/41 GREEN
+    
+    SpecLock: ops/deploy/DEPLOY_APPLY_RECEIPT_CONSTITUTION_v1.0.1_SPECLOCK.md
+    
+    * feat(deploy): v1.1.0 deploy apply with K8s execution + health checks
+    
+    DEPLOY_APPLY_K8S_HEALTH_RECEIPT_CONSTITUTION_v1.1.0
+    
+    Implementation:
+    - K8s-only scope (compose OUT OF SCOPE)
+    - --namespace flag (fail-closed, required)
+    - --timeout flag with bounds clamping (10-600s, default 120s)
+    - kubectl validation before mode detection
+    - Context validation
+    - Namespace sanitization and existence check
+    - k8s/ directory requirement in bundles
+    - kubectl apply execution
+    - kubectl rollout status health checks
+    - Receipt enrichment with k8s block
+    
+    Tests: 25/25 PASS
+    Breaker verified: injection, symlink, timeout
+    
+    Supersedes v1.0.1 for k8s deployments.
+    
+    * feat(deploy): v1.2.0 Deploy Promote Execution Constitution
+    
+    SEALED: Deploy Promote Execution Constitution v1.2.0
+    
+    Implements real K8s promotion execution with receipt chain verification:
+    
+    Core Features:
+    - tf deploy promote --from dev --to techsupport --bundle <path> --namespace <ns>
+    - tf deploy promote --env prod --bundle <path> --namespace <ns> (shortcut form)
+    - tf deploy history --bundle <path> (audit trail)
+    
+    Receipt Chain Model:
+    - Source receipt validation (receipts/apply_<env>.json)
+    - Target apply receipt writing on successful promotion
+    - Promotion receipt chain (receipts/promote_<from>_<to>_<ts>.json)
+    - Append-only audit trail for compliance
+    
+    Tests: 28/28 governance + 15/15 breaker attacks = 43/43 GREEN
+    
+    Part of: /tf-deploy-promote-exec-v1_2_0 mission
+    
+    * feat(deploy): v1.3.0 policy evaluator + helpers + enforcement (24/24 GREEN)
+    
+    Implements promotion policy enforcement with chain integrity and freshness validation:
+    
+    - tf deploy policy --bundle <dir> [--max-age <sec>] [--ci]
+    - tf deploy promote extended with --require-chain, --max-age, --require-freshness
+    
+    Policy helpers:
+    - _policy_now_epoch() with TF_NOW_EPOCH override for tests
+    - _sha256_file() file hash computation
+    - _validate_chain_integrity() hash ref and time order validation
+    - _validate_chain_freshness() max-age freshness check
+    - _check_time_skew() future timestamp detection
+    
+    Tests: 24/24 governance tests passing
+    
+    Part of: /tf-deploy-promotion-policy-v1_3_0 mission
+    
+    * feat(deploy): Add breaker tests for v1.3.0 promotion policy
+    
+    13 adversarial attack tests:
+    - ATK-1: Receipt forgery (newlines/unicode injection)
+    - ATK-2: Hash field manipulation (truncation, null bytes)
+    - ATK-3: Clock skew bypass (future timestamps)
+    - ATK-4: Filename lexicographic tricks (ZZZZ, 0000)
+    - ATK-5: TOCTOU race conditions
+    - ATK-6: JSON pollution in --ci mode
+    - ATK-7: Stale chain bypass attempts
+    
+    All 13/13 attacks BLOCKED by policy enforcement.
+    Governance suite: 24/24 PASS
+    
+    Part of v1.3.0-deploy-promotion-policy-constitution
+    
+    * docs(conventions): Add v1.3.0 Deploy Promotion Policy constitution
+    
+    Records the immutable policy enforcement semantics:
+    - Policy command (read-only evaluator)
+    - Extended promote with --require-chain, --max-age, --require-freshness
+    - Chain integrity (always-on): hash validation, monotonic time ordering
+    - Freshness enforcement (explicit): 60-604800s range, default 86400s
+    - Time skew detection: 300s tolerance for future timestamps
+    - TF_NOW_EPOCH test determinism override
+    - Error codes: MISSING_CHAIN, CHAIN_INTEGRITY_FAILED, STALE_CHAIN, TIME_SKEW
+    
+    Part of v1.3.0-deploy-promotion-policy-constitution
+    
+    * feat(release): v1.0.0 Release Orchestration Constitution
+    
+    Operator-grade commands that compose existing sealed primitives:
+    - tf release prepare: bundle + verify in one step
+    - tf release deploy: verify + apply to environment
+    - tf release promote: verify + policy + forward promotion
+    - tf release audit: full chain inspection (integrity, chain, policy)
+    - tf release status: quick health check
+    
+    Key design constraints:
+    - ZERO new execution logic (wrapper-only)
+    - All commands delegate to constitutional primitives
+    - Fail-closed propagation from underlying commands
+    - JSON output in --ci mode
+    - Deterministic composition
+    
+    Governance tests: 24/24 PASS
+    
+    SpecLock: ops/release/RELEASE_ORCHESTRATION_CONSTITUTION_v1.0.0_SPECLOCK.md
+    
+    * feat(release): Add breaker tests for v1.0.0 orchestration
+    
+    12 adversarial attack tests:
+    - ATK-1: ANSI injection in bundle path
+    - ATK-2: Concurrent prepare to same directory
+    - ATK-3: Promote with tampered receipt
+    - ATK-4: Audit with missing proofs/
+    - ATK-5: Status with symlink bundle
+    - ATK-6: Deploy with non-existent namespace
+    - ATK-7: Race condition - delete during verify
+    - ATK-8: Clock skew (future timestamp)
+    - ATK-9: --ci output purity
+    - ATK-10: Large receipt file (resource bounds)
+    - ATK-11: Path traversal
+    - ATK-12: Invalid --to value
+    
+    All 12/12 attacks BLOCKED.
+    Total validation: 24 governance + 12 breaker = 36 tests PASS
+    
+    Part of v1.0.0-release-orchestration-constitution
+    
+    * docs(constitution): Add Release Orchestration v1.0.0 to governance freeze
+    
+    Added Release Orchestration Subsystem section documenting:
+    - Five wrapper commands: prepare, deploy, promote, audit, status
+    - Wrapper-only enforcement: zero new execution logic
+    - Composition rules for each command
+    - Auto-inference logic for promote --from
+    - Default policy enforcement (require-chain, require-freshness)
+    - Exit code inheritance from underlying primitives
+    - SpecLock reference
+    
+    Constitutional freeze: v1.0.0-release-orchestration-constitution
+    
+    * docs(adoption): Add Release Playbooks v1.0.0 adoption layer
+    
+    Adoption artifacts (docs-only, no execution authority):
+    - RELEASE_PLAYBOOKS.md: 4 operator-grade playbooks
+    - RELEASE_PLAYBOOKS_CI_EXAMPLES.md: JSON examples for pipelines
+    - ROLE_GUIDE_OPERATOR.md: Step-by-step operator usage
+    - ROLE_GUIDE_AUDITOR.md: Evidence validation without execution
+    - ROLE_GUIDE_EXECUTIVE.md: Non-technical posture summaries
+    - RUNBOOK_FAQ.md: WARN vs FAIL semantics, common questions
+    
+    SpecLock: RELEASE_PLAYBOOKS_CONSTITUTION_v1.0.0_SPECLOCK.md
+    Governance: test_release_playbooks_lint.sh (27/27 PASS)
+    
+    Constitutional constraints enforced:
+    - No new authority (wrapper-only)
+    - Sealed composition only (tf release * commands)
+    - Role-scoped narratives
+    - Deterministic outputs with CI JSON
+    - Reproducible evidence references
+    
+    * docs(constitution): Add Release Playbooks v1.0.0 to governance freeze
+    
+    Added Adoption Layer section documenting:
+    - 6 playbook/guide artifacts (docs-only)
+    - 5 constitutional constraints (A-E)
+    - Lint governance script reference
+    - SpecLock reference
+    
+    Constitutional freeze: v1.0.0-release-playbooks
+    
+    * chore(wip): checkpoint WSL before push - observability governance + county pilot
+    
+    ---------
+    
+    Co-authored-by: bsval <bsval@users.noreply.github.com>
+
+ .envrc.local                                       |    1 +
+ ENGINEERING_PROTOCOL.md                            |  129 +
+ docs/HOW_TERRAFUSION_BUILDS_SOFTWARE.md            |  117 +
+ .../AGENT_RUNTIME_CONSTITUTION_v1.0.0_SPECLOCK.md  |  323 +
+ ops/agents/CONVENTIONS.md                          |  379 +
+ ops/agents/PROTOCOL_CHANGELOG.md                   |   84 +
+ ops/agents/README.md                               |  170 +
+ ops/agents/generate-contract.py                    | 1656 +++++
+ .../ATTACKPLAN.md                                  |   79 +
+ .../ATTACK_REPORT.md                               |  146 +
+ .../CONTRACT.md                                    |  211 +
+ .../NOTES.md                                       |   98 +
+ .../PATCHLOG.md                                    |   61 +
+ .../PR_REVIEW.md                                   |   77 +
+ .../SESSION.json                                   |   36 +
+ .../SPECLOCK.md                                    |  147 +
+ .../TESTPLAN.md                                    |   92 +
+ .../ATTACKPLAN.md                                  |   79 +
+ .../ATTACK_REPORT.md                               |   72 +
+ .../CONTRACT.md                                    |  213 +
+ .../NOTES.md                                       |   37 +
+ .../PATCHLOG.md                                    |   80 +
+ .../PR_REVIEW.md                                   |   59 +
+ .../SESSION.json                                   |   38 +
+ .../SPECLOCK.md                                    |  178 +
+ .../TESTPLAN.md                                    |  101 +
+ .../ATTACKPLAN.md                                  |   79 +
+ .../ATTACK_REPORT.md                               |  264 +
+ .../CONTRACT.md                                    |  211 +
+ .../NOTES.md                                       |   37 +
+ .../PATCHLOG.md                                    |   86 +
+ .../PR_REVIEW.md                                   |   81 +
+ .../SESSION.json                                   |   37 +
+ .../SPECLOCK.md                                    |   68 +
+ .../TESTPLAN.md                                    |   81 +
+ .../ATTACKPLAN.md                                  |   79 +
+ .../ATTACK_REPORT.md                               |   62 +
+ .../CONTRACT.md                                    |  211 +
+ .../NOTES.md                                       |   37 +
+ .../PATCHLOG.md                                    |   36 +
+ .../PR_REVIEW.md                                   |   72 +
+ .../SESSION.json                                   |   36 +
+ .../SPECLOCK.md                                    |  119 +
+ .../TESTPLAN.md                                    |   81 +
+ ops/agents/sessions/latest                         |    1 +
+ ops/ai/compose.ai.yml                              |  116 +
+ ops/ai/rag/ingest.py                               |  317 +
+ ops/ai/rag/prompts/terrafusion_rag.md              |   39 +
+ ops/ai/rag/query.py                                |  394 ++
+ ops/ai/rag/sources.yaml                            |   49 +
+ ops/ai/rag/state/manifest.json                     |  809 +++
+ ops/ai/rag/test_query.py                           |  305 +
+ ops/ci/check-protocol-compliance.sh                |  173 +
+ .../ACCEPTANCE_VALIDATION_ADDENDUM.md              |  245 +
+ .../CI_OUTPUT_SAMPLES/release_audit.json           |    1 +
+ .../CI_OUTPUT_SAMPLES/release_deploy_dryrun.json   |    1 +
+ .../CI_OUTPUT_SAMPLES/release_prepare.json         |    1 +
+ .../CI_OUTPUT_SAMPLES/release_promote_dryrun.json  |    1 +
+ .../CI_OUTPUT_SAMPLES/release_status.json          |    1 +
+ .../COUNTY_PILOT_REPORT_v1.0.0.md                  |  237 +
+ .../benton-pilot-v1.0.0/COUNTY_PILOT_RUN_LOG.md    |  125 +
+ .../EXECUTIVE_SUMMARY_1PAGER.md                    |   59 +
+ .../OPERATIONAL_FRICTION_LOG.md                    |  127 +
+ .../RECEIPT_CHAIN_SAMPLE/checksums.sha256          |    5 +
+ .../RECEIPT_CHAIN_SAMPLE/manifest.json             |   14 +
+ .../RECEIPT_CHAIN_SAMPLE/proofs/agent.json         |   52 +
+ .../RECEIPT_CHAIN_SAMPLE/proofs/deploy.json        |   59 +
+ .../RECEIPT_CHAIN_SAMPLE/proofs/gate.json          |   81 +
+ .../RECEIPT_CHAIN_SAMPLE/proofs/marketplace.json   |   59 +
+ .../benton-pilot-v1.0.0/SEAL_HASHES.txt            |    6 +
+ .../TIME_TO_EXECUTE_METRICS.json                   |   72 +
+ .../benton-pilot-v1.0.0/bundle/bundle_meta.json    |    6 +
+ .../benton-pilot-v1.0.0/bundle/checksums.sha256    |    5 +
+ .../benton-pilot-v1.0.0/bundle/manifest.json       |   14 +
+ .../benton-pilot-v1.0.0/bundle/proofs/agent.json   |   52 +
+ .../benton-pilot-v1.0.0/bundle/proofs/deploy.json  |   59 +
+ .../benton-pilot-v1.0.0/bundle/proofs/gate.json    |   81 +
+ .../bundle/proofs/marketplace.json                 |   59 +
+ ..._HEALTH_RECEIPT_CONSTITUTION_v1.1.0_SPECLOCK.md |  348 +
+ ...Y_APPLY_RECEIPT_CONSTITUTION_v1.0.0_SPECLOCK.md |  253 +
+ ...Y_APPLY_RECEIPT_CONSTITUTION_v1.0.1_SPECLOCK.md |  190 +
+ ...OMOTE_EXECUTION_CONSTITUTION_v1.2.0_SPECLOCK.md |  445 ++
+ ...ROMOTION_POLICY_CONSTITUTION_v1.3.0_SPECLOCK.md |  485 ++
+ .../DEPLOY_RUNTIME_CONSTITUTION_v1.0.0_SPECLOCK.md |  485 ++
+ .../DEPLOY_RUNTIME_CONSTITUTION_v1.1.0_SPECLOCK.md |  262 +
+ ops/dev/Audit-Extensions.ps1                       |  239 +
+ ops/dev/CERTIFIED_STATE.md                         |  215 +
+ ops/dev/DEV_OS_CONTRACT.md                         |  193 +
+ ops/dev/FIX_BASHRC_REDIRECT_WARNING.md             |   50 +
+ ops/dev/GATE_QUICK_REFERENCE.md                    |  107 +
+ ops/dev/Migrate-Repo-To-WSL.ps1                    |  391 ++
+ ops/dev/VSCODE_AI_ORCHESTRATION.md                 |  217 +
+ ops/dev/certify.json                               |   38 +
+ ops/dev/hooks/pre-commit                           |  111 +
+ ops/dev/install-hooks.sh                           |   43 +
+ ops/dev/shell-setup.sh                             |   71 +
+ ops/dev/tests/test_agent_governance.sh             |  317 +
+ ops/dev/tests/test_breaker_invariants.sh           |  333 +
+ .../tests/test_deploy_apply_receipt_governance.sh  |  552 ++
+ .../test_deploy_apply_receipt_hardening_v1_0_1.sh  |  432 ++
+ ops/dev/tests/test_deploy_governance.sh            |  406 ++
+ .../test_deploy_k8s_apply_v1_1_0_governance.sh     |  764 +++
+ ops/dev/tests/test_deploy_promote_breaker.sh       |  538 ++
+ .../test_deploy_promote_exec_v1_2_0_governance.sh  |  885 +++
+ .../tests/test_deploy_promotion_policy_breaker.sh  |  383 ++
+ ...st_deploy_promotion_policy_v1_3_0_governance.sh |  466 ++
+ .../tests/test_deploy_runtimecert_enforcement.sh   |  513 ++
+ ops/dev/tests/test_gate_ci.sh                      |  458 ++
+ ops/dev/tests/test_marketplace_breaker.sh          |  500 ++
+ ops/dev/tests/test_marketplace_governance.sh       |  570 ++
+ .../tests/test_marketplace_runtime_governance.sh   |  824 +++
+ ops/dev/tests/test_observability_breaker.sh        |  466 ++
+ ops/dev/tests/test_observability_governance.sh     |  548 ++
+ ops/dev/tests/test_proof_sources_of_truth.sh       |  427 ++
+ .../tests/test_release_orchestration_breaker.sh    |  308 +
+ ...test_release_orchestration_v1_0_0_governance.sh |  374 +
+ ops/dev/tests/test_release_playbooks_lint.sh       |  325 +
+ ops/dev/tests/test_runtimecert_breaker.sh          |  392 ++
+ .../tests/test_runtimecert_bundle_governance.sh    |  554 ++
+ ops/dev/tests/test_sterile_shell.sh                |   33 +
+ ops/dev/tf.ps1                                     |  411 ++
+ ops/dev/tf.sh                                      | 7251 ++++++++++++++++++++
+ ops/governance/CLI_CONSTITUTION_TEMPLATE.md        |  328 +
+ ...PLACE_EXECUTION_CONSTITUTION_v1.0.0_SPECLOCK.md |  543 ++
+ ...ETPLACE_RUNTIME_CONSTITUTION_v1.0.0_SPECLOCK.md |  625 ++
+ ops/marketplace/registry.json                      |   19 +
+ ops/observability/OBSERVABILITY_RECON_REPORT.md    |  341 +
+ ...ABILITY_RUNTIME_CONSTITUTION_v1.0.0_SPECLOCK.md |  454 ++
+ ops/observability/PHASE_STATUS.md                  |  205 +
+ ops/observability/test_observability_governance.sh |  548 ++
+ ops/ops/marketplace/registry.json                  |    5 +
+ .../PROOF_SOURCES_OF_TRUTH_v1.0.0_SPECLOCK.md      |  368 +
+ ...E_ORCHESTRATION_CONSTITUTION_v1.0.0_SPECLOCK.md |  376 +
+ ...LEASE_PLAYBOOKS_CONSTITUTION_v1.0.0_SPECLOCK.md |  242 +
+ ops/release/docs/RELEASE_PLAYBOOKS.md              |  357 +
+ ops/release/docs/RELEASE_PLAYBOOKS_CI_EXAMPLES.md  |  402 ++
+ ops/release/docs/ROLE_GUIDE_AUDITOR.md             |  312 +
+ ops/release/docs/ROLE_GUIDE_EXECUTIVE.md           |  275 +
+ ops/release/docs/ROLE_GUIDE_OPERATOR.md            |  229 +
+ ops/release/docs/RUNBOOK_FAQ.md                    |  345 +
+ ...TIMECERT_BUNDLE_CONSTITUTION_v1.0.0_SPECLOCK.md |  376 +
+ ops/scripts/gate-f-validate-all.sh                 |   65 +
+ ops/tooling/README.md                              |  125 +
+ ops/tooling/generate-docs.py                       |  109 +
+ ops/tooling/generate-tasks.py                      |   99 +
+ ops/tooling/registry.yml                           |  267 +
+ ops/tooling/verify-tasks.py                        |  122 +
+ pnpm-workspace.yaml                                |   21 +
+ ..._v1.0.0_SEALED_\360\237\217\233\357\270\217.md" |  348 +
+ 149 files changed, 40644 insertions(+)

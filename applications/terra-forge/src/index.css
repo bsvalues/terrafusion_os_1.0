@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --terra-void: #020617;
+  --terra-slate: #0a0e1a;
+  --terra-glow: rgba(0, 229, 255, 0.15);
+  --terra-cyan: #00e5ff;
+  --terra-amber: #ffb300;
+}
+
+body {
+  background-color: var(--terra-void);
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+/* Orbital Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

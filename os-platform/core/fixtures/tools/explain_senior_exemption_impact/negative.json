@@ -1,0 +1,4 @@
+{
+  "params": { "county": "yakima", "year": 2026, "exemptionProgram": "senior" },
+  "assert": { "rejects": true }
+}

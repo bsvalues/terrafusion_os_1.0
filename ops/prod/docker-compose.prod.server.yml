@@ -1,0 +1,191 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # 0. THE SHIELD (Reverse Proxy)
+  # ==========================================
+  proxy:
+    image: caddy:alpine
+    container_name: terrafusion-shield
+    restart: always
+    ports:
+      # Use 8080/8443 to avoid System/IIS conflict on Port 80
+      - '8080:80'
+      - '8443:443'
+    volumes:
+      - ../proxy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # ==========================================
+  # 1. THE SOUL (Frontend / Shell)
+  # ==========================================
+  frontend:
+    container_name: terrafusion-soul
+    image: terrafusion-os-frontend@sha256:175ac9840c76548d4434f0b5a5339b43b67cb75e96868acf797e8b176916a6a8
+    restart: always
+    # Ports removed (internal only via Proxy)
+    environment:
+      - NODE_ENV=production
+      # Update to relative path so it hits the proxy on same origin
+      - VITE_API_URL=/api
+    depends_on:
+      backend:
+        condition: service_healthy
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # ==========================================
+  # 2a. IRON SEEDER (Initialization Task)
+  # ==========================================
+  backend-seeder:
+    container_name: terrafusion-iron-seeder
+    image: terrafusion-os-api:dev
+    restart: 'no'
+    command: ['--mode=seed']
+    env_file:
+      - ./secrets.prod.env
+    volumes:
+      - ../../docs/spec-lock/AUTHORITIES.state.json:/app/docs/spec-lock/AUTHORITIES.state.json
+      - ../../data:/app/data
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - TF_STATE_MESH_ENFORCE=true
+      - DatabaseProvider=Sqlite
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    healthcheck:
+      disable: true
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # ==========================================
+  # 2. IRON BODY (Backend API)
+  # ==========================================
+  backend:
+    container_name: terrafusion-iron
+    image: terrafusion-os-api:dev
+    restart: always
+    # Ports removed (internal only via Proxy)
+    env_file:
+      - ./secrets.prod.env
+    volumes:
+      - ../../docs/spec-lock/AUTHORITIES.state.json:/app/docs/spec-lock/AUTHORITIES.state.json
+      - ../../docs/spec-lock/provenance.dev.json:/app/provenance.json
+      - ../../data:/app/data
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - TF_STATE_MESH_ENFORCE=true
+      - TF_PROVENANCE_PATH=/app/provenance.json
+      - DatabaseProvider=Sqlite
+      # Neural Link: Connect to Host MSSQL
+      # Connection string injected via secrets.prod.env
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+    # Start API mostly separate from Seeder, but in real scenarios API might need DB schema ready.
+    # For now, decoupled means they run in parallel or independently.
+    depends_on:
+      - redis
+
+  # ==========================================
+  # 3. CORTEX (AI Brain / Bridge)
+  # ==========================================
+  ai-bridge:
+    container_name: terrafusion-cortex
+    image: terrafusion-os-cortex@sha256:f0bfcf2f87e1202775605d8a3cb0a9b26dabc1d4c4fd4fccbec978073d810b9b
+    restart: always
+    ports:
+      - '8006:8006'
+    env_file:
+      - ./secrets.prod.env
+    environment:
+      - IRON_API_URL=http://terrafusion-iron:5000
+      - OTEL_SERVICE_NAME=terrafusion-cortex
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    depends_on:
+      backend:
+        condition: service_healthy
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # ==========================================
+  # 4. INFRASTRUCTURE (Substrate)
+  # ==========================================
+  # Redis for Cache (still needed even with MSSQL)
+  redis:
+    container_name: terrafusion-substrate-cache
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - C:\TerraFusion\Data\redis:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # Observability Stack (Optional for Single Node, but kept for "Show")
+  # Simplified for Production (No Jaeger UI exposed public, just internal)
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.97.0
+    command: ['--config=/etc/otelcol/config.yaml']
+    volumes:
+      - ./config/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+    logging:
+      driver: 'none' # Reduce noise
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle' # Allow reload
+    ports:
+      - '9090:9090' # Localhost only in real prod, but exposed here for Phase 11 check
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+volumes:
+  caddy_data:
+  caddy_config:

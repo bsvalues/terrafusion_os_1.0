@@ -1,0 +1,122 @@
+{{- if .Values.pluginAdmission.webhook.enabled }}
+# Admission Webhook Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "terrafusion.fullname" . }}-admission
+  labels:
+    {{- include "terrafusion.labels" . | nindent 4 }}
+    app.kubernetes.io/component: admission-webhook
+spec:
+  ports:
+    - port: 443
+      targetPort: https
+      protocol: TCP
+      name: https
+  selector:
+    {{- include "terrafusion.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: admission-webhook
+---
+# Admission Webhook Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "terrafusion.fullname" . }}-admission
+  labels:
+    {{- include "terrafusion.labels" . | nindent 4 }}
+    app.kubernetes.io/component: admission-webhook
+spec:
+  replicas: {{ .Values.pluginAdmission.webhook.replicas | default 2 }}
+  selector:
+    matchLabels:
+      {{- include "terrafusion.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: admission-webhook
+  template:
+    metadata:
+      labels:
+        {{- include "terrafusion.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: admission-webhook
+      annotations:
+        # Force restart on cert rotation
+        checksum/certs: {{ include (print $.Template.BasePath "/plugin-admission-cert.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "terrafusion.serviceAccountName" . }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+      containers:
+        - name: admission-webhook
+          image: "{{ .Values.pluginAdmission.webhook.image.repository }}:{{ .Values.pluginAdmission.webhook.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.pluginAdmission.webhook.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+          env:
+            - name: TF_ADMISSION_TLS_CERT
+              value: /certs/tls.crt
+            - name: TF_ADMISSION_TLS_KEY
+              value: /certs/tls.key
+            - name: TF_ADMISSION_PORT
+              value: "8443"
+            - name: TF_COUNTY
+              value: {{ .Values.county | default "benton" | quote }}
+            # Constitutional requirements
+            - name: TF_REQUIRE_SBOM
+              value: "true"
+            - name: TF_REQUIRE_SLSA
+              value: "true"
+            - name: TF_REQUIRE_BUNDLE_SIG
+              value: "true"
+            - name: TF_FAIL_POLICY
+              value: {{ .Values.pluginAdmission.webhook.failurePolicy | default "Fail" | quote }}
+          volumeMounts:
+            - name: certs
+              mountPath: /certs
+              readOnly: true
+            - name: speclock-config
+              mountPath: /etc/terrafusion/speclock
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: https
+              scheme: HTTPS
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: https
+              scheme: HTTPS
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.pluginAdmission.webhook.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: certs
+          secret:
+            secretName: {{ include "terrafusion.fullname" . }}-admission-cert
+        - name: speclock-config
+          configMap:
+            name: {{ include "terrafusion.fullname" . }}-speclock-config
+      {{- with .Values.pluginAdmission.webhook.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pluginAdmission.webhook.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pluginAdmission.webhook.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

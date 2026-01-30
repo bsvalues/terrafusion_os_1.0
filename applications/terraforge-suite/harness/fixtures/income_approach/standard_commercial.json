@@ -1,0 +1,78 @@
+{
+  "description": "Standard commercial property direct capitalization - deterministic fixture",
+  "input": {
+    "subjectId": "COMMERCIAL-001",
+    "effectiveDate": "2026-01-15",
+    "incomeData": {
+      "potentialGrossIncome": 12000000,
+      "vacancyRate": 0.05,
+      "otherIncome": 0,
+      "operatingExpenses": {
+        "taxes": 1200000,
+        "insurance": 300000,
+        "utilities": 0,
+        "maintenance": 600000,
+        "management": 1200000,
+        "reserves": 300000,
+        "other": 0
+      }
+    },
+    "capitalizationRate": {
+      "rate": 0.08,
+      "source": "market_extraction",
+      "supportingData": [
+        {
+          "propertyId": "COMP-A",
+          "salePrice": 95000000,
+          "noi": 7600000,
+          "extractedRate": 0.08
+        },
+        {
+          "propertyId": "COMP-B",
+          "salePrice": 110000000,
+          "noi": 8800000,
+          "extractedRate": 0.08
+        },
+        {
+          "propertyId": "COMP-C",
+          "salePrice": 87500000,
+          "noi": 7000000,
+          "extractedRate": 0.08
+        }
+      ]
+    },
+    "analysisParameters": {
+      "expenseRatioCheck": true,
+      "typicalExpenseRatioMin": 0.3,
+      "typicalExpenseRatioMax": 0.5
+    }
+  },
+  "expected": {
+    "indicatedValue": 97500000,
+    "incomeAnalysis": {
+      "potentialGrossIncome": 12000000,
+      "vacancyLoss": 600000,
+      "otherIncome": 0,
+      "effectiveGrossIncome": 11400000,
+      "operatingExpenseBreakdown": {
+        "taxes": 1200000,
+        "insurance": 300000,
+        "utilities": 0,
+        "maintenance": 600000,
+        "management": 1200000,
+        "reserves": 300000,
+        "other": 0
+      },
+      "totalOperatingExpenses": 3600000,
+      "netOperatingIncome": 7800000,
+      "capitalizationRate": 0.08,
+      "expenseRatio": 0.3158
+    },
+    "qualityIndicators": {
+      "confidenceLevel": "high",
+      "dataQuality": "verified",
+      "warnings": [],
+      "capRateSupport": "strong"
+    }
+  }
+}

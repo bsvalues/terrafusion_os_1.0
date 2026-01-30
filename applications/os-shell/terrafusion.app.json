@@ -1,0 +1,27 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "os-shell",
+  "displayName": "TerraFusion OS Shell",
+  "description": "Primary TerraFusion OS Shell (Vite dev server)",
+  "iconName": "Desktop",
+  "category": "system",
+  "tier": 1,
+  "status": "active",
+  "pinned": false,
+  "autostart": true,
+  "version": "1.0.0",
+  "intent": "archive",
+  "runnable": true,
+  "runtime": "pnpm",
+  "start": {
+    "cmd": "pnpm",
+    "args": ["run", "dev", "--", "--open"],
+    "cwd": "frontend"
+  },
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5173/"
+  },
+  "tags": ["shell", "desktop", "os"],
+  "permissions": []
+}

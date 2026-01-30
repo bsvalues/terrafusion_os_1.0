@@ -1,0 +1,146 @@
+{
+  "$schema": "speclock.schema.json",
+  "lock_id": "runtimecontract.v1",
+  "surface": "runtimecontract",
+  "version": "1.0.0",
+  "status": "active",
+  "owner": "systemgpt",
+  "created": "2025-12-13",
+  "updated": "2025-12-13",
+  "description": "Shell-agnostic constitutional runtime contract for TerraFusion Governance Kernel",
+  "required_endpoints": [
+    {
+      "path": "/healthz/ready",
+      "method": "GET",
+      "success_codes": [200],
+      "failure_codes": [503],
+      "failure_semantics": "Returns 503 unless speclock_ok AND state_mesh_ok"
+    },
+    {
+      "path": "/healthz/proof",
+      "method": "GET",
+      "success_codes": [200],
+      "response_schema": "generated/runtimecontract.schema.json"
+    },
+    {
+      "path": "/ops/speclock",
+      "method": "GET",
+      "success_codes": [200]
+    },
+    {
+      "path": "/ops/speclock/proof",
+      "method": "GET",
+      "success_codes": [200]
+    },
+    {
+      "path": "/ops/speclock/state/proof",
+      "method": "GET",
+      "success_codes": [200]
+    }
+  ],
+  "required_metrics": [
+    {
+      "name": "tf_speclock_ok",
+      "type": "gauge",
+      "description": "1 if speclock verified, 0 otherwise"
+    },
+    {
+      "name": "tf_state_mesh_ok",
+      "type": "gauge",
+      "description": "1 if state mesh verified, 0 otherwise"
+    },
+    {
+      "name": "tf_receipt_count",
+      "type": "gauge",
+      "description": "Total receipts issued"
+    },
+    {
+      "name": "tf_runtime_boot_timestamp",
+      "type": "gauge",
+      "description": "Unix epoch of last boot"
+    }
+  ],
+  "required_storage_paths": [
+    {
+      "path": "${ARTIFACTS_ROOT}/receipts/",
+      "purpose": "citizen_receipts",
+      "persistence": "durable"
+    },
+    {
+      "path": "${ARTIFACTS_ROOT}/speclock/tss/state/",
+      "purpose": "tss_state_artifacts",
+      "persistence": "durable"
+    },
+    {
+      "path": "${ARTIFACTS_ROOT}/speclock/manifest.json",
+      "purpose": "current_manifest",
+      "persistence": "durable"
+    }
+  ],
+  "proof_schema": {
+    "type": "object",
+    "required": [
+      "manifest_sha256",
+      "receipt_count",
+      "speclock_ok",
+      "state_mesh_ok",
+      "state_proof_present",
+      "timestamp_epoch"
+    ],
+    "properties": {
+      "manifest_sha256": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "receipt_count": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "speclock_ok": {
+        "type": "boolean"
+      },
+      "state_mesh_ok": {
+        "type": "boolean"
+      },
+      "state_proof_present": {
+        "type": "boolean"
+      },
+      "timestamp_epoch": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "additionalProperties": false
+  },
+  "determinism_rules": {
+    "json_key_ordering": "lexicographic",
+    "sha256_format": "lowercase_hex_64",
+    "timestamp_format": "unix_epoch_seconds"
+  },
+  "plugin_admission_requirements": {
+    "label_selector": "terrafusion.io/plugin=true",
+    "required_env_vars": [
+      "TF_SBOM_SHA256",
+      "TF_SLSA_SHA256",
+      "TF_BUNDLE_SHA256"
+    ],
+    "enforcement": "deny_beats_allow",
+    "fail_policy": "Fail"
+  },
+  "generated_artifacts": [
+    "generated/runtimecontract.schema.json",
+    "generated/runtimecontract.openapi.yaml",
+    "generated/runtimecontract.checklist.md"
+  ],
+  "test_requirements": [
+    "schema_validates_proof_endpoint",
+    "readiness_refuses_when_speclock_false",
+    "readiness_refuses_when_statemesh_false",
+    "proof_is_deterministic",
+    "proof_keys_lexicographic",
+    "metrics_exist",
+    "storage_paths_configurable",
+    "plugin_admission_denies_missing_sbom",
+    "plugin_admission_denies_missing_slsa"
+  ]
+}
