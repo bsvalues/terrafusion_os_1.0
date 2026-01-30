@@ -13,7 +13,7 @@
  * Solo-Dev Mode: The TerraFusion Way.
  */
 
-import { execSync, spawnSync } from 'node:child_process';
+import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -121,7 +121,7 @@ function createSliceMarker(slice) {
     fs.mkdirSync(markerDir, { recursive: true });
   }
 
-  const content = `# Slice ${Object.keys(SLICES).find((k) => SLICES[k] === slice)}: ${slice.name}
+  const content = `# Slice ${Object.keys(SLICES).find(k => SLICES[k] === slice)}: ${slice.name}
 
 ## Scope
 
