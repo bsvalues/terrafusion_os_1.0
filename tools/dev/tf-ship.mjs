@@ -1,38 +1,47 @@
 #!/usr/bin/env node
 
 /**
- * TerraFusion Ship Protocol (tf:ship)
- * -----------------------------------
- * "We do not click. We ship."
- * 
- * 1. Validates Local State (Tests + Lint)
- * 2. Pushes to Origin
- * 3. Creates or Updates PR
- * 4. Enables Auto-Merge (Squash)
- * 
- * Operational Excellence (Metric 9.0)
+ * TerraFusion Ship Protocol (pnpm tf:ship)
+ * ---------------------------------------
+ * Deterministic Solo-Dev shipping:
+ * 0) Preconditions: clean tree, not on main, gh authenticated
+ * 1) Local SEAL gates (no network)
+ * 2) Push branch
+ * 3) Create PR if needed
+ * 4) Enable auto-merge (squash) + delete branch
+ *
+ * Flags:
+ *   --dry-run   : prints actions, no push/PR/merge
+ *   --skip-local: bypass local gates (NOT recommended)
+ *   --fast      : run minimal local gates (build + unit tests only)
  */
 
 import { execSync } from 'child_process';
 
-// --- CONFIGURATION ---
 const BASE_BRANCH = 'main';
 const REMOTE = 'origin';
 
-// --- UTILS ---
-const run = (cmd, ignoreError = false) => {
+const args = new Set(process.argv.slice(2));
+const DRY_RUN = args.has('--dry-run');
+const SKIP_LOCAL = args.has('--skip-local');
+const FAST_MODE = args.has('--fast');
+
+const cyan = s => `\x1b[36m${s}\x1b[0m`;
+const green = s => `\x1b[32m${s}\x1b[0m`;
+const red = s => `\x1b[31m${s}\x1b[0m`;
+const bold = s => `\x1b[1m${s}\x1b[0m`;
+
+const run = (cmd, { silent = false, optional = false } = {}) => {
+  console.log(cyan(`> ${cmd}`));
   try {
-    console.log(`\x1b[36m> ${cmd}\x1b[0m`);
-    execSync(cmd, { stdio: 'inherit', encoding: 'utf-8' });
+    execSync(cmd, { stdio: silent ? 'pipe' : 'inherit', encoding: 'utf-8' });
   } catch (e) {
-    if (!ignoreError) {
-      console.error(`\x1b[31m[FATAL] Command failed: ${cmd}\x1b[0m`);
-      process.exit(1);
-    }
+    if (!optional) throw e;
+    console.log(`⚠️  Optional command failed (continuing): ${cmd}`);
   }
 };
 
-const runSilent = (cmd) => {
+const read = cmd => {
   try {
     return execSync(cmd, { stdio: 'pipe', encoding: 'utf-8' }).trim();
   } catch {
@@ -40,70 +49,145 @@ const runSilent = (cmd) => {
   }
 };
 
-// --- MAIN EXECUTION ---
-console.log(`\x1b[1m\x1b[32m🌟 TerraFusion Ship Protocol Initiated 🌟\x1b[0m\n`);
-
-// 1. Check Prerequisites
-const ghStatus = runSilent('gh auth status');
-if (!ghStatus.includes('Logged in')) {
-  console.error('❌ Error: GitHub CLI (gh) not authenticated. Run "gh auth login" first.');
+const fatal = msg => {
+  console.error(red(`\n[FATAL] ${msg}\n`));
   process.exit(1);
+};
+
+const banner = () => {
+  console.log(bold(green('🌟 TerraFusion Ship Protocol Initiated 🌟')));
+  if (DRY_RUN) console.log(bold('🧪 DRY RUN MODE — no network mutation'));
+  if (FAST_MODE) console.log(bold('⚡ FAST MODE — minimal local gates'));
+  console.log('');
+};
+
+const ensure = {
+  ghAuth() {
+    const s = read('gh auth status');
+    if (!s.includes('Logged in')) {
+      fatal('GitHub CLI not authenticated. Run: gh auth login');
+    }
+  },
+  notOnMain(currentBranch) {
+    if (!currentBranch || currentBranch === BASE_BRANCH) {
+      fatal(`Refusing to ship from '${BASE_BRANCH}'. Switch to a feature branch.`);
+    }
+  },
+  cleanWorkingTree() {
+    const porcelain = read('git status --porcelain');
+    if (porcelain) {
+      fatal('Working tree is not clean. Commit or stash changes before shipping.');
+    }
+  },
+  hasCommitsAhead(currentBranch) {
+    const ahead = read(`git rev-list --count ${BASE_BRANCH}..${currentBranch}`);
+    if (ahead === '0') {
+      fatal(`No commits ahead of ${BASE_BRANCH}. Nothing to ship.`);
+    }
+  },
+  gitBranch() {
+    const b = read('git branch --show-current');
+    if (!b) fatal('Unable to determine current branch.');
+    return b;
+  },
+};
+
+const localSealFast = () => {
+  console.log(`\n${bold('🔒 Executing Fast SEAL Gate (build + unit tests)...')}`);
+
+  // Backend
+  run('dotnet build backend/TerraFusion.sln -c Release');
+  run('dotnet test backend/tests/TerraFusion.Unit.Tests -c Release --no-build -v quiet');
+
+  // Frontend type-check
+  run('pnpm -C frontend run type-check', { optional: true });
+
+  console.log(green('✅ Fast SEAL gates passed.'));
+};
+
+const localSealFull = () => {
+  console.log(`\n${bold('🔒 Executing Full SEAL Gate (deterministic, offline)...')}`);
+
+  // Backend
+  run('dotnet build backend/TerraFusion.sln -c Release');
+  run('dotnet test backend/TerraFusion.sln -c Release --no-build -v minimal');
+
+  // Frontend
+  run('pnpm -C frontend run lint', { optional: true });
+  run('pnpm -C frontend run type-check');
+  run('pnpm -C frontend run test:unit -- --passWithNoTests');
+  run('pnpm -C frontend run build');
+
+  // Governance
+  run('pnpm run ci:governance-proof', { optional: true });
+
+  console.log(green('✅ Full SEAL gates passed.'));
+};
+
+const pushBranch = branch => {
+  console.log(`\n${bold('🚀 Pushing to Remote...')}`);
+  if (DRY_RUN) return console.log(bold('DRY RUN: skipping git push'));
+  run(`git push ${REMOTE} ${branch} --no-verify`);
+};
+
+const ensurePr = branch => {
+  console.log(`\n${bold('📝 Ensuring Pull Request exists...')}`);
+
+  let prUrl = read(`gh pr list --head ${branch} --json url --jq ".[0].url"`);
+
+  if (!prUrl) {
+    if (DRY_RUN) {
+      console.log(bold('DRY RUN: would create PR via gh pr create --fill'));
+      return `DRYRUN://pr/${branch}`;
+    }
+    run(`gh pr create --base ${BASE_BRANCH} --head ${branch} --fill`);
+    prUrl = read(`gh pr list --head ${branch} --json url --jq ".[0].url"`);
+  }
+
+  if (!prUrl) fatal('Failed to resolve PR URL after create/list.');
+  console.log(green(`✅ PR: ${prUrl}`));
+  return prUrl;
+};
+
+const enableAutoMerge = prUrl => {
+  console.log(`\n${bold('🤖 Engaging Auto-Merge (Squash + Delete Branch)...')}`);
+  if (DRY_RUN) return console.log(bold(`DRY RUN: would enable auto-merge on ${prUrl}`));
+
+  run(`gh pr merge "${prUrl}" --squash --auto --delete-branch`);
+  console.log(green('✅ Auto-merge enabled. CI SEAL will finalize the merge.'));
+};
+
+const main = () => {
+  banner();
+
+  ensure.ghAuth();
+
+  const branch = ensure.gitBranch();
+  ensure.notOnMain(branch);
+  ensure.cleanWorkingTree();
+  ensure.hasCommitsAhead(branch);
+
+  console.log(`📡 Branch: ${bold(branch)}`);
+
+  if (SKIP_LOCAL) {
+    console.log(bold('⚠️  --skip-local set: bypassing local SEAL gates (not recommended).'));
+  } else if (FAST_MODE) {
+    localSealFast();
+  } else {
+    localSealFull();
+  }
+
+  pushBranch(branch);
+  const prUrl = ensurePr(branch);
+  enableAutoMerge(prUrl);
+
+  console.log(`\n${bold(green('✅ SHIP SEQUENCE COMPLETE.'))}`);
+  console.log('No clicks. No waiting. Proceed to the next task.');
+  console.log('Government. Transcended.\n');
+};
+
+try {
+  main();
+} catch (e) {
+  fatal(e?.message || String(e));
 }
-console.log('✅ GitHub CLI authenticated');
-
-// 2. Identify Context
-const currentBranch = runSilent('git branch --show-current');
-if (currentBranch === BASE_BRANCH) {
-  console.error('❌ Error: You are on main. Switch to a feature branch before shipping.');
-  process.exit(1);
-}
-console.log(`📡 Branch: ${currentBranch}`);
-
-// 3. Check for uncommitted changes
-const status = runSilent('git status --porcelain');
-if (status) {
-  console.error('❌ Error: Uncommitted changes detected. Commit or stash before shipping.');
-  console.log(status);
-  process.exit(1);
-}
-console.log('✅ Working tree clean');
-
-// 4. The SEAL Gate (Local) - Fast validation
-console.log(`\n\x1b[1m🔒 Executing Local SEAL Gate...\x1b[0m`);
-
-// Backend build + unit tests
-console.log('\n📦 Backend validation...');
-run('dotnet build backend/TerraFusion.sln -c Release', true);
-run('dotnet test backend/tests/TerraFusion.Unit.Tests -c Release --no-build -v quiet', true);
-
-// Frontend quick checks (if frontend changed)
-const changedFiles = runSilent(`git diff --name-only ${BASE_BRANCH}...HEAD`);
-if (changedFiles.includes('frontend/')) {
-  console.log('\n🎨 Frontend validation...');
-  run('pnpm -C frontend run type-check', true);
-}
-
-console.log(`\n✅ Local Gates Passed.`);
-
-// 5. Push to Origin (bypass pre-push hook since we already validated)
-console.log(`\n\x1b[1m🚀 Pushing to Remote...\x1b[0m`);
-run(`git push ${REMOTE} ${currentBranch} --no-verify`);
-
-// 6. Handle Pull Request
-console.log(`\n\x1b[1m📝 Managing Pull Request...\x1b[0m`);
-const prUrl = runSilent(`gh pr list --head ${currentBranch} --json url --jq ".[0].url"`);
-
-if (prUrl) {
-  console.log(`✅ PR exists: ${prUrl}`);
-} else {
-  console.log(`✨ Creating new PR...`);
-  run(`gh pr create --base ${BASE_BRANCH} --head ${currentBranch} --fill`);
-}
-
-// 7. Enable Auto-Merge (The "Fire and Forget")
-console.log(`\n\x1b[1m🤖 Engaging Auto-Pilot (Squash Merge)...\x1b[0m`);
-run(`gh pr merge ${currentBranch} --squash --auto --delete-branch`, true);
-
-console.log(`\n\x1b[1m\x1b[32m✅ SHIP SEQUENCE COMPLETE.\x1b[0m`);
-console.log(`The SEAL will merge this automatically when CI passes.`);
-console.log(`You are free to move to the next task. Government. Transcended.`);
