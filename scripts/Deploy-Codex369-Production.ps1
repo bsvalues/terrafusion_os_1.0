@@ -309,7 +309,7 @@ function Deploy-Frontend {
         }
 
         # Build frontend
-        Write-LogInfo "Building frontend (outputs to ../native-shell/ui)..."
+        Write-LogInfo "Building frontend (outputs to ../native-shell/ui/dist)..."
         npm run build *>&1 >> $LogFile
         if ($LASTEXITCODE -eq 0) {
             Write-LogSuccess "Frontend build completed"

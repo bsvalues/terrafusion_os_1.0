@@ -1,8 +1,39 @@
 ---
 # TerraFusion OS - Prometheus ServiceMonitors
 # Configures Prometheus to scrape metrics from all services
+# Constitution-compliant: includes tf_speclock_ok gauge
 ################################################################################
 
+# ServiceMonitor for SpecLock Constitutional Metrics
+# Critical: must scrape tf_speclock_ok gauge for deployment gates
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: speclock-monitor
+  namespace: observability
+  labels:
+    app: speclock
+    release: prometheus
+    constitution: 'sealed'
+spec:
+  selector:
+    matchLabels:
+      app: terrafusion-api
+  namespaceSelector:
+    matchNames:
+      - terrafusion-production
+      - terrafusion-prod
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 10s
+      scrapeTimeout: 5s
+      metricRelabelings:
+        - sourceLabels: [__name__]
+          regex: 'tf_speclock_ok|tf_state_mesh_ok|tf_receipt_count'
+          action: keep
+
+---
 # ServiceMonitor for Backend API
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor

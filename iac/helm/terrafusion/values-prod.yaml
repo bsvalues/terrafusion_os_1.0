@@ -1,3 +1,50 @@
+# =============================================================================
+# TerraFusion Production Values - Constitutional Configuration
+# =============================================================================
+
+# County ID for Benton pilot
+county: 'benton'
+countyId: 'benton'
+
+# Plugin Admission Gate (NO BYPASS)
+# Every plugin pod must pass admission or fail to start
+marketplace:
+  admissionGate:
+    enabled: true
+    # In-cluster URL (service name + port)
+    url: 'http://terrafusion-api:8000/ops/plugins/admission'
+    defaults:
+      maxEgressKbPerMin: 100
+      maxCpuMs: 250
+      maxMemoryMb: 256
+
+# Native K8s ValidatingAdmissionWebhook
+# Constitutional: Deny beats Allow - fail closed
+pluginAdmission:
+  webhook:
+    enabled: true
+    failurePolicy: Fail # NEVER set to Ignore in production
+    timeoutSeconds: 10
+    replicas: 2
+    image:
+      repository: ghcr.io/terrafusion/admission-webhook
+      tag: v1.0.0
+      pullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+    # Use cert-manager for TLS certificate management
+    certManager:
+      enabled: true
+      createSelfSignedIssuer: true
+      issuerRef:
+        name: terrafusion-ca-issuer
+        kind: Issuer
+
 replicaCount: 4
 autoscaling:
   minReplicas: 4

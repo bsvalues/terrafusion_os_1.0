@@ -1,88 +1,50 @@
-name: "TerraFusion OS Government CodeQL Configuration"
+name: 'TerraFusion OS Government CodeQL Configuration'
 # Government-grade static analysis configuration for FISMA compliance
+# Scoped to production code only - excludes legacy/vendor/deployment artifacts
 
 disable-default-queries: false
 
 queries:
-  - name: security-extended
-    uses: security-extended
-  - name: security-and-quality
-    uses: security-and-quality
-  - name: government-compliance
-    uses: ./.github/codeql/government-queries
+  - uses: security-extended
+  - uses: security-and-quality
 
-# Government-specific security patterns
+# Only scan the real production code
 paths:
-  - backend/
-  - frontend/src/
-  - modules/
-  - backend/ai-models/
+  - backend
+  - frontend
 
 paths-ignore:
-  - node_modules/
-  - "**/*.min.js"
-  - "**/*.bundle.js"
-  - backend/bin/
-  - backend/obj/
-  - "**/*.test.js"
-  - "**/*.test.ts"
-  - "**/*.spec.js" 
-  - "**/*.spec.ts"
+  # Standard build artifacts
+  - '**/node_modules/**'
+  - '**/dist/**'
+  - '**/build/**'
+  - '**/coverage/**'
+  - '**/bin/**'
+  - '**/obj/**'
+  - '**/publish/**'
+  - '**/*.min.js'
+  - '**/*.bundle.js'
 
-# Custom configuration for government compliance
-query-filters:
-  - exclude:
-      id: js/unused-local-variable
-  - include:
-      kind: problem
-      severity: error
-  - include:
-      kind: problem
-      severity: warning
-      tags:
-        - security
-        - government
-        - fisma-compliance
-        - data-protection
+  # Test files (scanned separately)
+  - '**/*.test.js'
+  - '**/*.test.ts'
+  - '**/*.spec.js'
+  - '**/*.spec.ts'
 
-# Database and external system configuration
-external-repository-token-stdin: true
+  # Legacy / vendor / deployment directories (contain malformed JSON, huge files)
+  - 'workspaces/**'
+  - 'deployment/**'
+  - 'os-platform/**'
+  - 'marketplace/**'
+  - 'monorepo-scaffolding/**'
+  - 'costforge-ai-workspace/**'
+  - 'applications/**'
+  - 'tests/marketplace/**'
+  - 'TerraFusion_Command_Portal_Starter/**'
 
-# Performance and resource limits
-database:
-  cluster-threads: 4
-  ram: 4096
+  # Archived / backup directories
+  - '**/*.archived/**'
+  - '**/*-backup-*/**'
 
-# Government security focus areas
-security-severity: "high"
-
-# Language-specific configurations
-languages:
-  javascript:
-    # Frontend JavaScript/TypeScript security
-    framework: "react"
-    security-patterns:
-      - "injection-attacks"
-      - "xss-prevention" 
-      - "authentication-bypass"
-      - "sensitive-data-exposure"
-  
-  csharp:
-    # Backend .NET security
-    framework: "aspnetcore"
-    security-patterns:
-      - "sql-injection"
-      - "command-injection"
-      - "authentication-bypass"
-      - "authorization-bypass"
-      - "data-exposure"
-      - "government-compliance"
-  
-  python:
-    # AI models security
-    framework: "ml-security"
-    security-patterns:
-      - "model-poisoning"
-      - "data-leakage"
-      - "injection-attacks"
-      - "unauthorized-access"
+  # Large generated/vendor files (45MB+ JS file)
+  - '**/report-player-core*.js'

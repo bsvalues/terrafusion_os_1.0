@@ -1,0 +1,112 @@
+{
+  "$schema": "speclock.schema.json",
+  "lock_id": "amendment.v1",
+  "surface": "amendment",
+  "version": "1.0.0",
+  "status": "active",
+  "owner": "systemgpt",
+  "created": "2025-12-12",
+  "updated": "2025-12-12",
+  "description": "Constitutional governance upgrade workflow",
+  "lifecycle_states": [
+    "proposed",
+    "reviewed",
+    "approved",
+    "effective",
+    "expired",
+    "superseded",
+    "rejected"
+  ],
+  "review_gates": [
+    {
+      "gate": "builder",
+      "checks": [
+        "spec_changes_complete",
+        "tests_cover_changes",
+        "artifacts_regenerate_cleanly",
+        "migration_plan_executable"
+      ]
+    },
+    {
+      "gate": "breaker",
+      "checks": [
+        "attack_vectors_tested",
+        "edge_cases_covered",
+        "backwards_compatibility_assessed",
+        "security_implications_documented"
+      ]
+    },
+    {
+      "gate": "security",
+      "checks": [
+        "no_new_attack_surface",
+        "fisma_compliance_maintained",
+        "audit_logging_preserved",
+        "county_isolation_verified"
+      ]
+    }
+  ],
+  "quorum_requirements": [
+    {
+      "type": "minor",
+      "required": 2,
+      "description": "Patch-level changes"
+    },
+    {
+      "type": "moderate",
+      "required": 3,
+      "description": "Minor version changes"
+    },
+    {
+      "type": "major",
+      "required": 5,
+      "description": "Breaking changes"
+    },
+    {
+      "type": "critical",
+      "required": 7,
+      "description": "Security-related changes"
+    }
+  ],
+  "validation_rules": [
+    {
+      "id": "target_lock_exists",
+      "rule": "target_lock_id must exist in INDEX.json",
+      "error": "target lock not found"
+    },
+    {
+      "id": "nbf_in_future",
+      "rule": "effective_nbf must be in the future at proposal time",
+      "error": "nbf must be future date"
+    },
+    {
+      "id": "exp_after_nbf",
+      "rule": "if effective_exp present, must be > effective_nbf",
+      "error": "exp must be after nbf"
+    },
+    {
+      "id": "quorum_minimum",
+      "rule": "required_quorum must be >= 2",
+      "error": "quorum must be at least 2"
+    },
+    {
+      "id": "signers_match_quorum",
+      "rule": "signers array must have exactly required_quorum valid signatures",
+      "error": "insufficient valid signatures"
+    }
+  ],
+  "generated_artifacts": [
+    "generated/amendment.schema.json",
+    "generated/amendment.workflow.json"
+  ],
+  "test_requirements": [
+    "schema_validates_canonical_examples",
+    "schema_rejects_missing_required",
+    "schema_rejects_invalid_timestamps",
+    "schema_rejects_quorum_lt_2",
+    "target_lock_must_exist",
+    "cannot_skip_states",
+    "cannot_activate_before_nbf",
+    "cannot_activate_without_quorum"
+  ]
+}

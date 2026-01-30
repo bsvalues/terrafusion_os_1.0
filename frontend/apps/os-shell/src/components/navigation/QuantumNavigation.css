@@ -1,0 +1,306 @@
+/* ═══════════════════════════════════════════════════════════════
+   QUANTUM NAVIGATION - TERRAFUSION GOVERNANCE PLATFORM
+   Advanced navigation animations and effects
+   ═══════════════════════════════════════════════════════════════ */
+
+.quantum-navigation {
+  position: relative;
+  z-index: 10;
+}
+
+/* Navigation header effects */
+.quantum-nav-header {
+  position: relative;
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, rgba(0, 128, 255, 0.05) 100%);
+}
+
+.quantum-nav-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.1) 50%, transparent 100%);
+  animation: quantum-header-sweep 4s linear infinite;
+  pointer-events: none;
+}
+
+/* Navigation item hover effects */
+.quantum-nav-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.quantum-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.2) 50%, transparent 100%);
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.quantum-nav-item:hover::before {
+  left: 100%;
+}
+
+/* Active item glow effect */
+.quantum-nav-item.terra-glow {
+  position: relative;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.2),
+    inset 0 0 20px rgba(0, 255, 255, 0.1);
+}
+
+.quantum-nav-item.terra-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(0, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(0, 255, 255, 0.1) 100%
+  );
+  animation: quantum-active-pulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Navigation children animation */
+.quantum-nav-children {
+  animation: quantum-expand 0.3s ease-out;
+  transform-origin: top;
+}
+
+.quantum-nav-children .quantum-nav-item {
+  position: relative;
+  animation: quantum-slide-in 0.3s ease-out forwards;
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.quantum-nav-children .quantum-nav-item:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.quantum-nav-children .quantum-nav-item:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.quantum-nav-children .quantum-nav-item:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.quantum-nav-children .quantum-nav-item:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.quantum-nav-children .quantum-nav-item:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+/* Navigation content scrollbar */
+.quantum-nav-content {
+  /* Modern browsers */
+  /* Modern scrollbar styling with fallback */
+  overflow: auto;
+}
+
+.quantum-nav-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.quantum-nav-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.quantum-nav-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.quantum-nav-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.5);
+}
+
+/* Navigation footer status indicator */
+.quantum-nav-footer {
+  position: relative;
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.02) 0%, rgba(0, 128, 255, 0.02) 100%);
+}
+
+/* Breadcrumb styling */
+.quantum-breadcrumb {
+  padding: 1rem;
+  background: rgba(30, 41, 59, 0.3);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.quantum-breadcrumb button {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.quantum-breadcrumb button::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--tf-quantum-cyan), var(--tf-network-blue));
+  transition: width 0.3s ease;
+}
+
+.quantum-breadcrumb button:hover::after {
+  width: 100%;
+}
+
+/* Collapsed navigation adjustments */
+.quantum-navigation.w-16 .quantum-nav-item {
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
+}
+
+.quantum-navigation.w-16 .quantum-nav-header {
+  padding: 1rem 0.5rem;
+}
+
+.quantum-navigation.w-16 .quantum-nav-footer {
+  padding: 1rem 0.5rem;
+}
+
+/* Responsive navigation */
+@media (max-width: 768px) {
+  .quantum-navigation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .quantum-navigation.mobile-open {
+    transform: translateX(0);
+  }
+
+  .quantum-navigation.w-16 {
+    width: 4rem;
+  }
+
+  .quantum-navigation:not(.w-16) {
+    width: 16rem;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .quantum-nav-item {
+    border: 1px solid rgba(0, 255, 255, 0.5);
+  }
+
+  .quantum-nav-item:hover {
+    background: rgba(0, 255, 255, 0.2);
+  }
+
+  .quantum-nav-item.terra-glow {
+    border: 2px solid var(--tf-quantum-cyan);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .quantum-nav-header::before,
+  .quantum-nav-item::before,
+  .quantum-nav-item.terra-glow::after,
+  .quantum-nav-children,
+  .quantum-nav-children .quantum-nav-item {
+    animation: none;
+  }
+
+  .quantum-nav-item::before {
+    display: none;
+  }
+
+  .quantum-nav-children .quantum-nav-item {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes quantum-header-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes quantum-active-pulse {
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes quantum-expand {
+  0% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes quantum-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Navigation item focus states */
+.quantum-nav-item:focus-visible {
+  outline: 2px solid var(--tf-quantum-cyan);
+  outline-offset: 2px;
+}
+
+/* Badge pulse animation */
+.quantum-nav-item span[class*='bg-cyan-400/20'] {
+  animation: quantum-badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes quantum-badge-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}

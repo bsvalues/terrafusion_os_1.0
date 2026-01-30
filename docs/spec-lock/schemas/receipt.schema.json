@@ -1,0 +1,352 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/receipt.schema.json",
+  "title": "TerraFusion Verifiable Receipt Schema v1.0.0",
+  "description": "Citizen-verifiable receipt format for government artifact integrity",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "artifact",
+    "issuance",
+    "signatures",
+    "verification"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Receipt schema version (locked)"
+    },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^tfr-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+      "description": "Unique receipt identifier (UUID with prefix)"
+    },
+    "artifact": {
+      "$ref": "#/$defs/artifact",
+      "description": "The artifact this receipt attests to"
+    },
+    "issuance": {
+      "$ref": "#/$defs/issuance",
+      "description": "Issuance metadata and time bounds"
+    },
+    "signatures": {
+      "$ref": "#/$defs/signatures",
+      "description": "Cryptographic signature proof"
+    },
+    "verification": {
+      "$ref": "#/$defs/verification",
+      "description": "Verification endpoints and trust anchors"
+    },
+    "chain": {
+      "$ref": "#/$defs/chain",
+      "description": "Optional chain to previous receipts"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional context (non-signed, informational only)"
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": ["type", "hash", "hash_algorithm", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "assessment_notice",
+            "levy_table",
+            "gis_export",
+            "permit_document",
+            "policy_bundle",
+            "plugin_bundle",
+            "model_weights",
+            "schema_snapshot",
+            "deployment_manifest",
+            "custom"
+          ],
+          "description": "Artifact classification"
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 hash of artifact content"
+        },
+        "hash_algorithm": {
+          "type": "string",
+          "const": "sha256",
+          "description": "Hash algorithm used (locked to SHA-256)"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Artifact size in bytes"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "Human-readable artifact description"
+        },
+        "artifact_id": {
+          "type": "string",
+          "description": "Internal artifact identifier (parcel ID, permit number, etc.)"
+        },
+        "content_type": {
+          "type": "string",
+          "description": "MIME type of the artifact"
+        }
+      }
+    },
+    "issuance": {
+      "type": "object",
+      "required": ["issued_at", "nbf", "exp", "issuer"],
+      "additionalProperties": false,
+      "properties": {
+        "issued_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of receipt creation"
+        },
+        "nbf": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Not Before - receipt validity start"
+        },
+        "exp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Expiration - receipt validity end"
+        },
+        "issuer": {
+          "$ref": "#/$defs/issuer",
+          "description": "Issuing authority"
+        },
+        "speclock_manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Hash of the SpecLock manifest at issuance time"
+        },
+        "policy_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Hash of the policy bundle in effect"
+        }
+      }
+    },
+    "issuer": {
+      "type": "object",
+      "required": ["id", "name", "scope"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Issuer identifier (county code, state code, vendor ID)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable issuer name"
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["county", "state", "federation", "vendor"],
+          "description": "Governance scope of issuer"
+        },
+        "spiffe_id": {
+          "type": "string",
+          "pattern": "^spiffe://",
+          "description": "SPIFFE ID for service-to-service verification"
+        }
+      }
+    },
+    "signatures": {
+      "type": "object",
+      "required": ["mode", "signed_payload_hash"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["cosmic_tss", "god_tier_quorum", "mythic_single"],
+          "description": "Signature mode used"
+        },
+        "signed_payload_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Hash of the canonical signed payload"
+        },
+        "cosmic_tss": {
+          "$ref": "#/$defs/cosmicTssSignature",
+          "description": "FROST threshold signature (if mode=cosmic_tss)"
+        },
+        "god_tier_quorum": {
+          "$ref": "#/$defs/quorumSignature",
+          "description": "Quorum signatures (if mode=god_tier_quorum)"
+        },
+        "mythic_single": {
+          "$ref": "#/$defs/singleSignature",
+          "description": "Single signature (if mode=mythic_single)"
+        }
+      }
+    },
+    "cosmicTssSignature": {
+      "type": "object",
+      "required": [
+        "signature",
+        "group_public_key",
+        "threshold_k",
+        "participants_n",
+        "participants_used"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "signature": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{128}$",
+          "description": "64-byte Ed25519 signature (hex)"
+        },
+        "group_public_key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "32-byte group public key (hex)"
+        },
+        "threshold_k": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Threshold k (signers required)"
+        },
+        "participants_n": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total participants n"
+        },
+        "participants_used": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1 },
+          "minItems": 1,
+          "description": "Participant IDs that contributed"
+        }
+      }
+    },
+    "quorumSignature": {
+      "type": "object",
+      "required": ["signatures", "required_authorities", "actual_authorities"],
+      "additionalProperties": false,
+      "properties": {
+        "signatures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["authority_id", "signature", "public_key"],
+            "properties": {
+              "authority_id": { "type": "string" },
+              "signature": { "type": "string" },
+              "public_key": { "type": "string" }
+            }
+          },
+          "description": "Individual authority signatures"
+        },
+        "required_authorities": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Required signature count"
+        },
+        "actual_authorities": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Actual signature count"
+        }
+      }
+    },
+    "singleSignature": {
+      "type": "object",
+      "required": ["signature", "public_key", "authority_id"],
+      "additionalProperties": false,
+      "properties": {
+        "signature": {
+          "type": "string",
+          "description": "Base64 or hex signature"
+        },
+        "public_key": {
+          "type": "string",
+          "description": "Base64 or hex public key"
+        },
+        "authority_id": {
+          "type": "string",
+          "description": "Authority that signed"
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": ["public_endpoint", "trust_anchors"],
+      "additionalProperties": false,
+      "properties": {
+        "public_endpoint": {
+          "type": "string",
+          "format": "uri",
+          "description": "Public verification URL: /public/proof/{receipt_id}"
+        },
+        "offline_verifier": {
+          "type": "string",
+          "description": "CLI/binary name for offline verification"
+        },
+        "trust_anchors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type", "value"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "group_public_key",
+                  "ca_fingerprint",
+                  "spiffe_trust_domain"
+                ],
+                "description": "Trust anchor type"
+              },
+              "value": {
+                "type": "string",
+                "description": "Trust anchor value"
+              },
+              "description": {
+                "type": "string",
+                "description": "Human-readable description"
+              }
+            }
+          },
+          "description": "Minimal trust anchors for verification"
+        },
+        "qr_code_data": {
+          "type": "string",
+          "description": "Compact verification URL for QR encoding"
+        }
+      }
+    },
+    "chain": {
+      "type": "object",
+      "required": ["previous_receipt_id", "previous_receipt_hash"],
+      "additionalProperties": false,
+      "properties": {
+        "previous_receipt_id": {
+          "type": "string",
+          "description": "ID of the previous receipt in chain"
+        },
+        "previous_receipt_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Hash of the previous receipt"
+        },
+        "chain_depth": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Position in the chain"
+        }
+      }
+    }
+  }
+}

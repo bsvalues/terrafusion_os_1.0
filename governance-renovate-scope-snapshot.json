@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-01-18T18:06:40.826Z",
+  "config": {
+    "maxScope": 60,
+    "includePaths": ["package.json"]
+  },
+  "metrics": {
+    "matchedCount": 0,
+    "totalManifests": 0
+  },
+  "status": "OK",
+  "matches": []
+}

@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "id": "20251217_163311Z_os-shell_fix-breaker-path-resolution",
+  "status": "complete",
+  "createdUtc": "2025-12-17T16:33:11Z",
+  "updatedUtc": "2025-12-17T16:50:25Z",
+  "project": "os-shell",
+  "feature": "Fix breaker PATH resolution",
+  "featureSlug": "fix-breaker-path-resolution",
+  "mode": "bugfix",
+  "risk": "low",
+  "diffOnly": true,
+  "specLock": "strict",
+  "tests": "all",
+  "scope": [
+    "config/tenant."
+  ],
+  "agents": {
+    "builder": "Agent A",
+    "breaker": "Agent B"
+  },
+  "git": {
+    "baseBranch": "main",
+    "workBranch": "feat/os-shell/fix-breaker-path-resolution"
+  },
+  "artifacts": {
+    "contract": "CONTRACT.md",
+    "speclock": "SPECLOCK.md",
+    "testplan": "TESTPLAN.md",
+    "attackplan": "ATTACKPLAN.md",
+    "patchlog": "PATCHLOG.md",
+    "attackReport": "ATTACK_REPORT.md",
+    "prReview": "PR_REVIEW.md",
+    "notes": "NOTES.md"
+  },
+  "speclock": "frozen"
+}

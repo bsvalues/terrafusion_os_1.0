@@ -1,0 +1,9 @@
+{
+  "params": {
+    "county": "benton",
+    "subjectId": "S-1",
+    "compIds": ["C1", "C2", "C3"],
+    "adjustments": true
+  },
+  "assert": { "resultKeys": ["rationale", "comps"], "noPii": true }
+}

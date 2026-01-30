@@ -1,0 +1,76 @@
+{{- if and .Values.pluginAdmission.webhook.enabled .Values.pluginAdmission.webhook.certManager.enabled }}
+# Certificate for Admission Webhook (via cert-manager)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "terrafusion.fullname" . }}-admission-cert
+  labels:
+    {{- include "terrafusion.labels" . | nindent 4 }}
+spec:
+  secretName: {{ include "terrafusion.fullname" . }}-admission-cert
+  duration: 8760h # 1 year
+  renewBefore: 720h # 30 days
+  subject:
+    organizations:
+      - TerraFusion Government
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+  usages:
+    - server auth
+    - digital signature
+    - key encipherment
+  dnsNames:
+    - {{ include "terrafusion.fullname" . }}-admission
+    - {{ include "terrafusion.fullname" . }}-admission.{{ .Release.Namespace }}
+    - {{ include "terrafusion.fullname" . }}-admission.{{ .Release.Namespace }}.svc
+    - {{ include "terrafusion.fullname" . }}-admission.{{ .Release.Namespace }}.svc.cluster.local
+  issuerRef:
+    name: {{ .Values.pluginAdmission.webhook.certManager.issuerRef.name | default "selfsigned-issuer" }}
+    kind: {{ .Values.pluginAdmission.webhook.certManager.issuerRef.kind | default "ClusterIssuer" }}
+    group: cert-manager.io
+{{- end }}
+---
+{{- if and .Values.pluginAdmission.webhook.enabled .Values.pluginAdmission.webhook.certManager.enabled }}
+# Self-signed issuer for admission webhook (if not using external CA)
+{{- if .Values.pluginAdmission.webhook.certManager.createSelfSignedIssuer }}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "terrafusion.fullname" . }}-selfsigned
+  labels:
+    {{- include "terrafusion.labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "terrafusion.fullname" . }}-ca
+  labels:
+    {{- include "terrafusion.labels" . | nindent 4 }}
+spec:
+  isCA: true
+  commonName: terrafusion-admission-ca
+  secretName: {{ include "terrafusion.fullname" . }}-ca-secret
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: {{ include "terrafusion.fullname" . }}-selfsigned
+    kind: Issuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "terrafusion.fullname" . }}-ca-issuer
+  labels:
+    {{- include "terrafusion.labels" . | nindent 4 }}
+spec:
+  ca:
+    secretName: {{ include "terrafusion.fullname" . }}-ca-secret
+{{- end }}
+{{- end }}

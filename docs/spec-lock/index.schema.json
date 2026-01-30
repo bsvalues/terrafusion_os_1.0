@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/spec-lock-index.schema.json",
+  "title": "TerraFusion SpecLock Index Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "updated", "locks"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version for the index file.",
+      "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$"
+    },
+    "updated": {
+      "type": "string",
+      "description": "Last updated date (YYYY-MM-DD).",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "locks": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "$ref": "#/$defs/lockEntry" }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slugId": {
+      "type": "string",
+      "minLength": 4,
+      "pattern": "^(tf\\.[a-z0-9_]+\\.[a-z0-9_]+|[a-z]+\\.v[0-9]+)$",
+      "description": "Stable lock id: tf.<surface>.<slug> or <surface>.v<N> for governance locks"
+    },
+    "dateString": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "specVersion": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "deprecated", "draft"]
+    },
+    "surface": {
+      "type": "string",
+      "enum": [
+        "api",
+        "ui",
+        "events",
+        "metrics",
+        "alerts",
+        "dashboards",
+        "mixed",
+        "governance",
+        "receipt",
+        "pluginlock",
+        "amendment",
+        "plugin",
+        "policy",
+        "schema",
+        "model",
+        "state-report",
+        "runtimecontract"
+      ]
+    },
+    "pathsArray": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "generatedArtifactsArray": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "$ref": "#/$defs/nonEmptyString" },
+      "description": "Files generated from this spec-lock (renderer/compiler outputs)."
+    },
+    "generatorKeysArray": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "List of generator keys to run for this lock (from GENERATORS.json). If empty, uses surface default."
+    },
+    "tagsArray": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_\\-]+$"
+      }
+    },
+    "lockEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "project",
+        "surface",
+        "name",
+        "owner",
+        "status",
+        "spec_version",
+        "spec_path",
+        "test_paths",
+        "ci_tags",
+        "created",
+        "updated",
+        "artifact_paths",
+        "notes"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/slugId" },
+        "project": { "$ref": "#/$defs/nonEmptyString" },
+        "surface": { "$ref": "#/$defs/surface" },
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "owner": { "$ref": "#/$defs/nonEmptyString" },
+        "status": { "$ref": "#/$defs/status" },
+        "spec_version": { "$ref": "#/$defs/specVersion" },
+        "spec_path": { "$ref": "#/$defs/nonEmptyString" },
+        "artifact_paths": { "$ref": "#/$defs/pathsArray" },
+        "generated_artifacts": {
+          "$ref": "#/$defs/generatedArtifactsArray",
+          "description": "Files generated from this spec-lock (renderer/compiler outputs)."
+        },
+        "spec_data_path": {
+          "type": "string",
+          "minLength": 0,
+          "description": "Optional structured YAML/JSON input for generators (preferred over parsing markdown)."
+        },
+        "generator_keys": {
+          "$ref": "#/$defs/generatorKeysArray",
+          "description": "Which generators to run from GENERATORS.json (empty = surface default)."
+        },
+        "test_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/nonEmptyString" },
+          "description": "Glob patterns pointing at enforcement tests (must match >=1 file)."
+        },
+        "ci_tags": { "$ref": "#/$defs/tagsArray" },
+        "created": { "$ref": "#/$defs/dateString" },
+        "updated": { "$ref": "#/$defs/dateString" },
+        "notes": { "type": "string" },
+        "related": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/slugId" },
+          "description": "IDs of related spec-locks"
+        }
+      }
+    }
+  }
+}

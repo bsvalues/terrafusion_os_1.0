@@ -1,0 +1,159 @@
+# =============================================================================
+# Phase 38: Atlas Alert Rules - promtool Test File
+# Tests for AtlasForecastStale, AtlasOrchestratorStall, AtlasForecastErrorRateHigh,
+# AtlasForecastDurationSpike, AtlasAnomalySpike, AtlasAnomalyCritical, AtlasTelemetryDropRate
+# =============================================================================
+
+rule_files:
+  - ../atlas-alerts.yml
+
+evaluation_interval: 1m
+
+tests:
+  # ===========================================================================
+  # AtlasOrchestratorStall Tests
+  # ===========================================================================
+
+  # Nominal: Orchestrator running normally - no alert
+  - interval: 1m
+    input_series:
+      - series: 'atlas_forecast_orchestrator_runs_total'
+        values: '1 2 3 4 5 6 7 8 9 10 11 12'
+    alert_rule_test:
+      - alertname: AtlasOrchestratorStall
+        eval_time: 10m
+        exp_alerts: []
+
+  # Stall: No increase in runs for 10+ minutes - alert fires
+  - interval: 1m
+    input_series:
+      - series: 'atlas_forecast_orchestrator_runs_total'
+        values: '10 10 10 10 10 10 10 10 10 10 10 10'
+    alert_rule_test:
+      - alertname: AtlasOrchestratorStall
+        eval_time: 10m
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              government: 'true'
+              component: orchestrator
+
+  # ===========================================================================
+  # AtlasForecastErrorRateHigh Tests
+  # ===========================================================================
+
+  # Nominal: Low error rate (< 5%) - no alert
+  - interval: 1m
+    input_series:
+      - series: 'atlas_forecast_engine_errors_total{countyId="benton",errorType="validation"}'
+        values: '0 1 1 2 2 3 3 4 4 5'
+      - series: 'atlas_forecast_generated_total{countyId="benton"}'
+        values: '0 100 200 300 400 500 600 700 800 900'
+    alert_rule_test:
+      - alertname: AtlasForecastErrorRateHigh
+        eval_time: 5m
+        exp_alerts: []
+
+  # High error rate (> 5%) - alert fires
+  - interval: 1m
+    input_series:
+      - series: 'atlas_forecast_engine_errors_total{countyId="benton",errorType="validation"}'
+        values: '0 10 20 30 40 50 60 70 80 90'
+      - series: 'atlas_forecast_generated_total{countyId="benton"}'
+        values: '0 100 200 300 400 500 600 700 800 900'
+    alert_rule_test:
+      - alertname: AtlasForecastErrorRateHigh
+        eval_time: 5m
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              government: 'true'
+              component: forecast
+              countyId: benton
+
+  # ===========================================================================
+  # AtlasAnomalySpike Tests
+  # ===========================================================================
+
+  # Nominal: Low anomaly rate - no alert
+  - interval: 1m
+    input_series:
+      - series: 'atlas_anomaly_detected_total{countyId="benton",anomalyType="threshold"}'
+        values: '0 1 2 3 4 5 6 7 8 9'
+    alert_rule_test:
+      - alertname: AtlasAnomalySpike
+        eval_time: 5m
+        exp_alerts: []
+
+  # Spike: >10 anomalies in 5 minutes - alert fires
+  - interval: 1m
+    input_series:
+      - series: 'atlas_anomaly_detected_total{countyId="benton",anomalyType="threshold"}'
+        values: '0 5 10 15 20 25 30 35 40 45'
+    alert_rule_test:
+      - alertname: AtlasAnomalySpike
+        eval_time: 5m
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              government: 'true'
+              component: anomaly
+              countyId: benton
+
+  # ===========================================================================
+  # AtlasAnomalyCritical Tests
+  # ===========================================================================
+
+  # Nominal: No critical anomalies - no alert
+  - interval: 1m
+    input_series:
+      - series: 'atlas_anomaly_detected_total{countyId="benton",anomalyType="threshold"}'
+        values: '0 1 2 3 4 5'
+    alert_rule_test:
+      - alertname: AtlasAnomalyCritical
+        eval_time: 5m
+        exp_alerts: []
+
+  # Critical anomaly detected - alert fires immediately
+  - interval: 1m
+    input_series:
+      - series: 'atlas_anomaly_detected_total{countyId="benton",anomalyType="critical"}'
+        values: '0 0 0 0 1 2'
+    alert_rule_test:
+      - alertname: AtlasAnomalyCritical
+        eval_time: 5m
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              government: 'true'
+              component: anomaly
+              countyId: benton
+
+  # ===========================================================================
+  # AtlasTelemetryDropRate Tests
+  # ===========================================================================
+
+  # Nominal: Telemetry flowing - no alert
+  - interval: 1m
+    input_series:
+      - series: 'atlas_telemetry_ingest_total{countyId="benton"}'
+        values: '0 10 20 30 40 50 60 70 80 90'
+    alert_rule_test:
+      - alertname: AtlasTelemetryDropRate
+        eval_time: 5m
+        exp_alerts: []
+
+  # Drop: Zero telemetry for 5+ minutes - alert fires
+  - interval: 1m
+    input_series:
+      - series: 'atlas_telemetry_ingest_total{countyId="benton"}'
+        values: '100 100 100 100 100 100 100 100 100 100'
+    alert_rule_test:
+      - alertname: AtlasTelemetryDropRate
+        eval_time: 5m
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              government: 'true'
+              component: telemetry
+              countyId: benton

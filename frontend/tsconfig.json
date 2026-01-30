@@ -28,22 +28,22 @@
     /* Path mapping - Updated for modern TypeScript */
     "paths": {
       "@/*": [
-        "./src/*"
+        "./apps/os-shell/src/*"
       ],
       "@components/*": [
-        "./src/components/*"
+        "./apps/os-shell/src/components/*"
       ],
       "@services/*": [
-        "./src/services/*"
+        "./apps/os-shell/src/services/*"
       ],
       "@hooks/*": [
-        "./src/hooks/*"
+        "./apps/os-shell/src/hooks/*"
       ],
       "@utils/*": [
-        "./src/utils/*"
+        "./apps/os-shell/src/utils/*"
       ],
       "@types/*": [
-        "./src/types/*"
+        "./apps/os-shell/src/types/*"
       ],
       "@terrafusion/shared": [
         "../terrafusion-shared/dist/index.js"
@@ -51,7 +51,7 @@
     }
   },
   "include": [
-    "src"
+    "apps/os-shell/src"
   ],
   "exclude": [
     "node_modules",

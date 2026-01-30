@@ -1,0 +1,20 @@
+# Ignore legacy/vendor directories
+workspaces/
+deployment/
+os-platform/
+monorepo-scaffolding/
+marketplace/
+applications/
+ecosystem/
+SDK/
+**/node_modules/
+**/dist/
+**/build/
+
+# Ignore agent-generated documentation
+.github/agents/
+
+# Ignore generated/archived files
+*.backup.md
+ARCHIVE*/
+legacy*/

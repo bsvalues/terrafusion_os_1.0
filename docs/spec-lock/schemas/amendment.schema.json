@@ -1,0 +1,621 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/amendment.schema.json",
+  "title": "TerraFusion Amendment Workflow Schema v1.0.0",
+  "description": "Constitutional upgrade workflow - governance changes require formal amendment process",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "amendment_id",
+    "proposal",
+    "changes",
+    "review",
+    "approval",
+    "implementation"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Amendment schema version (locked)"
+    },
+    "amendment_id": {
+      "type": "string",
+      "pattern": "^tfa-[0-9]{4}-[0-9]{3}$",
+      "description": "Amendment ID format: tfa-YYYY-NNN"
+    },
+    "proposal": {
+      "$ref": "#/$defs/proposal",
+      "description": "Amendment proposal details"
+    },
+    "changes": {
+      "$ref": "#/$defs/changes",
+      "description": "Specific governance objects being amended"
+    },
+    "review": {
+      "$ref": "#/$defs/review",
+      "description": "Review process and gates"
+    },
+    "approval": {
+      "$ref": "#/$defs/approval",
+      "description": "Approval quorum and signatures"
+    },
+    "implementation": {
+      "$ref": "#/$defs/implementation",
+      "description": "Implementation and rollout plan"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "proposed",
+        "review",
+        "approved",
+        "implementing",
+        "active",
+        "superseded",
+        "rejected"
+      ],
+      "description": "Amendment lifecycle status"
+    },
+    "audit_trail": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/auditEntry" },
+      "description": "Immutable audit trail of all state transitions"
+    }
+  },
+  "$defs": {
+    "proposal": {
+      "type": "object",
+      "required": [
+        "title",
+        "summary",
+        "rationale",
+        "author",
+        "proposed_at",
+        "governance_objects"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 200,
+          "description": "Amendment title"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 50,
+          "maxLength": 2000,
+          "description": "Executive summary of the amendment"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 100,
+          "description": "Detailed rationale for the change"
+        },
+        "author": {
+          "$ref": "#/$defs/author",
+          "description": "Amendment author"
+        },
+        "proposed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Proposal timestamp"
+        },
+        "governance_objects": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "PolicyLock",
+              "SchemaLock",
+              "ModelLock",
+              "AuditLock",
+              "ReleaseLock",
+              "PluginLock",
+              "ReceiptSpec",
+              "AmendmentSpec"
+            ]
+          },
+          "minItems": 1,
+          "description": "Governance objects being amended"
+        },
+        "impact_scope": {
+          "type": "string",
+          "enum": ["county", "state", "federation", "vendor", "all"],
+          "description": "Scope of impact"
+        },
+        "breaking_change": {
+          "type": "boolean",
+          "description": "Whether this is a breaking change"
+        },
+        "supersedes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^tfa-[0-9]{4}-[0-9]{3}$"
+          },
+          "description": "Previous amendments being superseded"
+        }
+      }
+    },
+    "author": {
+      "type": "object",
+      "required": ["id", "name", "scope"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Author identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Author name"
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["county", "state", "vendor", "federation"],
+          "description": "Author's governance scope"
+        },
+        "contact": {
+          "type": "string",
+          "format": "email",
+          "description": "Contact email"
+        }
+      }
+    },
+    "changes": {
+      "type": "object",
+      "required": ["spec_changes", "test_changes", "migration_plan"],
+      "additionalProperties": false,
+      "properties": {
+        "spec_changes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/specChange" },
+          "minItems": 1,
+          "description": "Specification changes"
+        },
+        "test_changes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/testChange" },
+          "minItems": 1,
+          "description": "Test changes (required)"
+        },
+        "generator_changes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/generatorChange" },
+          "description": "Generator/compiler changes"
+        },
+        "migration_plan": {
+          "$ref": "#/$defs/migrationPlan",
+          "description": "Migration plan (required)"
+        },
+        "rollback_plan": {
+          "$ref": "#/$defs/rollbackPlan",
+          "description": "Rollback plan"
+        }
+      }
+    },
+    "specChange": {
+      "type": "object",
+      "required": ["path", "change_type", "before_hash", "after_hash"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path being changed"
+        },
+        "change_type": {
+          "type": "string",
+          "enum": ["create", "modify", "delete", "rename"],
+          "description": "Type of change"
+        },
+        "before_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$|^null$",
+          "description": "SHA-256 before change (null for create)"
+        },
+        "after_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$|^null$",
+          "description": "SHA-256 after change (null for delete)"
+        },
+        "diff_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to view diff"
+        }
+      }
+    },
+    "testChange": {
+      "type": "object",
+      "required": ["path", "test_type"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Test file path"
+        },
+        "test_type": {
+          "type": "string",
+          "enum": [
+            "unit",
+            "integration",
+            "e2e",
+            "security",
+            "performance",
+            "compliance"
+          ],
+          "description": "Test type"
+        },
+        "coverage_target": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Required coverage percentage"
+        }
+      }
+    },
+    "generatorChange": {
+      "type": "object",
+      "required": ["generator_key", "change_type"],
+      "additionalProperties": false,
+      "properties": {
+        "generator_key": {
+          "type": "string",
+          "description": "Generator key from GENERATORS.json"
+        },
+        "change_type": {
+          "type": "string",
+          "enum": ["create", "modify", "delete"],
+          "description": "Type of change"
+        },
+        "expected_outputs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Expected generated artifacts"
+        }
+      }
+    },
+    "migrationPlan": {
+      "type": "object",
+      "required": ["steps", "estimated_duration", "backward_compatible"],
+      "additionalProperties": false,
+      "properties": {
+        "steps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/migrationStep" },
+          "minItems": 1,
+          "description": "Ordered migration steps"
+        },
+        "estimated_duration": {
+          "type": "string",
+          "pattern": "^P[0-9]+[DWMH]$",
+          "description": "ISO 8601 duration estimate"
+        },
+        "backward_compatible": {
+          "type": "boolean",
+          "description": "Whether old versions remain compatible during migration"
+        },
+        "data_migration_required": {
+          "type": "boolean",
+          "description": "Whether data migration is needed"
+        }
+      }
+    },
+    "migrationStep": {
+      "type": "object",
+      "required": ["order", "description", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "order": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Step order"
+        },
+        "description": {
+          "type": "string",
+          "description": "Step description"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["schema", "code", "config", "data", "rollout"],
+          "description": "Step type"
+        },
+        "automated": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether step is automated"
+        },
+        "validation": {
+          "type": "string",
+          "description": "Validation command/script"
+        }
+      }
+    },
+    "rollbackPlan": {
+      "type": "object",
+      "required": ["steps", "max_rollback_window"],
+      "additionalProperties": false,
+      "properties": {
+        "steps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/migrationStep" },
+          "description": "Rollback steps"
+        },
+        "max_rollback_window": {
+          "type": "string",
+          "pattern": "^P[0-9]+[DWMH]$",
+          "description": "Maximum time window for rollback"
+        },
+        "data_rollback_possible": {
+          "type": "boolean",
+          "description": "Whether data can be rolled back"
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["builder_review", "breaker_review", "security_review"],
+      "additionalProperties": false,
+      "properties": {
+        "builder_review": {
+          "$ref": "#/$defs/reviewGate",
+          "description": "Builder agent review (must pass)"
+        },
+        "breaker_review": {
+          "$ref": "#/$defs/reviewGate",
+          "description": "Breaker agent review (must fail to break)"
+        },
+        "security_review": {
+          "$ref": "#/$defs/reviewGate",
+          "description": "Security review (required)"
+        },
+        "compliance_review": {
+          "$ref": "#/$defs/reviewGate",
+          "description": "Compliance review (for regulated changes)"
+        },
+        "community_review": {
+          "$ref": "#/$defs/communityReview",
+          "description": "Community review period"
+        }
+      }
+    },
+    "reviewGate": {
+      "type": "object",
+      "required": ["status", "reviewer_id"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pending", "passed", "failed", "waived"],
+          "description": "Review status"
+        },
+        "reviewer_id": {
+          "type": "string",
+          "description": "Reviewer identifier"
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Review timestamp"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Review notes"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Review artifacts (test results, reports)"
+        }
+      }
+    },
+    "communityReview": {
+      "type": "object",
+      "required": ["period_days", "start_date"],
+      "additionalProperties": false,
+      "properties": {
+        "period_days": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 90,
+          "description": "Review period in days"
+        },
+        "start_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Review period start"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Review period end"
+        },
+        "comments_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for public comments"
+        },
+        "objections_received": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of objections"
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "required": ["quorum_type", "required_scopes", "signatures"],
+      "additionalProperties": false,
+      "properties": {
+        "quorum_type": {
+          "type": "string",
+          "enum": ["simple_majority", "supermajority", "unanimous", "weighted"],
+          "description": "Quorum type required"
+        },
+        "required_scopes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["county", "state", "vendor", "federation"]
+          },
+          "minItems": 1,
+          "description": "Scopes required for approval"
+        },
+        "signatures": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/approvalSignature" },
+          "description": "Approval signatures"
+        },
+        "approved_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Approval timestamp"
+        },
+        "rejection_reason": {
+          "type": "string",
+          "description": "Rejection reason (if rejected)"
+        }
+      }
+    },
+    "approvalSignature": {
+      "type": "object",
+      "required": ["scope", "authority_id", "signature_mode", "vote"],
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "type": "string",
+          "enum": ["county", "state", "vendor", "federation"],
+          "description": "Voter scope"
+        },
+        "authority_id": {
+          "type": "string",
+          "description": "Voting authority ID"
+        },
+        "signature_mode": {
+          "type": "string",
+          "enum": ["cosmic_tss", "god_tier_quorum", "mythic_single"],
+          "description": "Signature mode"
+        },
+        "vote": {
+          "type": "string",
+          "enum": ["approve", "reject", "abstain"],
+          "description": "Vote"
+        },
+        "signature": {
+          "type": "string",
+          "description": "Cryptographic signature"
+        },
+        "voted_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Vote timestamp"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Vote weight (for weighted quorum)"
+        }
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "required": ["effective_date", "rollout_strategy"],
+      "additionalProperties": false,
+      "properties": {
+        "effective_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When amendment becomes effective (nbf)"
+        },
+        "rollout_strategy": {
+          "type": "string",
+          "enum": ["immediate", "canary", "blue_green", "phased"],
+          "description": "Rollout strategy"
+        },
+        "canary_percentage": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "description": "Canary rollout percentage"
+        },
+        "phased_schedule": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/phaseSchedule" },
+          "description": "Phased rollout schedule"
+        },
+        "monitoring_period_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 90,
+          "default": 14,
+          "description": "Post-implementation monitoring period"
+        },
+        "success_criteria": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Success criteria for implementation"
+        }
+      }
+    },
+    "phaseSchedule": {
+      "type": "object",
+      "required": ["phase", "targets", "date"],
+      "additionalProperties": false,
+      "properties": {
+        "phase": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Phase number"
+        },
+        "targets": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Target counties/environments"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Phase rollout date"
+        }
+      }
+    },
+    "auditEntry": {
+      "type": "object",
+      "required": ["timestamp", "action", "actor"],
+      "additionalProperties": false,
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Action timestamp"
+        },
+        "action": {
+          "type": "string",
+          "description": "Action performed"
+        },
+        "actor": {
+          "type": "string",
+          "description": "Actor identifier"
+        },
+        "from_status": {
+          "type": "string",
+          "description": "Previous status"
+        },
+        "to_status": {
+          "type": "string",
+          "description": "New status"
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Hash of audit entry (chain integrity)"
+        }
+      }
+    }
+  }
+}

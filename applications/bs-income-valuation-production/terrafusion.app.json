@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "income-valuation",
+  "displayName": "Income Valuation",
+  "description": "Income Approach Property Valuation Analysis",
+  "iconName": "TrendingUp",
+  "category": "assessment",
+  "tier": 2,
+  "status": "legacy",
+  "pinned": false,
+  "version": "1.0.0",
+  "intent": "legacy",
+  "runnable": false,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5180/"
+  },
+  "tags": ["assessment", "income", "valuation", "legacy"],
+  "permissions": ["county:read", "property:read"]
+}

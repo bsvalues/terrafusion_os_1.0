@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "reconciliation_output.json",
+  "title": "Reconciliation Output",
+  "description": "USPAP-aligned final opinion of value from reconciled approaches",
+  "type": "object",
+  "required": [
+    "subjectId",
+    "effectiveDate",
+    "finalOpinionOfValue",
+    "approachSummary",
+    "reconciliationAnalysis",
+    "generatedAt"
+  ],
+  "properties": {
+    "subjectId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "effectiveDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "finalOpinionOfValue": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Final reconciled value (integer cents)"
+    },
+    "approachSummary": {
+      "type": "object",
+      "properties": {
+        "sales": {
+          "type": "object",
+          "properties": {
+            "indicatedValue": { "type": "integer", "minimum": 0 },
+            "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+            "contributedValue": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "income": {
+          "type": "object",
+          "properties": {
+            "indicatedValue": { "type": "integer", "minimum": 0 },
+            "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+            "contributedValue": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "cost": {
+          "type": "object",
+          "properties": {
+            "indicatedValue": { "type": "integer", "minimum": 0 },
+            "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+            "contributedValue": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "reconciliationAnalysis": {
+      "type": "object",
+      "required": ["method", "valueRange", "spreadPercentage"],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["weighted_average", "bracketed", "primary_approach"]
+        },
+        "valueRange": {
+          "type": "object",
+          "required": ["min", "max"],
+          "properties": {
+            "min": { "type": "integer", "minimum": 0 },
+            "max": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "spreadPercentage": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Range spread as percentage of average"
+        },
+        "primaryApproach": {
+          "type": "string",
+          "enum": ["sales", "income", "cost"],
+          "description": "Which approach was given most weight"
+        },
+        "weightsNormalized": {
+          "type": "boolean",
+          "description": "Whether weights were normalized to sum to 1.0"
+        }
+      },
+      "additionalProperties": false
+    },
+    "qualityIndicators": {
+      "type": "object",
+      "properties": {
+        "confidenceLevel": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "approachAgreement": {
+          "type": "string",
+          "enum": ["strong", "moderate", "weak"],
+          "description": "How well approaches agree with each other"
+        }
+      },
+      "additionalProperties": false
+    },
+    "explanation": {
+      "type": "string",
+      "description": "Human-readable reconciliation narrative"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

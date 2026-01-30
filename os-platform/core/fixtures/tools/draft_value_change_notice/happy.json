@@ -1,0 +1,13 @@
+{
+  "params": {
+    "county": "benton",
+    "parcelId": "P-400",
+    "taxYear": 2026,
+    "reasonCodes": ["revaluation"],
+    "tone": "neutral"
+  },
+  "assert": {
+    "resultKeys": ["document", "payloadRef", "disclaimer"],
+    "noPii": true
+  }
+}

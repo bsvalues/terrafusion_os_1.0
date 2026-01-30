@@ -1,0 +1,10 @@
+# TerraFusion Data Pipeline - Production Dependencies
+flask==2.3.3
+flask-sqlalchemy==3.0.5
+flask-cors==4.0.0
+gunicorn==21.2.0
+werkzeug==2.3.7
+psycopg2-binary==2.9.7
+sqlalchemy==2.0.21
+pyjwt==2.8.0
+python-dotenv==1.0.0

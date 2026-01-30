@@ -1,0 +1,81 @@
+{
+  "checks": [
+    {
+      "id": 1,
+      "message": "Configured: 8GB",
+      "name": "wsl_memory_cap",
+      "status": "pass"
+    },
+    {
+      "id": 2,
+      "message": "14 extensions enabled",
+      "name": "vscode_extensions",
+      "status": "pass"
+    },
+    {
+      "id": 3,
+      "message": "All pods have resource limits",
+      "name": "k8s_resource_limits",
+      "status": "pass"
+    },
+    {
+      "id": 4,
+      "message": "All ports bound to localhost",
+      "name": "ai_lab_security",
+      "status": "pass"
+    },
+    {
+      "id": 5,
+      "message": "28.98GB used",
+      "name": "docker_disk",
+      "status": "pass"
+    },
+    {
+      "id": 6,
+      "message": "Index is 6 days old",
+      "name": "rag_index",
+      "status": "pass"
+    },
+    {
+      "id": 7,
+      "message": "4GB / 7GB used",
+      "name": "wsl_memory",
+      "status": "pass"
+    },
+    {
+      "id": 8,
+      "message": "Model storage: 5.7G",
+      "name": "model_storage",
+      "status": "pass"
+    },
+    {
+      "id": 9,
+      "message": "tasks.json matches registry",
+      "name": "hub_tasks_sync",
+      "status": "pass"
+    },
+    {
+      "id": 10,
+      "message": "No active sessions",
+      "name": "agent_sessions",
+      "status": "pass"
+    },
+    {
+      "id": 11,
+      "message": "Recent session completed at 15db065cf",
+      "name": "protocol_enforcement",
+      "status": "pass"
+    }
+  ],
+  "source": "gate",
+  "status": "pass",
+  "summary": {
+    "failed": 0,
+    "passed": 11,
+    "skipped": 0,
+    "total": 11,
+    "warnings": 0
+  },
+  "timestamp": "2025-12-23T17:24:51Z",
+  "version": "1.0.0"
+}

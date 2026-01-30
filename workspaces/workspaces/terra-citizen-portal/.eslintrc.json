@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  },
+  "rules": {
+    "prefer-const": "error",
+    "no-var": "error",
+    "@typescript-eslint/no-unused-vars": "error"
+  }
+}

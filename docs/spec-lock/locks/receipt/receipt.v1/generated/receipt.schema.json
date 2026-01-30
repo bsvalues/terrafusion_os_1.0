@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion Receipt",
+  "description": "Citizen-verifiable receipt for government artifacts",
+  "type": "object",
+  "required": [
+    "receipt_id",
+    "issued_at",
+    "nbf",
+    "exp",
+    "artifact",
+    "speclock_manifest_sha256",
+    "signing",
+    "proof_url"
+  ],
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^r[a-z0-9]{1,63}$",
+      "description": "Unique receipt identifier"
+    },
+    "issued_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "RFC3339 UTC timestamp when receipt was issued"
+    },
+    "nbf": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "Not-before timestamp (RFC3339 UTC)"
+    },
+    "exp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "Expiration timestamp (RFC3339 UTC)"
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "type",
+        "sha256"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "assessment_notice",
+            "levy_table",
+            "gis_export",
+            "report",
+            "other"
+          ],
+          "description": "Type of artifact being receipted"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 hash of artifact (lowercase hex)"
+        }
+      }
+    },
+    "speclock_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the speclock manifest at receipt time"
+    },
+    "signing": {
+      "type": "object",
+      "required": [
+        "mode",
+        "signature_sha256"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "mythic_cosign",
+            "cosmic_tss"
+          ],
+          "description": "Signing mode used"
+        },
+        "signature_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of signature"
+        },
+        "group_pub_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of group public key (for TSS)"
+        },
+        "participants_used": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of participants in TSS signing"
+        }
+      }
+    },
+    "proof_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL where citizens can verify this receipt"
+    },
+    "policy_bundle_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of policy bundle (optional)"
+    }
+  }
+}

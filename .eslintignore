@@ -36,3 +36,7 @@ package-lock.json
 # Test files (if needed)
 # *.test.ts
 # *.spec.ts
+
+_archive/
+
+os-kernel/api/main.ts

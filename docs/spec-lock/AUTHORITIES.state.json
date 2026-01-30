@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.io/authorities/state.v1.json",
+  "title": "TerraFusion State Mesh Authority",
+  "description": "Federated state-level signing authority for Washington State counties",
+  "version": "1.0.0",
+  "created": "2025-12-13T00:00:00Z",
+  "updated": "2025-12-13T00:00:00Z",
+  "state": {
+    "code": "WA",
+    "name": "Washington",
+    "fips": "53"
+  },
+  "mesh": {
+    "type": "federated_quorum",
+    "description": "State artifacts require county quorum signatures",
+    "threshold": 3,
+    "minimum_counties": 5,
+    "rules": [
+      {
+        "id": "no_single_county_sign",
+        "rule": "State artifacts cannot be signed by a single county",
+        "enforcement": "hard"
+      },
+      {
+        "id": "vendor_requires_county_quorum",
+        "rule": "Vendor cannot ship state-wide updates without county quorum",
+        "enforcement": "hard"
+      },
+      {
+        "id": "cross_county_isolation",
+        "rule": "County data remains isolated during state operations",
+        "enforcement": "hard"
+      }
+    ]
+  },
+  "counties": [
+    {
+      "id": "benton",
+      "name": "Benton County",
+      "fips": "53005",
+      "signer_id": 1,
+      "public_key_path": "artifacts/speclock/tss/counties/benton.pub",
+      "status": "active"
+    },
+    {
+      "id": "yakima",
+      "name": "Yakima County",
+      "fips": "53077",
+      "signer_id": 2,
+      "public_key_path": "artifacts/speclock/tss/counties/yakima.pub",
+      "status": "active"
+    },
+    {
+      "id": "franklin",
+      "name": "Franklin County",
+      "fips": "53021",
+      "signer_id": 3,
+      "public_key_path": "artifacts/speclock/tss/counties/franklin.pub",
+      "status": "active"
+    },
+    {
+      "id": "grant",
+      "name": "Grant County",
+      "fips": "53025",
+      "signer_id": 4,
+      "public_key_path": "artifacts/speclock/tss/counties/grant.pub",
+      "status": "active"
+    },
+    {
+      "id": "adams",
+      "name": "Adams County",
+      "fips": "53001",
+      "signer_id": 5,
+      "public_key_path": "artifacts/speclock/tss/counties/adams.pub",
+      "status": "active"
+    }
+  ],
+  "vendors": [
+    {
+      "id": "terrafusion",
+      "name": "TerraFusion Inc.",
+      "public_key_path": "artifacts/speclock/tss/vendors/terrafusion.pub",
+      "role": "platform_vendor",
+      "permissions": ["propose_state_updates", "submit_for_county_review"],
+      "restrictions": [
+        "cannot_sign_state_artifacts_alone",
+        "requires_county_quorum_approval"
+      ]
+    }
+  ],
+  "signing": {
+    "algorithm": "frost_ed25519",
+    "threshold": 3,
+    "total_participants": 5,
+    "group_public_key_path": "artifacts/speclock/tss/state.group.pub",
+    "ceremony": {
+      "type": "distributed_key_generation",
+      "protocol": "FROST-DKG",
+      "min_online_participants": 3
+    }
+  },
+  "artifact_types": [
+    {
+      "type": "state_report",
+      "description": "Aggregated state-wide property data reports",
+      "requires_quorum": true,
+      "lock_path": "docs/spec-lock/locks/state-report/state-report.v1/"
+    },
+    {
+      "type": "state_policy_update",
+      "description": "State-wide policy configuration changes",
+      "requires_quorum": true,
+      "min_threshold": 4
+    },
+    {
+      "type": "interop_certificate",
+      "description": "Cross-county interoperability certificates",
+      "requires_quorum": true,
+      "requires_vendor_attestation": true
+    }
+  ],
+  "verification": {
+    "runtime_endpoint": "/ops/speclock/state/verify",
+    "group_key_verification": "At startup, verify state group public key against AUTHORITIES.state.json",
+    "quorum_verification": "All state artifacts must verify against county quorum threshold"
+  }
+}

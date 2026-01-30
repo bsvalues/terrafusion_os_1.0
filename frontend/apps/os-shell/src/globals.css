@@ -1,0 +1,405 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════
+   TERRAFUSION OS - FONTS (Brand Kit v4.1)
+   ═══════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* TerraFusion Design System - Core Styles */
+@import './styles/terrafusion-tokens.css';
+@import './styles/terrafusion-theme.css';
+@import './styles/terrafusion-quantum-animations.css';
+@import './styles/terrafusion-layout-fixes.css';
+@import './styles/atlas.css';
+@import './ui/theme/focus.css';
+/* Temporarily disabled due to CSS syntax errors:
+@import "./styles/terrafusion-performance-monitor.css"; */
+
+@layer base {
+  :root {
+    /* TerraFusion Core Variables Override - HSL Format for Tailwind */
+    --background: 220 40% 5%; /* Terra-Midnight */
+    --foreground: 180 100% 50%; /* Terra-Cyan */
+    --card: 218 23% 23%; /* Terra-Slate */
+    --card-foreground: 180 100% 50%; /* Terra-Cyan */
+    --popover: 218 23% 23%; /* Terra-Slate */
+    --popover-foreground: 180 100% 50%; /* Terra-Cyan */
+    --primary: 180 100% 50%; /* Terra-Cyan */
+    --primary-foreground: 220 40% 5%; /* Terra-Midnight */
+    --secondary: 218 23% 23%; /* Terra-Slate */
+    --secondary-foreground: 180 100% 50%; /* Terra-Cyan */
+    --muted: 218 23% 23%; /* Terra-Slate */
+    --muted-foreground: 214 32% 57%; /* Light gray */
+    --accent: 208 100% 50%; /* Terra-Blue */
+    --accent-foreground: 180 100% 50%; /* Terra-Cyan */
+    --destructive: 0 84% 60%; /* Error red */
+    --destructive-foreground: 180 100% 50%; /* Terra-Cyan */
+    --border: 180 100% 50% / 0.2; /* Terra-Cyan with opacity */
+    --input: 218 23% 23%; /* Terra-Slate */
+    --ring: 180 100% 50%; /* Terra-Cyan */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* TerraFusion Dark Mode (Default) - HSL Format */
+    --background: 220 40% 5%; /* Terra-Midnight */
+    --foreground: 180 100% 50%; /* Terra-Cyan */
+    --card: 218 23% 23%; /* Terra-Slate */
+    --card-foreground: 180 100% 50%; /* Terra-Cyan */
+    --popover: 218 23% 23%; /* Terra-Slate */
+    --popover-foreground: 180 100% 50%; /* Terra-Cyan */
+    --primary: 180 100% 50%; /* Terra-Cyan */
+    --primary-foreground: 220 40% 5%; /* Terra-Midnight */
+    --secondary: 218 23% 23%; /* Terra-Slate */
+    --secondary-foreground: 180 100% 50%; /* Terra-Cyan */
+    --muted: 218 23% 23%; /* Terra-Slate */
+    --muted-foreground: 214 32% 57%; /* Light gray */
+    --accent: 208 100% 50%; /* Terra-Blue */
+    --accent-foreground: 180 100% 50%; /* Terra-Cyan */
+    --destructive: var(--error-red);
+    --destructive-foreground: var(--terra-cyan);
+    --border: rgba(0, 255, 255, 0.2);
+    --input: var(--terra-slate);
+    --ring: var(--terra-cyan);
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  /* Smooth transitions everywhere */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, border-color, box-shadow, opacity, transform;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Disable transitions for elements that need instant response */
+  input,
+  textarea,
+  [data-no-transition] {
+    transition: none;
+  }
+
+  body {
+    /* TerraFusion Brand Kit Typography */
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
+    font-size: 16px;
+    line-height: 1.618; /* Golden ratio */
+    letter-spacing: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* TerraFusion Brand Kit Colors */
+    background: #0a0e1a; /* terra-midnight */
+    color: #f1f5f9; /* gray-100 for body text, NOT cyan */
+    overflow: hidden; /* Prevent scrollbars, this is an OS */
+  }
+
+  /* Apply TerraFusion default dark theme */
+  html {
+    color-scheme: dark;
+    /* Smooth scroll for any scrollable areas */
+    scroll-behavior: smooth;
+  }
+
+  /* Headings use cyan accent */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    color: #00ffff;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+  }
+
+  /* Code uses JetBrains Mono */
+  code,
+  pre,
+  .mono {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  .dark body {
+    background: #0a0e1a;
+    color: #f1f5f9;
+  }
+
+  /* Custom scrollbar for the immersive feel */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 229, 255, 0.3);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 229, 255, 0.5);
+  }
+
+  /* Selection color */
+  ::selection {
+    background: rgba(0, 229, 255, 0.3);
+    color: #ffffff;
+  }
+
+  /* Elite Progress Bar Dynamic Width */
+  .elite-progress-bar[data-progress='0'] {
+    width: 0%;
+  }
+  .elite-progress-bar[data-progress='10'] {
+    width: 10%;
+  }
+  .elite-progress-bar[data-progress='20'] {
+    width: 20%;
+  }
+  .elite-progress-bar[data-progress='30'] {
+    width: 30%;
+  }
+  .elite-progress-bar[data-progress='40'] {
+    width: 40%;
+  }
+  .elite-progress-bar[data-progress='50'] {
+    width: 50%;
+  }
+  .elite-progress-bar[data-progress='60'] {
+    width: 60%;
+  }
+  .elite-progress-bar[data-progress='70'] {
+    width: 70%;
+  }
+  .elite-progress-bar[data-progress='80'] {
+    width: 80%;
+  }
+  .elite-progress-bar[data-progress='90'] {
+    width: 90%;
+  }
+  .elite-progress-bar[data-progress='100'] {
+    width: 100%;
+  }
+
+  /* Standard Progress Bar Dynamic Width */
+  [data-progress='0'] {
+    width: 0%;
+  }
+  [data-progress='10'] {
+    width: 10%;
+  }
+  [data-progress='20'] {
+    width: 20%;
+  }
+  [data-progress='30'] {
+    width: 30%;
+  }
+  [data-progress='40'] {
+    width: 40%;
+  }
+  [data-progress='50'] {
+    width: 50%;
+  }
+  [data-progress='60'] {
+    width: 60%;
+  }
+  [data-progress='70'] {
+    width: 70%;
+  }
+  [data-progress='80'] {
+    width: 80%;
+  }
+  [data-progress='90'] {
+    width: 90%;
+  }
+  [data-progress='100'] {
+    width: 100%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TERRAFUSION QUANTUM ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 40px rgba(0, 229, 255, 0.6);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TERRAFUSION SONOMA GLASS UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Taskbar/Dock Material */
+.glass-dock {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Desktop Icon hover glass */
+.glass-icon-hover {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Desktop Icon selected glass */
+.glass-icon-selected {
+  background: rgba(0, 229, 255, 0.15);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+}
+
+/* Slow pulse animation for ambient orbs */
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TERRAFUSION AMBIENT COMPOSITOR (CSS MODE)
+   ═══════════════════════════════════════════════════════════════ */
+.tf-ambient-root {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0, 128, 255, 0.08), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(0, 229, 255, 0.06), transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(0, 255, 136, 0.05), transparent 50%),
+    linear-gradient(180deg, rgba(10, 14, 26, 0.9), rgba(10, 14, 26, 1));
+}
+
+.tf-css-ambient {
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-ambient-mesh,
+.tf-ambient-noise,
+.tf-ambient-vignette {
+  position: absolute;
+  inset: 0;
+}
+
+.tf-ambient-mesh {
+  background:
+    radial-gradient(circle at 25% 15%, rgba(0, 229, 255, 0.08), transparent 40%),
+    radial-gradient(circle at 70% 35%, rgba(0, 128, 255, 0.06), transparent 45%),
+    radial-gradient(circle at 40% 85%, rgba(0, 255, 136, 0.05), transparent 50%);
+  filter: blur(8px);
+  opacity: 0.9;
+}
+
+.tf-ambient-noise {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 2px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.015) 0px,
+      rgba(255, 255, 255, 0.015) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  mix-blend-mode: soft-light;
+  opacity: 0.25;
+}
+
+.tf-ambient-vignette {
+  background: radial-gradient(circle at center, transparent 55%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TERRAFUSION VISUAL BEDROCK - @layer utilities
+   Toyota Engine, Ferrari Body - Pure CSS, No Crashes
+   ═══════════════════════════════════════════════════════════════ */
+@layer utilities {
+  /* The Standard TerraFusion Window Glass */
+  .glass-panel {
+    @apply bg-slate-900/60 backdrop-blur-xl border border-white/10 shadow-2xl ring-1 ring-white/5;
+  }
+
+  /* The Active Window State (Glow + Brightness) */
+  .glass-panel-active {
+    @apply border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] ring-white/10 bg-slate-800/70;
+  }
+
+  /* Interactive Elements */
+  .glass-button {
+    @apply bg-white/5 hover:bg-white/10 active:bg-white/20 border border-white/5 transition-all duration-200 rounded-md backdrop-blur-md;
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "receipt_id": "r-2025-12-13-sample-001",
+  "issued_at": "2025-12-13T00:00:00Z",
+  "nbf": "2025-12-13T00:00:00Z",
+  "exp": "2026-12-13T00:00:00Z",
+  "artifact": {
+    "type": "assessment_notice",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "speclock_manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "signing": {
+    "mode": "cosmic_tss",
+    "signature_sha256": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+    "group_pub_sha256": "f1e2d3c4b5a6f1e2d3c4b5a6f1e2d3c4b5a6f1e2d3c4b5a6f1e2d3c4b5a6f1e2",
+    "participants_used": [1, 2, 3]
+  },
+  "proof_url": "/public/proof/r-2025-12-13-sample-001"
+}

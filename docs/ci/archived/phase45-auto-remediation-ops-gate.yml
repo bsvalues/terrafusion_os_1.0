@@ -1,0 +1,238 @@
+# =============================================================================
+# Phase 45: Auto-Remediation Ops + Dashboards Quality Gate
+# =============================================================================
+# OPS SPEC LOCK v1.0.0
+# Production guardrails and observability for Phase 44 auto-remediation.
+# =============================================================================
+
+name: Phase 45 - Auto-Remediation Ops + Dashboards Quality Gate
+
+on:
+    pull_request:
+        paths:
+            - "backend/**Runbooks/**"
+            - "backend/**Operations/**"
+            - "backend/tests/**Phase45/**"
+            - "grafana/**"
+            - ".github/ai-prompts/breaker-phase45.md"
+            - ".github/ai-prompts/reviewer-phase45.md"
+    workflow_dispatch:
+        inputs:
+            run_breaker:
+                description: "Run Phase 45 Breaker Agent?"
+                required: true
+                default: "true"
+                type: choice
+                options: ["true", "false"]
+            run_reviewer:
+                description: "Run Phase 45 Reviewer Agent?"
+                required: true
+                default: "true"
+                type: choice
+                options: ["true", "false"]
+
+jobs:
+    phase45-core-tests:
+        name: Phase 45 Core Tests (Matrix)
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+                dotnet-version: ["8.0.x"]
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: ${{ matrix.dotnet-version }}
+
+            - name: Restore
+              run: dotnet restore
+
+            - name: Build
+              run: dotnet build --configuration Release --no-restore
+
+            - name: Run Phase 45 Core Tests
+              run: |
+                  dotnet test --configuration Release --no-build \
+                    --filter "Phase=45&Component=AutoRemediationOps&Category!=Breaker" \
+                    --logger "trx;LogFileName=phase45-core-${{ matrix.os }}.trx"
+
+            - name: Upload Core Test Results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: phase45-core-test-results-${{ matrix.os }}
+                  path: "**/TestResults/**/*.trx"
+
+    phase45-breaker-tests:
+        name: Phase 45 Breaker Tests
+        runs-on: ubuntu-latest
+        needs: phase45-core-tests
+        if: |
+            contains(needs.*.result, 'failure') == false &&
+            (github.event_name != 'workflow_dispatch' || inputs.run_breaker == 'true')
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: "8.0.x"
+
+            - name: Restore
+              run: dotnet restore
+
+            - name: Build
+              run: dotnet build --configuration Release --no-restore
+
+            - name: Run Phase 45 Breaker Tests
+              run: |
+                  dotnet test --configuration Release --no-build \
+                    --filter "Phase=45&Component=AutoRemediationOps&Category=Breaker" \
+                    --logger "trx;LogFileName=phase45-breaker.trx"
+
+            - name: Upload Breaker Test Results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: phase45-breaker-test-results
+                  path: "**/TestResults/**/*.trx"
+
+    phase45-dashboard-validation:
+        name: Phase 45 Grafana Dashboard Validation
+        runs-on: ubuntu-latest
+        needs: phase45-core-tests
+        if: contains(needs.*.result, 'failure') == false
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: "8.0.x"
+
+            - name: Restore
+              run: dotnet restore
+
+            - name: Build
+              run: dotnet build --configuration Release --no-restore
+
+            - name: Run Phase 45 Dashboard Validation Tests
+              run: |
+                  dotnet test --configuration Release --no-build \
+                    --filter "Phase=45&Component=GrafanaDashboards&Category!=Breaker" \
+                    --logger "trx;LogFileName=phase45-dashboards.trx"
+
+            - name: Validate Dashboard JSON Syntax
+              run: |
+                  for f in grafana/phase45/*.json; do
+                    echo "Validating $f..."
+                    python3 -c "import json; json.load(open('$f'))" || exit 1
+                  done
+
+            - name: Upload Dashboard Test Results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: phase45-dashboard-validation-results
+                  path: "**/TestResults/**/*.trx"
+
+    phase45-reviewer:
+        name: Phase 45 Reviewer (Ops Governance)
+        runs-on: ubuntu-latest
+        needs:
+            - phase45-breaker-tests
+            - phase45-dashboard-validation
+        if: |
+            needs.phase45-breaker-tests.result == 'success' &&
+            needs.phase45-dashboard-validation.result == 'success' &&
+            (github.event_name != 'workflow_dispatch' || inputs.run_reviewer == 'true')
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Download Breaker Output
+              uses: actions/download-artifact@v4
+              with:
+                  name: phase45-breaker-test-results
+                  path: phase45-breaker-output/
+              continue-on-error: true
+
+            - name: Generate Phase 45 Review Summary
+              run: |
+                  mkdir -p phase45-reviewer-output
+                  echo "# Phase 45 Auto-Remediation Ops Review" > phase45-reviewer-output/review.md
+                  echo "" >> phase45-reviewer-output/review.md
+                  echo "## Status" >> phase45-reviewer-output/review.md
+                  echo "- Core Tests: ${{ needs.phase45-core-tests.result }}" >> phase45-reviewer-output/review.md
+                  echo "- Breaker Tests: ${{ needs.phase45-breaker-tests.result }}" >> phase45-reviewer-output/review.md
+                  echo "- Dashboard Validation: ${{ needs.phase45-dashboard-validation.result }}" >> phase45-reviewer-output/review.md
+                  echo "" >> phase45-reviewer-output/review.md
+                  echo "## Checklist" >> phase45-reviewer-output/review.md
+                  echo "- [ ] Metrics spec lock v1.0.0 compliance verified" >> phase45-reviewer-output/review.md
+                  echo "- [ ] Dashboard panels match spec" >> phase45-reviewer-output/review.md
+                  echo "- [ ] No high-cardinality labels introduced" >> phase45-reviewer-output/review.md
+                  echo "- [ ] Invariant violation alerts configured" >> phase45-reviewer-output/review.md
+
+            - name: Post Reviewer Comment to PR
+              if: github.event_name == 'pull_request'
+              uses: marocchino/sticky-pull-request-comment@v2
+              with:
+                  recreate: true
+                  path: phase45-reviewer-output/review.md
+
+            - name: Upload Reviewer Output
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: phase45-reviewer-output
+                  path: phase45-reviewer-output/
+
+    phase45-quality-gate:
+        name: Phase 45 Quality Gate Summary
+        runs-on: ubuntu-latest
+        needs:
+            - phase45-core-tests
+            - phase45-breaker-tests
+            - phase45-dashboard-validation
+            - phase45-reviewer
+        if: always()
+
+        steps:
+            - name: Summarize Phase 45 Status
+              run: |
+                  echo "=============================================="
+                  echo "Phase 45 Auto-Remediation Ops Quality Gate"
+                  echo "=============================================="
+                  echo "Core Tests (matrix):   ${{ needs.phase45-core-tests.result }}"
+                  echo "Breaker:               ${{ needs.phase45-breaker-tests.result }}"
+                  echo "Dashboard Validation:  ${{ needs.phase45-dashboard-validation.result }}"
+                  echo "Reviewer:              ${{ needs.phase45-reviewer.result }}"
+                  echo "=============================================="
+
+                  if [ "${{ needs.phase45-core-tests.result }}" != "success" ]; then
+                    echo "FAILED: Core tests did not pass"
+                    exit 1
+                  fi
+                  if [ "${{ needs.phase45-breaker-tests.result }}" == "failure" ]; then
+                    echo "FAILED: Breaker tests failed"
+                    exit 1
+                  fi
+                  if [ "${{ needs.phase45-dashboard-validation.result }}" != "success" ]; then
+                    echo "FAILED: Dashboard validation failed"
+                    exit 1
+                  fi
+                  if [ "${{ needs.phase45-reviewer.result }}" == "failure" ]; then
+                    echo "FAILED: Reviewer failed"
+                    exit 1
+                  fi
+
+                  echo "=============================================="
+                  echo "Phase 45 Quality Gate: PASSED"
+                  echo "=============================================="

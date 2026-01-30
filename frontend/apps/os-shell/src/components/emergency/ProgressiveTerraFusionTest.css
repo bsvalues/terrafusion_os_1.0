@@ -1,0 +1,50 @@
+/* Championship-level styles for ProgressiveTerraFusionTest */
+.tf-progressive-test-fixed-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--tf-void-black);
+  color: #ffffff;
+  overflow: auto;
+}
+.tf-progressive-test-container {
+  padding: 2rem;
+  text-align: center;
+}
+.tf-progressive-test-title {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: bold;
+}
+.tf-progressive-test-cyan {
+  color: var(--tf-quantum-cyan);
+}
+.tf-progressive-test-red {
+  color: var(--error-red);
+}
+.tf-progressive-test-desc {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+.tf-progressive-test-white {
+  color: #ffffff;
+}
+.tf-progressive-test-btn {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+.tf-progressive-test-btn-cyan {
+  background: var(--tf-quantum-cyan);
+  color: var(--tf-void-black);
+}
+.tf-progressive-test-btn-red {
+  background: var(--error-red);
+  color: #ffffff;
+}

@@ -1,0 +1,31 @@
+# Auto-generated from runtimecontract.v1 spec
+# DO NOT EDIT - regenerate with speclock-runtimecontract-gen.py
+
+# Kubernetes readiness probe configuration
+# Apply to all TerraFusion deployments
+
+readinessProbe:
+  httpGet:
+    path: /healthz/ready
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+  successThreshold: 1
+
+# livenessProbe (less strict - just checks process alive)
+livenessProbe:
+  httpGet:
+    path: /healthz/ready
+    port: 8080
+  initialDelaySeconds: 15
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 5
+
+# CONSTITUTIONAL REQUIREMENT:
+# Readiness MUST return non-200 when:
+#   - speclock_ok = false
+#   - state_mesh_ok = false
+# This prevents traffic routing to nodes with constitutional violations.

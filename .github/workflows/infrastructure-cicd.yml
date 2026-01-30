@@ -34,7 +34,18 @@ jobs:
       with:
         terraform_version: ${{ env.TF_VERSION }}
 
+    - name: Check AWS credentials
+      id: aws
+      shell: bash
+      run: |
+        if [ -n "${{ secrets.AWS_ACCESS_KEY_ID }}" ] && [ -n "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ] && [ -n "${{ secrets.TF_STATE_BUCKET }}" ]; then
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: Configure AWS credentials
+      if: steps.aws.outputs.ready == 'true'
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -45,14 +56,20 @@ jobs:
       run: terraform fmt -check -recursive
 
     - name: Terraform Validate
+      if: steps.aws.outputs.ready == 'true'
       run: |
         terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}"
         terraform validate
 
     - name: Terraform Plan
+      if: steps.aws.outputs.ready == 'true'
       run: |
         terraform plan -no-color -out=tfplan
         terraform show -no-color tfplan
+
+    - name: Skip Terraform (missing credentials)
+      if: steps.aws.outputs.ready != 'true'
+      run: echo "Missing AWS credentials or TF_STATE_BUCKET; skipping terraform validate/plan."
 
   validate-helm:
     name: Validate Helm Charts
@@ -79,6 +96,13 @@ jobs:
         helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
         helm repo add grafana https://grafana.github.io/helm-charts
         helm repo update
+
+    - name: Build Helm dependencies
+      run: |
+        helm dependency build charts/terrafusion-backend
+        helm dependency build charts/terrafusion-frontend
+        helm dependency build charts/terrafusion-ai-swarm
+        helm dependency build charts/terrafusion
 
     - name: Lint Helm charts
       run: |

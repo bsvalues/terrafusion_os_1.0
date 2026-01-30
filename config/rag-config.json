@@ -1,0 +1,90 @@
+{
+  "$schema": "./rag-config.schema.json",
+  "version": "1.0.0",
+  "description": "TerraFusion RAG Configuration - Maps GPTs to their knowledge datasets",
+
+  "datasets": {
+    "benton_cama_basics": {
+      "id": "benton_cama_basics",
+      "name": "Benton CAMA Basics",
+      "description": "Core docs for Benton County CAMA, valuation methods, and workflow policies.",
+      "sourceType": "files",
+      "paths": [
+        "rag/benton-cama/manuals/*.pdf",
+        "rag/benton-cama/manuals/*.md",
+        "rag/benton-cama/policies/*.md"
+      ],
+      "chunkSize": 1000,
+      "chunkOverlap": 200,
+      "embeddingModel": "text-embedding-3-small",
+      "indexType": "semantic"
+    },
+    "assessment-standards": {
+      "id": "assessment-standards",
+      "name": "Assessment Standards & Procedures",
+      "description": "IAAO standards, Washington State RCW, and assessment methodology guides",
+      "sourceType": "files",
+      "paths": [
+        "rag/assessment-standards/*.pdf",
+        "rag/assessment-standards/*.md"
+      ],
+      "chunkSize": 1024,
+      "chunkOverlap": 100,
+      "embeddingModel": "text-embedding-3-small",
+      "indexType": "semantic"
+    },
+    "comparable-sales": {
+      "id": "comparable-sales",
+      "name": "Comparable Sales Database",
+      "description": "Recent property sales for comparable analysis",
+      "sourceType": "database",
+      "source": "Harris PACS",
+      "refreshInterval": "daily",
+      "chunkSize": 256,
+      "chunkOverlap": 25,
+      "embeddingModel": "text-embedding-3-small",
+      "indexType": "hybrid"
+    }
+  },
+
+  "gptMappings": {
+    "PropertyAssessmentGPT": {
+      "key": "PropertyAssessmentGPT",
+      "datasets": ["benton_cama_basics", "assessment-standards", "comparable-sales"],
+      "primaryDataset": "benton_cama_basics",
+      "ragEnabled": true,
+      "ragConfig": {
+        "topK": 8,
+        "scoreThreshold": 0.8,
+        "rerankerEnabled": true,
+        "contextWindowSize": 4096
+      }
+    },
+    "ComplianceGPT": {
+      "key": "ComplianceGPT",
+      "datasets": ["assessment-standards"],
+      "primaryDataset": "assessment-standards",
+      "ragEnabled": true,
+      "ragConfig": {
+        "topK": 5,
+        "scoreThreshold": 0.85,
+        "rerankerEnabled": false,
+        "contextWindowSize": 2048
+      }
+    }
+  },
+
+  "vectorStore": {
+    "provider": "pgvector",
+    "connectionStringEnvVar": "DATABASE_URL",
+    "tableName": "rag_embeddings",
+    "dimensions": 1536
+  },
+
+  "healthCheck": {
+    "endpoint": "/api/gpt/rag/health",
+    "requiredDatasets": ["benton_cama_basics"],
+    "minDocumentCount": 1,
+    "maxStalenessDays": 30
+  }
+}

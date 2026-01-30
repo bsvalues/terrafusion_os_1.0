@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **TerraFusion OS Frontend** is a React 18 + TypeScript PWA with Electron desktop shell for government operations. This is the UI layer for a complete government operating system with real-time AI coordination, property management, and citizen services.
 
-**Critical**: This builds to `../native-shell/ui` - not a standard `dist/` folder. The frontend is embedded in a native shell for desktop deployment.
+**Critical**: This builds to `../native-shell/ui/dist` - not a standard `dist/` folder. The frontend is embedded in a native shell for desktop deployment.
 
 ## Tech Stack
 
@@ -81,12 +81,12 @@ Available aliases:
 
 #### 2. Build Output
 
-**CRITICAL**: The frontend builds to `../native-shell/ui`, NOT `dist/`:
+**CRITICAL**: The frontend builds to `../native-shell/ui/dist`, NOT `dist/`:
 
 ```typescript
 // vite.config.ts
 build: {
-  outDir: '../native-shell/ui',
+  outDir: '../native-shell/ui/dist',
   emptyOutDir: true,
 }
 ```
@@ -173,7 +173,7 @@ npm run type-check
 ### Building
 
 ```bash
-# Production build (outputs to ../native-shell/ui)
+# Production build (outputs to ../native-shell/ui/dist)
 npm run build
 
 # Build with bundle analysis

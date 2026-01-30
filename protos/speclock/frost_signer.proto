@@ -1,0 +1,601 @@
+// ═══════════════════════════════════════════════════════════════════════════════
+// TerraFusion SpecLock - FROST Remote Signer gRPC Service
+// ═══════════════════════════════════════════════════════════════════════════════
+//
+// Deterministic, attestable, rate-limited remote signing protocol.
+// mTLS + SPIFFE IDs + OPA policy enforcement.
+// No key material leaves the signer boundary.
+//
+// ═══════════════════════════════════════════════════════════════════════════════
+
+syntax = "proto3";
+
+package terrafusion.speclock.frost.v1;
+
+option csharp_namespace = "TerraFusion.SpecLock.Frost.V1";
+option go_package = "github.com/terrafusion/speclock/frost/v1;frostv1";
+
+import "google/protobuf/timestamp.proto";
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FROST Signer Service
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// FrostSigner provides threshold signing operations.
+// Each participant runs this service with their HSM-backed key share.
+service FrostSigner {
+  // CommitNonce generates a nonce commitment for a signing session.
+  // Round 1 of the FROST protocol.
+  rpc CommitNonce(CommitNonceRequest) returns (CommitNonceResponse);
+
+  // SignShare produces a signature share for the given signing package.
+  // Round 2 of the FROST protocol.
+  rpc SignShare(SignShareRequest) returns (SignShareResponse);
+
+  // GetStatus returns the signer's current status and capabilities.
+  rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+
+  // VerifyAttestation verifies the signer's attestation (SPIFFE/TPM).
+  rpc VerifyAttestation(VerifyAttestationRequest) returns (VerifyAttestationResponse);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Round 1: Nonce Commitment
+// ═══════════════════════════════════════════════════════════════════════════════
+
+message CommitNonceRequest {
+  // SHA-256 hash of the message to be signed (32 bytes).
+  bytes message_hash = 1;
+
+  // Unique session identifier for this signing ceremony.
+  string session_id = 2;
+
+  // Requested by coordinator ID (for audit).
+  string coordinator_id = 3;
+
+  // Time bounds for this signing request.
+  google.protobuf.Timestamp not_before = 4;
+  google.protobuf.Timestamp not_after = 5;
+
+  // OPA policy bundle hash that must match signer's loaded policy.
+  bytes policy_hash = 6;
+}
+
+message CommitNonceResponse {
+  // Participant ID (1-indexed).
+  uint32 participant_id = 1;
+
+  // Nonce commitment (FROST commitment bytes).
+  bytes nonce_commitment = 2;
+
+  // Session ID echoed back.
+  string session_id = 3;
+
+  // Timestamp when commitment was generated.
+  google.protobuf.Timestamp committed_at = 4;
+
+  // Signer's attestation token (SPIFFE SVID or similar).
+  bytes attestation_token = 5;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Round 2: Signature Share
+// ═══════════════════════════════════════════════════════════════════════════════
+
+message SignShareRequest {
+  // SHA-256 hash of the message being signed (32 bytes).
+  bytes message_hash = 1;
+
+  // Session ID from Round 1.
+  string session_id = 2;
+
+  // Signing package containing all participant commitments.
+  bytes signing_package = 3;
+
+  // Coordinator ID (must match Round 1).
+  string coordinator_id = 4;
+
+  // Time bounds (must be within Round 1 bounds).
+  google.protobuf.Timestamp not_before = 5;
+  google.protobuf.Timestamp not_after = 6;
+}
+
+message SignShareResponse {
+  // Participant ID (must match Round 1).
+  uint32 participant_id = 1;
+
+  // Signature share (FROST share bytes).
+  bytes signature_share = 2;
+
+  // Session ID echoed back.
+  string session_id = 3;
+
+  // Timestamp when share was generated.
+  google.protobuf.Timestamp signed_at = 4;
+
+  // Audit proof for this signing operation.
+  AuditProof audit_proof = 5;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Status and Attestation
+// ═══════════════════════════════════════════════════════════════════════════════
+
+message GetStatusRequest {
+  // Optional: include detailed diagnostics.
+  bool include_diagnostics = 1;
+}
+
+message GetStatusResponse {
+  // Participant ID this signer represents.
+  uint32 participant_id = 1;
+
+  // Signer status.
+  SignerStatus status = 2;
+
+  // SPIFFE ID of this signer.
+  string spiffe_id = 3;
+
+  // Key package loaded (group public key hash).
+  bytes group_public_key_hash = 4;
+
+  // HSM backend type.
+  HsmBackend hsm_backend = 5;
+
+  // Rate limit status.
+  RateLimitStatus rate_limit = 6;
+
+  // Current policy hash.
+  bytes policy_hash = 7;
+
+  // Version info.
+  VersionInfo version = 8;
+
+  // Diagnostics (if requested).
+  Diagnostics diagnostics = 9;
+}
+
+message VerifyAttestationRequest {
+  // Challenge nonce for freshness.
+  bytes challenge_nonce = 1;
+}
+
+message VerifyAttestationResponse {
+  // Signed attestation document.
+  bytes attestation_document = 1;
+
+  // SPIFFE SVID (X.509 or JWT).
+  bytes spiffe_svid = 2;
+
+  // TPM quote (if available).
+  bytes tpm_quote = 3;
+
+  // Challenge nonce echoed back (signed).
+  bytes challenge_response = 4;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Supporting Types
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum SignerStatus {
+  SIGNER_STATUS_UNSPECIFIED = 0;
+  SIGNER_STATUS_READY = 1;
+  SIGNER_STATUS_BUSY = 2;
+  SIGNER_STATUS_RATE_LIMITED = 3;
+  SIGNER_STATUS_KEY_NOT_LOADED = 4;
+  SIGNER_STATUS_HSM_ERROR = 5;
+  SIGNER_STATUS_POLICY_MISMATCH = 6;
+  SIGNER_STATUS_OFFLINE = 7;
+}
+
+enum HsmBackend {
+  HSM_BACKEND_UNSPECIFIED = 0;
+  HSM_BACKEND_AWS_KMS = 1;
+  HSM_BACKEND_AZURE_KEY_VAULT = 2;
+  HSM_BACKEND_GCP_KMS = 3;
+  HSM_BACKEND_YUBIHSM2 = 4;
+  HSM_BACKEND_PKCS11 = 5;
+  HSM_BACKEND_SOFTWARE = 6; // Development only
+}
+
+message RateLimitStatus {
+  // Maximum signatures per window.
+  uint32 max_signatures_per_window = 1;
+
+  // Current window usage.
+  uint32 current_window_usage = 2;
+
+  // Window duration in seconds.
+  uint32 window_duration_seconds = 3;
+
+  // Time until window reset.
+  uint32 seconds_until_reset = 4;
+}
+
+message VersionInfo {
+  // Signer daemon version.
+  string daemon_version = 1;
+
+  // FROST library version.
+  string frost_version = 2;
+
+  // Protocol version.
+  string protocol_version = 3;
+}
+
+message Diagnostics {
+  // HSM health status.
+  bool hsm_healthy = 1;
+
+  // Last successful signing timestamp.
+  google.protobuf.Timestamp last_successful_sign = 2;
+
+  // Total signatures since startup.
+  uint64 total_signatures = 3;
+
+  // Total rejections since startup.
+  uint64 total_rejections = 4;
+
+  // Memory usage bytes.
+  uint64 memory_usage_bytes = 5;
+
+  // Uptime seconds.
+  uint64 uptime_seconds = 6;
+}
+
+message AuditProof {
+  // Unique audit ID.
+  string audit_id = 1;
+
+  // Hash of the request that was processed.
+  bytes request_hash = 2;
+
+  // Timestamp of the operation.
+  google.protobuf.Timestamp timestamp = 3;
+
+  // Signer's signature over the audit entry.
+  bytes audit_signature = 4;
+
+  // Sequence number (monotonically increasing).
+  uint64 sequence_number = 5;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Coordinator Service
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// FrostCoordinator aggregates signatures from multiple signers.
+// Stateless, replaceable, holds no secrets.
+service FrostCoordinator {
+  // InitiateSigningCeremony starts a new signing session.
+  rpc InitiateSigningCeremony(InitiateCeremonyRequest) returns (InitiateCeremonyResponse);
+
+  // CollectCommitments gathers nonce commitments from participants.
+  rpc CollectCommitments(CollectCommitmentsRequest) returns (CollectCommitmentsResponse);
+
+  // CollectShares gathers signature shares from participants.
+  rpc CollectShares(CollectSharesRequest) returns (CollectSharesResponse);
+
+  // AggregateSignature combines shares into final signature.
+  rpc AggregateSignature(AggregateRequest) returns (AggregateResponse);
+
+  // VerifySignature verifies a threshold signature.
+  rpc VerifySignature(VerifyRequest) returns (VerifyResponse);
+}
+
+message InitiateCeremonyRequest {
+  // SHA-256 hash of the message to sign.
+  bytes message_hash = 1;
+
+  // Participant IDs to include in this ceremony.
+  repeated uint32 participant_ids = 2;
+
+  // Threshold k.
+  uint32 threshold = 3;
+
+  // Time bounds for the ceremony.
+  google.protobuf.Timestamp not_before = 4;
+  google.protobuf.Timestamp not_after = 5;
+
+  // Coordinator identity.
+  string coordinator_id = 6;
+
+  // Policy hash that participants must have loaded.
+  bytes required_policy_hash = 7;
+}
+
+message InitiateCeremonyResponse {
+  // Session ID for this ceremony.
+  string session_id = 1;
+
+  // Participant endpoints to contact.
+  repeated ParticipantEndpoint participants = 2;
+
+  // Deadline for commitments.
+  google.protobuf.Timestamp commitment_deadline = 3;
+
+  // Deadline for shares.
+  google.protobuf.Timestamp share_deadline = 4;
+}
+
+message ParticipantEndpoint {
+  // Participant ID.
+  uint32 participant_id = 1;
+
+  // gRPC endpoint.
+  string endpoint = 2;
+
+  // SPIFFE ID for mTLS.
+  string spiffe_id = 3;
+
+  // Status (pre-checked).
+  SignerStatus status = 4;
+}
+
+message CollectCommitmentsRequest {
+  // Session ID.
+  string session_id = 1;
+
+  // Commitments collected from signers.
+  repeated SignerCommitment commitments = 2;
+}
+
+message SignerCommitment {
+  // Participant ID.
+  uint32 participant_id = 1;
+
+  // Nonce commitment bytes.
+  bytes commitment = 2;
+
+  // Attestation token.
+  bytes attestation = 3;
+}
+
+message CollectCommitmentsResponse {
+  // Session ID.
+  string session_id = 1;
+
+  // Signing package to distribute.
+  bytes signing_package = 2;
+
+  // Participants included.
+  repeated uint32 included_participants = 3;
+}
+
+message CollectSharesRequest {
+  // Session ID.
+  string session_id = 1;
+
+  // Signature shares from signers.
+  repeated SignerShare shares = 2;
+}
+
+message SignerShare {
+  // Participant ID.
+  uint32 participant_id = 1;
+
+  // Signature share bytes.
+  bytes share = 2;
+
+  // Audit proof from signer.
+  AuditProof audit_proof = 3;
+}
+
+message CollectSharesResponse {
+  // Session ID.
+  string session_id = 1;
+
+  // Ready to aggregate.
+  bool ready_to_aggregate = 2;
+
+  // Shares collected.
+  uint32 shares_collected = 3;
+
+  // Shares required (threshold).
+  uint32 shares_required = 4;
+}
+
+message AggregateRequest {
+  // Session ID.
+  string session_id = 1;
+}
+
+message AggregateResponse {
+  // Session ID.
+  string session_id = 1;
+
+  // Final aggregated signature (64 bytes for Ed25519).
+  bytes signature = 2;
+
+  // Group public key used.
+  bytes group_public_key = 3;
+
+  // Participants that contributed.
+  repeated uint32 participants_used = 4;
+
+  // Threshold achieved.
+  uint32 threshold = 5;
+
+  // Ceremony proof for audit.
+  CeremonyProof ceremony_proof = 6;
+}
+
+message VerifyRequest {
+  // Message hash that was signed.
+  bytes message_hash = 1;
+
+  // Signature to verify.
+  bytes signature = 2;
+
+  // Group public key.
+  bytes group_public_key = 3;
+}
+
+message VerifyResponse {
+  // Whether signature is valid.
+  bool valid = 1;
+
+  // Verification timestamp.
+  google.protobuf.Timestamp verified_at = 2;
+}
+
+message CeremonyProof {
+  // Ceremony ID.
+  string ceremony_id = 1;
+
+  // All audit proofs from participants.
+  repeated AuditProof participant_proofs = 2;
+
+  // Coordinator signature over the ceremony.
+  bytes coordinator_signature = 3;
+
+  // Full transcript hash.
+  bytes transcript_hash = 4;
+
+  // Timestamp of completion.
+  google.protobuf.Timestamp completed_at = 5;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DKG Orchestrator Service
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// DkgOrchestrator manages distributed key generation ceremonies.
+service DkgOrchestrator {
+  // InitiateDkg starts a new DKG ceremony.
+  rpc InitiateDkg(InitiateDkgRequest) returns (InitiateDkgResponse);
+
+  // CollectRound1Packages collects Round 1 packages from participants.
+  rpc CollectRound1Packages(CollectRound1Request) returns (CollectRound1Response);
+
+  // CollectRound2Packages collects Round 2 packages from participants.
+  rpc CollectRound2Packages(CollectRound2Request) returns (CollectRound2Response);
+
+  // FinalizeDkg completes the ceremony and produces group public key.
+  rpc FinalizeDkg(FinalizeDkgRequest) returns (FinalizeDkgResponse);
+}
+
+message InitiateDkgRequest {
+  // Threshold k.
+  uint32 threshold = 1;
+
+  // Total participants n.
+  uint32 total_participants = 2;
+
+  // Participant IDs (1-indexed).
+  repeated uint32 participant_ids = 3;
+
+  // Ceremony identifier.
+  string ceremony_id = 4;
+
+  // Coordinator identity.
+  string coordinator_id = 5;
+}
+
+message InitiateDkgResponse {
+  // Ceremony ID.
+  string ceremony_id = 1;
+
+  // Participant configuration.
+  repeated DkgParticipant participants = 2;
+
+  // Round 1 deadline.
+  google.protobuf.Timestamp round1_deadline = 3;
+
+  // Round 2 deadline.
+  google.protobuf.Timestamp round2_deadline = 4;
+}
+
+message DkgParticipant {
+  // Participant ID.
+  uint32 participant_id = 1;
+
+  // Endpoint for this participant.
+  string endpoint = 2;
+
+  // HSM backend type.
+  HsmBackend hsm_backend = 3;
+}
+
+message CollectRound1Request {
+  // Ceremony ID.
+  string ceremony_id = 1;
+
+  // Round 1 packages from each participant.
+  repeated DkgRound1Package packages = 2;
+}
+
+message DkgRound1Package {
+  // Participant ID.
+  uint32 participant_id = 1;
+
+  // Package bytes.
+  bytes package = 2;
+}
+
+message CollectRound1Response {
+  // Ceremony ID.
+  string ceremony_id = 1;
+
+  // Packages to distribute (mapped by receiver).
+  map<uint32, bytes> packages_for_participant = 2;
+}
+
+message CollectRound2Request {
+  // Ceremony ID.
+  string ceremony_id = 1;
+
+  // Round 2 packages.
+  repeated DkgRound2Package packages = 2;
+}
+
+message DkgRound2Package {
+  // Sender participant ID.
+  uint32 sender_id = 1;
+
+  // Receiver participant ID.
+  uint32 receiver_id = 2;
+
+  // Package bytes.
+  bytes package = 3;
+}
+
+message CollectRound2Response {
+  // Ceremony ID.
+  string ceremony_id = 1;
+
+  // Ready to finalize.
+  bool ready_to_finalize = 2;
+
+  // Packages collected.
+  uint32 packages_collected = 3;
+}
+
+message FinalizeDkgRequest {
+  // Ceremony ID.
+  string ceremony_id = 1;
+}
+
+message FinalizeDkgResponse {
+  // Ceremony ID.
+  string ceremony_id = 1;
+
+  // Success.
+  bool success = 2;
+
+  // Group public key (32 bytes for Ed25519).
+  bytes group_public_key = 3;
+
+  // Threshold k.
+  uint32 threshold = 4;
+
+  // Total participants n.
+  uint32 total_participants = 5;
+
+  // Ceremony transcript hash (for audit).
+  bytes transcript_hash = 6;
+
+  // Encrypted key packages for each participant (they decrypt with HSM).
+  map<uint32, bytes> encrypted_key_packages = 7;
+}

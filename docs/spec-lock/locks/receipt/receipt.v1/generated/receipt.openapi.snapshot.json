@@ -1,0 +1,47 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Receipt API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/ops/receipts": {
+      "get": {
+        "summary": "List receipts",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create receipt",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/ops/receipts/{receiptId}": {
+      "get": {
+        "summary": "Get receipt",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ops/receipts/{receiptId}/verify": {
+      "get": {
+        "summary": "Verify receipt",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}

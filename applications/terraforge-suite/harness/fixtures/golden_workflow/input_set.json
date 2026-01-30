@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Golden workflow deterministic input set. Expected output: totalValue=370625",
+  "parcels": [
+    {
+      "parcelId": "BENTON-2024-001234",
+      "countyCode": "benton",
+      "attributes": {
+        "sqft": 2500,
+        "quality": "Good",
+        "condition": "Average",
+        "yearBuilt": 2010,
+        "propertyType": "residential",
+        "stories": 2
+      },
+      "legalDescription": "LOT 15 BLOCK 3 SUNNYDALE ADDITION",
+      "ownerName": "EXAMPLE PROPERTY OWNER"
+    }
+  ],
+  "sales": [
+    {
+      "parcelId": "BENTON-2024-001234",
+      "salePrice": 385000,
+      "saleDate": "2024-06-15",
+      "saleType": "arm's length",
+      "verified": true
+    }
+  ],
+  "costFactors": {
+    "baseRate": 150,
+    "modifiers": {
+      "Good": 0.95,
+      "Average": 1.0,
+      "Fair": 1.05,
+      "Poor": 1.1
+    },
+    "depreciationTable": {
+      "effective_age": 10,
+      "rate_per_year": 0.01
+    }
+  },
+  "model": {
+    "landValue": 50000,
+    "adjustmentFactors": {
+      "neighborhood": 1.0,
+      "location": 1.0
+    },
+    "effectiveDate": "2024-01-01"
+  }
+}

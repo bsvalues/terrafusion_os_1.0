@@ -27,10 +27,10 @@ Min replicas: {{ .Values.autoscaling.minReplicas }}
 Max replicas: {{ .Values.autoscaling.maxReplicas }}
 {{- end }}
 
-{{- if .Values.monitoring.enabled }}
+{{- if and .Values.monitoring .Values.monitoring.enabled }}
 Monitoring is enabled. Check Prometheus and Grafana for metrics.
 {{- end }}
 
-{{- if .Values.security.enabled }}
+{{- if and .Values.security .Values.security.enabled }}
 Security features are enabled including network policies and pod security standards.
 {{- end }}

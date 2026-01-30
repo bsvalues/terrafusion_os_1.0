@@ -1,0 +1,74 @@
+{
+  "$schema": "speclock.schema.json",
+  "lock_id": "state-report.v1",
+  "surface": "state-report",
+  "version": "1.0.0",
+  "status": "active",
+  "owner": "systemgpt",
+  "created": "2025-12-13",
+  "updated": "2025-12-13",
+  "description": "Federated state-level reports requiring county quorum signatures",
+  "report_types": [
+    "annual_assessment_summary",
+    "levy_rate_comparison",
+    "compliance_audit",
+    "interop_certification"
+  ],
+  "signing_modes": ["state_quorum"],
+  "quorum_config": {
+    "threshold": 3,
+    "total_participants": 5,
+    "algorithm": "frost_ed25519"
+  },
+  "required_fields": [
+    "report_id",
+    "report_type",
+    "generated_at",
+    "period_start",
+    "period_end",
+    "counties_included",
+    "aggregation_method",
+    "signing",
+    "signing.mode",
+    "signing.threshold",
+    "signing.participants",
+    "signing.group_pub_sha256",
+    "signing.signature_sha256"
+  ],
+  "optional_fields": ["signing.proof_path", "data"],
+  "determinism_rules": {
+    "json_key_ordering": "lexicographic",
+    "sha256_format": "lowercase_hex_64",
+    "timestamp_format": "rfc3339_utc_z",
+    "whitespace": "no_trailing_lf_endings"
+  },
+  "validation_rules": [
+    {
+      "id": "quorum_threshold_met",
+      "rule": "len(signing.participants) >= signing.threshold",
+      "error": "Quorum threshold not met"
+    },
+    {
+      "id": "period_valid",
+      "rule": "period_start < period_end",
+      "error": "period_start must be before period_end"
+    },
+    {
+      "id": "counties_not_empty",
+      "rule": "len(counties_included) >= 1",
+      "error": "At least one county must be included"
+    },
+    {
+      "id": "no_single_county_sign",
+      "rule": "len(signing.participants) >= 3",
+      "error": "State reports require at least 3 county signers"
+    }
+  ],
+  "generated_artifacts": ["generated/state-report.schema.json"],
+  "test_requirements": [
+    "schema_validates_canonical_examples",
+    "quorum_threshold_enforced",
+    "single_county_sign_rejected",
+    "vendor_alone_cannot_sign"
+  ]
+}

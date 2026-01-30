@@ -1,0 +1,15 @@
+{
+  "policyVersion": "2026-01-19-GEN2",
+  "governance": {
+    "status": "ACTIVE_MODERNIZATION",
+    "anchor": "9af5bb291 (Arch Complete)",
+    "description": "Modern Gen2 Applications and Suites. May use npm or pnpm during transition."
+  },
+  "roots": [
+    "applications/terra-dossier/",
+    "terrabuild-modernization/",
+    "applications/terra-assessor-production/",
+    "applications/terraforge-suite/",
+    "applications/terra-permit/"
+  ]
+}

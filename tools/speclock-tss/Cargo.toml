@@ -1,0 +1,46 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# TerraFusion SpecLock TSS - COSMIC TIER Threshold Signature Tool
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Real FROST-Ed25519 threshold cryptography for k-of-n signing.
+# No single signer can produce a valid signature.
+# k-of-n participants must cooperate to sign.
+# One signature, one group public key, nation-state-grade integrity.
+#
+# Library: zkcrypto FROST-Ed25519 (Zcash Foundation audited)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[package]
+name = "speclock-tss"
+version = "1.0.0"
+edition = "2021"
+description = "TerraFusion SpecLock COSMIC TIER - FROST-Ed25519 Threshold Signatures"
+license = "Apache-2.0"
+authors = ["TerraFusion OS Team"]
+
+[[bin]]
+name = "speclock-tss"
+path = "src/main.rs"
+
+[dependencies]
+# Core utilities
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+hex = "0.4"
+rand = "0.8"
+sha2 = "0.10"
+base64 = "0.22"
+chrono = { version = "0.4", features = ["serde"] }
+
+# REAL FROST - Zcash Foundation audited implementation
+frost-core = "2.0"
+frost-ed25519 = "2.0"
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+lto = true
+strip = true

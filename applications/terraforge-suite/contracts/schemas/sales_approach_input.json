@@ -1,0 +1,191 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/sales_approach_input.json",
+  "title": "SalesApproachInput",
+  "description": "Input for the USPAP-aligned Sales Comparison Approach",
+  "type": "object",
+  "properties": {
+    "subjectParcelId": {
+      "type": "string",
+      "description": "Parcel ID of the subject property"
+    },
+    "subjectCharacteristics": {
+      "type": "object",
+      "properties": {
+        "gla": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Gross Living Area in square feet"
+        },
+        "lotSize": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Lot size in square feet"
+        },
+        "yearBuilt": {
+          "type": "integer",
+          "minimum": 1800,
+          "maximum": 2100,
+          "description": "Year the improvement was built"
+        },
+        "bedrooms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of bedrooms"
+        },
+        "bathrooms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Number of bathrooms (can be fractional)"
+        },
+        "condition": {
+          "type": "string",
+          "enum": ["Excellent", "Good", "Average", "Fair", "Poor"],
+          "description": "Overall condition rating"
+        },
+        "location": {
+          "type": "string",
+          "enum": ["Superior", "Good", "Average", "Fair", "Inferior"],
+          "description": "Location quality rating"
+        }
+      },
+      "required": ["gla", "lotSize", "yearBuilt", "condition", "location"],
+      "additionalProperties": false
+    },
+    "comparables": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "properties": {
+          "compId": {
+            "type": "string",
+            "description": "Unique identifier for this comparable"
+          },
+          "salePrice": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Actual sale price of the comparable"
+          },
+          "saleDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of sale (YYYY-MM-DD)"
+          },
+          "gla": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Gross Living Area in square feet"
+          },
+          "lotSize": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Lot size in square feet"
+          },
+          "yearBuilt": {
+            "type": "integer",
+            "minimum": 1800,
+            "maximum": 2100,
+            "description": "Year the improvement was built"
+          },
+          "bedrooms": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of bedrooms"
+          },
+          "bathrooms": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Number of bathrooms"
+          },
+          "condition": {
+            "type": "string",
+            "enum": ["Excellent", "Good", "Average", "Fair", "Poor"],
+            "description": "Overall condition rating"
+          },
+          "location": {
+            "type": "string",
+            "enum": ["Superior", "Good", "Average", "Fair", "Inferior"],
+            "description": "Location quality rating"
+          }
+        },
+        "required": [
+          "compId",
+          "salePrice",
+          "saleDate",
+          "gla",
+          "lotSize",
+          "yearBuilt",
+          "condition",
+          "location"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "adjustmentRates": {
+      "type": "object",
+      "properties": {
+        "glaPerSqFt": {
+          "type": "number",
+          "description": "Adjustment per square foot of GLA difference"
+        },
+        "lotSizePerSqFt": {
+          "type": "number",
+          "description": "Adjustment per square foot of lot size difference"
+        },
+        "agePerYear": {
+          "type": "number",
+          "description": "Adjustment per year of age difference"
+        },
+        "bedroomAdjustment": {
+          "type": "integer",
+          "description": "Adjustment per bedroom difference"
+        },
+        "bathroomAdjustment": {
+          "type": "integer",
+          "description": "Adjustment per bathroom difference"
+        },
+        "conditionAdjustments": {
+          "type": "object",
+          "properties": {
+            "Excellent": { "type": "integer" },
+            "Good": { "type": "integer" },
+            "Average": { "type": "integer" },
+            "Fair": { "type": "integer" },
+            "Poor": { "type": "integer" }
+          },
+          "required": ["Excellent", "Good", "Average", "Fair", "Poor"],
+          "additionalProperties": false
+        },
+        "locationAdjustments": {
+          "type": "object",
+          "properties": {
+            "Superior": { "type": "integer" },
+            "Good": { "type": "integer" },
+            "Average": { "type": "integer" },
+            "Fair": { "type": "integer" },
+            "Inferior": { "type": "integer" }
+          },
+          "required": ["Superior", "Good", "Average", "Fair", "Inferior"],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "glaPerSqFt",
+        "lotSizePerSqFt",
+        "agePerYear",
+        "conditionAdjustments",
+        "locationAdjustments"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "subjectParcelId",
+    "subjectCharacteristics",
+    "comparables",
+    "adjustmentRates"
+  ],
+  "additionalProperties": false
+}

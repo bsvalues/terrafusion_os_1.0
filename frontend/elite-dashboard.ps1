@@ -40,13 +40,13 @@ function Show-EliteSystemStatus {
     Write-Host "`n📦 BUILD SYSTEM STATUS" -ForegroundColor Yellow
     Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Yellow
 
-    if (Test-Path "../native-shell/ui/index.html") {
-        $buildTime = (Get-Item "../native-shell/ui/index.html").LastWriteTime
+    if (Test-Path "../native-shell/ui/dist/index.html") {
+        $buildTime = (Get-Item "../native-shell/ui/dist/index.html").LastWriteTime
         Write-Host "✅ Production Build: READY" -ForegroundColor Green
         Write-Host "🕒 Last Build: $buildTime" -ForegroundColor White
 
         # Count built assets
-        $assets = Get-ChildItem "../native-shell/ui/assets" -ErrorAction SilentlyContinue
+        $assets = Get-ChildItem "../native-shell/ui/dist/assets" -ErrorAction SilentlyContinue
         if ($assets) {
             Write-Host "📦 Assets: $($assets.Count) files generated" -ForegroundColor White
         }
@@ -82,7 +82,7 @@ function Show-EliteSystemStatus {
     Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Yellow
 
     Write-Host "1. Build: npm run build (20.80s avg)" -ForegroundColor White
-    Write-Host "2. Serve: npx serve ./native-shell/ui -l 8002" -ForegroundColor White
+    Write-Host "2. Serve: npx serve ./native-shell/ui/dist -l 8002" -ForegroundColor White
     Write-Host "3. Monitor: .\elite-dashboard.ps1 -Monitoring" -ForegroundColor White
     Write-Host "4. Repair: .\typescript-repair.ps1 -Fast" -ForegroundColor White
 
@@ -155,7 +155,7 @@ try {
             }
             'S' {
                 Write-Host "`n🚀 Starting server..." -ForegroundColor Yellow
-                Start-Process powershell -ArgumentList "-Command", "cd '$PWD/../native-shell/ui'; npx serve . -l 8002 --single --cors"
+                Start-Process powershell -ArgumentList "-Command", "cd '$PWD/../native-shell/ui/dist'; npx serve . -l 8002 --single --cors"
             }
             'R' {
                 Write-Host "`n🔧 Running TypeScript repair..." -ForegroundColor Yellow

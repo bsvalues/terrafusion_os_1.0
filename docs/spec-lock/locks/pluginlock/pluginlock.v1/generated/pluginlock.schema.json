@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerraFusion PluginLock",
+  "description": "Marketplace plugin permission envelope",
+  "type": "object",
+  "required": [
+    "plugin_id",
+    "version",
+    "bundle_sha256",
+    "sbom_sha256",
+    "slsa_provenance_sha256",
+    "permissions"
+  ],
+  "properties": {
+    "plugin_id": {
+      "type": "string",
+      "pattern": "^io\\.[a-z]+\\.[a-z]+\\.[a-z0-9-]+$",
+      "description": "Reverse-domain plugin identifier"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version"
+    },
+    "bundle_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of plugin bundle (lowercase hex)"
+    },
+    "sbom_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of SBOM (lowercase hex)"
+    },
+    "slsa_provenance_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of SLSA provenance (lowercase hex)"
+    },
+    "permissions": {
+      "type": "object",
+      "required": [
+        "data_scopes"
+      ],
+      "properties": {
+        "data_scopes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "assessment_read",
+              "assessment_write",
+              "audit_log_read",
+              "config_read",
+              "gis_read",
+              "gis_write",
+              "property_read",
+              "property_write",
+              "user_profile_read"
+            ]
+          },
+          "description": "Requested data access scopes"
+        },
+        "network": {
+          "type": "object",
+          "properties": {
+            "allow_domains": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Allowed network domains"
+            },
+            "deny_domains": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Denied network domains"
+            }
+          }
+        },
+        "storage": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "cloud_blob",
+              "local_cache",
+              "persistent_local",
+              "session_storage"
+            ]
+          },
+          "description": "Requested storage types"
+        },
+        "compute": {
+          "type": "object",
+          "properties": {
+            "max_cpu_ms": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 60000,
+              "description": "Max CPU time in milliseconds"
+            },
+            "max_memory_mb": {
+              "type": "integer",
+              "minimum": 16,
+              "maximum": 4096,
+              "description": "Max memory in megabytes"
+            }
+          }
+        },
+        "telemetry_required": {
+          "type": "boolean",
+          "description": "Whether telemetry is required"
+        }
+      }
+    },
+    "admission_decision": {
+      "type": "object",
+      "properties": {
+        "allowed": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "decided_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "decided_by": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

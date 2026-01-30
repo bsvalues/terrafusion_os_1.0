@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/audit_event.json",
+  "title": "AuditEvent",
+  "description": "Audit event emitted by TerraForge modules for government traceability",
+  "type": "object",
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this audit event"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC3339 timestamp of when the event occurred"
+    },
+    "actor": {
+      "type": "string",
+      "description": "The actor (user or system) that triggered this event"
+    },
+    "action": {
+      "type": "string",
+      "description": "The action performed (e.g., calculate_cost, valuate, generate_packet)"
+    },
+    "resourceId": {
+      "type": "string",
+      "description": "The resource identifier (e.g., parcelId) this event relates to"
+    },
+    "module": {
+      "type": "string",
+      "pattern": "^terraforge\\.",
+      "description": "The TerraForge module that emitted this event"
+    },
+    "hash": {
+      "type": "string",
+      "description": "Integrity hash for tamper detection"
+    }
+  },
+  "required": [
+    "eventId",
+    "timestamp",
+    "actor",
+    "action",
+    "resourceId",
+    "module",
+    "hash"
+  ],
+  "additionalProperties": false
+}

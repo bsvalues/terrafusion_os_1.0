@@ -20,7 +20,7 @@ data "aws_partition" "current" {}
 # EKS Service Role
 resource "aws_iam_role" "cluster" {
   name = "${var.cluster_name}-cluster-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -33,7 +33,7 @@ resource "aws_iam_role" "cluster" {
       }
     ]
   })
-  
+
   tags = var.tags
 }
 
@@ -45,7 +45,7 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
 # EKS Node Group Role
 resource "aws_iam_role" "node" {
   name = "${var.cluster_name}-node-group-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -58,7 +58,7 @@ resource "aws_iam_role" "node" {
       }
     ]
   })
-  
+
   tags = var.tags
 }
 
@@ -81,7 +81,7 @@ resource "aws_iam_role_policy_attachment" "node_AmazonEC2ContainerRegistryReadOn
 resource "aws_iam_role_policy" "node_additional" {
   name = "${var.cluster_name}-node-additional-policy"
   role = aws_iam_role.node.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -111,7 +111,7 @@ resource "aws_kms_key" "eks" {
   description             = "EKS Secret Encryption Key for ${var.cluster_name}"
   deletion_window_in_days = 7
   enable_key_rotation     = true
-  
+
   tags = merge(var.tags, {
     Name = "${var.cluster_name}-eks-encryption"
   })
@@ -127,7 +127,7 @@ resource "aws_eks_cluster" "main" {
   name     = var.cluster_name
   version  = var.cluster_version
   role_arn = aws_iam_role.cluster.arn
-  
+
   vpc_config {
     subnet_ids              = var.subnet_ids
     endpoint_private_access = var.endpoint_private_access
@@ -135,14 +135,14 @@ resource "aws_eks_cluster" "main" {
     public_access_cidrs     = var.endpoint_public_access_cidrs
     security_group_ids      = [aws_security_group.cluster.id]
   }
-  
+
   encryption_config {
     provider {
       key_arn = aws_kms_key.eks.arn
     }
     resources = ["secrets"]
   }
-  
+
   enabled_cluster_log_types = [
     "api",
     "audit",
@@ -150,12 +150,12 @@ resource "aws_eks_cluster" "main" {
     "controllerManager",
     "scheduler"
   ]
-  
+
   depends_on = [
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
     aws_cloudwatch_log_group.cluster
   ]
-  
+
   tags = var.tags
 }
 
@@ -163,7 +163,7 @@ resource "aws_eks_cluster" "main" {
 resource "aws_cloudwatch_log_group" "cluster" {
   name              = "/aws/eks/${var.cluster_name}/cluster"
   retention_in_days = 30
-  
+
   tags = var.tags
 }
 
@@ -172,18 +172,18 @@ resource "aws_security_group" "cluster" {
   name_prefix = "${var.cluster_name}-cluster-"
   vpc_id      = var.vpc_id
   description = "EKS cluster security group"
-  
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = merge(var.tags, {
     Name = "${var.cluster_name}-cluster-sg"
   })
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -205,40 +205,40 @@ resource "aws_security_group" "node" {
   name_prefix = "${var.cluster_name}-node-"
   vpc_id      = var.vpc_id
   description = "EKS node group security group"
-  
+
   ingress {
     from_port = 0
     to_port   = 0
     protocol  = "-1"
     self      = true
   }
-  
+
   ingress {
     from_port                = 1025
     to_port                  = 65535
     protocol                 = "tcp"
     source_security_group_id = aws_security_group.cluster.id
   }
-  
+
   ingress {
     from_port                = 443
     to_port                  = 443
     protocol                 = "tcp"
     source_security_group_id = aws_security_group.cluster.id
   }
-  
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = merge(var.tags, {
     Name                                        = "${var.cluster_name}-node-sg"
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   })
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -247,33 +247,33 @@ resource "aws_security_group" "node" {
 # EKS Node Groups
 resource "aws_eks_node_group" "main" {
   for_each = var.node_groups
-  
+
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = each.key
   node_role_arn   = aws_iam_role.node.arn
   subnet_ids      = var.subnet_ids
-  
+
   capacity_type  = each.value.capacity_type
   instance_types = each.value.instance_types
-  
+
   scaling_config {
     desired_size = each.value.desired_capacity
     max_size     = each.value.max_capacity
     min_size     = each.value.min_capacity
   }
-  
+
   update_config {
     max_unavailable_percentage = 25
   }
-  
+
   # Launch template configuration
   launch_template {
     id      = aws_launch_template.node_group[each.key].id
     version = aws_launch_template.node_group[each.key].latest_version
   }
-  
+
   labels = each.value.k8s_labels
-  
+
   dynamic "taint" {
     for_each = each.value.k8s_taints
     content {
@@ -282,13 +282,13 @@ resource "aws_eks_node_group" "main" {
       effect = taint.value.effect
     }
   }
-  
+
   depends_on = [
     aws_iam_role_policy_attachment.node_AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.node_AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.node_AmazonEC2ContainerRegistryReadOnly,
   ]
-  
+
   tags = merge(var.tags, {
     Name = "${var.cluster_name}-${each.key}"
   })
@@ -297,18 +297,18 @@ resource "aws_eks_node_group" "main" {
 # Launch Templates for Node Groups
 resource "aws_launch_template" "node_group" {
   for_each = var.node_groups
-  
+
   name_prefix = "${var.cluster_name}-${each.key}-"
-  
+
   vpc_security_group_ids = [aws_security_group.node.id]
-  
+
   user_data = base64encode(templatefile("${path.module}/user_data.sh", {
     cluster_name        = var.cluster_name
     cluster_endpoint    = aws_eks_cluster.main.endpoint
     cluster_ca_cert     = aws_eks_cluster.main.certificate_authority[0].data
     bootstrap_arguments = "--container-runtime containerd"
   }))
-  
+
   tag_specifications {
     resource_type = "instance"
     tags = merge(var.tags, {
@@ -316,14 +316,14 @@ resource "aws_launch_template" "node_group" {
       "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     })
   }
-  
+
   tag_specifications {
     resource_type = "volume"
     tags = merge(var.tags, {
       Name = "${var.cluster_name}-${each.key}"
     })
   }
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -336,11 +336,11 @@ data "tls_certificate" "cluster" {
 
 resource "aws_iam_openid_connect_provider" "cluster" {
   count = var.enable_irsa ? 1 : 0
-  
+
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = [data.tls_certificate.cluster.certificates[0].sha1_fingerprint]
   url             = aws_eks_cluster.main.identity[0].oidc[0].issuer
-  
+
   tags = merge(var.tags, {
     Name = "${var.cluster_name}-irsa"
   })
@@ -353,7 +353,7 @@ resource "aws_eks_addon" "vpc_cni" {
   addon_version            = "v1.15.1-eksbuild.1"
   resolve_conflicts        = "OVERWRITE"
   service_account_role_arn = var.enable_irsa ? aws_iam_role.vpc_cni[0].arn : null
-  
+
   tags = var.tags
 }
 
@@ -362,9 +362,9 @@ resource "aws_eks_addon" "coredns" {
   addon_name        = "coredns"
   addon_version     = "v1.10.1-eksbuild.4"
   resolve_conflicts = "OVERWRITE"
-  
+
   depends_on = [aws_eks_node_group.main]
-  
+
   tags = var.tags
 }
 
@@ -373,7 +373,7 @@ resource "aws_eks_addon" "kube_proxy" {
   addon_name        = "kube-proxy"
   addon_version     = "v1.28.2-eksbuild.2"
   resolve_conflicts = "OVERWRITE"
-  
+
   tags = var.tags
 }
 
@@ -383,16 +383,16 @@ resource "aws_eks_addon" "ebs_csi_driver" {
   addon_version            = "v1.24.0-eksbuild.1"
   resolve_conflicts        = "OVERWRITE"
   service_account_role_arn = var.enable_irsa ? aws_iam_role.ebs_csi[0].arn : null
-  
+
   tags = var.tags
 }
 
 # IAM role for VPC CNI addon
 resource "aws_iam_role" "vpc_cni" {
   count = var.enable_irsa ? 1 : 0
-  
+
   name = "${var.cluster_name}-vpc-cni-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -411,13 +411,13 @@ resource "aws_iam_role" "vpc_cni" {
       }
     ]
   })
-  
+
   tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "vpc_cni" {
   count = var.enable_irsa ? 1 : 0
-  
+
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.vpc_cni[0].name
 }
@@ -425,9 +425,9 @@ resource "aws_iam_role_policy_attachment" "vpc_cni" {
 # IAM role for EBS CSI driver
 resource "aws_iam_role" "ebs_csi" {
   count = var.enable_irsa ? 1 : 0
-  
+
   name = "${var.cluster_name}-ebs-csi-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -446,13 +446,13 @@ resource "aws_iam_role" "ebs_csi" {
       }
     ]
   })
-  
+
   tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "ebs_csi" {
   count = var.enable_irsa ? 1 : 0
-  
+
   policy_arn = "arn:aws:iam::aws:policy/service-role/Amazon_EBS_CSI_DriverPolicy"
   role       = aws_iam_role.ebs_csi[0].name
 }
