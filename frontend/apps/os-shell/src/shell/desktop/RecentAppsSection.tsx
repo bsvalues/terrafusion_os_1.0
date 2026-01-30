@@ -16,6 +16,7 @@
 
 import { cn } from '@/lib/utils';
 import React from 'react';
+import { getLucideIcon } from '../../config/iconMap';
 import { colors } from '../../design-system/tokens/colors';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
@@ -94,6 +95,7 @@ interface RecentAppTileProps {
 
 const RecentAppTile: React.FC<RecentAppTileProps> = ({ module, onLaunch }) => {
   const isRunning = useIsModuleRunning(module.id);
+  const Icon = getLucideIcon(module.icon);
 
   return (
     <button
@@ -116,7 +118,7 @@ const RecentAppTile: React.FC<RecentAppTileProps> = ({ module, onLaunch }) => {
     >
       {isRunning && <RunningIndicator />}
       <span className='text-2xl' role='img' aria-hidden='true'>
-        {module.icon}
+        <Icon className='h-5 w-5 text-white drop-shadow-md' />
       </span>
       <span className='text-xs text-white/80 text-center truncate max-w-[60px]'>{module.name}</span>
     </button>

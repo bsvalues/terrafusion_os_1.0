@@ -20,8 +20,7 @@ const LoadingFallback: React.FC = () => (
   <div
     className='w-full h-full flex flex-col items-center justify-center min-h-screen'
     style={{
-      background:
-        'linear-gradient(135deg, rgba(10, 14, 26, 0.98) 0%, rgba(20, 24, 36, 0.95) 100%)',
+      background: 'linear-gradient(135deg, rgba(10, 14, 26, 0.98) 0%, rgba(20, 24, 36, 0.95) 100%)',
     }}
   >
     {/* Quantum spinner */}

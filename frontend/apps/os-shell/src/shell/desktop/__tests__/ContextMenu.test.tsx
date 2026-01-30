@@ -192,7 +192,7 @@ describe('ContextMenu Component', () => {
       const menu = screen.getByTestId('context-menu');
 
       // Should have cyan border (TerraFusion brand)
-      expect(menu.className).toMatch(/border-.*\[var(--tf-transcend-highlight)\]/);
+      expect(menu.className).toContain('border-[var(--tf-transcend-highlight)]');
     });
 
     it('has glass morphism effect', () => {

@@ -46,7 +46,7 @@ const mockWindows = [
     id: 'window-1',
     moduleId: 'costforge',
     title: 'CostForge',
-    icon: '💎',
+    icon: 'Layers',
     state: 'normal' as const,
     position: { x: 100, y: 100 },
     size: { width: 800, height: 600 },
@@ -57,7 +57,7 @@ const mockWindows = [
     id: 'window-2',
     moduleId: 'terra-gaia',
     title: 'TerraGaia',
-    icon: '🌍',
+    icon: 'Map',
     state: 'minimized' as const,
     position: { x: 200, y: 100 },
     size: { width: 800, height: 600 },
@@ -68,7 +68,7 @@ const mockWindows = [
     id: 'window-3',
     moduleId: 'atlas-ai',
     title: 'ATLAS AI',
-    icon: '🤖',
+    icon: 'Brain',
     state: 'maximized' as const,
     position: { x: 0, y: 0 },
     size: { width: 1920, height: 1080 },
@@ -155,7 +155,8 @@ describe('WindowPeek', () => {
     it('shows window icon', () => {
       showPeekForWindow('window-1');
       render(<WindowPeek />);
-      expect(screen.getByText('💎')).toBeInTheDocument();
+      const peek = screen.getByTestId('window-peek');
+      expect(peek.querySelector('svg')).toBeInTheDocument();
     });
 
     it('shows different window title', () => {
@@ -167,7 +168,8 @@ describe('WindowPeek', () => {
     it('shows different window icon', () => {
       showPeekForWindow('window-2');
       render(<WindowPeek />);
-      expect(screen.getByText('🌍')).toBeInTheDocument();
+      const peek = screen.getByTestId('window-peek');
+      expect(peek.querySelector('svg')).toBeInTheDocument();
     });
   });
 

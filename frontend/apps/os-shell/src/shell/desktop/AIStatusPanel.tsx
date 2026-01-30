@@ -313,6 +313,9 @@ export const AIStatusIndicator: React.FC<AIStatusIndicatorProps> = ({
         <span className="text-xs text-[var(--tf-transcend-highlight)] font-medium">
           {status.totalAgents.toLocaleString()}
         </span>
+        <span className="text-[10px] uppercase tracking-wider text-white/60">
+          Agents
+        </span>
       </button>
 
       {/* Panel */}

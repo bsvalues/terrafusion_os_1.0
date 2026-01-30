@@ -1,5 +1,5 @@
 import type { ModuleDefinition, ModuleStatus, ModuleTier } from '../stores/moduleRegistryStore';
-import type { Entry, ModuleManifest, Intent } from './generatedModules';
+import type { Entry, Intent, ModuleManifest } from './generatedModules';
 import { GENERATED_MODULES } from './generatedModules';
 
 function mapTier(tier: number): ModuleTier {

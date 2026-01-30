@@ -3,8 +3,24 @@ name: TerraFusion OS 1.0 - Continuous Integration
 on:
   push:
     branches: [main, development]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '*.sln'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: [main, development]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '*.sln'
+      - '.github/workflows/ci.yml'
 
 env:
   NODE_VERSION: '20'
@@ -110,6 +126,51 @@ jobs:
           fi
 
           echo "✅ Hint Drift Guard: TerraFusion.CiHints invocation confirmed in ci-verified.yml"
+
+  contract-guard:
+    name: Manifest Contract Guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect manifest/launcher changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            contract:
+              - 'applications/**/terrafusion.app.json'
+              - 'tools/registry/terrafusion.app.schema.json'
+              - 'tools/dev/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+
+      - name: No relevant changes
+        if: steps.changes.outputs.contract != 'true'
+        run: echo "No manifest/launcher/guard changes detected — contract check skipped."
+
+      - name: Setup pnpm
+        if: steps.changes.outputs.contract == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        if: steps.changes.outputs.contract == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install
+        if: steps.changes.outputs.contract == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Contract check
+        if: steps.changes.outputs.contract == 'true'
+        run: pnpm run contract:check
 
   classify_changes:
     name: Classify Changes (path filtering)
@@ -508,7 +569,15 @@ jobs:
     runs-on: ubuntu-latest
     if: always() # Run even if dependent jobs fail - we need to report status
     needs:
-      [quality-gate, backend-tests, frontend-tests, ai-validation, security-scan, classify_changes]
+      [
+        quality-gate,
+        backend-tests,
+        frontend-tests,
+        ai-validation,
+        security-scan,
+        classify_changes,
+        contract-guard,
+      ]
     permissions:
       contents: read
       pull-requests: write # Required for PR comment updates

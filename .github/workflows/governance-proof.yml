@@ -3,6 +3,13 @@ name: governance-proof
 on:
   pull_request:
     branches: [main, master]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'policy/**'
+      - 'tools/**'
+      - '.github/workflows/governance-proof.yml'
   workflow_dispatch:
 
 permissions:
@@ -19,17 +26,39 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Detect governance policy/proof changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            governance:
+              - '.github/workflows/governance-proof.yml'
+              - 'policy/**'
+              - 'governance/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+
+      - name: No relevant changes
+        if: steps.changes.outputs.governance != 'true'
+        run: echo "No governance/policy changes detected — governance proof skipped."
+
       - uses: pnpm/action-setup@v4
+        if: steps.changes.outputs.governance == 'true'
+        with:
+          version: 9
 
       - uses: actions/setup-node@v4
+        if: steps.changes.outputs.governance == 'true'
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
           cache: pnpm
 
       - name: Install
+        if: steps.changes.outputs.governance == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Run Governance Proof (log)
+        if: steps.changes.outputs.governance == 'true'
         run: pnpm run ci:governance-proof:log
         env:
           GH_TOKEN: ${{ github.token }}

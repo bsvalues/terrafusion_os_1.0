@@ -44,8 +44,8 @@ describe('VirtualDesktopSwitcher', () => {
 
   it('highlights current desktop', () => {
     render(<VirtualDesktopSwitcher isOpen={true} onClose={jest.fn()} />);
-    const desktop1 = screen.getByText('Desktop 1').closest('div');
-    expect(desktop1?.parentElement).toHaveClass('border-[var(--tf-transcend-highlight)]');
+    const desktop1 = screen.getByTestId('desktop-tile-desktop-1');
+    expect(desktop1).toHaveAttribute('aria-selected', 'true');
   });
 
   it('switches desktop on click', () => {

@@ -39,7 +39,7 @@ const mockPinnedApps: Module[] = [
   {
     id: 'government-architecture',
     name: 'Government Architecture',
-    icon: '🏛️',
+    icon: 'Building2',
     description: 'Core',
     category: 'core',
     status: 'active',
@@ -47,7 +47,7 @@ const mockPinnedApps: Module[] = [
   {
     id: 'gis-viewer',
     name: 'GIS Viewer',
-    icon: '🗺️',
+    icon: 'Map',
     description: 'Maps',
     category: 'mapping',
     status: 'active',
@@ -55,7 +55,7 @@ const mockPinnedApps: Module[] = [
   {
     id: 'costforge',
     name: 'CostForge',
-    icon: '💎',
+    icon: 'Layers',
     description: 'Assessment',
     category: 'assessment',
     status: 'active',
@@ -66,7 +66,7 @@ const mockRecentApps: Module[] = [
   {
     id: 'levy-calculator',
     name: 'Levy Calculator',
-    icon: '📊',
+    icon: 'BarChart3',
     description: 'Tax',
     category: 'tax',
     status: 'active',
@@ -74,7 +74,7 @@ const mockRecentApps: Module[] = [
   {
     id: 'atlas-ai',
     name: 'ATLAS Intelligence',
-    icon: '🤖',
+    icon: 'Brain',
     description: 'AI',
     category: 'ai',
     status: 'active',

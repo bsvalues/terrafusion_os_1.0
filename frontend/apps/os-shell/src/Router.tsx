@@ -22,13 +22,18 @@ const CreateExperiment = lazy(() => import('./pages/experiments/CreateExperiment
 const EliteExperimentalResearchInterface = lazy(
   () => import('./components/elite/EliteExperimentalResearchInterface')
 );
-const NotificationPreferences = lazy(
-  () => import('./components/codex/NotificationPreferences')
-);
+const NotificationPreferences = lazy(() => import('./components/codex/NotificationPreferences'));
 
 // Gen2 Module Routes
 const TerraForgeGen2 = lazy(() => import('./pages/gen2/TerraForgeGen2'));
 const TerraDossierGen2 = lazy(() => import('./pages/gen2/TerraDossierGen2'));
+
+// GovernanceLock - Pilot Console (single choke point UI)
+const PilotConsole = lazy(() => import('./pages/PilotConsole'));
+
+// GovernanceLock - Dashboard (role-gated metrics)
+const GovernanceDashboard = lazy(() => import('./pages/GovernanceDashboard'));
+const PilotApiDemo = lazy(() => import('./pages/PilotApiDemo'));
 
 const Router: React.FC = () => {
   return (
@@ -51,6 +56,13 @@ const Router: React.FC = () => {
           {/* Gen2 Module Routes - Internal OS modules */}
           <Route path='/gen2/terraforge' element={<TerraForgeGen2 />} />
           <Route path='/gen2/dossier' element={<TerraDossierGen2 />} />
+
+          {/* GovernanceLock - Single Choke Point UI */}
+          <Route path='/pilot' element={<PilotConsole />} />
+
+          {/* GovernanceLock - Dashboard (role-gated) */}
+          <Route path='/pilot/dashboard' element={<GovernanceDashboard />} />
+          <Route path='/pilot/api' element={<PilotApiDemo />} />
 
           <Route path='/modules/*' element={<div>Module Loading...</div>} />
         </Routes>

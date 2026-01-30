@@ -158,7 +158,7 @@ describe('Desktop', () => {
       render(<Desktop />);
 
       const desktop = screen.getByTestId('desktop');
-      expect(desktop).toHaveClass('bg-[var(--tf-void-black)]');
+      expect(desktop).toHaveClass('bg-transparent');
     });
   });
 

@@ -8,6 +8,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **CRITICAL**: Read `.github/copilot-instructions.md` FIRST - contains essential government compliance requirements, AI swarm coordination rules, and testing architecture.
 
+## Canonical Instructions (Source of Truth)
+
+Always follow these, in order:
+1. `.github/copilot-instructions.md`
+2. `CLAUDE.md`
+3. `STANDARD.md` (repo root)
+
+Anything under `agents/**` is optional implementation detail unless explicitly referenced here.
+
+## Launcher Constitution (Dev OS)
+
+`tools/dev/dev-os.mjs` MUST:
+- Start only apps where `autostart === true` AND `start` is present.
+- Never infer runtime from the filesystem.
+- Treat missing `start` as a non-fatal skip.
+
+`terrafusion.app.json` MUST:
+- Declare `runtime` and `start` for any runnable app.
+- Keep legacy apps `pinned: false` and either omit `start` or set `runnable: false`.
+- Use `pinned` for UI visibility and `autostart` for launcher behavior.
+
 ## Architecture: Three-Tier OS Model
 
 TerraFusion operates as a complete operating system with three core service tiers:

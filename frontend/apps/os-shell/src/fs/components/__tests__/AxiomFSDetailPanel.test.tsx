@@ -270,7 +270,12 @@ describe('AxiomFSDetailPanel', () => {
       expect(mockOpenWindow).toHaveBeenCalledWith(
         'sovereign-dashboard',
         'Document: Test Property',
-        '📄'
+        '📄',
+        expect.objectContaining({
+          context: 'axiom-fs',
+          objectId: 'doc-001',
+          objectType: 'document',
+        })
       );
     });
 

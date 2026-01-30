@@ -1,0 +1,19 @@
+{
+  "status": "Degraded",
+  "intentFilter": "gen2",
+  "moduleCountTotal": 13,
+  "moduleCountActive": 2,
+  "moduleCountFilteredOut": 11,
+  "moduleCount": 2,
+  "healthyModules": 1,
+  "warnings": [
+    "ModuleLoader failed to load 1 module",
+    "AISwarm reported degraded"
+  ],
+  "systemComponents": {
+    "ModuleLoader": false,
+    "LegacyIntegration": true,
+    "AISwarm": false,
+    "TerraFusionSync": true
+  }
+}
