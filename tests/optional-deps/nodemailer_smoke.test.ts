@@ -4,28 +4,21 @@
  * Purpose: Verify nodemailer 7.x maintains the expected API contract
  * before merging PR #58 (nodemailer 6.10.1 → 7.0.11)
  *
- * This test uses streamTransport - no network required.
+ * Skips entirely if nodemailer isn't installed (graceful degradation).
  */
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-describe('nodemailer smoke', () => {
-  let nodemailer: typeof import('nodemailer') | null = null;
-  let available = false;
+// Check if nodemailer is installed before running tests
+const nodemailerInstalled = existsSync(resolve(process.cwd(), 'node_modules/nodemailer'));
 
-  beforeAll(async () => {
-    try {
-      nodemailer = await import('nodemailer');
-      available = true;
-    } catch {
-      // nodemailer not installed - test will skip
-    }
-  });
+describe.skipIf(!nodemailerInstalled)('nodemailer smoke', async () => {
+  // Only import if installed to avoid Vite resolution errors
+  const nodemailer = nodemailerInstalled ? await import('nodemailer') : null;
 
   it('createTransport API exists', async () => {
-    if (!available || !nodemailer) {
-      console.log('⏭️ nodemailer not installed - skipping smoke test');
-      return;
-    }
+    if (!nodemailer) return;
 
     expect(typeof nodemailer.createTransport).toBe('function');
     expect(typeof nodemailer.createTestAccount).toBe('function');
@@ -33,9 +26,7 @@ describe('nodemailer smoke', () => {
   });
 
   it('can construct streamTransport and send (no network)', async () => {
-    if (!available || !nodemailer) {
-      return; // Skip if nodemailer not installed
-    }
+    if (!nodemailer) return;
 
     // Use streamTransport to avoid network
     const transport = nodemailer.createTransport({
@@ -65,9 +56,7 @@ describe('nodemailer smoke', () => {
   });
 
   it('transport can be closed', async () => {
-    if (!available || !nodemailer) {
-      return;
-    }
+    if (!nodemailer) return;
 
     const transport = nodemailer.createTransport({
       streamTransport: true,

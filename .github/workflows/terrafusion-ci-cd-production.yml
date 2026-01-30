@@ -1,5 +1,9 @@
 name: TerraFusion OS - Production CI/CD Pipeline
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main, production]
@@ -48,9 +52,11 @@ env:
 
 jobs:
   # Security and Compliance Scan
+  # Skip for Snyk/Dependabot PRs - they use deps-fast-lane + seal-gate-fast instead
   security-scan:
     name: Security & Compliance Analysis
     runs-on: ubuntu-latest
+    if: ${{ github.actor != 'dependabot[bot]' && !contains(github.head_ref || github.ref_name, 'snyk-') }}
     permissions:
       contents: read
       security-events: write

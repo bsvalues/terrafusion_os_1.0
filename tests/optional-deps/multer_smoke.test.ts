@@ -4,30 +4,21 @@
  * Purpose: Verify multer 2.x maintains the expected API contract
  * before merging PR #72 (multer 1.4.5 → 2.0.0)
  *
- * This test uses dynamic imports to gracefully skip if deps aren't installed.
- * Requires: multer, express (as dev dep for testing)
+ * Skips entirely if multer isn't installed (graceful degradation).
  */
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-describe('multer smoke', () => {
-  let multer: typeof import('multer') | null = null;
-  let available = false;
+// Check if multer is installed before running tests
+const multerInstalled = existsSync(resolve(process.cwd(), 'node_modules/multer'));
 
-  beforeAll(async () => {
-    try {
-      multer = await import('multer');
-      // Just check if multer is importable
-      available = true;
-    } catch {
-      // multer not installed - test will skip
-    }
-  });
+describe.skipIf(!multerInstalled)('multer smoke', async () => {
+  // Only import if installed to avoid Vite resolution errors
+  const multer = multerInstalled ? await import('multer') : null;
 
   it('memoryStorage and single() API exists', async () => {
-    if (!available || !multer) {
-      console.log('⏭️ multer not installed - skipping smoke test');
-      return;
-    }
+    if (!multer) return;
 
     // Verify core API shape
     expect(typeof multer.default).toBe('function');
@@ -46,9 +37,7 @@ describe('multer smoke', () => {
   });
 
   it('memoryStorage stores buffer correctly', async () => {
-    if (!available || !multer) {
-      return; // Skip if multer not installed
-    }
+    if (!multer) return;
 
     const storage = multer.memoryStorage();
 

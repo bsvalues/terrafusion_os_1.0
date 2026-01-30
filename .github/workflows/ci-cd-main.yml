@@ -9,6 +9,10 @@
 # ============================================================================
 name: 🏛️ TerraFusion OS - Main CI/CD Pipeline
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main, develop]
