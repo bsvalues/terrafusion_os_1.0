@@ -1,24 +1,35 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { clearDevSession, getSession, setDevSession, type Session } from '../auth/session';
 import {
-  checkHealth,
+    checkHealth,
     executeTool,
     listTools,
     type ExecuteToolResponse,
-    type PilotApiHeaders,
     type PilotApiTool,
+    type PilotMode,
 } from '../services/pilotClient';
 
-const defaultHeaders: PilotApiHeaders = {
-  userId: 'demo-user',
-  countyId: 'benton',
-  role: 'analyst',
-  permissions: 'parcel:read,valuation:commit,parcel:write',
-  mode: 'pilot',
+type ContextOverrides = {
+  userId: string;
+  countyId: string;
+  role: string;
+  permissions: string;
+  mode: '' | PilotMode;
+  parcelId: string;
+};
+
+const defaultOverrides: ContextOverrides = {
+  userId: '',
+  countyId: '',
+  role: '',
+  permissions: '',
+  mode: '',
   parcelId: '',
 };
 
 export function PilotApiDemo(): React.ReactElement {
-  const [headers, setHeaders] = useState<PilotApiHeaders>(defaultHeaders);
+  const [overrides, setOverrides] = useState<ContextOverrides>(defaultOverrides);
+  const [session, setSession] = useState<Session | null>(null);
   const [tools, setTools] = useState<PilotApiTool[]>([]);
   const [selectedTool, setSelectedTool] = useState<string>('');
   const [params, setParams] = useState<string>('{}');
@@ -38,16 +49,42 @@ export function PilotApiDemo(): React.ReactElement {
     []
   );
 
-  const permissionsValue = useMemo(() => {
-    if (!headers.permissions) return '';
-    return Array.isArray(headers.permissions) ? headers.permissions.join(',') : headers.permissions;
-  }, [headers.permissions]);
+  const permissionsValue = overrides.permissions;
+
+  const effectiveContext = useMemo(() => {
+    const base: Session = session
+      ? { ...session }
+      : {
+          userId: '',
+          countyId: '',
+          role: undefined,
+          permissions: undefined,
+          mode: 'pilot',
+          parcelId: undefined,
+        };
+
+    if (overrides.userId.trim()) base.userId = overrides.userId.trim();
+    if (overrides.countyId.trim()) base.countyId = overrides.countyId.trim();
+    if (overrides.role.trim()) base.role = overrides.role.trim();
+    if (overrides.permissions.trim()) {
+      base.permissions = overrides.permissions
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+    if (overrides.mode) base.mode = overrides.mode;
+    if (overrides.parcelId.trim()) base.parcelId = overrides.parcelId.trim();
+
+    return base;
+  }, [session, overrides]);
+
+  const hasRequiredContext = Boolean(effectiveContext.userId && effectiveContext.countyId);
 
   const loadTools = useCallback(async () => {
     setLoadingTools(true);
     setError(null);
     try {
-      const response = await listTools(headers);
+      const response = await listTools({ headers: effectiveContext });
       setTools(response.tools);
       if (response.tools.length && !selectedTool) {
         setSelectedTool(response.tools[0].id);
@@ -57,17 +94,17 @@ export function PilotApiDemo(): React.ReactElement {
     } finally {
       setLoadingTools(false);
     }
-  }, [headers, selectedTool]);
+  }, [effectiveContext, selectedTool]);
 
   const runExecute = useCallback(async () => {
-    if (!selectedTool) return;
+    if (!selectedTool || !hasRequiredContext) return;
     setExecuting(true);
     setError(null);
     setResult(null);
 
     try {
       const parsedParams = params.trim() ? JSON.parse(params) : {};
-      const response = await executeTool(selectedTool, parsedParams, headers);
+      const response = await executeTool(selectedTool, parsedParams, effectiveContext);
       setResult(response);
       if (!response.ok) {
         setError(response.error || 'Execution failed');
@@ -77,7 +114,7 @@ export function PilotApiDemo(): React.ReactElement {
     } finally {
       setExecuting(false);
     }
-  }, [selectedTool, params, headers]);
+  }, [selectedTool, params, effectiveContext, hasRequiredContext]);
 
   const runHealthCheck = useCallback(async () => {
     const response = await checkHealth(baseUrl);
@@ -92,8 +129,13 @@ export function PilotApiDemo(): React.ReactElement {
   }, [baseUrl]);
 
   useEffect(() => {
+    setSession(getSession());
+  }, []);
+
+  useEffect(() => {
+    if (!hasRequiredContext) return;
     loadTools();
-  }, [loadTools]);
+  }, [loadTools, hasRequiredContext]);
 
   useEffect(() => {
     runHealthCheck();
@@ -136,45 +178,53 @@ export function PilotApiDemo(): React.ReactElement {
 
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
           <div className='lg:col-span-2 space-y-4'>
+            {!hasRequiredContext && (
+              <div className='bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm rounded-lg p-3'>
+                Set dev session (userId + countyId) to use Pilot API.
+              </div>
+            )}
             <div className='bg-slate-900/60 border border-slate-700 rounded-lg p-4'>
               <h2 className='text-sm font-semibold text-slate-300 mb-3'>Context Headers</h2>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
                 <label className='text-xs text-slate-400'>
                   x-user-id
                   <input
-                    value={headers.userId}
-                    onChange={(e) => setHeaders((prev) => ({ ...prev, userId: e.target.value }))}
+                    value={overrides.userId}
+                    onChange={(e) => setOverrides((prev) => ({ ...prev, userId: e.target.value }))}
                     className='mt-1 w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm'
                   />
                 </label>
                 <label className='text-xs text-slate-400'>
                   x-county-id
                   <input
-                    value={headers.countyId}
-                    onChange={(e) => setHeaders((prev) => ({ ...prev, countyId: e.target.value }))}
+                    value={overrides.countyId}
+                    onChange={(e) =>
+                      setOverrides((prev) => ({ ...prev, countyId: e.target.value }))
+                    }
                     className='mt-1 w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm'
                   />
                 </label>
                 <label className='text-xs text-slate-400'>
                   x-role
                   <input
-                    value={headers.role || ''}
-                    onChange={(e) => setHeaders((prev) => ({ ...prev, role: e.target.value }))}
+                    value={overrides.role}
+                    onChange={(e) => setOverrides((prev) => ({ ...prev, role: e.target.value }))}
                     className='mt-1 w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm'
                   />
                 </label>
                 <label className='text-xs text-slate-400'>
                   x-mode
                   <select
-                    value={headers.mode || 'pilot'}
+                    value={overrides.mode}
                     onChange={(e) =>
-                      setHeaders((prev) => ({
+                      setOverrides((prev) => ({
                         ...prev,
-                        mode: e.target.value as 'pilot' | 'muse',
+                        mode: e.target.value as '' | PilotMode,
                       }))
                     }
                     className='mt-1 w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm'
                   >
+                    <option value=''>auto</option>
                     <option value='pilot'>pilot</option>
                     <option value='muse'>muse</option>
                   </select>
@@ -184,7 +234,7 @@ export function PilotApiDemo(): React.ReactElement {
                   <input
                     value={permissionsValue}
                     onChange={(e) =>
-                      setHeaders((prev) => ({
+                      setOverrides((prev) => ({
                         ...prev,
                         permissions: e.target.value,
                       }))
@@ -195,19 +245,41 @@ export function PilotApiDemo(): React.ReactElement {
                 <label className='text-xs text-slate-400 md:col-span-2'>
                   x-parcel-id (optional)
                   <input
-                    value={headers.parcelId || ''}
-                    onChange={(e) => setHeaders((prev) => ({ ...prev, parcelId: e.target.value }))}
+                    value={overrides.parcelId}
+                    onChange={(e) =>
+                      setOverrides((prev) => ({ ...prev, parcelId: e.target.value }))
+                    }
                     className='mt-1 w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm'
                   />
                 </label>
               </div>
-              <div className='mt-4 flex gap-2'>
+              <div className='mt-4 flex flex-wrap gap-2'>
                 <button
                   onClick={loadTools}
-                  disabled={loadingTools}
+                  disabled={loadingTools || !hasRequiredContext}
                   className='px-4 py-2 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded text-sm hover:bg-cyan-500/30 transition-colors disabled:opacity-50'
                 >
                   {loadingTools ? 'Loading...' : 'Reload Tools'}
+                </button>
+                <button
+                  onClick={() => {
+                    if (!effectiveContext.userId || !effectiveContext.countyId) return;
+                    setDevSession(effectiveContext);
+                    setSession(effectiveContext);
+                  }}
+                  disabled={!hasRequiredContext}
+                  className='px-4 py-2 bg-slate-800 border border-slate-600 rounded text-sm hover:border-cyan-500/50 transition-colors disabled:opacity-50'
+                >
+                  Save as dev session
+                </button>
+                <button
+                  onClick={() => {
+                    clearDevSession();
+                    setSession(null);
+                  }}
+                  className='px-4 py-2 bg-slate-800 border border-slate-600 rounded text-sm hover:border-red-500/50 transition-colors'
+                >
+                  Clear dev session
                 </button>
               </div>
             </div>
@@ -237,7 +309,7 @@ export function PilotApiDemo(): React.ReactElement {
               </div>
               <button
                 onClick={runExecute}
-                disabled={!selectedTool || executing}
+                disabled={!selectedTool || executing || !hasRequiredContext}
                 className='px-4 py-2 bg-cyan-500 text-slate-900 font-semibold rounded hover:bg-cyan-400 transition-colors disabled:opacity-50'
               >
                 {executing ? 'Executing...' : 'Execute Tool'}
@@ -246,6 +318,20 @@ export function PilotApiDemo(): React.ReactElement {
           </div>
 
           <div className='space-y-4'>
+            <div className='bg-slate-900/60 border border-slate-700 rounded-lg p-4'>
+              <h2 className='text-sm font-semibold text-slate-300 mb-2'>Active Identity</h2>
+              {!session && <div className='text-xs text-slate-500'>No dev session loaded.</div>}
+              {session && (
+                <div className='text-xs text-slate-300 space-y-1'>
+                  <div className='font-mono'>
+                    {session.userId}@{session.countyId}
+                  </div>
+                  <div>role: {session.role || '—'}</div>
+                  <div>mode: {session.mode || 'pilot'}</div>
+                  <div>permissions: {session.permissions?.length ?? 0}</div>
+                </div>
+              )}
+            </div>
             <div className='bg-slate-900/60 border border-slate-700 rounded-lg p-4'>
               <h2 className='text-sm font-semibold text-slate-300 mb-2'>Result</h2>
               {error && <div className='text-red-400 text-xs mb-2'>Error: {error}</div>}
@@ -263,9 +349,7 @@ export function PilotApiDemo(): React.ReactElement {
                 </div>
               )}
             </div>
-            <div className='text-xs text-slate-500'>
-              Base URL: {baseUrl}
-            </div>
+            <div className='text-xs text-slate-500'>Base URL: {baseUrl}</div>
           </div>
         </div>
       </div>

@@ -1,3 +1,6 @@
+import type { Session } from '../auth/session';
+import { sessionToPilotHeaders } from './pilotContext';
+
 export type PilotMode = 'pilot' | 'muse';
 
 export type PilotApiHeaders = {
@@ -8,6 +11,13 @@ export type PilotApiHeaders = {
   mode?: PilotMode;
   parcelId?: string;
 };
+
+export type PilotContextInput =
+  | PilotApiHeaders
+  | {
+      headers?: PilotApiHeaders;
+      session?: Session | null;
+    };
 
 export type PilotApiTool = {
   id: string;
@@ -53,12 +63,32 @@ const buildHeaders = (ctx: PilotApiHeaders): Record<string, string> => {
   return headers;
 };
 
+const isPilotHeaders = (value: PilotContextInput): value is PilotApiHeaders =>
+  typeof (value as PilotApiHeaders).userId === 'string' &&
+  typeof (value as PilotApiHeaders).countyId === 'string';
+
+const resolveHeaders = (input: PilotContextInput): Record<string, string> => {
+  if (isPilotHeaders(input)) {
+    return buildHeaders(input);
+  }
+
+  if (input.headers) {
+    return buildHeaders(input.headers);
+  }
+
+  if (input.session) {
+    return sessionToPilotHeaders(input.session);
+  }
+
+  throw new Error('Pilot context is missing userId/countyId');
+};
+
 export const listTools = async (
-  ctx: PilotApiHeaders,
+  ctx: PilotContextInput,
   baseUrl: string = DEFAULT_BASE_URL
 ): Promise<ListToolsResponse> => {
   const response = await fetch(`${baseUrl}/api/tools`, {
-    headers: buildHeaders(ctx),
+    headers: resolveHeaders(ctx),
   });
 
   const data = await response.json().catch(() => ({}));
@@ -74,13 +104,13 @@ export const listTools = async (
 export const executeTool = async (
   toolId: string,
   params: Record<string, unknown>,
-  ctx: PilotApiHeaders,
+  ctx: PilotContextInput,
   baseUrl: string = DEFAULT_BASE_URL
 ): Promise<ExecuteToolResponse> => {
   const response = await fetch(`${baseUrl}/api/tools/execute`, {
     method: 'POST',
     headers: {
-      ...buildHeaders(ctx),
+      ...resolveHeaders(ctx),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ toolName: toolId, input: params }),
