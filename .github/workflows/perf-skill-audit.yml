@@ -1,0 +1,71 @@
+# Perf Skill Audit (Informational)
+#
+# Phase 4G: Non-blocking performance audit lane
+#
+# GOVERNANCE:
+# - NEVER required for merge (SEAL remains the only required check)
+# - Runs nightly + manual dispatch only
+# - Cancel-safe with concurrency
+# - Read-only, no mutations
+
+name: Perf Skill Audit (Informational)
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_ref:
+        description: 'Ref/SHA to audit (blank = current)'
+        required: false
+        default: ''
+  schedule:
+    # 02:15 PST (10:15 UTC) - outside peak hours
+    - cron: '15 10 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  perf_audit:
+    # Skip for dependency bot PRs (belt + suspenders)
+    if: ${{ github.actor != 'dependabot[bot]' && !contains(github.ref_name, 'snyk-') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_ref || github.ref }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install root dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install audit tool dependencies
+        run: pnpm -C tools/registry/perf-skill-audit install
+
+      - name: Run performance skill audit (read-only)
+        run: npx tsx tools/registry/perf-skill-audit/src/index.ts
+        env:
+          PERF_AUDIT_MAX_FINDINGS: '200'
+          PERF_AUDIT_SEVERITY_THRESHOLD: 'medium'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: perf-skill-audit-${{ github.run_number }}
+          path: |
+            tools/registry/perf-skill-audit/out/perf-audit-report.md
+            tools/registry/perf-skill-audit/out/perf-audit-report.json
+          retention-days: 30

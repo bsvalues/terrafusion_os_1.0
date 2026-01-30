@@ -1,0 +1,21 @@
+{
+  "name": "@terrafusion/perf-skill-audit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Informational performance audit lane based on Vercel React Best Practices",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "scan": "tsx src/index.ts",
+    "audit": "tsx src/index.ts",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.6.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

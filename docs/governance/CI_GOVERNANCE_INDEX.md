@@ -41,6 +41,7 @@ This is the canonical starting point for anyone touching CI workflows.
 | [terrafusion-gate-enforcement.yml](../../.github/workflows/terrafusion-gate-enforcement.yml) | Integration gates (E/F) | ❌ Informational |
 | [ci-cd-pipeline.yml](../../.github/workflows/ci-cd-pipeline.yml) | Full CI/CD | ❌ Informational |
 | [nightly.yml](../../.github/workflows/nightly.yml) | Heavy checks (E2E, security scans) | ❌ Nightly only |
+| [perf-skill-audit.yml](../../.github/workflows/perf-skill-audit.yml) | Vercel performance audit | ❌ Nightly + Manual |
 
 ---
 
@@ -67,6 +68,7 @@ pnpm vitest run tests/governance/required-check-drift.test.ts
 | **4D** | 2026-01-30 | 27 → 0 PRs merged, 156-run queue cleared |
 | **4E** | 2026-01-30 | Concurrency + actor guards added |
 | **4F** | 2026-01-30 | SEAL unskippable assertions added |
+| **4G** | 2026-01-30 | Performance Skill Audit lane (informational) |
 
 ---
 
