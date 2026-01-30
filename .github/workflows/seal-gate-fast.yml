@@ -169,7 +169,7 @@ jobs:
 
       - name: Unit tests (blocking)
         id: unit-tests
-        run: pnpm -C frontend run test:unit -- --passWithNoTests
+        run: pnpm -C frontend run test:unit
 
       - name: IPC tests (blocking)
         id: ipc-tests
@@ -216,7 +216,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Cache NuGet
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.2.0
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('backend/**/*.csproj', 'backend/**/Directory.Packages.props') }}
