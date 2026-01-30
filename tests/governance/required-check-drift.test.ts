@@ -11,7 +11,9 @@
  * @see 🏆_PHASE_4D_DEPENDENCY_CONVERGENCE_ACHIEVEMENT_🏆.md
  */
 
-import { describe, expect, it, vi } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 // Mock the GitHub API response for branch protection
 // In CI, this would be replaced with actual API call via gh CLI
@@ -75,5 +77,34 @@ describe('Required Check API Contract (CI)', () => {
 
     // Placeholder assertion for local runs
     expect(true).toBe(true);
+  });
+});
+
+describe('SEAL Workflow Invariants', () => {
+  it('SEAL workflow has no path filters (runs on all PRs)', () => {
+    // Prevent accidental introduction of paths/paths-ignore which could bypass SEAL.
+    // The SEAL gate is the ONLY required check - it must run on every PR, always.
+    const wfPath = path.join(process.cwd(), '.github', 'workflows', 'seal-gate-fast.yml');
+
+    expect(fs.existsSync(wfPath)).toBe(true);
+
+    const sealWorkflow = fs.readFileSync(wfPath, 'utf-8');
+
+    // Match common YAML keys in any indentation/context (multiline + start-of-line)
+    expect(sealWorkflow).not.toMatch(/^\s*paths\s*:/m);
+    expect(sealWorkflow).not.toMatch(/^\s*paths-ignore\s*:/m);
+  });
+
+  it('SEAL workflow triggers on both PR and push to protected branches', () => {
+    const wfPath = path.join(process.cwd(), '.github', 'workflows', 'seal-gate-fast.yml');
+
+    const sealWorkflow = fs.readFileSync(wfPath, 'utf-8');
+
+    // Must trigger on pull_request to main/develop
+    expect(sealWorkflow).toMatch(/pull_request:/);
+    expect(sealWorkflow).toMatch(/branches:.*main/);
+
+    // Must trigger on push to main/develop
+    expect(sealWorkflow).toMatch(/push:/);
   });
 });
