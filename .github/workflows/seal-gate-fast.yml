@@ -247,6 +247,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: classify
+    if: needs.classify.outputs.docs_only != 'true'
 
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -372,13 +373,15 @@ jobs:
               ;;
           esac
 
-          # Governance
-          if [ "${{ needs.governance-fast.result }}" != "success" ]; then
-            echo "❌ Governance: FAILED"
-            FAILED=1
-          else
-            echo "✅ Governance: passed"
-          fi
+          # Governance (may be skipped for docs-only)
+          case "${{ needs.governance-fast.result }}" in
+            success) echo "✅ Governance: passed" ;;
+            skipped) echo "⏭️ Governance: skipped (docs-only)" ;;
+            *)
+              echo "❌ Governance: FAILED"
+              FAILED=1
+              ;;
+          esac
 
           echo ""
 
@@ -404,7 +407,11 @@ jobs:
             skipped) echo "| Backend | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
             *) echo "| Backend | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
           esac
-          echo "| Governance | ${{ needs.governance-fast.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          case "${{ needs.governance-fast.result }}" in
+            success) echo "| Governance | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            skipped) echo "| Governance | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Governance | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+          esac
           echo "" >> $GITHUB_STEP_SUMMARY
 
           if [ $FAILED -eq 0 ]; then
