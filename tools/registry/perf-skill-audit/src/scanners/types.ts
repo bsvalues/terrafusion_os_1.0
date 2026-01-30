@@ -7,12 +7,12 @@ export type Severity = 'critical' | 'high' | 'medium';
 /**
  * Waterfall classification types for v2 scanner
  */
-export type WaterfallKind = 
-  | 'safe-parallel'      // Independent awaits, safe to Promise.all()
-  | 'dependent'          // Data dependency between awaits
-  | 'batch-candidate'    // Repeated calls to same service/endpoint
-  | 'loop-seq'           // Sequential in loop (may be intentional)
-  | 'retry-seq';         // Sequential in try/catch retry block
+export type WaterfallKind =
+  | 'safe-parallel' // Independent awaits, safe to Promise.all()
+  | 'dependent' // Data dependency between awaits
+  | 'batch-candidate' // Repeated calls to same service/endpoint
+  | 'loop-seq' // Sequential in loop (may be intentional)
+  | 'retry-seq'; // Sequential in try/catch retry block
 
 /**
  * Evidence item for detailed findings
@@ -32,11 +32,11 @@ export interface Finding {
   message: string;
   snippet?: string;
   suggestedFix?: string;
-  
+
   // v2 additions for waterfall scanner
   functionName?: string;
   kind?: WaterfallKind;
-  priorityScore?: number;  // 0-100, higher = fix first
+  priorityScore?: number; // 0-100, higher = fix first
   evidence?: EvidenceItem[];
 }
 
@@ -75,4 +75,68 @@ export interface AuditConfig {
   includePaths: string[];
   excludePaths: string[];
   forbiddenPaths: string[];
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Phase 4I: Auto-Remediation Plan Types
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Patch strategy for auto-remediation
+ * P1: safe-parallel → Promise.all()
+ * P2: batch-candidate → batch interface stub
+ */
+export type PatchStrategy =
+  | 'promise-all'        // P1: Convert to Promise.all()
+  | 'batch-stub'         // P2: Create batch interface TODO
+  | 'review-only';       // Not auto-fixable, needs human review
+
+/**
+ * Risk level for applying patch
+ */
+export type PatchRisk = 'low' | 'medium' | 'high';
+
+/**
+ * Eligibility status for auto-fix
+ */
+export interface EligibilityCheck {
+  eligible: boolean;
+  reason?: string;
+}
+
+/**
+ * Plan item for auto-remediation
+ * This is the handoff contract to Ralph Loop / QC-019
+ */
+export interface PlanItem {
+  id: string;                    // Unique finding ID
+  file: string;                  // Relative file path
+  functionName: string;          // Function/method containing the issue
+  startLine: number;             // Start of function/await block
+  endLine: number;               // End of function/await block
+  kind: WaterfallKind;           // Classification from v2 scanner
+  priorityScore: number;         // 0-100, higher = fix first
+  patchStrategy: PatchStrategy;  // How to fix
+  risk: PatchRisk;               // Risk level
+  eligibility: EligibilityCheck; // Can we auto-fix?
+  verification: string[];        // Commands to run after patch
+  evidence: EvidenceItem[];      // Line-by-line audit trail
+  suggestedPatch?: string;       // Promise.all() transformation
+}
+
+/**
+ * Remediation plan output
+ */
+export interface RemediationPlan {
+  generated: string;             // ISO timestamp
+  ref: string;                   // Git ref
+  rulesVersion: string;          // Scanner version
+  summary: {
+    total: number;
+    eligible: number;
+    promiseAll: number;
+    batchStub: number;
+    reviewOnly: number;
+  };
+  items: PlanItem[];
 }

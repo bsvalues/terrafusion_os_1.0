@@ -1,0 +1,272 @@
+/**
+ * Plan Generator - Phase 4I
+ * 
+ * Converts v2 scanner findings into a machine-consumable remediation plan.
+ * This is the handoff contract to Ralph Loop / QC-019.
+ * 
+ * GOVERNANCE: This tool is INFORMATIONAL ONLY.
+ * Patches are generated but NOT applied unless explicitly enabled.
+ */
+
+import type {
+  Finding,
+  PlanItem,
+  PatchStrategy,
+  PatchRisk,
+  EligibilityCheck,
+  RemediationPlan,
+  WaterfallKind,
+  EvidenceItem,
+} from './scanners/types.js';
+
+// Verification commands (required gates)
+const VERIFICATION_COMMANDS = [
+  'pnpm run type-check',
+  'node --test os-platform/core/tests/phase83-tools.test.mjs',
+];
+
+/**
+ * Generate a unique finding ID
+ */
+function generateFindingId(finding: Finding, index: number): string {
+  const fileHash = finding.file.replace(/[^a-zA-Z0-9]/g, '-').slice(-30);
+  const funcName = finding.functionName || 'unknown';
+  return `wf-${index}-${fileHash}-${funcName}`.toLowerCase();
+}
+
+/**
+ * Determine patch strategy based on classification
+ */
+function determinePatchStrategy(kind: WaterfallKind): PatchStrategy {
+  switch (kind) {
+    case 'safe-parallel':
+      return 'promise-all';
+    case 'batch-candidate':
+      return 'batch-stub';
+    case 'dependent':
+    case 'loop-seq':
+    case 'retry-seq':
+    default:
+      return 'review-only';
+  }
+}
+
+/**
+ * Assess risk level for patching
+ */
+function assessRisk(finding: Finding, kind: WaterfallKind): PatchRisk {
+  // Low risk: safe-parallel with high confidence
+  if (kind === 'safe-parallel' && (finding.priorityScore ?? 0) >= 60) {
+    return 'low';
+  }
+  
+  // Medium risk: batch candidates or lower-confidence safe-parallel
+  if (kind === 'batch-candidate' || kind === 'safe-parallel') {
+    return 'medium';
+  }
+  
+  // High risk: dependent or loop patterns
+  return 'high';
+}
+
+/**
+ * Check eligibility for auto-fix
+ * Key guardrail: function boundary integrity
+ */
+function checkEligibility(finding: Finding): EligibilityCheck {
+  // Must have function name (scope-aware)
+  if (!finding.functionName) {
+    return { eligible: false, reason: 'No function scope detected' };
+  }
+  
+  // Must have line boundaries
+  if (!finding.lineStart || !finding.lineEnd) {
+    return { eligible: false, reason: 'Missing line boundaries' };
+  }
+  
+  // Must have at least 2 evidence items
+  if (!finding.evidence || finding.evidence.length < 2) {
+    return { eligible: false, reason: 'Insufficient evidence for safe transformation' };
+  }
+  
+  // Kind must be auto-fixable
+  if (finding.kind !== 'safe-parallel') {
+    return { eligible: false, reason: `Kind '${finding.kind}' requires manual review` };
+  }
+  
+  // Priority score threshold
+  if ((finding.priorityScore ?? 0) < 50) {
+    return { eligible: false, reason: 'Priority score below threshold (50)' };
+  }
+  
+  return { eligible: true };
+}
+
+/**
+ * Generate Promise.all() patch for safe-parallel findings
+ */
+function generatePromiseAllPatch(finding: Finding): string | undefined {
+  if (!finding.evidence || finding.evidence.length < 2) {
+    return undefined;
+  }
+  
+  const evidence = finding.evidence;
+  
+  // Extract variable names and call expressions
+  const transformations: { varName: string; call: string }[] = [];
+  
+  for (const e of evidence) {
+    const varMatch = e.snippet.match(/(?:const|let|var)\s+(\w+)\s*=\s*await\s+(.+?)(?:;?\s*$)/);
+    if (varMatch) {
+      transformations.push({
+        varName: varMatch[1],
+        call: varMatch[2],
+      });
+    } else {
+      // Await without assignment
+      const awaitMatch = e.snippet.match(/await\s+(.+?)(?:;?\s*$)/);
+      if (awaitMatch) {
+        transformations.push({
+          varName: `result${transformations.length + 1}`,
+          call: awaitMatch[1],
+        });
+      }
+    }
+  }
+  
+  if (transformations.length < 2) {
+    return undefined;
+  }
+  
+  // Generate the Promise.all() transformation
+  const varNames = transformations.map(t => t.varName).join(', ');
+  const calls = transformations.map(t => `  ${t.call}`).join(',\n');
+  
+  return `const [${varNames}] = await Promise.all([
+${calls}
+]);`;
+}
+
+/**
+ * Convert a finding into a plan item
+ */
+function findingToPlanItem(finding: Finding, index: number): PlanItem | null {
+  // Only process waterfall findings
+  if (finding.rule !== 'waterfall.parallelize') {
+    return null;
+  }
+  
+  const kind = finding.kind || 'dependent';
+  const patchStrategy = determinePatchStrategy(kind);
+  const risk = assessRisk(finding, kind);
+  const eligibility = checkEligibility(finding);
+  
+  const planItem: PlanItem = {
+    id: generateFindingId(finding, index),
+    file: finding.file,
+    functionName: finding.functionName || '<unknown>',
+    startLine: finding.lineStart || 0,
+    endLine: finding.lineEnd || 0,
+    kind,
+    priorityScore: finding.priorityScore ?? 50,
+    patchStrategy,
+    risk,
+    eligibility,
+    verification: VERIFICATION_COMMANDS,
+    evidence: finding.evidence || [],
+  };
+  
+  // Generate patch for eligible safe-parallel findings
+  if (patchStrategy === 'promise-all' && eligibility.eligible) {
+    planItem.suggestedPatch = generatePromiseAllPatch(finding);
+  }
+  
+  return planItem;
+}
+
+/**
+ * Generate remediation plan from findings
+ */
+export function generateRemediationPlan(
+  findings: Finding[],
+  ref: string,
+  rulesVersion: string
+): RemediationPlan {
+  const items: PlanItem[] = [];
+  
+  // Convert findings to plan items
+  for (let i = 0; i < findings.length; i++) {
+    const planItem = findingToPlanItem(findings[i], i);
+    if (planItem) {
+      items.push(planItem);
+    }
+  }
+  
+  // Sort by priority score (descending) then by eligibility
+  items.sort((a, b) => {
+    // Eligible first
+    if (a.eligibility.eligible !== b.eligibility.eligible) {
+      return a.eligibility.eligible ? -1 : 1;
+    }
+    // Then by priority score
+    return b.priorityScore - a.priorityScore;
+  });
+  
+  // Calculate summary
+  const eligible = items.filter(i => i.eligibility.eligible).length;
+  const promiseAll = items.filter(i => i.patchStrategy === 'promise-all').length;
+  const batchStub = items.filter(i => i.patchStrategy === 'batch-stub').length;
+  const reviewOnly = items.filter(i => i.patchStrategy === 'review-only').length;
+  
+  return {
+    generated: new Date().toISOString(),
+    ref,
+    rulesVersion,
+    summary: {
+      total: items.length,
+      eligible,
+      promiseAll,
+      batchStub,
+      reviewOnly,
+    },
+    items,
+  };
+}
+
+/**
+ * Generate unified diff for a plan item
+ */
+export function generateUnifiedDiff(
+  planItem: PlanItem,
+  originalLines: string[]
+): string | null {
+  if (!planItem.eligibility.eligible || !planItem.suggestedPatch) {
+    return null;
+  }
+  
+  const { startLine, endLine, file, suggestedPatch, evidence } = planItem;
+  
+  // Build the original block from evidence
+  const originalBlock = evidence.map(e => e.snippet).join('\n');
+  
+  // Build unified diff header
+  const lines: string[] = [
+    `--- a/${file}`,
+    `+++ b/${file}`,
+    `@@ -${startLine},${endLine - startLine + 1} +${startLine},1 @@`,
+  ];
+  
+  // Add original lines (prefixed with -)
+  for (const e of evidence) {
+    lines.push(`-${e.snippet}`);
+  }
+  
+  // Add new lines (prefixed with +)
+  for (const line of suggestedPatch.split('\n')) {
+    lines.push(`+${line}`);
+  }
+  
+  return lines.join('\n');
+}
+
+export default { generateRemediationPlan, generateUnifiedDiff };
