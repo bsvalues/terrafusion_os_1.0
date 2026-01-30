@@ -12,7 +12,8 @@
  */
 
 // API Base URL - uses deterministic port 5000
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { getViteEnv } from '@/env/getViteEnv';
+const API_BASE_URL = getViteEnv().VITE_API_URL || 'http://localhost:5000';
 
 // ═══════════════════════════════════════════════════════════════
 // PHASE 22: COUNTY FEDERATION TYPES

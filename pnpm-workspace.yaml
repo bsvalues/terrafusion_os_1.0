@@ -4,6 +4,16 @@
 # ============================================================================
 
 packages:
+  # OS Core and other packages (Gate enforcement layer)
+  - 'packages/*'
+  # Exclude broken legacy packages (MARKED-FOR-REVIEW = not production ready)
+  # Belt-and-suspenders: both forms for max pnpm compatibility
+  - '!packages/government-edition-enhanced-MARKED-FOR-REVIEW'
+  - '!packages/government-edition-enhanced-MARKED-FOR-REVIEW/**'
+  # Future-proof: any *MARKED-FOR-REVIEW* folder is automatically quarantined
+  - '!packages/**/*MARKED-FOR-REVIEW*'
+  - '!packages/**/*MARKED-FOR-REVIEW*/**'
+
   # Core frontend (OS Shell)
   - 'frontend'
   - 'frontend/electron'

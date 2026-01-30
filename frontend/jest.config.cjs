@@ -61,9 +61,10 @@ const config = {
 
   // Test file patterns
   testMatch: [
-    '<rootDir>/apps/os-shell/src/**/__tests__/**/*.{ts,tsx}',
-    '<rootDir>/apps/os-shell/src/**/*.{test,spec}.{ts,tsx}',
-    '<rootDir>/tests/**/*.{test,spec}.{ts,tsx}',
+    '<rootDir>/apps/os-shell/src/**/__tests__/**/*.test.{ts,tsx}',
+    '<rootDir>/apps/os-shell/src/**/*.test.{ts,tsx}',
+    '<rootDir>/tests/**/*.test.{ts,tsx}',
+    '!**/*.vitest.test.{ts,tsx}',
   ],
 
   // Files to collect coverage from
@@ -98,11 +99,12 @@ const config = {
     '<rootDir>/dist/',
     '<rootDir>/build/',
     '<rootDir>/coverage/',
-    '<rootDir>/tests/integration/',
-    '<rootDir>/tests/accessibility/',
-    '/tests/accessibility/',
-    'tests/accessibility/',
-    '\\.spec\\.ts$', // Playwright uses .spec.ts convention
+    'tests/integration',
+    'tests/accessibility',
+    '\\.integration\\.test\\.[tj]sx?$',
+    '\\.vitest\\.test\\.[tj]sx?$',
+    'scripts/tag_lint.py',
+    'scripts/scan_todos.py',
   ],
 
   // Module file extensions

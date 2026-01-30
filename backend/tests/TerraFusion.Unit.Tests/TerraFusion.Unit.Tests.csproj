@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\TerraFusion.API\TerraFusion.API.csproj" />
     <ProjectReference Include="..\..\src\TerraFusion.Operations\TerraFusion.Operations.csproj" />
     <ProjectReference Include="..\..\tools\TerraFusion.CiHints\TerraFusion.CiHints.csproj" />
   </ItemGroup>

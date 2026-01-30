@@ -1,3 +1,5 @@
+import { getViteEnv } from '../shared/viteEnv';
+
 /**
  * Benton County Configuration Service
  * Provides county-specific configuration and data for TerraFusion OS
@@ -50,45 +52,49 @@ class BentonCountyConfigService {
   private config: BentonCountyConfig;
 
   private constructor() {
+    const env = getViteEnv();
     this.config = {
       county: {
-        name: import.meta.env.VITE_COUNTY_NAME || 'Benton County',
-        code: import.meta.env.VITE_COUNTY_CODE || 'benton',
-        fips: import.meta.env.VITE_COUNTY_FIPS || '53005',
-        state: import.meta.env.VITE_COUNTY_STATE || 'Washington',
-        parcelCount: parseInt(import.meta.env.VITE_COUNTY_PARCEL_COUNT || 'await DynamicPropertyService.GetPropertyCountAsync("benton")'),
+        name: env.VITE_COUNTY_NAME || 'Benton County',
+        code: env.VITE_COUNTY_CODE || 'benton',
+        fips: env.VITE_COUNTY_FIPS || '53005',
+        state: env.VITE_COUNTY_STATE || 'Washington',
+        parcelCount: parseInt(
+          env.VITE_COUNTY_PARCEL_COUNT ||
+            'await DynamicPropertyService.GetPropertyCountAsync("benton")'
+        ),
         timezone: 'America/Los_Angeles',
       },
       harrisPACS: {
-        version: import.meta.env.VITE_HARRIS_PACS_VERSION || '9.0',
-        enabled: import.meta.env.VITE_HARRIS_PACS_ENABLED === 'true',
-        syncInterval: parseInt(import.meta.env.VITE_SYNC_INTERVAL || '15'),
+        version: env.VITE_HARRIS_PACS_VERSION || '9.0',
+        enabled: env.VITE_HARRIS_PACS_ENABLED === 'true',
+        syncInterval: parseInt(env.VITE_SYNC_INTERVAL || '15'),
         jurisdiction: 'BENTON_WA',
       },
       deployment: {
-        mode: import.meta.env.VITE_DEMO_MODE === 'true' ? 'demo' : 'production',
-        environment: import.meta.env.VITE_DEPLOYMENT_MODE || 'benton_county',
+        mode: env.VITE_DEMO_MODE === 'true' ? 'demo' : 'production',
+        environment: env.VITE_DEPLOYMENT_MODE || 'benton_county',
         domain: 'assessor.terrafusionmarket.io',
         sslEnabled: true,
       },
       sla: {
-        availability: parseFloat(import.meta.env.VITE_SLA_AVAILABILITY || '99.9'),
-        p95Latency: parseInt(import.meta.env.VITE_SLA_P95_LATENCY || '150'),
+        availability: parseFloat(env.VITE_SLA_AVAILABILITY || '99.9'),
+        p95Latency: parseInt(env.VITE_SLA_P95_LATENCY || '150'),
         syncLagMinutes: 10,
         errorRatePercent: 0.1,
       },
       features: {
-        aiSwarmEnabled: import.meta.env.VITE_AI_SWARM_ENABLED === 'true',
-        quantumOptimization: import.meta.env.VITE_QUANTUM_OPTIMIZATION === 'true',
-        realTimeSync: import.meta.env.VITE_REAL_TIME_SYNC === 'true',
-        advancedAnalytics: import.meta.env.VITE_ADVANCED_ANALYTICS === 'true',
-        complianceMonitoring: import.meta.env.VITE_COMPLIANCE_MONITORING === 'true',
+        aiSwarmEnabled: env.VITE_AI_SWARM_ENABLED === 'true',
+        quantumOptimization: env.VITE_QUANTUM_OPTIMIZATION === 'true',
+        realTimeSync: env.VITE_REAL_TIME_SYNC === 'true',
+        advancedAnalytics: env.VITE_ADVANCED_ANALYTICS === 'true',
+        complianceMonitoring: env.VITE_COMPLIANCE_MONITORING === 'true',
       },
       security: {
-        ssoProvider: import.meta.env.VITE_SSO_PROVIDER || 'azure_ad',
-        mfaRequired: import.meta.env.VITE_MFA_REQUIRED === 'true',
-        auditLogging: import.meta.env.VITE_AUDIT_LOGGING === 'true',
-        fismaLevel: import.meta.env.VITE_FISMA_LEVEL || 'HIGH',
+        ssoProvider: env.VITE_SSO_PROVIDER || 'azure_ad',
+        mfaRequired: env.VITE_MFA_REQUIRED === 'true',
+        auditLogging: env.VITE_AUDIT_LOGGING === 'true',
+        fismaLevel: env.VITE_FISMA_LEVEL || 'HIGH',
       },
     };
   }
@@ -156,13 +162,14 @@ class BentonCountyConfigService {
   }
 
   public getEnvironmentInfo() {
+    const env = getViteEnv();
     return {
       county: this.config.county.name,
       mode: this.config.deployment.mode,
       environment: this.config.deployment.environment,
       domain: this.config.deployment.domain,
       isDemo: this.isDemo(),
-      isMultiCounty: import.meta.env.VITE_MULTI_COUNTY === 'true',
+      isMultiCounty: env.VITE_MULTI_COUNTY === 'true',
     };
   }
 }

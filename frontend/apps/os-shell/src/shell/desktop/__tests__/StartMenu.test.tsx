@@ -30,7 +30,7 @@ const mockPinnedApps = [
   {
     id: 'government-architecture',
     name: 'Government Architecture',
-    icon: '🏛️',
+    icon: 'Building2',
     description: 'System architecture overview',
     category: 'government',
     status: 'active' as const,
@@ -38,7 +38,7 @@ const mockPinnedApps = [
   {
     id: 'costforge',
     name: 'CostForge',
-    icon: '💎',
+    icon: 'Layers',
     description: 'Property assessment',
     category: 'assessment',
     status: 'active' as const,
@@ -46,7 +46,7 @@ const mockPinnedApps = [
   {
     id: 'levy-calculator',
     name: 'Levy Calculator',
-    icon: '📊',
+    icon: 'BarChart3',
     description: 'Tax levy',
     category: 'tax',
     status: 'active' as const,
@@ -54,7 +54,7 @@ const mockPinnedApps = [
   {
     id: 'gis-viewer',
     name: 'GIS Viewer',
-    icon: '🗺️',
+    icon: 'Map',
     description: 'Geographic info',
     category: 'mapping',
     status: 'active' as const,
@@ -66,7 +66,7 @@ const mockAllApps = [
   {
     id: 'atlas-ai',
     name: 'ATLAS Intelligence',
-    icon: '🤖',
+    icon: 'Brain',
     description: 'AI assistant',
     category: 'ai',
     status: 'active' as const,
@@ -74,7 +74,7 @@ const mockAllApps = [
   {
     id: 'reporting',
     name: 'Analytics',
-    icon: '📈',
+    icon: 'TrendingUp',
     description: 'Reports',
     category: 'analytics',
     status: 'active' as const,
@@ -221,7 +221,7 @@ describe('StartMenu Component', () => {
 
       const pinnedSection = screen.getByTestId('pinned-apps');
       // Scope to pinned section to avoid matching duplicates in all-apps
-      expect(within(pinnedSection).getByText('🏛️')).toBeInTheDocument();
+      expect(within(pinnedSection).getAllByRole('img', { hidden: true }).length).toBeGreaterThan(0);
       expect(within(pinnedSection).getByText('Government Architecture')).toBeInTheDocument();
     });
   });

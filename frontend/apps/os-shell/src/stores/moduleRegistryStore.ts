@@ -15,6 +15,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 import { useDesktopStore } from './desktopStore';
+import type { Entry } from '../config/generatedModules';
 
 // ============================================================================
 // Types
@@ -35,6 +36,7 @@ export interface ModuleDefinition {
   status: ModuleStatus;
   version: string;
   launchPath: string;
+  entry?: Entry;
   isCore: boolean;
   priority: number;
 }
