@@ -25,6 +25,24 @@ export type BundleKind =
   | 'dynamic-candidate'; // Could benefit from dynamic import
 
 /**
+ * Rerender classification types for Phase 4M2
+ */
+export type RerenderKind =
+  | 'inline-object' // Inline object prop {{ }} - auto-fixable
+  | 'inline-array' // Inline array prop {[]} - auto-fixable
+  | 'inline-fn' // Inline function prop {() => } - auto-fixable
+  | 'setstate-nonfunctional' // setState(x+1) vs setState(s => s+1) - auto-fixable
+  | 'unstable-deps' // Missing/unstable useEffect deps - review-only
+  | 'context-value' // Inline object in Provider value - review-only
+  | 'list-hotspot' // .map() without memo/virtualization - review-only
+  | 'missing-memo'; // Component should be memoized - review-only
+
+/**
+ * Fixability classification for Phase 4M2
+ */
+export type Fixability = 'auto' | 'review';
+
+/**
  * Evidence item for detailed findings
  */
 export interface EvidenceItem {
@@ -45,13 +63,20 @@ export interface Finding {
 
   // v2 additions for waterfall scanner
   functionName?: string;
-  kind?: WaterfallKind | BundleKind;
+  kind?: WaterfallKind | BundleKind | RerenderKind;
   priorityScore?: number; // 0-100, higher = fix first
   evidence?: EvidenceItem[];
 
   // Phase 4M1: Bundle scanner additions
   importPath?: string;
   importChain?: string[];
+
+  // Phase 4M2: Rerender scanner additions
+  componentName?: string;
+  hook?: string; // useEffect/useMemo/useCallback/useState
+  fixability?: Fixability;
+  propName?: string;
+  depName?: string;
 }
 
 export interface ScanContext {
@@ -128,7 +153,7 @@ export interface PlanItem {
   functionName: string; // Function/method containing the issue
   startLine: number; // Start of function/await block
   endLine: number; // End of function/await block
-  kind: WaterfallKind | BundleKind; // Classification from scanner
+  kind: WaterfallKind | BundleKind | RerenderKind; // Classification from scanner
   priorityScore: number; // 0-100, higher = fix first
   patchStrategy: PatchStrategy; // How to fix
   risk: PatchRisk; // Risk level

@@ -197,7 +197,15 @@ describe('Waterfall Scanner Self-Test (Phase 4N)', () => {
       assert.ok(item.functionName, 'Eligible item should have functionName');
       assert.ok(item.startLine > 0, 'Eligible item should have valid startLine');
       assert.ok(item.endLine > 0, 'Eligible item should have valid endLine');
-      assert.ok(item.evidence?.length >= 2, 'Eligible item should have at least 2 evidence items');
+      // Waterfall items need 2+ evidence, rerender items need 1+
+      if (item.id.startsWith('wf-')) {
+        assert.ok(
+          item.evidence?.length >= 2,
+          'Waterfall eligible item should have at least 2 evidence items'
+        );
+      } else {
+        assert.ok(item.evidence?.length >= 1, 'Eligible item should have at least 1 evidence item');
+      }
       assert.ok(item.suggestedPatch, 'Eligible item should have suggestedPatch');
       assert.ok(item.verification?.length > 0, 'Eligible item should have verification commands');
     }
@@ -353,6 +361,149 @@ describe('Bundle Scanner Self-Test (Phase 4M1)', () => {
         finding.priorityScore >= 50,
         `Bundle finding in allowed surface should have priority >= 50, got ${finding.priorityScore}`
       );
+    }
+  });
+});
+
+// ============================================================
+// RERENDER SCANNER SELF-TEST (Phase 4M2)
+// ============================================================
+describe('Rerender Scanner Self-Test (Phase 4M2)', () => {
+  let reportData;
+
+  it('loads the full audit report for rerender analysis', () => {
+    const reportPath = path.join(__dirname, '..', 'out', 'perf-audit-report.full.json');
+    assert.ok(fs.existsSync(reportPath), 'Full report should exist');
+    reportData = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+  });
+
+  it('detects inline-object patterns in test fixtures', () => {
+    const rerenderFindings = reportData.findings.filter(
+      f => f.file.includes('rerender-patterns.tsx') && f.rule.startsWith('rerender.')
+    );
+
+    const inlineObjects = rerenderFindings.filter(f => f.kind === 'inline-object');
+    console.log(`Found ${inlineObjects.length} inline-object findings in rerender fixture`);
+
+    assert.ok(
+      inlineObjects.length >= 1,
+      `Should detect inline-object patterns, found ${inlineObjects.length}`
+    );
+
+    // Check fixability is 'auto'
+    for (const finding of inlineObjects) {
+      assert.strictEqual(finding.fixability, 'auto', 'inline-object should be auto-fixable');
+    }
+  });
+
+  it('detects inline-fn patterns', () => {
+    const inlineFns = reportData.findings.filter(
+      f => f.file.includes('rerender-patterns.tsx') && f.kind === 'inline-fn'
+    );
+
+    console.log(`Found ${inlineFns.length} inline-fn findings in rerender fixture`);
+
+    assert.ok(inlineFns.length >= 1, `Should detect inline-fn patterns, found ${inlineFns.length}`);
+
+    // Check fixability
+    for (const finding of inlineFns) {
+      assert.strictEqual(finding.fixability, 'auto', 'inline-fn should be auto-fixable');
+    }
+  });
+
+  it('detects setstate-nonfunctional patterns', () => {
+    const setStateFindings = reportData.findings.filter(
+      f => f.file.includes('rerender-patterns.tsx') && f.kind === 'setstate-nonfunctional'
+    );
+
+    console.log(`Found ${setStateFindings.length} setstate-nonfunctional findings`);
+
+    assert.ok(
+      setStateFindings.length >= 1,
+      `Should detect setstate-nonfunctional patterns, found ${setStateFindings.length}`
+    );
+
+    // This should have highest priority among auto-fixable
+    for (const finding of setStateFindings) {
+      assert.ok(
+        finding.priorityScore >= 60,
+        `setstate-nonfunctional should have high priority, got ${finding.priorityScore}`
+      );
+    }
+  });
+
+  it('detects context-value patterns as review-only', () => {
+    const contextFindings = reportData.findings.filter(
+      f => f.file.includes('rerender-patterns.tsx') && f.kind === 'context-value'
+    );
+
+    console.log(`Found ${contextFindings.length} context-value findings`);
+
+    // Context value should be review-only
+    for (const finding of contextFindings) {
+      assert.strictEqual(finding.fixability, 'review', 'context-value should be review-only');
+    }
+  });
+
+  it('respects rerender ignore pragma', () => {
+    // The suppressed component should not produce findings
+    const allRerenderFindings = reportData.findings.filter(f =>
+      f.file.includes('rerender-patterns.tsx')
+    );
+
+    const suppressed = allRerenderFindings.filter(f => f.componentName === 'SuppressedComponent');
+
+    assert.strictEqual(
+      suppressed.length,
+      0,
+      'SuppressedComponent with pragma should not produce findings'
+    );
+  });
+
+  it('does not flag properly memoized patterns', () => {
+    const cleanFindings = reportData.findings.filter(
+      f => f.file.includes('rerender-patterns.tsx') && f.componentName === 'CleanComponent'
+    );
+
+    assert.strictEqual(
+      cleanFindings.length,
+      0,
+      'CleanComponent with proper memoization should not produce findings'
+    );
+  });
+
+  it('does not flag functional setState', () => {
+    const functionalFindings = reportData.findings.filter(
+      f =>
+        f.file.includes('rerender-patterns.tsx') &&
+        f.componentName === 'FunctionalSetStateComponent'
+    );
+
+    assert.strictEqual(
+      functionalFindings.length,
+      0,
+      'FunctionalSetStateComponent should not produce findings'
+    );
+  });
+
+  it('rerender findings have required fields', () => {
+    const rerenderFindings = reportData.findings.filter(
+      f => f.file.includes('rerender-patterns.tsx') && f.rule.startsWith('rerender.')
+    );
+
+    for (const finding of rerenderFindings) {
+      assert.ok(finding.severity, 'Rerender finding should have severity');
+      assert.ok(finding.rule, 'Rerender finding should have rule');
+      assert.ok(finding.file, 'Rerender finding should have file');
+      assert.ok(finding.lineStart > 0, 'Rerender finding should have valid lineStart');
+      assert.ok(finding.message, 'Rerender finding should have message');
+      assert.ok(finding.kind, 'Rerender finding should have kind classification');
+      assert.ok(finding.fixability, 'Rerender finding should have fixability');
+      assert.ok(
+        typeof finding.priorityScore === 'number',
+        'Rerender finding should have priorityScore'
+      );
+      assert.ok(finding.evidence?.length >= 1, 'Rerender finding should have evidence');
     }
   });
 });
