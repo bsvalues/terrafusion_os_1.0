@@ -33,7 +33,7 @@ on:
       - 'manifests/**'
       - 'kustomize/**'
       - '.github/workflows/kubernetes-infrastructure-ci.yml'
-  
+
   pull_request:
     branches:
       - main
@@ -42,7 +42,7 @@ on:
       - 'charts/**'
       - 'manifests/**'
       - 'kustomize/**'
-  
+
   workflow_dispatch:
     inputs:
       environment:
@@ -78,42 +78,59 @@ jobs:
     name: Lint & Format
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+    outputs:
+      charts-present: ${{ steps.detect-charts.outputs.present }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
+      - name: Detect charts
+        id: detect-charts
+        run: |
+          if [ -d "charts" ] && [ "$(ls -A charts 2>/dev/null)" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+            echo "✅ Charts directory found with content"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️ No charts directory or empty - skipping Helm operations"
+          fi
+
       - name: Set up Helm
+        if: steps.detect-charts.outputs.present == 'true'
         uses: azure/setup-helm@v3
         with:
           version: ${{ env.HELM_VERSION }}
-      
+
       - name: Set up kubectl
+        if: steps.detect-charts.outputs.present == 'true'
         uses: azure/setup-kubectl@v3
         with:
           version: ${{ env.KUBECTL_VERSION }}
-      
+
       - name: Install kubeconform
+        if: steps.detect-charts.outputs.present == 'true'
         run: |
           wget https://github.com/yannh/kubeconform/releases/download/v${{ env.KUBECONFORM_VERSION }}/kubeconform-linux-amd64.tar.gz
           tar xf kubeconform-linux-amd64.tar.gz
           sudo mv kubeconform /usr/local/bin/
           kubeconform -v
-      
+
       - name: Install yamllint
         run: |
           pip install yamllint
           yamllint --version
-      
+
       - name: Lint YAML files
         run: |
           echo "::group::YAML Lint"
           find . -name "*.yaml" -o -name "*.yml" | xargs yamllint -c .yamllint.yml || true
           echo "::endgroup::"
-      
+
       - name: Lint Helm charts
+        if: steps.detect-charts.outputs.present == 'true'
         run: |
           echo "::group::Helm Lint"
           for chart in charts/*; do
@@ -124,8 +141,9 @@ jobs:
             fi
           done
           echo "::endgroup::"
-      
+
       - name: Validate Kubernetes manifests
+        if: steps.detect-charts.outputs.present == 'true'
         run: |
           echo "::group::Kubeconform Validation"
           for chart in charts/*; do
@@ -134,14 +152,15 @@ jobs:
               helm template "$chart" | kubeconform -strict -summary
             fi
           done
-          
+
           # Validate standalone manifests
           if [ -d "manifests" ]; then
             find manifests -name "*.yaml" -exec kubeconform -strict {} \;
           fi
           echo "::endgroup::"
-      
+
       - name: Check for deprecated APIs
+        if: steps.detect-charts.outputs.present == 'true'
         run: |
           echo "::group::Deprecated API Check"
           for chart in charts/*; do
@@ -151,10 +170,10 @@ jobs:
             fi
           done
           echo "::endgroup::"
-      
+
       - name: Upload lint results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lint-results
           path: |
@@ -169,31 +188,31 @@ jobs:
     name: OPA Policy Tests
     runs-on: ubuntu-latest
     needs: lint-and-format
+    if: needs.lint-and-format.outputs.charts-present == 'true'
     timeout-minutes: 15
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
           version: ${{ env.HELM_VERSION }}
-      
+
       - name: Install OPA
         run: |
           curl -L -o opa https://openpolicyagent.org/downloads/v${{ env.OPA_VERSION }}/opa_linux_amd64_static
           chmod +x opa
           sudo mv opa /usr/local/bin/
           opa version
-      
+
       - name: Install Conftest
         run: |
           wget https://github.com/open-policy-agent/conftest/releases/download/v${{ env.CONFTEST_VERSION }}/conftest_${{ env.CONFTEST_VERSION }}_Linux_x86_64.tar.gz
           tar xzf conftest_${{ env.CONFTEST_VERSION }}_Linux_x86_64.tar.gz
           sudo mv conftest /usr/local/bin/
           conftest --version
-      
       - name: Test pod-security policies (17 rules)
         run: |
           echo "::group::Pod Security Policies"
@@ -204,7 +223,7 @@ jobs:
             fi
           done
           echo "::endgroup::"
-      
+
       - name: Test network-security policies (11 rules)
         run: |
           echo "::group::Network Security Policies"
@@ -215,7 +234,7 @@ jobs:
             fi
           done
           echo "::endgroup::"
-      
+
       - name: Test resource-limits policies (9 rules)
         run: |
           echo "::group::Resource Limits Policies"
@@ -226,12 +245,12 @@ jobs:
             fi
           done
           echo "::endgroup::"
-      
+
       - name: Run all OPA tests (37 rules total)
         run: |
           echo "::group::Comprehensive OPA Testing"
           conftest verify -p ../../policies/ || echo "Warning: Some tests may have failed"
-          
+
           # Generate test report
           for chart in charts/*; do
             if [ -d "$chart" ]; then
@@ -239,15 +258,15 @@ jobs:
             fi
           done
           echo "::endgroup::"
-      
+
       - name: Upload OPA test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: opa-test-results
           path: opa-results-*.json
           retention-days: 30
-      
+
       - name: Comment on PR (OPA results)
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
@@ -255,11 +274,11 @@ jobs:
           script: |
             const fs = require('fs');
             const files = fs.readdirSync('.').filter(f => f.startsWith('opa-results-'));
-            
+
             let comment = '## 🔒 OPA Policy Test Results\n\n';
             comment += '| Chart | Pod Security | Network Security | Resource Limits | Total |\n';
             comment += '|-------|--------------|------------------|-----------------|-------|\n';
-            
+
             files.forEach(file => {
               const data = JSON.parse(fs.readFileSync(file, 'utf8'));
               const chartName = file.replace('opa-results-', '').replace('.json', '');
@@ -267,7 +286,7 @@ jobs:
               const status = failures === 0 ? '✅' : '❌';
               comment += `| ${chartName} | ${status} | ${status} | ${status} | ${status} |\n`;
             });
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -281,29 +300,32 @@ jobs:
   security-scanning:
     name: Security Scanning
     runs-on: ubuntu-latest
-    needs: opa-policy-tests
+    needs: [lint-and-format, opa-policy-tests]
+    if: |
+      always() &&
+      needs.lint-and-format.outputs.charts-present == 'true' &&
+      (needs.opa-policy-tests.result == 'success' || needs.opa-policy-tests.result == 'skipped')
     timeout-minutes: 20
-    
     permissions:
       contents: read
       security-events: write
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
           version: ${{ env.HELM_VERSION }}
-      
+
       - name: Install Trivy
         run: |
           wget https://github.com/aquasecurity/trivy/releases/download/v${{ env.TRIVY_VERSION }}/trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz
           tar zxvf trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz
           sudo mv trivy /usr/local/bin/
           trivy --version
-      
+
       - name: Scan Helm charts for misconfigurations
         run: |
           echo "::group::Trivy IaC Scanning"
@@ -318,7 +340,7 @@ jobs:
             fi
           done
           echo "::endgroup::"
-      
+
       - name: Scan container images
         run: |
           echo "::group::Trivy Image Scanning"
@@ -338,7 +360,7 @@ jobs:
             fi
           done
           echo "::endgroup::"
-      
+
       - name: Run Snyk IaC scan
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         continue-on-error: true
@@ -360,30 +382,30 @@ jobs:
           else
             echo "Snyk token not configured, skipping Snyk scan"
           fi
-      
+
       - name: Upload Trivy results to GitHub Security
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results-*.sarif'
           category: trivy-iac
-      
+
       - name: Upload security scan results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-scan-results
           path: |
             trivy-*.sarif
             trivy-*.json
           retention-days: 30
-      
+
       - name: Check for critical vulnerabilities
         run: |
           echo "::group::Vulnerability Summary"
           critical_count=0
           high_count=0
-          
+
           for file in trivy-image-*.json; do
             if [ -f "$file" ]; then
               crit=$(jq '.Results[].Vulnerabilities[] | select(.Severity=="CRITICAL") | .VulnerabilityID' "$file" 2>/dev/null | wc -l || echo 0)
@@ -392,15 +414,15 @@ jobs:
               high_count=$((high_count + high))
             fi
           done
-          
+
           echo "Critical vulnerabilities: $critical_count"
           echo "High vulnerabilities: $high_count"
-          
+
           if [ $critical_count -gt 0 ]; then
             echo "::error::Found $critical_count CRITICAL vulnerabilities. Deployment blocked."
             exit 1
           fi
-          
+
           if [ $high_count -gt 5 ]; then
             echo "::warning::Found $high_count HIGH vulnerabilities. Consider remediation."
           fi
@@ -412,33 +434,36 @@ jobs:
   build-and-package:
     name: Build & Package
     runs-on: ubuntu-latest
-    needs: security-scanning
+    needs: [lint-and-format, security-scanning]
+    if: |
+      always() &&
+      needs.lint-and-format.outputs.charts-present == 'true' &&
+      (needs.security-scanning.result == 'success' || needs.security-scanning.result == 'skipped')
     timeout-minutes: 15
-    
     outputs:
       chart-version: ${{ steps.version.outputs.version }}
       charts-packaged: ${{ steps.package.outputs.charts }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
           version: ${{ env.HELM_VERSION }}
-      
+
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
+
       - name: Login to Azure Container Registry
         run: |
           az acr login --name ${{ env.ACR_NAME }}
-      
+
       - name: Determine version
         id: version
         run: |
@@ -449,7 +474,7 @@ jobs:
           fi
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Chart version: $VERSION"
-      
+
       - name: Update chart versions
         run: |
           VERSION="${{ steps.version.outputs.version }}"
@@ -460,14 +485,14 @@ jobs:
               sed -i "s/^appVersion: .*/appVersion: ${VERSION}/" "$chart/Chart.yaml"
             fi
           done
-      
+
       - name: Package Helm charts
         id: package
         run: |
           echo "::group::Helm Package"
           mkdir -p packaged-charts
           CHARTS=""
-          
+
           for chart in charts/*; do
             if [ -d "$chart" ]; then
               echo "Packaging chart: $chart"
@@ -477,11 +502,11 @@ jobs:
               CHARTS="${CHARTS},${CHART_NAME}"
             fi
           done
-          
+
           echo "charts=${CHARTS#,}" >> $GITHUB_OUTPUT
           ls -lh packaged-charts/
           echo "::endgroup::"
-      
+
       - name: Push charts to ACR
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         run: |
@@ -491,14 +516,14 @@ jobs:
             helm push "$chart" ${{ env.CHART_REGISTRY }}
           done
           echo "::endgroup::"
-      
+
       - name: Upload packaged charts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: helm-charts
           path: packaged-charts/*.tgz
           retention-days: 90
-      
+
       - name: Generate chart index
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -517,53 +542,53 @@ jobs:
     environment:
       name: staging
       url: https://staging.terrafusion.io
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
           version: ${{ env.HELM_VERSION }}
-      
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: ${{ env.KUBECTL_VERSION }}
-      
+
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
+
       - name: Get AKS credentials
         run: |
           az aks get-credentials \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --name ${{ env.AKS_CLUSTER_NAME }} \
             --overwrite-existing
-      
+
       - name: Login to ACR
         run: |
           az acr login --name ${{ env.ACR_NAME }}
-      
+
       - name: Create staging namespace
         run: |
           kubectl create namespace staging --dry-run=client -o yaml | kubectl apply -f -
           kubectl label namespace staging environment=staging --overwrite
-      
+
       - name: Download packaged charts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: helm-charts
           path: packaged-charts/
-      
+
       - name: Deploy infrastructure charts to staging
         run: |
           echo "::group::Helm Deploy Staging"
           VERSION="${{ needs.build-and-package.outputs.chart-version }}"
-          
+
           for chart in packaged-charts/*.tgz; do
             CHART_NAME=$(basename "$chart" .tgz | sed 's/-[0-9].*//')
             echo "Deploying: $CHART_NAME"
@@ -580,17 +605,17 @@ jobs:
               --values "charts/$CHART_NAME/values-staging.yaml" || true
           done
           echo "::endgroup::"
-      
+
       - name: Verify deployment
         run: |
           echo "::group::Deployment Verification"
           kubectl get all -n staging
           kubectl get pods -n staging -o wide
-          
+
           # Wait for all pods to be ready
           kubectl wait --for=condition=Ready pods --all -n staging --timeout=300s || true
           echo "::endgroup::"
-      
+
       - name: Get deployment status
         if: always()
         run: |
@@ -611,32 +636,31 @@ jobs:
       (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') &&
       !inputs.skip_tests
     timeout-minutes: 20
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: ${{ env.KUBECTL_VERSION }}
-      
+
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
+
       - name: Get AKS credentials
         run: |
           az aks get-credentials \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --name ${{ env.AKS_CLUSTER_NAME }} \
             --overwrite-existing
-      
+
       - name: Health checks
         run: |
           echo "::group::Health Checks"
-          
+
           # Check all pods are running
           NOT_RUNNING=$(kubectl get pods -n staging --field-selector=status.phase!=Running --no-headers 2>/dev/null | wc -l || echo 0)
           if [ "$NOT_RUNNING" -gt 0 ]; then
@@ -644,19 +668,19 @@ jobs:
             kubectl get pods -n staging --field-selector=status.phase!=Running
             exit 1
           fi
-          
+
           # Check pod restarts
           HIGH_RESTARTS=$(kubectl get pods -n staging -o json | jq '.items[] | select(.status.containerStatuses[].restartCount > 3) | .metadata.name' || echo "")
           if [ -n "$HIGH_RESTARTS" ]; then
             echo "::warning::Pods with high restart counts: $HIGH_RESTARTS"
           fi
-          
+
           echo "::endgroup::"
-      
+
       - name: Smoke tests
         run: |
           echo "::group::Smoke Tests"
-          
+
           # Test 1: Check services are accessible
           kubectl get services -n staging -o json | jq -r '.items[] | "\(.metadata.name):\(.spec.ports[0].port)"' | while read svc; do
             echo "Testing service: $svc"
@@ -671,53 +695,53 @@ jobs:
             curl -f "http://localhost:$PORT/health" || echo "Warning: Health check failed for $SVC_NAME"
             kill $PF_PID 2>/dev/null || true
           done
-          
+
           echo "::endgroup::"
-      
+
       - name: Performance tests
         run: |
           echo "::group::Performance Tests"
-          
+
           # Check resource usage
           kubectl top nodes || true
           kubectl top pods -n staging || true
-          
+
           # Check for resource constraints
           kubectl get pods -n staging -o json | jq -r '.items[] | select(.status.containerStatuses[].state.waiting.reason == "CrashLoopBackOff") | .metadata.name' | while read pod; do
             echo "::error::Pod in CrashLoopBackOff: $pod"
             kubectl logs -n staging "$pod" --tail=50
           done
-          
+
           echo "::endgroup::"
-      
+
       - name: Generate test report
         if: always()
         run: |
           cat > test-report.md << 'EOF'
           # Integration Test Report
-          
+
           **Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           **Environment:** Staging
           **Commit:** ${{ github.sha }}
-          
+
           ## Health Checks
           $(kubectl get pods -n staging -o wide)
-          
+
           ## Service Status
           $(kubectl get services -n staging)
-          
+
           ## Resource Usage
           $(kubectl top pods -n staging 2>/dev/null || echo "Metrics not available")
-          
+
           ## Recent Events
           $(kubectl get events -n staging --sort-by='.lastTimestamp' | tail -10)
           EOF
-          
+
           cat test-report.md
-      
+
       - name: Upload test report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: integration-test-report
           path: test-report.md
@@ -735,49 +759,49 @@ jobs:
     environment:
       name: production
       url: https://terrafusion.io
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
           version: ${{ env.HELM_VERSION }}
-      
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: ${{ env.KUBECTL_VERSION }}
-      
+
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
+
       - name: Get AKS credentials
         run: |
           az aks get-credentials \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --name ${{ env.AKS_CLUSTER_NAME }} \
             --overwrite-existing
-      
+
       - name: Create production namespace
         run: |
           kubectl create namespace production --dry-run=client -o yaml | kubectl apply -f -
           kubectl label namespace production environment=production --overwrite
-      
+
       - name: Download packaged charts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: helm-charts
           path: packaged-charts/
-      
+
       - name: Deploy infrastructure charts to production
         run: |
           echo "::group::Helm Deploy Production"
           VERSION="${{ needs.build-and-package.outputs.chart-version }}"
-          
+
           for chart in packaged-charts/*.tgz; do
             CHART_NAME=$(basename "$chart" .tgz | sed 's/-[0-9].*//')
             echo "Deploying: $CHART_NAME to PRODUCTION"
@@ -796,29 +820,29 @@ jobs:
               --values "charts/$CHART_NAME/values-production.yaml"
           done
           echo "::endgroup::"
-      
+
       - name: Verify production deployment
         run: |
           echo "::group::Production Verification"
           kubectl get all -n production
           kubectl wait --for=condition=Ready pods --all -n production --timeout=600s
-          
+
           # Check deployment health
           kubectl get deployments -n production -o json | jq -r '.items[] | "\(.metadata.name): \(.status.readyReplicas)/\(.spec.replicas)"'
           echo "::endgroup::"
-      
+
       - name: Run production smoke tests
         run: |
           echo "::group::Production Smoke Tests"
-          
+
           # Verify all services responding
           kubectl get services -n production -o json | jq -r '.items[].metadata.name' | while read svc; do
             echo "Verifying service: $svc"
             kubectl get endpoints -n production "$svc" -o json | jq '.subsets[].addresses' || echo "No endpoints for $svc"
           done
-          
+
           echo "::endgroup::"
-      
+
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/create-release@v1
@@ -829,16 +853,16 @@ jobs:
           release_name: Release ${{ github.ref }}
           body: |
             ## Kubernetes Infrastructure Release
-            
+
             **Version:** ${{ needs.build-and-package.outputs.chart-version }}
             **Charts:** ${{ needs.build-and-package.outputs.charts-packaged }}
-            
+
             ### Deployed Components
             - Infrastructure charts deployed to production
             - All OPA policies passing (37 rules)
             - Zero critical vulnerabilities
             - Production health checks: PASSED
-            
+
             ### Validation
             ✅ Lint & Format: PASSED
             ✅ OPA Policy Tests: PASSED (37/37 rules)
@@ -854,16 +878,24 @@ jobs:
   notify:
     name: Send Notifications
     runs-on: ubuntu-latest
-    needs: [lint-and-format, opa-policy-tests, security-scanning, build-and-package, integration-tests, deploy-production]
+    needs:
+      [
+        lint-and-format,
+        opa-policy-tests,
+        security-scanning,
+        build-and-package,
+        integration-tests,
+        deploy-production,
+      ]
     if: always()
-    
+
     steps:
       - name: Notify on success
         if: needs.deploy-production.result == 'success'
         run: |
           echo "::notice::✅ Kubernetes Infrastructure CI/CD completed successfully!"
           echo "All stages passed. Production deployment verified."
-      
+
       - name: Notify on failure
         if: failure()
         run: |

@@ -83,7 +83,7 @@ public sealed class SpecLockHealthCheck : IHealthCheck
                     manifest.Locks.Sum(l => l.GeneratedArtifacts.Count));
                 SpecLockMetrics.SpecLockCheckTotal.WithLabels("terrafusion-api", "healthy").Inc();
 
-                return HealthCheckResult.Healthy("SpecLock invariant satisfied.", new Dictionary<string, object?>
+                return HealthCheckResult.Healthy("SpecLock invariant satisfied.", new Dictionary<string, object>
                 {
                     ["lockCount"] = manifest.LockCount,
                     ["generatedAt"] = manifest.GeneratedAt
@@ -94,11 +94,11 @@ public sealed class SpecLockHealthCheck : IHealthCheck
             SpecLockMetrics.SpecLockOk.WithLabels("terrafusion-api").Set(0);
             SpecLockMetrics.SpecLockCount.WithLabels("terrafusion-api").Set(manifest.LockCount);
 
-            var data = new Dictionary<string, object?>
+            var data = new Dictionary<string, object>
             {
                 ["lockCount"] = manifest.LockCount,
                 ["errorCount"] = errors.Count,
-                ["errorsSample"] = errors.Take(5).ToArray()
+                ["errorsSample"] = (object)errors.Take(5).ToArray()
             };
 
             if (guardEnabled)
@@ -113,7 +113,7 @@ public sealed class SpecLockHealthCheck : IHealthCheck
         catch (FileNotFoundException)
         {
             // Manifest missing - depends on guard state
-            var data = new Dictionary<string, object?>
+            var data = new Dictionary<string, object>
             {
                 ["error"] = "manifest.json not found"
             };

@@ -7,12 +7,15 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Moq" />
+    <PackageReference Include="StackExchange.Redis" />
+    <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TerraFusion.API\TerraFusion.API.csproj" />
+    <ProjectReference Include="..\src\TerraFusion.API\TerraFusion.API.csproj" />
   </ItemGroup>
 </Project>

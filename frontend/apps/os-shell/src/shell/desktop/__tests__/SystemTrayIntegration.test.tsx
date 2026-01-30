@@ -15,7 +15,19 @@ import userEvent from '@testing-library/user-event';
 // Vitest imports removed - Jest globals used
 import '@testing-library/jest-dom';
 
+import { SentinelPanel } from '../../../sentinel/SentinelPanel';
+import { useSentinelStore } from '../../../sentinel/sentinelStore';
 import { Taskbar } from '../Taskbar';
+
+const TaskbarWithPanels = () => {
+  const { panelOpen, setPanelOpen } = useSentinelStore();
+  return (
+    <>
+      <Taskbar />
+      <SentinelPanel open={panelOpen} onClose={() => setPanelOpen(false)} />
+    </>
+  );
+};
 
 // Mock stores
 jest.mock('../../../stores/desktopStore', () => ({
@@ -103,19 +115,19 @@ describe('System Tray Integration', () => {
 
   describe('System Health Panel', () => {
     it('opens system health panel on click', async () => {
-      render(<Taskbar />);
+      render(<TaskbarWithPanels />);
 
       await userEvent.click(screen.getByTestId('system-health-indicator'));
 
       expect(screen.getByTestId('system-health-panel')).toBeInTheDocument();
     });
 
-    it('shows CPU usage in panel', async () => {
-      render(<Taskbar />);
+    it('shows latency in panel', async () => {
+      render(<TaskbarWithPanels />);
 
       await userEvent.click(screen.getByTestId('system-health-indicator'));
 
-      expect(screen.getByText(/CPU/i)).toBeInTheDocument();
+      expect(screen.getByText(/Latency/i)).toBeInTheDocument();
     });
   });
 
@@ -138,7 +150,7 @@ describe('System Tray Integration', () => {
 
   describe('Panel Interactions', () => {
     it('only one panel open at a time - AI closes when Health opens', async () => {
-      render(<Taskbar />);
+      render(<TaskbarWithPanels />);
 
       // Open AI panel
       await userEvent.click(screen.getByTestId('ai-status-indicator'));

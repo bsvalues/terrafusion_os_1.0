@@ -1,9 +1,9 @@
-/// <summary>
-/// TERRAFUSION OS - PREDICTIVE IMPACT SERVICE
-/// ML-Powered Parameter Impact Prediction with Gradient Boosting
-/// Confidence Scoring, Historical Analysis &amp; Championship-Level Accuracy
-/// THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
-/// </summary>
+// <summary>
+// TERRAFUSION OS - PREDICTIVE IMPACT SERVICE
+// ML-Powered Parameter Impact Prediction with Gradient Boosting
+// Confidence Scoring, Historical Analysis &amp; Championship-Level Accuracy
+// THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
+// </summary>
 
 using Microsoft.Extensions.Logging;
 using Microsoft.ML;
@@ -11,7 +11,6 @@ using System.Collections.Concurrent;
 
 namespace TerraFusion.Consciousness.Services;
 
-/// <summary>
 /// <summary>
 /// Predictive Impact Service using ML.NET for parameter impact forecasting
 ///

@@ -162,6 +162,8 @@ namespace TerraFusion.Levy.Services
             RevenueProjection projection,
             LevyScenario scenario)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             _logger.LogInformation(
                 "Assessing risks for revenue projection {ProjectionId}",
                 projection.Id);
@@ -279,6 +281,8 @@ namespace TerraFusion.Levy.Services
             RevenueProjection projection,
             decimal confidenceLevel = 0.95m)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             // Calculate standard deviation based on historical variance
             var historicalVariance = 0.08m; // 8% standard deviation (typical for government revenue)
             var standardDeviation = projection.ProjectedNetRevenue * historicalVariance;

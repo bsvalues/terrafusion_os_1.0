@@ -1,4 +1,4 @@
-/**
+/*
  * AnalysisResult Entity
  *
  * Stores results from statistical analyses, hypothesis tests, and other

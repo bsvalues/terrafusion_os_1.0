@@ -12,6 +12,7 @@ import '@testing-library/jest-dom';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useModuleLoaderStore } from '../../../stores/moduleLoaderStore';
+import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { ModuleHost } from '../ModuleHost';
 
 // Mock analytics
@@ -39,18 +40,39 @@ jest.mock('../../../config/moduleComponents', () => ({
     };
     return modules[id] || null;
   },
-  ModuleRenderer: ({ moduleId }: { moduleId: string }) => (
-    <div data-testid='mock-module-renderer'>Module: {moduleId}</div>
+  ModuleRenderer: ({ module }: { module: { id: string } }) => (
+    <div data-testid='mock-module-renderer'>Module: {module.id}</div>
   ),
 }));
 
 // Reset store before each test
+const mockRegistryModule = {
+  id: 'costforge',
+  name: 'CostForge',
+  displayName: 'CostForge',
+  description: 'Property assessment module',
+  icon: 'Building2',
+  category: 'assessment',
+  tier: 'Tier1',
+  status: 'active',
+  version: '1.0.0',
+  launchPath: '/modules/costforge',
+  isCore: true,
+  priority: 1,
+};
+
 const resetStore = () => {
   useModuleLoaderStore.setState({
     loadStates: new Map(),
     currentRequestIds: new Map(),
     loadingPromises: new Map(),
     requestCounter: 0,
+  });
+  useModuleRegistryStore.setState({
+    modules: new Map([[mockRegistryModule.id, mockRegistryModule]]),
+    loadStates: new Map(),
+    isInitialized: true,
+    initError: null,
   });
 };
 

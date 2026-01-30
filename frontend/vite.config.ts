@@ -116,7 +116,7 @@ export default defineConfig(({ mode }) => {
     },
 
     preview: {
-      port: parseInt(process.env.VITE_PORT || '3000'),
+      port: parseInt(process.env.VITE_PREVIEW_PORT || '4173'),
       strictPort: false,
     },
 

@@ -25,7 +25,6 @@ public class MetricsCollectionService : IMetricsCollectionService
     private readonly ILogger<MetricsCollectionService> _logger;
     private readonly ConcurrentDictionary<string, List<MetricPoint>> _metricsHistory;
     private readonly ConcurrentDictionary<string, double> _currentMetrics;
-    private readonly Timer? _collectionTimer;
     private readonly PerformanceCounter? _cpuCounter;
     private readonly PerformanceCounter? _memoryCounter;
     private bool _isCollecting;
@@ -39,14 +38,21 @@ public class MetricsCollectionService : IMetricsCollectionService
         _metricsHistory = new ConcurrentDictionary<string, List<MetricPoint>>();
         _currentMetrics = new ConcurrentDictionary<string, double>();
 
-        try
+        if (OperatingSystem.IsWindows())
         {
-            _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-            _memoryCounter = new PerformanceCounter("Memory", "Available MBytes");
+            try
+            {
+                _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+                _memoryCounter = new PerformanceCounter("Memory", "Available MBytes");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to initialize performance counters");
+            }
         }
-        catch (Exception ex)
+        else
         {
-            _logger.LogWarning(ex, "Failed to initialize performance counters");
+            _logger.LogDebug("Performance counters are only available on Windows");
         }
     }
 
@@ -290,7 +296,7 @@ public class MetricsCollectionService : IMetricsCollectionService
     {
         try
         {
-            if (_cpuCounter != null)
+            if (OperatingSystem.IsWindows() && _cpuCounter != null)
             {
                 // First call returns 0, so call twice
                 _cpuCounter.NextValue();
@@ -312,7 +318,7 @@ public class MetricsCollectionService : IMetricsCollectionService
     {
         try
         {
-            if (_memoryCounter != null)
+            if (OperatingSystem.IsWindows() && _memoryCounter != null)
             {
                 var availableMemoryMB = _memoryCounter.NextValue();
                 // Estimate total memory (this is a simplified approach)

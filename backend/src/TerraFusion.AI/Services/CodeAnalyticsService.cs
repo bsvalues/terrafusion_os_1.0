@@ -1,4 +1,4 @@
-/**
+/*
  * CodeAnalyticsService - Code Metrics and Analytics Engine
  *
  * Production-ready service for collecting, analyzing, and reporting code metrics,

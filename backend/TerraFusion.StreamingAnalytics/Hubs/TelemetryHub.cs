@@ -1,4 +1,4 @@
-/**
+/*
  * TelemetryHub
  *
  * SignalR hub for real-time agent telemetry and system monitoring.

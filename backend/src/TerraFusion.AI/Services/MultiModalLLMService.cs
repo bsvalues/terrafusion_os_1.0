@@ -427,7 +427,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Select optimal model based on routing decision
         /// </summary>
-        private async System.Threading.Tasks.Task<ILanguageModel> SelectOptimalModel(RoutingDecision routing, ProcessedInputs inputs)
+        private System.Threading.Tasks.Task<ILanguageModel> SelectOptimalModel(RoutingDecision routing, ProcessedInputs inputs)
         {
             var models = routing.TargetTier switch
             {
@@ -440,7 +440,7 @@ namespace TerraFusion.AI.Services
             // If specific model recommended, use it
             if (!string.IsNullOrEmpty(routing.RecommendedModel) && models.ContainsKey(routing.RecommendedModel))
             {
-                return models[routing.RecommendedModel];
+                return Task.FromResult(models[routing.RecommendedModel]);
             }
 
             // Otherwise, select based on performance and availability
@@ -455,7 +455,7 @@ namespace TerraFusion.AI.Services
                 .OrderByDescending(m => GetModelScore(m, inputs))
                 .First();
 
-            return bestModel;
+            return Task.FromResult(bestModel);
         }
 
         #endregion
@@ -494,16 +494,17 @@ namespace TerraFusion.AI.Services
             return TimeSpan.FromMilliseconds(complexity * 100 + 500); // Base 500ms + complexity factor
         }
 
-        private async System.Threading.Tasks.Task<string> SelectBestModelInTier(ModelTier tier, MultiModalRequest request)
+        private System.Threading.Tasks.Task<string> SelectBestModelInTier(ModelTier tier, MultiModalRequest request)
         {
             // Logic to select the best model within a tier based on request characteristics
-            return tier switch
+            var result = tier switch
             {
                 ModelTier.Strategic => "gpt-4o-strategic",
                 ModelTier.Domain => DetermineOptimalDomainModel(request),
                 ModelTier.Operational => "Expert-Specialists",
                 _ => "Expert-Specialists"
             };
+            return Task.FromResult(result);
         }
 
         private string DetermineOptimalDomainModel(MultiModalRequest request)
@@ -562,20 +563,23 @@ namespace TerraFusion.AI.Services
             return model;
         }
 
-        private async System.Threading.Tasks.Task<string> LoadDomainKnowledge(string domain) => $"Domain knowledge for {domain}";
-        private async System.Threading.Tasks.Task ValidateModelPerformance() => await System.Threading.Tasks.Task.Delay(1);
-        private async System.Threading.Tasks.Task<ITextProcessor> InitializeTextProcessor() => new TextProcessorImpl();
-        private async System.Threading.Tasks.Task<IImageProcessor> InitializeImageProcessor() => new ImageProcessorImpl();
-        private async System.Threading.Tasks.Task<IAudioProcessor> InitializeAudioProcessor() => new AudioProcessorImpl();
-        private async System.Threading.Tasks.Task<ISpatialProcessor> InitializeSpatialProcessor() => new SpatialProcessorImpl();
-        private async System.Threading.Tasks.Task<IVideoProcessor> InitializeVideoProcessor() => new VideoProcessorImpl();
-        private async System.Threading.Tasks.Task<ModelResponse> ProcessWithModel(ILanguageModel model, ProcessedInputs inputs, RequestContext context) => new ModelResponse();
-        private async System.Threading.Tasks.Task<EnhancedResponse> PostProcessResponse(ModelResponse response, RoutingDecision routing) => new EnhancedResponse();
-        private async System.Threading.Tasks.Task<ReasoningChain> GenerateReasoningChain(MultiModalRequest request, ModelResponse response, RoutingDecision routing) => new ReasoningChain();
-        private async System.Threading.Tasks.Task UpdateModelMetrics(ILanguageModel model, ModelResponse response, DateTime startTime) => await System.Threading.Tasks.Task.Delay(1);
-        private async System.Threading.Tasks.Task<double> CalculateModelUptime(string modelId) => 0.999; // 99.9% uptime
-        private async System.Threading.Tasks.Task<long> GetTokensProcessed(string modelId) => 1000000; // 1M tokens
-        private async System.Threading.Tasks.Task<double> GetAverageLatency(string modelId) => 75.5; // 75.5ms average
+        private System.Threading.Tasks.Task<string> LoadDomainKnowledge(string domain) 
+        { 
+            return Task.FromResult($"Domain knowledge for {domain}"); 
+        }
+        private System.Threading.Tasks.Task ValidateModelPerformance() => Task.CompletedTask;
+        private System.Threading.Tasks.Task<ITextProcessor> InitializeTextProcessor() => Task.FromResult<ITextProcessor>(new TextProcessorImpl());
+        private System.Threading.Tasks.Task<IImageProcessor> InitializeImageProcessor() => Task.FromResult<IImageProcessor>(new ImageProcessorImpl());
+        private System.Threading.Tasks.Task<IAudioProcessor> InitializeAudioProcessor() => Task.FromResult<IAudioProcessor>(new AudioProcessorImpl());
+        private System.Threading.Tasks.Task<ISpatialProcessor> InitializeSpatialProcessor() => Task.FromResult<ISpatialProcessor>(new SpatialProcessorImpl());
+        private System.Threading.Tasks.Task<IVideoProcessor> InitializeVideoProcessor() => Task.FromResult<IVideoProcessor>(new VideoProcessorImpl());
+        private System.Threading.Tasks.Task<ModelResponse> ProcessWithModel(ILanguageModel model, ProcessedInputs inputs, RequestContext context) => Task.FromResult(new ModelResponse());
+        private System.Threading.Tasks.Task<EnhancedResponse> PostProcessResponse(ModelResponse response, RoutingDecision routing) => Task.FromResult(new EnhancedResponse());
+        private System.Threading.Tasks.Task<ReasoningChain> GenerateReasoningChain(MultiModalRequest request, ModelResponse response, RoutingDecision routing) => Task.FromResult(new ReasoningChain());
+        private System.Threading.Tasks.Task UpdateModelMetrics(ILanguageModel model, ModelResponse response, DateTime startTime) => Task.CompletedTask;
+        private System.Threading.Tasks.Task<double> CalculateModelUptime(string modelId) => Task.FromResult(0.999); // 99.9% uptime
+        private System.Threading.Tasks.Task<long> GetTokensProcessed(string modelId) => Task.FromResult(1000000L); // 1M tokens
+        private System.Threading.Tasks.Task<double> GetAverageLatency(string modelId) => Task.FromResult(75.5); // 75.5ms average
 
         #endregion
 

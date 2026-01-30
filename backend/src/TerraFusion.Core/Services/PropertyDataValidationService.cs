@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Abstractions.Interfaces;
+using TerraFusion.Core.PACS;
 
 namespace TerraFusion.Core.Services
 {
@@ -31,7 +32,7 @@ namespace TerraFusion.Core.Services
     {
         private readonly ILogger<PropertyDataValidationService> _logger;
         private readonly IConfiguration _configuration;
-        private readonly IHarrisPACSIntegrationService _pacsIntegrationService;
+        private readonly IPacsAdapter _pacsAdapter;
         private readonly IPerformanceMonitor _performanceMonitor;
 
         private readonly double _discrepancyThreshold;
@@ -41,12 +42,12 @@ namespace TerraFusion.Core.Services
         public PropertyDataValidationService(
             ILogger<PropertyDataValidationService> logger,
             IConfiguration configuration,
-            IHarrisPACSIntegrationService pacsIntegrationService,
+            IPacsAdapter pacsAdapter,
             IPerformanceMonitor performanceMonitor)
         {
             _logger = logger;
             _configuration = configuration;
-            _pacsIntegrationService = pacsIntegrationService;
+            _pacsAdapter = pacsAdapter;
             _performanceMonitor = performanceMonitor;
 
             _discrepancyThreshold = configuration.GetValue<double>(
@@ -82,10 +83,10 @@ namespace TerraFusion.Core.Services
             {
                 // Get property counts from both systems
                 var terraFusionCount = await GetPropertyCountAsync(countyCode);
-                var pacsProperties = await _pacsIntegrationService.GetPropertiesAsync(countyCode, 1, 1);
+                var pacsProperties = await _pacsAdapter.GetPropertiesAsync(1, 1);
 
                 report.TerraFusionPropertyCount = terraFusionCount;
-                report.HarrisPACSPropertyCount = pacsProperties?.Count ?? 0;
+                report.HarrisPACSPropertyCount = pacsProperties.TotalCount;
 
                 // Detect data discrepancies with sample analysis
                 var discrepancyReport = await DetectDataDiscrepanciesAsync(countyCode, 1000);
@@ -164,7 +165,7 @@ namespace TerraFusion.Core.Services
             try
             {
                 // Get property data from Harris PACS
-                var pacsProperty = await _pacsIntegrationService.GetPropertyByParcelAsync(countyCode, parcelId);
+                var pacsProperty = await GetPacsPropertyAsync(parcelId);
 
                 if (pacsProperty == null)
                 {
@@ -237,10 +238,10 @@ namespace TerraFusion.Core.Services
             try
             {
                 // Get sample properties from Harris PACS
-                var pacsProperties = await _pacsIntegrationService.GetPropertiesAsync(
-                    countyCode, 1, sampleSize);
+                var pacsResult = await _pacsAdapter.GetPropertiesAsync(1, sampleSize);
+                var pacsProperties = pacsResult.Items;
 
-                if (pacsProperties == null || !pacsProperties.Any())
+                if (pacsProperties.Count == 0)
                 {
                     report.Message = "No properties retrieved from Harris PACS";
                     return report;
@@ -252,14 +253,15 @@ namespace TerraFusion.Core.Services
                 foreach (var pacsProperty in pacsProperties)
                 {
                     // Reconcile each property
-                    var reconciliation = await ReconcilePropertyDataAsync(countyCode, pacsProperty.ParcelId ?? "");
+                    var parcelId = GetParcelId(pacsProperty);
+                    var reconciliation = await ReconcilePropertyDataAsync(countyCode, parcelId);
 
                     if (reconciliation.ReconciliationStatus == "DISCREPANCIES_FOUND")
                     {
                         discrepancyCount++;
                         report.Discrepancies.Add(new DataDiscrepancy
                         {
-                            ParcelId = pacsProperty.ParcelId ?? "",
+                            ParcelId = parcelId,
                             DiscrepancyType = "FIELD_MISMATCH",
                             FieldDiscrepancies = reconciliation.FieldDiscrepancies,
                             Severity = DetermineSeverity(reconciliation.FieldDiscrepancies)
@@ -315,8 +317,7 @@ namespace TerraFusion.Core.Services
                     try
                     {
                         // Get fresh data from Harris PACS (source of truth)
-                        var pacsProperty = await _pacsIntegrationService.GetPropertyByParcelAsync(
-                            countyCode, discrepancy.ParcelId);
+                        var pacsProperty = await GetPacsPropertyAsync(discrepancy.ParcelId);
 
                         if (pacsProperty != null)
                         {
@@ -365,6 +366,8 @@ namespace TerraFusion.Core.Services
 
         public async Task<ValidationStatistics> GetValidationStatisticsAsync(string countyCode, DateTime? since = null)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             var sinceDate = since ?? DateTime.UtcNow.AddDays(-30);
 
             _logger.LogDebug(
@@ -395,6 +398,8 @@ namespace TerraFusion.Core.Services
 
         public async Task<int> GetPropertyCountAsync(string jurisdiction)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             // This would query TerraFusion database for property count
             // For now, return simulated count based on known county data
             return jurisdiction.ToLower() switch
@@ -417,6 +422,23 @@ namespace TerraFusion.Core.Services
                 return "HIGH"; // Many field discrepancies
             }
             return "MEDIUM";
+        }
+
+        private async Task<PacsPropertyCore?> GetPacsPropertyAsync(string parcelId)
+        {
+            if (int.TryParse(parcelId, out var propId))
+            {
+                return await _pacsAdapter.GetPropertyByIdAsync(propId);
+            }
+
+            return await _pacsAdapter.GetPropertyByGeoIdAsync(parcelId);
+        }
+
+        private static string GetParcelId(PacsPropertyCore pacsProperty)
+        {
+            return string.IsNullOrWhiteSpace(pacsProperty.GeoId)
+                ? pacsProperty.PropId.ToString()
+                : pacsProperty.GeoId;
         }
     }
 

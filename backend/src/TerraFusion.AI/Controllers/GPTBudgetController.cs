@@ -45,7 +45,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpGet]
         [Authorize(Roles = "Admin,Finance")]
-        public async Task<ActionResult<List<GPTBudget>>> GetBudgets(
+        public async System.Threading.Tasks.Task<ActionResult<List<GPTBudget>>> GetBudgets(
             [FromQuery] int countyId,
             [FromQuery] bool activeOnly = true)
         {
@@ -74,7 +74,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Finance")]
-        public async Task<ActionResult<GPTBudget>> GetBudget(int id)
+        public async System.Threading.Tasks.Task<ActionResult<GPTBudget>> GetBudget(int id)
         {
             var budget = await _context.Set<GPTBudget>()
                 .Include(b => b.Alerts)
@@ -94,7 +94,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpPost]
         [Authorize(Roles = "Admin,Finance")]
-        public async Task<ActionResult<GPTBudget>> CreateBudget(
+        public async System.Threading.Tasks.Task<ActionResult<GPTBudget>> CreateBudget(
             [FromBody] CreateBudgetRequest request)
         {
             try
@@ -172,7 +172,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Finance")]
-        public async Task<ActionResult<GPTBudget>> UpdateBudget(
+        public async System.Threading.Tasks.Task<ActionResult<GPTBudget>> UpdateBudget(
             int id,
             [FromBody] UpdateBudgetRequest request)
         {
@@ -247,7 +247,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpPost("{id}/approve-overrun")]
         [Authorize(Roles = "Admin,Finance")]
-        public async Task<ActionResult> ApproveOverrun(
+        public async System.Threading.Tasks.Task<ActionResult> ApproveOverrun(
             int id,
             [FromBody] ApproveOverrunRequest request)
         {
@@ -304,7 +304,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpPost("{id}/suspend")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> SuspendBudget(int id)
+        public async System.Threading.Tasks.Task<ActionResult> SuspendBudget(int id)
         {
             try
             {
@@ -344,7 +344,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpGet("{id}/summary")]
         [Authorize(Roles = "Admin,Finance,User")]
-        public async Task<ActionResult<BudgetSummary>> GetBudgetSummary(
+        public async System.Threading.Tasks.Task<ActionResult<BudgetSummary>> GetBudgetSummary(
             int id,
             [FromQuery] DateTime? startDate,
             [FromQuery] DateTime? endDate)
@@ -378,7 +378,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpGet("{id}/usage")]
         [Authorize(Roles = "Admin,Finance")]
-        public async Task<ActionResult<List<GPTCostUsage>>> GetUsageHistory(
+        public async System.Threading.Tasks.Task<ActionResult<List<GPTCostUsage>>> GetUsageHistory(
             int id,
             [FromQuery] DateTime? startDate,
             [FromQuery] DateTime? endDate,
@@ -430,7 +430,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpGet("{id}/alerts")]
         [Authorize(Roles = "Admin,Finance")]
-        public async Task<ActionResult<List<GPTBudgetAlert>>> GetAlerts(
+        public async System.Threading.Tasks.Task<ActionResult<List<GPTBudgetAlert>>> GetAlerts(
             int id,
             [FromQuery] bool unacknowledgedOnly = false)
         {
@@ -451,7 +451,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpPost("alerts/{alertId}/acknowledge")]
         [Authorize(Roles = "Admin,Finance")]
-        public async Task<ActionResult> AcknowledgeAlert(int alertId)
+        public async System.Threading.Tasks.Task<ActionResult> AcknowledgeAlert(int alertId)
         {
             try
             {
@@ -477,7 +477,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpGet("attention")]
         [Authorize(Roles = "Admin,Finance")]
-        public async Task<ActionResult<List<GPTBudget>>> GetBudgetsNeedingAttention(
+        public async System.Threading.Tasks.Task<ActionResult<List<GPTBudget>>> GetBudgetsNeedingAttention(
             [FromQuery] int countyId)
         {
             try
@@ -497,7 +497,7 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         [HttpPost("calculate-cost")]
         [Authorize(Roles = "Admin,Finance,User")]
-        public async Task<ActionResult> CalculateCost(
+        public async System.Threading.Tasks.Task<ActionResult> CalculateCost(
             [FromBody] CostCalculationRequest request)
         {
             try

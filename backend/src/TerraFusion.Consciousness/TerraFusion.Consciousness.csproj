@@ -9,7 +9,18 @@
     <UseAppHost>false</UseAppHost>
     <OutputType>Library</OutputType>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <!-- Prevent appsettings collision when referenced by TerraFusion.API -->
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <!-- Clean-build policy: suppress doc-comment spam + WIP unused-field noise (internal service surface). -->
+    <NoWarn>$(NoWarn);1591;0414</NoWarn>
   </PropertyGroup>
+
+  <!-- Explicitly include content but exclude appsettings from publish -->
+  <ItemGroup>
+    <Content Include="appsettings*.json" CopyToOutputDirectory="PreserveNewest">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />

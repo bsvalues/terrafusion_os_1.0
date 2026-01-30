@@ -1,0 +1,109 @@
+{
+  "description": "Residential property with all three approaches developed - deterministic fixture",
+  "input": {
+    "subjectId": "BENTON-2026-001234",
+    "effectiveDate": "2026-01-15",
+    "salePrice": 38500000,
+    "finalValue": 37062500,
+    "propertyAddress": "123 Main Street, Kennewick, WA 99336",
+    "propertyType": "residential",
+    "assumptions": [
+      "Fee simple interest",
+      "As-is condition",
+      "Highest and best use as improved"
+    ],
+    "salesApproach": {
+      "indicatedValue": 38000000,
+      "confidenceLevel": "high",
+      "comparableCount": 3,
+      "valueRange": {
+        "min": 36500000,
+        "max": 39500000
+      },
+      "keyComparables": [
+        {
+          "id": "COMP-001",
+          "address": "456 Oak Lane, Kennewick, WA",
+          "salePrice": 37500000,
+          "adjustedPrice": 38500000,
+          "weight": 0.4
+        },
+        {
+          "id": "COMP-002",
+          "address": "789 Maple Drive, Richland, WA",
+          "salePrice": 39000000,
+          "adjustedPrice": 38000000,
+          "weight": 0.35
+        },
+        {
+          "id": "COMP-003",
+          "address": "321 Pine Street, Pasco, WA",
+          "salePrice": 36000000,
+          "adjustedPrice": 37500000,
+          "weight": 0.25
+        }
+      ],
+      "adjustmentSummary": "Adjustments applied for location, GLA, and age differences. All comparables within 6 months of effective date."
+    },
+    "incomeApproach": {
+      "indicatedValue": 36000000,
+      "confidenceLevel": "medium",
+      "method": "gross_rent_multiplier",
+      "grossRentMultiplier": 150,
+      "warnings": ["Limited rental data for single-family in this market"]
+    },
+    "costApproach": {
+      "indicatedValue": 37062500,
+      "confidenceLevel": "high",
+      "landValue": 5000000,
+      "buildingValue": 32062500,
+      "replacementCostNew": 35625000,
+      "totalDepreciation": 3562500,
+      "depreciationBreakdown": {
+        "physical": 3562500,
+        "functional": 0,
+        "external": 0
+      }
+    },
+    "reconciliation": {
+      "finalValue": 37062500,
+      "method": "weighted_average",
+      "weights": {
+        "sales": 0.6,
+        "income": 0.1,
+        "cost": 0.3
+      },
+      "primaryApproach": "sales",
+      "rationale": "Primary reliance placed on Sales Comparison due to active market with good comparable data. Cost approach supports value. Income approach given limited weight due to sparse rental data.",
+      "confidenceLevel": "high",
+      "approachAgreement": "strong",
+      "auditTrailPointers": [
+        "audit-sales-001",
+        "audit-income-001",
+        "audit-cost-001",
+        "audit-recon-001"
+      ]
+    },
+    "diagnostics": {
+      "pipelineVersion": "1.0.0",
+      "calculationMode": "stub"
+    }
+  },
+  "expected": {
+    "ratio": 0.96,
+    "status": "OK",
+    "sections": {
+      "B_sales": {
+        "developed": true,
+        "indicatedValue": 38000000
+      },
+      "C_income": {
+        "developed": true,
+        "indicatedValue": 36000000
+      },
+      "D_reconciliation": {
+        "finalValue": 37062500
+      }
+    }
+  }
+}

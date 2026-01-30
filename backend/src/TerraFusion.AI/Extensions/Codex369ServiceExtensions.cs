@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - CODEX 3-6-9 FRAMEWORK SERVICE EXTENSIONS
  * Championship-Level Service Registration for Divine Balance

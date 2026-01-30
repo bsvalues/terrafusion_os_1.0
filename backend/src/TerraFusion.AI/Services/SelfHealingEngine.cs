@@ -1,4 +1,4 @@
-/**
+/*
  * SelfHealingEngine - Advanced Self-Healing and Recovery System
  *
  * Provides comprehensive self-healing capabilities with advanced recovery procedures:
@@ -45,7 +45,6 @@ namespace TerraFusion.AI.Services
         private int _failedRecoveries = 0;
         private int _rolledBackRecoveries = 0;
         private double _averageRecoveryTime = 5.8;
-        private double _recoverySuccessRate = 98.3;
 
         public SelfHealingEngine(ILogger<SelfHealingEngine> logger)
         {

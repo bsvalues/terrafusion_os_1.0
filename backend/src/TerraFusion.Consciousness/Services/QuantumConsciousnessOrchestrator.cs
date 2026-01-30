@@ -21,7 +21,7 @@ namespace TerraFusion.Consciousness.Services
         private readonly IMillionAgentService _millionAgentService;
         private readonly IQuantumSecurityService _quantumSecurityService;
         private readonly IBentonCountyDataService _bentonCountyDataService;
-        private readonly IHybridConsciousnessManager _hybridConsciousnessManager;
+        private readonly IHybridConsciousnessManager? _hybridConsciousnessManager;
         // Temporarily disabled until AI dependencies resolved
         // private readonly IAIOrchestrationService _aiOrchestrationService;
         private readonly IComplianceValidator _complianceValidator;
@@ -41,7 +41,7 @@ namespace TerraFusion.Consciousness.Services
         /// <param name="millionAgentService">Service for managing million-agent coordination</param>
         /// <param name="quantumSecurityService">Quantum security and encryption service</param>
         /// <param name="bentonCountyDataService">Benton County data integration service</param>
-        /// <param name="hybridConsciousnessManager">Manager for hybrid consciousness operations</param>
+        /// <param name="hybridConsciousnessManager">Optional hybrid consciousness manager for combined operations</param>
         /// <param name="complianceValidator">Service for compliance validation</param>
         /// <param name="legacyConsciousnessService">Optional legacy consciousness service for backwards compatibility</param>
         public QuantumConsciousnessOrchestrator(
@@ -50,10 +50,10 @@ namespace TerraFusion.Consciousness.Services
             IMillionAgentService millionAgentService,
             IQuantumSecurityService quantumSecurityService,
             IBentonCountyDataService bentonCountyDataService,
-            // IHybridConsciousnessManager hybridConsciousnessManager, // Temporarily removed to break circular dependency
             // Temporarily disabled until AI dependencies resolved
             // IAIOrchestrationService aiOrchestrationService,
             IComplianceValidator complianceValidator,
+            IHybridConsciousnessManager? hybridConsciousnessManager = null,
             TerraFusion.Consciousness.Interfaces.IConsciousnessService? legacyConsciousnessService = null)
         {
             _logger = logger;
@@ -61,7 +61,7 @@ namespace TerraFusion.Consciousness.Services
             _millionAgentService = millionAgentService;
             _quantumSecurityService = quantumSecurityService;
             _bentonCountyDataService = bentonCountyDataService;
-            // _hybridConsciousnessManager = hybridConsciousnessManager; // Temporarily removed to break circular dependency
+            _hybridConsciousnessManager = hybridConsciousnessManager;
             // Temporarily disabled until AI dependencies resolved
             // _aiOrchestrationService = aiOrchestrationService;
             _complianceValidator = complianceValidator;
@@ -574,6 +574,12 @@ namespace TerraFusion.Consciousness.Services
         private async Task InitializeHybridConsciousnessAsync()
         {
             _logger.LogInformation("Initializing hybrid consciousness subsystem...");
+            if (_hybridConsciousnessManager == null)
+            {
+                _logger.LogInformation("Hybrid consciousness manager not configured; skipping initialization.");
+                return;
+            }
+
             await _hybridConsciousnessManager.InitializeAsync();
         }
 
@@ -680,6 +686,8 @@ namespace TerraFusion.Consciousness.Services
 
         private async Task<Dictionary<string, object>> GetSystemMetricsAsync()
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             return new Dictionary<string, object>
             {
                 { "SystemLoad", 0.75 },
@@ -694,6 +702,8 @@ namespace TerraFusion.Consciousness.Services
 
         private async Task<Dictionary<string, object>> GetLegacyMetricsAsync()
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             return new Dictionary<string, object>
             {
                 { "ActiveAgents", 1008 },
@@ -985,6 +995,8 @@ namespace TerraFusion.Consciousness.Services
         /// </summary>
         public async Task<QuantumOperationResultDto> ExecuteQuantumConsciousnessAsync(QuantumOperationRequestDto request)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             _logger.LogInformation("🔬 Executing quantum consciousness operation: {OperationType}", request.OperationType);
 
             try

@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - CODEX 3-6-9 HISTORICAL TREND ANALYSIS
  * Track Divine Balance Over Time

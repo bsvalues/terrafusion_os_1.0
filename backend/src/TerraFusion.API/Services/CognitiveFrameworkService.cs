@@ -49,6 +49,8 @@ namespace TerraFusion.API.Services
         /// </summary>
         public async Task<TaskClassificationResult> ClassifyTaskAsync(TaskAssessment assessment)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             try
             {
                 _logger.LogInformation("Classifying task using 3-6-9-12 cognitive framework: {TaskTitle}", assessment.TaskTitle);

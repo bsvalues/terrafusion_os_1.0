@@ -5,7 +5,7 @@ variable "environment" {
   description = "Environment name (dev, staging, prod)"
   type        = string
   default     = "production"
-  
+
   validation {
     condition     = contains(["dev", "staging", "production"], var.environment)
     error_message = "Environment must be one of: dev, staging, production."
@@ -39,7 +39,7 @@ variable "rds_instance_class" {
 variable "allowed_cidr_blocks" {
   description = "CIDR blocks allowed to access EKS API server"
   type        = list(string)
-  default     = ["0.0.0.0/0"]  # Restrict this in production
+  default     = ["0.0.0.0/0"] # Restrict this in production
 }
 
 variable "enable_monitoring" {
@@ -76,9 +76,9 @@ variable "tags" {
   description = "Additional tags for all resources"
   type        = map(string)
   default = {
-    Project     = "TerraFusion-OS"
-    Version     = "1.0.0"
-    ManagedBy   = "Terraform"
-    Compliance  = "FISMA"
+    Project    = "TerraFusion-OS"
+    Version    = "1.0.0"
+    ManagedBy  = "Terraform"
+    Compliance = "FISMA"
   }
 }

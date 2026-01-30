@@ -212,6 +212,8 @@ namespace TerraFusion.AI.Services
 
         private async System.Threading.Tasks.Task<decimal> CalculateBaseValueAsync(PropertyValuationRequest request)
         {
+            await System.Threading.Tasks.Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             var squareFootage = request.SquareFootage ?? 2000m;
             var basePricePerSqft = 185m;
             return squareFootage * basePricePerSqft;
@@ -219,6 +221,8 @@ namespace TerraFusion.AI.Services
 
         private async System.Threading.Tasks.Task<decimal> ApplyMarketAdjustmentsAsync(string location, decimal baseValue)
         {
+            await System.Threading.Tasks.Task.CompletedTask;
+            await System.Threading.Tasks.Task.CompletedTask;
             var locationMultiplier = location.ToLower() switch
             {
                 var loc when loc.Contains("seattle") => 1.35m,
@@ -232,7 +236,7 @@ namespace TerraFusion.AI.Services
 
         // ✅ AI Swarm Integration Methods (Championship-Level Implementation)
 
-        private async Task<object> CoordinateAISwarmAnalysis(string parcelId, string countyId)
+        private async System.Threading.Tasks.Task<object> CoordinateAISwarmAnalysis(string parcelId, string countyId)
         {
             _logger.LogInformation("Coordinating AI swarm analysis for parcel {ParcelId}", parcelId);
 
@@ -254,7 +258,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        private async Task<object> CalculateQuantumOptimizationFactors(object swarmAnalysis)
+        private async System.Threading.Tasks.Task<object> CalculateQuantumOptimizationFactors(object swarmAnalysis)
         {
             _logger.LogInformation("Calculating quantum optimization factors");
 
@@ -276,7 +280,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        private async Task<object> GetMarketComparables(string parcelId, string countyId)
+        private async System.Threading.Tasks.Task<object> GetMarketComparables(string parcelId, string countyId)
         {
             _logger.LogInformation("Getting market comparables for parcel {ParcelId}", parcelId);
 
@@ -298,7 +302,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        private async Task<object> ApplyQuantumValuationAlgorithms(object swarmAnalysis, object quantumFactors, object marketComparables)
+        private async System.Threading.Tasks.Task<object> ApplyQuantumValuationAlgorithms(object swarmAnalysis, object quantumFactors, object marketComparables)
         {
             _logger.LogInformation("Applying quantum valuation algorithms");
 

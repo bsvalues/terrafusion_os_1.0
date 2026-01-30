@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "costforge-ai",
+  "displayName": "CostForge AI",
+  "description": "AI-Driven Cost Estimation & RCNLD Analysis (Legacy Standalone)",
+  "iconName": "Building2",
+  "category": "assessment",
+  "tier": 1,
+  "status": "legacy",
+  "pinned": false,
+  "version": "2.1.0",
+  "intent": "legacy",
+  "runnable": true,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5176/"
+  },
+  "tags": ["assessment", "cost", "rcnld", "ai", "legacy"],
+  "permissions": ["county:read", "property:read", "property:write"]
+}

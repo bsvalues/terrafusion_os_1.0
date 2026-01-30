@@ -1,0 +1,13 @@
+
+> terrafusion-frontend@0.1.0 lint C:\Users\bsval\terrafusion_os_1.0\frontend
+> eslint apps/os-shell/src tests --ext .ts,.tsx,.js,.jsx
+
+
+C:\Users\bsval\terrafusion_os_1.0\frontend\apps\os-shell\src\setupTests.ts
+  100:3  error  Definition for rule '@typescript-eslint/no-explicit-any' was not found  @typescript-eslint/no-explicit-any
+  104:3  error  Definition for rule '@typescript-eslint/no-explicit-any' was not found  @typescript-eslint/no-explicit-any
+  108:3  error  Definition for rule '@typescript-eslint/no-explicit-any' was not found  @typescript-eslint/no-explicit-any
+
+Γ£û 3 problems (3 errors, 0 warnings)
+
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.

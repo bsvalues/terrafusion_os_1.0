@@ -1,0 +1,48 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    ":prImmediately",
+    ":maintainLockFilesWeekly",
+    ":semanticCommits",
+    ":rebaseStalePrs"
+  ],
+  "baseBranches": ["main"],
+  "labels": ["dependencies", "terra-fusion-bot"],
+  "//": "--- GOVERNANCE: CORE OS + GEN2 APPS ---",
+  "includePaths": [
+    "package.json",
+    "pnpm-lock.yaml",
+    "frontend/**",
+    "backend/**",
+    "applications/terra-dossier/**",
+    "terrabuild-modernization/**",
+    "applications/terra-assessor-production/**",
+    "applications/terraforge-suite/**",
+    "applications/terra-permit/**"
+  ],
+  "schedule": ["before 5am on monday"],
+  "timezone": "America/Los_Angeles",
+  "rangeStrategy": "bump",
+  "postUpdateOptions": ["npmDedupe"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
+    },
+    {
+      "matchPackageNames": ["next", "electron", "react", "react-dom"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "Major Framework Updates",
+      "dependencyDashboardApproval": true
+    },
+    {
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "matchDatasources": ["npm"],
+      "vulnerabilityAlerts": true,
+      "groupName": "Security Fixes",
+      "schedule": ["at any time"]
+    }
+  ]
+}

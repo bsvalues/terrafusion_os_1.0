@@ -8,6 +8,8 @@
  */
 
 import React, { useCallback, useState } from 'react';
+import type { Category } from '../../config/generatedModules';
+import { MODULES } from '../../config/modules';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { DesktopIcon } from './DesktopIcon';
 
@@ -19,15 +21,12 @@ import { DesktopIcon } from './DesktopIcon';
  * Desktop icon definitions for the 7 working modules.
  * Order determines grid position (top-left to bottom-right).
  */
-const DESKTOP_ICONS = [
-  { id: 'costforge', name: 'CostForge', icon: '🏛️' },
-  { id: 'terra-gaia', name: 'TerraGaia', icon: '🌍' },
-  { id: 'atlas-ai', name: 'ATLAS', icon: '🤖' },
-  { id: 'reporting', name: 'Analytics', icon: '📈' },
-  { id: 'marketplace', name: 'Marketplace', icon: '🏪' },
-  { id: 'counties', name: 'Counties Hub', icon: '🗺️' },
-  { id: 'government-architecture', name: 'Gov Architecture', icon: '🏗️' },
-];
+const DESKTOP_ICONS = MODULES.filter((module) => module.isCore).map((module) => ({
+  id: module.id,
+  name: module.displayName,
+  iconName: module.icon,
+  category: module.category as Category,
+}));
 
 // ============================================================================
 // Types
@@ -104,7 +103,8 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = ''
           key={icon.id}
           id={icon.id}
           name={icon.name}
-          icon={icon.icon}
+          iconName={icon.iconName}
+          category={icon.category}
           isSelected={selectedId === icon.id}
           onSelect={handleSelect}
           onLaunch={handleLaunch}

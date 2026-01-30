@@ -7,7 +7,7 @@ using TerraFusion.Abstractions.DTOs;
 namespace TerraFusion.API.Controllers
 {
     /// <summary>
-    /// TIER 5+ AI Enhancement: Cognitive Framework Monitoring & Analytics Controller
+    /// TIER 5+ AI Enhancement: Cognitive Framework Monitoring &amp; Analytics Controller
     /// Provides real-time metrics and analytics for the 3-6-9-12 cognitive framework
     /// Supports operational monitoring across 50,000+ AI agents and 39+ counties
     /// </summary>

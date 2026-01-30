@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AxiomSpinner } from '@/fs/components/AxiomSpinner';
+import { AxiomFSToolbar } from './AxiomFSToolbar';
 import { useAxiomFsStore } from '@/fs/store/axiomFsStore';
 
 interface Props {
@@ -36,7 +37,11 @@ export const AxiomFSWindow = ({ windowId, metadata }: Props) => {
 
   // 5. Render Strategy
   return (
-    <div className='flex h-full w-full flex-col bg-[var(--tf-substrate)] text-[var(--tf-foreground)] relative overflow-hidden'>
+    <div
+      data-testid='axiomfs-surface-host'
+      className='flex h-full w-full flex-col bg-[var(--tf-substrate)] text-[var(--tf-foreground)] relative overflow-hidden'
+    >
+      <AxiomFSToolbar />
       {/* A. Header: Identity Strip */}
       <header className='flex h-12 shrink-0 items-center justify-between border-b border-[var(--tf-glass-border)] bg-[var(--tf-glass-bg)] px-4 backdrop-blur-md z-10'>
         <div className='flex items-center gap-3'>

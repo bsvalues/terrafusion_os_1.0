@@ -282,6 +282,8 @@ public class CodexNotificationController : ControllerBase
         [FromQuery] string? countyId,
         [FromQuery] int days = 7)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         try
         {
             // This would be implemented with actual database tracking

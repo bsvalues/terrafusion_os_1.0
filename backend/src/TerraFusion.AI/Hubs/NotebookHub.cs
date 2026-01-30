@@ -1,4 +1,4 @@
-/**
+/*
  * NotebookHub - Real-Time Notebook Collaboration
  *
  * SignalR hub for real-time notebook collaboration, live cell execution,

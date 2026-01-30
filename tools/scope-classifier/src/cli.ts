@@ -5,6 +5,7 @@ import { scanRefs } from "./scanRefs";
 import { getTouchedRoots } from "./gitTouched";
 import { classifyRoot } from "./classify";
 import { writeScopeOutputs } from "./writeOutputs";
+import { getTrackedIndex } from "./trackedDirs";
 
 const SKIP_DIRS = new Set([
   ".git",
@@ -16,6 +17,12 @@ const SKIP_DIRS = new Set([
   "coverage",
   ".next",
   ".turbo",
+  "artifacts",
+  "_artifacts",
+  ".ci_artifacts_local",
+  "Dev",
+  "Dev - Copy",
+  "Dev - Copy (2)",
 ]);
 
 const TWO_SEGMENT_ROOTS = new Set([
@@ -57,7 +64,13 @@ function parseArgs(argv: string[]) {
   return args;
 }
 
-function collectFiles(root: string, predicate: (p: string) => boolean): string[] {
+function collectFiles(
+  root: string,
+  predicate: (p: string) => boolean,
+  repoRoot: string,
+  trackedDirs?: Set<string> | null,
+  trackedFiles?: Set<string> | null
+): string[] {
   const files: string[] = [];
   const stack = [root];
   while (stack.length) {
@@ -73,10 +86,18 @@ function collectFiles(root: string, predicate: (p: string) => boolean): string[]
       const full = path.join(current, entry.name);
       if (entry.isDirectory()) {
         if (SKIP_DIRS.has(entry.name)) continue;
+        if (trackedDirs) {
+          const rel = path.relative(repoRoot, full).replace(/\\/g, "/");
+          if (!trackedDirs.has(rel === "" ? "." : rel)) continue;
+        }
         stack.push(full);
         continue;
       }
       if (entry.isFile() && predicate(full)) {
+        if (trackedFiles) {
+          const rel = path.relative(repoRoot, full).replace(/\\/g, "/");
+          if (!trackedFiles.has(rel)) continue;
+        }
         files.push(full);
       }
     }
@@ -98,7 +119,11 @@ function rootFromPath(repoRoot: string, filePath: string): string {
   return first;
 }
 
-function collectCandidateRoots(repoRoot: string): string[] {
+function collectCandidateRoots(
+  repoRoot: string,
+  trackedDirs?: Set<string> | null,
+  trackedFiles?: Set<string> | null
+): string[] {
   const roots = new Set<string>(["."]);
 
   const markerFiles = collectFiles(repoRoot, (p) => {
@@ -108,7 +133,7 @@ function collectCandidateRoots(repoRoot: string): string[] {
     if (name.toLowerCase().startsWith("docker-compose")) return true;
     if (name === "compose.yml" || name === "compose.yaml") return true;
     return false;
-  });
+  }, repoRoot, trackedDirs, trackedFiles);
 
   for (const file of markerFiles) {
     roots.add(rootFromPath(repoRoot, file));
@@ -120,12 +145,13 @@ function collectCandidateRoots(repoRoot: string): string[] {
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const repoRoot = path.resolve(args["--repoRoot"] ?? process.cwd());
+  const trackedIndex = getTrackedIndex(repoRoot);
   const anchors = {
     release: args["--solidBase"] ?? "567fbcec5",
     dev: args["--archAnchor"] ?? "9af5bb291",
   };
 
-  const roots = collectCandidateRoots(repoRoot);
+  const roots = collectCandidateRoots(repoRoot, trackedIndex?.dirs, trackedIndex?.files);
   const recursive = args["--recursive"] ? args["--recursive"] !== "false" : true;
   const maxDepth = Number(args["--maxDepth"] ?? 3);
   const maxFiles = Number(args["--maxFiles"] ?? 5000);
@@ -136,10 +162,12 @@ function main() {
         recursive: r === "." ? false : recursive,
         maxDepth,
         maxFiles,
+        trackedDirs: trackedIndex?.dirs,
+        trackedFiles: trackedIndex?.files,
       }),
     ])
   );
-  const refScans = scanRefs(repoRoot, roots);
+  const refScans = scanRefs(repoRoot, roots, trackedIndex?.dirs, trackedIndex?.files);
   const touched = getTouchedRoots(repoRoot, anchors);
 
   const classified = roots.map((root) => {

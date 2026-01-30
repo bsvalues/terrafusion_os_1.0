@@ -1,4 +1,4 @@
-/**
+/*
  * AnalysisResult Entity Configuration
  *
  * EF Core Fluent API configuration for AnalysisResult entity.

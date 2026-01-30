@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * CONSCIOUSNESS ENGINE INTERFACE
  * TerraFusion.Consciousness - Elite AI Swarm Coordination

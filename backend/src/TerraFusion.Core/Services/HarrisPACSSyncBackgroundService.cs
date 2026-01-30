@@ -253,46 +253,9 @@ namespace TerraFusion.Core.Services
 
             try
             {
-                // Create scoped service provider for dependency injection
-                using var scope = _serviceProvider.CreateScope();
-                var integrationService = scope.ServiceProvider.GetRequiredService<IHarrisPACSIntegrationService>();
-                var dataService = scope.ServiceProvider.GetService<IPropertyDataService>();
-
-                // Execute sync via Harris PACS integration service
-                var syncSuccessful = await integrationService.SyncPropertyDataAsync(jurisdiction);
-
-                if (syncSuccessful)
-                {
-                    // Get sync status for detailed metrics
-                    var syncStatus = await integrationService.GetSyncStatusAsync(jurisdiction);
-
-                    result.Success = true;
-                    result.PropertiesSynced = syncStatus?.RecordsProcessed ?? 0;
-                    result.UpdatesApplied = syncStatus?.RecordsUpdated ?? 0 + syncStatus?.RecordsAdded ?? 0;
-                    result.SyncEndTime = DateTime.UtcNow;
-
-                    // Optional: Trigger data validation after sync
-                    if (dataService != null && _enableQuantumOptimization)
-                    {
-                        _ = Task.Run(async () =>
-                        {
-                            try
-                            {
-                                await dataService.ValidatePropertyDataIntegrityAsync(jurisdiction);
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogWarning(ex,
-                                    "Data integrity validation failed for {Jurisdiction} - sync still succeeded",
-                                    jurisdiction);
-                            }
-                        }, cancellationToken);
-                    }
-                }
-                else
-                {
-                    result.Error = "Sync returned false status";
-                }
+                result.Error = "pacscontract.v1 is read-only; background sync is disabled.";
+                _logger.LogWarning("⚠️ Harris PACS sync skipped for {Jurisdiction}: {Reason}", jurisdiction, result.Error);
+                await Task.CompletedTask;
             }
             catch (Exception ex)
             {
@@ -303,6 +266,7 @@ namespace TerraFusion.Core.Services
             {
                 stopwatch.Stop();
                 result.DurationMs = stopwatch.ElapsedMilliseconds;
+                result.SyncEndTime = DateTime.UtcNow;
             }
 
             return result;

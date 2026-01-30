@@ -1,5 +1,0 @@
-# Using Python
-python scripts/setup_daily_work.py
-
-# Or on Windows
-scripts\setup_daily_work.bat

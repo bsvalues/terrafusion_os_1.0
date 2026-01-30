@@ -1,4 +1,4 @@
-/**
+/*
  * AutoScalingEngine - Advanced Predictive Auto-Scaling System
  *
  * Provides intelligent auto-scaling capabilities with:
@@ -860,19 +860,19 @@ namespace TerraFusion.AI.Services
         public double ScalingAccuracy { get; set; }
         public double AverageScalingTime { get; set; }
         public double CostSavingsPercent { get; set; }
-        public List<SubsystemScalingConfig> SubsystemConfigs { get; set; }
+        public List<SubsystemScalingConfig> SubsystemConfigs { get; set; } = new();
         public int CurrentTotalInstances { get; set; }
         public int MaxTotalInstances { get; set; }
         public int MinTotalInstances { get; set; }
         public double AverageUtilization { get; set; }
         public double EstimatedHourlyCost { get; set; }
         public double OptimizedHourlyCost { get; set; }
-        public List<ScalingDecision> RecentScalingDecisions { get; set; }
+        public List<ScalingDecision> RecentScalingDecisions { get; set; } = new();
     }
 
     public class SubsystemScalingConfig
     {
-        public string SubsystemId { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
         public int MinInstances { get; set; }
         public int MaxInstances { get; set; }
         public int CurrentInstances { get; set; }
@@ -886,51 +886,51 @@ namespace TerraFusion.AI.Services
         public bool PredictiveScaling { get; set; }
         public bool CostOptimization { get; set; }
         public bool BusinessHoursAware { get; set; }
-        public string InstanceType { get; set; }
+        public string InstanceType { get; set; } = string.Empty;
         public double CostPerInstanceHour { get; set; }
         public DateTime LastScalingAction { get; set; }
     }
 
     public class ScalingDecision
     {
-        public string SubsystemId { get; set; }
-        public string Decision { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public string Decision { get; set; } = string.Empty;
         public double Confidence { get; set; }
-        public string Reason { get; set; }
+        public string Reason { get; set; } = string.Empty;
         public int CurrentInstances { get; set; }
         public int RecommendedInstances { get; set; }
         public double PredictedUtilization { get; set; }
-        public string EstimatedImpact { get; set; }
+        public string EstimatedImpact { get; set; } = string.Empty;
         public double CostImpact { get; set; }
         public DateTime Timestamp { get; set; }
     }
 
     public class ScalingAction
     {
-        public string SubsystemId { get; set; }
-        public string Action { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public string Action { get; set; } = string.Empty;
         public int CurrentInstances { get; set; }
         public int TargetInstances { get; set; }
-        public string Trigger { get; set; }
+        public string Trigger { get; set; } = string.Empty;
     }
 
     public class ScalingResult
     {
-        public string ExecutionId { get; set; }
-        public string Status { get; set; }
-        public string SubsystemId { get; set; }
-        public string Action { get; set; }
+        public string ExecutionId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string SubsystemId { get; set; } = string.Empty;
+        public string Action { get; set; } = string.Empty;
         public int PreviousInstances { get; set; }
         public int NewInstances { get; set; }
         public double Duration { get; set; }
-        public List<string> ScalingSteps { get; set; }
-        public string Message { get; set; }
+        public List<string> ScalingSteps { get; set; } = new();
+        public string Message { get; set; } = string.Empty;
         public DateTime CompletedAt { get; set; }
     }
 
     public class TrafficMetrics
     {
-        public string SubsystemId { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
         public double CurrentRequestsPerSecond { get; set; }
         public double AverageRequestsPerSecond { get; set; }
         public double PeakRequestsPerSecond { get; set; }
@@ -945,7 +945,7 @@ namespace TerraFusion.AI.Services
 
     public class CapacityForecast
     {
-        public string SubsystemId { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
         public int ForecastHoursAhead { get; set; }
         public double CurrentRequestsPerSecond { get; set; }
         public double PredictedRequestsPerSecond { get; set; }
@@ -954,36 +954,36 @@ namespace TerraFusion.AI.Services
         public double CurrentMemoryUtilization { get; set; }
         public double PredictedMemoryUtilization { get; set; }
         public double ConfidenceScore { get; set; }
-        public string ScalingRecommendation { get; set; }
-        public string ForecastMethod { get; set; }
-        public string Message { get; set; }
+        public string ScalingRecommendation { get; set; } = string.Empty;
+        public string ForecastMethod { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
         public DateTime GeneratedAt { get; set; }
     }
 
     public class TrafficPattern
     {
-        public string SubsystemId { get; set; }
-        public string PatternType { get; set; }
-        public List<int> PeakHours { get; set; }
-        public List<int> LowTrafficHours { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public string PatternType { get; set; } = string.Empty;
+        public List<int> PeakHours { get; set; } = new();
+        public List<int> LowTrafficHours { get; set; } = new();
         public double AveragePeakRPS { get; set; }
         public double AverageLowRPS { get; set; }
         public double PeakToAverageRatio { get; set; }
-        public string Seasonality { get; set; }
+        public string Seasonality { get; set; } = string.Empty;
         public double Predictability { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public DateTime AnalyzedAt { get; set; }
     }
 
     public class AutoScalingEvent
     {
-        public string EventId { get; set; }
-        public string SubsystemId { get; set; }
+        public string EventId { get; set; } = string.Empty;
+        public string SubsystemId { get; set; } = string.Empty;
         public DateTime Timestamp { get; set; }
-        public string Action { get; set; }
+        public string Action { get; set; } = string.Empty;
         public int PreviousInstances { get; set; }
         public int NewInstances { get; set; }
-        public string Trigger { get; set; }
+        public string Trigger { get; set; } = string.Empty;
         public bool Predicted { get; set; }
         public double Duration { get; set; }
         public bool Success { get; set; }
@@ -996,45 +996,45 @@ namespace TerraFusion.AI.Services
         public double OptimizedMonthlyCost { get; set; }
         public double MonthlySavings { get; set; }
         public double SavingsPercent { get; set; }
-        public List<OptimizationOpportunity> OptimizationOpportunities { get; set; }
-        public List<RightSizingRecommendation> RightSizingRecommendations { get; set; }
-        public List<ReservedInstanceRecommendation> ReservedInstanceRecommendations { get; set; }
+        public List<OptimizationOpportunity> OptimizationOpportunities { get; set; } = new();
+        public List<RightSizingRecommendation> RightSizingRecommendations { get; set; } = new();
+        public List<ReservedInstanceRecommendation> ReservedInstanceRecommendations { get; set; } = new();
     }
 
     public class OptimizationOpportunity
     {
-        public string Type { get; set; }
-        public string SubsystemId { get; set; }
-        public string Description { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public string SubsystemId { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public double EstimatedMonthlySavings { get; set; }
-        public string ImplementationComplexity { get; set; }
-        public string Risk { get; set; }
+        public string ImplementationComplexity { get; set; } = string.Empty;
+        public string Risk { get; set; } = string.Empty;
     }
 
     public class RightSizingRecommendation
     {
-        public string SubsystemId { get; set; }
-        public string CurrentInstanceType { get; set; }
-        public string RecommendedInstanceType { get; set; }
-        public string Reasoning { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public string CurrentInstanceType { get; set; } = string.Empty;
+        public string RecommendedInstanceType { get; set; } = string.Empty;
+        public string Reasoning { get; set; } = string.Empty;
         public double MonthlySavings { get; set; }
-        public string PerformanceImpact { get; set; }
+        public string PerformanceImpact { get; set; } = string.Empty;
     }
 
     public class ReservedInstanceRecommendation
     {
-        public string SubsystemId { get; set; }
-        public string InstanceType { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public string InstanceType { get; set; } = string.Empty;
         public int RecommendedReservedCount { get; set; }
-        public string ReservedTerm { get; set; }
-        public string PaymentOption { get; set; }
+        public string ReservedTerm { get; set; } = string.Empty;
+        public string PaymentOption { get; set; } = string.Empty;
         public double MonthlySavings { get; set; }
         public int BreakevenMonths { get; set; }
     }
 
     public class ScalingPolicyRecommendation
     {
-        public string SubsystemId { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
         public int RecommendedMinInstances { get; set; }
         public int RecommendedMaxInstances { get; set; }
         public double RecommendedTargetCpu { get; set; }
@@ -1046,9 +1046,9 @@ namespace TerraFusion.AI.Services
         public bool EnablePredictiveScaling { get; set; }
         public bool EnableCostOptimization { get; set; }
         public bool EnableBusinessHoursAwareness { get; set; }
-        public string Reasoning { get; set; }
+        public string Reasoning { get; set; } = string.Empty;
         public double ConfidenceScore { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public DateTime GeneratedAt { get; set; }
     }
 }

@@ -224,11 +224,16 @@ public class RunbookSafetyTests
 
         highRiskSteps.Should().AllSatisfy(step =>
         {
-            (step.SuggestedOwnerRole.Contains("Senior") ||
-             step.SuggestedOwnerRole.Contains("Lead") ||
-             step.SuggestedOwnerRole.Contains("Manager") ||
-             step.SuggestedOwnerRole.Contains("DBA") ||
-             step.SuggestedOwnerRole.Contains("Admin"))
+            step.SuggestedOwnerRole.Should().NotBeNullOrWhiteSpace(
+                $"High-risk step '{step.Title}' must have a suggested owner role");
+
+            var role = step.SuggestedOwnerRole!;
+
+            (role.Contains("Senior") ||
+             role.Contains("Lead") ||
+             role.Contains("Manager") ||
+             role.Contains("DBA") ||
+             role.Contains("Admin"))
             .Should().BeTrue($"High-risk step '{step.Title}' should require senior personnel");
         });
     }

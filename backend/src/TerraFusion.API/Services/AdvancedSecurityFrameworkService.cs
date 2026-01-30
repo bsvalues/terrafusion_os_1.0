@@ -53,7 +53,6 @@ namespace TerraFusion.API.Services
     // 📊 Championship Security Metrics
     private readonly ConcurrentDictionary<string, long> _securityCounters;
     private long _threatsDetected = 0;
-    private long _incidentsResolved = 0;
     private long _complianceValidationCount = 0;
     private long _quantumKeysRotated = 0;
     private DateTime _lastSecurityAudit = DateTime.UtcNow;
@@ -261,6 +260,8 @@ namespace TerraFusion.API.Services
     /// </summary>
     private async void QuantumKeyRotationCycle(object? state)
     {
+      await Task.CompletedTask;
+      await Task.CompletedTask;
       try
       {
         if (_quantumEncryptionEnabled)

@@ -6,6 +6,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 package-lock.json
+# Exception: harness lockfile needed for CI npm caching
+!applications/terraforge-suite/harness/package-lock.json
 
 # Build outputs
 dist/
@@ -51,6 +53,13 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Governance snapshots (generated artifacts)
+dependency-scope-quarantine.json
+governance-snapshot.json
+ci_governance_proof.log
+ci_dependency_scope_quarantine.log
+ci_telemetry.json
 
 # Phase 3 Extraction Artifacts (archived)
 # Note: Actual extraction scripts archived in archive/phase-3-extraction/
@@ -218,6 +227,7 @@ celerybeat-schedule
 .env
 .venv
 env/
+
 venv/
 ENV/
 env.bak/
@@ -271,6 +281,7 @@ logs/
 *.tflite
 
 # Security and keys
+secrets/
 *.pem
 *.key
 *.crt
@@ -517,3 +528,13 @@ native-shell/ui/dist/
 
 # generated benchmark output
 quantum_performance_results.json
+
+# --- Exceptions: OS Shell source assets must be tracked ---
+!frontend/apps/os-shell/src/lib/
+!frontend/apps/os-shell/src/lib/**/*
+!frontend/apps/os-shell/src/data/
+!frontend/apps/os-shell/src/data/**/*
+
+# Local operator intel outputs
+STATUS.md
+TODO_INTEL.json

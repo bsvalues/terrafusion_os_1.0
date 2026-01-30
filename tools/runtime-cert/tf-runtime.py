@@ -320,7 +320,7 @@ def run_checks(base_url: str, county: str, strict: bool) -> list[dict[str, Any]]
 
 def cmd_cert(args) -> int:
     """Execute the cert command."""
-    # SECURITY: Validate inputs before any processing
+    # NOTE: Inputs are validated before any processing.
     county_valid, county_result = validate_county(args.county)
     if not county_valid:
         print(f"❌ Input validation failed: {county_result}", file=sys.stderr)

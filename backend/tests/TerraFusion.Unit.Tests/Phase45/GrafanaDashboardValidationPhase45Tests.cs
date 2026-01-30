@@ -472,6 +472,8 @@ public sealed class GrafanaDashboardValidationPhase45Tests
                 if (line.Equals("Allowed metric names:", StringComparison.Ordinal))
                 {
                     i++;
+                    while (i < lines.Length && string.IsNullOrWhiteSpace(lines[i]))
+                        i++;
                     while (i < lines.Length && lines[i].TrimStart().StartsWith("-", StringComparison.Ordinal))
                     {
                         var m = ExtractBackticked(lines[i]);
@@ -485,6 +487,8 @@ public sealed class GrafanaDashboardValidationPhase45Tests
                 if (line.StartsWith("Banned labels anywhere", StringComparison.Ordinal))
                 {
                     i++;
+                    while (i < lines.Length && string.IsNullOrWhiteSpace(lines[i]))
+                        i++;
                     while (i < lines.Length && lines[i].TrimStart().StartsWith("-", StringComparison.Ordinal))
                     {
                         var l = ExtractBackticked(lines[i]);
@@ -549,6 +553,8 @@ public sealed class GrafanaDashboardValidationPhase45Tests
                 if (line.StartsWith("Dashboard UID", StringComparison.Ordinal))
                 {
                     index++;
+                    while (index < lines.Length && string.IsNullOrWhiteSpace(lines[index]))
+                        index++;
                     uid = ExtractBackticked(lines[index]);
                     index++;
                     continue;
@@ -558,6 +564,8 @@ public sealed class GrafanaDashboardValidationPhase45Tests
                 if (line.StartsWith("Dashboard Title", StringComparison.Ordinal))
                 {
                     index++;
+                    while (index < lines.Length && string.IsNullOrWhiteSpace(lines[index]))
+                        index++;
                     title = ExtractBackticked(lines[index]);
                     index++;
                     continue;
@@ -607,6 +615,8 @@ public sealed class GrafanaDashboardValidationPhase45Tests
                 if (line.Equals("Title:", StringComparison.Ordinal))
                 {
                     index++;
+                    while (index < lines.Length && string.IsNullOrWhiteSpace(lines[index]))
+                        index++;
                     var bullet = lines[index];
                     var t = ExtractBackticked(bullet);
                     index++;

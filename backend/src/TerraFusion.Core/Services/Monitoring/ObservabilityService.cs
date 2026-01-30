@@ -25,7 +25,6 @@ public class ObservabilityService : IObservabilityService
     private readonly IHealthCheckService _healthCheckService;
     private readonly IMetricsCollectionService _metricsService;
     private readonly ILogger<ObservabilityService> _logger;
-    private readonly Timer? _healthMonitorTimer;
     private bool _isMonitoring;
 
     public ObservabilityService(
@@ -246,6 +245,8 @@ public class ObservabilityService : IObservabilityService
 
     public async Task StartHealthMonitoringAsync()
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         if (_isMonitoring)
         {
             _logger.LogWarning("Health monitoring is already running");
