@@ -5,6 +5,7 @@ name: 📄 Docs Fast Lane
 # ═══════════════════════════════════════════════════════════════════════════════
 # Purpose: Give docs-only PRs a fast green checkmark without triggering heavy CI
 # Target: <1 minute
+# Philosophy: Lint ONLY changed files (not entire repo) for speed
 # ═══════════════════════════════════════════════════════════════════════════════
 
 on:
@@ -13,41 +14,91 @@ on:
       - 'docs/**'
       - '**/*.md'
       - '**/*.mdx'
-      - '.github/*.md'
-  push:
-    branches: [main]
-    paths:
-      - 'docs/**'
-      - '**/*.md'
-      - '**/*.mdx'
-      - '.github/*.md'
+      - '.github/**/*.md'
+  workflow_dispatch: {}
+
+concurrency:
+  group: docs-fast-lane-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   markdownlint:
-    name: 📝 Markdown Lint
+    name: 📝 Docs Fast Lane
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Run markdownlint-cli2
-        uses: DavidAnson/markdownlint-cli2-action@v16
         with:
-          globs: |
-            docs/**/*.md
-            **/*.md
-            !node_modules/**
-            !**/ARCHIVE/**
-        continue-on-error: true # Soft fail - don't block on lint issues
+          fetch-depth: 0
 
-      - name: Docs Fast Lane Summary
+      - name: Detect changed markdown files
+        id: changed
+        shell: bash
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+
+          echo "Base: $BASE"
+          echo "Head: $HEAD"
+
+          files="$(git diff --name-only "$BASE" "$HEAD" | grep -E '\.(md|mdx)$' || true)"
+          if [ -z "$files" ]; then
+            echo "none=true" >> "$GITHUB_OUTPUT"
+            echo "files=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "none=false" >> "$GITHUB_OUTPUT"
+          # newline-safe output for later use
+          {
+            echo "files<<EOF"
+            echo "$files"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Markdown lint (soft-fail)
+        id: lint
+        if: steps.changed.outputs.none != 'true'
+        continue-on-error: true
+        shell: bash
+        run: |
+          npm i -g markdownlint-cli2@latest
+          echo "${{ steps.changed.outputs.files }}" > /tmp/md_files.txt
+
+          # Lint ONLY changed files for speed
+          markdownlint-cli2 $(cat /tmp/md_files.txt)
+
+      - name: Summary
         if: always()
         shell: bash
         run: |
-          echo "## 📄 Docs Fast Lane" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Documentation changes validated" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "This is a lightweight check for docs-only PRs." >> $GITHUB_STEP_SUMMARY
-          echo "Heavy workflows (backend, frontend, security) are skipped when only docs change." >> $GITHUB_STEP_SUMMARY
+          echo "## 📄 Docs Fast Lane" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "${{ steps.changed.outputs.none }}" = "true" ]; then
+            echo "- No markdown changes detected." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "### Files checked:" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.changed.outputs.files }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "${{ steps.lint.outcome }}" = "failure" ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "### ⚠️ Lint warnings (soft-fail)" >> "$GITHUB_STEP_SUMMARY"
+            echo "- This does **not** block merge. Please fix when convenient." >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Docs Fast Lane found markdownlint warnings (soft-fail)."
+          else
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "### ✅ Clean" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "---" >> "$GITHUB_STEP_SUMMARY"
+          echo "Heavy workflows (backend, frontend, security) are skipped when only docs change." >> "$GITHUB_STEP_SUMMARY"
