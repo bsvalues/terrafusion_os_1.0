@@ -4,6 +4,25 @@
 
 export type Severity = 'critical' | 'high' | 'medium';
 
+/**
+ * Waterfall classification types for v2 scanner
+ */
+export type WaterfallKind = 
+  | 'safe-parallel'      // Independent awaits, safe to Promise.all()
+  | 'dependent'          // Data dependency between awaits
+  | 'batch-candidate'    // Repeated calls to same service/endpoint
+  | 'loop-seq'           // Sequential in loop (may be intentional)
+  | 'retry-seq';         // Sequential in try/catch retry block
+
+/**
+ * Evidence item for detailed findings
+ */
+export interface EvidenceItem {
+  line: number;
+  snippet: string;
+  varName?: string;
+}
+
 export interface Finding {
   severity: Severity;
   rule: string;
@@ -13,6 +32,12 @@ export interface Finding {
   message: string;
   snippet?: string;
   suggestedFix?: string;
+  
+  // v2 additions for waterfall scanner
+  functionName?: string;
+  kind?: WaterfallKind;
+  priorityScore?: number;  // 0-100, higher = fix first
+  evidence?: EvidenceItem[];
 }
 
 export interface ScanContext {

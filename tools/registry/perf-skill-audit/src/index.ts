@@ -268,8 +268,15 @@ async function runAudit(): Promise<void> {
     }
   }
   
-  // Sort findings by severity
-  findings.sort((a, b) => severityPriority(a.severity) - severityPriority(b.severity));
+  // Sort findings by severity, then by priorityScore (higher first)
+  findings.sort((a, b) => {
+    const severityDiff = severityPriority(a.severity) - severityPriority(b.severity);
+    if (severityDiff !== 0) return severityDiff;
+    // Within same severity, sort by priorityScore descending
+    const aScore = a.priorityScore ?? 50;
+    const bScore = b.priorityScore ?? 50;
+    return bScore - aScore;
+  });
   
   // Limit to max findings
   const limitedFindings = findings.slice(0, config.maxFindings);
