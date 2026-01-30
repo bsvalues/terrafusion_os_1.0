@@ -43,6 +43,13 @@ const FORBIDDEN_PATTERNS = [
   /\/archive\//i,
 ];
 
+// Allowed paths (Core Governance Surface from AGENTS.md)
+const ALLOWED_PATTERNS = [
+  /^os-platform\/core\/pilot\//,
+  /^os-platform\/core\/types\//,
+  /^tools\/registry\//,
+];
+
 // Required gates
 const REQUIRED_GATES = [
   { name: 'type-check', command: 'pnpm run type-check' },
@@ -103,6 +110,14 @@ function getSuggestedAction(filePath: string): string {
     return 'To remediate: Request explicit authorization or refactor into allowed scope';
   }
   return 'To remediate: Move code into the Core Governance Surface';
+}
+
+/**
+ * Check if a file path is in the allowed governance surface
+ */
+function isInAllowedSurface(filePath: string): boolean {
+  const normalizedPath = filePath.replace(/\\/g, '/');
+  return ALLOWED_PATTERNS.some(pattern => pattern.test(normalizedPath));
 }
 
 /**
@@ -336,6 +351,16 @@ async function main(): Promise<void> {
   const safeItems: { item: PlanItem; skipped: boolean; reason?: string }[] = [];
 
   for (const item of eligibleItems) {
+    // Check allowed paths FIRST (Core Governance Surface)
+    if (!isInAllowedSurface(item.file)) {
+      console.log(`⛔ SKIP: ${item.file}`);
+      console.log(`   Reason: Not in Core Governance Surface`);
+      console.log(`   📜 Rule: AGENTS.md defines allowed scope`);
+      console.log(`   💡 Allowed: os-platform/core/pilot/**, os-platform/core/types/**, tools/registry/**`);
+      safeItems.push({ item, skipped: true, reason: 'Not in Core Governance Surface' });
+      continue;
+    }
+
     // Check forbidden paths
     const forbidden = isForbiddenPath(item.file);
     if (forbidden.forbidden) {
