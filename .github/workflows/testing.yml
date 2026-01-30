@@ -3,8 +3,24 @@ name: TerraFusion OS Comprehensive Testing
 on:
   push:
     branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '*.sln'
+      - '.github/workflows/testing.yml'
   pull_request:
     branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '*.sln'
+      - '.github/workflows/testing.yml'
 
 jobs:
   test:

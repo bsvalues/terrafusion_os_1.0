@@ -1,6 +1,12 @@
 name: Baseline Guard
 on:
-  pull_request: {}
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'tools/**'
+      - '.github/workflows/baseline-guard.yml'
 jobs:
   guard:
     runs-on: windows-latest

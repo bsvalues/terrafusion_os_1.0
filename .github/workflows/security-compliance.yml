@@ -6,8 +6,26 @@ name: 🛡️ Security & Compliance Pipeline
 on:
   push:
     branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '*.csproj'
+      - 'Directory.Packages.props'
+      - '.github/workflows/security-compliance.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '*.csproj'
+      - 'Directory.Packages.props'
+      - '.github/workflows/security-compliance.yml'
   schedule:
     - cron: '0 0 * * 0' # Weekly on Sunday at midnight
   workflow_dispatch:
