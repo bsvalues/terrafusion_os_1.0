@@ -11,12 +11,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { generateRemediationPlan, generateUnifiedDiff } from './plan-generator.js';
 import { bundlesScanner } from './scanners/bundles.js';
 import { clientBoundaryScanner } from './scanners/client-boundary.js';
 import { rerendersScanner } from './scanners/rerenders.js';
 import type { AuditConfig, AuditReport, Finding, Scanner, Severity } from './scanners/types.js';
 import { waterfallsScanner } from './scanners/waterfalls.js';
-import { generateRemediationPlan, generateUnifiedDiff } from './plan-generator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,9 +34,14 @@ const DEFAULT_CONFIG: AuditConfig = {
   maxFindings: parseInt(process.env.PERF_AUDIT_MAX_FINDINGS || '200', 10),
   severityThreshold: (process.env.PERF_AUDIT_SEVERITY_THRESHOLD || 'medium') as Severity,
   includePaths: [
+    // Allowed surface FIRST (priority scanning)
+    'os-platform/core/pilot/**/*.{ts,tsx}',
+    'os-platform/core/types/**/*.{ts,tsx}',
+    'tools/registry/**/*.{ts,tsx}',
+    // Then broader scopes
     'frontend-v2/**/*.{ts,tsx}',
-    'applications/**/*.{ts,tsx}',
     'os-platform/**/*.{ts,tsx}',
+    'applications/**/*.{ts,tsx}',
     'terrabuild-modernization/**/*.{ts,tsx}',
   ],
   excludePaths: [
@@ -58,7 +63,9 @@ const RULES_VERSION = 'vercel-react-2026-01';
 const CLI_FLAGS = {
   emitPatch: process.argv.includes('--emit-patch'),
   verbose: process.argv.includes('--verbose'),
-  scope: (process.argv.find(a => a.startsWith('--scope='))?.split('=')[1] || 'actionable') as 'actionable' | 'full',
+  scope: (process.argv.find(a => a.startsWith('--scope='))?.split('=')[1] || 'actionable') as
+    | 'actionable'
+    | 'full',
   allowForbidden: process.argv.includes('--allow-forbidden'),
 };
 
@@ -337,17 +344,13 @@ async function runAudit(): Promise<void> {
   const limitedFindings = findings.slice(0, config.maxFindings);
 
   // Phase 4K: Split findings into full and actionable streams
-  const actionableFindings = limitedFindings.filter(f => 
-    isInAllowedSurface(f.file) && !isInForbiddenZone(f.file)
+  const actionableFindings = limitedFindings.filter(
+    f => isInAllowedSurface(f.file) && !isInForbiddenZone(f.file)
   );
-  const forbiddenFindings = limitedFindings.filter(f =>
-    isInForbiddenZone(f.file)
-  );
+  const forbiddenFindings = limitedFindings.filter(f => isInForbiddenZone(f.file));
 
   // Determine which findings to report based on scope
-  const reportFindings = CLI_FLAGS.scope === 'actionable' 
-    ? actionableFindings 
-    : limitedFindings;
+  const reportFindings = CLI_FLAGS.scope === 'actionable' ? actionableFindings : limitedFindings;
 
   // Build full report (all findings)
   const fullReport: AuditReport = {
@@ -408,16 +411,18 @@ async function runAudit(): Promise<void> {
   // Generate unified diffs if --emit-patch flag is set
   const diffPath = path.join(outDir, 'waterfalls.patch');
   if (CLI_FLAGS.emitPatch) {
-    const eligibleItems = plan.items.filter(item => item.eligibility.eligible && item.suggestedPatch);
+    const eligibleItems = plan.items.filter(
+      item => item.eligibility.eligible && item.suggestedPatch
+    );
     const diffs: string[] = [];
-    
+
     for (const item of eligibleItems) {
       const diff = generateUnifiedDiff(item, []);
       if (diff) {
         diffs.push(diff);
       }
     }
-    
+
     if (diffs.length > 0) {
       fs.writeFileSync(diffPath, diffs.join('\n\n'));
       console.log(`\n🔧 Patches written:`);

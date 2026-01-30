@@ -108,7 +108,12 @@ function getSuggestedAction(filePath: string): string {
 /**
  * Check if a file path is in a forbidden zone
  */
-function isForbiddenPath(filePath: string): { forbidden: boolean; reason?: string; education?: string; suggestion?: string } {
+function isForbiddenPath(filePath: string): {
+  forbidden: boolean;
+  reason?: string;
+  education?: string;
+  suggestion?: string;
+} {
   const normalizedPath = filePath.replace(/\\/g, '/');
 
   for (const pattern of FORBIDDEN_PATTERNS) {
