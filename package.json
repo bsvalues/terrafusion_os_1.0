@@ -43,6 +43,8 @@
   },
   "scripts": {
     "tf": "node tools/tf.js",
+    "tf:ship": "node tools/dev/tf-ship.mjs",
+    "tf:slice": "node tools/dev/tf-slice.mjs",
     "tf:scope": "pnpm -C tools/scope-classifier scope -- --repoRoot=../..",
     "ci:scope-proof": "pnpm tf:scope",
     "ci:renovate-scope:log": "echo 'Renovate scope check simulated' > renovate_scope.log",
@@ -257,7 +259,7 @@
     "input-otp": "1.4.2",
     "jest-axe": "10.0.0",
     "msw": "2.11.0",
-    "next": "16.0.3",
+    "next": "16.0.7",
     "next-themes": "0.4.6",
     "react": "18.3.1",
     "react-beautiful-dnd": "13.1.1",

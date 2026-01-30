@@ -62,16 +62,16 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
   {
     "$schema": "../../tools/registry/terrafusion.app.schema.json",
     "id": "gis-pro",
-    "displayName": "GIS Pro",
-    "description": "Geographic Information System & Parcel Mapping (Legacy Production)",
+    "displayName": "TerraGIS",
+    "description": "Gen2 Geographic Information System & Parcel Mapping",
     "iconName": "Map",
     "category": "mapping",
     "tier": 1,
-    "status": "legacy",
-    "pinned": false,
-    "version": "3.0.0",
-    "intent": "legacy",
-    "runnable": false,
+    "status": "active",
+    "pinned": true,
+    "version": "4.0.0",
+    "intent": "gen2",
+    "runnable": true,
     "entry": {
       "type": "url",
       "url": "http://localhost:5178/"
@@ -81,12 +81,293 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
       "mapping",
       "parcels",
       "geospatial",
-      "legacy"
+      "gen2"
     ],
     "permissions": [
       "county:read",
       "gis:read",
       "gis:write"
+    ]
+  },
+  {
+    "$schema": "../../tools/registry/terrafusion.app.schema.json",
+    "id": "os-shell",
+    "displayName": "TerraFusion OS Shell",
+    "description": "Primary TerraFusion OS Shell (Vite dev server)",
+    "iconName": "Desktop",
+    "category": "system",
+    "tier": 1,
+    "status": "active",
+    "pinned": false,
+    "autostart": true,
+    "version": "1.0.0",
+    "intent": "archive",
+    "runnable": true,
+    "runtime": "pnpm",
+    "start": {
+      "cmd": "pnpm",
+      "args": [
+        "run",
+        "dev",
+        "--",
+        "--open"
+      ],
+      "cwd": "frontend"
+    },
+    "entry": {
+      "type": "url",
+      "url": "http://localhost:5173/"
+    },
+    "tags": [
+      "shell",
+      "desktop",
+      "os"
+    ],
+    "permissions": []
+  },
+  {
+    "$schema": "../../tools/registry/terrafusion.app.schema.json",
+    "id": "terra-dossier",
+    "displayName": "TerraDossier",
+    "description": "Gen2 Sovereign Document Management & Defense Packets",
+    "iconName": "FileSearch",
+    "category": "records",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "autostart": true,
+    "version": "1.0.0",
+    "intent": "gen2",
+    "runnable": true,
+    "runtime": "deno",
+    "start": {
+      "cmd": "deno",
+      "args": [
+        "task",
+        "dev"
+      ]
+    },
+    "entry": {
+      "type": "url",
+      "url": "http://localhost:3007/"
+    },
+    "tags": [
+      "records",
+      "documents",
+      "dossier",
+      "gen2"
+    ],
+    "permissions": [
+      "county:read",
+      "documents:read",
+      "documents:write"
+    ]
+  },
+  {
+    "$schema": "../../tools/registry/terrafusion.app.schema.json",
+    "id": "terra-flow",
+    "displayName": "TerraFlow",
+    "description": "Gen2 Workflow & Process Automation Engine",
+    "iconName": "GitBranch",
+    "category": "system",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "2.0.0",
+    "intent": "gen2",
+    "runnable": true,
+    "entry": {
+      "type": "url",
+      "url": "http://localhost:5183/"
+    },
+    "tags": [
+      "workflow",
+      "automation",
+      "process",
+      "gen2"
+    ],
+    "permissions": [
+      "system:admin"
+    ]
+  },
+  {
+    "$schema": "../../tools/registry/terrafusion.app.schema.json",
+    "id": "terra-gama",
+    "displayName": "TerraGAMA",
+    "description": "Gen2 Geographic Area Market Analysis",
+    "iconName": "BarChart3",
+    "category": "analytics",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "2.0.0",
+    "intent": "gen2",
+    "runnable": true,
+    "entry": {
+      "type": "url",
+      "url": "http://localhost:5182/"
+    },
+    "tags": [
+      "analytics",
+      "market",
+      "gama",
+      "gen2"
+    ],
+    "permissions": [
+      "county:read",
+      "analytics:read"
+    ]
+  },
+  {
+    "$schema": "../../tools/registry/terrafusion.app.schema.json",
+    "id": "terra-levy",
+    "displayName": "TerraLevy",
+    "description": "Gen2 Tax Levy Management & Rate Calculations",
+    "iconName": "Calculator",
+    "category": "tax",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "2.0.0",
+    "intent": "gen2",
+    "runnable": true,
+    "entry": {
+      "type": "url",
+      "url": "http://localhost:5177/"
+    },
+    "tags": [
+      "tax",
+      "levy",
+      "rates",
+      "gen2"
+    ],
+    "permissions": [
+      "county:read",
+      "tax:read",
+      "tax:write"
+    ]
+  },
+  {
+    "$schema": "../../tools/registry/terrafusion.app.schema.json",
+    "id": "terra-permit",
+    "displayName": "TerraPermit",
+    "description": "Gen2 Building Permit Tracking & Valuation Updates",
+    "iconName": "HardHat",
+    "category": "assessment",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "2.0.0",
+    "intent": "gen2",
+    "runnable": true,
+    "entry": {
+      "type": "url",
+      "url": "http://localhost:5181/"
+    },
+    "tags": [
+      "permits",
+      "construction",
+      "assessment",
+      "gen2"
+    ],
+    "permissions": [
+      "county:read",
+      "permits:read",
+      "permits:write"
+    ]
+  },
+  {
+    "$schema": "../../tools/registry/terrafusion.app.schema.json",
+    "id": "terra-pilt",
+    "displayName": "TerraPILT",
+    "description": "Gen2 Payment in Lieu of Taxes Calculator",
+    "iconName": "Landmark",
+    "category": "tax",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "2.0.0",
+    "intent": "gen2",
+    "runnable": true,
+    "entry": {
+      "type": "url",
+      "url": "http://localhost:5179/"
+    },
+    "tags": [
+      "tax",
+      "pilt",
+      "federal",
+      "gen2"
+    ],
+    "permissions": [
+      "county:read",
+      "tax:read"
+    ]
+  },
+  {
+    "$schema": "../../tools/registry/terrafusion.app.schema.json",
+    "id": "terra-primeview",
+    "displayName": "TerraPrime",
+    "description": "Gen2 Property Data Viewer & Inspector",
+    "iconName": "Eye",
+    "category": "records",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "2.0.0",
+    "intent": "gen2",
+    "runnable": true,
+    "entry": {
+      "type": "url",
+      "url": "http://localhost:5184/"
+    },
+    "tags": [
+      "records",
+      "viewer",
+      "property",
+      "gen2"
+    ],
+    "permissions": [
+      "county:read",
+      "property:read"
+    ]
+  },
+  {
+    "$schema": "../../tools/registry/terrafusion.app.schema.json",
+    "id": "terraforge",
+    "displayName": "TerraForge",
+    "description": "AI-Powered Cost Calculation & Valuation Modeling Suite",
+    "iconName": "Layers",
+    "category": "assessment",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "autostart": false,
+    "version": "1.0.0",
+    "intent": "gen2",
+    "runnable": true,
+    "runtime": "node",
+    "start": {
+      "cmd": "pnpm",
+      "args": [
+        "dev"
+      ]
+    },
+    "entry": {
+      "type": "url",
+      "url": "http://localhost:4201/"
+    },
+    "tags": [
+      "assessment",
+      "valuation",
+      "cost",
+      "ai",
+      "gen2"
+    ],
+    "permissions": [
+      "county:read",
+      "property:read",
+      "property:write"
     ]
   },
   {
@@ -115,234 +396,6 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "permissions": [
       "county:read",
       "property:read"
-    ]
-  },
-  {
-    "$schema": "../../tools/registry/terrafusion.app.schema.json",
-    "id": "terra-dossier",
-    "displayName": "TerraDossier",
-    "description": "Gen2 Sovereign Document Management & Defense Packets",
-    "iconName": "FileSearch",
-    "category": "records",
-    "tier": 1,
-    "status": "active",
-    "pinned": true,
-    "version": "1.0.0",
-    "intent": "gen2",
-    "runnable": false,
-    "entry": {
-      "type": "route",
-      "route": "/gen2/dossier"
-    },
-    "tags": [
-      "records",
-      "documents",
-      "dossier",
-      "gen2"
-    ],
-    "permissions": [
-      "county:read",
-      "documents:read",
-      "documents:write"
-    ]
-  },
-  {
-    "$schema": "../../tools/registry/terrafusion.app.schema.json",
-    "id": "terra-flow",
-    "displayName": "Terra Flow",
-    "description": "Workflow & Process Automation Engine",
-    "iconName": "GitBranch",
-    "category": "system",
-    "tier": 2,
-    "status": "legacy",
-    "pinned": false,
-    "version": "1.0.0",
-    "intent": "legacy",
-    "runnable": false,
-    "entry": {
-      "type": "url",
-      "url": "http://localhost:5183/"
-    },
-    "tags": [
-      "workflow",
-      "automation",
-      "process",
-      "legacy"
-    ],
-    "permissions": [
-      "system:admin"
-    ]
-  },
-  {
-    "$schema": "../../tools/registry/terrafusion.app.schema.json",
-    "id": "terra-gama",
-    "displayName": "Terra GAMA",
-    "description": "Geographic Area Market Analysis",
-    "iconName": "BarChart3",
-    "category": "analytics",
-    "tier": 2,
-    "status": "legacy",
-    "pinned": false,
-    "version": "1.0.0",
-    "intent": "legacy",
-    "runnable": false,
-    "entry": {
-      "type": "url",
-      "url": "http://localhost:5182/"
-    },
-    "tags": [
-      "analytics",
-      "market",
-      "gama",
-      "legacy"
-    ],
-    "permissions": [
-      "county:read",
-      "analytics:read"
-    ]
-  },
-  {
-    "$schema": "../../tools/registry/terrafusion.app.schema.json",
-    "id": "terra-levy",
-    "displayName": "Terra Levy",
-    "description": "Tax Levy Management & Rate Calculations (Legacy Multi-Service)",
-    "iconName": "Calculator",
-    "category": "tax",
-    "tier": 1,
-    "status": "legacy",
-    "pinned": false,
-    "version": "1.5.0",
-    "intent": "legacy",
-    "runnable": false,
-    "entry": {
-      "type": "url",
-      "url": "http://localhost:5177/"
-    },
-    "tags": [
-      "tax",
-      "levy",
-      "rates",
-      "legacy"
-    ],
-    "permissions": [
-      "county:read",
-      "tax:read",
-      "tax:write"
-    ]
-  },
-  {
-    "$schema": "../../tools/registry/terrafusion.app.schema.json",
-    "id": "terra-permit",
-    "displayName": "Terra Permit",
-    "description": "Building Permit Tracking & Valuation Updates",
-    "iconName": "HardHat",
-    "category": "assessment",
-    "tier": 2,
-    "status": "legacy",
-    "pinned": false,
-    "version": "1.0.0",
-    "intent": "legacy",
-    "runnable": false,
-    "entry": {
-      "type": "url",
-      "url": "http://localhost:5181/"
-    },
-    "tags": [
-      "permits",
-      "construction",
-      "assessment",
-      "legacy"
-    ],
-    "permissions": [
-      "county:read",
-      "permits:read",
-      "permits:write"
-    ]
-  },
-  {
-    "$schema": "../../tools/registry/terrafusion.app.schema.json",
-    "id": "terra-pilt",
-    "displayName": "Terra PILT",
-    "description": "Payment in Lieu of Taxes Calculator (Legacy Production)",
-    "iconName": "Landmark",
-    "category": "tax",
-    "tier": 1,
-    "status": "legacy",
-    "pinned": false,
-    "version": "1.0.0",
-    "intent": "legacy",
-    "runnable": false,
-    "entry": {
-      "type": "url",
-      "url": "http://localhost:5179/"
-    },
-    "tags": [
-      "tax",
-      "pilt",
-      "federal",
-      "legacy"
-    ],
-    "permissions": [
-      "county:read",
-      "tax:read"
-    ]
-  },
-  {
-    "$schema": "../../tools/registry/terrafusion.app.schema.json",
-    "id": "terra-primeview",
-    "displayName": "PrimeView",
-    "description": "Primary Property Data Viewer & Inspector",
-    "iconName": "Eye",
-    "category": "records",
-    "tier": 2,
-    "status": "legacy",
-    "pinned": false,
-    "version": "1.0.0",
-    "intent": "legacy",
-    "runnable": false,
-    "entry": {
-      "type": "url",
-      "url": "http://localhost:5184/"
-    },
-    "tags": [
-      "records",
-      "viewer",
-      "property",
-      "legacy"
-    ],
-    "permissions": [
-      "county:read",
-      "property:read"
-    ]
-  },
-  {
-    "$schema": "../../tools/registry/terrafusion.app.schema.json",
-    "id": "terraforge",
-    "displayName": "TerraForge",
-    "description": "AI-Powered Cost Calculation & Valuation Modeling Suite",
-    "iconName": "Layers",
-    "category": "assessment",
-    "tier": 1,
-    "status": "active",
-    "pinned": true,
-    "version": "1.0.0",
-    "intent": "gen2",
-    "runnable": false,
-    "entry": {
-      "type": "route",
-      "route": "/gen2/terraforge"
-    },
-    "tags": [
-      "assessment",
-      "valuation",
-      "cost",
-      "ai",
-      "gen2"
-    ],
-    "permissions": [
-      "county:read",
-      "property:read",
-      "property:write"
     ]
   },
   {

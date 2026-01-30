@@ -15,14 +15,26 @@
  */
 
 import { useEffect } from 'react';
+
+// ============================================================================
+// CSS IMPORTS - ORDER IS CRITICAL (DO NOT REORDER - BREAKS STYLING)
+// ============================================================================
+// 1. Base tokens MUST load first (defines --tf-quantum-cyan, --tf-void-black, etc.)
+import './styles/terrafusion-tokens.css';
+// 2. Then brand system (references tokens)
+import './styles/terrafusion-brand.css';
+// 3. Then OS styles (references tokens + brand)
+import './styles/terrafusion-os.css';
+// 4. Finally App-specific overrides
 import './App.css';
-import { TERRAFUSION_MODULES } from './config/modules';
+// ============================================================================
+
+import { MODULES } from './config/modules';
 import { useSyncIntegration } from './hooks/useSyncIntegration';
+import { installShellIpcBridge } from './ipc/shellIpcBridge';
 import { DesktopWithErrorBoundary } from './shell/desktop';
 import { useModuleRegistryStore } from './stores/moduleRegistryStore';
 import { useStartMenuStore } from './stores/startMenuStore';
-import './styles/terrafusion-brand.css';
-import './styles/terrafusion-os.css';
 
 // ============================================================================
 // Application Component
@@ -53,11 +65,14 @@ function App() {
 
   // Initialize module registry and start menu on mount
   useEffect(() => {
+    // Install IPC bridge for app ↔ shell communication
+    const cleanupIpc = installShellIpcBridge();
+
     // Register all modules
-    registerModules(TERRAFUSION_MODULES);
+    registerModules(MODULES);
 
     // Configure Start Menu
-    const startMenuApps = TERRAFUSION_MODULES.map((m) => ({
+    const startMenuApps = MODULES.map((m) => ({
       id: m.id,
       name: m.displayName,
       description: m.description,
@@ -67,10 +82,15 @@ function App() {
     }));
 
     setAllApps(startMenuApps);
-    setPinnedApps(startMenuApps.filter((_, i) => TERRAFUSION_MODULES[i].isCore));
+    setPinnedApps(startMenuApps.filter((_, i) => MODULES[i].isCore));
 
     console.log('🚀 TerraFusion OS initialized');
-    console.log(`📦 ${TERRAFUSION_MODULES.length} modules registered`);
+    console.log(`📦 ${MODULES.length} modules registered`);
+    console.log('📡 IPC bridge installed');
+
+    return () => {
+      cleanupIpc();
+    };
   }, [registerModules, setAllApps, setPinnedApps]);
 
   return (

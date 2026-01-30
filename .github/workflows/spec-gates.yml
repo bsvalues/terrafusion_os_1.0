@@ -1,0 +1,222 @@
+name: TerraFusion Spec Gates
+
+on:
+  push:
+    branches: [main, develop, release/*]
+    paths:
+      - 'docs/architecture/specs/**'
+      - 'policy/**'
+      - '.github/workflows/spec-gates.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'docs/architecture/specs/**'
+      - 'policy/**'
+      - '.github/workflows/spec-gates.yml'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  SPECS_PATH: docs/architecture/specs/terrafusion
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # GATE 1: Naming Lint - Reject forbidden naming variants
+  # Spec Reference: ADR-0001 through ADR-0004, Suite Constitution
+  # Status: BLOCKING - new violations fail, baselined issues tolerated
+  # ═══════════════════════════════════════════════════════════════════════════
+  gate-1-naming-lint:
+    name: 'Gate 1: Naming Lint'
+    runs-on: ubuntu-latest
+    # Blocking gate - fails on new violations only (baseline at tools/spec-gates/naming-lint.baseline.txt)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run Naming Lint
+        run: node scripts/spec-gates/naming-lint.mjs
+        env:
+          SPECS_PATH: ${{ env.SPECS_PATH }}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # GATE 2: Workbench Extension Compliance (UI Routes Only)
+  # Spec Reference: 01_PROPERTY_WORKBENCH_SPEC_v3.1.md, ADR-0001
+  # Status: BLOCKING - scoped to frontend route declarations only
+  # ═══════════════════════════════════════════════════════════════════════════
+  gate-2-workbench-compliance:
+    name: 'Gate 2: Workbench Compliance'
+    runs-on: ubuntu-latest
+    # Blocking gate - UI route ownership enforcement
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check Workbench Extension Compliance
+        run: node scripts/spec-gates/workbench-compliance.mjs
+        env:
+          SPECS_PATH: ${{ env.SPECS_PATH }}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # GATE 3: TerraTrace Immutability
+  # Spec Reference: 03_TERRATRACE_SPEC_v3.1.md, ADR-0003
+  # ═══════════════════════════════════════════════════════════════════════════
+  gate-3-trace-immutability:
+    name: 'Gate 3: Trace Immutability'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check Trace Immutability Patterns
+        run: node scripts/spec-gates/trace-immutability.mjs
+        env:
+          SPECS_PATH: ${{ env.SPECS_PATH }}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # GATE 4: Write-Lane Assertions
+  # Spec Reference: 04_SUITE_BOUNDARIES_WRITE_LANES_v3.1.md, ADR-0002
+  # Status: BLOCKING - validates tool manifest write-lane declarations
+  # ═══════════════════════════════════════════════════════════════════════════
+  gate-4-write-lanes:
+    name: 'Gate 4: Write-Lane Assertions'
+    runs-on: ubuntu-latest
+    # Blocking gate - validates tool manifest declarations
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check Write-Lane Compliance
+        run: node scripts/spec-gates/write-lanes.mjs
+        env:
+          SPECS_PATH: ${{ env.SPECS_PATH }}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # GATE 5: RiskPolicy Enforcement
+  # Spec Reference: 02_TERRAPILOT_SPEC_v3.1.md, ADR-0004
+  # Status: BLOCKING - validates risk/confirmation/supervisor requirements
+  # ═══════════════════════════════════════════════════════════════════════════
+  gate-5-risk-policy:
+    name: 'Gate 5: RiskPolicy Enforcement'
+    runs-on: ubuntu-latest
+    # Blocking gate - validates risk policy requirements
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check RiskPolicy Compliance
+        run: node scripts/spec-gates/risk-policy.mjs
+        env:
+          SPECS_PATH: ${{ env.SPECS_PATH }}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # GATE 6: PII Sanitization
+  # Spec Reference: 02_TERRAPILOT_SPEC_v3.1.md, 03_TERRATRACE_SPEC_v3.1.md
+  # Status: BLOCKING - validates PII handling and trace policies
+  # ═══════════════════════════════════════════════════════════════════════════
+  gate-6-pii-sanitization:
+    name: 'Gate 6: PII Sanitization'
+    runs-on: ubuntu-latest
+    # Blocking gate - validates PII handling declarations
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check PII Sanitization Patterns
+        run: node scripts/spec-gates/pii-sanitization.mjs
+        env:
+          SPECS_PATH: ${{ env.SPECS_PATH }}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # GATE 7: Risk Escalation Proof
+  # Spec Reference: 02_TERRAPILOT_SPEC_v3.1.md, ADR-0004
+  # Status: BLOCKING - proves high-risk tools (write_high, irreversible) have safeguards
+  # ═══════════════════════════════════════════════════════════════════════════
+  gate-7-risk-escalation-proof:
+    name: 'Gate 7: Risk Escalation Proof'
+    runs-on: ubuntu-latest
+    # Blocking gate - proves dangerous tools are properly guarded
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Prove High-Risk Tool Safeguards
+        run: node scripts/spec-gates/risk-escalation-proof.mjs
+        env:
+          SPECS_PATH: ${{ env.SPECS_PATH }}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # FINAL: Spec Gate Summary
+  # ═══════════════════════════════════════════════════════════════════════════
+  spec-gate-summary:
+    name: 'Spec Gate Summary'
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - gate-1-naming-lint
+      - gate-2-workbench-compliance
+      - gate-3-trace-immutability
+      - gate-4-write-lanes
+      - gate-5-risk-policy
+      - gate-6-pii-sanitization
+      - gate-7-risk-escalation-proof
+    steps:
+      - name: Check Gate Results
+        run: |
+          echo "📋 Spec Gate Results"
+          echo "===================="
+          echo ""
+          echo "Gate 1 (Naming Lint): ${{ needs.gate-1-naming-lint.result }}"
+          echo "Gate 2 (Workbench Compliance): ${{ needs.gate-2-workbench-compliance.result }}"
+          echo "Gate 3 (Trace Immutability): ${{ needs.gate-3-trace-immutability.result }}"
+          echo "Gate 4 (Write-Lanes): ${{ needs.gate-4-write-lanes.result }}"
+          echo "Gate 5 (RiskPolicy): ${{ needs.gate-5-risk-policy.result }}"
+          echo "Gate 6 (PII Sanitization): ${{ needs.gate-6-pii-sanitization.result }}"
+          echo "Gate 7 (Risk Escalation): ${{ needs.gate-7-risk-escalation-proof.result }}"
+          echo ""
+
+          # Count failures (critical gates only)
+          FAILURES=0
+          if [ "${{ needs.gate-1-naming-lint.result }}" != "success" ]; then FAILURES=$((FAILURES+1)); fi
+          if [ "${{ needs.gate-2-workbench-compliance.result }}" != "success" ]; then FAILURES=$((FAILURES+1)); fi
+          if [ "${{ needs.gate-3-trace-immutability.result }}" != "success" ]; then FAILURES=$((FAILURES+1)); fi
+          if [ "${{ needs.gate-4-write-lanes.result }}" != "success" ]; then FAILURES=$((FAILURES+1)); fi
+          if [ "${{ needs.gate-5-risk-policy.result }}" != "success" ]; then FAILURES=$((FAILURES+1)); fi
+          if [ "${{ needs.gate-6-pii-sanitization.result }}" != "success" ]; then FAILURES=$((FAILURES+1)); fi
+          if [ "${{ needs.gate-7-risk-escalation-proof.result }}" != "success" ]; then FAILURES=$((FAILURES+1)); fi
+
+          if [ $FAILURES -gt 0 ]; then
+            echo "❌ $FAILURES critical gate(s) failed"
+            echo "See: docs/architecture/specs/terrafusion/ for spec requirements"
+            exit 1
+          fi
+
+          echo "✅ All critical gates passed"
+          echo "Spec Package: docs/architecture/specs/terrafusion/"

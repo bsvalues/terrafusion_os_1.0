@@ -14,10 +14,12 @@
     "preview:fast": "vite preview --host"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5",
     "@tauri-apps/api": "^1.5.3",
+    "lucide-react": "^0.263.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "lucide-react": "^0.263.1"
+    "react-router-dom": "^6"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.6",

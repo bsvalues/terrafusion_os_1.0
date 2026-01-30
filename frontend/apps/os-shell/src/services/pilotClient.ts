@@ -1,3 +1,14 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * TERRAFUSION PILOT CLIENT
+ * Pilot subsystem (port 3333) - NOT TerraFusion core API
+ *
+ * NOTE: This client uses its own URL pattern (VITE_PILOT_API_URL)
+ * and does NOT use the centralized apiBase.ts. This is intentional.
+ * Do NOT migrate to buildApiUrl().
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import type { Session } from '../auth/session';
 import { sessionToPilotHeaders } from './pilotContext';
 
@@ -40,10 +51,10 @@ export type ExecuteToolResponse = {
 
 export type PilotHealth = { ok: true } | { ok: false; error: string };
 
+import { getViteEnv } from '@/env/getViteEnv';
+
 const DEFAULT_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_PILOT_API_URL) ||
-  (typeof process !== 'undefined' && process.env?.PILOT_API_URL) ||
-  'http://localhost:3333';
+  getViteEnv().VITE_PILOT_API_URL || getViteEnv().PILOT_API_URL || 'http://localhost:3333';
 
 const buildHeaders = (ctx: PilotApiHeaders): Record<string, string> => {
   const headers: Record<string, string> = {

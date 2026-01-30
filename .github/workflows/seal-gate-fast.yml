@@ -137,7 +137,7 @@ jobs:
 
       - name: Lint (loud, temporary non-blocking)
         id: lint
-        run: pnpm run lint
+        run: pnpm -C frontend run lint
         continue-on-error: true
 
       - name: Lint escape hatch (expires 2026-02-15)
@@ -158,10 +158,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if pnpm -s run | grep -qE '(^| )type-check($| )'; then
-            pnpm run type-check
-          elif pnpm -s run | grep -qE '(^| )typecheck($| )'; then
-            pnpm run typecheck
+          if pnpm -C frontend -s run | grep -qE '(^| )type-check($| )'; then
+            pnpm -C frontend run type-check
+          elif pnpm -C frontend -s run | grep -qE '(^| )typecheck($| )'; then
+            pnpm -C frontend run typecheck
           else
             echo "::error::No typecheck script found (expected type-check or typecheck)."
             exit 1
@@ -169,11 +169,19 @@ jobs:
 
       - name: Unit tests (blocking)
         id: unit-tests
-        run: pnpm run test:unit || pnpm test -- --passWithNoTests
+        run: pnpm -C frontend run test:unit
+
+      - name: IPC tests (blocking)
+        id: ipc-tests
+        run: pnpm -C frontend run test:ipc
 
       - name: Build (blocking)
         id: build
-        run: pnpm run build
+        run: pnpm -C frontend run build
+
+      - name: Bundle Analysis (blocking - requires build)
+        id: bundle-analysis
+        run: pnpm -C frontend run test:unit -- apps/os-shell/src/tests/performance/BundleAnalysis.test.ts
 
       - name: Frontend Summary
         if: always()
@@ -186,7 +194,9 @@ jobs:
           echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '⚠️ Soft (expires 2026-02-15)' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Type Check | ${{ steps.typecheck.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Unit Tests | ${{ steps.unit-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| IPC Tests | ${{ steps.ipc-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ steps.build.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Bundle | ${{ steps.bundle-analysis.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Backend Fast Gate (restore + build with warnings-as-errors + unit tests)
@@ -206,7 +216,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Cache NuGet
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('backend/**/*.csproj', 'backend/**/Directory.Packages.props') }}
@@ -237,6 +247,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: classify
+    if: needs.classify.outputs.docs_only != 'true'
 
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -362,13 +373,15 @@ jobs:
               ;;
           esac
 
-          # Governance
-          if [ "${{ needs.governance-fast.result }}" != "success" ]; then
-            echo "❌ Governance: FAILED"
-            FAILED=1
-          else
-            echo "✅ Governance: passed"
-          fi
+          # Governance (may be skipped for docs-only)
+          case "${{ needs.governance-fast.result }}" in
+            success) echo "✅ Governance: passed" ;;
+            skipped) echo "⏭️ Governance: skipped (docs-only)" ;;
+            *)
+              echo "❌ Governance: FAILED"
+              FAILED=1
+              ;;
+          esac
 
           echo ""
 
@@ -394,7 +407,11 @@ jobs:
             skipped) echo "| Backend | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
             *) echo "| Backend | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
           esac
-          echo "| Governance | ${{ needs.governance-fast.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          case "${{ needs.governance-fast.result }}" in
+            success) echo "| Governance | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            skipped) echo "| Governance | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Governance | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+          esac
           echo "" >> $GITHUB_STEP_SUMMARY
 
           if [ $FAILED -eq 0 ]; then

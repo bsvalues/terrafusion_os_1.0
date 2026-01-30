@@ -8,12 +8,18 @@
   "tier": 1,
   "status": "active",
   "pinned": true,
+  "autostart": false,
   "version": "1.0.0",
   "intent": "gen2",
-  "runnable": false,
+  "runnable": true,
+  "runtime": "node",
+  "start": {
+    "cmd": "pnpm",
+    "args": ["dev"]
+  },
   "entry": {
-    "type": "route",
-    "route": "/gen2/terraforge"
+    "type": "url",
+    "url": "http://localhost:4201/"
   },
   "tags": ["assessment", "valuation", "cost", "ai", "gen2"],
   "permissions": ["county:read", "property:read", "property:write"]

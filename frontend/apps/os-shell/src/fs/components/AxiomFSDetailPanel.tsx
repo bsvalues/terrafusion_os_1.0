@@ -32,18 +32,17 @@ export const AxiomFSDetailPanel = () => {
   const handleOpenDocument = () => {
     if (!selectedObject) return;
 
-    // Open a new Sovereign Dashboard window with the object context
-    openWindow('sovereign-dashboard', `${selectedObject.label} - Assessment`, '📋', {
-      objectId: selectedObject.id,
-      objectType: selectedObject.type, // e.g., 'document' or 'parcel'
-      objectLabel: selectedObject.label,
-      context: 'axiom-fs', // Traceability
-    });
+    const typeLabel = selectedObject.type.charAt(0).toUpperCase() + selectedObject.type.slice(1);
+    const title = `${typeLabel}: ${selectedObject.label}`;
+    const icon = selectedObject.type === 'document' ? '📄' : '📋';
 
-    // Note: Window metadata would ideally be passed here, but the current
-    // openWindow signature doesn't support metadata. For now, we'll use
-    // a global context or the object will be fetched by ID in the dashboard.
-    // TODO: Extend openWindow to accept metadata parameter
+    // Protocol C4.3: Deep Context Injection
+    // Inject sovereign object metadata into the window lifecycle
+    openWindow('sovereign-dashboard', title, icon, {
+      objectId: selectedObject.id,
+      objectType: selectedObject.type,
+      context: 'axiom-fs',
+    });
   };
 
   // Handler: Show Relations in Lattice
@@ -146,14 +145,14 @@ export const AxiomFSDetailPanel = () => {
             <button
               onClick={handleOpenDocument}
               className='w-full rounded-md bg-[var(--tf-cyan)] py-2 text-xs font-bold text-black hover:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-white uppercase tracking-wider'
-              data-testid='open-document-btn'
+              data-testid='open-document-button'
             >
               OPEN DOCUMENT
             </button>
             <button
               onClick={handleShowRelations}
               className='w-full rounded-md border border-[var(--tf-glass-border)] py-2 text-xs font-bold text-white hover:bg-white/5 transition-colors focus:outline-none focus:ring-1 focus:ring-[var(--tf-cyan)] uppercase tracking-wider'
-              data-testid='show-relations-btn'
+              data-testid='show-relations-button'
             >
               SHOW RELATIONS
             </button>

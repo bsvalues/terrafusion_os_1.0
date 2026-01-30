@@ -162,6 +162,13 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
         try
         {
+            if (_moduleStatuses.Count == 0)
+            {
+                await InitializeModuleSystemAsync();
+                status.ModuleCount = _moduleStatuses.Count;
+                status.HealthyModules = _moduleStatuses.Values.Count(m => m.IsHealthy);
+            }
+
             // Check core system components
             status.SystemComponents["ModuleLoader"] = await CheckModuleLoaderHealthAsync();
             status.SystemComponents["LegacyIntegration"] = await CheckLegacyIntegrationHealthAsync();

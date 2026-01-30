@@ -184,8 +184,8 @@ describe('SnapPreview Component', () => {
       );
       const preview = screen.getByTestId('snap-preview');
 
-      // Should have cyan border (TerraFusion brand)
-      expect(preview.className).toMatch(/border-cyan|border-\[var(--tf-transcend-highlight)\]/);
+      // Should have brand color border (check for variable name or cyan)
+      expect(preview.className).toContain('border-[var(--tf-transcend-highlight)]');
     });
 
     it('has translucent background', () => {
@@ -444,7 +444,7 @@ describe('Store Integration (snapWindow)', () => {
   const createTestWindow = () => {
     let windowId = '';
     act(() => {
-      windowId = useDesktopStore.getState().openWindow('test-module', 'Test Window', '📦');
+      windowId = useDesktopStore.getState().openWindow('test-module', 'Test Window', 'Activity');
     });
     return windowId;
   };
@@ -544,7 +544,7 @@ describe('Keyboard Shortcuts', () => {
     let windowId = '';
     act(() => {
       const { openWindow, focusWindow } = useDesktopStore.getState();
-      windowId = openWindow('test-module', 'Test Window', '📦');
+      windowId = openWindow('test-module', 'Test Window', 'Activity');
       focusWindow(windowId);
     });
     return windowId;

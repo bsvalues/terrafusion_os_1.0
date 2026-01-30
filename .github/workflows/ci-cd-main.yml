@@ -12,8 +12,26 @@ name: 🏛️ TerraFusion OS - Main CI/CD Pipeline
 on:
   push:
     branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '*.sln'
+      - 'Directory.Build.props'
+      - '.github/workflows/ci-cd-main.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '*.sln'
+      - 'Directory.Build.props'
+      - '.github/workflows/ci-cd-main.yml'
   workflow_dispatch:
 
 env:

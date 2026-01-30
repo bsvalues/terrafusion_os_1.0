@@ -802,3 +802,5 @@ For licensing inquiries: licensing@terrafusion.gov
 [![Twitter Follow](https://img.shields.io/twitter/follow/TerraFusionOS?style=social)](https://twitter.com/TerraFusionOS)
 
 </div>
+
+<!-- drift-guard smoke test -->

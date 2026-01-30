@@ -1,0 +1,117 @@
+:root {
+  color-scheme: dark;
+}
+
+.tf-root {
+  min-height: 100vh;
+  background: #0f172a; /* slate-900 */
+  color: #e2e8f0; /* slate-200 */
+  padding: 32px;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+}
+
+.tf-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tf-logo {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  color: #a5b4fc; /* indigo-200 */
+}
+
+.tf-title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.tf-subtitle {
+  margin: 4px 0 0;
+  color: rgba(226, 232, 240, 0.65);
+  font-size: 14px;
+}
+
+.tf-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .tf-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.tf-card {
+  border-radius: 18px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition:
+    border-color 120ms ease,
+    transform 120ms ease;
+  cursor: pointer;
+}
+
+.tf-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.tf-cardTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+.tf-indigo {
+  color: #c7d2fe;
+}
+.tf-emerald {
+  color: #a7f3d0;
+}
+
+.tf-cardBig {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.tf-cardSmall {
+  margin-top: 4px;
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.55);
+}
+
+.tf-footer {
+  margin-top: 26px;
+  text-align: center;
+  font-size: 11px;
+  color: rgba(226, 232, 240, 0.45);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}

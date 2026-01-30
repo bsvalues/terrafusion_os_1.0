@@ -8,12 +8,18 @@
   "tier": 1,
   "status": "active",
   "pinned": true,
+  "autostart": true,
   "version": "1.0.0",
   "intent": "gen2",
-  "runnable": false,
+  "runnable": true,
+  "runtime": "deno",
+  "start": {
+    "cmd": "deno",
+    "args": ["task", "dev"]
+  },
   "entry": {
-    "type": "route",
-    "route": "/gen2/dossier"
+    "type": "url",
+    "url": "http://localhost:3007/"
   },
   "tags": ["records", "documents", "dossier", "gen2"],
   "permissions": ["county:read", "documents:read", "documents:write"]
