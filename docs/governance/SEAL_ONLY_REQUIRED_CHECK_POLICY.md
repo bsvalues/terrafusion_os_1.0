@@ -97,6 +97,26 @@ if: ${{ github.actor != 'dependabot[bot]' && !contains(github.head_ref || github
 
 `tests/governance/required-check-drift.test.ts` asserts this policy as a hard invariant.
 
+### 4. Unskippable Assertion (Phase 4F)
+
+The drift test validates that `seal-gate-fast.yml` has:
+- **No `paths:` or `paths-ignore:` filters** — SEAL cannot be accidentally bypassed
+- **Triggers on both `pull_request:` and `push:`** — covers all merge paths
+
+This prevents a well-meaning optimization from creating a blind spot in the only required gate.
+
+---
+
+## Why SEAL-Only? (Executive Summary)
+
+| Phase | Problem | Solution |
+|-------|---------|----------|
+| **4D** | 156-run queue backlog blocked 27 PRs | Discovered only SEAL was actually required |
+| **4E** | Heavy workflows caused queue storms | Added concurrency + actor guards |
+| **4F** | Future drift could re-introduce bypass | Added unskippable test assertions |
+
+**Result:** CI is now fail-closed where it matters, fail-open where it's informational, and self-thinning under pressure.
+
 ---
 
 ## Modification Procedure
