@@ -42,7 +42,7 @@ describe('WindowPeek Integration', () => {
       // Add a window to desktop
       let windowId: string;
       act(() => {
-        windowId = useDesktopStore.getState().openWindow('costforge', 'CostForge', '💎');
+        windowId = useDesktopStore.getState().openWindow('costforge', 'CostForge', 'Layers');
       });
 
       // Show peek for that window
@@ -60,7 +60,7 @@ describe('WindowPeek Integration', () => {
       // Add a window
       let windowId: string;
       act(() => {
-        windowId = useDesktopStore.getState().openWindow('costforge', 'CostForge', '💎');
+        windowId = useDesktopStore.getState().openWindow('costforge', 'CostForge', 'Layers');
       });
 
       // Show peek

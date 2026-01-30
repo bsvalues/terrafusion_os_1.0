@@ -1,3 +1,4 @@
+import { getViteEnv } from '@/env/getViteEnv';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { clearDevSession, getSession, setDevSession, type Session } from '../auth/session';
 import {
@@ -41,13 +42,10 @@ export function PilotApiDemo(): React.ReactElement {
   const [lastChecked, setLastChecked] = useState<string | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
 
-  const baseUrl = useMemo(
-    () =>
-      (typeof import.meta !== 'undefined' && import.meta.env?.VITE_PILOT_API_URL) ||
-      (typeof process !== 'undefined' && process.env?.PILOT_API_URL) ||
-      'http://localhost:3333',
-    []
-  );
+  const baseUrl = useMemo(() => {
+    const env = getViteEnv();
+    return env.VITE_PILOT_API_URL || env.PILOT_API_URL || 'http://localhost:3333';
+  }, []);
 
   const permissionsValue = overrides.permissions;
 

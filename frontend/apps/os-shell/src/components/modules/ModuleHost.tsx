@@ -16,6 +16,7 @@
 
 import React, { Suspense, useCallback, useEffect, useMemo, useRef } from 'react';
 import { getModuleEntry, ModuleRenderer, normalizeModuleId } from '../../config/moduleComponents';
+import { useModuleRegistryStore, type ModuleDefinition } from '../../stores/moduleRegistryStore';
 import { useModuleLoaderActions, useModuleLoadState } from '../../stores/moduleLoaderStore';
 import { ModuleErrorBoundary } from './ModuleErrorBoundary';
 
@@ -80,6 +81,7 @@ const EmptyState: React.FC = () => (
 interface ModuleContentProps {
   moduleId: string;
   normalizedId: string;
+  module: ModuleDefinition | undefined;
   onRetry: () => void;
   onClose?: () => void;
 }
@@ -87,6 +89,7 @@ interface ModuleContentProps {
 const ModuleContent: React.FC<ModuleContentProps> = ({
   moduleId,
   normalizedId,
+  module,
   onRetry,
   onClose,
 }) => {
@@ -110,6 +113,21 @@ const ModuleContent: React.FC<ModuleContentProps> = ({
   }
 
   // Fallback to ModuleRenderer (handles placeholders and unknown modules)
+  if (!module) {
+    return (
+      <ModuleErrorBoundary
+        moduleId={normalizedId}
+        moduleName={normalizedId}
+        onRetry={onRetry}
+        onClose={onClose}
+      >
+        <div className='w-full h-full flex items-center justify-center text-slate-500'>
+          Missing module definition for <code className='text-cyan-400/70'>{moduleId}</code>
+        </div>
+      </ModuleErrorBoundary>
+    );
+  }
+
   return (
     <ModuleErrorBoundary
       moduleId={normalizedId}
@@ -117,7 +135,7 @@ const ModuleContent: React.FC<ModuleContentProps> = ({
       onRetry={onRetry}
       onClose={onClose}
     >
-      <ModuleRenderer moduleId={normalizedId} />
+      <ModuleRenderer module={module} />
     </ModuleErrorBoundary>
   );
 };
@@ -143,6 +161,7 @@ const ModuleContent: React.FC<ModuleContentProps> = ({
 export const ModuleHost: React.FC<ModuleHostProps> = ({ moduleId, onClose, className = '' }) => {
   // Normalize the module ID
   const normalizedId = useMemo(() => normalizeModuleId(moduleId), [moduleId]);
+  const module = useModuleRegistryStore((state) => state.getModuleById(normalizedId));
 
   // Get load state from store
   const loadState = useModuleLoadState(normalizedId);
@@ -213,6 +232,7 @@ export const ModuleHost: React.FC<ModuleHostProps> = ({ moduleId, onClose, class
         <ModuleContent
           moduleId={moduleId}
           normalizedId={normalizedId}
+          module={module}
           onRetry={handleRetry}
           onClose={handleClose}
         />

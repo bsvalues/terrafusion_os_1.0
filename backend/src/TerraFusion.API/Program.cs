@@ -26,6 +26,7 @@ using TerraFusion.Core.Services;
 using TerraFusion.Core.PACS;
 using TerraFusion.API.Services.SpecLock;
 using TerraFusion.API.Services.Marketplace;
+using TerraFusion.API.Services.Telemetry;
 // Conditional DB providers
 using Npgsql;
 using Microsoft.Data.Sqlite;
@@ -94,6 +95,19 @@ builder.Logging.AddDebug();
 
 // Add basic services with JSON serialization configuration
 builder.Services.AddControllers()
+    .ConfigureApplicationPartManager(manager =>
+    {
+        var defaultProvider = manager.FeatureProviders
+            .FirstOrDefault(p => p is Microsoft.AspNetCore.Mvc.Controllers.ControllerFeatureProvider);
+        if (defaultProvider != null)
+        {
+            manager.FeatureProviders.Remove(defaultProvider);
+        }
+
+        manager.FeatureProviders.Add(
+            new TerraFusion.API.Controllers.NamespaceExcludingControllerFeatureProvider(
+                "TerraFusion.AI.Controllers"));
+    })
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
@@ -185,6 +199,9 @@ builder.Services.AddSingleton<IModuleLoaderService, ModuleLoaderService>();
 // ✅ RE-ENABLED: Fixed with BackgroundService pattern and periodic refresh loop
 builder.Services.AddHostedService<ModuleLoaderService>(provider =>
     (ModuleLoaderService)provider.GetRequiredService<IModuleLoaderService>());
+
+// Agent telemetry buffer (read-only feed)
+builder.Services.AddSingleton<IAgentTelemetryService>(_ => new AgentTelemetryService(capacity: 1000));
 
 // Register module services
 builder.Services.AddScoped<TerraFusion.Core.Services.IModuleService, TerraFusion.Core.Services.ModuleService>();

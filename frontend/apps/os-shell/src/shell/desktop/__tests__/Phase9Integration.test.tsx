@@ -35,7 +35,7 @@ const mockModules: ModuleDefinition[] = [
     name: 'Government Edition',
     displayName: 'Government Edition',
     description: 'Core government operations dashboard',
-    icon: '🏛️',
+    icon: 'Building2',
     category: 'core',
     tier: 'Tier1',
     status: 'active',
@@ -49,7 +49,7 @@ const mockModules: ModuleDefinition[] = [
     name: 'CostForge AI',
     displayName: 'CostForge AI Champion',
     description: 'AI-powered cost analysis',
-    icon: '💰',
+    icon: 'Calculator',
     category: 'ai',
     tier: 'Tier1',
     status: 'active',
@@ -63,7 +63,7 @@ const mockModules: ModuleDefinition[] = [
     name: 'GIS Pro',
     displayName: 'GIS Professional',
     description: 'Geographic information systems',
-    icon: '🗺️',
+    icon: 'Map',
     category: 'mapping',
     tier: 'Tier2',
     status: 'active',
@@ -471,7 +471,7 @@ describe('Phase 9: Multi-Store Coordination', () => {
 
     // Add some state
     act(() => {
-      useDesktopStore.getState().openWindow('test', 'Test', '🔧');
+      useDesktopStore.getState().openWindow('test', 'Test', 'Settings');
       useStartMenuStore.getState().open();
       useNotificationStore.getState().addNotification({
         title: 'T',

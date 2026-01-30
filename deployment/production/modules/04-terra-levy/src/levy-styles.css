@@ -1,0 +1,123 @@
+/**
+ * TerraLevy Quantum Styles
+ * Government. Transcended. - Championship Excellence
+ */
+
+/* Tailwind via CDN handles most styling */
+/* These are the custom Terra classes used by the SDK components */
+
+.terra-glass {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.terra-gradient-quantum {
+  background: linear-gradient(135deg, #00ffee 0%, #0099ff 50%, #00ffaa 100%);
+}
+
+.quantum-pulse {
+  animation: quantum-pulse 2s ease-in-out infinite;
+}
+
+@keyframes quantum-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.hover-quantum {
+  transition: all 0.3s ease;
+}
+
+.hover-quantum:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0, 255, 238, 0.2);
+}
+
+/* Background */
+.bg-terra-midnight {
+  background-color: #0a0e1a;
+}
+
+/* Toast styles */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toast {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: toast-in 0.3s ease;
+}
+
+.toast-success {
+  background: rgba(0, 255, 170, 0.15);
+  border: 1px solid rgba(0, 255, 170, 0.5);
+  color: #00ffaa;
+}
+
+.toast-error {
+  background: rgba(255, 0, 85, 0.15);
+  border: 1px solid rgba(255, 0, 85, 0.5);
+  color: #ff0055;
+}
+
+.toast-warning {
+  background: rgba(255, 170, 0, 0.15);
+  border: 1px solid rgba(255, 170, 0, 0.5);
+  color: #ffaa00;
+}
+
+.toast-info {
+  background: rgba(0, 153, 255, 0.15);
+  border: 1px solid rgba(0, 153, 255, 0.5);
+  color: #0099ff;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 255, 238, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 238, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 238, 0.4);
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 255, 238, 0.3);
+}

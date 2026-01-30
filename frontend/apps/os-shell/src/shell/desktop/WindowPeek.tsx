@@ -11,6 +11,7 @@
 import { cn } from '@/lib/utils';
 import React, { useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { getLucideIcon } from '../../config/iconMap';
 import { useWindowPeek } from '../../hooks/useWindowPeek';
 import { useDesktopStore } from '../../stores/desktopStore';
 import {
@@ -70,6 +71,8 @@ export const WindowPeek: React.FC<WindowPeekProps> = ({ className }) => {
   const description = targetWindow?.moduleId
     ? MODULE_DESCRIPTIONS[targetWindow.moduleId] || 'TerraFusion Module'
     : 'Window';
+  const iconName = targetWindow?.icon ?? 'Activity';
+  const Icon = getLucideIcon(iconName);
 
   // Handle click to focus window
   const handleClick = useCallback(() => {
@@ -134,7 +137,7 @@ export const WindowPeek: React.FC<WindowPeekProps> = ({ className }) => {
       <div className='flex items-center justify-between px-3 py-2 border-b border-white/10'>
         <div className='flex items-center gap-2 min-w-0'>
           <span className='text-xl flex-shrink-0' aria-hidden='true'>
-            {targetWindow.icon}
+            <Icon className='h-5 w-5 text-white' />
           </span>
           <span className='text-sm font-medium text-white truncate'>{targetWindow.title}</span>
         </div>

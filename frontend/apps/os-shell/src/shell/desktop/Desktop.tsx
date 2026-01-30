@@ -10,17 +10,15 @@
  */
 
 import { useCallback, useEffect, useRef } from 'react';
-import { colors } from '../../design-system/tokens/colors';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useAltTabStore } from '../../stores/altTabStore';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
-import { SovereignMenu } from '../../ui/navigation/SovereignMenu';
 import { CommandPalette } from '../command-palette/CommandPalette';
 import { ToastContainer } from '../notifications/ToastContainer';
 import { AltTabSwitcher } from './AltTabSwitcher';
-import { DesktopBackground } from './DesktopBackground';
+import { AmbientCompositor } from '../ambient/AmbientCompositor';
 import { DesktopContextMenu } from './DesktopContextMenu';
 import { DesktopErrorBoundary } from './DesktopErrorBoundary';
 import { DesktopIconGrid } from './DesktopIconGrid';
@@ -28,6 +26,9 @@ import { StartMenu } from './StartMenu';
 import { TaskbarWithNotifications } from './TaskbarWithNotifications';
 import { WindowManager } from './WindowManager';
 import { WindowPeek } from './WindowPeek';
+import { SentinelPanel } from '../../sentinel/SentinelPanel';
+import { useSentinelStore } from '../../sentinel/sentinelStore';
+import { useIpcBridge } from '../../ipc/useIpcBridge';
 
 // ============================================================================
 // Types
@@ -73,6 +74,10 @@ export interface DesktopProps {
  * ```
  */
 export function Desktop({ className = '' }: DesktopProps) {
+  // Install IPC bridge for app ↔ shell communication (Phase 6)
+  useIpcBridge();
+
+  const { panelOpen, setPanelOpen } = useSentinelStore();
   // Subscribe to Start Menu state
   const isStartMenuOpen = useStartMenuStore((state) => state.isOpen);
   const toggleStartMenu = useStartMenuStore((state) => state.toggle);
@@ -277,17 +282,15 @@ export function Desktop({ className = '' }: DesktopProps) {
       aria-label='TerraFusion Desktop'
       tabIndex={-1}
       className={`
-        relative w-screen h-screen overflow-hidden
+        relative w-screen h-screen overflow-hidden bg-transparent
         ${className}
       `.trim()}
-      style={{
-        backgroundColor: colors.semantic.background.void,
-      }}
       onMouseDown={handleDesktopClick}
       onContextMenu={handleContextMenu}
     >
-      {/* Layer 0: Background */}
-      <DesktopBackground />
+
+      {/* Layer 0: Ambient Background - ALWAYS ON (CSS mode) */}
+      <AmbientCompositor forcedMode='css' />
 
       {/* Layer 0.5: Desktop Icons (Priority 3) */}
       <DesktopIconGrid className='absolute top-4 left-4 z-[1]' />
@@ -300,11 +303,6 @@ export function Desktop({ className = '' }: DesktopProps) {
 
       {/* Layer 1001: Start Menu (conditional) */}
       {isStartMenuOpen && <StartMenu />}
-
-      {/* Layer 1002: Sovereign Menu (Orbital Launcher) */}
-      <div className='absolute bottom-4 left-4 z-[1002]'>
-        <SovereignMenu />
-      </div>
 
       {/* Layer 50: Toast Notifications (bottom-right, above taskbar) */}
       <ToastContainer />
@@ -322,6 +320,8 @@ export function Desktop({ className = '' }: DesktopProps) {
 
       {/* Layer 9999: Window Peek Preview (Priority 13) */}
       <WindowPeek />
+
+      <SentinelPanel open={panelOpen} onClose={() => setPanelOpen(false)} />
     </div>
   );
 }

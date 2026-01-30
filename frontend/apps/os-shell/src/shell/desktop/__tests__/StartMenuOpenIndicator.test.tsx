@@ -71,7 +71,7 @@ const COSTFORGE_MODULE = {
   id: 'costforge',
   name: 'CostForge',
   description: 'Property Assessment',
-  icon: '💎',
+  icon: 'Layers',
   category: 'Core',
   status: 'active' as const,
 };
@@ -80,7 +80,7 @@ const ATLAS_MODULE = {
   id: 'atlas-ai',
   name: 'ATLAS',
   description: 'AI Intelligence',
-  icon: '🤖',
+  icon: 'Brain',
   category: 'AI',
   status: 'active' as const,
 };
@@ -89,7 +89,7 @@ const ANALYTICS_MODULE = {
   id: 'reporting',
   name: 'Analytics',
   description: 'Reporting Dashboard',
-  icon: '📊',
+  icon: 'BarChart3',
   category: 'Analytics',
   status: 'active' as const,
 };
