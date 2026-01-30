@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # 1. THE SOUL (Frontend / Shell)
+  # ==========================================
+  frontend:
+    build:
+      context: ./os-platform/development/tools/TerraFusionIDE
+      dockerfile: Dockerfile
+    container_name: terrafusion-soul
+    restart: always
+    ports:
+      - '8080:80'
+    depends_on:
+      - api
+      - cortex
+    networks:
+      - terrafusion-net
+
+  # ==========================================
+  # 2. THE BODY (Backend / Iron)
+  # ==========================================
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.API
+    container_name: terrafusion-iron
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - TF_MODULE_INTENT_FILTER=gen2
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+      - Redis__Configuration=redis:6379
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_SERVICE_NAME=terrafusion-iron
+    volumes:
+      - ./docs:/app/docs
+      - ./scripts:/app/scripts
+      - ./applications:/app/applications:ro
+    ports:
+      - '5000:5000'
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - terrafusion-net
+
+  # ==========================================
+  # 3. THE BRAIN (Cortex / Python)
+  # ==========================================
+  cortex:
+    build:
+      context: ./backend/terrafusion-bridge
+      dockerfile: Dockerfile
+    container_name: terrafusion-cortex
+    restart: always
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - REAL_IRON_API_URL=http://api:5000
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_SERVICE_NAME=terrafusion-cortex
+    ports:
+      - '8006:8006'
+    networks:
+      - terrafusion-net
+
+  # ==========================================
+  # INFRASTRUCTURE (Substrate)
+  # ==========================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: terrafusion-substrate-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-terrafusion_secure}
+      POSTGRES_DB: terrafusion
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - terrafusion-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: terrafusion-substrate-cache
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - terrafusion-net
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  terrafusion-net:
+    driver: bridge

@@ -4,7 +4,7 @@
 > Regenerate with: `python scripts/speclock-index-gen.py`
 
 **Version**: 1.0.0
-**Updated**: 2025-12-13
+**Updated**: 2025-12-14
 
 ---
 
@@ -25,6 +25,8 @@ Each lock is immutable once published — changes require a new version via Amen
 | `tf.dashboards.atlas_auto_remediation_benton_ops` | dashboards | ✅ active | v1.0.0 | 1/1 | 11 |
 | `tf.dashboards.atlas_auto_remediation_governance` | dashboards | ✅ active | v1.0.0 | 1/1 | 11 |
 | `tf.metrics.phase45_auto_remediation` | metrics | ✅ active | v1.0.0 | 0 | 11 |
+| `pacscontract.v1` | pacscontract | ✅ active | v1.0.0 | 2/2 | 36 |
+| `runtimecert.v1` | runtimecert | ✅ active | v1.0.0 | 0 | 23 |
 ## Lock Details
 
 ### RuntimeContract v1
@@ -212,6 +214,50 @@ Each lock is immutable once published — changes require a new version via Amen
 - ✅ [backend/tests/TerraFusion.Unit.Tests/Phase45/GrafanaDashboardValidationPhase45Tests.cs](backend/tests/TerraFusion.Unit.Tests/Phase45/GrafanaDashboardValidationPhase45Tests.cs)
 
 **CI Tags**: `speclock`, `metrics`, `phase45`
+
+---
+
+### PACS Contract v1
+
+**ID**: `pacscontract.v1`  
+**Surface**: `pacscontract`  
+**Status**: active  
+**Purpose**: Immutable contract defining TerraFusion OS dependencies on Harris PACS (TrueAutomation) database systems
+
+**Specification**:
+- ✅ [docs/spec-lock/locks/pacscontract/pacscontract.v1/SPEC_LOCK_v1.0.0.md](docs/spec-lock/locks/pacscontract/pacscontract.v1/SPEC_LOCK_v1.0.0.md)
+- ✅ [docs/spec-lock/locks/pacscontract/pacscontract.v1/speclock.spec.json](docs/spec-lock/locks/pacscontract/pacscontract.v1/speclock.spec.json)
+
+**Generated Artifacts**:
+- ✅ [docs/spec-lock/locks/pacscontract/pacscontract.v1/generated/pacscontract.schema.json](docs/spec-lock/locks/pacscontract/pacscontract.v1/generated/pacscontract.schema.json)
+- ✅ [docs/spec-lock/locks/pacscontract/pacscontract.v1/generated/pacscontract.openapi.yaml](docs/spec-lock/locks/pacscontract/pacscontract.v1/generated/pacscontract.openapi.yaml)
+
+**Tests** (36 assertions):
+- ✅ [backend/tests/TerraFusion.Unit.SmokeTests/PacsContractTests.cs](backend/tests/TerraFusion.Unit.SmokeTests/PacsContractTests.cs)
+
+**CI Tags**: `speclock`, `pacscontract`, `governance`, `pacs`, `database`
+
+**Related**: `runtimecontract.v1`, `amendment.v1`
+
+---
+
+### Runtime Certification v1
+
+**ID**: `runtimecert.v1`  
+**Surface**: `runtimecert`  
+**Status**: active  
+**Purpose**: Runtime certification gate for county go-live acceptance. No cert = no go-live.
+
+**Specification**:
+- ✅ [docs/spec-lock/locks/runtimecert/runtimecert.v1/speclock.spec.json](docs/spec-lock/locks/runtimecert/runtimecert.v1/speclock.spec.json)
+- ✅ [docs/spec-lock/locks/runtimecert/runtimecert.v1/speclock.spec.json](docs/spec-lock/locks/runtimecert/runtimecert.v1/speclock.spec.json)
+
+**Tests** (23 assertions):
+- ✅ [backend/tests/TerraFusion.Unit.SmokeTests/CertificationTests.cs](backend/tests/TerraFusion.Unit.SmokeTests/CertificationTests.cs)
+
+**CI Tags**: `speclock`, `runtimecert`, `governance`, `certification`, `go-live`
+
+**Related**: `runtimecontract.v1`, `pacscontract.v1`
 
 ---
 ## Generator Registry

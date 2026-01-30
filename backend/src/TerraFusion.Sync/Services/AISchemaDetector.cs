@@ -157,6 +157,8 @@ namespace TerraFusion.Sync.Services
 
         private async Task<SystemIdentification> IdentifyLegacySystemAsync(SqlConnection connection, List<string> tables)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             _logger.LogInformation("🔍 AI analyzing system signatures...");
 
             foreach (var signature in _knownSystems.Values)
@@ -220,6 +222,8 @@ namespace TerraFusion.Sync.Services
 
         private async Task<List<string>> AnalyzeCriticalTablesAsync(SqlConnection connection, List<string> tables)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             var foundCriticalTables = new List<string>();
 
             foreach (var criticalTable in _criticalTables)

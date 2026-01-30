@@ -143,13 +143,13 @@ const CountiesHub: React.FC = () => {
   const getCountyColor = (type: string) => {
     switch (type) {
       case 'arcgis':
-        return '#00ffee';
+        return 'var(--tf-transcend-highlight)';
       case 'custom':
-        return '#00ff88';
+        return 'var(--success-green)';
       case 'hybrid':
-        return '#ffaa00';
+        return 'var(--warning-amber)';
       default:
-        return '#00ffee';
+        return 'var(--tf-transcend-highlight)';
     }
   };
   const initiateMigration = (countyId: string) => {
@@ -173,7 +173,7 @@ const CountiesHub: React.FC = () => {
           style={{
             fontSize: '2.5rem',
             fontWeight: 900,
-            background: 'linear-gradient(135deg, #0099ff, #00ffee, #00ffaa)',
+            background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight), var(--tf-accent-success))',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -217,7 +217,7 @@ const CountiesHub: React.FC = () => {
               style={{
                 fontSize: '2.5rem',
                 fontWeight: 900,
-                background: 'linear-gradient(135deg, #00ffee, #00ffaa)',
+                background: 'linear-gradient(135deg, var(--tf-transcend-highlight), var(--tf-accent-success))',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -264,9 +264,9 @@ const CountiesHub: React.FC = () => {
             style={{
               background:
                 filter === filterOption.key
-                  ? 'linear-gradient(135deg, #0099ff, #00ffee)'
+                  ? 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight))'
                   : 'rgba(0,153,255,0.1)',
-              color: filter === filterOption.key ? '#000' : '#00ffee',
+              color: filter === filterOption.key ? 'var(--tf-void-black)' : 'var(--tf-transcend-highlight)',
               transform: filter === filterOption.key ? 'scale(1.05)' : 'scale(1)',
             }}
             className='font-semibold'
@@ -328,7 +328,7 @@ const CountiesHub: React.FC = () => {
                 style={{
                   fontSize: '1.4rem',
                   fontWeight: 700,
-                  color: '#fff',
+                  color: 'var(--tf-text-primary)',
                 }}
               >
                 {county.name}
@@ -337,7 +337,7 @@ const CountiesHub: React.FC = () => {
                 style={{
                   background:
                     county.status === 'ready' ? 'rgba(0,255,136,0.1)' : 'rgba(255,170,0,0.1)',
-                  color: county.status === 'ready' ? '#00ff88' : '#ffaa00',
+                  color: county.status === 'ready' ? 'var(--success-green)' : 'var(--warning-amber)',
                   border:
                     county.status === 'ready'
                       ? '1px solid rgba(0,255,136,0.3)'
@@ -395,7 +395,7 @@ const CountiesHub: React.FC = () => {
                     background: 'rgba(0,255,238,0.2)',
                     borderRadius: '10px',
                     fontSize: '0.75rem',
-                    color: '#00ffee',
+                    color: 'var(--tf-transcend-highlight)',
                   }}
                 >
                   {county.systemBadge}
@@ -410,7 +410,7 @@ const CountiesHub: React.FC = () => {
                   style={{
                     height: '100%',
                     width: `${county.integrationScore}%`,
-                    background: 'linear-gradient(90deg, #0099ff, #00ffee, #00ffaa)',
+                    background: 'linear-gradient(90deg, var(--tf-network-blue), var(--tf-transcend-highlight), var(--tf-accent-success))',
                     transition: 'width 1s ease',
                   }}
                 />
@@ -457,7 +457,7 @@ const CountiesHub: React.FC = () => {
           style={{
             fontSize: '1.8rem',
             fontWeight: 700,
-            background: 'linear-gradient(135deg, #0099ff, #00ffee, #00ffaa)',
+            background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight), var(--tf-accent-success))',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -497,7 +497,7 @@ const CountiesHub: React.FC = () => {
                 style={{
                   fontSize: '1.8rem',
                   fontWeight: 900,
-                  color: '#00ffee',
+                  color: 'var(--tf-transcend-highlight)',
                   marginBottom: '0.5rem',
                 }}
               >

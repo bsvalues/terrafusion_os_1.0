@@ -4,27 +4,27 @@ const BrandKit: React.FC = () => {
   const colorPalette = [
     {
       name: 'Trust Blue',
-      hex: '#0099ff',
+      hex: 'var(--tf-network-blue)',
       label: 'PRIMARY',
     },
     {
       name: 'Transcendence Cyan',
-      hex: '#00ffee',
+      hex: 'var(--tf-transcend-highlight)',
       label: 'TRANSCEND',
     },
     {
       name: 'Success Green',
-      hex: '#00ffaa',
+      hex: 'var(--tf-accent-success)',
       label: 'ACCENT',
     },
     {
       name: 'Deep Space',
-      hex: '#0b1020',
+      hex: 'var(--tf-bg-surface)',
       label: 'DARK',
     },
     {
       name: 'Midnight',
-      hex: '#1a1f3a',
+      hex: 'var(--tf-bg-surface)',
       label: 'SURFACE',
     },
   ];
@@ -64,8 +64,8 @@ const BrandKit: React.FC = () => {
     <div
       style={{
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
-        background: '#0b1020',
-        color: '#ffffff',
+        background: 'var(--tf-bg-surface)',
+        color: 'var(--tf-text-primary)fff',
         minHeight: '100vh',
         lineHeight: 1.6,
       }}
@@ -90,7 +90,7 @@ const BrandKit: React.FC = () => {
               <button
                 onClick={() => setActiveSection(section)}
                 style={{
-                  color: activeSection === section ? '#00ffee' : 'rgba(255,255,255,0.7)',
+                  color: activeSection === section ? 'var(--tf-transcend-highlight)' : 'rgba(255,255,255,0.7)',
                   transition: 'all 0.3s ease',
                   padding: '0.5rem 1rem',
                   borderRadius: '50px',
@@ -114,7 +114,7 @@ const BrandKit: React.FC = () => {
           background: `
           radial-gradient(circle at 20% 50%, rgba(0,153,255,0.3) 0%, transparent 50%),
           radial-gradient(circle at 80% 50%, rgba(0,255,238,0.2) 0%, transparent 50%),
-          linear-gradient(180deg, #0b1020 0%, #0a0f1c 100%)
+          linear-gradient(180deg, var(--tf-bg-surface) 0%, var(--tf-void-black) 100%)
         `,
         }}
         className='flex items-center'
@@ -134,7 +134,7 @@ const BrandKit: React.FC = () => {
               fontWeight: 100,
               letterSpacing: '-2px',
               marginBottom: '1rem',
-              background: 'linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%)',
+              background: 'linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-transcend-highlight) 50%, var(--tf-accent-success) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -148,7 +148,7 @@ const BrandKit: React.FC = () => {
             style={{
               fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
               fontWeight: 200,
-              color: '#00ffee',
+              color: 'var(--tf-transcend-highlight)',
               marginBottom: '0.5rem',
               letterSpacing: '2px',
             }}
@@ -201,7 +201,7 @@ const BrandKit: React.FC = () => {
                   style={{
                     fontSize: '1.5rem',
                     fontWeight: 300,
-                    color: '#00ffee',
+                    color: 'var(--tf-transcend-highlight)',
                     marginBottom: '1rem',
                   }}
                 >
@@ -232,7 +232,7 @@ const BrandKit: React.FC = () => {
                   style={{
                     fontSize: '1.5rem',
                     fontWeight: 300,
-                    color: '#00ffee',
+                    color: 'var(--tf-transcend-highlight)',
                     marginBottom: '1rem',
                   }}
                 >
@@ -263,7 +263,7 @@ const BrandKit: React.FC = () => {
                   style={{
                     fontSize: '1.5rem',
                     fontWeight: 300,
-                    color: '#00ffee',
+                    color: 'var(--tf-transcend-highlight)',
                     marginBottom: '1rem',
                   }}
                 >
@@ -432,7 +432,7 @@ const BrandKit: React.FC = () => {
                     style={{
                       fontSize: '1.25rem',
                       fontWeight: 400,
-                      color: '#00ffee',
+                      color: 'var(--tf-transcend-highlight)',
                       marginBottom: '0.5rem',
                     }}
                   >
@@ -452,7 +452,7 @@ const BrandKit: React.FC = () => {
           style={{
             fontSize: '2rem',
             fontWeight: 100,
-            background: 'linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%)',
+            background: 'linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-transcend-highlight) 50%, var(--tf-accent-success) 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -463,7 +463,7 @@ const BrandKit: React.FC = () => {
         </div>
         <div
           style={{
-            color: '#00ffee',
+            color: 'var(--tf-transcend-highlight)',
             fontSize: '1.25rem',
             letterSpacing: '2px',
           }}

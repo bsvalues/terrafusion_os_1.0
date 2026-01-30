@@ -4,7 +4,36 @@
 # Global ownership
 * @government-leads @platform-team @security-team
 
+# ═══════════════════════════════════════════════════════════════════════════
+# CONSTITUTIONAL CONTROLS - CI Governance (CRITICAL)
+# See: docs/ci/CI_CONSTITUTION.md
+# ═══════════════════════════════════════════════════════════════════════════
+
+# CI Seal Gate (single source of truth for pass/fail)
+scripts/ci-seal-gate.ps1 @bsvalues @government-leads @security-team
+
+# Runtime Certification (production readiness validation)
+tools/runtime-cert/ @bsvalues @government-leads @security-team
+
+# SpecLock infrastructure (contract enforcement)
+scripts/speclock-* @bsvalues @platform-team @security-team
+docs/spec-lock/ @bsvalues @platform-team @security-team
+
+# CI Constitution and governance documents
+docs/ci/CI_CONSTITUTION.md @bsvalues @government-leads @security-team
+docs/ci/archived/ @bsvalues @devops-team
+
+# Production smoke verification
+scripts/prod-smoke-verify.ps1 @bsvalues @devops-team @security-team
+scripts/prod-smoke-verify.sh @bsvalues @devops-team @security-team
+
+# Tier 1 workflow spine (orchestrators)
+.github/workflows/ci.yml @bsvalues @devops-team @security-team
+.github/workflows/deployment.yml @bsvalues @devops-team @security-team
+
+# ═══════════════════════════════════════════════════════════════════════════
 # AI Agent Guidance & Instructions (CRITICAL PROTECTION)
+# ═══════════════════════════════════════════════════════════════════════════
 .github/copilot-instructions.md @government-leads @platform-team @ai-infrastructure-team @security-team
 config/ai-system-prompts.json @government-leads @ai-infrastructure-team @platform-team
 TERRAFUSION_COPILOT_VALIDATION_REPORT.md @government-leads @platform-team @ai-infrastructure-team

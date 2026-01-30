@@ -33,8 +33,7 @@ public static class IncidentServiceExtensions
             configuration.GetSection(IncidentExplanationConfiguration.SectionName));
 
         // Register core triage engine
-        // TODO: Phase 39 implementation - replace with concrete IncidentTriageEngine
-        // services.AddScoped<IIncidentTriageEngine, IncidentTriageEngine>();
+        services.AddScoped<IIncidentTriageEngine, IncidentTriageEngine>();
 
         // Register explanation service based on configuration
         var explanationConfig = configuration

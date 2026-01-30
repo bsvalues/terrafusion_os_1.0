@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
+    <IsTestProject>false</IsTestProject>
     <!-- Avoid duplicate assembly attributes: project has manual AssemblyInfo -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <!-- Avoid duplicate TargetFramework attribute due to custom assembly attribute sources -->
@@ -48,6 +48,8 @@
     <!-- Exclude performance/benchmark suites and their dedicated project files -->
     <Compile Remove="performance\**\*.cs" />
     <Compile Remove="TerraFusion.Performance.Tests\**\*.cs" />
+    <!-- Exclude nested test project sources (handled by their own csproj files) -->
+    <Compile Remove="TerraFusion.*\**\*.cs" />
     <!-- Temporarily exclude all integration tests (require Testcontainers/infra) -->
     <Compile Remove="integration\**\*.cs" />
     <!-- Exclude Testcontainers-based setup until containerized integration harness is configured -->

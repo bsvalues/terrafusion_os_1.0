@@ -5,12 +5,7 @@
  * @testCategory Integration Testing
  */
 
-import React, { useState } from 'react';
-import { render, screen, within, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { axe } from 'jest-axe';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,9 +14,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
+import { useState } from 'react';
 
 // ============================================================================
 // TEST COMPONENTS - Realistic Floating UI Examples
@@ -270,7 +270,8 @@ describe('Integration: Tooltip + Button Workflow', () => {
       // Unhover to hide tooltip
       await user.unhover(saveButton);
       await waitFor(() => {
-        expect(screen.queryByText(/save \(ctrl\+s\)/i)).not.toBeInTheDocument();
+        const tooltip = screen.getByText(/save \(ctrl\+s\)/i).closest('[role="tooltip"]');
+        expect(tooltip).toHaveAttribute('aria-hidden', 'true');
       });
     });
 
@@ -601,29 +602,36 @@ describe('Integration: Multiple Tooltips', () => {
     it('should render multiple tooltip triggers', () => {
       render(<MultipleTooltips />);
 
-      expect(screen.getByRole('button', { name: /hover me/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /hover me too/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /and me/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^hover me$/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^hover me too$/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^and me$/i })).toBeInTheDocument();
     });
 
     it('should show only one tooltip at a time', async () => {
       const user = userEvent.setup();
       render(<MultipleTooltips />);
 
+      const firstButton = screen.getByRole('button', { name: /^hover me$/i });
+      const secondButton = screen.getByRole('button', { name: /^hover me too$/i });
+
       // Hover first button
-      await user.hover(screen.getByRole('button', { name: /hover me$/i }));
+      await user.hover(firstButton);
       await waitFor(() => {
         expect(screen.getByText(/first tooltip/i)).toBeVisible();
       });
 
+      // Move off the first button (simulates real pointer movement)
+      await user.unhover(firstButton);
+
       // Hover second button
-      await user.hover(screen.getByRole('button', { name: /hover me too/i }));
+      await user.hover(secondButton);
       await waitFor(() => {
         expect(screen.getByText(/second tooltip/i)).toBeVisible();
       });
 
-      // First tooltip should be gone
-      expect(screen.queryByText(/first tooltip/i)).not.toBeInTheDocument();
+      // First tooltip should now be hidden
+      const firstTooltip = screen.getByText(/first tooltip/i).closest('[role="tooltip"]');
+      expect(firstTooltip).toHaveAttribute('aria-hidden', 'true');
     });
   });
 

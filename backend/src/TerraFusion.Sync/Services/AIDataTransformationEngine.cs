@@ -54,12 +54,15 @@ namespace TerraFusion.Sync.Services
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "⚠️ AI query generation failed, will use fallback");
-                return null;
+                var primaryTable = schema.CriticalTablesFound.FirstOrDefault()
+                    ?? schema.Tables.FirstOrDefault()
+                    ?? "unknown_table";
+                return $"SELECT TOP 1000 * FROM {primaryTable} ORDER BY 1 DESC";
             }
         }
 
         public async Task<AITransformationResult> TransformDataIntelligentlyAsync(
-            Dictionary<string, object> rawData,
+            Dictionary<string, object?> rawData,
             DetectedSchema schema)
         {
             _logger.LogDebug("🧠 AI transforming data with {RuleCount} intelligent rules...", _aiTransformationRules.Count);
@@ -69,7 +72,7 @@ namespace TerraFusion.Sync.Services
                 TransformationId = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow,
                 SourceSystem = schema.SystemIdentification.SystemName,
-                TransformedData = new Dictionary<string, object>(),
+                TransformedData = new Dictionary<string, object?>(),
                 QualityIssues = new List<AIQualityIssue>(),
                 AppliedRules = new List<string>(),
                 ConfidenceScore = _accuracyScore
@@ -114,7 +117,7 @@ namespace TerraFusion.Sync.Services
         }
 
         private async Task<FieldTransformationResult> ApplyAITransformationAsync(
-            string fieldName, object fieldValue, DetectedSchema schema)
+            string fieldName, object? fieldValue, DetectedSchema schema)
         {
             var result = new FieldTransformationResult
             {
@@ -169,7 +172,7 @@ namespace TerraFusion.Sync.Services
             return result;
         }
 
-        private async Task<string> DetectFieldTypeWithAIAsync(string fieldName, object fieldValue)
+        private async Task<string> DetectFieldTypeWithAIAsync(string fieldName, object? fieldValue)
         {
             var fieldNameLower = fieldName.ToLower();
             var valueString = fieldValue?.ToString() ?? "";
@@ -217,14 +220,16 @@ namespace TerraFusion.Sync.Services
             return "text";
         }
 
-        private AITransformationRule GetAITransformationRule(string fieldType)
+        private AITransformationRule? GetAITransformationRule(string fieldType)
         {
             return _aiTransformationRules.GetValueOrDefault(fieldType);
         }
 
-        private async Task<AIQualityIssue> ValidateTransformationQualityAsync(
-            string fieldName, object originalValue, object transformedValue, AITransformationRule rule)
+        private async Task<AIQualityIssue?> ValidateTransformationQualityAsync(
+            string fieldName, object? originalValue, object? transformedValue, AITransformationRule rule)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             // AI quality validation logic
             if (originalValue == null && transformedValue != null)
             {
@@ -257,6 +262,8 @@ namespace TerraFusion.Sync.Services
 
         private async Task UpdateAILearningAsync(AITransformationResult result)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             // AI continuous learning - update accuracy based on results
             var successRate = 1.0 - (double)result.QualityIssues.Count(qi => qi.Severity == "HIGH") / Math.Max(1, result.TransformedData.Count);
             _accuracyScore = (_accuracyScore * 0.95) + (successRate * 0.05); // Moving average
@@ -274,8 +281,10 @@ namespace TerraFusion.Sync.Services
                 _accuracyScore, _transformationCount);
         }
 
-        private async Task LearnNewPatternAsync(string fieldName, object fieldValue, string detectedType)
+        private async Task LearnNewPatternAsync(string fieldName, object? fieldValue, string detectedType)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             if (_learnedPatterns.ContainsKey(fieldName))
             {
                 var existing = _learnedPatterns[fieldName];
@@ -306,6 +315,8 @@ namespace TerraFusion.Sync.Services
                 FieldType = "parcel_id",
                 TransformAsync = async (value, patterns) =>
                 {
+                    await Task.CompletedTask;
+                    await Task.CompletedTask;
                     var parcelStr = value?.ToString()?.Trim()?.ToUpper() ?? "";
                     parcelStr = Regex.Replace(parcelStr, @"[^A-Z0-9]", "");
                     return string.IsNullOrEmpty(parcelStr) ? null : parcelStr;
@@ -321,6 +332,8 @@ namespace TerraFusion.Sync.Services
                 FieldType = "phone",
                 TransformAsync = async (value, patterns) =>
                 {
+                    await Task.CompletedTask;
+                    await Task.CompletedTask;
                     var phoneStr = Regex.Replace(value?.ToString() ?? "", @"[^0-9]", "");
                     if (phoneStr.Length == 10)
                         return $"({phoneStr.Substring(0, 3)}) {phoneStr.Substring(3, 3)}-{phoneStr.Substring(6)}";
@@ -339,6 +352,8 @@ namespace TerraFusion.Sync.Services
                 FieldType = "date",
                 TransformAsync = async (value, patterns) =>
                 {
+                    await Task.CompletedTask;
+                    await Task.CompletedTask;
                     if (DateTime.TryParse(value?.ToString(), out var date))
                         return date.ToString("yyyy-MM-dd");
                     return null;
@@ -354,6 +369,8 @@ namespace TerraFusion.Sync.Services
                 FieldType = "currency",
                 TransformAsync = async (value, patterns) =>
                 {
+                    await Task.CompletedTask;
+                    await Task.CompletedTask;
                     var currencyStr = Regex.Replace(value?.ToString() ?? "", @"[$,\s]", "");
                     if (decimal.TryParse(currencyStr, out var amount))
                         return Math.Round(amount, 2);
@@ -370,6 +387,8 @@ namespace TerraFusion.Sync.Services
                 FieldType = "assessment_value",
                 TransformAsync = async (value, patterns) =>
                 {
+                    await Task.CompletedTask;
+                    await Task.CompletedTask;
                     var currencyStr = Regex.Replace(value?.ToString() ?? "", @"[$,\s]", "");
                     if (decimal.TryParse(currencyStr, out var amount))
                     {
@@ -394,6 +413,8 @@ namespace TerraFusion.Sync.Services
                 FieldType = "person_name",
                 TransformAsync = async (value, patterns) =>
                 {
+                    await Task.CompletedTask;
+                    await Task.CompletedTask;
                     var nameStr = value?.ToString()?.Trim();
                     if (string.IsNullOrEmpty(nameStr)) return null;
 
@@ -444,6 +465,8 @@ namespace TerraFusion.Sync.Services
 
         private async Task<string> GenerateHarrisPACSQueryAsync(DetectedSchema schema, DateTime? sinceDate)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             JoinCount = 4;
             FilterCount = sinceDate.HasValue ? 2 : 1;
 
@@ -475,6 +498,8 @@ namespace TerraFusion.Sync.Services
 
         private async Task<string> GenerateGenericQueryAsync(DetectedSchema schema, DateTime? sinceDate)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             JoinCount = 0;
             FilterCount = 1;
 
@@ -494,6 +519,8 @@ namespace TerraFusion.Sync.Services
 
         public async Task<QualityAnalysisResult> AnalyzeTransformationQualityAsync(AITransformationResult result)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             var qualityScore = 1.0;
             var recommendations = new List<string>();
 
@@ -538,7 +565,8 @@ namespace TerraFusion.Sync.Services
     {
         public string RuleName { get; set; } = "";
         public string FieldType { get; set; } = "";
-        public Func<object, Dictionary<string, DataPattern>, Task<object>> TransformAsync { get; set; }
+        public Func<object?, Dictionary<string, DataPattern>, Task<object?>> TransformAsync { get; set; } =
+            (value, _) => Task.FromResult(value);
         public bool AllowNullOutput { get; set; }
         public int SuccessCount { get; set; }
     }
@@ -548,7 +576,7 @@ namespace TerraFusion.Sync.Services
         public Guid TransformationId { get; set; }
         public DateTime Timestamp { get; set; }
         public string SourceSystem { get; set; } = "";
-        public Dictionary<string, object> TransformedData { get; set; } = new();
+        public Dictionary<string, object?> TransformedData { get; set; } = new();
         public List<AIQualityIssue> QualityIssues { get; set; } = new();
         public List<string> AppliedRules { get; set; } = new();
         public double ConfidenceScore { get; set; }
@@ -559,8 +587,8 @@ namespace TerraFusion.Sync.Services
     public class FieldTransformationResult
     {
         public string FieldName { get; set; } = "";
-        public object OriginalValue { get; set; }
-        public object Value { get; set; }
+        public object? OriginalValue { get; set; }
+        public object? Value { get; set; }
         public List<string> RulesApplied { get; set; } = new();
         public List<AIQualityIssue> QualityIssues { get; set; } = new();
     }
@@ -569,8 +597,8 @@ namespace TerraFusion.Sync.Services
     {
         public string FieldName { get; set; } = "";
         public string IssueType { get; set; } = "";
-        public string OriginalValue { get; set; } = "";
-        public string TransformedValue { get; set; } = "";
+        public string? OriginalValue { get; set; }
+        public string? TransformedValue { get; set; }
         public string Severity { get; set; } = ""; // HIGH, MEDIUM, LOW
         public string AIRecommendation { get; set; } = "";
     }

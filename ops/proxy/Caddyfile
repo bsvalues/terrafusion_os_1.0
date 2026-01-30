@@ -1,0 +1,4 @@
+:80 {
+    reverse_proxy /api/* terrafusion-iron:5000
+    reverse_proxy /* terrafusion-soul:80
+}

@@ -202,7 +202,7 @@ namespace TerraFusion.API.Services
         public async Task<PropertyAssessmentEnhancementResult> EnhancePropertyAssessmentAsync(
             string sessionId,
             string parcelId,
-            PropertyAssessmentEnhancementRequest request)
+            PropertyAssessmentEnhancementRequest? request)
         {
             if (!_activeSessions.TryGetValue(sessionId, out var session))
             {
@@ -231,7 +231,7 @@ namespace TerraFusion.API.Services
                         ["LandValue"] = harrisBaselineAssessment.LandValue,
                         ["ImprovementValue"] = harrisBaselineAssessment.ImprovementValue
                     },
-                    EnhancementTypes = request.EnhancementTargets != null
+                    EnhancementTypes = request?.EnhancementTargets != null
                         ? new List<string> { "Accuracy", "Valuation", "Consciousness" }
                         : new List<string> { "Valuation" }
                 };
@@ -428,7 +428,7 @@ namespace TerraFusion.API.Services
         /// This continuously processes queued enhancement requests to maintain optimal
         /// performance and demonstrate ongoing AI superiority.
         /// </summary>
-        private async void ProcessEnhancementQueue(object state)
+        private async void ProcessEnhancementQueue(object? state)
         {
             try
             {
@@ -487,7 +487,7 @@ namespace TerraFusion.API.Services
             await Task.WhenAll(updateTasks);
         }
 
-        private async Task UpdateEnhancementMetricsAsync(string sessionId, TerraFusion.API.Models.EnhancedPropertyAssessment enhancedAssessment)
+        private async Task UpdateEnhancementMetricsAsync(string sessionId, TerraFusion.API.Models.EnhancedPropertyAssessment? enhancedAssessment)
         {
             if (_enhancementMetrics.TryGetValue(sessionId, out var metrics))
             {
@@ -542,6 +542,8 @@ namespace TerraFusion.API.Services
 
         private async Task StartRealTimeEnhancementProcessingAsync(string sessionId)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             // Initialize real-time enhancement processing pipeline
             _logger.LogInformation("🔄 Started real-time enhancement processing for session: {SessionId}", sessionId);
         }
@@ -737,7 +739,7 @@ namespace TerraFusion.API.Services
     public interface IHarrisPACSEnhancementBridge
     {
         Task<HarrisPACSEnhancementResult> InitializeEnhancementBridgeAsync(string countyCode, EnhancementConfiguration config);
-        Task<PropertyAssessmentEnhancementResult> EnhancePropertyAssessmentAsync(string sessionId, string parcelId, PropertyAssessmentEnhancementRequest request);
+        Task<PropertyAssessmentEnhancementResult> EnhancePropertyAssessmentAsync(string sessionId, string parcelId, PropertyAssessmentEnhancementRequest? request);
         Task<HarrisPACSComparisonReport> GenerateComparisonReportAsync(string sessionId, ComparisonReportRequest request);
     }
 

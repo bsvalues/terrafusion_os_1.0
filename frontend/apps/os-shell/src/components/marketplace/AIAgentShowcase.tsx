@@ -76,7 +76,7 @@ export const AIAgentShowcase: React.FC = () => {
       description: 'Autonomous property valuation with 99.5% accuracy',
       icon: <Assessment className='w-8 h-8' />,
       agentCount: 8742,
-      color: '#0099ff',
+      color: 'var(--tf-network-blue)',
       featured: true,
       aiCapabilities: ['Computer Vision', 'Predictive Analytics', 'Market Analysis'],
       examples: ['CostForge AI', 'PropertyMatrix Pro', 'ValuationBot Elite'],
@@ -87,7 +87,7 @@ export const AIAgentShowcase: React.FC = () => {
       description: 'Predictive policing and real-time crime analysis',
       icon: <LocalPolice className='w-8 h-8' />,
       agentCount: 2847,
-      color: '#ff6b6b',
+      color: 'var(--tf-accent-error)',
       featured: true,
       aiCapabilities: ['Pattern Recognition', 'Predictive Modeling', 'Real-time Analysis'],
       examples: ['CrimePredict AI', 'PatrolOptimizer', 'Evidence Analyzer'],
@@ -98,7 +98,7 @@ export const AIAgentShowcase: React.FC = () => {
       description: 'Self-healing smart city infrastructure management',
       icon: <Engineering className='w-8 h-8' />,
       agentCount: 5129,
-      color: '#00ffee',
+      color: 'var(--tf-transcend-highlight)',
       featured: true,
       aiCapabilities: ['IoT Integration', 'Predictive Maintenance', 'Resource Optimization'],
       examples: ['SmartGrid AI', 'TrafficFlow Optimizer', 'WaterNet Intelligence'],
@@ -109,7 +109,7 @@ export const AIAgentShowcase: React.FC = () => {
       description: 'Budget optimization and fraud detection AI',
       icon: <AttachMoney className='w-8 h-8' />,
       agentCount: 3456,
-      color: '#00ffaa',
+      color: 'var(--tf-accent-success)',
       featured: false,
       aiCapabilities: ['Fraud Detection', 'Budget Optimization', 'Risk Assessment'],
       examples: ['BudgetBot Pro', 'FraudGuard AI', 'TaxOptimizer Elite'],
@@ -120,7 +120,7 @@ export const AIAgentShowcase: React.FC = () => {
       description: 'Predictive health monitoring and emergency response',
       icon: <HealthAndSafety className='w-8 h-8' />,
       agentCount: 2198,
-      color: '#9c27b0',
+      color: 'var(--tf-accent-quantum)',
       featured: false,
       aiCapabilities: ['Epidemic Modeling', 'Resource Allocation', 'Emergency Response'],
       examples: ['HealthWatch AI', 'EmergencyBot', 'EpidemicPredict'],
@@ -131,7 +131,7 @@ export const AIAgentShowcase: React.FC = () => {
       description: 'AI-powered legal research and document analysis',
       icon: <Gavel className='w-8 h-8' />,
       agentCount: 1876,
-      color: '#ff9800',
+      color: 'var(--tf-accent-warning)',
       featured: false,
       aiCapabilities: ['Document Analysis', 'Legal Research', 'Case Prediction'],
       examples: ['LegalMind AI', 'CaseAnalyzer Pro', 'JudgeBot Assistant'],
@@ -175,49 +175,49 @@ export const AIAgentShowcase: React.FC = () => {
   ];
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-[#0b1020] via-[#1a2332] to-[#0b1020] p-8'>
+    <div className='min-h-screen bg-gradient-to-br from-[var(--tf-bg-surface)] via-[var(--tf-bg-surface)] to-[var(--tf-bg-surface)] p-8'>
       {/* Real-time AI Metrics Header */}
       <div className='mb-12'>
         <div className='max-w-7xl mx-auto'>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[#00ffee]/20 rounded-2xl p-6 text-center'>
-              <div className='text-4xl font-black text-[#00ffee] mb-2'>
+            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20 rounded-2xl p-6 text-center'>
+              <div className='text-4xl font-black text-[var(--tf-transcend-highlight)] mb-2'>
                 {realTimeMetrics.totalProcessed.toLocaleString()}
               </div>
               <div className='text-gray-300 text-sm uppercase tracking-wider'>
                 Operations Processed Today
               </div>
               <div className='flex items-center justify-center mt-2'>
-                <TrendingUp className='w-4 h-4 text-[#00ffaa] mr-1' />
-                <span className='text-[#00ffaa] text-xs'>
+                <TrendingUp className='w-4 h-4 text-[var(--tf-accent-success)] mr-1' />
+                <span className='text-[var(--tf-accent-success)] text-xs'>
                   +{Math.floor(Math.random() * 20)}% efficiency
                 </span>
               </div>
             </div>
 
-            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[#0099ff]/20 rounded-2xl p-6 text-center'>
-              <div className='text-4xl font-black text-[#0099ff] mb-2'>
+            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[var(--tf-network-blue)]/20 rounded-2xl p-6 text-center'>
+              <div className='text-4xl font-black text-[var(--tf-network-blue)] mb-2'>
                 {realTimeMetrics.activeNow.toLocaleString()}
               </div>
               <div className='text-gray-300 text-sm uppercase tracking-wider'>
                 AI Agents Active Now
               </div>
               <div className='flex items-center justify-center mt-2'>
-                <SmartToy className='w-4 h-4 text-[#0099ff] mr-1 animate-pulse' />
-                <span className='text-[#0099ff] text-xs'>Real-time processing</span>
+                <SmartToy className='w-4 h-4 text-[var(--tf-network-blue)] mr-1 animate-pulse' />
+                <span className='text-[var(--tf-network-blue)] text-xs'>Real-time processing</span>
               </div>
             </div>
 
-            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[#00ffaa]/20 rounded-2xl p-6 text-center'>
-              <div className='text-4xl font-black text-[#00ffaa] mb-2'>
+            <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[var(--tf-accent-success)]/20 rounded-2xl p-6 text-center'>
+              <div className='text-4xl font-black text-[var(--tf-accent-success)] mb-2'>
                 {realTimeMetrics.accuracy.toFixed(1)}%
               </div>
               <div className='text-gray-300 text-sm uppercase tracking-wider'>
                 System-wide Accuracy
               </div>
               <div className='flex items-center justify-center mt-2'>
-                <CloudDone className='w-4 h-4 text-[#00ffaa] mr-1' />
-                <span className='text-[#00ffaa] text-xs'>Championship level</span>
+                <CloudDone className='w-4 h-4 text-[var(--tf-accent-success)] mr-1' />
+                <span className='text-[var(--tf-accent-success)] text-xs'>Championship level</span>
               </div>
             </div>
           </div>
@@ -228,7 +228,7 @@ export const AIAgentShowcase: React.FC = () => {
       <div className='max-w-7xl mx-auto mb-16'>
         <div className='text-center mb-12'>
           <h2 className='text-5xl font-black mb-4'>
-            <span className='bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] bg-clip-text text-transparent'>
+            <span className='bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] bg-clip-text text-transparent'>
               AI AGENT CATEGORIES
             </span>
           </h2>
@@ -240,14 +240,14 @@ export const AIAgentShowcase: React.FC = () => {
             <div
               key={category.id}
               className={`tf-glass-card bg-white/5 backdrop-blur-lg border rounded-3xl p-8 hover:transform hover:-translate-y-2 transition-all duration-500 cursor-pointer ${
-                category.featured ? 'border-2 border-[#00ffee]/40' : 'border-gray-600/30'
+                category.featured ? 'border-2 border-[var(--tf-transcend-highlight)]/40' : 'border-gray-600/30'
               }`}
               onClick={() => setSelectedCategory(category.id)}
             >
               {category.featured && (
-                <div className='inline-flex items-center gap-2 bg-gradient-to-r from-[#00ffee]/20 to-[#0099ff]/20 backdrop-blur-sm border border-[#00ffee]/30 rounded-full px-3 py-1 mb-4'>
-                  <AutoAwesome className='w-4 h-4 text-[#00ffee]' />
-                  <span className='text-[#00ffee] text-xs font-bold uppercase'>Featured</span>
+                <div className='inline-flex items-center gap-2 bg-gradient-to-r from-[var(--tf-transcend-highlight)]/20 to-[var(--tf-network-blue)]/20 backdrop-blur-sm border border-[var(--tf-transcend-highlight)]/30 rounded-full px-3 py-1 mb-4'>
+                  <AutoAwesome className='w-4 h-4 text-[var(--tf-transcend-highlight)]' />
+                  <span className='text-[var(--tf-transcend-highlight)] text-xs font-bold uppercase'>Featured</span>
                 </div>
               )}
 
@@ -272,7 +272,7 @@ export const AIAgentShowcase: React.FC = () => {
               <p className='text-gray-300 mb-6 leading-relaxed'>{category.description}</p>
 
               <div className='mb-6'>
-                <h4 className='text-sm font-bold text-[#00ffee] mb-2 uppercase tracking-wider'>
+                <h4 className='text-sm font-bold text-[var(--tf-transcend-highlight)] mb-2 uppercase tracking-wider'>
                   AI Capabilities
                 </h4>
                 <div className='flex flex-wrap gap-2'>
@@ -288,13 +288,13 @@ export const AIAgentShowcase: React.FC = () => {
               </div>
 
               <div>
-                <h4 className='text-sm font-bold text-[#00ffaa] mb-2 uppercase tracking-wider'>
+                <h4 className='text-sm font-bold text-[var(--tf-accent-success)] mb-2 uppercase tracking-wider'>
                   Popular Apps
                 </h4>
                 <div className='space-y-1'>
                   {category.examples.slice(0, 2).map((example, index) => (
                     <div key={index} className='text-sm text-gray-400 flex items-center'>
-                      <div className='w-2 h-2 bg-gradient-to-r from-[#0099ff] to-[#00ffee] rounded-full mr-2'></div>
+                      <div className='w-2 h-2 bg-gradient-to-r from-[var(--tf-network-blue)] to-[var(--tf-transcend-highlight)] rounded-full mr-2'></div>
                       {example}
                     </div>
                   ))}
@@ -306,8 +306,8 @@ export const AIAgentShowcase: React.FC = () => {
                 <div className='flex items-center justify-between text-xs'>
                   <span className='text-gray-400'>Processing Status</span>
                   <div className='flex items-center'>
-                    <div className='w-2 h-2 bg-[#00ffaa] rounded-full mr-2 animate-pulse'></div>
-                    <span className='text-[#00ffaa]'>ACTIVE</span>
+                    <div className='w-2 h-2 bg-[var(--tf-accent-success)] rounded-full mr-2 animate-pulse'></div>
+                    <span className='text-[var(--tf-accent-success)]'>ACTIVE</span>
                   </div>
                 </div>
               </div>
@@ -320,7 +320,7 @@ export const AIAgentShowcase: React.FC = () => {
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-12'>
           <h2 className='text-4xl font-black mb-4'>
-            <span className='bg-gradient-to-r from-[#ff6b6b] via-[#00ffee] to-[#00ffaa] bg-clip-text text-transparent'>
+            <span className='bg-gradient-to-r from-[var(--tf-accent-error)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] bg-clip-text text-transparent'>
               FEATURED AI AGENTS
             </span>
           </h2>
@@ -333,12 +333,12 @@ export const AIAgentShowcase: React.FC = () => {
           {featuredAgents.map((agent) => (
             <div
               key={agent.id}
-              className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[#00ffee]/30 rounded-3xl p-6 hover:transform hover:-translate-y-1 transition-all duration-500'
+              className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/30 rounded-3xl p-6 hover:transform hover:-translate-y-1 transition-all duration-500'
               onMouseEnter={() => setHoveredAgent(agent.id)}
               onMouseLeave={() => setHoveredAgent(null)}
             >
               <div className='flex items-center mb-4'>
-                <div className='w-12 h-12 bg-gradient-to-br from-[#0099ff] to-[#00ffee] rounded-xl flex items-center justify-center mr-4'>
+                <div className='w-12 h-12 bg-gradient-to-br from-[var(--tf-network-blue)] to-[var(--tf-transcend-highlight)] rounded-xl flex items-center justify-center mr-4'>
                   {agent.icon}
                 </div>
                 <div>
@@ -346,10 +346,10 @@ export const AIAgentShowcase: React.FC = () => {
                   <span
                     className={`text-xs px-2 py-1 rounded-full ${
                       agent.aiLevel === 'Transcendent'
-                        ? 'bg-[#00ffee]/20 text-[#00ffee]'
+                        ? 'bg-[var(--tf-transcend-highlight)]/20 text-[var(--tf-transcend-highlight)]'
                         : agent.aiLevel === 'Elite'
-                          ? 'bg-[#00ffaa]/20 text-[#00ffaa]'
-                          : 'bg-[#0099ff]/20 text-[#0099ff]'
+                          ? 'bg-[var(--tf-accent-success)]/20 text-[var(--tf-accent-success)]'
+                          : 'bg-[var(--tf-network-blue)]/20 text-[var(--tf-network-blue)]'
                     }`}
                   >
                     {agent.aiLevel} AI
@@ -365,11 +365,11 @@ export const AIAgentShowcase: React.FC = () => {
                   <div className='flex items-center'>
                     <div className='w-16 bg-gray-700 rounded-full h-2 mr-2'>
                       <div
-                        className='bg-gradient-to-r from-[#0099ff] to-[#00ffee] h-2 rounded-full transition-all duration-1000'
+                        className='bg-gradient-to-r from-[var(--tf-network-blue)] to-[var(--tf-transcend-highlight)] h-2 rounded-full transition-all duration-1000'
                         style={{ width: `${agent.accuracy}%` }}
                       />
                     </div>
-                    <span className='text-sm font-bold text-[#00ffee]'>{agent.accuracy}%</span>
+                    <span className='text-sm font-bold text-[var(--tf-transcend-highlight)]'>{agent.accuracy}%</span>
                   </div>
                 </div>
 
@@ -378,19 +378,19 @@ export const AIAgentShowcase: React.FC = () => {
                   <div className='flex items-center'>
                     <div className='w-16 bg-gray-700 rounded-full h-2 mr-2'>
                       <div
-                        className='bg-gradient-to-r from-[#00ffaa] to-[#00ffee] h-2 rounded-full transition-all duration-1000'
+                        className='bg-gradient-to-r from-[var(--tf-accent-success)] to-[var(--tf-transcend-highlight)] h-2 rounded-full transition-all duration-1000'
                         style={{ width: `${agent.autonomy}%` }}
                       />
                     </div>
-                    <span className='text-sm font-bold text-[#00ffaa]'>{agent.autonomy}%</span>
+                    <span className='text-sm font-bold text-[var(--tf-accent-success)]'>{agent.autonomy}%</span>
                   </div>
                 </div>
 
                 <div className='flex justify-between items-center pt-2'>
                   <span className='text-sm text-gray-400'>Real-time Ops</span>
                   <div className='flex items-center'>
-                    <Speed className='w-4 h-4 text-[#ff6b6b] mr-1' />
-                    <span className='text-sm font-bold text-[#ff6b6b]'>
+                    <Speed className='w-4 h-4 text-[var(--tf-accent-error)] mr-1' />
+                    <span className='text-sm font-bold text-[var(--tf-accent-error)]'>
                       {agent.realTimeOps ? 'ACTIVE' : 'OFFLINE'}
                     </span>
                   </div>
@@ -399,7 +399,7 @@ export const AIAgentShowcase: React.FC = () => {
 
               {hoveredAgent === agent.id && (
                 <div className='mt-4 pt-4 border-t border-gray-600/30'>
-                  <button className='w-full bg-gradient-to-r from-[#0099ff] to-[#00ffee] text-white font-bold py-2 px-4 rounded-full text-sm hover:shadow-lg transition-all duration-300'>
+                  <button className='w-full bg-gradient-to-r from-[var(--tf-network-blue)] to-[var(--tf-transcend-highlight)] text-white font-bold py-2 px-4 rounded-full text-sm hover:shadow-lg transition-all duration-300'>
                     DEPLOY AGENT
                   </button>
                 </div>
@@ -412,8 +412,8 @@ export const AIAgentShowcase: React.FC = () => {
       {/* Revolutionary Technology Footer */}
       <div className='mt-20 text-center'>
         <div className='max-w-4xl mx-auto'>
-          <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[#00ffee]/20 rounded-3xl p-8'>
-            <Science className='w-16 h-16 text-[#00ffee] mx-auto mb-4' />
+          <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20 rounded-3xl p-8'>
+            <Science className='w-16 h-16 text-[var(--tf-transcend-highlight)] mx-auto mb-4' />
             <h3 className='text-2xl font-bold text-white mb-4'>
               Revolutionary AI-Native Government Technology
             </h3>
@@ -423,7 +423,7 @@ export const AIAgentShowcase: React.FC = () => {
               championship-level accuracy, we're transcending traditional government technology.
             </p>
             <div className='mt-6'>
-              <span className='text-[#00ffee] font-bold text-lg italic'>
+              <span className='text-[var(--tf-transcend-highlight)] font-bold text-lg italic'>
                 "Government. Transcended."
               </span>
             </div>

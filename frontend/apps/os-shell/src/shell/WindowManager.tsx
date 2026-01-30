@@ -112,7 +112,7 @@ export const WindowManager: React.FC<WindowManagerProps> = ({ activeModule, onCl
           display: 'flex',
           flexDirection: 'column',
           height: '100%',
-          background: 'linear-gradient(135deg, #0a0e27 0%, #1a1a2e 100%)',
+          background: 'linear-gradient(135deg, var(--tf-bg-void) 0%, var(--tf-surface-darker) 100%)',
         }}
       >
         {isLoading ? (

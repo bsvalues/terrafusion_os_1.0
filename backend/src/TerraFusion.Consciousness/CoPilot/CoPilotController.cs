@@ -1,13 +1,13 @@
-/// <summary>
-/// TerraFusion AI Co-Pilot Backend - Autonomous Agent System
-/// 
-/// Production-grade intelligent coding agent with:
-/// - Real-time code analysis (county isolation, security, FISMA compliance)
-/// - Autonomous code generation with TerraFusion primitives
-/// - Natural language to implementation
-/// - Multi-agent collaboration (50,000 agent swarm integration)
-/// - Statistical code quality validation
-/// </summary>
+// <summary>
+// TerraFusion AI Co-Pilot Backend - Autonomous Agent System
+// 
+// Production-grade intelligent coding agent with:
+// - Real-time code analysis (county isolation, security, FISMA compliance)
+// - Autonomous code generation with TerraFusion primitives
+// - Natural language to implementation
+// - Multi-agent collaboration (50,000 agent swarm integration)
+// - Statistical code quality validation
+// </summary>
 
 using System;
 using System.Collections.Generic;
@@ -150,7 +150,8 @@ public class CoPilotService : ICoPilotService
         );
 
         // Parse response into code blocks
-        var codeBlocks = ParseCodeBlocks(response.Content);
+        var responseContent = response.Content ?? string.Empty;
+        var codeBlocks = ParseCodeBlocks(responseContent);
 
         // Validate county isolation in generated code
         foreach (var block in codeBlocks)
@@ -233,10 +234,11 @@ public class CoPilotService : ICoPilotService
         var response = await _chatService.GetChatMessageContentAsync(chatHistory);
 
         // Save to history
-        chatHistory.AddAssistantMessage(response.Content);
+        var responseContent = response.Content ?? string.Empty;
+        chatHistory.AddAssistantMessage(responseContent);
         await SaveConversationHistoryAsync(conversationId, chatHistory);
 
-        return response.Content;
+        return responseContent;
     }
 
     private string BuildSystemPrompt(GenerationContext context)
@@ -372,7 +374,7 @@ Add: .Where(x => x.CountyId == countyId)
 Return ONLY the modified code.";
 
         var response = await _chatService.GetChatMessageContentAsync(prompt);
-        return response.Content;
+        return response.Content ?? string.Empty;
     }
 
     private async Task<string> AddCountyIdPropertyAsync(string code, int lineNumber)
@@ -389,7 +391,7 @@ Add: public Guid CountyId {{ get; set; }}
 Return ONLY the modified code.";
 
         var response = await _chatService.GetChatMessageContentAsync(prompt);
-        return response.Content;
+        return response.Content ?? string.Empty;
     }
 
     private async Task<string> RefactorForComplexityAsync(string code)
@@ -404,7 +406,7 @@ Extract methods, simplify conditionals, apply SOLID principles.
 Return ONLY the refactored code.";
 
         var response = await _chatService.GetChatMessageContentAsync(prompt);
-        return response.Content;
+        return response.Content ?? string.Empty;
     }
 
     private async Task<string> AddCachingAsync(string code)
@@ -419,7 +421,7 @@ Use IDistributedCache, MessagePack serialization, appropriate cache key and expi
 Return ONLY the modified code.";
 
         var response = await _chatService.GetChatMessageContentAsync(prompt);
-        return response.Content;
+        return response.Content ?? string.Empty;
     }
 
     private List<CodeSuggestion> GenerateSuggestionsFromViolations(List<Violation> violations, string type)
@@ -444,6 +446,8 @@ Return ONLY the modified code.";
 
     private async Task<ChatHistory> GetConversationHistoryAsync(string conversationId)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         // TODO: Retrieve from database or Redis cache
         return new ChatHistory();
     }
@@ -481,6 +485,8 @@ public class CodeAnalysisService : ICodeAnalysisService
 
     private async Task<ComplianceCheck> AnalyzeCountyIsolationAsync(string code)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         var violations = new List<Violation>();
         var lines = code.Split('\n');
 
@@ -528,6 +534,8 @@ public class CodeAnalysisService : ICodeAnalysisService
 
     private async Task<ComplianceCheck> AnalyzeSecurityAsync(string code)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         var violations = new List<Violation>();
 
         // Check for SQL injection vulnerabilities
@@ -568,6 +576,8 @@ public class CodeAnalysisService : ICodeAnalysisService
 
     private async Task<PerformanceMetrics> AnalyzePerformanceAsync(string code)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         // Simple cyclomatic complexity calculation
         var complexity = CountComplexity(code);
 
@@ -589,6 +599,8 @@ public class CodeAnalysisService : ICodeAnalysisService
 
     private async Task<QualityMetrics> AnalyzeCodeQualityAsync(string code)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         var maintainability = 100 - (CountComplexity(code) * 3);
         var hasTests = code.Contains("[Fact]") || code.Contains("[Test]");
         var hasDocs = code.Contains("///");
@@ -605,6 +617,8 @@ public class CodeAnalysisService : ICodeAnalysisService
 
     private async Task<FISMACheck> AnalyzeFismaComplianceAsync(string code)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         var requiredControls = new List<string>
         {
             "AC-2: Account Management",
@@ -932,24 +946,32 @@ public class AutonomousAgentService : IAutonomousAgentService
 
     private async Task<AgentTaskResult> RefactorCodeTaskAsync(AgentTask task)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         // TODO: Implement autonomous refactoring
         return new AgentTaskResult { Summary = "Refactoring completed" };
     }
 
     private async Task<AgentTaskResult> GenerateTestsTaskAsync(AgentTask task)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         // TODO: Implement test generation
         return new AgentTaskResult { Summary = "Tests generated" };
     }
 
     private async Task<AgentTaskResult> GenerateDocumentationTaskAsync(AgentTask task)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         // TODO: Implement documentation generation
         return new AgentTaskResult { Summary = "Documentation generated" };
     }
 
     private async Task<AgentTaskResult> OptimizeCodeTaskAsync(AgentTask task)
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         // TODO: Implement code optimization
         return new AgentTaskResult { Summary = "Code optimized" };
     }

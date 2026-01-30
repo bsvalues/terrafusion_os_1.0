@@ -260,22 +260,22 @@ export const AISwarmDashboard: React.FC = () => {
   const getStatusColor = (status: string): string => {
     switch (status) {
       case 'ACTIVE':
-        return '#4caf50';
+        return 'var(--tf-accent-success)';
       case 'PROCESSING':
-        return '#2196f3';
+        return 'var(--tf-network-blue)';
       case 'MAINTENANCE':
-        return '#ff9800';
+        return 'var(--tf-accent-warning)';
       case 'STANDBY':
-        return '#9e9e9e';
+        return 'var(--gray-500)';
       default:
-        return '#f44336';
+        return 'var(--tf-accent-error)';
     }
   };
 
   const getHealthColor = (score: number): string => {
-    if (score >= 90) return '#4caf50';
-    if (score >= 70) return '#ff9800';
-    return '#f44336';
+    if (score >= 90) return 'var(--tf-accent-success)';
+    if (score >= 70) return 'var(--tf-accent-warning)';
+    return 'var(--tf-accent-error)';
   };
 
   // Emergency Actions
@@ -399,19 +399,19 @@ export const AISwarmDashboard: React.FC = () => {
                 <Line
                   type='monotone'
                   dataKey='successRate'
-                  stroke='#4caf50'
+                  stroke='var(--tf-accent-success)'
                   name='Success Rate %'
                 />
                 <Line
                   type='monotone'
                   dataKey='responseTime'
-                  stroke='#2196f3'
+                  stroke='var(--tf-network-blue)'
                   name='Response Time (ms)'
                 />
                 <Line
                   type='monotone'
                   dataKey='quantumCoherence'
-                  stroke='#9c27b0'
+                  stroke='var(--tf-accent-quantum)'
                   name='Quantum Coherence %'
                 />
               </LineChart>
@@ -689,7 +689,7 @@ export const AISwarmDashboard: React.FC = () => {
   );
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+    <Box sx={{ flexGrow: 1, p: 3, backgroundColor: 'var(--gray-50)', minHeight: '100vh' }}>
       {/* Header */}
       <Box display='flex' justifyContent='space-between' alignItems='center' mb={3}>
         <Typography variant='h4' component='h1' fontWeight='bold'>

@@ -13,8 +13,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #0a0e1a 0%, #1a202c 100%);
-  color: #00ffff;
+  background: linear-gradient(135deg, var(--tf-void-black) 0%, var(--tf-surface-darker) 100%);
+  color: var(--tf-quantum-cyan);
   font-family: 'Inter', system-ui, sans-serif;
   overflow: auto;
   z-index: 1;
@@ -40,7 +40,7 @@
 
 .quantum-terrasphere {
   font-size: 2rem;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   text-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
 }
 
@@ -48,7 +48,7 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: bold;
-  background: linear-gradient(135deg, #00ffff, #0099ff);
+  background: linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -78,7 +78,7 @@
 .quantum-metric-value {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 /* Main Analytics Dashboard */
@@ -110,7 +110,7 @@
   margin: 0 0 1rem 0;
   font-size: 1.3rem;
   font-weight: bold;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 /* Quantum Visualization */
@@ -143,7 +143,7 @@
 .quantum-state-value {
   font-size: 1.1rem;
   font-weight: bold;
-  color: #00ff88;
+  color: var(--success-green);
 }
 
 /* ML Model Grid */
@@ -169,7 +169,7 @@
   margin: 0 0 0.5rem 0;
   font-size: 1rem;
   font-weight: bold;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .ml-model-metrics {
@@ -186,7 +186,7 @@
 
 .ml-metric-value {
   font-weight: bold;
-  color: #00ff88;
+  color: var(--success-green);
 }
 
 /* Agent Swarm Section */
@@ -217,7 +217,7 @@
 .agent-stat-value {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .agent-grid {
@@ -244,7 +244,7 @@
   margin: 0 0 0.5rem 0;
   font-size: 0.9rem;
   font-weight: bold;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .agent-metrics {
@@ -259,7 +259,7 @@
 
 .agent-metric-value {
   font-weight: bold;
-  color: #00ff88;
+  color: var(--success-green);
 }
 
 /* Statistics Panel */
@@ -292,7 +292,7 @@
   margin: 0 0 0.5rem 0;
   font-size: 1rem;
   font-weight: bold;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .statistic-value {
@@ -302,13 +302,13 @@
 }
 
 .statistic-value.emergent {
-  color: #00ff88;
+  color: var(--success-green);
 }
 .statistic-value.quantum {
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 .statistic-value.entropy {
-  color: #ff8800;
+  color: var(--tf-accent-orange);
 }
 .statistic-value.accuracy {
   color: #8800ff;
@@ -358,8 +358,8 @@
 }
 
 .elite-btn.primary {
-  background: linear-gradient(135deg, #00ffff, #0099ff);
-  color: #0a0e1a;
+  background: linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue));
+  color: var(--tf-void-black);
   box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
 }
 
@@ -369,7 +369,7 @@
 
 .elite-btn.secondary {
   background: rgba(0, 255, 255, 0.1);
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   border: 1px solid rgba(0, 255, 255, 0.3);
 }
 
@@ -394,7 +394,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #00ffff;
+  background: var(--tf-quantum-cyan);
   animation: pulse 2s infinite;
 }
 
@@ -416,7 +416,7 @@
 .status-text {
   font-size: 0.9rem;
   font-weight: bold;
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .footer-description {
@@ -498,7 +498,7 @@
 .math-notation {
   font-family: 'Times New Roman', serif;
   font-style: italic;
-  color: #00ff88;
+  color: var(--success-green);
 }
 
 /* Elite user interface enhancements */

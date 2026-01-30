@@ -27,11 +27,11 @@ Min replicas: {{ .Values.autoscaling.minReplicas }}
 Max replicas: {{ .Values.autoscaling.maxReplicas }}
 {{- end }}
 
-{{- if .Values.monitoring.enabled }}
+{{- if and .Values.monitoring .Values.monitoring.enabled }}
 Monitoring is enabled. Check Prometheus and Grafana for metrics.
 {{- end }}
 
-{{- if .Values.security.enabled }}
+{{- if and .Values.security .Values.security.enabled }}
 Security features are enabled including network policies and pod security standards.
 {{- end }}
 
@@ -40,4 +40,8 @@ AI Swarm Configuration:
 - Data Path: {{ .Values.aiSwarm.dataPath }}
 - Max Workers: {{ .Values.aiSwarm.maxWorkers }}
 - Batch Size: {{ .Values.aiSwarm.batchSize }}
-- GPU Support: Enabled ({{ .Values.resources.limits."nvidia.com/gpu" }} GPU per pod)
+{{- if and .Values.resources .Values.resources.limits (hasKey .Values.resources.limits "nvidia.com/gpu") }}
+- GPU Support: Enabled ({{ index .Values.resources.limits "nvidia.com/gpu" }} GPU per pod)
+{{- else }}
+- GPU Support: Enabled (0 GPU per pod)
+{{- end }}

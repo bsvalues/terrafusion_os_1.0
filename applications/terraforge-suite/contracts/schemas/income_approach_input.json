@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "income_approach_input.json",
+  "title": "Income Approach Input",
+  "description": "USPAP-aligned input for income approach (direct capitalization method)",
+  "type": "object",
+  "required": [
+    "subjectId",
+    "effectiveDate",
+    "incomeData",
+    "capitalizationRate"
+  ],
+  "properties": {
+    "subjectId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Subject property identifier"
+    },
+    "effectiveDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of valuation (YYYY-MM-DD)"
+    },
+    "incomeData": {
+      "type": "object",
+      "required": ["potentialGrossIncome"],
+      "properties": {
+        "potentialGrossIncome": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "PGI: Total possible income at 100% occupancy (integer cents)"
+        },
+        "vacancyRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.05,
+          "description": "Vacancy and collection loss rate (0.05 = 5%)"
+        },
+        "otherIncome": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Additional income (parking, laundry, etc.) integer cents"
+        },
+        "operatingExpenses": {
+          "type": "object",
+          "properties": {
+            "taxes": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "description": "Property taxes (integer cents)"
+            },
+            "insurance": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "description": "Insurance (integer cents)"
+            },
+            "utilities": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "description": "Utilities paid by owner (integer cents)"
+            },
+            "maintenance": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "description": "Maintenance and repairs (integer cents)"
+            },
+            "management": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "description": "Property management fees (integer cents)"
+            },
+            "reserves": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "description": "Replacement reserves (integer cents)"
+            },
+            "other": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "description": "Other operating expenses (integer cents)"
+            }
+          },
+          "additionalProperties": false,
+          "default": {}
+        }
+      },
+      "additionalProperties": false
+    },
+    "capitalizationRate": {
+      "type": "object",
+      "required": ["rate"],
+      "properties": {
+        "rate": {
+          "type": "number",
+          "minimum": 0.001,
+          "maximum": 0.5,
+          "description": "Overall capitalization rate (0.08 = 8%)"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "market_extraction",
+            "band_of_investment",
+            "debt_coverage",
+            "provided"
+          ],
+          "default": "provided",
+          "description": "Method used to derive cap rate"
+        },
+        "supportingData": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "propertyId": { "type": "string" },
+              "salePrice": { "type": "integer", "minimum": 0 },
+              "noi": { "type": "integer", "minimum": 0 },
+              "extractedRate": { "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          },
+          "default": [],
+          "description": "Market sales used to support cap rate"
+        }
+      },
+      "additionalProperties": false
+    },
+    "analysisParameters": {
+      "type": "object",
+      "properties": {
+        "expenseRatioCheck": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag if expense ratio falls outside typical range"
+        },
+        "typicalExpenseRatioMin": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.3,
+          "description": "Minimum typical expense ratio"
+        },
+        "typicalExpenseRatioMax": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.5,
+          "description": "Maximum typical expense ratio"
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
+    }
+  },
+  "additionalProperties": false
+}

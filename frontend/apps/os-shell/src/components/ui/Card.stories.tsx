@@ -161,7 +161,7 @@ export const CardGrid: Story = {
           <p
             style={{
               fontSize: '14px',
-              color: '#888',
+              color: 'var(--gray-400)',
             }}
           >
             Total page views
@@ -192,7 +192,7 @@ export const CardGrid: Story = {
           <p
             style={{
               fontSize: '14px',
-              color: '#888',
+              color: 'var(--gray-400)',
             }}
           >
             +12% from last month
@@ -223,7 +223,7 @@ export const CardGrid: Story = {
           <p
             style={{
               fontSize: '14px',
-              color: '#888',
+              color: 'var(--gray-400)',
             }}
           >
             +8% from last month
@@ -333,7 +333,7 @@ export const InteractiveCard: Story = {
               height='24'
               viewBox='0 0 24 24'
               fill='none'
-              stroke='#0099ff'
+              stroke='var(--tf-network-blue)'
               strokeWidth='2'
             >
               <rect x='3' y='3' width='18' height='18' rx='2' />
@@ -372,7 +372,7 @@ export const InteractiveCard: Story = {
               height='24'
               viewBox='0 0 24 24'
               fill='none'
-              stroke='#0099ff'
+              stroke='var(--tf-network-blue)'
               strokeWidth='2'
             >
               <path d='M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6' />
@@ -410,7 +410,7 @@ export const InteractiveCard: Story = {
               height='24'
               viewBox='0 0 24 24'
               fill='none'
-              stroke='#0099ff'
+              stroke='var(--tf-network-blue)'
               strokeWidth='2'
             >
               <path d='M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z' />
@@ -464,7 +464,7 @@ export const RealWorldExample: Story = {
             <div className='flex justify-between'>
               <span
                 style={{
-                  color: '#888',
+                  color: 'var(--gray-400)',
                 }}
               >
                 Email:
@@ -474,7 +474,7 @@ export const RealWorldExample: Story = {
             <div className='flex justify-between'>
               <span
                 style={{
-                  color: '#888',
+                  color: 'var(--gray-400)',
                 }}
               >
                 Location:
@@ -484,7 +484,7 @@ export const RealWorldExample: Story = {
             <div className='flex justify-between'>
               <span
                 style={{
-                  color: '#888',
+                  color: 'var(--gray-400)',
                 }}
               >
                 Member since:
@@ -532,7 +532,7 @@ export const RealWorldExample: Story = {
               <div
                 style={{
                   fontSize: '12px',
-                  color: '#888',
+                  color: 'var(--gray-400)',
                 }}
               >
                 Projects
@@ -551,7 +551,7 @@ export const RealWorldExample: Story = {
               <div
                 style={{
                   fontSize: '12px',
-                  color: '#888',
+                  color: 'var(--gray-400)',
                 }}
               >
                 Commits
@@ -570,7 +570,7 @@ export const RealWorldExample: Story = {
               <div
                 style={{
                   fontSize: '12px',
-                  color: '#888',
+                  color: 'var(--gray-400)',
                 }}
               >
                 Pull Requests
@@ -589,7 +589,7 @@ export const RealWorldExample: Story = {
               <div
                 style={{
                   fontSize: '12px',
-                  color: '#888',
+                  color: 'var(--gray-400)',
                 }}
               >
                 Issues
@@ -1178,7 +1178,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -1206,7 +1206,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -1234,7 +1234,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -1262,7 +1262,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -1305,7 +1305,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -1333,7 +1333,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -1361,7 +1361,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -1389,7 +1389,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >

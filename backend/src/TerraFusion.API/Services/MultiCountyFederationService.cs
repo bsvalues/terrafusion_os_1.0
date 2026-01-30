@@ -40,14 +40,12 @@ public class MultiCountyFederationService : IMultiCountyFederationService
     private readonly Timer _federationHealthMonitor;
     private readonly Timer _complianceValidator;
     private readonly SemaphoreSlim _operationSemaphore;
-    private bool _isInitialized;
 
     // Championship Federation Metrics
     private long _totalFederatedOperations;
     private long _successfulOperations;
     private long _dataSharesCompleted;
     private long _servicesUnified;
-    private double _federationSuccessRate = 99.97; // Championship target
     private DateTime _federationStartTime;
 
     public MultiCountyFederationService(
@@ -105,8 +103,6 @@ public class MultiCountyFederationService : IMultiCountyFederationService
 
             // Initialize unified service delivery platform
             await InitializeUnifiedServicePlatformAsync();
-
-            _isInitialized = true;
 
             _logger.LogInformation($"✅ TIER 5+ Multi-County Federation System initialized successfully with {_federatedCounties.Count} counties");
 

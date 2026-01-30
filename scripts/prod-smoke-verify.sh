@@ -114,6 +114,48 @@ fi
 echo ""
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Gate 8: Runtime Certification (tf-runtime cert)
+# CONSTITUTIONAL: "No certification, no traffic"
+# ─────────────────────────────────────────────────────────────────────────────
+echo "🔒 Gate 8: Runtime Certification (tf-runtime cert)"
+RUNTIME_CERT_TOOL="$PROJECT_ROOT/tools/runtime-cert/tf-runtime.py"
+COUNTY="${COUNTY:-benton}"
+STRICT_FLAG="${STRICT:+--strict}"
+OUTPUT_DIR="${PROJECT_ROOT}/artifacts/cert"
+
+if [ -f "$RUNTIME_CERT_TOOL" ]; then
+    echo "   Running certification: county=$COUNTY, strict=${STRICT:-false}"
+
+    # Run certification
+    set +e
+    python3 "$RUNTIME_CERT_TOOL" cert "$COUNTY" --base-url "$BASE_URL" --output "$OUTPUT_DIR" "$STRICT_FLAG"
+    CERT_EXIT=$?
+    set -e
+
+    case $CERT_EXIT in
+        0)
+            echo "   ✅ PASS: Runtime certification passed"
+            # Show report location
+            LATEST_REPORT=$(ls -td "$OUTPUT_DIR"/*/ 2>/dev/null | head -1)
+            if [ -n "$LATEST_REPORT" ]; then
+                echo "   📄 Report: ${LATEST_REPORT}cert.report.json"
+            fi
+            ;;
+        1)
+            echo "   ❌ FAIL: Runtime certification failed (checks failed)"
+            FAIL=1
+            ;;
+        *)
+            echo "   ❌ FAIL: Runtime certification error (exit code: $CERT_EXIT)"
+            FAIL=1
+            ;;
+    esac
+else
+    echo "   ⚠️  SKIP: Runtime certification tool not found"
+fi
+echo ""
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Final Verdict
 # ─────────────────────────────────────────────────────────────────────────────
 echo "============================================"

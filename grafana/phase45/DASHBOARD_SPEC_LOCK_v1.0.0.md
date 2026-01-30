@@ -93,11 +93,9 @@ File:
 - `grafana/phase45/atlas-auto-remediation-benton-ops.json`
 
 Dashboard UID (must match exactly):
-
 - `atlas-auto-remediation-benton-ops`
 
 Dashboard Title (must match exactly):
-
 - `Atlas Auto-Remediation — Benton Ops`
 
 Time range expectation:
@@ -221,11 +219,9 @@ File:
 - `grafana/phase45/atlas-auto-remediation-governance.json`
 
 Dashboard UID (must match exactly):
-
 - `atlas-auto-remediation-governance`
 
 Dashboard Title (must match exactly):
-
 - `Atlas Auto-Remediation — Governance`
 
 ### Panel Spec (exact titles + PromQL)

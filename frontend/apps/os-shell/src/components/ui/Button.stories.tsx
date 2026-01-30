@@ -296,7 +296,7 @@ export const RealWorldExample: Story = {
       <p
         style={{
           marginBottom: '24px',
-          color: '#888',
+          color: 'var(--gray-400)',
           fontSize: '14px',
         }}
       >
@@ -389,7 +389,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -417,7 +417,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -446,7 +446,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -474,7 +474,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -517,7 +517,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -545,7 +545,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -573,7 +573,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -601,7 +601,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >

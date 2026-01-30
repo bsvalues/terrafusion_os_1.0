@@ -76,7 +76,7 @@
   position: absolute;
   top: -8px;
   right: -8px;
-  background: linear-gradient(135deg, #ff4444, #ff6666);
+  background: linear-gradient(135deg, var(--error-red), var(--tf-error-light));
   color: white;
   border-radius: 50%;
   width: 24px;
@@ -133,30 +133,30 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #00ffff;
+  background: var(--tf-quantum-cyan);
   box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
   animation: atlas-status-pulse 2s ease-in-out infinite;
 }
 
 .atlas-status-indicator[data-status='INFINITE'] {
-  background: linear-gradient(135deg, #00ffff, #00ff88);
+  background: linear-gradient(135deg, var(--tf-quantum-cyan), var(--success-green));
   animation: atlas-status-transcendent 2s ease-in-out infinite;
 }
 
 .atlas-status-indicator[data-status='TRANSCENDENT'] {
-  background: linear-gradient(135deg, #00ffff, #0088ff);
+  background: linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue));
 }
 
 .atlas-status-indicator[data-status='ACTIVE'] {
-  background: #00ff88;
+  background: var(--success-green);
 }
 
 .atlas-status-indicator[data-status='AWARE'] {
-  background: #ffaa00;
+  background: var(--warning-amber);
 }
 
 .atlas-status-indicator[data-status='DORMANT'] {
-  background: #666666;
+  background: var(--gray-500);
   animation: none;
 }
 
@@ -242,7 +242,7 @@
   border-radius: 8px;
   border: 1px solid rgba(0, 255, 255, 0.2);
   background: rgba(0, 255, 255, 0.05);
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   transition: all 0.2s ease;
   cursor: pointer;
 }
@@ -270,7 +270,7 @@
   border-radius: 24px;
   border: 1px solid rgba(0, 255, 255, 0.2);
   background: rgba(0, 255, 255, 0.05);
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   font-size: 14px;
   outline: none;
   transition: all 0.2s ease;
@@ -292,7 +292,7 @@
   border-radius: 50%;
   border: 1px solid rgba(0, 255, 255, 0.3);
   background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 128, 255, 0.1));
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   font-size: 16px;
   display: flex;
   align-items: center;
@@ -456,15 +456,15 @@
   0%,
   100% {
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
-    background: linear-gradient(135deg, #00ffff, #00ff88);
+    background: linear-gradient(135deg, var(--tf-quantum-cyan), var(--success-green));
   }
   33% {
     box-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
-    background: linear-gradient(135deg, #00ff88, #0088ff);
+    background: linear-gradient(135deg, var(--success-green), var(--tf-network-blue));
   }
   66% {
     box-shadow: 0 0 20px rgba(0, 136, 255, 0.8);
-    background: linear-gradient(135deg, #0088ff, #8800ff);
+    background: linear-gradient(135deg, var(--tf-network-blue), #8800ff);
   }
 }
 

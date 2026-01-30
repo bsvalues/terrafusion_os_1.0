@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - ELITE SIGNAL HANDLING SERVICE
  * Championship-Level Process Signal Management and Graceful Shutdown
@@ -31,6 +31,7 @@ public class EliteSignalHandlingService : BackgroundService
     private bool _isShuttingDown = false;
     private DateTime? _firstSignalTime;
     private int _signalCount = 0;
+    private int _stopCalled = 0;
 
     // Signal handling delegates
     private static readonly Dictionary<int, EliteSignalHandlingService> _activeServices = new();
@@ -386,14 +387,42 @@ public class EliteSignalHandlingService : BackgroundService
 
     public override async Task StopAsync(CancellationToken stoppingToken)
     {
+        if (Interlocked.Exchange(ref _stopCalled, 1) == 1)
+        {
+            await base.StopAsync(stoppingToken);
+            return;
+        }
+
         _logger.LogInformation("🛑 Elite Signal Handling Service stopping...");
 
         // Signal internal cancellation
-        _internalCancellation.Cancel();
+        try
+        {
+            _internalCancellation.Cancel();
+        }
+        catch (ObjectDisposedException)
+        {
+            // Already disposed during shutdown path; safe to ignore.
+        }
 
         // Cleanup resources
-        _shutdownSignalReceived?.Dispose();
-        _internalCancellation?.Dispose();
+        try
+        {
+            _shutdownSignalReceived.Dispose();
+        }
+        catch (ObjectDisposedException)
+        {
+            // Already disposed; ignore.
+        }
+
+        try
+        {
+            _internalCancellation.Dispose();
+        }
+        catch (ObjectDisposedException)
+        {
+            // Already disposed; ignore.
+        }
 
         await base.StopAsync(stoppingToken);
         _logger.LogInformation("✅ Elite Signal Handling Service stopped gracefully");

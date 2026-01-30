@@ -1,4 +1,4 @@
-/**
+/*
  * Basic implementations of quantum consciousness services for build resolution
  * These can be enhanced with full functionality as needed
  * 

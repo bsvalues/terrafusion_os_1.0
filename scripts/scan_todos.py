@@ -1,4 +1,4 @@
-import re, json, os, sys, pathlib, datetime
+import re, json, os, sys, pathlib, datetime, subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / 'docs'
@@ -14,21 +14,63 @@ TAG_SET = {
 
 PATTERN = re.compile(r"(?:^\s*(?:#|//|<!--|;|/\*|\*)\s*)(?:\[(?P<module>[^\]]+)\]\s*)?(?P<tag>" + '|'.join(map(re.escape, TAG_SET)) + r")\s*:\s*(?P<text>.+?)\s*$")
 
-IGNORE_DIRS = {'.git','.venv','venv','node_modules','dist','build','__pycache__'}
+IGNORE_DIRS = {
+    '.git', '.venv', 'venv', 'node_modules', 'dist', 'build', '__pycache__',
+    '.next', 'out', 'bin', 'obj', '.ci_artifacts_local', 'artifacts',
+    '.pnpm-store', '.ci_test_results', '.data', '_archive', '_CLEAN_BUILD_ZONE',
+    'backups', 'cache', 'logs', 'temp', 'target', 'test-results', 'generated_tests',
+    'ARCGIS'
+}
+IGNORE_PREFIXES = {
+    '_pre_restore_safety_',
+}
 VALID_EXT = {'.py','.ts','.tsx','.js','.jsx','.md','.json','.yml','.yaml','.ini','.cfg','.cs','.go','.rs'}
+MAX_FILE_SIZE = 2_000_000  # bytes
 
 def walk_files(root: pathlib.Path):
-    for p in root.rglob('*'):
-        try:
-            if p.is_dir():
-                if p.name in IGNORE_DIRS:
-                    continue
+    try:
+        # Use tracked files when available; avoids scanning huge untracked dirs.
+        pathspecs = [f'*{ext}' for ext in sorted(VALID_EXT)]
+        result = subprocess.run(
+            ['git', '-C', str(root), 'ls-files', '--', *pathspecs],
+            check=True,
+            capture_output=True,
+            text=True
+        )
+        for line in result.stdout.splitlines():
+            if not line:
                 continue
-            if p.suffix.lower() in VALID_EXT:
-                yield p
-        except (OSError, PermissionError):
-            # Skip broken symlinks, permission denied, etc.
-            continue
+            rel_path = pathlib.Path(line)
+            if any(part in IGNORE_DIRS for part in rel_path.parts):
+                continue
+            if any(part.startswith(prefix) for part in rel_path.parts for prefix in IGNORE_PREFIXES):
+                continue
+            p = root / rel_path
+            try:
+                if p.stat().st_size > MAX_FILE_SIZE:
+                    continue
+            except (OSError, PermissionError):
+                continue
+            yield p
+        return
+    except Exception:
+        # Fall back to filesystem walk if git isn't available.
+        pass
+
+    for dirpath, dirs, files in os.walk(root):
+        # Prune heavy or irrelevant directories early
+        dirs[:] = [
+            d for d in dirs
+            if d not in IGNORE_DIRS and not any(d.startswith(prefix) for prefix in IGNORE_PREFIXES)
+        ]
+        for name in files:
+            try:
+                p = pathlib.Path(dirpath) / name
+                if p.suffix.lower() in VALID_EXT and p.stat().st_size <= MAX_FILE_SIZE:
+                    yield p
+            except (OSError, PermissionError):
+                # Skip broken symlinks, permission denied, etc.
+                continue
 
 def rel(p: pathlib.Path):
     try:
@@ -62,7 +104,7 @@ def main():
         by_module.setdefault(mod, []).append(r)
 
     payload = {
-        'generated_at': datetime.datetime.utcnow().isoformat()+'Z',
+        'generated_at': datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00', 'Z'),
         'root': str(ROOT),
         'counts': {
             'total': len(records),

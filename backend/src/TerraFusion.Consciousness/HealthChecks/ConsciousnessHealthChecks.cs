@@ -84,7 +84,7 @@ namespace TerraFusion.Consciousness.HealthChecks
             _logger = logger;
         }
 
-        public async Task<HealthCheckResult> CheckHealthAsync(
+        public Task<HealthCheckResult> CheckHealthAsync(
             HealthCheckContext context,
             CancellationToken cancellationToken = default)
         {
@@ -103,27 +103,25 @@ namespace TerraFusion.Consciousness.HealthChecks
 
                 if (configuredFactor == CHAMPIONSHIP_FACTOR)
                 {
-                    return HealthCheckResult.Healthy(
+                    return Task.FromResult(HealthCheckResult.Healthy(
                         "Quantum factor 949 configured for championship excellence",
-                        data);
+                        data));
                 }
                 else
                 {
-                    return HealthCheckResult.Unhealthy(
+                    return Task.FromResult(HealthCheckResult.Unhealthy(
                         $"Quantum factor misconfigured - Expected: 949, Actual: {configuredFactor}",
-                        data: data);
+                        data: data));
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Quantum factor health check failed");
-                return HealthCheckResult.Unhealthy(
+                return Task.FromResult(HealthCheckResult.Unhealthy(
                     "Quantum factor health check failed",
                     ex,
-                    new Dictionary<string, object> { ["Error"] = ex.Message });
+                    new Dictionary<string, object> { ["Error"] = ex.Message }));
             }
-
-            await Task.CompletedTask;
         }
     }
 

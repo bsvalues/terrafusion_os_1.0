@@ -87,7 +87,7 @@ export const Default: Story = {
         <p
           style={{
             fontSize: '14px',
-            color: '#888',
+            color: 'var(--gray-400)',
             lineHeight: '1.6',
           }}
         >
@@ -107,7 +107,7 @@ export const Default: Story = {
         <p
           style={{
             fontSize: '14px',
-            color: '#888',
+            color: 'var(--gray-400)',
             lineHeight: '1.6',
           }}
         >
@@ -262,7 +262,7 @@ export const WithText: Story = {
         <span
           style={{
             fontSize: '12px',
-            color: '#888',
+            color: 'var(--gray-400)',
             fontWeight: 500,
           }}
         >
@@ -284,7 +284,7 @@ export const WithText: Story = {
         <span
           style={{
             fontSize: '13px',
-            color: '#0099ff',
+            color: 'var(--tf-network-blue)',
             fontWeight: 500,
           }}
         >
@@ -318,7 +318,7 @@ export const InNavigation: Story = {
             href='#'
             style={{
               fontSize: '14px',
-              color: '#fff',
+              color: 'var(--tf-text-primary)',
               textDecoration: 'none',
               fontWeight: 500,
             }}
@@ -335,7 +335,7 @@ export const InNavigation: Story = {
             href='#'
             style={{
               fontSize: '14px',
-              color: '#888',
+              color: 'var(--gray-400)',
               textDecoration: 'none',
             }}
           >
@@ -351,7 +351,7 @@ export const InNavigation: Story = {
             href='#'
             style={{
               fontSize: '14px',
-              color: '#888',
+              color: 'var(--gray-400)',
               textDecoration: 'none',
             }}
           >
@@ -367,7 +367,7 @@ export const InNavigation: Story = {
             href='#'
             style={{
               fontSize: '14px',
-              color: '#888',
+              color: 'var(--gray-400)',
               textDecoration: 'none',
             }}
           >
@@ -389,7 +389,7 @@ export const InNavigation: Story = {
                 backgroundColor: 'transparent',
                 border: '1px solid #2a2a2a',
                 borderRadius: '4px',
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
                 fontSize: '13px',
                 fontStyle: 'italic',
@@ -403,7 +403,7 @@ export const InNavigation: Story = {
                 backgroundColor: 'transparent',
                 border: '1px solid #2a2a2a',
                 borderRadius: '4px',
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
                 fontSize: '13px',
                 textDecoration: 'underline',
@@ -428,7 +428,7 @@ export const InNavigation: Story = {
                 backgroundColor: 'transparent',
                 border: '1px solid #2a2a2a',
                 borderRadius: '4px',
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
                 fontSize: '11px',
               }}
@@ -441,7 +441,7 @@ export const InNavigation: Story = {
                 backgroundColor: 'transparent',
                 border: '1px solid #2a2a2a',
                 borderRadius: '4px',
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
                 fontSize: '11px',
               }}
@@ -454,7 +454,7 @@ export const InNavigation: Story = {
                 backgroundColor: 'transparent',
                 border: '1px solid #2a2a2a',
                 borderRadius: '4px',
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
                 fontSize: '11px',
               }}
@@ -475,10 +475,10 @@ export const InNavigation: Story = {
             <button
               style={{
                 padding: '6px 12px',
-                backgroundColor: '#0099ff',
+                backgroundColor: 'var(--tf-network-blue)',
                 border: 'none',
                 borderRadius: '4px',
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
                 fontSize: '12px',
                 fontWeight: 500,
@@ -492,7 +492,7 @@ export const InNavigation: Story = {
                 backgroundColor: 'transparent',
                 border: '1px solid #2a2a2a',
                 borderRadius: '4px',
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
                 fontSize: '12px',
               }}
@@ -532,7 +532,7 @@ export const RealWorldCard: Story = {
               width: '48px',
               height: '48px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, var(--tf-accent-quantum) 0%, var(--tf-accent-quantum) 100%)',
             }}
           />
           <div className='flex-1'>
@@ -540,7 +540,7 @@ export const RealWorldCard: Story = {
             <p
               style={{
                 fontSize: '13px',
-                color: '#888',
+                color: 'var(--gray-400)',
               }}
             >
               Software Engineer
@@ -560,7 +560,7 @@ export const RealWorldCard: Story = {
         <p
           style={{
             fontSize: '14px',
-            color: '#ccc',
+            color: 'var(--gray-300)',
             lineHeight: '1.6',
             marginBottom: '16px',
           }}
@@ -575,7 +575,7 @@ export const RealWorldCard: Story = {
               style={{
                 fontSize: '20px',
                 fontWeight: 700,
-                color: '#0099ff',
+                color: 'var(--tf-network-blue)',
               }}
             >
               127
@@ -583,7 +583,7 @@ export const RealWorldCard: Story = {
             <div
               style={{
                 fontSize: '12px',
-                color: '#888',
+                color: 'var(--gray-400)',
               }}
             >
               Projects
@@ -600,7 +600,7 @@ export const RealWorldCard: Story = {
               style={{
                 fontSize: '20px',
                 fontWeight: 700,
-                color: '#0099ff',
+                color: 'var(--tf-network-blue)',
               }}
             >
               1.2k
@@ -608,7 +608,7 @@ export const RealWorldCard: Story = {
             <div
               style={{
                 fontSize: '12px',
-                color: '#888',
+                color: 'var(--gray-400)',
               }}
             >
               Followers
@@ -625,7 +625,7 @@ export const RealWorldCard: Story = {
               style={{
                 fontSize: '20px',
                 fontWeight: 700,
-                color: '#0099ff',
+                color: 'var(--tf-network-blue)',
               }}
             >
               834
@@ -633,7 +633,7 @@ export const RealWorldCard: Story = {
             <div
               style={{
                 fontSize: '12px',
-                color: '#888',
+                color: 'var(--gray-400)',
               }}
             >
               Following
@@ -690,7 +690,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -718,7 +718,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -746,7 +746,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -774,7 +774,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -817,7 +817,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -845,7 +845,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -873,7 +873,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -901,7 +901,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -1036,7 +1036,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   Horizontal
@@ -1044,7 +1044,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   Yes
@@ -1065,7 +1065,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   Vertical
@@ -1073,7 +1073,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   Yes
@@ -1094,7 +1094,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   Vertical
@@ -1102,7 +1102,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   Yes
@@ -1123,7 +1123,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   Horizontal
@@ -1131,7 +1131,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   Yes
@@ -1152,7 +1152,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   Horizontal
@@ -1160,7 +1160,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   Yes
@@ -1177,7 +1177,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   Either
@@ -1185,7 +1185,7 @@ export const UsageGuidelines: Story = {
                 <td
                   style={{
                     padding: '12px',
-                    color: '#888',
+                    color: 'var(--gray-400)',
                   }}
                 >
                   No

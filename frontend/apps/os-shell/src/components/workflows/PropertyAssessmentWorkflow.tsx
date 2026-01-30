@@ -49,7 +49,7 @@ const WorkflowCard = styled(Card)(({ theme }) => ({
 }));
 
 const StepIcon = styled(Avatar)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #0891b2, #00d2ff)',
+  background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-cyan))',
   width: '40px',
   height: '40px',
 }));
@@ -259,7 +259,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                     borderRadius: 4,
                     mb: 2,
                     '& .MuiLinearProgress-bar': {
-                      background: 'linear-gradient(90deg, #00d2ff, #667eea)',
+                      background: 'linear-gradient(90deg, var(--tf-transcend-cyan), var(--tf-accent-quantum))',
                     },
                   }}
                 />
@@ -274,7 +274,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                     <CardContent sx={{ textAlign: 'center' }}>
                       <Avatar
                         sx={{
-                          background: 'linear-gradient(135deg, #00ffaa, #00cc88)',
+                          background: 'linear-gradient(135deg, var(--tf-accent-success), var(--tf-transcend-cyan))',
                           mx: 'auto',
                           mb: 2,
                         }}
@@ -284,7 +284,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                       <Typography variant='h6' sx={{ color: 'white', mb: 1 }}>
                         Land Value
                       </Typography>
-                      <Typography variant='h4' sx={{ color: '#00ffaa', fontWeight: 700 }}>
+                      <Typography variant='h4' sx={{ color: 'var(--tf-accent-success)', fontWeight: 700 }}>
                         {propertyData.landValue}
                       </Typography>
                     </CardContent>
@@ -295,7 +295,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                     <CardContent sx={{ textAlign: 'center' }}>
                       <Avatar
                         sx={{
-                          background: 'linear-gradient(135deg, #00d2ff, #0891b2)',
+                          background: 'linear-gradient(135deg, var(--tf-transcend-cyan), var(--tf-network-blue))',
                           mx: 'auto',
                           mb: 2,
                         }}
@@ -305,7 +305,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                       <Typography variant='h6' sx={{ color: 'white', mb: 1 }}>
                         Improvement Value
                       </Typography>
-                      <Typography variant='h4' sx={{ color: '#00d2ff', fontWeight: 700 }}>
+                      <Typography variant='h4' sx={{ color: 'var(--tf-transcend-cyan)', fontWeight: 700 }}>
                         {propertyData.improvementValue}
                       </Typography>
                     </CardContent>
@@ -316,7 +316,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                     <CardContent sx={{ textAlign: 'center' }}>
                       <Avatar
                         sx={{
-                          background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                          background: 'linear-gradient(135deg, var(--tf-accent-quantum), var(--tf-accent-quantum))',
                           mx: 'auto',
                           mb: 2,
                         }}
@@ -326,7 +326,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                       <Typography variant='h6' sx={{ color: 'white', mb: 1 }}>
                         Total Assessed Value
                       </Typography>
-                      <Typography variant='h4' sx={{ color: '#667eea', fontWeight: 700 }}>
+                      <Typography variant='h4' sx={{ color: 'var(--tf-accent-quantum)', fontWeight: 700 }}>
                         {propertyData.totalValue}
                       </Typography>
                     </CardContent>
@@ -338,8 +338,8 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                     sx={{
                       background: 'rgba(0, 255, 170, 0.1)',
                       border: '1px solid rgba(0, 255, 170, 0.3)',
-                      color: '#00ffaa',
-                      '& .MuiAlert-icon': { color: '#00ffaa' },
+                      color: 'var(--tf-accent-success)',
+                      '& .MuiAlert-icon': { color: 'var(--tf-accent-success)' },
                     }}
                   >
                     Transcendence complete. Values generated with 99.7% confidence using
@@ -385,9 +385,9 @@ const PropertyAssessmentWorkflow: React.FC = () => {
               sx={{
                 background: 'rgba(0, 210, 255, 0.1)',
                 border: '1px solid rgba(0, 210, 255, 0.3)',
-                color: '#00d2ff',
+                color: 'var(--tf-transcend-cyan)',
                 mb: 3,
-                '& .MuiAlert-icon': { color: '#00d2ff' },
+                '& .MuiAlert-icon': { color: 'var(--tf-transcend-cyan)' },
               }}
             >
               Please review all assessment details before final submission.
@@ -419,19 +419,19 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                 <Stack spacing={1}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Land Value:</Typography>
-                    <Typography sx={{ color: '#00ffaa' }}>{propertyData.landValue}</Typography>
+                    <Typography sx={{ color: 'var(--tf-accent-success)' }}>{propertyData.landValue}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                       Improvement Value:
                     </Typography>
-                    <Typography sx={{ color: '#00d2ff' }}>
+                    <Typography sx={{ color: 'var(--tf-transcend-cyan)' }}>
                       {propertyData.improvementValue}
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Total Value:</Typography>
-                    <Typography sx={{ color: '#667eea', fontWeight: 700 }}>
+                    <Typography sx={{ color: 'var(--tf-accent-quantum)', fontWeight: 700 }}>
                       {propertyData.totalValue}
                     </Typography>
                   </Box>
@@ -463,7 +463,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                       StepIconComponent={() => <StepIcon>{step.icon}</StepIcon>}
                       sx={{
                         '& .MuiStepLabel-label': {
-                          color: activeStep === index ? '#00d2ff' : 'rgba(255, 255, 255, 0.7)',
+                          color: activeStep === index ? 'var(--tf-transcend-cyan)' : 'rgba(255, 255, 255, 0.7)',
                           fontWeight: activeStep === index ? 600 : 400,
                         },
                       }}
@@ -512,11 +512,11 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                   onClick={handleNext}
                   disabled={!canProceed() && activeStep !== 2 && activeStep !== 4}
                   sx={{
-                    background: 'linear-gradient(135deg, #00d2ff, #667eea)',
+                    background: 'linear-gradient(135deg, var(--tf-transcend-cyan), var(--tf-accent-quantum))',
                     color: 'white',
                     fontWeight: 600,
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #0891b2, #00d2ff)',
+                      background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-cyan))',
                     },
                   }}
                 >

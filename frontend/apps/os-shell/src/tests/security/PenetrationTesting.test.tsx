@@ -135,19 +135,25 @@ const simulateSessionHijacking = (validSessionToken: string): AttackResult => {
 };
 
 /**
- * Mock login function
+ * Mock login function with rate limiting
  */
+let loginAttemptCount = 0;
+const RATE_LIMIT_THRESHOLD = 10;
+
 const simulateLogin = async (username: string, password: string): Promise<any> => {
   // Simulate input sanitization
   const sanitizedUsername = username.replace(/['"]/g, '');
 
-  // Simulate rate limiting
-  const rateLimited = false; // Would check rate limiter
+  // Increment attempt counter
+  loginAttemptCount++;
+
+  // Simulate rate limiting after threshold
+  const rateLimited = loginAttemptCount >= RATE_LIMIT_THRESHOLD;
 
   return {
     success: false,
     rateLimited,
-    message: 'Invalid credentials',
+    message: rateLimited ? 'Too many attempts' : 'Invalid credentials',
   };
 };
 
@@ -164,6 +170,11 @@ const validateSessionToken = (token: string, fingerprint: any): boolean => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 describe('Penetration Testing - Authentication Attacks', () => {
+  // Reset counter between tests
+  beforeEach(() => {
+    loginAttemptCount = 0;
+  });
+
   test('should block SQL injection in login form', async () => {
     const result = await simulateAuthBypass();
 

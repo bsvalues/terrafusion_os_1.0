@@ -109,36 +109,36 @@ namespace TerraFusion.AI.Interfaces
     // Supporting classes for interfaces
     public class MultiModalRequest
     {
-        public string RequestId { get; set; }
-        public string TextInput { get; set; }
-        public byte[] ImageData { get; set; }
-        public string AudioData { get; set; }
-        public Dictionary<string, object> SpatialData { get; set; }
-        public RequestContext Context { get; set; }
+        public string RequestId { get; set; } = string.Empty;
+        public string TextInput { get; set; } = string.Empty;
+        public byte[] ImageData { get; set; } = Array.Empty<byte>();
+        public string AudioData { get; set; } = string.Empty;
+        public Dictionary<string, object> SpatialData { get; set; } = new();
+        public RequestContext Context { get; set; } = new();
     }
     
     public class LLMResponse
     {
-        public string ResponseId { get; set; }
-        public string TextResponse { get; set; }
+        public string ResponseId { get; set; } = string.Empty;
+        public string TextResponse { get; set; } = string.Empty;
         public double Confidence { get; set; }
-        public List<string> Sources { get; set; }
-        public ReasoningChain Reasoning { get; set; }
+        public List<string> Sources { get; set; } = new();
+        public ReasoningChain Reasoning { get; set; } = new();
     }
     
     public class QuantumOptimizationRequest
     {
-        public string OptimizationId { get; set; }
+        public string OptimizationId { get; set; } = string.Empty;
         public OptimizationType Type { get; set; }
-        public Dictionary<string, double> Parameters { get; set; }
-        public List<Constraint> Constraints { get; set; }
+        public Dictionary<string, double> Parameters { get; set; } = new();
+        public List<Constraint> Constraints { get; set; } = new();
         public int MaxIterations { get; set; }
     }
     
     public class QuantumAIResponse
     {
-        public string OptimizationId { get; set; }
-        public OptimizationResult Result { get; set; }
+        public string OptimizationId { get; set; } = string.Empty;
+        public OptimizationResult Result { get; set; } = new();
         public double QuantumAdvantage { get; set; }
         public TimeSpan ProcessingTime { get; set; }
         public double Confidence { get; set; }
@@ -148,27 +148,27 @@ namespace TerraFusion.AI.Interfaces
     
     public class DecisionExplanation
     {
-        public string DecisionId { get; set; }
-        public string PrimaryReason { get; set; }
-        public List<ContributingFactor> Factors { get; set; }
+        public string DecisionId { get; set; } = string.Empty;
+        public string PrimaryReason { get; set; } = string.Empty;
+        public List<ContributingFactor> Factors { get; set; } = new();
         public double ConfidenceScore { get; set; }
-        public List<AlternativeOption> Alternatives { get; set; }
-        public ComplianceValidation Compliance { get; set; }
-        public AuditTrail AuditInformation { get; set; }
+        public List<AlternativeOption> Alternatives { get; set; } = new();
+        public ComplianceValidation Compliance { get; set; } = new();
+        public AuditTrail AuditInformation { get; set; } = new();
     }
     
     public class EthicalValidation
     {
         public bool IsEthical { get; set; }
         public double EthicalScore { get; set; }
-        public List<EthicalConcern> Concerns { get; set; }
-        public List<EthicalRecommendation> Recommendations { get; set; }
+        public List<EthicalConcern> Concerns { get; set; } = new();
+        public List<EthicalRecommendation> Recommendations { get; set; } = new();
         public bool RequiresHumanReview { get; set; }
     }
     
     public class ModelPerformance
     {
-        public string ModelId { get; set; }
+        public string ModelId { get; set; } = string.Empty;
         public double Accuracy { get; set; }
         public double Precision { get; set; }
         public double Recall { get; set; }

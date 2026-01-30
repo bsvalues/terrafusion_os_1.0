@@ -41,7 +41,7 @@ const TextStyleExample = ({
     <div
       style={{
         ...style,
-        color: '#fff',
+        color: 'var(--tf-text-primary)',
       }}
     >
       {example}
@@ -53,7 +53,7 @@ export const DisplayText: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '32px',
           fontSize: '24px',
           fontWeight: 700,
@@ -105,7 +105,7 @@ export const Headings: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '32px',
           fontSize: '24px',
           fontWeight: 700,
@@ -161,7 +161,7 @@ export const BodyText: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '32px',
           fontSize: '24px',
           fontWeight: 700,
@@ -207,7 +207,7 @@ export const Labels: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '32px',
           fontSize: '24px',
           fontWeight: 700,
@@ -248,7 +248,7 @@ export const CodeText: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '32px',
           fontSize: '24px',
           fontWeight: 700,
@@ -289,7 +289,7 @@ export const FontWeights: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '32px',
           fontSize: '24px',
           fontWeight: 700,
@@ -319,7 +319,7 @@ export const FontWeights: Story = {
           </div>
           <div
             style={{
-              color: '#fff',
+              color: 'var(--tf-text-primary)',
               fontSize: '18px',
               fontWeight: weight,
             }}
@@ -336,7 +336,7 @@ export const RealWorldExample: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '32px',
           fontSize: '24px',
           fontWeight: 700,
@@ -356,7 +356,7 @@ export const RealWorldExample: Story = {
         <h1
           style={{
             ...tokens.typography.textStyles.heading.h1,
-            color: '#fff',
+            color: 'var(--tf-text-primary)',
             marginBottom: tokens.spacing[2],
           }}
         >
@@ -387,7 +387,7 @@ export const RealWorldExample: Story = {
         <h2
           style={{
             ...tokens.typography.textStyles.heading.h3,
-            color: '#fff',
+            color: 'var(--tf-text-primary)',
             marginBottom: tokens.spacing[3],
           }}
         >
@@ -436,7 +436,7 @@ export const UsageGuidelines: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '24px',
           fontSize: '24px',
           fontWeight: 700,

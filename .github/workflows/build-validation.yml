@@ -3,8 +3,20 @@ name: TerraFusion OS - Build Validation
 on:
   push:
     branches: [main]
+    paths:
+      - 'backend/**'
+      - '*.sln'
+      - 'Directory.Build.props'
+      - 'Directory.Build.targets'
+      - '.github/workflows/build-validation.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'backend/**'
+      - '*.sln'
+      - 'Directory.Build.props'
+      - 'Directory.Build.targets'
+      - '.github/workflows/build-validation.yml'
 
 jobs:
   validate-build:
@@ -55,12 +67,12 @@ jobs:
           echo "🏛️ Validating Single Source of Truth architecture..."
 
           # Check that DTOs exist in Abstractions
-          if [ ! -f "backend/TerraFusion.Abstractions/DTOs/Shared/SharedDtos.cs" ]; then
+          if [ ! -f "backend/src/TerraFusion.Abstractions/DTOs/Shared/SharedDtos.cs" ]; then
             echo "❌ FAILED: SharedDtos.cs missing from Abstractions"
             exit 1
           fi
 
-          if [ ! -f "backend/TerraFusion.Abstractions/DTOs/Responses/PerformanceMetricsDto.cs" ]; then
+          if [ ! -f "backend/src/TerraFusion.Abstractions/DTOs/Responses/PerformanceMetricsDto.cs" ]; then
             echo "❌ FAILED: PerformanceMetricsDto.cs missing from Abstractions"
             exit 1
           fi

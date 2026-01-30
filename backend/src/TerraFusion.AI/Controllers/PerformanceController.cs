@@ -1,4 +1,4 @@
-/**
+/*
  * PerformanceController - REST API for Performance Optimization
  *
  * Provides endpoints for performance status, cache statistics, optimization recommendations,

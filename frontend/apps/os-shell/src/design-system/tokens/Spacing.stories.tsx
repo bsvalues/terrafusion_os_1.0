@@ -54,7 +54,7 @@ export const BaseSpacing: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '24px',
           fontSize: '24px',
           fontWeight: 700,
@@ -112,7 +112,7 @@ export const SemanticSpacing: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '24px',
           fontSize: '24px',
           fontWeight: 700,
@@ -143,7 +143,7 @@ export const SpacingExamples: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '24px',
           fontSize: '24px',
           fontWeight: 700,
@@ -218,7 +218,7 @@ export const SpacingExamples: Story = {
                 backgroundColor: tokens.colors.semantic.surface.elevated,
                 padding: tokens.spacing[4],
                 borderRadius: tokens.radius.md,
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
               }}
             >
               {item}
@@ -261,7 +261,7 @@ export const UsageGuidelines: Story = {
     <div>
       <h2
         style={{
-          color: '#fff',
+          color: 'var(--tf-text-primary)',
           marginBottom: '24px',
           fontSize: '24px',
           fontWeight: 700,

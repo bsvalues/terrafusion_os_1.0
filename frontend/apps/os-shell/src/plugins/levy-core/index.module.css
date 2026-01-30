@@ -8,7 +8,7 @@
 
 .header {
   margin-bottom: 16px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--gray-200);
   padding-bottom: 12px;
 }
 

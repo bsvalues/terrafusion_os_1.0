@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as MenubarPrimitive from '@radix-ui/react-menubar';
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import { CheckIcon, ChevronRightIcon, DotFilledIcon } from '@radix-ui/react-icons';
 
 function MenubarMenu({ ...props }: React.ComponentProps<typeof MenubarPrimitive.Menu>) {

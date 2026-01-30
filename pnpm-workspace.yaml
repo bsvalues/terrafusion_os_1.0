@@ -1,0 +1,34 @@
+# ============================================================================
+# SPECLOCK: TerraFusion pnpm Workspace Configuration
+# Contract: Defines workspace packages for pnpm -w commands
+# ============================================================================
+
+packages:
+  # OS Core and other packages (Gate enforcement layer)
+  - 'packages/*'
+  # Exclude broken legacy packages (MARKED-FOR-REVIEW = not production ready)
+  # Belt-and-suspenders: both forms for max pnpm compatibility
+  - '!packages/government-edition-enhanced-MARKED-FOR-REVIEW'
+  - '!packages/government-edition-enhanced-MARKED-FOR-REVIEW/**'
+  # Future-proof: any *MARKED-FOR-REVIEW* folder is automatically quarantined
+  - '!packages/**/*MARKED-FOR-REVIEW*'
+  - '!packages/**/*MARKED-FOR-REVIEW*/**'
+
+  # Core frontend (OS Shell)
+  - 'frontend'
+  - 'frontend/electron'
+
+  # Terrafusion shared libraries
+  # DECISION (2025-12-25): Disabled - package moved to external repo
+  # Evidence: No terrafusion-shared/ dir, no package.json, no imports reference it
+  # Regression guard: If re-enabling, ensure package.json exists AND imports work
+  # - 'terrafusion-shared'
+
+  # Applications (optional, may not all have package.json)
+  # - "applications/*"
+
+  # Agents with package.json
+  - 'agents/*'
+
+  # Tools with package.json
+  - 'tools/*'

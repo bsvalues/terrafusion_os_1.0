@@ -1,0 +1,28 @@
+/* src/ui/theme/focus.css */
+.tf-focus-scope {
+  position: relative;
+  outline: none; /* Delegate to ring */
+}
+
+.tf-focus-ring {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--transcend-cyan);
+  opacity: 0;
+  transition: opacity var(--ease-phi) 0.382s;
+  z-index: 10;
+}
+
+.tf-focus-scope:focus-within .tf-focus-ring {
+  opacity: 1;
+  filter: drop-shadow(0 0 5px var(--transcend-cyan));
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .tf-focus-ring {
+    transition: none;
+  }
+}

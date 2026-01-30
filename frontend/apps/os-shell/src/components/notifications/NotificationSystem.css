@@ -80,7 +80,7 @@
 }
 
 .quantum-toast-info {
-  border-left: 4px solid #00ffff;
+  border-left: 4px solid var(--tf-quantum-cyan);
 }
 
 .quantum-toast-content {
@@ -110,7 +110,7 @@
 }
 
 .quantum-toast-icon-info {
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .quantum-toast-text {
@@ -149,8 +149,8 @@
 }
 
 .quantum-toast-action-primary {
-  background: #00ffff;
-  color: #0a0e1a;
+  background: var(--tf-quantum-cyan);
+  color: var(--tf-void-black);
 }
 
 .quantum-toast-action-primary:hover {
@@ -188,7 +188,7 @@
   justify-content: center;
   border: none;
   background: transparent;
-  color: #9ca3af;
+  color: var(--gray-400);
   cursor: pointer;
   border-radius: 0.25rem;
   transition: all 200ms ease;
@@ -283,7 +283,7 @@
 }
 
 .quantum-alert-info .quantum-alert-icon {
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 .quantum-alert-text {
@@ -316,7 +316,7 @@
   justify-content: center;
   border: none;
   background: transparent;
-  color: #9ca3af;
+  color: var(--gray-400);
   cursor: pointer;
   border-radius: 0.25rem;
   transition: all 200ms ease;
@@ -368,7 +368,7 @@
 .quantum-badge-quantum {
   background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 128, 255, 0.2));
   border: 1px solid rgba(0, 255, 255, 0.3);
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
 }
 
 /* Badge Types */
@@ -392,7 +392,7 @@
 
 .quantum-badge-info {
   background: rgba(0, 255, 255, 0.2);
-  color: #00ffff;
+  color: var(--tf-quantum-cyan);
   border: 1px solid rgba(0, 255, 255, 0.3);
 }
 
@@ -512,7 +512,7 @@
 .quantum-toast-close:focus,
 .quantum-alert-close:focus,
 .quantum-toast-action:focus {
-  outline: 2px solid #00ffff;
+  outline: 2px solid var(--tf-quantum-cyan);
   outline-offset: 2px;
 }
 
@@ -520,11 +520,11 @@
 @media (prefers-color-scheme: dark) {
   .quantum-toast-default {
     background: rgba(15, 23, 42, 0.95);
-    border-color: #334155;
+    border-color: var(--gray-700);
   }
 
   .quantum-alert-default {
     background: rgba(15, 23, 42, 0.8);
-    border-color: #334155;
+    border-color: var(--gray-700);
   }
 }

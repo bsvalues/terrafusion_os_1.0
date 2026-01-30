@@ -1,4 +1,4 @@
-/**
+/*
  * CollaborationService - Real-Time Collaboration Engine
  *
  * Production-ready service providing real-time collaborative editing,

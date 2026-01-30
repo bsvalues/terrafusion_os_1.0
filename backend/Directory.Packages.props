@@ -62,6 +62,7 @@
   <!-- Caching & Data Access -->
   <ItemGroup>
     <PackageVersion Include="StackExchange.Redis" Version="2.7.10" />
+    <PackageVersion Include="Dapper" Version="2.1.35" />
   </ItemGroup>
   <!-- Security -->
   <ItemGroup>

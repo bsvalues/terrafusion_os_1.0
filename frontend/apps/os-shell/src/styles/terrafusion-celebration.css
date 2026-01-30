@@ -39,11 +39,11 @@
 }
 
 .celebration-background-default {
-  background: conic-gradient(from 0deg, #00ffff, #8b5cf6, #ef4444, #00ffff);
+  background: conic-gradient(from 0deg, var(--tf-quantum-cyan), #8b5cf6, #ef4444, var(--tf-quantum-cyan));
 }
 
 .celebration-background-dynamic {
-  background: conic-gradient(from var(--particle-angle, 0deg), #00ffff, #8b5cf6, #ef4444, #00ffff);
+  background: conic-gradient(from var(--particle-angle, 0deg), var(--tf-quantum-cyan), #8b5cf6, #ef4444, var(--tf-quantum-cyan));
 }
 
 /* Achievement Animation Delays */

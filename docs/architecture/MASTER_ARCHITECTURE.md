@@ -516,6 +516,17 @@ Repository → Team → Domain Expertise
 
 ## 📚 **ARCHITECTURE DOCUMENTATION INDEX**
 
+### **🔒 Canonical Specs (SpecLock v3.1)**
+> **Source of Truth:** [`docs/architecture/specs/terrafusion/`](specs/terrafusion/)
+>
+> ADRs 0001-0004 define immutable architectural decisions for:
+> - **Property Workbench** (Tier-0 OS Surface)
+> - **TerraPilot** (Pilot/Muse Modes)
+> - **TerraTrace** (Append-Only Audit Spine)
+> - **Write-Lane Matrix** (Suite Ownership)
+>
+> CI gates enforce these specs via `.github/workflows/spec-gates.yml`
+
 ### **Core Documents Consolidated**
 1. **ARCHITECTURE.md** (724 lines) - Base architecture documentation
 2. **ARCHITECTURE_OVERVIEW.md** (234 lines) - High-level system overview

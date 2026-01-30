@@ -26,7 +26,7 @@
  */
 
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 
 export interface GridProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Number of columns (1-12) or responsive object */

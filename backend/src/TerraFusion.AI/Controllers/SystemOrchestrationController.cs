@@ -1,4 +1,4 @@
-/**
+/*
  * SystemOrchestrationController - REST API for System Orchestration
  *
  * Provides endpoints for unified system status, subsystem health, system metrics,

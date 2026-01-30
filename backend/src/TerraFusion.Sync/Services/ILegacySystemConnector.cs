@@ -31,11 +31,11 @@ namespace TerraFusion.Sync.Services
 
     public class SystemHealthInfo
     {
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public DateTime LastChecked { get; set; }
         public double ResponseTimeMs { get; set; }
         public long ActiveConnections { get; set; }
-        public string Version { get; set; }
+        public string Version { get; set; } = string.Empty;
         public Dictionary<string, object> AdditionalInfo { get; set; } = new();
     }
 

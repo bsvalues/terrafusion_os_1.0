@@ -73,11 +73,11 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
     <group ref={sphereRef} position={position}>
       {/* Main Sphere Container */}
       <Sphere args={[3, 32, 32]}>
-        <meshStandardMaterial color='#001122' transparent opacity={0.2} wireframe />
+        <meshStandardMaterial color='var(--tf-void-black)' transparent opacity={0.2} wireframe />
       </Sphere>
 
       {/* Title */}
-      <Text position={[0, 4, 0]} fontSize={0.4} color='#00aaff' anchorX='center' anchorY='middle'>
+      <Text position={[0, 4, 0]} fontSize={0.4} color='var(--tf-network-blue)' anchorX='center' anchorY='middle'>
         Payment Tracking
       </Text>
 
@@ -85,12 +85,12 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
       {realTimeUpdates && (
         <group position={[-2.5, 3.5, 0]}>
           <Sphere args={[0.08]}>
-            <meshStandardMaterial color='#00ff00' emissive='#004400' />
+            <meshStandardMaterial color='var(--tf-success-green)' emissive='var(--tf-success-dark)' />
           </Sphere>
           <Text
             position={[0.2, 0, 0]}
             fontSize={0.12}
-            color='#00ff00'
+            color='var(--tf-success-green)'
             anchorX='left'
             anchorY='middle'
           >
@@ -103,12 +103,12 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
       {predictiveMode && (
         <group position={[2.5, 3.5, 0]}>
           <Sphere args={[0.08]}>
-            <meshStandardMaterial color='#ff8800' emissive='#442200' />
+            <meshStandardMaterial color='var(--tf-accent-orange)' emissive='var(--tf-surface-dark)' />
           </Sphere>
           <Text
             position={[-0.2, 0, 0]}
             fontSize={0.12}
-            color='#ff8800'
+            color='var(--tf-accent-orange)'
             anchorX='right'
             anchorY='middle'
           >
@@ -133,7 +133,7 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
           <Text
             position={[0, payment.scale * 0.15, 0]}
             fontSize={0.08}
-            color='#ffffff'
+            color='var(--tf-text-primary)fff'
             anchorX='center'
             anchorY='bottom'
           >
@@ -144,7 +144,7 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
           {payment.status === 'processing' && (
             <Line
               points={[new Vector3(0, 0, 0), new Vector3(0, 0, -payment.scale * 0.3)]}
-              color='#ffaa00'
+              color='var(--warning-amber)'
               lineWidth={2}
             />
           )}
@@ -156,7 +156,7 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
         <Text
           position={[-1.5, 0.3, 0]}
           fontSize={0.12}
-          color='#88aaff'
+          color='var(--tf-network-light)'
           anchorX='left'
           anchorY='middle'
         >
@@ -166,7 +166,7 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
         <Text
           position={[-1.5, 0, 0]}
           fontSize={0.1}
-          color='#88ff88'
+          color='var(--tf-success-light)'
           anchorX='left'
           anchorY='middle'
         >
@@ -176,7 +176,7 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
         <Text
           position={[-1.5, -0.3, 0]}
           fontSize={0.1}
-          color='#ffaa88'
+          color='var(--tf-accent-pink)'
           anchorX='left'
           anchorY='middle'
         >
@@ -189,7 +189,7 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
             <Text
               position={[0, 0.2, 0]}
               fontSize={0.1}
-              color='#ff8800'
+              color='var(--tf-accent-orange)'
               anchorX='left'
               anchorY='middle'
             >
@@ -198,7 +198,7 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
             <Text
               position={[0, 0, 0]}
               fontSize={0.12}
-              color='#ffaa00'
+              color='var(--warning-amber)'
               anchorX='left'
               anchorY='middle'
             >
@@ -207,7 +207,7 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
             <Text
               position={[0, -0.2, 0]}
               fontSize={0.08}
-              color='#aa8800'
+              color='var(--tf-warning-dark)'
               anchorX='left'
               anchorY='middle'
             >
@@ -231,7 +231,7 @@ export const PaymentTrackingSphere: React.FC<PaymentTrackingSphereProps> = ({
 
       {/* Central Core */}
       <Sphere args={[0.2]}>
-        <meshStandardMaterial color='#0088ff' emissive='#002244' metalness={0.8} roughness={0.2} />
+        <meshStandardMaterial color='var(--tf-network-blue)' emissive='var(--tf-network-dark)' metalness={0.8} roughness={0.2} />
       </Sphere>
     </group>
   );

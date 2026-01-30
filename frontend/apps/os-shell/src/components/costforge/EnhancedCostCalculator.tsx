@@ -63,11 +63,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 // CostForge branding colors - TerraFusion Design System
 const COSTFORGE_COLORS = {
-  trustBlue: '#0099ff',
-  transcendCyan: '#00ffee',
-  successGreen: '#00ffaa',
-  deepSpace: '#0b1020',
-  clarity: 'linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%)',
+  trustBlue: 'var(--tf-network-blue)',
+  transcendCyan: 'var(--tf-transcend-highlight)',
+  successGreen: 'var(--tf-accent-success)',
+  deepSpace: 'var(--tf-bg-surface)',
+  clarity: 'linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-transcend-highlight) 50%, var(--tf-accent-success) 100%)',
 };
 
 // Enhanced form schema for CostForge calculator with government compliance
@@ -1106,7 +1106,7 @@ export const EnhancedCostCalculator: React.FC = () => {
                       disabled={isCalculating}
                       className={`gap-2 ${
                         backendConnected
-                          ? 'bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] hover:from-[#0088ee] hover:via-[#00eecc] hover:to-[#00dd99]'
+                          ? 'bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] hover:from-[var(--tf-network-blue)] hover:via-[var(--tf-accent-teal)] hover:to-[var(--tf-accent-success)]'
                           : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600'
                       } text-white font-semibold uppercase`}
                     >
@@ -1363,7 +1363,7 @@ export const EnhancedCostCalculator: React.FC = () => {
                             labelLine={true}
                             outerRadius={80}
                             innerRadius={30}
-                            fill='#8884d8'
+                            fill='var(--tf-chart-1)'
                             dataKey='cost'
                             nameKey='category'
                             label={({ category, percent }) => `${(percent * 100).toFixed(0)}%`}
@@ -1378,10 +1378,10 @@ export const EnhancedCostCalculator: React.FC = () => {
                                 key={`cell-${index}`}
                                 fill={
                                   index % 3 === 0
-                                    ? '#00ffee'
+                                    ? 'var(--tf-transcend-highlight)'
                                     : index % 3 === 1
-                                      ? '#0099ff'
-                                      : '#00ffaa'
+                                      ? 'var(--tf-network-blue)'
+                                      : 'var(--tf-accent-success)'
                                 }
                               />
                             ))}
@@ -1395,7 +1395,7 @@ export const EnhancedCostCalculator: React.FC = () => {
                               backgroundColor: 'rgba(15, 23, 42, 0.9)',
                               border: '1px solid rgba(0, 255, 238, 0.3)',
                               borderRadius: '8px',
-                              color: '#fff',
+                              color: 'var(--tf-text-primary)',
                             }}
                           />
                         </PieChart>
@@ -1416,9 +1416,9 @@ export const EnhancedCostCalculator: React.FC = () => {
                     <div className='h-80 border border-cyan-400/30 rounded-md p-4 bg-slate-700/30'>
                       <ResponsiveContainer width='100%' height='100%'>
                         <LineChart data={timelineData}>
-                          <CartesianGrid strokeDasharray='3 3' stroke='#334155' />
-                          <XAxis dataKey='month' stroke='#94a3b8' />
-                          <YAxis stroke='#94a3b8' />
+                          <CartesianGrid strokeDasharray='3 3' stroke='var(--gray-700)' />
+                          <XAxis dataKey='month' stroke='var(--gray-400)' />
+                          <YAxis stroke='var(--gray-400)' />
                           <Tooltip
                             formatter={(value, name) => [
                               `$${Number(value).toLocaleString()}`,
@@ -1428,7 +1428,7 @@ export const EnhancedCostCalculator: React.FC = () => {
                               backgroundColor: 'rgba(15, 23, 42, 0.9)',
                               border: '1px solid rgba(0, 255, 238, 0.3)',
                               borderRadius: '8px',
-                              color: '#fff',
+                              color: 'var(--tf-text-primary)',
                             }}
                           />
                           <Legend />
@@ -1436,7 +1436,7 @@ export const EnhancedCostCalculator: React.FC = () => {
                             type='monotone'
                             dataKey='cost'
                             name='Actual Cost'
-                            stroke='#00ffee'
+                            stroke='var(--tf-transcend-highlight)'
                             strokeWidth={3}
                             activeDot={{ r: 8 }}
                           />
@@ -1444,7 +1444,7 @@ export const EnhancedCostCalculator: React.FC = () => {
                             type='monotone'
                             dataKey='projectedCost'
                             name='Projected Cost'
-                            stroke='#0099ff'
+                            stroke='var(--tf-network-blue)'
                             strokeWidth={2}
                             strokeDasharray='5 5'
                           />

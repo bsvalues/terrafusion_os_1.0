@@ -1,0 +1,637 @@
+{
+  "totalWarnings": 2233,
+  "byCode": {
+    "CS1998": 146,
+    "CS8767": 1,
+    "CS0618": 8,
+    "CS0169": 2,
+    "CS0414": 5,
+    "CS8618": 275,
+    "CS8603": 22,
+    "CS8601": 8,
+    "CS8605": 1,
+    "CS8604": 4,
+    "CS8602": 5,
+    "CS0162": 4,
+    "CS0649": 1,
+    "CS1591": 1748,
+    "CS1572": 1,
+    "CS1587": 2
+  },
+  "byProject": {
+    "backend/src/TerraFusion.Levy/TerraFusion.Levy.csproj": {
+      "total": 6,
+      "byCode": {
+        "CS1998": 6
+      }
+    },
+    "backend/src/TerraFusion.Core/TerraFusion.Core.csproj": {
+      "total": 23,
+      "byCode": {
+        "CS8767": 1,
+        "CS0618": 8,
+        "CS1998": 9,
+        "CS0169": 2,
+        "CS0414": 3
+      }
+    },
+    "backend/src/TerraFusion.Sync/TerraFusion.Sync.csproj": {
+      "total": 72,
+      "byCode": {
+        "CS8618": 19,
+        "CS8603": 15,
+        "CS1998": 22,
+        "CS8601": 7,
+        "CS8605": 1,
+        "CS8604": 2,
+        "CS8602": 5,
+        "CS0414": 1
+      }
+    },
+    "backend/src/TerraFusion.Consciousness/TerraFusion.Consciousness.csproj": {
+      "total": 1791,
+      "byCode": {
+        "CS0162": 4,
+        "CS8604": 2,
+        "CS1998": 28,
+        "CS8603": 4,
+        "CS8618": 1,
+        "CS0649": 1,
+        "CS1591": 1748,
+        "CS1572": 1,
+        "CS1587": 2
+      }
+    },
+    "backend/src/TerraFusion.AI/TerraFusion.AI.csproj": {
+      "total": 341,
+      "byCode": {
+        "CS8618": 255,
+        "CS1998": 81,
+        "CS8601": 1,
+        "CS8603": 3,
+        "CS0414": 1
+      }
+    }
+  },
+  "topFiles": [
+    {
+      "file": "backend/src/TerraFusion.Consciousness/DTOs/AILayerMeshDTOs.cs",
+      "total": 456,
+      "byCode": {
+        "CS1591": 456
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/DTOs/ConsciousnessDTOs.cs",
+      "total": 275,
+      "byCode": {
+        "CS1591": 275
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/DTOs/ComplianceAndAuditDTOs.cs",
+      "total": 189,
+      "byCode": {
+        "CS1591": 189
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/CoPilot/CoPilotController.cs",
+      "total": 147,
+      "byCode": {
+        "CS8604": 2,
+        "CS1998": 10,
+        "CS8603": 4,
+        "CS1591": 130,
+        "CS1587": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/DTOs/TranscendenceEngineDto.cs",
+      "total": 95,
+      "byCode": {
+        "CS1591": 95
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/AILayerMeshOrchestrator.cs",
+      "total": 78,
+      "byCode": {
+        "CS1998": 2,
+        "CS1591": 76
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/HybridConsciousnessManager.cs",
+      "total": 66,
+      "byCode": {
+        "CS1998": 1,
+        "CS1591": 65
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Interfaces/IPropertyValuationService.cs",
+      "total": 62,
+      "byCode": {
+        "CS1591": 62
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/AutoScalingEngine.cs",
+      "total": 52,
+      "byCode": {
+        "CS8618": 52
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Interfaces/IConsciousnessService.cs",
+      "total": 50,
+      "byCode": {
+        "CS1591": 50
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/WorkloadDistributionService.cs",
+      "total": 49,
+      "byCode": {
+        "CS8618": 49
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/AutoRecoveryOrchestrator.cs",
+      "total": 45,
+      "byCode": {
+        "CS8618": 45
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/PredictiveImpactService.cs",
+      "total": 43,
+      "byCode": {
+        "CS1591": 42,
+        "CS1587": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/MultiCountyDataService.cs",
+      "total": 42,
+      "byCode": {
+        "CS1998": 3,
+        "CS1591": 39
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Interfaces/IComplianceService.cs",
+      "total": 38,
+      "byCode": {
+        "CS1591": 38
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Interfaces/IConsciousnessEngine.cs",
+      "total": 37,
+      "byCode": {
+        "CS1591": 37
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/WorkflowAutomationService.cs",
+      "total": 33,
+      "byCode": {
+        "CS8618": 27,
+        "CS1998": 3,
+        "CS8603": 3
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/EmergentIntelligenceEngine.cs",
+      "total": 32,
+      "byCode": {
+        "CS1998": 19,
+        "CS8618": 13
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Hubs/AILayerMeshHub.cs",
+      "total": 31,
+      "byCode": {
+        "CS1591": 31
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Sync/Services/AIDataTransformationEngine.cs",
+      "total": 29,
+      "byCode": {
+        "CS8618": 3,
+        "CS8603": 9,
+        "CS1998": 12,
+        "CS8601": 4,
+        "CS8604": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Hubs/ConsciousnessHubs.cs",
+      "total": 29,
+      "byCode": {
+        "CS1591": 29
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Sync/Services/HarrisPACSConnector.cs",
+      "total": 27,
+      "byCode": {
+        "CS8618": 12,
+        "CS8605": 1,
+        "CS8601": 1,
+        "CS1998": 1,
+        "CS8604": 1,
+        "CS8602": 5,
+        "CS8603": 5,
+        "CS0414": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Controllers/AdvancedAIController.cs",
+      "total": 27,
+      "byCode": {
+        "CS8601": 1,
+        "CS8618": 26
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Interfaces/IAdvancedAIOrchestrator.cs",
+      "total": 24,
+      "byCode": {
+        "CS8618": 24
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/AIAssistantService.cs",
+      "total": 24,
+      "byCode": {
+        "CS8618": 19,
+        "CS1998": 5
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/AuditAndComplianceServices.cs",
+      "total": 23,
+      "byCode": {
+        "CS1591": 23
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/QuantumConsciousnessServices.cs",
+      "total": 23,
+      "byCode": {
+        "CS1591": 23
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Interfaces/IWorkflowRepository.cs",
+      "total": 14,
+      "byCode": {
+        "CS1591": 14
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/MultiModalLLMService.cs",
+      "total": 14,
+      "byCode": {
+        "CS1998": 14
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/DTOs/SwarmCoordinationResult.cs",
+      "total": 13,
+      "byCode": {
+        "CS1591": 13
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Sync/Services/AIValidationEngine.cs",
+      "total": 12,
+      "byCode": {
+        "CS8618": 2,
+        "CS8601": 2,
+        "CS1998": 7,
+        "CS8603": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/AdvancedAIOrchestrator.cs",
+      "total": 12,
+      "byCode": {
+        "CS1998": 12
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/HealthChecks/ConsciousnessHealthChecks.cs",
+      "total": 9,
+      "byCode": {
+        "CS0162": 1,
+        "CS1591": 8
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Middleware/SecurityMiddleware.cs",
+      "total": 9,
+      "byCode": {
+        "CS1591": 9
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/BentonCountyDataService.cs",
+      "total": 8,
+      "byCode": {
+        "CS1998": 2,
+        "CS1591": 6
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Extensions/ConsciousnessServiceExtensions.cs",
+      "total": 8,
+      "byCode": {
+        "CS1591": 8
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/PredictiveAnalyticsEngine.cs",
+      "total": 8,
+      "byCode": {
+        "CS1998": 8
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Core/Services/PropertyValuationAIEnhancementService.cs",
+      "total": 7,
+      "byCode": {
+        "CS0618": 2,
+        "CS1998": 5
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/MillionAgentService.cs",
+      "total": 7,
+      "byCode": {
+        "CS1998": 1,
+        "CS1591": 6
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/LegacyConsciousnessService.cs",
+      "total": 7,
+      "byCode": {
+        "CS1591": 7
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/QuantumConsciousnessOrchestrator.cs",
+      "total": 6,
+      "byCode": {
+        "CS8618": 1,
+        "CS1998": 3,
+        "CS0649": 1,
+        "CS1572": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/QuantumSecurityService.cs",
+      "total": 6,
+      "byCode": {
+        "CS1591": 6
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/ModelInfrastructure.cs",
+      "total": 5,
+      "byCode": {
+        "CS1998": 5
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Levy/Services/LevyCalculationService.cs",
+      "total": 4,
+      "byCode": {
+        "CS1998": 4
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Core/Services/PropertyDataValidationService.cs",
+      "total": 4,
+      "byCode": {
+        "CS0618": 2,
+        "CS1998": 2
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Controllers/ConsciousnessControllers.cs",
+      "total": 4,
+      "byCode": {
+        "CS1998": 1,
+        "CS1591": 3
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/TerraFusionTranscendenceEngine.cs",
+      "total": 4,
+      "byCode": {
+        "CS0162": 3,
+        "CS1591": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Models/PropertyAssessmentAIModel.cs",
+      "total": 4,
+      "byCode": {
+        "CS1998": 4
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/EmergencyResponseService.cs",
+      "total": 3,
+      "byCode": {
+        "CS1998": 3
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Program.cs",
+      "total": 3,
+      "byCode": {
+        "CS1998": 1,
+        "CS1591": 2
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Hubs/QuantumConsciousnessHub.cs",
+      "total": 3,
+      "byCode": {
+        "CS1591": 3
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/AdvancedAnalyticsEngine.cs",
+      "total": 3,
+      "byCode": {
+        "CS1998": 3
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Levy/Services/RevenueProjectionService.cs",
+      "total": 2,
+      "byCode": {
+        "CS1998": 2
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Core/Configuration/DatabaseConfiguration.cs",
+      "total": 2,
+      "byCode": {
+        "CS8767": 1,
+        "CS0618": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Core/Services/ComplianceValidationAutomationService.cs",
+      "total": 2,
+      "byCode": {
+        "CS0618": 2
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Core/Services/Monitoring/ObservabilityService.cs",
+      "total": 2,
+      "byCode": {
+        "CS1998": 1,
+        "CS0169": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Core/Services/PredictiveMaintenanceService.cs",
+      "total": 2,
+      "byCode": {
+        "CS0414": 2
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Sync/Services/ILegacySystemConnector.cs",
+      "total": 2,
+      "byCode": {
+        "CS8618": 2
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Sync/Services/AISchemaDetector.cs",
+      "total": 2,
+      "byCode": {
+        "CS1998": 2
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/PropertyValuationService.cs",
+      "total": 2,
+      "byCode": {
+        "CS1998": 2
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Core/Services/HarrisPACSSyncBackgroundService.cs",
+      "total": 1,
+      "byCode": {
+        "CS0618": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Core/Services/AI/AssessmentRecommendationEngine.cs",
+      "total": 1,
+      "byCode": {
+        "CS1998": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Core/Services/Monitoring/MetricsCollectionService.cs",
+      "total": 1,
+      "byCode": {
+        "CS0169": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Core/Services/QuantumComputingService.cs",
+      "total": 1,
+      "byCode": {
+        "CS0414": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/ConsciousnessService.cs",
+      "total": 1,
+      "byCode": {
+        "CS1998": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Controllers/AILayerMeshController.cs",
+      "total": 1,
+      "byCode": {
+        "CS1591": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.Consciousness/Services/AIOrchestrationService.cs",
+      "total": 1,
+      "byCode": {
+        "CS1591": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Functions/DepreciationCalculationFunction.cs",
+      "total": 1,
+      "byCode": {
+        "CS1998": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/AIModelOrchestrationService.cs",
+      "total": 1,
+      "byCode": {
+        "CS1998": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/FunctionCallingOrchestrator.cs",
+      "total": 1,
+      "byCode": {
+        "CS1998": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/GPTBudgetAlertService.cs",
+      "total": 1,
+      "byCode": {
+        "CS1998": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/GPTOrchestrationService.cs",
+      "total": 1,
+      "byCode": {
+        "CS1998": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/QuantumAIHybridService.cs",
+      "total": 1,
+      "byCode": {
+        "CS1998": 1
+      }
+    },
+    {
+      "file": "backend/src/TerraFusion.AI/Services/SelfHealingEngine.cs",
+      "total": 1,
+      "byCode": {
+        "CS0414": 1
+      }
+    }
+  ],
+  "generatedAt": "2026-01-18T06:31:57.056Z"
+}

@@ -48,10 +48,10 @@ const StyledCard = styled(Card)(({ theme }) => ({
 
 const SpeciesAvatar = styled(Avatar)<{ species: SpeciesType }>(({ theme, species }) => {
   const colors = {
-    silicon: '#00d2ff',
-    carbon: '#00ffaa',
-    quantum: '#c5a6ff',
-    hybrid: '#ffa500',
+    silicon: 'var(--tf-transcend-cyan)',
+    carbon: 'var(--tf-accent-success)',
+    quantum: 'var(--tf-accent-quantum)',
+    hybrid: 'var(--tf-warning-amber)',
   };
   const color = colors[species];
 
@@ -142,7 +142,7 @@ const SpeciesDetectionVisualizer: React.FC = () => {
   return (
     <StyledCard>
       <CardContent>
-        <Typography variant='h6' sx={{ color: '#d1c4e9', fontWeight: 600, mb: 3 }}>
+        <Typography variant='h6' sx={{ color: 'var(--tf-accent-quantum)', fontWeight: 600, mb: 3 }}>
           Species Detection Service (Live Feed)
         </Typography>
         <Grid container spacing={2}>
@@ -176,7 +176,7 @@ const SpeciesDetectionVisualizer: React.FC = () => {
                       sx={{
                         height: 8,
                         borderRadius: 4,
-                        '& .MuiLinearProgress-bar': { background: '#00ffaa' },
+                        '& .MuiLinearProgress-bar': { background: 'var(--tf-accent-success)' },
                       }}
                     />
                   </Grid>
@@ -185,7 +185,7 @@ const SpeciesDetectionVisualizer: React.FC = () => {
                       <Typography variant='caption' sx={{ color: 'rgba(255,255,255,0.7)' }}>
                         Coherence
                       </Typography>
-                      <Typography sx={{ fontWeight: 700, color: '#c5a6ff' }}>
+                      <Typography sx={{ fontWeight: 700, color: 'var(--tf-accent-quantum)' }}>
                         {entity.quantumCoherence}
                       </Typography>
                     </Grid>

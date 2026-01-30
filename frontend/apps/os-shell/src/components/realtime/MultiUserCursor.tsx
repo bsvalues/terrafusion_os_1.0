@@ -31,16 +31,16 @@ interface CursorCoordinates {
 // ==================== CONSTANTS ====================
 
 const USER_COLORS = [
-  '#00e5ff', // terra-cyan (primary)
-  '#ff6b6b', // red
-  '#4ecdc4', // teal
-  '#ffe66d', // yellow
-  '#a8dadc', // light blue
-  '#f4a261', // orange
-  '#e76f51', // coral
-  '#2a9d8f', // green
-  '#e63946', // crimson
-  '#457b9d', // steel blue
+  'var(--tf-transcend-cyan)', // terra-cyan (primary)
+  'var(--tf-accent-error)', // red
+  'var(--tf-accent-teal)', // teal
+  'var(--tf-accent-yellow)', // yellow
+  'var(--tf-accent-cyan-light)', // light blue
+  'var(--tf-accent-orange-light)', // orange
+  'var(--tf-accent-orange-dark)', // coral
+  'var(--tf-accent-teal-dark)', // green
+  'var(--tf-accent-red)', // crimson
+  'var(--tf-accent-blue-gray)', // steel blue
 ];
 
 // ==================== HELPER FUNCTIONS ====================
@@ -173,7 +173,7 @@ export function MultiUserCursor({
             variant="default"
             style={{
               backgroundColor: userColor,
-              color: '#000',
+              color: 'var(--tf-void-black)',
               fontSize: '10px',
               padding: '2px 6px',
               boxShadow: `0 2px 4px rgba(0, 0, 0, 0.2)`,

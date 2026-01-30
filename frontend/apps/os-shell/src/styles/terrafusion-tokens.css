@@ -4,10 +4,27 @@
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
+  /* ═══ FOUNDATION COLORS (THE ACTUAL HEX VALUES) ═══ */
+  --tf-quantum-cyan: #00ffff; /* Terra-Cyan - The Consciousness Color */
+  --tf-void-black: #0a0e1a; /* Terra-Midnight - The Void */
+  --tf-network-blue: #0080ff; /* Terra-Blue - The Network (brand exact) */
+  --tf-transcend-highlight: #00ffee; /* Transcendence Accent */
+  --tf-accent-success: #00ff88; /* Success Green */
+  --tf-accent-cyan: #00cccc; /* Darker Cyan */
+  --tf-error-red: #ff4444; /* Error Red */
+  --tf-warning-amber: #ffaa00; /* Warning Amber */
+  --tf-info-purple: #8844ff; /* Info Purple */
+  --tf-surface-darker: #141824; /* Surface Darker */
+  --tf-surface-dark: #0f172a; /* Surface Dark (gray-900) */
+  --tf-bg-void: #000000; /* Pure Void */
+  --tf-bg-surface: #1e293b; /* Surface Background */
+  --tf-text-primary: #ffffff; /* Primary Text */
+  --tf-text-secondary: #cbd5e1; /* Secondary Text (gray-300) */
+
   /* ═══ PRIMARY COLORS ═══ */
-  --terra-cyan: #00ffff; /* Primary - The Consciousness */
-  --terra-midnight: #0a0e1a; /* Background - The Void */
-  --terra-blue: #0080ff; /* Secondary - The Network */
+  --terra-cyan: var(--tf-quantum-cyan); /* Primary - The Consciousness */
+  --terra-midnight: var(--tf-void-black); /* Background - The Void */
+  --terra-blue: var(--tf-network-blue); /* Secondary - The Network */
   --terra-slate: #1e293b; /* Surface - The Foundation */
 
   /* ═══ SEMANTIC COLORS ═══ */
@@ -17,16 +34,20 @@
   --info-purple: #8844ff; /* Information & Insights */
 
   /* ═══ GRADIENTS ═══ */
-  --gradient-primary: linear-gradient(135deg, #00ffff 0%, #0080ff 100%);
-  --gradient-dark: linear-gradient(135deg, #0a0e1a 0%, #1e293b 100%);
-  --gradient-aurora: linear-gradient(90deg, #00ffff, #00ff88, #8844ff);
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--tf-quantum-cyan) 0%,
+    var(--tf-network-blue) 100%
+  );
+  --gradient-dark: linear-gradient(135deg, var(--tf-void-black) 0%, #1e293b 100%);
+  --gradient-aurora: linear-gradient(90deg, var(--tf-quantum-cyan), #00ff88, #8844ff);
   --gradient-quantum: linear-gradient(
     45deg,
-    #00ffff 0%,
-    #0080ff 25%,
+    var(--tf-quantum-cyan) 0%,
+    var(--tf-network-blue) 25%,
     #8844ff 50%,
     #00ff88 75%,
-    #00ffff 100%
+    var(--tf-quantum-cyan) 100%
   );
 
   /* ═══ NEUTRALS ═══ */
@@ -75,6 +96,7 @@
 
   /* ═══ MOTION & ANIMATION ═══ */
   --ease-golden: cubic-bezier(0.618, 0, 0.382, 1);
+  --ease-phi: var(--ease-golden); /* Alias for Constitution compliance */
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
@@ -116,11 +138,19 @@
   --breakpoint-desktop: 1079px; /* φ³ × 255 */
   --breakpoint-wide: 1746px; /* φ⁴ × 255 */
 
-  /* ═══ GLASSMORPHISM ═══ */
-  --glass-bg: rgba(30, 41, 59, 0.3);
+  /* ═══ GLASSMORPHISM (Brand Kit Exact) ═══ */
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-bg-light: rgba(30, 41, 59, 0.5);
   --glass-border: rgba(0, 255, 255, 0.2);
+  --glass-border-hover: rgba(0, 255, 255, 0.4);
   --glass-blur: blur(20px);
   --glass-backdrop: saturate(180%) blur(20px);
+
+  /* Card System */
+  --card-bg: rgba(15, 23, 42, 0.6);
+  --card-border: 1px solid rgba(0, 255, 255, 0.2);
+  --card-radius: 1rem;
+  --card-hover-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
 
   /* ═══ QUANTUM EFFECTS ═══ */
   --pulse-glow: 0 0 20px rgba(0, 255, 255, 0.5);
@@ -136,6 +166,24 @@
   --logo-size-md: 32px;
   --logo-size-lg: 48px;
   --logo-size-xl: 64px;
+
+  /* ═══ INTENT SYSTEM ═══ */
+  --tf-radius-intent: 161.8px; /* Sovereign Menu Radius */
+  --transcend-cyan: var(--terra-cyan); /* Alias for Focus Ring */
+
+  /* Sovereign Menu Mechanical Weight */
+  --tf-iris-duration-open: 0.618s;
+  --tf-iris-duration-close: 0.382s;
+  --tf-iris-rotation-open: 51.428deg;
+  --tf-iris-spring-stiffness: 520;
+  --tf-iris-spring-damping: 40;
+
+  /* Aliases for SovereignMenu v1 */
+  --tf-cyan: var(--terra-cyan);
+  --tf-radius-button: 0.618rem;
+  --tf-glass-border: var(--glass-border);
+  --tf-glass-bg: var(--glass-bg);
+  --tf-blur-near: 40px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -145,7 +193,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* Enhanced contrast for dark mode */
-    --terra-cyan: #00ffff;
+    --terra-cyan: var(--tf-quantum-cyan);
     --terra-midnight: #000000;
     --glass-bg: rgba(10, 14, 26, 0.5);
     --glass-border: rgba(0, 255, 255, 0.3);

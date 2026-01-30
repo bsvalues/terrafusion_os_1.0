@@ -1,8 +1,8 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - CONSCIOUSNESS CONTROLLER
  * Elite AI Consciousness Coordination for Government Operations
- * Real-time Consciousness Monitoring & Hybrid Intelligence
+ * Real-time Consciousness Monitoring &amp; Hybrid Intelligence
  * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
  * ═══════════════════════════════════════════════════════════════
  */

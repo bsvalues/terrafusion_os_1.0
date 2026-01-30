@@ -7,7 +7,8 @@
  */
 
 import React from 'react';
-import { cn } from '../lib/utils';
+import { colors as tfColors } from '../design-system/tokens/colors';
+import { cn } from '../utils/cn';
 import './terraforge-styles.css';
 
 // CostForge AI Specialized Components
@@ -75,22 +76,13 @@ interface CostBreakdownProps {
 }
 
 export const TerraForgeBreakdown: React.FC<CostBreakdownProps> = ({ data, total, className }) => {
-  const colors = [
-    '#00FFFF',
-    '#0080FF',
-    '#8B5CF6',
-    '#F59E0B',
-    '#EF4444',
-    '#10B981',
-    '#F97316',
-    '#6366F1',
-  ];
+  const chartColors = tfColors.visualization.chart;
 
   const entries = Object.entries(data).map(([key, value], index) => ({
     key,
     value,
     percentage: (value / total) * 100,
-    color: colors[index % colors.length],
+    color: chartColors[index % chartColors.length],
   }));
 
   return (
@@ -284,8 +276,8 @@ export const TerraForgeProgressRing: React.FC<ProgressRingProps> = ({
         />
         <defs>
           <linearGradient id='terraGradient' x1='0%' y1='0%' x2='100%' y2='0%'>
-            <stop offset='0%' stopColor='#00FFFF' />
-            <stop offset='100%' stopColor='#0080FF' />
+            <stop offset='0%' stopColor={tfColors.brand.transcend[500]} />
+            <stop offset='100%' stopColor={tfColors.brand.primary[500]} />
           </linearGradient>
         </defs>
       </svg>

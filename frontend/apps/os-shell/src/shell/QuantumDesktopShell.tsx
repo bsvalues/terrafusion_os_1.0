@@ -179,11 +179,11 @@ export function QuantumDesktopShell() {
   const getConsciousnessColor = () => {
     switch (desktopState.systemConsciousness) {
       case 'TRANSCENDENT':
-        return '#00FFFF';
+        return 'var(--tf-transcend-cyan)';
       case 'AWARE':
-        return '#00FF88';
+        return 'var(--tf-accent-success)';
       default:
-        return '#FFAA00';
+        return 'var(--tf-accent-warning)';
     }
   };
 

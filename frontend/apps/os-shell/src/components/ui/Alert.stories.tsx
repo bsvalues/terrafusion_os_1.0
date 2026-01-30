@@ -135,8 +135,8 @@ export const WithIcons: Story = {
       {/* Success Alert */}
       <Alert
         style={{
-          borderColor: '#22c55e',
-          color: '#22c55e',
+          borderColor: 'var(--tf-success-green)',
+          color: 'var(--tf-success-green)',
         }}
       >
         <svg
@@ -255,10 +255,10 @@ export const WithActions: Story = {
               style={{
                 padding: '6px 12px',
                 fontSize: '14px',
-                backgroundColor: '#0099ff',
+                backgroundColor: 'var(--tf-network-blue)',
                 border: 'none',
                 borderRadius: '6px',
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
                 fontWeight: 500,
               }}
@@ -272,7 +272,7 @@ export const WithActions: Story = {
                 backgroundColor: 'transparent',
                 border: '1px solid #2a2a2a',
                 borderRadius: '6px',
-                color: '#fff',
+                color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
               }}
             >
@@ -308,10 +308,10 @@ export const WithActions: Story = {
             style={{
               padding: '6px 12px',
               fontSize: '14px',
-              backgroundColor: '#ef4444',
+              backgroundColor: 'var(--tf-accent-error)',
               border: 'none',
               borderRadius: '6px',
-              color: '#fff',
+              color: 'var(--tf-text-primary)',
               cursor: 'pointer',
               fontWeight: 500,
             }}
@@ -343,7 +343,7 @@ export const RealWorldExample: Story = {
       <Alert
         style={{
           marginBottom: '24px',
-          borderColor: '#22c55e',
+          borderColor: 'var(--tf-success-green)',
           backgroundColor: 'rgba(34, 197, 94, 0.05)',
         }}
       >
@@ -353,7 +353,7 @@ export const RealWorldExample: Story = {
           height='16'
           viewBox='0 0 24 24'
           fill='none'
-          stroke='#22c55e'
+          stroke='var(--tf-success-green)'
           strokeWidth='2'
         >
           <path d='M22 11.08V12a10 10 0 1 1-5.93-9.14' />
@@ -361,7 +361,7 @@ export const RealWorldExample: Story = {
         </svg>
         <AlertDescription
           style={{
-            color: '#22c55e',
+            color: 'var(--tf-success-green)',
           }}
         >
           Your profile has been updated successfully.
@@ -456,7 +456,7 @@ export const RealWorldExample: Story = {
             backgroundColor: 'transparent',
             border: '1px solid #2a2a2a',
             borderRadius: '6px',
-            color: '#fff',
+            color: 'var(--tf-text-primary)',
             cursor: 'pointer',
           }}
         >
@@ -466,10 +466,10 @@ export const RealWorldExample: Story = {
           style={{
             padding: '10px 16px',
             fontSize: '14px',
-            backgroundColor: '#0099ff',
+            backgroundColor: 'var(--tf-network-blue)',
             border: 'none',
             borderRadius: '6px',
-            color: '#fff',
+            color: 'var(--tf-text-primary)',
             cursor: 'pointer',
             fontWeight: 500,
           }}
@@ -518,7 +518,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -546,7 +546,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -574,7 +574,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -602,7 +602,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                borderLeft: '3px solid #22c55e',
+                borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
             >
@@ -645,7 +645,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -673,7 +673,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -701,7 +701,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >
@@ -729,7 +729,7 @@ export const UsageGuidelines: Story = {
               style={{
                 padding: '16px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeft: '3px solid #ef4444',
+                borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
             >

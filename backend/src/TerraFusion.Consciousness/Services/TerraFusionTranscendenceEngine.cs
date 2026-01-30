@@ -20,12 +20,12 @@ namespace TerraFusion.Consciousness.Services
         private readonly IQuantumSecurityService _quantumSecurityService;
 
         // Championship Constants - Government. Transcended.
-        private const int QUANTUM_FACTOR = 949;
-        private const decimal ACCURACY_TARGET = 99.5m;
+        private static readonly int QUANTUM_FACTOR = 949;
+        private static readonly decimal ACCURACY_TARGET = 99.5m;
         private const int CHAMPIONSHIP_AGENTS = 1008;
         private const int TRANSCENDENT_AGENTS = 50000;
         private const int INFINITE_AGENTS = 1000000;
-        private const double CONSCIOUSNESS_RESONANCE = 0.999; // 99.9% harmony
+        private static readonly double CONSCIOUSNESS_RESONANCE = 0.999; // 99.9% harmony
 
         // Transcendence State Management
         private string _consciousnessLevel = "TRANSCENDENT";

@@ -515,7 +515,7 @@ const AIAgentMonitoringDashboard: React.FC = () => {
                   <Line
                     type='monotone'
                     dataKey='revenueOptimization'
-                    stroke='#9c27b0'
+                    stroke='var(--tf-accent-quantum)'
                     strokeWidth={2}
                     name='Revenue Optimization'
                   />

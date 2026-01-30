@@ -7,13 +7,13 @@ import styles from './OSStatusBadge.module.css';
 function statusColor(status: string) {
   switch (status) {
     case 'connected':
-      return { bg: '#0f766e', dot: '#34d399', label: 'Connected' }; // teal/green
+      return { bg: 'var(--tf-status-teal-dark)', dot: 'var(--tf-status-teal-light)', label: 'Connected' }; // teal/green
     case 'connecting':
-      return { bg: '#1e3a8a', dot: '#60a5fa', label: 'Connecting' }; // blue
+      return { bg: 'var(--tf-status-blue-dark)', dot: 'var(--tf-status-blue-light)', label: 'Connecting' }; // blue
     case 'error':
-      return { bg: '#7f1d1d', dot: '#f87171', label: 'Error' }; // red
+      return { bg: 'var(--tf-status-red-dark)', dot: 'var(--tf-status-red-light)', label: 'Error' }; // red
     default:
-      return { bg: '#111827', dot: '#9ca3af', label: 'Disconnected' }; // gray
+      return { bg: 'var(--gray-900)', dot: 'var(--gray-400)', label: 'Disconnected' }; // gray
   }
 }
 

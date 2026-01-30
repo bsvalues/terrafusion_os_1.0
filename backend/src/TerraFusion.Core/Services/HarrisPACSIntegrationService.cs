@@ -1,3 +1,15 @@
+// =============================================================================
+// ⚠️ DEPRECATED: Use TerraFusion.Core.PACS.IPacsAdapter instead
+// =============================================================================
+// This service is DEPRECATED as of pacscontract.v1 SpecLock.
+// All PACS access should go through IPacsAdapter.
+//
+// Migration: Replace IHarrisPACSIntegrationService with IPacsAdapter
+// See: docs/spec-lock/locks/pacscontract/pacscontract.v1/
+//
+// This file will be removed in a future release.
+// =============================================================================
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,6 +21,11 @@ using System.Text;
 
 namespace TerraFusion.Core.Services
 {
+    /// <summary>
+    /// [DEPRECATED] Use <see cref="TerraFusion.Core.PACS.IPacsAdapter"/> instead.
+    /// This interface is deprecated as of pacscontract.v1 SpecLock.
+    /// </summary>
+    [Obsolete("Use TerraFusion.Core.PACS.IPacsAdapter instead. This service will be removed in a future release.")]
     public interface IHarrisPACSIntegrationService
     {
         Task<List<PACSProperty>> GetPropertiesAsync(string jurisdiction, int page = 1, int pageSize = 100);
@@ -161,6 +178,11 @@ namespace TerraFusion.Core.Services
         public string? ReferenceNumber { get; set; }
     }
 
+    /// <summary>
+    /// [DEPRECATED] Use <see cref="TerraFusion.Core.PACS.PacsSqlAdapter"/> instead.
+    /// This service is deprecated as of pacscontract.v1 SpecLock.
+    /// </summary>
+    [Obsolete("Use TerraFusion.Core.PACS.IPacsAdapter instead. This service will be removed in a future release.")]
     public class HarrisPACSIntegrationService : IHarrisPACSIntegrationService
     {
         private readonly ILogger<HarrisPACSIntegrationService> _logger;

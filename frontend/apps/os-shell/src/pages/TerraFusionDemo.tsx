@@ -56,22 +56,22 @@ export const TerraFusionDemo: React.FC = () => {
                 <div className='space-y-2'>
                   <div className='w-full h-16 bg-cyan-400 rounded-lg terra-glow'></div>
                   <div className='text-sm text-gray-300'>Terra Cyan</div>
-                  <div className='text-xs text-gray-500'>#00FFFF</div>
+                  <div className='text-xs text-gray-500'>var(--tf-transcend-cyan)</div>
                 </div>
                 <div className='space-y-2'>
                   <div className='w-full h-16 bg-blue-500 rounded-lg'></div>
                   <div className='text-sm text-gray-300'>Terra Blue</div>
-                  <div className='text-xs text-gray-500'>#0080FF</div>
+                  <div className='text-xs text-gray-500'>var(--tf-network-blue)</div>
                 </div>
                 <div className='space-y-2'>
                   <div className='w-full h-16 bg-gray-800 rounded-lg'></div>
                   <div className='text-sm text-gray-300'>Terra Slate</div>
-                  <div className='text-xs text-gray-500'>#1E293B</div>
+                  <div className='text-xs text-gray-500'>var(--terra-slate)</div>
                 </div>
                 <div className='space-y-2'>
                   <div className='w-full h-16 bg-gray-950 rounded-lg'></div>
                   <div className='text-sm text-gray-300'>Terra Midnight</div>
-                  <div className='text-xs text-gray-500'>#0A0E1A</div>
+                  <div className='text-xs text-gray-500'>var(--tf-bg-void)</div>
                 </div>
               </div>
             </div>

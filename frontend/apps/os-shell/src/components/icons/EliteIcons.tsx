@@ -6,7 +6,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { cn } from '@/lib/utils';
+import { cn } from '@utils/cn';
 import React from 'react';
 
 // Elite Icon Component Interface
@@ -373,7 +373,7 @@ export const EliteQuantumIcon: React.FC<
 > = ({
   iconType,
   className = 'w-6 h-6',
-  color = '#00FFFF',
+  color = 'var(--tf-transcend-cyan)',
   glowIntensity = 'medium',
   ...props
 }) => {

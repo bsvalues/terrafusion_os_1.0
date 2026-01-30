@@ -3,8 +3,8 @@
 .terra-slider {
   background: linear-gradient(
     to right,
-    #00ffff var(--slider-progress, 0%),
-    #334155 var(--slider-progress, 0%)
+    var(--tf-quantum-cyan) var(--slider-progress, 0%),
+    var(--gray-700) var(--slider-progress, 0%)
   );
 }
 
@@ -12,7 +12,7 @@
   appearance: none;
   width: 16px;
   height: 16px;
-  background: #00ffff;
+  background: var(--tf-quantum-cyan);
   border-radius: 50%;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
   cursor: pointer;
@@ -21,7 +21,7 @@
 .terra-slider::-moz-range-thumb {
   width: 16px;
   height: 16px;
-  background: #00ffff;
+  background: var(--tf-quantum-cyan);
   border-radius: 50%;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
   cursor: pointer;
@@ -78,11 +78,11 @@
   border: 1px solid rgba(0, 255, 255, 0.1);
 }
 
-.terra-breakdown-dot[data-color='#00FFFF'] {
-  background-color: #00ffff;
+.terra-breakdown-dot[data-color='var(--tf-quantum-cyan)'] {
+  background-color: var(--tf-quantum-cyan);
 }
-.terra-breakdown-dot[data-color='#0080FF'] {
-  background-color: #0080ff;
+.terra-breakdown-dot[data-color='var(--tf-network-blue)'] {
+  background-color: var(--tf-network-blue);
 }
 .terra-breakdown-dot[data-color='#8B5CF6'] {
   background-color: #8b5cf6;

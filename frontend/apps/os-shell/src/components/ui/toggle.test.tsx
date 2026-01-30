@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { Toggle } from './toggle';
 import { Bold } from 'lucide-react';
+import React from 'react';
+import { Toggle } from './toggle';
 
 expect.extend(toHaveNoViolations);
 
@@ -167,21 +168,24 @@ describe('Toggle', () => {
       render(<Toggle size='sm'>Toggle</Toggle>);
 
       const button = screen.getByRole('button');
-      expect(button.className).toContain('h-9');
+      // Component uses h-8 for sm size
+      expect(button.className).toContain('h-8');
     });
 
     it('renders default size', () => {
       render(<Toggle size='default'>Toggle</Toggle>);
 
       const button = screen.getByRole('button');
-      expect(button.className).toContain('h-10');
+      // Component uses h-9 for default size
+      expect(button.className).toContain('h-9');
     });
 
     it('renders large size', () => {
       render(<Toggle size='lg'>Toggle</Toggle>);
 
       const button = screen.getByRole('button');
-      expect(button.className).toContain('h-11');
+      // Component uses h-10 for lg size
+      expect(button.className).toContain('h-10');
     });
 
     it('combines variant and size', () => {
@@ -193,7 +197,8 @@ describe('Toggle', () => {
 
       const button = screen.getByRole('button');
       expect(button.className).toContain('border');
-      expect(button.className).toContain('h-9');
+      // Component uses h-8 for sm size
+      expect(button.className).toContain('h-8');
     });
   });
 

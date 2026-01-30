@@ -167,7 +167,7 @@ export const PlaygroundTester: React.FC = () => {
   const allPassed = passedTests === totalTests && !isRunning;
 
   return (
-    <div className='terra-glass p-8 rounded-lg border border-[#00ffee]/20 max-w-4xl mx-auto'>
+    <div className='terra-glass p-8 rounded-lg border border-[var(--tf-transcend-highlight)]/20 max-w-4xl mx-auto'>
       {/* Header */}
       <div className='text-center mb-8'>
         <h1 className='text-4xl font-bold mb-2 terra-gradient-quantum bg-clip-text text-transparent'>
@@ -198,11 +198,11 @@ export const PlaygroundTester: React.FC = () => {
             key={index}
             className={`p-4 rounded-lg border transition-all duration-300 ${
               test.status === 'success'
-                ? 'border-[#00ffaa] bg-[#00ffaa]/10'
+                ? 'border-[var(--tf-accent-success)] bg-[var(--tf-accent-success)]/10'
                 : test.status === 'error'
                   ? 'border-red-500 bg-red-500/10'
                   : test.status === 'running'
-                    ? 'border-[#00ffee] bg-[#00ffee]/10 quantum-pulse'
+                    ? 'border-[var(--tf-transcend-highlight)] bg-[var(--tf-transcend-highlight)]/10 quantum-pulse'
                     : 'border-gray-700 bg-gray-900/50'
             }`}
           >
@@ -220,7 +220,7 @@ export const PlaygroundTester: React.FC = () => {
             {test.message && <div className='text-sm text-gray-300 font-mono'>{test.message}</div>}
             {test.data && (
               <details className='mt-2'>
-                <summary className='cursor-pointer text-xs text-[#00ffee] hover:text-[#00ffaa]'>
+                <summary className='cursor-pointer text-xs text-[var(--tf-transcend-highlight)] hover:text-[var(--tf-accent-success)]'>
                   View Response Data
                 </summary>
                 <pre className='mt-2 p-3 bg-black/50 rounded text-xs overflow-auto max-h-40'>
@@ -233,7 +233,7 @@ export const PlaygroundTester: React.FC = () => {
       </div>
 
       {/* Summary */}
-      <div className='text-center p-6 terra-glass rounded-lg border border-[#00ffee]/30'>
+      <div className='text-center p-6 terra-glass rounded-lg border border-[var(--tf-transcend-highlight)]/30'>
         <div className='text-2xl font-bold mb-2'>
           {allPassed ? (
             <span className='terra-gradient-quantum bg-clip-text text-transparent'>
@@ -247,34 +247,34 @@ export const PlaygroundTester: React.FC = () => {
           {passedTests}/{totalTests} Tests Passed
         </div>
         {allPassed && (
-          <div className='mt-4 text-sm text-[#00ffee]'>
+          <div className='mt-4 text-sm text-[var(--tf-transcend-highlight)]'>
             All Playground endpoints operational! 🚀
           </div>
         )}
         {createdRunId && (
           <div className='mt-4 text-xs text-gray-400'>
-            Created Run ID: <code className='text-[#00ffaa]'>{createdRunId}</code>
+            Created Run ID: <code className='text-[var(--tf-accent-success)]'>{createdRunId}</code>
           </div>
         )}
       </div>
 
       {/* Performance Metrics */}
       {testResults.some((r) => r.duration) && (
-        <div className='mt-6 p-4 terra-glass rounded-lg border border-[#00ffee]/20'>
-          <h3 className='text-sm font-semibold text-[#00ffee] mb-2'>⚡ Performance Metrics</h3>
+        <div className='mt-6 p-4 terra-glass rounded-lg border border-[var(--tf-transcend-highlight)]/20'>
+          <h3 className='text-sm font-semibold text-[var(--tf-transcend-highlight)] mb-2'>⚡ Performance Metrics</h3>
           <div className='grid grid-cols-2 gap-2 text-xs'>
             {testResults
               .filter((r) => r.duration)
               .map((test, index) => (
                 <div key={index} className='flex justify-between text-gray-300'>
                   <span>{test.name}:</span>
-                  <span className='font-mono text-[#00ffaa]'>{test.duration}ms</span>
+                  <span className='font-mono text-[var(--tf-accent-success)]'>{test.duration}ms</span>
                 </div>
               ))}
             {testResults.filter((r) => r.duration).length > 0 && (
               <div className='col-span-2 flex justify-between font-semibold text-white border-t border-gray-700 pt-2 mt-2'>
                 <span>Average:</span>
-                <span className='font-mono text-[#00ffee]'>
+                <span className='font-mono text-[var(--tf-transcend-highlight)]'>
                   {Math.round(
                     testResults
                       .filter((r) => r.duration)

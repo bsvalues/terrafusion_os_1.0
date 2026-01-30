@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * WORKFLOW AUTOMATION SERVICE - Backend AI Orchestration
  * TerraFusion OS Workflow Intelligence Engine
@@ -23,7 +23,7 @@ namespace TerraFusion.AI.Services
     {
         Task<TerraFusion.AI.DTOs.WorkflowExecutionResult> ExecuteWorkflowAsync(string workflowId, string countyId);
         Task<List<WorkflowDefinition>> GetAvailableWorkflowsAsync(string department);
-        Task<WorkflowStatus> GetWorkflowStatusAsync(string workflowId, string executionId);
+        Task<WorkflowStatus?> GetWorkflowStatusAsync(string workflowId, string executionId);
         Task<WorkflowOptimizationSuggestion> AnalyzeWorkflowEfficiencyAsync(string workflowId, string countyId);
     }
 
@@ -60,6 +60,11 @@ namespace TerraFusion.AI.Services
             try
             {
                 var workflow = await GetWorkflowDefinitionAsync(workflowId);
+                if (workflow == null)
+                {
+                    throw new KeyNotFoundException($"Workflow definition {workflowId} not found");
+                }
+
                 var execution = new WorkflowExecution
                 {
                     ExecutionId = executionId,
@@ -135,7 +140,7 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        public async Task<List<WorkflowDefinition>> GetAvailableWorkflowsAsync(string department)
+        public Task<List<WorkflowDefinition>> GetAvailableWorkflowsAsync(string department)
         {
             _logger.LogInformation("Getting workflows for department {Department}", department);
 
@@ -270,14 +275,14 @@ namespace TerraFusion.AI.Services
                 }
             });
 
-            return workflows;
+            return Task.FromResult(workflows);
         }
 
-        public async Task<WorkflowStatus> GetWorkflowStatusAsync(string workflowId, string executionId)
+        public async Task<WorkflowStatus?> GetWorkflowStatusAsync(string workflowId, string executionId)
         {
             if (_activeExecutions.TryGetValue(executionId, out var execution))
             {
-                return new WorkflowStatus
+                return await Task.FromResult(new WorkflowStatus
                 {
                     ExecutionId = executionId,
                     WorkflowId = workflowId,
@@ -286,7 +291,7 @@ namespace TerraFusion.AI.Services
                     CurrentStep = GetCurrentStep(execution),
                     StartTime = execution.StartTime,
                     EstimatedCompletion = EstimateCompletion(execution)
-                };
+                });
             }
 
             return null;
@@ -302,6 +307,10 @@ namespace TerraFusion.AI.Services
 
             // AI-powered workflow optimization analysis
             var workflow = await GetWorkflowDefinitionAsync(workflowId);
+            if (workflow == null)
+            {
+                throw new KeyNotFoundException($"Workflow {workflowId} not found");
+            }
             var historicalData = await GetHistoricalExecutionsAsync(workflowId, countyId);
 
             return new WorkflowOptimizationSuggestion
@@ -394,12 +403,15 @@ namespace TerraFusion.AI.Services
         private string GetCurrentStep(WorkflowExecution execution)
         {
             return execution.Steps.FirstOrDefault(s => s.Status == "running")?.StepId
-                ?? execution.Steps.FirstOrDefault(s => s.Status == "pending")?.StepId;
+                ?? execution.Steps.FirstOrDefault(s => s.Status == "pending")?.StepId
+                ?? string.Empty;
         }
 
         private DateTime? EstimateCompletion(WorkflowExecution execution)
         {
             var workflow = GetWorkflowDefinitionAsync(execution.WorkflowId).Result;
+            if (workflow == null) return null;
+
             var remainingSteps = workflow.Steps
                 .Where(s => execution.Steps.Any(es => es.StepId == s.Id && es.Status == "pending"))
                 .Sum(s => s.EstimatedDuration);
@@ -438,7 +450,7 @@ namespace TerraFusion.AI.Services
         private async Task<object> GenerateComplianceReportAsync(string countyId) =>
             await Task.FromResult(new { Report = "FISMA-High Compliant", Generated = true });
 
-        private async Task<WorkflowDefinition> GetWorkflowDefinitionAsync(string workflowId)
+        private async Task<WorkflowDefinition?> GetWorkflowDefinitionAsync(string workflowId)
         {
             var workflows = await GetAvailableWorkflowsAsync("property");
             return workflows.FirstOrDefault(w => w.Id == workflowId);
@@ -448,6 +460,8 @@ namespace TerraFusion.AI.Services
             string workflowId,
             string countyId)
         {
+            await Task.CompletedTask;
+            await Task.CompletedTask;
             return new List<WorkflowExecution>();
         }
     }
@@ -455,41 +469,41 @@ namespace TerraFusion.AI.Services
     // Data models
     public class WorkflowDefinition
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Category { get; set; }
-        public string Description { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public int EstimatedDuration { get; set; }
-        public List<WorkflowStep> Steps { get; set; }
+        public List<WorkflowStep> Steps { get; set; } = new();
         public double AIConfidence { get; set; }
-        public WorkflowSavings EstimatedSavings { get; set; }
+        public WorkflowSavings EstimatedSavings { get; set; } = new();
     }
 
     public class WorkflowStep
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public int EstimatedDuration { get; set; }
         public bool AIOptimized { get; set; }
-        public string Handler { get; set; }
+        public string Handler { get; set; } = string.Empty;
     }
 
     public class WorkflowExecution
     {
-        public string ExecutionId { get; set; }
-        public string WorkflowId { get; set; }
-        public string CountyId { get; set; }
-        public string Status { get; set; }
+        public string ExecutionId { get; set; } = string.Empty;
+        public string WorkflowId { get; set; } = string.Empty;
+        public string CountyId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
-        public List<StepExecution> Steps { get; set; }
+        public List<StepExecution> Steps { get; set; } = new();
     }
 
     public class StepExecution
     {
-        public string StepId { get; set; }
-        public string Status { get; set; }
+        public string StepId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public DateTime? UpdateTime { get; set; }
     }
 
@@ -497,20 +511,20 @@ namespace TerraFusion.AI.Services
 
     public class StepResult
     {
-        public string StepId { get; set; }
+        public string StepId { get; set; } = string.Empty;
         public bool Success { get; set; }
         public double Duration { get; set; }
-        public object Result { get; set; }
-        public string Error { get; set; }
+        public object Result { get; set; } = new();
+        public string Error { get; set; } = string.Empty;
     }
 
     public class WorkflowStatus
     {
-        public string ExecutionId { get; set; }
-        public string WorkflowId { get; set; }
-        public string Status { get; set; }
+        public string ExecutionId { get; set; } = string.Empty;
+        public string WorkflowId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public double Progress { get; set; }
-        public string CurrentStep { get; set; }
+        public string CurrentStep { get; set; } = string.Empty;
         public DateTime StartTime { get; set; }
         public DateTime? EstimatedCompletion { get; set; }
     }
@@ -523,11 +537,11 @@ namespace TerraFusion.AI.Services
 
     public class WorkflowOptimizationSuggestion
     {
-        public string WorkflowId { get; set; }
+        public string WorkflowId { get; set; } = string.Empty;
         public double CurrentEfficiency { get; set; }
         public double PotentialEfficiency { get; set; }
-        public List<string> Suggestions { get; set; }
-        public WorkflowSavings EstimatedImprovement { get; set; }
+        public List<string> Suggestions { get; set; } = new();
+        public WorkflowSavings EstimatedImprovement { get; set; } = new();
         public double Confidence { get; set; }
     }
 }

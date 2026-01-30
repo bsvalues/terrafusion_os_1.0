@@ -225,7 +225,7 @@ const AISwarmVisualization: React.FC<AISwarmVisualizationProps> = ({
         <sphereGeometry args={[1, 8, 8]} />
         <meshStandardMaterial
           vertexColors
-          emissive='#00FFFF'
+          emissive='cyan'
           emissiveIntensity={0.3}
           roughness={0.5}
           metalness={0.8}
@@ -235,7 +235,7 @@ const AISwarmVisualization: React.FC<AISwarmVisualizationProps> = ({
       {/* Connection lines */}
       {connectionGeometry && (
         <lineSegments ref={connectionsRef} geometry={connectionGeometry}>
-          <lineBasicMaterial color='#00FFFF' opacity={0.2} transparent />
+          <lineBasicMaterial color='cyan' opacity={0.2} transparent />
         </lineSegments>
       )}
     </group>
@@ -413,8 +413,8 @@ export const AISwarmManagementPanel: React.FC = () => {
       style={{
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(135deg, #0A0E1A 0%, #1E293B 100%)',
-        color: '#FFFFFF',
+        background: 'linear-gradient(135deg, var(--terra-midnight) 0%, var(--terra-slate) 100%)',
+        color: 'white',
         fontFamily: "'Inter', system-ui, sans-serif",
         overflow: 'auto',
         padding: '2rem',
@@ -428,18 +428,18 @@ export const AISwarmManagementPanel: React.FC = () => {
         style={{
           marginBottom: '2rem',
           padding: '1.5rem',
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: 'var(--glass-bg)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 255, 255, 0.2)',
+          border: '1px solid var(--glass-border)',
           borderRadius: '1rem',
-          boxShadow: '0 0 40px rgba(0, 255, 255, 0.2)',
+          boxShadow: '0 0 40px var(--glass-border)',
         }}
       >
         <h2
           style={{
             fontSize: '2rem',
             fontWeight: 700,
-            color: '#00FFFF',
+            color: 'var(--terra-cyan)',
             marginBottom: '0.5rem',
             textShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
           }}
@@ -474,9 +474,9 @@ export const AISwarmManagementPanel: React.FC = () => {
           <div
             style={{
               padding: '1rem',
-              background: 'rgba(30, 41, 59, 0.3)',
+              background: 'var(--glass-bg)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              border: '1px solid var(--glass-border)',
               borderRadius: '0.75rem',
             }}
           >
@@ -489,7 +489,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             >
               Total Agents
             </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#00FFFF' }}>
+            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--terra-cyan)' }}>
               {coordinationMetrics.totalAgents.toLocaleString()}
             </div>
           </div>
@@ -497,9 +497,9 @@ export const AISwarmManagementPanel: React.FC = () => {
           <div
             style={{
               padding: '1rem',
-              background: 'rgba(30, 41, 59, 0.3)',
+              background: 'var(--glass-bg)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              border: '1px solid var(--glass-border)',
               borderRadius: '0.75rem',
             }}
           >
@@ -512,7 +512,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             >
               Active Agents
             </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#00FF00' }}>
+            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--success-green)' }}>
               {coordinationMetrics.activeAgents.toLocaleString()}
             </div>
           </div>
@@ -520,9 +520,9 @@ export const AISwarmManagementPanel: React.FC = () => {
           <div
             style={{
               padding: '1rem',
-              background: 'rgba(30, 41, 59, 0.3)',
+              background: 'var(--glass-bg)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              border: '1px solid var(--glass-border)',
               borderRadius: '0.75rem',
             }}
           >
@@ -539,7 +539,7 @@ export const AISwarmManagementPanel: React.FC = () => {
               style={{
                 fontSize: '1.75rem',
                 fontWeight: 700,
-                color: coordinationMetrics.averageEfficiency >= 0.95 ? '#00FF00' : '#FFA500',
+                color: coordinationMetrics.averageEfficiency >= 0.95 ? 'var(--success-green)' : 'var(--warning-amber)',
               }}
             >
               {(coordinationMetrics.averageEfficiency * 100).toFixed(1)}%
@@ -549,9 +549,9 @@ export const AISwarmManagementPanel: React.FC = () => {
           <div
             style={{
               padding: '1rem',
-              background: 'rgba(30, 41, 59, 0.3)',
+              background: 'var(--glass-bg)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              border: '1px solid var(--glass-border)',
               borderRadius: '0.75rem',
             }}
           >
@@ -564,7 +564,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             >
               Swarm Harmony
             </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#00FFFF' }}>
+            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--terra-cyan)' }}>
               {(coordinationMetrics.swarmHarmony * 100).toFixed(1)}%
             </div>
           </div>
@@ -572,9 +572,9 @@ export const AISwarmManagementPanel: React.FC = () => {
           <div
             style={{
               padding: '1rem',
-              background: 'rgba(30, 41, 59, 0.3)',
+              background: 'var(--glass-bg)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              border: '1px solid var(--glass-border)',
               borderRadius: '0.75rem',
             }}
           >
@@ -591,7 +591,7 @@ export const AISwarmManagementPanel: React.FC = () => {
               style={{
                 fontSize: '1.75rem',
                 fontWeight: 700,
-                color: coordinationMetrics.averageLatency < 10 ? '#00FF00' : '#FFA500',
+                color: coordinationMetrics.averageLatency < 10 ? 'var(--success-green)' : 'var(--warning-amber)',
               }}
             >
               {coordinationMetrics.averageLatency.toFixed(1)}ms
@@ -601,9 +601,9 @@ export const AISwarmManagementPanel: React.FC = () => {
           <div
             style={{
               padding: '1rem',
-              background: 'rgba(30, 41, 59, 0.3)',
+              background: 'var(--glass-bg)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              border: '1px solid var(--glass-border)',
               borderRadius: '0.75rem',
             }}
           >
@@ -616,7 +616,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             >
               Total Throughput
             </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#00FFFF' }}>
+            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--terra-cyan)' }}>
               {(coordinationMetrics.totalThroughput / 1000).toFixed(0)}K ops/s
             </div>
           </div>
@@ -624,9 +624,9 @@ export const AISwarmManagementPanel: React.FC = () => {
           <div
             style={{
               padding: '1rem',
-              background: 'rgba(30, 41, 59, 0.3)',
+              background: 'var(--glass-bg)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              border: '1px solid var(--glass-border)',
               borderRadius: '0.75rem',
             }}
           >
@@ -639,7 +639,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             >
               Consciousness Coherence
             </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#00FFFF' }}>
+            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--terra-cyan)' }}>
               {(coordinationMetrics.consciousnessCoherence * 100).toFixed(1)}%
             </div>
           </div>
@@ -654,9 +654,9 @@ export const AISwarmManagementPanel: React.FC = () => {
         style={{
           marginBottom: '2rem',
           padding: '1.5rem',
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: 'var(--glass-bg)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 255, 255, 0.2)',
+          border: '1px solid var(--glass-border)',
           borderRadius: '1rem',
         }}
       >
@@ -664,7 +664,7 @@ export const AISwarmManagementPanel: React.FC = () => {
           style={{
             fontSize: '1.25rem',
             fontWeight: 600,
-            color: '#00FFFF',
+            color: 'var(--terra-cyan)',
             marginBottom: '1rem',
           }}
         >
@@ -690,9 +690,9 @@ export const AISwarmManagementPanel: React.FC = () => {
                 width: '100%',
                 padding: '0.75rem',
                 background: 'rgba(10, 14, 26, 0.8)',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
+                border: '1px solid var(--glass-border)',
                 borderRadius: '0.5rem',
-                color: '#FFFFFF',
+                color: 'white',
                 fontSize: '0.875rem',
                 cursor: 'pointer',
               }}
@@ -723,9 +723,9 @@ export const AISwarmManagementPanel: React.FC = () => {
                 width: '100%',
                 padding: '0.75rem',
                 background: 'rgba(10, 14, 26, 0.8)',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
+                border: '1px solid var(--glass-border)',
                 borderRadius: '0.5rem',
-                color: '#FFFFFF',
+                color: 'white',
                 fontSize: '0.875rem',
                 cursor: 'pointer',
               }}
@@ -760,7 +760,7 @@ export const AISwarmManagementPanel: React.FC = () => {
               onChange={(e) => setAgentHealthFilter(parseFloat(e.target.value))}
               style={{
                 width: '100%',
-                accentColor: '#00FFFF',
+                accentColor: 'var(--terra-cyan)',
               }}
               aria-label='Agent health filter slider'
               title={`Filter agents by minimum health: ${(agentHealthFilter * 100).toFixed(0)}%`}
@@ -776,8 +776,8 @@ export const AISwarmManagementPanel: React.FC = () => {
               gap: '0.5rem',
               cursor: 'pointer',
               padding: '0.5rem 1rem',
-              background: showConnections ? 'rgba(0, 255, 255, 0.2)' : 'rgba(30, 41, 59, 0.5)',
-              border: showConnections ? '1px solid #00FFFF' : '1px solid rgba(255, 255, 255, 0.1)',
+              background: showConnections ? 'var(--glass-border)' : 'rgba(30, 41, 59, 0.5)',
+              border: showConnections ? '1px solid var(--terra-cyan)' : '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: '0.5rem',
               transition: 'all 0.3s ease',
             }}
@@ -786,24 +786,24 @@ export const AISwarmManagementPanel: React.FC = () => {
               type='checkbox'
               checked={showConnections}
               onChange={(e) => setShowConnections(e.target.checked)}
-              style={{ accentColor: '#00FFFF' }}
+              style={{ accentColor: 'var(--terra-cyan)' }}
               aria-label='Toggle agent connections visibility'
             />
-            <span style={{ color: '#FFFFFF', fontSize: '0.875rem' }}>Show Connections</span>
+            <span style={{ color: 'white', fontSize: '0.875rem' }}>Show Connections</span>
           </label>
 
           <button
             onClick={optimizeSwarmCoordination}
             style={{
               padding: '0.5rem 1.5rem',
-              background: 'linear-gradient(135deg, #00FFFF 0%, #0080FF 100%)',
+              background: 'linear-gradient(135deg, var(--terra-cyan) 0%, var(--terra-blue) 100%)',
               border: 'none',
               borderRadius: '0.5rem',
-              color: '#FFFFFF',
+              color: 'white',
               fontSize: '0.875rem',
               fontWeight: 600,
               cursor: 'pointer',
-              boxShadow: '0 0 20px rgba(0, 255, 255, 0.3)',
+              boxShadow: '0 0 20px var(--glass-border)',
               transition: 'all 0.3s ease',
             }}
           >
@@ -814,10 +814,10 @@ export const AISwarmManagementPanel: React.FC = () => {
             onClick={analyzeSwarmIntelligence}
             style={{
               padding: '0.5rem 1.5rem',
-              background: 'linear-gradient(135deg, #0080FF 0%, #00FFFF 100%)',
+              background: 'linear-gradient(135deg, var(--terra-blue) 0%, var(--terra-cyan) 100%)',
               border: 'none',
               borderRadius: '0.5rem',
-              color: '#FFFFFF',
+              color: 'white',
               fontSize: '0.875rem',
               fontWeight: 600,
               cursor: 'pointer',
@@ -838,9 +838,9 @@ export const AISwarmManagementPanel: React.FC = () => {
         style={{
           marginBottom: '2rem',
           padding: '1.5rem',
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: 'var(--glass-bg)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 255, 255, 0.2)',
+          border: '1px solid var(--glass-border)',
           borderRadius: '1rem',
         }}
       >
@@ -848,7 +848,7 @@ export const AISwarmManagementPanel: React.FC = () => {
           style={{
             fontSize: '1.25rem',
             fontWeight: 600,
-            color: '#00FFFF',
+            color: 'var(--terra-cyan)',
             marginBottom: '1rem',
           }}
         >
@@ -872,7 +872,7 @@ export const AISwarmManagementPanel: React.FC = () => {
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 fontSize: '1.25rem',
-                color: '#00FFFF',
+                color: 'var(--terra-cyan)',
                 zIndex: 10,
               }}
             >
@@ -884,8 +884,8 @@ export const AISwarmManagementPanel: React.FC = () => {
             <PerspectiveCamera makeDefault position={[15, 15, 15]} />
             <OrbitControls enableDamping dampingFactor={0.05} />
             <ambientLight intensity={0.3} />
-            <pointLight position={[20, 20, 20]} intensity={1} color='#00FFFF' />
-            <pointLight position={[-20, -20, -20]} intensity={0.5} color='#0080FF' />
+            <pointLight position={[20, 20, 20]} intensity={1} color='cyan' />
+            <pointLight position={[-20, -20, -20]} intensity={0.5} color='var(--terra-blue)' />
             <Environment preset='night' />
 
             <AISwarmVisualization
@@ -908,9 +908,9 @@ export const AISwarmManagementPanel: React.FC = () => {
           style={{
             marginBottom: '2rem',
             padding: '1.5rem',
-            background: 'rgba(30, 41, 59, 0.3)',
+            background: 'var(--glass-bg)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0, 255, 255, 0.2)',
+            border: '1px solid var(--glass-border)',
             borderRadius: '1rem',
           }}
         >
@@ -918,7 +918,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             style={{
               fontSize: '1.25rem',
               fontWeight: 600,
-              color: '#00FFFF',
+              color: 'var(--terra-cyan)',
               marginBottom: '1rem',
             }}
           >
@@ -938,14 +938,14 @@ export const AISwarmManagementPanel: React.FC = () => {
                 padding: '1rem',
                 background: 'rgba(10, 14, 26, 0.5)',
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: '1px solid var(--glass-border)',
               }}
             >
               <h4
                 style={{
                   fontSize: '1rem',
                   fontWeight: 600,
-                  color: '#00FFFF',
+                  color: 'var(--terra-cyan)',
                   marginBottom: '0.75rem',
                 }}
               >
@@ -955,7 +955,7 @@ export const AISwarmManagementPanel: React.FC = () => {
                 style={{ margin: 0, paddingLeft: '1.5rem', fontSize: '0.875rem', lineHeight: 1.6 }}
               >
                 {intelligenceAnalysis.emergentBehaviors.map((behavior, index) => (
-                  <li key={index} style={{ color: '#FFFFFF', marginBottom: '0.25rem' }}>
+                  <li key={index} style={{ color: 'white', marginBottom: '0.25rem' }}>
                     {behavior}
                   </li>
                 ))}
@@ -968,14 +968,14 @@ export const AISwarmManagementPanel: React.FC = () => {
                 padding: '1rem',
                 background: 'rgba(10, 14, 26, 0.5)',
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: '1px solid var(--glass-border)',
               }}
             >
               <h4
                 style={{
                   fontSize: '1rem',
                   fontWeight: 600,
-                  color: '#00FFFF',
+                  color: 'var(--terra-cyan)',
                   marginBottom: '0.75rem',
                 }}
               >
@@ -983,7 +983,7 @@ export const AISwarmManagementPanel: React.FC = () => {
               </h4>
               {intelligenceAnalysis.coordinationPatterns.map((pattern, index) => (
                 <div key={index} style={{ marginBottom: '0.5rem' }}>
-                  <div style={{ fontSize: '0.875rem', color: '#FFFFFF' }}>{pattern.pattern}</div>
+                  <div style={{ fontSize: '0.875rem', color: 'white' }}>{pattern.pattern}</div>
                   <div
                     style={{
                       display: 'flex',
@@ -1012,7 +1012,7 @@ export const AISwarmManagementPanel: React.FC = () => {
                 style={{
                   fontSize: '1rem',
                   fontWeight: 600,
-                  color: '#FFA500',
+                  color: 'var(--warning-amber)',
                   marginBottom: '0.75rem',
                 }}
               >
@@ -1020,7 +1020,7 @@ export const AISwarmManagementPanel: React.FC = () => {
               </h4>
               {intelligenceAnalysis.bottlenecks.map((bottleneck, index) => (
                 <div key={index} style={{ marginBottom: '0.75rem' }}>
-                  <div style={{ fontSize: '0.875rem', color: '#FFFFFF' }}>
+                  <div style={{ fontSize: '0.875rem', color: 'white' }}>
                     {bottleneck.location}
                   </div>
                   <div
@@ -1032,7 +1032,7 @@ export const AISwarmManagementPanel: React.FC = () => {
                   >
                     Severity: {(bottleneck.severity * 100).toFixed(0)}%
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#00FFFF', marginTop: '0.25rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--terra-cyan)', marginTop: '0.25rem' }}>
                     → {bottleneck.recommendedAction}
                   </div>
                 </div>
@@ -1052,7 +1052,7 @@ export const AISwarmManagementPanel: React.FC = () => {
                 style={{
                   fontSize: '1rem',
                   fontWeight: 600,
-                  color: '#00FF00',
+                  color: 'var(--success-green)',
                   marginBottom: '0.75rem',
                 }}
               >
@@ -1060,8 +1060,8 @@ export const AISwarmManagementPanel: React.FC = () => {
               </h4>
               {intelligenceAnalysis.optimizationOpportunities.map((opportunity, index) => (
                 <div key={index} style={{ marginBottom: '0.75rem' }}>
-                  <div style={{ fontSize: '0.875rem', color: '#FFFFFF' }}>{opportunity.area}</div>
-                  <div style={{ fontSize: '0.75rem', color: '#00FF00', marginTop: '0.25rem' }}>
+                  <div style={{ fontSize: '0.875rem', color: 'white' }}>{opportunity.area}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--success-green)', marginTop: '0.25rem' }}>
                     Potential Gain: +{(opportunity.potentialGain * 100).toFixed(1)}%
                   </div>
                   <div
@@ -1083,35 +1083,35 @@ export const AISwarmManagementPanel: React.FC = () => {
                 padding: '1rem',
                 background: 'rgba(10, 14, 26, 0.5)',
                 borderRadius: '0.5rem',
-                border: '1px solid rgba(0, 255, 255, 0.2)',
+                border: '1px solid var(--glass-border)',
               }}
             >
               <h4
                 style={{
                   fontSize: '1rem',
                   fontWeight: 600,
-                  color: '#00FFFF',
+                  color: 'var(--terra-cyan)',
                   marginBottom: '0.75rem',
                 }}
               >
                 Predicted Performance
               </h4>
               <div style={{ fontSize: '0.875rem', lineHeight: 1.8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#FFFFFF' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'white' }}>
                   <span>Next 5 min:</span>
-                  <span style={{ color: '#00FFFF', fontWeight: 600 }}>
+                  <span style={{ color: 'var(--terra-cyan)', fontWeight: 600 }}>
                     {(intelligenceAnalysis.predictedPerformance.next5Minutes * 100).toFixed(1)}%
                   </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#FFFFFF' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'white' }}>
                   <span>Next 15 min:</span>
-                  <span style={{ color: '#00FFFF', fontWeight: 600 }}>
+                  <span style={{ color: 'var(--terra-cyan)', fontWeight: 600 }}>
                     {(intelligenceAnalysis.predictedPerformance.next15Minutes * 100).toFixed(1)}%
                   </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#FFFFFF' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'white' }}>
                   <span>Next 60 min:</span>
-                  <span style={{ color: '#00FFFF', fontWeight: 600 }}>
+                  <span style={{ color: 'var(--terra-cyan)', fontWeight: 600 }}>
                     {(intelligenceAnalysis.predictedPerformance.next60Minutes * 100).toFixed(1)}%
                   </span>
                 </div>
@@ -1125,3 +1125,4 @@ export const AISwarmManagementPanel: React.FC = () => {
 };
 
 export default AISwarmManagementPanel;
+

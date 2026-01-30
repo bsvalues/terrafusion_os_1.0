@@ -11,7 +11,7 @@ namespace TerraFusion.API.Services
     /// <summary>
     /// Elite Performance Optimization Engine
     /// Championship-grade system performance monitoring and auto-optimization
-    /// Government OS performance standards: 99.999% availability, <1ms P50, <10ms P95
+    /// Government OS performance standards: 99.999% availability, &lt;1ms P50, &lt;10ms P95
     /// </summary>
     public class ElitePerformanceOptimizationEngine : BackgroundService
     {

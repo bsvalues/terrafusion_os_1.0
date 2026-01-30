@@ -1,0 +1,173 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/speclock.v1.json",
+  "id": "pacscontract.v1",
+  "surface": "pacscontract",
+  "version": "1.0.0",
+  "status": "active",
+  "effective_date": "2025-12-14",
+  "purpose": "Immutable contract defining TerraFusion OS dependencies on Harris PACS (TrueAutomation) database systems",
+
+  "spec_file": "SPEC_LOCK_v1.0.0.md",
+
+  "databases": {
+    "allowed": [
+      {
+        "name": "pacs_oltp",
+        "purpose": "Production PACS database",
+        "required": true
+      },
+      {
+        "name": "CIAPS",
+        "purpose": "County Integrated Assessment & Permit System",
+        "required": false
+      }
+    ],
+    "forbidden": [
+      "PACS_Training",
+      "TA_AppSvr",
+      "ReportServer",
+      "Web_Internet_Benton"
+    ]
+  },
+
+  "required_objects": {
+    "pacs_oltp": {
+      "views": [
+        {
+          "name": "vw_TerraFusion_Property_Core",
+          "required_columns": [
+            "prop_id",
+            "geo_id",
+            "prop_type_cd",
+            "prop_val_yr",
+            "assessed_val",
+            "taxable_val",
+            "situs_display",
+            "situs_city",
+            "situs_state",
+            "situs_zip"
+          ]
+        },
+        {
+          "name": "vw_TerraFusion_Property_Ownership",
+          "required_columns": [
+            "prop_id",
+            "owner_id",
+            "owner_name",
+            "mail_addr_1",
+            "mail_city",
+            "mail_state",
+            "mail_zip",
+            "ownership_pct"
+          ]
+        },
+        {
+          "name": "vw_TerraFusion_Assessment_History",
+          "required_columns": [
+            "prop_id",
+            "geo_id",
+            "prop_val_yr",
+            "assessed_val",
+            "taxable_val",
+            "improvement_value",
+            "land_value"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "name": "IX_TerraFusion_Property_GeoID",
+          "table": "property",
+          "severity": "warning"
+        },
+        {
+          "name": "IX_TerraFusion_PropertyVal_PropYear",
+          "table": "property_val",
+          "severity": "warning"
+        },
+        {
+          "name": "IX_TerraFusion_Situs_Property",
+          "table": "situs",
+          "severity": "warning"
+        }
+      ],
+      "procedures": [
+        {
+          "name": "sp_TerraFusion_HealthCheck",
+          "severity": "error"
+        }
+      ]
+    }
+  },
+
+  "connection": {
+    "encryption": "required",
+    "timeout_seconds": 30,
+    "command_timeout_seconds": 60,
+    "application_name": "TerraFusion-OS",
+    "min_pool_size": 5,
+    "max_pool_size": 100
+  },
+
+  "access_mode": {
+    "default": "read_only",
+    "writes_require": "amendment"
+  },
+
+  "authentication": {
+    "method": "sql_server",
+    "user": "TerraFusion_Integration",
+    "password_source": "vault"
+  },
+
+  "permissions": {
+    "required": ["db_datareader", "EXECUTE on sp_TerraFusion_HealthCheck"],
+    "forbidden": ["db_datawriter", "db_owner", "sysadmin"]
+  },
+
+  "error_codes": {
+    "PACS_VIEW_MISSING": {
+      "severity": "error",
+      "behavior": "fail_closed"
+    },
+    "PACS_COLUMN_MISSING": {
+      "severity": "error",
+      "behavior": "fail_closed"
+    },
+    "PACS_INDEX_MISSING": {
+      "severity": "warning",
+      "behavior": "continue"
+    },
+    "PACS_PERMISSION_DENIED": {
+      "severity": "error",
+      "behavior": "fail_closed"
+    },
+    "PACS_CONNECTION_FAILED": {
+      "severity": "error",
+      "behavior": "fail_closed"
+    }
+  },
+
+  "compatibility": {
+    "pacs_schema_version_min": "9.0",
+    "pacs_schema_version_max": "9.99"
+  },
+
+  "generated_artifacts": [
+    "generated/pacscontract.schema.json",
+    "generated/pacscontract.openapi.yaml"
+  ],
+
+  "test_file": "backend/tests/TerraFusion.Unit.SmokeTests/PacsContractTests.cs",
+  "test_count_min": 10,
+
+  "ci_tags": ["speclock", "pacscontract", "governance", "pacs", "database"],
+
+  "related": ["runtimecontract.v1", "amendment.v1"],
+
+  "metadata": {
+    "author": "TerraFusion Elite Government OS Engineering",
+    "county": "benton",
+    "classification": "GOVERNANCE"
+  }
+}

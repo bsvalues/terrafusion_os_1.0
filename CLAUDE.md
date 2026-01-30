@@ -8,6 +8,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **CRITICAL**: Read `.github/copilot-instructions.md` FIRST - contains essential government compliance requirements, AI swarm coordination rules, and testing architecture.
 
+## Canonical Instructions (Source of Truth)
+
+Always follow these, in order:
+1. `.github/copilot-instructions.md`
+2. `CLAUDE.md`
+3. `STANDARD.md` (repo root)
+
+Anything under `agents/**` is optional implementation detail unless explicitly referenced here.
+
+## Launcher Constitution (Dev OS)
+
+`tools/dev/dev-os.mjs` MUST:
+- Start only apps where `autostart === true` AND `start` is present.
+- Never infer runtime from the filesystem.
+- Treat missing `start` as a non-fatal skip.
+
+`terrafusion.app.json` MUST:
+- Declare `runtime` and `start` for any runnable app.
+- Keep legacy apps `pinned: false` and either omit `start` or set `runnable: false`.
+- Use `pinned` for UI visibility and `autostart` for launcher behavior.
+
 ## Architecture: Three-Tier OS Model
 
 TerraFusion operates as a complete operating system with three core service tiers:
@@ -29,7 +50,7 @@ TerraFusion operates as a complete operating system with three core service tier
 
 4. **Frontend** - Port 3000
    - React 18.3 + TypeScript 5.3 with Vite 5
-   - Builds to `native-shell/ui` (NOT `dist/`) for Electron desktop deployment
+   - Builds to `native-shell/ui/dist` (NOT `dist/`) for Electron desktop deployment
    - SignalR client connects to backend hubs
    - Vite proxy routes `/api` requests to port 5000
 
@@ -53,7 +74,7 @@ terrafusion_os_1.0/
 │   ├── src/services/           # API clients + SignalR
 │   ├── src/hooks/              # Custom React hooks (useBackendConnection)
 │   ├── electron/               # Electron main process
-│   └── vite.config.ts          # Builds to ../native-shell/ui
+│   └── vite.config.ts          # Builds to ../native-shell/ui/dist
 │
 ├── native-shell/               # C# WPF desktop shell
 │   └── ui/                     # Frontend build output (deployed here)
@@ -112,7 +133,7 @@ cd frontend
 npm run dev                    # Vite dev server (port 3000)
 npm run electron:dev           # Electron desktop app
 
-# Building (outputs to ../native-shell/ui)
+# Building (outputs to ../native-shell/ui/dist)
 npm run build
 npm run build:analyze          # With bundle analysis
 
@@ -199,12 +220,12 @@ var agents = await _aiCommandService.GetActiveAgentsAsync();
 
 ### 4. Frontend Build Architecture
 
-**CRITICAL**: Frontend builds to `native-shell/ui`, NOT `dist/`:
+**CRITICAL**: Frontend builds to `native-shell/ui/dist`, NOT `dist/`:
 
 ```typescript
 // vite.config.ts
 build: {
-  outDir: '../native-shell/ui',
+  outDir: '../native-shell/ui/dist',
   emptyOutDir: true,
 }
 ```

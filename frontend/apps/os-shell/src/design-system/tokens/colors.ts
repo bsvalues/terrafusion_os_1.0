@@ -20,7 +20,7 @@ export const brandColors = {
     200: '#80ccff',
     300: '#4db8ff',
     400: '#1aa3ff',
-    500: '#0099ff', // Main brand color
+    500: 'var(--tf-network-blue)', // Main brand color
     600: '#007acc',
     700: '#005c99',
     800: '#003d66',
@@ -34,7 +34,7 @@ export const brandColors = {
     200: '#80fff6',
     300: '#4dfff2',
     400: '#1affef',
-    500: '#00ffee', // Transcend accent
+    500: 'var(--tf-transcend-highlight)', // Transcend accent
     600: '#00ccbe',
     700: '#00998f',
     800: '#00665f',
@@ -48,11 +48,16 @@ export const brandColors = {
     200: '#80ffd9',
     300: '#4dffca',
     400: '#1affbb',
-    500: '#00ffaa', // Accent green
-    600: '#00cc88',
+    500: 'var(--tf-accent-success)', // Accent green
+    600: 'var(--tf-transcend-cyan)',
     700: '#009966',
     800: '#006644',
     900: '#003322',
+  },
+
+  // Quantum Cyan - Pure Electric
+  quantum: {
+    500: 'var(--tf-transcend-cyan)',
   },
 } as const;
 
@@ -63,20 +68,21 @@ export const brandColors = {
 export const semanticColors = {
   // Text Colors
   text: {
-    primary: '#ffffff', // Primary text (white)
+    primary: 'var(--tf-text-primary)fff', // Primary text (white)
     secondary: '#b3b3b3', // Secondary text (gray)
     tertiary: '#808080', // Tertiary text (darker gray)
     disabled: '#4d4d4d', // Disabled text
-    inverse: '#000000', // Inverse text (on light backgrounds)
-    link: '#0099ff', // Links (brand primary)
+    inverse: 'var(--tf-bg-void)', // Inverse text (on light backgrounds)
+    link: 'var(--tf-network-blue)', // Links (brand primary)
     linkHover: '#1aa3ff', // Link hover state
   },
 
   // Background Colors
   background: {
-    primary: '#000000', // Primary background (black)
+    primary: 'var(--tf-bg-void)', // Primary background (black)
     secondary: '#0a0a0a', // Secondary background (near-black)
     tertiary: '#1a1a1a', // Tertiary background (dark gray)
+    void: 'var(--tf-bg-void)', // Terra Midnight
     elevated: '#2a2a2a', // Elevated surfaces
     overlay: 'rgba(0, 0, 0, 0.8)', // Modal/overlay background
     glass: 'rgba(0, 0, 0, 0.6)', // Glass morphism effect
@@ -84,20 +90,20 @@ export const semanticColors = {
 
   // Border Colors
   border: {
-    default: '#333333', // Default border
+    default: 'var(--tf-bg-surface)333', // Default border
     subtle: '#1a1a1a', // Subtle border
     strong: '#4d4d4d', // Strong border
-    interactive: '#0099ff', // Interactive border (brand primary)
-    focus: '#00ffee', // Focus ring (transcend)
+    interactive: 'var(--tf-network-blue)', // Interactive border (brand primary)
+    focus: 'var(--tf-transcend-highlight)', // Focus ring (transcend)
   },
 
   // Surface Colors
   surface: {
     default: '#0a0a0a', // Default surface
     elevated: '#1a1a1a', // Elevated surface
-    sunken: '#000000', // Sunken surface
+    sunken: 'var(--tf-bg-void)', // Sunken surface
     interactive: '#2a2a2a', // Interactive surface
-    hover: '#333333', // Hover state
+    hover: 'var(--tf-bg-surface)333', // Hover state
     active: '#3d3d3d', // Active/pressed state
   },
 } as const;
@@ -114,12 +120,12 @@ export const stateColors = {
     200: '#80ffd9',
     300: '#4dffca',
     400: '#1affbb',
-    500: '#00ffaa', // Primary success
-    600: '#00cc88',
+    500: 'var(--tf-accent-success)', // Primary success
+    600: 'var(--tf-transcend-cyan)',
     700: '#009966',
     800: '#006644',
     900: '#003322',
-    text: '#00ffaa',
+    text: 'var(--tf-accent-success)',
     background: 'rgba(0, 255, 170, 0.1)',
     border: 'rgba(0, 255, 170, 0.3)',
   },
@@ -131,7 +137,7 @@ export const stateColors = {
     200: '#ff8080',
     300: '#ff4d4d',
     400: '#ff1a1a',
-    500: '#ff0000', // Primary error
+    500: 'var(--tf-error-red)', // Primary error
     600: '#cc0000',
     700: '#990000',
     800: '#660000',
@@ -143,7 +149,7 @@ export const stateColors = {
 
   // Warning States
   warning: {
-    50: '#fff9e6',
+    50: 'var(--tf-text-primary)9e6',
     100: '#ffecb3',
     200: '#ffe080',
     300: '#ffd34d',
@@ -165,12 +171,12 @@ export const stateColors = {
     200: '#80ccff',
     300: '#4db8ff',
     400: '#1aa3ff',
-    500: '#0099ff', // Primary info (brand primary)
+    500: 'var(--tf-network-blue)', // Primary info (brand primary)
     600: '#007acc',
     700: '#005c99',
     800: '#003d66',
     900: '#001f33',
-    text: '#0099ff',
+    text: 'var(--tf-network-blue)',
     background: 'rgba(0, 153, 255, 0.1)',
     border: 'rgba(0, 153, 255, 0.3)',
   },
@@ -188,7 +194,7 @@ export const componentColors = {
       hover: brandColors.primary[400],
       active: brandColors.primary[600],
       disabled: '#4d4d4d',
-      text: '#ffffff',
+      text: 'var(--tf-text-primary)fff',
     },
     secondary: {
       background: 'transparent',
@@ -202,23 +208,23 @@ export const componentColors = {
       background: 'transparent',
       hover: 'rgba(255, 255, 255, 0.05)',
       active: 'rgba(255, 255, 255, 0.1)',
-      text: '#ffffff',
+      text: 'var(--tf-text-primary)fff',
     },
     danger: {
       background: stateColors.error[500],
       hover: stateColors.error[400],
       active: stateColors.error[600],
-      text: '#ffffff',
+      text: 'var(--tf-text-primary)fff',
     },
   },
 
   // Input Colors
   input: {
     background: '#0a0a0a',
-    border: '#333333',
+    border: 'var(--tf-bg-surface)333',
     borderFocus: brandColors.primary[500],
     placeholder: '#808080',
-    text: '#ffffff',
+    text: 'var(--tf-text-primary)fff',
     disabled: {
       background: '#1a1a1a',
       border: '#1a1a1a',
@@ -229,18 +235,18 @@ export const componentColors = {
   // Card Colors
   card: {
     background: '#0a0a0a',
-    border: '#333333',
+    border: 'var(--tf-bg-surface)333',
     hover: '#1a1a1a',
     shadow: 'rgba(0, 0, 0, 0.5)',
   },
 
   // Navigation Colors
   navigation: {
-    background: '#000000',
+    background: 'var(--tf-bg-void)',
     border: '#1a1a1a',
     active: brandColors.primary[500],
     hover: '#1a1a1a',
-    text: '#ffffff',
+    text: 'var(--tf-text-primary)fff',
     textSecondary: '#b3b3b3',
   },
 
@@ -248,31 +254,53 @@ export const componentColors = {
   modal: {
     background: '#0a0a0a',
     overlay: 'rgba(0, 0, 0, 0.8)',
-    border: '#333333',
+    border: 'var(--tf-bg-surface)333',
   },
 
   // Badge Colors
   badge: {
     primary: {
       background: brandColors.primary[500],
-      text: '#ffffff',
+      text: 'var(--tf-text-primary)fff',
     },
     secondary: {
-      background: '#333333',
-      text: '#ffffff',
+      background: 'var(--tf-bg-surface)333',
+      text: 'var(--tf-text-primary)fff',
     },
     success: {
       background: stateColors.success[500],
-      text: '#000000',
+      text: 'var(--tf-bg-void)',
     },
     error: {
       background: stateColors.error[500],
-      text: '#ffffff',
+      text: 'var(--tf-text-primary)fff',
     },
     warning: {
       background: stateColors.warning[500],
-      text: '#000000',
+      text: 'var(--tf-bg-void)',
     },
+  },
+} as const;
+
+// ============================================================================
+// Visualization Colors
+// ============================================================================
+
+export const visualizationColors = {
+  chart: [
+    brandColors.transcend[500],
+    brandColors.primary[500],
+    '#8B5CF6', // Purple
+    stateColors.warning[500],
+    stateColors.error[500],
+    stateColors.success[500],
+    '#F97316', // Orange
+    '#6366F1', // Indigo
+  ],
+  sparkline: {
+    latency: brandColors.transcend[500],
+    throughput: stateColors.success[500],
+    error: stateColors.error[300], // lighter red
   },
 } as const;
 
@@ -281,9 +309,10 @@ export const componentColors = {
 // ============================================================================
 
 export const gradients = {
-  primary: 'linear-gradient(135deg, #0099ff 0%, #00ffee 100%)',
-  transcend: 'linear-gradient(135deg, #00ffee 0%, #00ffaa 100%)',
-  dark: 'linear-gradient(180deg, #000000 0%, #0a0a0a 100%)',
+  primary: 'linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-transcend-highlight) 100%)',
+  transcend: 'linear-gradient(135deg, var(--tf-transcend-highlight) 0%, var(--tf-accent-success) 100%)',
+  dark: 'linear-gradient(180deg, var(--tf-bg-void) 0%, #0a0a0a 100%)',
+  void: 'linear-gradient(135deg, var(--tf-void-black) 0%, var(--tf-surface-darker) 100%)', // Terra Midnight
   glow: 'radial-gradient(circle, rgba(0, 153, 255, 0.3) 0%, rgba(0, 153, 255, 0) 70%)',
   mesh: `
     radial-gradient(at 40% 20%, rgba(0, 153, 255, 0.3) 0px, transparent 50%),
@@ -343,6 +372,7 @@ export const colors = {
   semantic: semanticColors,
   state: stateColors,
   component: componentColors,
+  visualization: visualizationColors,
   gradient: gradients,
   utils: {
     withOpacity,

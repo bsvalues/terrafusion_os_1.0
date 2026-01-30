@@ -8,12 +8,12 @@
  * MILESTONE: This is the FINAL test file to achieve 100% Shadcn coverage! 🎯
  */
 
-import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { Switch } from './switch';
+import React from 'react';
 import { Label } from './label';
+import { Switch } from './switch';
 
 expect.extend(toHaveNoViolations);
 
@@ -59,12 +59,15 @@ describe('Switch', () => {
     });
 
     it('has data-state attribute reflecting checked state', () => {
-      const { rerender } = render(<Switch defaultChecked={false} aria-label='Toggle' />);
+      const { rerender } = render(<Switch checked={false} aria-label='Toggle' />);
 
-      const switchElement = screen.getByRole('switch');
+      let switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('data-state', 'unchecked');
 
-      rerender(<Switch defaultChecked={true} aria-label='Toggle' />);
+      // Use controlled `checked` prop for rerender behavior
+      rerender(<Switch checked={true} aria-label='Toggle' />);
+      // Re-query after rerender to get updated element
+      switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('data-state', 'checked');
     });
   });
@@ -409,12 +412,15 @@ describe('Switch', () => {
     });
 
     it('has aria-checked attribute', () => {
-      const { rerender } = render(<Switch defaultChecked={false} aria-label='Toggle' />);
+      const { rerender } = render(<Switch checked={false} aria-label='Toggle' />);
 
-      const switchElement = screen.getByRole('switch');
+      let switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('aria-checked', 'false');
 
-      rerender(<Switch defaultChecked={true} aria-label='Toggle' />);
+      // Use controlled `checked` prop for rerender behavior
+      rerender(<Switch checked={true} aria-label='Toggle' />);
+      // Re-query after rerender to get updated element
+      switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('aria-checked', 'true');
     });
 
@@ -455,7 +461,8 @@ describe('Switch', () => {
       render(<Switch disabled aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
-      expect(switchElement).toHaveAttribute('aria-disabled', 'true');
+      // Radix UI uses data-disabled attribute instead of aria-disabled
+      expect(switchElement).toHaveAttribute('data-disabled');
     });
 
     it('has no accessibility violations (unchecked)', async () => {

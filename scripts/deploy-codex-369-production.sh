@@ -262,7 +262,7 @@ deploy_frontend() {
     npm run lint >> "$LOG_FILE" 2>&1 || log_warning "Linting warnings found"
 
     # Build frontend
-    log_info "Building frontend (outputs to ../native-shell/ui)..."
+    log_info "Building frontend (outputs to ../native-shell/ui/dist)..."
     if [ "$ENVIRONMENT" = "production" ]; then
         npm run build >> "$LOG_FILE" 2>&1
     else
@@ -277,7 +277,7 @@ deploy_frontend() {
     fi
 
     # Verify build output
-    BUILD_OUTPUT="$ROOT_DIR/native-shell/ui"
+    BUILD_OUTPUT="$ROOT_DIR/native-shell/ui/dist"
     if [ -f "$BUILD_OUTPUT/index.html" ]; then
         log_success "Build output verified: $BUILD_OUTPUT"
     else
@@ -438,7 +438,7 @@ print_deployment_summary() {
     echo ""
     echo -e "${BLUE}Frontend Deployment:${NC}"
     echo "  ✅ Build: Completed successfully"
-    echo "  ✅ Output: $ROOT_DIR/native-shell/ui"
+    echo "  ✅ Output: $ROOT_DIR/native-shell/ui/dist"
     echo "  ✅ Route: /codex/preferences configured"
     echo ""
     echo -e "${BLUE}API Endpoints:${NC}"

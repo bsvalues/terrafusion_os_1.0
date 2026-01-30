@@ -168,7 +168,7 @@ export function AdvancedCodexDashboard({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#00FFFF', '#00FFEE', '#0099ff'],
+        colors: ['var(--tf-transcend-cyan)', 'var(--tf-transcend-cyan)', 'var(--tf-network-blue)'],
       });
 
       toast.success('🌟 DIVINE BALANCE ACHIEVED!', {

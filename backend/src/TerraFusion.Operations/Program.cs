@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TerraFusion.Operations.Configuration;
+using TerraFusion.Operations.Incidents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,7 @@ builder.Services.AddEliteOperationalSecurity(builder.Configuration);
 builder.Services.AddEliteOperationalHealthChecks(builder.Configuration);
 builder.Services.AddEliteOperationalCaching(builder.Configuration);
 builder.Services.AddEliteOperationalLogging(builder.Configuration);
+builder.Services.AddIncidentTriageServices(builder.Configuration);
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -203,3 +205,5 @@ catch (Exception ex)
     Console.WriteLine($"💥 TerraFusion Elite Operational Excellence startup failed: {ex.Message}");
     throw;
 }
+
+public partial class Program { }

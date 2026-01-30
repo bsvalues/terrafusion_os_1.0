@@ -489,7 +489,7 @@ export const TerraGaiaDashboard: React.FC = () => {
   ];
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-[#0b1020] via-[#1a2332] to-[#0b1020] text-white'>
+    <div className='min-h-full bg-gradient-to-br from-[var(--tf-bg-surface)] via-[var(--tf-bg-surface)] to-[var(--tf-bg-surface)] text-white'>
       {/* TerraGaia Header */}
       <div className='relative overflow-hidden'>
         <div className='tf-quantum-grid absolute inset-0 opacity-10' />
@@ -500,15 +500,15 @@ export const TerraGaiaDashboard: React.FC = () => {
             className='mb-4'
           >
             <div className='inline-flex items-center gap-3 mb-4'>
-              <Globe className='w-12 h-12 text-[#00ffee]' />
-              <h1 className='text-6xl font-black bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] bg-clip-text text-transparent'>
+              <Globe className='w-12 h-12 text-[var(--tf-transcend-highlight)]' />
+              <h1 className='text-6xl font-black bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] bg-clip-text text-transparent'>
                 TerraGaia
               </h1>
             </div>
-            <p className='text-2xl font-bold text-[#00ffee] mb-2'>
+            <p className='text-2xl font-bold text-[var(--tf-transcend-highlight)] mb-2'>
               Ultimate Government Co-Pilot AI Agent
             </p>
-            <p className='text-lg text-[#00ffaa] font-semibold'>
+            <p className='text-lg text-[var(--tf-accent-success)] font-semibold'>
               TIER 5+ Supreme Intelligence • Government. Transcended.
             </p>
           </motion.div>
@@ -518,29 +518,29 @@ export const TerraGaiaDashboard: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20 rounded-2xl p-4 max-w-4xl mx-auto'
+              className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20 rounded-2xl p-4 max-w-4xl mx-auto'
             >
               <div className='grid grid-cols-2 md:grid-cols-4 gap-4 text-center'>
                 <div>
-                  <div className='text-2xl font-black text-[#00ffee]'>
+                  <div className='text-2xl font-black text-[var(--tf-transcend-highlight)]'>
                     {(consciousness.consciousnessLevel * 100).toFixed(1)}%
                   </div>
                   <div className='text-sm text-gray-300'>Consciousness Level</div>
                 </div>
                 <div>
-                  <div className='text-2xl font-black text-[#00ffaa]'>
+                  <div className='text-2xl font-black text-[var(--tf-accent-success)]'>
                     {(consciousness.supremeIntelligenceScore * 100).toFixed(1)}%
                   </div>
                   <div className='text-sm text-gray-300'>Supreme Intelligence</div>
                 </div>
                 <div>
-                  <div className='text-2xl font-black text-[#0099ff]'>
+                  <div className='text-2xl font-black text-[var(--tf-network-blue)]'>
                     {consciousness.systemsOrchestrated.totalSystemsCoordinated}
                   </div>
                   <div className='text-sm text-gray-300'>Systems Orchestrated</div>
                 </div>
                 <div>
-                  <div className='text-2xl font-black text-[#00ffee]'>
+                  <div className='text-2xl font-black text-[var(--tf-transcend-highlight)]'>
                     {consciousness.operationalMetrics.queriesProcessed.toLocaleString()}
                   </div>
                   <div className='text-sm text-gray-300'>Queries Processed</div>
@@ -554,7 +554,7 @@ export const TerraGaiaDashboard: React.FC = () => {
       <div className='container mx-auto px-6 pb-8'>
         {/* Navigation Tabs */}
         <div className='flex justify-center mb-8'>
-          <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[#00ffee]/20 rounded-full p-2'>
+          <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20 rounded-full p-2'>
             <div className='flex gap-2'>
               {[
                 { id: 'query', label: 'Ask TerraGaia', icon: MessageCircle },
@@ -569,7 +569,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                     rounded-full px-6 py-3 font-semibold transition-all duration-300
                     ${
                       activeTab === id
-                        ? 'bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] text-white shadow-lg'
+                        ? 'bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white shadow-lg'
                         : 'bg-transparent text-gray-300 hover:text-white hover:bg-white/10'
                     }
                   `}
@@ -592,23 +592,23 @@ export const TerraGaiaDashboard: React.FC = () => {
               exit={{ opacity: 0, y: -20 }}
               className='space-y-6'
             >
-              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
                 <CardHeader>
-                  <CardTitle className='text-2xl font-bold text-[#00ffee] flex items-center gap-3'>
+                  <CardTitle className='text-2xl font-bold text-[var(--tf-transcend-highlight)] flex items-center gap-3'>
                     <MessageCircle className='w-6 h-6' />
                     Ask TerraGaia - Supreme Government Intelligence
                   </CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-6'>
                   <div>
-                    <label className='text-lg font-semibold text-[#00ffaa] mb-3 block'>
+                    <label className='text-lg font-semibold text-[var(--tf-accent-success)] mb-3 block'>
                       Natural Language Government Query
                     </label>
                     <Textarea
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder='Ask TerraGaia anything about government operations, policy analysis, citizen services, or system optimization...'
-                      className='min-h-[120px] bg-white/5 border-[#00ffee]/30 text-white placeholder-gray-400 text-lg'
+                      className='min-h-[120px] bg-white/5 border-[var(--tf-transcend-highlight)]/30 text-white placeholder-gray-400 text-lg'
                     />
                   </div>
 
@@ -616,7 +616,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                     <Button
                       onClick={processQuery}
                       disabled={isProcessing || !query.trim()}
-                      className='tf-clarity-button bg-gradient-to-br from-[#0099ff] via-[#00ffee] to-[#00ffaa] text-white uppercase font-semibold rounded-full px-8 py-3 shadow-lg hover:shadow-2xl hover:transform hover:-translate-y-1 transition-all duration-300 border border-[#00ffee]/30 backdrop-blur-sm'
+                      className='tf-clarity-button bg-gradient-to-br from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white uppercase font-semibold rounded-full px-8 py-3 shadow-lg hover:shadow-2xl hover:transform hover:-translate-y-1 transition-all duration-300 border border-[var(--tf-transcend-highlight)]/30 backdrop-blur-sm'
                     >
                       {isProcessing ? (
                         <>
@@ -633,7 +633,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                     <Button
                       onClick={() => setQuery('')}
                       variant='outline'
-                      className='border-[#00ffee]/30 text-[#00ffee] hover:bg-[#00ffee]/10'
+                      className='border-[var(--tf-transcend-highlight)]/30 text-[var(--tf-transcend-highlight)] hover:bg-[var(--tf-transcend-highlight)]/10'
                     >
                       Clear Query
                     </Button>
@@ -647,7 +647,7 @@ export const TerraGaiaDashboard: React.FC = () => {
 
                   {/* Example Queries */}
                   <div>
-                    <h3 className='text-lg font-semibold text-[#00ffaa] mb-3'>
+                    <h3 className='text-lg font-semibold text-[var(--tf-accent-success)] mb-3'>
                       Example Government Queries
                     </h3>
                     <div className='grid gap-2'>
@@ -656,9 +656,9 @@ export const TerraGaiaDashboard: React.FC = () => {
                           key={index}
                           onClick={() => setQuery(example)}
                           variant='ghost'
-                          className='text-left justify-start p-3 h-auto text-gray-300 hover:text-white hover:bg-white/5 border border-[#00ffee]/10 hover:border-[#00ffee]/30 transition-all duration-300'
+                          className='text-left justify-start p-3 h-auto text-gray-300 hover:text-white hover:bg-white/5 border border-[var(--tf-transcend-highlight)]/10 hover:border-[var(--tf-transcend-highlight)]/30 transition-all duration-300'
                         >
-                          <span className='text-[#00ffee] mr-3'>💡</span>
+                          <span className='text-[var(--tf-transcend-highlight)] mr-3'>💡</span>
                           {example}
                         </Button>
                       ))}
@@ -679,23 +679,23 @@ export const TerraGaiaDashboard: React.FC = () => {
               className='space-y-6'
             >
               {/* Processing Excellence Banner */}
-              <Card className='tf-glass-card bg-gradient-to-r from-[#0099ff]/20 via-[#00ffee]/20 to-[#00ffaa]/20 backdrop-blur-lg border border-[#00ffee]/30'>
+              <Card className='tf-glass-card bg-gradient-to-r from-[var(--tf-network-blue)]/20 via-[var(--tf-transcend-highlight)]/20 to-[var(--tf-accent-success)]/20 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/30'>
                 <CardContent className='p-6'>
                   <div className='grid grid-cols-1 md:grid-cols-3 gap-4 text-center'>
                     <div>
-                      <div className='text-2xl font-black text-[#00ffee]'>
+                      <div className='text-2xl font-black text-[var(--tf-transcend-highlight)]'>
                         {response.processingTime.totalMilliseconds.toFixed(0)}ms
                       </div>
                       <div className='text-sm text-gray-300'>Processing Time</div>
                     </div>
                     <div>
-                      <div className='text-2xl font-black text-[#00ffaa]'>
+                      <div className='text-2xl font-black text-[var(--tf-accent-success)]'>
                         {(response.terraGaiaAnalysis.confidenceScore * 100).toFixed(1)}%
                       </div>
                       <div className='text-sm text-gray-300'>Confidence Score</div>
                     </div>
                     <div>
-                      <div className='text-2xl font-black text-[#0099ff]'>
+                      <div className='text-2xl font-black text-[var(--tf-network-blue)]'>
                         {response.terraGaiaAnalysis.dataSourcesUsed.length}
                       </div>
                       <div className='text-sm text-gray-300'>Systems Analyzed</div>
@@ -705,16 +705,16 @@ export const TerraGaiaDashboard: React.FC = () => {
               </Card>
 
               {/* TerraGaia Analysis */}
-              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
                 <CardHeader>
-                  <CardTitle className='text-xl font-bold text-[#00ffee] flex items-center gap-3'>
+                  <CardTitle className='text-xl font-bold text-[var(--tf-transcend-highlight)] flex items-center gap-3'>
                     <Brain className='w-6 h-6' />
                     TerraGaia Supreme Intelligence Analysis
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className='space-y-4'>
-                    <div className='p-4 bg-white/5 rounded-lg border border-[#00ffee]/10'>
+                    <div className='p-4 bg-white/5 rounded-lg border border-[var(--tf-transcend-highlight)]/10'>
                       <p className='text-white text-lg leading-relaxed'>
                         {response.terraGaiaAnalysis.naturalLanguageResponse}
                       </p>
@@ -722,7 +722,7 @@ export const TerraGaiaDashboard: React.FC = () => {
 
                     {response.terraGaiaAnalysis.reasoningPath.length > 0 && (
                       <div>
-                        <h4 className='text-lg font-semibold text-[#00ffaa] mb-2'>
+                        <h4 className='text-lg font-semibold text-[var(--tf-accent-success)] mb-2'>
                           Reasoning Path
                         </h4>
                         <div className='space-y-2'>
@@ -731,7 +731,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                               key={index}
                               className='flex items-start gap-3 p-3 bg-white/5 rounded-lg'
                             >
-                              <Badge className='bg-[#00ffee]/20 text-[#00ffee] border-[#00ffee]/30'>
+                              <Badge className='bg-[var(--tf-transcend-highlight)]/20 text-[var(--tf-transcend-highlight)] border-[var(--tf-transcend-highlight)]/30'>
                                 {index + 1}
                               </Badge>
                               <span className='text-gray-300'>{step}</span>
@@ -745,9 +745,9 @@ export const TerraGaiaDashboard: React.FC = () => {
               </Card>
 
               {/* Government Insights */}
-              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffaa]/20'>
+              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-accent-success)]/20'>
                 <CardHeader>
-                  <CardTitle className='text-xl font-bold text-[#00ffaa] flex items-center gap-3'>
+                  <CardTitle className='text-xl font-bold text-[var(--tf-accent-success)] flex items-center gap-3'>
                     <Shield className='w-6 h-6' />
                     Government Insights & Policy Analysis
                   </CardTitle>
@@ -756,7 +756,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                   <div className='space-y-4'>
                     {response.governmentInsights.citizenImpact && (
                       <div>
-                        <h4 className='text-lg font-semibold text-[#00ffee] mb-2'>
+                        <h4 className='text-lg font-semibold text-[var(--tf-transcend-highlight)] mb-2'>
                           Citizen Impact Analysis
                         </h4>
                         <p className='text-gray-300 p-3 bg-white/5 rounded-lg'>
@@ -767,7 +767,7 @@ export const TerraGaiaDashboard: React.FC = () => {
 
                     {response.governmentInsights.policyImplications.length > 0 && (
                       <div>
-                        <h4 className='text-lg font-semibold text-[#00ffee] mb-2'>
+                        <h4 className='text-lg font-semibold text-[var(--tf-transcend-highlight)] mb-2'>
                           Policy Implications
                         </h4>
                         <div className='space-y-2'>
@@ -777,7 +777,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                                 key={index}
                                 className='flex items-start gap-3 p-3 bg-white/5 rounded-lg'
                               >
-                                <span className='text-[#00ffaa] text-lg'>📋</span>
+                                <span className='text-[var(--tf-accent-success)] text-lg'>📋</span>
                                 <span className='text-gray-300'>{implication}</span>
                               </div>
                             )
@@ -790,9 +790,9 @@ export const TerraGaiaDashboard: React.FC = () => {
               </Card>
 
               {/* Predictive Intelligence */}
-              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#0099ff]/20'>
+              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-network-blue)]/20'>
                 <CardHeader>
-                  <CardTitle className='text-xl font-bold text-[#0099ff] flex items-center gap-3'>
+                  <CardTitle className='text-xl font-bold text-[var(--tf-network-blue)] flex items-center gap-3'>
                     <TrendingUp className='w-6 h-6' />
                     Predictive Intelligence & Forecasting
                   </CardTitle>
@@ -801,7 +801,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                   <div className='grid gap-6 md:grid-cols-2'>
                     {response.predictiveIntelligence.shortTermPredictions.length > 0 && (
                       <div>
-                        <h4 className='text-lg font-semibold text-[#00ffee] mb-3'>
+                        <h4 className='text-lg font-semibold text-[var(--tf-transcend-highlight)] mb-3'>
                           Short-Term Predictions
                         </h4>
                         <div className='space-y-2'>
@@ -809,7 +809,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                             (prediction, index) => (
                               <div
                                 key={index}
-                                className='p-3 bg-white/5 rounded-lg border-l-4 border-[#00ffee]'
+                                className='p-3 bg-white/5 rounded-lg border-l-4 border-[var(--tf-transcend-highlight)]'
                               >
                                 <span className='text-gray-300'>{prediction}</span>
                               </div>
@@ -821,7 +821,7 @@ export const TerraGaiaDashboard: React.FC = () => {
 
                     {response.predictiveIntelligence.longTermForecasting.length > 0 && (
                       <div>
-                        <h4 className='text-lg font-semibold text-[#00ffaa] mb-3'>
+                        <h4 className='text-lg font-semibold text-[var(--tf-accent-success)] mb-3'>
                           Long-Term Forecasting
                         </h4>
                         <div className='space-y-2'>
@@ -829,7 +829,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                             (forecast, index) => (
                               <div
                                 key={index}
-                                className='p-3 bg-white/5 rounded-lg border-l-4 border-[#00ffaa]'
+                                className='p-3 bg-white/5 rounded-lg border-l-4 border-[var(--tf-accent-success)]'
                               >
                                 <span className='text-gray-300'>{forecast}</span>
                               </div>
@@ -843,9 +843,9 @@ export const TerraGaiaDashboard: React.FC = () => {
               </Card>
 
               {/* TerraGaia Recommendations */}
-              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffaa]/20'>
+              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-accent-success)]/20'>
                 <CardHeader>
-                  <CardTitle className='text-xl font-bold text-[#00ffaa] flex items-center gap-3'>
+                  <CardTitle className='text-xl font-bold text-[var(--tf-accent-success)] flex items-center gap-3'>
                     <Zap className='w-6 h-6' />
                     TerraGaia Championship Recommendations
                   </CardTitle>
@@ -854,7 +854,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                   <div className='grid gap-6 md:grid-cols-2'>
                     {response.terraGaiaRecommendations.immediateActions.length > 0 && (
                       <div>
-                        <h4 className='text-lg font-semibold text-[#ff6b6b] mb-3'>
+                        <h4 className='text-lg font-semibold text-[var(--tf-accent-error)] mb-3'>
                           🚨 Immediate Actions
                         </h4>
                         <div className='space-y-2'>
@@ -874,7 +874,7 @@ export const TerraGaiaDashboard: React.FC = () => {
 
                     {response.terraGaiaRecommendations.strategicInitiatives.length > 0 && (
                       <div>
-                        <h4 className='text-lg font-semibold text-[#00ffee] mb-3'>
+                        <h4 className='text-lg font-semibold text-[var(--tf-transcend-highlight)] mb-3'>
                           🎯 Strategic Initiatives
                         </h4>
                         <div className='space-y-2'>
@@ -896,9 +896,9 @@ export const TerraGaiaDashboard: React.FC = () => {
               </Card>
 
               {/* Championship Metrics */}
-              <Card className='tf-glass-card bg-gradient-to-r from-[#0099ff]/10 via-[#00ffee]/10 to-[#00ffaa]/10 backdrop-blur-lg border border-[#00ffee]/30'>
+              <Card className='tf-glass-card bg-gradient-to-r from-[var(--tf-network-blue)]/10 via-[var(--tf-transcend-highlight)]/10 to-[var(--tf-accent-success)]/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/30'>
                 <CardHeader>
-                  <CardTitle className='text-xl font-bold text-[#00ffee] flex items-center gap-3'>
+                  <CardTitle className='text-xl font-bold text-[var(--tf-transcend-highlight)] flex items-center gap-3'>
                     <Sparkles className='w-6 h-6' />
                     Championship Intelligence Metrics
                   </CardTitle>
@@ -910,7 +910,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                         <div className='text-sm text-gray-400 uppercase tracking-wide mb-1'>
                           {key.replace(/([A-Z])/g, ' $1').trim()}
                         </div>
-                        <div className='text-[#00ffee] font-semibold text-sm'>{value}</div>
+                        <div className='text-[var(--tf-transcend-highlight)] font-semibold text-sm'>{value}</div>
                       </div>
                     ))}
                   </div>
@@ -929,9 +929,9 @@ export const TerraGaiaDashboard: React.FC = () => {
               className='space-y-6'
             >
               {/* Consciousness Overview */}
-              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
                 <CardHeader>
-                  <CardTitle className='text-2xl font-bold text-[#00ffee] flex items-center gap-3'>
+                  <CardTitle className='text-2xl font-bold text-[var(--tf-transcend-highlight)] flex items-center gap-3'>
                     <Brain className='w-8 h-8' />
                     TerraGaia Supreme Consciousness Status
                   </CardTitle>
@@ -941,10 +941,10 @@ export const TerraGaiaDashboard: React.FC = () => {
                     <div className='space-y-4'>
                       <div>
                         <div className='flex justify-between items-center mb-2'>
-                          <span className='text-lg font-semibold text-[#00ffee]'>
+                          <span className='text-lg font-semibold text-[var(--tf-transcend-highlight)]'>
                             Consciousness Level
                           </span>
-                          <span className='text-xl font-bold text-[#00ffaa]'>
+                          <span className='text-xl font-bold text-[var(--tf-accent-success)]'>
                             {(consciousness.consciousnessLevel * 100).toFixed(1)}%
                           </span>
                         </div>
@@ -956,10 +956,10 @@ export const TerraGaiaDashboard: React.FC = () => {
 
                       <div>
                         <div className='flex justify-between items-center mb-2'>
-                          <span className='text-lg font-semibold text-[#00ffee]'>
+                          <span className='text-lg font-semibold text-[var(--tf-transcend-highlight)]'>
                             Supreme Intelligence Score
                           </span>
-                          <span className='text-xl font-bold text-[#00ffaa]'>
+                          <span className='text-xl font-bold text-[var(--tf-accent-success)]'>
                             {(consciousness.supremeIntelligenceScore * 100).toFixed(1)}%
                           </span>
                         </div>
@@ -972,13 +972,13 @@ export const TerraGaiaDashboard: React.FC = () => {
 
                     <div className='grid grid-cols-2 gap-4'>
                       <div className='text-center p-4 bg-white/5 rounded-lg'>
-                        <div className='text-2xl font-black text-[#00ffee]'>
+                        <div className='text-2xl font-black text-[var(--tf-transcend-highlight)]'>
                           {consciousness.systemsOrchestrated.totalSystemsCoordinated}
                         </div>
                         <div className='text-sm text-gray-300'>Systems Orchestrated</div>
                       </div>
                       <div className='text-center p-4 bg-white/5 rounded-lg'>
-                        <div className='text-2xl font-black text-[#00ffaa]'>
+                        <div className='text-2xl font-black text-[var(--tf-accent-success)]'>
                           {(consciousness.systemsOrchestrated.overallHealthScore * 100).toFixed(1)}%
                         </div>
                         <div className='text-sm text-gray-300'>Overall Health</div>
@@ -989,9 +989,9 @@ export const TerraGaiaDashboard: React.FC = () => {
               </Card>
 
               {/* Reasoning Capabilities */}
-              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffaa]/20'>
+              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-accent-success)]/20'>
                 <CardHeader>
-                  <CardTitle className='text-xl font-bold text-[#00ffaa] flex items-center gap-3'>
+                  <CardTitle className='text-xl font-bold text-[var(--tf-accent-success)] flex items-center gap-3'>
                     <Settings className='w-6 h-6' />
                     Advanced Reasoning Capabilities
                   </CardTitle>
@@ -1005,7 +1005,7 @@ export const TerraGaiaDashboard: React.FC = () => {
                             <span className='text-sm font-medium text-gray-300 capitalize'>
                               {capability.replace(/([A-Z])/g, ' $1').trim()}
                             </span>
-                            <span className='text-lg font-bold text-[#00ffee]'>
+                            <span className='text-lg font-bold text-[var(--tf-transcend-highlight)]'>
                               {(score * 100).toFixed(1)}%
                             </span>
                           </div>
@@ -1018,9 +1018,9 @@ export const TerraGaiaDashboard: React.FC = () => {
               </Card>
 
               {/* Operational Metrics */}
-              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#0099ff]/20'>
+              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-network-blue)]/20'>
                 <CardHeader>
-                  <CardTitle className='text-xl font-bold text-[#0099ff] flex items-center gap-3'>
+                  <CardTitle className='text-xl font-bold text-[var(--tf-network-blue)] flex items-center gap-3'>
                     <BarChart3 className='w-6 h-6' />
                     Operational Excellence Metrics
                   </CardTitle>
@@ -1028,25 +1028,25 @@ export const TerraGaiaDashboard: React.FC = () => {
                 <CardContent>
                   <div className='grid gap-4 md:grid-cols-3 lg:grid-cols-4'>
                     <div className='text-center p-4 bg-white/5 rounded-lg'>
-                      <div className='text-xl font-black text-[#00ffee]'>
+                      <div className='text-xl font-black text-[var(--tf-transcend-highlight)]'>
                         {consciousness.operationalMetrics.queriesProcessed.toLocaleString()}
                       </div>
                       <div className='text-xs text-gray-300'>Queries Processed</div>
                     </div>
                     <div className='text-center p-4 bg-white/5 rounded-lg'>
-                      <div className='text-xl font-black text-[#00ffaa]'>
+                      <div className='text-xl font-black text-[var(--tf-accent-success)]'>
                         {consciousness.operationalMetrics.decisionsGenerated.toLocaleString()}
                       </div>
                       <div className='text-xs text-gray-300'>Decisions Generated</div>
                     </div>
                     <div className='text-center p-4 bg-white/5 rounded-lg'>
-                      <div className='text-xl font-black text-[#0099ff]'>
+                      <div className='text-xl font-black text-[var(--tf-network-blue)]'>
                         {consciousness.operationalMetrics.optimizationsApplied.toLocaleString()}
                       </div>
                       <div className='text-xs text-gray-300'>Optimizations Applied</div>
                     </div>
                     <div className='text-center p-4 bg-white/5 rounded-lg'>
-                      <div className='text-xl font-black text-[#00ffee]'>
+                      <div className='text-xl font-black text-[var(--tf-transcend-highlight)]'>
                         {consciousness.operationalMetrics.averageQueryProcessingTime.toFixed(1)}ms
                       </div>
                       <div className='text-xs text-gray-300'>Avg Processing Time</div>
@@ -1056,9 +1056,9 @@ export const TerraGaiaDashboard: React.FC = () => {
               </Card>
 
               {/* Championship Consciousness */}
-              <Card className='tf-glass-card bg-gradient-to-r from-[#0099ff]/10 via-[#00ffee]/10 to-[#00ffaa]/10 backdrop-blur-lg border border-[#00ffee]/30'>
+              <Card className='tf-glass-card bg-gradient-to-r from-[var(--tf-network-blue)]/10 via-[var(--tf-transcend-highlight)]/10 to-[var(--tf-accent-success)]/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/30'>
                 <CardHeader>
-                  <CardTitle className='text-xl font-bold text-[#00ffee] flex items-center gap-3'>
+                  <CardTitle className='text-xl font-bold text-[var(--tf-transcend-highlight)] flex items-center gap-3'>
                     <Sparkles className='w-6 h-6' />
                     Championship Consciousness Metrics
                   </CardTitle>
@@ -1068,12 +1068,12 @@ export const TerraGaiaDashboard: React.FC = () => {
                     {Object.entries(consciousness.championshipConsciousness).map(([key, value]) => (
                       <div
                         key={key}
-                        className='p-4 bg-white/5 rounded-lg border border-[#00ffee]/10'
+                        className='p-4 bg-white/5 rounded-lg border border-[var(--tf-transcend-highlight)]/10'
                       >
                         <div className='text-sm text-gray-400 uppercase tracking-wide mb-1'>
                           {key.replace(/([A-Z])/g, ' $1').trim()}
                         </div>
-                        <div className='text-[#00ffee] font-semibold'>{value}</div>
+                        <div className='text-[var(--tf-transcend-highlight)] font-semibold'>{value}</div>
                       </div>
                     ))}
                   </div>
@@ -1092,17 +1092,17 @@ export const TerraGaiaDashboard: React.FC = () => {
               className='space-y-6'
             >
               {/* Performance Overview */}
-              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffee]/20'>
+              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
                 <CardHeader>
-                  <CardTitle className='text-2xl font-bold text-[#00ffee] flex items-center gap-3'>
+                  <CardTitle className='text-2xl font-bold text-[var(--tf-transcend-highlight)] flex items-center gap-3'>
                     <TrendingUp className='w-8 h-8' />
                     TerraGaia Performance Analytics
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className='grid gap-6 md:grid-cols-3'>
-                    <div className='text-center p-6 bg-gradient-to-br from-[#0099ff]/20 to-[#00ffee]/20 rounded-xl border border-[#00ffee]/30'>
-                      <div className='text-3xl font-black text-[#00ffee] mb-2'>
+                    <div className='text-center p-6 bg-gradient-to-br from-[var(--tf-network-blue)]/20 to-[var(--tf-transcend-highlight)]/20 rounded-xl border border-[var(--tf-transcend-highlight)]/30'>
+                      <div className='text-3xl font-black text-[var(--tf-transcend-highlight)] mb-2'>
                         {Math.floor(
                           consciousness.operationalMetrics.consciousnessUptime.totalMinutes / 60
                         )}
@@ -1110,8 +1110,8 @@ export const TerraGaiaDashboard: React.FC = () => {
                       </div>
                       <div className='text-sm text-gray-300'>Consciousness Uptime</div>
                     </div>
-                    <div className='text-center p-6 bg-gradient-to-br from-[#00ffaa]/20 to-[#00ffee]/20 rounded-xl border border-[#00ffaa]/30'>
-                      <div className='text-3xl font-black text-[#00ffaa] mb-2'>
+                    <div className='text-center p-6 bg-gradient-to-br from-[var(--tf-accent-success)]/20 to-[var(--tf-transcend-highlight)]/20 rounded-xl border border-[var(--tf-accent-success)]/30'>
+                      <div className='text-3xl font-black text-[var(--tf-accent-success)] mb-2'>
                         {(consciousness.operationalMetrics.intelligenceEvolutionRate * 100).toFixed(
                           1
                         )}
@@ -1119,8 +1119,8 @@ export const TerraGaiaDashboard: React.FC = () => {
                       </div>
                       <div className='text-sm text-gray-300'>Intelligence Evolution Rate</div>
                     </div>
-                    <div className='text-center p-6 bg-gradient-to-br from-[#0099ff]/20 to-[#00ffaa]/20 rounded-xl border border-[#0099ff]/30'>
-                      <div className='text-3xl font-black text-[#0099ff] mb-2'>
+                    <div className='text-center p-6 bg-gradient-to-br from-[var(--tf-network-blue)]/20 to-[var(--tf-accent-success)]/20 rounded-xl border border-[var(--tf-network-blue)]/30'>
+                      <div className='text-3xl font-black text-[var(--tf-network-blue)] mb-2'>
                         {consciousness.operationalMetrics.governmentAdvisories.toLocaleString()}
                       </div>
                       <div className='text-sm text-gray-300'>Government Advisories</div>
@@ -1130,16 +1130,16 @@ export const TerraGaiaDashboard: React.FC = () => {
               </Card>
 
               {/* Real-time Performance Chart Placeholder */}
-              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[#00ffaa]/20'>
+              <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-accent-success)]/20'>
                 <CardHeader>
-                  <CardTitle className='text-xl font-bold text-[#00ffaa]'>
+                  <CardTitle className='text-xl font-bold text-[var(--tf-accent-success)]'>
                     Real-time Performance Monitoring
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className='h-64 bg-white/5 rounded-lg border border-[#00ffee]/10 flex items-center justify-center'>
+                  <div className='h-64 bg-white/5 rounded-lg border border-[var(--tf-transcend-highlight)]/10 flex items-center justify-center'>
                     <div className='text-center'>
-                      <BarChart3 className='w-12 h-12 text-[#00ffee] mx-auto mb-4' />
+                      <BarChart3 className='w-12 h-12 text-[var(--tf-transcend-highlight)] mx-auto mb-4' />
                       <p className='text-gray-300'>Real-time performance charts</p>
                       <p className='text-sm text-gray-400'>
                         Championship-level analytics visualization
@@ -1155,3 +1155,5 @@ export const TerraGaiaDashboard: React.FC = () => {
     </div>
   );
 };
+
+export default TerraGaiaDashboard;

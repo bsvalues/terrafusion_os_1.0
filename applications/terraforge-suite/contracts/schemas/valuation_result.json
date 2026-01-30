@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/valuation_result.json",
+  "title": "ValuationResult",
+  "description": "Final valuation output from the TerraForge valuation kernel",
+  "type": "object",
+  "properties": {
+    "totalValue": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total assessed value of the property"
+    },
+    "components": {
+      "type": "object",
+      "properties": {
+        "land": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Land component of the valuation"
+        },
+        "building": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Building/improvement component of the valuation"
+        }
+      },
+      "required": ["land", "building"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["totalValue", "components"],
+  "additionalProperties": false
+}

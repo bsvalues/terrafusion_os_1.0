@@ -1,7 +1,7 @@
 .root {
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, var(--tf-surface-darker) 0%, var(--tf-surface-darker) 50%, #0f3460 100%);
   border-radius: 12px;
   color: #e2e8f0;
   min-height: 500px;
@@ -15,7 +15,7 @@
 .title {
   font-size: 28px;
   font-weight: bold;
-  background: linear-gradient(45deg, #60a5fa, #3b82f6);
+  background: linear-gradient(45deg, var(--tf-status-blue-light), #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 8px;
@@ -23,7 +23,7 @@
 
 .subtitle {
   font-size: 14px;
-  color: #94a3b8;
+  color: var(--gray-400);
   font-weight: 500;
 }
 
@@ -133,7 +133,7 @@
 .resultsTitle {
   font-size: 18px;
   font-weight: 600;
-  color: #60a5fa;
+  color: var(--tf-status-blue-light);
   margin-bottom: 16px;
   display: flex;
   align-items: center;
@@ -152,7 +152,7 @@
   padding: 16px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--gray-400);
   overflow-x: auto;
   max-height: 400px;
   overflow-y: auto;
@@ -175,7 +175,7 @@
 
 .costType {
   font-weight: 600;
-  color: #60a5fa;
+  color: var(--tf-status-blue-light);
 }
 
 .costAmount {
@@ -210,7 +210,7 @@
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--gray-400);
   margin-top: 8px;
 }
 

@@ -171,7 +171,7 @@ export function LiveAnalyticsChart({
               <Line
                 type="monotone"
                 dataKey="value"
-                stroke="#00e5ff"
+                stroke="var(--tf-transcend-cyan)"
                 strokeWidth={2}
                 dot={false}
                 isAnimationActive={false}
@@ -189,7 +189,7 @@ export function LiveAnalyticsChart({
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="value" fill="#00e5ff" />
+              <Bar dataKey="value" fill="var(--tf-transcend-cyan)" />
             </BarChart>
           </ResponsiveContainer>
         );
@@ -200,8 +200,8 @@ export function LiveAnalyticsChart({
             <AreaChart {...commonProps}>
               <defs>
                 <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00e5ff" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#00e5ff" stopOpacity={0.1} />
+                  <stop offset="5%" stopColor="var(--tf-transcend-cyan)" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="var(--tf-transcend-cyan)" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" />
@@ -212,7 +212,7 @@ export function LiveAnalyticsChart({
               <Area
                 type="monotone"
                 dataKey="value"
-                stroke="#00e5ff"
+                stroke="var(--tf-transcend-cyan)"
                 fillOpacity={1}
                 fill="url(#colorValue)"
               />

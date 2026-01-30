@@ -20,18 +20,15 @@ public class ComplianceValidationAutomationService
 {
     private readonly ILogger<ComplianceValidationAutomationService> _logger;
     private readonly IPropertyDataService _propertyDataService;
-    private readonly IHarrisPACSIntegrationService _harrisService;
     private readonly HttpClient _httpClient;
 
     public ComplianceValidationAutomationService(
         ILogger<ComplianceValidationAutomationService> logger,
         IPropertyDataService propertyDataService,
-        IHarrisPACSIntegrationService harrisService,
         HttpClient httpClient)
     {
         _logger = logger;
         _propertyDataService = propertyDataService;
-        _harrisService = harrisService;
         _httpClient = httpClient;
     }
 

@@ -191,15 +191,15 @@ const WorkflowNode3D: React.FC<{
 
   const getNodeColor = (type: string, isSelected: boolean) => {
     const colors = {
-      start: '#00ff88',
-      process: '#0088ff',
-      decision: '#ffaa00',
-      approval: '#ff6600',
-      notification: '#aa88ff',
-      integration: '#ff8844',
-      end: '#ff4444',
+      start: 'var(--success-green)',
+      process: 'var(--tf-network-blue)',
+      decision: 'var(--warning-amber)',
+      approval: 'var(--tf-retro-orange)',
+      notification: 'var(--tf-accent-purple)',
+      integration: 'var(--tf-accent-orange-light)',
+      end: 'var(--error-red)',
     };
-    return isSelected ? '#ffffff' : colors[type as keyof typeof colors] || '#888888';
+    return isSelected ? 'var(--tf-text-primary)fff' : colors[type as keyof typeof colors] || 'var(--gray-400)';
   };
 
   const getNodeShape = (type: string) => {
@@ -227,14 +227,14 @@ const WorkflowNode3D: React.FC<{
           color={getNodeColor(node.type, isSelected)}
           transparent
           opacity={isSelected ? 1.0 : 0.8}
-          emissive={isSelected ? '#444444' : '#000000'}
+          emissive={isSelected ? 'var(--gray-700)' : 'var(--tf-bg-void)'}
         />
       </mesh>
 
       <Text
         position={[0, -1.2, 0]}
         fontSize={0.3}
-        color='#ffffff'
+        color='var(--tf-text-primary)fff'
         anchorX='center'
         anchorY='middle'
         maxWidth={3}
@@ -245,7 +245,7 @@ const WorkflowNode3D: React.FC<{
       {node.aiSuggestions && node.aiSuggestions.length > 0 && (
         <mesh position={[1.2, 0.8, 0]}>
           <sphereGeometry args={[0.15]} />
-          <meshStandardMaterial color='#00ff88' emissive='#004422' />
+          <meshStandardMaterial color='var(--success-green)' emissive='var(--tf-surface-darker)' />
         </mesh>
       )}
 
@@ -255,10 +255,10 @@ const WorkflowNode3D: React.FC<{
           <meshStandardMaterial
             color={
               node.complianceValidation.status === 'valid'
-                ? '#00ff88'
+                ? 'var(--success-green)'
                 : node.complianceValidation.status === 'warning'
-                  ? '#ffaa00'
-                  : '#ff4444'
+                  ? 'var(--warning-amber)'
+                  : 'var(--error-red)'
             }
           />
         </mesh>
@@ -293,7 +293,7 @@ const ConnectionLine3D: React.FC<{
             itemSize={3}
           />
         </bufferGeometry>
-        <lineBasicMaterial color='#444444' linewidth={2} />
+        <lineBasicMaterial color='var(--gray-700)' linewidth={2} />
       </line>
     </group>
   );
@@ -486,7 +486,7 @@ export const VisualWorkflowDesigner: React.FC = () => {
           >
             <ambientLight intensity={0.4} />
             <directionalLight position={[10, 10, 5]} intensity={1.2} />
-            <pointLight position={[-10, -10, -5]} intensity={0.8} color='#0088ff' />
+            <pointLight position={[-10, -10, -5]} intensity={0.8} color='var(--tf-network-blue)' />
 
             <OrbitControls
               enablePan={true}
@@ -522,7 +522,7 @@ export const VisualWorkflowDesigner: React.FC = () => {
             )}
 
             {/* Grid helper */}
-            <gridHelper args={[20, 20, '#333333', '#666666']} />
+            <gridHelper args={[20, 20, 'var(--tf-bg-surface)333', 'var(--gray-500)']} />
           </Canvas>
         </div>
 

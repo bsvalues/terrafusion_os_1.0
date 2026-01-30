@@ -453,7 +453,7 @@ ARCHITECTURE OVERVIEW:
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: #000;
+    background: var(--tf-void-black);
     color: #0f0;
     font-family: monospace;
     font-size: 14px;

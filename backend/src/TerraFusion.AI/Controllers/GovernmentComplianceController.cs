@@ -1,4 +1,4 @@
-/**
+/*
  * GovernmentComplianceController - REST API for Government Compliance
  *
  * Provides endpoints for compliance reporting, FISMA validation,

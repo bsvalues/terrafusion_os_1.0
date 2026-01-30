@@ -1,0 +1,9 @@
+{
+  "params": {
+    "county": "yakima",
+    "parcelId": "P-401",
+    "taxYear": 2026,
+    "reasonCodes": ["revaluation"]
+  },
+  "assert": { "rejects": true }
+}

@@ -141,13 +141,13 @@ const ApplicationLauncher: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return '#00ffaa';
+        return 'var(--tf-accent-success)';
       case 'built':
-        return '#00ffee';
+        return 'var(--tf-transcend-highlight)';
       case 'ready':
-        return '#ffd700';
+        return 'var(--tf-accent-warning)';
       default:
-        return '#666';
+        return 'var(--gray-500)';
     }
   };
   const getStatusLabel = (status: string) => {
@@ -166,7 +166,7 @@ const ApplicationLauncher: React.FC = () => {
     <div
       style={{
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        background: '#0a0f1c',
+        background: 'var(--tf-void-black)',
         color: 'white',
         padding: '40px',
         minHeight: '100vh',
@@ -177,7 +177,7 @@ const ApplicationLauncher: React.FC = () => {
         <h1
           style={{
             fontSize: '3rem',
-            background: 'linear-gradient(45deg, #00d2ff, #667eea)',
+            background: 'linear-gradient(45deg, var(--tf-transcend-cyan), var(--tf-accent-quantum))',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -189,7 +189,7 @@ const ApplicationLauncher: React.FC = () => {
         </h1>
         <div
           style={{
-            color: '#00d2ff',
+            color: 'var(--tf-transcend-cyan)',
             fontSize: '1.2rem',
             marginBottom: '20px',
           }}
@@ -198,7 +198,7 @@ const ApplicationLauncher: React.FC = () => {
         </div>
         <div
           style={{
-            color: '#00ffaa',
+            color: 'var(--tf-accent-success)',
             fontSize: '0.9rem',
             marginBottom: '40px',
           }}
@@ -225,7 +225,7 @@ const ApplicationLauncher: React.FC = () => {
         >
           <strong
             style={{
-              color: '#00d2ff',
+              color: 'var(--tf-transcend-cyan)',
             }}
           >
             Registry:
@@ -239,7 +239,7 @@ const ApplicationLauncher: React.FC = () => {
         >
           <strong
             style={{
-              color: '#00d2ff',
+              color: 'var(--tf-transcend-cyan)',
             }}
           >
             Contents:
@@ -253,7 +253,7 @@ const ApplicationLauncher: React.FC = () => {
         >
           <strong
             style={{
-              color: '#00d2ff',
+              color: 'var(--tf-transcend-cyan)',
             }}
           >
             Property Data:
@@ -263,7 +263,7 @@ const ApplicationLauncher: React.FC = () => {
         <div>
           <strong
             style={{
-              color: '#00ffaa',
+              color: 'var(--tf-accent-success)',
             }}
           >
             Status:
@@ -294,7 +294,7 @@ const ApplicationLauncher: React.FC = () => {
             key={app.id}
             style={{
               background: 'rgba(255, 255, 255, 0.05)',
-              border: `1px solid ${launchedApps.has(app.id) ? '#00ffaa' : 'rgba(0, 210, 255, 0.3)'}`,
+              border: `1px solid ${launchedApps.has(app.id) ? 'var(--tf-accent-success)' : 'rgba(0, 210, 255, 0.3)'}`,
               borderRadius: '12px',
               padding: '20px',
               transition: 'all 0.3s ease',
@@ -305,7 +305,7 @@ const ApplicationLauncher: React.FC = () => {
             onMouseEnter={(e) => {
               if (!launchedApps.has(app.id)) {
                 e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.borderColor = '#00d2ff';
+                e.currentTarget.style.borderColor = 'var(--tf-transcend-cyan)';
                 e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 210, 255, 0.3)';
               }
             }}
@@ -322,7 +322,7 @@ const ApplicationLauncher: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.9rem',
-                  color: '#667eea',
+                  color: 'var(--tf-accent-quantum)',
                 }}
               >
                 Module {app.id.toString().padStart(2, '0')}
@@ -374,8 +374,8 @@ const ApplicationLauncher: React.FC = () => {
               disabled={launchedApps.has(app.id)}
               style={{
                 background: launchedApps.has(app.id)
-                  ? 'linear-gradient(45deg, #00ffaa, #00cc88)'
-                  : 'linear-gradient(45deg, #00d2ff, #667eea)',
+                  ? 'linear-gradient(45deg, var(--tf-accent-success), var(--tf-transcend-cyan))'
+                  : 'linear-gradient(45deg, var(--tf-transcend-cyan), var(--tf-accent-quantum))',
                 cursor: launchedApps.has(app.id) ? 'default' : 'pointer',
               }}
               onMouseEnter={(e) => {
@@ -410,7 +410,7 @@ const ApplicationLauncher: React.FC = () => {
               style={{
                 fontSize: '2rem',
                 fontWeight: 'bold',
-                color: '#00ffee',
+                color: 'var(--tf-transcend-highlight)',
                 marginBottom: '5px',
               }}
             >
@@ -429,7 +429,7 @@ const ApplicationLauncher: React.FC = () => {
               style={{
                 fontSize: '2rem',
                 fontWeight: 'bold',
-                color: '#00ffaa',
+                color: 'var(--tf-accent-success)',
                 marginBottom: '5px',
               }}
             >
@@ -448,7 +448,7 @@ const ApplicationLauncher: React.FC = () => {
               style={{
                 fontSize: '2rem',
                 fontWeight: 'bold',
-                color: '#ffd700',
+                color: 'var(--tf-accent-warning)',
                 marginBottom: '5px',
               }}
             >
@@ -467,7 +467,7 @@ const ApplicationLauncher: React.FC = () => {
               style={{
                 fontSize: '2rem',
                 fontWeight: 'bold',
-                color: '#ff6b6b',
+                color: 'var(--tf-accent-error)',
                 marginBottom: '5px',
               }}
             >

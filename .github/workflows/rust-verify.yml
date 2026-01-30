@@ -25,18 +25,29 @@ jobs:
           fetch-depth: 0
           submodules: 'false'
 
+      - name: Detect Rust workspace
+        id: rust
+        shell: bash
+        run: |
+          if [ -f "monorepo-scaffolding/Cargo.toml" ]; then
+            echo "dir=monorepo-scaffolding" >> "$GITHUB_OUTPUT"
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+      - name: Setup Rust
+        if: steps.rust.outputs.found == 'true'
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: ${{ matrix.toolchain }}
-          override: true
 
       - name: Ensure cargo is available
+        if: steps.rust.outputs.found == 'true'
         run: cargo --version
 
       - name: Cache cargo registry + target
+        if: steps.rust.outputs.found == 'true'
         uses: actions/cache@v4
         with:
           path: |
@@ -50,11 +61,17 @@ jobs:
             ${{ runner.os }}-cargo-${{ matrix.toolchain }}-
             ${{ runner.os }}-cargo-
 
-      - name: Run rust verify
+      - name: Rust verify (workspace)
+        if: steps.rust.outputs.found == 'true'
+        working-directory: ${{ steps.rust.outputs.dir }}
+        shell: bash
         run: |
-          set -euo pipefail
-          echo "Running rust-verify with toolchain=${{ matrix.toolchain }}"
-          make rust-verify
+          cargo build --workspace --locked --verbose
+          cargo test  --workspace --locked --verbose
+
+      - name: Rust verify (no workspace)
+        if: steps.rust.outputs.found != 'true'
+        run: echo "No Rust workspace found; skipping rust verify."
 
       - name: Collect built binaries
         if: always()

@@ -276,7 +276,7 @@ app.get('/report/:type/:year', async (req, res) => {
     const totalAssessedValue = 7376820; // Sample total assessed value
     const totalPiltAmount = 150000; // Sample PILT amount for demonstration
 
-    const currentYearDistributions = districts.map((district: any /* , index */: number) => {
+    const currentYearDistributions = districts.map((district, index) => {
       const baseAmount = totalPiltAmount / districts.length;
       const variationFactor = 0.8 + (index * 0.1); // Create some variation
       const calculatedAmount = Math.round(baseAmount * variationFactor);

@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { act, renderHook } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
 import type { SystemGptAtlasLiveEvent } from '../useSystemGptAtlasLive';
 import { useSystemGptAtlasLive } from '../useSystemGptAtlasLive';
 
@@ -64,15 +64,22 @@ class MockEventSource {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 describe('useSystemGptAtlasLive', () => {
+  let originalMathRandom: () => number;
+
   beforeEach(() => {
     MockEventSource.reset();
-    vi.stubGlobal('EventSource', MockEventSource);
-    vi.useFakeTimers();
+    // @ts-expect-error - mocking global EventSource
+    global.EventSource = MockEventSource;
+    jest.useFakeTimers();
+    // Mock Math.random for deterministic timing
+    originalMathRandom = Math.random;
+    Math.random = () => 0;
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
-    vi.useRealTimers();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+    Math.random = originalMathRandom;
   });
 
   describe('C1.1 - Initial state', () => {
@@ -124,7 +131,7 @@ describe('useSystemGptAtlasLive', () => {
       const { unmount } = renderHook(() => useSystemGptAtlasLive());
 
       const eventSource = MockEventSource.getLastInstance();
-      const closeSpy = vi.spyOn(eventSource!, 'close');
+      const closeSpy = jest.spyOn(eventSource!, 'close');
 
       unmount();
 
@@ -252,9 +259,9 @@ describe('useSystemGptAtlasLive', () => {
         eventSource!.simulateError();
       });
 
-      // Advance timers to trigger reconnection
-      act(() => {
-        vi.advanceTimersByTime(5000);
+      // Advance timers to trigger reconnection (5000ms base delay + jitter, but jitter is mocked to 0)
+      await act(async () => {
+        jest.advanceTimersByTime(5001);
       });
 
       expect(MockEventSource.instances.length).toBeGreaterThan(initialInstanceCount);
@@ -263,16 +270,30 @@ describe('useSystemGptAtlasLive', () => {
     it('should transition to offline after max retries', async () => {
       const { result } = renderHook(() => useSystemGptAtlasLive({ maxRetries: 2 }));
 
-      // Simulate multiple failures
-      for (let i = 0; i < 3; i++) {
-        const eventSource = MockEventSource.getLastInstance();
-        act(() => {
-          eventSource!.simulateError();
-        });
-        act(() => {
-          vi.advanceTimersByTime(5000);
-        });
-      }
+      // Simulate multiple failures with proper timing
+      // First error: triggers retry after 5000ms
+      const eventSource1 = MockEventSource.getLastInstance();
+      act(() => {
+        eventSource1!.simulateError();
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(5001);
+      });
+
+      // Second error: triggers retry after 7500ms (5000 * 1.5^1)
+      const eventSource2 = MockEventSource.getLastInstance();
+      act(() => {
+        eventSource2!.simulateError();
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(7501);
+      });
+
+      // Third error: exceeds maxRetries=2, should go offline
+      const eventSource3 = MockEventSource.getLastInstance();
+      act(() => {
+        eventSource3!.simulateError();
+      });
 
       expect(result.current.connectionState).toBe('offline');
     });
@@ -284,7 +305,7 @@ describe('useSystemGptAtlasLive', () => {
 
   describe('C1.5 - Polling fallback', () => {
     it('should fall back to polling when SSE fails', async () => {
-      const mockFetch = vi.fn().mockResolvedValue({
+      const mockFetch = jest.fn().mockResolvedValue({
         ok: true,
         json: () =>
           Promise.resolve({
@@ -306,7 +327,8 @@ describe('useSystemGptAtlasLive', () => {
             ],
           }),
       });
-      vi.stubGlobal('fetch', mockFetch);
+      // @ts-expect-error - mocking global fetch
+      global.fetch = mockFetch;
 
       const { result } = renderHook(() =>
         useSystemGptAtlasLive({
@@ -324,7 +346,7 @@ describe('useSystemGptAtlasLive', () => {
 
       // Should trigger polling
       await act(async () => {
-        vi.advanceTimersByTime(1000);
+        jest.advanceTimersByTime(1000);
         await Promise.resolve();
       });
 
@@ -332,7 +354,7 @@ describe('useSystemGptAtlasLive', () => {
     });
 
     it('should call snapshot endpoint when polling', async () => {
-      const mockFetch = vi.fn().mockResolvedValue({
+      const mockFetch = jest.fn().mockResolvedValue({
         ok: true,
         json: () =>
           Promise.resolve({
@@ -342,7 +364,8 @@ describe('useSystemGptAtlasLive', () => {
             counties: [],
           }),
       });
-      vi.stubGlobal('fetch', mockFetch);
+      // @ts-expect-error - mocking global fetch
+      global.fetch = mockFetch;
 
       renderHook(() =>
         useSystemGptAtlasLive({
@@ -358,7 +381,7 @@ describe('useSystemGptAtlasLive', () => {
       });
 
       await act(async () => {
-        vi.advanceTimersByTime(1000);
+        jest.advanceTimersByTime(1000);
         await Promise.resolve();
       });
 

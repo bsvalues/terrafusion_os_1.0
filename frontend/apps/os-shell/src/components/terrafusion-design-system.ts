@@ -34,9 +34,9 @@ import './ui/terrafusion-ui.css';
  * TerraFusion Design System Usage Guide:
  *
  * Core Colors:
- * - Primary: #00FFFF (terra-cyan)
- * - Background: #0A0E1A (terra-midnight)
- * - Secondary: #0080FF (terra-blue)
+ * - Primary: var(--tf-transcend-cyan) (terra-cyan)
+ * - Background: var(--tf-bg-void) (terra-midnight)
+ * - Secondary: var(--tf-network-blue) (terra-blue)
  *
  * Typography Scale (Golden Ratio):
  * - Base: 1rem (16px)
@@ -78,14 +78,14 @@ export const DESIGN_SYSTEM_NAME = 'TerraFusion Quantum UI';
 // Design System Utilities
 export const TerraFusionTheme = {
   colors: {
-    primary: '#00FFFF',
-    secondary: '#0080FF',
-    background: '#0A0E1A',
-    surface: '#1E293B',
-    success: '#00FF88',
-    warning: '#FFAA00',
-    error: '#FF4444',
-    info: '#8844FF',
+    primary: 'var(--tf-transcend-cyan)',
+    secondary: 'var(--tf-network-blue)',
+    background: 'var(--tf-bg-void)',
+    surface: 'var(--terra-slate)',
+    success: 'var(--tf-accent-success)',
+    warning: 'var(--tf-accent-warning)',
+    error: 'var(--tf-accent-error)',
+    info: 'var(--tf-accent-quantum)',
   },
 
   spacing: {

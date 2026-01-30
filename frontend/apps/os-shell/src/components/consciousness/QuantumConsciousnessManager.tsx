@@ -33,7 +33,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 }));
 
 const QuantumSlider = styled(Slider)(({ theme }) => ({
-  color: '#c5a6ff',
+  color: 'var(--tf-accent-quantum)',
   '& .MuiSlider-thumb': {
     '&:hover, &.Mui-focusVisible': {
       boxShadow: `0px 0px 0px 8px rgba(197, 166, 255, 0.16)`,
@@ -106,7 +106,7 @@ const QuantumConsciousnessManager: React.FC = () => {
     <StyledCard>
       <CardContent>
         <Stack direction='row' justifyContent='space-between' alignItems='center' sx={{ mb: 2 }}>
-          <Typography variant='h6' sx={{ color: '#d1c4e9', fontWeight: 600 }}>
+          <Typography variant='h6' sx={{ color: 'var(--tf-accent-quantum)', fontWeight: 600 }}>
             Quantum Consciousness Manager
           </Typography>
           <Chip
@@ -121,7 +121,7 @@ const QuantumConsciousnessManager: React.FC = () => {
             size='small'
             avatar={
               <Avatar sx={{ background: 'transparent' }}>
-                <AllInclusive sx={{ color: '#d1c4e9 !important' }} />
+                <AllInclusive sx={{ color: 'var(--tf-accent-quantum) !important' }} />
               </Avatar>
             }
           />
@@ -153,11 +153,11 @@ const QuantumConsciousnessManager: React.FC = () => {
                   variant={activeProtocol === protocol ? 'contained' : 'outlined'}
                   onClick={() => handleProtocolChange(protocol)}
                   sx={{
-                    color: '#d1c4e9',
+                    color: 'var(--tf-accent-quantum)',
                     borderColor: 'rgba(200, 150, 255, 0.3)',
-                    '&:hover': { background: 'rgba(200, 150, 255, 0.1)', borderColor: '#c5a6ff' },
+                    '&:hover': { background: 'rgba(200, 150, 255, 0.1)', borderColor: 'var(--tf-accent-quantum)' },
                     ...(activeProtocol === protocol && {
-                      background: 'linear-gradient(135deg, #764ba2, #667eea)',
+                      background: 'linear-gradient(135deg, var(--tf-accent-quantum), var(--tf-accent-quantum))',
                     }),
                   }}
                 >

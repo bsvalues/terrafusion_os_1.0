@@ -19,7 +19,7 @@ if (-not (Test-Path "core-os/target/release/terrafusion_core_os.dll")) {
     $needsBuild = $true
 }
 
-if (-not (Test-Path "native-shell/ui/index.html")) {
+if (-not (Test-Path "native-shell/ui/dist/index.html")) {
     Write-Host "⚠️  Frontend not built to native shell" -ForegroundColor Yellow
     $needsBuild = $true
 }
@@ -69,7 +69,7 @@ if ($needsBuild) {
         exit 1
     }
     Pop-Location
-    Write-Host "   ✅ Frontend built to native-shell/ui/" -ForegroundColor Green
+    Write-Host "   ✅ Frontend built to native-shell/ui/dist/" -ForegroundColor Green
     
     # Build native shell
     Write-Host "5️⃣  Building Native Shell..." -ForegroundColor Green

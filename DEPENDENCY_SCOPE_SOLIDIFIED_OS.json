@@ -1,0 +1,1783 @@
+[
+  {
+    "root": "backend",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 21,
+      "scoreLocal": 7,
+      "scoreTotal": 21,
+      "buildableLocal": true,
+      "markers": [
+        "docker",
+        "dotnet",
+        "package.json:buildOrTest",
+        "python"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "backend/ai-models/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "backend/ai-models/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "backend/docker-compose.bulletproof.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "backend/docker-compose.microservices.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "backend/docker-compose.prod.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "backend/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "backend/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "backend/mcp-servers/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "backend/mcp-servers/document-server/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "backend/terrafusion-bridge/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "backend/TerraFusion.IDE.Gateway/Dockerfile"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/api-unified/TerraFusion.API.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/CognitiveFrameworkTest/CognitiveFrameworkTest.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/CreateAuditLogsTable/CreateAuditLogsTable.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/src/TerraFusion.Abstractions/TerraFusion.Abstractions.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/src/TerraFusion.AI/TerraFusion.AI.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/src/TerraFusion.API/TerraFusion.API.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/src/TerraFusion.Consciousness/TerraFusion.Consciousness.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/src/TerraFusion.Core/TerraFusion.Core.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/src/TerraFusion.CostForge/TerraFusion.CostForge.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/src/TerraFusion.Data/TerraFusion.Data.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/src/TerraFusion.Levy/TerraFusion.Levy.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/src/TerraFusion.Operations/TerraFusion.Operations.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/src/TerraFusion.Sync/TerraFusion.Sync.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusion.Experiments.Tests/TerraFusion.Experiments.Tests.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusion.Experiments/TerraFusion.Experiments.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusion.Gateway/TerraFusion.Gateway.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusion.IDE.Gateway/TerraFusion.IDE.Gateway.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusion.IDE.Gateway/TerraFusion.IDE.Gateway.Simple.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusion.QuantumAnalytics/TerraFusion.QuantumAnalytics.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusion.Research/TerraFusion.Research.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusion.Resilience/TerraFusion.Resilience.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusion.sln"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusion.StreamingAnalytics/TerraFusion.StreamingAnalytics.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/TerraFusionSimple.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/tests/TerraFusion.Integration.Tests/TerraFusion.Integration.Tests.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/tests/TerraFusion.Performance.Tests/TerraFusion.Performance.Tests.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/tests/TerraFusion.Tests.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/tests/TerraFusion.Tests.Unit/TerraFusion.Tests.Unit.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/tests/TerraFusion.Unit.SmokeTests/TerraFusion.Unit.SmokeTests.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "backend/tools/TerraFusion.CiHints/TerraFusion.CiHints.csproj"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "backend/ai-models/BENTON_COUNTY_CHAMPIONSHIP_DEMO/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "backend/mcp-core/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "backend/mcp-servers/package.json"
+        },
+        {
+          "marker": "python",
+          "foundAt": "backend/ai-models/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/requirements.txt"
+        },
+        {
+          "marker": "python",
+          "foundAt": "backend/core/gauge-theory/requirements.txt"
+        },
+        {
+          "marker": "python",
+          "foundAt": "backend/terrafusion-bridge/requirements.txt"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "renovate-ref",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "compose",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 16,
+      "scoreLocal": 4,
+      "scoreTotal": 16,
+      "buildableLocal": true,
+      "markers": [
+        "docker",
+        "package.json:buildOrTest"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.ai.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.cowlitz.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.demo.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.dev.enhanced.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.dev.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.minimal.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.obs.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.prod.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.production-optimized.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.production.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.yakima-flagship.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "compose/docker-compose.yml"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "compose/ai-services/package.json"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": false,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "config",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 16,
+      "scoreLocal": 2,
+      "scoreTotal": 16,
+      "buildableLocal": true,
+      "markers": [
+        "docker"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "config/docker/docker-compose.benton-county_1.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "config/docker/docker-compose.benton-county.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "config/docker/docker-compose.marketplace_1.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "config/docker/docker-compose.marketplace.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "config/docker/docker-compose.prod_1.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "config/docker/docker-compose.prod.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "config/docker/docker-compose.production_1.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "config/docker/docker-compose.production.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "config/docker/docker-compose.ultimate-ide_1.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "config/docker/docker-compose.ultimate-ide.yml"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "renovate-ref",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": true,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "consciousness",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 12,
+      "scoreLocal": 2,
+      "scoreTotal": 12,
+      "buildableLocal": true,
+      "markers": [
+        "package.json:buildOrTest"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "consciousness/package.json"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": false,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "counties",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 11,
+      "scoreLocal": 2,
+      "scoreTotal": 11,
+      "buildableLocal": true,
+      "markers": [
+        "docker"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "counties/benton/docker-compose.county.yml"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "data",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 17,
+      "scoreLocal": 5,
+      "scoreTotal": 17,
+      "buildableLocal": true,
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "python"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "data/county-templates/benton-county/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "data/county-templates/benton-county/Dockerfile"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "data/cost-matrices/package.json"
+        },
+        {
+          "marker": "python",
+          "foundAt": "data/county-templates/benton-county/requirements.txt"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": false,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "deployment",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 18,
+      "scoreLocal": 6,
+      "scoreTotal": 18,
+      "buildableLocal": true,
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "python",
+        "vite"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "deployment/benton-county/BENTON_COUNTY_CHAMPIONSHIP_DEMO/docker-compose.staging.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "deployment/benton-county/BENTON_COUNTY_CHAMPIONSHIP_DEMO/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "deployment/benton-county/BENTON_COUNTY_CHAMPIONSHIP_DEMO/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "deployment/benton-county/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "deployment/benton-county/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "deployment/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "deployment/installers/docker/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "deployment/web-demo/api/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "deployment/web-demo/docker-compose.demo.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "deployment/web-demo/frontend/Dockerfile"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/benton-county/BENTON_COUNTY_CHAMPIONSHIP_DEMO/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/01-terra-agent/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/02-terra-flow/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/03-web-audit-tracker/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/04-terra-levy/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/05-terra-miner/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/06-terra-fusion-sync/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/07-gispro/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/08-costforge-ai/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/09-property-workbench/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/10-terra-insight/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/11-terra-fusion-dashboard/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/12-terra-fusion-assessor/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/modules/13-marketplace/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/production/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "deployment/web-demo/api/package.json"
+        },
+        {
+          "marker": "python",
+          "foundAt": "deployment/benton-county/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/requirements.txt"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/01-terra-agent/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/02-terra-flow/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/03-web-audit-tracker/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/04-terra-levy/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/05-terra-miner/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/06-terra-fusion-sync/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/07-gispro/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/08-costforge-ai/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/09-property-workbench/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/10-terra-insight/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/11-terra-fusion-dashboard/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/12-terra-fusion-assessor/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "deployment/production/modules/13-marketplace/vite.config.ts"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": false,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "docker",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 11,
+      "scoreLocal": 2,
+      "scoreTotal": 11,
+      "buildableLocal": true,
+      "markers": [
+        "docker"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "docker/Dockerfile"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref"
+      ],
+      "touchedRelease": false,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "docs",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 16,
+      "scoreLocal": 4,
+      "scoreTotal": 16,
+      "buildableLocal": true,
+      "markers": [
+        "docker",
+        "package.json:buildOrTest"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "docs/marketplace/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/frontend/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/api.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/autonomous-research-engine.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/commercial-suite.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/commercial.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/costforge-ai.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/government-core.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/government-edition.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/LeafScope.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/marketplace-frontend.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/plugins.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/property-workbench.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/RAGPanel.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/revenue.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/shock-and-awe.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/store.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/submissions.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/templates.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/terra-bank.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/terra-collections.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/terra-flow.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/terra-fusion-dashboard.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/terra-fusion-sync.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/terra-insight.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/terra-justice.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/terra-levy.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/terra-net.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/terra-sync.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/terra-university.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/TerraFusion-PublicRecords.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/TerraFusionIDE.md/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "docs/marketplace/unified-system.md/package.json"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "frontend",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 20,
+      "scoreLocal": 5,
+      "scoreTotal": 20,
+      "buildableLocal": true,
+      "markers": [
+        "docker",
+        "package.json:buildOrTest",
+        "pnpm-lock.yaml",
+        "vite"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "frontend/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "frontend/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "frontend/electron/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "frontend/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "frontend/vscode-extension/package.json"
+        },
+        {
+          "marker": "pnpm-lock.yaml",
+          "foundAt": "frontend/pnpm-lock.yaml"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "frontend/vite.config.ts"
+        }
+      ],
+      "inherited": [
+        "renovate-ref",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "monitoring",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 15,
+      "scoreLocal": 3,
+      "scoreTotal": 15,
+      "buildableLocal": true,
+      "markers": [
+        "docker",
+        "python"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "monitoring/services/ai-swarm-metrics-collector/Dockerfile"
+        },
+        {
+          "marker": "python",
+          "foundAt": "monitoring/services/ai-swarm-metrics-collector/requirements.txt"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": false,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "ops",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 11,
+      "scoreLocal": 2,
+      "scoreTotal": 11,
+      "buildableLocal": true,
+      "markers": [
+        "docker"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "ops/benton/compose/docker-compose.demo.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "ops/prod/docker-compose.prod.server.yml"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": true,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "tests",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 15,
+      "scoreLocal": 6,
+      "scoreTotal": 15,
+      "buildableLocal": true,
+      "markers": [
+        "docker",
+        "dotnet",
+        "package.json:buildOrTest"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/ai-systems/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/auth/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/backend/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/consciousness/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/development/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/engines/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/infrastructure/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/monitoring/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/os-platform/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/performance/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/security/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/services/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/specialized/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/testing/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/core/trust/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/frontend/citizen-services/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/frontend/code-enforcement/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/frontend/economic-development/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/frontend/human-resources/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/frontend/legal-judicial/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/frontend/public-health/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/frontend/public-works/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/harris-pacs-integration/docker-compose.harris-pacs-test.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/api/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/commercial-suite/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/costforge-ai/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/government-core/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/government-edition/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/LeafScope/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/marketplace-frontend/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/plugins/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/property-workbench/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/RAGPanel/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/revenue/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/store/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/submissions/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/templates/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/terra-bank/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/terra-collections/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/terra-flow/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/terra-fusion-dashboard/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/terra-fusion-sync/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/terra-insight/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/terra-justice/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/terra-levy/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/terra-net/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/terra-sync/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/terra-university/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/TerraFusion-PublicRecords/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/TerraFusionIDE/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "tests/marketplace/unified-system/monitoring/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "tests/mock_tests/TerraFusion.IntegrationTests/TerraFusion.IntegrationTests.csproj"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "tests/mock_tests/TerraFusion.PerformanceTests/TerraFusion.PerformanceTests.csproj"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/ai-systems/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/auth/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/backend/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/consciousness/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/development/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/engines/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/infrastructure/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/monitoring/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/os-platform/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/performance/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/security/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/services/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/specialized/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/testing/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/core/trust/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/frontend/citizen-services/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/frontend/code-enforcement/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/frontend/core/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/frontend/economic-development/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/frontend/human-resources/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/frontend/legal-judicial/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/frontend/public-health/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/frontend/public-works/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/api/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/autonomous-research-engine/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/commercial-suite/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/commercial/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/costforge-ai/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/government-core/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/government-edition/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/LeafScope/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/marketplace-frontend/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/plugins/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/property-workbench/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/RAGPanel/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/revenue/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/shock-and-awe/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/store/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/submissions/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/templates/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/terra-bank/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/terra-collections/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/terra-flow/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/terra-fusion-dashboard/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/terra-fusion-sync/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/terra-insight/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/terra-justice/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/terra-levy/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/terra-net/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/terra-sync/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/terra-university/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/TerraFusion-PublicRecords/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/TerraFusionIDE/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tests/marketplace/unified-system/package.json"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "tools",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 16,
+      "scoreLocal": 4,
+      "scoreTotal": 16,
+      "buildableLocal": true,
+      "markers": [
+        "Cargo.toml",
+        "package.json:buildOrTest"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "Cargo.toml",
+          "foundAt": "tools/speclock-tss/Cargo.toml"
+        },
+        {
+          "marker": "Cargo.toml",
+          "foundAt": "tools/tf-designctl-rust/Cargo.toml"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tools/scope-classifier/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tools/tdc/cli/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tools/tdc/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tools/tdc/packages/transparency-engine/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tools/tf-designctl-node/package.json"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": false,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": ".",
+    "bucket": "CORE_OS_TOOLING",
+    "evidence": {
+      "score": 8,
+      "scoreLocal": 6,
+      "scoreTotal": 8,
+      "buildableLocal": true,
+      "markers": [
+        "docker",
+        "dotnet",
+        "package.json:buildOrTest",
+        "packageManager",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "docker-compose.benton.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "docker-compose.database.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "docker-compose.elite.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "docker-compose.observability.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "docker-compose.prod.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "Dockerfile"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "TerraFusion.sln"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "package.json"
+        },
+        {
+          "marker": "packageManager",
+          "foundAt": "package.json"
+        },
+        {
+          "marker": "pnpm-lock.yaml",
+          "foundAt": "pnpm-lock.yaml"
+        },
+        {
+          "marker": "pnpm-workspace.yaml",
+          "foundAt": "pnpm-workspace.yaml"
+        }
+      ],
+      "inherited": [],
+      "wiring": [],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "ecosystem/intake",
+    "bucket": "CORE_OS_TOOLING",
+    "evidence": {
+      "score": 4,
+      "scoreLocal": 2,
+      "scoreTotal": 4,
+      "buildableLocal": true,
+      "markers": [
+        "package.json:buildOrTest",
+        "pnpm-lock.yaml"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "ecosystem/intake/package.json"
+        },
+        {
+          "marker": "pnpm-lock.yaml",
+          "foundAt": "ecosystem/intake/pnpm-lock.yaml"
+        }
+      ],
+      "inherited": [],
+      "wiring": [],
+      "touchedRelease": false,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "SDK",
+    "bucket": "CORE_OS_TOOLING",
+    "evidence": {
+      "score": 12,
+      "scoreLocal": 3,
+      "scoreTotal": 12,
+      "buildableLocal": true,
+      "markers": [
+        "package.json:buildOrTest",
+        "vite"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "SDK/modules/bcbs-webhub/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "SDK/modules/costforge-ai/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "SDK/modules/terra-agent/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "SDK/modules/terra-dashboard/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "SDK/modules/terra-fusion-permit/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "SDK/modules/terra-levy/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "SDK/modules/terra-pilt/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "SDK/modules/terra-playground/package.json"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "SDK/modules/bcbs-webhub/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "SDK/modules/terra-agent/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "SDK/modules/terra-dashboard/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "SDK/modules/terra-fusion-permit/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "SDK/modules/terra-pilt/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "SDK/modules/terra-playground/vite.config.ts"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "kernel-gateway-ref"
+      ],
+      "touchedRelease": false,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "terrabuild-modernization",
+    "bucket": "CORE_OS_TOOLING",
+    "evidence": {
+      "score": 11,
+      "scoreLocal": 7,
+      "scoreTotal": 11,
+      "buildableLocal": true,
+      "markers": [
+        "docker",
+        "next:config",
+        "package.json:buildOrTest",
+        "pnpm-lock.yaml",
+        "python",
+        "vite"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "docker",
+          "foundAt": "terrabuild-modernization/docker-compose.monitoring.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "terrabuild-modernization/docker-compose.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "terrabuild-modernization/docker/agent/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "terrabuild-modernization/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "terrabuild-modernization/terrafusion-devops-kit/monitoring/docker-compose.yml"
+        },
+        {
+          "marker": "next:config",
+          "foundAt": "terrabuild-modernization/terrafusion/next.config.mjs"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "terrabuild-modernization/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "terrabuild-modernization/terrafusion-devops-kit/tools/agent-wizard/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "terrabuild-modernization/terrafusion/functions/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "terrabuild-modernization/terrafusion/package.json"
+        },
+        {
+          "marker": "pnpm-lock.yaml",
+          "foundAt": "terrabuild-modernization/terrafusion/pnpm-lock.yaml"
+        },
+        {
+          "marker": "python",
+          "foundAt": "terrabuild-modernization/docker/agent/requirements.txt"
+        },
+        {
+          "marker": "python",
+          "foundAt": "terrabuild-modernization/pyproject.toml"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "terrabuild-modernization/vite.config.ts"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "renovate-ref"
+      ],
+      "wiring": [],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  }
+]

@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - ELITE PRODUCTION LAUNCHER SERVICE
  * Championship-Level Continuous Operation Management
@@ -27,7 +27,6 @@ public class EliteProductionLauncherService : BackgroundService
 
     private readonly TimeSpan _healthCheckInterval = TimeSpan.FromMinutes(2);
     private readonly TimeSpan _restartDelay = TimeSpan.FromSeconds(10);
-    private readonly int _maxConsecutiveFailures = 3;
 
     private Process? _apiProcess;
     private DateTime _lastHealthCheck = DateTime.MinValue;
@@ -185,6 +184,8 @@ public class EliteProductionLauncherService : BackgroundService
     /// </summary>
     private async Task StopApiProcessAsync()
     {
+        await Task.CompletedTask;
+        await Task.CompletedTask;
         if (_apiProcess != null && !_apiProcess.HasExited)
         {
             try

@@ -74,9 +74,9 @@ function ValuationToolsPlugin({ context }: { context: any }) {
             title='Select valuation tool'
             style={{
               padding: '8px 12px',
-              border: '1px solid #ddd',
+              border: '1px solid var(--gray-200)',
               borderRadius: '4px',
-              backgroundColor: '#fff',
+              backgroundColor: 'var(--tf-text-primary)',
             }}
           >
             <option value='timber'>Timber Land</option>

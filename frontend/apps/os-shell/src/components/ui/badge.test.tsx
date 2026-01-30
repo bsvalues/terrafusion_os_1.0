@@ -239,9 +239,10 @@ describe('Badge', () => {
     });
 
     it('handles empty string', () => {
-      render(<Badge>{''}</Badge>);
-      const badge = screen.getByText('', { selector: 'div' });
+      const { container } = render(<Badge data-testid='empty-badge'>{''}</Badge>);
+      const badge = screen.getByTestId('empty-badge');
       expect(badge).toBeInTheDocument();
+      expect(badge.textContent).toBe('');
     });
 
     it('handles zero as content', () => {

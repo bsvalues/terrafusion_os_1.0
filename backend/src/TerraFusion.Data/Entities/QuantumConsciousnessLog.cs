@@ -1,4 +1,4 @@
-/**
+/*
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - QUANTUM CONSCIOUSNESS LOG ENTITY
  * FISMA-HIGH Compliant Audit Trail for Parameter Adjustments
