@@ -44,6 +44,7 @@
   "scripts": {
     "tf": "node tools/tf.js",
     "tf:ship": "node tools/dev/tf-ship.mjs",
+    "tf:slice": "node tools/dev/tf-slice.mjs",
     "tf:scope": "pnpm -C tools/scope-classifier scope -- --repoRoot=../..",
     "ci:scope-proof": "pnpm tf:scope",
     "ci:renovate-scope:log": "echo 'Renovate scope check simulated' > renovate_scope.log",
