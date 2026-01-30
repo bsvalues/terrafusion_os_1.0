@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Npgsql;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 
 
 #pragma warning disable CS1998
@@ -93,7 +94,6 @@ public static class DatabaseConfiguration
         builder.CancellationTimeout = poolConfig.GetValue("CancellationTimeoutSeconds", 2);
 
         // Security and reliability
-        builder.TrustServerCertificate = false; // Enforce SSL certificate validation
         builder.SslMode = Enum.Parse<SslMode>(poolConfig.GetValue("SslMode", "Require") ?? "Require");
         builder.KeepAlive = poolConfig.GetValue("KeepAliveSeconds", 30);
 
@@ -259,6 +259,7 @@ internal class TrackedConnection : IDbConnection
         _manager = manager;
     }
 
+    [AllowNull]
     public string ConnectionString 
     { 
         get => _connection.ConnectionString; 

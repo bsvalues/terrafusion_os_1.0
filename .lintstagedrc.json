@@ -1,6 +1,13 @@
 {
   "src/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
-  "tests/**/*.{js,jsx,ts,tsx}": ["prettier --write"],
+  "tests/**/*.{js,jsx,ts,tsx}": [
+    "node scripts/ci/check-encoding.mjs",
+    "prettier --write"
+  ],
+  "scripts/**/*.{js,mjs,ts}": [
+    "node scripts/ci/check-encoding.mjs",
+    "prettier --write"
+  ],
   "*.{json,md,yml,yaml}": ["prettier --write"],
   "*.cs": ["dotnet format backend/TerraFusion.sln --include"],
   "*.{css,scss,less}": ["prettier --write"]

@@ -342,8 +342,10 @@ Government. Transcended. - THE TERRAFUSION WAY
 // Singleton instance for global use
 export const eliteSystemMonitor = new EliteSystemMonitor();
 
+import { getViteEnv } from '@/env/getViteEnv';
+
 // Auto-start monitoring in development
-if (import.meta.env.DEV) {
+if (getViteEnv().DEV) {
   eliteSystemMonitor.startMonitoring(5000);
 }
 

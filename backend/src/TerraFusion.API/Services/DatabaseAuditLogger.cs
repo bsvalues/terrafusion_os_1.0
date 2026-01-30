@@ -1879,7 +1879,6 @@ namespace TerraFusion.API.Services
   public class QuantumRandomNumberGenerator : IDisposable
   {
     private readonly RandomNumberGenerator _classicalRng;
-    private bool _isCalibrated = true;
     private bool _disposed = false;
 
     public QuantumRandomNumberGenerator()
@@ -1919,7 +1918,6 @@ namespace TerraFusion.API.Services
     {
       // Simulate quantum calibration process
       await Task.Delay(100);
-      _isCalibrated = true;
     }
 
     public void Dispose()

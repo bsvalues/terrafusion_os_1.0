@@ -19,8 +19,6 @@ namespace TerraFusion.Core.Services
         private readonly ILogger<PredictiveMaintenanceService> _logger;
         private readonly IConfiguration _configuration;
         private readonly IPerformanceOptimizationService _performanceService;
-        private bool _predictiveMaintenanceEnabled = false;
-        private bool _selfOptimizationEnabled = false;
 
         public PredictiveMaintenanceService(
             ILogger<PredictiveMaintenanceService> logger,
@@ -64,7 +62,6 @@ namespace TerraFusion.Core.Services
                 EnableFailurePrediction()
             );
 
-            _predictiveMaintenanceEnabled = true;
             _logger.LogInformation("[PREDICTIVE] Predictive maintenance system enabled");
             return true;
         }
@@ -80,7 +77,6 @@ namespace TerraFusion.Core.Services
                 EnableCapacityPlanning()
             );
 
-            _selfOptimizationEnabled = true;
             _logger.LogInformation("[SELF-OPT] Self-optimization enabled");
             return true;
         }

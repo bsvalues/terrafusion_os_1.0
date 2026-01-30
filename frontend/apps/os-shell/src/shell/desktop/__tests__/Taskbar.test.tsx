@@ -133,8 +133,8 @@ describe('Taskbar Component', () => {
 
     it('shows app button for each open window', () => {
       // Open some windows
-      useDesktopStore.getState().openWindow('module-1', 'Module 1', '📊');
-      useDesktopStore.getState().openWindow('module-2', 'Module 2', '📈');
+      useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
+      useDesktopStore.getState().openWindow('module-2', 'Module 2', 'TrendingUp');
 
       render(<Taskbar />);
 
@@ -144,7 +144,7 @@ describe('Taskbar Component', () => {
     });
 
     it('displays window title on app button', () => {
-      useDesktopStore.getState().openWindow('government-edition', 'Government Edition', '🏛️');
+      useDesktopStore.getState().openWindow('government-edition', 'Government Edition', 'Building2');
 
       render(<Taskbar />);
 
@@ -152,15 +152,16 @@ describe('Taskbar Component', () => {
     });
 
     it('displays window icon on app button', () => {
-      useDesktopStore.getState().openWindow('government-edition', 'Government Edition', '🏛️');
+      useDesktopStore.getState().openWindow('government-edition', 'Government Edition', 'Building2');
 
       render(<Taskbar />);
 
-      expect(screen.getByText('🏛️')).toBeInTheDocument();
+      const runningApps = screen.getByTestId('running-apps');
+      expect(runningApps.querySelector('svg')).toBeInTheDocument();
     });
 
     it('highlights active window button', () => {
-      const windowId = useDesktopStore.getState().openWindow('module-1', 'Module 1', '📊');
+      const windowId = useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
 
       render(<Taskbar />);
 
@@ -169,8 +170,8 @@ describe('Taskbar Component', () => {
     });
 
     it('focuses window when app button is clicked', async () => {
-      const window1Id = useDesktopStore.getState().openWindow('module-1', 'Module 1', '📊');
-      const window2Id = useDesktopStore.getState().openWindow('module-2', 'Module 2', '📈');
+      const window1Id = useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
+      const window2Id = useDesktopStore.getState().openWindow('module-2', 'Module 2', 'TrendingUp');
 
       render(<Taskbar />);
 
@@ -186,7 +187,7 @@ describe('Taskbar Component', () => {
     });
 
     it('restores minimized window when its button is clicked', async () => {
-      const windowId = useDesktopStore.getState().openWindow('module-1', 'Module 1', '📊');
+      const windowId = useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
       useDesktopStore.getState().minimizeWindow(windowId);
 
       render(<Taskbar />);
@@ -204,7 +205,7 @@ describe('Taskbar Component', () => {
     });
 
     it('shows visual indicator for minimized windows', () => {
-      const windowId = useDesktopStore.getState().openWindow('module-1', 'Module 1', '📊');
+      const windowId = useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
       useDesktopStore.getState().minimizeWindow(windowId);
 
       render(<Taskbar />);
@@ -282,7 +283,7 @@ describe('Taskbar Component', () => {
     it('truncates long window titles', () => {
       useDesktopStore
         .getState()
-        .openWindow('module-1', 'This Is A Very Long Module Title That Should Be Truncated', '📊');
+        .openWindow('module-1', 'This Is A Very Long Module Title That Should Be Truncated', 'BarChart3');
 
       render(<Taskbar />);
 

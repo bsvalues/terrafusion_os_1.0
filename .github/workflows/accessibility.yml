@@ -4,7 +4,15 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'frontend/**'
+      - 'src/**'
+      - '.github/workflows/accessibility.yml'
   pull_request:
+    paths:
+      - 'frontend/**'
+      - 'src/**'
+      - '.github/workflows/accessibility.yml'
   workflow_dispatch:
 
 jobs:

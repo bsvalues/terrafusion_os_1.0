@@ -22,33 +22,39 @@ import { Window } from '../Window';
 // ============================================================================
 
 // Mock react-rnd since it requires actual DOM measurements
-jest.mock('react-rnd', () => ({
-  Rnd: ({ children, className, style, onMouseDown, position, size, ...props }: any) => (
-    <div
-      data-testid='window'
-      data-window-id={props['data-window-id']}
-      className={className}
-      style={{
-        ...style,
-        position: 'absolute',
-        left: position?.x ?? 0,
-        top: position?.y ?? 0,
-        width: typeof size?.width === 'number' ? size.width : size?.width,
-        height: typeof size?.height === 'number' ? size.height : size?.height,
-      }}
-      onMouseDown={onMouseDown}
-    >
-      {children}
-    </div>
-  ),
-}));
+jest.mock('react-rnd', () => {
+  const React = require('react');
+  return {
+    Rnd: React.forwardRef(
+      ({ children, className, style, onMouseDown, position, size, ...props }: any, ref: any) => (
+        <div
+          ref={ref}
+          data-testid='window'
+          data-window-id={props['data-window-id']}
+          className={className}
+          style={{
+            ...style,
+            position: 'absolute',
+            left: position?.x ?? 0,
+            top: position?.y ?? 0,
+            width: typeof size?.width === 'number' ? size.width : size?.width,
+            height: typeof size?.height === 'number' ? size.height : size?.height,
+          }}
+          onMouseDown={onMouseDown}
+        >
+          {children}
+        </div>
+      )
+    ),
+  };
+});
 
 // Mock window data factory
 const createMockWindow = (overrides: Partial<DesktopWindow> = {}): DesktopWindow => ({
   id: 'test-window-1',
   moduleId: 'test-module',
   title: 'Test Window',
-  icon: '📋',
+  icon: 'FileText',
   position: { x: 100, y: 50 },
   size: { width: 800, height: 600 },
   state: 'normal',
@@ -93,11 +99,11 @@ describe('Window Component', () => {
     });
 
     it('displays window icon', () => {
-      const mockWindow = createMockWindow({ icon: '🏛️' });
+      const mockWindow = createMockWindow({ icon: 'Building2' });
       render(<Window window={mockWindow} />);
 
       const titleBar = screen.getByTestId('window-titlebar');
-      expect(titleBar).toHaveTextContent('🏛️');
+      expect(titleBar.querySelector('svg')).toBeInTheDocument();
     });
 
     it('renders content area', () => {
@@ -274,7 +280,9 @@ describe('Window Component', () => {
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('window-visuals');
-      expect(windowVisuals.className).toContain('border-[var(--tf-transcend-highlight)]');
+      expect(windowVisuals).toHaveStyle({
+        border: '1px solid rgba(0, 229, 255, 0.5)',
+      });
     });
 
     it('shows inactive styling when window is not active', () => {
@@ -290,7 +298,9 @@ describe('Window Component', () => {
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('window-visuals');
-      expect(windowVisuals.className).toContain('border-white/10');
+      expect(windowVisuals).toHaveStyle({
+        border: '1px solid rgba(0, 229, 255, 0.15)',
+      });
     });
 
     it('calls focusWindow when clicking window', async () => {
@@ -485,7 +495,7 @@ describe('Window Component', () => {
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('window-visuals');
-      expect(windowVisuals.className).toContain('backdrop-blur');
+      expect(windowVisuals.style.backdropFilter).toContain('blur(24px)');
     });
 
     it('has rounded corners', () => {
@@ -501,7 +511,7 @@ describe('Window Component', () => {
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('window-visuals');
-      expect(windowVisuals.className).toContain('shadow-');
+      expect(windowVisuals.style.boxShadow).not.toBe('');
     });
   });
 
@@ -520,13 +530,13 @@ describe('Window Component', () => {
     });
 
     it('icon has aria-hidden', () => {
-      const mockWindow = createMockWindow({ icon: '🏛️' });
+      const mockWindow = createMockWindow({ icon: 'Building2' });
       render(<Window window={mockWindow} />);
 
       const titleBar = screen.getByTestId('window-titlebar');
       const icon = titleBar.querySelector('[aria-hidden="true"]');
       expect(icon).toBeInTheDocument();
-      expect(icon).toHaveTextContent('🏛️');
+      expect(icon?.querySelector('svg')).toBeInTheDocument();
     });
 
     it('control buttons are keyboard focusable', () => {

@@ -1,0 +1,59 @@
+{
+  "description": "Standard residential reconciliation with 3 approaches - deterministic fixture",
+  "input": {
+    "subjectId": "RES-001",
+    "effectiveDate": "2026-01-15",
+    "approaches": {
+      "sales": {
+        "indicatedValue": 35000000,
+        "confidenceLevel": "high"
+      },
+      "income": {
+        "indicatedValue": 32000000,
+        "confidenceLevel": "medium"
+      },
+      "cost": {
+        "indicatedValue": 34000000,
+        "confidenceLevel": "high"
+      }
+    },
+    "propertyType": "residential",
+    "reconciliationMethod": "weighted_average",
+    "forcedWeights": false
+  },
+  "expected": {
+    "finalOpinionOfValue": 34461600,
+    "approachSummary": {
+      "sales": {
+        "indicatedValue": 35000000,
+        "weight": 0.6154,
+        "contributedValue": 21539000
+      },
+      "income": {
+        "indicatedValue": 32000000,
+        "weight": 0.0769,
+        "contributedValue": 2460800
+      },
+      "cost": {
+        "indicatedValue": 34000000,
+        "weight": 0.3077,
+        "contributedValue": 10461800
+      }
+    },
+    "reconciliationAnalysis": {
+      "method": "weighted_average",
+      "valueRange": {
+        "min": 32000000,
+        "max": 35000000
+      },
+      "spreadPercentage": 8.91,
+      "primaryApproach": "sales",
+      "weightsNormalized": true
+    },
+    "qualityIndicators": {
+      "confidenceLevel": "high",
+      "warnings": [],
+      "approachAgreement": "strong"
+    }
+  }
+}

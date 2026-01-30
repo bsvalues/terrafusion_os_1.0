@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Machine-readable canonical paths registry. See docs/ci/BRANCH_HYGIENE.md for policy.",
+  "version": "1.0.0",
+  "checkpoint": "ci-governance-v1",
+  "updated": "2026-01-24",
+
+  "authoritative": {
+    "workspaces": [
+      "frontend/",
+      "frontend/electron/",
+      "agents/*",
+      "tools/*",
+      "terrabuild-modernization/"
+    ],
+    "dockerfiles": {
+      "frontend": "infrastructure/docker/Dockerfile.frontend",
+      "api": "infrastructure/docker/Dockerfile.api",
+      "ai-swarm": "infrastructure/docker/Dockerfile.ai-swarm"
+    },
+    "modules": {
+      "costforge-ai": "marketplace/government-core/costforge-ai-enhanced/",
+      "property-workbench": "packages/commercial/modules/09-property-workbench/",
+      "terra-build": "applications/terra-build-actual/",
+      "terra-pilt": "applications/terra-pilt-production/",
+      "terra-permit": "applications/terra-permit-production/"
+    }
+  },
+
+  "derived": {
+    "patterns": [
+      "deployment/**/",
+      "**/championship-deployment/**/",
+      "packages/government-edition-enhanced-MARKED-FOR-REVIEW/**",
+      "**/*-PRODUCTION/**/",
+      "docker/Dockerfile.*",
+      "**/devops-kit/docker/**",
+      "infrastructure/iac/container-optimization/**",
+      "data/cost-matrices/**",
+      "packages/**/08-costforge-ai/**",
+      "infrastructure/marketplace-unified/**/08-costforge-ai/**",
+      "costforge-ai-workspace/**"
+    ]
+  },
+
+  "keepers": {
+    "fabric-6.0.0": {
+      "pr": 150,
+      "path": "packages/commercial/modules/09-property-workbench/"
+    },
+    "sinon-21.0.1": { "pr": 153, "path": "terrabuild-modernization/" },
+    "nginx-1.29.4": {
+      "pr": 117,
+      "path": "infrastructure/docker/Dockerfile.frontend"
+    },
+    "jspdf-costforge": {
+      "pr": 113,
+      "path": "marketplace/government-core/costforge-ai-enhanced/"
+    },
+    "jspdf-terra-build": {
+      "pr": 104,
+      "path": "applications/terra-build-actual/"
+    }
+  },
+
+  "dotnet": {
+    "reusableWorkflow": ".github/workflows/dotnet-test.yml",
+    "requiredCallers": [
+      ".github/workflows/ci.yml",
+      ".github/workflows/ci-cd-main.yml",
+      ".github/workflows/ci-verified.yml"
+    ],
+    "allowedDirectTestWorkflows": ["dotnet-test", "ci"],
+    "$comment_allowedDirect": "ci.yml allowed because it contains the drift_guard job that must reference 'dotnet test' to detect violations"
+  }
+}

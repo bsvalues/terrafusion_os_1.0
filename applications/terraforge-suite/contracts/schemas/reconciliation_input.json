@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "reconciliation_input.json",
+  "title": "Reconciliation Input",
+  "description": "USPAP-aligned reconciliation of multiple valuation approaches",
+  "type": "object",
+  "required": ["subjectId", "effectiveDate", "approaches"],
+  "properties": {
+    "subjectId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Subject property identifier"
+    },
+    "effectiveDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of valuation (YYYY-MM-DD)"
+    },
+    "approaches": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "sales": {
+          "type": "object",
+          "required": ["indicatedValue"],
+          "properties": {
+            "indicatedValue": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Value indicated by sales comparison approach (integer cents)"
+            },
+            "confidenceLevel": {
+              "type": "string",
+              "enum": ["high", "medium", "low"]
+            },
+            "weight": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Override weight (0-1); if omitted, auto-calculated"
+            }
+          },
+          "additionalProperties": false
+        },
+        "income": {
+          "type": "object",
+          "required": ["indicatedValue"],
+          "properties": {
+            "indicatedValue": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Value indicated by income approach (integer cents)"
+            },
+            "confidenceLevel": {
+              "type": "string",
+              "enum": ["high", "medium", "low"]
+            },
+            "weight": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Override weight (0-1); if omitted, auto-calculated"
+            }
+          },
+          "additionalProperties": false
+        },
+        "cost": {
+          "type": "object",
+          "required": ["indicatedValue"],
+          "properties": {
+            "indicatedValue": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Value indicated by cost approach (integer cents)"
+            },
+            "confidenceLevel": {
+              "type": "string",
+              "enum": ["high", "medium", "low"]
+            },
+            "weight": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Override weight (0-1); if omitted, auto-calculated"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "propertyType": {
+      "type": "string",
+      "enum": [
+        "residential",
+        "commercial",
+        "industrial",
+        "agricultural",
+        "special_purpose"
+      ],
+      "default": "residential",
+      "description": "Property type influences default weight distribution"
+    },
+    "reconciliationMethod": {
+      "type": "string",
+      "enum": ["weighted_average", "bracketed", "primary_approach"],
+      "default": "weighted_average",
+      "description": "Method for reconciling approach values"
+    },
+    "forcedWeights": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, use explicit weights; if false, auto-calculate"
+    }
+  },
+  "additionalProperties": false
+}

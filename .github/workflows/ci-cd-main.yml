@@ -12,8 +12,26 @@ name: 🏛️ TerraFusion OS - Main CI/CD Pipeline
 on:
   push:
     branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '*.sln'
+      - 'Directory.Build.props'
+      - '.github/workflows/ci-cd-main.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '*.sln'
+      - 'Directory.Build.props'
+      - '.github/workflows/ci-cd-main.yml'
   workflow_dispatch:
 
 env:
@@ -71,58 +89,13 @@ jobs:
   # ==========================================================================
   backend-tests:
     name: ⚙️ Backend .NET Microservices
-    runs-on: ubuntu-latest
     needs: validation
-
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: terrafusion_test
-          POSTGRES_DB: terrafusion_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 🔧 Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: 💾 Cache NuGet Packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('backend/**/*.csproj') }}
-          restore-keys: |
-            nuget-${{ runner.os }}-
-
-      - name: 📦 Restore Dependencies
-        working-directory: backend
-        run: |
-          echo "📦 Restoring NuGet packages..."
-          dotnet restore TerraFusion.sln || (echo "⚠️ Retry after 30s..." && sleep 30 && dotnet restore TerraFusion.sln)
-
-      - name: 🏗️ Build Solution
-        working-directory: backend
-        run: |
-          echo "🏗️ Building TerraFusion Backend..."
-          dotnet build TerraFusion.sln --configuration Release --no-restore
-
-      - name: 🧪 Run Unit Tests
-        working-directory: backend
-        run: |
-          echo "🧪 Running .NET unit tests..."
-          dotnet test TerraFusion.sln --configuration Release --no-build --verbosity normal || echo "⚠️ Some tests skipped"
-        continue-on-error: true
+    uses: ./.github/workflows/dotnet-test.yml
+    with:
+      dotnet_version: ${{ env.DOTNET_VERSION }}
+      configuration: Release
+      solution: TerraFusion.sln
+      connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=terrafusion_test'
 
   # ==========================================================================
   # GATE 3: Frontend React PWA (pnpm-first, deterministic)
@@ -281,8 +254,8 @@ jobs:
           cd backend
           dotnet restore TerraFusion.sln
           dotnet build TerraFusion.sln --configuration Release --no-restore
-          # Publish the main API project for deployment
-          dotnet publish TerraFusion.sln --configuration Release --no-build --output ../artifacts/backend-publish || echo "⚠️ Backend publish skipped"
+          # Publish the main API project for deployment (project-level to avoid NETSDK1194)
+          dotnet publish src/TerraFusion.API/TerraFusion.API.csproj --configuration Release --no-build --output ../artifacts/backend-publish || echo "⚠️ Backend publish skipped"
           cd ..
           echo ""
           echo "🎨 Building Frontend (pnpm + Vite)..."

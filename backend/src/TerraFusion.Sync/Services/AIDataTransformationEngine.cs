@@ -54,12 +54,15 @@ namespace TerraFusion.Sync.Services
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "⚠️ AI query generation failed, will use fallback");
-                return null;
+                var primaryTable = schema.CriticalTablesFound.FirstOrDefault()
+                    ?? schema.Tables.FirstOrDefault()
+                    ?? "unknown_table";
+                return $"SELECT TOP 1000 * FROM {primaryTable} ORDER BY 1 DESC";
             }
         }
 
         public async Task<AITransformationResult> TransformDataIntelligentlyAsync(
-            Dictionary<string, object> rawData,
+            Dictionary<string, object?> rawData,
             DetectedSchema schema)
         {
             _logger.LogDebug("🧠 AI transforming data with {RuleCount} intelligent rules...", _aiTransformationRules.Count);
@@ -69,7 +72,7 @@ namespace TerraFusion.Sync.Services
                 TransformationId = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow,
                 SourceSystem = schema.SystemIdentification.SystemName,
-                TransformedData = new Dictionary<string, object>(),
+                TransformedData = new Dictionary<string, object?>(),
                 QualityIssues = new List<AIQualityIssue>(),
                 AppliedRules = new List<string>(),
                 ConfidenceScore = _accuracyScore
@@ -114,7 +117,7 @@ namespace TerraFusion.Sync.Services
         }
 
         private async Task<FieldTransformationResult> ApplyAITransformationAsync(
-            string fieldName, object fieldValue, DetectedSchema schema)
+            string fieldName, object? fieldValue, DetectedSchema schema)
         {
             var result = new FieldTransformationResult
             {
@@ -169,7 +172,7 @@ namespace TerraFusion.Sync.Services
             return result;
         }
 
-        private async Task<string> DetectFieldTypeWithAIAsync(string fieldName, object fieldValue)
+        private async Task<string> DetectFieldTypeWithAIAsync(string fieldName, object? fieldValue)
         {
             var fieldNameLower = fieldName.ToLower();
             var valueString = fieldValue?.ToString() ?? "";
@@ -217,13 +220,13 @@ namespace TerraFusion.Sync.Services
             return "text";
         }
 
-        private AITransformationRule GetAITransformationRule(string fieldType)
+        private AITransformationRule? GetAITransformationRule(string fieldType)
         {
             return _aiTransformationRules.GetValueOrDefault(fieldType);
         }
 
-        private async Task<AIQualityIssue> ValidateTransformationQualityAsync(
-            string fieldName, object originalValue, object transformedValue, AITransformationRule rule)
+        private async Task<AIQualityIssue?> ValidateTransformationQualityAsync(
+            string fieldName, object? originalValue, object? transformedValue, AITransformationRule rule)
         {
             await Task.CompletedTask;
             await Task.CompletedTask;
@@ -278,7 +281,7 @@ namespace TerraFusion.Sync.Services
                 _accuracyScore, _transformationCount);
         }
 
-        private async Task LearnNewPatternAsync(string fieldName, object fieldValue, string detectedType)
+        private async Task LearnNewPatternAsync(string fieldName, object? fieldValue, string detectedType)
         {
             await Task.CompletedTask;
             await Task.CompletedTask;
@@ -562,7 +565,8 @@ namespace TerraFusion.Sync.Services
     {
         public string RuleName { get; set; } = "";
         public string FieldType { get; set; } = "";
-        public Func<object, Dictionary<string, DataPattern>, Task<object>> TransformAsync { get; set; }
+        public Func<object?, Dictionary<string, DataPattern>, Task<object?>> TransformAsync { get; set; } =
+            (value, _) => Task.FromResult(value);
         public bool AllowNullOutput { get; set; }
         public int SuccessCount { get; set; }
     }
@@ -572,7 +576,7 @@ namespace TerraFusion.Sync.Services
         public Guid TransformationId { get; set; }
         public DateTime Timestamp { get; set; }
         public string SourceSystem { get; set; } = "";
-        public Dictionary<string, object> TransformedData { get; set; } = new();
+        public Dictionary<string, object?> TransformedData { get; set; } = new();
         public List<AIQualityIssue> QualityIssues { get; set; } = new();
         public List<string> AppliedRules { get; set; } = new();
         public double ConfidenceScore { get; set; }
@@ -583,8 +587,8 @@ namespace TerraFusion.Sync.Services
     public class FieldTransformationResult
     {
         public string FieldName { get; set; } = "";
-        public object OriginalValue { get; set; }
-        public object Value { get; set; }
+        public object? OriginalValue { get; set; }
+        public object? Value { get; set; }
         public List<string> RulesApplied { get; set; } = new();
         public List<AIQualityIssue> QualityIssues { get; set; } = new();
     }
@@ -593,8 +597,8 @@ namespace TerraFusion.Sync.Services
     {
         public string FieldName { get; set; } = "";
         public string IssueType { get; set; } = "";
-        public string OriginalValue { get; set; } = "";
-        public string TransformedValue { get; set; } = "";
+        public string? OriginalValue { get; set; }
+        public string? TransformedValue { get; set; }
         public string Severity { get; set; } = ""; // HIGH, MEDIUM, LOW
         public string AIRecommendation { get; set; } = "";
     }

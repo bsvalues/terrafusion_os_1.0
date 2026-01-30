@@ -23,8 +23,10 @@ using TerraFusion.Levy.Models;
 using TerraFusion.Levy.Services;
 using System.Data;
 using TerraFusion.Core.Services;
+using TerraFusion.Core.PACS;
 using TerraFusion.API.Services.SpecLock;
 using TerraFusion.API.Services.Marketplace;
+using TerraFusion.API.Services.Telemetry;
 // Conditional DB providers
 using Npgsql;
 using Microsoft.Data.Sqlite;
@@ -93,6 +95,19 @@ builder.Logging.AddDebug();
 
 // Add basic services with JSON serialization configuration
 builder.Services.AddControllers()
+    .ConfigureApplicationPartManager(manager =>
+    {
+        var defaultProvider = manager.FeatureProviders
+            .FirstOrDefault(p => p is Microsoft.AspNetCore.Mvc.Controllers.ControllerFeatureProvider);
+        if (defaultProvider != null)
+        {
+            manager.FeatureProviders.Remove(defaultProvider);
+        }
+
+        manager.FeatureProviders.Add(
+            new TerraFusion.API.Controllers.NamespaceExcludingControllerFeatureProvider(
+                "TerraFusion.AI.Controllers"));
+    })
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
@@ -185,6 +200,9 @@ builder.Services.AddSingleton<IModuleLoaderService, ModuleLoaderService>();
 builder.Services.AddHostedService<ModuleLoaderService>(provider =>
     (ModuleLoaderService)provider.GetRequiredService<IModuleLoaderService>());
 
+// Agent telemetry buffer (read-only feed)
+builder.Services.AddSingleton<IAgentTelemetryService>(_ => new AgentTelemetryService(capacity: 1000));
+
 // Register module services
 builder.Services.AddScoped<TerraFusion.Core.Services.IModuleService, TerraFusion.Core.Services.ModuleService>();
 
@@ -199,9 +217,8 @@ builder.Services.AddScoped<TerraFusion.Core.Services.HarrisPacsLegacyService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, TerraFusion.Core.Services.DynamicPropertyService>();
 
 
-// 🏛️ Register Harris PACS Integration Service - Elite government property assessment system integration
-// Provides real-time bidirectional sync with Harris PACS v12.4.7 for property data, assessments, and tax records
-builder.Services.AddScoped<TerraFusion.Core.Services.IHarrisPACSIntegrationService, TerraFusion.Core.Services.HarrisPACSIntegrationService>();
+// 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
+builder.Services.AddPacsAdapter();
 // Conditionally register Redis-backed cache or NoOp fallback
 if (redisAvailable)
 {
@@ -250,7 +267,7 @@ builder.Services.AddScoped<TerraFusionOperationsInterfaces.IEliteOperationalServ
 // builder.Services.AddHostedService<PluginHotReloadService>();
 
 // Add AutoMapper
-builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(TerraFusion.Core.Services.ModuleService).Assembly);
+builder.Services.AddAutoMapper(typeof(TerraFusion.API.Program).Assembly, typeof(TerraFusion.Core.Services.ModuleService).Assembly);
 
 // Register Rust FFI Service
 // TEMPORARILY DISABLED - ffi_bridge.dll is placeholder, may cause issues
@@ -1220,4 +1237,4 @@ catch (Exception ex)
     throw;
 }
 
-
+public partial class Program { }

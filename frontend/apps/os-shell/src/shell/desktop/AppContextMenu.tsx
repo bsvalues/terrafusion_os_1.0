@@ -20,6 +20,7 @@
 
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { getLucideIcon } from '../../config/iconMap';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
 
 // ============================================================================
@@ -84,9 +85,15 @@ export const AppContextMenu: React.FC<AppContextMenuProps> = ({ module, position
   const pinnedApps = useStartMenuStore((state) => state.pinnedApps);
   const addPinnedApp = useStartMenuStore((state) => state.addPinnedApp);
   const removePinnedApp = useStartMenuStore((state) => state.removePinnedApp);
+  if (!module) {
+    return null;
+  }
+
+  const iconKey = module.icon || (module as any).iconName || 'Package';
+  const Icon = getLucideIcon(iconKey);
 
   // Check if current module is pinned
-  const isPinned = module ? pinnedApps.some((app) => app.id === module.id) : false;
+  const isPinned = pinnedApps.some((app) => app.id === module.id);
 
   // Handle pin/unpin
   const handleTogglePin = useCallback(() => {
@@ -175,10 +182,6 @@ export const AppContextMenu: React.FC<AppContextMenuProps> = ({ module, position
   }, [module, onClose]);
 
   // Don't render if no module
-  if (!module) {
-    return null;
-  }
-
   return (
     <div
       ref={menuRef}
@@ -198,7 +201,7 @@ export const AppContextMenu: React.FC<AppContextMenuProps> = ({ module, position
       {/* Menu Header */}
       <div className='flex items-center gap-2 px-3 py-2 border-b border-white/10'>
         <span className='text-lg' aria-hidden='true'>
-          {module.icon}
+          <Icon className='h-5 w-5 text-white' />
         </span>
         <span className='text-sm text-white/90 font-medium truncate'>{module.name}</span>
       </div>

@@ -95,7 +95,7 @@ namespace TerraFusion.API.Hubs
             await base.OnConnectedAsync();
         }
 
-        public override async Task OnDisconnectedAsync(Exception exception)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
             _logger.LogInformation("Client disconnected from Harris PACS Enhancement Hub: {ConnectionId}", Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);

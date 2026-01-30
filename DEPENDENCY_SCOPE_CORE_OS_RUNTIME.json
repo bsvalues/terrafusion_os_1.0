@@ -183,6 +183,10 @@
           "foundAt": "backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj"
         },
         {
+          "marker": "dotnet",
+          "foundAt": "backend/tools/TerraFusion.CiHints/TerraFusion.CiHints.csproj"
+        },
+        {
           "marker": "package.json:buildOrTest",
           "foundAt": "backend/ai-models/BENTON_COUNTY_CHAMPIONSHIP_DEMO/package.json"
         },

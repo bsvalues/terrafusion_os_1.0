@@ -12,7 +12,7 @@ namespace TerraFusion.API.Security
     public interface IJwtAuthService
     {
         string GenerateToken(string userId, string email, IEnumerable<string> roles);
-        ClaimsPrincipal ValidateToken(string token);
+        ClaimsPrincipal? ValidateToken(string token);
         Task<bool> ValidateAsync(string token);
     }
 

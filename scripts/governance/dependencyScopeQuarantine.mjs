@@ -28,9 +28,26 @@ function main() {
 
   const currentCount = quarantineData.length;
   const baselineCount = baselineData.count;
+  const delta = currentCount - baselineCount;
 
   console.log(`Current Quarantine Count: ${currentCount}`);
   console.log(`Baseline Quarantine Count: ${baselineCount}`);
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // QUARANTINE POLICY (Option A): Monotonic decrease allowed, increase blocked
+  // ────────────────────────────────────────────────────────────────────────────
+  // PASS if current <= baseline  (shrinking or stable = good)
+  // FAIL if current > baseline   (regression = bad)
+  // ════════════════════════════════════════════════════════════════════════════
+  const isPass = currentCount <= baselineCount;
+  const policyNote =
+    delta < 0
+      ? `✅ Quarantine shrank by ${Math.abs(delta)} (improvement)`
+      : delta === 0
+        ? `✅ Quarantine stable at baseline`
+        : `❌ Quarantine grew by ${delta} (regression blocked)`;
+
+  console.log(policyNote);
 
   // Create the requested snapshot/output
   fs.writeFileSync(
@@ -38,10 +55,13 @@ function main() {
     JSON.stringify(
       {
         timestamp: new Date().toISOString(),
-        status: currentCount <= baselineCount ? 'PASS' : 'FAIL',
+        status: isPass ? 'PASS' : 'FAIL',
+        policy: 'monotonic-decrease-allowed',
+        policyNote,
         metrics: {
           current: currentCount,
           baseline: baselineCount,
+          delta,
         },
         quarantineList: quarantineData.map(q => q.root),
       },
@@ -51,10 +71,11 @@ function main() {
   );
   console.log(`Snapshot written to ${SNAPSHOT_FILE}`);
 
-  if (currentCount > baselineCount) {
+  if (!isPass) {
     console.error(
       `FAILURE: Quarantine count (${currentCount}) exceeds baseline (${baselineCount}).`
     );
+    console.error(`Update baseline or reduce quarantine entries before merging.`);
     process.exit(1);
   }
 

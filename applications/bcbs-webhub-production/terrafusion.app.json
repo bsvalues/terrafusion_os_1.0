@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "webhub",
+  "displayName": "WebHub",
+  "description": "County Web Portal & Public Interface Hub",
+  "iconName": "Globe",
+  "category": "system",
+  "tier": 2,
+  "status": "legacy",
+  "pinned": false,
+  "version": "1.0.0",
+  "intent": "legacy",
+  "runnable": false,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5185/"
+  },
+  "tags": ["portal", "public", "web", "legacy"],
+  "permissions": ["county:read"]
+}

@@ -308,6 +308,92 @@ Reliability Through Quantum-Inspired Motion Design
 
 /* ===== ADVANCED COMPONENT ANIMATIONS ===== */
 
+/* Floating Particle Animation */
+@keyframes quantum-float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translate(10px, -20px) scale(1.1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-5px, -40px) scale(1);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translate(-15px, -20px) scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+.animate-float {
+  animation: quantum-float 8s ease-in-out infinite;
+}
+
+/* Slide Up Animation for Start Menu */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Pulse Glow Animation */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Rotate Animation */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-rotate {
+  animation: rotate 10s linear infinite;
+}
+
 /* Module Transcendence Loading */
 @keyframes module-transcendence-load {
   0% {

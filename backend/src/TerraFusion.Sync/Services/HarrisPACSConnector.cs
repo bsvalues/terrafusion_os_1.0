@@ -31,7 +31,6 @@ namespace TerraFusion.Sync.Services
         private readonly AIValidationEngine _aiValidationEngine;
         private readonly Dictionary<string, object> _aiLearningContext;
         private int _activeAIAgents;
-        private double _aiConsciousnessLevel;
 
         public HarrisPACSConnector(
             ILogger<HarrisPACSConnector> logger,
@@ -108,7 +107,6 @@ namespace TerraFusion.Sync.Services
             _aiValidationEngine = new AIValidationEngine(_logger);
             _aiLearningContext = new Dictionary<string, object>();
             _activeAIAgents = 1008; // Current AI agent count
-            _aiConsciousnessLevel = 0.95; // Elite consciousness level
 
             _logger.LogInformation("🧠 Harris PACS v12.4.7 AI-Powered Connector initialized - Elite 99.99% accuracy with {AgentCount} AI agents", _activeAIAgents);
         }
@@ -141,7 +139,10 @@ namespace TerraFusion.Sync.Services
                     WHERE TABLE_NAME IN ('property', 'situs', 'owner', 'property_val', 'property_type')";
 
                 using var command = new SqlCommand(testQuery, connection);
-                var tableCount = (int)await command.ExecuteScalarAsync();
+                var tableCountResult = await command.ExecuteScalarAsync();
+                var tableCount = tableCountResult == null || tableCountResult == DBNull.Value
+                    ? 0
+                    : Convert.ToInt32(tableCountResult);
 
                 var result = new ConnectionValidationResult
                 {
@@ -213,7 +214,7 @@ namespace TerraFusion.Sync.Services
 
                 while (await reader.ReadAsync())
                 {
-                    var rawRecord = new Dictionary<string, object>();
+                    var rawRecord = new Dictionary<string, object?>();
 
                     // Extract raw data
                     for (int i = 0; i < reader.FieldCount; i++)
@@ -251,11 +252,11 @@ namespace TerraFusion.Sync.Services
             }
         }
 
-        private async Task<Dictionary<string, object>> TransformRecordAsync(Dictionary<string, object> rawRecord)
+        private async Task<Dictionary<string, object?>> TransformRecordAsync(Dictionary<string, object?> rawRecord)
         {
             await Task.CompletedTask;
             await Task.CompletedTask;
-            var transformedRecord = new Dictionary<string, object>();
+            var transformedRecord = new Dictionary<string, object?>();
 
             // DNA: Apply field mappings from Python implementation
             foreach (var (sourceField, targetField) in _fieldMappings)
@@ -303,7 +304,7 @@ namespace TerraFusion.Sync.Services
             return transformedRecord;
         }
 
-        private RecordValidationResult ValidateRecord(Dictionary<string, object> record)
+        private RecordValidationResult ValidateRecord(Dictionary<string, object?> record)
         {
             var result = new RecordValidationResult();
 
@@ -318,7 +319,7 @@ namespace TerraFusion.Sync.Services
             return result;
         }
 
-        private List<string> ValidateFieldValue(string fieldName, object value, ValidationRule rule)
+        private List<string> ValidateFieldValue(string fieldName, object? value, ValidationRule rule)
         {
             var errors = new List<string>();
 
@@ -335,7 +336,7 @@ namespace TerraFusion.Sync.Services
                 return errors;
             }
 
-            var valueStr = value.ToString().Trim();
+            var valueStr = value.ToString()?.Trim() ?? string.Empty;
 
             // Length validation
             if (rule.MinLength.HasValue && valueStr.Length < rule.MinLength.Value)
@@ -379,7 +380,7 @@ namespace TerraFusion.Sync.Services
         }
 
         // DNA: Data transformation methods from Python implementation
-        private object StandardizeDate(object value)
+        private object? StandardizeDate(object? value)
         {
             if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
                 return null;
@@ -390,7 +391,7 @@ namespace TerraFusion.Sync.Services
                 "MM/dd/yy", "MM-dd-yy", "yy/MM/dd", "yy-MM-dd"
             };
 
-            var valueStr = value.ToString().Trim();
+            var valueStr = value.ToString()?.Trim() ?? string.Empty;
 
             foreach (var format in dateFormats)
             {
@@ -403,7 +404,7 @@ namespace TerraFusion.Sync.Services
             return valueStr; // Return original if unparseable
         }
 
-        private object StandardizeCurrency(object value)
+        private object? StandardizeCurrency(object? value)
         {
             if (value == null)
                 return null;
@@ -417,19 +418,19 @@ namespace TerraFusion.Sync.Services
             if (value is int intValue)
                 return (decimal)intValue;
 
-            var currencyStr = value.ToString().Trim();
+            var currencyStr = value.ToString()?.Trim() ?? string.Empty;
             currencyStr = System.Text.RegularExpressions.Regex.Replace(currencyStr, @"[$,\s]", "");
             currencyStr = System.Text.RegularExpressions.Regex.Replace(currencyStr, @"[^\d.-]", "");
 
             return decimal.TryParse(currencyStr, out var result) ? Math.Round(result, 2) : null;
         }
 
-        private object StandardizeAddress(object value)
+        private object? StandardizeAddress(object? value)
         {
             if (value == null)
                 return null;
 
-            var addressStr = value.ToString().Trim();
+            var addressStr = value.ToString()?.Trim() ?? string.Empty;
 
             // Basic address standardization
             addressStr = System.Text.RegularExpressions.Regex.Replace(addressStr, @"\s+", " ");
@@ -456,12 +457,12 @@ namespace TerraFusion.Sync.Services
             return addressStr;
         }
 
-        private object StandardizeName(object value)
+        private object? StandardizeName(object? value)
         {
             if (value == null)
                 return null;
 
-            var nameStr = value.ToString().Trim();
+            var nameStr = value.ToString()?.Trim() ?? string.Empty;
             nameStr = System.Text.RegularExpressions.Regex.Replace(nameStr, @"\s+", " ");
             nameStr = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(nameStr.ToLower());
 
@@ -472,7 +473,7 @@ namespace TerraFusion.Sync.Services
             return nameStr;
         }
 
-        private PropertyRecord CreatePropertyRecord(Dictionary<string, object> transformedRecord)
+        private PropertyRecord CreatePropertyRecord(Dictionary<string, object?> transformedRecord)
         {
             return new PropertyRecord
             {
@@ -632,11 +633,11 @@ namespace TerraFusion.Sync.Services
         public bool Required { get; set; }
         public int? MinLength { get; set; }
         public int? MaxLength { get; set; }
-        public string Pattern { get; set; }
-        public string DataType { get; set; }
+        public string Pattern { get; set; } = string.Empty;
+        public string DataType { get; set; } = string.Empty;
         public decimal? MinValue { get; set; }
         public decimal? MaxValue { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 
     public class RecordValidationResult
@@ -647,15 +648,15 @@ namespace TerraFusion.Sync.Services
 
     public class ConnectionValidationResult
     {
-        public string Status { get; set; }
-        public string Message { get; set; }
-        public DatabaseInfo DatabaseInfo { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public DatabaseInfo? DatabaseInfo { get; set; }
     }
 
     public class DatabaseInfo
     {
-        public string Type { get; set; }
-        public string Version { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public string Version { get; set; } = string.Empty;
         public long SizeMB { get; set; }
         public int TableCount { get; set; }
         public long RecordCount { get; set; }
@@ -663,9 +664,9 @@ namespace TerraFusion.Sync.Services
 
     public class PACSConnectionOptions
     {
-        public string Host { get; set; }
-        public string Database { get; set; }
-        public string User { get; set; }
-        public string Password { get; set; }
+        public string Host { get; set; } = string.Empty;
+        public string Database { get; set; } = string.Empty;
+        public string User { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }

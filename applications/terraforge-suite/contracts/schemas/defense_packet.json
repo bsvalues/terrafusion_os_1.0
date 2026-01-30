@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/defense_packet.json",
+  "title": "DefensePacket",
+  "description": "Defense packet output from TerraForge Defense Studio for value appeals",
+  "type": "object",
+  "properties": {
+    "parcelId": {
+      "type": "string",
+      "description": "Parcel identifier"
+    },
+    "assessedValue": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Assessed value (integer cents avoided, whole dollars)"
+    },
+    "salePrice": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sale price for comparison"
+    },
+    "ratio": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "Assessment ratio (assessed/sale), rounded to 2 decimals"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["OK", "Review Required", "Appeal Likely"],
+      "description": "Defense status based on ratio analysis"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Human-readable summary of the defense analysis"
+    },
+    "components": {
+      "type": "object",
+      "properties": {
+        "land": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "building": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": ["land", "building"],
+      "additionalProperties": false
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when packet was generated"
+    },
+    "packetHash": {
+      "type": "string",
+      "description": "Deterministic hash of packet contents for verification"
+    }
+  },
+  "required": [
+    "parcelId",
+    "assessedValue",
+    "salePrice",
+    "ratio",
+    "status",
+    "summary",
+    "components",
+    "generatedAt",
+    "packetHash"
+  ],
+  "additionalProperties": false
+}

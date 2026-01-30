@@ -10,7 +10,7 @@ ARCH_ANCHOR: 9af5bb291
 - QUARANTINE: 128
 
 ## Top Evidence Samples
-- . -> CORE_OS_TOOLING (local=4; total=6; wiring=none)
+- . -> CORE_OS_TOOLING (local=6; total=8; wiring=none)
 - .ai -> QUARANTINE (local=0; total=0; wiring=kernel-gateway-ref)
 - BS_PACS -> QUARANTINE (local=2; total=3; wiring=none)
 - CONSOLIDATED_20250915_062012 -> QUARANTINE (local=2; total=3; wiring=none)

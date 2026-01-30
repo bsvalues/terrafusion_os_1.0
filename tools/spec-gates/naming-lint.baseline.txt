@@ -1,0 +1,323 @@
+ARCHITECTURE_PLAN_FINAL.md:158:Terra Levy
+Dev - Copy (2)/Archive/TerraFusionMono/START_HERE_DEV_ONBOARDING_KIT/CURSOR_ELITE_PLAYBOOK.md:1:TERRA FUSION
+Dev - Copy (2)/Archive/TerraFusionMono/TerraFusionMono/CURSOR_ELITE_PLAYBOOK.md:1:TERRA FUSION
+Dev - Copy (2)/Archive/TerraFusionMono/TerraFusionMono/START_HERE_DEV_ONBOARDING_KIT/CURSOR_ELITE_PLAYBOOK.md:1:TERRA FUSION
+Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/ARCHITECTURE_PLAN_FINAL.md:158:Terra Levy
+Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/PHASE_3_PRECISION_EXECUTION_COMPLETE.md:109:Terra Levy
+Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/PHASE_3_PRECISION_EXECUTION_COMPLETE.md:48:Terra Levy
+Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/PHASE_4_VALIDATION_IN_PROGRESS.md:32:Terra Levy
+Dev - Copy (2)/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/playwright.mcp.config.ts:209:Terra Levy
+Dev - Copy/Archive/TerraFusionMono/START_HERE_DEV_ONBOARDING_KIT/CURSOR_ELITE_PLAYBOOK.md:1:TERRA FUSION
+Dev - Copy/Archive/TerraFusionMono/TerraFusionMono/CURSOR_ELITE_PLAYBOOK.md:1:TERRA FUSION
+Dev/Archive/TerraFusionMono/START_HERE_DEV_ONBOARDING_KIT/CURSOR_ELITE_PLAYBOOK.md:1:TERRA FUSION
+Dev/Archive/TerraFusionMono/TerraFusionMono/CURSOR_ELITE_PLAYBOOK.md:1:TERRA FUSION
+Dev/Archive/TerraFusionMono/TerraFusionMono/START_HERE_DEV_ONBOARDING_KIT/CURSOR_ELITE_PLAYBOOK.md:1:TERRA FUSION
+Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/ARCHITECTURE_PLAN_FINAL.md:158:Terra Levy
+Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/PHASE_3_PRECISION_EXECUTION_COMPLETE.md:109:Terra Levy
+Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/PHASE_3_PRECISION_EXECUTION_COMPLETE.md:48:Terra Levy
+Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/PHASE_4_VALIDATION_IN_PROGRESS.md:32:Terra Levy
+Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/playwright.mcp.config.ts:209:Terra Levy
+PHASE_3_PRECISION_EXECUTION_COMPLETE.md:109:Terra Levy
+PHASE_3_PRECISION_EXECUTION_COMPLETE.md:48:Terra Levy
+PHASE_4_VALIDATION_IN_PROGRESS.md:32:Terra Levy
+SDK/modules/terra-fusion-permit/PHASE_C3_COMPLETION_REPORT.md:1:TERRA FUSION
+SDK/modules/terra-fusion-permit/src/data/mockData.ts:29:Terra Fusion
+SDK/tools/validate-terra-fusion-permit.py:102:TERRA FUSION
+SDK/tools/validate-terra-fusion-permit.py:130:TERRA FUSION
+SDK/tools/validate-terra-fusion-permit.py:3:TERRA FUSION
+TerraFusion_Command_Portal_Starter/terrafusion-command-portal/INTEGRATION_GUIDE.md:113:Terra Levy
+TerraFusion_Command_Portal_Starter/terrafusion-command-portal/backend/src/ai_adapter.rs:168:Terra Levy
+TerraFusion_Command_Portal_Starter/terrafusion-command-portal/backend/src/ai_adapter.rs:328:Terra Levy
+TerraFusion_Command_Portal_Starter/terrafusion-command-portal/backend/src/deployments.rs:238:Terra Levy
+TerraFusion_Command_Portal_Starter/terrafusion-command-portal/backend/src/workspace_integration.rs:195:Terra Levy
+TerraFusion_Command_Portal_Starter/terrafusion-command-portal/frontend-legacy/app/(routes)/collaboration/page.tsx:137:Terra Levy
+TerraFusion_Command_Portal_Starter/terrafusion-command-portal/frontend-legacy/app/(routes)/collaboration/page.tsx:396:Terra Levy
+TerraFusion_Command_Portal_Starter/terrafusion-command-portal/frontend-legacy/app/(routes)/deployments/page.tsx:630:Terra Levy
+TerraFusion_Command_Portal_Starter/terrafusion-command-portal/frontend-legacy/app/(routes)/deployments/page.tsx:88:Terra Levy
+TerraFusion_Workspace_Enhancements_Addon/terrafusion-workspace-enhancements/platform/qa/integration/revenue-flow.test.ts:3:Terra Levy
+WORKSPACE_STRATEGY_ENHANCEMENTS.md:359:Terra Levy
+WORKSPACE_STRATEGY_ENHANCEMENTS.md:395:Terra Levy
+WORKSPACE_STRATEGY_ENHANCEMENTS.md:397:Terra Levy
+WORKSPACE_STRATEGY_ENHANCEMENTS.md:612:Terra Levy
+WORKSPACE_STRATEGY_ENHANCEMENTS.md:676:Terra Levy
+WORKSPACE_SYSTEM_RESTORATION_COMPLETE.md:92:Terra Levy
+_CLEAN_BUILD_ZONE/src/components/ApplicationLauncher.tsx:36:Terra Levy
+_CLEAN_BUILD_ZONE/src/components/BrandKit.tsx:39:Terra Levy
+_CLEAN_BUILD_ZONE/src/components/PWAShell.tsx:64:Terra Levy
+_CLEAN_BUILD_ZONE/src/components/core/ModuleLauncher.tsx:89:Terra Levy
+_CLEAN_BUILD_ZONE/src/services/moduleAPI.ts:31:Terra Fusion
+_CLEAN_BUILD_ZONE/src/services/moduleAPI.ts:32:Terra Levy
+_CLEAN_BUILD_ZONE/src/services/moduleAPI.ts:43:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/modules/ACTIVE_MODULES.md:23:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/modules/modules/ACTIVE_MODULES.md:23:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:154:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:167:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:63:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:89:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/04-terra-levy/README.md:1:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/04-terra-levy/src/BrandedApp.tsx:17:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/04-terra-levy/src/BrandedApp.tsx:2:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/06-terra-fusion-sync/README.md:1:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/11-terra-fusion-dashboard/README.md:1:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/11-terra-fusion-dashboard/src-tauri/Cargo.toml:4:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/12-terra-fusion-assessor/README.md:1:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/commercial/modules/13-marketplace/src-tauri/Cargo.toml:4:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:154:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:167:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:63:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:89:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/government-edition/API/TerraFusion.API/Program.cs:41:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:154:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:167:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:63:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:89:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/government-edition/PWA/src/TerraFusionEnhanced.jsx:236:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:154:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:167:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:63:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:89:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/04-terra-levy/README.md:1:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/04-terra-levy/src/BrandedApp.tsx:17:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/04-terra-levy/src/BrandedApp.tsx:2:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/06-terra-fusion-sync/README.md:1:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/11-terra-fusion-dashboard/README.md:1:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/11-terra-fusion-dashboard/src-tauri/Cargo.toml:4:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/12-terra-fusion-assessor/README.md:1:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/commercial/modules/13-marketplace/src-tauri/Cargo.toml:4:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:154:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:167:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:63:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:89:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/government-edition/API/TerraFusion.API/Program.cs:41:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:154:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:167:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:63:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:89:Terra Fusion
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/government-edition/PWA/src/TerraFusionEnhanced.jsx:236:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/COMPREHENSIVE_TECHNICAL_AUDIT_REPORT.md:177:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/FINAL_TEST.js:54:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/clean-modules.js:374:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/comprehensive-test.js:28:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/debug-fix.js:52:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/debug-fix.js:57:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/debug-fix.js:59:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/fix-modules.js:162:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/fix-modules.js:281:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/interface-manager.js:208:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/interface-manager.js:645:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/interface-manager.js:646:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/main.js:879:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/main.js:888:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/main.js:891:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/main.js:892:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/terra-levy-old.js:2:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/terra-levy-old.js:37:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/terra-levy-old.js:405:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/terra-levy-old.js:449:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/terra-levy-old.js:453:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/terra-levy.js:260:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/terra-levy.js:2:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/js/terra-levy.js:30:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/quick-feature-test.js:14:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/packages/shock-and-awe/test-features.js:182:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/COMPREHENSIVE_TECHNICAL_AUDIT_REPORT.md:177:Terra Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/FINAL_TEST.js:54:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/clean-modules.js:374:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/comprehensive-test.js:28:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/debug-fix.js:52:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/debug-fix.js:57:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/debug-fix.js:59:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/fix-modules.js:162:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/fix-modules.js:281:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/interface-manager.js:208:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/interface-manager.js:645:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/interface-manager.js:646:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/main.js:879:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/main.js:888:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/main.js:891:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/main.js:892:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/terra-levy-old.js:2:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/terra-levy-old.js:37:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/terra-levy-old.js:405:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/terra-levy-old.js:449:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/terra-levy-old.js:453:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/terra-levy.js:260:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/terra-levy.js:2:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/js/terra-levy.js:30:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/quick-feature-test.js:14:Terra-Levy
+_pre_restore_safety_20260108_144218/data/archives/old-projects/packages/shock-and-awe/test-features.js:182:Terra-Levy
+applications/terra-levy/ELITE_STATUS_REPORT.md:238:TERRA LEVY
+applications/terra-playground-main/server/services/repository-marketplace-service.ts:18:Terra Fusion
+applications/terra-playground-main/shared/schema.ts:27:Terra Fusion
+applications/terra-playground-production/server/services/repository-marketplace-service.ts:18:Terra Fusion
+applications/terra-playground-production/shared/schema.ts:27:Terra Fusion
+backend/TerraFusion.Marketplace/Services/MarketplaceEngine.cs:524:Terra Fusion
+backend/TerraFusion.Marketplace/Services/MarketplaceEngine.cs:524:Terra Levy
+backend/src/TerraFusion.API/Services/FullModuleInitializationService.cs:151:Terra Levy
+backend/src/TerraFusion.API/Services/FullModuleInitializationService.cs:379:Terra Fusion
+backend/src/TerraFusion.API/Services/FullModuleInitializationService.cs:392:Terra Fusion
+backend/src/TerraFusion.API/Services/FullModuleInitializationService.cs:405:Terra Fusion
+backend/src/TerraFusion.Data/TerraFusionContext.cs:130:Terra Levy
+costforge-ai/api/empowerment-report.py:164:Terra Levy
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Additional_Documentation/SYSTEM_ARCHITECTURE_REVIEW.md:30:Terra-Levy
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/02-terra-flow/src/components/CrossAppAutomation.tsx:154:Terra Fusion
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/02-terra-flow/src/components/CrossAppAutomation.tsx:167:Terra Fusion
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/02-terra-flow/src/components/CrossAppAutomation.tsx:63:Terra Levy
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/02-terra-flow/src/components/CrossAppAutomation.tsx:89:Terra Fusion
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/04-terra-levy/src/BrandedApp.tsx:21:Terra Levy
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/04-terra-levy/src/BrandedApp.tsx:2:TERRA LEVY
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/04-terra-levy/src/BrandedApp.tsx:39:Terra Levy
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/11-terra-fusion-dashboard/src-tauri/Cargo.toml:4:Terra Fusion
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/13-marketplace/src-tauri/Cargo.toml:4:Terra Fusion
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/Core_Modules/02-terra-flow/components/CrossAppAutomation.tsx:154:Terra Fusion
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/Core_Modules/02-terra-flow/components/CrossAppAutomation.tsx:167:Terra Fusion
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/Core_Modules/02-terra-flow/components/CrossAppAutomation.tsx:63:Terra Levy
+deployment/advanced/packages/BentonCounty_COMPLETE_WhiteGlove_Package/Championship_Modules/Core_Modules/02-terra-flow/components/CrossAppAutomation.tsx:89:Terra Fusion
+deployment/production/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:154:Terra Fusion
+deployment/production/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:167:Terra Fusion
+deployment/production/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:63:Terra Levy
+deployment/production/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:89:Terra Fusion
+deployment/production/modules/04-terra-levy/README.md:1:Terra Levy
+deployment/production/modules/04-terra-levy/src/BrandedApp.tsx:17:Terra Levy
+deployment/production/modules/04-terra-levy/src/BrandedApp.tsx:2:Terra Levy
+deployment/production/modules/06-terra-fusion-sync/README.md:1:Terra Fusion
+deployment/production/modules/11-terra-fusion-dashboard/README.md:1:Terra Fusion
+deployment/production/modules/11-terra-fusion-dashboard/src-tauri/Cargo.toml:4:Terra Fusion
+deployment/production/modules/12-terra-fusion-assessor/README.md:1:Terra Fusion
+docs/Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/ARCHITECTURE_PLAN_FINAL.md:158:Terra Levy
+docs/Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/PHASE_3_PRECISION_EXECUTION_COMPLETE.md:109:Terra Levy
+docs/Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/PHASE_3_PRECISION_EXECUTION_COMPLETE.md:48:Terra Levy
+docs/Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/PHASE_4_VALIDATION_IN_PROGRESS.md:32:Terra Levy
+docs/Dev/TerraFusionOS/terrafusion-os.worktrees/worktree-2025-12-23T18-28-15/playwright.mcp.config.ts:209:Terra Levy
+docs/architecture/MCP_SERVER_CLASSIFICATION.md:120:Terra Fusion
+docs/architecture/MCP_SERVER_CLASSIFICATION.md:178:Terra Fusion
+docs/architecture/MCP_SERVER_CLASSIFICATION.md:205:Terra Fusion
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:133:Terra Fusion
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:133:Terra Levy
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:234:Terra Fusion
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:253:Terra Fusion
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:254:Terra Levy
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:355:Terra Fusion
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:358:Terra Fusion
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:360:Terra Levy
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:391:Terra Fusion
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:436:Terra Fusion
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:440:Terra Levy
+docs/architecture/SYSTEM_ARCHITECTURE_MAP.md:472:Terra Fusion
+docs/architecture/SYSTEM_DESIGN_DOCUMENT.md:254:Terra Fusion
+docs/architecture/SYSTEM_DESIGN_DOCUMENT.md:256:Terra Levy
+docs/architecture/SYSTEM_DESIGN_DOCUMENT.md:279:Terra Fusion
+docs/architecture/SYSTEM_DESIGN_DOCUMENT.md:320:Terra Levy
+docs/architecture/SYSTEM_DESIGN_DOCUMENT.md:472:Terra Fusion
+docs/architecture/SYSTEM_DESIGN_DOCUMENT.md:506:Terra Fusion
+docs/architecture/SYSTEM_DESIGN_DOCUMENT.md:510:Terra Levy
+docs/architecture/SYSTEM_DESIGN_DOCUMENT.md:61:Terra Fusion
+docs/architecture/TERRAFUSION_OS_ARCHITECTURE_ANALYSIS.md:151:Terra Fusion
+docs/architecture/TERRAFUSION_OS_ARCHITECTURE_ANALYSIS.md:174:Terra Fusion
+docs/architecture/TERRAFUSION_OS_ARCHITECTURE_ANALYSIS.md:187:Terra Fusion
+docs/archive/history/PHASE_3_PRECISION_EXECUTION_COMPLETE.md:109:Terra Levy
+docs/archive/history/PHASE_3_PRECISION_EXECUTION_COMPLETE.md:48:Terra Levy
+docs/archive/history/PHASE_4_VALIDATION_IN_PROGRESS.md:32:Terra Levy
+docs/archive/history/WORKSPACE_SYSTEM_RESTORATION_COMPLETE.md:92:Terra Levy
+docs/audits/🎓_MIT_PHD_STRATEGIC_GAP_ANALYSIS.md:223:Terra-Fusion
+docs/audits/🎓_MIT_PHD_STRATEGIC_GAP_ANALYSIS.md:543:Terra-Fusion
+docs/audits/🎓_MIT_PHD_STRATEGIC_GAP_ANALYSIS.md:601:Terra-Fusion
+docs/audits/🎓_MIT_PHD_STRATEGIC_GAP_ANALYSIS.md:602:Terra-Levy
+docs/audits/🎓_MIT_PHD_STRATEGIC_GAP_ANALYSIS.md:646:Terra-Fusion
+docs/audits/📊_EXECUTIVE_SUMMARY_AI_GAP.md:53:Terra-Fusion
+docs/files/PROPERTY_WORKBENCH_SPEC_v3.md:29:TaraFusion
+docs/files/PROPERTY_WORKBENCH_SPEC_v3.md:29:TaraFusion
+docs/files/PROPERTY_WORKBENCH_SPEC_v3.md:30:TaraDais
+docs/phases/PHASE_0-2_COMPLETE.md:118:Terra Fusion
+docs/phases/PHASE_0-2_COMPLETE.md:170:Terra Fusion
+docs/reports/TECHNICAL_DEBT_AUDIT.md:490:Terra Fusion
+frontend/TERRAFUSION_STRATEGIC_ANALYSIS.md:275:Terra Fusion
+frontend/TERRAFUSION_STRATEGIC_ANALYSIS.md:331:Terra Fusion
+frontend/apps/os-shell/src/components/ApplicationLauncher.tsx:40:Terra Levy
+frontend/apps/os-shell/src/components/BrandKit.tsx:49:Terra Levy
+frontend/apps/os-shell/src/components/PWAShell.tsx:81:Terra Levy
+frontend/apps/os-shell/src/components/core/ModuleLauncher.tsx:93:Terra Levy
+frontend/apps/os-shell/src/ipc/__tests__/ipcBridge.test.ts:28:Terra Levy
+frontend/apps/os-shell/src/services/QuantumModuleManager.ts:106:Terra Levy
+frontend/apps/os-shell/src/services/moduleAPI.ts:110:Terra Fusion
+frontend/apps/os-shell/src/services/moduleAPI.ts:111:Terra Fusion
+frontend/apps/os-shell/src/services/moduleAPI.ts:122:Terra Levy
+frontend/apps/os-shell/src/services/moduleAPI.ts:123:Terra Levy
+frontend/apps/os-shell/src/services/moduleAPI.ts:232:Terra Fusion
+frontend/apps/os-shell/src/services/moduleAPI.ts:233:Terra Fusion
+frontend/apps/os-shell/src/stores/__tests__/moduleRegistryStore.test.ts:92:Terra Levy
+frontend/apps/os-shell/src/stores/__tests__/moduleRegistryStore.test.ts:93:Terra Levy
+frontend/apps/os-shell/src/stores/__tests__/startMenuStore.recent.test.ts:34:Terra Levy
+frontend/apps/os-shell/src/stores/__tests__/startMenuStore.test.ts:56:Terra Levy
+marketplace/commercial/marketplace-champion/src-tauri/Cargo.toml:4:Terra Fusion
+marketplace/government-core/terra-fusion-dashboard/src-tauri/Cargo.toml:4:Terra Fusion
+marketplace/government-core/terra-fusion-dashboard/src/App.tsx:19:Terra Fusion
+marketplace/government-core/terra-fusion-sync/src/TerraFusionSyncCore.cs:589:Terra-Fusion
+marketplace/government-core/terra-fusion-sync/src/TerraFusionSyncCore.cs:593:Terra-Fusion
+marketplace/government-core/terra-fusion-sync/src/TerraFusionSyncCore.cs:783:Terra-Fusion
+marketplace/government-core/terra-fusion-sync/src/TerraFusionSyncCore.cs:84:Terra-Fusion
+marketplace/shock-and-awe/COMPREHENSIVE_TECHNICAL_AUDIT_REPORT.md:177:Terra Levy
+marketplace/shock-and-awe/FINAL_TEST.js:54:Terra-Levy
+marketplace/shock-and-awe/clean-modules.js:374:Terra-Levy
+marketplace/shock-and-awe/comprehensive-test.js:28:Terra-Levy
+marketplace/shock-and-awe/debug-fix.js:52:Terra-Levy
+marketplace/shock-and-awe/debug-fix.js:57:Terra-Levy
+marketplace/shock-and-awe/debug-fix.js:59:Terra-Levy
+marketplace/shock-and-awe/fix-modules.js:162:Terra-Levy
+marketplace/shock-and-awe/fix-modules.js:281:Terra-Levy
+marketplace/shock-and-awe/js/interface-manager.js:208:Terra-Levy
+marketplace/shock-and-awe/js/interface-manager.js:645:Terra-Levy
+marketplace/shock-and-awe/js/interface-manager.js:646:Terra-Levy
+marketplace/shock-and-awe/js/main.js:879:Terra-Levy
+marketplace/shock-and-awe/js/main.js:888:Terra-Levy
+marketplace/shock-and-awe/js/main.js:891:Terra-Levy
+marketplace/shock-and-awe/js/main.js:892:Terra-Levy
+marketplace/shock-and-awe/js/terra-levy-old.js:2:Terra-Levy
+marketplace/shock-and-awe/js/terra-levy-old.js:37:Terra-Levy
+marketplace/shock-and-awe/js/terra-levy-old.js:405:Terra-Levy
+marketplace/shock-and-awe/js/terra-levy-old.js:449:Terra-Levy
+marketplace/shock-and-awe/js/terra-levy-old.js:453:Terra-Levy
+marketplace/shock-and-awe/js/terra-levy.js:260:Terra-Levy
+marketplace/shock-and-awe/js/terra-levy.js:2:Terra-Levy
+marketplace/shock-and-awe/js/terra-levy.js:30:Terra-Levy
+marketplace/shock-and-awe/quick-feature-test.js:14:Terra-Levy
+marketplace/shock-and-awe/test-features.js:182:Terra-Levy
+os-platform/development/tools/championship-dev/ARCHIVE/docs/SYSTEM_ARCHITECTURE_REVIEW.md:30:Terra-Levy
+os-platform/development/tools/championship-dev/ARCHIVE/legacy/apps/02-terra-flow/src/components/CrossAppAutomation.tsx:142:Terra Fusion
+os-platform/development/tools/championship-dev/ARCHIVE/legacy/apps/02-terra-flow/src/components/CrossAppAutomation.tsx:154:Terra Fusion
+os-platform/development/tools/championship-dev/ARCHIVE/legacy/apps/02-terra-flow/src/components/CrossAppAutomation.tsx:58:Terra Levy
+os-platform/development/tools/championship-dev/ARCHIVE/legacy/apps/02-terra-flow/src/components/CrossAppAutomation.tsx:82:Terra Fusion
+os-platform/development/tools/championship-dev/ARCHIVE/legacy/apps/11-terra-fusion-dashboard/src-tauri/Cargo.toml:4:Terra Fusion
+os-platform/development/tools/championship-dev/ARCHIVE/legacy/apps/13-marketplace/src-tauri/Cargo.toml:4:Terra Fusion
+packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:154:Terra Fusion
+packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:167:Terra Fusion
+packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:63:Terra Levy
+packages/commercial/modules/02-terra-flow/src/components/CrossAppAutomation.tsx:89:Terra Fusion
+packages/commercial/modules/04-terra-levy/README.md:1:Terra Levy
+packages/commercial/modules/04-terra-levy/src/BrandedApp.tsx:17:Terra Levy
+packages/commercial/modules/04-terra-levy/src/BrandedApp.tsx:2:Terra Levy
+packages/commercial/modules/06-terra-fusion-sync/README.md:1:Terra Fusion
+packages/commercial/modules/11-terra-fusion-dashboard/README.md:1:Terra Fusion
+packages/commercial/modules/11-terra-fusion-dashboard/src-tauri/Cargo.toml:4:Terra Fusion
+packages/commercial/modules/12-terra-fusion-assessor/README.md:1:Terra Fusion
+packages/commercial/modules/13-marketplace/src-tauri/Cargo.toml:4:Terra Fusion
+packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:154:Terra Fusion
+packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:167:Terra Fusion
+packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:63:Terra Levy
+packages/government-edition-enhanced-MARKED-FOR-REVIEW/02-terra-flow/src/components/CrossAppAutomation.tsx:89:Terra Fusion
+packages/government-edition/API/TerraFusion.API/Program.cs:41:Terra Levy
+packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:154:Terra Fusion
+packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:167:Terra Fusion
+packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:63:Terra Levy
+packages/government-edition/Modules/migrated/02-terra-flow/components/CrossAppAutomation.tsx:89:Terra Fusion
+packages/government-edition/PWA/src/TerraFusionEnhanced.jsx:236:Terra Levy
+playwright.mcp.config.ts:209:Terra Levy
+tests/playwright.mcp.config.ts:209:Terra Levy
+workspaces/marketplace/terra-fusion-dashboard/START_HERE_TERRAFUSION_WAY.md:34:Terra-Fusion
+workspaces/marketplace/terra-fusion-dashboard/docs/api/INTEGRATION_GUIDE.md:214:Terra Fusion
+workspaces/marketplace/terra-fusion-dashboard/tests/api/terra-fusion-dashboard-api.test.js:13:Terra Fusion
+workspaces/marketplace/terra-fusion-sync/START_HERE_TERRAFUSION_WAY.md:34:Terra-Fusion
+workspaces/marketplace/terra-fusion-sync/docs/api/INTEGRATION_GUIDE.md:214:Terra Fusion
+workspaces/marketplace/terra-fusion-sync/tests/api/terra-fusion-sync-api.test.js:13:Terra Fusion
+workspaces/marketplace/terra-levy/docs/api/INTEGRATION_GUIDE.md:214:Terra Levy
+workspaces/marketplace/terra-levy/tests/api/terra-levy-api.test.js:13:Terra Levy

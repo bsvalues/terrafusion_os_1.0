@@ -1,0 +1,398 @@
+{
+  "$schema": "./terrapilot.tools.schema.json",
+  "version": "1.3.0",
+  "description": "TerraPilot tool registry - authoritative manifest for Gates 4-7 enforcement",
+  "lastUpdated": "2026-01-29",
+  "tools": [
+    {
+      "toolId": "route_to_parcel",
+      "displayName": "Route to Parcel",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel"],
+      "description": "Navigate user to Property Workbench for a given parcel",
+      "uiSurfaces": ["workbench_tab"],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "assign_task",
+      "displayName": "Assign Task",
+      "suite": "dais",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "dais",
+      "touches": ["workflow"],
+      "description": "Assign a workflow task to a user or queue",
+      "requiresConfirmation": true,
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "check_cert_status",
+      "displayName": "Check Certification Status",
+      "suite": "dais",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["workflow"],
+      "description": "Query certification status for a parcel or batch",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "run_valuation_model",
+      "displayName": "Run Valuation Model",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": ["parcel", "model"],
+      "description": "Execute valuation model and persist results",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": [
+        "annual_certification",
+        "market_adjustment",
+        "new_construction",
+        "correction"
+      ],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "assemble_boe_packet",
+      "displayName": "Assemble BOE Packet",
+      "suite": "dais",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "dais",
+      "touches": ["workflow", "dossier"],
+      "description": "Assemble Board of Equalization packet from dossier artifacts",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["appeal_response", "board_directive"],
+      "crossSuiteReads": ["dossier"],
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier"
+    },
+    {
+      "toolId": "draft_notice",
+      "displayName": "Draft Notice",
+      "suite": "dais",
+      "mode": "muse",
+      "risk": "write_low",
+      "writeLane": "dais",
+      "touches": ["notice"],
+      "description": "Generate draft notice document for review",
+      "requiresConfirmation": true,
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "draft_appeal_response",
+      "displayName": "Draft Appeal Response",
+      "suite": "dais",
+      "mode": "muse",
+      "risk": "write_low",
+      "writeLane": "dais",
+      "touches": ["notice", "dossier"],
+      "description": "Draft an appeal response letter/memo for assessor review. Full draft stored as payloadRef in dossier store; trace records only summary and payload reference.",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "reasonCodes": [],
+      "requiresSupervisorApproval": false,
+      "supervisorRoles": [],
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "appealId": {
+            "type": "string",
+            "description": "Appeal case identifier"
+          },
+          "position": {
+            "type": "string",
+            "enum": ["uphold", "adjust", "partial"],
+            "default": "uphold"
+          },
+          "tone": {
+            "type": "string",
+            "enum": ["formal", "neutral"],
+            "default": "formal"
+          },
+          "includeEvidenceRefs": { "type": "boolean", "default": true }
+        },
+        "required": ["parcelId", "appealId"]
+      }
+    },
+    {
+      "toolId": "explain_value_change",
+      "displayName": "Explain Value Change",
+      "suite": "forge",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "model"],
+      "description": "Generate natural language explanation of value delta",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "explain_model_results",
+      "displayName": "Explain Model Results",
+      "suite": "forge",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "model"],
+      "description": "Explain valuation/model outputs (drivers, deltas, confidence, comps influence) in plain language for review and appeal preparation. Trace stores summary only; all text sanitized.",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "reasonCodes": [],
+      "requiresSupervisorApproval": false,
+      "supervisorRoles": [],
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "payloadStore": null,
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year for model results"
+          },
+          "compareToYear": {
+            "type": "integer",
+            "description": "Optional comparison year"
+          },
+          "audience": {
+            "type": "string",
+            "enum": ["internal", "taxpayer"],
+            "default": "internal"
+          }
+        },
+        "required": ["parcelId", "taxYear"]
+      }
+    },
+    {
+      "toolId": "summarize_dossier",
+      "displayName": "Summarize Dossier",
+      "suite": "dossier",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["dossier"],
+      "description": "Summarize a dossier/case file into an executive brief for review, BOE prep, or internal handoff. Stores full output as payloadRef; trace records only a summary.",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "reasonCodes": [],
+      "requiresSupervisorApproval": false,
+      "supervisorRoles": [],
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "dossierId": {
+            "type": "string",
+            "description": "Dossier identifier"
+          },
+          "focus": {
+            "type": "string",
+            "enum": ["appeal", "permit", "exemption", "general"],
+            "default": "general"
+          },
+          "length": {
+            "type": "string",
+            "enum": ["short", "standard", "detailed"],
+            "default": "standard"
+          }
+        },
+        "required": ["dossierId"]
+      }
+    },
+    {
+      "toolId": "synthesize_evidence",
+      "displayName": "Synthesize Evidence",
+      "suite": "dossier",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["dossier"],
+      "description": "Synthesize evidence from multiple dossier sources",
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier"
+    },
+    {
+      "toolId": "generate_commissioner_memo",
+      "displayName": "Generate Commissioner Memo",
+      "suite": "dais",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["workflow", "dossier"],
+      "description": "Generate draft memo for commissioner review",
+      "crossSuiteReads": ["dossier"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "request_trace_redaction",
+      "displayName": "Request Trace Redaction",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "irreversible",
+      "writeLane": "os",
+      "touches": ["workflow"],
+      "description": "Request redaction of PII from stored payloads - REQUIRES supervisor approval. Emits redaction_requested event (append-only) and marks payloads for secure deletion.",
+      "endpoints": ["/api/pilot/redaction"],
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": [
+        "court_order",
+        "data_subject_request",
+        "supervisor_override",
+        "legal_compliance"
+      ],
+      "requiresSupervisorApproval": true,
+      "supervisorRoles": ["supervisor", "administrator", "compliance_officer"],
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "secure-blob"
+    },
+    {
+      "toolId": "explain_senior_exemption_impact",
+      "displayName": "Explain Senior/Disabled Exemption Impact",
+      "suite": "dais",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "exemption"],
+      "description": "Explains how senior/disabled exemptions affect assessed value, taxable value, and estimated taxes for a Benton County parcel (taxpayer-friendly).",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "summarize_parcel_casefile",
+      "displayName": "Summarize Parcel Casefile",
+      "suite": "dossier",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["dossier", "parcel"],
+      "description": "Summarizes the dossier/casefile for a parcel (appeal history, key events, documents) with PII-safe trace handling.",
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier"
+    },
+    {
+      "toolId": "compare_assessed_value_history",
+      "displayName": "Compare Assessed Value History",
+      "suite": "forge",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "model"],
+      "description": "Compares assessed value year-over-year and explains drivers (market, new construction, corrections) in plain language.",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "summarize_levy_rate_components",
+      "displayName": "Summarize Levy Rate Components",
+      "suite": "dais",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["levy", "parcel"],
+      "description": "Breaks down estimated levy rate components (state/school/local) and explains why taxes can change without value change.",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "explain_model_inputs",
+      "displayName": "Explain Valuation Model Inputs",
+      "suite": "forge",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "model"],
+      "description": "Explains which model inputs matter most (quality, size, location, effective age) and what could justify a review.",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "draft_value_change_notice",
+      "displayName": "Draft Value Change Notice",
+      "suite": "dais",
+      "mode": "muse",
+      "risk": "write_low",
+      "writeLane": "dais",
+      "touches": ["notice", "parcel"],
+      "description": "Drafts a value change notice text for review (non-final), including rationale and next-step instructions.",
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier"
+    },
+    {
+      "toolId": "draft_boe_appeal_response",
+      "displayName": "Draft BOE Appeal Response",
+      "suite": "dais",
+      "mode": "muse",
+      "risk": "write_low",
+      "writeLane": "dais",
+      "touches": ["notice", "dossier"],
+      "description": "Drafts an initial appeal response narrative (position-aware) for BOE review—facts, rationale, and recommended resolution.",
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier"
+    },
+    {
+      "toolId": "summarize_sales_comps_rationale",
+      "displayName": "Summarize Sales/Comps Rationale",
+      "suite": "forge",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "model"],
+      "description": "Summarizes comp selection logic and adjustments at a high level (no raw PII) for taxpayer-facing explanation.",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "search_trace_by_correlation",
+      "displayName": "Search Trace By Correlation",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["workflow"],
+      "description": "OS-only trace lookup helper used by admins/auditors to fetch events by correlationId (visibility still enforced by access control).",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only"
+    },
+    {
+      "toolId": "add_dossier_note",
+      "displayName": "Add Dossier Note",
+      "suite": "dossier",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "dossier",
+      "touches": ["dossier"],
+      "description": "Adds a case note to the dossier for internal workflow continuity (PII-safe trace via payload ref).",
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier"
+    }
+  ]
+}

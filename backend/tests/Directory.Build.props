@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- Tests-only hygiene gate -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn)</NoWarn>
+  </PropertyGroup>
+</Project>

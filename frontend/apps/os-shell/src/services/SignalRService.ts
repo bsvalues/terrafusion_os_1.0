@@ -8,6 +8,7 @@
  * @version 2.0.0 - Phase 2 Week 5 Day 3
  */
 
+import { getViteEnv } from '@/env/getViteEnv';
 import * as signalR from '@microsoft/signalr';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 
@@ -24,7 +25,7 @@ export class SignalRService {
   private reconnectAttempts: Map<string, number> = new Map();
   private readonly maxReconnectAttempts = 5;
 
-  constructor(baseUrl: string = import.meta.env.VITE_API_URL || 'http://localhost:5000') {
+  constructor(baseUrl: string = getViteEnv().VITE_API_URL || 'http://localhost:5000') {
     this.baseUrl = baseUrl;
   }
 
@@ -161,7 +162,11 @@ export class SignalRService {
   /**
    * Connect to WorkflowHub
    */
-  async connectToWorkflow(workflowId: number, userId: number, countyId: number): Promise<HubConnection> {
+  async connectToWorkflow(
+    workflowId: number,
+    userId: number,
+    countyId: number
+  ): Promise<HubConnection> {
     if (this.workflowConnection?.state === HubConnectionState.Connected) {
       return this.workflowConnection;
     }
@@ -310,7 +315,9 @@ export class SignalRService {
   /**
    * Get connection state for a hub
    */
-  getConnectionState(hubType: 'notebook' | 'analytics' | 'workflow' | 'collaboration'): HubConnectionState | null {
+  getConnectionState(
+    hubType: 'notebook' | 'analytics' | 'workflow' | 'collaboration'
+  ): HubConnectionState | null {
     const connectionMap = {
       notebook: this.notebookConnection,
       analytics: this.analyticsConnection,

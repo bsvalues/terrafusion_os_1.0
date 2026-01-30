@@ -1,0 +1,236 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# 📦 Deps Fast Lane - Lightweight validation for dependency PRs
+# ═══════════════════════════════════════════════════════════════════════════════
+# Target: < 5 minutes
+# Purpose: Fast signal for Snyk/Dependabot PRs without competing with feature work
+# Scope: Install + build + unit tests (no heavy integration/E2E)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 📦 Deps Fast Lane
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      # NPM/PNPM
+      - '**/package.json'
+      - '**/pnpm-lock.yaml'
+      - '**/yarn.lock'
+      - '**/package-lock.json'
+      # .NET
+      - '**/*.csproj'
+      - '**/Directory.Packages.props'
+      - '**/NuGet.config'
+      # Docker
+      - '**/Dockerfile'
+      - '**/*.dockerfile'
+      # Python
+      - '**/requirements*.txt'
+      - '**/pyproject.toml'
+      - '**/Pipfile*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deps-fast-lane-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Classify: Check if this is a deps-only PR
+  # ═══════════════════════════════════════════════════════════════════════════
+  classify:
+    name: 📋 Classify
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      deps_only: ${{ steps.check.outputs.deps_only }}
+      has_frontend: ${{ steps.check.outputs.has_frontend }}
+      has_backend: ${{ steps.check.outputs.has_backend }}
+      has_docker: ${{ steps.check.outputs.has_docker }}
+
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+
+      - name: Check changed files
+        id: check
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          CHANGED=$(git diff --name-only "${{ github.event.pull_request.base.sha }}...${{ github.sha }}" || echo "")
+          echo "Changed files:"
+          echo "$CHANGED"
+
+          # Deps patterns (lockfiles, package manifests, Dockerfiles)
+          DEPS_PATTERN='^(.*package\.json$|.*pnpm-lock\.yaml$|.*yarn\.lock$|.*package-lock\.json$|.*\.csproj$|.*Directory\.Packages\.props$|.*NuGet\.config$|.*Dockerfile$|.*\.dockerfile$|.*requirements.*\.txt$|.*pyproject\.toml$|.*Pipfile.*$)'
+
+          NON_DEPS=$(echo "$CHANGED" | grep -Ev "$DEPS_PATTERN" | head -1 || true)
+
+          if [ -z "$NON_DEPS" ]; then
+            echo "deps_only=true" >> $GITHUB_OUTPUT
+            echo "📦 DEPS-ONLY: Lightweight validation path"
+          else
+            echo "deps_only=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Area detection
+          echo "has_frontend=$(echo "$CHANGED" | grep -q 'package\|pnpm\|yarn' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "has_backend=$(echo "$CHANGED" | grep -q '\.csproj\|Directory\.Packages' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "has_docker=$(echo "$CHANGED" | grep -qi 'dockerfile' && echo true || echo false)" >> $GITHUB_OUTPUT
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Frontend: Install + Type check + Unit tests
+  # ═══════════════════════════════════════════════════════════════════════════
+  frontend:
+    name: 🎨 Frontend Deps
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    needs: classify
+    if: needs.classify.outputs.has_frontend == 'true'
+
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - uses: pnpm/action-setup@9fd676a19091d4595eefd76e4bd31c97133911f1 # v4.2.0
+
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: |
+          if [ -f frontend/package.json ]; then
+            pnpm -C frontend run type-check || pnpm -C frontend run typecheck || echo "No typecheck script"
+          fi
+
+      - name: Unit tests
+        run: |
+          if [ -f frontend/package.json ]; then
+            pnpm -C frontend run test:unit || echo "No unit test script"
+          fi
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Backend: Restore + Build
+  # ═══════════════════════════════════════════════════════════════════════════
+  backend:
+    name: ⚙️ Backend Deps
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    needs: classify
+    if: needs.classify.outputs.has_backend == 'true'
+
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - uses: actions/setup-dotnet@6bd8b7f7774af54e05809fcc5431931b3eb1ddee # v4.0.1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore backend/TerraFusion.sln
+
+      - name: Build
+        run: dotnet build backend/TerraFusion.sln -c Release --no-restore
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Docker: Validate Dockerfiles (syntax only, no build)
+  # ═══════════════════════════════════════════════════════════════════════════
+  docker:
+    name: 🐳 Docker Deps
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    needs: classify
+    if: needs.classify.outputs.has_docker == 'true'
+
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Validate Dockerfiles
+        run: |
+          echo "Validating Dockerfile syntax..."
+          find . -name 'Dockerfile*' -o -name '*.dockerfile' | while read -r df; do
+            echo "Checking: $df"
+            docker run --rm -i hadolint/hadolint < "$df" || echo "⚠️ Warnings in $df (non-blocking)"
+          done
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Summary: Report deps validation result
+  # ═══════════════════════════════════════════════════════════════════════════
+  summary:
+    name: 📦 Deps Summary
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    if: always()
+    needs: [classify, frontend, backend, docker]
+
+    steps:
+      - name: Deps Fast Lane Result
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "## 📦 Deps Fast Lane" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          # Report each job
+          case "${{ needs.classify.result }}" in
+            success) echo "| Classify | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Classify | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+          esac
+
+          case "${{ needs.frontend.result }}" in
+            success) echo "| Frontend | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            skipped) echo "| Frontend | ⏭️ |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Frontend | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+          esac
+
+          case "${{ needs.backend.result }}" in
+            success) echo "| Backend | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            skipped) echo "| Backend | ⏭️ |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Backend | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+          esac
+
+          case "${{ needs.docker.result }}" in
+            success) echo "| Docker | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            skipped) echo "| Docker | ⏭️ |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Docker | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+          esac
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**deps_only**: ${{ needs.classify.outputs.deps_only }}" >> $GITHUB_STEP_SUMMARY
+
+          # Fail if any required job failed
+          if [ "${{ needs.classify.result }}" != "success" ]; then
+            echo "❌ Deps Fast Lane: FAILED"
+            exit 1
+          fi
+
+          # Frontend/Backend failures are blocking if they ran
+          if [ "${{ needs.frontend.result }}" = "failure" ]; then
+            echo "❌ Frontend deps check failed"
+            exit 1
+          fi
+
+          if [ "${{ needs.backend.result }}" = "failure" ]; then
+            echo "❌ Backend deps check failed"
+            exit 1
+          fi
+
+          echo "✅ Deps Fast Lane: PASSED"

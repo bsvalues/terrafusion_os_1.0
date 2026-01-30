@@ -1,14 +1,24 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { AxiomFSDetailPanel } from '@/fs/components/AxiomFSDetailPanel';
 import { useAxiomFsStore } from '@/fs/store/axiomFsStore';
 import { useDesktopStore } from '../../../stores/desktopStore';
 
 // Mock the openWindow action from desktopStore
-const mockOpenWindow = vi.fn();
+const mockOpenWindow = jest.fn();
 
 // Mock dependencies
-vi.mock('framer-motion', () => ({
+jest.mock('@/config/features', () => ({
+  FEATURES: {
+    ENABLE_AXIOM_FS: true,
+    ENABLE_DASHBOARD: true,
+    ENABLE_SIMULATION_ENGINE: true,
+    ENABLE_REDUCED_MOTION: false,
+    ENABLE_DEBUG_OVERLAYS: false,
+    USE_MOCK_DATA: false,
+  },
+}));
+
+jest.mock('framer-motion', () => ({
   motion: {
     aside: ({ children, ...props }: any) => <aside {...props}>{children}</aside>,
   },

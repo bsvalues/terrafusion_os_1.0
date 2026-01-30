@@ -3,6 +3,7 @@ using System.Text.Json;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Enums;
+using TerraFusion.API.Services.Telemetry;
 
 namespace TerraFusion.API.Services;
 
@@ -18,30 +19,66 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
 {
     private readonly ILogger<ModuleLoaderService> _logger;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IAgentTelemetryService _telemetry;
     private readonly Dictionary<string, ModuleManifest> _moduleCache = new();
     private readonly string _modulesPath;
+    private readonly string _manifestFileName;
+    private readonly string? _intentFilter;
     private const int RefreshIntervalMinutes = 5; // Refresh module cache every 5 minutes
 
     public ModuleLoaderService(
         ILogger<ModuleLoaderService> logger,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IAgentTelemetryService telemetry)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _telemetry = telemetry;
 
-        // Path to the modules directory - fix the path resolution
+        // Path to the modules directory - allow override and fallback to applications
         var currentDir = Directory.GetCurrentDirectory();
-        _modulesPath = Path.Combine(currentDir, "modules");
-        if (!Directory.Exists(_modulesPath))
+        var envPath = Environment.GetEnvironmentVariable("TF_MODULES_PATH")
+                      ?? Environment.GetEnvironmentVariable("MODULES_PATH");
+
+        if (!string.IsNullOrWhiteSpace(envPath))
         {
-            // Try alternative paths for different deployment scenarios
-            _modulesPath = Path.Combine(currentDir, "..", "..", "modules");
+            _modulesPath = Path.GetFullPath(envPath);
+        }
+        else
+        {
+            _modulesPath = Path.Combine(currentDir, "modules");
             if (!Directory.Exists(_modulesPath))
             {
-                _modulesPath = Path.Combine(currentDir, "..", "modules");
+                // Try alternative paths for different deployment scenarios
+                _modulesPath = Path.Combine(currentDir, "..", "..", "modules");
+                if (!Directory.Exists(_modulesPath))
+                {
+                    _modulesPath = Path.Combine(currentDir, "..", "modules");
+                }
+            }
+            _modulesPath = Path.GetFullPath(_modulesPath);
+        }
+
+        if (Directory.Exists(_modulesPath))
+        {
+            _manifestFileName = "module.manifest.json";
+        }
+        else
+        {
+            var applicationsPath = Path.Combine(currentDir, "applications");
+            if (Directory.Exists(applicationsPath))
+            {
+                _modulesPath = Path.GetFullPath(applicationsPath);
+                _manifestFileName = "terrafusion.app.json";
+            }
+            else
+            {
+                _modulesPath = Path.GetFullPath(_modulesPath);
+                _manifestFileName = "module.manifest.json";
             }
         }
-        _modulesPath = Path.GetFullPath(_modulesPath);
+
+        _intentFilter = Environment.GetEnvironmentVariable("TF_MODULE_INTENT_FILTER");
     }
 
     protected override async System.Threading.Tasks.Task ExecuteAsync(CancellationToken stoppingToken)
@@ -124,7 +161,7 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
         try
         {
             var moduleDir = Path.Combine(_modulesPath, moduleName);
-            var manifestPath = Path.Combine(moduleDir, "module.manifest.json");
+            var manifestPath = Path.Combine(moduleDir, _manifestFileName);
 
             if (!File.Exists(manifestPath))
             {
@@ -133,37 +170,80 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
             }
 
             var manifestContent = await File.ReadAllTextAsync(manifestPath);
-            var manifest = JsonSerializer.Deserialize<ModuleManifest>(manifestContent, new JsonSerializerOptions
+
+            if (_manifestFileName == "module.manifest.json")
+            {
+                var manifest = JsonSerializer.Deserialize<ModuleManifest>(manifestContent, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (manifest == null)
+                {
+                    _logger.LogWarning("Failed to deserialize manifest for {ModuleName}", moduleName);
+                    return null;
+                }
+
+                _moduleCache[moduleName] = manifest;
+
+                return new Module
+                {
+                    Name = moduleName,
+                    DisplayName = manifest.DisplayName ?? manifest.Name ?? moduleName,
+                    Description = manifest.Description,
+                    Version = manifest.Version ?? "1.0.0",
+                    Status = ParseModuleStatus(manifest.Status),
+                    Tier = ParseModuleTier(manifest.Tier),
+                    LaunchPath = $"modules/{moduleName}/index.html",
+                    Priority = GetModulePriority(moduleName),
+                    IsCore = IsCoreTier(moduleName),
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+            }
+
+            var appManifest = JsonSerializer.Deserialize<AppManifest>(manifestContent, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
 
-            if (manifest == null)
+            if (appManifest == null)
             {
-                _logger.LogWarning("Failed to deserialize manifest for {ModuleName}", moduleName);
+                _logger.LogWarning("Failed to deserialize app manifest for {ModuleName}", moduleName);
                 return null;
             }
 
-            // Cache the manifest
-            _moduleCache[moduleName] = manifest;
-
-            // Convert manifest to Module entity
-            var module = new Module
+            if (!MatchesIntentFilter(_intentFilter, appManifest.Intent))
             {
-                Name = moduleName,
-                DisplayName = manifest.DisplayName ?? manifest.Name ?? moduleName,
-                Description = manifest.Description,
-                Version = manifest.Version ?? "1.0.0",
-                Status = ParseModuleStatus(manifest.Status),
-                Tier = ParseModuleTier(manifest.Tier),
-                LaunchPath = $"modules/{moduleName}/index.html",
+                _logger.LogDebug("Skipping module {ModuleName} due to intent filter {Filter}", moduleName, _intentFilter);
+                return null;
+            }
+
+            _moduleCache[moduleName] = new ModuleManifest
+            {
+                Name = appManifest.Name ?? appManifest.Id ?? moduleName,
+                DisplayName = appManifest.DisplayName ?? appManifest.Name ?? appManifest.Id ?? moduleName,
+                Description = appManifest.Description,
+                Version = appManifest.Version,
+                Status = appManifest.Status,
+                Tier = appManifest.Tier?.ToString()
+            };
+
+            var tier = ParseModuleTier(appManifest.Tier);
+            return new Module
+            {
+                Name = appManifest.Id ?? moduleName,
+                DisplayName = appManifest.DisplayName ?? appManifest.Name ?? moduleName,
+                Description = appManifest.Description,
+                Version = appManifest.Version ?? "1.0.0",
+                Status = ParseModuleStatus(appManifest.Status),
+                Tier = tier,
+                LaunchPath = appManifest.Entry?.Url ?? $"applications/{moduleName}",
                 Priority = GetModulePriority(moduleName),
                 IsCore = IsCoreTier(moduleName),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-
-            return module;
         }
         catch (Exception ex)
         {
@@ -172,18 +252,18 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
         }
     }
 
-            public async System.Threading.Tasks.Task<bool> IsModuleAvailableAsync(string moduleName)
+            public System.Threading.Tasks.Task<bool> IsModuleAvailableAsync(string moduleName)
     {
         try
         {
             var moduleDir = Path.Combine(_modulesPath, moduleName);
-            var manifestPath = Path.Combine(moduleDir, "module.manifest.json");
-            
-            return Directory.Exists(moduleDir) && File.Exists(manifestPath);
+            var manifestPath = Path.Combine(moduleDir, _manifestFileName);
+
+            return System.Threading.Tasks.Task.FromResult(Directory.Exists(moduleDir) && File.Exists(manifestPath));
         }
         catch
         {
-            return false;
+            return System.Threading.Tasks.Task.FromResult(false);
         }
     }
 
@@ -199,13 +279,22 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
                 return;
             }
 
+            _telemetry.Emit("Info", "ModuleLoader", "Modules", "Scan started.");
+
             var moduleDirectories = Directory.GetDirectories(_modulesPath);
             var loadedCount = 0;
+            var filteredCount = 0;
 
             foreach (var moduleDir in moduleDirectories)
             {
                 var moduleName = Path.GetFileName(moduleDir);
                 if (string.IsNullOrEmpty(moduleName)) continue;
+
+                if (IsFilteredByIntent(moduleDir))
+                {
+                    filteredCount++;
+                    continue;
+                }
 
                 var module = await LoadModuleAsync(moduleName);
                 if (module != null)
@@ -216,6 +305,26 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
 
             _logger.LogInformation("Refreshed modules cache. Loaded {Count} modules from {Total} directories", 
                 loadedCount, moduleDirectories.Length);
+
+            _telemetry.Emit(
+                "Info",
+                "ModuleLoader",
+                "Modules",
+                "Manifests loaded.",
+                new
+                {
+                    intentFilter = _intentFilter,
+                    moduleCountTotal = moduleDirectories.Length,
+                    moduleCountActive = loadedCount,
+                    moduleCountFilteredOut = filteredCount
+                });
+
+            _telemetry.Emit(
+                "Info",
+                "ModuleLoader",
+                "Health",
+                "ModuleLoader healthy.",
+                new { moduleCountActive = loadedCount });
         }
         catch (Exception ex)
         {
@@ -249,6 +358,72 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
             "essential operations" => ModuleTier.Tier2,
             _ => ModuleTier.Tier1 // Default for production modules
         };
+    }
+
+    private ModuleTier ParseModuleTier(int? tier)
+    {
+        return tier switch
+        {
+            1 => ModuleTier.Tier1,
+            2 => ModuleTier.Tier2,
+            3 => ModuleTier.Tier3,
+            _ => ModuleTier.Tier1
+        };
+    }
+
+    private static bool MatchesIntentFilter(string? filter, string? manifestIntent)
+    {
+        if (string.IsNullOrWhiteSpace(filter))
+        {
+            return true;
+        }
+
+        var allowed = filter.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (allowed.Length == 0)
+        {
+            return true;
+        }
+
+        return allowed.Any(a => string.Equals(a, manifestIntent, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private bool IsFilteredByIntent(string moduleDir)
+    {
+        if (string.IsNullOrWhiteSpace(_intentFilter))
+        {
+            return false;
+        }
+
+        if (_manifestFileName != "terrafusion.app.json")
+        {
+            return false;
+        }
+
+        var manifestPath = Path.Combine(moduleDir, _manifestFileName);
+        if (!File.Exists(manifestPath))
+        {
+            return false;
+        }
+
+        try
+        {
+            var manifestContent = File.ReadAllText(manifestPath);
+            var appManifest = JsonSerializer.Deserialize<AppManifest>(manifestContent, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (appManifest == null)
+            {
+                return false;
+            }
+
+            return !MatchesIntentFilter(_intentFilter, appManifest.Intent);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private bool IsCoreTier(string moduleName)
@@ -307,4 +482,23 @@ public class ModuleManifest
     public string? Author { get; set; }
     public string[] Dependencies { get; set; } = Array.Empty<string>();
     public string[] Capabilities { get; set; } = Array.Empty<string>();
+}
+
+internal sealed class AppManifest
+{
+    public string? Id { get; set; }
+    public string? Name { get; set; }
+    public string? DisplayName { get; set; }
+    public string? Description { get; set; }
+    public string? Status { get; set; }
+    public string? Version { get; set; }
+    public int? Tier { get; set; }
+    public string? Intent { get; set; }
+    public AppManifestEntry? Entry { get; set; }
+}
+
+internal sealed class AppManifestEntry
+{
+    public string? Type { get; set; }
+    public string? Url { get; set; }
 }

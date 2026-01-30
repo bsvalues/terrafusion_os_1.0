@@ -26,7 +26,7 @@ namespace TerraFusion.AI.Services
     {
         Task<AIAssistantResponse> ProcessMessageAsync(AIAssistantRequest request);
         Task<AISwarmHealthStatus> GetSwarmStatusAsync(string countyId);
-        Task<List<AIRecommendation>> GetRecommendationsAsync(string countyId, string context);
+        Task<List<AIRecommendation>> GetRecommendationsAsync(string countyId, string? context);
         Task<PropertyAnalysisResult> AnalyzePropertyAsync(string parcelId, string countyId);
     }
 
@@ -122,7 +122,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<List<AIRecommendation>> GetRecommendationsAsync(string countyId, string context)
+        public async Task<List<AIRecommendation>> GetRecommendationsAsync(string countyId, string? context)
         {
             _logger.LogInformation("Generating AI recommendations for {CountyId}", countyId);
 
