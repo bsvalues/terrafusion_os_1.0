@@ -4,26 +4,21 @@
  * Purpose: Verify bcrypt 6.x maintains the expected API contract
  * before merging PR #189 (bcrypt 5.1.1 → 6.0.0)
  *
- * This test uses dynamic import to gracefully skip if bcrypt isn't installed.
+ * Skips entirely if bcrypt isn't installed (graceful degradation).
  */
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-describe('bcrypt smoke', () => {
-  let bcrypt: typeof import('bcrypt') | null = null;
+// Check if bcrypt is installed before running tests
+const bcryptInstalled = existsSync(resolve(process.cwd(), 'node_modules/bcrypt'));
 
-  beforeAll(async () => {
-    try {
-      bcrypt = await import('bcrypt');
-    } catch {
-      // bcrypt not installed - test will skip
-    }
-  });
+describe.skipIf(!bcryptInstalled)('bcrypt smoke', async () => {
+  // Only import if installed to avoid Vite resolution errors
+  const bcrypt = bcryptInstalled ? await import('bcrypt') : null;
 
   it('hash/compare contract holds', async () => {
-    if (!bcrypt) {
-      console.log('⏭️ bcrypt not installed - skipping smoke test');
-      return;
-    }
+    if (!bcrypt) return;
 
     const pw = 'terraFusion🔒';
     const hash = await bcrypt.hash(pw, 10);
@@ -41,9 +36,7 @@ describe('bcrypt smoke', () => {
   });
 
   it('getRounds returns expected value', async () => {
-    if (!bcrypt) {
-      return; // Skip if bcrypt not installed
-    }
+    if (!bcrypt) return;
 
     const hash = await bcrypt.hash('test', 12);
     expect(bcrypt.getRounds(hash)).toBe(12);

@@ -88,6 +88,7 @@
     "test:unit": "vitest run tests/unit tests/basic.test.ts",
     "test:unit:watch": "vitest tests/unit tests/basic.test.ts",
     "test:unit:coverage": "vitest run --coverage tests/unit tests/basic.test.ts",
+    "test:optional-deps": "vitest run tests/optional-deps",
     "test:integration": "playwright test tests/integration --config=playwright.config.ts",
     "test:integration:headed": "playwright test tests/integration --headed",
     "test:e2e": "playwright test tests/e2e --config=playwright.config.ts",

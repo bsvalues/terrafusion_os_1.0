@@ -1,5 +1,9 @@
 name: 🚀 TerraFusion OS - Revolutionary CI/CD Pipeline Excellence
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main, develop, staging]
@@ -45,9 +49,11 @@ env:
 
 jobs:
   # Code Quality and Security Scanning
+  # Skip for Snyk/Dependabot PRs - they use deps-fast-lane + seal-gate-fast instead
   code-quality:
     runs-on: ubuntu-latest
     name: Code Quality & Security Scan
+    if: ${{ github.actor != 'dependabot[bot]' && !contains(github.head_ref || github.ref_name, 'snyk-') }}
 
     steps:
       - name: Checkout code

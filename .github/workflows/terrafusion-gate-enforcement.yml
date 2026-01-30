@@ -1,4 +1,9 @@
 name: TerraFusion Integration Gates
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main, develop, release/*]
@@ -29,8 +34,10 @@ env:
 
 jobs:
   # Gate A: Build & Tests
+  # Skip for Snyk/Dependabot PRs - they use deps-fast-lane + seal-gate-fast instead
   gate-a-build-tests:
     name: 'Gate A: Build & Tests'
+    if: ${{ github.actor != 'dependabot[bot]' && !contains(github.head_ref || github.ref_name, 'snyk-') }}
     runs-on: ubuntu-latest
     outputs:
       score: ${{ steps.calculate.outputs.score }}
