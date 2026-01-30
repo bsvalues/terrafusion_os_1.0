@@ -1,0 +1,305 @@
+# ============================================================================
+# TERRAFUSION AGENT GOVERNANCE GATEWAY
+# ============================================================================
+# Version: 1.0.0
+# Purpose: Machine-readable rules that ALL AI agents MUST follow
+# Enforcement: Pre-commit hooks, CI/CD gates, runtime validation
+#
+# This file is the SINGLE SOURCE OF TRUTH for agent behavior.
+# All agents (Copilot, Claude, Ralph, QC-019, etc.) MUST read this file
+# BEFORE making any modifications to the codebase.
+# ============================================================================
+
+schema_version: '1.0'
+last_updated: '2026-01-30'
+enforcement_level: 'STRICT'
+
+# ============================================================================
+# PRIME DIRECTIVE
+# ============================================================================
+prime_directive:
+  statement: 'Do not destabilize the Core Governance Surface'
+  violation_severity: 'CRITICAL'
+  enforcement: 'BLOCKING'
+
+# ============================================================================
+# AGENT IDENTIFICATION
+# Required fields for all agent operations
+# ============================================================================
+agent_requirements:
+  must_identify: true
+  required_fields:
+    - agent_name
+    - agent_version
+    - operation_id
+    - timestamp
+  commit_format: |
+    type(scope): subject
+
+    Evidence:
+    - Tests: [results]
+    - Gates: [status]
+    - Codex: [score]/12
+
+    Government: FISMA compliance status
+    AI-Collaboration: [agent_name] v[version]
+
+# ============================================================================
+# SCOPE RULES
+# What agents CAN and CANNOT modify
+# ============================================================================
+scope:
+  # ALLOWED - Agents CAN modify these paths
+  allowed:
+    - path: 'os-platform/core/pilot/**'
+      description: 'Core pilot modules'
+      requires_gates: true
+    - path: 'os-platform/core/types/**'
+      description: 'Type definitions'
+      requires_gates: true
+    - path: 'tools/registry/**'
+      description: 'Tool registry'
+      requires_gates: true
+    - path: 'tsconfig.core.json'
+      description: 'Core TypeScript config'
+      requires_gates: true
+    - path: 'package.json'
+      description: 'Package dependencies'
+      requires_gates: true
+    - path: '.github/workflows/**'
+      description: 'CI/CD workflows (gate wiring only)'
+      requires_gates: true
+      restriction: 'gate_wiring_only'
+
+  # FORBIDDEN - Agents CANNOT modify these paths
+  forbidden:
+    - path: '**/ARCHIVE/**'
+      severity: 'CRITICAL'
+      message: 'Archive directories are immutable'
+    - path: 'development/tools/championship-dev/ARCHIVE/**'
+      severity: 'CRITICAL'
+      message: 'Championship archive is protected'
+    - path: 'specialized/**'
+      severity: 'HIGH'
+      message: 'Requires explicit authorization'
+    - path: 'applications/**'
+      severity: 'HIGH'
+      message: 'Requires explicit authorization'
+    - path: 'os-platform/ai-systems/ai-systems/ai-swarm/**'
+      severity: 'CRITICAL'
+      message: 'Production AI swarm - DO NOT TOUCH'
+
+# ============================================================================
+# PORT RULES
+# ZERO TOLERANCE for hardcoded ports
+# ============================================================================
+ports:
+  enforcement: 'ZERO_TOLERANCE'
+  validator: 'scripts/port-validator.py'
+
+  # Forbidden patterns - if found, REJECT
+  forbidden_patterns:
+    - pattern: 'localhost:3000'
+      message: 'Hardcoded port 3000 - use ${TF_FRONTEND_PORT:-3102}'
+    - pattern: 'localhost:5000'
+      message: 'Hardcoded port 5000 - use ${TF_API_PORT:-5046}'
+    - pattern: 'localhost:3001'
+      message: 'Hardcoded port 3001 - use ${TF_SHELL_PORT:-3100}'
+    - pattern: 'localhost:3002'
+      message: 'Hardcoded port 3002'
+    - pattern: 'port=3000'
+      message: 'Hardcoded port assignment'
+    - pattern: 'port=5000'
+      message: 'Hardcoded port assignment'
+    - pattern: ':5173'
+      message: 'Vite default port - use ${TF_FRONTEND_PORT}'
+
+  # Required format by language
+  required_format:
+    bash:
+      pattern: '${TF_.*_PORT:-\d+}'
+      example: '${TF_API_PORT:-5046}'
+    javascript:
+      pattern: 'process\.env\.TF_.*_PORT \|\| \d+'
+      example: 'process.env.TF_API_PORT || 5046'
+    typescript:
+      pattern: 'process\.env\.TF_.*_PORT \|\| \d+'
+      example: 'process.env.TF_API_PORT || 5046'
+    python:
+      pattern: "os\\.environ\\.get\\('TF_.*_PORT', \\d+\\)"
+      example: "os.environ.get('TF_API_PORT', 5046)"
+    json:
+      pattern: '"\\$\\{TF_.*_PORT:-\\d+\\}"'
+      example: '"${TF_API_PORT:-5046}"'
+
+  # Port mapping reference
+  mapping:
+    TF_API_PORT: 5046
+    TF_FRONTEND_PORT: 3102
+    TF_SHELL_PORT: 3100
+    TF_DESKTOP_PORT: 3104
+    TF_STATIC_PORT: 3105
+    TF_LOKI_PORT: 3100
+    TF_CONSCIOUSNESS_PORT: 3004
+    TF_GATEWAY_PORT: 3002
+
+# ============================================================================
+# REQUIRED GATES
+# MUST pass before ANY commit
+# ============================================================================
+gates:
+  enforcement: 'BLOCKING'
+
+  required:
+    - name: 'type-check'
+      command: 'pnpm run type-check'
+      timeout_seconds: 120
+      severity: 'CRITICAL'
+
+    - name: 'phase83-tools-test'
+      command: 'node --test os-platform/core/tests/phase83-tools.test.mjs'
+      timeout_seconds: 60
+      severity: 'CRITICAL'
+
+    - name: 'port-validator'
+      command: 'python3 scripts/port-validator.py'
+      timeout_seconds: 30
+      severity: 'CRITICAL'
+      optional_if_missing: true
+
+# ============================================================================
+# FRONTEND PROTECTION
+# Experience Suite v5 is the ONLY authorized frontend
+# ============================================================================
+frontend:
+  authorized_location: 'experience-suite/temp-extract/experience-suite-v5/'
+  alternative_location: 'frontend-v2/'
+
+  forbidden_locations:
+    - path: 'frontend/'
+      reason: 'Legacy - 97+ TypeScript errors'
+    - path: 'terrafusion/frontend/'
+      reason: 'Old structure - superseded'
+
+  validation:
+    package_version_required: '2.0.0'
+    react_version_minimum: '18.2.0'
+    typescript_version_minimum: '5.3.3'
+
+# ============================================================================
+# COMMIT RULES
+# Evidence-based commits required
+# ============================================================================
+commits:
+  style: 'conventional'
+
+  required_elements:
+    - type: true
+    - scope: true
+    - subject: true
+    - evidence_block: true
+    - government_compliance: true
+    - ai_collaboration: true
+
+  types:
+    - feat # New feature
+    - fix # Bug fix
+    - refactor # Code refactoring
+    - docs # Documentation
+    - test # Tests
+    - chore # Maintenance
+
+  evidence_template: |
+    Evidence:
+    - Tests: [test count] passing
+    - Gates: [gate status]
+    - Codex: [score]/12
+
+    Government: [FISMA status]
+    AI-Collaboration: [agent info]
+
+# ============================================================================
+# CODEX 3-6-9 INTEGRATION
+# Health scoring system
+# ============================================================================
+codex:
+  api_endpoint: '/api/codex/ultimate-power'
+
+  thresholds:
+    divine_balance:
+      min: 11.5
+      max: 12.0
+      status: 'DIVINE_BALANCE'
+      color: 'gold'
+    championship:
+      min: 10.0
+      max: 11.49
+      status: 'CHAMPIONSHIP'
+      color: 'green'
+    operational:
+      min: 8.0
+      max: 9.99
+      status: 'OPERATIONAL'
+      color: 'blue'
+    needs_improvement:
+      min: 0
+      max: 7.99
+      status: 'NEEDS_IMPROVEMENT'
+      color: 'yellow'
+
+  safeguard:
+    threshold: 666
+    message: 'Never cross 666 - imbalance protection'
+
+# ============================================================================
+# EMERGENCY PROTOCOLS
+# Escalation procedures
+# ============================================================================
+emergency:
+  code_red_triggers:
+    - pattern: 'SwarmOrchestrator.ts'
+      action: 'HALT_ALL'
+      contacts: ['@ai-infrastructure-team', '@government-leads']
+    - pattern: 'County.*data.*exposure'
+      action: 'HALT_ALL'
+      contacts: ['@government-leads', '@security-team', '@compliance-team']
+    - pattern: 'PluginValidator.ts'
+      action: 'REVERT_IMMEDIATE'
+      contacts: ['@security-team', '@compliance-team']
+
+  escalation:
+    P0:
+      description: 'Critical - Security, data corruption, system down'
+      response_time: '1 hour'
+    P1:
+      description: 'High - Major feature broken'
+      response_time: '24 hours'
+    P2:
+      description: 'Medium - Minor issues'
+      response_time: 'Next sprint'
+    P3:
+      description: 'Low - Cosmetic'
+      response_time: 'Backlog'
+
+# ============================================================================
+# AGENT SWARM COORDINATION
+# Integration with QC teams
+# ============================================================================
+swarm:
+  supreme_orchestrator: 'claude'
+
+  commanders:
+    QC-019:
+      name: 'Performance Team'
+      size: 50
+      focus: 'System optimization'
+      specializations:
+        - frontend_performance
+        - backend_optimization
+        - bundle_analysis
+        - waterfall_elimination
+
+  coordination:
+    protocol: 'QUANTUM_CONSENSUS'
+    accuracy: 0.999
+    latency_target_ms: 1

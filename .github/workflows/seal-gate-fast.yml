@@ -275,6 +275,60 @@ jobs:
           fi
           echo "✅ Workspace sanity passed"
 
+      - name: Governance enforcement (AGENTS.md compliance)
+        shell: bash
+        env:
+          CI: 'true'
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          echo "🔒 Governance Enforcement (SEAL)"
+          echo "================================="
+
+          # Get changed files
+          if [ -n "${GITHUB_BASE_REF:-}" ]; then
+            CHANGED=$(git diff --name-only "origin/${GITHUB_BASE_REF}...HEAD" 2>/dev/null || echo "")
+          elif [ -n "${GITHUB_EVENT_BEFORE:-}" ] && [ "${GITHUB_EVENT_BEFORE}" != "0000000000000000000000000000000000000000" ]; then
+            CHANGED=$(git diff --name-only "${GITHUB_EVENT_BEFORE}...HEAD" 2>/dev/null || echo "")
+          else
+            CHANGED=$(git diff --name-only HEAD~1 2>/dev/null || echo "")
+          fi
+
+          VIOLATIONS=0
+
+          # Check 1: Forbidden paths (AGENTS.md)
+          echo ""
+          echo "📋 Check: Forbidden paths..."
+          FORBIDDEN=$(echo "$CHANGED" | grep -E '^(specialized/|applications/|.*ARCHIVE/)' || true)
+          if [ -n "$FORBIDDEN" ]; then
+            echo "::error::Forbidden paths modified (AGENTS.md violation)"
+            echo "$FORBIDDEN" | while read -r f; do echo "  ❌ $f"; done
+            VIOLATIONS=1
+          else
+            echo "  ✅ No forbidden paths modified"
+          fi
+
+          # Check 2: Legacy frontend
+          echo ""
+          echo "📋 Check: Legacy frontend..."
+          LEGACY=$(echo "$CHANGED" | grep -E '^frontend/' | grep -v '^frontend-v2/' || true)
+          if [ -n "$LEGACY" ]; then
+            echo "::error::Legacy frontend modified (use frontend-v2/ instead)"
+            echo "$LEGACY" | while read -r f; do echo "  ❌ $f"; done
+            VIOLATIONS=1
+          else
+            echo "  ✅ Legacy frontend not touched"
+          fi
+
+          echo ""
+          if [ $VIOLATIONS -eq 0 ]; then
+            echo "✅ Governance enforcement passed"
+          else
+            echo "❌ Governance violations detected - merge blocked"
+            exit 1
+          fi
+
       - name: Drift guard (dotnet canonical enforcement)
         shell: bash
         run: |

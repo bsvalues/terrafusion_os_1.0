@@ -1,0 +1,198 @@
+# TerraFusion Ralph Loop Configuration
+# Autonomous optimization within Core Governance Surface
+# Version: 1.0.0
+# Date: January 30, 2026
+
+version: '1.0'
+name: 'terrafusion-ralph-loop'
+description: 'Autonomous self-optimization engine for TerraFusion OS'
+
+# ============================================================================
+# TERMINATION CONDITION - CODEX 3-6-9
+# Loop continues until Divine Balance (11.5+) is achieved
+# ============================================================================
+termination:
+  metric: 'codex_ultimate_power'
+  target: 11.5 # Divine Balance minimum
+  api_endpoint: '/api/codex/ultimate-power'
+  port_env_var: 'TF_API_PORT'
+  port_default: 5046
+  check_interval_seconds: 30
+
+  thresholds:
+    divine_balance_min: 11.5
+    divine_balance_max: 12.0
+    championship_min: 10.0
+    operational_min: 8.0
+    warning_threshold: 6.0
+
+# ============================================================================
+# GOVERNANCE CONSTRAINTS - FROM AGENTS.md
+# These are the ONLY paths agents can modify
+# ============================================================================
+governance:
+  prime_directive: 'Do not destabilize the Core Governance Surface'
+
+  allowed_scope:
+    - 'os-platform/core/pilot/**'
+    - 'os-platform/core/types/**'
+    - 'tools/registry/**'
+    - 'tsconfig.core.json'
+    - 'package.json'
+    - '.github/workflows/**' # Gate wiring only
+
+  forbidden_scope:
+    - '**/ARCHIVE/**'
+    - 'development/tools/championship-dev/ARCHIVE/**'
+    - 'specialized/**'
+    - 'applications/**'
+
+  required_gates:
+    - command: 'pnpm run type-check'
+      name: 'TypeScript Type Check'
+      timeout_seconds: 120
+    - command: 'node --test os-platform/core/tests/phase83-tools.test.mjs'
+      name: 'Phase 83 Tools Test'
+      timeout_seconds: 60
+
+  build_artifacts:
+    source_of_truth: '.ts'
+    generated: '.js'
+    policy: 'Do not hand-edit generated .js files'
+    regen_command: 'pnpm run build:core-js && pnpm run check:generated'
+
+# ============================================================================
+# PORT RULES - FROM AI_AGENT_PORT_RULES_STRICT.md
+# ZERO TOLERANCE for hardcoded ports
+# ============================================================================
+port_enforcement:
+  enabled: true
+  zero_tolerance: true
+  validator_script: 'scripts/port-validator.py'
+
+  forbidden_patterns:
+    - 'localhost:3000'
+    - 'localhost:5000'
+    - 'localhost:3001'
+    - 'localhost:3002'
+    - 'port=3000'
+    - 'port=5000'
+    - ':5173'
+
+  required_format:
+    bash: '${TF_*_PORT:-default}'
+    javascript: 'process.env.TF_*_PORT || default'
+    python: "os.environ.get('TF_*_PORT', default)"
+    json: '"${TF_*_PORT:-default}"'
+
+  port_mapping:
+    TF_API_PORT: 5046
+    TF_FRONTEND_PORT: 3102
+    TF_SHELL_PORT: 3100
+    TF_DESKTOP_PORT: 3104
+    TF_STATIC_PORT: 3105
+    TF_LOKI_PORT: 3100
+
+# ============================================================================
+# FRONTEND PROTECTION - FROM AI_AGENT_FRONTEND_PROTECTION.md
+# Experience Suite v5 is the ONLY authorized frontend
+# ============================================================================
+frontend_protection:
+  enabled: true
+
+  authorized_paths:
+    - 'experience-suite/temp-extract/experience-suite-v5/**'
+    - 'frontend-v2/**'
+
+  forbidden_paths:
+    - 'frontend/**' # Legacy - 97+ errors
+    - 'terrafusion/frontend/**' # Old structure
+
+  validation:
+    package_version: '2.0.0'
+    react_version: '18.2.0'
+    typescript_version: '5.3.3'
+
+# ============================================================================
+# SKILLS INTEGRATION
+# External optimization rules (Vercel, etc.)
+# ============================================================================
+skills:
+  vercel_react:
+    enabled: true
+    rules_file: 'skills/vercel-react-best-practices.yml'
+    priority_rules:
+      critical:
+        - '1.1' # No sequential awaits
+        - '1.2' # Batch data fetching
+        - '2.1' # Bundle size optimization
+      high:
+        - '3.1' # Server/client boundary
+        - '3.2' # React.cache() usage
+      medium:
+        - '4.1' # Re-render optimization
+        - '4.2' # Memo/useCallback
+
+# ============================================================================
+# AGENT COORDINATION - QC-019 PERFORMANCE TEAM
+# ============================================================================
+agents:
+  supreme_orchestrator: 'claude'
+
+  quantum_commander:
+    id: 'QC-019'
+    name: 'Performance Team'
+    size: 50
+    focus: 'System optimization'
+
+  specialists:
+    allocated: 50
+    categories:
+      - frontend_performance: 15
+      - backend_optimization: 15
+      - bundle_analysis: 10
+      - waterfall_elimination: 10
+
+# ============================================================================
+# ITERATION CONTROLS
+# ============================================================================
+iteration:
+  max_per_session: 20
+  commit_after_each: true
+  commit_format: 'refactor(ralph): iteration {n} - score {score}'
+
+  git:
+    branch_prefix: 'ralph/optimization'
+    auto_stash: true
+    evidence_required: true
+
+  logging:
+    directory: 'logs/ralph'
+    level: 'info'
+    retain_days: 30
+
+# ============================================================================
+# EMERGENCY PROTOCOLS - FROM AI_AGENT_EMERGENCY_PROTOCOLS.md
+# ============================================================================
+emergency:
+  escalation_levels:
+    P0:
+      description: 'Critical - Security, data corruption, system down'
+      response_time: '1 hour'
+      contacts: ['@government-leads', '@ai-infrastructure-team']
+    P1:
+      description: 'High - Major feature broken, performance degradation'
+      response_time: '24 hours'
+      contacts: ['@platform-team']
+    P2:
+      description: 'Medium - Minor feature issues'
+      response_time: 'Next sprint'
+    P3:
+      description: 'Low - Cosmetic issues'
+      response_time: 'Backlog'
+
+  code_red_triggers:
+    - 'SwarmOrchestrator.ts modification'
+    - 'County data exposure'
+    - 'Compliance framework bypass'
+    - 'PluginValidator.ts tampering'
