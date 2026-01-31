@@ -19,12 +19,17 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 
 // Import the evidence index module
 import {
+    CANONICAL_ASSET_NAMES,
     DEFAULT_RETENTION_DAYS,
     EVIDENCE_INDEX_SCHEMA,
     type EvidenceIndex,
     RETENTION_POLICY_VERSION,
+    buildAssetUrl,
     buildEvidenceIndex,
+    buildReleaseAssets,
+    buildReleaseUrl,
     loadApplyProofs,
+    validateImmutableUrl,
 } from '../src/evidence-index.js';
 
 // ============================================================================
@@ -611,5 +616,257 @@ describe('Evidence Index Edge Cases', () => {
     const opts = createMockOptions(tempDir);
     const index = buildEvidenceIndex(opts);
     assert.equal(index.records.length, 100);
+  });
+});
+
+// ============================================================================
+// Phase 4N14: Immutable URL Contract Tests
+// ============================================================================
+
+describe('Phase 4N14: Immutable URL Wiring', () => {
+  describe('validateImmutableUrl()', () => {
+    it('should accept valid release tag URL', () => {
+      const url = 'https://github.com/owner/repo/releases/tag/v1.0.0';
+      assert.equal(validateImmutableUrl(url), null);
+    });
+
+    it('should accept valid release download URL', () => {
+      const url = 'https://github.com/owner/repo/releases/download/v1.0.0/bundle.zip';
+      assert.equal(validateImmutableUrl(url), null);
+    });
+
+    it('should reject /latest URLs', () => {
+      const url = 'https://github.com/owner/repo/releases/latest';
+      const result = validateImmutableUrl(url);
+      assert.ok(result !== null);
+      assert.ok(result.includes('mutable'));
+    });
+
+    it('should reject /download/latest URLs', () => {
+      const url = 'https://github.com/owner/repo/releases/download/latest/bundle.zip';
+      const result = validateImmutableUrl(url);
+      assert.ok(result !== null);
+    });
+
+    it('should reject branch refs (refs/heads)', () => {
+      const url = 'https://github.com/owner/repo/releases/refs/heads/main';
+      const result = validateImmutableUrl(url);
+      assert.ok(result !== null);
+    });
+
+    it('should reject /tree/ URLs', () => {
+      const url = 'https://github.com/owner/repo/tree/main/releases/v1';
+      const result = validateImmutableUrl(url);
+      assert.ok(result !== null);
+    });
+
+    it('should reject /blob/ URLs', () => {
+      const url = 'https://github.com/owner/repo/blob/main/releases/v1';
+      const result = validateImmutableUrl(url);
+      assert.ok(result !== null);
+    });
+
+    it('should reject URL shorteners (bit.ly)', () => {
+      const url = 'https://bit.ly/releases/abc';
+      const result = validateImmutableUrl(url);
+      assert.ok(result !== null);
+    });
+
+    it('should reject URL shorteners (t.co)', () => {
+      const url = 'https://t.co/releases/abc';
+      const result = validateImmutableUrl(url);
+      assert.ok(result !== null);
+    });
+
+    it('should reject @latest suffix', () => {
+      const url = 'https://github.com/owner/repo/releases/tag/v1@latest';
+      const result = validateImmutableUrl(url);
+      assert.ok(result !== null);
+    });
+
+    it('should reject non-releases URLs', () => {
+      const url = 'https://github.com/owner/repo/archive/v1.0.0.zip';
+      const result = validateImmutableUrl(url);
+      assert.ok(result !== null);
+      assert.ok(result.includes('not a GitHub releases URL'));
+    });
+  });
+
+  describe('buildReleaseUrl()', () => {
+    it('should build correct release tag URL', () => {
+      const url = buildReleaseUrl('https://github.com', 'owner/repo', 'v1.0.0');
+      assert.equal(url, 'https://github.com/owner/repo/releases/tag/v1.0.0');
+    });
+
+    it('should strip trailing slash from serverUrl', () => {
+      const url = buildReleaseUrl('https://github.com/', 'owner/repo', 'v1.0.0');
+      assert.equal(url, 'https://github.com/owner/repo/releases/tag/v1.0.0');
+    });
+
+    it('should properly encode special characters in tag', () => {
+      const url = buildReleaseUrl('https://github.com', 'owner/repo', 'autonomy-evidence/2026-01');
+      assert.ok(url.includes('autonomy-evidence%2F2026-01'));
+    });
+
+    it('should produce immutable URL (passes validation)', () => {
+      const url = buildReleaseUrl('https://github.com', 'owner/repo', 'v1.0.0');
+      assert.equal(validateImmutableUrl(url), null);
+    });
+  });
+
+  describe('buildAssetUrl()', () => {
+    it('should build correct asset download URL', () => {
+      const url = buildAssetUrl('https://github.com', 'owner/repo', 'v1.0.0', 'bundle.zip');
+      assert.equal(url, 'https://github.com/owner/repo/releases/download/v1.0.0/bundle.zip');
+    });
+
+    it('should encode special characters in tag and asset name', () => {
+      const url = buildAssetUrl('https://github.com', 'owner/repo', 'autonomy-evidence/2026-01', 'my file.zip');
+      assert.ok(url.includes('autonomy-evidence%2F2026-01'));
+      assert.ok(url.includes('my%20file.zip'));
+    });
+
+    it('should produce immutable URL (passes validation)', () => {
+      const url = buildAssetUrl('https://github.com', 'owner/repo', 'v1.0.0', 'bundle.zip');
+      assert.equal(validateImmutableUrl(url), null);
+    });
+  });
+
+  describe('CANONICAL_ASSET_NAMES', () => {
+    it('should generate correct bundle zip name', () => {
+      const name = CANONICAL_ASSET_NAMES.bundleZip('12345');
+      assert.equal(name, 'autonomy-evidence-bundle-12345.zip');
+    });
+
+    it('should generate correct manifest json name', () => {
+      const name = CANONICAL_ASSET_NAMES.manifestJson('12345');
+      assert.equal(name, 'autonomy-evidence-manifest-12345.json');
+    });
+
+    it('should have correct fixed names', () => {
+      assert.equal(CANONICAL_ASSET_NAMES.evidenceIndexJson, 'autonomy-evidence-index.json');
+      assert.equal(CANONICAL_ASSET_NAMES.ledgerHtml, 'autonomy-ledger.html');
+      assert.equal(CANONICAL_ASSET_NAMES.dashboardHtml, 'autonomy-dashboard.html');
+      assert.equal(CANONICAL_ASSET_NAMES.custodyHtml, 'autonomy-custody.html');
+      assert.equal(CANONICAL_ASSET_NAMES.custodyAttestationJson, 'custody-attestation.json');
+    });
+  });
+
+  describe('buildReleaseAssets()', () => {
+    it('should build all asset URLs', () => {
+      const assets = buildReleaseAssets('https://github.com', 'owner/repo', 'v1.0.0', '12345');
+
+      assert.ok(assets.bundleZip);
+      assert.ok(assets.manifestJson);
+      assert.ok(assets.evidenceIndexJson);
+      assert.ok(assets.ledgerHtml);
+      assert.ok(assets.dashboardHtml);
+      assert.ok(assets.custodyHtml);
+      assert.ok(assets.custodyAttestationJson);
+    });
+
+    it('should use canonical names for dynamic assets', () => {
+      const assets = buildReleaseAssets('https://github.com', 'owner/repo', 'v1.0.0', '12345');
+
+      assert.equal(assets.bundleZip?.name, 'autonomy-evidence-bundle-12345.zip');
+      assert.equal(assets.manifestJson?.name, 'autonomy-evidence-manifest-12345.json');
+    });
+
+    it('should use canonical names for fixed assets', () => {
+      const assets = buildReleaseAssets('https://github.com', 'owner/repo', 'v1.0.0', '12345');
+
+      assert.equal(assets.evidenceIndexJson?.name, 'autonomy-evidence-index.json');
+      assert.equal(assets.ledgerHtml?.name, 'autonomy-ledger.html');
+    });
+
+    it('should produce immutable URLs for all assets', () => {
+      const assets = buildReleaseAssets('https://github.com', 'owner/repo', 'v1.0.0', '12345');
+
+      // Check each asset URL is immutable
+      assert.equal(validateImmutableUrl(assets.bundleZip!.url), null);
+      assert.equal(validateImmutableUrl(assets.manifestJson!.url), null);
+      assert.equal(validateImmutableUrl(assets.evidenceIndexJson!.url), null);
+      assert.equal(validateImmutableUrl(assets.ledgerHtml!.url), null);
+    });
+
+    it('should generate deterministic output', () => {
+      const assets1 = buildReleaseAssets('https://github.com', 'owner/repo', 'v1.0.0', '12345');
+      const assets2 = buildReleaseAssets('https://github.com', 'owner/repo', 'v1.0.0', '12345');
+
+      assert.deepEqual(assets1, assets2);
+    });
+  });
+
+  describe('buildEvidenceIndex with releaseTag', () => {
+    let tempDir: string;
+
+    beforeEach(() => {
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'evidence-index-url-test-'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    });
+
+    it('should include releaseUrl when releaseTag is provided', () => {
+      const opts = createMockOptions(tempDir, {
+        artifactsDir: '',
+        releaseTag: 'autonomy-evidence/2026-01',
+        serverUrl: 'https://github.com',
+      });
+      const index = buildEvidenceIndex(opts);
+
+      assert.ok(index.releaseTag);
+      assert.equal(index.releaseTag, 'autonomy-evidence/2026-01');
+      assert.ok(index.releaseUrl);
+      assert.ok(index.releaseUrl.includes('/releases/tag/'));
+    });
+
+    it('should include assets when releaseTag is provided', () => {
+      const opts = createMockOptions(tempDir, {
+        artifactsDir: '',
+        releaseTag: 'v1.0.0',
+        serverUrl: 'https://github.com',
+      });
+      const index = buildEvidenceIndex(opts);
+
+      assert.ok(index.assets);
+      assert.ok(index.assets.bundleZip);
+      assert.ok(index.assets.manifestJson);
+      assert.ok(index.assets.evidenceIndexJson);
+    });
+
+    it('should not include releaseUrl when releaseTag is not provided', () => {
+      const opts = createMockOptions(tempDir, { artifactsDir: '' });
+      const index = buildEvidenceIndex(opts);
+
+      assert.equal(index.releaseTag, undefined);
+      assert.equal(index.releaseUrl, undefined);
+      assert.equal(index.assets, undefined);
+    });
+
+    it('should validate releaseUrl is immutable', () => {
+      const opts = createMockOptions(tempDir, {
+        artifactsDir: '',
+        releaseTag: 'v1.0.0',
+        serverUrl: 'https://github.com',
+      });
+      const index = buildEvidenceIndex(opts);
+
+      // Should pass validation
+      assert.equal(validateImmutableUrl(index.releaseUrl!), null);
+    });
+
+    it('should use default serverUrl when not provided', () => {
+      const opts = createMockOptions(tempDir, {
+        artifactsDir: '',
+        releaseTag: 'v1.0.0',
+        // serverUrl not provided, should use default
+      });
+      const index = buildEvidenceIndex(opts);
+
+      assert.ok(index.releaseUrl);
+      assert.ok(index.releaseUrl.includes('github.com'));
+    });
   });
 });

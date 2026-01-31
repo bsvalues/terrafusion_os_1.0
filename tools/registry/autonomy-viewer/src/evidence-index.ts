@@ -70,6 +70,28 @@ export interface EvidenceRetention {
   tier: 'ci' | 'merged' | 'incident';
 }
 
+// Phase 4N14 — Release Asset Types
+export interface ReleaseAsset {
+  /** Asset filename (e.g., "autonomy-evidence-bundle-123.zip") */
+  name: string;
+  /** Immutable download URL (releases/download/<tag>/<name>) */
+  url: string;
+}
+
+/**
+ * Canonical release assets for evidence package.
+ * All URLs must be immutable (tagged releases only).
+ */
+export interface ReleaseAssets {
+  bundleZip?: ReleaseAsset;
+  manifestJson?: ReleaseAsset;
+  evidenceIndexJson?: ReleaseAsset;
+  ledgerHtml?: ReleaseAsset;
+  dashboardHtml?: ReleaseAsset;
+  custodyHtml?: ReleaseAsset;
+  custodyAttestationJson?: ReleaseAsset;
+}
+
 export interface EvidenceRecord {
   recordId: string;
   status: 'applied' | 'noop' | 'skipped' | 'blocked' | 'dry-run';
@@ -95,7 +117,12 @@ export interface EvidenceIndex {
   records: EvidenceRecord[];
   incident?: boolean;
   incidentSource?: IncidentSource;
+  /** Release tag (e.g., "autonomy-evidence/2026-01") */
   releaseTag?: string;
+  /** Immutable release page URL (releases/tag/<tag>) */
+  releaseUrl?: string;
+  /** Canonical release assets with immutable URLs */
+  assets?: ReleaseAssets;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -118,6 +145,10 @@ interface IndexOptions {
   incident: boolean;
   incidentPr: number;
   retentionTier: 'ci' | 'merged' | 'incident';
+  /** Release tag for immutable URLs (e.g., "autonomy-evidence/2026-01") */
+  releaseTag: string;
+  /** GitHub server URL (default: https://github.com) */
+  serverUrl: string;
 }
 
 function parseArgs(): IndexOptions {
@@ -138,6 +169,8 @@ function parseArgs(): IndexOptions {
     incident: false,
     incidentPr: 0,
     retentionTier: 'ci',
+    releaseTag: '',
+    serverUrl: process.env.GITHUB_SERVER_URL || 'https://github.com',
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -172,6 +205,10 @@ function parseArgs(): IndexOptions {
       opts.incidentPr = parseInt(args[++i], 10);
     } else if (arg === '--retention-tier' && args[i + 1]) {
       opts.retentionTier = args[++i] as 'ci' | 'merged' | 'incident';
+    } else if (arg === '--release-tag' && args[i + 1]) {
+      opts.releaseTag = args[++i];
+    } else if (arg === '--server-url' && args[i + 1]) {
+      opts.serverUrl = args[++i];
     } else if (arg === '--help' || arg === '-h') {
       printHelp();
       process.exit(0);
@@ -203,6 +240,8 @@ Options:
   --incident            Mark as incident (7-year retention)
   --incident-pr <num>   PR number for incident
   --retention-tier <t>  Tier: ci, merged, incident (default: ci)
+  --release-tag <tag>   Release tag for immutable URLs (required for publishing)
+  --server-url <url>    GitHub server URL (default: GITHUB_SERVER_URL or https://github.com)
   --verbose             Verbose output
   --help, -h            Show this help
 `);
@@ -228,6 +267,106 @@ function getRetentionDays(tier: 'ci' | 'merged' | 'incident'): number {
     default:
       return DEFAULT_RETENTION_DAYS;
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 4N14 — Immutable URL Builders
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Mutable URL patterns that MUST be rejected.
+ * Evidence URLs must be immutable (tagged releases only).
+ */
+const MUTABLE_URL_PATTERNS = [
+  /\/latest\/?$/i,
+  /\/download\/latest/i,
+  /refs\/heads\//i,
+  /\/tree\//i,
+  /\/blob\//i,
+  /git\.io\//i,
+  /bit\.ly\//i,
+  /tinyurl\./i,
+  /t\.co\//i,
+  /@latest$/i,
+  /branch=/i,
+] as const;
+
+/**
+ * Validate a URL is immutable (no latest, no branch refs, no shorteners).
+ * Returns error message if invalid, null if valid.
+ */
+export function validateImmutableUrl(url: string): string | null {
+  // Must be a GitHub releases URL
+  if (!url.includes('/releases/')) {
+    return `URL is not a GitHub releases URL: ${url}`;
+  }
+
+  for (const pattern of MUTABLE_URL_PATTERNS) {
+    if (pattern.test(url)) {
+      return `URL contains mutable reference: ${url} (matched ${pattern})`;
+    }
+  }
+
+  return null; // Valid
+}
+
+/**
+ * Build the release page URL (releases/tag/<tag>).
+ */
+export function buildReleaseUrl(serverUrl: string, repo: string, releaseTag: string): string {
+  const base = serverUrl.replace(/\/$/, '');
+  return `${base}/${repo}/releases/tag/${encodeURIComponent(releaseTag)}`;
+}
+
+/**
+ * Build an asset download URL (releases/download/<tag>/<assetName>).
+ */
+export function buildAssetUrl(
+  serverUrl: string,
+  repo: string,
+  releaseTag: string,
+  assetName: string
+): string {
+  const base = serverUrl.replace(/\/$/, '');
+  return `${base}/${repo}/releases/download/${encodeURIComponent(releaseTag)}/${encodeURIComponent(assetName)}`;
+}
+
+/**
+ * Canonical asset names for evidence packages.
+ */
+export const CANONICAL_ASSET_NAMES = {
+  bundleZip: (runId: string) => `autonomy-evidence-bundle-${runId}.zip`,
+  manifestJson: (runId: string) => `autonomy-evidence-manifest-${runId}.json`,
+  evidenceIndexJson: 'autonomy-evidence-index.json',
+  ledgerHtml: 'autonomy-ledger.html',
+  dashboardHtml: 'autonomy-dashboard.html',
+  custodyHtml: 'autonomy-custody.html',
+  custodyAttestationJson: 'custody-attestation.json',
+} as const;
+
+/**
+ * Build all release assets with immutable URLs.
+ */
+export function buildReleaseAssets(
+  serverUrl: string,
+  repo: string,
+  releaseTag: string,
+  runId: string
+): ReleaseAssets {
+  const makeAsset = (name: string): ReleaseAsset => ({
+    name,
+    url: buildAssetUrl(serverUrl, repo, releaseTag, name),
+  });
+
+  return {
+    bundleZip: makeAsset(CANONICAL_ASSET_NAMES.bundleZip(runId)),
+    manifestJson: makeAsset(CANONICAL_ASSET_NAMES.manifestJson(runId)),
+    evidenceIndexJson: makeAsset(CANONICAL_ASSET_NAMES.evidenceIndexJson),
+    ledgerHtml: makeAsset(CANONICAL_ASSET_NAMES.ledgerHtml),
+    dashboardHtml: makeAsset(CANONICAL_ASSET_NAMES.dashboardHtml),
+    custodyHtml: makeAsset(CANONICAL_ASSET_NAMES.custodyHtml),
+    custodyAttestationJson: makeAsset(CANONICAL_ASSET_NAMES.custodyAttestationJson),
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -387,9 +526,24 @@ export function buildEvidenceIndex(opts: IndexOptions): EvidenceIndex {
       pr: opts.incidentPr,
       mergedAt: new Date().toISOString(),
     };
-    // Release tag follows annual format for incident tier
-    const year = new Date().getFullYear();
-    index.releaseTag = `autonomy-incident/${year}`;
+    // Release tag follows annual format for incident tier (if not already set)
+    if (!opts.releaseTag) {
+      const year = new Date().getFullYear();
+      index.releaseTag = `autonomy-incident/${year}`;
+    }
+  }
+
+  // Phase 4N14: Add immutable release URLs when releaseTag is provided
+  if (opts.releaseTag) {
+    index.releaseTag = opts.releaseTag;
+    index.releaseUrl = buildReleaseUrl(opts.serverUrl, opts.repo, opts.releaseTag);
+    index.assets = buildReleaseAssets(opts.serverUrl, opts.repo, opts.releaseTag, opts.runId);
+
+    // Validate all URLs are immutable (fail-fast if mutable refs detected)
+    const releaseUrlError = validateImmutableUrl(index.releaseUrl);
+    if (releaseUrlError) {
+      throw new Error(`Immutable URL validation failed: ${releaseUrlError}`);
+    }
   }
 
   return index;

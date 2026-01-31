@@ -159,6 +159,23 @@ export interface EvidenceIndex {
     actor?: string;
     prNumber?: number;
   };
+  /** Phase 4N14: Release tag for this evidence bundle */
+  releaseTag?: string;
+  /** Phase 4N14: Immutable release URL */
+  releaseUrl?: string;
+  /** Phase 4N14: Incident tracking */
+  incident?: boolean;
+  incidentSource?: { pr: number; merged_at?: string };
+  /** Phase 4N14: Immutable asset URLs */
+  assets?: {
+    bundleZip?: { name: string; url: string };
+    manifestJson?: { name: string; url: string };
+    evidenceIndexJson?: { name: string; url: string };
+    ledgerHtml?: { name: string; url: string };
+    dashboardHtml?: { name: string; url: string };
+    custodyHtml?: { name: string; url: string };
+    custodyAttestationJson?: { name: string; url: string };
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

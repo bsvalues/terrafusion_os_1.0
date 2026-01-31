@@ -206,6 +206,7 @@ jobs:
             --workflow "autonomy-evidence-publisher" \
             --repo "${{ github.repository }}" \
             --ref "refs/heads/main" \
+            --release-tag "${{ needs.gate.outputs.release_tag }}" \
             --verbose
 
       - name: Generate Evidence Ledger
@@ -234,30 +235,63 @@ jobs:
             --verbose || echo "::warning::Chain of custody generation failed (non-fatal)"
 
       # ========================================================================
+      # Step 2b: Generate and Verify Custody Attestation (Phase 4N13/4N14)
+      # ========================================================================
+      - name: Generate Custody Attestation
+        run: |
+          echo "🔐 Generating Custody Attestation..."
+
+          npx tsx tools/registry/autonomy-viewer/src/custody-attest.ts \
+            --in ${{ env.VIEWER_DIR }} \
+            --out ${{ env.VIEWER_DIR }}/custody-attestation.json \
+            --verbose
+
+          echo "✅ Custody attestation generated"
+
+      - name: Verify Custody Attestation (strict)
+        run: |
+          echo "🔒 Verifying Custody Attestation (strict mode)..."
+
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/verify-custody.ts \
+            --in ${{ env.VIEWER_DIR }} \
+            --strict \
+            --verbose
+          VERIFY_EXIT=$?
+          set -e
+
+          if [ $VERIFY_EXIT -eq 0 ]; then
+            echo "✅ Custody attestation verification PASSED (strict)"
+          else
+            echo "::error::Custody attestation verification FAILED - cannot publish"
+            exit 1
+          fi
+
+      # ========================================================================
       # Step 3: Publish to GitHub Release
       # ========================================================================
       - name: Prepare release assets
         id: assets
         run: |
-          echo "📦 Preparing release assets..."
+          echo "📦 Preparing release assets (Phase 4N14: Canonical naming)..."
           ASSETS_DIR="${{ env.VIEWER_DIR }}/release-assets"
           mkdir -p "$ASSETS_DIR"
 
           RUN_ID="${{ needs.gate.outputs.run_id }}"
 
-          # Copy and rename assets for release
-          cp "${{ steps.bundle.outputs.bundle_path }}" "$ASSETS_DIR/"
-          cp "${{ env.VIEWER_DIR }}/MANIFEST.json" "$ASSETS_DIR/autonomy-evidence-$RUN_ID.manifest.json"
+          # Phase 4N14: Use canonical asset names for immutable URL generation
+          # These names MUST match CANONICAL_ASSET_NAMES in evidence-index.ts
+          cp "${{ steps.bundle.outputs.bundle_path }}" "$ASSETS_DIR/autonomy-evidence-bundle-${RUN_ID}.zip"
+          cp "${{ env.VIEWER_DIR }}/MANIFEST.json" "$ASSETS_DIR/autonomy-evidence-manifest-${RUN_ID}.json"
           cp "${{ env.VIEWER_DIR }}/autonomy-evidence-index.json" "$ASSETS_DIR/"
-          cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/autonomy-dashboard-$RUN_ID.html" || true
-          cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.json" "$ASSETS_DIR/autonomy-dashboard-$RUN_ID.json" || true
-          cp "${{ env.VIEWER_DIR }}/autonomy-ledger.html" "$ASSETS_DIR/autonomy-ledger.html" || true
-          cp "${{ env.VIEWER_DIR }}/autonomy-custody.html" "$ASSETS_DIR/autonomy-custody-$RUN_ID.html" || true
-          cp "${{ env.VIEWER_DIR }}/autonomy-custody.json" "$ASSETS_DIR/autonomy-custody-$RUN_ID.json" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-ledger.html" "$ASSETS_DIR/" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-custody.html" "$ASSETS_DIR/" || true
+          cp "${{ env.VIEWER_DIR }}/custody-attestation.json" "$ASSETS_DIR/" || true
 
           echo "assets_dir=$ASSETS_DIR" >> $GITHUB_OUTPUT
 
-          echo "✅ Release assets prepared:"
+          echo "✅ Release assets prepared (canonical naming):"
           ls -la "$ASSETS_DIR/"
 
       - name: Create or Update Release
@@ -267,7 +301,7 @@ jobs:
           tag_name: ${{ needs.gate.outputs.release_tag }}
           name: 'Autonomy Evidence Archive - ${{ needs.gate.outputs.release_tag }}'
           body: |
-            ## 📦 Autonomy Evidence Archive
+            ## 📦 Autonomy Evidence Archive (Phase 4N14)
 
             This release contains verified evidence bundles from merged autonomy PRs.
 
@@ -280,9 +314,10 @@ jobs:
 
             | Field | Value |
             |-------|-------|
-            | **Bundle** | `${{ steps.bundle.outputs.bundle_name }}` |
+            | **Bundle** | `autonomy-evidence-bundle-${{ needs.gate.outputs.run_id }}.zip` |
             | **Manifest SHA256** | `${{ steps.bundle.outputs.manifest_sha }}` |
             | **Verification** | ✅ Passed (strict) |
+            | **Custody Attestation** | ✅ Passed (Phase 4N13) |
             | **PR** | #${{ github.event.pull_request.number }} |
             | **Merged By** | @${{ github.event.pull_request.merged_by.login }} |
             | **Merged At** | ${{ github.event.pull_request.merged_at }} |
@@ -292,7 +327,11 @@ jobs:
             ### Verify Offline
 
             ```bash
-            pnpm perf:verify-bundle --zip ${{ steps.bundle.outputs.bundle_name }}
+            # Verify bundle integrity
+            pnpm perf:verify-bundle --zip autonomy-evidence-bundle-${{ needs.gate.outputs.run_id }}.zip
+
+            # Verify custody attestation (Phase 4N13)
+            pnpm perf:verify-custody --strict
             ```
 
             ---
@@ -306,20 +345,25 @@ jobs:
 
       - name: Publish Summary
         run: |
+          RUN_ID="${{ needs.gate.outputs.run_id }}"
           echo "## 📦 Evidence Published to Release" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Release Tag:** \`${{ needs.gate.outputs.release_tag }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Retention Tier:** 1 year (merged PR)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Assets Published" >> $GITHUB_STEP_SUMMARY
+          echo "### Assets Published (Phase 4N14 Canonical Naming)" >> $GITHUB_STEP_SUMMARY
           echo "| Asset | Purpose |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|---------|" >> $GITHUB_STEP_SUMMARY
-          echo "| \`${{ steps.bundle.outputs.bundle_name }}\` | Complete evidence bundle (ZIP) |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`autonomy-evidence-${{ needs.gate.outputs.run_id }}.manifest.json\` | SHA256 integrity hashes |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`autonomy-evidence-index.json\` | Evidence ledger entry |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`autonomy-dashboard-${{ needs.gate.outputs.run_id }}.html\` | Offline CIO viewer |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-evidence-bundle-${RUN_ID}.zip\` | Complete evidence bundle |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-evidence-manifest-${RUN_ID}.json\` | SHA256 integrity hashes |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-evidence-index.json\` | Evidence index with immutable URLs |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-dashboard.html\` | Offline CIO viewer |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-ledger.html\` | Evidence ledger viewer |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-custody.html\` | Chain of custody viewer |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`custody-attestation.json\` | Self-verifying attestation (Phase 4N13) |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Verification" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "pnpm perf:verify-bundle --zip ${{ steps.bundle.outputs.bundle_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "pnpm perf:verify-bundle --zip autonomy-evidence-bundle-${RUN_ID}.zip" >> $GITHUB_STEP_SUMMARY
+          echo "pnpm perf:verify-custody --strict  # Phase 4N13 attestation" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

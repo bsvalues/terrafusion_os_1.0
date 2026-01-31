@@ -231,6 +231,7 @@ jobs:
             --incident \
             --incident-pr "${{ needs.gate.outputs.pr_number }}" \
             --retention-tier "incident" \
+            --release-tag "${{ needs.gate.outputs.release_tag }}" \
             --verbose
 
       - name: Generate Incident Evidence Ledger
@@ -259,31 +260,64 @@ jobs:
             --verbose || echo "::warning::Chain of custody generation failed (non-fatal)"
 
       # ========================================================================
+      # Step 2b: Generate and Verify Custody Attestation (Phase 4N13/4N14)
+      # ========================================================================
+      - name: Generate Custody Attestation (Incident)
+        run: |
+          echo "🔐 Generating Custody Attestation (Incident)..."
+
+          npx tsx tools/registry/autonomy-viewer/src/custody-attest.ts \
+            --in ${{ env.VIEWER_DIR }} \
+            --out ${{ env.VIEWER_DIR }}/custody-attestation.json \
+            --verbose
+
+          echo "✅ Custody attestation generated"
+
+      - name: Verify Custody Attestation (strict)
+        run: |
+          echo "🔒 Verifying Custody Attestation (strict mode)..."
+
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/verify-custody.ts \
+            --in ${{ env.VIEWER_DIR }} \
+            --strict \
+            --verbose
+          VERIFY_EXIT=$?
+          set -e
+
+          if [ $VERIFY_EXIT -eq 0 ]; then
+            echo "✅ Custody attestation verification PASSED (strict)"
+          else
+            echo "::error::Custody attestation verification FAILED - cannot publish to incident channel"
+            exit 1
+          fi
+
+      # ========================================================================
       # Step 3: Publish to Incident Release Channel
       # ========================================================================
       - name: Prepare incident release assets
         id: assets
         run: |
-          echo "📦 Preparing incident release assets..."
+          echo "📦 Preparing incident release assets (Phase 4N14: Canonical naming)..."
           ASSETS_DIR="${{ env.VIEWER_DIR }}/incident-assets"
           mkdir -p "$ASSETS_DIR"
 
           PR_NUMBER="${{ needs.gate.outputs.pr_number }}"
           RUN_ID="${{ needs.gate.outputs.run_id }}"
 
-          # Copy and rename assets for incident release
-          cp "${{ steps.bundle.outputs.bundle_path }}" "$ASSETS_DIR/"
-          cp "${{ env.VIEWER_DIR }}/MANIFEST.json" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-${RUN_ID}.manifest.json"
-          cp "${{ env.VIEWER_DIR }}/autonomy-evidence-index.json" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-index.json"
-          cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-dashboard.html" || true
-          cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.json" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-dashboard.json" || true
+          # Phase 4N14: Use canonical asset names for immutable URL generation
+          # Incident bundles use pr-prefixed names for traceability
+          cp "${{ steps.bundle.outputs.bundle_path }}" "$ASSETS_DIR/autonomy-incident-bundle-pr${PR_NUMBER}-${RUN_ID}.zip"
+          cp "${{ env.VIEWER_DIR }}/MANIFEST.json" "$ASSETS_DIR/autonomy-incident-manifest-pr${PR_NUMBER}-${RUN_ID}.json"
+          cp "${{ env.VIEWER_DIR }}/autonomy-evidence-index.json" "$ASSETS_DIR/autonomy-incident-index-pr${PR_NUMBER}.json"
+          cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/autonomy-incident-dashboard-pr${PR_NUMBER}.html" || true
           cp "${{ env.VIEWER_DIR }}/autonomy-incident-ledger.html" "$ASSETS_DIR/" || true
-          cp "${{ env.VIEWER_DIR }}/autonomy-custody.html" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-custody.html" || true
-          cp "${{ env.VIEWER_DIR }}/autonomy-custody.json" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-custody.json" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-custody.html" "$ASSETS_DIR/autonomy-incident-custody-pr${PR_NUMBER}.html" || true
+          cp "${{ env.VIEWER_DIR }}/custody-attestation.json" "$ASSETS_DIR/custody-attestation-pr${PR_NUMBER}.json" || true
 
           echo "assets_dir=$ASSETS_DIR" >> $GITHUB_OUTPUT
 
-          echo "✅ Incident release assets prepared:"
+          echo "✅ Incident release assets prepared (canonical naming):"
           ls -la "$ASSETS_DIR/"
 
       - name: Create or Update Incident Release
@@ -351,6 +385,8 @@ jobs:
 
       - name: Incident Publish Summary
         run: |
+          PR_NUMBER="${{ needs.gate.outputs.pr_number }}"
+          RUN_ID="${{ needs.gate.outputs.run_id }}"
           echo "## 🚨 Incident Evidence Published" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Release Tag:** \`${{ needs.gate.outputs.release_tag }}\`" >> $GITHUB_STEP_SUMMARY
@@ -359,20 +395,22 @@ jobs:
           echo "### PR Details" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| PR | #${{ needs.gate.outputs.pr_number }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| PR | #${PR_NUMBER} |" >> $GITHUB_STEP_SUMMARY
           echo "| Title | ${{ needs.gate.outputs.pr_title }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Assets Published" >> $GITHUB_STEP_SUMMARY
+          echo "### Assets Published (Phase 4N14 Canonical Naming)" >> $GITHUB_STEP_SUMMARY
           echo "| Asset | Purpose |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|---------|" >> $GITHUB_STEP_SUMMARY
-          echo "| \`${{ steps.bundle.outputs.bundle_name }}\` | Complete incident evidence bundle |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`autonomy-incident-pr${{ needs.gate.outputs.pr_number }}-*.manifest.json\` | SHA256 integrity hashes |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`autonomy-incident-pr${{ needs.gate.outputs.pr_number }}-index.json\` | Incident evidence ledger |" >> $GITHUB_STEP_SUMMARY
-          echo "| \`autonomy-incident-pr${{ needs.gate.outputs.pr_number }}-dashboard.html\` | Offline CIO viewer |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-incident-bundle-pr${PR_NUMBER}-${RUN_ID}.zip\` | Complete incident evidence bundle |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-incident-manifest-pr${PR_NUMBER}-${RUN_ID}.json\` | SHA256 integrity hashes |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-incident-index-pr${PR_NUMBER}.json\` | Incident evidence index with URLs |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-incident-dashboard-pr${PR_NUMBER}.html\` | Offline CIO viewer |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`custody-attestation-pr${PR_NUMBER}.json\` | Self-verifying attestation (Phase 4N13) |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Verification" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "pnpm perf:verify-bundle --zip ${{ steps.bundle.outputs.bundle_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "pnpm perf:verify-bundle --zip autonomy-incident-bundle-pr${PR_NUMBER}-${RUN_ID}.zip" >> $GITHUB_STEP_SUMMARY
+          echo "pnpm perf:verify-custody --strict  # Phase 4N13 attestation" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "⚠️ **7-year retention — do NOT delete without authorization**" >> $GITHUB_STEP_SUMMARY

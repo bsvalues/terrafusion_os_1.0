@@ -18,13 +18,13 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import test from 'node:test';
 import {
-  ATTESTATION_SCHEMA,
-  buildAttestation,
-  containsMutableRef,
-  REQUIRED_ARTIFACTS,
-  TOOL_VERSION,
-  validateNoMutableUrls,
-  type CustodyAttestation,
+    ATTESTATION_SCHEMA,
+    buildAttestation,
+    containsMutableRef,
+    REQUIRED_ARTIFACTS,
+    TOOL_VERSION,
+    validateNoMutableUrls,
+    type CustodyAttestation,
 } from '../src/custody-attest.js';
 import { verifyCustodyAttestation } from '../src/verify-custody.js';
 
@@ -34,13 +34,25 @@ import { verifyCustodyAttestation } from '../src/verify-custody.js';
 
 function createTestArtifacts(tmpDir: string): void {
   // Create required artifacts
-  fs.writeFileSync(path.join(tmpDir, 'autonomy-ledger.html'), '<!DOCTYPE html><html><body>Ledger</body></html>');
-  fs.writeFileSync(path.join(tmpDir, 'autonomy-dashboard.html'), '<!DOCTYPE html><html><body>Dashboard</body></html>');
-  fs.writeFileSync(path.join(tmpDir, 'autonomy-evidence-index.json'), JSON.stringify({
-    schema: 'terrafusion.autonomy.evidence.index.v1',
-    records: [],
-  }));
-  fs.writeFileSync(path.join(tmpDir, 'autonomy-custody.html'), '<!DOCTYPE html><html><body>Custody</body></html>');
+  fs.writeFileSync(
+    path.join(tmpDir, 'autonomy-ledger.html'),
+    '<!DOCTYPE html><html><body>Ledger</body></html>'
+  );
+  fs.writeFileSync(
+    path.join(tmpDir, 'autonomy-dashboard.html'),
+    '<!DOCTYPE html><html><body>Dashboard</body></html>'
+  );
+  fs.writeFileSync(
+    path.join(tmpDir, 'autonomy-evidence-index.json'),
+    JSON.stringify({
+      schema: 'terrafusion.autonomy.evidence.index.v1',
+      records: [],
+    })
+  );
+  fs.writeFileSync(
+    path.join(tmpDir, 'autonomy-custody.html'),
+    '<!DOCTYPE html><html><body>Custody</body></html>'
+  );
 }
 
 function createTestAttestationFile(tmpDir: string, attestation: CustodyAttestation): void {
@@ -60,7 +72,7 @@ test('determinism: same input produces identical attestation hash list 10 times'
 
   try {
     const results: string[] = [];
-    
+
     for (let i = 0; i < 10; i++) {
       const result = buildAttestation({ inputDir: tmpDir, runId: 'test-run-123' });
       // Compare hashes only (exclude generatedAt which varies)
@@ -84,7 +96,7 @@ test('determinism: same input produces identical foundArtifacts order 10 times',
 
   try {
     const results: string[] = [];
-    
+
     for (let i = 0; i < 10; i++) {
       const result = buildAttestation({ inputDir: tmpDir, runId: 'test-run-123' });
       results.push(JSON.stringify(result.attestation.foundArtifacts));
@@ -126,7 +138,7 @@ test('integrity: one-byte change in artifact fails verification', () => {
     // Modify one byte in dashboard
     const dashboardPath = path.join(tmpDir, 'autonomy-dashboard.html');
     const original = fs.readFileSync(dashboardPath, 'utf8');
-    fs.writeFileSync(dashboardPath, original + 'X');  // Add one byte
+    fs.writeFileSync(dashboardPath, original + 'X'); // Add one byte
 
     // Verify now fails
     const verifyAfter = verifyCustodyAttestation({
@@ -305,7 +317,7 @@ test('attestation: hashes array contains all required artifacts', () => {
   try {
     const result = buildAttestation({ inputDir: tmpDir, runId: 'test-123' });
     const hashNames = result.attestation.hashes.map(h => h.name);
-    
+
     for (const required of REQUIRED_ARTIFACTS) {
       assert.ok(hashNames.includes(required), `Should include ${required} in hashes`);
     }
@@ -320,13 +332,22 @@ test('attestation: each hash entry has sha256, bytes, source', () => {
 
   try {
     const result = buildAttestation({ inputDir: tmpDir, runId: 'test-123' });
-    
+
     for (const hash of result.attestation.hashes) {
       assert.ok(hash.name, 'Hash entry should have name');
       assert.ok(hash.sha256, 'Hash entry should have sha256');
-      assert.ok(typeof hash.sha256 === 'string' && hash.sha256.length === 64, 'sha256 should be 64-char hex');
-      assert.ok(typeof hash.bytes === 'number' && hash.bytes >= 0, 'bytes should be non-negative number');
-      assert.ok(hash.source === 'file' || hash.source === 'zip-entry', 'source should be file or zip-entry');
+      assert.ok(
+        typeof hash.sha256 === 'string' && hash.sha256.length === 64,
+        'sha256 should be 64-char hex'
+      );
+      assert.ok(
+        typeof hash.bytes === 'number' && hash.bytes >= 0,
+        'bytes should be non-negative number'
+      );
+      assert.ok(
+        hash.source === 'file' || hash.source === 'zip-entry',
+        'source should be file or zip-entry'
+      );
     }
   } finally {
     fs.rmSync(tmpDir, { recursive: true });
@@ -476,7 +497,7 @@ test('verification: rejects wrong schema version', () => {
 
   try {
     const buildResult = buildAttestation({ inputDir: tmpDir, runId: 'test-123' });
-    
+
     // Tamper with schema
     const tampered = { ...buildResult.attestation, schema: 'wrong.schema.v1' };
     fs.writeFileSync(
@@ -560,7 +581,7 @@ test('attestation: handles empty directory', () => {
 test('attestation: ignores non-evidence files', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attest-test-'));
   createTestArtifacts(tmpDir);
-  
+
   // Add non-evidence files
   fs.writeFileSync(path.join(tmpDir, 'random.txt'), 'random content');
   fs.writeFileSync(path.join(tmpDir, 'config.yaml'), 'key: value');
@@ -578,7 +599,7 @@ test('attestation: ignores non-evidence files', () => {
 test('attestation: handles optional bundle files', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attest-test-'));
   createTestArtifacts(tmpDir);
-  
+
   // Add optional bundle (fake ZIP - just for pattern matching)
   fs.writeFileSync(path.join(tmpDir, 'autonomy-evidence-bundle-12345.zip'), 'fake zip content');
 

@@ -28,10 +28,10 @@ import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {
-  ATTESTATION_SCHEMA,
-  containsMutableRef,
-  REQUIRED_ARTIFACTS,
-  type CustodyAttestation,
+    ATTESTATION_SCHEMA,
+    containsMutableRef,
+    REQUIRED_ARTIFACTS,
+    type CustodyAttestation,
 } from './custody-attest.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -79,7 +79,7 @@ function sha256File(filePath: string): string {
 
 function isEvidenceArtifact(name: string): boolean {
   // Same patterns as custody-attest.ts
-  const required = REQUIRED_ARTIFACTS.includes(name as typeof REQUIRED_ARTIFACTS[number]);
+  const required = REQUIRED_ARTIFACTS.includes(name as (typeof REQUIRED_ARTIFACTS)[number]);
   const optional = [
     /^autonomy-evidence-bundle-.*\.zip$/,
     /^manifest\.json$/,
@@ -368,8 +368,7 @@ function main(): void {
 // Run if main module
 const isMain =
   process.argv[1] &&
-  (process.argv[1].endsWith('verify-custody.ts') ||
-    process.argv[1].endsWith('verify-custody.js'));
+  (process.argv[1].endsWith('verify-custody.ts') || process.argv[1].endsWith('verify-custody.js'));
 
 if (isMain) {
   main();

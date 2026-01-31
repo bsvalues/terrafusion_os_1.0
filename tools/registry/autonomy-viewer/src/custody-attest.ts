@@ -143,7 +143,7 @@ function sha256Buffer(buf: Buffer): string {
 }
 
 function isRequiredArtifact(name: string): boolean {
-  return REQUIRED_ARTIFACTS.includes(name as typeof REQUIRED_ARTIFACTS[number]);
+  return REQUIRED_ARTIFACTS.includes(name as (typeof REQUIRED_ARTIFACTS)[number]);
 }
 
 function isOptionalArtifact(name: string): boolean {
@@ -386,7 +386,13 @@ function parseArgs(): AttestOptions | null {
     return null;
   }
 
-  return { inputDir: path.resolve(inputDir), outputPath: path.resolve(outputPath), strict, verbose, runId };
+  return {
+    inputDir: path.resolve(inputDir),
+    outputPath: path.resolve(outputPath),
+    strict,
+    verbose,
+    runId,
+  };
 }
 
 function printHelp(): void {
@@ -477,7 +483,9 @@ function main(): void {
   // Report results
   console.log(`✅ Attestation generated: ${opts.outputPath}`);
   console.log(`   Artifacts: ${result.attestation.presentCount} present`);
-  console.log(`   Required: ${REQUIRED_ARTIFACTS.length - result.attestation.missingRequired.length}/${REQUIRED_ARTIFACTS.length}`);
+  console.log(
+    `   Required: ${REQUIRED_ARTIFACTS.length - result.attestation.missingRequired.length}/${REQUIRED_ARTIFACTS.length}`
+  );
 
   if (result.attestation.missingRequired.length > 0) {
     console.log(`   Missing: ${result.attestation.missingRequired.join(', ')}`);
@@ -501,8 +509,7 @@ function main(): void {
 // Run if main module
 const isMain =
   process.argv[1] &&
-  (process.argv[1].endsWith('custody-attest.ts') ||
-    process.argv[1].endsWith('custody-attest.js'));
+  (process.argv[1].endsWith('custody-attest.ts') || process.argv[1].endsWith('custody-attest.js'));
 
 if (isMain) {
   main();

@@ -66,6 +66,9 @@ export interface LedgerEntry {
   workflow: string;
   repo: string;
   ref: string;
+  /** Phase 4N14: Immutable URLs (derived from evidence index) */
+  releaseUrl?: string;
+  bundleUrl?: string;
 }
 
 export interface LedgerViewModel {
@@ -244,6 +247,10 @@ export function buildLedgerEntries(indices: EvidenceIndex[]): LedgerEntry[] {
       const tier = getTierFromRecord(record, index);
       const releaseTag = getReleaseTag(index, tier);
 
+      // Phase 4N14: Extract immutable URLs from index (zero-manual URL wiring)
+      const releaseUrl = index.releaseUrl;
+      const bundleUrl = index.assets?.bundleZip?.url;
+
       const entry: LedgerEntry = {
         runId: index.source.runId,
         date: index.generatedAt,
@@ -263,6 +270,8 @@ export function buildLedgerEntries(indices: EvidenceIndex[]): LedgerEntry[] {
         workflow: index.source.workflow,
         repo: index.source.repo,
         ref: index.source.ref,
+        releaseUrl,
+        bundleUrl,
       };
 
       entries.push(entry);
@@ -473,14 +482,24 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
       const verifyText = entry.verifyOk ? '✓ Verified' : '✗ Failed';
       const incidentInfo = entry.incident && entry.incidentPr ? ` (PR #${entry.incidentPr})` : '';
 
+      // Phase 4N14: Render bundle as link when URL is available
+      const bundleCell = entry.bundleUrl
+        ? `<a href="${escapeHtml(entry.bundleUrl)}" title="Download bundle">${escapeHtml(entry.bundleName)}</a>`
+        : escapeHtml(entry.bundleName);
+
+      // Phase 4N14: Render release tag as link when URL is available
+      const releaseTagCell = entry.releaseUrl
+        ? `<a href="${escapeHtml(entry.releaseUrl)}" title="View release">${escapeHtml(entry.releaseTag)}</a>`
+        : escapeHtml(entry.releaseTag);
+
       return `
         <tr data-tier="${entry.tier}" data-verify="${entry.verifyOk}">
           <td>${formatDate(entry.date)}</td>
           <td>${escapeHtml(entry.runId)}</td>
           <td>${tierBadge}${incidentInfo}</td>
-          <td>${escapeHtml(entry.bundleName)}</td>
+          <td>${bundleCell}</td>
           <td class="sha">${escapeHtml(entry.manifestSha256)}</td>
-          <td>${escapeHtml(entry.releaseTag)}</td>
+          <td>${releaseTagCell}</td>
           <td class="verify-status ${verifyClass}">${verifyText}</td>
         </tr>
       `;

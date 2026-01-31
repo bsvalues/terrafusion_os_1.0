@@ -232,23 +232,29 @@ export function generateCustody(params: GenerateCustodyOptions): CustodyModel {
   // Build verify command
   const verifyCommand = `pnpm perf:verify-bundle --zip "${bundleName}" --strict`;
 
-  // Build evidence graph links (Phase 4N12)
+  // Phase 4N14: Build evidence graph links from index (zero-manual URL wiring)
+  // Priority: index.releaseUrl/assets > CLI params > undefined
+  const derivedReleaseUrl = index?.releaseUrl ?? params.releaseUrl;
+  const derivedBundleUrl =
+    index?.assets?.bundleZip?.url ??
+    params.bundleDownloadUrl ??
+    (derivedReleaseUrl ? `${derivedReleaseUrl.replace(/\/$/, '')}/${bundleName}` : undefined);
+  const derivedLedgerUrl = index?.assets?.ledgerHtml?.url ?? params.ledgerUrl;
+  const derivedDashboardUrl = index?.assets?.dashboardHtml?.url ?? params.dashboardUrl;
+  const derivedCustodyUrl = index?.assets?.custodyHtml?.url ?? params.custodyUrl;
+
   const graph: EvidenceGraph | undefined =
-    params.ledgerUrl ||
-    params.releaseUrl ||
-    params.dashboardUrl ||
-    params.bundleDownloadUrl ||
-    params.custodyUrl
+    derivedLedgerUrl ||
+    derivedReleaseUrl ||
+    derivedDashboardUrl ||
+    derivedBundleUrl ||
+    derivedCustodyUrl
       ? {
-          ledgerUrl: params.ledgerUrl,
-          releaseUrl: params.releaseUrl,
-          dashboardUrl: params.dashboardUrl,
-          bundleDownloadUrl:
-            params.bundleDownloadUrl ??
-            (params.releaseUrl
-              ? `${params.releaseUrl.replace(/\/$/, '')}/${bundleName}`
-              : undefined),
-          custodyUrl: params.custodyUrl,
+          ledgerUrl: derivedLedgerUrl,
+          releaseUrl: derivedReleaseUrl,
+          dashboardUrl: derivedDashboardUrl,
+          bundleDownloadUrl: derivedBundleUrl,
+          custodyUrl: derivedCustodyUrl,
         }
       : undefined;
 
