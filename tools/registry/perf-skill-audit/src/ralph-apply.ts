@@ -73,6 +73,41 @@ const CLI_FLAGS = {
 // Proof collection for --emit-proof
 const appliedProofs: ApplyProof[] = [];
 
+// Phase 4M6c: Autonomy report stats (accumulated during --auto mode)
+interface AutonomyReportStats {
+  totalCandidates: number;
+  eligible: number;
+  applied: number;
+  noop: number;
+  blockedByGovernance: number;
+  blockedBySafetyRails: number;
+  blockedByTier: number;
+  selectedItem: PerfPlanItem | null;
+  selectionReason: SelectionReason | null;
+  topCandidates: Array<{
+    id: string;
+    file: string;
+    kind: string;
+    strategy: string;
+    priorityScore: number;
+    riskScore: number;
+    estimatedLines: number;
+  }>;
+}
+
+let autonomyStats: AutonomyReportStats = {
+  totalCandidates: 0,
+  eligible: 0,
+  applied: 0,
+  noop: 0,
+  blockedByGovernance: 0,
+  blockedBySafetyRails: 0,
+  blockedByTier: 0,
+  selectedItem: null,
+  selectionReason: null,
+  topCandidates: [],
+};
+
 // Forbidden paths (from AGENTS.md governance)
 const FORBIDDEN_PATTERNS = [
   /\/ARCHIVE\//i,
@@ -918,6 +953,158 @@ function writeProofs(): void {
 }
 
 /**
+ * Phase 4M6c: Generate autonomy report (JSON + Markdown)
+ * County CIO view of autonomous maintenance
+ */
+function writeAutonomyReport(plan: PerfPlan): void {
+  if (!CLI_FLAGS.auto) return;
+
+  const outDir = path.join(__dirname, '..', 'out');
+
+  // Ensure autonomy stats has top candidates
+  if (autonomyStats.topCandidates.length === 0 && plan) {
+    autonomyStats.topCandidates = plan.items
+      .filter(i => i.eligibility === 'eligible')
+      .sort((a, b) => {
+        // priorityScore desc, then riskScore asc, then estimatedLinesChanged asc
+        if (b.priorityScore !== a.priorityScore) return b.priorityScore - a.priorityScore;
+        if ((a.riskScore || 50) !== (b.riskScore || 50))
+          return (a.riskScore || 50) - (b.riskScore || 50);
+        return (a.estimatedLinesChanged || 10) - (b.estimatedLinesChanged || 10);
+      })
+      .slice(0, 10)
+      .map(item => ({
+        id: item.id,
+        file: item.file,
+        kind: item.kind,
+        strategy: item.patchStrategy || 'unknown',
+        priorityScore: item.priorityScore,
+        riskScore: item.riskScore || 50,
+        estimatedLines: item.estimatedLinesChanged || 10,
+      }));
+  }
+
+  // JSON report
+  const jsonReport = {
+    generatedAt: new Date().toISOString(),
+    envelope: {
+      tier: CLI_FLAGS.enableTier1 ? 'Tier 0-1' : 'Tier 0 only',
+      riskScoreThreshold: 40,
+      estimatedLinesThreshold: 40,
+      governance: 'Core Governance Surface',
+    },
+    counts: {
+      totalCandidates: autonomyStats.totalCandidates,
+      eligible: autonomyStats.eligible,
+      applied: autonomyStats.applied,
+      noop: autonomyStats.noop,
+      blockedByGovernance: autonomyStats.blockedByGovernance,
+      blockedBySafetyRails: autonomyStats.blockedBySafetyRails,
+      blockedByTier: autonomyStats.blockedByTier,
+    },
+    selected: autonomyStats.selectedItem
+      ? {
+          id: autonomyStats.selectedItem.id,
+          file: autonomyStats.selectedItem.file,
+          kind: autonomyStats.selectedItem.kind,
+          strategy: autonomyStats.selectedItem.patchStrategy,
+          priorityScore: autonomyStats.selectedItem.priorityScore,
+          riskScore: autonomyStats.selectedItem.riskScore,
+          estimatedLinesChanged: autonomyStats.selectedItem.estimatedLinesChanged,
+        }
+      : null,
+    selectionReason: autonomyStats.selectionReason,
+    topCandidates: autonomyStats.topCandidates,
+  };
+
+  const jsonPath = path.join(outDir, 'autonomy-report.json');
+  fs.writeFileSync(jsonPath, JSON.stringify(jsonReport, null, 2));
+
+  // Markdown report
+  const mdLines: string[] = [
+    '# 🤖 TerraFusion Autonomy Report',
+    '',
+    `**Generated:** ${new Date().toISOString()}`,
+    '',
+    '## Envelope Constraints',
+    '',
+    `| Constraint | Value |`,
+    `|------------|-------|`,
+    `| Tier | ${jsonReport.envelope.tier} |`,
+    `| Risk Score Threshold | ≤ ${jsonReport.envelope.riskScoreThreshold} |`,
+    `| Estimated Lines Threshold | ≤ ${jsonReport.envelope.estimatedLinesThreshold} |`,
+    `| Governance | ${jsonReport.envelope.governance} |`,
+    '',
+    '## Counts',
+    '',
+    `| Metric | Count |`,
+    `|--------|-------|`,
+    `| Total Candidates | ${jsonReport.counts.totalCandidates} |`,
+    `| Eligible | ${jsonReport.counts.eligible} |`,
+    `| **Applied** | **${jsonReport.counts.applied}** |`,
+    `| Noop | ${jsonReport.counts.noop} |`,
+    `| Blocked by Governance | ${jsonReport.counts.blockedByGovernance} |`,
+    `| Blocked by Safety Rails | ${jsonReport.counts.blockedBySafetyRails} |`,
+    `| Blocked by Tier | ${jsonReport.counts.blockedByTier} |`,
+    '',
+  ];
+
+  if (jsonReport.selected) {
+    mdLines.push('## Selected Item');
+    mdLines.push('');
+    mdLines.push(`| Property | Value |`);
+    mdLines.push(`|----------|-------|`);
+    mdLines.push(`| ID | \`${jsonReport.selected.id}\` |`);
+    mdLines.push(`| File | \`${jsonReport.selected.file}\` |`);
+    mdLines.push(`| Kind | ${jsonReport.selected.kind} |`);
+    mdLines.push(`| Strategy | ${jsonReport.selected.strategy} |`);
+    mdLines.push(`| Priority Score | ${jsonReport.selected.priorityScore} |`);
+    mdLines.push(`| Risk Score | ${jsonReport.selected.riskScore || 'N/A'} |`);
+    mdLines.push(`| Estimated Lines | ${jsonReport.selected.estimatedLinesChanged || 'N/A'} |`);
+    mdLines.push('');
+  } else {
+    mdLines.push('## Selected Item');
+    mdLines.push('');
+    mdLines.push('*No item selected (noop)*');
+    mdLines.push('');
+  }
+
+  if (jsonReport.selectionReason) {
+    mdLines.push('## Selection Reason');
+    mdLines.push('');
+    mdLines.push(`> ${jsonReport.selectionReason.reason}`);
+    mdLines.push('');
+  }
+
+  if (jsonReport.topCandidates.length > 0) {
+    mdLines.push('## Top 10 Candidates');
+    mdLines.push('');
+    mdLines.push(
+      '| # | ID | Kind | Strategy | Priority | Risk | Lines |'
+    );
+    mdLines.push(
+      '|---|-----|------|----------|----------|------|-------|'
+    );
+    jsonReport.topCandidates.forEach((c, i) => {
+      mdLines.push(
+        `| ${i + 1} | \`${c.id.substring(0, 30)}...\` | ${c.kind} | ${c.strategy} | ${c.priorityScore} | ${c.riskScore} | ${c.estimatedLines} |`
+      );
+    });
+    mdLines.push('');
+  }
+
+  mdLines.push('---');
+  mdLines.push('');
+  mdLines.push('*Government. Transcended.*');
+
+  const mdPath = path.join(outDir, 'autonomy-report.md');
+  fs.writeFileSync(mdPath, mdLines.join('\n'));
+
+  console.log(`📊 Autonomy report: ${jsonPath}`);
+  console.log(`📊 Autonomy report: ${mdPath}`);
+}
+
+/**
  * Main execution
  */
 async function main(): Promise<void> {
@@ -1373,6 +1560,20 @@ async function mainWithAutoMode(plan: PerfPlan): Promise<void> {
   console.log('\n🤖 AUTO MODE - Phase 4M5 Autonomy Envelope');
   console.log('   Deterministic selection with governed safety rails\n');
 
+  // Phase 4M6c: Initialize autonomy stats
+  autonomyStats = {
+    totalCandidates: plan.items.length,
+    eligible: plan.items.filter(i => i.eligibility === 'eligible').length,
+    applied: 0,
+    noop: 0,
+    blockedByGovernance: 0,
+    blockedBySafetyRails: 0,
+    blockedByTier: 0,
+    selectedItem: null,
+    selectionReason: null,
+    topCandidates: [],
+  };
+
   // Step 1: Check safety rails (NON-NEGOTIABLE)
   console.log('🔐 Checking safety rails...');
   const safetyResult = checkAutoSafetyRails(plan);
@@ -1382,6 +1583,10 @@ async function mainWithAutoMode(plan: PerfPlan): Promise<void> {
     if (safetyResult.details) {
       console.log(`   Details: ${JSON.stringify(safetyResult.details)}`);
     }
+
+    // Phase 4M6c: Track safety rail block
+    autonomyStats.blockedBySafetyRails = plan.items.length;
+    autonomyStats.noop = 1;
 
     // Emit noop proof with safety failure reason
     if (CLI_FLAGS.emitProof) {
@@ -1393,6 +1598,7 @@ async function mainWithAutoMode(plan: PerfPlan): Promise<void> {
       });
       appliedProofs.push(noopProof);
       writeProofs();
+      writeAutonomyReport(plan);
     }
 
     process.exit(1);
@@ -1410,11 +1616,18 @@ async function mainWithAutoMode(plan: PerfPlan): Promise<void> {
       `   Stats: ${selection.reason.candidatesConsidered} considered, ${selection.reason.filteredByGovernance} filtered by governance, ${selection.reason.filteredByTier} filtered by tier`
     );
 
+    // Track stats for autonomy report
+    autonomyStats.noop = 1;
+    autonomyStats.blockedByGovernance = selection.reason.filteredByGovernance;
+    autonomyStats.blockedByTier = selection.reason.filteredByTier;
+    autonomyStats.selectionReason = selection.reason;
+
     // Emit noop proof (NON-NEGOTIABLE: we emit proof even when we do nothing)
     if (CLI_FLAGS.emitProof) {
       const noopProof = createNoopProof(selection.reason);
       appliedProofs.push(noopProof);
       writeProofs();
+      writeAutonomyReport(plan);
     }
 
     console.log('\n✅ Ralph Apply complete (noop)');
@@ -1445,6 +1658,14 @@ async function mainWithAutoMode(plan: PerfPlan): Promise<void> {
       });
       appliedProofs.push(explainProof);
       writeProofs();
+      
+      // Track explain in autonomy stats
+      autonomyStats.selectedItem = selectedItem;
+      autonomyStats.selectionReason = {
+        ...selectionReason,
+        reason: `EXPLAIN: ${selectionReason.reason}`,
+      };
+      writeAutonomyReport(plan);
     }
 
     process.exit(0);
@@ -1544,6 +1765,10 @@ async function mainWithAutoMode(plan: PerfPlan): Promise<void> {
     }
 
     if (applyResult.reason === 'Dry run mode') {
+      // Track dry-run in autonomy stats
+      autonomyStats.selectedItem = selectedItem;
+      autonomyStats.selectionReason = selectionReason;
+      writeAutonomyReport(plan);
       console.log('\n✅ Ralph Apply complete (--auto --dry-run)');
       process.exit(0);
     }
@@ -1628,6 +1853,12 @@ async function mainWithAutoMode(plan: PerfPlan): Promise<void> {
     );
     appliedProofs.push(proof);
     writeProofs();
+
+    // Track successful apply in autonomy stats
+    autonomyStats.applied = 1;
+    autonomyStats.selectedItem = selectedItem;
+    autonomyStats.selectionReason = selectionReason;
+    writeAutonomyReport(plan);
   }
 
   console.log('\n✅ Ralph Apply complete (--auto mode)');
