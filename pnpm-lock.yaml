@@ -768,6 +768,12 @@ importers:
         specifier: ^5.7.3
         version: 5.9.2
 
+  tools/registry/autonomy-viewer:
+    devDependencies:
+      yaml:
+        specifier: 2.8.2
+        version: 2.8.2
+
   tools/scope-classifier:
     devDependencies:
       tsx:

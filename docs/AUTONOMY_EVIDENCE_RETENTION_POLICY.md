@@ -35,13 +35,40 @@ This policy applies to:
 | Evidence Index JSON | **90 days** | GitHub Actions Artifacts |
 | PR-attached artifacts | **Until PR is closed + 90 days** | GitHub PR Artifacts |
 
-### Extended Retention (Merged PRs)
+### Extended Retention (Merged PRs) — Release Evidence Channel
 
-| Condition | Retention Period | Storage Location |
-|-----------|------------------|------------------|
-| PR merged to main | **1 year** | Release Evidence Archive |
-| Tagged release | **2 years** | Release Assets |
-| Incident label applied | **7 years** | County Records System |
+When a PR with autonomy changes is **merged to main**, the evidence bundle is automatically published to a GitHub Release for extended retention.
+
+| Condition | Retention Period | Storage Location | Automation |
+|-----------|------------------|------------------|------------|
+| PR merged to main | **1 year** | GitHub Release (`autonomy-evidence/YYYY-MM`) | `autonomy-evidence-publisher.yml` |
+| Tagged release | **2 years** | Release Assets | Manual escalation |
+| Incident label applied | **7 years** | County Records System + Release | `4N9` (pending) |
+
+#### Release Evidence Channel Details
+
+- **Tag Format:** `autonomy-evidence/YYYY-MM` (monthly rollup)
+- **Assets Published:**
+  - `autonomy-evidence-<runId>.zip` — Complete evidence bundle
+  - `autonomy-evidence-<runId>.manifest.json` — SHA256 integrity hashes
+  - `autonomy-evidence-index.json` — Evidence ledger entry
+  - `autonomy-dashboard-<runId>.html` — Offline CIO viewer
+  - `autonomy-dashboard-<runId>.json` — Machine-readable dashboard
+
+#### Security Posture
+
+- Workflow only runs on merged PRs to main
+- Bundle must pass `perf:verify-bundle --strict` before publish
+- Minimal permissions: `contents: write`, `pull-requests: read`
+- No artifacts downloaded from untrusted sources
+
+#### Verification
+
+Download any bundle from the Release and verify offline:
+
+```bash
+pnpm perf:verify-bundle --zip autonomy-evidence-<runId>.zip --strict
+```
 
 ### Audit Retention (Jurisdiction-Dependent)
 

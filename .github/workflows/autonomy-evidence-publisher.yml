@@ -1,0 +1,297 @@
+# Autonomy Evidence Publisher (Phase 4N8)
+#
+# Publishes evidence bundles to GitHub Releases for 1-year retention tier.
+# This workflow runs ONLY on merged PRs to main, ensuring the evidence
+# channel remains a clean "record of truth" for audits.
+#
+# SECURITY POSTURE (Non-negotiable):
+# - Only runs when PR merged to main
+# - Verifies bundle BEFORE publishing (strict mode)
+# - Uses minimal permissions (contents: write for releases)
+# - Never downloads from untrusted sources
+# - All artifacts created in-job or from verified CI artifacts
+#
+# RETENTION TIERS:
+# - CI artifacts: 90 days (GitHub Actions default)
+# - Merged PR → Release: 1 year minimum
+# - Incident: 7 years (manual escalation)
+
+name: Autonomy Evidence Publisher
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  OUT_DIR: tools/registry/perf-skill-audit/out
+  VIEWER_DIR: tools/registry/autonomy-viewer/dist
+
+jobs:
+  # ==========================================================================
+  # Gate: Only proceed if PR was merged (not just closed)
+  # ==========================================================================
+  gate:
+    name: Merge Gate
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    outputs:
+      should_publish: ${{ steps.check.outputs.should_publish }}
+      release_tag: ${{ steps.check.outputs.release_tag }}
+      run_id: ${{ steps.check.outputs.run_id }}
+    steps:
+      - name: Check merge conditions
+        id: check
+        run: |
+          echo "🔒 Phase 4N8: Evidence Publisher Gate Check"
+          echo ""
+
+          # Verify this is a merged PR to main
+          if [[ "${{ github.event.pull_request.merged }}" != "true" ]]; then
+            echo "::notice::PR was closed but not merged - skipping"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ "${{ github.base_ref }}" != "main" ]]; then
+            echo "::notice::PR was not merged to main - skipping"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check for autonomy label (optional gate)
+          LABELS="${{ join(github.event.pull_request.labels.*.name, ',') }}"
+          echo "PR Labels: $LABELS"
+
+          # Generate release tag (monthly rollup format)
+          YEAR_MONTH=$(date +%Y-%m)
+          RELEASE_TAG="autonomy-evidence/${YEAR_MONTH}"
+          RUN_ID="${{ github.run_id }}"
+
+          echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          echo "should_publish=true" >> $GITHUB_OUTPUT
+
+          echo "✅ Merge gate passed"
+          echo "   Release Tag: $RELEASE_TAG"
+          echo "   Run ID: $RUN_ID"
+
+  # ==========================================================================
+  # Publish: Generate/verify evidence and publish to Release
+  # ==========================================================================
+  publish:
+    name: Publish Evidence to Release
+    needs: gate
+    if: needs.gate.outputs.should_publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm -C tools/registry/perf-skill-audit install
+
+      # ========================================================================
+      # Step 1: Generate fresh evidence artifacts (deterministic)
+      # ========================================================================
+      - name: Generate performance plan
+        run: |
+          echo "📊 Generating performance plan..."
+          npx tsx tools/registry/perf-skill-audit/src/index.ts || true
+
+          if [ -f "${{ env.OUT_DIR }}/perf.plan.json" ]; then
+            echo "✅ Performance plan generated"
+          else
+            echo "⚠️ No performance plan (may be empty run)"
+          fi
+
+      - name: Generate CIO Dashboard
+        run: |
+          echo "📊 Generating County CIO Dashboard..."
+          mkdir -p ${{ env.VIEWER_DIR }}
+
+          npx tsx tools/registry/autonomy-viewer/src/generate.ts \
+            --artifacts=${{ env.OUT_DIR }} \
+            --output=${{ env.VIEWER_DIR }} \
+            --emit-json \
+            --verbose || echo "::warning::Dashboard generation failed (non-fatal)"
+
+      - name: Generate Evidence Bundle
+        id: bundle
+        run: |
+          echo "📦 Generating Evidence Bundle..."
+          BUNDLE_NAME="autonomy-evidence-${{ needs.gate.outputs.run_id }}"
+
+          npx tsx tools/registry/autonomy-viewer/src/bundle.ts \
+            --in ${{ env.OUT_DIR }} \
+            --in ${{ env.VIEWER_DIR }} \
+            --out ${{ env.VIEWER_DIR }} \
+            --name "$BUNDLE_NAME" \
+            --run-id "${{ needs.gate.outputs.run_id }}" \
+            --emit-manifest \
+            --verbose
+
+          # Capture manifest SHA256
+          if [ -f "${{ env.VIEWER_DIR }}/MANIFEST.json" ]; then
+            MANIFEST_SHA=$(sha256sum ${{ env.VIEWER_DIR }}/MANIFEST.json | cut -d' ' -f1)
+            echo "manifest_sha=$MANIFEST_SHA" >> $GITHUB_OUTPUT
+            echo "bundle_name=${BUNDLE_NAME}.zip" >> $GITHUB_OUTPUT
+            echo "bundle_path=${{ env.VIEWER_DIR }}/${BUNDLE_NAME}.zip" >> $GITHUB_OUTPUT
+            echo "✅ Bundle generated: ${BUNDLE_NAME}.zip"
+          else
+            echo "::error::MANIFEST.json not found"
+            exit 1
+          fi
+
+      # ========================================================================
+      # Step 2: Verify bundle (STRICT - non-negotiable before publish)
+      # ========================================================================
+      - name: Verify Evidence Bundle (strict)
+        id: verify
+        run: |
+          echo "🔐 Verifying Evidence Bundle (strict mode)..."
+          BUNDLE_PATH="${{ steps.bundle.outputs.bundle_path }}"
+
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/verify-bundle.ts \
+            --zip "$BUNDLE_PATH" \
+            --strict \
+            --verbose
+          VERIFY_EXIT=$?
+          set -e
+
+          if [ $VERIFY_EXIT -eq 0 ]; then
+            echo "verify_ok=true" >> $GITHUB_OUTPUT
+            echo "✅ Bundle verification PASSED (strict)"
+          else
+            echo "verify_ok=false" >> $GITHUB_OUTPUT
+            echo "::error::Bundle verification FAILED - cannot publish"
+            exit 1
+          fi
+
+      - name: Generate Evidence Index
+        run: |
+          echo "📋 Generating Evidence Index..."
+
+          npx tsx tools/registry/autonomy-viewer/src/evidence-index.ts \
+            --out ${{ env.VIEWER_DIR }}/autonomy-evidence-index.json \
+            --artifacts ${{ env.OUT_DIR }} \
+            --bundle "${{ steps.bundle.outputs.bundle_name }}" \
+            --manifest-sha "${{ steps.bundle.outputs.manifest_sha }}" \
+            --verify-ok \
+            --verify-strict \
+            --run-id "${{ needs.gate.outputs.run_id }}" \
+            --workflow "autonomy-evidence-publisher" \
+            --repo "${{ github.repository }}" \
+            --ref "refs/heads/main" \
+            --verbose
+
+      # ========================================================================
+      # Step 3: Publish to GitHub Release
+      # ========================================================================
+      - name: Prepare release assets
+        id: assets
+        run: |
+          echo "📦 Preparing release assets..."
+          ASSETS_DIR="${{ env.VIEWER_DIR }}/release-assets"
+          mkdir -p "$ASSETS_DIR"
+
+          RUN_ID="${{ needs.gate.outputs.run_id }}"
+
+          # Copy and rename assets for release
+          cp "${{ steps.bundle.outputs.bundle_path }}" "$ASSETS_DIR/"
+          cp "${{ env.VIEWER_DIR }}/MANIFEST.json" "$ASSETS_DIR/autonomy-evidence-$RUN_ID.manifest.json"
+          cp "${{ env.VIEWER_DIR }}/autonomy-evidence-index.json" "$ASSETS_DIR/"
+          cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/autonomy-dashboard-$RUN_ID.html" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.json" "$ASSETS_DIR/autonomy-dashboard-$RUN_ID.json" || true
+
+          echo "assets_dir=$ASSETS_DIR" >> $GITHUB_OUTPUT
+
+          echo "✅ Release assets prepared:"
+          ls -la "$ASSETS_DIR/"
+
+      - name: Create or Update Release
+        id: release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.gate.outputs.release_tag }}
+          name: 'Autonomy Evidence Archive - ${{ needs.gate.outputs.release_tag }}'
+          body: |
+            ## 📦 Autonomy Evidence Archive
+
+            This release contains verified evidence bundles from merged autonomy PRs.
+
+            **Retention Tier:** 1 year (merged PR)
+            **Policy:** autonomy-evidence-retention.v1
+
+            ---
+
+            ### Run: ${{ needs.gate.outputs.run_id }}
+
+            | Field | Value |
+            |-------|-------|
+            | **Bundle** | `${{ steps.bundle.outputs.bundle_name }}` |
+            | **Manifest SHA256** | `${{ steps.bundle.outputs.manifest_sha }}` |
+            | **Verification** | ✅ Passed (strict) |
+            | **PR** | #${{ github.event.pull_request.number }} |
+            | **Merged By** | @${{ github.event.pull_request.merged_by.login }} |
+            | **Merged At** | ${{ github.event.pull_request.merged_at }} |
+
+            ---
+
+            ### Verify Offline
+
+            ```bash
+            pnpm perf:verify-bundle --zip ${{ steps.bundle.outputs.bundle_name }}
+            ```
+
+            ---
+
+            *TerraFusion Autonomy v1 — Government. Transcended.*
+          draft: false
+          prerelease: false
+          files: |
+            ${{ steps.assets.outputs.assets_dir }}/*
+          make_latest: false
+
+      - name: Publish Summary
+        run: |
+          echo "## 📦 Evidence Published to Release" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Release Tag:** \`${{ needs.gate.outputs.release_tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Retention Tier:** 1 year (merged PR)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Assets Published" >> $GITHUB_STEP_SUMMARY
+          echo "| Asset | Purpose |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| \`${{ steps.bundle.outputs.bundle_name }}\` | Complete evidence bundle (ZIP) |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-evidence-${{ needs.gate.outputs.run_id }}.manifest.json\` | SHA256 integrity hashes |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-evidence-index.json\` | Evidence ledger entry |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-dashboard-${{ needs.gate.outputs.run_id }}.html\` | Offline CIO viewer |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Verification" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "pnpm perf:verify-bundle --zip ${{ steps.bundle.outputs.bundle_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

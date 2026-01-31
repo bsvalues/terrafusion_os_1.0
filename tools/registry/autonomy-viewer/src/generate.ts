@@ -21,13 +21,13 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type {
-  ActionableReport,
-  ApplyProof,
-  AutonomyReport,
-  DashboardViewModel,
-  EvidenceIndex,
-  PerfPlan,
-  SafetyRailsStatus,
+    ActionableReport,
+    ApplyProof,
+    AutonomyReport,
+    DashboardViewModel,
+    EvidenceIndex,
+    PerfPlan,
+    SafetyRailsStatus,
 } from './types.js';
 
 // ESM-compatible __dirname
@@ -809,11 +809,7 @@ function truncatePath(path: string, maxLen = 50): string {
 
 export function generate(opts: CliOptions): { html: string; viewModel: DashboardViewModel } {
   const artifacts = loadArtifacts(opts.artifactsDir);
-  const evidenceIndex = loadEvidenceIndex(
-    opts.artifactsDir,
-    opts.evidenceIndexPath,
-    opts.verbose
-  );
+  const evidenceIndex = loadEvidenceIndex(opts.artifactsDir, opts.evidenceIndexPath, opts.verbose);
   const viewModel = buildViewModel(artifacts, evidenceIndex);
   const html = generateHtml(viewModel);
   return { html, viewModel };

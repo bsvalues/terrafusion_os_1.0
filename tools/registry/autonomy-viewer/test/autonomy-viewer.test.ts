@@ -17,11 +17,10 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import type {
-  ApplyProof,
-  AutonomyReport,
-  DashboardViewModel,
-  EvidenceIndex,
-  PerfPlan,
+    ApplyProof,
+    AutonomyReport,
+    DashboardViewModel,
+    PerfPlan
 } from '../src/types.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -497,28 +496,16 @@ describe('Phase 4N7 — Evidence Ledger Rendering', () => {
       const vm = buildMockViewModelWithLedger(false);
       const html = generateTestHtml(vm);
 
-      assert.ok(
-        html.includes('verification-banner'),
-        'Must have verification-banner class'
-      );
-      assert.ok(
-        html.includes('verification FAILED'),
-        'Must contain "verification FAILED" text'
-      );
-      assert.ok(
-        html.includes('do not approve/merge'),
-        'Must warn against approval'
-      );
+      assert.ok(html.includes('verification-banner'), 'Must have verification-banner class');
+      assert.ok(html.includes('verification FAILED'), 'Must contain "verification FAILED" text');
+      assert.ok(html.includes('do not approve/merge'), 'Must warn against approval');
     });
 
     it('does NOT render red banner when verify.ok=true', () => {
       const vm = buildMockViewModelWithLedger(true);
       const html = generateTestHtml(vm);
 
-      assert.ok(
-        !html.includes('verification-banner'),
-        'Must NOT have verification-banner when ok'
-      );
+      assert.ok(!html.includes('verification-banner'), 'Must NOT have verification-banner when ok');
     });
 
     it('does NOT render red banner when index absent', () => {
@@ -537,10 +524,7 @@ describe('Phase 4N7 — Evidence Ledger Rendering', () => {
       const vm = buildMockViewModelWithLedger(true);
       const html = generateTestHtml(vm);
 
-      assert.ok(
-        html.includes(vm.evidenceLedger!.bundle.name),
-        'Must display bundle name'
-      );
+      assert.ok(html.includes(vm.evidenceLedger!.bundle.name), 'Must display bundle name');
     });
 
     it('displays manifest SHA256 without truncation', () => {
@@ -570,10 +554,7 @@ describe('Phase 4N7 — Evidence Ledger Rendering', () => {
       const vm = buildMockViewModelWithLedger(true);
       const html = generateTestHtml(vm);
 
-      assert.ok(
-        html.includes('pnpm perf:verify-bundle'),
-        'Must include verify-bundle command'
-      );
+      assert.ok(html.includes('pnpm perf:verify-bundle'), 'Must include verify-bundle command');
     });
 
     it('references bundle name from index in command', () => {
