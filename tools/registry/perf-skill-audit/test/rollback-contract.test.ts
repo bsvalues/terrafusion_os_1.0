@@ -7,10 +7,10 @@
  * This contract makes ApplyProof auditable by county governance.
  */
 
-import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 // ESM-compatible __dirname
@@ -86,10 +86,7 @@ function assertNonDestructiveRollback(cmd: string): void {
   ];
 
   for (const bad of forbidden) {
-    assert.ok(
-      !lowered.includes(bad),
-      `rollbackCommand contains forbidden '${bad}': ${cmd}`
-    );
+    assert.ok(!lowered.includes(bad), `rollbackCommand contains forbidden '${bad}': ${cmd}`);
   }
 }
 
@@ -98,12 +95,7 @@ function assertNonDestructiveRollback(cmd: string): void {
 // ============================================================================
 
 function loadSampleProofs(): ApplyProof[] {
-  const fixturePath = path.join(
-    __dirname,
-    'fixtures',
-    'proofs',
-    'apply-proofs.sample.json'
-  );
+  const fixturePath = path.join(__dirname, 'fixtures', 'proofs', 'apply-proofs.sample.json');
 
   if (!fs.existsSync(fixturePath)) {
     throw new Error(`Fixture not found: ${fixturePath}`);
@@ -127,26 +119,17 @@ describe('Phase 4M6d — Rollback Drill Contract', () => {
 
     for (const p of applied) {
       // Applied proofs MUST have finalCommitSha
-      assert.ok(
-        p.finalCommitSha,
-        `applied proof '${p.planItemId}' must include finalCommitSha`
-      );
+      assert.ok(p.finalCommitSha, `applied proof '${p.planItemId}' must include finalCommitSha`);
 
       // Applied proofs MUST have rollbackCommand
-      assert.ok(
-        p.rollbackCommand,
-        `applied proof '${p.planItemId}' must include rollbackCommand`
-      );
+      assert.ok(p.rollbackCommand, `applied proof '${p.planItemId}' must include rollbackCommand`);
 
       // Rollback must be non-destructive
       assertNonDestructiveRollback(p.rollbackCommand!);
 
       // Parse and validate the revert SHA
       const revertSha = parseRevertSha(p.rollbackCommand!);
-      assert.ok(
-        revertSha,
-        `rollbackCommand must match 'git revert <sha>': ${p.rollbackCommand}`
-      );
+      assert.ok(revertSha, `rollbackCommand must match 'git revert <sha>': ${p.rollbackCommand}`);
 
       // Revert SHA must match finalCommitSha (prefix is OK)
       assert.ok(
@@ -181,16 +164,10 @@ describe('Phase 4M6d — Rollback Drill Contract', () => {
         const cmd = p.rollbackCommand;
 
         // Check for shell chaining operators
-        assert.ok(
-          !/[;&|]/.test(cmd),
-          `rollbackCommand must not contain shell chaining: ${cmd}`
-        );
+        assert.ok(!/[;&|]/.test(cmd), `rollbackCommand must not contain shell chaining: ${cmd}`);
 
         // Check for subshell/command substitution
-        assert.ok(
-          !/[`$()]/.test(cmd),
-          `rollbackCommand must not contain subshell syntax: ${cmd}`
-        );
+        assert.ok(!/[`$()]/.test(cmd), `rollbackCommand must not contain subshell syntax: ${cmd}`);
       }
     }
   });
@@ -247,11 +224,7 @@ describe('Phase 4M6d — Rollback Drill Contract', () => {
 
     for (const cmd of injectionPatterns) {
       const result = parseRevertSha(cmd);
-      assert.equal(
-        result,
-        null,
-        `Should reject injection pattern: ${cmd}`
-      );
+      assert.equal(result, null, `Should reject injection pattern: ${cmd}`);
     }
   });
 
@@ -261,16 +234,15 @@ describe('Phase 4M6d — Rollback Drill Contract', () => {
       { cmd: 'git revert abc1234567', expectedSha: 'abc1234567' },
       { cmd: 'git revert 843da9cf64', expectedSha: '843da9cf64' },
       { cmd: 'git revert --no-edit abc1234567', expectedSha: 'abc1234567' },
-      { cmd: 'git revert 843da9cf649dbcde0ee103d407d2ae0e3d3985f6', expectedSha: '843da9cf649dbcde0ee103d407d2ae0e3d3985f6' },
+      {
+        cmd: 'git revert 843da9cf649dbcde0ee103d407d2ae0e3d3985f6',
+        expectedSha: '843da9cf649dbcde0ee103d407d2ae0e3d3985f6',
+      },
     ];
 
     for (const { cmd, expectedSha } of validCommands) {
       const result = parseRevertSha(cmd);
-      assert.equal(
-        result,
-        expectedSha,
-        `Should parse valid command: ${cmd}`
-      );
+      assert.equal(result, expectedSha, `Should parse valid command: ${cmd}`);
     }
   });
 });

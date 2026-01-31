@@ -424,11 +424,7 @@ describe('Tier 0 Safety Guarantees Contract', () => {
 
     const result = selectBestCandidate(plan, defaultOptions);
     if (result.item) {
-      assert.equal(
-        result.item.eligibility,
-        'eligible',
-        'Only eligible items should be selected'
-      );
+      assert.equal(result.item.eligibility, 'eligible', 'Only eligible items should be selected');
     }
   });
 
