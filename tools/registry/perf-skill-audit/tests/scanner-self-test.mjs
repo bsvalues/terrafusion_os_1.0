@@ -507,3 +507,160 @@ describe('Rerender Scanner Self-Test (Phase 4M2)', () => {
     }
   });
 });
+
+// ============================================================
+// CLIENT-BOUNDARY SCANNER SELF-TEST (Phase 4M3)
+// ============================================================
+describe('Client-Boundary Scanner Self-Test (Phase 4M3)', () => {
+  let reportData;
+
+  it('loads the full audit report for client-boundary analysis', () => {
+    const reportPath = path.join(__dirname, '..', 'out', 'perf-audit-report.full.json');
+    assert.ok(fs.existsSync(reportPath), 'Full report should exist');
+    reportData = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+  });
+
+  it('detects missing-use-client patterns (hooks)', () => {
+    const clientBoundaryFindings = reportData.findings.filter(
+      f => f.file.includes('client-boundary-patterns.tsx') && f.rule.startsWith('client-boundary.')
+    );
+
+    const missingUseClient = clientBoundaryFindings.filter(f => f.kind === 'missing-use-client');
+    console.log(`Found ${missingUseClient.length} missing-use-client findings`);
+
+    assert.ok(
+      missingUseClient.length >= 1,
+      `Should detect missing-use-client patterns, found ${missingUseClient.length}`
+    );
+
+    // Check fixability is 'auto'
+    for (const finding of missingUseClient) {
+      assert.strictEqual(finding.fixability, 'auto', 'missing-use-client should be auto-fixable');
+    }
+  });
+
+  it('detects dynamic-candidate patterns (heavy imports)', () => {
+    const dynamicCandidates = reportData.findings.filter(
+      f => f.file.includes('client-boundary-patterns.tsx') && f.kind === 'dynamic-candidate'
+    );
+
+    console.log(`Found ${dynamicCandidates.length} dynamic-candidate findings`);
+
+    assert.ok(
+      dynamicCandidates.length >= 1,
+      `Should detect dynamic-candidate patterns, found ${dynamicCandidates.length}`
+    );
+
+    // Check that suggested fix mentions dynamic()
+    for (const finding of dynamicCandidates) {
+      assert.ok(
+        finding.suggestedFix.includes('dynamic'),
+        'dynamic-candidate should suggest dynamic() import'
+      );
+    }
+  });
+
+  it('detects server-imports-client patterns', () => {
+    const serverImports = reportData.findings.filter(
+      f => f.file.includes('client-boundary-patterns.tsx') && f.kind === 'server-imports-client'
+    );
+
+    console.log(`Found ${serverImports.length} server-imports-client findings`);
+
+    // Server imports are detected via path heuristics
+    assert.ok(
+      serverImports.length >= 1,
+      `Should detect server-imports-client patterns, found ${serverImports.length}`
+    );
+
+    // These should be review-only
+    for (const finding of serverImports) {
+      assert.strictEqual(finding.fixability, 'review', 'server-imports-client should be review-only');
+    }
+  });
+
+  it('respects client-boundary ignore pragma', () => {
+    const allBoundaryFindings = reportData.findings.filter(f =>
+      f.file.includes('client-boundary-patterns.tsx')
+    );
+
+    // The suppressed useEffect should not produce findings
+    const suppressed = allBoundaryFindings.filter(f =>
+      f.snippet && f.snippet.includes("console.log('Effect')")
+    );
+
+    assert.strictEqual(
+      suppressed.length,
+      0,
+      'Suppressed component with pragma should not produce useEffect findings'
+    );
+  });
+
+  it('has correct priority scoring (shell boost)', () => {
+    const clientBoundaryFindings = reportData.findings.filter(
+      f => f.file.includes('client-boundary-patterns.tsx') && f.rule.startsWith('client-boundary.')
+    );
+
+    // Findings in tools/registry should have priority boost (+30)
+    for (const finding of clientBoundaryFindings) {
+      assert.ok(
+        finding.priorityScore >= 50,
+        `Client-boundary finding in allowed surface should have priority >= 50, got ${finding.priorityScore}`
+      );
+    }
+  });
+
+  it('client-boundary findings have required fields', () => {
+    const clientBoundaryFindings = reportData.findings.filter(
+      f => f.file.includes('client-boundary-patterns.tsx') && f.rule.startsWith('client-boundary.')
+    );
+
+    for (const finding of clientBoundaryFindings) {
+      assert.ok(finding.severity, 'Client-boundary finding should have severity');
+      assert.ok(finding.rule, 'Client-boundary finding should have rule');
+      assert.ok(finding.file, 'Client-boundary finding should have file');
+      assert.ok(finding.lineStart > 0, 'Client-boundary finding should have valid lineStart');
+      assert.ok(finding.message, 'Client-boundary finding should have message');
+      assert.ok(finding.kind, 'Client-boundary finding should have kind classification');
+      assert.ok(finding.fixability, 'Client-boundary finding should have fixability');
+      assert.ok(
+        typeof finding.priorityScore === 'number',
+        'Client-boundary finding should have priorityScore'
+      );
+      assert.ok(finding.evidence?.length >= 1, 'Client-boundary finding should have evidence');
+      assert.ok(finding.boundaryReason, 'Client-boundary finding should have boundaryReason');
+    }
+  });
+
+  it('produces correct boundary reason explanations', () => {
+    const clientBoundaryFindings = reportData.findings.filter(
+      f => f.file.includes('client-boundary-patterns.tsx') && f.rule.startsWith('client-boundary.')
+    );
+
+    for (const finding of clientBoundaryFindings) {
+      assert.ok(
+        finding.boundaryReason && finding.boundaryReason.length > 10,
+        `Finding should have explanatory boundaryReason, got: ${finding.boundaryReason}`
+      );
+    }
+  });
+
+  it('actionable client-boundary findings are in allowed surface', () => {
+    const actionablePath = path.join(__dirname, '..', 'out', 'perf-audit-report.actionable.json');
+    const actionableData = JSON.parse(fs.readFileSync(actionablePath, 'utf8'));
+
+    const clientBoundaryActionable = actionableData.findings.filter(
+      f => f.rule && f.rule.startsWith('client-boundary.')
+    );
+
+    // All actionable findings should be in allowed surface
+    for (const finding of clientBoundaryActionable) {
+      const isAllowed =
+        finding.file.startsWith('os-platform/core/pilot/') ||
+        finding.file.startsWith('os-platform/core/types/') ||
+        finding.file.startsWith('tools/registry/');
+
+      assert.ok(isAllowed, `Actionable client-boundary finding ${finding.file} should be in allowed surface`);
+    }
+  });
+});

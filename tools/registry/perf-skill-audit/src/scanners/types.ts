@@ -38,7 +38,23 @@ export type RerenderKind =
   | 'missing-memo'; // Component should be memoized - review-only
 
 /**
- * Fixability classification for Phase 4M2
+ * Client-Boundary classification types for Phase 4M3
+ * Detects Server ↔ Client boundary performance debt
+ */
+export type ClientBoundaryKind =
+  // Auto-fixable (low blast radius)
+  | 'missing-use-client' // File uses client-only APIs but lacks "use client"
+  | 'server-imports-client' // Server module imports client component
+  | 'dynamic-candidate' // Heavy UI component should use dynamic()
+  | 'serialization-trim' // Over-large prop objects at boundary
+  // Review-only (needs human intent)
+  | 'unstable-server-action' // Server Actions with revalidation overhead
+  | 'rsc-cache-candidate' // Repeated fetch without cache/dedup
+  | 'boundary-churn' // Server→client→server refetch loop
+  | 'client-fetch-in-render'; // Fetch in client render phase
+
+/**
+ * Fixability classification for Phase 4M2+
  */
 export type Fixability = 'auto' | 'review';
 
@@ -63,9 +79,14 @@ export interface Finding {
 
   // v2 additions for waterfall scanner
   functionName?: string;
-  kind?: WaterfallKind | BundleKind | RerenderKind;
+  kind?: WaterfallKind | BundleKind | RerenderKind | ClientBoundaryKind;
   priorityScore?: number; // 0-100, higher = fix first
   evidence?: EvidenceItem[];
+
+  // Phase 4M3: Client-Boundary scanner additions
+  moduleName?: string;
+  boundaryReason?: string;
+  symbol?: string; // hook/global/import causing boundary issue
 
   // Phase 4M1: Bundle scanner additions
   importPath?: string;
@@ -153,7 +174,7 @@ export interface PlanItem {
   functionName: string; // Function/method containing the issue
   startLine: number; // Start of function/await block
   endLine: number; // End of function/await block
-  kind: WaterfallKind | BundleKind | RerenderKind; // Classification from scanner
+  kind: WaterfallKind | BundleKind | RerenderKind | ClientBoundaryKind; // Classification from scanner
   priorityScore: number; // 0-100, higher = fix first
   patchStrategy: PatchStrategy; // How to fix
   risk: PatchRisk; // Risk level

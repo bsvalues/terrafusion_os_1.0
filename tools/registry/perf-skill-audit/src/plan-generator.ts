@@ -9,6 +9,7 @@
  */
 
 import type {
+    ClientBoundaryKind,
     EligibilityCheck,
     Finding,
     PatchRisk,
@@ -25,6 +26,12 @@ const AUTO_FIXABLE_RERENDER_KINDS: RerenderKind[] = [
   'inline-array',
   'inline-fn',
   'setstate-nonfunctional',
+];
+
+// Auto-fixable client-boundary kinds (Phase 4M3)
+const AUTO_FIXABLE_CLIENTBOUNDARY_KINDS: ClientBoundaryKind[] = [
+  'missing-use-client',
+  'dynamic-candidate', // Only in client files
 ];
 
 // Forbidden patterns (from AGENTS.md)
@@ -201,6 +208,11 @@ function findingToPlanItem(finding: Finding, index: number): PlanItem | null {
     return rerenderToPlanItem(finding, index);
   }
 
+  // Handle client-boundary findings (Phase 4M3)
+  if (finding.rule?.startsWith('client-boundary.')) {
+    return clientBoundaryToPlanItem(finding, index);
+  }
+
   // Other findings not yet supported for plan generation
   return null;
 }
@@ -325,6 +337,99 @@ function checkRerenderEligibility(finding: Finding, isAutoFixable: boolean): Eli
   // Priority score threshold (60 for rerenders)
   if ((finding.priorityScore ?? 0) < 60) {
     return { eligible: false, reason: 'Priority score below threshold (60)' };
+  }
+
+  return { eligible: true };
+}
+
+/**
+ * Convert client-boundary finding to plan item (Phase 4M3)
+ */
+function clientBoundaryToPlanItem(finding: Finding, index: number): PlanItem | null {
+  const kind = finding.kind as ClientBoundaryKind;
+
+  // Determine if auto-fixable
+  const isAutoFixable = AUTO_FIXABLE_CLIENTBOUNDARY_KINDS.includes(kind);
+
+  // Patch strategy based on kind
+  let patchStrategy: PatchStrategy = 'review-only';
+  if (isAutoFixable && finding.fixability === 'auto') {
+    patchStrategy = 'promise-all'; // Reusing for now
+  }
+
+  // Risk assessment for client-boundary
+  let risk: PatchRisk = 'medium';
+  if (kind === 'missing-use-client') {
+    risk = 'low'; // Adding directive is very safe
+  } else if (kind === 'dynamic-candidate') {
+    risk = 'low'; // Mechanical transformation
+  } else {
+    risk = 'high'; // Review-only patterns
+  }
+
+  // Eligibility check for client-boundary
+  const eligibility = checkClientBoundaryEligibility(finding, isAutoFixable);
+
+  const planItem: PlanItem = {
+    id: `cb-${index}-${finding.file.replace(/[^a-zA-Z0-9]/g, '-').slice(-30)}-${finding.symbol || 'unknown'}`.toLowerCase(),
+    file: finding.file,
+    functionName: finding.moduleName || finding.symbol || '<unknown>',
+    startLine: finding.lineStart || 0,
+    endLine: finding.lineEnd || 0,
+    kind,
+    priorityScore: finding.priorityScore ?? 50,
+    patchStrategy,
+    risk,
+    eligibility,
+    verification: VERIFICATION_COMMANDS,
+    evidence: finding.evidence || [],
+  };
+
+  // Generate patch for eligible findings
+  if (eligibility.eligible && finding.suggestedFix) {
+    planItem.suggestedPatch = finding.suggestedFix;
+  }
+
+  return planItem;
+}
+
+/**
+ * Check eligibility for client-boundary auto-fix
+ */
+function checkClientBoundaryEligibility(finding: Finding, isAutoFixable: boolean): EligibilityCheck {
+  // GOVERNANCE: Must be in allowed surface
+  if (!isInAllowedSurface(finding.file)) {
+    return { eligible: false, reason: 'Not in Core Governance Surface' };
+  }
+
+  // GOVERNANCE: Must not be in forbidden zone
+  if (isInForbiddenZone(finding.file)) {
+    return { eligible: false, reason: 'File is in forbidden zone' };
+  }
+
+  // Must be auto-fixable kind
+  if (!isAutoFixable) {
+    return { eligible: false, reason: `Kind '${finding.kind}' is review-only` };
+  }
+
+  // Must have fixability=auto
+  if (finding.fixability !== 'auto') {
+    return { eligible: false, reason: 'Finding marked as review-only' };
+  }
+
+  // Must have line boundaries
+  if (!finding.lineStart) {
+    return { eligible: false, reason: 'Missing line boundaries' };
+  }
+
+  // Must have evidence
+  if (!finding.evidence || finding.evidence.length < 1) {
+    return { eligible: false, reason: 'No evidence for transformation' };
+  }
+
+  // Priority score threshold (70 for client-boundary - higher confidence required)
+  if ((finding.priorityScore ?? 0) < 70) {
+    return { eligible: false, reason: 'Priority score below threshold (70)' };
   }
 
   return { eligible: true };
