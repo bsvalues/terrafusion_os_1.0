@@ -47,6 +47,7 @@ function createOptions(overrides: Partial<VerifyOptions> = {}): VerifyOptions {
     strict: false,
     json: false,
     verbose: false,
+    verifySignatures: false,
     ...overrides,
   };
 }
@@ -398,5 +399,164 @@ describe('Verify Bundle - Security', () => {
 
     assert.ok(result.ok);
     assert.equal(result.filesVerified, 100);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 4N18: Unified Verification Tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+import {
+    buildUnifiedResult,
+    type SignatureError,
+    type UnifiedVerifyResult,
+} from '../src/verify-bundle.js';
+
+describe('Phase 4N18: Unified Verification', () => {
+  describe('buildUnifiedResult()', () => {
+    it('should combine passing hash result without signatures', () => {
+      const hashResult = {
+        ok: true,
+        bundle: 'test.zip',
+        manifestSha: 'sha256:abc123',
+        filesVerified: 5,
+        errors: [],
+      };
+
+      const result = buildUnifiedResult(hashResult, null, false);
+
+      assert.equal(result.ok, true);
+      assert.equal(result.bundle, 'test.zip');
+      assert.equal(result.hashes.ok, true);
+      assert.equal(result.hashes.filesVerified, 5);
+      assert.equal(result.signatures, undefined);
+    });
+
+    it('should include signatures when sigResult provided', () => {
+      const hashResult = {
+        ok: true,
+        bundle: 'test.zip',
+        manifestSha: 'sha256:abc123',
+        filesVerified: 3,
+        errors: [],
+      };
+
+      const sigResult = {
+        ok: true,
+        identity: 'workflow-identity',
+        issuer: 'https://token.actions.githubusercontent.com',
+        errors: [] as SignatureError[],
+      };
+
+      const result = buildUnifiedResult(hashResult, sigResult, true);
+
+      assert.equal(result.ok, true);
+      assert.ok(result.signatures);
+      assert.equal(result.signatures.ok, true);
+      assert.equal(result.signatures.tripletFound, true);
+      assert.equal(result.signatures.identity, 'workflow-identity');
+    });
+
+    it('should fail if hashes fail but signatures pass', () => {
+      const hashResult = {
+        ok: false,
+        bundle: 'test.zip',
+        manifestSha: 'sha256:abc123',
+        filesVerified: 0,
+        errors: [{ type: 'hash_mismatch' as const, message: 'hash mismatch' }],
+      };
+
+      const sigResult = {
+        ok: true,
+        errors: [] as SignatureError[],
+      };
+
+      const result = buildUnifiedResult(hashResult, sigResult, true);
+
+      assert.equal(result.ok, false);
+      assert.equal(result.hashes.ok, false);
+      assert.ok(result.signatures?.ok);
+    });
+
+    it('should fail if signatures fail but hashes pass', () => {
+      const hashResult = {
+        ok: true,
+        bundle: 'test.zip',
+        manifestSha: 'sha256:abc123',
+        filesVerified: 3,
+        errors: [],
+      };
+
+      const sigResult = {
+        ok: false,
+        errors: [{ type: 'triplet_missing' as const, message: 'no triplet' }],
+      };
+
+      const result = buildUnifiedResult(hashResult, sigResult, false);
+
+      assert.equal(result.ok, false);
+      assert.equal(result.hashes.ok, true);
+      assert.equal(result.signatures?.ok, false);
+    });
+
+    it('should pass unified if both hashes and signatures pass', () => {
+      const hashResult = {
+        ok: true,
+        bundle: 'test.zip',
+        manifestSha: 'sha256:abc123',
+        filesVerified: 5,
+        errors: [],
+      };
+
+      const sigResult = {
+        ok: true,
+        identity: 'github-actions',
+        errors: [] as SignatureError[],
+      };
+
+      const result = buildUnifiedResult(hashResult, sigResult, true);
+
+      assert.equal(result.ok, true);
+      assert.equal(result.hashes.ok, true);
+      assert.equal(result.signatures?.ok, true);
+    });
+  });
+
+  describe('UnifiedVerifyResult structure', () => {
+    it('should have correct schema for courtroom reporting', () => {
+      const result: UnifiedVerifyResult = {
+        ok: true,
+        bundle: 'autonomy-evidence-bundle-12345.zip',
+        hashes: {
+          ok: true,
+          manifestSha: 'sha256:abc123def456',
+          filesVerified: 10,
+          errors: [],
+        },
+        signatures: {
+          ok: true,
+          tripletFound: true,
+          identity: 'https://github.com/org/repo/.github/workflows/publisher.yml@refs/heads/main',
+          issuer: 'https://token.actions.githubusercontent.com',
+          errors: [],
+        },
+      };
+
+      // Verify all expected fields are present
+      assert.ok('ok' in result);
+      assert.ok('bundle' in result);
+      assert.ok('hashes' in result);
+      assert.ok('signatures' in result);
+
+      // Verify hashes structure
+      assert.equal(typeof result.hashes.ok, 'boolean');
+      assert.equal(typeof result.hashes.manifestSha, 'string');
+      assert.equal(typeof result.hashes.filesVerified, 'number');
+      assert.ok(Array.isArray(result.hashes.errors));
+
+      // Verify signatures structure
+      assert.equal(typeof result.signatures?.ok, 'boolean');
+      assert.equal(typeof result.signatures?.tripletFound, 'boolean');
+    });
   });
 });

@@ -113,7 +113,7 @@ describe('Evidence Publisher: Security Contracts', () => {
       'must have pull-requests:read only'
     );
 
-    // Must NOT have elevated permissions
+    // Must NOT have elevated permissions (except id-token for keyless signing)
     assert.ok(
       !publishJob.permissions?.actions || publishJob.permissions.actions === 'read',
       'must not have actions:write'
@@ -122,7 +122,12 @@ describe('Evidence Publisher: Security Contracts', () => {
       !publishJob.permissions?.packages || publishJob.permissions.packages === 'read',
       'must not have packages:write'
     );
-    assert.ok(!publishJob.permissions?.['id-token'], 'must not request id-token (OIDC)');
+    // Phase 4N16: id-token:write is REQUIRED for keyless OIDC signing
+    assert.strictEqual(
+      publishJob.permissions?.['id-token'],
+      'write',
+      'must have id-token:write for keyless signing (Phase 4N16)'
+    );
   });
 
   it('publish job should depend on gate job', () => {

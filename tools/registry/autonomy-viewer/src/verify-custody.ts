@@ -1,5 +1,6 @@
 /**
  * Phase 4N13 — Custody Attestation Verifier
+ * Phase 4N18 — Unified Verification (hashes + signatures)
  *
  * Independently verifies custody attestation by recomputing hashes.
  * Zero dependencies, offline, courtroom-grade.
@@ -8,13 +9,15 @@
  *   pnpm perf:verify-custody --in <dir>
  *   pnpm perf:verify-custody --in <dir> --strict
  *   pnpm perf:verify-custody --in <dir> --json
+ *   pnpm perf:verify-custody --in <dir> --verify-signatures
  *
  * Options:
- *   --in <dir>        Directory containing evidence artifacts + attestation
- *   --attest <path>   Path to custody-attestation.json (default: <dir>/custody-attestation.json)
- *   --strict          Fail if directory contains files not in attestation
- *   --json            Output machine-readable JSON report
- *   --verbose         Verbose output
+ *   --in <dir>           Directory containing evidence artifacts + attestation
+ *   --attest <path>      Path to custody-attestation.json (default: <dir>/custody-attestation.json)
+ *   --strict             Fail if directory contains files not in attestation
+ *   --verify-signatures  Check for .sig/.crt/.bundle triplets for attested files
+ *   --json               Output machine-readable JSON report
+ *   --verbose            Verbose output
  *
  * Exit codes:
  *   0 = All verifications passed
@@ -44,6 +47,7 @@ export interface VerifyOptions {
   strict: boolean;
   json: boolean;
   verbose: boolean;
+  verifySignatures: boolean;
 }
 
 export interface VerifyCustodyResult {
@@ -51,6 +55,33 @@ export interface VerifyCustodyResult {
   attestation: CustodyAttestation | null;
   filesVerified: number;
   errors: VerifyCustodyError[];
+}
+
+/**
+ * Phase 4N18: Unified custody verification result.
+ */
+export interface UnifiedCustodyResult {
+  ok: boolean;
+  attestation: CustodyAttestation | null;
+  hashes: {
+    ok: boolean;
+    filesVerified: number;
+    errors: VerifyCustodyError[];
+  };
+  signatures?: {
+    ok: boolean;
+    filesWithTriplet: number;
+    errors: SignatureError[];
+  };
+}
+
+/**
+ * Phase 4N18: Signature verification errors for custody.
+ */
+export interface SignatureError {
+  type: 'triplet_missing' | 'triplet_incomplete';
+  file: string;
+  message: string;
 }
 
 export interface VerifyCustodyError {
@@ -232,6 +263,89 @@ export function verifyCustodyAttestation(opts: VerifyAttestationOptions): Verify
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Phase 4N18: Signature Verification
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Check if signature triplet exists for a file.
+ */
+function hasTriplet(filePath: string): { ok: boolean; missing: string[] } {
+  const sig = `${filePath}.sig`;
+  const crt = `${filePath}.crt`;
+  const bundle = `${filePath}.bundle`;
+
+  const missing: string[] = [];
+  if (!fs.existsSync(sig)) missing.push('.sig');
+  if (!fs.existsSync(crt)) missing.push('.crt');
+  if (!fs.existsSync(bundle)) missing.push('.bundle');
+
+  return { ok: missing.length === 0, missing };
+}
+
+/**
+ * Phase 4N18: Verify signature triplets for all attested files.
+ */
+function verifySignatures(
+  inputDir: string,
+  attestation: CustodyAttestation | null,
+  verbose: boolean
+): { ok: boolean; filesWithTriplet: number; errors: SignatureError[] } {
+  const errors: SignatureError[] = [];
+  let filesWithTriplet = 0;
+
+  if (!attestation) {
+    return { ok: false, filesWithTriplet: 0, errors };
+  }
+
+  for (const entry of attestation.hashes) {
+    const filePath = path.join(inputDir, entry.name);
+    const triplet = hasTriplet(filePath);
+
+    if (triplet.ok) {
+      filesWithTriplet++;
+      if (verbose) {
+        console.log(`  ✓ Signature triplet found: ${entry.name}`);
+      }
+    } else if (triplet.missing.length > 0 && triplet.missing.length < 3) {
+      // Partial triplet is an error
+      errors.push({
+        type: 'triplet_incomplete',
+        file: entry.name,
+        message: `Incomplete signature triplet for ${entry.name}: missing ${triplet.missing.join(', ')}`,
+      });
+    }
+    // If all three missing, that's OK - file was never signed
+  }
+
+  return { ok: errors.length === 0, filesWithTriplet, errors };
+}
+
+/**
+ * Phase 4N18: Build unified custody result.
+ */
+function buildUnifiedCustodyResult(
+  hashResult: VerifyCustodyResult,
+  sigResult: { ok: boolean; filesWithTriplet: number; errors: SignatureError[] } | null
+): UnifiedCustodyResult {
+  return {
+    ok: hashResult.ok && (sigResult?.ok ?? true),
+    attestation: hashResult.attestation,
+    hashes: {
+      ok: hashResult.ok,
+      filesVerified: hashResult.filesVerified,
+      errors: hashResult.errors,
+    },
+    ...(sigResult && {
+      signatures: {
+        ok: sigResult.ok,
+        filesWithTriplet: sigResult.filesWithTriplet,
+        errors: sigResult.errors,
+      },
+    }),
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // CLI
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -242,6 +356,7 @@ function parseArgs(): VerifyOptions | null {
   let strict = false;
   let json = false;
   let verbose = false;
+  let verifySignatures = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -255,6 +370,8 @@ function parseArgs(): VerifyOptions | null {
       json = true;
     } else if (arg === '--verbose') {
       verbose = true;
+    } else if (arg === '--verify-signatures' || arg === '--signatures') {
+      verifySignatures = true;
     } else if (arg === '--help' || arg === '-h') {
       printHelp();
       process.exit(0);
@@ -276,25 +393,27 @@ function parseArgs(): VerifyOptions | null {
     strict,
     json,
     verbose,
+    verifySignatures,
   };
 }
 
 function printHelp(): void {
   console.log(`
-TerraFusion Custody Attestation Verifier (Phase 4N13)
+TerraFusion Custody Attestation Verifier (Phase 4N18: Unified)
 
 Usage:
   pnpm perf:verify-custody --in <dir> [options]
 
 Required:
-  --in <dir>         Directory containing evidence artifacts
+  --in <dir>           Directory containing evidence artifacts
 
 Optional:
-  --attest <path>    Path to custody-attestation.json (default: <dir>/custody-attestation.json)
-  --strict           Fail if directory contains files not in attestation
-  --json             Output machine-readable JSON report
-  --verbose          Enable verbose output
-  --help, -h         Show this help
+  --attest <path>      Path to custody-attestation.json (default: <dir>/custody-attestation.json)
+  --strict             Fail if directory contains files not in attestation
+  --verify-signatures  Check for .sig/.crt/.bundle triplets
+  --json               Output machine-readable JSON report
+  --verbose            Enable verbose output
+  --help, -h           Show this help
 
 Exit codes:
   0 = All verifications passed
@@ -304,7 +423,7 @@ Exit codes:
 Example:
   pnpm perf:verify-custody --in ./dist
   pnpm perf:verify-custody --in ./dist --strict
-  pnpm perf:verify-custody --in ./dist --json
+  pnpm perf:verify-custody --in ./dist --verify-signatures --json
 `);
 }
 
@@ -329,6 +448,7 @@ function main(): void {
   log(`Input: ${opts.inputDir}`, opts.verbose);
   log(`Attestation: ${opts.attestPath}`, opts.verbose);
   log(`Strict: ${opts.strict}`, opts.verbose);
+  log(`Verify Signatures: ${opts.verifySignatures}`, opts.verbose);
 
   const result = verifyCustodyAttestation({
     inputDir: opts.inputDir,
@@ -336,6 +456,58 @@ function main(): void {
     strict: opts.strict,
   });
 
+  // If --verify-signatures, build unified result
+  if (opts.verifySignatures) {
+    const sigResult = verifySignatures(opts.inputDir, result.attestation, opts.verbose);
+    const unified = buildUnifiedCustodyResult(result, sigResult);
+
+    if (opts.json) {
+      console.log(JSON.stringify(unified, null, 2));
+      process.exit(unified.ok ? 0 : 1);
+    }
+
+    // Human-readable unified output
+    console.log(unified.ok ? '✅ Unified verification PASSED' : '❌ Unified verification FAILED');
+    console.log('');
+    console.log('=== Custody Hashes ===');
+    console.log(`   Status: ${unified.custody.ok ? '✅ OK' : '❌ FAILED'}`);
+    console.log(`   Files verified: ${unified.custody.filesVerified}`);
+    if (result.attestation) {
+      console.log(`   Run ID: ${result.attestation.runId}`);
+      console.log(`   Generated: ${result.attestation.generatedAt}`);
+    }
+    if (unified.custody.errors.length > 0) {
+      console.log(`   Errors: ${unified.custody.errors.length}`);
+      for (const err of unified.custody.errors) {
+        console.log(`     - ${err.type}: ${err.message}`);
+      }
+    }
+    console.log('');
+    console.log('=== Signature Verification ===');
+    console.log(`   Status: ${unified.signatures.ok ? '✅ OK' : '❌ FAILED'}`);
+    console.log(`   Triplet Found: ${unified.signatures.tripletFound}`);
+    if (unified.signatures.identity) {
+      console.log(`   Identity: ${unified.signatures.identity}`);
+    }
+    if (unified.signatures.issuer) {
+      console.log(`   Issuer: ${unified.signatures.issuer}`);
+    }
+    if (unified.signatures.signedAt) {
+      console.log(`   Signed At: ${unified.signatures.signedAt}`);
+    }
+    if (unified.signatures.certificateExpiry) {
+      console.log(`   Certificate Expiry: ${unified.signatures.certificateExpiry}`);
+    }
+    if (unified.signatures.errors.length > 0) {
+      console.log(`   Errors: ${unified.signatures.errors.length}`);
+      for (const err of unified.signatures.errors) {
+        console.log(`     - ${err.code}: ${err.message}`);
+      }
+    }
+    process.exit(unified.ok ? 0 : 1);
+  }
+
+  // Standard (non-unified) output
   if (opts.json) {
     console.log(JSON.stringify(result, null, 2));
     process.exit(result.ok ? 0 : 1);
