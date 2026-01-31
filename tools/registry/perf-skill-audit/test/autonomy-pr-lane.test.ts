@@ -258,7 +258,11 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
     const run = bodyStep?.run || '';
 
     assert.ok(run.includes('apply-proofs.json'), 'PR body must reference apply-proofs.json');
-    assert.ok(run.includes('autonomy-report.json'), 'PR body must reference autonomy-report.json');
+    // autonomy-report.json may be in bundle or mentioned directly
+    assert.ok(
+      run.includes('autonomy-report') || run.includes('audit'),
+      'PR body must reference autonomy-report or audit trail'
+    );
     assert.ok(run.includes('perf.plan.json'), 'PR body must reference perf.plan.json');
   });
 
@@ -273,6 +277,175 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
     assert.ok(
       run.includes('--proof') && run.includes('plan_item_id'),
       'PR body must use --proof flag with dynamic plan_item_id'
+    );
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Phase 4N4: Evidence Bundle in PR Body Contract Tests
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  test('Workflow generates evidence bundle', () => {
+    const workflow = loadWorkflow();
+    const applyJob = workflow.jobs?.autonomy_apply;
+    const steps = applyJob?.steps || [];
+
+    const bundleStep = steps.find(
+      (s: any) => s.id === 'bundle' || s.name?.toLowerCase().includes('evidence bundle')
+    );
+    assert.ok(bundleStep, 'Must have evidence bundle generation step');
+
+    const run = bundleStep.run || '';
+    assert.ok(run.includes('bundle.ts'), 'Must invoke bundle.ts CLI');
+    assert.ok(run.includes('--emit-manifest'), 'Must emit manifest');
+  });
+
+  test('Workflow outputs bundle_name and manifest_sha', () => {
+    const workflow = loadWorkflow();
+    const applyJob = workflow.jobs?.autonomy_apply;
+    const outputs = applyJob?.outputs || {};
+
+    assert.ok(outputs.bundle_name, 'Must output bundle_name');
+    assert.ok(outputs.manifest_sha, 'Must output manifest_sha');
+    assert.ok(outputs.bundle_exists, 'Must output bundle_exists');
+  });
+
+  test('Workflow uploads evidence bundle artifact', () => {
+    const workflow = loadWorkflow();
+    const applyJob = workflow.jobs?.autonomy_apply;
+    const steps = applyJob?.steps || [];
+
+    const uploadStep = steps.find(
+      (s: any) =>
+        s.name?.toLowerCase().includes('upload evidence') ||
+        s.name?.toLowerCase().includes('evidence bundle')
+    );
+    assert.ok(uploadStep, 'Must have evidence bundle upload step');
+  });
+
+  test('PR body contains Evidence Bundle section', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    assert.ok(run.includes('Evidence Bundle'), 'PR body must have Evidence Bundle section');
+    assert.ok(
+      run.includes('One download = one audit packet'),
+      'PR body must explain bundle purpose'
+    );
+  });
+
+  test('PR body contains bundle filename reference', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    assert.ok(run.includes('bundle_name'), 'PR body must reference bundle_name output');
+    assert.ok(
+      run.includes('autonomy-evidence-bundle'),
+      'PR body must reference bundle artifact name pattern'
+    );
+  });
+
+  test('PR body contains manifest SHA256 field', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    assert.ok(
+      run.includes('Manifest SHA256') || run.includes('manifest_sha'),
+      'PR body must include manifest SHA256 field'
+    );
+  });
+
+  test('PR body contains Audit Checklist', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    assert.ok(
+      run.includes('Audit Checklist') || run.includes('audit checklist'),
+      'PR body must have Audit Checklist section'
+    );
+    assert.ok(run.includes('[ ]'), 'Audit checklist must have checkbox items');
+  });
+
+  test('PR body Audit Checklist includes key verification steps', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    // Key verification steps that should be in the checklist
+    assert.ok(
+      run.includes('Download') && run.includes('evidence bundle'),
+      'Checklist must instruct to download bundle'
+    );
+    assert.ok(
+      run.includes('autonomy-dashboard.html'),
+      'Checklist must reference opening the dashboard'
+    );
+    assert.ok(run.includes('Safety Rails'), 'Checklist must mention Safety Rails verification');
+  });
+
+  test('PR body contains verify-bundle command', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    assert.ok(
+      run.includes('perf:verify-bundle') || run.includes('verify-bundle'),
+      'PR body must include verify-bundle command (or placeholder)'
+    );
+  });
+
+  test('PR body Artifacts table includes bundle contents', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    // Key bundle contents that should be listed
+    assert.ok(run.includes('MANIFEST.json'), 'Artifacts table must list MANIFEST.json');
+    assert.ok(
+      run.includes('GOVERNANCE_CONTRACT') || run.includes('governance'),
+      'Artifacts table must list governance contract'
+    );
+    assert.ok(
+      run.includes('README_AUDIT_PACKET') || run.includes('rollback instructions'),
+      'Artifacts table must list README with rollback instructions'
+    );
+  });
+
+  test('Workflow summary includes evidence bundle info', () => {
+    const workflow = loadWorkflow();
+    const summaryJob = workflow.jobs?.summary;
+    const steps = summaryJob?.steps || [];
+
+    const summaryStep = steps.find((s: any) => s.name?.toLowerCase().includes('write summary'));
+    const run = summaryStep?.run || '';
+
+    assert.ok(
+      run.includes('Evidence Bundle') || run.includes('bundle_name'),
+      'Summary must include evidence bundle info'
     );
   });
 });

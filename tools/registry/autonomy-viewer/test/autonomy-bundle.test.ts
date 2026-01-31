@@ -12,9 +12,9 @@
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import { describe, it } from 'node:test';
-import { buildManifest, sha256, verifyManifest } from '../src/manifest.ts';
-import { crc32 } from '../src/zip/crc32.ts';
-import { buildDeterministicZip } from '../src/zip/zip-writer.ts';
+import { buildManifest, sha256, verifyManifest } from '../src/manifest.js';
+import { crc32 } from '../src/zip/crc32.js';
+import { buildDeterministicZip } from '../src/zip/zip-writer.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper Functions

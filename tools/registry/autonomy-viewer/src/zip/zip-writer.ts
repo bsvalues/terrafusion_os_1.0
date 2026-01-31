@@ -11,7 +11,7 @@
  * - No data descriptors
  */
 
-import { crc32 } from './crc32.ts';
+import { crc32 } from './crc32.js';
 
 export interface ZipEntry {
   zipPath: string; // POSIX path inside zip

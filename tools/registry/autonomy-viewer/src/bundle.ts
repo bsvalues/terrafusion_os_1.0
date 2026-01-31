@@ -22,8 +22,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildManifest } from './manifest.ts';
-import { buildDeterministicZip } from './zip/zip-writer.ts';
+import { buildManifest } from './manifest.js';
+import { buildDeterministicZip } from './zip/zip-writer.js';
 
 // ESM-compatible __dirname
 const __filename = fileURLToPath(import.meta.url);
