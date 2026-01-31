@@ -24,7 +24,7 @@
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { basename, dirname, join, resolve } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // ESM-compatible __dirname
@@ -281,7 +281,8 @@ function buildRecords(opts: IndexOptions, proofs: ApplyProof[]): EvidenceRecord[
       artifacts: detectArtifacts(opts),
       rollback: {
         command: planItemId !== 'unknown' ? `pnpm perf:rollback --proof ${planItemId}` : '',
-        preview: planItemId !== 'unknown' ? `pnpm perf:rollback --proof ${planItemId} --dry-run` : '',
+        preview:
+          planItemId !== 'unknown' ? `pnpm perf:rollback --proof ${planItemId} --dry-run` : '',
       },
       retention: {
         days: DEFAULT_RETENTION_DAYS,

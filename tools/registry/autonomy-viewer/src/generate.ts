@@ -1,29 +1,33 @@
 /**
- * Phase 4M9 — Autonomy Dashboard Generator
+ * Phase 4M9 / 4N7 — Autonomy Dashboard Generator
  *
  * Generates a standalone, offline HTML dashboard from autonomy artifacts.
  * Zero external dependencies - pure static HTML with embedded CSS/JS.
+ *
+ * Phase 4N7: Adds Evidence Ledger section from autonomy-evidence-index.json
  *
  * Usage:
  *   npx tsx tools/registry/autonomy-viewer/src/generate.ts [options]
  *
  * Options:
- *   --artifacts=<dir>   Directory containing artifacts (default: ../perf-skill-audit/out)
- *   --output=<dir>      Output directory (default: ./dist)
- *   --emit-json         Also emit view-model as JSON
- *   --verbose          Verbose output
+ *   --artifacts=<dir>       Directory containing artifacts (default: ../perf-skill-audit/out)
+ *   --output=<dir>          Output directory (default: ./dist)
+ *   --evidence-index=<path> Path to evidence index JSON (optional, auto-detected)
+ *   --emit-json             Also emit view-model as JSON
+ *   --verbose              Verbose output
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type {
-    ActionableReport,
-    ApplyProof,
-    AutonomyReport,
-    DashboardViewModel,
-    PerfPlan,
-    SafetyRailsStatus,
+  ActionableReport,
+  ApplyProof,
+  AutonomyReport,
+  DashboardViewModel,
+  EvidenceIndex,
+  PerfPlan,
+  SafetyRailsStatus,
 } from './types.js';
 
 // ESM-compatible __dirname
@@ -65,6 +69,7 @@ const ARTIFACTS_PURPOSE = [
 interface CliOptions {
   artifactsDir: string;
   outputDir: string;
+  evidenceIndexPath: string;
   emitJson: boolean;
   verbose: boolean;
 }
@@ -74,6 +79,7 @@ function parseArgs(): CliOptions {
   const opts: CliOptions = {
     artifactsDir: DEFAULT_ARTIFACTS_DIR,
     outputDir: DEFAULT_OUTPUT_DIR,
+    evidenceIndexPath: '',
     emitJson: false,
     verbose: false,
   };
@@ -83,6 +89,8 @@ function parseArgs(): CliOptions {
       opts.artifactsDir = resolve(arg.slice('--artifacts='.length));
     } else if (arg.startsWith('--output=')) {
       opts.outputDir = resolve(arg.slice('--output='.length));
+    } else if (arg.startsWith('--evidence-index=')) {
+      opts.evidenceIndexPath = resolve(arg.slice('--evidence-index='.length));
     } else if (arg === '--emit-json') {
       opts.emitJson = true;
     } else if (arg === '--verbose') {
@@ -134,6 +142,96 @@ function loadArtifacts(dir: string): {
       null
     ),
   };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Evidence Index Loading (Phase 4N7)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const EVIDENCE_INDEX_FILENAME = 'autonomy-evidence-index.json';
+
+/**
+ * Auto-detect evidence index in common locations (deterministic order):
+ * 1. Explicit path (if provided)
+ * 2. <artifactsDir>/autonomy-evidence-index.json
+ * 3. <artifactsDir>/out/autonomy-evidence-index.json
+ * 4. Lexicographically first autonomy-evidence-index*.json in artifactsDir
+ */
+function findEvidenceIndex(artifactsDir: string, explicitPath: string): string | null {
+  // 1. Explicit path
+  if (explicitPath && existsSync(explicitPath)) {
+    return explicitPath;
+  }
+
+  // 2. Direct in artifacts dir
+  const directPath = join(artifactsDir, EVIDENCE_INDEX_FILENAME);
+  if (existsSync(directPath)) {
+    return directPath;
+  }
+
+  // 3. In out/ subdirectory
+  const outPath = join(artifactsDir, 'out', EVIDENCE_INDEX_FILENAME);
+  if (existsSync(outPath)) {
+    return outPath;
+  }
+
+  // 4. Lexicographically first match
+  try {
+    const files = readdirSync(artifactsDir)
+      .filter(f => f.startsWith('autonomy-evidence-index') && f.endsWith('.json'))
+      .sort();
+    if (files.length > 0) {
+      return join(artifactsDir, files[0]);
+    }
+  } catch {
+    // Directory doesn't exist or can't be read
+  }
+
+  return null;
+}
+
+function loadEvidenceIndex(
+  artifactsDir: string,
+  explicitPath: string,
+  verbose: boolean
+): EvidenceIndex | null {
+  const indexPath = findEvidenceIndex(artifactsDir, explicitPath);
+
+  if (!indexPath) {
+    if (verbose) {
+      console.log('  📋 Evidence index: not found (ledger section will be omitted)');
+    }
+    return null;
+  }
+
+  if (verbose) {
+    console.log(`  📋 Evidence index: ${indexPath}`);
+  }
+
+  const index = loadJsonSafe<EvidenceIndex | null>(indexPath, null);
+
+  // Validate schema
+  if (index && index.schema !== 'terrafusion.autonomy.evidence.index.v1') {
+    if (verbose) {
+      console.log(`  ⚠️ Evidence index has unexpected schema: ${index.schema}`);
+    }
+    return null;
+  }
+
+  return index;
+}
+
+/**
+ * Determine retention tier from days
+ */
+function getRetentionTier(days: number): { tier: 'ci' | 'merged' | 'incident'; label: string } {
+  if (days >= 2555) {
+    return { tier: 'incident', label: '7 years (Incident)' };
+  } else if (days >= 365) {
+    return { tier: 'merged', label: '1 year (Merged PR)' };
+  } else {
+    return { tier: 'ci', label: '90 days (CI Default)' };
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -193,7 +291,10 @@ function buildSafetyRailsView(
   ];
 }
 
-function buildViewModel(artifacts: ReturnType<typeof loadArtifacts>): DashboardViewModel {
+function buildViewModel(
+  artifacts: ReturnType<typeof loadArtifacts>,
+  evidenceIndex: EvidenceIndex | null
+): DashboardViewModel {
   const { autonomyReport, applyProofs, perfPlan } = artifacts;
 
   // Find applied proof (if any)
@@ -258,6 +359,49 @@ function buildViewModel(artifacts: ReturnType<typeof loadArtifacts>): DashboardV
     })),
   };
 
+  // Build evidence ledger (Phase 4N7)
+  let evidenceLedger: DashboardViewModel['evidenceLedger'] = undefined;
+  let verificationFailed = false;
+
+  if (evidenceIndex && evidenceIndex.records.length > 0) {
+    const firstRecord = evidenceIndex.records[0];
+    const retentionInfo = getRetentionTier(firstRecord.retention.days);
+
+    evidenceLedger = {
+      present: true,
+      schema: evidenceIndex.schema,
+      generatedAt: evidenceIndex.generatedAt,
+      source: {
+        workflow: evidenceIndex.source.workflow,
+        runId: evidenceIndex.source.runId,
+        repo: evidenceIndex.source.repo,
+        ref: evidenceIndex.source.ref,
+      },
+      bundle: {
+        name: firstRecord.bundle.name,
+        manifestSha256: firstRecord.bundle.manifestSha256,
+        verifyOk: firstRecord.bundle.verify.ok,
+        verifyStrict: firstRecord.bundle.verify.strict,
+      },
+      retention: {
+        days: firstRecord.retention.days,
+        policy: firstRecord.retention.policy,
+        tier: retentionInfo.tier,
+        tierLabel: retentionInfo.label,
+      },
+      verifyCommand: `pnpm perf:verify-bundle --zip "${firstRecord.bundle.name}"`,
+      records: evidenceIndex.records.map(r => ({
+        recordId: r.recordId,
+        status: r.status,
+        planItemId: r.planItemId,
+        strategyId: r.strategyId,
+      })),
+    };
+
+    // Check if verification failed
+    verificationFailed = firstRecord.bundle.verify.ok === false;
+  }
+
   return {
     generatedAt: new Date().toISOString(),
     viewerVersion: VIEWER_VERSION,
@@ -266,6 +410,8 @@ function buildViewModel(artifacts: ReturnType<typeof loadArtifacts>): DashboardV
     rollback,
     findings,
     artifacts: ARTIFACTS_PURPOSE,
+    evidenceLedger,
+    verificationFailed,
   };
 }
 
@@ -309,7 +455,74 @@ function generateHtml(vm: DashboardViewModel): string {
     )
     .join('');
 
-  return `<!DOCTYPE html>
+  // Evidence Ledger HTML (Phase 4N7)
+  const evidenceLedgerHtml = vm.evidenceLedger
+    ? `
+    <!-- Evidence Ledger (Phase 4N7) -->
+    <section id="evidence-ledger">
+      <h2>📋 Evidence Ledger</h2>
+      <table>
+        <tr><th>Schema</th><td><code>${escapeHtml(vm.evidenceLedger.schema)}</code></td></tr>
+        <tr><th>Generated At</th><td>${escapeHtml(vm.evidenceLedger.generatedAt)}</td></tr>
+        <tr><th>Workflow</th><td><code>${escapeHtml(vm.evidenceLedger.source.workflow)}</code></td></tr>
+        <tr><th>Run ID</th><td><code>${escapeHtml(vm.evidenceLedger.source.runId)}</code></td></tr>
+        <tr><th>Repository</th><td><code>${escapeHtml(vm.evidenceLedger.source.repo)}</code></td></tr>
+        <tr><th>Ref</th><td><code>${escapeHtml(vm.evidenceLedger.source.ref)}</code></td></tr>
+      </table>
+
+      <h3 style="margin-top: 1.5rem; font-size: 1rem;">📦 Evidence Bundle</h3>
+      <table>
+        <tr><th>Bundle Name</th><td><code>${escapeHtml(vm.evidenceLedger.bundle.name)}</code></td></tr>
+        <tr><th>Manifest SHA256</th><td><code title="${escapeHtml(vm.evidenceLedger.bundle.manifestSha256)}">${escapeHtml(vm.evidenceLedger.bundle.manifestSha256)}</code></td></tr>
+        <tr><th>Verification</th><td>${vm.evidenceLedger.bundle.verifyOk ? '✅ Passed' : '❌ Failed'}${vm.evidenceLedger.bundle.verifyStrict ? ' (strict)' : ''}</td></tr>
+      </table>
+
+      <h3 style="margin-top: 1.5rem; font-size: 1rem;">📅 Retention</h3>
+      <table>
+        <tr><th>Tier</th><td><span class="badge ${vm.evidenceLedger.retention.tier === 'incident' ? 'badge-error' : vm.evidenceLedger.retention.tier === 'merged' ? 'badge-warning' : 'badge-muted'}">${escapeHtml(vm.evidenceLedger.retention.tierLabel)}</span></td></tr>
+        <tr><th>Days</th><td>${vm.evidenceLedger.retention.days}</td></tr>
+        <tr><th>Policy</th><td><code>${escapeHtml(vm.evidenceLedger.retention.policy)}</code></td></tr>
+      </table>
+
+      <h3 style="margin-top: 1.5rem; font-size: 1rem;">🔐 Verify Offline</h3>
+      <pre>${escapeHtml(vm.evidenceLedger.verifyCommand)}</pre>
+
+      ${
+        vm.evidenceLedger.records.length > 0
+          ? `
+      <h3 style="margin-top: 1.5rem; font-size: 1rem;">📝 Records (${vm.evidenceLedger.records.length})</h3>
+      <table>
+        <thead>
+          <tr><th>Record ID</th><th>Status</th><th>Plan Item</th><th>Strategy</th></tr>
+        </thead>
+        <tbody>
+          ${vm.evidenceLedger.records
+            .map(
+              r => `
+          <tr>
+            <td><code>${escapeHtml(r.recordId)}</code></td>
+            <td>${escapeHtml(r.status)}</td>
+            <td><code>${escapeHtml(r.planItemId)}</code></td>
+            <td>${escapeHtml(r.strategyId)}</td>
+          </tr>`
+            )
+            .join('')}
+        </tbody>
+      </table>`
+          : ''
+      }
+    </section>`
+    : '';
+
+  // Verification Banner (red if failed)
+  const verificationBannerHtml = vm.verificationFailed
+    ? `
+    <div class="verification-banner">
+      ❌ <strong>Evidence bundle verification FAILED</strong> — do not approve/merge.
+    </div>`
+    : '';
+
+  return `<!DOCTYPE html>>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -414,6 +627,15 @@ function generateHtml(vm: DashboardViewModel): string {
       color: var(--muted);
       font-style: italic;
     }
+    .verification-banner {
+      background: var(--error);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      font-size: 1.1rem;
+    }
     footer {
       text-align: center;
       padding: 2rem 0;
@@ -431,6 +653,8 @@ function generateHtml(vm: DashboardViewModel): string {
       <p class="subtitle">County CIO Mode — Governance Telemetry Viewer</p>
       <p class="subtitle">Generated: ${escapeHtml(vm.generatedAt)} | Viewer v${vm.viewerVersion}</p>
     </header>
+
+    ${verificationBannerHtml}
 
     <!-- Executive Summary -->
     <section id="summary">
@@ -539,6 +763,8 @@ function generateHtml(vm: DashboardViewModel): string {
       </table>
     </section>
 
+    ${evidenceLedgerHtml}
+
     <!-- What Autonomy Will NOT Do -->
     <section id="governance">
       <h2>🚫 What Autonomy Will NOT Do</h2>
@@ -583,7 +809,12 @@ function truncatePath(path: string, maxLen = 50): string {
 
 export function generate(opts: CliOptions): { html: string; viewModel: DashboardViewModel } {
   const artifacts = loadArtifacts(opts.artifactsDir);
-  const viewModel = buildViewModel(artifacts);
+  const evidenceIndex = loadEvidenceIndex(
+    opts.artifactsDir,
+    opts.evidenceIndexPath,
+    opts.verbose
+  );
+  const viewModel = buildViewModel(artifacts, evidenceIndex);
   const html = generateHtml(viewModel);
   return { html, viewModel };
 }
@@ -592,9 +823,12 @@ export function main(): void {
   const opts = parseArgs();
 
   if (opts.verbose) {
-    console.log('📊 Autonomy Dashboard Generator');
+    console.log('📊 Autonomy Dashboard Generator (Phase 4N7)');
     console.log(`   Artifacts: ${opts.artifactsDir}`);
     console.log(`   Output: ${opts.outputDir}`);
+    if (opts.evidenceIndexPath) {
+      console.log(`   Evidence Index: ${opts.evidenceIndexPath}`);
+    }
   }
 
   // Ensure output directory exists

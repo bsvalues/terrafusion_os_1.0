@@ -11,20 +11,20 @@
  * @governance SEAL-COMPLIANT
  */
 
-import { describe, it, beforeEach, afterEach } from 'node:test';
 import * as assert from 'node:assert/strict';
 import * as fs from 'node:fs';
-import * as path from 'node:path';
 import * as os from 'node:os';
+import * as path from 'node:path';
+import { afterEach, beforeEach, describe, it } from 'node:test';
 
 // Import the evidence index module
 import {
-  type EvidenceIndex,
-  buildEvidenceIndex,
-  loadApplyProofs,
-  EVIDENCE_INDEX_SCHEMA,
-  RETENTION_POLICY_VERSION,
-  DEFAULT_RETENTION_DAYS,
+    DEFAULT_RETENTION_DAYS,
+    EVIDENCE_INDEX_SCHEMA,
+    type EvidenceIndex,
+    RETENTION_POLICY_VERSION,
+    buildEvidenceIndex,
+    loadApplyProofs,
 } from '../src/evidence-index.js';
 
 // ============================================================================
@@ -78,10 +78,7 @@ function createMockOptions(tempDir: string, overrides: Record<string, unknown> =
 
 describe('Evidence Index Schema Contract', () => {
   it('should export the correct schema version', () => {
-    assert.equal(
-      EVIDENCE_INDEX_SCHEMA,
-      'terrafusion.autonomy.evidence.index.v1'
-    );
+    assert.equal(EVIDENCE_INDEX_SCHEMA, 'terrafusion.autonomy.evidence.index.v1');
   });
 
   it('should export the correct retention policy version', () => {
@@ -345,10 +342,7 @@ describe('Evidence Index Retention Days', () => {
   it('should always include retention.policy version', () => {
     const opts = createMockOptions(tempDir, { artifactsDir: '' });
     const index = buildEvidenceIndex(opts);
-    assert.equal(
-      index.records[0].retention.policy,
-      'autonomy-evidence-retention.v1'
-    );
+    assert.equal(index.records[0].retention.policy, 'autonomy-evidence-retention.v1');
   });
 });
 
@@ -389,19 +383,13 @@ describe('Evidence Index No PII Fields', () => {
 
         // Check key names for PII patterns
         for (const pattern of PII_PATTERNS) {
-          assert.ok(
-            !pattern.test(key),
-            `PII-like field name found: ${fullPath}`
-          );
+          assert.ok(!pattern.test(key), `PII-like field name found: ${fullPath}`);
         }
 
         // Check string values for PII patterns (shallow)
         if (typeof value === 'string') {
           for (const pattern of PII_PATTERNS) {
-            assert.ok(
-              !pattern.test(value),
-              `PII-like value found at: ${fullPath}`
-            );
+            assert.ok(!pattern.test(value), `PII-like value found at: ${fullPath}`);
           }
         }
 
@@ -432,10 +420,7 @@ describe('Evidence Index No PII Fields', () => {
     const actualFields = Object.keys(index);
 
     for (const field of actualFields) {
-      assert.ok(
-        allowedFields.includes(field),
-        `Unexpected top-level field: ${field}`
-      );
+      assert.ok(allowedFields.includes(field), `Unexpected top-level field: ${field}`);
     }
   });
 
@@ -457,10 +442,7 @@ describe('Evidence Index No PII Fields', () => {
     const actualFields = Object.keys(record);
 
     for (const field of actualFields) {
-      assert.ok(
-        allowedRecordFields.includes(field),
-        `Unexpected record field: ${field}`
-      );
+      assert.ok(allowedRecordFields.includes(field), `Unexpected record field: ${field}`);
     }
   });
 });

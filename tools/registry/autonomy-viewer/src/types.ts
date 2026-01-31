@@ -6,6 +6,14 @@
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Re-export Evidence Index Types (Phase 4N6)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type {
+    EvidenceArtifacts, EvidenceBundle, EvidenceIndex, EvidenceIndexSource, EvidenceRecord, EvidenceRetention, EvidenceRollback
+} from './evidence-index.js';
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Input Artifact Types (from perf-skill-audit outputs)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -163,4 +171,39 @@ export interface DashboardViewModel {
     name: string;
     purpose: string;
   }>;
+
+  /** Evidence Ledger (Phase 4N7) — only present if evidence index loaded */
+  evidenceLedger?: {
+    present: boolean;
+    schema: string;
+    generatedAt: string;
+    source: {
+      workflow: string;
+      runId: string;
+      repo: string;
+      ref: string;
+    };
+    bundle: {
+      name: string;
+      manifestSha256: string;
+      verifyOk: boolean;
+      verifyStrict: boolean;
+    };
+    retention: {
+      days: number;
+      policy: string;
+      tier: 'ci' | 'merged' | 'incident';
+      tierLabel: string;
+    };
+    verifyCommand: string;
+    records: Array<{
+      recordId: string;
+      status: string;
+      planItemId: string;
+      strategyId: string;
+    }>;
+  };
+
+  /** Verification status — red banner if failed */
+  verificationFailed: boolean;
 }
