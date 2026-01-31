@@ -637,3 +637,128 @@ test('determinism: same model produces same HTML twice', () => {
   assert.equal(html1, html2);
   assert.equal(html1.length, html2.length);
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Evidence Graph Navigation Tests (Phase 4N12)
+// ─────────────────────────────────────────────────────────────────────────────
+
+test('generateCustody: builds graph when URL options provided', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'custody-test-'));
+  const proofPath = path.join(tmpDir, 'apply-proofs.json');
+
+  fs.writeFileSync(proofPath, JSON.stringify([baseProof()]), 'utf8');
+
+  try {
+    const model = generateCustody({
+      proofPath,
+      ledgerUrl: './ledger.html',
+      releaseUrl: 'https://github.com/owner/repo/releases/tag/v1',
+      bundleDownloadUrl: 'https://cdn.example.com/bundle.zip',
+      dashboardUrl: './dashboard.html',
+      custodyUrl: './custody.html',
+    });
+
+    assert.ok(model.graph);
+    assert.equal(model.graph!.ledgerUrl, './ledger.html');
+    assert.equal(model.graph!.releaseUrl, 'https://github.com/owner/repo/releases/tag/v1');
+    assert.equal(model.graph!.bundleDownloadUrl, 'https://cdn.example.com/bundle.zip');
+    assert.equal(model.graph!.dashboardUrl, './dashboard.html');
+    assert.equal(model.graph!.custodyUrl, './custody.html');
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true });
+  }
+});
+
+test('generateCustody: graph undefined when no URL options', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'custody-test-'));
+  const proofPath = path.join(tmpDir, 'apply-proofs.json');
+
+  fs.writeFileSync(proofPath, JSON.stringify([baseProof()]), 'utf8');
+
+  try {
+    const model = generateCustody({ proofPath });
+    assert.equal(model.graph, undefined);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true });
+  }
+});
+
+test('generateCustody: partial graph with only some URLs', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'custody-test-'));
+  const proofPath = path.join(tmpDir, 'apply-proofs.json');
+
+  fs.writeFileSync(proofPath, JSON.stringify([baseProof()]), 'utf8');
+
+  try {
+    const model = generateCustody({
+      proofPath,
+      ledgerUrl: './ledger.html',
+    });
+
+    assert.ok(model.graph);
+    assert.equal(model.graph!.ledgerUrl, './ledger.html');
+    assert.equal(model.graph!.releaseUrl, undefined);
+    assert.equal(model.graph!.bundleDownloadUrl, undefined);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true });
+  }
+});
+
+test('renderCustodyHtml: renders nav-grid when graph provided', () => {
+  const model = {
+    ...baseModel(),
+    graph: {
+      ledgerUrl: './ledger.html',
+      releaseUrl: 'https://github.com/owner/repo/releases/tag/v1',
+    },
+  };
+
+  const html = renderCustodyHtml(model);
+  assert.ok(html.includes('nav-grid'), 'Expected nav-grid class');
+  assert.ok(html.includes('nav-link'), 'Expected nav-link class');
+  assert.ok(html.includes('Evidence Graph Navigation'), 'Expected section header');
+  assert.ok(html.includes('./ledger.html'), 'Expected ledger link');
+  assert.ok(html.includes('https://github.com/owner/repo/releases/tag/v1'), 'Expected release link');
+});
+
+test('renderCustodyHtml: omits nav section when no graph', () => {
+  const model = baseModel();
+  delete (model as unknown as Record<string, unknown>).graph;
+
+  const html = renderCustodyHtml(model);
+  // Check for nav section heading, not CSS class (which is always present in stylesheet)
+  assert.ok(!html.includes('Evidence Graph Navigation'), 'Expected no nav section');
+  assert.ok(!html.includes('nav-link">📋'), 'Expected no nav links');
+});
+
+test('renderCustodyHtml: only renders provided graph links', () => {
+  const model = {
+    ...baseModel(),
+    graph: {
+      ledgerUrl: './ledger.html',
+      // No releaseUrl
+    },
+  };
+
+  const html = renderCustodyHtml(model);
+  assert.ok(html.includes('./ledger.html'), 'Expected ledger link');
+  assert.ok(!html.includes('GitHub Release'), 'Should not have release link');
+});
+
+test('renderCustodyHtml: graph link text is correct', () => {
+  const model = {
+    ...baseModel(),
+    graph: {
+      ledgerUrl: './ledger.html',
+      releaseUrl: 'https://github.com/owner/repo/releases/tag/v1',
+      bundleDownloadUrl: 'https://cdn.example.com/bundle.zip',
+      dashboardUrl: './dashboard.html',
+    },
+  };
+
+  const html = renderCustodyHtml(model);
+  assert.ok(html.includes('📋 Evidence Ledger'), 'Expected ledger emoji');
+  assert.ok(html.includes('🔖 GitHub Release'), 'Expected release emoji');
+  assert.ok(html.includes('📦 Download Bundle'), 'Expected bundle emoji');
+  assert.ok(html.includes('📊 Performance Dashboard'), 'Expected dashboard emoji');
+});

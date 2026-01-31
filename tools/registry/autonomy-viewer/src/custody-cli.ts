@@ -59,10 +59,18 @@ Optional:
   --strict                 Fail if optional inputs are missing
   --verbose                Enable verbose output
 
+Graph Navigation URLs (for evidence stitching):
+  --ledger-url <url>       URL to evidence ledger HTML
+  --release-url <url>      URL to GitHub release page
+  --bundle-url <url>       URL to download evidence bundle
+  --dashboard-url <url>    URL to performance dashboard
+  --custody-url <url>      Self-referential URL (for ledger backlink)
+
 Examples:
   pnpm perf:custody --proof out/apply-proofs.json --out dist/custody.html
   pnpm perf:custody --proof out/apply-proofs.json --out dist/custody.html --emit-json
   pnpm perf:custody --proof out/apply-proofs.json --plan out/perf.plan.json --verify out/verify.json --out dist/custody.html --strict
+  pnpm perf:custody --proof out/proofs.json --out dist/custody.html --ledger-url "./ledger.html" --release-url "https://github.com/owner/repo/releases/tag/v1"
 `);
 }
 
@@ -85,6 +93,12 @@ function main(): void {
     emitJson: has('--emit-json'),
     strict: has('--strict'),
     verbose: has('--verbose'),
+    // Graph navigation URLs
+    ledgerUrl: arg('--ledger-url'),
+    releaseUrl: arg('--release-url'),
+    bundleDownloadUrl: arg('--bundle-url'),
+    dashboardUrl: arg('--dashboard-url'),
+    custodyUrl: arg('--custody-url'),
   };
 
   // Validate required args
@@ -140,6 +154,11 @@ function main(): void {
       planPath: options.planPath,
       verifyPath: options.verifyPath,
       evidenceIndexPath: options.evidenceIndexPath,
+      ledgerUrl: options.ledgerUrl,
+      releaseUrl: options.releaseUrl,
+      bundleDownloadUrl: options.bundleDownloadUrl,
+      dashboardUrl: options.dashboardUrl,
+      custodyUrl: options.custodyUrl,
     });
 
     log(`Audit Ready: ${model.auditReady}`, verbose);

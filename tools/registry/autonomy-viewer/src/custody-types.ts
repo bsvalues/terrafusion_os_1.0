@@ -174,6 +174,27 @@ export interface CustodyChecklist {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Evidence Graph Links (Phase 4N12)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Navigable links connecting custody ↔ ledger ↔ release assets.
+ * All URLs are optional; if missing, the link is not rendered.
+ */
+export interface EvidenceGraph {
+  /** URL to the evidence ledger HTML */
+  ledgerUrl?: string;
+  /** URL to the GitHub Release containing this bundle */
+  releaseUrl?: string;
+  /** Direct download URL for the bundle ZIP */
+  bundleDownloadUrl?: string;
+  /** URL to the dashboard HTML for this run */
+  dashboardUrl?: string;
+  /** URL to this custody HTML (for embedding in ledger) */
+  custodyUrl?: string;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Custody Model (the complete chain-of-custody document)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -214,6 +235,9 @@ export interface CustodyModel {
     prNumber?: number;
     branch?: string;
   };
+
+  /** Evidence graph links for navigation (Phase 4N12) */
+  graph?: EvidenceGraph;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -236,4 +260,10 @@ export interface CustodyCliOptions extends CustodyInputPaths {
   emitJson?: boolean;
   strict?: boolean;
   verbose?: boolean;
+  /** Graph link options (Phase 4N12) */
+  ledgerUrl?: string;
+  releaseUrl?: string;
+  bundleDownloadUrl?: string;
+  dashboardUrl?: string;
+  custodyUrl?: string;
 }

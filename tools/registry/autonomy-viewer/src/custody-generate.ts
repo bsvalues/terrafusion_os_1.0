@@ -20,6 +20,7 @@ import type {
     CustodyChecklist,
     CustodyInputPaths,
     CustodyModel,
+    EvidenceGraph,
     EvidenceIndex,
     EvidenceRecord,
     PerfPlanItem,
@@ -180,7 +181,16 @@ export function computeAuditReady(
 // Generate Custody Model
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function generateCustody(params: CustodyInputPaths): CustodyModel {
+export interface GenerateCustodyOptions extends CustodyInputPaths {
+  /** Graph link options (Phase 4N12) */
+  ledgerUrl?: string;
+  releaseUrl?: string;
+  bundleDownloadUrl?: string;
+  dashboardUrl?: string;
+  custodyUrl?: string;
+}
+
+export function generateCustody(params: GenerateCustodyOptions): CustodyModel {
   // Read proof file (required)
   const proofsRaw = readJson<ProofsInput>(params.proofPath);
   if (!proofsRaw) {
@@ -222,6 +232,20 @@ export function generateCustody(params: CustodyInputPaths): CustodyModel {
   // Build verify command
   const verifyCommand = `pnpm perf:verify-bundle --zip "${bundleName}" --strict`;
 
+  // Build evidence graph links (Phase 4N12)
+  const graph: EvidenceGraph | undefined =
+    params.ledgerUrl || params.releaseUrl || params.dashboardUrl || params.bundleDownloadUrl || params.custodyUrl
+      ? {
+          ledgerUrl: params.ledgerUrl,
+          releaseUrl: params.releaseUrl,
+          dashboardUrl: params.dashboardUrl,
+          bundleDownloadUrl: params.bundleDownloadUrl ?? (params.releaseUrl
+            ? `${params.releaseUrl.replace(/\/$/, '')}/${bundleName}`
+            : undefined),
+          custodyUrl: params.custodyUrl,
+        }
+      : undefined;
+
   return {
     schema: CUSTODY_SCHEMA,
     auditReady,
@@ -233,6 +257,7 @@ export function generateCustody(params: CustodyInputPaths): CustodyModel {
     verifyCommand,
     checklist,
     source: index?.source,
+    graph,
   };
 }
 
@@ -355,6 +380,26 @@ ul.checklist li { padding: 6px 0; font-size: 1rem; }
 .badge-warning { background: #3b2b0b; color: #fbbf24; }
 .badge-muted { background: #1a1f2e; color: #8b9cc0; }
 .badge-success { background: #0b2b14; color: #4ade80; }
+.nav-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.nav-link {
+  display: inline-block;
+  padding: 10px 16px;
+  background: #141a2d;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--fg);
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+.nav-link:hover {
+  background: #1a2440;
+  border-color: var(--pass);
+}
 footer {
   margin-top: 40px;
   padding-top: 20px;
@@ -461,6 +506,8 @@ ${
 <h2>Verification Command</h2>
 <pre>${escapeHtml(model.verifyCommand)}</pre>
 
+${renderGraphNav(model)}
+
 <footer>
   <p>TerraFusion Autonomy v1 — Government. Transcended.</p>
   <p class="muted">This document is a courtroom-grade chain of custody record. Offline-capable, zero dependencies.</p>
@@ -468,4 +515,48 @@ ${
 
 </body>
 </html>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Graph Navigation Renderer (Phase 4N12)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function renderGraphNav(model: CustodyModel): string {
+  if (!model.graph) return '';
+
+  const links: string[] = [];
+
+  if (model.graph.ledgerUrl) {
+    links.push(
+      `<a href="${escapeHtml(model.graph.ledgerUrl)}" class="nav-link">📋 Evidence Ledger</a>`
+    );
+  }
+
+  if (model.graph.releaseUrl) {
+    links.push(
+      `<a href="${escapeHtml(model.graph.releaseUrl)}" class="nav-link">🔖 GitHub Release</a>`
+    );
+  }
+
+  if (model.graph.bundleDownloadUrl) {
+    links.push(
+      `<a href="${escapeHtml(model.graph.bundleDownloadUrl)}" class="nav-link">📦 Download Bundle</a>`
+    );
+  }
+
+  if (model.graph.dashboardUrl) {
+    links.push(
+      `<a href="${escapeHtml(model.graph.dashboardUrl)}" class="nav-link">📊 Performance Dashboard</a>`
+    );
+  }
+
+  if (links.length === 0) return '';
+
+  return `
+<h2>🔗 Evidence Graph Navigation</h2>
+<div class="nav-grid">
+${links.join('\n')}
+</div>
+<p class="muted" style="margin-top: 8px;">Navigate between related evidence artifacts.</p>
+`;
 }
