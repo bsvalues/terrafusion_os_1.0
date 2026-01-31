@@ -189,6 +189,24 @@ git log --oneline -3
 - Refuses if gates fail after patch
 - Automatically rolls back if gates fail
 
+### Automated PR Lane (Phase 4N0)
+
+The `autonomy-pr-lane.yml` workflow automates Tier 0 patching with human-merge governance:
+
+| Property | Value |
+|----------|-------|
+| **Trigger** | Nightly (03:00 UTC) + manual dispatch |
+| **Branch** | `autonomy/bot/<timestamp>-<runid>` |
+| **Max patches** | 1 per run |
+| **Tier** | Tier 0 only |
+| **Output** | PR with proof artifacts attached |
+| **Merge** | Manual only (no automerge) |
+
+**Invariants enforced by contract tests:**
+- Never applies directly to main
+- Always uploads artifacts (even on noop)
+- PR labeled: `autonomy`, `tier-0`, `automated`
+
 ---
 
 ## 10. Incident Protocol
@@ -219,6 +237,7 @@ If an autonomous patch causes regression:
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0.0 | 2026-01-30 | Initial release: Tier 0 with setstate-nonfunctional, rollback contracts |
+| 1.1.0 | 2026-01-30 | Phase 4N0: Added automated PR lane with workflow contract tests |
 
 ---
 
