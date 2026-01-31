@@ -359,8 +359,9 @@ export const setstateNonfunctionalStrategy: PatchStrategy = {
       },
     ];
 
+    // Join with newlines and ensure trailing newline for git apply
     return {
-      patch: patchLines.join('\n'),
+      patch: patchLines.join('\n') + '\n',
       evidence: patchEvidence,
     };
   },
