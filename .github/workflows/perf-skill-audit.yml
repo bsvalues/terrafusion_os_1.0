@@ -171,3 +171,85 @@ jobs:
           else
             echo "⚠️ No apply-proofs.json generated (may be noop)" >> $GITHUB_STEP_SUMMARY
           fi
+
+  # ============================================================================
+  # Phase 4M9: County CIO Dashboard
+  #
+  # Generates an offline HTML dashboard from autonomy artifacts.
+  # This is the "governance telemetry viewer" that county staff can download
+  # and open locally without any CLI access.
+  # ============================================================================
+  dashboard:
+    name: Generate CIO Dashboard
+    needs: rehearsal
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_ref || github.ref }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download audit artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: perf-skill-audit-${{ github.run_number }}
+          path: tools/registry/perf-skill-audit/out/
+
+      - name: Download rehearsal proof (if available)
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: ralph-apply-rehearsal-${{ github.run_number }}
+          path: tools/registry/perf-skill-audit/out/
+
+      - name: Generate Autonomy Dashboard (HTML)
+        run: |
+          echo "📊 Phase 4M9: Generating County CIO Dashboard..."
+          npx tsx tools/registry/autonomy-viewer/src/generate.ts \
+            --artifacts=tools/registry/perf-skill-audit/out \
+            --output=tools/registry/autonomy-viewer/dist \
+            --emit-json \
+            --verbose
+
+      - name: Upload Dashboard Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: autonomy-dashboard-${{ github.run_number }}
+          path: |
+            tools/registry/autonomy-viewer/dist/autonomy-dashboard.html
+            tools/registry/autonomy-viewer/dist/autonomy-dashboard.json
+          retention-days: 90
+
+      - name: Dashboard Summary
+        if: always()
+        run: |
+          echo "## 🏛️ County CIO Dashboard Generated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Artifact:** \`autonomy-dashboard-${{ github.run_number }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Download the HTML file and open it locally (no server required)." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Dashboard Contents:" >> $GITHUB_STEP_SUMMARY
+          echo "- 📋 Executive Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- 🛡️ Safety Rails Status" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔄 Rollback Panel (commands + gates)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 Findings & Plan Breakdown" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 Proof Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚫 Governance Limits" >> $GITHUB_STEP_SUMMARY

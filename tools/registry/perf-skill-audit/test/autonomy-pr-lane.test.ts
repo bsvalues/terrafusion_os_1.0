@@ -232,10 +232,7 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
     const run = bodyStep?.run || '';
 
     assert.ok(run.includes('type-check'), 'PR body must reference type-check gate');
-    assert.ok(
-      run.includes('phase83-tools'),
-      'PR body must reference phase83-tools gate'
-    );
+    assert.ok(run.includes('phase83-tools'), 'PR body must reference phase83-tools gate');
   });
 
   test('PR body contains "What Autonomy Will NOT Do" section', () => {

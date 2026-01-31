@@ -199,11 +199,7 @@ describe('FORBIDDEN_COMMANDS constant', () => {
 
     for (const pattern of dangerousPatterns) {
       const forbidden = containsForbiddenCommand(pattern);
-      assert.notEqual(
-        forbidden,
-        null,
-        `Should detect dangerous pattern: ${pattern}`
-      );
+      assert.notEqual(forbidden, null, `Should detect dangerous pattern: ${pattern}`);
     }
   });
 

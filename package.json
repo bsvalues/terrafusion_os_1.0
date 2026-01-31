@@ -208,7 +208,8 @@
     "terrafusion:phd": "echo '🎓 MIT PhD-Level Complete Verification' && npm run health:check && npm run profile:30s && npm run validate:full",
     "terrafusion:deploy": "echo '🚀 TerraFusion Deployment Pipeline' && npm run health:check && npm run test:all && npm run deploy:orchestrate",
     "perf:apply": "npx tsx tools/registry/perf-skill-audit/src/ralph-apply.ts",
-    "perf:rollback": "npx tsx tools/registry/perf-skill-audit/src/perf-rollback.ts"
+    "perf:rollback": "npx tsx tools/registry/perf-skill-audit/src/perf-rollback.ts",
+    "perf:dashboard": "npx tsx tools/registry/autonomy-viewer/src/generate.ts"
   },
   "keywords": [
     "government",

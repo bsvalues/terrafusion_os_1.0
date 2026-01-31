@@ -1,0 +1,18 @@
+{
+  "name": "@terrafusion/autonomy-viewer",
+  "version": "1.0.0",
+  "description": "County CIO Dashboard - Offline HTML viewer for autonomy artifacts",
+  "type": "module",
+  "main": "src/generate.ts",
+  "scripts": {
+    "generate": "npx tsx src/generate.ts",
+    "test": "node --test --experimental-strip-types test/*.test.ts"
+  },
+  "keywords": [
+    "terrafusion",
+    "autonomy",
+    "dashboard",
+    "governance"
+  ],
+  "license": "Proprietary"
+}
