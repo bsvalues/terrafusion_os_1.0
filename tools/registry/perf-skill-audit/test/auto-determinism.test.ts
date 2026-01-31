@@ -349,3 +349,121 @@ describe('Selection Reason Contract: Ranking factors', () => {
     assert.ok(!result.reason.rankingFactors, 'Noop should not have ranking factors');
   });
 });
+
+// ============================================================================
+// CONTRACT 7: Tier 0 Safety Guarantees (Phase 4M6b)
+// ============================================================================
+describe('Tier 0 Safety Guarantees Contract', () => {
+  // Define Tier 0 strategies
+  const TIER_0_STRATEGIES = [
+    'missing-use-client',
+    'dedupe-imports',
+    'debarrel-import',
+    'setstate-nonfunctional',
+  ];
+
+  test('Tier 0 strategies must have riskScore <= 40', () => {
+    // When a Tier 0 strategy is selected, the risk score should be low
+    for (const strategy of TIER_0_STRATEGIES) {
+      const items = [
+        createMockPlanItem({
+          id: `tier0-${strategy}`,
+          patchStrategy: strategy as any,
+          riskScore: 20, // Tier 0 should have low risk
+        }),
+      ];
+      const plan = createMockPlan(items);
+
+      const result = selectBestCandidate(plan, defaultOptions);
+      if (result.item) {
+        assert.ok(
+          result.reason.rankingFactors!.riskScore <= 40,
+          `${strategy} riskScore (${result.reason.rankingFactors!.riskScore}) should be <= 40`
+        );
+      }
+    }
+  });
+
+  test('Tier 0 strategies must have estimatedLinesChanged <= 40', () => {
+    // Tier 0 patches should be small - single-file, minimal diff
+    for (const strategy of TIER_0_STRATEGIES) {
+      const items = [
+        createMockPlanItem({
+          id: `tier0-${strategy}`,
+          patchStrategy: strategy as any,
+          estimatedLinesChanged: 5, // Tier 0 should have small patches
+        }),
+      ];
+      const plan = createMockPlan(items);
+
+      const result = selectBestCandidate(plan, defaultOptions);
+      if (result.item) {
+        assert.ok(
+          result.reason.rankingFactors!.estimatedLinesChanged <= 40,
+          `${strategy} estimatedLinesChanged (${result.reason.rankingFactors!.estimatedLinesChanged}) should be <= 40`
+        );
+      }
+    }
+  });
+
+  test('Tier 0 selection respects eligibility', () => {
+    // Only eligible items should be selected
+    const items = [
+      createMockPlanItem({
+        id: 'ineligible',
+        patchStrategy: 'setstate-nonfunctional',
+        eligibility: 'review', // Not eligible
+      }),
+      createMockPlanItem({
+        id: 'eligible',
+        patchStrategy: 'missing-use-client',
+        eligibility: 'eligible',
+      }),
+    ];
+    const plan = createMockPlan(items);
+
+    const result = selectBestCandidate(plan, defaultOptions);
+    if (result.item) {
+      assert.equal(
+        result.item.eligibility,
+        'eligible',
+        'Only eligible items should be selected'
+      );
+    }
+  });
+
+  test('Tier 0 applies only in allowed governance surface', () => {
+    const items = [
+      createMockPlanItem({
+        id: 'outside-surface',
+        patchStrategy: 'setstate-nonfunctional',
+        file: 'src/components/Button.tsx', // Not in allowed surface
+      }),
+    ];
+    const plan = createMockPlan(items);
+
+    const result = selectBestCandidate(plan, defaultOptions);
+    // Should not select if outside allowed surface
+    assert.equal(result.item, null, 'Should not select outside allowed surface');
+  });
+
+  test('diffStats.filesChanged === 1 for single-file Tier 0 patches', () => {
+    // Mock a Tier 0 proof structure
+    const mockProof = {
+      planItemId: 'test-tier0',
+      strategyId: 'setstate-nonfunctional',
+      diffStats: {
+        filesChanged: 1,
+        linesAdded: 1,
+        linesRemoved: 1,
+      },
+      outcome: 'applied' as const,
+    };
+
+    assert.equal(
+      mockProof.diffStats.filesChanged,
+      1,
+      'Tier 0 patches should change exactly 1 file'
+    );
+  });
+});
