@@ -6,11 +6,18 @@
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Re-export Evidence Index Types (Phase 4N6)
+// Re-export Evidence Index Types (Phase 4N6 + 4N9)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type {
-    EvidenceArtifacts, EvidenceBundle, EvidenceIndex, EvidenceIndexSource, EvidenceRecord, EvidenceRetention, EvidenceRollback
+    EvidenceArtifacts,
+    EvidenceBundle,
+    EvidenceIndex,
+    EvidenceIndexSource,
+    EvidenceRecord,
+    EvidenceRetention,
+    EvidenceRollback,
+    IncidentSource
 } from './evidence-index.js';
 
 // ─────────────────────────────────────────────────────────────────────────────

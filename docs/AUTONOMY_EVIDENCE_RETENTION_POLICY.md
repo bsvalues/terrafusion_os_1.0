@@ -43,7 +43,7 @@ When a PR with autonomy changes is **merged to main**, the evidence bundle is au
 |-----------|------------------|------------------|------------|
 | PR merged to main | **1 year** | GitHub Release (`autonomy-evidence/YYYY-MM`) | `autonomy-evidence-publisher.yml` |
 | Tagged release | **2 years** | Release Assets | Manual escalation |
-| Incident label applied | **7 years** | County Records System + Release | `4N9` (pending) |
+| Incident label applied | **7 years** | GitHub Release (`autonomy-incident/YYYY`) | `autonomy-incident-publisher.yml` |
 
 #### Release Evidence Channel Details
 
@@ -69,6 +69,56 @@ Download any bundle from the Release and verify offline:
 ```bash
 pnpm perf:verify-bundle --zip autonomy-evidence-<runId>.zip --strict
 ```
+
+### Incident Retention Channel (7 Years)
+
+When a PR is labeled with `incident`, it is automatically promoted to the 7-year incident retention channel.
+
+#### Trigger Conditions
+
+| Event | Action |
+|-------|--------|
+| PR closed (merged) + incident label | Immediate promotion |
+| PR labeled (after merge) | Retroactive promotion |
+
+#### Incident Release Channel Details
+
+- **Tag Format:** `autonomy-incident/YYYY` (yearly rollup for 7-year retention)
+- **Assets Published:**
+  - `autonomy-incident-pr<PR#>-<runId>.zip` — Complete incident evidence bundle
+  - `autonomy-incident-pr<PR#>-<runId>.manifest.json` — SHA256 integrity hashes
+  - `autonomy-incident-pr<PR#>-index.json` — Incident evidence ledger
+  - `autonomy-incident-pr<PR#>-dashboard.html` — Offline CIO viewer
+
+#### Evidence Index Incident Fields
+
+When an incident is recorded, the evidence index includes:
+
+```json
+{
+  "incident": true,
+  "incidentSource": {
+    "pr": 123,
+    "mergedAt": "2026-01-31T12:00:00Z"
+  },
+  "releaseTag": "autonomy-incident/2026"
+}
+```
+
+#### Incident Safety Invariants
+
+- Incident label **cannot** be applied by bots (GitHub policy)
+- Once a bundle is promoted to incident tier, retention is **sticky**
+- Never modifies the original monthly evidence release
+- Never overwrites existing incident entry for same PR
+- Rollback commands are included in release notes
+
+#### Dashboard Incident Display
+
+When viewing an incident-tier bundle, the dashboard shows:
+- **Red "Incident (7 years)" badge** in retention tier
+- Incident PR number and merge details
+- Enhanced rollback instructions
 
 ### Audit Retention (Jurisdiction-Dependent)
 

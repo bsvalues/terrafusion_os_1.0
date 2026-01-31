@@ -67,6 +67,7 @@ export interface EvidenceRollback {
 export interface EvidenceRetention {
   days: number;
   policy: string;
+  tier: 'ci' | 'merged' | 'incident';
 }
 
 export interface EvidenceRecord {
@@ -81,11 +82,20 @@ export interface EvidenceRecord {
   retention: EvidenceRetention;
 }
 
+export interface IncidentSource {
+  pr: number;
+  labelAppliedAt?: string;
+  mergedAt?: string;
+}
+
 export interface EvidenceIndex {
   schema: 'terrafusion.autonomy.evidence.index.v1';
   generatedAt: string;
   source: EvidenceIndexSource;
   records: EvidenceRecord[];
+  incident?: boolean;
+  incidentSource?: IncidentSource;
+  releaseTag?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -105,6 +115,9 @@ interface IndexOptions {
   repo: string;
   ref: string;
   verbose: boolean;
+  incident: boolean;
+  incidentPr: number;
+  retentionTier: 'ci' | 'merged' | 'incident';
 }
 
 function parseArgs(): IndexOptions {
@@ -122,6 +135,9 @@ function parseArgs(): IndexOptions {
     repo: process.env.GITHUB_REPOSITORY || '',
     ref: process.env.GITHUB_REF || '',
     verbose: false,
+    incident: false,
+    incidentPr: 0,
+    retentionTier: 'ci',
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -150,6 +166,12 @@ function parseArgs(): IndexOptions {
       opts.ref = args[++i];
     } else if (arg === '--verbose') {
       opts.verbose = true;
+    } else if (arg === '--incident') {
+      opts.incident = true;
+    } else if (arg === '--incident-pr' && args[i + 1]) {
+      opts.incidentPr = parseInt(args[++i], 10);
+    } else if (arg === '--retention-tier' && args[i + 1]) {
+      opts.retentionTier = args[++i] as 'ci' | 'merged' | 'incident';
     } else if (arg === '--help' || arg === '-h') {
       printHelp();
       process.exit(0);
@@ -178,6 +200,9 @@ Options:
   --workflow <name>     Workflow name
   --repo <owner/repo>   Repository identifier
   --ref <ref>           Git ref
+  --incident            Mark as incident (7-year retention)
+  --incident-pr <num>   PR number for incident
+  --retention-tier <t>  Tier: ci, merged, incident (default: ci)
   --verbose             Verbose output
   --help, -h            Show this help
 `);
@@ -189,7 +214,21 @@ Options:
 
 export const EVIDENCE_INDEX_SCHEMA = 'terrafusion.autonomy.evidence.index.v1';
 export const DEFAULT_RETENTION_DAYS = 90;
+export const MERGED_RETENTION_DAYS = 365;
+export const INCIDENT_RETENTION_DAYS = 2555; // 7 years
 export const RETENTION_POLICY_VERSION = 'autonomy-evidence-retention.v1';
+
+function getRetentionDays(tier: 'ci' | 'merged' | 'incident'): number {
+  switch (tier) {
+    case 'incident':
+      return INCIDENT_RETENTION_DAYS;
+    case 'merged':
+      return MERGED_RETENTION_DAYS;
+    case 'ci':
+    default:
+      return DEFAULT_RETENTION_DAYS;
+  }
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Index Generation
@@ -253,8 +292,9 @@ function buildRecords(opts: IndexOptions, proofs: ApplyProof[]): EvidenceRecord[
         preview: '',
       },
       retention: {
-        days: DEFAULT_RETENTION_DAYS,
+        days: getRetentionDays(opts.retentionTier),
         policy: RETENTION_POLICY_VERSION,
+        tier: opts.retentionTier,
       },
     });
   }
@@ -285,8 +325,9 @@ function buildRecords(opts: IndexOptions, proofs: ApplyProof[]): EvidenceRecord[
           planItemId !== 'unknown' ? `pnpm perf:rollback --proof ${planItemId} --dry-run` : '',
       },
       retention: {
-        days: DEFAULT_RETENTION_DAYS,
+        days: getRetentionDays(opts.retentionTier),
         policy: RETENTION_POLICY_VERSION,
+        tier: opts.retentionTier,
       },
     });
   }
@@ -327,7 +368,7 @@ export function buildEvidenceIndex(opts: IndexOptions): EvidenceIndex {
   const proofs = opts.artifactsDir ? loadApplyProofs(opts.artifactsDir, opts.verbose) : [];
   const records = buildRecords(opts, proofs);
 
-  return {
+  const index: EvidenceIndex = {
     schema: 'terrafusion.autonomy.evidence.index.v1',
     generatedAt: new Date().toISOString(),
     source: {
@@ -338,6 +379,20 @@ export function buildEvidenceIndex(opts: IndexOptions): EvidenceIndex {
     },
     records,
   };
+
+  // Add incident fields if applicable
+  if (opts.incident && opts.incidentPr > 0) {
+    index.incident = true;
+    index.incidentSource = {
+      pr: opts.incidentPr,
+      mergedAt: new Date().toISOString(),
+    };
+    // Release tag follows annual format for incident tier
+    const year = new Date().getFullYear();
+    index.releaseTag = `autonomy-incident/${year}`;
+  }
+
+  return index;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

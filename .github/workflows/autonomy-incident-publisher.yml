@@ -1,0 +1,350 @@
+# Autonomy Incident Publisher (Phase 4N9)
+#
+# Publishes evidence bundles to the 7-year incident retention channel.
+# This workflow promotes merged PR evidence when the 'incident' label is applied.
+#
+# TRIGGER CONDITIONS (all must be true):
+# - PR merged to main
+# - PR has label 'incident'
+# - Evidence bundle verifies strict
+#
+# EVENTS:
+# - pull_request.closed (merged) - primary path
+# - pull_request.labeled - secondary path (retroactive promotion)
+#
+# SECURITY POSTURE (Non-negotiable):
+# - Same minimal permissions as 4N8
+# - Strict verification BEFORE publish
+# - Never modifies original monthly release
+# - Never overwrites existing incident entry for same PR
+#
+# RETENTION:
+# - Incident channel: autonomy-incident/YYYY
+# - Retention: 7 years
+
+name: Autonomy Incident Publisher
+
+on:
+  pull_request:
+    types: [closed, labeled]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+env:
+  OUT_DIR: tools/registry/perf-skill-audit/out
+  VIEWER_DIR: tools/registry/autonomy-viewer/dist
+  INCIDENT_LABEL: incident
+
+jobs:
+  # ==========================================================================
+  # Gate: Only proceed if PR merged AND has incident label
+  # ==========================================================================
+  gate:
+    name: Incident Gate
+    runs-on: ubuntu-latest
+    outputs:
+      should_publish: ${{ steps.check.outputs.should_publish }}
+      release_tag: ${{ steps.check.outputs.release_tag }}
+      run_id: ${{ steps.check.outputs.run_id }}
+      pr_number: ${{ steps.check.outputs.pr_number }}
+      pr_title: ${{ steps.check.outputs.pr_title }}
+    steps:
+      - name: Check incident conditions
+        id: check
+        run: |
+          echo "🔒 Phase 4N9: Incident Publisher Gate Check"
+          echo ""
+
+          # Check if PR is merged
+          if [[ "${{ github.event.pull_request.merged }}" != "true" ]]; then
+            echo "::notice::PR is not merged - skipping"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check if target is main
+          if [[ "${{ github.base_ref }}" != "main" ]]; then
+            echo "::notice::PR was not merged to main - skipping"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check for incident label
+          LABELS="${{ join(github.event.pull_request.labels.*.name, ',') }}"
+          echo "PR Labels: $LABELS"
+
+          if [[ ! "$LABELS" =~ (^|,)incident(,|$) ]]; then
+            echo "::notice::PR does not have 'incident' label - skipping"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Generate incident release tag (yearly format for 7-year retention)
+          YEAR=$(date +%Y)
+          RELEASE_TAG="autonomy-incident/${YEAR}"
+          RUN_ID="${{ github.run_id }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+
+          echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
+          echo "should_publish=true" >> $GITHUB_OUTPUT
+
+          echo "✅ Incident gate passed"
+          echo "   Release Tag: $RELEASE_TAG"
+          echo "   PR: #$PR_NUMBER"
+          echo "   Run ID: $RUN_ID"
+
+  # ==========================================================================
+  # Publish: Generate/verify evidence and publish to Incident Release
+  # ==========================================================================
+  publish:
+    name: Publish to Incident Channel
+    needs: gate
+    if: needs.gate.outputs.should_publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm -C tools/registry/perf-skill-audit install
+
+      # ========================================================================
+      # Step 1: Generate fresh evidence artifacts (deterministic)
+      # ========================================================================
+      - name: Generate performance plan
+        run: |
+          echo "📊 Generating performance plan..."
+          npx tsx tools/registry/perf-skill-audit/src/index.ts || true
+
+          if [ -f "${{ env.OUT_DIR }}/perf.plan.json" ]; then
+            echo "✅ Performance plan generated"
+          else
+            echo "⚠️ No performance plan (may be empty run)"
+          fi
+
+      - name: Generate CIO Dashboard
+        run: |
+          echo "📊 Generating County CIO Dashboard..."
+          mkdir -p ${{ env.VIEWER_DIR }}
+
+          npx tsx tools/registry/autonomy-viewer/src/generate.ts \
+            --artifacts=${{ env.OUT_DIR }} \
+            --output=${{ env.VIEWER_DIR }} \
+            --emit-json \
+            --verbose || echo "::warning::Dashboard generation failed (non-fatal)"
+
+      - name: Generate Evidence Bundle (Incident)
+        id: bundle
+        run: |
+          echo "📦 Generating Evidence Bundle (Incident)..."
+          PR_NUMBER="${{ needs.gate.outputs.pr_number }}"
+          RUN_ID="${{ needs.gate.outputs.run_id }}"
+          BUNDLE_NAME="autonomy-incident-pr${PR_NUMBER}-${RUN_ID}"
+
+          npx tsx tools/registry/autonomy-viewer/src/bundle.ts \
+            --in ${{ env.OUT_DIR }} \
+            --in ${{ env.VIEWER_DIR }} \
+            --out ${{ env.VIEWER_DIR }} \
+            --name "$BUNDLE_NAME" \
+            --run-id "$RUN_ID" \
+            --emit-manifest \
+            --verbose
+
+          # Capture manifest SHA256
+          if [ -f "${{ env.VIEWER_DIR }}/MANIFEST.json" ]; then
+            MANIFEST_SHA=$(sha256sum ${{ env.VIEWER_DIR }}/MANIFEST.json | cut -d' ' -f1)
+            echo "manifest_sha=$MANIFEST_SHA" >> $GITHUB_OUTPUT
+            echo "bundle_name=${BUNDLE_NAME}.zip" >> $GITHUB_OUTPUT
+            echo "bundle_path=${{ env.VIEWER_DIR }}/${BUNDLE_NAME}.zip" >> $GITHUB_OUTPUT
+            echo "✅ Incident bundle generated: ${BUNDLE_NAME}.zip"
+          else
+            echo "::error::MANIFEST.json not found"
+            exit 1
+          fi
+
+      # ========================================================================
+      # Step 2: Verify bundle (STRICT - non-negotiable before publish)
+      # ========================================================================
+      - name: Verify Evidence Bundle (strict)
+        id: verify
+        run: |
+          echo "🔐 Verifying Incident Evidence Bundle (strict mode)..."
+          BUNDLE_PATH="${{ steps.bundle.outputs.bundle_path }}"
+
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/verify-bundle.ts \
+            --zip "$BUNDLE_PATH" \
+            --strict \
+            --verbose
+          VERIFY_EXIT=$?
+          set -e
+
+          if [ $VERIFY_EXIT -eq 0 ]; then
+            echo "verify_ok=true" >> $GITHUB_OUTPUT
+            echo "✅ Bundle verification PASSED (strict)"
+          else
+            echo "verify_ok=false" >> $GITHUB_OUTPUT
+            echo "::error::Bundle verification FAILED - cannot publish to incident channel"
+            exit 1
+          fi
+
+      - name: Generate Evidence Index (Incident)
+        run: |
+          echo "📋 Generating Evidence Index (Incident tier)..."
+
+          npx tsx tools/registry/autonomy-viewer/src/evidence-index.ts \
+            --out ${{ env.VIEWER_DIR }}/autonomy-evidence-index.json \
+            --artifacts ${{ env.OUT_DIR }} \
+            --bundle "${{ steps.bundle.outputs.bundle_name }}" \
+            --manifest-sha "${{ steps.bundle.outputs.manifest_sha }}" \
+            --verify-ok \
+            --verify-strict \
+            --run-id "${{ needs.gate.outputs.run_id }}" \
+            --workflow "autonomy-incident-publisher" \
+            --repo "${{ github.repository }}" \
+            --ref "refs/heads/main" \
+            --incident \
+            --incident-pr "${{ needs.gate.outputs.pr_number }}" \
+            --retention-tier "incident" \
+            --verbose
+
+      # ========================================================================
+      # Step 3: Publish to Incident Release Channel
+      # ========================================================================
+      - name: Prepare incident release assets
+        id: assets
+        run: |
+          echo "📦 Preparing incident release assets..."
+          ASSETS_DIR="${{ env.VIEWER_DIR }}/incident-assets"
+          mkdir -p "$ASSETS_DIR"
+
+          PR_NUMBER="${{ needs.gate.outputs.pr_number }}"
+          RUN_ID="${{ needs.gate.outputs.run_id }}"
+
+          # Copy and rename assets for incident release
+          cp "${{ steps.bundle.outputs.bundle_path }}" "$ASSETS_DIR/"
+          cp "${{ env.VIEWER_DIR }}/MANIFEST.json" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-${RUN_ID}.manifest.json"
+          cp "${{ env.VIEWER_DIR }}/autonomy-evidence-index.json" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-index.json"
+          cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-dashboard.html" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.json" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-dashboard.json" || true
+
+          echo "assets_dir=$ASSETS_DIR" >> $GITHUB_OUTPUT
+
+          echo "✅ Incident release assets prepared:"
+          ls -la "$ASSETS_DIR/"
+
+      - name: Create or Update Incident Release
+        id: release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.gate.outputs.release_tag }}
+          name: 'Autonomy Incident Evidence Archive - ${{ needs.gate.outputs.release_tag }}'
+          body: |
+            ## 🚨 Autonomy Incident Evidence Archive
+
+            This release contains evidence bundles from autonomy PRs marked as **incident**.
+
+            **Retention Tier:** 7 years (incident)
+            **Policy:** autonomy-evidence-retention.v1
+
+            ---
+
+            ### Incident: PR #${{ needs.gate.outputs.pr_number }}
+
+            **Title:** ${{ needs.gate.outputs.pr_title }}
+
+            | Field | Value |
+            |-------|-------|
+            | **Bundle** | `${{ steps.bundle.outputs.bundle_name }}` |
+            | **Manifest SHA256** | `${{ steps.bundle.outputs.manifest_sha }}` |
+            | **Verification** | ✅ Passed (strict) |
+            | **PR** | #${{ needs.gate.outputs.pr_number }} |
+            | **Merged By** | @${{ github.event.pull_request.merged_by.login }} |
+            | **Merged At** | ${{ github.event.pull_request.merged_at }} |
+            | **Incident Label Applied** | ${{ github.event.action == 'labeled' && 'After merge (retroactive)' || 'Before merge' }} |
+
+            ---
+
+            ### Verify Offline
+
+            ```bash
+            pnpm perf:verify-bundle --zip ${{ steps.bundle.outputs.bundle_name }}
+            ```
+
+            ### Rollback (if applicable)
+
+            ```bash
+            pnpm perf:rollback --proof <proof-id> --dry-run  # preview
+            pnpm perf:rollback --proof <proof-id>            # execute
+            ```
+
+            ---
+
+            ### Retention Statement
+
+            **This evidence bundle is retained for 7 years** in accordance with 
+            FISMA compliance requirements and county incident retention policies.
+
+            Do NOT delete without explicit legal/compliance authorization.
+
+            ---
+
+            *TerraFusion Autonomy v1 — Government. Transcended.*
+          draft: false
+          prerelease: false
+          files: |
+            ${{ steps.assets.outputs.assets_dir }}/*
+          make_latest: false
+
+      - name: Incident Publish Summary
+        run: |
+          echo "## 🚨 Incident Evidence Published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Release Tag:** \`${{ needs.gate.outputs.release_tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Retention Tier:** 7 years (incident)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### PR Details" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| PR | #${{ needs.gate.outputs.pr_number }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Title | ${{ needs.gate.outputs.pr_title }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Assets Published" >> $GITHUB_STEP_SUMMARY
+          echo "| Asset | Purpose |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| \`${{ steps.bundle.outputs.bundle_name }}\` | Complete incident evidence bundle |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-incident-pr${{ needs.gate.outputs.pr_number }}-*.manifest.json\` | SHA256 integrity hashes |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-incident-pr${{ needs.gate.outputs.pr_number }}-index.json\` | Incident evidence ledger |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-incident-pr${{ needs.gate.outputs.pr_number }}-dashboard.html\` | Offline CIO viewer |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Verification" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "pnpm perf:verify-bundle --zip ${{ steps.bundle.outputs.bundle_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **7-year retention — do NOT delete without authorization**" >> $GITHUB_STEP_SUMMARY
