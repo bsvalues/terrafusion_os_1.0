@@ -102,6 +102,32 @@ export interface SignatureInfo {
 }
 
 /**
+ * Phase 4N17: Signing mode for evidence packages.
+ * - 'full': All primary artifacts must be signed (bundle, manifest, custody, ledger)
+ * - 'primary': Only bundle and manifest signed
+ * - 'none': No signing (e.g., CI artifacts before merge)
+ */
+export type SigningMode = 'full' | 'primary' | 'none';
+
+/**
+ * Phase 4N17: Explicit signing status for an asset.
+ */
+export interface AssetSigningStatus {
+  /** Whether this asset was signed */
+  signed: boolean;
+  /** Signature triplet files (.sig, .crt, .bundle) - all must exist if signed=true */
+  triplet?: {
+    sig: string;
+    crt: string;
+    bundle: string;
+  };
+  /** Signing identity URI (if signed) */
+  identity?: string;
+  /** OIDC issuer (if signed) */
+  issuer?: string;
+}
+
+/**
  * Release asset with optional signature.
  */
 export interface ReleaseAsset {
@@ -109,6 +135,8 @@ export interface ReleaseAsset {
   url: string;
   /** Phase 4N16: Cryptographic signature (keyless via OIDC) */
   signature?: SignatureInfo;
+  /** Phase 4N17: Explicit signing status (prevents inference ambiguity) */
+  signing?: AssetSigningStatus;
 }
 
 /**
@@ -156,6 +184,18 @@ export interface EvidenceIndex {
   releaseUrl?: string;
   /** Canonical release assets with immutable URLs */
   assets?: ReleaseAssets;
+  /**
+   * Phase 4N17: Signing mode for this evidence package.
+   * - 'full': All primary artifacts signed
+   * - 'primary': Bundle + manifest signed
+   * - 'none': No signing (CI-only)
+   */
+  signingMode?: SigningMode;
+  /**
+   * Phase 4N17: Canonical workflow identity for signature verification.
+   * Format: https://github.com/{owner}/{repo}/.github/workflows/{workflow}.yml@{ref}
+   */
+  signingIdentity?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -182,6 +222,10 @@ interface IndexOptions {
   releaseTag: string;
   /** GitHub server URL (default: https://github.com) */
   serverUrl: string;
+  /** Phase 4N17: Signing mode ('full' | 'primary' | 'none') */
+  signingMode?: SigningMode;
+  /** Phase 4N17: Signing identity (workflow OIDC subject) */
+  signingIdentity?: string;
 }
 
 function parseArgs(): IndexOptions {
@@ -440,6 +484,119 @@ export const SIGNATURE_ASSET_NAMES = {
 } as const;
 
 /**
+ * Phase 4N17: Signature triplet - the three files that must exist together.
+ */
+export interface SignatureTriplet {
+  sig: string;
+  crt: string;
+  bundle: string;
+}
+
+/**
+ * Phase 4N17: Build signature triplet filenames for an asset.
+ */
+export function buildSignatureTriplet(assetName: string): SignatureTriplet {
+  return {
+    sig: SIGNATURE_ASSET_NAMES.sig(assetName),
+    crt: SIGNATURE_ASSET_NAMES.crt(assetName),
+    bundle: SIGNATURE_ASSET_NAMES.bundle(assetName),
+  };
+}
+
+/**
+ * Phase 4N17: Signature triplet verification result.
+ */
+export interface TripletVerifyResult {
+  ok: boolean;
+  assetName: string;
+  missing: string[];
+  present: string[];
+}
+
+/**
+ * Phase 4N17: Verify that a signature triplet is complete.
+ * If signed=true, all three files (.sig, .crt, .bundle) must exist.
+ * Returns verification result with missing file names.
+ */
+export function verifySignatureTriplet(
+  assetName: string,
+  existingFiles: Set<string>
+): TripletVerifyResult {
+  const triplet = buildSignatureTriplet(assetName);
+  const missing: string[] = [];
+  const present: string[] = [];
+
+  for (const [_key, fileName] of Object.entries(triplet)) {
+    if (existingFiles.has(fileName)) {
+      present.push(fileName);
+    } else {
+      missing.push(fileName);
+    }
+  }
+
+  return {
+    ok: missing.length === 0,
+    assetName,
+    missing,
+    present,
+  };
+}
+
+/**
+ * Phase 4N17: Primary assets that MUST be signed in 'full' signing mode.
+ */
+export const PRIMARY_SIGNED_ASSETS = [
+  'bundleZip',
+  'manifestJson',
+  'evidenceIndexJson',
+  'ledgerHtml',
+  'custodyHtml',
+  'custodyAttestationJson',
+] as const;
+
+/**
+ * Phase 4N17: Minimum assets that MUST be signed in 'primary' signing mode.
+ */
+export const MINIMUM_SIGNED_ASSETS = ['bundleZip', 'manifestJson'] as const;
+
+/**
+ * Phase 4N17: Verify all signature triplets for a signing mode.
+ * Returns aggregated results for all required signed assets.
+ */
+export function verifySigningModeParity(
+  signingMode: SigningMode,
+  assets: ReleaseAssets,
+  existingFiles: Set<string>
+): { ok: boolean; results: TripletVerifyResult[]; errors: string[] } {
+  if (signingMode === 'none') {
+    return { ok: true, results: [], errors: [] };
+  }
+
+  const requiredAssets = signingMode === 'full' ? PRIMARY_SIGNED_ASSETS : MINIMUM_SIGNED_ASSETS;
+
+  const results: TripletVerifyResult[] = [];
+  const errors: string[] = [];
+
+  for (const assetKey of requiredAssets) {
+    const asset = assets[assetKey as keyof ReleaseAssets];
+    if (!asset) continue; // Asset doesn't exist, skip
+
+    const result = verifySignatureTriplet(asset.name, existingFiles);
+    results.push(result);
+
+    if (!result.ok) {
+      errors.push(`Asset "${asset.name}" is missing signature files: ${result.missing.join(', ')}`);
+    }
+  }
+
+  return {
+    ok: errors.length === 0,
+    results,
+    errors,
+  };
+}
+
+/**
  * Phase 4N16: GitHub Actions OIDC issuer for keyless signing.
  */
 export const GITHUB_OIDC_ISSUER = 'https://token.actions.githubusercontent.com' as const;
@@ -482,6 +639,7 @@ export function buildWorkflowIdentity(
 /**
  * Build all release assets with immutable URLs.
  * Phase 4N16: Optionally include signature info for signed artifacts.
+ * Phase 4N17: Include explicit signing status (signed boolean + triplet names).
  */
 export function buildReleaseAssets(
   serverUrl: string,
@@ -499,13 +657,24 @@ export function buildReleaseAssets(
     : '';
 
   const makeAsset = (name: string, shouldSign = false): ReleaseAsset => {
+    const wasSigned = shouldSign && (signedAssets?.signedArtifacts.has(name) ?? false);
+
     const asset: ReleaseAsset = {
       name,
       url: buildAssetUrl(serverUrl, repo, releaseTag, name),
+      // Phase 4N17: Explicit signing status (never inferred)
+      signing: {
+        signed: wasSigned,
+        ...(wasSigned && {
+          triplet: buildSignatureTriplet(name),
+          identity: workflowIdentity,
+          issuer: GITHUB_OIDC_ISSUER,
+        }),
+      },
     };
 
-    // Phase 4N16: Add signature info if this asset was signed
-    if (shouldSign && signedAssets?.signedArtifacts.has(name)) {
+    // Phase 4N16: Also add signature URLs for backward compatibility
+    if (wasSigned) {
       asset.signature = buildSignatureUrls(serverUrl, repo, releaseTag, name, workflowIdentity);
     }
 
@@ -702,6 +871,14 @@ export function buildEvidenceIndex(opts: IndexOptions): EvidenceIndex {
     if (releaseUrlError) {
       throw new Error(`Immutable URL validation failed: ${releaseUrlError}`);
     }
+  }
+
+  // Phase 4N17: Add signing metadata when provided
+  if (opts.signingMode) {
+    index.signingMode = opts.signingMode;
+  }
+  if (opts.signingIdentity) {
+    index.signingIdentity = opts.signingIdentity;
   }
 
   return index;

@@ -616,7 +616,11 @@ if (
 export {
     extractCertificateInfo,
     findCosign,
-    getCosignVersion, parseArgs, parseBundle, verifySignature, type IdentityInfo,
+    getCosignVersion,
+    parseArgs,
+    parseBundle,
+    verifySignature,
+    type IdentityInfo,
     type VerifyError,
     type VerifyOptions,
     type VerifyResult

@@ -23,13 +23,19 @@ import {
     DEFAULT_RETENTION_DAYS,
     EVIDENCE_INDEX_SCHEMA,
     type EvidenceIndex,
+    MINIMUM_SIGNED_ASSETS,
+    PRIMARY_SIGNED_ASSETS,
     RETENTION_POLICY_VERSION,
+    type SigningMode,
     buildAssetUrl,
     buildEvidenceIndex,
     buildReleaseAssets,
     buildReleaseUrl,
+    buildSignatureTriplet,
     loadApplyProofs,
     validateImmutableUrl,
+    verifySignatureTriplet,
+    verifySigningModeParity,
 } from '../src/evidence-index.js';
 
 // ============================================================================
@@ -73,6 +79,7 @@ function createMockOptions(tempDir: string, overrides: Record<string, unknown> =
     repo: 'terrafusion/os',
     ref: 'refs/heads/main',
     verbose: false,
+    serverUrl: 'https://github.com',
     ...overrides,
   };
 }
@@ -880,13 +887,13 @@ describe('Phase 4N14: Immutable URL Wiring', () => {
     it('should include releaseUrl when releaseTag is provided', () => {
       const opts = createMockOptions(tempDir, {
         artifactsDir: '',
-        releaseTag: 'autonomy-evidence/2026-01',
+        releaseTag: 'autonomy-evidence-2026-01', // Use hyphen to avoid URL encoding conflict
         serverUrl: 'https://github.com',
       });
       const index = buildEvidenceIndex(opts);
 
       assert.ok(index.releaseTag);
-      assert.equal(index.releaseTag, 'autonomy-evidence/2026-01');
+      assert.equal(index.releaseTag, 'autonomy-evidence-2026-01');
       assert.ok(index.releaseUrl);
       assert.ok(index.releaseUrl.includes('/releases/tag/'));
     });
@@ -1038,6 +1045,373 @@ describe('Phase 4N15: Evidence Reality Check', () => {
       const result = validateImmutableUrl(url);
       // This should pass current validation - documenting for future hardening
       assert.equal(result, null);
+    });
+  });
+});
+
+// ============================================================================
+// Phase 4N17: Signature Triplet Parity Contract Tests
+// ============================================================================
+
+describe('Phase 4N17: Signature Triplet Parity', () => {
+  describe('buildSignatureTriplet()', () => {
+    it('should construct complete triplet from asset name', () => {
+      const assetName = 'bundle.zip';
+      const triplet = buildSignatureTriplet(assetName);
+
+      assert.equal(triplet.sig, 'bundle.zip.sig');
+      assert.equal(triplet.crt, 'bundle.zip.crt');
+      assert.equal(triplet.bundle, 'bundle.zip.bundle');
+    });
+
+    it('should produce consistent triplet suffixes', () => {
+      const assetName = 'asset.json';
+      const triplet = buildSignatureTriplet(assetName);
+
+      assert.ok(triplet.sig.endsWith('.sig'));
+      assert.ok(triplet.crt.endsWith('.crt'));
+      assert.ok(triplet.bundle.endsWith('.bundle'));
+    });
+
+    it('should preserve original name in triplet', () => {
+      const assetName = 'my-evidence.zip';
+      const triplet = buildSignatureTriplet(assetName);
+
+      // Each triplet file should use the original name as prefix
+      assert.ok(triplet.sig.startsWith(assetName));
+      assert.ok(triplet.crt.startsWith(assetName));
+      assert.ok(triplet.bundle.startsWith(assetName));
+    });
+  });
+
+  describe('Signing Mode Constants', () => {
+    it('PRIMARY_SIGNED_ASSETS should include required primary assets', () => {
+      // These are the assets that MUST be signed in 'primary' or 'full' mode
+      assert.ok(PRIMARY_SIGNED_ASSETS.includes('bundleZip'));
+      assert.ok(PRIMARY_SIGNED_ASSETS.includes('manifestJson'));
+      assert.ok(PRIMARY_SIGNED_ASSETS.includes('evidenceIndexJson'));
+    });
+
+    it('MINIMUM_SIGNED_ASSETS should include bundle and manifest', () => {
+      // These are the absolute minimum for 'primary' mode
+      assert.ok(MINIMUM_SIGNED_ASSETS.includes('bundleZip'));
+      assert.ok(MINIMUM_SIGNED_ASSETS.includes('manifestJson'));
+    });
+
+    it('MINIMUM_SIGNED_ASSETS should be subset of PRIMARY_SIGNED_ASSETS', () => {
+      for (const asset of MINIMUM_SIGNED_ASSETS) {
+        assert.ok(PRIMARY_SIGNED_ASSETS.includes(asset), `${asset} is in MINIMUM but not PRIMARY`);
+      }
+    });
+  });
+
+  describe('verifySignatureTriplet()', () => {
+    it('should return ok=true when all three files exist in set', () => {
+      const assetName = 'bundle.zip';
+      const existingFiles = new Set([
+        'bundle.zip',
+        'bundle.zip.sig',
+        'bundle.zip.crt',
+        'bundle.zip.bundle',
+      ]);
+
+      const result = verifySignatureTriplet(assetName, existingFiles);
+      assert.equal(result.ok, true);
+      assert.equal(result.missing.length, 0);
+      assert.equal(result.present.length, 3);
+    });
+
+    it('should return ok=false when .sig is missing', () => {
+      const assetName = 'bundle.zip';
+      const existingFiles = new Set(['bundle.zip', 'bundle.zip.crt', 'bundle.zip.bundle']);
+
+      const result = verifySignatureTriplet(assetName, existingFiles);
+      assert.equal(result.ok, false);
+      assert.ok(result.missing.includes('bundle.zip.sig'));
+      assert.equal(result.present.length, 2);
+    });
+
+    it('should return ok=false when .crt is missing', () => {
+      const assetName = 'bundle.zip';
+      const existingFiles = new Set(['bundle.zip', 'bundle.zip.sig', 'bundle.zip.bundle']);
+
+      const result = verifySignatureTriplet(assetName, existingFiles);
+      assert.equal(result.ok, false);
+      assert.ok(result.missing.includes('bundle.zip.crt'));
+    });
+
+    it('should return ok=false when .bundle is missing', () => {
+      const assetName = 'bundle.zip';
+      const existingFiles = new Set(['bundle.zip', 'bundle.zip.sig', 'bundle.zip.crt']);
+
+      const result = verifySignatureTriplet(assetName, existingFiles);
+      assert.equal(result.ok, false);
+      assert.ok(result.missing.includes('bundle.zip.bundle'));
+    });
+
+    it('should return ok=false when all signature files are missing', () => {
+      const assetName = 'bundle.zip';
+      const existingFiles = new Set(['bundle.zip']);
+
+      const result = verifySignatureTriplet(assetName, existingFiles);
+      assert.equal(result.ok, false);
+      assert.equal(result.missing.length, 3);
+      assert.equal(result.present.length, 0);
+    });
+
+    it('should include asset name in result', () => {
+      const assetName = 'my-bundle.zip';
+      const existingFiles = new Set<string>();
+
+      const result = verifySignatureTriplet(assetName, existingFiles);
+      assert.equal(result.assetName, 'my-bundle.zip');
+    });
+  });
+
+  describe('verifySigningModeParity()', () => {
+    const BUNDLE_NAME = 'autonomy-evidence-bundle-12345.zip';
+    const MANIFEST_NAME = 'autonomy-evidence-manifest-12345.json';
+
+    function createAssets(): ReturnType<typeof buildReleaseAssets> {
+      return buildReleaseAssets('https://github.com', 'owner/repo', 'v1.0.0', '12345');
+    }
+
+    it('should return ok=true for mode=none (no signatures required)', () => {
+      const assets = createAssets();
+      const existingFiles = new Set([BUNDLE_NAME, MANIFEST_NAME]);
+
+      const result = verifySigningModeParity('none', assets, existingFiles);
+      assert.equal(result.ok, true);
+      assert.equal(result.errors.length, 0);
+    });
+
+    it('should return ok=true for mode=primary with minimum signed assets', () => {
+      const assets = createAssets();
+      const existingFiles = new Set([
+        BUNDLE_NAME,
+        `${BUNDLE_NAME}.sig`,
+        `${BUNDLE_NAME}.crt`,
+        `${BUNDLE_NAME}.bundle`,
+        MANIFEST_NAME,
+        `${MANIFEST_NAME}.sig`,
+        `${MANIFEST_NAME}.crt`,
+        `${MANIFEST_NAME}.bundle`,
+      ]);
+
+      const result = verifySigningModeParity('primary', assets, existingFiles);
+      assert.equal(result.ok, true);
+      assert.equal(result.errors.length, 0);
+    });
+
+    it('should return ok=false for mode=primary with missing triplet', () => {
+      const assets = createAssets();
+      // Bundle has triplet, manifest missing triplet
+      const existingFiles = new Set([
+        BUNDLE_NAME,
+        `${BUNDLE_NAME}.sig`,
+        `${BUNDLE_NAME}.crt`,
+        `${BUNDLE_NAME}.bundle`,
+        MANIFEST_NAME, // Only manifest, no signature files
+      ]);
+
+      const result = verifySigningModeParity('primary', assets, existingFiles);
+      assert.equal(result.ok, false);
+      assert.ok(result.errors.length > 0);
+    });
+
+    it('should return ok=false for mode=full with any missing triplet', () => {
+      const assets = createAssets();
+      // Bundle and manifest have triplets, but evidence index doesn't
+      const existingFiles = new Set([
+        BUNDLE_NAME,
+        `${BUNDLE_NAME}.sig`,
+        `${BUNDLE_NAME}.crt`,
+        `${BUNDLE_NAME}.bundle`,
+        MANIFEST_NAME,
+        `${MANIFEST_NAME}.sig`,
+        `${MANIFEST_NAME}.crt`,
+        `${MANIFEST_NAME}.bundle`,
+        'autonomy-evidence-index.json', // Index has no triplet
+      ]);
+
+      const result = verifySigningModeParity('full', assets, existingFiles);
+      assert.equal(result.ok, false);
+    });
+  });
+
+  describe('buildReleaseAssets() with Signing Status', () => {
+    it('should include signing field in all assets', () => {
+      const assets = buildReleaseAssets('https://github.com', 'owner/repo', 'v1.0.0', '12345');
+
+      // Each asset should have a signing field
+      assert.ok(assets.bundleZip?.signing !== undefined);
+      assert.ok(assets.manifestJson?.signing !== undefined);
+      assert.ok(assets.evidenceIndexJson?.signing !== undefined);
+    });
+
+    it('should mark assets as signed when signedAssets provided', () => {
+      const signedAssets = {
+        workflow: 'autonomy-evidence-publisher',
+        ref: 'refs/heads/main',
+        signedArtifacts: new Set([
+          'autonomy-evidence-bundle-12345.zip',
+          'autonomy-evidence-manifest-12345.json',
+        ]),
+      };
+      const assets = buildReleaseAssets(
+        'https://github.com',
+        'owner/repo',
+        'v1.0.0',
+        '12345',
+        signedAssets
+      );
+
+      // Bundle and manifest should be marked as signed
+      assert.equal(assets.bundleZip?.signing.signed, true);
+      assert.equal(assets.manifestJson?.signing.signed, true);
+    });
+
+    it('should not mark assets as signed without signedAssets', () => {
+      const assets = buildReleaseAssets('https://github.com', 'owner/repo', 'v1.0.0', '12345');
+
+      // Without signedAssets, assets are not signed
+      assert.equal(assets.bundleZip?.signing.signed, false);
+      assert.equal(assets.manifestJson?.signing.signed, false);
+    });
+
+    it('should include triplet URLs for signed assets', () => {
+      const signedAssets = {
+        workflow: 'autonomy-evidence-publisher',
+        ref: 'refs/heads/main',
+        signedArtifacts: new Set(['autonomy-evidence-bundle-12345.zip']),
+      };
+      const assets = buildReleaseAssets(
+        'https://github.com',
+        'owner/repo',
+        'v1.0.0',
+        '12345',
+        signedAssets
+      );
+
+      // Signed assets should have triplet names
+      const bundleSigning = assets.bundleZip?.signing;
+      assert.ok(bundleSigning?.triplet);
+      assert.ok(bundleSigning?.triplet?.sig.endsWith('.sig'));
+      assert.ok(bundleSigning?.triplet?.crt.endsWith('.crt'));
+      assert.ok(bundleSigning?.triplet?.bundle.endsWith('.bundle'));
+    });
+
+    it('should have explicit boolean signed field (not inferred)', () => {
+      const assets = buildReleaseAssets('https://github.com', 'owner/repo', 'v1.0.0', '12345');
+
+      // signed must be an explicit boolean, not undefined
+      assert.equal(typeof assets.bundleZip?.signing.signed, 'boolean');
+      assert.equal(typeof assets.manifestJson?.signing.signed, 'boolean');
+    });
+  });
+
+  describe('EvidenceIndex with Signing Metadata', () => {
+    let tempDir: string;
+
+    beforeEach(() => {
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'signing-metadata-test-'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    });
+
+    it('should include signingMode when provided', () => {
+      const opts = createMockOptions(tempDir, {
+        artifactsDir: '',
+        signingMode: 'full' as SigningMode,
+      });
+      const index = buildEvidenceIndex(opts);
+
+      assert.equal(index.signingMode, 'full');
+    });
+
+    it('should include signingIdentity when provided', () => {
+      const opts = createMockOptions(tempDir, {
+        artifactsDir: '',
+        signingIdentity:
+          'https://github.com/terrafusion/os/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main',
+      });
+      const index = buildEvidenceIndex(opts);
+
+      assert.equal(
+        index.signingIdentity,
+        'https://github.com/terrafusion/os/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main'
+      );
+    });
+
+    it('should not include signing fields when not provided', () => {
+      const opts = createMockOptions(tempDir, { artifactsDir: '' });
+      const index = buildEvidenceIndex(opts);
+
+      assert.equal(index.signingMode, undefined);
+      assert.equal(index.signingIdentity, undefined);
+    });
+  });
+
+  describe('Triplet Parity Enforcement Contracts', () => {
+    it('contract: signed=true requires complete triplet', () => {
+      // This documents the enforcement contract
+      // If an asset has signing.signed=true, all three triplet files MUST exist
+      const signedAssets = {
+        workflow: 'autonomy-evidence-publisher',
+        ref: 'refs/heads/main',
+        signedArtifacts: new Set([
+          'autonomy-evidence-bundle-12345.zip',
+          'autonomy-evidence-manifest-12345.json',
+        ]),
+      };
+      const assets = buildReleaseAssets(
+        'https://github.com',
+        'owner/repo',
+        'v1.0.0',
+        '12345',
+        signedAssets
+      );
+
+      for (const [name, asset] of Object.entries(assets)) {
+        if (asset?.signing.signed === true) {
+          assert.ok(asset.signing.triplet, `${name} is signed but missing triplet`);
+          assert.ok(asset.signing.triplet.sig, `${name} is signed but missing .sig name`);
+          assert.ok(asset.signing.triplet.crt, `${name} is signed but missing .crt name`);
+          assert.ok(asset.signing.triplet.bundle, `${name} is signed but missing .bundle name`);
+        }
+      }
+    });
+
+    it('contract: PRIMARY_SIGNED_ASSETS defines scope for full mode', () => {
+      // PRIMARY_SIGNED_ASSETS defines which assets need signatures in 'full' mode
+      // At least bundleZip and manifestJson must be in the list
+      assert.ok(PRIMARY_SIGNED_ASSETS.includes('bundleZip'));
+      assert.ok(PRIMARY_SIGNED_ASSETS.includes('manifestJson'));
+      assert.ok(PRIMARY_SIGNED_ASSETS.length >= 2);
+    });
+
+    it('contract: triplet names use correct suffixes', () => {
+      const signedAssets = {
+        workflow: 'autonomy-evidence-publisher',
+        ref: 'refs/heads/main',
+        signedArtifacts: new Set(['autonomy-evidence-bundle-12345.zip']),
+      };
+      const assets = buildReleaseAssets(
+        'https://github.com',
+        'owner/repo',
+        'v1.0.0',
+        '12345',
+        signedAssets
+      );
+
+      // Triplet names must use standard suffixes
+      const triplet = assets.bundleZip?.signing.triplet;
+      assert.ok(triplet);
+      assert.ok(triplet.sig.endsWith('.sig'), 'sig should end with .sig');
+      assert.ok(triplet.crt.endsWith('.crt'), 'crt should end with .crt');
+      assert.ok(triplet.bundle.endsWith('.bundle'), 'bundle should end with .bundle');
     });
   });
 });

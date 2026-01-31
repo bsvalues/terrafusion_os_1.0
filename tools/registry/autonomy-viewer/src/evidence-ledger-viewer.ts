@@ -539,9 +539,10 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
       // Phase 4N16: Signature status cell
       const sigClass = entry.signature?.signed ? 'sig-signed' : 'sig-unsigned';
       const sigText = entry.signature?.signed ? '🔏 Signed' : '—';
-      const sigTitle = entry.signature?.signed && entry.signature.identity
-        ? `Signed by: ${entry.signature.identity}`
-        : 'Not signed';
+      const sigTitle =
+        entry.signature?.signed && entry.signature.identity
+          ? `Signed by: ${entry.signature.identity}`
+          : 'Not signed';
 
       // Phase 4N14: Render bundle as link when URL is available
       // Phase 4N15: Show local-missing badge when bundle URL exists but local file is absent

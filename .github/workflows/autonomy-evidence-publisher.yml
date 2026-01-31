@@ -371,6 +371,59 @@ jobs:
           echo "✅ Release assets prepared (canonical naming + signatures):"
           ls -la "$ASSETS_DIR/"
 
+      # ========================================================================
+      # Step 3a: Phase 4N17 - Verify Signature Triplet Parity
+      # ========================================================================
+      - name: Verify Signature Triplet Parity (Phase 4N17)
+        id: triplet
+        run: |
+          echo "🔏 Phase 4N17: Verifying signature triplet parity..."
+          ASSETS_DIR="${{ steps.assets.outputs.assets_dir }}"
+
+          RUN_ID="${{ needs.gate.outputs.run_id }}"
+          BUNDLE_NAME="autonomy-evidence-bundle-${RUN_ID}.zip"
+          MANIFEST_NAME="autonomy-evidence-manifest-${RUN_ID}.json"
+
+          # Primary signed assets - MUST have complete triplet
+          PRIMARY_SIGNED=(
+            "$BUNDLE_NAME"
+            "$MANIFEST_NAME"
+          )
+
+          TRIPLET_OK=true
+          MISSING_TRIPLETS=()
+
+          for ASSET in "${PRIMARY_SIGNED[@]}"; do
+            SIG_FILE="${ASSET}.sig"
+            CRT_FILE="${ASSET}.crt"
+            BUNDLE_FILE="${ASSET}.bundle"
+
+            MISSING=()
+            if [ ! -f "$ASSETS_DIR/$SIG_FILE" ]; then MISSING+=("$SIG_FILE"); fi
+            if [ ! -f "$ASSETS_DIR/$CRT_FILE" ]; then MISSING+=("$CRT_FILE"); fi
+            if [ ! -f "$ASSETS_DIR/$BUNDLE_FILE" ]; then MISSING+=("$BUNDLE_FILE"); fi
+
+            if [ ${#MISSING[@]} -gt 0 ]; then
+              echo "  ❌ $ASSET: Missing ${MISSING[*]}"
+              TRIPLET_OK=false
+              MISSING_TRIPLETS+=("$ASSET")
+            else
+              echo "  ✅ $ASSET: Complete triplet (.sig, .crt, .bundle)"
+            fi
+          done
+
+          if [ "$TRIPLET_OK" = false ]; then
+            echo ""
+            echo "::error::Phase 4N17 FAILED: Signature triplet parity check failed"
+            echo "::error::Missing triplets for: ${MISSING_TRIPLETS[*]}"
+            echo "::error::All primary signed assets must have .sig, .crt, and .bundle files"
+            exit 1
+          fi
+
+          echo ""
+          echo "triplet_verified=true" >> $GITHUB_OUTPUT
+          echo "✅ Phase 4N17: All signature triplets verified (parity check passed)"
+
       - name: Create or Update Release
         id: release
         uses: softprops/action-gh-release@v2
