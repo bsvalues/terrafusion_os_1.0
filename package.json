@@ -209,7 +209,8 @@
     "terrafusion:deploy": "echo '🚀 TerraFusion Deployment Pipeline' && npm run health:check && npm run test:all && npm run deploy:orchestrate",
     "perf:apply": "npx tsx tools/registry/perf-skill-audit/src/ralph-apply.ts",
     "perf:rollback": "npx tsx tools/registry/perf-skill-audit/src/perf-rollback.ts",
-    "perf:dashboard": "npx tsx tools/registry/autonomy-viewer/src/generate.ts"
+    "perf:dashboard": "npx tsx tools/registry/autonomy-viewer/src/generate.ts",
+    "perf:bundle": "npx tsx tools/registry/autonomy-viewer/src/bundle.ts"
   },
   "keywords": [
     "government",

@@ -253,3 +253,87 @@ jobs:
           echo "- 📊 Findings & Plan Breakdown" >> $GITHUB_STEP_SUMMARY
           echo "- 📦 Proof Artifacts" >> $GITHUB_STEP_SUMMARY
           echo "- 🚫 Governance Limits" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Phase 4N3: Autonomy Evidence Bundle
+  #
+  # Creates a single ZIP file containing all artifacts needed for audit sign-off.
+  # "One download = one audit packet" for county CIO/auditors.
+  # Includes deterministic hashing, manifest with SHA256, and rollback instructions.
+  # ============================================================================
+  bundle:
+    name: Generate Evidence Bundle
+    needs: dashboard
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_ref || github.ref }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download audit artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: perf-skill-audit-${{ github.run_number }}
+          path: tools/registry/perf-skill-audit/out/
+
+      - name: Download dashboard artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: autonomy-dashboard-${{ github.run_number }}
+          path: tools/registry/autonomy-viewer/dist/
+
+      - name: Generate Evidence Bundle (ZIP)
+        run: |
+          echo "📦 Phase 4N3: Generating Autonomy Evidence Bundle..."
+          npx tsx tools/registry/autonomy-viewer/src/bundle.ts \
+            --in tools/registry/perf-skill-audit/out \
+            --in tools/registry/autonomy-viewer/dist \
+            --out tools/registry/autonomy-viewer/dist \
+            --name "autonomy-evidence-bundle-${{ github.run_number }}" \
+            --run-id "${{ github.run_id }}" \
+            --emit-manifest \
+            --verbose
+
+      - name: Upload Evidence Bundle
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: autonomy-evidence-bundle-${{ github.run_number }}
+          path: |
+            tools/registry/autonomy-viewer/dist/*.zip
+            tools/registry/autonomy-viewer/dist/MANIFEST.json
+          retention-days: 90
+
+      - name: Bundle Summary
+        if: always()
+        run: |
+          echo "## 📦 Autonomy Evidence Bundle Generated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Artifact:** \`autonomy-evidence-bundle-${{ github.run_number }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "One download = one audit packet. Open ZIP and double-click HTML." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Bundle Contents:" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 autonomy-dashboard.html (offline viewer)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📋 perf.plan.json (performance plan)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔒 apply-proofs.json (cryptographic proofs)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📜 GOVERNANCE_CONTRACT.md (governance terms)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📖 README_AUDIT_PACKET.md (rollback instructions)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔐 MANIFEST.json (SHA256 hashes)" >> $GITHUB_STEP_SUMMARY
