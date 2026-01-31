@@ -93,6 +93,15 @@ jobs:
       pull-requests: read
       id-token: write # Phase 4N16: Required for keyless OIDC signing
 
+    # Phase 4N20: Signature identity pins (deterministic)
+    env:
+      TF_SIG_ISSUER: https://token.actions.githubusercontent.com
+      TF_SIG_REPO: ${{ github.repository }}
+      TF_SIG_REF: refs/heads/main
+      TF_SIG_WORKFLOW: .github/workflows/autonomy-evidence-publisher.yml
+      TF_SIG_IDENTITY: https://github.com/${{ github.repository }}/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main
+      TF_SIG_SHA: ${{ github.sha }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -321,6 +330,44 @@ jobs:
             echo "✅ Custody attestation verification PASSED (strict)"
           else
             echo "::error::Custody attestation verification FAILED - cannot publish"
+            exit 1
+          fi
+
+      # ========================================================================
+      # Step 2c: Phase 4N20 - Strict Pin Verification (Pre-Publish Gate)
+      # ========================================================================
+      - name: Verify Signature Pins (Phase 4N20)
+        run: |
+          echo "🔏 Phase 4N20: Verifying signature pins (strict mode)..."
+
+          # Display expected pins
+          echo "📌 Expected pins:"
+          echo "   Issuer: $TF_SIG_ISSUER"
+          echo "   Repo: $TF_SIG_REPO"
+          echo "   Ref: $TF_SIG_REF"
+          echo "   Workflow: $TF_SIG_WORKFLOW"
+          echo "   Identity: $TF_SIG_IDENTITY"
+          echo "   SHA: $TF_SIG_SHA"
+
+          # Verify bundle with policy from evidence index
+          BUNDLE_PATH="${{ steps.bundle.outputs.bundle_path }}"
+          INDEX_PATH="${{ env.VIEWER_DIR }}/autonomy-evidence-index.json"
+
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/verify-bundle.ts \
+            --zip "$BUNDLE_PATH" \
+            --verify-signatures \
+            --policy-from-index "$INDEX_PATH" \
+            --strict \
+            --verbose
+          VERIFY_EXIT=$?
+          set -e
+
+          if [ $VERIFY_EXIT -eq 0 ]; then
+            echo "✅ Phase 4N20: Pin verification PASSED"
+          else
+            echo "::error::Phase 4N20: Pin verification FAILED - cannot publish"
+            echo "::error::Signature identity does not match expected pins"
             exit 1
           fi
 

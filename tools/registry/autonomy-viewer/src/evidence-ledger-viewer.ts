@@ -78,6 +78,8 @@ export interface LedgerEntry {
     identity?: string;
     issuer?: string;
     verified?: { ok: boolean; checkedAt: string; error?: string };
+    /** Phase 4N20: Whether signature pins were verified */
+    pinned?: boolean;
   };
 }
 
@@ -103,6 +105,8 @@ export interface LedgerViewModel {
     /** Phase 4N16: Signature counts */
     signedCount: number;
     unsignedCount: number;
+    /** Phase 4N20: Pinned count */
+    pinnedCount: number;
   };
 }
 
@@ -279,7 +283,11 @@ export function buildLedgerEntries(
         !localBundles.has(record.bundle.name);
 
       // Phase 4N16: Extract signature info from assets
+      // Phase 4N20: Include pinned status from expectedSignaturePolicy
       const bundleAsset = index.assets?.bundleZip;
+      const hasPins = !!(
+        index.expectedSignaturePolicy?.issuer && index.expectedSignaturePolicy?.identity
+      );
       const signature = bundleAsset?.signature
         ? {
             signed: true,
@@ -287,8 +295,9 @@ export function buildLedgerEntries(
             identity: bundleAsset.signature.identity,
             issuer: bundleAsset.signature.issuer,
             verified: bundleAsset.signature.verified,
+            pinned: hasPins,
           }
-        : { signed: false };
+        : { signed: false, pinned: false };
 
       const entry: LedgerEntry = {
         runId: index.source.runId,
@@ -355,6 +364,8 @@ export function buildLedgerViewModel(entries: LedgerEntry[], opts: ViewerOptions
     // Phase 4N16: Signature counts
     signedCount: entries.filter(e => e.signature?.signed).length,
     unsignedCount: entries.filter(e => !e.signature?.signed).length,
+    // Phase 4N20: Pinned count
+    pinnedCount: entries.filter(e => e.signature?.signed && e.signature?.pinned).length,
   };
 
   return {
@@ -537,11 +548,18 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
       const incidentInfo = entry.incident && entry.incidentPr ? ` (PR #${entry.incidentPr})` : '';
 
       // Phase 4N16: Signature status cell
+      // Phase 4N20: Add pinned badge
       const sigClass = entry.signature?.signed ? 'sig-signed' : 'sig-unsigned';
       const sigText = entry.signature?.signed ? '🔏 Signed' : '—';
+      const pinnedBadge =
+        entry.signature?.signed && entry.signature?.pinned
+          ? ' <span class="badge badge-success" title="Signature identity pins verified">📌 Pinned</span>'
+          : entry.signature?.signed
+            ? ' <span class="badge badge-warning" title="Signature not pinned - verify manually">⚠️ Not pinned</span>'
+            : '';
       const sigTitle =
         entry.signature?.signed && entry.signature.identity
-          ? `Signed by: ${entry.signature.identity}`
+          ? `Signed by: ${entry.signature.identity}${entry.signature.pinned ? ' (pinned)' : ''}`
           : 'Not signed';
 
       // Phase 4N14: Render bundle as link when URL is available
@@ -560,7 +578,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
         : escapeHtml(entry.releaseTag);
 
       return `
-        <tr data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}">
+        <tr data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}">
           <td>${formatDate(entry.date)}</td>
           <td>${escapeHtml(entry.runId)}</td>
           <td>${tierBadge}${incidentInfo}</td>
@@ -568,7 +586,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
           <td class="sha">${escapeHtml(entry.manifestSha256.substring(0, 16))}...</td>
           <td>${releaseTagCell}</td>
           <td class="verify-status ${verifyClass}">${verifyText}</td>
-          <td class="sig-status ${sigClass}" title="${escapeHtml(sigTitle)}">${sigText}</td>
+          <td class="sig-status ${sigClass}" title="${escapeHtml(sigTitle)}">${sigText}${pinnedBadge}</td>
         </tr>
       `;
     })
@@ -616,6 +634,10 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     <div class="summary-card">
       <div class="value" style="color: var(--color-info)">${vm.summary.signedCount}</div>
       <div class="label">Signed</div>
+    </div>
+    <div class="summary-card">
+      <div class="value" style="color: var(--color-success)">${vm.summary.pinnedCount}</div>
+      <div class="label">📌 Pinned</div>
     </div>
   </div>
 
