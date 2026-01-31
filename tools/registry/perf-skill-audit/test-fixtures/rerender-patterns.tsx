@@ -53,7 +53,7 @@ export function NonFunctionalSetStateComponent() {
   const [value, setValue] = useState(10);
 
   const increment = () => {
-    setCount(count + 1);
+    setCount(prev => prev + 1)
     setValue(value - 1);
   };
 

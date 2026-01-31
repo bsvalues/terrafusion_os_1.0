@@ -575,7 +575,11 @@ describe('Client-Boundary Scanner Self-Test (Phase 4M3)', () => {
 
     // These should be review-only
     for (const finding of serverImports) {
-      assert.strictEqual(finding.fixability, 'review', 'server-imports-client should be review-only');
+      assert.strictEqual(
+        finding.fixability,
+        'review',
+        'server-imports-client should be review-only'
+      );
     }
   });
 
@@ -585,8 +589,8 @@ describe('Client-Boundary Scanner Self-Test (Phase 4M3)', () => {
     );
 
     // The suppressed useEffect should not produce findings
-    const suppressed = allBoundaryFindings.filter(f =>
-      f.snippet && f.snippet.includes("console.log('Effect')")
+    const suppressed = allBoundaryFindings.filter(
+      f => f.snippet && f.snippet.includes("console.log('Effect')")
     );
 
     assert.strictEqual(
@@ -660,7 +664,10 @@ describe('Client-Boundary Scanner Self-Test (Phase 4M3)', () => {
         finding.file.startsWith('os-platform/core/types/') ||
         finding.file.startsWith('tools/registry/');
 
-      assert.ok(isAllowed, `Actionable client-boundary finding ${finding.file} should be in allowed surface`);
+      assert.ok(
+        isAllowed,
+        `Actionable client-boundary finding ${finding.file} should be in allowed surface`
+      );
     }
   });
 });

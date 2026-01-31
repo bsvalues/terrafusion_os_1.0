@@ -18,12 +18,12 @@
  */
 
 import {
-  ClientBoundaryKind,
-  EvidenceItem,
-  Finding,
-  Fixability,
-  ScanContext,
-  Scanner,
+    ClientBoundaryKind,
+    EvidenceItem,
+    Finding,
+    Fixability,
+    ScanContext,
+    Scanner,
 } from './types.js';
 
 // Rule IDs
@@ -247,11 +247,7 @@ export const clientBoundaryScanner: Scanner = {
 /**
  * Detect file using client-only APIs without "use client"
  */
-function detectMissingUseClient(
-  line: string,
-  lineNum: number,
-  filePath: string
-): Finding | null {
+function detectMissingUseClient(line: string, lineNum: number, filePath: string): Finding | null {
   // Check for client-only hooks
   for (const hook of CLIENT_ONLY_HOOKS) {
     const hookRegex = new RegExp(`\\b${hook}\\s*\\(`);
@@ -281,7 +277,9 @@ function detectMissingUseClient(
   // Check for client-only globals (must be actual usage, not just type reference)
   for (const global of CLIENT_ONLY_GLOBALS) {
     // Match actual usage like window.something, document.getElementById
-    const globalRegex = new RegExp(`(?<!type.*|interface.*|:\\s*)\\b${global}\\s*\\.|\\b${global}\\s*\\[`);
+    const globalRegex = new RegExp(
+      `(?<!type.*|interface.*|:\\s*)\\b${global}\\s*\\.|\\b${global}\\s*\\[`
+    );
     if (globalRegex.test(line)) {
       // Skip if it's a type-only reference or typeof
       if (line.includes('typeof ' + global) || line.includes(': ' + global)) continue;
