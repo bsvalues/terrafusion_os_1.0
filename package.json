@@ -210,7 +210,8 @@
     "perf:apply": "npx tsx tools/registry/perf-skill-audit/src/ralph-apply.ts",
     "perf:rollback": "npx tsx tools/registry/perf-skill-audit/src/perf-rollback.ts",
     "perf:dashboard": "npx tsx tools/registry/autonomy-viewer/src/generate.ts",
-    "perf:bundle": "npx tsx tools/registry/autonomy-viewer/src/bundle.ts"
+    "perf:bundle": "npx tsx tools/registry/autonomy-viewer/src/bundle.ts",
+    "perf:verify-bundle": "npx tsx tools/registry/autonomy-viewer/src/verify-bundle.ts"
   },
   "keywords": [
     "government",

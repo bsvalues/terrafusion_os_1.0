@@ -7,6 +7,7 @@
   "scripts": {
     "generate": "npx tsx src/generate.ts",
     "bundle": "npx tsx src/bundle.ts",
+    "verify": "npx tsx src/verify-bundle.ts",
     "test": "npx tsx --test test/*.test.ts"
   },
   "keywords": [
