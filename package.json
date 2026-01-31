@@ -212,6 +212,7 @@
     "perf:dashboard": "npx tsx tools/registry/autonomy-viewer/src/generate.ts",
     "perf:bundle": "npx tsx tools/registry/autonomy-viewer/src/bundle.ts",
     "perf:verify-bundle": "npx tsx tools/registry/autonomy-viewer/src/verify-bundle.ts",
+    "perf:verify-signature": "npx tsx tools/registry/autonomy-viewer/src/verify-signature.ts",
     "perf:custody": "npx tsx tools/registry/autonomy-viewer/src/custody-cli.ts",
     "perf:custody-attest": "npx tsx tools/registry/autonomy-viewer/src/custody-attest.ts",
     "perf:verify-custody": "npx tsx tools/registry/autonomy-viewer/src/verify-custody.ts"

@@ -79,6 +79,39 @@ export interface ReleaseAsset {
 }
 
 /**
+ * Phase 4N16: Signature metadata for cryptographic authorship verification.
+ * Uses keyless signing via GitHub OIDC (Sigstore/cosign).
+ */
+export interface SignatureInfo {
+  /** Signature file URL (.sig) */
+  sigUrl: string;
+  /** Certificate file URL (.crt) */
+  crtUrl: string;
+  /** Bundle file URL (.bundle) for offline verification */
+  bundleUrl: string;
+  /** OIDC issuer (e.g., https://token.actions.githubusercontent.com) */
+  issuer: string;
+  /** Signing identity (workflow identity URI) */
+  identity: string;
+  /** Verification status (populated after verification) */
+  verified?: {
+    ok: boolean;
+    checkedAt: string;
+    error?: string;
+  };
+}
+
+/**
+ * Release asset with optional signature.
+ */
+export interface ReleaseAsset {
+  name: string;
+  url: string;
+  /** Phase 4N16: Cryptographic signature (keyless via OIDC) */
+  signature?: SignatureInfo;
+}
+
+/**
  * Canonical release assets for evidence package.
  * All URLs must be immutable (tagged releases only).
  */
@@ -397,27 +430,100 @@ export const CANONICAL_ASSET_NAMES = {
 } as const;
 
 /**
+ * Phase 4N16: Canonical signature asset names.
+ * For each signed artifact, we emit .sig, .crt, and .bundle files.
+ */
+export const SIGNATURE_ASSET_NAMES = {
+  sig: (assetName: string) => `${assetName}.sig`,
+  crt: (assetName: string) => `${assetName}.crt`,
+  bundle: (assetName: string) => `${assetName}.bundle`,
+} as const;
+
+/**
+ * Phase 4N16: GitHub Actions OIDC issuer for keyless signing.
+ */
+export const GITHUB_OIDC_ISSUER = 'https://token.actions.githubusercontent.com' as const;
+
+/**
+ * Phase 4N16: Build signature asset URLs for a given base asset.
+ */
+export function buildSignatureUrls(
+  serverUrl: string,
+  repo: string,
+  releaseTag: string,
+  assetName: string,
+  workflowIdentity: string
+): SignatureInfo {
+  return {
+    sigUrl: buildAssetUrl(serverUrl, repo, releaseTag, SIGNATURE_ASSET_NAMES.sig(assetName)),
+    crtUrl: buildAssetUrl(serverUrl, repo, releaseTag, SIGNATURE_ASSET_NAMES.crt(assetName)),
+    bundleUrl: buildAssetUrl(serverUrl, repo, releaseTag, SIGNATURE_ASSET_NAMES.bundle(assetName)),
+    issuer: GITHUB_OIDC_ISSUER,
+    identity: workflowIdentity,
+  };
+}
+
+/**
+ * Phase 4N16: Build workflow identity URI for signature verification.
+ * Format: https://github.com/{owner}/{repo}/.github/workflows/{workflow}.yml@refs/heads/{branch}
+ */
+export function buildWorkflowIdentity(
+  serverUrl: string,
+  repo: string,
+  workflow: string,
+  ref: string
+): string {
+  const base = serverUrl.replace(/\/$/, '');
+  // Normalize workflow name (remove path prefix if present)
+  const workflowFile = workflow.includes('/') ? workflow : `.github/workflows/${workflow}.yml`;
+  return `${base}/${repo}/${workflowFile}@${ref}`;
+}
+
+/**
  * Build all release assets with immutable URLs.
+ * Phase 4N16: Optionally include signature info for signed artifacts.
  */
 export function buildReleaseAssets(
   serverUrl: string,
   repo: string,
   releaseTag: string,
-  runId: string
+  runId: string,
+  signedAssets?: {
+    workflow: string;
+    ref: string;
+    signedArtifacts: Set<string>; // asset names that were signed
+  }
 ): ReleaseAssets {
-  const makeAsset = (name: string): ReleaseAsset => ({
-    name,
-    url: buildAssetUrl(serverUrl, repo, releaseTag, name),
-  });
+  const workflowIdentity = signedAssets
+    ? buildWorkflowIdentity(serverUrl, repo, signedAssets.workflow, signedAssets.ref)
+    : '';
+
+  const makeAsset = (name: string, shouldSign = false): ReleaseAsset => {
+    const asset: ReleaseAsset = {
+      name,
+      url: buildAssetUrl(serverUrl, repo, releaseTag, name),
+    };
+
+    // Phase 4N16: Add signature info if this asset was signed
+    if (shouldSign && signedAssets?.signedArtifacts.has(name)) {
+      asset.signature = buildSignatureUrls(serverUrl, repo, releaseTag, name, workflowIdentity);
+    }
+
+    return asset;
+  };
+
+  // Primary artifacts that should be signed
+  const bundleName = CANONICAL_ASSET_NAMES.bundleZip(runId);
+  const manifestName = CANONICAL_ASSET_NAMES.manifestJson(runId);
 
   return {
-    bundleZip: makeAsset(CANONICAL_ASSET_NAMES.bundleZip(runId)),
-    manifestJson: makeAsset(CANONICAL_ASSET_NAMES.manifestJson(runId)),
-    evidenceIndexJson: makeAsset(CANONICAL_ASSET_NAMES.evidenceIndexJson),
-    ledgerHtml: makeAsset(CANONICAL_ASSET_NAMES.ledgerHtml),
-    dashboardHtml: makeAsset(CANONICAL_ASSET_NAMES.dashboardHtml),
-    custodyHtml: makeAsset(CANONICAL_ASSET_NAMES.custodyHtml),
-    custodyAttestationJson: makeAsset(CANONICAL_ASSET_NAMES.custodyAttestationJson),
+    bundleZip: makeAsset(bundleName, true),
+    manifestJson: makeAsset(manifestName, true),
+    evidenceIndexJson: makeAsset(CANONICAL_ASSET_NAMES.evidenceIndexJson, true),
+    ledgerHtml: makeAsset(CANONICAL_ASSET_NAMES.ledgerHtml, true),
+    dashboardHtml: makeAsset(CANONICAL_ASSET_NAMES.dashboardHtml, false), // optional, not signed
+    custodyHtml: makeAsset(CANONICAL_ASSET_NAMES.custodyHtml, true),
+    custodyAttestationJson: makeAsset(CANONICAL_ASSET_NAMES.custodyAttestationJson, true),
   };
 }
 

@@ -111,6 +111,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: read
+      id-token: write # Phase 4N16: Required for keyless OIDC signing
 
     steps:
       - name: Checkout
@@ -132,6 +133,12 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           pnpm -C tools/registry/perf-skill-audit install
+
+      # Phase 4N16: Install cosign for keyless signing
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.7.0
+        with:
+          cosign-release: 'v2.4.1'
 
       # ========================================================================
       # Step 1: Generate fresh evidence artifacts (deterministic)
@@ -212,6 +219,52 @@ jobs:
             echo "::error::Bundle verification FAILED - cannot publish to incident channel"
             exit 1
           fi
+
+      # ========================================================================
+      # Step 2a: Phase 4N16 - Keyless Signatures for Incident Evidence
+      # ========================================================================
+      - name: Sign Incident Evidence Artifacts (Keyless)
+        id: sign
+        run: |
+          echo "🔏 Phase 4N16: Signing incident evidence artifacts (keyless OIDC)..."
+          BUNDLE_PATH="${{ steps.bundle.outputs.bundle_path }}"
+          SIGN_DIR="${{ env.VIEWER_DIR }}/signatures"
+          mkdir -p "$SIGN_DIR"
+
+          # List of primary artifacts to sign
+          ARTIFACTS_TO_SIGN=(
+            "$BUNDLE_PATH"
+            "${{ env.VIEWER_DIR }}/MANIFEST.json"
+          )
+
+          SIGNED_COUNT=0
+          for ARTIFACT in "${ARTIFACTS_TO_SIGN[@]}"; do
+            if [ -f "$ARTIFACT" ]; then
+              BASENAME=$(basename "$ARTIFACT")
+              echo "  Signing: $BASENAME"
+
+              # Keyless signing with Sigstore/Fulcio
+              cosign sign-blob "$ARTIFACT" \
+                --yes \
+                --bundle "${ARTIFACT}.bundle" \
+                --output-signature "${ARTIFACT}.sig" \
+                --output-certificate "${ARTIFACT}.crt"
+
+              # Copy signature files to sign dir for later
+              cp "${ARTIFACT}.bundle" "$SIGN_DIR/"
+              cp "${ARTIFACT}.sig" "$SIGN_DIR/"
+              cp "${ARTIFACT}.crt" "$SIGN_DIR/"
+
+              SIGNED_COUNT=$((SIGNED_COUNT + 1))
+              echo "  ✅ Signed: $BASENAME"
+            else
+              echo "  ⚠️ Skipping (not found): $ARTIFACT"
+            fi
+          done
+
+          echo "signed_count=$SIGNED_COUNT" >> $GITHUB_OUTPUT
+          echo "sign_dir=$SIGN_DIR" >> $GITHUB_OUTPUT
+          echo "✅ Signed $SIGNED_COUNT incident artifacts with keyless OIDC"
 
       - name: Generate Evidence Index (Incident)
         run: |
@@ -298,7 +351,7 @@ jobs:
       - name: Prepare incident release assets
         id: assets
         run: |
-          echo "📦 Preparing incident release assets (Phase 4N14: Canonical naming)..."
+          echo "📦 Preparing incident release assets (Phase 4N14/4N16: Canonical naming + signatures)..."
           ASSETS_DIR="${{ env.VIEWER_DIR }}/incident-assets"
           mkdir -p "$ASSETS_DIR"
 
@@ -307,17 +360,39 @@ jobs:
 
           # Phase 4N14: Use canonical asset names for immutable URL generation
           # Incident bundles use pr-prefixed names for traceability
-          cp "${{ steps.bundle.outputs.bundle_path }}" "$ASSETS_DIR/autonomy-incident-bundle-pr${PR_NUMBER}-${RUN_ID}.zip"
-          cp "${{ env.VIEWER_DIR }}/MANIFEST.json" "$ASSETS_DIR/autonomy-incident-manifest-pr${PR_NUMBER}-${RUN_ID}.json"
+          BUNDLE_NAME="autonomy-incident-bundle-pr${PR_NUMBER}-${RUN_ID}.zip"
+          MANIFEST_NAME="autonomy-incident-manifest-pr${PR_NUMBER}-${RUN_ID}.json"
+
+          cp "${{ steps.bundle.outputs.bundle_path }}" "$ASSETS_DIR/${BUNDLE_NAME}"
+          cp "${{ env.VIEWER_DIR }}/MANIFEST.json" "$ASSETS_DIR/${MANIFEST_NAME}"
           cp "${{ env.VIEWER_DIR }}/autonomy-evidence-index.json" "$ASSETS_DIR/autonomy-incident-index-pr${PR_NUMBER}.json"
           cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/autonomy-incident-dashboard-pr${PR_NUMBER}.html" || true
           cp "${{ env.VIEWER_DIR }}/autonomy-incident-ledger.html" "$ASSETS_DIR/" || true
           cp "${{ env.VIEWER_DIR }}/autonomy-custody.html" "$ASSETS_DIR/autonomy-incident-custody-pr${PR_NUMBER}.html" || true
           cp "${{ env.VIEWER_DIR }}/custody-attestation.json" "$ASSETS_DIR/custody-attestation-pr${PR_NUMBER}.json" || true
 
+          # Phase 4N16: Copy signature files for primary artifacts
+          echo "📎 Including signature files..."
+
+          # Bundle signatures
+          if [ -f "${{ steps.bundle.outputs.bundle_path }}.sig" ]; then
+            cp "${{ steps.bundle.outputs.bundle_path }}.sig" "$ASSETS_DIR/${BUNDLE_NAME}.sig"
+            cp "${{ steps.bundle.outputs.bundle_path }}.crt" "$ASSETS_DIR/${BUNDLE_NAME}.crt"
+            cp "${{ steps.bundle.outputs.bundle_path }}.bundle" "$ASSETS_DIR/${BUNDLE_NAME}.bundle"
+            echo "  ✅ ${BUNDLE_NAME} signature files"
+          fi
+
+          # Manifest signatures
+          if [ -f "${{ env.VIEWER_DIR }}/MANIFEST.json.sig" ]; then
+            cp "${{ env.VIEWER_DIR }}/MANIFEST.json.sig" "$ASSETS_DIR/${MANIFEST_NAME}.sig"
+            cp "${{ env.VIEWER_DIR }}/MANIFEST.json.crt" "$ASSETS_DIR/${MANIFEST_NAME}.crt"
+            cp "${{ env.VIEWER_DIR }}/MANIFEST.json.bundle" "$ASSETS_DIR/${MANIFEST_NAME}.bundle"
+            echo "  ✅ ${MANIFEST_NAME} signature files"
+          fi
+
           echo "assets_dir=$ASSETS_DIR" >> $GITHUB_OUTPUT
 
-          echo "✅ Incident release assets prepared (canonical naming):"
+          echo "✅ Incident release assets prepared (canonical naming + signatures):"
           ls -la "$ASSETS_DIR/"
 
       - name: Create or Update Incident Release
@@ -327,12 +402,14 @@ jobs:
           tag_name: ${{ needs.gate.outputs.release_tag }}
           name: 'Autonomy Incident Evidence Archive - ${{ needs.gate.outputs.release_tag }}'
           body: |
-            ## 🚨 Autonomy Incident Evidence Archive
+            ## 🚨 Autonomy Incident Evidence Archive (Phase 4N16)
 
             This release contains evidence bundles from autonomy PRs marked as **incident**.
+            All bundles are **cryptographically signed** for courtroom-grade integrity.
 
             **Retention Tier:** 7 years (incident)
             **Policy:** autonomy-evidence-retention.v1
+            **Signing:** Keyless OIDC (Sigstore/Fulcio)
 
             ---
 
@@ -345,6 +422,7 @@ jobs:
             | **Bundle** | `${{ steps.bundle.outputs.bundle_name }}` |
             | **Manifest SHA256** | `${{ steps.bundle.outputs.manifest_sha }}` |
             | **Verification** | ✅ Passed (strict) |
+            | **Keyless Signature** | ✅ Signed (Phase 4N16) |
             | **PR** | #${{ needs.gate.outputs.pr_number }} |
             | **Merged By** | @${{ github.event.pull_request.merged_by.login }} |
             | **Merged At** | ${{ github.event.pull_request.merged_at }} |
@@ -355,7 +433,14 @@ jobs:
             ### Verify Offline
 
             ```bash
+            # Verify bundle integrity (hash-based)
             pnpm perf:verify-bundle --zip ${{ steps.bundle.outputs.bundle_name }}
+
+            # Verify cryptographic signature (Phase 4N16)
+            pnpm perf:verify-signature \
+              --artifact ${{ steps.bundle.outputs.bundle_name }} \
+              --bundle ${{ steps.bundle.outputs.bundle_name }}.bundle \
+              --identity "https://github.com/${{ github.repository }}/.github/workflows/autonomy-incident-publisher.yml@refs/heads/main"
             ```
 
             ### Rollback (if applicable)
@@ -464,6 +549,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Release Tag:** \`${{ needs.gate.outputs.release_tag }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Retention Tier:** 7 years (incident)" >> $GITHUB_STEP_SUMMARY
+          echo "**Keyless Signature:** ✅ Signed (${{ steps.sign.outputs.signed_count }} artifacts)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### PR Details" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
@@ -471,10 +557,11 @@ jobs:
           echo "| PR | #${PR_NUMBER} |" >> $GITHUB_STEP_SUMMARY
           echo "| Title | ${{ needs.gate.outputs.pr_title }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Assets Published (Phase 4N14 Canonical Naming)" >> $GITHUB_STEP_SUMMARY
+          echo "### Assets Published (Phase 4N14/4N16 Canonical Naming + Signatures)" >> $GITHUB_STEP_SUMMARY
           echo "| Asset | Purpose |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|---------|" >> $GITHUB_STEP_SUMMARY
           echo "| \`autonomy-incident-bundle-pr${PR_NUMBER}-${RUN_ID}.zip\` | Complete incident evidence bundle |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-incident-bundle-pr${PR_NUMBER}-${RUN_ID}.zip.bundle\` | Signature verification bundle |" >> $GITHUB_STEP_SUMMARY
           echo "| \`autonomy-incident-manifest-pr${PR_NUMBER}-${RUN_ID}.json\` | SHA256 integrity hashes |" >> $GITHUB_STEP_SUMMARY
           echo "| \`autonomy-incident-index-pr${PR_NUMBER}.json\` | Incident evidence index with URLs |" >> $GITHUB_STEP_SUMMARY
           echo "| \`autonomy-incident-dashboard-pr${PR_NUMBER}.html\` | Offline CIO viewer |" >> $GITHUB_STEP_SUMMARY
@@ -482,8 +569,14 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Verification" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "# Hash verification" >> $GITHUB_STEP_SUMMARY
           echo "pnpm perf:verify-bundle --zip autonomy-incident-bundle-pr${PR_NUMBER}-${RUN_ID}.zip" >> $GITHUB_STEP_SUMMARY
-          echo "pnpm perf:verify-custody --strict  # Phase 4N13 attestation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Custody attestation (Phase 4N13)" >> $GITHUB_STEP_SUMMARY
+          echo "pnpm perf:verify-custody --strict" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Signature verification (Phase 4N16)" >> $GITHUB_STEP_SUMMARY
+          echo "pnpm perf:verify-signature --artifact autonomy-incident-bundle-pr${PR_NUMBER}-${RUN_ID}.zip --bundle autonomy-incident-bundle-pr${PR_NUMBER}-${RUN_ID}.zip.bundle" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "⚠️ **7-year retention — do NOT delete without authorization**" >> $GITHUB_STEP_SUMMARY

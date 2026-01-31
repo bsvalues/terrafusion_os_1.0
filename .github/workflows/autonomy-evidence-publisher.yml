@@ -91,6 +91,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: read
+      id-token: write # Phase 4N16: Required for keyless OIDC signing
 
     steps:
       - name: Checkout
@@ -112,6 +113,12 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           pnpm -C tools/registry/perf-skill-audit install
+
+      # Phase 4N16: Install cosign for keyless signing
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.7.0
+        with:
+          cosign-release: 'v2.4.1'
 
       # ========================================================================
       # Step 1: Generate fresh evidence artifacts (deterministic)
@@ -190,6 +197,54 @@ jobs:
             echo "::error::Bundle verification FAILED - cannot publish"
             exit 1
           fi
+
+      # ========================================================================
+      # Step 2a: Phase 4N16 - Keyless Signatures for Evidence Artifacts
+      # ========================================================================
+      - name: Sign Evidence Artifacts (Keyless)
+        id: sign
+        run: |
+          echo "🔏 Phase 4N16: Signing evidence artifacts (keyless OIDC)..."
+          BUNDLE_PATH="${{ steps.bundle.outputs.bundle_path }}"
+          SIGN_DIR="${{ env.VIEWER_DIR }}/signatures"
+          mkdir -p "$SIGN_DIR"
+
+          # List of primary artifacts to sign
+          ARTIFACTS_TO_SIGN=(
+            "$BUNDLE_PATH"
+            "${{ env.VIEWER_DIR }}/MANIFEST.json"
+          )
+
+          SIGNED_COUNT=0
+          for ARTIFACT in "${ARTIFACTS_TO_SIGN[@]}"; do
+            if [ -f "$ARTIFACT" ]; then
+              BASENAME=$(basename "$ARTIFACT")
+              echo "  Signing: $BASENAME"
+
+              # Keyless signing with Sigstore/Fulcio
+              # --yes skips confirmation prompts
+              # --bundle creates the combined signature bundle for offline verification
+              cosign sign-blob "$ARTIFACT" \
+                --yes \
+                --bundle "${ARTIFACT}.bundle" \
+                --output-signature "${ARTIFACT}.sig" \
+                --output-certificate "${ARTIFACT}.crt"
+
+              # Copy signature files to sign dir for later
+              cp "${ARTIFACT}.bundle" "$SIGN_DIR/"
+              cp "${ARTIFACT}.sig" "$SIGN_DIR/"
+              cp "${ARTIFACT}.crt" "$SIGN_DIR/"
+
+              SIGNED_COUNT=$((SIGNED_COUNT + 1))
+              echo "  ✅ Signed: $BASENAME"
+            else
+              echo "  ⚠️ Skipping (not found): $ARTIFACT"
+            fi
+          done
+
+          echo "signed_count=$SIGNED_COUNT" >> $GITHUB_OUTPUT
+          echo "sign_dir=$SIGN_DIR" >> $GITHUB_OUTPUT
+          echo "✅ Signed $SIGNED_COUNT artifacts with keyless OIDC"
 
       - name: Generate Evidence Index
         run: |
@@ -273,7 +328,7 @@ jobs:
       - name: Prepare release assets
         id: assets
         run: |
-          echo "📦 Preparing release assets (Phase 4N14: Canonical naming)..."
+          echo "📦 Preparing release assets (Phase 4N14/4N16: Canonical naming + signatures)..."
           ASSETS_DIR="${{ env.VIEWER_DIR }}/release-assets"
           mkdir -p "$ASSETS_DIR"
 
@@ -281,17 +336,39 @@ jobs:
 
           # Phase 4N14: Use canonical asset names for immutable URL generation
           # These names MUST match CANONICAL_ASSET_NAMES in evidence-index.ts
-          cp "${{ steps.bundle.outputs.bundle_path }}" "$ASSETS_DIR/autonomy-evidence-bundle-${RUN_ID}.zip"
-          cp "${{ env.VIEWER_DIR }}/MANIFEST.json" "$ASSETS_DIR/autonomy-evidence-manifest-${RUN_ID}.json"
+          BUNDLE_NAME="autonomy-evidence-bundle-${RUN_ID}.zip"
+          MANIFEST_NAME="autonomy-evidence-manifest-${RUN_ID}.json"
+
+          cp "${{ steps.bundle.outputs.bundle_path }}" "$ASSETS_DIR/${BUNDLE_NAME}"
+          cp "${{ env.VIEWER_DIR }}/MANIFEST.json" "$ASSETS_DIR/${MANIFEST_NAME}"
           cp "${{ env.VIEWER_DIR }}/autonomy-evidence-index.json" "$ASSETS_DIR/"
           cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/" || true
           cp "${{ env.VIEWER_DIR }}/autonomy-ledger.html" "$ASSETS_DIR/" || true
           cp "${{ env.VIEWER_DIR }}/autonomy-custody.html" "$ASSETS_DIR/" || true
           cp "${{ env.VIEWER_DIR }}/custody-attestation.json" "$ASSETS_DIR/" || true
 
+          # Phase 4N16: Copy signature files for primary artifacts
+          echo "📎 Including signature files..."
+
+          # Bundle signatures
+          if [ -f "${{ steps.bundle.outputs.bundle_path }}.sig" ]; then
+            cp "${{ steps.bundle.outputs.bundle_path }}.sig" "$ASSETS_DIR/${BUNDLE_NAME}.sig"
+            cp "${{ steps.bundle.outputs.bundle_path }}.crt" "$ASSETS_DIR/${BUNDLE_NAME}.crt"
+            cp "${{ steps.bundle.outputs.bundle_path }}.bundle" "$ASSETS_DIR/${BUNDLE_NAME}.bundle"
+            echo "  ✅ ${BUNDLE_NAME} signature files"
+          fi
+
+          # Manifest signatures
+          if [ -f "${{ env.VIEWER_DIR }}/MANIFEST.json.sig" ]; then
+            cp "${{ env.VIEWER_DIR }}/MANIFEST.json.sig" "$ASSETS_DIR/${MANIFEST_NAME}.sig"
+            cp "${{ env.VIEWER_DIR }}/MANIFEST.json.crt" "$ASSETS_DIR/${MANIFEST_NAME}.crt"
+            cp "${{ env.VIEWER_DIR }}/MANIFEST.json.bundle" "$ASSETS_DIR/${MANIFEST_NAME}.bundle"
+            echo "  ✅ ${MANIFEST_NAME} signature files"
+          fi
+
           echo "assets_dir=$ASSETS_DIR" >> $GITHUB_OUTPUT
 
-          echo "✅ Release assets prepared (canonical naming):"
+          echo "✅ Release assets prepared (canonical naming + signatures):"
           ls -la "$ASSETS_DIR/"
 
       - name: Create or Update Release
@@ -301,12 +378,13 @@ jobs:
           tag_name: ${{ needs.gate.outputs.release_tag }}
           name: 'Autonomy Evidence Archive - ${{ needs.gate.outputs.release_tag }}'
           body: |
-            ## 📦 Autonomy Evidence Archive (Phase 4N14)
+            ## 📦 Autonomy Evidence Archive (Phase 4N16)
 
-            This release contains verified evidence bundles from merged autonomy PRs.
+            This release contains verified and **cryptographically signed** evidence bundles from merged autonomy PRs.
 
             **Retention Tier:** 1 year (merged PR)
             **Policy:** autonomy-evidence-retention.v1
+            **Signing:** Keyless OIDC (Sigstore/Fulcio)
 
             ---
 
@@ -318,6 +396,7 @@ jobs:
             | **Manifest SHA256** | `${{ steps.bundle.outputs.manifest_sha }}` |
             | **Verification** | ✅ Passed (strict) |
             | **Custody Attestation** | ✅ Passed (Phase 4N13) |
+            | **Keyless Signature** | ✅ Signed (Phase 4N16) |
             | **PR** | #${{ github.event.pull_request.number }} |
             | **Merged By** | @${{ github.event.pull_request.merged_by.login }} |
             | **Merged At** | ${{ github.event.pull_request.merged_at }} |
@@ -327,11 +406,17 @@ jobs:
             ### Verify Offline
 
             ```bash
-            # Verify bundle integrity
+            # Verify bundle integrity (hash-based)
             pnpm perf:verify-bundle --zip autonomy-evidence-bundle-${{ needs.gate.outputs.run_id }}.zip
 
             # Verify custody attestation (Phase 4N13)
             pnpm perf:verify-custody --strict
+
+            # Verify cryptographic signature (Phase 4N16)
+            pnpm perf:verify-signature \
+              --artifact autonomy-evidence-bundle-${{ needs.gate.outputs.run_id }}.zip \
+              --bundle autonomy-evidence-bundle-${{ needs.gate.outputs.run_id }}.zip.bundle \
+              --identity "https://github.com/${{ github.repository }}/.github/workflows/autonomy-evidence-publisher.yml@refs/heads/main"
             ```
 
             ---
@@ -407,11 +492,13 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Release Tag:** \`${{ needs.gate.outputs.release_tag }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Retention Tier:** 1 year (merged PR)" >> $GITHUB_STEP_SUMMARY
+          echo "**Keyless Signature:** ✅ Signed (${{ steps.sign.outputs.signed_count }} artifacts)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Assets Published (Phase 4N14 Canonical Naming)" >> $GITHUB_STEP_SUMMARY
+          echo "### Assets Published (Phase 4N14/4N16 Canonical Naming + Signatures)" >> $GITHUB_STEP_SUMMARY
           echo "| Asset | Purpose |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|---------|" >> $GITHUB_STEP_SUMMARY
           echo "| \`autonomy-evidence-bundle-${RUN_ID}.zip\` | Complete evidence bundle |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-evidence-bundle-${RUN_ID}.zip.bundle\` | Signature verification bundle |" >> $GITHUB_STEP_SUMMARY
           echo "| \`autonomy-evidence-manifest-${RUN_ID}.json\` | SHA256 integrity hashes |" >> $GITHUB_STEP_SUMMARY
           echo "| \`autonomy-evidence-index.json\` | Evidence index with immutable URLs |" >> $GITHUB_STEP_SUMMARY
           echo "| \`autonomy-dashboard.html\` | Offline CIO viewer |" >> $GITHUB_STEP_SUMMARY
@@ -421,6 +508,12 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Verification" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "# Hash verification" >> $GITHUB_STEP_SUMMARY
           echo "pnpm perf:verify-bundle --zip autonomy-evidence-bundle-${RUN_ID}.zip" >> $GITHUB_STEP_SUMMARY
-          echo "pnpm perf:verify-custody --strict  # Phase 4N13 attestation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Custody attestation (Phase 4N13)" >> $GITHUB_STEP_SUMMARY
+          echo "pnpm perf:verify-custody --strict" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Signature verification (Phase 4N16)" >> $GITHUB_STEP_SUMMARY
+          echo "pnpm perf:verify-signature --artifact autonomy-evidence-bundle-${RUN_ID}.zip --bundle autonomy-evidence-bundle-${RUN_ID}.zip.bundle" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

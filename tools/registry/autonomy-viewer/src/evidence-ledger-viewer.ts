@@ -71,6 +71,14 @@ export interface LedgerEntry {
   bundleUrl?: string;
   /** Phase 4N15: Local availability status */
   localBundleMissing?: boolean;
+  /** Phase 4N16: Signature status */
+  signature?: {
+    signed: boolean;
+    bundleUrl?: string;
+    identity?: string;
+    issuer?: string;
+    verified?: { ok: boolean; checkedAt: string; error?: string };
+  };
 }
 
 export interface LedgerViewModel {
@@ -92,6 +100,9 @@ export interface LedgerViewModel {
     byTier: { ci: number; merged: number; incident: number };
     verifiedCount: number;
     failedCount: number;
+    /** Phase 4N16: Signature counts */
+    signedCount: number;
+    unsignedCount: number;
   };
 }
 
@@ -267,6 +278,18 @@ export function buildLedgerEntries(
         localBundles !== undefined &&
         !localBundles.has(record.bundle.name);
 
+      // Phase 4N16: Extract signature info from assets
+      const bundleAsset = index.assets?.bundleZip;
+      const signature = bundleAsset?.signature
+        ? {
+            signed: true,
+            bundleUrl: bundleAsset.signature.bundleUrl,
+            identity: bundleAsset.signature.identity,
+            issuer: bundleAsset.signature.issuer,
+            verified: bundleAsset.signature.verified,
+          }
+        : { signed: false };
+
       const entry: LedgerEntry = {
         runId: index.source.runId,
         date: index.generatedAt,
@@ -289,6 +312,7 @@ export function buildLedgerEntries(
         releaseUrl,
         bundleUrl,
         localBundleMissing,
+        signature,
       };
 
       entries.push(entry);
@@ -328,6 +352,9 @@ export function buildLedgerViewModel(entries: LedgerEntry[], opts: ViewerOptions
     },
     verifiedCount: entries.filter(e => e.verifyOk).length,
     failedCount: entries.filter(e => !e.verifyOk).length,
+    // Phase 4N16: Signature counts
+    signedCount: entries.filter(e => e.signature?.signed).length,
+    unsignedCount: entries.filter(e => !e.signature?.signed).length,
   };
 
   return {
@@ -423,7 +450,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     .header { margin-bottom: 2rem; }
     .header-meta { display: flex; gap: 2rem; flex-wrap: wrap; color: var(--color-muted); font-size: 0.875rem; margin-top: 0.5rem; }
 
-    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
     .summary-card {
       background: var(--color-bg);
       border: 1px solid var(--color-border);
@@ -448,7 +475,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     .filter-btn:hover, .filter-btn.active { background: var(--color-border); }
 
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.875rem; }
-    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--color-border); }
+    th, td { padding: 0.75rem 0.5rem; text-align: left; border-bottom: 1px solid var(--color-border); }
     th { background: var(--color-border); font-weight: 600; position: sticky; top: 0; }
     tr:hover { background: rgba(0,0,0,0.02); }
     @media (prefers-color-scheme: dark) { tr:hover { background: rgba(255,255,255,0.02); } }
@@ -465,16 +492,23 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     .badge-warning { background: #fef3c7; color: #92400e; }
     .badge-success { background: #d1fae5; color: #065f46; }
     .badge-muted { background: #f3f4f6; color: #4b5563; }
+    .badge-info { background: #dbeafe; color: #1e40af; }
     @media (prefers-color-scheme: dark) {
       .badge-error { background: #7f1d1d; color: #fecaca; }
       .badge-warning { background: #78350f; color: #fde68a; }
       .badge-success { background: #064e3b; color: #a7f3d0; }
       .badge-muted { background: #374151; color: #d1d5db; }
+      .badge-info { background: #1e3a5f; color: #93c5fd; }
     }
 
     .verify-status { font-weight: 600; }
     .verify-ok { color: var(--color-success); }
     .verify-fail { color: var(--color-error); }
+
+    /* Phase 4N16: Signature status */
+    .sig-status { font-weight: 600; font-size: 0.8rem; }
+    .sig-signed { color: var(--color-info); }
+    .sig-unsigned { color: var(--color-muted); }
 
     .sha { font-family: var(--font-mono); font-size: 0.7rem; word-break: break-all; }
     .cmd { font-family: var(--font-mono); font-size: 0.75rem; background: var(--color-border); padding: 0.25rem 0.5rem; border-radius: 4px; display: inline-block; max-width: 100%; overflow-x: auto; }
@@ -499,8 +533,15 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     .map((entry, idx) => {
       const tierBadge = `<span class="badge ${getTierBadgeClass(entry.tier)}">${escapeHtml(getTierLabel(entry.tier))}</span>`;
       const verifyClass = entry.verifyOk ? 'verify-ok' : 'verify-fail';
-      const verifyText = entry.verifyOk ? '✓ Verified' : '✗ Failed';
+      const verifyText = entry.verifyOk ? '✓' : '✗';
       const incidentInfo = entry.incident && entry.incidentPr ? ` (PR #${entry.incidentPr})` : '';
+
+      // Phase 4N16: Signature status cell
+      const sigClass = entry.signature?.signed ? 'sig-signed' : 'sig-unsigned';
+      const sigText = entry.signature?.signed ? '🔏 Signed' : '—';
+      const sigTitle = entry.signature?.signed && entry.signature.identity
+        ? `Signed by: ${entry.signature.identity}`
+        : 'Not signed';
 
       // Phase 4N14: Render bundle as link when URL is available
       // Phase 4N15: Show local-missing badge when bundle URL exists but local file is absent
@@ -518,14 +559,15 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
         : escapeHtml(entry.releaseTag);
 
       return `
-        <tr data-tier="${entry.tier}" data-verify="${entry.verifyOk}">
+        <tr data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}">
           <td>${formatDate(entry.date)}</td>
           <td>${escapeHtml(entry.runId)}</td>
           <td>${tierBadge}${incidentInfo}</td>
           <td>${bundleCell}</td>
-          <td class="sha">${escapeHtml(entry.manifestSha256)}</td>
+          <td class="sha">${escapeHtml(entry.manifestSha256.substring(0, 16))}...</td>
           <td>${releaseTagCell}</td>
           <td class="verify-status ${verifyClass}">${verifyText}</td>
+          <td class="sig-status ${sigClass}" title="${escapeHtml(sigTitle)}">${sigText}</td>
         </tr>
       `;
     })
@@ -552,27 +594,27 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
   <div class="summary-grid">
     <div class="summary-card">
       <div class="value">${vm.summary.total}</div>
-      <div class="label">Total Records</div>
+      <div class="label">Total</div>
     </div>
     <div class="summary-card">
       <div class="value" style="color: var(--color-error)">${vm.summary.byTier.incident}</div>
-      <div class="label">Incident (7y)</div>
+      <div class="label">Incident</div>
     </div>
     <div class="summary-card">
       <div class="value" style="color: var(--color-warning)">${vm.summary.byTier.merged}</div>
-      <div class="label">Merged (1y)</div>
+      <div class="label">Merged</div>
     </div>
     <div class="summary-card">
       <div class="value">${vm.summary.byTier.ci}</div>
-      <div class="label">CI (90d)</div>
+      <div class="label">CI</div>
     </div>
     <div class="summary-card">
       <div class="value" style="color: var(--color-success)">${vm.summary.verifiedCount}</div>
       <div class="label">Verified</div>
     </div>
     <div class="summary-card">
-      <div class="value" style="color: var(--color-error)">${vm.summary.failedCount}</div>
-      <div class="label">Failed</div>
+      <div class="value" style="color: var(--color-info)">${vm.summary.signedCount}</div>
+      <div class="label">Signed</div>
     </div>
   </div>
 
@@ -584,7 +626,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     <a href="#" class="filter-btn" onclick="filterTable('merged'); return false;">Merged</a>
     <a href="#" class="filter-btn" onclick="filterTable('ci'); return false;">CI</a>
     <a href="#" class="filter-btn" onclick="filterTable('verified'); return false;">Verified</a>
-    <a href="#" class="filter-btn" onclick="filterTable('failed'); return false;">Failed</a>
+    <a href="#" class="filter-btn" onclick="filterTable('signed'); return false;">Signed</a>
   </div>
 
   <table id="evidence-table">
@@ -594,9 +636,10 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
         <th>Run ID</th>
         <th>Tier</th>
         <th>Bundle</th>
-        <th>Manifest SHA256</th>
+        <th>Manifest SHA</th>
         <th>Release Tag</th>
         <th>Verify</th>
+        <th>Signature</th>
       </tr>
     </thead>
     <tbody>
@@ -606,8 +649,12 @@ ${rowsHtml}
 
   <div class="instructions">
     <h3>🔐 Verification Instructions</h3>
-    <p>To verify any evidence bundle offline, download the ZIP from the release and run:</p>
-    <pre><code>pnpm perf:verify-bundle --zip "&lt;bundle-name&gt;.zip" --strict</code></pre>
+    <p>To verify any evidence bundle offline:</p>
+    <pre><code># Hash verification
+pnpm perf:verify-bundle --zip "&lt;bundle-name&gt;.zip" --strict
+
+# Signature verification (Phase 4N16)
+pnpm perf:verify-signature --artifact "&lt;bundle-name&gt;.zip" --bundle "&lt;bundle-name&gt;.zip.bundle"</code></pre>
     <p style="margin-top: 1rem;">Exit code 0 = verified. Non-zero = integrity failure.</p>
   </div>
 
@@ -622,12 +669,14 @@ ${rowsHtml}
       rows.forEach(row => {
         const tier = row.dataset.tier;
         const verify = row.dataset.verify === 'true';
+        const signed = row.dataset.signed === 'true';
         let show = true;
         if (filter === 'incident') show = tier === 'incident';
         else if (filter === 'merged') show = tier === 'merged';
         else if (filter === 'ci') show = tier === 'ci';
         else if (filter === 'verified') show = verify;
         else if (filter === 'failed') show = !verify;
+        else if (filter === 'signed') show = signed;
         row.style.display = show ? '' : 'none';
       });
       // Update active state
