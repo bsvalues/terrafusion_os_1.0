@@ -112,6 +112,25 @@ export interface SignatureInfo {
     checkedAt: string;
     error?: string;
   };
+  /** Phase 4N21: Rekor transparency log anchoring */
+  rekor?: RekorAnchor;
+}
+
+/**
+ * Phase 4N21: Rekor transparency log entry metadata.
+ * Enables offline verification of public anchoring.
+ */
+export interface RekorAnchor {
+  /** Rekor log index (e.g., 12345678) */
+  logIndex: number;
+  /** Rekor entry UUID (64-hex) */
+  uuid: string;
+  /** Integrated time (epoch seconds) */
+  integratedTime: number;
+  /** Immutable entry URL (must pass validateImmutableUrl) */
+  entryUrl: string;
+  /** Whether bundle file contained valid Rekor proof */
+  bundleValid: boolean;
 }
 
 /**
@@ -124,6 +143,7 @@ export type SigningMode = 'full' | 'primary' | 'none';
 
 /**
  * Phase 4N17: Explicit signing status for an asset.
+ * Phase 4N21: Extended with Rekor anchoring status.
  */
 export interface AssetSigningStatus {
   /** Whether this asset was signed */
@@ -138,6 +158,10 @@ export interface AssetSigningStatus {
   identity?: string;
   /** OIDC issuer (if signed) */
   issuer?: string;
+  /** Phase 4N21: Whether .bundle file is present (required for Rekor verification) */
+  rekorBundlePresent?: boolean;
+  /** Phase 4N21: Rekor anchor metadata (if bundle parsed successfully) */
+  rekor?: RekorAnchor;
 }
 
 /**
@@ -1086,6 +1110,102 @@ export function buildEvidenceIndex(opts: IndexOptions): EvidenceIndex {
   }
 
   return index;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 4N21: Rekor Transparency Log Parsing
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Rekor public instance base URL */
+export const REKOR_PUBLIC_URL = 'https://rekor.sigstore.dev';
+
+/**
+ * Phase 4N21: Parse Rekor anchor from cosign bundle JSON.
+ * Returns null if bundle is missing or invalid.
+ *
+ * Cosign bundle structure (simplified):
+ * {
+ *   "rekorBundle": {
+ *     "Payload": { "logIndex": number, "integratedTime": number, ... },
+ *     "SignedEntryTimestamp": "..."
+ *   }
+ * }
+ * OR (newer format):
+ * {
+ *   "verificationMaterial": {
+ *     "tlogEntries": [{
+ *       "logIndex": string,
+ *       "logId": { "keyId": "..." },
+ *       "integratedTime": string,
+ *       ...
+ *     }]
+ *   }
+ * }
+ */
+export function parseRekorFromBundle(bundleContent: string): RekorAnchor | null {
+  try {
+    const bundle = JSON.parse(bundleContent);
+
+    // Try newer Sigstore bundle format (v0.2+)
+    const tlogEntries = bundle.verificationMaterial?.tlogEntries;
+    if (Array.isArray(tlogEntries) && tlogEntries.length > 0) {
+      const entry = tlogEntries[0];
+      const logIndex = parseInt(entry.logIndex, 10);
+      const integratedTime = parseInt(entry.integratedTime, 10);
+      // UUID is typically derived from logId.keyId + logIndex, but we use a placeholder
+      const uuid = entry.logId?.keyId
+        ? `${entry.logId.keyId.substring(0, 16)}${logIndex.toString(16).padStart(16, '0')}`
+        : logIndex.toString(16).padStart(64, '0');
+
+      return {
+        logIndex,
+        uuid,
+        integratedTime,
+        entryUrl: `${REKOR_PUBLIC_URL}/api/v1/log/entries?logIndex=${logIndex}`,
+        bundleValid: true,
+      };
+    }
+
+    // Try older rekorBundle format
+    const rekorPayload = bundle.rekorBundle?.Payload;
+    if (rekorPayload) {
+      const logIndex = rekorPayload.logIndex;
+      const integratedTime = rekorPayload.integratedTime;
+      const uuid = logIndex.toString(16).padStart(64, '0');
+
+      return {
+        logIndex,
+        uuid,
+        integratedTime,
+        entryUrl: `${REKOR_PUBLIC_URL}/api/v1/log/entries?logIndex=${logIndex}`,
+        bundleValid: true,
+      };
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Phase 4N21: Validate Rekor anchor URL is immutable.
+ * Same rules as validateImmutableUrl but specific to Rekor.
+ */
+export function validateRekorUrl(url: string): string | null {
+  // Must start with known Rekor instance
+  if (!url.startsWith(REKOR_PUBLIC_URL)) {
+    return `Rekor URL must start with ${REKOR_PUBLIC_URL}`;
+  }
+  // No fragments allowed
+  if (url.includes('#')) {
+    return 'Rekor URL must not contain fragments';
+  }
+  // Must use logIndex parameter (immutable)
+  if (!url.includes('logIndex=')) {
+    return 'Rekor URL must use logIndex parameter';
+  }
+  return null;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

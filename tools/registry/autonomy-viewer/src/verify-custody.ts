@@ -48,6 +48,8 @@ export interface VerifyOptions {
   json: boolean;
   verbose: boolean;
   verifySignatures: boolean;
+  /** Phase 4N21: Verify Rekor transparency log anchoring */
+  verifyRekor: boolean;
   /** Phase 4N20: Path to evidence index for pin policy */
   policyFromIndex?: string;
   /** Phase 4N20: Expected issuer for pin verification */
@@ -82,6 +84,15 @@ export interface UnifiedCustodyResult {
     pinned?: boolean;
     errors: SignatureError[];
   };
+  /** Phase 4N21: Rekor transparency log verification result */
+  rekor?: {
+    ok: boolean;
+    entriesChecked: number;
+    anchored: boolean;
+    logIndex?: number;
+    integratedTime?: number;
+    errors: RekorError[];
+  };
 }
 
 /**
@@ -98,6 +109,15 @@ export interface SignatureError {
     | 'sha_missing'
     | 'sha_mismatch'
     | 'ref_forbidden';
+  file?: string;
+  message: string;
+}
+
+/**
+ * Phase 4N21: Rekor verification errors.
+ */
+export interface RekorError {
+  type: 'bundle_missing' | 'bundle_invalid' | 'rekor_missing' | 'pin_mismatch';
   file?: string;
   message: string;
 }
@@ -455,20 +475,113 @@ function verifyPins(
   return { pinned, errors };
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 4N21: Rekor Verification
+// ─────────────────────────────────────────────────────────────────────────────
+
+import { parseRekorFromBundle, type RekorAnchor } from './evidence-index.js';
+
+interface RekorVerifyResult {
+  ok: boolean;
+  entriesChecked: number;
+  anchored: boolean;
+  logIndex?: number;
+  integratedTime?: number;
+  errors: RekorError[];
+}
+
+/**
+ * Phase 4N21: Verify Rekor transparency log anchoring from bundle files.
+ * Offline-first: parses .bundle files without network access.
+ */
+function verifyRekor(opts: VerifyOptions, verbose: boolean): RekorVerifyResult {
+  const errors: RekorError[] = [];
+  let entriesChecked = 0;
+  let anchor: RekorAnchor | null = null;
+
+  // Find .bundle files in inputDir
+  const bundleFiles: string[] = [];
+  try {
+    const files = fs.readdirSync(opts.inputDir);
+    for (const file of files) {
+      if (file.endsWith('.bundle')) {
+        bundleFiles.push(path.join(opts.inputDir, file));
+      }
+    }
+  } catch {
+    // Directory read error handled below
+  }
+
+  if (bundleFiles.length === 0) {
+    if (opts.strict) {
+      errors.push({
+        type: 'bundle_missing',
+        message: 'No .bundle files found (required for Rekor verification in strict mode)',
+      });
+    }
+    return { ok: !opts.strict, entriesChecked: 0, anchored: false, errors };
+  }
+
+  // Parse each bundle for Rekor entries
+  for (const bundlePath of bundleFiles) {
+    try {
+      const content = fs.readFileSync(bundlePath, 'utf8');
+      const parsed = parseRekorFromBundle(content);
+      entriesChecked++;
+
+      if (parsed) {
+        anchor = parsed;
+        if (verbose) {
+          console.log(`  📋 Rekor anchor found in ${path.basename(bundlePath)}:`);
+          console.log(`     Log index: ${parsed.logIndex}`);
+          console.log(`     Integrated: ${new Date(parsed.integratedTime * 1000).toISOString()}`);
+        }
+      } else {
+        errors.push({
+          type: 'rekor_missing',
+          file: path.basename(bundlePath),
+          message: `Bundle does not contain Rekor entry: ${path.basename(bundlePath)}`,
+        });
+      }
+    } catch {
+      errors.push({
+        type: 'bundle_invalid',
+        file: path.basename(bundlePath),
+        message: `Failed to parse bundle: ${path.basename(bundlePath)}`,
+      });
+    }
+  }
+
+  const anchored = anchor !== null;
+  const ok = opts.strict ? anchored && errors.length === 0 : true;
+
+  return {
+    ok,
+    entriesChecked,
+    anchored,
+    logIndex: anchor?.logIndex,
+    integratedTime: anchor?.integratedTime,
+    errors,
+  };
+}
+
 /**
  * Phase 4N18: Build unified custody result.
  * Phase 4N20: Extended with pinning support.
+ * Phase 4N21: Extended with Rekor verification.
  */
 function buildUnifiedCustodyResult(
   hashResult: VerifyCustodyResult,
   sigResult: { ok: boolean; filesWithTriplet: number; errors: SignatureError[] } | null,
-  pinResult?: { pinned: boolean; errors: SignatureError[] }
+  pinResult?: { pinned: boolean; errors: SignatureError[] },
+  rekorResult?: RekorVerifyResult
 ): UnifiedCustodyResult {
   const allSigErrors = [...(sigResult?.errors || []), ...(pinResult?.errors || [])];
   const sigOk = (sigResult?.ok ?? true) && pinResult?.errors.length === 0;
+  const rekorOk = rekorResult?.ok ?? true;
 
   return {
-    ok: hashResult.ok && sigOk,
+    ok: hashResult.ok && sigOk && rekorOk,
     attestation: hashResult.attestation,
     hashes: {
       ok: hashResult.ok,
@@ -482,6 +595,16 @@ function buildUnifiedCustodyResult(
         filesWithTriplet: sigResult.filesWithTriplet,
         pinned: pinResult?.pinned,
         errors: allSigErrors,
+      },
+    }),
+    ...(rekorResult && {
+      rekor: {
+        ok: rekorResult.ok,
+        entriesChecked: rekorResult.entriesChecked,
+        anchored: rekorResult.anchored,
+        logIndex: rekorResult.logIndex,
+        integratedTime: rekorResult.integratedTime,
+        errors: rekorResult.errors,
       },
     }),
   };
@@ -499,6 +622,7 @@ function parseArgs(): VerifyOptions | null {
   let json = false;
   let verbose = false;
   let verifySignatures = false;
+  let verifyRekor = false;
   let policyFromIndex: string | undefined;
   let expectedIssuer: string | undefined;
   let expectedIdentity: string | undefined;
@@ -523,6 +647,8 @@ function parseArgs(): VerifyOptions | null {
       verbose = true;
     } else if (arg === '--verify-signatures' || arg === '--signatures') {
       verifySignatures = true;
+    } else if (arg === '--verify-rekor' || arg === '--rekor') {
+      verifyRekor = true;
     } else if (arg === '--help' || arg === '-h') {
       printHelp();
       process.exit(0);
@@ -545,6 +671,7 @@ function parseArgs(): VerifyOptions | null {
     json,
     verbose,
     verifySignatures,
+    verifyRekor,
     policyFromIndex: policyFromIndex ? path.resolve(policyFromIndex) : undefined,
     expectedIssuer,
     expectedIdentity,
@@ -553,7 +680,7 @@ function parseArgs(): VerifyOptions | null {
 
 function printHelp(): void {
   console.log(`
-TerraFusion Custody Attestation Verifier (Phase 4N18: Unified)
+TerraFusion Custody Attestation Verifier (Phase 4N18: Unified, 4N21: Rekor)
 
 Usage:
   pnpm perf:verify-custody --in <dir> [options]
@@ -565,6 +692,7 @@ Optional:
   --attest <path>      Path to custody-attestation.json (default: <dir>/custody-attestation.json)
   --strict             Fail if directory contains files not in attestation
   --verify-signatures  Check for .sig/.crt/.bundle triplets
+  --verify-rekor       Verify Rekor transparency log anchoring (Phase 4N21)
   --json               Output machine-readable JSON report
   --verbose            Enable verbose output
   --help, -h           Show this help
@@ -574,6 +702,10 @@ Phase 4N20 Pinning:
   --expected-issuer <uri>     Expected OIDC issuer
   --expected-identity <uri>   Expected workflow identity
 
+Phase 4N21 Rekor:
+  --verify-rekor              Verify .bundle files contain Rekor entries (offline)
+                              In strict mode, missing Rekor anchors fail verification
+
 Exit codes:
   0 = All verifications passed
   1 = Verification failed (mismatch, missing, extra in strict mode)
@@ -582,7 +714,7 @@ Exit codes:
 Example:
   pnpm perf:verify-custody --in ./dist
   pnpm perf:verify-custody --in ./dist --strict
-  pnpm perf:verify-custody --in ./dist --verify-signatures --json
+  pnpm perf:verify-custody --in ./dist --verify-signatures --verify-rekor --json
 `);
 }
 
@@ -620,7 +752,9 @@ function main(): void {
     const sigResult = verifySignatures(opts.inputDir, result.attestation, opts.verbose);
     // Phase 4N20: Verify pins if policy provided or strict mode
     const pinResult = verifyPins(opts, opts.verbose);
-    const unified = buildUnifiedCustodyResult(result, sigResult, pinResult);
+    // Phase 4N21: Verify Rekor anchoring if requested
+    const rekorResult = opts.verifyRekor ? verifyRekor(opts, opts.verbose) : undefined;
+    const unified = buildUnifiedCustodyResult(result, sigResult, pinResult, rekorResult);
 
     if (opts.json) {
       console.log(JSON.stringify(unified, null, 2));
@@ -658,6 +792,30 @@ function main(): void {
       }
     } else {
       console.log('   Status: ⚠️  Not checked (no --verify-signatures)');
+    }
+    // Phase 4N21: Rekor anchoring output
+    console.log('');
+    console.log('=== Rekor Transparency Log ===');
+    if (unified.rekor) {
+      console.log(`   Status: ${unified.rekor.ok ? '✅ OK' : '❌ FAILED'}`);
+      console.log(`   Anchored: ${unified.rekor.anchored ? '✅ Yes' : '⚠️ No'}`);
+      console.log(`   Entries Checked: ${unified.rekor.entriesChecked}`);
+      if (unified.rekor.logIndex !== undefined) {
+        console.log(`   Log Index: ${unified.rekor.logIndex}`);
+      }
+      if (unified.rekor.integratedTime !== undefined) {
+        console.log(
+          `   Integrated Time: ${new Date(unified.rekor.integratedTime * 1000).toISOString()}`
+        );
+      }
+      if (unified.rekor.errors.length > 0) {
+        console.log(`   Errors: ${unified.rekor.errors.length}`);
+        for (const err of unified.rekor.errors) {
+          console.log(`     - ${err.type}: ${err.message}`);
+        }
+      }
+    } else {
+      console.log('   Status: ⚠️  Not checked (no --verify-rekor)');
     }
     process.exit(unified.ok ? 0 : 1);
   }

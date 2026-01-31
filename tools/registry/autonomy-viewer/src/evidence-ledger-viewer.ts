@@ -83,6 +83,13 @@ export interface LedgerEntry {
     /** Phase 4N20: If not pinned, why (for audit visibility) */
     pinMismatchReason?: string;
   };
+  /** Phase 4N21: Rekor transparency log anchoring */
+  rekor?: {
+    anchored: boolean;
+    logIndex?: number;
+    integratedTime?: number;
+    entryUrl?: string;
+  };
 }
 
 export interface LedgerViewModel {
@@ -111,6 +118,8 @@ export interface LedgerViewModel {
     pinnedCount: number;
     /** Phase 4N20: Count of signed but not pinned (red flag) */
     unpinnedCount: number;
+    /** Phase 4N21: Rekor anchored count */
+    rekorAnchoredCount: number;
   };
 }
 
@@ -316,6 +325,16 @@ export function buildLedgerEntries(
           }
         : { signed: false, pinned: false };
 
+      // Phase 4N21: Extract Rekor anchoring info from signature
+      const rekor = bundleAsset?.signature?.rekor
+        ? {
+            anchored: bundleAsset.signature.rekor.bundleValid,
+            logIndex: bundleAsset.signature.rekor.logIndex,
+            integratedTime: bundleAsset.signature.rekor.integratedTime,
+            entryUrl: bundleAsset.signature.rekor.entryUrl,
+          }
+        : undefined;
+
       const entry: LedgerEntry = {
         runId: index.source.runId,
         date: index.generatedAt,
@@ -339,6 +358,7 @@ export function buildLedgerEntries(
         bundleUrl,
         localBundleMissing,
         signature,
+        rekor,
       };
 
       entries.push(entry);
@@ -385,6 +405,8 @@ export function buildLedgerViewModel(entries: LedgerEntry[], opts: ViewerOptions
     pinnedCount: entries.filter(e => e.signature?.signed && e.signature?.pinned).length,
     // Phase 4N20: Unpinned count (red flag for auditors)
     unpinnedCount: entries.filter(e => e.signature?.signed && !e.signature?.pinned).length,
+    // Phase 4N21: Rekor anchored count
+    rekorAnchoredCount: entries.filter(e => e.rekor?.anchored).length,
   };
 
   return {
@@ -610,8 +632,16 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
         ? `<a href="${escapeHtml(entry.releaseUrl)}" title="View release">${escapeHtml(entry.releaseTag)}</a>`
         : escapeHtml(entry.releaseTag);
 
+      // Phase 4N21: Rekor anchoring badge
+      const rekorClass = entry.rekor?.anchored ? 'rekor-anchored' : 'rekor-missing';
+      const rekorBadge = entry.rekor?.anchored
+        ? `<span class="badge badge-success" title="Rekor log index: ${entry.rekor.logIndex}">🧾 Anchored</span>`
+        : entry.signature?.signed
+          ? '<span class="badge badge-danger" title="No Rekor anchor found">🚨 Missing</span>'
+          : '<span class="badge badge-muted">—</span>';
+
       return `
-        <tr class="${rowClass}" data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}">
+        <tr class="${rowClass}" data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}" data-rekor="${entry.rekor?.anchored ?? false}">
           <td>${formatDate(entry.date)}</td>
           <td>${escapeHtml(entry.runId)}</td>
           <td>${tierBadge}${incidentInfo}</td>
@@ -620,6 +650,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
           <td>${releaseTagCell}</td>
           <td class="verify-status ${verifyClass}">${verifyText}</td>
           <td class="sig-status ${sigClass}" title="${escapeHtml(sigTitle)}">${sigText}${pinnedBadge}</td>
+          <td class="${rekorClass}">${rekorBadge}</td>
         </tr>
       `;
     })
@@ -676,6 +707,10 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
       <div class="value" style="color: ${vm.summary.unpinnedCount > 0 ? 'var(--color-error)' : 'var(--color-muted)'}">${vm.summary.unpinnedCount}</div>
       <div class="label">${vm.summary.unpinnedCount > 0 ? '🚨' : ''} Unpinned</div>
     </div>
+    <div class="summary-card">
+      <div class="value" style="color: var(--color-success)">${vm.summary.rekorAnchoredCount}</div>
+      <div class="label">🧾 Anchored</div>
+    </div>
   </div>
 
   <h2>Evidence Records</h2>
@@ -700,6 +735,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
         <th>Release Tag</th>
         <th>Verify</th>
         <th>Signature</th>
+        <th>Rekor</th>
       </tr>
     </thead>
     <tbody>

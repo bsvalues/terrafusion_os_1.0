@@ -1713,3 +1713,136 @@ describe('Phase 4N20: Identity & Issuer Pinning', () => {
     });
   });
 });
+
+// ============================================================================
+// Phase 4N21: Rekor Transparency Log Contract Tests
+// ============================================================================
+
+describe('Phase 4N21: Rekor Transparency Log Anchoring', () => {
+  describe('RekorAnchor Schema', () => {
+    it('should export REKOR_PUBLIC_URL constant', async () => {
+      const { REKOR_PUBLIC_URL } = await import('../src/evidence-index.js');
+      assert.equal(REKOR_PUBLIC_URL, 'https://rekor.sigstore.dev');
+    });
+
+    it('should export parseRekorFromBundle function', async () => {
+      const { parseRekorFromBundle } = await import('../src/evidence-index.js');
+      assert.equal(typeof parseRekorFromBundle, 'function');
+    });
+
+    it('should export validateRekorUrl function', async () => {
+      const { validateRekorUrl } = await import('../src/evidence-index.js');
+      assert.equal(typeof validateRekorUrl, 'function');
+    });
+  });
+
+  describe('parseRekorFromBundle()', () => {
+    it('should parse new Sigstore bundle format (v0.2+)', async () => {
+      const { parseRekorFromBundle } = await import('../src/evidence-index.js');
+      const bundleContent = JSON.stringify({
+        verificationMaterial: {
+          tlogEntries: [
+            {
+              logIndex: '12345678',
+              logId: { keyId: 'abcdef0123456789' },
+              integratedTime: '1706745600',
+            },
+          ],
+        },
+      });
+
+      const result = parseRekorFromBundle(bundleContent);
+      assert.ok(result, 'Should parse bundle successfully');
+      assert.equal(result!.logIndex, 12345678);
+      assert.equal(result!.integratedTime, 1706745600);
+      assert.equal(result!.bundleValid, true);
+    });
+
+    it('should parse older rekorBundle format', async () => {
+      const { parseRekorFromBundle } = await import('../src/evidence-index.js');
+      const bundleContent = JSON.stringify({
+        rekorBundle: {
+          Payload: {
+            logIndex: 9876543,
+            integratedTime: 1706745600,
+          },
+        },
+      });
+
+      const result = parseRekorFromBundle(bundleContent);
+      assert.ok(result, 'Should parse bundle successfully');
+      assert.equal(result!.logIndex, 9876543);
+      assert.equal(result!.integratedTime, 1706745600);
+    });
+
+    it('should return null for invalid JSON', async () => {
+      const { parseRekorFromBundle } = await import('../src/evidence-index.js');
+      const result = parseRekorFromBundle('not-json');
+      assert.equal(result, null);
+    });
+
+    it('should return null for missing Rekor entries', async () => {
+      const { parseRekorFromBundle } = await import('../src/evidence-index.js');
+      const bundleContent = JSON.stringify({
+        someOtherData: {},
+      });
+      const result = parseRekorFromBundle(bundleContent);
+      assert.equal(result, null);
+    });
+  });
+
+  describe('validateRekorUrl()', () => {
+    it('should accept valid Rekor URLs', async () => {
+      const { validateRekorUrl } = await import('../src/evidence-index.js');
+      const error = validateRekorUrl(
+        'https://rekor.sigstore.dev/api/v1/log/entries?logIndex=12345678'
+      );
+      assert.equal(error, null);
+    });
+
+    it('should reject non-Rekor URLs', async () => {
+      const { validateRekorUrl } = await import('../src/evidence-index.js');
+      const error = validateRekorUrl('https://example.com/rekor');
+      assert.ok(error);
+      assert.ok(error.includes('must start with'));
+    });
+
+    it('should reject URLs with fragments', async () => {
+      const { validateRekorUrl } = await import('../src/evidence-index.js');
+      const error = validateRekorUrl(
+        'https://rekor.sigstore.dev/api/v1/log/entries?logIndex=123#section'
+      );
+      assert.ok(error);
+      assert.ok(error.includes('fragments'));
+    });
+
+    it('should reject URLs without logIndex', async () => {
+      const { validateRekorUrl } = await import('../src/evidence-index.js');
+      const error = validateRekorUrl('https://rekor.sigstore.dev/api/v1/log/entries');
+      assert.ok(error);
+      assert.ok(error.includes('logIndex'));
+    });
+  });
+
+  describe('Determinism', () => {
+    it('should produce same output for same bundle input', async () => {
+      const { parseRekorFromBundle } = await import('../src/evidence-index.js');
+      const bundleContent = JSON.stringify({
+        verificationMaterial: {
+          tlogEntries: [
+            {
+              logIndex: '999',
+              logId: { keyId: 'test123' },
+              integratedTime: '1700000000',
+            },
+          ],
+        },
+      });
+
+      const result1 = parseRekorFromBundle(bundleContent);
+      const result2 = parseRekorFromBundle(bundleContent);
+
+      assert.deepStrictEqual(result1, result2);
+    });
+  });
+});

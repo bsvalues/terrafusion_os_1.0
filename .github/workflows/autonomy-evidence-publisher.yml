@@ -372,6 +372,43 @@ jobs:
           fi
 
       # ========================================================================
+      # Step 2d: Phase 4N21 - Rekor Transparency Log Verification (Pre-Publish Gate)
+      # ========================================================================
+      - name: Verify Rekor Anchoring (Phase 4N21)
+        run: |
+          echo "🧾 Phase 4N21: Verifying Rekor transparency log anchoring..."
+
+          BUNDLE_PATH="${{ steps.bundle.outputs.bundle_path }}"
+          INDEX_PATH="${{ env.VIEWER_DIR }}/autonomy-evidence-index.json"
+
+          # Check that .bundle files exist (required for Rekor verification)
+          BUNDLE_COUNT=$(find "$(dirname $BUNDLE_PATH)" -name "*.bundle" -type f | wc -l)
+          if [ "$BUNDLE_COUNT" -eq 0 ]; then
+            echo "::error::Phase 4N21: No .bundle files found - Rekor anchoring required"
+            exit 1
+          fi
+          echo "   Found $BUNDLE_COUNT .bundle file(s)"
+
+          # Verify Rekor anchoring using verify-custody
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/verify-custody.ts \
+            --in "$(dirname $BUNDLE_PATH)" \
+            --verify-signatures \
+            --verify-rekor \
+            --strict \
+            --verbose
+          REKOR_EXIT=$?
+          set -e
+
+          if [ $REKOR_EXIT -eq 0 ]; then
+            echo "✅ Phase 4N21: Rekor anchoring verification PASSED"
+          else
+            echo "::error::Phase 4N21: Rekor verification FAILED - cannot publish"
+            echo "::error::Evidence bundle is not properly anchored in transparency log"
+            exit 1
+          fi
+
+      # ========================================================================
       # Step 3: Publish to GitHub Release
       # ========================================================================
       - name: Prepare release assets
