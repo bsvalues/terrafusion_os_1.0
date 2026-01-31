@@ -292,10 +292,62 @@ const MUTABLE_URL_PATTERNS = [
 ] as const;
 
 /**
+ * Phase 4N15: Additional URL validation checks for auditor-grade security.
+ * Returns error message if invalid, null if valid.
+ */
+function validateUrlSecurityConstraints(url: string): string | null {
+  // Reject URLs with querystrings (?download=1, ?ref=main, etc.)
+  if (url.includes('?')) {
+    return `URL contains querystring (not allowed in evidence URLs): ${url}`;
+  }
+
+  // Reject URLs with fragments (#section)
+  if (url.includes('#')) {
+    return `URL contains fragment (not allowed in evidence URLs): ${url}`;
+  }
+
+  // Reject URL-encoded traversal attempts (%2f = /, %2e = .)
+  const lowerUrl = url.toLowerCase();
+  if (lowerUrl.includes('%2f') || lowerUrl.includes('%2e')) {
+    return `URL contains encoded path characters (potential traversal): ${url}`;
+  }
+
+  // Reject double-encoding attempts (%252f = %2f)
+  if (lowerUrl.includes('%25')) {
+    return `URL contains double-encoded characters: ${url}`;
+  }
+
+  // Reject non-ASCII characters (unicode confusables)
+  // eslint-disable-next-line no-control-regex
+  if (/[^\x00-\x7F]/.test(url)) {
+    return `URL contains non-ASCII characters (unicode confusables not allowed): ${url}`;
+  }
+
+  // Reject backslash (Windows path injection)
+  if (url.includes('\\')) {
+    return `URL contains backslash (not allowed): ${url}`;
+  }
+
+  // Reject null bytes
+  if (url.includes('\x00')) {
+    return `URL contains null byte: ${url}`;
+  }
+
+  return null; // Valid
+}
+
+/**
  * Validate a URL is immutable (no latest, no branch refs, no shorteners).
+ * Phase 4N15: Enhanced with security constraints for auditor-grade validation.
  * Returns error message if invalid, null if valid.
  */
 export function validateImmutableUrl(url: string): string | null {
+  // Phase 4N15: Security constraints first
+  const securityError = validateUrlSecurityConstraints(url);
+  if (securityError) {
+    return securityError;
+  }
+
   // Must be a GitHub releases URL
   if (!url.includes('/releases/')) {
     return `URL is not a GitHub releases URL: ${url}`;

@@ -383,6 +383,79 @@ jobs:
             ${{ steps.assets.outputs.assets_dir }}/*
           make_latest: false
 
+      # ========================================================================
+      # Step 4: Phase 4N15 - Verify Asset Existence (Reality Check)
+      # ========================================================================
+      - name: Verify Incident Release Assets Exist (Phase 4N15)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "🔍 Phase 4N15: Verifying incident release assets exist..."
+
+          RELEASE_TAG="${{ needs.gate.outputs.release_tag }}"
+          PR_NUMBER="${{ needs.gate.outputs.pr_number }}"
+          RUN_ID="${{ needs.gate.outputs.run_id }}"
+
+          # Expected canonical asset names for incident channel
+          EXPECTED_ASSETS=(
+            "autonomy-incident-bundle-pr${PR_NUMBER}-${RUN_ID}.zip"
+            "autonomy-incident-manifest-pr${PR_NUMBER}-${RUN_ID}.json"
+            "autonomy-incident-index-pr${PR_NUMBER}.json"
+            "autonomy-incident-dashboard-pr${PR_NUMBER}.html"
+            "autonomy-incident-ledger.html"
+            "autonomy-incident-custody-pr${PR_NUMBER}.html"
+            "custody-attestation-pr${PR_NUMBER}.json"
+          )
+
+          # Get actual assets from release
+          echo "Fetching assets for release: $RELEASE_TAG"
+          ACTUAL_ASSETS=$(gh release view "$RELEASE_TAG" --json assets -q '.assets[].name' 2>/dev/null || echo "")
+
+          if [ -z "$ACTUAL_ASSETS" ]; then
+            echo "::error::Failed to retrieve release assets for $RELEASE_TAG"
+            exit 1
+          fi
+
+          echo "Found assets:"
+          echo "$ACTUAL_ASSETS"
+          echo ""
+
+          # Check each expected asset exists (some may be optional)
+          MISSING=()
+          OPTIONAL=("autonomy-incident-dashboard-pr${PR_NUMBER}.html" "autonomy-incident-ledger.html" "autonomy-incident-custody-pr${PR_NUMBER}.html")
+
+          for ASSET in "${EXPECTED_ASSETS[@]}"; do
+            if echo "$ACTUAL_ASSETS" | grep -q "^${ASSET}$"; then
+              echo "  ✅ $ASSET"
+            else
+              # Check if optional
+              IS_OPTIONAL=false
+              for OPT in "${OPTIONAL[@]}"; do
+                if [ "$ASSET" = "$OPT" ]; then
+                  IS_OPTIONAL=true
+                  break
+                fi
+              done
+
+              if [ "$IS_OPTIONAL" = true ]; then
+                echo "  ⚠️ $ASSET (optional, not present)"
+              else
+                echo "  ❌ $ASSET (MISSING - required)"
+                MISSING+=("$ASSET")
+              fi
+            fi
+          done
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo ""
+            echo "::error::Phase 4N15 FAILED: Missing ${#MISSING[@]} required assets"
+            echo "Missing: ${MISSING[*]}"
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ Phase 4N15: All required incident assets verified"
+
       - name: Incident Publish Summary
         run: |
           PR_NUMBER="${{ needs.gate.outputs.pr_number }}"

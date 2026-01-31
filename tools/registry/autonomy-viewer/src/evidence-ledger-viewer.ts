@@ -69,6 +69,8 @@ export interface LedgerEntry {
   /** Phase 4N14: Immutable URLs (derived from evidence index) */
   releaseUrl?: string;
   bundleUrl?: string;
+  /** Phase 4N15: Local availability status */
+  localBundleMissing?: boolean;
 }
 
 export interface LedgerViewModel {
@@ -239,7 +241,15 @@ function getReleaseTag(index: EvidenceIndex, tier: 'ci' | 'merged' | 'incident')
   return 'ci-artifacts';
 }
 
-export function buildLedgerEntries(indices: EvidenceIndex[]): LedgerEntry[] {
+/**
+ * Build ledger entries from evidence indices.
+ * @param indices - Evidence index files
+ * @param localBundles - Optional set of locally available bundle names (for 4N15b local-missing badge)
+ */
+export function buildLedgerEntries(
+  indices: EvidenceIndex[],
+  localBundles?: Set<string>
+): LedgerEntry[] {
   const entries: LedgerEntry[] = [];
 
   for (const index of indices) {
@@ -250,6 +260,12 @@ export function buildLedgerEntries(indices: EvidenceIndex[]): LedgerEntry[] {
       // Phase 4N14: Extract immutable URLs from index (zero-manual URL wiring)
       const releaseUrl = index.releaseUrl;
       const bundleUrl = index.assets?.bundleZip?.url;
+
+      // Phase 4N15: Check if local bundle is missing when release URL exists
+      const localBundleMissing =
+        bundleUrl !== undefined &&
+        localBundles !== undefined &&
+        !localBundles.has(record.bundle.name);
 
       const entry: LedgerEntry = {
         runId: index.source.runId,
@@ -272,6 +288,7 @@ export function buildLedgerEntries(indices: EvidenceIndex[]): LedgerEntry[] {
         ref: index.source.ref,
         releaseUrl,
         bundleUrl,
+        localBundleMissing,
       };
 
       entries.push(entry);
@@ -462,6 +479,9 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     .sha { font-family: var(--font-mono); font-size: 0.7rem; word-break: break-all; }
     .cmd { font-family: var(--font-mono); font-size: 0.75rem; background: var(--color-border); padding: 0.25rem 0.5rem; border-radius: 4px; display: inline-block; max-width: 100%; overflow-x: auto; }
 
+    /* Phase 4N15: Local-missing badge */
+    .local-missing { font-size: 0.7rem; color: var(--color-warning); margin-left: 0.25rem; }
+
     .instructions { background: var(--color-border); padding: 1.5rem; border-radius: 8px; margin-top: 2rem; }
     .instructions h3 { margin-bottom: 0.5rem; }
     .instructions code { font-family: var(--font-mono); background: var(--color-bg); padding: 0.25rem 0.5rem; border-radius: 4px; }
@@ -483,9 +503,14 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
       const incidentInfo = entry.incident && entry.incidentPr ? ` (PR #${entry.incidentPr})` : '';
 
       // Phase 4N14: Render bundle as link when URL is available
-      const bundleCell = entry.bundleUrl
+      // Phase 4N15: Show local-missing badge when bundle URL exists but local file is absent
+      let bundleCell = entry.bundleUrl
         ? `<a href="${escapeHtml(entry.bundleUrl)}" title="Download bundle">${escapeHtml(entry.bundleName)}</a>`
         : escapeHtml(entry.bundleName);
+
+      if (entry.localBundleMissing) {
+        bundleCell += `<span class="local-missing" title="Bundle available on release but not in local packet">⚠️ local-missing</span>`;
+      }
 
       // Phase 4N14: Render release tag as link when URL is available
       const releaseTagCell = entry.releaseUrl
