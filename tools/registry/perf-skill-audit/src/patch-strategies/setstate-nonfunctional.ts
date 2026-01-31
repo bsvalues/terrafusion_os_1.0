@@ -308,8 +308,11 @@ export const setstateNonfunctionalStrategy: PatchStrategy = {
       throw new Error(`Cannot build patch: ${analysis.reason}`);
     }
 
+    // Normalize line endings to Unix-style for patch compatibility
+    const normalizedContent = fileContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
     // Get original line
-    const lines = fileContent.split('\n');
+    const lines = normalizedContent.split('\n');
     const originalLine = lines[line - 1];
 
     // Build the transformed call
@@ -319,15 +322,21 @@ export const setstateNonfunctionalStrategy: PatchStrategy = {
     // Replace in the line
     const patchedLine = originalLine.replace(originalCall, transformedCall);
 
-    // Build unified diff
+    // Calculate context lines
+    const hasContextBefore = line > 1;
+    const hasContextAfter = line < lines.length;
+    const contextCount = (hasContextBefore ? 1 : 0) + 1 + (hasContextAfter ? 1 : 0);
+    const startLine = hasContextBefore ? line - 1 : line;
+
+    // Build unified diff with proper hunk header
     const patchLines: string[] = [
       `--- a/${finding.file}`,
       `+++ b/${finding.file}`,
-      `@@ -${line},1 +${line},1 @@`,
+      `@@ -${startLine},${contextCount} +${startLine},${contextCount} @@`,
     ];
 
     // Context before
-    if (line > 1) {
+    if (hasContextBefore) {
       patchLines.push(` ${lines[line - 2]}`);
     }
 
@@ -336,7 +345,7 @@ export const setstateNonfunctionalStrategy: PatchStrategy = {
     patchLines.push(`+${patchedLine}`);
 
     // Context after
-    if (line < lines.length) {
+    if (hasContextAfter) {
       patchLines.push(` ${lines[line]}`);
     }
 
