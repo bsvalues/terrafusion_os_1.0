@@ -718,7 +718,10 @@ test('renderCustodyHtml: renders nav-grid when graph provided', () => {
   assert.ok(html.includes('nav-link'), 'Expected nav-link class');
   assert.ok(html.includes('Evidence Graph Navigation'), 'Expected section header');
   assert.ok(html.includes('./ledger.html'), 'Expected ledger link');
-  assert.ok(html.includes('https://github.com/owner/repo/releases/tag/v1'), 'Expected release link');
+  assert.ok(
+    html.includes('https://github.com/owner/repo/releases/tag/v1'),
+    'Expected release link'
+  );
 });
 
 test('renderCustodyHtml: omits nav section when no graph', () => {

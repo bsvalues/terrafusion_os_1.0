@@ -9,6 +9,8 @@
     "bundle": "npx tsx src/bundle.ts",
     "verify": "npx tsx src/verify-bundle.ts",
     "custody": "npx tsx src/custody-cli.ts",
+    "custody-attest": "npx tsx src/custody-attest.ts",
+    "verify-custody": "npx tsx src/verify-custody.ts",
     "test": "npx tsx --test test/*.test.ts"
   },
   "keywords": [

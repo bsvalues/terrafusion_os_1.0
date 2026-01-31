@@ -234,14 +234,20 @@ export function generateCustody(params: GenerateCustodyOptions): CustodyModel {
 
   // Build evidence graph links (Phase 4N12)
   const graph: EvidenceGraph | undefined =
-    params.ledgerUrl || params.releaseUrl || params.dashboardUrl || params.bundleDownloadUrl || params.custodyUrl
+    params.ledgerUrl ||
+    params.releaseUrl ||
+    params.dashboardUrl ||
+    params.bundleDownloadUrl ||
+    params.custodyUrl
       ? {
           ledgerUrl: params.ledgerUrl,
           releaseUrl: params.releaseUrl,
           dashboardUrl: params.dashboardUrl,
-          bundleDownloadUrl: params.bundleDownloadUrl ?? (params.releaseUrl
-            ? `${params.releaseUrl.replace(/\/$/, '')}/${bundleName}`
-            : undefined),
+          bundleDownloadUrl:
+            params.bundleDownloadUrl ??
+            (params.releaseUrl
+              ? `${params.releaseUrl.replace(/\/$/, '')}/${bundleName}`
+              : undefined),
           custodyUrl: params.custodyUrl,
         }
       : undefined;
