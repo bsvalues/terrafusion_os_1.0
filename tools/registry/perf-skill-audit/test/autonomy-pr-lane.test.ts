@@ -5,10 +5,10 @@
  * These tests ensure governance compliance without requiring workflow execution.
  */
 
-import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import * as yaml from 'yaml';
 
@@ -45,10 +45,7 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
 
   test('Workflow has correct name', () => {
     const workflow = loadWorkflow();
-    assert.ok(
-      workflow.name?.includes('Autonomy'),
-      'Workflow name must include "Autonomy"'
-    );
+    assert.ok(workflow.name?.includes('Autonomy'), 'Workflow name must include "Autonomy"');
   });
 
   test('Workflow has concurrency with cancel-in-progress', () => {
@@ -69,10 +66,7 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
   test('Workflow triggers include schedule', () => {
     const workflow = loadWorkflow();
     assert.ok(workflow.on?.schedule, 'Must have scheduled trigger');
-    assert.ok(
-      workflow.on.schedule.length > 0,
-      'Must have at least one cron schedule'
-    );
+    assert.ok(workflow.on.schedule.length > 0, 'Must have at least one cron schedule');
   });
 
   test('Gate check job exists and blocks protected branches', () => {
@@ -98,11 +92,7 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
     const applyJob = workflow.jobs?.autonomy_apply;
     assert.ok(applyJob, 'autonomy_apply job must exist');
     assert.ok(applyJob.permissions, 'Job must specify permissions');
-    assert.equal(
-      applyJob.permissions.contents,
-      'write',
-      'Must have contents: write permission'
-    );
+    assert.equal(applyJob.permissions.contents, 'write', 'Must have contents: write permission');
     assert.equal(
       applyJob.permissions['pull-requests'],
       'write',
@@ -116,9 +106,7 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
     assert.ok(applyJob, 'autonomy_apply job must exist');
 
     const steps = applyJob.steps || [];
-    const applyStep = steps.find(
-      (s: any) => s.id === 'apply' || s.name?.includes('ralph-apply')
-    );
+    const applyStep = steps.find((s: any) => s.id === 'apply' || s.name?.includes('ralph-apply'));
     assert.ok(applyStep, 'Must have ralph-apply step');
 
     const run = applyStep.run || '';
@@ -129,9 +117,7 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
     const workflow = loadWorkflow();
     const applyJob = workflow.jobs?.autonomy_apply;
     const steps = applyJob?.steps || [];
-    const applyStep = steps.find(
-      (s: any) => s.id === 'apply' || s.name?.includes('ralph-apply')
-    );
+    const applyStep = steps.find((s: any) => s.id === 'apply' || s.name?.includes('ralph-apply'));
 
     const run = applyStep?.run || '';
     assert.ok(run.includes('--emit-proof'), 'Must use --emit-proof flag');
@@ -141,15 +127,10 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
     const workflow = loadWorkflow();
     const applyJob = workflow.jobs?.autonomy_apply;
     const steps = applyJob?.steps || [];
-    const applyStep = steps.find(
-      (s: any) => s.id === 'apply' || s.name?.includes('ralph-apply')
-    );
+    const applyStep = steps.find((s: any) => s.id === 'apply' || s.name?.includes('ralph-apply'));
 
     const run = applyStep?.run || '';
-    assert.ok(
-      !run.includes('--enable-tier1'),
-      'Must NOT use --enable-tier1 flag (Tier 0 only)'
-    );
+    assert.ok(!run.includes('--enable-tier1'), 'Must NOT use --enable-tier1 flag (Tier 0 only)');
   });
 
   test('Open PR job has conditional on outcome=applied', () => {
@@ -158,10 +139,7 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
     assert.ok(prJob, 'open_pr job must exist');
 
     const ifCondition = prJob.if || '';
-    assert.ok(
-      ifCondition.includes('applied'),
-      'PR job must only run when outcome=applied'
-    );
+    assert.ok(ifCondition.includes('applied'), 'PR job must only run when outcome=applied');
   });
 
   test('Artifacts are uploaded even on failure', () => {
@@ -169,9 +147,7 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
     const applyJob = workflow.jobs?.autonomy_apply;
     const steps = applyJob?.steps || [];
 
-    const uploadStep = steps.find((s: any) =>
-      s.name?.toLowerCase().includes('upload')
-    );
+    const uploadStep = steps.find((s: any) => s.name?.toLowerCase().includes('upload'));
     assert.ok(uploadStep, 'Must have artifact upload step');
     assert.equal(uploadStep.if, 'always()', 'Upload must run on always()');
   });
@@ -206,13 +182,100 @@ describe('Phase 4N0 — Autonomy PR Lane Contract', () => {
     const prJob = workflow.jobs?.open_pr;
     const steps = prJob?.steps || [];
 
-    const createPrStep = steps.find((s: any) =>
-      s.uses?.includes('create-pull-request')
-    );
+    const createPrStep = steps.find((s: any) => s.uses?.includes('create-pull-request'));
     assert.ok(createPrStep, 'Must use create-pull-request action');
 
     const labels = createPrStep.with?.labels || '';
     assert.ok(labels.includes('autonomy'), 'PR must have autonomy label');
     assert.ok(labels.includes('tier-0'), 'PR must have tier-0 label');
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Phase 4N2: PR Body "Change Capsule" Contract Tests
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  test('PR body contains pnpm perf:rollback command', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    assert.ok(bodyStep, 'Must have PR body creation step');
+
+    const run = bodyStep.run || '';
+    assert.ok(
+      run.includes('pnpm perf:rollback'),
+      'PR body must include pnpm perf:rollback command'
+    );
+  });
+
+  test('PR body contains dry-run rollback command', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    assert.ok(
+      run.includes('--dry-run'),
+      'PR body must include --dry-run rollback command for preview'
+    );
+  });
+
+  test('PR body contains post-rollback gates', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    assert.ok(run.includes('type-check'), 'PR body must reference type-check gate');
+    assert.ok(
+      run.includes('phase83-tools'),
+      'PR body must reference phase83-tools gate'
+    );
+  });
+
+  test('PR body contains "What Autonomy Will NOT Do" section', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    assert.ok(
+      run.includes('Will NOT Do') || run.includes('will NOT do'),
+      'PR body must include "What Autonomy Will NOT Do" section'
+    );
+  });
+
+  test('PR body explains proof artifacts and their purpose', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    assert.ok(run.includes('apply-proofs.json'), 'PR body must reference apply-proofs.json');
+    assert.ok(run.includes('autonomy-report.json'), 'PR body must reference autonomy-report.json');
+    assert.ok(run.includes('perf.plan.json'), 'PR body must reference perf.plan.json');
+  });
+
+  test('PR body references --proof flag with plan item ID', () => {
+    const workflow = loadWorkflow();
+    const prJob = workflow.jobs?.open_pr;
+    const steps = prJob?.steps || [];
+
+    const bodyStep = steps.find((s: any) => s.id === 'pr_body' || s.name?.includes('PR body'));
+    const run = bodyStep?.run || '';
+
+    assert.ok(
+      run.includes('--proof') && run.includes('plan_item_id'),
+      'PR body must use --proof flag with dynamic plan_item_id'
+    );
   });
 });
