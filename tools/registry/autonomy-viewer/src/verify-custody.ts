@@ -70,6 +70,7 @@ export interface UnifiedCustodyResult {
   };
   signatures?: {
     ok: boolean;
+    tripletFound: boolean;
     filesWithTriplet: number;
     errors: SignatureError[];
   };
@@ -338,6 +339,7 @@ function buildUnifiedCustodyResult(
     ...(sigResult && {
       signatures: {
         ok: sigResult.ok,
+        tripletFound: sigResult.filesWithTriplet > 0,
         filesWithTriplet: sigResult.filesWithTriplet,
         errors: sigResult.errors,
       },
@@ -470,39 +472,32 @@ function main(): void {
     console.log(unified.ok ? '✅ Unified verification PASSED' : '❌ Unified verification FAILED');
     console.log('');
     console.log('=== Custody Hashes ===');
-    console.log(`   Status: ${unified.custody.ok ? '✅ OK' : '❌ FAILED'}`);
-    console.log(`   Files verified: ${unified.custody.filesVerified}`);
+    console.log(`   Status: ${unified.hashes.ok ? '✅ OK' : '❌ FAILED'}`);
+    console.log(`   Files verified: ${unified.hashes.filesVerified}`);
     if (result.attestation) {
       console.log(`   Run ID: ${result.attestation.runId}`);
       console.log(`   Generated: ${result.attestation.generatedAt}`);
     }
-    if (unified.custody.errors.length > 0) {
-      console.log(`   Errors: ${unified.custody.errors.length}`);
-      for (const err of unified.custody.errors) {
+    if (unified.hashes.errors.length > 0) {
+      console.log(`   Errors: ${unified.hashes.errors.length}`);
+      for (const err of unified.hashes.errors) {
         console.log(`     - ${err.type}: ${err.message}`);
       }
     }
     console.log('');
     console.log('=== Signature Verification ===');
-    console.log(`   Status: ${unified.signatures.ok ? '✅ OK' : '❌ FAILED'}`);
-    console.log(`   Triplet Found: ${unified.signatures.tripletFound}`);
-    if (unified.signatures.identity) {
-      console.log(`   Identity: ${unified.signatures.identity}`);
-    }
-    if (unified.signatures.issuer) {
-      console.log(`   Issuer: ${unified.signatures.issuer}`);
-    }
-    if (unified.signatures.signedAt) {
-      console.log(`   Signed At: ${unified.signatures.signedAt}`);
-    }
-    if (unified.signatures.certificateExpiry) {
-      console.log(`   Certificate Expiry: ${unified.signatures.certificateExpiry}`);
-    }
-    if (unified.signatures.errors.length > 0) {
-      console.log(`   Errors: ${unified.signatures.errors.length}`);
-      for (const err of unified.signatures.errors) {
-        console.log(`     - ${err.code}: ${err.message}`);
+    if (unified.signatures) {
+      console.log(`   Status: ${unified.signatures.ok ? '✅ OK' : '❌ FAILED'}`);
+      console.log(`   Triplet Found: ${unified.signatures.tripletFound}`);
+      console.log(`   Files With Triplet: ${unified.signatures.filesWithTriplet}`);
+      if (unified.signatures.errors.length > 0) {
+        console.log(`   Errors: ${unified.signatures.errors.length}`);
+        for (const err of unified.signatures.errors) {
+          console.log(`     - ${err.type}: ${err.message}`);
+        }
       }
+    } else {
+      console.log('   Status: ⚠️  Not checked (no --verify-signatures)');
     }
     process.exit(unified.ok ? 0 : 1);
   }

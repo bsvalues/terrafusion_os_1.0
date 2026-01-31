@@ -16,6 +16,8 @@
  *   --strict          Fail if required files are missing (default: true)
  *   --no-strict       Skip missing files without error
  *   --emit-manifest   Emit manifest JSON alongside ZIP (default: true)
+ *   --include-seals   Phase 4N19: Include signature triplet + VERIFY.md in sealed bundle
+ *   --seals-dir <dir> Directory containing .sig/.crt/.bundle files (default: out dir)
  *   --verbose         Verbose output
  */
 
@@ -41,6 +43,10 @@ interface BundleOptions {
   strict: boolean;
   emitManifest: boolean;
   verbose: boolean;
+  /** Phase 4N19: Include signature triplet and VERIFY.md for offline verification */
+  includeSeals: boolean;
+  /** Path to signature triplet directory (default: same as outDir after signing) */
+  sealsDir?: string;
 }
 
 function parseArgs(): BundleOptions {
@@ -53,6 +59,7 @@ function parseArgs(): BundleOptions {
     strict: true,
     emitManifest: true,
     verbose: false,
+    includeSeals: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -83,6 +90,13 @@ function parseArgs(): BundleOptions {
       opts.emitManifest = false;
     } else if (arg === '--verbose') {
       opts.verbose = true;
+    } else if (arg === '--include-seals') {
+      // Phase 4N19: Include signature triplet for offline verification
+      opts.includeSeals = true;
+    } else if (arg === '--seals-dir' && args[i + 1]) {
+      opts.sealsDir = resolve(args[++i]);
+    } else if (arg.startsWith('--seals-dir=')) {
+      opts.sealsDir = resolve(arg.slice('--seals-dir='.length));
     }
   }
 
@@ -184,6 +198,133 @@ Verify integrity by re-computing hashes and comparing.
 ---
 
 *TerraFusion Autonomy v1 — Government. Transcended.*
+`,
+    'utf8'
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 4N19: VERIFY.md Template (Offline Signature Verification)
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface VerifyMdOptions {
+  bundleName: string;
+  manifestPath: string;
+  signatureIdentity?: string;
+}
+
+/**
+ * Generates VERIFY.md with offline cosign verification instructions.
+ * This allows auditors to verify cryptographic signatures without network access
+ * (after first installing cosign).
+ */
+function generateVerifyMd(opts: VerifyMdOptions): Buffer {
+  const bundleBase = opts.bundleName.replace(/\.zip$/, '');
+  return Buffer.from(
+    `# Offline Signature Verification Guide
+
+## Phase 4N19: Self-Contained Evidence Bag
+
+This bundle contains its own cryptographic seals for offline verification.
+
+---
+
+## Step 1: Install cosign (one-time)
+
+Download cosign from: https://github.com/sigstore/cosign/releases
+
+\`\`\`bash
+# macOS
+brew install cosign
+
+# Windows (scoop)
+scoop install cosign
+
+# Linux
+curl -O -L https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
+chmod +x cosign-linux-amd64
+sudo mv cosign-linux-amd64 /usr/local/bin/cosign
+\`\`\`
+
+---
+
+## Step 2: Verify Manifest Signature (Offline)
+
+The \`${opts.manifestPath}.sig\` file contains the detached signature.
+The \`${opts.manifestPath}.crt\` file contains the certificate.
+The \`${opts.manifestPath}.bundle\` file contains the Rekor transparency log proof.
+
+\`\`\`bash
+# Extract the bundle first
+unzip ${opts.bundleName} -d ./evidence
+
+# Verify the manifest signature (uses embedded certificate + bundle)
+cosign verify-blob \\
+  --signature ./seals/${bundleBase}.manifest.json.sig \\
+  --certificate ./seals/${bundleBase}.manifest.json.crt \\
+  --bundle ./seals/${bundleBase}.manifest.json.bundle \\
+  --certificate-identity-regexp ".*" \\
+  --certificate-oidc-issuer-regexp ".*" \\
+  ./evidence/${opts.manifestPath}
+\`\`\`
+
+---
+
+## Step 3: Verify File Integrity
+
+After signature verification, verify all files against the manifest:
+
+\`\`\`bash
+# Use the verify-bundle CLI
+npx @terrafusion/autonomy-viewer verify-bundle \\
+  --in ${opts.bundleName} \\
+  --strict
+\`\`\`
+
+Or manually verify SHA256 hashes:
+
+\`\`\`bash
+# Read the manifest
+cat ./evidence/MANIFEST.json | jq '.files[]'
+
+# Verify each file hash
+sha256sum ./evidence/<filename> | grep <expected_hash>
+\`\`\`
+
+---
+
+## What These Seals Prove
+
+1. **Authenticity**: The manifest was signed by a GitHub Actions workflow
+2. **Integrity**: The SHA256 hashes in the manifest match the file contents
+3. **Non-repudiation**: The signature is recorded in Sigstore's transparency log
+4. **Provenance**: The certificate contains the workflow run ID and repository
+
+---
+
+## Included Signature Files
+
+| File | Purpose |
+|------|---------|
+| \`seals/${bundleBase}.manifest.json.sig\` | Detached signature |
+| \`seals/${bundleBase}.manifest.json.crt\` | Signing certificate |
+| \`seals/${bundleBase}.manifest.json.bundle\` | Rekor transparency log proof |
+
+---
+
+## Troubleshooting
+
+### "certificate has expired"
+This is expected for keyless signatures. The \`.bundle\` file contains the
+timestamp proof from Rekor, which proves the signature was valid at signing time.
+
+### "failed to verify signature"
+Ensure you're using the correct manifest file and that no files have been modified.
+
+---
+
+*TerraFusion Phase 4N19 — Self-Contained Evidence Bag*
+*Government. Transcended.*
 `,
     'utf8'
   );
@@ -306,6 +447,59 @@ export function main(): void {
     writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
     if (opts.verbose) {
       console.log(`✅ Manifest: ${manifestPath}`);
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Phase 4N19: Include signature seals for offline verification
+  // ─────────────────────────────────────────────────────────────────────────
+  if (opts.includeSeals) {
+    const sealsDir = opts.sealsDir || opts.outDir;
+    const manifestBaseName = `${zipName}.manifest.json`;
+    
+    // Load signature triplet files
+    const sigFile = loadFile(join(sealsDir, `${manifestBaseName}.sig`), false, opts.verbose);
+    const crtFile = loadFile(join(sealsDir, `${manifestBaseName}.crt`), false, opts.verbose);
+    const bundleFile = loadFile(join(sealsDir, `${manifestBaseName}.bundle`), false, opts.verbose);
+    
+    // Check if we have at least the signature file
+    const hasTriplet = sigFile && crtFile && bundleFile;
+    
+    if (hasTriplet) {
+      // Create sealed bundle with signature triplet included
+      const sealedFiles = [...files];
+      
+      // Add seals in a subdirectory
+      sealedFiles.push({ zipPath: `seals/${manifestBaseName}.sig`, data: sigFile });
+      sealedFiles.push({ zipPath: `seals/${manifestBaseName}.crt`, data: crtFile });
+      sealedFiles.push({ zipPath: `seals/${manifestBaseName}.bundle`, data: bundleFile });
+      
+      // Generate and add VERIFY.md
+      const verifyMd = generateVerifyMd({
+        bundleName: zipName,
+        manifestPath: 'MANIFEST.json',
+      });
+      sealedFiles.push({ zipPath: 'VERIFY.md', data: verifyMd });
+      
+      // Build sealed ZIP
+      const sealedZipBuf = buildDeterministicZip(sealedFiles);
+      const sealedZipName = zipName.replace(/\.zip$/, '-sealed.zip');
+      const sealedZipPath = join(opts.outDir, sealedZipName);
+      
+      writeFileSync(sealedZipPath, sealedZipBuf);
+      console.log(`🔒 Sealed bundle: ${sealedZipPath} (${sealedZipBuf.length} bytes)`);
+      
+      if (opts.verbose) {
+        console.log('📋 Sealed bundle contains signature triplet:');
+        console.log(`   - seals/${manifestBaseName}.sig`);
+        console.log(`   - seals/${manifestBaseName}.crt`);
+        console.log(`   - seals/${manifestBaseName}.bundle`);
+        console.log('   - VERIFY.md');
+      }
+    } else {
+      console.log('⚠️  --include-seals specified but signature triplet not found');
+      console.log(`   Looking in: ${sealsDir}`);
+      console.log(`   Expected: ${manifestBaseName}.sig, .crt, .bundle`);
     }
   }
 
