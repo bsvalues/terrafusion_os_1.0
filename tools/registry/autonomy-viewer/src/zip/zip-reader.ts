@@ -72,12 +72,7 @@ export function readZipEntries(data: Buffer): ZipReadResult {
   // Signature: 0x06054b50
   let eocdOffset = -1;
   for (let i = data.length - 22; i >= 0 && i >= data.length - 65535 - 22; i--) {
-    if (
-      data[i] === 0x50 &&
-      data[i + 1] === 0x4b &&
-      data[i + 2] === 0x05 &&
-      data[i + 3] === 0x06
-    ) {
+    if (data[i] === 0x50 && data[i + 1] === 0x4b && data[i + 2] === 0x05 && data[i + 3] === 0x06) {
       eocdOffset = i;
       break;
     }

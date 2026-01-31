@@ -22,9 +22,8 @@
  */
 
 import { existsSync, readFileSync } from 'node:fs';
-import { basename, resolve } from 'node:path';
+import { basename, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
 import { sha256, type EvidenceManifest } from './manifest.js';
 import { readZipEntries, readZipFileData } from './zip/zip-reader.js';
 
@@ -151,7 +150,7 @@ function verifyBundle(zipData: Buffer, options: VerifyOptions): VerifyResult {
   }
 
   // Step 2: Find MANIFEST.json
-  const manifestEntry = zipResult.entries.find((e) => e.path === MANIFEST_PATH);
+  const manifestEntry = zipResult.entries.find(e => e.path === MANIFEST_PATH);
   if (!manifestEntry) {
     return {
       ok: false,
@@ -230,7 +229,7 @@ function verifyBundle(zipData: Buffer, options: VerifyOptions): VerifyResult {
   }
 
   // Step 5: Create lookup of ZIP entries (excluding manifest itself for verification)
-  const zipEntryMap = new Map<string, typeof zipResult.entries[0]>();
+  const zipEntryMap = new Map<string, (typeof zipResult.entries)[0]>();
   for (const entry of zipResult.entries) {
     zipEntryMap.set(entry.path, entry);
   }
@@ -419,9 +418,13 @@ function main(): void {
 }
 
 // Run if main module
-if (process.argv[1] && (process.argv[1].endsWith('verify-bundle.ts') || process.argv[1].endsWith('verify-bundle.js'))) {
+if (
+  process.argv[1] &&
+  (process.argv[1].endsWith('verify-bundle.ts') || process.argv[1].endsWith('verify-bundle.js'))
+) {
   main();
 }
 
 // Export for testing
-export { verifyBundle, parseArgs, type VerifyResult, type VerifyError, type VerifyOptions };
+export { parseArgs, verifyBundle, type VerifyError, type VerifyOptions, type VerifyResult };
+

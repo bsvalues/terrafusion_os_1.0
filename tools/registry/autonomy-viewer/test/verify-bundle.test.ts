@@ -12,10 +12,10 @@
 
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { buildManifest, sha256, type EvidenceManifest } from '../src/manifest.js';
-import { buildDeterministicZip, type ZipEntry } from '../src/zip/zip-writer.js';
-import { readZipEntries, readZipFileData, readZipFiles } from '../src/zip/zip-reader.js';
+import { buildManifest } from '../src/manifest.js';
 import { verifyBundle, type VerifyOptions } from '../src/verify-bundle.js';
+import { readZipEntries, readZipFileData, readZipFiles } from '../src/zip/zip-reader.js';
+import { buildDeterministicZip, type ZipEntry } from '../src/zip/zip-writer.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper Functions
@@ -36,10 +36,7 @@ function createValidBundle(): Buffer {
 
   const manifestData = Buffer.from(JSON.stringify(manifest, null, 2));
 
-  const allEntries: ZipEntry[] = [
-    ...files,
-    { zipPath: 'MANIFEST.json', data: manifestData },
-  ];
+  const allEntries: ZipEntry[] = [...files, { zipPath: 'MANIFEST.json', data: manifestData }];
 
   return buildDeterministicZip(allEntries);
 }
@@ -69,10 +66,7 @@ describe('ZIP Reader', () => {
 
     assert.ok(result.ok);
     assert.equal(result.entries.length, 2);
-    assert.deepEqual(
-      result.entries.map((e) => e.path).sort(),
-      ['a.txt', 'b.txt']
-    );
+    assert.deepEqual(result.entries.map(e => e.path).sort(), ['a.txt', 'b.txt']);
   });
 
   it('reads file data correctly', () => {
@@ -171,7 +165,7 @@ describe('Verify Bundle - Failure Cases', () => {
     const result = verifyBundle(zip, createOptions());
 
     assert.equal(result.ok, false);
-    assert.ok(result.errors.some((e) => e.type === 'manifest_missing'));
+    assert.ok(result.errors.some(e => e.type === 'manifest_missing'));
   });
 
   it('fails if file is missing from ZIP', () => {
@@ -193,8 +187,8 @@ describe('Verify Bundle - Failure Cases', () => {
     const result = verifyBundle(zip, createOptions());
 
     assert.equal(result.ok, false);
-    assert.ok(result.errors.some((e) => e.type === 'file_missing'));
-    assert.ok(result.errors.some((e) => e.path === 'missing.txt'));
+    assert.ok(result.errors.some(e => e.type === 'file_missing'));
+    assert.ok(result.errors.some(e => e.path === 'missing.txt'));
   });
 
   it('fails if file hash does not match', () => {
@@ -216,8 +210,8 @@ describe('Verify Bundle - Failure Cases', () => {
     const result = verifyBundle(zip, createOptions());
 
     assert.equal(result.ok, false);
-    assert.ok(result.errors.some((e) => e.type === 'hash_mismatch'));
-    assert.ok(result.errors.some((e) => e.path === 'file.txt'));
+    assert.ok(result.errors.some(e => e.type === 'hash_mismatch'));
+    assert.ok(result.errors.some(e => e.path === 'file.txt'));
   });
 
   it('fails if schema version is wrong', () => {
@@ -235,7 +229,7 @@ describe('Verify Bundle - Failure Cases', () => {
     const result = verifyBundle(zip, createOptions());
 
     assert.equal(result.ok, false);
-    assert.ok(result.errors.some((e) => e.type === 'schema_invalid'));
+    assert.ok(result.errors.some(e => e.type === 'schema_invalid'));
   });
 
   it('fails on invalid JSON manifest', () => {
@@ -246,7 +240,7 @@ describe('Verify Bundle - Failure Cases', () => {
     const result = verifyBundle(zip, createOptions());
 
     assert.equal(result.ok, false);
-    assert.ok(result.errors.some((e) => e.type === 'schema_invalid'));
+    assert.ok(result.errors.some(e => e.type === 'schema_invalid'));
   });
 
   it('fails on invalid ZIP structure', () => {
@@ -255,7 +249,7 @@ describe('Verify Bundle - Failure Cases', () => {
     const result = verifyBundle(badZip, createOptions());
 
     assert.equal(result.ok, false);
-    assert.ok(result.errors.some((e) => e.type === 'zip_invalid'));
+    assert.ok(result.errors.some(e => e.type === 'zip_invalid'));
   });
 });
 
@@ -281,8 +275,8 @@ describe('Verify Bundle - Strict Mode', () => {
     const result = verifyBundle(zip, createOptions({ strict: true }));
 
     assert.equal(result.ok, false);
-    assert.ok(result.errors.some((e) => e.type === 'extra_file'));
-    assert.ok(result.errors.some((e) => e.path === 'extrafile.txt'));
+    assert.ok(result.errors.some(e => e.type === 'extra_file'));
+    assert.ok(result.errors.some(e => e.path === 'extrafile.txt'));
   });
 
   it('passes in non-strict mode with extra files', () => {
@@ -321,9 +315,7 @@ describe('Verify Bundle - Output', () => {
   });
 
   it('error objects have required fields', () => {
-    const zip = buildDeterministicZip([
-      { zipPath: 'MANIFEST.json', data: Buffer.from('{}') },
-    ]);
+    const zip = buildDeterministicZip([{ zipPath: 'MANIFEST.json', data: Buffer.from('{}') }]);
 
     const result = verifyBundle(zip, createOptions());
 
@@ -349,7 +341,7 @@ describe('Verify Bundle - Output', () => {
 
     const result = verifyBundle(zip, createOptions());
 
-    const hashError = result.errors.find((e) => e.type === 'hash_mismatch');
+    const hashError = result.errors.find(e => e.type === 'hash_mismatch');
     assert.ok(hashError);
     assert.ok(hashError.expected);
     assert.ok(hashError.actual);
@@ -379,21 +371,27 @@ describe('Verify Bundle - Security', () => {
     const result = verifyBundle(emptyZip, createOptions());
 
     assert.equal(result.ok, false);
-    assert.ok(result.errors.some((e) => e.type === 'manifest_missing'));
+    assert.ok(result.errors.some(e => e.type === 'manifest_missing'));
   });
 
   it('handles large file counts without issue', () => {
     const files: ZipEntry[] = [];
     for (let i = 0; i < 100; i++) {
-      files.push({ zipPath: `file${i.toString().padStart(3, '0')}.txt`, data: Buffer.from(`content${i}`) });
+      files.push({
+        zipPath: `file${i.toString().padStart(3, '0')}.txt`,
+        data: Buffer.from(`content${i}`),
+      });
     }
 
     const manifest = buildManifest({
       baseSha: 'test',
-      files: files.map((f) => ({ zipPath: f.zipPath, data: f.data })),
+      files: files.map(f => ({ zipPath: f.zipPath, data: f.data })),
     });
 
-    const allEntries = [...files, { zipPath: 'MANIFEST.json', data: Buffer.from(JSON.stringify(manifest)) }];
+    const allEntries = [
+      ...files,
+      { zipPath: 'MANIFEST.json', data: Buffer.from(JSON.stringify(manifest)) },
+    ];
     const zip = buildDeterministicZip(allEntries);
 
     const result = verifyBundle(zip, createOptions());

@@ -264,6 +264,56 @@ jobs:
             echo "bundle_exists=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Verify Evidence Bundle
+        id: verify
+        if: always() && steps.bundle.outputs.bundle_exists == 'true'
+        run: |
+          echo "🔐 Verifying Evidence Bundle integrity..."
+          BUNDLE_PATH="tools/registry/autonomy-viewer/dist/autonomy-evidence-${{ github.run_number }}.zip"
+
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/verify-bundle.ts \
+            --zip "$BUNDLE_PATH" \
+            --strict \
+            --verbose
+          VERIFY_EXIT=$?
+          set -e
+
+          if [ $VERIFY_EXIT -eq 0 ]; then
+            echo "verify_ok=true" >> $GITHUB_OUTPUT
+            echo "verify_strict=true" >> $GITHUB_OUTPUT
+            echo "✅ Bundle verification passed (strict)"
+          elif [ $VERIFY_EXIT -eq 1 ]; then
+            echo "verify_ok=true" >> $GITHUB_OUTPUT
+            echo "verify_strict=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Bundle verification passed (non-strict)"
+          else
+            echo "verify_ok=false" >> $GITHUB_OUTPUT
+            echo "verify_strict=false" >> $GITHUB_OUTPUT
+            echo "::warning::Bundle verification failed"
+          fi
+
+      - name: Generate Evidence Index
+        if: always()
+        run: |
+          echo "📋 Generating Evidence Index (system-of-record)..."
+          MANIFEST_SHA="${{ steps.bundle.outputs.manifest_sha }}"
+          VERIFY_OK="${{ steps.verify.outputs.verify_ok || 'false' }}"
+          VERIFY_STRICT="${{ steps.verify.outputs.verify_strict || 'false' }}"
+
+          npx tsx tools/registry/autonomy-viewer/src/evidence-index.ts \
+            --out tools/registry/autonomy-viewer/dist/autonomy-evidence-index.json \
+            --artifacts ${{ env.OUT_DIR }} \
+            --bundle "autonomy-evidence-${{ github.run_number }}.zip" \
+            --manifest-sha "$MANIFEST_SHA" \
+            --verify-ok "$VERIFY_OK" \
+            --verify-strict "$VERIFY_STRICT" \
+            --run-id "${{ github.run_id }}" \
+            --workflow "autonomy-pr-lane" \
+            --repo "${{ github.repository }}" \
+            --ref "${{ github.ref }}" \
+            --verbose || echo "::warning::Evidence index generation failed (non-fatal)"
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         if: always()
@@ -286,6 +336,7 @@ jobs:
             tools/registry/autonomy-viewer/dist/MANIFEST.json
             tools/registry/autonomy-viewer/dist/autonomy-dashboard.html
             tools/registry/autonomy-viewer/dist/autonomy-dashboard.json
+            tools/registry/autonomy-viewer/dist/autonomy-evidence-index.json
           retention-days: 90
 
   # ==========================================================================

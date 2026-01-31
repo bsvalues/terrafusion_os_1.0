@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "terrafusion.autonomy.retention-policy.v1",
+  "version": "autonomy-evidence-retention.v1",
+  "effectiveDate": "2026-01-31",
+  "defaults": {
+    "retentionDays": 90,
+    "hashAlgorithm": "SHA-256",
+    "verifyStrict": true
+  },
+  "tiers": [
+    {
+      "id": "standard",
+      "name": "Standard CI Retention",
+      "description": "Default retention for CI workflow artifacts",
+      "retentionDays": 90,
+      "conditions": [],
+      "storageLocation": "github-actions-artifacts"
+    },
+    {
+      "id": "pr-closed",
+      "name": "Closed PR Retention",
+      "description": "Extended retention for closed PRs",
+      "retentionDays": 90,
+      "conditions": [
+        { "field": "pr.state", "operator": "eq", "value": "closed" }
+      ],
+      "storageLocation": "github-pr-artifacts"
+    },
+    {
+      "id": "merged-main",
+      "name": "Merged to Main",
+      "description": "Extended retention for merged PRs",
+      "retentionDays": 365,
+      "conditions": [
+        { "field": "pr.merged", "operator": "eq", "value": true },
+        { "field": "pr.baseRef", "operator": "eq", "value": "main" }
+      ],
+      "storageLocation": "release-evidence-archive"
+    },
+    {
+      "id": "tagged-release",
+      "name": "Tagged Release",
+      "description": "Long-term retention for tagged releases",
+      "retentionDays": 730,
+      "conditions": [
+        { "field": "ref", "operator": "startsWith", "value": "refs/tags/" }
+      ],
+      "storageLocation": "release-assets"
+    },
+    {
+      "id": "incident",
+      "name": "Incident Label",
+      "description": "Extended retention for incident-related bundles",
+      "retentionDays": 2555,
+      "conditions": [
+        { "field": "labels", "operator": "contains", "value": "incident" }
+      ],
+      "storageLocation": "county-records-system"
+    },
+    {
+      "id": "legal-hold",
+      "name": "Legal Hold",
+      "description": "Indefinite retention for legal holds",
+      "retentionDays": -1,
+      "conditions": [
+        { "field": "labels", "operator": "contains", "value": "legal-hold" }
+      ],
+      "storageLocation": "county-records-system"
+    }
+  ],
+  "integrityRequirements": {
+    "verifyCommand": "pnpm perf:verify-bundle --zip <bundle.zip> --strict",
+    "exitCodes": {
+      "ok": 0,
+      "strictFail": 1,
+      "error": 2
+    },
+    "requiredFiles": ["MANIFEST.json"],
+    "hashValidation": true
+  },
+  "accessControl": [
+    { "role": "county-cio", "access": "full-read" },
+    { "role": "it-staff", "access": "department-read" },
+    { "role": "auditor", "access": "request-read" },
+    { "role": "public", "access": "none" }
+  ],
+  "compliance": {
+    "fisma": {
+      "enabled": true,
+      "retentionYears": 3
+    },
+    "stateRecords": {
+      "enabled": true,
+      "retentionYears": 7
+    }
+  },
+  "metadata": {
+    "policyDocument": "docs/AUTONOMY_EVIDENCE_RETENTION_POLICY.md",
+    "generatedBy": "TerraFusion Autonomy",
+    "lastUpdated": "2026-01-31"
+  }
+}

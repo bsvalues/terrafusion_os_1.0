@@ -337,3 +337,131 @@ jobs:
           echo "- 📜 GOVERNANCE_CONTRACT.md (governance terms)" >> $GITHUB_STEP_SUMMARY
           echo "- 📖 README_AUDIT_PACKET.md (rollback instructions)" >> $GITHUB_STEP_SUMMARY
           echo "- 🔐 MANIFEST.json (SHA256 hashes)" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Phase 4N6: Evidence Index (System-of-Record)
+  #
+  # Generates a JSON evidence index that serves as the audit ledger for this run.
+  # The index tracks: what was done, when, by whom, bundle integrity, retention policy.
+  # This is the "system-of-record" that makes Autonomy discoverable at county scale.
+  # ============================================================================
+  evidence_index:
+    name: Generate Evidence Index
+    needs: bundle
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_ref || github.ref }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download audit artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: perf-skill-audit-${{ github.run_number }}
+          path: tools/registry/perf-skill-audit/out/
+
+      - name: Download bundle artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: autonomy-evidence-bundle-${{ github.run_number }}
+          path: tools/registry/autonomy-viewer/dist/
+
+      - name: Verify Evidence Bundle
+        id: verify
+        run: |
+          echo "🔐 Verifying Evidence Bundle integrity..."
+          BUNDLE_PATH="tools/registry/autonomy-viewer/dist/autonomy-evidence-bundle-${{ github.run_number }}.zip"
+
+          if [ ! -f "$BUNDLE_PATH" ]; then
+            echo "::warning::Bundle not found, skipping verification"
+            echo "verify_ok=false" >> $GITHUB_OUTPUT
+            echo "verify_strict=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/verify-bundle.ts \
+            --zip "$BUNDLE_PATH" \
+            --strict \
+            --verbose
+          VERIFY_EXIT=$?
+          set -e
+
+          if [ $VERIFY_EXIT -eq 0 ]; then
+            echo "verify_ok=true" >> $GITHUB_OUTPUT
+            echo "verify_strict=true" >> $GITHUB_OUTPUT
+            echo "✅ Bundle verification passed (strict)"
+          elif [ $VERIFY_EXIT -eq 1 ]; then
+            echo "verify_ok=true" >> $GITHUB_OUTPUT
+            echo "verify_strict=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Bundle verification passed (non-strict)"
+          else
+            echo "verify_ok=false" >> $GITHUB_OUTPUT
+            echo "verify_strict=false" >> $GITHUB_OUTPUT
+            echo "::warning::Bundle verification failed"
+          fi
+
+      - name: Compute Manifest SHA256
+        id: manifest
+        run: |
+          if [ -f "tools/registry/autonomy-viewer/dist/MANIFEST.json" ]; then
+            MANIFEST_SHA=$(sha256sum tools/registry/autonomy-viewer/dist/MANIFEST.json | cut -d' ' -f1)
+            echo "sha=$MANIFEST_SHA" >> $GITHUB_OUTPUT
+          else
+            echo "sha=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate Evidence Index
+        run: |
+          echo "📋 Phase 4N6: Generating Evidence Index (system-of-record)..."
+          npx tsx tools/registry/autonomy-viewer/src/evidence-index.ts \
+            --out tools/registry/autonomy-viewer/dist/autonomy-evidence-index.json \
+            --artifacts tools/registry/perf-skill-audit/out \
+            --bundle "autonomy-evidence-bundle-${{ github.run_number }}.zip" \
+            --manifest-sha "${{ steps.manifest.outputs.sha }}" \
+            --verify-ok "${{ steps.verify.outputs.verify_ok || 'false' }}" \
+            --verify-strict "${{ steps.verify.outputs.verify_strict || 'false' }}" \
+            --run-id "${{ github.run_id }}" \
+            --workflow "perf-skill-audit" \
+            --repo "${{ github.repository }}" \
+            --ref "${{ github.ref }}" \
+            --verbose
+
+      - name: Upload Evidence Index
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: autonomy-evidence-index-${{ github.run_number }}
+          path: |
+            tools/registry/autonomy-viewer/dist/autonomy-evidence-index.json
+          retention-days: 90
+
+      - name: Evidence Index Summary
+        if: always()
+        run: |
+          echo "## 📋 Evidence Index Generated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Artifact:** \`autonomy-evidence-index-${{ github.run_number }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Schema:** \`terrafusion.autonomy.evidence.index.v1\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Retention Policy:** \`autonomy-evidence-retention.v1\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Retention Days:** 90 (default)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The Evidence Index is the system-of-record for this autonomy run." >> $GITHUB_STEP_SUMMARY
+          echo "It links: workflow → bundle → proofs → retention policy." >> $GITHUB_STEP_SUMMARY
