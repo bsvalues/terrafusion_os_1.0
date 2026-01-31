@@ -208,6 +208,16 @@ jobs:
             --ref "refs/heads/main" \
             --verbose
 
+      - name: Generate Evidence Ledger
+        run: |
+          echo "📋 Generating Evidence Ledger..."
+
+          npx tsx tools/registry/autonomy-viewer/src/evidence-ledger-viewer.ts \
+            --in ${{ env.VIEWER_DIR }} \
+            --out ${{ env.VIEWER_DIR }}/autonomy-ledger.html \
+            --title "TerraFusion Evidence Ledger - ${{ needs.gate.outputs.release_tag }}" \
+            --verbose
+
       # ========================================================================
       # Step 3: Publish to GitHub Release
       # ========================================================================
@@ -226,6 +236,7 @@ jobs:
           cp "${{ env.VIEWER_DIR }}/autonomy-evidence-index.json" "$ASSETS_DIR/"
           cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/autonomy-dashboard-$RUN_ID.html" || true
           cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.json" "$ASSETS_DIR/autonomy-dashboard-$RUN_ID.json" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-ledger.html" "$ASSETS_DIR/autonomy-ledger.html" || true
 
           echo "assets_dir=$ASSETS_DIR" >> $GITHUB_OUTPUT
 

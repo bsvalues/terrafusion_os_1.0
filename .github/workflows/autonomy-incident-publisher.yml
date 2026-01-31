@@ -233,6 +233,16 @@ jobs:
             --retention-tier "incident" \
             --verbose
 
+      - name: Generate Incident Evidence Ledger
+        run: |
+          echo "📋 Generating Incident Evidence Ledger..."
+
+          npx tsx tools/registry/autonomy-viewer/src/evidence-ledger-viewer.ts \
+            --in ${{ env.VIEWER_DIR }} \
+            --out ${{ env.VIEWER_DIR }}/autonomy-incident-ledger.html \
+            --title "TerraFusion Incident Ledger - ${{ needs.gate.outputs.release_tag }}" \
+            --verbose
+
       # ========================================================================
       # Step 3: Publish to Incident Release Channel
       # ========================================================================
@@ -252,6 +262,7 @@ jobs:
           cp "${{ env.VIEWER_DIR }}/autonomy-evidence-index.json" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-index.json"
           cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-dashboard.html" || true
           cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.json" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-dashboard.json" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-incident-ledger.html" "$ASSETS_DIR/" || true
 
           echo "assets_dir=$ASSETS_DIR" >> $GITHUB_OUTPUT
 

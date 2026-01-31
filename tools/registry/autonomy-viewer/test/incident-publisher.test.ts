@@ -14,9 +14,9 @@
  */
 
 import * as assert from 'node:assert';
-import { describe, it } from 'node:test';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import * as yaml from 'yaml';
 
@@ -26,7 +26,10 @@ import * as yaml from 'yaml';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const WORKFLOW_PATH = path.resolve(__dirname, '../../../../.github/workflows/autonomy-incident-publisher.yml');
+const WORKFLOW_PATH = path.resolve(
+  __dirname,
+  '../../../../.github/workflows/autonomy-incident-publisher.yml'
+);
 
 interface WorkflowYaml {
   name: string;
@@ -76,8 +79,10 @@ describe('Incident Publisher: Trigger Contracts', () => {
     const workflow = loadWorkflow();
     const trigger = workflow.on.pull_request;
 
-    assert.ok(trigger?.types?.includes('labeled'),
-      'must trigger on labeled event for retroactive incident promotion');
+    assert.ok(
+      trigger?.types?.includes('labeled'),
+      'must trigger on labeled event for retroactive incident promotion'
+    );
   });
 
   it('should only trigger for main branch', () => {
@@ -109,8 +114,7 @@ describe('Incident Publisher: Label Detection Contracts', () => {
     const workflow = loadWorkflow();
     const env = workflow.env;
 
-    assert.strictEqual(env?.INCIDENT_LABEL, 'incident',
-      'must use canonical "incident" label name');
+    assert.strictEqual(env?.INCIDENT_LABEL, 'incident', 'must use canonical "incident" label name');
   });
 
   it('gate should skip if incident label is not present', () => {
@@ -118,10 +122,11 @@ describe('Incident Publisher: Label Detection Contracts', () => {
     const gateJob = workflow.jobs.gate;
     const checkStep = gateJob?.steps?.find(s => s.id === 'check');
 
-    assert.ok(checkStep?.run?.includes('should_publish=false'),
-      'must output should_publish=false when label missing');
-    assert.ok(checkStep?.run?.includes('incident'),
-      'must check for incident label specifically');
+    assert.ok(
+      checkStep?.run?.includes('should_publish=false'),
+      'must output should_publish=false when label missing'
+    );
+    assert.ok(checkStep?.run?.includes('incident'), 'must check for incident label specifically');
   });
 });
 
@@ -135,16 +140,27 @@ describe('Incident Publisher: Security Contracts', () => {
     const publishJob = workflow.jobs.publish;
 
     assert.ok(publishJob?.permissions, 'publish job must define permissions');
-    assert.strictEqual(publishJob.permissions?.contents, 'write', 'must have contents:write for releases');
-    assert.strictEqual(publishJob.permissions?.['pull-requests'], 'read', 'must have pull-requests:read only');
+    assert.strictEqual(
+      publishJob.permissions?.contents,
+      'write',
+      'must have contents:write for releases'
+    );
+    assert.strictEqual(
+      publishJob.permissions?.['pull-requests'],
+      'read',
+      'must have pull-requests:read only'
+    );
 
     // Must NOT have elevated permissions
-    assert.ok(!publishJob.permissions?.actions || publishJob.permissions.actions === 'read',
-      'must not have actions:write');
-    assert.ok(!publishJob.permissions?.packages || publishJob.permissions.packages === 'read',
-      'must not have packages:write');
-    assert.ok(!publishJob.permissions?.['id-token'],
-      'must not request id-token (OIDC)');
+    assert.ok(
+      !publishJob.permissions?.actions || publishJob.permissions.actions === 'read',
+      'must not have actions:write'
+    );
+    assert.ok(
+      !publishJob.permissions?.packages || publishJob.permissions.packages === 'read',
+      'must not have packages:write'
+    );
+    assert.ok(!publishJob.permissions?.['id-token'], 'must not request id-token (OIDC)');
   });
 
   it('publish job should depend on gate job', () => {
@@ -159,8 +175,10 @@ describe('Incident Publisher: Security Contracts', () => {
     const publishJob = workflow.jobs.publish;
 
     assert.ok(publishJob?.if?.includes('should_publish'), 'must check gate output');
-    assert.ok(publishJob.if?.includes("'true'") || publishJob.if?.includes('true'),
-      'must require should_publish == true');
+    assert.ok(
+      publishJob.if?.includes("'true'") || publishJob.if?.includes('true'),
+      'must require should_publish == true'
+    );
   });
 });
 
@@ -208,8 +226,10 @@ describe('Incident Publisher: Release Naming Contracts', () => {
     const steps = workflow.jobs.gate?.steps ?? [];
 
     const checkStep = steps.find(s => s.id === 'check');
-    assert.ok(checkStep?.run?.includes('autonomy-incident/'),
-      'release tag must use autonomy-incident/ namespace');
+    assert.ok(
+      checkStep?.run?.includes('autonomy-incident/'),
+      'release tag must use autonomy-incident/ namespace'
+    );
   });
 
   it('should use yearly format for 7-year incident tier', () => {
@@ -218,8 +238,7 @@ describe('Incident Publisher: Release Naming Contracts', () => {
 
     const checkStep = steps.find(s => s.id === 'check');
     // Should use %Y not %Y-%m for yearly rollup
-    assert.ok(checkStep?.run?.includes('%Y'),
-      'release tag should use yearly format');
+    assert.ok(checkStep?.run?.includes('%Y'), 'release tag should use yearly format');
   });
 
   it('bundle name should include PR number for incident traceability', () => {
@@ -227,8 +246,10 @@ describe('Incident Publisher: Release Naming Contracts', () => {
     const steps = workflow.jobs.publish?.steps ?? [];
 
     const bundleStep = steps.find(s => s.id === 'bundle');
-    assert.ok(bundleStep?.run?.includes('PR_NUMBER') || bundleStep?.run?.includes('pr_number'),
-      'bundle name must include PR number for incident traceability');
+    assert.ok(
+      bundleStep?.run?.includes('PR_NUMBER') || bundleStep?.run?.includes('pr_number'),
+      'bundle name must include PR number for incident traceability'
+    );
   });
 });
 
@@ -241,41 +262,46 @@ describe('Incident Publisher: Asset Contracts', () => {
     const workflow = loadWorkflow();
     const steps = workflow.jobs.publish?.steps ?? [];
 
-    const assetsStep = steps.find(s => s.name?.toLowerCase().includes('prepare') &&
-                                       s.name?.toLowerCase().includes('incident'));
-    assert.ok(assetsStep?.run?.includes('bundle_path') || assetsStep?.run?.includes('.zip'),
-      'must include incident ZIP bundle in assets');
+    const assetsStep = steps.find(
+      s => s.name?.toLowerCase().includes('prepare') && s.name?.toLowerCase().includes('incident')
+    );
+    assert.ok(
+      assetsStep?.run?.includes('bundle_path') || assetsStep?.run?.includes('.zip'),
+      'must include incident ZIP bundle in assets'
+    );
   });
 
   it('should publish incident manifest JSON', () => {
     const workflow = loadWorkflow();
     const steps = workflow.jobs.publish?.steps ?? [];
 
-    const assetsStep = steps.find(s => s.name?.toLowerCase().includes('prepare') &&
-                                       s.name?.toLowerCase().includes('incident'));
-    assert.ok(assetsStep?.run?.includes('manifest'),
-      'must include incident manifest in assets');
+    const assetsStep = steps.find(
+      s => s.name?.toLowerCase().includes('prepare') && s.name?.toLowerCase().includes('incident')
+    );
+    assert.ok(assetsStep?.run?.includes('manifest'), 'must include incident manifest in assets');
   });
 
   it('should publish incident evidence index JSON', () => {
     const workflow = loadWorkflow();
     const steps = workflow.jobs.publish?.steps ?? [];
 
-    const assetsStep = steps.find(s => s.name?.toLowerCase().includes('prepare') &&
-                                       s.name?.toLowerCase().includes('incident'));
-    assert.ok(assetsStep?.run?.includes('index'),
-      'must include incident evidence index in assets');
+    const assetsStep = steps.find(
+      s => s.name?.toLowerCase().includes('prepare') && s.name?.toLowerCase().includes('incident')
+    );
+    assert.ok(assetsStep?.run?.includes('index'), 'must include incident evidence index in assets');
   });
 
   it('should publish incident dashboard HTML', () => {
     const workflow = loadWorkflow();
     const steps = workflow.jobs.publish?.steps ?? [];
 
-    const assetsStep = steps.find(s => s.name?.toLowerCase().includes('prepare') &&
-                                       s.name?.toLowerCase().includes('incident'));
-    assert.ok(assetsStep?.run?.includes('dashboard') &&
-              assetsStep?.run?.includes('.html'),
-      'must include incident dashboard HTML in assets');
+    const assetsStep = steps.find(
+      s => s.name?.toLowerCase().includes('prepare') && s.name?.toLowerCase().includes('incident')
+    );
+    assert.ok(
+      assetsStep?.run?.includes('dashboard') && assetsStep?.run?.includes('.html'),
+      'must include incident dashboard HTML in assets'
+    );
   });
 });
 
@@ -290,8 +316,10 @@ describe('Incident Publisher: Release Action Contracts', () => {
 
     const releaseStep = steps.find(s => s.uses?.includes('action-gh-release'));
     assert.ok(releaseStep, 'must use action-gh-release');
-    assert.ok(releaseStep.uses?.includes('softprops/action-gh-release'),
-      'must use softprops/action-gh-release');
+    assert.ok(
+      releaseStep.uses?.includes('softprops/action-gh-release'),
+      'must use softprops/action-gh-release'
+    );
   });
 
   it('release should not be draft', () => {
@@ -299,8 +327,7 @@ describe('Incident Publisher: Release Action Contracts', () => {
     const steps = workflow.jobs.publish?.steps ?? [];
 
     const releaseStep = steps.find(s => s.uses?.includes('action-gh-release'));
-    assert.strictEqual(releaseStep?.with?.draft, false,
-      'incident release must not be a draft');
+    assert.strictEqual(releaseStep?.with?.draft, false, 'incident release must not be a draft');
   });
 
   it('release should not be prerelease', () => {
@@ -308,8 +335,11 @@ describe('Incident Publisher: Release Action Contracts', () => {
     const steps = workflow.jobs.publish?.steps ?? [];
 
     const releaseStep = steps.find(s => s.uses?.includes('action-gh-release'));
-    assert.strictEqual(releaseStep?.with?.prerelease, false,
-      'incident release must not be a prerelease');
+    assert.strictEqual(
+      releaseStep?.with?.prerelease,
+      false,
+      'incident release must not be a prerelease'
+    );
   });
 
   it('release body should include verify command', () => {
@@ -319,8 +349,10 @@ describe('Incident Publisher: Release Action Contracts', () => {
     const releaseStep = steps.find(s => s.uses?.includes('action-gh-release'));
     const body = releaseStep?.with?.body as string | undefined;
 
-    assert.ok(body?.includes('perf:verify-bundle'),
-      'incident release body must include verify command');
+    assert.ok(
+      body?.includes('perf:verify-bundle'),
+      'incident release body must include verify command'
+    );
   });
 
   it('release body should mention 7-year retention', () => {
@@ -330,8 +362,7 @@ describe('Incident Publisher: Release Action Contracts', () => {
     const releaseStep = steps.find(s => s.uses?.includes('action-gh-release'));
     const body = releaseStep?.with?.body as string | undefined;
 
-    assert.ok(body?.includes('7 year'),
-      'incident release body must mention 7-year retention');
+    assert.ok(body?.includes('7 year'), 'incident release body must mention 7-year retention');
   });
 
   it('release body should include rollback command', () => {
@@ -341,8 +372,10 @@ describe('Incident Publisher: Release Action Contracts', () => {
     const releaseStep = steps.find(s => s.uses?.includes('action-gh-release'));
     const body = releaseStep?.with?.body as string | undefined;
 
-    assert.ok(body?.includes('perf:rollback'),
-      'incident release body must include rollback command');
+    assert.ok(
+      body?.includes('perf:rollback'),
+      'incident release body must include rollback command'
+    );
   });
 });
 
@@ -356,8 +389,7 @@ describe('Incident Publisher: Evidence Index Contracts', () => {
     const steps = workflow.jobs.publish?.steps ?? [];
 
     const indexStep = steps.find(s => s.name?.toLowerCase().includes('evidence index'));
-    assert.ok(indexStep?.run?.includes('--incident'),
-      'must generate index with --incident flag');
+    assert.ok(indexStep?.run?.includes('--incident'), 'must generate index with --incident flag');
   });
 
   it('should set retention tier to incident', () => {
@@ -365,9 +397,10 @@ describe('Incident Publisher: Evidence Index Contracts', () => {
     const steps = workflow.jobs.publish?.steps ?? [];
 
     const indexStep = steps.find(s => s.name?.toLowerCase().includes('evidence index'));
-    assert.ok(indexStep?.run?.includes('--retention-tier') &&
-              indexStep?.run?.includes('incident'),
-      'must set retention tier to incident');
+    assert.ok(
+      indexStep?.run?.includes('--retention-tier') && indexStep?.run?.includes('incident'),
+      'must set retention tier to incident'
+    );
   });
 
   it('should include incident PR number', () => {
@@ -375,8 +408,10 @@ describe('Incident Publisher: Evidence Index Contracts', () => {
     const steps = workflow.jobs.publish?.steps ?? [];
 
     const indexStep = steps.find(s => s.name?.toLowerCase().includes('evidence index'));
-    assert.ok(indexStep?.run?.includes('--incident-pr'),
-      'must include incident PR number in index');
+    assert.ok(
+      indexStep?.run?.includes('--incident-pr'),
+      'must include incident PR number in index'
+    );
   });
 });
 
@@ -391,8 +426,7 @@ describe('Incident Publisher: Tier 1 Safety Contracts', () => {
 
     for (const step of steps) {
       if (step.run) {
-        assert.ok(!step.run.includes('--force'),
-          `step "${step.name}" must not use --force flag`);
+        assert.ok(!step.run.includes('--force'), `step "${step.name}" must not use --force flag`);
       }
     }
   });
@@ -403,8 +437,7 @@ describe('Incident Publisher: Tier 1 Safety Contracts', () => {
     // Check global env
     if (workflow.env) {
       for (const key of Object.keys(workflow.env)) {
-        assert.ok(!key.startsWith('OVERRIDE_'),
-          `env "${key}" must not be an OVERRIDE_ variable`);
+        assert.ok(!key.startsWith('OVERRIDE_'), `env "${key}" must not be an OVERRIDE_ variable`);
       }
     }
 
@@ -412,8 +445,10 @@ describe('Incident Publisher: Tier 1 Safety Contracts', () => {
     const steps = workflow.jobs.publish?.steps ?? [];
     for (const step of steps) {
       if (step.run) {
-        assert.ok(!step.run.includes('OVERRIDE_'),
-          `step "${step.name}" must not set OVERRIDE_ variables`);
+        assert.ok(
+          !step.run.includes('OVERRIDE_'),
+          `step "${step.name}" must not set OVERRIDE_ variables`
+        );
       }
     }
   });
@@ -424,8 +459,10 @@ describe('Incident Publisher: Tier 1 Safety Contracts', () => {
 
     const verifyStep = steps.find(s => s.name?.toLowerCase().includes('verify'));
     if (verifyStep?.run) {
-      assert.ok(!verifyStep.run.match(/exit 0.*verify/i),
-        'verify step must not exit 0 before verification');
+      assert.ok(
+        !verifyStep.run.match(/exit 0.*verify/i),
+        'verify step must not exit 0 before verification'
+      );
     }
   });
 });
@@ -440,8 +477,7 @@ describe('Incident Publisher: Checkout Contracts', () => {
     const steps = workflow.jobs.publish?.steps ?? [];
 
     const checkoutStep = steps.find(s => s.uses?.includes('actions/checkout'));
-    assert.ok(checkoutStep?.with?.ref === 'main',
-      'checkout must explicitly use ref: main');
+    assert.ok(checkoutStep?.with?.ref === 'main', 'checkout must explicitly use ref: main');
   });
 
   it('should use shallow clone (fetch-depth: 1)', () => {
@@ -449,8 +485,11 @@ describe('Incident Publisher: Checkout Contracts', () => {
     const steps = workflow.jobs.publish?.steps ?? [];
 
     const checkoutStep = steps.find(s => s.uses?.includes('actions/checkout'));
-    assert.strictEqual(checkoutStep?.with?.['fetch-depth'], 1,
-      'checkout should use fetch-depth: 1 for speed');
+    assert.strictEqual(
+      checkoutStep?.with?.['fetch-depth'],
+      1,
+      'checkout should use fetch-depth: 1 for speed'
+    );
   });
 });
 
@@ -461,15 +500,18 @@ describe('Incident Publisher: Checkout Contracts', () => {
 describe('Incident Publisher: Metadata Contracts', () => {
   it('should have descriptive name including "Incident"', () => {
     const workflow = loadWorkflow();
-    assert.ok(workflow.name.includes('Incident'),
-      'workflow name must include "Incident"');
+    assert.ok(workflow.name.includes('Incident'), 'workflow name must include "Incident"');
   });
 
   it('should have concurrency group to prevent parallel runs for same PR', () => {
     const workflowContent = fs.readFileSync(WORKFLOW_PATH, 'utf-8');
-    assert.ok(workflowContent.includes('concurrency'),
-      'workflow must define concurrency to prevent parallel runs');
-    assert.ok(workflowContent.includes('pull_request.number'),
-      'concurrency group should include PR number');
+    assert.ok(
+      workflowContent.includes('concurrency'),
+      'workflow must define concurrency to prevent parallel runs'
+    );
+    assert.ok(
+      workflowContent.includes('pull_request.number'),
+      'concurrency group should include PR number'
+    );
   });
 });
