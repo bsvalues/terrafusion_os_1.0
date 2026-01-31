@@ -1,0 +1,51 @@
+[
+  {
+    "planItemId": "rerender-setstate-nonfunctional-31-erender-patterns-tsx-l56",
+    "strategyId": "setstate-nonfunctional",
+    "outcome": "applied",
+    "finalCommitSha": "843da9cf649dbcde0ee103d407d2ae0e3d3985f6",
+    "rollbackCommand": "git revert 843da9cf64",
+    "gates": [
+      {
+        "name": "type-check",
+        "command": "pnpm run type-check",
+        "passed": true,
+        "durationMs": 1959
+      },
+      {
+        "name": "phase83-tools",
+        "command": "node --test os-platform/core/tests/phase83-tools.test.mjs",
+        "passed": true,
+        "durationMs": 172
+      }
+    ],
+    "diffStats": { "filesChanged": 1, "linesAdded": 1, "linesRemoved": 1 }
+  },
+  {
+    "outcome": "noop",
+    "selectionReason": {
+      "reason": "No eligible Tier 0 candidates after governance/tier filtering",
+      "candidatesConsidered": 69,
+      "filteredByGovernance": 46,
+      "filteredByTier": 0
+    }
+  },
+  {
+    "planItemId": "bundle-barrel-import-0-h-strategies-test-ts-l142",
+    "strategyId": "debarrel-import",
+    "outcome": "skipped",
+    "failureReason": "Patch did not apply cleanly"
+  },
+  {
+    "planItemId": "rerender-waterfall-42-some-component-tsx-l100",
+    "strategyId": "waterfall-parallelize",
+    "outcome": "blocked",
+    "failureReason": "Strategy requires --tier=1 flag"
+  },
+  {
+    "planItemId": "client-boundary-missing-use-client-20-fixture-tsx-l13",
+    "strategyId": "missing-use-client",
+    "outcome": "dry-run",
+    "rollbackCommand": ""
+  }
+]

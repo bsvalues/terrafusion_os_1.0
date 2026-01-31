@@ -856,7 +856,8 @@ function createProof(
     })),
     outcome,
     finalCommitSha: commitHash,
-    rollbackCommand: commitHash ? `git revert ${commitHash}` : undefined,
+    // Phase 4M6d: standardize on short SHA (10 chars) for readability + uniqueness
+    rollbackCommand: commitHash ? `git revert ${commitHash.slice(0, 10)}` : undefined,
     failureReason,
     selectionReason,
     // Phase 4M6a extensions
@@ -1079,12 +1080,8 @@ function writeAutonomyReport(plan: PerfPlan): void {
   if (jsonReport.topCandidates.length > 0) {
     mdLines.push('## Top 10 Candidates');
     mdLines.push('');
-    mdLines.push(
-      '| # | ID | Kind | Strategy | Priority | Risk | Lines |'
-    );
-    mdLines.push(
-      '|---|-----|------|----------|----------|------|-------|'
-    );
+    mdLines.push('| # | ID | Kind | Strategy | Priority | Risk | Lines |');
+    mdLines.push('|---|-----|------|----------|----------|------|-------|');
     jsonReport.topCandidates.forEach((c, i) => {
       mdLines.push(
         `| ${i + 1} | \`${c.id.substring(0, 30)}...\` | ${c.kind} | ${c.strategy} | ${c.priorityScore} | ${c.riskScore} | ${c.estimatedLines} |`
@@ -1658,7 +1655,7 @@ async function mainWithAutoMode(plan: PerfPlan): Promise<void> {
       });
       appliedProofs.push(explainProof);
       writeProofs();
-      
+
       // Track explain in autonomy stats
       autonomyStats.selectedItem = selectedItem;
       autonomyStats.selectionReason = {
