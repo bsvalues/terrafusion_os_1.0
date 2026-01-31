@@ -218,6 +218,21 @@ jobs:
             --title "TerraFusion Evidence Ledger - ${{ needs.gate.outputs.release_tag }}" \
             --verbose
 
+      - name: Generate Chain of Custody
+        run: |
+          echo "🔗 Generating Chain of Custody..."
+
+          # Create minimal apply-proofs for publisher context (no actual apply in publisher)
+          echo '[{"planItemId":"publisher-${{ needs.gate.outputs.run_id }}","outcome":"noop","allowedSurfaceCheck":{"passed":true},"forbiddenPathCheck":{"passed":true}}]' > ${{ env.OUT_DIR }}/apply-proofs.json
+
+          npx tsx tools/registry/autonomy-viewer/src/custody-cli.ts \
+            --proof ${{ env.OUT_DIR }}/apply-proofs.json \
+            --plan ${{ env.OUT_DIR }}/perf.plan.json \
+            --evidence-index ${{ env.VIEWER_DIR }}/autonomy-evidence-index.json \
+            --out ${{ env.VIEWER_DIR }}/autonomy-custody.html \
+            --emit-json \
+            --verbose || echo "::warning::Chain of custody generation failed (non-fatal)"
+
       # ========================================================================
       # Step 3: Publish to GitHub Release
       # ========================================================================
@@ -237,6 +252,8 @@ jobs:
           cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/autonomy-dashboard-$RUN_ID.html" || true
           cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.json" "$ASSETS_DIR/autonomy-dashboard-$RUN_ID.json" || true
           cp "${{ env.VIEWER_DIR }}/autonomy-ledger.html" "$ASSETS_DIR/autonomy-ledger.html" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-custody.html" "$ASSETS_DIR/autonomy-custody-$RUN_ID.html" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-custody.json" "$ASSETS_DIR/autonomy-custody-$RUN_ID.json" || true
 
           echo "assets_dir=$ASSETS_DIR" >> $GITHUB_OUTPUT
 

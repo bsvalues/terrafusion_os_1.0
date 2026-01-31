@@ -314,6 +314,18 @@ jobs:
             --ref "${{ github.ref }}" \
             --verbose || echo "::warning::Evidence index generation failed (non-fatal)"
 
+      - name: Generate Chain of Custody
+        if: always()
+        run: |
+          echo "🔗 Generating Chain of Custody (auditor packet)..."
+          npx tsx tools/registry/autonomy-viewer/src/custody-cli.ts \
+            --proof ${{ env.OUT_DIR }}/apply-proofs.json \
+            --plan ${{ env.OUT_DIR }}/perf.plan.json \
+            --evidence-index tools/registry/autonomy-viewer/dist/autonomy-evidence-index.json \
+            --out tools/registry/autonomy-viewer/dist/autonomy-custody.html \
+            --emit-json \
+            --verbose || echo "::warning::Chain of custody generation failed (non-fatal)"
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         if: always()
@@ -337,6 +349,8 @@ jobs:
             tools/registry/autonomy-viewer/dist/autonomy-dashboard.html
             tools/registry/autonomy-viewer/dist/autonomy-dashboard.json
             tools/registry/autonomy-viewer/dist/autonomy-evidence-index.json
+            tools/registry/autonomy-viewer/dist/autonomy-custody.html
+            tools/registry/autonomy-viewer/dist/autonomy-custody.json
           retention-days: 90
 
   # ==========================================================================
@@ -478,6 +492,8 @@ jobs:
           |----------|---------|----------|
           | `autonomy-evidence-bundle-*` | **Complete audit packet** (ZIP) | Workflow Artifacts |
           | `autonomy-dashboard.html` | Offline CIO viewer | Inside bundle |
+          | `autonomy-custody.html` | Chain of custody (auditor single-page) | Inside bundle |
+          | `autonomy-custody.json` | Chain of custody (machine-readable) | Inside bundle |
           | `MANIFEST.json` | SHA256 integrity hashes | Inside bundle |
           | `apply-proofs.json` | Cryptographic proof trail | Inside bundle |
           | `perf.plan.json` | Original performance plan | Inside bundle |

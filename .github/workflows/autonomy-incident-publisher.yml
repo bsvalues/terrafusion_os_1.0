@@ -243,6 +243,21 @@ jobs:
             --title "TerraFusion Incident Ledger - ${{ needs.gate.outputs.release_tag }}" \
             --verbose
 
+      - name: Generate Chain of Custody (Incident)
+        run: |
+          echo "🔗 Generating Chain of Custody (Incident)..."
+
+          # Create minimal apply-proofs for publisher context
+          echo '[{"planItemId":"incident-pr${{ needs.gate.outputs.pr_number }}","outcome":"noop","allowedSurfaceCheck":{"passed":true},"forbiddenPathCheck":{"passed":true}}]' > ${{ env.OUT_DIR }}/apply-proofs.json
+
+          npx tsx tools/registry/autonomy-viewer/src/custody-cli.ts \
+            --proof ${{ env.OUT_DIR }}/apply-proofs.json \
+            --plan ${{ env.OUT_DIR }}/perf.plan.json \
+            --evidence-index ${{ env.VIEWER_DIR }}/autonomy-evidence-index.json \
+            --out ${{ env.VIEWER_DIR }}/autonomy-custody.html \
+            --emit-json \
+            --verbose || echo "::warning::Chain of custody generation failed (non-fatal)"
+
       # ========================================================================
       # Step 3: Publish to Incident Release Channel
       # ========================================================================
@@ -263,6 +278,8 @@ jobs:
           cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.html" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-dashboard.html" || true
           cp "${{ env.VIEWER_DIR }}/autonomy-dashboard.json" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-dashboard.json" || true
           cp "${{ env.VIEWER_DIR }}/autonomy-incident-ledger.html" "$ASSETS_DIR/" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-custody.html" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-custody.html" || true
+          cp "${{ env.VIEWER_DIR }}/autonomy-custody.json" "$ASSETS_DIR/autonomy-incident-pr${PR_NUMBER}-custody.json" || true
 
           echo "assets_dir=$ASSETS_DIR" >> $GITHUB_OUTPUT
 

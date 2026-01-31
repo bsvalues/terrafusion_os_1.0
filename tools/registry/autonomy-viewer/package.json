@@ -8,6 +8,7 @@
     "generate": "npx tsx src/generate.ts",
     "bundle": "npx tsx src/bundle.ts",
     "verify": "npx tsx src/verify-bundle.ts",
+    "custody": "npx tsx src/custody-cli.ts",
     "test": "npx tsx --test test/*.test.ts"
   },
   "keywords": [
