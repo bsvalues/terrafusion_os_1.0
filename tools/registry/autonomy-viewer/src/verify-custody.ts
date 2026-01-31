@@ -86,6 +86,7 @@ export interface UnifiedCustodyResult {
 
 /**
  * Phase 4N18: Signature verification errors for custody.
+ * Phase 4N20: Extended with SHA/ref binding errors.
  */
 export interface SignatureError {
   type:
@@ -93,7 +94,10 @@ export interface SignatureError {
     | 'triplet_incomplete'
     | 'issuer_mismatch'
     | 'identity_mismatch'
-    | 'pins_missing';
+    | 'pins_missing'
+    | 'sha_missing'
+    | 'sha_mismatch'
+    | 'ref_forbidden';
   file?: string;
   message: string;
 }
@@ -341,6 +345,12 @@ function verifySignatures(
 interface ExpectedPolicy {
   issuer?: string;
   identity?: string;
+  /** If true, SHA binding is REQUIRED for verification to pass */
+  requireShaBinding?: boolean;
+  /** Expected SHA (40-hex) */
+  sha?: string;
+  /** Expected ref (e.g., refs/heads/main) */
+  ref?: string;
 }
 
 /**
@@ -355,6 +365,9 @@ function loadPolicyFromIndex(indexPath: string): ExpectedPolicy | null {
       return {
         issuer: policy.issuer,
         identity: policy.identity,
+        requireShaBinding: policy.requireShaBinding,
+        sha: policy.sha,
+        ref: policy.ref,
       };
     }
     // Fallback to signingIdentity for older indices
@@ -372,6 +385,7 @@ function loadPolicyFromIndex(indexPath: string): ExpectedPolicy | null {
 
 /**
  * Phase 4N20: Verify pins against expected values.
+ * Enforces SHA binding for merged/incident tiers when requireShaBinding=true.
  */
 function verifyPins(
   opts: VerifyOptions,
@@ -382,14 +396,21 @@ function verifyPins(
   // Load policy from index if specified
   let expectedIssuer = opts.expectedIssuer;
   let expectedIdentity = opts.expectedIdentity;
+  let requireShaBinding = false;
+  let expectedSha: string | undefined;
+  let expectedRef: string | undefined;
 
   if (opts.policyFromIndex) {
     const policy = loadPolicyFromIndex(opts.policyFromIndex);
     if (policy) {
       expectedIssuer = expectedIssuer || policy.issuer;
       expectedIdentity = expectedIdentity || policy.identity;
+      requireShaBinding = policy.requireShaBinding ?? false;
+      expectedSha = policy.sha;
+      expectedRef = policy.ref;
       if (verbose) {
         console.log(`  Loaded pins from index: ${opts.policyFromIndex}`);
+        if (requireShaBinding) console.log(`  SHA binding: REQUIRED`);
       }
     }
   }
@@ -403,13 +424,32 @@ function verifyPins(
     return { pinned: false, errors };
   }
 
-  const pinned = !!(expectedIssuer || expectedIdentity);
+  // Phase 4N20: Enforce SHA binding for merged/incident tiers
+  if (requireShaBinding && opts.strict) {
+    if (!expectedSha) {
+      errors.push({
+        type: 'sha_missing',
+        message: 'SHA binding required but no SHA in policy (merged/incident tier)',
+      });
+    }
+    // Ref binding enforcement: only main/master allowed for merged/incident
+    if (expectedRef && !expectedRef.match(/^refs\/heads\/(main|master)$/)) {
+      errors.push({
+        type: 'ref_forbidden',
+        message: `Ref '${expectedRef}' not allowed for merged/incident tier (only refs/heads/main or refs/heads/master)`,
+      });
+    }
+  }
+
+  const pinned = !!(expectedIssuer || expectedIdentity) && errors.length === 0;
 
   // Note: Actual signature content verification would require reading .crt files
   // For now, we document the expected pins for audit purposes
   if (verbose && pinned) {
     if (expectedIssuer) console.log(`  Expected issuer: ${expectedIssuer}`);
     if (expectedIdentity) console.log(`  Expected identity: ${expectedIdentity}`);
+    if (expectedSha) console.log(`  Expected SHA: ${expectedSha}`);
+    if (expectedRef) console.log(`  Expected ref: ${expectedRef}`);
   }
 
   return { pinned, errors };

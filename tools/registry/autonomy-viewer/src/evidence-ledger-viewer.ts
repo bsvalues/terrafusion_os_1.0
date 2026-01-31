@@ -80,6 +80,8 @@ export interface LedgerEntry {
     verified?: { ok: boolean; checkedAt: string; error?: string };
     /** Phase 4N20: Whether signature pins were verified */
     pinned?: boolean;
+    /** Phase 4N20: If not pinned, why (for audit visibility) */
+    pinMismatchReason?: string;
   };
 }
 
@@ -107,6 +109,8 @@ export interface LedgerViewModel {
     unsignedCount: number;
     /** Phase 4N20: Pinned count */
     pinnedCount: number;
+    /** Phase 4N20: Count of signed but not pinned (red flag) */
+    unpinnedCount: number;
   };
 }
 
@@ -285,9 +289,21 @@ export function buildLedgerEntries(
       // Phase 4N16: Extract signature info from assets
       // Phase 4N20: Include pinned status from expectedSignaturePolicy
       const bundleAsset = index.assets?.bundleZip;
-      const hasPins = !!(
-        index.expectedSignaturePolicy?.issuer && index.expectedSignaturePolicy?.identity
-      );
+      const policy = index.expectedSignaturePolicy;
+      const hasPins = !!(policy?.issuer && policy?.identity);
+
+      // Phase 4N20: Determine why signature is not pinned (for auditor visibility)
+      let pinMismatchReason: string | undefined;
+      if (bundleAsset?.signature && !hasPins) {
+        if (!policy) {
+          pinMismatchReason = 'No signature policy in index';
+        } else if (!policy.issuer) {
+          pinMismatchReason = 'Missing issuer in policy';
+        } else if (!policy.identity) {
+          pinMismatchReason = 'Missing identity in policy';
+        }
+      }
+
       const signature = bundleAsset?.signature
         ? {
             signed: true,
@@ -296,6 +312,7 @@ export function buildLedgerEntries(
             issuer: bundleAsset.signature.issuer,
             verified: bundleAsset.signature.verified,
             pinned: hasPins,
+            pinMismatchReason,
           }
         : { signed: false, pinned: false };
 
@@ -366,6 +383,8 @@ export function buildLedgerViewModel(entries: LedgerEntry[], opts: ViewerOptions
     unsignedCount: entries.filter(e => !e.signature?.signed).length,
     // Phase 4N20: Pinned count
     pinnedCount: entries.filter(e => e.signature?.signed && e.signature?.pinned).length,
+    // Phase 4N20: Unpinned count (red flag for auditors)
+    unpinnedCount: entries.filter(e => e.signature?.signed && !e.signature?.pinned).length,
   };
 
   return {
@@ -502,14 +521,22 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     .badge-error { background: #fee2e2; color: #991b1b; }
     .badge-warning { background: #fef3c7; color: #92400e; }
     .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-danger { background: #fecaca; color: #7f1d1d; border: 1px solid #f87171; }
     .badge-muted { background: #f3f4f6; color: #4b5563; }
     .badge-info { background: #dbeafe; color: #1e40af; }
     @media (prefers-color-scheme: dark) {
       .badge-error { background: #7f1d1d; color: #fecaca; }
       .badge-warning { background: #78350f; color: #fde68a; }
       .badge-success { background: #064e3b; color: #a7f3d0; }
+      .badge-danger { background: #991b1b; color: #fecaca; border: 1px solid #f87171; }
       .badge-muted { background: #374151; color: #d1d5db; }
       .badge-info { background: #1e3a5f; color: #93c5fd; }
+    }
+
+    /* Phase 4N20: Red flag for unpinned signatures */
+    .row-unpinned { background: #fef2f2 !important; }
+    @media (prefers-color-scheme: dark) {
+      .row-unpinned { background: #450a0a !important; }
     }
 
     .verify-status { font-weight: 600; }
@@ -548,19 +575,25 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
       const incidentInfo = entry.incident && entry.incidentPr ? ` (PR #${entry.incidentPr})` : '';
 
       // Phase 4N16: Signature status cell
-      // Phase 4N20: Add pinned badge
+      // Phase 4N20: Add pinned badge with mismatch reason
       const sigClass = entry.signature?.signed ? 'sig-signed' : 'sig-unsigned';
       const sigText = entry.signature?.signed ? '🔏 Signed' : '—';
+      const mismatchReason = entry.signature?.pinMismatchReason
+        ? ` (${entry.signature.pinMismatchReason})`
+        : '';
       const pinnedBadge =
         entry.signature?.signed && entry.signature?.pinned
           ? ' <span class="badge badge-success" title="Signature identity pins verified">📌 Pinned</span>'
           : entry.signature?.signed
-            ? ' <span class="badge badge-warning" title="Signature not pinned - verify manually">⚠️ Not pinned</span>'
+            ? ` <span class="badge badge-danger" title="Signature not pinned${mismatchReason} - VERIFY MANUALLY">🚨 Not pinned</span>`
             : '';
       const sigTitle =
         entry.signature?.signed && entry.signature.identity
-          ? `Signed by: ${entry.signature.identity}${entry.signature.pinned ? ' (pinned)' : ''}`
+          ? `Signed by: ${entry.signature.identity}${entry.signature.pinned ? ' (pinned)' : mismatchReason}`
           : 'Not signed';
+
+      // Phase 4N20: Row class for red flag visibility
+      const rowClass = entry.signature?.signed && !entry.signature?.pinned ? 'row-unpinned' : '';
 
       // Phase 4N14: Render bundle as link when URL is available
       // Phase 4N15: Show local-missing badge when bundle URL exists but local file is absent
@@ -578,7 +611,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
         : escapeHtml(entry.releaseTag);
 
       return `
-        <tr data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}">
+        <tr class="${rowClass}" data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}">
           <td>${formatDate(entry.date)}</td>
           <td>${escapeHtml(entry.runId)}</td>
           <td>${tierBadge}${incidentInfo}</td>
@@ -638,6 +671,10 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     <div class="summary-card">
       <div class="value" style="color: var(--color-success)">${vm.summary.pinnedCount}</div>
       <div class="label">📌 Pinned</div>
+    </div>
+    <div class="summary-card">
+      <div class="value" style="color: ${vm.summary.unpinnedCount > 0 ? 'var(--color-error)' : 'var(--color-muted)'}">${vm.summary.unpinnedCount}</div>
+      <div class="label">${vm.summary.unpinnedCount > 0 ? '🚨' : ''} Unpinned</div>
     </div>
   </div>
 

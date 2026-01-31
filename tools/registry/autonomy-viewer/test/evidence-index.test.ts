@@ -1655,28 +1655,61 @@ describe('Phase 4N20: Identity & Issuer Pinning', () => {
       assert.equal(index.expectedSignaturePolicy.sha, sha);
     });
 
-    // NOTE: Test deferred - requireShaBinding is not yet implemented in buildEvidenceIndex
-    it.skip('should set requireShaBinding based on tier context', () => {
+    it('should set requireShaBinding=true for merged tier', () => {
       const opts = createMockOptions(tempDir, {
         artifactsDir: '',
         signingMode: 'primary' as SigningMode,
         workflow: 'autonomy-evidence-publisher',
         workflowPath: '.github/workflows/autonomy-evidence-publisher.yml',
         sha: 'a'.repeat(40),
+        retentionTier: 'merged', // Merged tier requires SHA binding
       });
       const index = buildEvidenceIndex(opts);
 
-      // Check that expectedSignaturePolicy is present with signingMode enabled
-      if (index.expectedSignaturePolicy) {
-        // For merged tier, SHA binding should be required (or not yet implemented)
-        assert.ok(
-          index.expectedSignaturePolicy.requireShaBinding === true ||
-            index.expectedSignaturePolicy.requireShaBinding === undefined
-        );
-      } else {
-        // If no policy, that's also valid during development
-        assert.ok(true, 'expectedSignaturePolicy not yet implemented');
-      }
+      assert.ok(index.expectedSignaturePolicy, 'Policy must exist when signingMode set');
+      assert.strictEqual(
+        index.expectedSignaturePolicy.requireShaBinding,
+        true,
+        'Merged tier MUST require SHA binding'
+      );
+    });
+
+    it('should set requireShaBinding=true for incident tier', () => {
+      const opts = createMockOptions(tempDir, {
+        artifactsDir: '',
+        signingMode: 'primary' as SigningMode,
+        workflow: 'autonomy-incident-publisher',
+        workflowPath: '.github/workflows/autonomy-incident-publisher.yml',
+        sha: 'b'.repeat(40),
+        retentionTier: 'incident', // Incident tier requires SHA binding
+      });
+      const index = buildEvidenceIndex(opts);
+
+      assert.ok(index.expectedSignaturePolicy, 'Policy must exist when signingMode set');
+      assert.strictEqual(
+        index.expectedSignaturePolicy.requireShaBinding,
+        true,
+        'Incident tier MUST require SHA binding'
+      );
+    });
+
+    it('should set requireShaBinding=false for CI tier', () => {
+      const opts = createMockOptions(tempDir, {
+        artifactsDir: '',
+        signingMode: 'primary' as SigningMode,
+        workflow: 'autonomy-pr-lane',
+        workflowPath: '.github/workflows/autonomy-pr-lane.yml',
+        sha: 'c'.repeat(40),
+        retentionTier: 'ci', // CI tier does NOT require SHA binding
+      });
+      const index = buildEvidenceIndex(opts);
+
+      assert.ok(index.expectedSignaturePolicy, 'Policy must exist when signingMode set');
+      assert.strictEqual(
+        index.expectedSignaturePolicy.requireShaBinding,
+        false,
+        'CI tier should NOT require SHA binding'
+      );
     });
   });
 });
