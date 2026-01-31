@@ -1,0 +1,382 @@
+# Autonomy PR Lane (Phase 4N0)
+#
+# Controlled autonomous patching with human-merge governance.
+#
+# GOVERNANCE INVARIANTS (Non-negotiable):
+# - NEVER applies directly to main (hard fail if ref_name = main|master)
+# - Creates bot branch: autonomy/bot/<date>-<planItemId>
+# - Max 1 patch per run (--max=1)
+# - Tier 0 only (no --enable-tier1)
+# - SEAL remains the only required check
+# - No automerge (human merge stays law)
+# - Artifacts always uploaded (even on noop)
+#
+# TRIGGERS:
+# - Nightly schedule (03:00 UTC)
+# - Manual dispatch with optional parameters
+#
+# OUTPUTS:
+# - If outcome=applied: Opens PR with proof artifacts
+# - If outcome=noop: Uploads artifacts, exits success
+# - If outcome=blocked: Uploads artifacts, exits with summary
+
+name: Autonomy PR Lane (Tier 0)
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_ref:
+        description: 'Base ref to patch from (blank = main)'
+        required: false
+        default: 'main'
+      dry_run:
+        description: 'Dry run only (no PR created)'
+        type: boolean
+        required: false
+        default: false
+      strategy_filter:
+        description: 'Strategy filter (blank = all Tier 0)'
+        required: false
+        default: ''
+  schedule:
+    # 03:00 UTC daily (after perf audit at 02:15 UTC)
+    - cron: '0 3 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Standard date format for branch naming
+  RUN_DATE: ${{ github.run_id }}
+  # Output directory
+  OUT_DIR: tools/registry/perf-skill-audit/out
+
+jobs:
+  # ==========================================================================
+  # Gate Check: Ensure we're not running on protected branches
+  # ==========================================================================
+  gate_check:
+    name: Governance Gate Check
+    runs-on: ubuntu-latest
+    outputs:
+      can_proceed: ${{ steps.check.outputs.can_proceed }}
+      base_ref: ${{ steps.check.outputs.base_ref }}
+    steps:
+      - name: Check branch governance
+        id: check
+        run: |
+          BASE_REF="${{ inputs.target_ref || 'main' }}"
+          echo "base_ref=$BASE_REF" >> $GITHUB_OUTPUT
+
+          # INVARIANT: Never run autonomy apply on main/master directly
+          if [[ "${{ github.ref_name }}" == "main" || "${{ github.ref_name }}" == "master" ]]; then
+            echo "::error::❌ GOVERNANCE VIOLATION: Autonomy PR Lane cannot run on main/master"
+            echo "can_proceed=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          # Skip dependency bot runs
+          if [[ "${{ github.actor }}" == "dependabot[bot]" ]]; then
+            echo "::notice::Skipping: dependabot actor"
+            echo "can_proceed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ "${{ github.ref_name }}" == *"snyk-"* ]]; then
+            echo "::notice::Skipping: snyk branch"
+            echo "can_proceed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "can_proceed=true" >> $GITHUB_OUTPUT
+          echo "✅ Governance gate passed"
+
+  # ==========================================================================
+  # Autonomy Apply: Generate plan, apply max 1 patch, prepare PR
+  # ==========================================================================
+  autonomy_apply:
+    name: Autonomy Apply (Tier 0)
+    needs: gate_check
+    if: ${{ needs.gate_check.outputs.can_proceed == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      outcome: ${{ steps.apply.outputs.outcome }}
+      plan_item_id: ${{ steps.apply.outputs.plan_item_id }}
+      strategy_id: ${{ steps.apply.outputs.strategy_id }}
+      bot_branch: ${{ steps.apply.outputs.bot_branch }}
+      commit_sha: ${{ steps.apply.outputs.commit_sha }}
+      rollback_command: ${{ steps.apply.outputs.rollback_command }}
+
+    steps:
+      - name: Checkout base ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.gate_check.outputs.base_ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name "TerraFusion Autonomy Bot"
+          git config user.email "autonomy-bot@terrafusion.gov"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm -C tools/registry/perf-skill-audit install
+
+      - name: Generate performance plan
+        run: |
+          echo "📊 Generating performance plan..."
+          npx tsx tools/registry/perf-skill-audit/src/index.ts
+
+          if [ -f "${{ env.OUT_DIR }}/perf.plan.json" ]; then
+            ELIGIBLE=$(jq '.items | map(select(.eligible == true)) | length' ${{ env.OUT_DIR }}/perf.plan.json)
+            echo "📋 Plan generated: $ELIGIBLE eligible items"
+          else
+            echo "::warning::No perf.plan.json generated"
+          fi
+
+      - name: Create bot branch
+        id: branch
+        run: |
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          BOT_BRANCH="autonomy/bot/${TIMESTAMP}-${{ github.run_id }}"
+          echo "bot_branch=$BOT_BRANCH" >> $GITHUB_OUTPUT
+
+          git checkout -b "$BOT_BRANCH"
+          echo "🌿 Created branch: $BOT_BRANCH"
+
+      - name: Run ralph-apply (Tier 0, max 1)
+        id: apply
+        run: |
+          echo "🤖 Running ralph-apply --auto --max=1 --emit-proof"
+          echo "=================================================="
+
+          # Prepare strategy filter if provided
+          STRATEGY_FILTER=""
+          if [ -n "${{ inputs.strategy_filter }}" ]; then
+            STRATEGY_FILTER="--strategy=${{ inputs.strategy_filter }}"
+          fi
+
+          # Prepare dry-run flag if requested
+          DRY_RUN_FLAG=""
+          if [ "${{ inputs.dry_run }}" == "true" ]; then
+            DRY_RUN_FLAG="--dry-run"
+          fi
+
+          # Run ralph-apply and capture output
+          set +e
+          OUTPUT=$(npx tsx tools/registry/perf-skill-audit/src/ralph-apply.ts \
+            --auto \
+            --max=1 \
+            --emit-proof \
+            --verbose \
+            $STRATEGY_FILTER \
+            $DRY_RUN_FLAG 2>&1)
+          EXIT_CODE=$?
+          set -e
+
+          echo "$OUTPUT"
+
+          # Parse outcome from apply-proofs.json
+          if [ -f "${{ env.OUT_DIR }}/apply-proofs.json" ]; then
+            OUTCOME=$(jq -r '.[0].outcome // "noop"' ${{ env.OUT_DIR }}/apply-proofs.json)
+            PLAN_ITEM_ID=$(jq -r '.[0].planItemId // "none"' ${{ env.OUT_DIR }}/apply-proofs.json)
+            STRATEGY_ID=$(jq -r '.[0].strategyId // "none"' ${{ env.OUT_DIR }}/apply-proofs.json)
+            COMMIT_SHA=$(jq -r '.[0].finalCommitSha // ""' ${{ env.OUT_DIR }}/apply-proofs.json)
+            ROLLBACK_CMD=$(jq -r '.[0].rollbackCommand // ""' ${{ env.OUT_DIR }}/apply-proofs.json)
+          else
+            OUTCOME="noop"
+            PLAN_ITEM_ID="none"
+            STRATEGY_ID="none"
+            COMMIT_SHA=""
+            ROLLBACK_CMD=""
+          fi
+
+          echo "outcome=$OUTCOME" >> $GITHUB_OUTPUT
+          echo "plan_item_id=$PLAN_ITEM_ID" >> $GITHUB_OUTPUT
+          echo "strategy_id=$STRATEGY_ID" >> $GITHUB_OUTPUT
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "rollback_command=$ROLLBACK_CMD" >> $GITHUB_OUTPUT
+          echo "bot_branch=${{ steps.branch.outputs.bot_branch }}" >> $GITHUB_OUTPUT
+
+          echo ""
+          echo "📋 Outcome: $OUTCOME"
+          echo "📋 Plan Item: $PLAN_ITEM_ID"
+          echo "📋 Strategy: $STRATEGY_ID"
+
+      - name: Push bot branch (if applied)
+        if: ${{ steps.apply.outputs.outcome == 'applied' && inputs.dry_run != 'true' }}
+        run: |
+          git push origin ${{ steps.apply.outputs.bot_branch }}
+          echo "📤 Pushed branch: ${{ steps.apply.outputs.bot_branch }}"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: autonomy-artifacts-${{ github.run_number }}
+          path: |
+            ${{ env.OUT_DIR }}/perf.plan.json
+            ${{ env.OUT_DIR }}/apply-proofs.json
+            ${{ env.OUT_DIR }}/autonomy-report.json
+            ${{ env.OUT_DIR }}/autonomy-report.md
+          retention-days: 90
+
+  # ==========================================================================
+  # Open PR: Create pull request with proof artifacts
+  # ==========================================================================
+  open_pr:
+    name: Open Pull Request
+    needs: [gate_check, autonomy_apply]
+    if: ${{ needs.autonomy_apply.outputs.outcome == 'applied' && github.event.inputs.dry_run != 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.autonomy_apply.outputs.bot_branch }}
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: autonomy-artifacts-${{ github.run_number }}
+          path: artifacts/
+
+      - name: Create PR body
+        id: pr_body
+        run: |
+          cat << 'EOF' > pr_body.md
+          ## 🤖 TerraFusion Autonomy PR (Tier 0)
+
+          This PR was automatically generated by the TerraFusion Autonomy Lane.
+
+          ### Patch Details
+
+          | Field | Value |
+          |-------|-------|
+          | **Plan Item ID** | `${{ needs.autonomy_apply.outputs.plan_item_id }}` |
+          | **Strategy** | `${{ needs.autonomy_apply.outputs.strategy_id }}` |
+          | **Commit SHA** | `${{ needs.autonomy_apply.outputs.commit_sha }}` |
+          | **Rollback Command** | `${{ needs.autonomy_apply.outputs.rollback_command }}` |
+
+          ### Governance Compliance
+
+          - ✅ Tier 0 only (low-risk, single-file)
+          - ✅ Max 1 patch applied
+          - ✅ Proof artifacts attached
+          - ✅ Rollback command available
+          - ✅ SEAL gate must pass before merge
+
+          ### How to Rollback
+
+          If this patch causes issues, run:
+          ```bash
+          ${{ needs.autonomy_apply.outputs.rollback_command }}
+          ```
+
+          ### Proof Artifacts
+
+          See attached workflow artifacts for:
+          - `apply-proofs.json` - Full audit trail
+          - `autonomy-report.json` - Machine-readable status
+          - `autonomy-report.md` - Human-readable summary
+
+          ---
+
+          **⚠️ Human Review Required**: This PR will not auto-merge. A human must review and approve.
+
+          ---
+
+          *Generated by TerraFusion Autonomy v1 — Government. Transcended.*
+          EOF
+
+          # Escape for GitHub output
+          BODY=$(cat pr_body.md)
+          echo "body<<EOFBODY" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOFBODY" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ needs.autonomy_apply.outputs.bot_branch }}
+          base: ${{ needs.gate_check.outputs.base_ref }}
+          title: '🤖 Autonomy: ${{ needs.autonomy_apply.outputs.strategy_id }} - ${{ needs.autonomy_apply.outputs.plan_item_id }}'
+          body-path: pr_body.md
+          labels: |
+            autonomy
+            tier-0
+            automated
+          draft: false
+          delete-branch: false
+
+  # ==========================================================================
+  # Summary: Write workflow summary
+  # ==========================================================================
+  summary:
+    name: Workflow Summary
+    needs: [gate_check, autonomy_apply]
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        if: ${{ needs.autonomy_apply.result == 'success' }}
+        continue-on-error: true
+        with:
+          name: autonomy-artifacts-${{ github.run_number }}
+          path: artifacts/
+
+      - name: Write summary
+        run: |
+          echo "## 🤖 Autonomy PR Lane Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Governance Gate" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.gate_check.outputs.can_proceed }}" == "true" ]; then
+            echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Blocked (see logs)" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Apply Result" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Outcome** | \`${{ needs.autonomy_apply.outputs.outcome || 'N/A' }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Plan Item** | \`${{ needs.autonomy_apply.outputs.plan_item_id || 'N/A' }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Strategy** | \`${{ needs.autonomy_apply.outputs.strategy_id || 'N/A' }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Bot Branch** | \`${{ needs.autonomy_apply.outputs.bot_branch || 'N/A' }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit SHA** | \`${{ needs.autonomy_apply.outputs.commit_sha || 'N/A' }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Rollback** | \`${{ needs.autonomy_apply.outputs.rollback_command || 'N/A' }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f "artifacts/autonomy-report.md" ]; then
+            echo "### Autonomy Report" >> $GITHUB_STEP_SUMMARY
+            cat artifacts/autonomy-report.md >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*TerraFusion Autonomy v1 — Government. Transcended.*" >> $GITHUB_STEP_SUMMARY

@@ -39,6 +39,7 @@ This is the canonical starting point for anyone touching CI workflows.
 |----------|------|-----------|
 | [seal-gate-fast.yml](../../.github/workflows/seal-gate-fast.yml) | Fast gate (~90s), scope/build/lint | ✅ Yes |
 | [deps-fast-lane.yml](../../.github/workflows/deps-fast-lane.yml) | Dependency PR validation | Runs automatically |
+| [autonomy-pr-lane.yml](../../.github/workflows/autonomy-pr-lane.yml) | Tier 0 autonomous patching (opens PRs) | ❌ Informational |
 | [terrafusion-gate-enforcement.yml](../../.github/workflows/terrafusion-gate-enforcement.yml) | Integration gates (E/F) | ❌ Informational |
 | [ci-cd-pipeline.yml](../../.github/workflows/ci-cd-pipeline.yml) | Full CI/CD | ❌ Informational |
 | [nightly.yml](../../.github/workflows/nightly.yml) | Heavy checks (E2E, security scans) | ❌ Nightly only |
