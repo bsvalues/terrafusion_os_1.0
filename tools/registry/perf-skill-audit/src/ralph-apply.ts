@@ -1,6 +1,6 @@
 #!/usr/bin/env npx tsx
 /**
- * Ralph Apply - Phase 4J: Controlled Auto-Apply Lane
+ * Ralph Apply - Phase 4J/4M4/4M5: Controlled Auto-Apply Lane with Strategy Routing
  *
  * Applies eligible remediation patches with guardrails.
  * This is the execution lane for the Ralph Loop / QC-019.
@@ -13,6 +13,20 @@
  * - gates must pass
  * - if gates fail: reset hard + exit non-zero
  *
+ * Phase 4M4 EXTENSIONS:
+ * - --kind=<kind>         Filter by finding kind (e.g., missing-use-client)
+ * - --strategy=<id>       Filter by patch strategy (e.g., missing-use-client)
+ * - --explain             Show detailed dry-run (what would change)
+ * - --emit-proof          Emit JSON proof of each patch application
+ * - --enable-tier1        Enable Tier 1 strategies (default: Tier 0 only)
+ * - --plan=<path>         Use custom plan file (default: perf.plan.json, fallback: waterfalls.plan.json)
+ *
+ * Phase 4M5 EXTENSIONS (Autonomy Envelope):
+ * - --auto                Deterministic selection + governed autonomy
+ *                         Selection order: allowed surface → eligible → tier0 → priorityScore → smallest diff → id
+ *                         Safety rails: refuse on main, refuse dirty tree, refuse baseSha mismatch
+ *                         NON-NEGOTIABLE: ALWAYS emit ApplyProof (even on noop)
+ *
  * GOVERNANCE: This tool respects the Core Governance Surface.
  * It will NEVER touch forbidden paths even if they appear in the plan.
  */
@@ -21,6 +35,19 @@ import { execSync, spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { getStrategyForKind, STRATEGY_BY_ID } from './patch-strategies/index.js';
+import {
+    getSemanticGuards,
+    getTransformationSummary,
+} from './patch-strategies/setstate-nonfunctional.js';
+import type {
+    ApplyOutcome,
+    ApplyProof,
+    PatchStrategyId,
+    PerfPlan,
+    PerfPlanItem,
+    SelectionReason,
+} from './patch-strategies/types.js';
 import type { PlanItem, RemediationPlan } from './scanners/types.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -32,7 +59,19 @@ const CLI_FLAGS = {
   max: parseInt(process.argv.find(a => a.startsWith('--max='))?.split('=')[1] || '1', 10),
   verbose: process.argv.includes('--verbose'),
   createPr: process.argv.includes('--create-pr'),
+  // Phase 4M4 extensions
+  kind: process.argv.find(a => a.startsWith('--kind='))?.split('=')[1],
+  strategy: process.argv.find(a => a.startsWith('--strategy='))?.split('=')[1],
+  explain: process.argv.includes('--explain'),
+  emitProof: process.argv.includes('--emit-proof'),
+  enableTier1: process.argv.includes('--enable-tier1'),
+  plan: process.argv.find(a => a.startsWith('--plan='))?.split('=')[1],
+  // Phase 4M5: Autonomy envelope with deterministic selection
+  auto: process.argv.includes('--auto'),
 };
+
+// Proof collection for --emit-proof
+const appliedProofs: ApplyProof[] = [];
 
 // Forbidden paths (from AGENTS.md governance)
 const FORBIDDEN_PATTERNS = [
@@ -55,6 +94,187 @@ const REQUIRED_GATES = [
   { name: 'type-check', command: 'pnpm run type-check' },
   { name: 'phase83-tools', command: 'node --test os-platform/core/tests/phase83-tools.test.mjs' },
 ];
+
+// ============================================================================
+// Phase 4M5: Safety Rails for --auto mode
+// ============================================================================
+
+/**
+ * Check safety rails for --auto mode (NON-NEGOTIABLE)
+ * Refuses: on main branch, dirty working tree, baseSha mismatch
+ */
+function checkAutoSafetyRails(plan: PerfPlan): {
+  safe: boolean;
+  reason?: string;
+  details?: Record<string, any>;
+} {
+  // 1. Refuse on main/master branch
+  const branchResult = spawnSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
+    encoding: 'utf8',
+  });
+  const currentBranch = branchResult.stdout?.trim() || '';
+  if (['main', 'master'].includes(currentBranch)) {
+    return {
+      safe: false,
+      reason: 'SAFETY: Refusing --auto on protected branch',
+      details: { branch: currentBranch, protectedBranches: ['main', 'master'] },
+    };
+  }
+
+  // 2. Refuse if working tree is dirty
+  const statusResult = spawnSync('git', ['status', '--porcelain'], {
+    encoding: 'utf8',
+  });
+  if (statusResult.stdout && statusResult.stdout.trim().length > 0) {
+    return {
+      safe: false,
+      reason: 'SAFETY: Refusing --auto with dirty working tree',
+      details: { dirtyFiles: statusResult.stdout.trim().split('\n').length },
+    };
+  }
+
+  // 3. Refuse if plan baseSha doesn't match current HEAD
+  if (plan.baseSha) {
+    const headResult = spawnSync('git', ['rev-parse', 'HEAD'], {
+      encoding: 'utf8',
+    });
+    const currentHead = headResult.stdout?.trim() || '';
+    if (currentHead !== plan.baseSha) {
+      return {
+        safe: false,
+        reason: 'SAFETY: Plan baseSha does not match current HEAD',
+        details: { planBaseSha: plan.baseSha, currentHead },
+      };
+    }
+  }
+
+  return { safe: true };
+}
+
+/**
+ * Deterministic selection algorithm for --auto mode
+ *
+ * Selection order (tiebreaker):
+ * 1. In allowed surface ✅
+ * 2. Eligible ✅
+ * 3. Tier 0 (unless --enable-tier1)
+ * 4. Highest priorityScore
+ * 5. Smallest estimatedLinesChanged (smallest diff footprint)
+ * 6. Stable id (lexicographic, for determinism)
+ *
+ * @returns The best candidate and reason, or null with reason if none
+ */
+function selectBestCandidate(
+  plan: PerfPlan
+): { item: PerfPlanItem; reason: SelectionReason } | { item: null; reason: SelectionReason } {
+  const allItems = plan.items;
+  let candidatesConsidered = allItems.length;
+  let filteredByGovernance = 0;
+  let filteredByTier = 0;
+
+  // Step 1 & 2: Filter to allowed surface + eligible
+  const governanceFiltered = allItems.filter(item => {
+    // Must be eligible
+    if (item.eligibility !== 'eligible') {
+      return false;
+    }
+
+    // Must have a patch strategy
+    if (!item.patchStrategy) {
+      return false;
+    }
+
+    // Must be in allowed surface
+    if (!isInAllowedSurface(item.file)) {
+      filteredByGovernance++;
+      return false;
+    }
+
+    // Must not be in forbidden path
+    const forbidden = isForbiddenPath(item.file);
+    if (forbidden.forbidden) {
+      filteredByGovernance++;
+      return false;
+    }
+
+    return true;
+  });
+
+  if (governanceFiltered.length === 0) {
+    return {
+      item: null,
+      reason: {
+        reason: 'No candidates pass governance filters (allowed surface + eligible)',
+        candidatesConsidered,
+        filteredByGovernance,
+        filteredByTier: 0,
+      },
+    };
+  }
+
+  // Step 3: Filter by tier (Tier 0 only unless --enable-tier1)
+  const tierFiltered = governanceFiltered.filter(item => {
+    const strategy = STRATEGY_BY_ID.get(item.patchStrategy!);
+    if (!strategy) {
+      return false;
+    }
+    if (strategy.tier > 0 && !CLI_FLAGS.enableTier1) {
+      filteredByTier++;
+      return false;
+    }
+    return true;
+  });
+
+  if (tierFiltered.length === 0) {
+    return {
+      item: null,
+      reason: {
+        reason: 'No Tier 0 candidates available (use --enable-tier1 for Tier 1)',
+        candidatesConsidered,
+        filteredByGovernance,
+        filteredByTier,
+      },
+    };
+  }
+
+  // Steps 4-6: Sort deterministically
+  // Priority: priorityScore DESC → estimatedLinesChanged ASC → id ASC
+  const sorted = [...tierFiltered].sort((a, b) => {
+    // 4. Highest priorityScore first
+    if (a.priorityScore !== b.priorityScore) {
+      return b.priorityScore - a.priorityScore;
+    }
+
+    // 5. Smallest estimatedLinesChanged first (prefer smaller patches)
+    const aLines = a.estimatedLinesChanged ?? Infinity;
+    const bLines = b.estimatedLinesChanged ?? Infinity;
+    if (aLines !== bLines) {
+      return aLines - bLines;
+    }
+
+    // 6. Stable id (lexicographic for determinism)
+    return a.id.localeCompare(b.id);
+  });
+
+  const selected = sorted[0];
+  const strategy = STRATEGY_BY_ID.get(selected.patchStrategy!);
+
+  return {
+    item: selected,
+    reason: {
+      reason: `Selected: priorityScore=${selected.priorityScore}, tier=${strategy?.tier ?? 0}, estimatedLines=${selected.estimatedLinesChanged ?? 'unknown'}, id=${selected.id}`,
+      candidatesConsidered,
+      filteredByGovernance,
+      filteredByTier,
+      rankingFactors: {
+        priorityScore: selected.priorityScore,
+        estimatedLinesChanged: selected.estimatedLinesChanged ?? 0,
+        riskScore: selected.riskScore ?? 0,
+        id: selected.id,
+      },
+    },
+  };
+}
 
 // Evidence commit template
 const COMMIT_TEMPLATE = `fix(perf): auto-apply Promise.all() optimization
@@ -220,15 +440,20 @@ function gitResetHard(): void {
 }
 
 /**
- * Run all required gates
+ * Run all required gates with detailed tracking
  */
-function runGates(): { allPassed: boolean; results: { name: string; passed: boolean }[] } {
-  const results: { name: string; passed: boolean }[] = [];
+function runGates(): {
+  allPassed: boolean;
+  results: { name: string; command: string; passed: boolean; durationMs: number }[];
+} {
+  const results: { name: string; command: string; passed: boolean; durationMs: number }[] = [];
 
   for (const gate of REQUIRED_GATES) {
     console.log(`\n🔍 Running gate: ${gate.name}`);
+    const startTime = Date.now();
     const result = runCommand(gate.command, { silent: false });
-    results.push({ name: gate.name, passed: result.success });
+    const durationMs = Date.now() - startTime;
+    results.push({ name: gate.name, command: gate.command, passed: result.success, durationMs });
 
     if (!result.success) {
       console.log(`❌ Gate failed: ${gate.name}`);
@@ -315,27 +540,434 @@ function applyPatch(item: PlanItem, patchContent: string): { applied: boolean; r
   }
 }
 
+// ============================================================================
+// Phase 4M4: Strategy-based patching with perf.plan.json
+// ============================================================================
+
+/**
+ * Load the plan file (perf.plan.json or waterfalls.plan.json)
+ */
+function loadPlan(): {
+  type: 'perf' | 'legacy';
+  perfPlan?: PerfPlan;
+  legacyPlan?: RemediationPlan;
+} {
+  const outDir = path.join(__dirname, '..', 'out');
+
+  // Check for custom plan path
+  if (CLI_FLAGS.plan) {
+    const customPath = path.isAbsolute(CLI_FLAGS.plan)
+      ? CLI_FLAGS.plan
+      : path.join(process.cwd(), CLI_FLAGS.plan);
+
+    if (!fs.existsSync(customPath)) {
+      console.error(`❌ Custom plan not found: ${customPath}`);
+      process.exit(1);
+    }
+
+    const content = JSON.parse(fs.readFileSync(customPath, 'utf8'));
+    // Detect format by checking for 'patchStrategy' field on items
+    if (content.items?.[0]?.patchStrategy !== undefined) {
+      return { type: 'perf', perfPlan: content as PerfPlan };
+    }
+    return { type: 'legacy', legacyPlan: content as RemediationPlan };
+  }
+
+  // Default: try perf.plan.json first (Phase 4M4), fallback to waterfalls.plan.json
+  const perfPlanPath = path.join(outDir, 'perf.plan.json');
+  const legacyPlanPath = path.join(outDir, 'waterfalls.plan.json');
+
+  if (fs.existsSync(perfPlanPath)) {
+    const content = JSON.parse(fs.readFileSync(perfPlanPath, 'utf8')) as PerfPlan;
+    return { type: 'perf', perfPlan: content };
+  }
+
+  if (fs.existsSync(legacyPlanPath)) {
+    const content = JSON.parse(fs.readFileSync(legacyPlanPath, 'utf8')) as RemediationPlan;
+    return { type: 'legacy', legacyPlan: content };
+  }
+
+  console.error('❌ No remediation plan found. Run perf-skill-audit first.');
+  process.exit(1);
+}
+
+/**
+ * Check if an item passes the CLI filters (--kind, --strategy, tier)
+ */
+function passesFilters(item: PerfPlanItem): { passes: boolean; reason?: string } {
+  // Filter by kind
+  if (CLI_FLAGS.kind && item.kind !== CLI_FLAGS.kind) {
+    return { passes: false, reason: `Kind mismatch: ${item.kind} != ${CLI_FLAGS.kind}` };
+  }
+
+  // Filter by strategy
+  if (CLI_FLAGS.strategy && item.patchStrategy !== CLI_FLAGS.strategy) {
+    return {
+      passes: false,
+      reason: `Strategy mismatch: ${item.patchStrategy} != ${CLI_FLAGS.strategy}`,
+    };
+  }
+
+  // Check tier (Tier 0 only by default)
+  const strategy = item.patchStrategy ? STRATEGY_BY_ID.get(item.patchStrategy) : undefined;
+  if (strategy && strategy.tier > 0 && !CLI_FLAGS.enableTier1) {
+    return { passes: false, reason: `Tier ${strategy.tier} requires --enable-tier1` };
+  }
+
+  return { passes: true };
+}
+
+/**
+ * Generate patch using the strategy system
+ * Phase 4M6a: Added extensions support for semantic guards and patch summary
+ */
+function generateStrategyPatch(
+  item: PerfPlanItem,
+  fileContent: string
+): {
+  patch: string | null;
+  strategy: string | null;
+  reason?: string;
+  extensions?: {
+    semanticGuardsPassed?: string[];
+    patchSummary?: {
+      kind: string;
+      strategyId: string;
+      file: string;
+      transformations: string[];
+    };
+  };
+} {
+  const strategy = item.patchStrategy ? STRATEGY_BY_ID.get(item.patchStrategy) : null;
+
+  if (!strategy) {
+    // Try to find strategy by kind
+    const kindStrategy = getStrategyForKind(item.kind);
+    if (!kindStrategy) {
+      return { patch: null, strategy: null, reason: 'No strategy available for this kind' };
+    }
+    return generateStrategyPatch({ ...item, patchStrategy: kindStrategy.id }, fileContent);
+  }
+
+  // Convert PerfPlanItem to Finding for strategy API
+  const finding = perfPlanItemToFinding(item);
+
+  // Check if strategy can apply
+  const canApply = strategy.canApply(finding, fileContent);
+  if (!canApply.ok) {
+    return { patch: null, strategy: strategy.id, reason: canApply.reason };
+  }
+
+  // Build the patch
+  const patchResult = strategy.buildPatch(finding, fileContent);
+  if (!patchResult || !patchResult.patch) {
+    return { patch: null, strategy: strategy.id, reason: 'Strategy returned empty patch' };
+  }
+
+  // Phase 4M6a: Get extensions for setstate-nonfunctional strategy
+  let extensions:
+    | {
+        semanticGuardsPassed?: string[];
+        patchSummary?: {
+          kind: string;
+          strategyId: string;
+          file: string;
+          transformations: string[];
+        };
+      }
+    | undefined;
+
+  if (strategy.id === 'setstate-nonfunctional') {
+    const semanticGuards = getSemanticGuards(finding);
+    const transformSummary = getTransformationSummary(finding);
+    extensions = {
+      semanticGuardsPassed: semanticGuards,
+      patchSummary: transformSummary
+        ? {
+            kind: item.kind,
+            strategyId: strategy.id,
+            file: item.file,
+            transformations: [transformSummary],
+          }
+        : undefined,
+    };
+  }
+
+  return { patch: patchResult.patch, strategy: strategy.id, extensions };
+}
+
+/**
+ * Convert PerfPlanItem to Finding for strategy compatibility
+ */
+function perfPlanItemToFinding(item: PerfPlanItem): any {
+  return {
+    severity: 'warning',
+    rule: `perf/${item.kind}`,
+    file: item.file,
+    message: `${item.kind} finding`,
+    kind: item.kind,
+    priorityScore: item.priorityScore,
+    lineStart: item.startLine,
+    lineEnd: item.endLine,
+    evidence: item.evidence,
+    functionName: item.functionName,
+    suggestedFix: item.suggestedPatch,
+  };
+}
+
+/**
+ * Display detailed explanation for --explain mode
+ */
+function displayExplanation(item: PerfPlanItem, fileContent: string): void {
+  console.log('\n' + '═'.repeat(70));
+  console.log(`📋 EXPLANATION: ${item.id}`);
+  console.log('═'.repeat(70));
+
+  console.log(`\n📁 File: ${item.file}`);
+  console.log(`🏷️  Kind: ${item.kind}`);
+  console.log(`🎯 Priority: ${item.priorityScore}`);
+  console.log(`✅ Eligibility: ${item.eligibility}`);
+  console.log(`🔧 Strategy: ${item.patchStrategy || 'none'}`);
+
+  const strategy = item.patchStrategy ? STRATEGY_BY_ID.get(item.patchStrategy) : null;
+  if (strategy) {
+    console.log(`\n📖 Strategy Details:`);
+    console.log(`   Name: ${strategy.name}`);
+    console.log(`   Risk: ${strategy.risk}`);
+    console.log(`   Tier: ${strategy.tier}`);
+    console.log(`   Handles: ${strategy.handlesKinds.join(', ')}`);
+  }
+
+  console.log(`\n📝 Evidence:`);
+  for (const e of item.evidence) {
+    console.log(
+      `   L${e.line}: ${e.snippet.substring(0, 80)}${e.snippet.length > 80 ? '...' : ''}`
+    );
+  }
+
+  const result = generateStrategyPatch(item, fileContent);
+  if (result.patch) {
+    console.log(`\n📄 Generated Patch:`);
+    console.log('─'.repeat(60));
+    console.log(result.patch);
+    console.log('─'.repeat(60));
+  } else {
+    console.log(`\n⚠️  Cannot generate patch: ${result.reason}`);
+  }
+
+  console.log(`\n🔐 Gates required: ${REQUIRED_GATES.map(g => g.name).join(', ')}`);
+}
+
+/**
+ * Create ApplyProof for --emit-proof (audit-grade contract)
+ * Phase 4M6a: Added optional extensions for semantic guards, patch summary, and diff stats
+ */
+function createProof(
+  item: PerfPlanItem,
+  patch: string,
+  strategyId: string,
+  checks: {
+    allowedSurface: { passed: boolean; reason?: string };
+    forbiddenPath: { passed: boolean; reason?: string };
+    gitApply: { ok: boolean; output?: string };
+  },
+  gateResults: { name: string; command: string; passed: boolean; durationMs?: number }[],
+  outcome: ApplyOutcome,
+  commitHash?: string,
+  failureReason?: string,
+  selectionReason?: SelectionReason,
+  extensions?: {
+    semanticGuardsPassed?: string[];
+    patchSummary?: {
+      kind: string;
+      strategyId: string;
+      file: string;
+      transformations: string[];
+    };
+    diffStats?: {
+      filesChanged: number;
+      linesAdded: number;
+      linesRemoved: number;
+    };
+  }
+): ApplyProof {
+  // Calculate diffStats from patch if not provided
+  const diffStats = extensions?.diffStats || calculateDiffStats(patch);
+
+  return {
+    planItemId: item.id,
+    strategyId: strategyId as PatchStrategyId,
+    appliedAt: new Date().toISOString(),
+    allowedSurfaceCheck: {
+      passed: checks.allowedSurface.passed,
+      file: item.file,
+      reason: checks.allowedSurface.reason,
+    },
+    forbiddenPathCheck: {
+      passed: checks.forbiddenPath.passed,
+      file: item.file,
+      reason: checks.forbiddenPath.reason,
+    },
+    gitApplyCheck: {
+      ok: checks.gitApply.ok,
+      output: checks.gitApply.output,
+    },
+    patch,
+    gates: gateResults.map(g => ({
+      name: g.name,
+      command: g.command,
+      passed: g.passed,
+      durationMs: g.durationMs,
+    })),
+    outcome,
+    finalCommitSha: commitHash,
+    rollbackCommand: commitHash ? `git revert ${commitHash}` : undefined,
+    failureReason,
+    selectionReason,
+    // Phase 4M6a extensions
+    semanticGuardsPassed: extensions?.semanticGuardsPassed,
+    patchSummary: extensions?.patchSummary,
+    diffStats,
+  };
+}
+
+/**
+ * Calculate diff stats from a unified diff patch
+ */
+function calculateDiffStats(patch: string): {
+  filesChanged: number;
+  linesAdded: number;
+  linesRemoved: number;
+} {
+  const lines = patch.split('\n');
+  let linesAdded = 0;
+  let linesRemoved = 0;
+  let filesChanged = 0;
+  const fileHeaders = new Set<string>();
+
+  for (const line of lines) {
+    if (line.startsWith('+') && !line.startsWith('+++')) {
+      linesAdded++;
+    } else if (line.startsWith('-') && !line.startsWith('---')) {
+      linesRemoved++;
+    } else if (line.startsWith('--- a/') || line.startsWith('--- ')) {
+      const fileName = line.replace(/^--- (a\/)?/, '');
+      fileHeaders.add(fileName);
+    }
+  }
+
+  filesChanged = Math.max(1, fileHeaders.size);
+  return { filesChanged, linesAdded, linesRemoved };
+}
+
+/**
+ * Create noop proof for --auto mode when no candidate is selected
+ * NON-NEGOTIABLE: We emit ApplyProof even when we do nothing
+ */
+function createNoopProof(reason: SelectionReason): ApplyProof {
+  return {
+    planItemId: '__noop__',
+    strategyId: 'noop' as PatchStrategyId,
+    appliedAt: new Date().toISOString(),
+    allowedSurfaceCheck: {
+      passed: true,
+      file: '',
+      reason: 'No item selected',
+    },
+    forbiddenPathCheck: {
+      passed: true,
+      file: '',
+      reason: 'No item selected',
+    },
+    gitApplyCheck: {
+      ok: true,
+      output: 'No patch to apply',
+    },
+    patch: '',
+    gates: [],
+    outcome: 'noop',
+    selectionReason: reason,
+  };
+}
+
+/**
+ * Write proofs to file
+ * NOTE: In --auto mode, we ALWAYS emit a proof, even for noop
+ */
+function writeProofs(): void {
+  // In --auto mode, always emit proof (even if empty/noop)
+  if (!CLI_FLAGS.emitProof) return;
+
+  // Allow empty proofs for noop case
+  if (appliedProofs.length === 0 && !CLI_FLAGS.auto) return;
+
+  const proofPath = path.join(__dirname, '..', 'out', 'apply-proofs.json');
+  fs.writeFileSync(
+    proofPath,
+    JSON.stringify(
+      {
+        generatedAt: new Date().toISOString(),
+        mode: CLI_FLAGS.auto ? 'auto' : 'manual',
+        proofs: appliedProofs,
+      },
+      null,
+      2
+    )
+  );
+  console.log(`\n📜 Proofs written: ${proofPath}`);
+}
+
 /**
  * Main execution
  */
 async function main(): Promise<void> {
-  console.log('🤖 Ralph Apply - Phase 4J');
-  console.log('   Controlled Auto-Apply Lane\n');
+  console.log('🤖 Ralph Apply - Phase 4J/4M4/4M5');
+  console.log('   Controlled Auto-Apply Lane with Strategy Routing\n');
+
+  if (CLI_FLAGS.auto) {
+    console.log('🤖 AUTO MODE - Deterministic selection with governed autonomy\n');
+  }
 
   if (CLI_FLAGS.dryRun) {
     console.log('🔶 DRY RUN MODE - no changes will be made\n');
   }
 
-  // Load remediation plan
-  const planPath = path.join(__dirname, '..', 'out', 'waterfalls.plan.json');
-
-  if (!fs.existsSync(planPath)) {
-    console.error('❌ No remediation plan found. Run perf-skill-audit first.');
-    process.exit(1);
+  if (CLI_FLAGS.explain) {
+    console.log('📖 EXPLAIN MODE - showing patch details without applying\n');
   }
 
-  const plan: RemediationPlan = JSON.parse(fs.readFileSync(planPath, 'utf8'));
-  console.log(`📋 Loaded plan: ${plan.summary.total} items, ${plan.summary.eligible} eligible`);
+  if (CLI_FLAGS.kind) {
+    console.log(`🏷️  Filter by kind: ${CLI_FLAGS.kind}`);
+  }
+
+  if (CLI_FLAGS.strategy) {
+    console.log(`🔧 Filter by strategy: ${CLI_FLAGS.strategy}`);
+  }
+
+  if (CLI_FLAGS.enableTier1) {
+    console.log('⚠️  Tier 1 strategies ENABLED (medium risk)');
+  }
+
+  // Load plan (preferring perf.plan.json)
+  const loaded = loadPlan();
+
+  if (loaded.type === 'perf' && loaded.perfPlan) {
+    await mainWithPerfPlan(loaded.perfPlan);
+  } else if (loaded.legacyPlan) {
+    if (CLI_FLAGS.auto) {
+      console.error('❌ --auto mode requires perf.plan.json (not legacy waterfalls.plan.json)');
+      process.exit(1);
+    }
+    await mainWithLegacyPlan(loaded.legacyPlan);
+  }
+}
+
+/**
+ * Legacy mode: use waterfalls.plan.json (Phase 4J behavior)
+ */
+async function mainWithLegacyPlan(plan: RemediationPlan): Promise<void> {
+  console.log('📋 Using legacy plan (waterfalls.plan.json)');
+  console.log(`   ${plan.summary.total} items, ${plan.summary.eligible} eligible`);
 
   // Filter eligible items
   const eligibleItems = plan.items.filter(item => item.eligibility.eligible && item.suggestedPatch);
@@ -482,6 +1114,548 @@ async function main(): Promise<void> {
   }
 
   console.log('\n✅ Ralph Apply complete');
+}
+
+/**
+ * Phase 4M4/4M5: Strategy-based patching with perf.plan.json
+ */
+async function mainWithPerfPlan(plan: PerfPlan): Promise<void> {
+  console.log('📋 Using perf plan (perf.plan.json) - Phase 4M4/4M5');
+  console.log(`   ${plan.summary.total} items, ${plan.summary.eligible} eligible`);
+  console.log(
+    `   By strategy: ${Object.entries(plan.summary.byStrategy)
+      .map(([k, v]) => `${k}=${v}`)
+      .join(', ')}`
+  );
+
+  // ========================================================================
+  // Phase 4M5: --auto mode with deterministic selection
+  // ========================================================================
+  if (CLI_FLAGS.auto) {
+    await mainWithAutoMode(plan);
+    return;
+  }
+
+  // Filter eligible items
+  const eligibleItems = plan.items.filter(item => item.eligibility === 'eligible');
+
+  if (eligibleItems.length === 0) {
+    console.log('✅ No eligible items to apply.');
+    process.exit(0);
+  }
+
+  // Apply CLI filters
+  const filteredItems: PerfPlanItem[] = [];
+  const filterSkipped: { item: PerfPlanItem; reason: string }[] = [];
+
+  for (const item of eligibleItems) {
+    const filterResult = passesFilters(item);
+    if (filterResult.passes) {
+      filteredItems.push(item);
+    } else {
+      filterSkipped.push({ item, reason: filterResult.reason || 'filter' });
+    }
+  }
+
+  if (filterSkipped.length > 0 && CLI_FLAGS.verbose) {
+    console.log(`\n🔍 Filtered out ${filterSkipped.length} items by CLI flags`);
+  }
+
+  console.log(`\n🔍 Scanning ${filteredItems.length} items for safety...\n`);
+
+  // Find safe items (governance + strategy checks)
+  const safeItems: { item: PerfPlanItem; skipped: boolean; reason?: string }[] = [];
+
+  for (const item of filteredItems) {
+    // Check allowed paths (Core Governance Surface)
+    if (!isInAllowedSurface(item.file)) {
+      console.log(`⛔ SKIP: ${item.file}`);
+      console.log(`   Reason: Not in Core Governance Surface`);
+      safeItems.push({ item, skipped: true, reason: 'Not in Core Governance Surface' });
+      continue;
+    }
+
+    // Check forbidden paths
+    const forbidden = isForbiddenPath(item.file);
+    if (forbidden.forbidden) {
+      console.log(`⛔ SKIP: ${item.file}`);
+      console.log(`   Reason: ${forbidden.reason}`);
+      safeItems.push({ item, skipped: true, reason: forbidden.reason });
+      continue;
+    }
+
+    // Check strategy availability
+    if (!item.patchStrategy) {
+      console.log(`⚠️  SKIP: ${item.file}`);
+      console.log(`   Reason: No patch strategy assigned`);
+      safeItems.push({ item, skipped: true, reason: 'No patch strategy' });
+      continue;
+    }
+
+    const strategy = STRATEGY_BY_ID.get(item.patchStrategy);
+    if (!strategy) {
+      console.log(`⚠️  SKIP: ${item.file}`);
+      console.log(`   Reason: Unknown strategy: ${item.patchStrategy}`);
+      safeItems.push({ item, skipped: true, reason: `Unknown strategy: ${item.patchStrategy}` });
+      continue;
+    }
+
+    console.log(`✅ SAFE: ${item.file}`);
+    console.log(`   Kind: ${item.kind}, Strategy: ${strategy.id}, Score: ${item.priorityScore}`);
+    safeItems.push({ item, skipped: false });
+  }
+
+  // Explain mode: show details and exit
+  if (CLI_FLAGS.explain) {
+    const toExplain = safeItems.filter(s => !s.skipped).slice(0, CLI_FLAGS.max);
+
+    if (toExplain.length === 0) {
+      console.log('\n⚠️  No items to explain');
+      process.exit(0);
+    }
+
+    for (const { item } of toExplain) {
+      const filePath = path.join(process.cwd(), item.file);
+      const fileContent = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+      displayExplanation(item, fileContent);
+    }
+
+    console.log('\n📖 Explanation complete (--explain mode, no changes made)');
+    process.exit(0);
+  }
+
+  // Get items to apply
+  const toApply = safeItems.filter(s => !s.skipped).slice(0, CLI_FLAGS.max);
+
+  if (toApply.length === 0) {
+    console.log('\n⚠️  No safe items to apply.');
+    process.exit(0);
+  }
+
+  console.log(`\n🎯 Will apply ${toApply.length} patch(es):\n`);
+
+  for (const { item } of toApply) {
+    const strategy = STRATEGY_BY_ID.get(item.patchStrategy!);
+    console.log(`   - ${item.file}:${item.startLine}`);
+    console.log(
+      `     ${item.kind} → ${strategy?.name || item.patchStrategy} (score ${item.priorityScore})`
+    );
+  }
+
+  // Apply patches using strategy system
+  for (const { item } of toApply) {
+    console.log(`\n${'='.repeat(60)}`);
+    console.log(`📝 Processing: ${item.id}`);
+    console.log(`${'='.repeat(60)}`);
+
+    // Read file content
+    const filePath = path.join(process.cwd(), item.file);
+    if (!fs.existsSync(filePath)) {
+      console.log(`❌ File not found: ${filePath}`);
+      continue;
+    }
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+
+    // Generate patch using strategy
+    const patchResult = generateStrategyPatch(item, fileContent);
+
+    if (!patchResult.patch) {
+      console.log(`⚠️  Cannot generate patch: ${patchResult.reason}`);
+      continue;
+    }
+
+    if (CLI_FLAGS.verbose) {
+      console.log('\n📄 Patch content:');
+      console.log(patchResult.patch);
+    }
+
+    // Apply patch
+    const applyResult = applyPatch({ ...item, suggestedPatch: '' } as any, patchResult.patch);
+
+    if (!applyResult.applied) {
+      console.log(`\n⚠️  Patch not applied: ${applyResult.reason}`);
+
+      if (applyResult.reason !== 'Dry run mode') {
+        gitResetHard();
+        process.exit(1);
+      }
+      continue;
+    }
+
+    console.log('✅ Patch applied successfully');
+
+    // Run gates
+    console.log('\n🔐 Running required gates...');
+    const gateResults = runGates();
+
+    if (!gateResults.allPassed) {
+      console.log('\n❌ GATES FAILED - Rolling back...');
+      gitResetHard();
+      process.exit(1);
+    }
+
+    console.log('\n✅ All gates passed');
+
+    // Commit
+    const commitMessage = generateStrategyCommitMessage(item, patchResult.strategy!);
+    console.log('\n📝 Committing...');
+
+    if (CLI_FLAGS.verbose) {
+      console.log('\nCommit message:');
+      console.log(commitMessage);
+    }
+
+    const commitResult = runCommand(
+      `git add "${item.file}" && git commit -m "${commitMessage.replace(/"/g, '\\"')}"`,
+      { silent: true }
+    );
+
+    let commitHash: string | undefined;
+    if (!commitResult.success) {
+      console.log('⚠️  Commit failed (may be no changes):', commitResult.output);
+    } else {
+      console.log('✅ Committed successfully');
+      // Get commit hash for proof
+      const hashResult = runCommand('git rev-parse HEAD', { silent: true });
+      commitHash = hashResult.success ? hashResult.output.trim() : undefined;
+    }
+
+    // Collect proof for --emit-proof
+    if (CLI_FLAGS.emitProof && patchResult.strategy) {
+      const proof = createProof(
+        item,
+        patchResult.patch,
+        patchResult.strategy,
+        {
+          allowedSurface: { passed: true }, // Already filtered by safeItems
+          forbiddenPath: { passed: true }, // Already filtered by safeItems
+          gitApply: { ok: applyResult.applied, output: applyResult.reason },
+        },
+        gateResults.results,
+        commitHash ? 'applied' : 'skipped',
+        commitHash,
+        commitHash ? undefined : 'Commit not created',
+        undefined, // selectionReason (not in auto mode)
+        patchResult.extensions // Phase 4M6a: pass extensions
+      );
+      appliedProofs.push(proof);
+    }
+  }
+
+  // Write proofs if in emit-proof mode
+  writeProofs();
+
+  console.log('\n✅ Ralph Apply complete');
+}
+
+// ============================================================================
+// Phase 4M5: --auto mode with deterministic selection
+// ============================================================================
+
+/**
+ * Main execution for --auto mode
+ *
+ * Selection algorithm:
+ * 1. In allowed surface ✅
+ * 2. Eligible ✅
+ * 3. Tier 0 (unless --enable-tier1)
+ * 4. Highest priorityScore
+ * 5. Smallest estimatedLinesChanged (smallest diff footprint)
+ * 6. Stable id (lexicographic, for determinism)
+ *
+ * Safety rails (NON-NEGOTIABLE):
+ * - Refuse on main/master branch
+ * - Refuse if working tree is dirty
+ * - Refuse if plan baseSha != current HEAD
+ * - ALWAYS emit ApplyProof (even on noop)
+ */
+async function mainWithAutoMode(plan: PerfPlan): Promise<void> {
+  console.log('\n🤖 AUTO MODE - Phase 4M5 Autonomy Envelope');
+  console.log('   Deterministic selection with governed safety rails\n');
+
+  // Step 1: Check safety rails (NON-NEGOTIABLE)
+  console.log('🔐 Checking safety rails...');
+  const safetyResult = checkAutoSafetyRails(plan);
+
+  if (!safetyResult.safe) {
+    console.log(`\n❌ SAFETY RAIL VIOLATION: ${safetyResult.reason}`);
+    if (safetyResult.details) {
+      console.log(`   Details: ${JSON.stringify(safetyResult.details)}`);
+    }
+
+    // Emit noop proof with safety failure reason
+    if (CLI_FLAGS.emitProof) {
+      const noopProof = createNoopProof({
+        reason: safetyResult.reason || 'Safety rail violation',
+        candidatesConsidered: plan.items.length,
+        filteredByGovernance: 0,
+        filteredByTier: 0,
+      });
+      appliedProofs.push(noopProof);
+      writeProofs();
+    }
+
+    process.exit(1);
+  }
+
+  console.log('✅ Safety rails passed');
+
+  // Step 2: Deterministic selection
+  console.log('\n🎯 Running deterministic selection algorithm...');
+  const selection = selectBestCandidate(plan);
+
+  if (!selection.item) {
+    console.log(`\n⚠️  No candidate selected: ${selection.reason.reason}`);
+    console.log(
+      `   Stats: ${selection.reason.candidatesConsidered} considered, ${selection.reason.filteredByGovernance} filtered by governance, ${selection.reason.filteredByTier} filtered by tier`
+    );
+
+    // Emit noop proof (NON-NEGOTIABLE: we emit proof even when we do nothing)
+    if (CLI_FLAGS.emitProof) {
+      const noopProof = createNoopProof(selection.reason);
+      appliedProofs.push(noopProof);
+      writeProofs();
+    }
+
+    console.log('\n✅ Ralph Apply complete (noop)');
+    process.exit(0);
+  }
+
+  const selectedItem = selection.item;
+  const selectionReason = selection.reason;
+
+  console.log(`\n✅ Selected: ${selectedItem.id}`);
+  console.log(`   ${selectionReason.reason}`);
+  console.log(`   File: ${selectedItem.file}`);
+  console.log(`   Kind: ${selectedItem.kind}`);
+  console.log(`   Strategy: ${selectedItem.patchStrategy}`);
+
+  // Step 3: Explain mode check
+  if (CLI_FLAGS.explain) {
+    const filePath = path.join(process.cwd(), selectedItem.file);
+    const fileContent = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+    displayExplanation(selectedItem, fileContent);
+    console.log('\n📖 Explanation complete (--auto --explain mode, no changes made)');
+
+    // Emit proof for explain mode
+    if (CLI_FLAGS.emitProof) {
+      const explainProof = createNoopProof({
+        ...selectionReason,
+        reason: `EXPLAIN: ${selectionReason.reason}`,
+      });
+      appliedProofs.push(explainProof);
+      writeProofs();
+    }
+
+    process.exit(0);
+  }
+
+  // Step 4: Generate and apply patch
+  const filePath = path.join(process.cwd(), selectedItem.file);
+  if (!fs.existsSync(filePath)) {
+    console.log(`❌ File not found: ${filePath}`);
+
+    if (CLI_FLAGS.emitProof) {
+      const errorProof = createProof(
+        selectedItem,
+        '',
+        selectedItem.patchStrategy || 'unknown',
+        {
+          allowedSurface: { passed: true },
+          forbiddenPath: { passed: true },
+          gitApply: { ok: false, output: 'File not found' },
+        },
+        [],
+        'skipped',
+        undefined,
+        'File not found',
+        selectionReason
+      );
+      appliedProofs.push(errorProof);
+      writeProofs();
+    }
+
+    process.exit(1);
+  }
+
+  const fileContent = fs.readFileSync(filePath, 'utf8');
+  const patchResult = generateStrategyPatch(selectedItem, fileContent);
+
+  if (!patchResult.patch) {
+    console.log(`\n⚠️  Cannot generate patch: ${patchResult.reason}`);
+
+    if (CLI_FLAGS.emitProof) {
+      const noopProof = createProof(
+        selectedItem,
+        '',
+        patchResult.strategy || 'unknown',
+        {
+          allowedSurface: { passed: true },
+          forbiddenPath: { passed: true },
+          gitApply: { ok: false, output: patchResult.reason },
+        },
+        [],
+        'skipped',
+        undefined,
+        patchResult.reason,
+        selectionReason
+      );
+      appliedProofs.push(noopProof);
+      writeProofs();
+    }
+
+    process.exit(1);
+  }
+
+  if (CLI_FLAGS.verbose) {
+    console.log('\n📄 Patch content:');
+    console.log(patchResult.patch);
+  }
+
+  // Step 5: Apply patch (git apply --check first)
+  const applyResult = applyPatch({ ...selectedItem, suggestedPatch: '' } as any, patchResult.patch);
+
+  if (!applyResult.applied) {
+    console.log(`\n⚠️  Patch not applied: ${applyResult.reason}`);
+
+    if (applyResult.reason !== 'Dry run mode') {
+      gitResetHard();
+    }
+
+    if (CLI_FLAGS.emitProof) {
+      const outcome: ApplyOutcome = CLI_FLAGS.dryRun ? 'skipped' : 'skipped';
+      const proof = createProof(
+        selectedItem,
+        patchResult.patch,
+        patchResult.strategy!,
+        {
+          allowedSurface: { passed: true },
+          forbiddenPath: { passed: true },
+          gitApply: { ok: false, output: applyResult.reason },
+        },
+        [],
+        outcome,
+        undefined,
+        applyResult.reason,
+        selectionReason
+      );
+      appliedProofs.push(proof);
+      writeProofs();
+    }
+
+    if (applyResult.reason === 'Dry run mode') {
+      console.log('\n✅ Ralph Apply complete (--auto --dry-run)');
+      process.exit(0);
+    }
+
+    process.exit(1);
+  }
+
+  console.log('✅ Patch applied successfully');
+
+  // Step 6: Run gates
+  console.log('\n🔐 Running required gates...');
+  const gateResults = runGates();
+
+  if (!gateResults.allPassed) {
+    console.log('\n❌ GATES FAILED - Rolling back...');
+    gitResetHard();
+
+    if (CLI_FLAGS.emitProof) {
+      const proof = createProof(
+        selectedItem,
+        patchResult.patch,
+        patchResult.strategy!,
+        {
+          allowedSurface: { passed: true },
+          forbiddenPath: { passed: true },
+          gitApply: { ok: true },
+        },
+        gateResults.results,
+        'rolled_back',
+        undefined,
+        'Gates failed',
+        selectionReason
+      );
+      appliedProofs.push(proof);
+      writeProofs();
+    }
+
+    process.exit(1);
+  }
+
+  console.log('\n✅ All gates passed');
+
+  // Step 7: Commit
+  const commitMessage = generateStrategyCommitMessage(selectedItem, patchResult.strategy!);
+  console.log('\n📝 Committing...');
+
+  if (CLI_FLAGS.verbose) {
+    console.log('\nCommit message:');
+    console.log(commitMessage);
+  }
+
+  const commitResult = runCommand(
+    `git add "${selectedItem.file}" && git commit -m "${commitMessage.replace(/"/g, '\\"')}"`,
+    { silent: true }
+  );
+
+  let commitHash: string | undefined;
+  if (!commitResult.success) {
+    console.log('⚠️  Commit failed (may be no changes):', commitResult.output);
+  } else {
+    console.log('✅ Committed successfully');
+    const hashResult = runCommand('git rev-parse HEAD', { silent: true });
+    commitHash = hashResult.success ? hashResult.output.trim() : undefined;
+  }
+
+  // Step 8: Emit proof (with selection reason)
+  if (CLI_FLAGS.emitProof) {
+    const proof = createProof(
+      selectedItem,
+      patchResult.patch,
+      patchResult.strategy!,
+      {
+        allowedSurface: { passed: true },
+        forbiddenPath: { passed: true },
+        gitApply: { ok: true },
+      },
+      gateResults.results,
+      commitHash ? 'applied' : 'skipped',
+      commitHash,
+      commitHash ? undefined : 'Commit not created',
+      selectionReason
+    );
+    appliedProofs.push(proof);
+    writeProofs();
+  }
+
+  console.log('\n✅ Ralph Apply complete (--auto mode)');
+}
+
+/**
+ * Generate commit message for strategy-based patch
+ */
+function generateStrategyCommitMessage(item: PerfPlanItem, strategyId: string): string {
+  const strategy = STRATEGY_BY_ID.get(strategyId as PatchStrategyId);
+
+  return `fix(perf): ${strategy?.name || strategyId}
+
+File: ${item.file}
+Kind: ${item.kind}
+Strategy: ${strategyId}
+PriorityScore: ${item.priorityScore}
+PlanItemId: ${item.id}
+
+Evidence:
+${item.evidence.map(e => `- L${e.line}: ${e.snippet.trim().substring(0, 60)}`).join('\n')}
+
+Gates:
+- pnpm run type-check: ✅ PASS
+- node --test phase83-tools.test.mjs: ✅ PASS
+
+AI-Collaboration: Ralph-Loop-4M4
+Government: FISMA-aware automated refactor`;
 }
 
 main().catch(err => {

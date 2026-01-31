@@ -396,7 +396,10 @@ function clientBoundaryToPlanItem(finding: Finding, index: number): PlanItem | n
 /**
  * Check eligibility for client-boundary auto-fix
  */
-function checkClientBoundaryEligibility(finding: Finding, isAutoFixable: boolean): EligibilityCheck {
+function checkClientBoundaryEligibility(
+  finding: Finding,
+  isAutoFixable: boolean
+): EligibilityCheck {
   // GOVERNANCE: Must be in allowed surface
   if (!isInAllowedSurface(finding.file)) {
     return { eligible: false, reason: 'Not in Core Governance Surface' };

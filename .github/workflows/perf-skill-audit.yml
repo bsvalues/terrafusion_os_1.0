@@ -1,12 +1,15 @@
 # Perf Skill Audit (Informational)
 #
-# Phase 4G: Non-blocking performance audit lane
+# Phase 4G/4M5: Non-blocking performance audit lane with rehearsal
 #
 # GOVERNANCE:
 # - NEVER required for merge (SEAL remains the only required check)
 # - Runs nightly + manual dispatch only
 # - Cancel-safe with concurrency
 # - Read-only, no mutations
+#
+# Phase 4M5: Adds nightly rehearsal (--auto --dry-run --explain --emit-proof)
+# The rehearsal demonstrates what ralph-apply would do without applying changes.
 
 name: Perf Skill Audit (Informational)
 
@@ -17,6 +20,11 @@ on:
         description: 'Ref/SHA to audit (blank = current)'
         required: false
         default: ''
+      enable_rehearsal:
+        description: 'Run ralph-apply rehearsal (dry-run)'
+        type: boolean
+        required: false
+        default: true
   schedule:
     # 02:15 PST (10:15 UTC) - outside peak hours
     - cron: '15 10 * * *'
@@ -60,7 +68,7 @@ jobs:
           PERF_AUDIT_MAX_FINDINGS: '200'
           PERF_AUDIT_SEVERITY_THRESHOLD: 'medium'
 
-      - name: Upload artifacts
+      - name: Upload audit artifacts (Phase 4M4)
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -68,4 +76,98 @@ jobs:
           path: |
             tools/registry/perf-skill-audit/out/perf-audit-report.md
             tools/registry/perf-skill-audit/out/perf-audit-report.json
+            tools/registry/perf-skill-audit/out/perf-audit-report.full.json
+            tools/registry/perf-skill-audit/out/perf-audit-report.actionable.json
+            tools/registry/perf-skill-audit/out/perf.plan.json
+            tools/registry/perf-skill-audit/out/waterfalls.plan.json
+            tools/registry/perf-skill-audit/out/apply-proofs.json
           retention-days: 30
+
+  # ============================================================================
+  # Phase 4M5: Nightly Rehearsal (Informational)
+  #
+  # Runs ralph-apply --auto in dry-run mode to demonstrate what would happen
+  # if the autonomy envelope were triggered. Produces ApplyProof for review.
+  #
+  # NON-NEGOTIABLE: This is DRY-RUN ONLY (no actual changes)
+  # ============================================================================
+  rehearsal:
+    name: Ralph Apply Rehearsal (dry-run)
+    needs: perf_audit
+    if: ${{ github.event.inputs.enable_rehearsal != 'false' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_ref || github.ref }}
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install root dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install audit tool dependencies
+        run: pnpm -C tools/registry/perf-skill-audit install
+
+      - name: Download perf.plan.json from audit job
+        uses: actions/download-artifact@v4
+        with:
+          name: perf-skill-audit-${{ github.run_number }}
+          path: tools/registry/perf-skill-audit/out/
+
+      - name: Ralph Apply Rehearsal (--auto --dry-run --explain --emit-proof)
+        id: rehearsal
+        run: |
+          echo "🤖 Phase 4M5: Ralph Apply Rehearsal (DRY-RUN ONLY)"
+          echo "=================================================="
+          echo ""
+          echo "This demonstrates what ralph-apply --auto would do."
+          echo "No changes are applied (--dry-run mode)."
+          echo ""
+          npx tsx tools/registry/perf-skill-audit/src/ralph-apply.ts \
+            --auto \
+            --dry-run \
+            --explain \
+            --emit-proof \
+            --verbose || true
+        env:
+          # Ensure we're on a non-protected branch for safety rail demo
+          GIT_BRANCH: ${{ github.ref_name }}
+
+      - name: Upload rehearsal proof
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ralph-apply-rehearsal-${{ github.run_number }}
+          path: |
+            tools/registry/perf-skill-audit/out/apply-proofs.json
+          retention-days: 30
+
+      - name: Rehearsal Summary
+        if: always()
+        run: |
+          echo "## 🤖 Ralph Apply Rehearsal Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Mode:** \`--auto --dry-run --explain --emit-proof\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f "tools/registry/perf-skill-audit/out/apply-proofs.json" ]; then
+            echo "### ApplyProof Generated" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+            cat tools/registry/perf-skill-audit/out/apply-proofs.json >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No apply-proofs.json generated (may be noop)" >> $GITHUB_STEP_SUMMARY
+          fi

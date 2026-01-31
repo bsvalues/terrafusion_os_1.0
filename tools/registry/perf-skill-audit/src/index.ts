@@ -11,6 +11,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { generatePerfPlan } from './perf-plan-generator.js';
 import { generateRemediationPlan, generateUnifiedDiff } from './plan-generator.js';
 import { bundlesScanner } from './scanners/bundles.js';
 import { clientBoundaryScanner } from './scanners/client-boundary.js';
@@ -408,6 +409,11 @@ async function runAudit(): Promise<void> {
   const planPath = path.join(outDir, 'waterfalls.plan.json');
   fs.writeFileSync(planPath, JSON.stringify(plan, null, 2));
 
+  // Phase 4M4: Generate unified perf.plan.json (new format with strategy routing)
+  const perfPlan = generatePerfPlan(planFindings, getGitRef(), RULES_VERSION);
+  const perfPlanPath = path.join(outDir, 'perf.plan.json');
+  fs.writeFileSync(perfPlanPath, JSON.stringify(perfPlan, null, 2));
+
   // Generate unified diffs if --emit-patch flag is set
   const diffPath = path.join(outDir, 'waterfalls.patch');
   if (CLI_FLAGS.emitPatch) {
@@ -440,6 +446,17 @@ async function runAudit(): Promise<void> {
   console.log(`   📦 Batch-stub:  ${plan.summary.batchStub}`);
   console.log(`   👀 Review-only: ${plan.summary.reviewOnly}`);
   console.log(`\n   Plan: ${planPath}`);
+
+  // Phase 4M4: Print perf plan summary (strategy-aware)
+  console.log(`\n📋 Perf Plan (Phase 4M4):`);
+  console.log(`   📄 Total items:    ${perfPlan.summary.total}`);
+  console.log(`   ✅ Eligible:       ${perfPlan.summary.eligible}`);
+  console.log(`   🔍 Review:         ${perfPlan.summary.review}`);
+  console.log(`   🚫 Blocked:        ${perfPlan.summary.blocked}`);
+  console.log(`   🛡️  Low risk:       ${perfPlan.summary.byRisk.low}`);
+  console.log(`   ⚠️  Medium risk:    ${perfPlan.summary.byRisk.medium}`);
+  console.log(`   🔴 High risk:      ${perfPlan.summary.byRisk.high}`);
+  console.log(`\n   Plan: ${perfPlanPath}`);
 
   // Print summary
   console.log('📊 Audit Summary:');

@@ -34,7 +34,6 @@ export function MissingUseClientComponent() {
 // ══════════════════════════════════════════════════════════════════════════════
 
 import { ClientButton } from '../hooks/use-client-button';
-import { SomeUI } from './components/ui/button';
 
 export function ServerComponent() {
   return <ClientButton />;
@@ -45,9 +44,9 @@ export function ServerComponent() {
 // Heavy modules that should use dynamic()
 // ══════════════════════════════════════════════════════════════════════════════
 
-import { Chart } from 'recharts';
-import { DatePicker } from 'react-datepicker';
 import Editor from '@monaco-editor/react';
+import { DatePicker } from 'react-datepicker';
+import { Chart } from 'recharts';
 
 export function HeavyImportsComponent() {
   return (
@@ -116,8 +115,8 @@ export function CleanClientComponent() {
 // Components matching *Viewer, *Chart, *Editor patterns
 // ══════════════════════════════════════════════════════════════════════════════
 
-import { PDFViewer } from './pdf-components';
 import { MapVisualization } from './map-components';
+import { PDFViewer } from './pdf-components';
 
 export function HeavyComponentNames() {
   return (
