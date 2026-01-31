@@ -27,6 +27,7 @@ This is the canonical starting point for anyone touching CI workflows.
 | Document | Purpose |
 |----------|---------|
 | [SEAL_ONLY_REQUIRED_CHECK_POLICY.md](SEAL_ONLY_REQUIRED_CHECK_POLICY.md) | Policy rationale and configuration |
+| [AUTONOMY_V1_GOVERNANCE_CONTRACT.md](../../AUTONOMY_V1_GOVERNANCE_CONTRACT.md) | Autonomy v1 operational guarantees |
 | [🏆_PHASE_4D_DEPENDENCY_CONVERGENCE_ACHIEVEMENT_🏆.md](../../🏆_PHASE_4D_DEPENDENCY_CONVERGENCE_ACHIEVEMENT_🏆.md) | Achievement log with merge statistics |
 | [required-check-drift.test.ts](../../tests/governance/required-check-drift.test.ts) | Hard invariant tests |
 
@@ -69,6 +70,8 @@ pnpm vitest run tests/governance/required-check-drift.test.ts
 | **4E** | 2026-01-30 | Concurrency + actor guards added |
 | **4F** | 2026-01-30 | SEAL unskippable assertions added |
 | **4G** | 2026-01-30 | Performance Skill Audit lane (informational) |
+| **4M6** | 2026-01-30 | Autonomy v1: determinism, proofs, rollback contracts |
+| **4M7** | 2026-01-30 | Autonomy v1 merged to main with governance contract |
 
 ---
 
