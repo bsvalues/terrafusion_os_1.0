@@ -81,6 +81,9 @@ export interface ReleaseAsset {
 /**
  * Phase 4N16: Signature metadata for cryptographic authorship verification.
  * Uses keyless signing via GitHub OIDC (Sigstore/cosign).
+ *
+ * Phase 4N20: Extended with identity & issuer pinning fields for
+ * non-spoofable verification.
  */
 export interface SignatureInfo {
   /** Signature file URL (.sig) */
@@ -93,6 +96,16 @@ export interface SignatureInfo {
   issuer: string;
   /** Signing identity (workflow identity URI) */
   identity: string;
+  /** Phase 4N20: Workflow file path (e.g., .github/workflows/autonomy-evidence-publisher.yml) */
+  workflowPath: string;
+  /** Phase 4N20: Git ref (e.g., refs/heads/main) */
+  ref: string;
+  /** Phase 4N20: Repository (e.g., owner/repo) */
+  repo: string;
+  /** Phase 4N20: Signing commit SHA (40-hex) */
+  sha: string;
+  /** Phase 4N20: Cosign subject (optional, for audit) */
+  subject?: string;
   /** Verification status (populated after verification) */
   verified?: {
     ok: boolean;
@@ -171,6 +184,57 @@ export interface IncidentSource {
   mergedAt?: string;
 }
 
+/**
+ * Phase 4N20: Expected signature policy for verification.
+ * Embedded in evidence index to make verification expectations explicit.
+ */
+export interface ExpectedSignaturePolicy {
+  /** OIDC issuer (must be exact match) */
+  issuer: string;
+  /** Repository (owner/repo) */
+  repo: string;
+  /** Git ref (e.g., refs/heads/main) */
+  ref: string;
+  /** Workflow file path */
+  workflowPath: string;
+  /** Derived identity URI */
+  identity: string;
+  /** Whether SHA binding is required (default true for merged/incident) */
+  requireShaBinding?: boolean;
+  /** Expected SHA (40-hex) - required if requireShaBinding is true */
+  sha?: string;
+}
+
+/**
+ * Phase 4N20: Individual pin verification result.
+ */
+export interface PinResult {
+  expected: string;
+  actual: string;
+  ok: boolean;
+}
+
+/**
+ * Phase 4N20: Complete signature pins verification result.
+ */
+export interface SignaturePins {
+  issuer: PinResult;
+  identity: PinResult;
+  repo: PinResult;
+  workflowPath: PinResult;
+  ref: PinResult;
+  sha?: PinResult;
+}
+
+/**
+ * Phase 4N20: Forbidden identity patterns.
+ */
+export const FORBIDDEN_IDENTITY_PATTERNS = [
+  /@refs\/tags\//, // No tag identities for merged/incident
+  /\/latest$/, // No mutable "latest" refs
+  /@refs\/heads\/(?!main$|master$)/, // Only main/master allowed for merged/incident
+] as const;
+
 export interface EvidenceIndex {
   schema: 'terrafusion.autonomy.evidence.index.v1';
   generatedAt: string;
@@ -196,6 +260,11 @@ export interface EvidenceIndex {
    * Format: https://github.com/{owner}/{repo}/.github/workflows/{workflow}.yml@{ref}
    */
   signingIdentity?: string;
+  /**
+   * Phase 4N20: Expected signature policy for verification.
+   * Contains issuer, identity, workflow, ref, repo pins for non-spoofable verification.
+   */
+  expectedSignaturePolicy?: ExpectedSignaturePolicy;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -226,6 +295,12 @@ interface IndexOptions {
   signingMode?: SigningMode;
   /** Phase 4N17: Signing identity (workflow OIDC subject) */
   signingIdentity?: string;
+  /** Phase 4N20: Workflow file path for signature pinning */
+  workflowPath?: string;
+  /** Phase 4N20: Signing commit SHA (40-hex) */
+  sha?: string;
+  /** Phase 4N20: OIDC issuer (defaults to GitHub Actions) */
+  issuer?: string;
 }
 
 function parseArgs(): IndexOptions {
@@ -248,6 +323,9 @@ function parseArgs(): IndexOptions {
     retentionTier: 'ci',
     releaseTag: '',
     serverUrl: process.env.GITHUB_SERVER_URL || 'https://github.com',
+    // Phase 4N20: Signature pinning defaults
+    sha: process.env.GITHUB_SHA || '',
+    issuer: 'https://token.actions.githubusercontent.com',
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -286,6 +364,15 @@ function parseArgs(): IndexOptions {
       opts.releaseTag = args[++i];
     } else if (arg === '--server-url' && args[i + 1]) {
       opts.serverUrl = args[++i];
+    } else if (arg === '--workflow-path' && args[i + 1]) {
+      // Phase 4N20: Explicit workflow path for signature pinning
+      opts.workflowPath = args[++i];
+    } else if (arg === '--sha' && args[i + 1]) {
+      // Phase 4N20: Signing commit SHA
+      opts.sha = args[++i];
+    } else if (arg === '--issuer' && args[i + 1]) {
+      // Phase 4N20: OIDC issuer override (rarely needed)
+      opts.issuer = args[++i];
     } else if (arg === '--help' || arg === '-h') {
       printHelp();
       process.exit(0);
@@ -461,6 +548,84 @@ export function buildAssetUrl(
 }
 
 /**
+ * Phase 4N20: Derive workflow path from workflow name.
+ * Maps workflow name to standard GitHub workflow file path.
+ */
+export function deriveWorkflowPath(workflowName: string, isIncident: boolean): string {
+  // If already a path (contains .yml), return as-is
+  if (workflowName.includes('.yml') || workflowName.includes('.yaml')) {
+    return workflowName.startsWith('.github/') ? workflowName : `.github/workflows/${workflowName}`;
+  }
+
+  // Derive based on incident flag and known workflow names
+  if (isIncident) {
+    return '.github/workflows/autonomy-incident-publisher.yml';
+  }
+
+  // Map common workflow names
+  const workflowMap: Record<string, string> = {
+    'autonomy-evidence-publisher': '.github/workflows/autonomy-evidence-publisher.yml',
+    'autonomy-incident-publisher': '.github/workflows/autonomy-incident-publisher.yml',
+    'autonomy-pr-lane': '.github/workflows/autonomy-pr-lane.yml',
+  };
+
+  return workflowMap[workflowName] || `.github/workflows/${workflowName}.yml`;
+}
+
+/**
+ * Phase 4N20: Build signing identity URI.
+ * Format: https://github.com/{owner}/{repo}/.github/workflows/{workflow}.yml@{ref}
+ */
+export function buildSigningIdentity(
+  serverUrl: string,
+  repo: string,
+  workflowPath: string,
+  ref: string
+): string {
+  const base = serverUrl.replace(/\/$/, '');
+  // Ensure workflowPath starts with .github/
+  const normalizedPath = workflowPath.startsWith('.github/')
+    ? workflowPath
+    : `.github/workflows/${workflowPath}`;
+  return `${base}/${repo}/${normalizedPath}@${ref}`;
+}
+
+/**
+ * Phase 4N20: Validate identity against forbidden patterns.
+ * Returns error message if invalid, null if valid.
+ */
+export function validateIdentity(
+  identity: string,
+  tier: 'ci' | 'merged' | 'incident'
+): string | null {
+  // Only apply strict rules for merged/incident tiers
+  if (tier === 'ci') {
+    return null;
+  }
+
+  // No tag identities for merged/incident
+  if (/@refs\/tags\//.test(identity)) {
+    return 'Tag identities forbidden for merged/incident tiers';
+  }
+
+  // No mutable "latest" refs
+  if (/\/latest$/.test(identity)) {
+    return 'Mutable "latest" ref forbidden';
+  }
+
+  // Only allow main/master branches for merged/incident
+  const refMatch = identity.match(/@refs\/heads\/(.+)$/);
+  if (refMatch) {
+    const branch = refMatch[1];
+    if (branch !== 'main' && branch !== 'master') {
+      return `Only main/master branches allowed for ${tier} tier, got: ${branch}`;
+    }
+  }
+
+  return null;
+}
+
+/**
  * Canonical asset names for evidence packages.
  */
 export const CANONICAL_ASSET_NAMES = {
@@ -609,7 +774,10 @@ export function buildSignatureUrls(
   repo: string,
   releaseTag: string,
   assetName: string,
-  workflowIdentity: string
+  workflowIdentity: string,
+  workflowPath: string,
+  ref: string,
+  sha?: string
 ): SignatureInfo {
   return {
     sigUrl: buildAssetUrl(serverUrl, repo, releaseTag, SIGNATURE_ASSET_NAMES.sig(assetName)),
@@ -617,6 +785,10 @@ export function buildSignatureUrls(
     bundleUrl: buildAssetUrl(serverUrl, repo, releaseTag, SIGNATURE_ASSET_NAMES.bundle(assetName)),
     issuer: GITHUB_OIDC_ISSUER,
     identity: workflowIdentity,
+    workflowPath,
+    ref,
+    repo,
+    sha: sha || '',
   };
 }
 
@@ -649,12 +821,18 @@ export function buildReleaseAssets(
   signedAssets?: {
     workflow: string;
     ref: string;
+    sha?: string; // Phase 4N20: Commit SHA for pinning
     signedArtifacts: Set<string>; // asset names that were signed
   }
 ): ReleaseAssets {
   const workflowIdentity = signedAssets
     ? buildWorkflowIdentity(serverUrl, repo, signedAssets.workflow, signedAssets.ref)
     : '';
+  const workflowPath = signedAssets?.workflow
+    ? deriveWorkflowPath(signedAssets.workflow, signedAssets.workflow.includes('incident'))
+    : '';
+  const sigRef = signedAssets?.ref || '';
+  const sigSha = signedAssets?.sha || '';
 
   const makeAsset = (name: string, shouldSign = false): ReleaseAsset => {
     const wasSigned = shouldSign && (signedAssets?.signedArtifacts.has(name) ?? false);
@@ -675,7 +853,16 @@ export function buildReleaseAssets(
 
     // Phase 4N16: Also add signature URLs for backward compatibility
     if (wasSigned) {
-      asset.signature = buildSignatureUrls(serverUrl, repo, releaseTag, name, workflowIdentity);
+      asset.signature = buildSignatureUrls(
+        serverUrl,
+        repo,
+        releaseTag,
+        name,
+        workflowIdentity,
+        workflowPath,
+        sigRef,
+        sigSha
+      );
     }
 
     return asset;
@@ -879,6 +1066,23 @@ export function buildEvidenceIndex(opts: IndexOptions): EvidenceIndex {
   }
   if (opts.signingIdentity) {
     index.signingIdentity = opts.signingIdentity;
+  }
+
+  // Phase 4N20: Build expected signature policy for non-spoofable verification
+  if (opts.signingMode && opts.signingMode !== 'none') {
+    const workflowPath = opts.workflowPath || deriveWorkflowPath(opts.workflow, opts.incident);
+    const identity = buildSigningIdentity(opts.serverUrl, opts.repo, workflowPath, opts.ref);
+
+    index.expectedSignaturePolicy = {
+      issuer: opts.issuer || 'https://token.actions.githubusercontent.com',
+      repo: opts.repo,
+      ref: opts.ref,
+      workflowPath,
+      identity,
+      // SHA binding required for merged/incident tiers
+      requireShaBinding: opts.retentionTier === 'merged' || opts.retentionTier === 'incident',
+      sha: opts.sha || undefined,
+    };
   }
 
   return index;

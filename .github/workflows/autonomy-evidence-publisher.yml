@@ -250,6 +250,7 @@ jobs:
         run: |
           echo "📋 Generating Evidence Index..."
 
+          # Phase 4N20: Include SHA for identity pinning
           npx tsx tools/registry/autonomy-viewer/src/evidence-index.ts \
             --out ${{ env.VIEWER_DIR }}/autonomy-evidence-index.json \
             --artifacts ${{ env.OUT_DIR }} \
@@ -261,6 +262,7 @@ jobs:
             --workflow "autonomy-evidence-publisher" \
             --repo "${{ github.repository }}" \
             --ref "refs/heads/main" \
+            --sha "${{ github.sha }}" \
             --release-tag "${{ needs.gate.outputs.release_tag }}" \
             --verbose
 

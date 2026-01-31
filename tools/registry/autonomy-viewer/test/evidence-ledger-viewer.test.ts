@@ -19,7 +19,7 @@ import type { EvidenceIndex, EvidenceRecord } from '../src/evidence-index.js';
 import {
     buildLedgerEntries,
     buildLedgerViewModel,
-    generateLedgerHtml
+    generateLedgerHtml,
 } from '../src/evidence-ledger-viewer.js';
 
 // =============================================================================
@@ -461,7 +461,7 @@ describe('Ledger Viewer: Filter Contracts', () => {
     assert.ok(html.includes('Merged'), 'must have merged filter');
     assert.ok(html.includes('CI'), 'must have ci filter');
     assert.ok(html.includes('Verified'), 'must have verified filter');
-    assert.ok(html.includes('Failed'), 'must have failed filter');
+    assert.ok(html.includes('Signed'), 'must have signed filter');
   });
 
   it('should include data attributes for filtering', () => {
@@ -486,7 +486,7 @@ describe('Ledger Viewer: Summary Contracts', () => {
     const html = generateLedgerHtml(vm);
 
     assert.ok(html.includes('>2<'), 'must show total count of 2');
-    assert.ok(html.includes('Total Records'), 'must label total records');
+    assert.ok(html.includes('>Total<'), 'must label total records');
   });
 
   it('should display tier breakdown', () => {

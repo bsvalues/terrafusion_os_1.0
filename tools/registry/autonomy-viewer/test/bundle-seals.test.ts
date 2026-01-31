@@ -5,8 +5,8 @@
  * evidence bags with embedded signature verification instructions.
  */
 
-import { describe, it } from 'node:test';
 import * as assert from 'node:assert';
+import { describe, it } from 'node:test';
 
 // Since generateVerifyMd is not exported, we test the expected behavior
 // through the bundle CLI or by checking the VERIFY.md template structure
@@ -16,7 +16,11 @@ describe('Phase 4N19: Sealed Evidence Bundle Contracts', () => {
     it('should document cosign installation for all platforms', () => {
       // Template must include installation instructions for:
       const requiredPlatforms = ['macOS', 'Windows', 'Linux'];
-      const requiredCommands = ['brew install cosign', 'scoop install cosign', 'cosign-linux-amd64'];
+      const requiredCommands = [
+        'brew install cosign',
+        'scoop install cosign',
+        'cosign-linux-amd64',
+      ];
 
       // This is a contract test - actual template testing would require export
       assert.ok(requiredPlatforms.length === 3, 'must support 3 platforms');
@@ -53,12 +57,7 @@ describe('Phase 4N19: Sealed Evidence Bundle Contracts', () => {
       // - seals/<manifest>.crt
       // - seals/<manifest>.bundle
       // - VERIFY.md
-      const expectedFiles = [
-        'seals/*.sig',
-        'seals/*.crt',
-        'seals/*.bundle',
-        'VERIFY.md',
-      ];
+      const expectedFiles = ['seals/*.sig', 'seals/*.crt', 'seals/*.bundle', 'VERIFY.md'];
 
       assert.strictEqual(expectedFiles.length, 4, 'must include 4 seal-related files');
     });

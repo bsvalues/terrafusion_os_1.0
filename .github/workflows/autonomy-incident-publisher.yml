@@ -270,6 +270,7 @@ jobs:
         run: |
           echo "📋 Generating Evidence Index (Incident tier)..."
 
+          # Phase 4N20: Include SHA for identity pinning
           npx tsx tools/registry/autonomy-viewer/src/evidence-index.ts \
             --out ${{ env.VIEWER_DIR }}/autonomy-evidence-index.json \
             --artifacts ${{ env.OUT_DIR }} \
@@ -281,6 +282,7 @@ jobs:
             --workflow "autonomy-incident-publisher" \
             --repo "${{ github.repository }}" \
             --ref "refs/heads/main" \
+            --sha "${{ github.sha }}" \
             --incident \
             --incident-pr "${{ needs.gate.outputs.pr_number }}" \
             --retention-tier "incident" \

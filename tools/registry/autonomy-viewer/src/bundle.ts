@@ -456,39 +456,39 @@ export function main(): void {
   if (opts.includeSeals) {
     const sealsDir = opts.sealsDir || opts.outDir;
     const manifestBaseName = `${zipName}.manifest.json`;
-    
+
     // Load signature triplet files
     const sigFile = loadFile(join(sealsDir, `${manifestBaseName}.sig`), false, opts.verbose);
     const crtFile = loadFile(join(sealsDir, `${manifestBaseName}.crt`), false, opts.verbose);
     const bundleFile = loadFile(join(sealsDir, `${manifestBaseName}.bundle`), false, opts.verbose);
-    
+
     // Check if we have at least the signature file
     const hasTriplet = sigFile && crtFile && bundleFile;
-    
+
     if (hasTriplet) {
       // Create sealed bundle with signature triplet included
       const sealedFiles = [...files];
-      
+
       // Add seals in a subdirectory
       sealedFiles.push({ zipPath: `seals/${manifestBaseName}.sig`, data: sigFile });
       sealedFiles.push({ zipPath: `seals/${manifestBaseName}.crt`, data: crtFile });
       sealedFiles.push({ zipPath: `seals/${manifestBaseName}.bundle`, data: bundleFile });
-      
+
       // Generate and add VERIFY.md
       const verifyMd = generateVerifyMd({
         bundleName: zipName,
         manifestPath: 'MANIFEST.json',
       });
       sealedFiles.push({ zipPath: 'VERIFY.md', data: verifyMd });
-      
+
       // Build sealed ZIP
       const sealedZipBuf = buildDeterministicZip(sealedFiles);
       const sealedZipName = zipName.replace(/\.zip$/, '-sealed.zip');
       const sealedZipPath = join(opts.outDir, sealedZipName);
-      
+
       writeFileSync(sealedZipPath, sealedZipBuf);
       console.log(`🔒 Sealed bundle: ${sealedZipPath} (${sealedZipBuf.length} bytes)`);
-      
+
       if (opts.verbose) {
         console.log('📋 Sealed bundle contains signature triplet:');
         console.log(`   - seals/${manifestBaseName}.sig`);
