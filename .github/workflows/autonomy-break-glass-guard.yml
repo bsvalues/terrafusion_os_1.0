@@ -1,0 +1,474 @@
+# Autonomy Break-Glass Guard (Phase 4N23)
+#
+# Emergency governance lane for autonomy PRs requiring enhanced oversight.
+# Break-glass is NOT a bypass - it's a STRICTER enforcement mode.
+#
+# Allowed actions:
+# - rollback_from_proof: Revert a specific autonomy change
+# - republish_evidence: Re-run evidence publisher
+# - pause_autonomy_lane: Temporarily disable autonomy PR lane
+#
+# NEVER allowed:
+# - Skip TPI approvals
+# - Skip signature/pinning/Rekor verification
+# - Modify forbidden paths
+# - Push directly to main
+# - Use Tier 1 strategies
+#
+# POLICY SOURCE: tools/registry/autonomy-viewer/policy/AUTONOMY_BREAK_GLASS_POLICY.json
+
+name: Autonomy Break-Glass Guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled, edited]
+    branches: [main]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  # ==========================================================================
+  # Gate: Check if this is a Break-Glass PR
+  # ==========================================================================
+  detect:
+    name: Detect Break-Glass PR
+    runs-on: ubuntu-latest
+    outputs:
+      is_break_glass: ${{ steps.check.outputs.is_break_glass }}
+      is_autonomy: ${{ steps.check.outputs.is_autonomy }}
+      has_reason_label: ${{ steps.check.outputs.has_reason_label }}
+      reason_label: ${{ steps.check.outputs.reason_label }}
+      has_required_title: ${{ steps.check.outputs.has_required_title }}
+    steps:
+      - name: Check PR type
+        id: check
+        run: |
+          echo "🚨 Phase 4N23: Detecting Break-Glass PR..."
+
+          TITLE="${{ github.event.pull_request.title }}"
+          LABELS='${{ toJson(github.event.pull_request.labels.*.name) }}'
+
+          echo "  Title: $TITLE"
+          echo "  Labels: $LABELS"
+          echo ""
+
+          # Check for break-glass label
+          if echo "$LABELS" | jq -e 'index("break-glass") != null' > /dev/null 2>&1; then
+            echo "is_break_glass=true" >> $GITHUB_OUTPUT
+            echo "  🚨 Break-Glass label detected"
+          else
+            echo "is_break_glass=false" >> $GITHUB_OUTPUT
+            echo "  ℹ️ No break-glass label"
+          fi
+
+          # Check for autonomy label
+          if echo "$LABELS" | jq -e 'index("autonomy") != null' > /dev/null 2>&1; then
+            echo "is_autonomy=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_autonomy=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Check for reason label (break-glass:reason/*)
+          REASON_LABEL=$(echo "$LABELS" | jq -r '.[] | select(startswith("break-glass:reason/"))' 2>/dev/null | head -n1)
+          if [ -n "$REASON_LABEL" ]; then
+            echo "has_reason_label=true" >> $GITHUB_OUTPUT
+            echo "reason_label=$REASON_LABEL" >> $GITHUB_OUTPUT
+            echo "  ✅ Reason label: $REASON_LABEL"
+          else
+            echo "has_reason_label=false" >> $GITHUB_OUTPUT
+            echo "reason_label=" >> $GITHUB_OUTPUT
+            echo "  ⚠️ No reason label (break-glass:reason/*)"
+          fi
+
+          # Check title prefix
+          if [[ "$TITLE" == "🚨 Break Glass:"* ]]; then
+            echo "has_required_title=true" >> $GITHUB_OUTPUT
+            echo "  ✅ Title has required prefix"
+          else
+            echo "has_required_title=false" >> $GITHUB_OUTPUT
+            echo "  ⚠️ Title missing '🚨 Break Glass:' prefix"
+          fi
+
+  # ==========================================================================
+  # Break-Glass Guard: Enhanced enforcement for incident PRs
+  # ==========================================================================
+  break-glass-guard:
+    name: Break-Glass Enforcement
+    needs: detect
+    if: needs.detect.outputs.is_break_glass == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Load Break-Glass Policy
+        id: policy
+        run: |
+          echo "📋 Phase 4N23: Loading Break-Glass Policy..."
+          POLICY_PATH="tools/registry/autonomy-viewer/policy/AUTONOMY_BREAK_GLASS_POLICY.json"
+
+          if [ ! -f "$POLICY_PATH" ]; then
+            echo "::error::Break-Glass Policy not found at $POLICY_PATH"
+            exit 1
+          fi
+
+          # Extract policy values
+          MIN_APPROVALS=$(jq -r '.requirements.minApprovals' "$POLICY_PATH")
+          DISALLOW_SELF=$(jq -r '.requirements.disallowSelfApproval' "$POLICY_PATH")
+          DISALLOW_BOTS=$(jq -r '.requirements.disallowBots' "$POLICY_PATH")
+          BOT_PATTERNS=$(jq -c '.requirements.botPatterns' "$POLICY_PATH")
+          POLICY_VERSION=$(jq -r '.version' "$POLICY_PATH")
+          REQUIRED_BODY_FIELDS=$(jq -c '.activation.requiredBodyFields' "$POLICY_PATH")
+          REQUIRE_NO_AUTOMERGE=$(jq -r '.verification.requireNoAutomerge' "$POLICY_PATH")
+
+          # Compute policy hash for audit trail
+          POLICY_HASH=$(sha256sum "$POLICY_PATH" | cut -d' ' -f1)
+
+          echo "  Policy Version: $POLICY_VERSION"
+          echo "  Policy Hash: ${POLICY_HASH:0:16}..."
+          echo "  Min Approvals: $MIN_APPROVALS"
+          echo "  Disallow Self: $DISALLOW_SELF"
+          echo "  Disallow Bots: $DISALLOW_BOTS"
+          echo "  Require No Automerge: $REQUIRE_NO_AUTOMERGE"
+
+          echo "min_approvals=$MIN_APPROVALS" >> $GITHUB_OUTPUT
+          echo "disallow_self=$DISALLOW_SELF" >> $GITHUB_OUTPUT
+          echo "disallow_bots=$DISALLOW_BOTS" >> $GITHUB_OUTPUT
+          echo "bot_patterns=$BOT_PATTERNS" >> $GITHUB_OUTPUT
+          echo "policy_version=$POLICY_VERSION" >> $GITHUB_OUTPUT
+          echo "policy_hash=$POLICY_HASH" >> $GITHUB_OUTPUT
+          echo "required_body_fields=$REQUIRED_BODY_FIELDS" >> $GITHUB_OUTPUT
+          echo "require_no_automerge=$REQUIRE_NO_AUTOMERGE" >> $GITHUB_OUTPUT
+
+          echo "✅ Policy loaded"
+
+      - name: Check PR Requirements
+        id: pr_check
+        env:
+          HAS_TITLE: ${{ needs.detect.outputs.has_required_title }}
+          HAS_REASON: ${{ needs.detect.outputs.has_reason_label }}
+          IS_AUTONOMY: ${{ needs.detect.outputs.is_autonomy }}
+          REASON_LABEL: ${{ needs.detect.outputs.reason_label }}
+          REQUIRED_BODY_FIELDS: ${{ steps.policy.outputs.required_body_fields }}
+          REQUIRE_NO_AUTOMERGE: ${{ steps.policy.outputs.require_no_automerge }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          AUTO_MERGE: ${{ github.event.pull_request.auto_merge }}
+        run: |
+          echo "📋 Phase 4N23: Checking Break-Glass PR Requirements..."
+          echo ""
+
+          PASS=true
+          ERRORS=()
+
+          # Base branch check
+          if [[ "${{ github.base_ref }}" != "main" ]]; then
+            echo "  ❌ Base branch must be 'main' (got: ${{ github.base_ref }})"
+            ERRORS+=("Base branch must be 'main'")
+            PASS=false
+          else
+            echo "  ✅ Base branch: main"
+          fi
+
+          # Autonomy PR check
+          if [[ "$IS_AUTONOMY" != "true" ]]; then
+            echo "  ❌ Break-glass requires 'autonomy' label"
+            ERRORS+=("Missing 'autonomy' label")
+            PASS=false
+          else
+            echo "  ✅ Autonomy label: present"
+          fi
+
+          # Title prefix check
+          if [[ "$HAS_TITLE" != "true" ]]; then
+            echo "  ❌ Title must start with '🚨 Break Glass:'"
+            ERRORS+=("Missing title prefix '🚨 Break Glass:'")
+            PASS=false
+          else
+            echo "  ✅ Title prefix: OK"
+          fi
+
+          # Reason label check
+          if [[ "$HAS_REASON" != "true" ]]; then
+            echo "  ❌ Missing reason label (break-glass:reason/*)"
+            ERRORS+=("Missing reason label (break-glass:reason/*)")
+            PASS=false
+          else
+            echo "  ✅ Reason label: $REASON_LABEL"
+          fi
+
+          # Automerge check
+          if [[ "$REQUIRE_NO_AUTOMERGE" == "true" ]] && [[ "$AUTO_MERGE" != "null" ]] && [[ -n "$AUTO_MERGE" ]]; then
+            echo "  ❌ Automerge is NOT allowed for break-glass PRs"
+            ERRORS+=("Automerge must be disabled")
+            PASS=false
+          else
+            echo "  ✅ Automerge: disabled"
+          fi
+
+          # Required body fields check
+          echo ""
+          echo "  Checking required body fields..."
+          BODY_CHECK_PASS=true
+          for FIELD in $(echo "$REQUIRED_BODY_FIELDS" | jq -r '.[]'); do
+            if echo "$PR_BODY" | grep -qF "$FIELD"; then
+              echo "    ✅ Found: $FIELD"
+            else
+              echo "    ❌ Missing: $FIELD"
+              ERRORS+=("Missing in PR body: $FIELD")
+              BODY_CHECK_PASS=false
+            fi
+          done
+
+          if [[ "$BODY_CHECK_PASS" != "true" ]]; then
+            PASS=false
+          fi
+
+          echo ""
+          if [ "$PASS" = true ]; then
+            echo "pr_check_ok=true" >> $GITHUB_OUTPUT
+            echo "✅ PR requirements satisfied"
+          else
+            echo "pr_check_ok=false" >> $GITHUB_OUTPUT
+            echo "pr_errors=$(printf '%s\n' "${ERRORS[@]}" | jq -R -s -c 'split("\n") | map(select(. != ""))')" >> $GITHUB_OUTPUT
+            echo "::error::PR requirements not satisfied - see details above"
+          fi
+
+      - name: Count Approvals (Enhanced)
+        id: approvals
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MIN_APPROVALS: ${{ steps.policy.outputs.min_approvals }}
+          DISALLOW_SELF: ${{ steps.policy.outputs.disallow_self }}
+          DISALLOW_BOTS: ${{ steps.policy.outputs.disallow_bots }}
+          BOT_PATTERNS: ${{ steps.policy.outputs.bot_patterns }}
+        run: |
+          echo "👥 Phase 4N23: Counting Approvals (Break-Glass Mode)..."
+          echo ""
+
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+
+          echo "  PR Author: $PR_AUTHOR"
+          echo "  Required Approvals: $MIN_APPROVALS (Break-Glass Policy)"
+          echo ""
+
+          # Get all reviews
+          REVIEWS=$(gh api repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews --jq '
+            [.[] | select(.state == "APPROVED") | {user: .user.login, id: .id}]
+            | unique_by(.user)
+          ')
+
+          echo "  Raw approvals: $REVIEWS"
+          echo ""
+
+          # Filter approvals
+          VALID_APPROVERS=()
+          EXCLUDED_APPROVERS=()
+
+          for ROW in $(echo "$REVIEWS" | jq -r '.[] | @base64'); do
+            _jq() {
+              echo "$ROW" | base64 --decode | jq -r "$1"
+            }
+
+            APPROVER=$(_jq '.user')
+
+            # Check self-approval
+            if [ "$DISALLOW_SELF" = "true" ] && [ "$APPROVER" = "$PR_AUTHOR" ]; then
+              EXCLUDED_APPROVERS+=("$APPROVER (self)")
+              echo "  ⚠️ Excluded: $APPROVER (self-approval)"
+              continue
+            fi
+
+            # Check bot patterns
+            IS_BOT=false
+            if [ "$DISALLOW_BOTS" = "true" ]; then
+              for PATTERN in $(echo "$BOT_PATTERNS" | jq -r '.[]'); do
+                if [[ "$APPROVER" == *"$PATTERN"* ]]; then
+                  IS_BOT=true
+                  break
+                fi
+              done
+            fi
+
+            if [ "$IS_BOT" = true ]; then
+              EXCLUDED_APPROVERS+=("$APPROVER (bot)")
+              echo "  ⚠️ Excluded: $APPROVER (bot)"
+              continue
+            fi
+
+            VALID_APPROVERS+=("$APPROVER")
+            echo "  ✅ Valid: $APPROVER"
+          done
+
+          echo ""
+
+          # Count unique valid approvers
+          UNIQUE_APPROVERS=($(echo "${VALID_APPROVERS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+          APPROVAL_COUNT=${#UNIQUE_APPROVERS[@]}
+
+          echo "  Valid approvers: ${UNIQUE_APPROVERS[*]:-none}"
+          echo "  Approval count: $APPROVAL_COUNT"
+          echo "  Required (Break-Glass): $MIN_APPROVALS"
+          echo ""
+
+          # Output for later steps
+          APPROVER_LIST=$(printf '%s,' "${UNIQUE_APPROVERS[@]}" | sed 's/,$//')
+          echo "approval_count=$APPROVAL_COUNT" >> $GITHUB_OUTPUT
+          echo "approver_logins=$APPROVER_LIST" >> $GITHUB_OUTPUT
+
+          if [ "$APPROVAL_COUNT" -ge "$MIN_APPROVALS" ]; then
+            echo "approvals_ok=true" >> $GITHUB_OUTPUT
+            echo "✅ Break-Glass approval threshold met ($APPROVAL_COUNT >= $MIN_APPROVALS)"
+          else
+            echo "approvals_ok=false" >> $GITHUB_OUTPUT
+            echo "::warning::Break-Glass approval threshold NOT met ($APPROVAL_COUNT < $MIN_APPROVALS)"
+          fi
+
+      - name: Break-Glass Guard Result
+        id: result
+        env:
+          PR_CHECK_OK: ${{ steps.pr_check.outputs.pr_check_ok }}
+          APPROVALS_OK: ${{ steps.approvals.outputs.approvals_ok }}
+          APPROVAL_COUNT: ${{ steps.approvals.outputs.approval_count }}
+          APPROVER_LOGINS: ${{ steps.approvals.outputs.approver_logins }}
+          MIN_APPROVALS: ${{ steps.policy.outputs.min_approvals }}
+          POLICY_VERSION: ${{ steps.policy.outputs.policy_version }}
+          POLICY_HASH: ${{ steps.policy.outputs.policy_hash }}
+          REASON_LABEL: ${{ needs.detect.outputs.reason_label }}
+        run: |
+          echo ""
+          echo "════════════════════════════════════════════════════════════════"
+          echo "           🚨 BREAK-GLASS GUARD RESULT (Phase 4N23)"
+          echo "════════════════════════════════════════════════════════════════"
+          echo ""
+
+          ALL_PASS=true
+
+          # PR requirements
+          if [ "$PR_CHECK_OK" = "true" ]; then
+            echo "  ✅ PR Requirements: PASS"
+          else
+            echo "  ❌ PR Requirements: FAIL"
+            ALL_PASS=false
+          fi
+
+          # Approval count (stricter for break-glass)
+          if [ "$APPROVALS_OK" = "true" ]; then
+            echo "  ✅ Break-Glass Approvals: PASS ($APPROVAL_COUNT/$MIN_APPROVALS)"
+            echo "     Approvers: $APPROVER_LOGINS"
+          else
+            echo "  ❌ Break-Glass Approvals: FAIL ($APPROVAL_COUNT < $MIN_APPROVALS required)"
+            ALL_PASS=false
+          fi
+
+          echo ""
+          echo "  Reason: $REASON_LABEL"
+          echo "  Policy Version: $POLICY_VERSION"
+          echo "  Policy Hash: ${POLICY_HASH:0:16}..."
+          echo "  Evaluated At: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo ""
+
+          if [ "$ALL_PASS" = true ]; then
+            echo "════════════════════════════════════════════════════════════════"
+            echo "           ✅ BREAK-GLASS: APPROVED FOR MERGE"
+            echo "════════════════════════════════════════════════════════════════"
+            echo ""
+            echo "break_glass_ok=true" >> $GITHUB_OUTPUT
+          else
+            echo "════════════════════════════════════════════════════════════════"
+            echo "           ❌ BREAK-GLASS: BLOCKED"
+            echo "════════════════════════════════════════════════════════════════"
+            echo ""
+            echo "⚠️ Break-glass PRs require enhanced oversight."
+            echo "   Ensure all requirements are met before merging."
+            echo ""
+            echo "::error::Break-Glass Guard failed - PR cannot be merged"
+            echo "break_glass_ok=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Generate Summary
+        if: always()
+        env:
+          PR_CHECK_OK: ${{ steps.pr_check.outputs.pr_check_ok }}
+          APPROVALS_OK: ${{ steps.approvals.outputs.approvals_ok }}
+          APPROVAL_COUNT: ${{ steps.approvals.outputs.approval_count }}
+          APPROVER_LOGINS: ${{ steps.approvals.outputs.approver_logins }}
+          MIN_APPROVALS: ${{ steps.policy.outputs.min_approvals }}
+          POLICY_VERSION: ${{ steps.policy.outputs.policy_version }}
+          POLICY_HASH: ${{ steps.policy.outputs.policy_hash }}
+          REASON_LABEL: ${{ needs.detect.outputs.reason_label }}
+          BREAK_GLASS_OK: ${{ steps.result.outputs.break_glass_ok }}
+        run: |
+          echo "## 🚨 Break-Glass Guard Result (Phase 4N23)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$BREAK_GLASS_OK" = "true" ]; then
+            echo "### ✅ Break-Glass: APPROVED" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Break-Glass: BLOCKED" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$PR_CHECK_OK" = "true" ]; then
+            echo "| PR Requirements | ✅ Pass |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| PR Requirements | ❌ Fail |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "$APPROVALS_OK" = "true" ]; then
+            echo "| Approvals ($APPROVAL_COUNT/$MIN_APPROVALS) | ✅ Pass |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Approvals ($APPROVAL_COUNT/$MIN_APPROVALS) | ❌ Fail |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -n "$APPROVER_LOGINS" ]; then
+            echo "**Approvers:** $APPROVER_LOGINS" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Approvers:** _(none)_" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Reason:** \`$REASON_LABEL\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Policy Version:** \`$POLICY_VERSION\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Policy Hash:** \`${POLICY_HASH:0:16}...\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **Break-Glass PRs require:**" >> $GITHUB_STEP_SUMMARY
+          echo "- 3+ human approvals (excluding author and bots)" >> $GITHUB_STEP_SUMMARY
+          echo "- Automerge disabled" >> $GITHUB_STEP_SUMMARY
+          echo "- All required checklist fields in PR body" >> $GITHUB_STEP_SUMMARY
+          echo "- Reason label (break-glass:reason/*)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "_TerraFusion Autonomy — Government. Transcended._" >> $GITHUB_STEP_SUMMARY
+
+  # ==========================================================================
+  # Skip: Non-Break-Glass PRs get automatic pass
+  # ==========================================================================
+  skip:
+    name: Break-Glass Guard (Skip)
+    needs: detect
+    if: needs.detect.outputs.is_break_glass != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip Break-Glass Guard
+        run: |
+          echo "📝 This is not a Break-Glass PR - enhanced guard not required"
+          echo ""
+          echo "Break-Glass guard only runs for PRs with the 'break-glass' label."
+          echo "Standard TPI guard (Phase 4N22) still applies for autonomy PRs."

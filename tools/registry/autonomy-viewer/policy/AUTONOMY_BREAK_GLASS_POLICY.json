@@ -1,0 +1,62 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/autonomy-break-glass-policy.v1.json",
+  "schema": "terrafusion.autonomy.break_glass.policy.v1",
+  "version": "1.0.0",
+  "description": "Break-Glass Protocol for Autonomy PRs. Enables controlled emergency actions with enhanced oversight.",
+  "enabled": true,
+  "allowedActions": [
+    "rollback_from_proof",
+    "republish_evidence",
+    "pause_autonomy_lane"
+  ],
+  "requirements": {
+    "minApprovals": 3,
+    "requireCodeOwners": true,
+    "requireSecurityApproval": true,
+    "disallowSelfApproval": true,
+    "disallowBots": true,
+    "botPatterns": [
+      "[bot]",
+      "dependabot",
+      "snyk-bot",
+      "renovate",
+      "github-actions"
+    ]
+  },
+  "activation": {
+    "label": "break-glass",
+    "reasonLabelPrefix": "break-glass:reason/",
+    "requiredTitlePrefix": "🚨 Break Glass:",
+    "requiredBodyFields": [
+      "BREAK GLASS MODE: ENABLED",
+      "Reason:",
+      "Scope:",
+      "Risk:",
+      "Rollback Preview:",
+      "Rollback Execute:",
+      "Evidence:"
+    ],
+    "allowedBaseBranches": ["main"]
+  },
+  "verification": {
+    "requireStrictVerify": true,
+    "requirePinnedSignatures": true,
+    "requireRekorEntry": true,
+    "requireRollbackPlan": true,
+    "requireNoAutomerge": true
+  },
+  "forbiddenActions": [
+    "skip_tpi_approvals",
+    "skip_signature_verification",
+    "modify_forbidden_paths",
+    "direct_push_to_main",
+    "tier1_strategies",
+    "destructive_git_ops"
+  ],
+  "governance": {
+    "compliance": "FISMA",
+    "auditRetention": "7-years",
+    "lastUpdated": "2026-01-31T00:00:00Z",
+    "approvedBy": "TerraFusion Governance Board"
+  }
+}

@@ -98,6 +98,16 @@ export interface LedgerEntry {
     policyVersion: string;
     evaluatedAt?: string;
   };
+  /** Phase 4N23: Break-Glass Protocol status */
+  breakGlass?: {
+    activated: boolean;
+    reason: string;
+    action: string;
+    approvers: string[];
+    approvalsRequired: number;
+    policySha: string;
+    policyVersion: string;
+  };
 }
 
 export interface LedgerViewModel {
@@ -130,6 +140,8 @@ export interface LedgerViewModel {
     rekorAnchoredCount: number;
     /** Phase 4N22: TPI verified count */
     tpiVerifiedCount: number;
+    /** Phase 4N23: Break-Glass activated count */
+    breakGlassCount: number;
   };
 }
 
@@ -356,6 +368,19 @@ export function buildLedgerEntries(
           }
         : undefined;
 
+      // Phase 4N23: Extract Break-Glass status from index
+      const breakGlass = index.breakGlass
+        ? {
+            activated: index.breakGlass.activated,
+            reason: index.breakGlass.reason,
+            action: index.breakGlass.action,
+            approvers: index.breakGlass.approvers,
+            approvalsRequired: index.breakGlass.approvalsRequired,
+            policySha: index.breakGlass.policySha,
+            policyVersion: index.breakGlass.policyVersion,
+          }
+        : undefined;
+
       const entry: LedgerEntry = {
         runId: index.source.runId,
         date: index.generatedAt,
@@ -381,6 +406,7 @@ export function buildLedgerEntries(
         signature,
         rekor,
         tpi,
+        breakGlass,
       };
 
       entries.push(entry);
@@ -431,6 +457,8 @@ export function buildLedgerViewModel(entries: LedgerEntry[], opts: ViewerOptions
     rekorAnchoredCount: entries.filter(e => e.rekor?.anchored).length,
     // Phase 4N22: TPI verified count
     tpiVerifiedCount: entries.filter(e => e.tpi?.ok).length,
+    // Phase 4N23: Break-Glass activated count
+    breakGlassCount: entries.filter(e => e.breakGlass?.activated).length,
   };
 
   return {
@@ -585,6 +613,12 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
       .row-unpinned { background: #450a0a !important; }
     }
 
+    /* Phase 4N23: Break-Glass row highlight */
+    .row-break-glass { background: #fef3c7 !important; border-left: 4px solid var(--color-error); }
+    @media (prefers-color-scheme: dark) {
+      .row-break-glass { background: #78350f !important; }
+    }
+
     .verify-status { font-weight: 600; }
     .verify-ok { color: var(--color-success); }
     .verify-fail { color: var(--color-error); }
@@ -673,11 +707,19 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
           ? '<span class="badge badge-danger" title="TPI not verified">🚨 Missing</span>'
           : '<span class="badge badge-muted">—</span>';
 
+      // Phase 4N23: Break-Glass badge
+      const breakGlassActivated = entry.breakGlass?.activated ?? false;
+      const breakGlassApprovers = entry.breakGlass?.approvers?.join(', ') || '';
+      const breakGlassReason = entry.breakGlass?.reason || '';
+      const breakGlassBadge = breakGlassActivated
+        ? `<span class="badge badge-error" title="Break-Glass: ${escapeHtml(breakGlassReason)} | Approvers: ${escapeHtml(breakGlassApprovers)}">🚨 Break-Glass</span>`
+        : '';
+
       return `
-        <tr class="${rowClass}" data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}" data-rekor="${entry.rekor?.anchored ?? false}" data-tpi="${tpiOk}">
+        <tr class="${rowClass}${breakGlassActivated ? ' row-break-glass' : ''}" data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}" data-rekor="${entry.rekor?.anchored ?? false}" data-tpi="${tpiOk}" data-breakglass="${breakGlassActivated}">
           <td>${formatDate(entry.date)}</td>
           <td>${escapeHtml(entry.runId)}</td>
-          <td>${tierBadge}${incidentInfo}</td>
+          <td>${tierBadge}${incidentInfo}${breakGlassBadge}</td>
           <td>${bundleCell}</td>
           <td class="sha">${escapeHtml(entry.manifestSha256.substring(0, 16))}...</td>
           <td>${releaseTagCell}</td>
@@ -749,6 +791,10 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
       <div class="value" style="color: ${vm.summary.tpiVerifiedCount > 0 ? 'var(--color-success)' : 'var(--color-muted)'}">${vm.summary.tpiVerifiedCount}</div>
       <div class="label">👥 TPI</div>
     </div>
+    <div class="summary-card">
+      <div class="value" style="color: ${vm.summary.breakGlassCount > 0 ? 'var(--color-error)' : 'var(--color-muted)'}">${vm.summary.breakGlassCount}</div>
+      <div class="label">${vm.summary.breakGlassCount > 0 ? '🚨' : ''} Break-Glass</div>
+    </div>
   </div>
 
   <h2>Evidence Records</h2>
@@ -761,6 +807,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     <a href="#" class="filter-btn" onclick="filterTable('verified'); return false;">Verified</a>
     <a href="#" class="filter-btn" onclick="filterTable('signed'); return false;">Signed</a>
     <a href="#" class="filter-btn" onclick="filterTable('tpi'); return false;">TPI</a>
+    <a href="#" class="filter-btn" onclick="filterTable('breakglass'); return false;">Break-Glass</a>
   </div>
 
   <table id="evidence-table">
@@ -807,6 +854,7 @@ pnpm perf:verify-signature --artifact "&lt;bundle-name&gt;.zip" --bundle "&lt;bu
         const verify = row.dataset.verify === 'true';
         const signed = row.dataset.signed === 'true';
         const tpi = row.dataset.tpi === 'true';
+        const breakglass = row.dataset.breakglass === 'true';
         let show = true;
         if (filter === 'incident') show = tier === 'incident';
         else if (filter === 'merged') show = tier === 'merged';
@@ -815,6 +863,7 @@ pnpm perf:verify-signature --artifact "&lt;bundle-name&gt;.zip" --bundle "&lt;bu
         else if (filter === 'failed') show = !verify;
         else if (filter === 'signed') show = signed;
         else if (filter === 'tpi') show = tpi;
+        else if (filter === 'breakglass') show = breakglass;
         row.style.display = show ? '' : 'none';
       });
       // Update active state

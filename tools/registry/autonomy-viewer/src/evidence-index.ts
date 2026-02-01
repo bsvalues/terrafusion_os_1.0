@@ -253,6 +253,39 @@ export interface TPIResult {
 }
 
 /**
+ * Phase 4N23: Break-Glass Protocol result.
+ * Emergency governance lane with enhanced oversight.
+ */
+export interface BreakGlassResult {
+  /** Break-glass mode activated */
+  activated: boolean;
+  /** Reason label (break-glass:reason/*) */
+  reason: string;
+  /** Allowed action type */
+  action: 'rollback_from_proof' | 'republish_evidence' | 'pause_autonomy_lane' | 'unknown';
+  /** GitHub logins of valid approvers (no PII - logins only) */
+  approvers: string[];
+  /** Required approvals (from break-glass policy, typically 3) */
+  approvalsRequired: number;
+  /** SHA256 hash of the policy file used */
+  policySha: string;
+  /** Policy version */
+  policyVersion: string;
+  /** ISO timestamp when break-glass was evaluated */
+  evaluatedAt: string;
+  /** Verification checks passed */
+  checks: {
+    pinned: boolean;
+    rekor: boolean;
+    verifyBundleStrict: boolean;
+    rollbackVerified: boolean;
+    noAutomerge: boolean;
+  };
+  /** Proof ID if rollback action */
+  proofId?: string;
+}
+
+/**
  * Phase 4N20: Individual pin verification result.
  */
 export interface PinResult {
@@ -317,6 +350,11 @@ export interface EvidenceIndex {
    * Ensures changes require explicit human authorization before landing.
    */
   tpi?: TPIResult;
+  /**
+   * Phase 4N23: Break-Glass Protocol result.
+   * Emergency governance lane with enhanced oversight (3+ approvals, strict verification).
+   */
+  breakGlass?: BreakGlassResult;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

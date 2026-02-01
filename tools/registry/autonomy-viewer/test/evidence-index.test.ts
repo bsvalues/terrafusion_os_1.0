@@ -16,8 +16,8 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 // ESM-compatible __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -1881,11 +1881,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
       assert.equal(typeof mockTpiResult.ok, 'boolean', 'ok should be boolean');
       assert.equal(typeof mockTpiResult.minApprovals, 'number', 'minApprovals should be number');
       assert.ok(Array.isArray(mockTpiResult.approverLogins), 'approverLogins should be array');
-      assert.equal(
-        typeof mockTpiResult.policyVersion,
-        'string',
-        'policyVersion should be string'
-      );
+      assert.equal(typeof mockTpiResult.policyVersion, 'string', 'policyVersion should be string');
       assert.equal(typeof mockTpiResult.evaluatedAt, 'string', 'evaluatedAt should be string');
     });
 
@@ -1931,8 +1927,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
       const botPatterns = ['[bot]', 'dependabot', 'snyk-bot', 'renovate', 'github-actions'];
       const approvals = ['alice', 'dependabot[bot]', 'snyk-bot', 'bob'];
 
-      const isBot = (approver: string) =>
-        botPatterns.some(pattern => approver.includes(pattern));
+      const isBot = (approver: string) => botPatterns.some(pattern => approver.includes(pattern));
 
       const validApprovers = approvals.filter(a => !isBot(a));
       assert.deepStrictEqual(validApprovers, ['alice', 'bob']);
@@ -2008,11 +2003,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
 
   describe('TPI Determinism', () => {
     it('should produce same TPI result for same input', () => {
-      const evaluateTpi = (
-        approvers: string[],
-        prAuthor: string,
-        minApprovals: number
-      ) => {
+      const evaluateTpi = (approvers: string[], prAuthor: string, minApprovals: number) => {
         const validApprovers = [...new Set(approvers.filter(a => a !== prAuthor))];
         return {
           ok: validApprovers.length >= minApprovals,
@@ -2042,12 +2033,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
 
   describe('TPI Policy File', () => {
     it('should have valid AUTONOMY_TPI_POLICY.json', async () => {
-      const policyPath = path.join(
-        __dirname,
-        '..',
-        'policy',
-        'AUTONOMY_TPI_POLICY.json'
-      );
+      const policyPath = path.join(__dirname, '..', 'policy', 'AUTONOMY_TPI_POLICY.json');
 
       // Check file exists
       assert.ok(fs.existsSync(policyPath), 'Policy file should exist');
@@ -2069,21 +2055,418 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
         'number',
         'minApprovals should be number'
       );
-      assert.equal(
-        policy.enforcement.minApprovals,
-        2,
-        'minApprovals should be 2 for TPI'
-      );
+      assert.equal(policy.enforcement.minApprovals, 2, 'minApprovals should be 2 for TPI');
       assert.equal(
         policy.enforcement.disallowSelfApproval,
         true,
         'disallowSelfApproval should be true'
       );
-      assert.equal(
-        policy.enforcement.disallowBots,
-        true,
-        'disallowBots should be true'
-      );
+      assert.equal(policy.enforcement.disallowBots, true, 'disallowBots should be true');
+    });
+  });
+
+  // ──────────────────────────────────────────────────────────────────
+  // Phase 4N23: Break-Glass Protocol Contract Tests
+  // ──────────────────────────────────────────────────────────────────
+  describe('Phase 4N23: Break-Glass Protocol', () => {
+    describe('Policy Contract', () => {
+      it('should have valid AUTONOMY_BREAK_GLASS_POLICY.json', async () => {
+        const policyPath = path.join(
+          __dirname,
+          '..',
+          'policy',
+          'AUTONOMY_BREAK_GLASS_POLICY.json'
+        );
+
+        // Check file exists
+        assert.ok(fs.existsSync(policyPath), 'Break-Glass policy file should exist');
+
+        // Parse and validate structure
+        const content = fs.readFileSync(policyPath, 'utf8');
+        const policy = JSON.parse(content);
+
+        // Validate schema version
+        assert.equal(
+          policy.schema,
+          'terrafusion.autonomy.break_glass.policy.v1',
+          'Policy schema should be correct'
+        );
+        assert.equal(typeof policy.version, 'string', 'Policy version should be string');
+      });
+
+      it('should require stricter approval threshold than TPI', async () => {
+        const tpiPath = path.join(__dirname, '..', 'policy', 'AUTONOMY_TPI_POLICY.json');
+        const breakGlassPath = path.join(
+          __dirname,
+          '..',
+          'policy',
+          'AUTONOMY_BREAK_GLASS_POLICY.json'
+        );
+
+        const tpiPolicy = JSON.parse(fs.readFileSync(tpiPath, 'utf8'));
+        const breakGlassPolicy = JSON.parse(fs.readFileSync(breakGlassPath, 'utf8'));
+
+        // TPI uses enforcement.minApprovals, Break-Glass uses requirements.minApprovals
+        assert.ok(
+          breakGlassPolicy.requirements.minApprovals > tpiPolicy.enforcement.minApprovals,
+          'Break-Glass minApprovals must be > TPI minApprovals'
+        );
+        assert.equal(
+          breakGlassPolicy.requirements.minApprovals,
+          3,
+          'Break-Glass requires exactly 3 approvals'
+        );
+      });
+
+      it('should disallow automerge for break-glass PRs', async () => {
+        const policyPath = path.join(
+          __dirname,
+          '..',
+          'policy',
+          'AUTONOMY_BREAK_GLASS_POLICY.json'
+        );
+        const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+
+        assert.equal(
+          policy.verification.requireNoAutomerge,
+          true,
+          'Break-Glass must require no automerge'
+        );
+      });
+
+      it('should have allowed and forbidden action lists', async () => {
+        const policyPath = path.join(
+          __dirname,
+          '..',
+          'policy',
+          'AUTONOMY_BREAK_GLASS_POLICY.json'
+        );
+        const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+
+        // Verify allowed actions
+        assert.ok(Array.isArray(policy.allowedActions), 'allowedActions should be array');
+        const expectedAllowed = ['rollback_from_proof', 'republish_evidence', 'pause_autonomy_lane'];
+        expectedAllowed.forEach((action) => {
+          assert.ok(
+            policy.allowedActions.includes(action),
+            `allowedActions should include ${action}`
+          );
+        });
+
+        // Verify forbidden actions
+        assert.ok(Array.isArray(policy.forbiddenActions), 'forbiddenActions should be array');
+        const expectedForbidden = [
+          'skip_tpi_approvals',
+          'skip_signature_verification',
+          'modify_forbidden_paths',
+          'direct_push_to_main',
+        ];
+        expectedForbidden.forEach((action) => {
+          assert.ok(
+            policy.forbiddenActions.includes(action),
+            `forbiddenActions should include ${action}`
+          );
+        });
+      });
+
+      it('should require break-glass reason labels', async () => {
+        const policyPath = path.join(
+          __dirname,
+          '..',
+          'policy',
+          'AUTONOMY_BREAK_GLASS_POLICY.json'
+        );
+        const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+
+        assert.ok(
+          policy.activation,
+          'Policy should have activation section'
+        );
+        assert.equal(
+          policy.activation.label,
+          'break-glass',
+          'Should require break-glass label'
+        );
+        assert.equal(
+          policy.activation.reasonLabelPrefix,
+          'break-glass:reason/',
+          'Should have reason label prefix'
+        );
+      });
+
+      it('should require PR body fields for documentation', async () => {
+        const policyPath = path.join(
+          __dirname,
+          '..',
+          'policy',
+          'AUTONOMY_BREAK_GLASS_POLICY.json'
+        );
+        const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+
+        assert.ok(
+          Array.isArray(policy.activation.requiredBodyFields),
+          'requiredBodyFields should be array'
+        );
+
+        const expectedFields = [
+          'BREAK GLASS MODE:',
+          'Reason:',
+          'Scope:',
+          'Risk:',
+          'Evidence:',
+        ];
+        expectedFields.forEach((field) => {
+          const found = policy.activation.requiredBodyFields.some(
+            (f: string) => f.includes(field.replace(':', ''))
+          );
+          assert.ok(
+            found,
+            `requiredBodyFields should include field matching ${field}`
+          );
+        });
+      });
+    });
+
+    describe('BreakGlassResult Interface Contract', () => {
+      it('should generate deterministic output for same input', () => {
+        const mockBreakGlass: Record<string, unknown> = {
+          activated: true,
+          reason: 'incident',
+          action: 'rollback_from_proof',
+          approvers: ['alice', 'bob', 'carol'],
+          approvalsRequired: 3,
+          policySha: 'sha256:abc123',
+          policyVersion: '1.0.0',
+          evaluatedAt: '2025-01-01T00:00:00Z',
+          checks: {
+            pinned: true,
+            rekor: true,
+            verifyBundleStrict: true,
+            rollbackVerified: true,
+            noAutomerge: true,
+          },
+        };
+
+        // Serialize and deserialize
+        const serialized = JSON.stringify(mockBreakGlass);
+        const deserialized = JSON.parse(serialized);
+
+        // Verify determinism
+        assert.deepStrictEqual(
+          deserialized,
+          mockBreakGlass,
+          'BreakGlassResult should be deterministically serializable'
+        );
+
+        // Re-serialize should produce identical output
+        assert.equal(
+          JSON.stringify(deserialized),
+          serialized,
+          'Re-serialization should be identical'
+        );
+      });
+
+      it('should enforce approvers >= approvalsRequired when activated', () => {
+        const validBreakGlass = {
+          activated: true,
+          approvers: ['alice', 'bob', 'carol'],
+          approvalsRequired: 3,
+        };
+
+        const invalidBreakGlass = {
+          activated: true,
+          approvers: ['alice', 'bob'],
+          approvalsRequired: 3,
+        };
+
+        assert.ok(
+          validBreakGlass.approvers.length >= validBreakGlass.approvalsRequired,
+          'Valid break-glass should have sufficient approvers'
+        );
+        assert.ok(
+          invalidBreakGlass.approvers.length < invalidBreakGlass.approvalsRequired,
+          'Invalid break-glass should fail approver count check'
+        );
+      });
+
+      it('should require all checks to pass for activated break-glass', () => {
+        const checks = {
+          pinned: true,
+          rekor: true,
+          verifyBundleStrict: true,
+          rollbackVerified: true,
+          noAutomerge: true,
+        };
+
+        const allPass = Object.values(checks).every((v) => v === true);
+        assert.ok(allPass, 'All break-glass checks must pass');
+
+        // Test failure detection
+        const failedChecks = { ...checks, noAutomerge: false };
+        const stillPass = Object.values(failedChecks).every((v) => v === true);
+        assert.ok(!stillPass, 'Should detect failed checks');
+      });
+    });
+
+    describe('Break-Glass Guard Logic', () => {
+      it('should detect break-glass label in PR labels', () => {
+        const prLabels = ['enhancement', 'break-glass', 'break-glass:reason/incident'];
+        const hasBreakGlass = prLabels.includes('break-glass');
+        assert.ok(hasBreakGlass, 'Should detect break-glass label');
+      });
+
+      it('should detect missing break-glass label', () => {
+        const prLabels = ['enhancement', 'documentation'];
+        const hasBreakGlass = prLabels.includes('break-glass');
+        assert.ok(!hasBreakGlass, 'Should detect missing break-glass label');
+      });
+
+      it('should extract reason from break-glass:reason/* label', () => {
+        const prLabels = ['break-glass', 'break-glass:reason/incident'];
+        const reasonLabel = prLabels.find((l) => l.startsWith('break-glass:reason/'));
+        assert.ok(reasonLabel, 'Should find reason label');
+        const reason = reasonLabel?.replace('break-glass:reason/', '');
+        assert.equal(reason, 'incident', 'Should extract reason correctly');
+      });
+
+      it('should exclude self-approvals and bot approvals', () => {
+        const prAuthor = 'alice';
+        const allApprovals = [
+          { user: 'alice', type: 'human' },
+          { user: 'bob', type: 'human' },
+          { user: 'dependabot[bot]', type: 'bot' },
+          { user: 'carol', type: 'human' },
+        ];
+
+        const validApprovals = allApprovals.filter(
+          (a) => a.user !== prAuthor && !a.user.includes('[bot]')
+        );
+
+        assert.equal(validApprovals.length, 2, 'Should have 2 valid approvals');
+        assert.deepStrictEqual(
+          validApprovals.map((a) => a.user),
+          ['bob', 'carol'],
+          'Should only include bob and carol'
+        );
+      });
+
+      it('should detect automerge enabled on PR', () => {
+        const prWithAutomerge = { auto_merge: { enabled: true } };
+        const prWithoutAutomerge = { auto_merge: null };
+
+        const hasAutomerge = (pr: { auto_merge: unknown }) =>
+          pr.auto_merge !== null && pr.auto_merge !== undefined;
+
+        assert.ok(hasAutomerge(prWithAutomerge), 'Should detect automerge enabled');
+        assert.ok(!hasAutomerge(prWithoutAutomerge), 'Should detect automerge disabled');
+      });
+
+      it('should validate required title prefix', () => {
+        const validTitle = '🚨 Break Glass: Emergency rollback for incident #123';
+        const invalidTitle = 'feat: Add new feature';
+        const requiredPrefix = '🚨 Break Glass:';
+
+        assert.ok(
+          validTitle.startsWith(requiredPrefix),
+          'Valid title should have required prefix'
+        );
+        assert.ok(
+          !invalidTitle.startsWith(requiredPrefix),
+          'Invalid title should fail prefix check'
+        );
+      });
+
+      it('should validate required PR body fields', () => {
+        const prBody = `
+## 🚨 Break Glass PR
+
+**BREAK GLASS MODE:** ENABLED
+**Reason:** Production incident #456
+**Scope:** Rollback deployment to v1.2.3
+**Risk:** Low - reverting to known-good state
+**Evidence:** https://rekor.sigstore.dev/api/v1/log/entries/abc123
+        `;
+
+        const requiredFields = [
+          'BREAK GLASS MODE:',
+          'Reason:',
+          'Scope:',
+          'Risk:',
+          'Evidence:',
+        ];
+
+        const missingFields = requiredFields.filter((f) => !prBody.includes(f));
+        assert.equal(missingFields.length, 0, 'All required fields should be present');
+      });
+
+      it('should fail validation for incomplete PR body', () => {
+        const incompleteBody = `
+## 🚨 Break Glass PR
+
+**BREAK GLASS MODE:** ENABLED
+**Reason:** Production incident
+        `;
+
+        const requiredFields = [
+          'BREAK GLASS MODE:',
+          'Reason:',
+          'Scope:',
+          'Risk:',
+          'Evidence:',
+        ];
+
+        const missingFields = requiredFields.filter((f) => !incompleteBody.includes(f));
+        assert.ok(missingFields.length > 0, 'Should detect missing fields');
+        assert.ok(missingFields.includes('Scope:'), 'Should detect missing Scope');
+        assert.ok(missingFields.includes('Risk:'), 'Should detect missing Risk');
+        assert.ok(missingFields.includes('Evidence:'), 'Should detect missing Evidence');
+      });
+    });
+
+    describe('Break-Glass Workflow Integration', () => {
+      it('should have break-glass guard workflow file', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-guard.yml'
+        );
+
+        assert.ok(
+          fs.existsSync(workflowPath),
+          'autonomy-break-glass-guard.yml should exist'
+        );
+      });
+
+      it('should reference break-glass policy in workflow', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-guard.yml'
+        );
+
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('AUTONOMY_BREAK_GLASS_POLICY.json') ||
+            content.includes('break_glass') ||
+            content.includes('break-glass'),
+          'Workflow should reference break-glass policy'
+        );
+        assert.ok(
+          content.includes('minApprovals') || content.includes('approvals'),
+          'Workflow should check approvals'
+        );
+      });
     });
   });
 });
