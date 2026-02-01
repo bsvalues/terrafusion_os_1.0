@@ -3120,10 +3120,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
           'autonomy-break-glass-incident-publisher.yml'
         );
 
-        assert.ok(
-          fs.existsSync(workflowPath),
-          'Incident publisher workflow should exist'
-        );
+        assert.ok(fs.existsSync(workflowPath), 'Incident publisher workflow should exist');
       });
 
       it('should trigger on merged PR to main', () => {
@@ -3143,10 +3140,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
           content.includes('pull_request:') && content.includes('closed'),
           'Workflow should trigger on PR closed'
         );
-        assert.ok(
-          content.includes('merged == true'),
-          'Workflow should check for merged PRs'
-        );
+        assert.ok(content.includes('merged == true'), 'Workflow should check for merged PRs');
         assert.ok(
           content.includes('branches: [main]'),
           'Workflow should only trigger on main branch'
@@ -3193,15 +3187,9 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
           content.includes('contents: write'),
           'Workflow should have contents write for release'
         );
-        assert.ok(
-          content.includes('pull-requests: read'),
-          'Workflow should have PR read only'
-        );
+        assert.ok(content.includes('pull-requests: read'), 'Workflow should have PR read only');
         // Should NOT have admin or issues:write
-        assert.ok(
-          !content.includes('admin'),
-          'Workflow should not have admin permissions'
-        );
+        assert.ok(!content.includes('admin'), 'Workflow should not have admin permissions');
       });
     });
 
@@ -3349,7 +3337,8 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
           reason: 'break-glass' as const,
           retentionTier: 'incident' as const,
           incidentReleaseTag: 'autonomy-incident/2026/abc1234567',
-          incidentReleaseUrl: 'https://github.com/owner/repo/releases/tag/autonomy-incident/2026/abc1234567',
+          incidentReleaseUrl:
+            'https://github.com/owner/repo/releases/tag/autonomy-incident/2026/abc1234567',
           publishedAt: '2026-01-31T00:00:00Z',
           mergeSha: 'abc1234567',
           mergeCommitSha: 'abc1234567890abcdef1234567890abcdef1234',
@@ -3471,6 +3460,211 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
         assert.ok(
           content.includes('Reality Check') || content.includes('Verify'),
           'Workflow should have reality check step'
+        );
+      });
+    });
+
+    describe('Security Hard Gates', () => {
+      it('should have proper concurrency group', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('concurrency:') &&
+            content.includes('autonomy-break-glass-incident-publisher'),
+          'Workflow should have proper concurrency group'
+        );
+      });
+
+      it('should not have override env vars', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(!content.includes('OVERRIDE_'), 'Workflow should not have OVERRIDE_ env vars');
+      });
+
+      it('should require strict verification with signatures', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(content.includes('--strict'), 'Workflow should use --strict verification');
+        assert.ok(
+          content.includes('--verify-signatures'),
+          'Workflow should verify signatures'
+        );
+        assert.ok(
+          content.includes('--policy-from-index'),
+          'Workflow should use policy from index'
+        );
+      });
+
+      it('should check for minimum 3 approvals', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('APPROVALS_ELIGIBLE') || content.includes('approvalsEligible'),
+          'Workflow should check approval count'
+        );
+        assert.ok(content.includes('-lt 3'), 'Workflow should require at least 3 approvals');
+      });
+
+      it('should check for automerge blocked', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('noAutomerge') || content.includes('automerge'),
+          'Workflow should check automerge blocked'
+        );
+      });
+
+      it('should have Rekor as hard gate', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('REKOR_ANCHORED') && content.includes('fail closed'),
+          'Workflow should have Rekor as hard gate'
+        );
+      });
+
+      it('should not have destructive commands', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          !content.includes('gh release delete'),
+          'Workflow should not delete releases'
+        );
+        assert.ok(!content.includes('--force'), 'Workflow should not use --force');
+        assert.ok(!content.includes('rm -rf'), 'Workflow should not have rm -rf');
+      });
+
+      it('should not have id-token permission if not re-signing', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        // id-token should NOT be present (reusing already-signed artifacts)
+        assert.ok(
+          !content.includes('id-token: write'),
+          'Workflow should not have id-token:write (reusing signed artifacts)'
+        );
+      });
+
+      it('should have actions:read for artifact fetch', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(content.includes('actions: read'), 'Workflow should have actions:read');
+      });
+    });
+
+    describe('Label-Only Prevention', () => {
+      it('should NOT publish based on labels alone', () => {
+        // The workflow requires evidence-index.json with breakGlass.ok
+        // Labels are only used as initial filter, not source of truth
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        // Must check evidence index, not just labels
+        assert.ok(
+          content.includes('evidence_index') || content.includes('EVIDENCE_INDEX'),
+          'Workflow must use evidence index, not just labels'
+        );
+        assert.ok(
+          content.includes('breakGlass.activated') || content.includes('BG_OK'),
+          'Workflow must check breakGlass.activated from evidence'
         );
       });
     });
