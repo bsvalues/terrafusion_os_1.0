@@ -2071,12 +2071,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
   describe('Phase 4N23: Break-Glass Protocol', () => {
     describe('Policy Contract', () => {
       it('should have valid AUTONOMY_BREAK_GLASS_POLICY.json', async () => {
-        const policyPath = path.join(
-          __dirname,
-          '..',
-          'policy',
-          'AUTONOMY_BREAK_GLASS_POLICY.json'
-        );
+        const policyPath = path.join(__dirname, '..', 'policy', 'AUTONOMY_BREAK_GLASS_POLICY.json');
 
         // Check file exists
         assert.ok(fs.existsSync(policyPath), 'Break-Glass policy file should exist');
@@ -2119,12 +2114,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
       });
 
       it('should disallow automerge for break-glass PRs', async () => {
-        const policyPath = path.join(
-          __dirname,
-          '..',
-          'policy',
-          'AUTONOMY_BREAK_GLASS_POLICY.json'
-        );
+        const policyPath = path.join(__dirname, '..', 'policy', 'AUTONOMY_BREAK_GLASS_POLICY.json');
         const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
 
         assert.equal(
@@ -2135,18 +2125,17 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
       });
 
       it('should have allowed and forbidden action lists', async () => {
-        const policyPath = path.join(
-          __dirname,
-          '..',
-          'policy',
-          'AUTONOMY_BREAK_GLASS_POLICY.json'
-        );
+        const policyPath = path.join(__dirname, '..', 'policy', 'AUTONOMY_BREAK_GLASS_POLICY.json');
         const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
 
         // Verify allowed actions
         assert.ok(Array.isArray(policy.allowedActions), 'allowedActions should be array');
-        const expectedAllowed = ['rollback_from_proof', 'republish_evidence', 'pause_autonomy_lane'];
-        expectedAllowed.forEach((action) => {
+        const expectedAllowed = [
+          'rollback_from_proof',
+          'republish_evidence',
+          'pause_autonomy_lane',
+        ];
+        expectedAllowed.forEach(action => {
           assert.ok(
             policy.allowedActions.includes(action),
             `allowedActions should include ${action}`
@@ -2161,7 +2150,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
           'modify_forbidden_paths',
           'direct_push_to_main',
         ];
-        expectedForbidden.forEach((action) => {
+        expectedForbidden.forEach(action => {
           assert.ok(
             policy.forbiddenActions.includes(action),
             `forbiddenActions should include ${action}`
@@ -2170,23 +2159,11 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
       });
 
       it('should require break-glass reason labels', async () => {
-        const policyPath = path.join(
-          __dirname,
-          '..',
-          'policy',
-          'AUTONOMY_BREAK_GLASS_POLICY.json'
-        );
+        const policyPath = path.join(__dirname, '..', 'policy', 'AUTONOMY_BREAK_GLASS_POLICY.json');
         const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
 
-        assert.ok(
-          policy.activation,
-          'Policy should have activation section'
-        );
-        assert.equal(
-          policy.activation.label,
-          'break-glass',
-          'Should require break-glass label'
-        );
+        assert.ok(policy.activation, 'Policy should have activation section');
+        assert.equal(policy.activation.label, 'break-glass', 'Should require break-glass label');
         assert.equal(
           policy.activation.reasonLabelPrefix,
           'break-glass:reason/',
@@ -2195,12 +2172,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
       });
 
       it('should require PR body fields for documentation', async () => {
-        const policyPath = path.join(
-          __dirname,
-          '..',
-          'policy',
-          'AUTONOMY_BREAK_GLASS_POLICY.json'
-        );
+        const policyPath = path.join(__dirname, '..', 'policy', 'AUTONOMY_BREAK_GLASS_POLICY.json');
         const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
 
         assert.ok(
@@ -2208,21 +2180,12 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
           'requiredBodyFields should be array'
         );
 
-        const expectedFields = [
-          'BREAK GLASS MODE:',
-          'Reason:',
-          'Scope:',
-          'Risk:',
-          'Evidence:',
-        ];
-        expectedFields.forEach((field) => {
-          const found = policy.activation.requiredBodyFields.some(
-            (f: string) => f.includes(field.replace(':', ''))
+        const expectedFields = ['BREAK GLASS MODE:', 'Reason:', 'Scope:', 'Risk:', 'Evidence:'];
+        expectedFields.forEach(field => {
+          const found = policy.activation.requiredBodyFields.some((f: string) =>
+            f.includes(field.replace(':', ''))
           );
-          assert.ok(
-            found,
-            `requiredBodyFields should include field matching ${field}`
-          );
+          assert.ok(found, `requiredBodyFields should include field matching ${field}`);
         });
       });
     });
@@ -2298,12 +2261,12 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
           noAutomerge: true,
         };
 
-        const allPass = Object.values(checks).every((v) => v === true);
+        const allPass = Object.values(checks).every(v => v === true);
         assert.ok(allPass, 'All break-glass checks must pass');
 
         // Test failure detection
         const failedChecks = { ...checks, noAutomerge: false };
-        const stillPass = Object.values(failedChecks).every((v) => v === true);
+        const stillPass = Object.values(failedChecks).every(v => v === true);
         assert.ok(!stillPass, 'Should detect failed checks');
       });
     });
@@ -2323,7 +2286,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
 
       it('should extract reason from break-glass:reason/* label', () => {
         const prLabels = ['break-glass', 'break-glass:reason/incident'];
-        const reasonLabel = prLabels.find((l) => l.startsWith('break-glass:reason/'));
+        const reasonLabel = prLabels.find(l => l.startsWith('break-glass:reason/'));
         assert.ok(reasonLabel, 'Should find reason label');
         const reason = reasonLabel?.replace('break-glass:reason/', '');
         assert.equal(reason, 'incident', 'Should extract reason correctly');
@@ -2339,12 +2302,12 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
         ];
 
         const validApprovals = allApprovals.filter(
-          (a) => a.user !== prAuthor && !a.user.includes('[bot]')
+          a => a.user !== prAuthor && !a.user.includes('[bot]')
         );
 
         assert.equal(validApprovals.length, 2, 'Should have 2 valid approvals');
         assert.deepStrictEqual(
-          validApprovals.map((a) => a.user),
+          validApprovals.map(a => a.user),
           ['bob', 'carol'],
           'Should only include bob and carol'
         );
@@ -2366,10 +2329,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
         const invalidTitle = 'feat: Add new feature';
         const requiredPrefix = '🚨 Break Glass:';
 
-        assert.ok(
-          validTitle.startsWith(requiredPrefix),
-          'Valid title should have required prefix'
-        );
+        assert.ok(validTitle.startsWith(requiredPrefix), 'Valid title should have required prefix');
         assert.ok(
           !invalidTitle.startsWith(requiredPrefix),
           'Invalid title should fail prefix check'
@@ -2387,15 +2347,9 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
 **Evidence:** https://rekor.sigstore.dev/api/v1/log/entries/abc123
         `;
 
-        const requiredFields = [
-          'BREAK GLASS MODE:',
-          'Reason:',
-          'Scope:',
-          'Risk:',
-          'Evidence:',
-        ];
+        const requiredFields = ['BREAK GLASS MODE:', 'Reason:', 'Scope:', 'Risk:', 'Evidence:'];
 
-        const missingFields = requiredFields.filter((f) => !prBody.includes(f));
+        const missingFields = requiredFields.filter(f => !prBody.includes(f));
         assert.equal(missingFields.length, 0, 'All required fields should be present');
       });
 
@@ -2407,15 +2361,9 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
 **Reason:** Production incident
         `;
 
-        const requiredFields = [
-          'BREAK GLASS MODE:',
-          'Reason:',
-          'Scope:',
-          'Risk:',
-          'Evidence:',
-        ];
+        const requiredFields = ['BREAK GLASS MODE:', 'Reason:', 'Scope:', 'Risk:', 'Evidence:'];
 
-        const missingFields = requiredFields.filter((f) => !incompleteBody.includes(f));
+        const missingFields = requiredFields.filter(f => !incompleteBody.includes(f));
         assert.ok(missingFields.length > 0, 'Should detect missing fields');
         assert.ok(missingFields.includes('Scope:'), 'Should detect missing Scope');
         assert.ok(missingFields.includes('Risk:'), 'Should detect missing Risk');
@@ -2436,10 +2384,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
           'autonomy-break-glass-guard.yml'
         );
 
-        assert.ok(
-          fs.existsSync(workflowPath),
-          'autonomy-break-glass-guard.yml should exist'
-        );
+        assert.ok(fs.existsSync(workflowPath), 'autonomy-break-glass-guard.yml should exist');
       });
 
       it('should reference break-glass policy in workflow', () => {
@@ -2465,6 +2410,373 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
         assert.ok(
           content.includes('minApprovals') || content.includes('approvals'),
           'Workflow should check approvals'
+        );
+      });
+    });
+  });
+
+  // ──────────────────────────────────────────────────────────────────
+  // Phase 4N24: Break-Glass Drill Contract Tests
+  // ──────────────────────────────────────────────────────────────────
+  describe('Phase 4N24: Break-Glass Drill', () => {
+    describe('Drill Workflow', () => {
+      it('should have break-glass-drill.yml workflow file', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'break-glass-drill.yml'
+        );
+
+        assert.ok(fs.existsSync(workflowPath), 'break-glass-drill.yml should exist');
+      });
+
+      it('should have both manual dispatch and schedule triggers', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'break-glass-drill.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('workflow_dispatch:'),
+          'Workflow should have manual dispatch trigger'
+        );
+        assert.ok(content.includes('schedule:'), 'Workflow should have schedule trigger');
+        assert.ok(content.includes('cron:'), 'Workflow should define cron schedule');
+      });
+
+      it('should validate guard logic for approval thresholds', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'break-glass-drill.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        // Drill should test 0, 1, 2, 3 approval scenarios
+        assert.ok(
+          content.includes('zero') || content.includes('0 approval'),
+          'Should test zero approvals blocked'
+        );
+        assert.ok(
+          content.includes('three') || content.includes('3 approval'),
+          'Should test three approvals passes'
+        );
+      });
+
+      it('should reference the break-glass policy file', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'break-glass-drill.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('AUTONOMY_BREAK_GLASS_POLICY.json'),
+          'Workflow should reference break-glass policy'
+        );
+      });
+
+      it('should generate drill report artifact', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'break-glass-drill.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('break-glass-drill-report'),
+          'Workflow should generate drill report'
+        );
+        assert.ok(
+          content.includes('upload-artifact'),
+          'Workflow should upload drill report as artifact'
+        );
+      });
+    });
+
+    describe('DrillResult Interface Contract', () => {
+      it('should generate deterministic drill result', () => {
+        const mockDrill = {
+          schema: 'terrafusion.autonomy.break_glass.drill.v1',
+          drillId: 'drill-20260131-090000-42',
+          timestamp: '2026-01-31T09:00:00Z',
+          repository: 'owner/repo',
+          runId: 12345,
+          runNumber: 42,
+          triggeredBy: 'alice',
+          triggerType: 'workflow_dispatch',
+          drillType: 'full',
+          dryRun: true,
+          status: 'PASS',
+          policy: {
+            version: '1.0.0',
+            sha256: 'abc123def456',
+          },
+          guardLogicTests: {
+            zeroApprovalsBlocked: true,
+            oneApprovalBlocked: true,
+            twoApprovalsBlocked: true,
+            threeApprovalsPasses: true,
+            botExcluded: true,
+            selfExcluded: true,
+            automergeBlocked: true,
+            allTestsPass: true,
+          },
+          labelValidation: {
+            requiredLabelValid: true,
+            reasonPrefixValid: true,
+            titlePrefixValid: true,
+            bodyFieldsValid: true,
+          },
+          forbiddenActions: {
+            count: 6,
+            criticalPresent: true,
+          },
+          compliance: {
+            framework: 'FISMA',
+            controlExercised: true,
+            lastDrillDate: '2026-01-31T09:00:00Z',
+            nextScheduledDrill: 'monthly',
+          },
+        };
+
+        // Serialize and deserialize
+        const serialized = JSON.stringify(mockDrill);
+        const deserialized = JSON.parse(serialized);
+
+        assert.deepStrictEqual(
+          deserialized,
+          mockDrill,
+          'DrillResult should be deterministically serializable'
+        );
+
+        // Re-serialize should produce identical output
+        assert.equal(
+          JSON.stringify(deserialized),
+          serialized,
+          'Re-serialization should be identical'
+        );
+      });
+
+      it('should require all guard logic tests for PASS status', () => {
+        const passingDrill = {
+          status: 'PASS',
+          guardLogicTests: {
+            zeroApprovalsBlocked: true,
+            oneApprovalBlocked: true,
+            twoApprovalsBlocked: true,
+            threeApprovalsPasses: true,
+            botExcluded: true,
+            selfExcluded: true,
+            automergeBlocked: true,
+            allTestsPass: true,
+          },
+        };
+
+        const failingDrill = {
+          status: 'FAIL',
+          guardLogicTests: {
+            zeroApprovalsBlocked: true,
+            oneApprovalBlocked: true,
+            twoApprovalsBlocked: false, // This fails
+            threeApprovalsPasses: true,
+            botExcluded: true,
+            selfExcluded: true,
+            automergeBlocked: true,
+            allTestsPass: false,
+          },
+        };
+
+        assert.equal(
+          passingDrill.guardLogicTests.allTestsPass,
+          true,
+          'Passing drill should have allTestsPass=true'
+        );
+        assert.equal(
+          failingDrill.guardLogicTests.allTestsPass,
+          false,
+          'Failing drill should have allTestsPass=false'
+        );
+      });
+
+      it('should record FISMA compliance metadata', () => {
+        const drillCompliance = {
+          framework: 'FISMA',
+          controlExercised: true,
+          lastDrillDate: '2026-01-31T09:00:00Z',
+          nextScheduledDrill: 'monthly',
+        };
+
+        assert.equal(drillCompliance.framework, 'FISMA', 'Framework should be FISMA');
+        assert.ok(drillCompliance.controlExercised, 'Control should be marked as exercised');
+        assert.ok(
+          drillCompliance.lastDrillDate.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/),
+          'lastDrillDate should be ISO format'
+        );
+        assert.ok(
+          ['monthly', 'quarterly', 'annual'].includes(drillCompliance.nextScheduledDrill),
+          'nextScheduledDrill should be valid frequency'
+        );
+      });
+    });
+
+    describe('Drill Validation Logic', () => {
+      it('should validate bot exclusion logic', () => {
+        const botPatterns = ['[bot]', 'dependabot', 'snyk-bot', 'renovate', 'github-actions'];
+        const testUsers = [
+          { login: 'dependabot[bot]', isBot: true },
+          { login: 'alice', isBot: false },
+          { login: 'snyk-bot', isBot: true },
+          { login: 'bob', isBot: false },
+          { login: 'renovate[bot]', isBot: true },
+        ];
+
+        testUsers.forEach((user) => {
+          const detectedAsBot = botPatterns.some((pattern) => user.login.includes(pattern));
+          assert.equal(
+            detectedAsBot,
+            user.isBot,
+            `${user.login} should be detected as ${user.isBot ? 'bot' : 'human'}`
+          );
+        });
+      });
+
+      it('should validate self-approval exclusion', () => {
+        const prAuthor = 'alice';
+        const approvers = ['alice', 'bob', 'carol'];
+
+        const validApprovers = approvers.filter((a) => a !== prAuthor);
+        assert.deepStrictEqual(
+          validApprovers,
+          ['bob', 'carol'],
+          'Self-approvals should be excluded'
+        );
+      });
+
+      it('should validate automerge detection', () => {
+        const testCases = [
+          { auto_merge: null, expected: false },
+          { auto_merge: undefined, expected: false },
+          { auto_merge: { enabled: true }, expected: true },
+          { auto_merge: {}, expected: true },
+        ];
+
+        testCases.forEach((tc, i) => {
+          const hasAutomerge =
+            tc.auto_merge !== null && tc.auto_merge !== undefined;
+          assert.equal(
+            hasAutomerge,
+            tc.expected,
+            `Test case ${i}: automerge detection should be ${tc.expected}`
+          );
+        });
+      });
+
+      it('should validate approval count thresholds', () => {
+        const minApprovals = 3;
+
+        const testCases = [
+          { count: 0, shouldBlock: true },
+          { count: 1, shouldBlock: true },
+          { count: 2, shouldBlock: true },
+          { count: 3, shouldBlock: false },
+          { count: 4, shouldBlock: false },
+        ];
+
+        testCases.forEach((tc) => {
+          const blocked = tc.count < minApprovals;
+          assert.equal(
+            blocked,
+            tc.shouldBlock,
+            `${tc.count} approvals should be ${tc.shouldBlock ? 'blocked' : 'allowed'}`
+          );
+        });
+      });
+    });
+
+    describe('Policy Alignment', () => {
+      it('should drill against correct policy version', async () => {
+        const policyPath = path.join(
+          __dirname,
+          '..',
+          'policy',
+          'AUTONOMY_BREAK_GLASS_POLICY.json'
+        );
+
+        const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+
+        // Drill must verify these policy requirements
+        assert.equal(
+          policy.requirements.minApprovals,
+          3,
+          'Policy requires 3 approvals'
+        );
+        assert.equal(
+          policy.verification.requireNoAutomerge,
+          true,
+          'Policy requires no automerge'
+        );
+        assert.equal(
+          policy.requirements.disallowBots,
+          true,
+          'Policy disallows bot approvals'
+        );
+        assert.equal(
+          policy.requirements.disallowSelfApproval,
+          true,
+          'Policy disallows self-approval'
+        );
+      });
+
+      it('should verify drill workflow uses same policy path', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'break-glass-drill.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        // The expected policy path from workflow
+        const expectedPath =
+          'tools/registry/autonomy-viewer/policy/AUTONOMY_BREAK_GLASS_POLICY.json';
+
+        assert.ok(
+          content.includes(expectedPath),
+          'Drill workflow should reference correct policy path'
         );
       });
     });

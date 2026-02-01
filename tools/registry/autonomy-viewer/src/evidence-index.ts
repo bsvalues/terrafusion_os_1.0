@@ -286,6 +286,70 @@ export interface BreakGlassResult {
 }
 
 /**
+ * Phase 4N24: Break-Glass Drill result.
+ * Proves emergency controls work via live-fire rehearsal.
+ */
+export interface DrillResult {
+  /** Drill schema identifier */
+  schema: 'terrafusion.autonomy.break_glass.drill.v1';
+  /** Unique drill identifier */
+  drillId: string;
+  /** ISO timestamp of drill execution */
+  timestamp: string;
+  /** Repository where drill was run */
+  repository: string;
+  /** CI run ID */
+  runId: number;
+  /** CI run number */
+  runNumber: number;
+  /** GitHub login who triggered drill */
+  triggeredBy: string;
+  /** How drill was triggered */
+  triggerType: 'workflow_dispatch' | 'schedule' | 'push';
+  /** Drill type */
+  drillType: 'full' | 'guard-only' | 'report-only';
+  /** Whether this was a dry run */
+  dryRun: boolean;
+  /** Overall drill status */
+  status: 'PASS' | 'FAIL';
+  /** Policy used for drill */
+  policy: {
+    version: string;
+    sha256: string;
+  };
+  /** Guard logic test results */
+  guardLogicTests: {
+    zeroApprovalsBlocked: boolean;
+    oneApprovalBlocked: boolean;
+    twoApprovalsBlocked: boolean;
+    threeApprovalsPasses: boolean;
+    botExcluded: boolean;
+    selfExcluded: boolean;
+    automergeBlocked: boolean;
+    allTestsPass: boolean;
+  };
+  /** Label/title validation results */
+  labelValidation: {
+    requiredLabelValid: boolean;
+    reasonPrefixValid: boolean;
+    titlePrefixValid: boolean;
+    bodyFieldsValid: boolean;
+  };
+  /** Forbidden actions validation */
+  forbiddenActions: {
+    count: number;
+    criticalPresent: boolean;
+  };
+  /** Compliance metadata */
+  compliance: {
+    framework: 'FISMA';
+    controlExercised: boolean;
+    lastDrillDate: string;
+    nextScheduledDrill: 'monthly' | 'quarterly' | 'annual';
+  };
+}
+
+/**
  * Phase 4N20: Individual pin verification result.
  */
 export interface PinResult {
@@ -355,6 +419,11 @@ export interface EvidenceIndex {
    * Emergency governance lane with enhanced oversight (3+ approvals, strict verification).
    */
   breakGlass?: BreakGlassResult;
+  /**
+   * Phase 4N24: Break-Glass Drill result.
+   * Proves emergency controls work via periodic live-fire rehearsals.
+   */
+  drill?: DrillResult;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
