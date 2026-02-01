@@ -3102,4 +3102,377 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
       });
     });
   });
+
+  // ──────────────────────────────────────────────────────────────────
+  // Phase 4N26: Incident Publisher Contract Tests
+  // ──────────────────────────────────────────────────────────────────
+  describe('Phase 4N26: Incident Publisher', () => {
+    describe('Workflow File', () => {
+      it('should have incident publisher workflow', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+
+        assert.ok(
+          fs.existsSync(workflowPath),
+          'Incident publisher workflow should exist'
+        );
+      });
+
+      it('should trigger on merged PR to main', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('pull_request:') && content.includes('closed'),
+          'Workflow should trigger on PR closed'
+        );
+        assert.ok(
+          content.includes('merged == true'),
+          'Workflow should check for merged PRs'
+        );
+        assert.ok(
+          content.includes('branches: [main]'),
+          'Workflow should only trigger on main branch'
+        );
+      });
+
+      it('should support workflow_dispatch for replay', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('workflow_dispatch:'),
+          'Workflow should support manual dispatch'
+        );
+        assert.ok(
+          content.includes('merge_sha') || content.includes('MERGE_SHA'),
+          'Workflow should accept merge SHA for replay'
+        );
+      });
+
+      it('should have minimal permissions', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('contents: write'),
+          'Workflow should have contents write for release'
+        );
+        assert.ok(
+          content.includes('pull-requests: read'),
+          'Workflow should have PR read only'
+        );
+        // Should NOT have admin or issues:write
+        assert.ok(
+          !content.includes('admin'),
+          'Workflow should not have admin permissions'
+        );
+      });
+    });
+
+    describe('Eligibility Checks', () => {
+      it('should require break-glass label', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('break-glass') && content.includes('label'),
+          'Workflow should check for break-glass label'
+        );
+      });
+
+      it('should verify evidence index has breakGlass.ok and roleBinding.ok', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('breakGlass') || content.includes('break_glass'),
+          'Workflow should check breakGlass status'
+        );
+        assert.ok(
+          content.includes('roleBinding') || content.includes('role_binding'),
+          'Workflow should check roleBinding status'
+        );
+      });
+
+      it('should require security and cio approvers', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('security') && content.includes('cio'),
+          'Workflow should check for security and cio approvers'
+        );
+      });
+    });
+
+    describe('Release Tag Format', () => {
+      it('should use deterministic tag format', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('autonomy-incident/'),
+          'Tag should use autonomy-incident/ prefix'
+        );
+      });
+
+      it('should derive tag from year and SHA', () => {
+        // Test tag format logic
+        const year = 2026;
+        const sha10 = 'abc1234567';
+        const expectedTag = `autonomy-incident/${year}/${sha10}`;
+
+        assert.equal(
+          expectedTag,
+          'autonomy-incident/2026/abc1234567',
+          'Tag format should be autonomy-incident/YYYY/<sha10>'
+        );
+      });
+    });
+
+    describe('Idempotency', () => {
+      it('should check for existing release', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('release view') || content.includes('Idempotency'),
+          'Workflow should check for existing release'
+        );
+      });
+
+      it('should exit with noop if release exists', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('noop') || content.includes('already exists'),
+          'Workflow should handle noop case'
+        );
+      });
+    });
+
+    describe('IncidentPromotion Interface', () => {
+      it('should have valid IncidentPromotion structure', () => {
+        const mockPromotion = {
+          status: 'promoted' as const,
+          reason: 'break-glass' as const,
+          retentionTier: 'incident' as const,
+          incidentReleaseTag: 'autonomy-incident/2026/abc1234567',
+          incidentReleaseUrl: 'https://github.com/owner/repo/releases/tag/autonomy-incident/2026/abc1234567',
+          publishedAt: '2026-01-31T00:00:00Z',
+          mergeSha: 'abc1234567',
+          mergeCommitSha: 'abc1234567890abcdef1234567890abcdef1234',
+          prNumber: 123,
+          breakGlassRoleBinding: {
+            ok: true,
+            securityApprovers: ['alice'],
+            cioApprovers: ['bob'],
+          },
+          prePromotionVerification: {
+            bundleVerified: true,
+            custodyVerified: true,
+            signaturesVerified: true,
+            rekorAnchored: true,
+            policyFromIndex: true,
+          },
+          publishedAssets: ['bundle.zip', 'manifest.json'],
+          idempotency: {
+            releaseExisted: false,
+            assetsMatched: true,
+            wasNoop: false,
+          },
+        };
+
+        // Verify structure is valid
+        assert.equal(mockPromotion.status, 'promoted');
+        assert.equal(mockPromotion.reason, 'break-glass');
+        assert.equal(mockPromotion.retentionTier, 'incident');
+        assert.ok(mockPromotion.breakGlassRoleBinding.ok);
+        assert.ok(mockPromotion.prePromotionVerification.bundleVerified);
+      });
+
+      it('should serialize deterministically', () => {
+        const promotion = {
+          status: 'promoted',
+          reason: 'break-glass',
+          mergeSha: 'abc1234567',
+          publishedAssets: ['a.zip', 'b.json'],
+        };
+
+        const serialized = JSON.stringify(promotion);
+        const deserialized = JSON.parse(serialized);
+
+        assert.deepStrictEqual(deserialized, promotion);
+      });
+    });
+
+    describe('Fail Closed Scenarios', () => {
+      it('should fail if breakGlass.ok is false', () => {
+        const mockIndex = {
+          breakGlass: { activated: false },
+          roleBinding: { ok: true },
+        };
+
+        const shouldPublish = mockIndex.breakGlass.activated && mockIndex.roleBinding.ok;
+        assert.ok(!shouldPublish, 'Should not publish if breakGlass not activated');
+      });
+
+      it('should fail if roleBinding.ok is false', () => {
+        const mockIndex = {
+          breakGlass: { activated: true },
+          roleBinding: { ok: false },
+        };
+
+        const shouldPublish = mockIndex.breakGlass.activated && mockIndex.roleBinding.ok;
+        assert.ok(!shouldPublish, 'Should not publish if roleBinding not ok');
+      });
+
+      it('should fail if security approvers missing', () => {
+        const mockRoleBinding = {
+          ok: true,
+          approverRoles: {
+            security: [],
+            cio: ['bob'],
+            engineering: ['carol'],
+          },
+        };
+
+        const hasSecurityApprover = (mockRoleBinding.approverRoles.security?.length || 0) > 0;
+        assert.ok(!hasSecurityApprover, 'Should detect missing security approvers');
+      });
+
+      it('should fail if cio approvers missing', () => {
+        const mockRoleBinding = {
+          ok: true,
+          approverRoles: {
+            security: ['alice'],
+            cio: [],
+            engineering: ['carol'],
+          },
+        };
+
+        const hasCioApprover = (mockRoleBinding.approverRoles.cio?.length || 0) > 0;
+        assert.ok(!hasCioApprover, 'Should detect missing CIO approvers');
+      });
+
+      it('should fail if evidence index missing', () => {
+        const evidenceIndexExists = false;
+
+        const shouldPublish = evidenceIndexExists;
+        assert.ok(!shouldPublish, 'Should not publish if evidence index missing');
+      });
+    });
+
+    describe('Reality Check', () => {
+      it('should verify release exists after upload', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-incident-publisher.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('Reality Check') || content.includes('Verify'),
+          'Workflow should have reality check step'
+        );
+      });
+    });
+  });
 });

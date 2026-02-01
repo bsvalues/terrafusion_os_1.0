@@ -118,6 +118,17 @@ export interface LedgerEntry {
     securityApprovers: string[];
     cioApprovers: string[];
   };
+  /** Phase 4N26: Incident Promotion status */
+  incidentPromotion?: {
+    status: 'promoted' | 'skipped' | 'failed' | 'noop';
+    reason: 'break-glass' | 'manual' | 'policy';
+    incidentReleaseTag: string;
+    incidentReleaseUrl: string;
+    publishedAt: string;
+    prNumber: number;
+    securityApprovers: string[];
+    cioApprovers: string[];
+  };
 }
 
 export interface LedgerViewModel {
@@ -156,6 +167,8 @@ export interface LedgerViewModel {
     roleBindingCount: number;
     /** Phase 4N25: Role binding failures */
     roleBindingFailedCount: number;
+    /** Phase 4N26: Incident promoted count */
+    incidentPromotedCount: number;
   };
 }
 
@@ -408,6 +421,21 @@ export function buildLedgerEntries(
           }
         : undefined;
 
+      // Phase 4N26: Extract Incident Promotion status from index
+      const incidentPromotion = index.incidentPromotion
+        ? {
+            status: index.incidentPromotion.status,
+            reason: index.incidentPromotion.reason,
+            incidentReleaseTag: index.incidentPromotion.incidentReleaseTag,
+            incidentReleaseUrl: index.incidentPromotion.incidentReleaseUrl,
+            publishedAt: index.incidentPromotion.publishedAt,
+            prNumber: index.incidentPromotion.prNumber,
+            securityApprovers:
+              index.incidentPromotion.breakGlassRoleBinding?.securityApprovers || [],
+            cioApprovers: index.incidentPromotion.breakGlassRoleBinding?.cioApprovers || [],
+          }
+        : undefined;
+
       const entry: LedgerEntry = {
         runId: index.source.runId,
         date: index.generatedAt,
@@ -435,6 +463,7 @@ export function buildLedgerEntries(
         tpi,
         breakGlass,
         roleBinding,
+        incidentPromotion,
       };
 
       entries.push(entry);
@@ -492,6 +521,8 @@ export function buildLedgerViewModel(entries: LedgerEntry[], opts: ViewerOptions
     roleBindingFailedCount: entries.filter(
       e => e.roleBinding && !e.roleBinding.ok && !e.roleBinding.skipped
     ).length,
+    // Phase 4N26: Incident promoted count
+    incidentPromotedCount: entries.filter(e => e.incidentPromotion?.status === 'promoted').length,
   };
 
   return {
@@ -763,11 +794,24 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
         }
       }
 
+      // Phase 4N26: Incident Promotion badge
+      const incidentPromoted = entry.incidentPromotion?.status === 'promoted';
+      const incidentPromotionTag = entry.incidentPromotion?.incidentReleaseTag || '';
+      const incidentPromotionUrl = entry.incidentPromotion?.incidentReleaseUrl || '';
+      const incidentPromotionReason = entry.incidentPromotion?.reason || '';
+      const incidentPromotionSecurityApprovers =
+        entry.incidentPromotion?.securityApprovers?.join(', ') || '';
+      const incidentPromotionCioApprovers = entry.incidentPromotion?.cioApprovers?.join(', ') || '';
+      let incidentPromotionBadge = '';
+      if (incidentPromoted) {
+        incidentPromotionBadge = `<a href="${escapeHtml(incidentPromotionUrl)}" target="_blank" class="badge badge-incident" title="Reason: ${escapeHtml(incidentPromotionReason)} | Security: ${escapeHtml(incidentPromotionSecurityApprovers)} | CIO: ${escapeHtml(incidentPromotionCioApprovers)}">🚨 7-Year</a>`;
+      }
+
       return `
-        <tr class="${rowClass}${breakGlassActivated ? ' row-break-glass' : ''}" data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}" data-rekor="${entry.rekor?.anchored ?? false}" data-tpi="${tpiOk}" data-breakglass="${breakGlassActivated}" data-rolebinding="${roleBindingOk}">
+        <tr class="${rowClass}${breakGlassActivated ? ' row-break-glass' : ''}${incidentPromoted ? ' row-incident-promoted' : ''}" data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}" data-rekor="${entry.rekor?.anchored ?? false}" data-tpi="${tpiOk}" data-breakglass="${breakGlassActivated}" data-rolebinding="${roleBindingOk}" data-incidentpromoted="${incidentPromoted}">
           <td>${formatDate(entry.date)}</td>
           <td>${escapeHtml(entry.runId)}</td>
-          <td>${tierBadge}${incidentInfo}${breakGlassBadge}${roleBindingBadge}</td>
+          <td>${tierBadge}${incidentInfo}${breakGlassBadge}${roleBindingBadge}${incidentPromotionBadge}</td>
           <td>${bundleCell}</td>
           <td class="sha">${escapeHtml(entry.manifestSha256.substring(0, 16))}...</td>
           <td>${releaseTagCell}</td>
@@ -847,6 +891,10 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
       <div class="value" style="color: ${vm.summary.roleBindingCount > 0 ? 'var(--color-success)' : vm.summary.roleBindingFailedCount > 0 ? 'var(--color-error)' : 'var(--color-muted)'}">${vm.summary.roleBindingCount}${vm.summary.roleBindingFailedCount > 0 ? '/' + vm.summary.roleBindingFailedCount + '❌' : ''}</div>
       <div class="label">🔐 Roles</div>
     </div>
+    <div class="summary-card">
+      <div class="value" style="color: ${vm.summary.incidentPromotedCount > 0 ? 'var(--color-error)' : 'var(--color-muted)'}">${vm.summary.incidentPromotedCount}</div>
+      <div class="label">🚨 7-Year</div>
+    </div>
   </div>
 
   <h2>Evidence Records</h2>
@@ -861,6 +909,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     <a href="#" class="filter-btn" onclick="filterTable('tpi'); return false;">TPI</a>
     <a href="#" class="filter-btn" onclick="filterTable('breakglass'); return false;">Break-Glass</a>
     <a href="#" class="filter-btn" onclick="filterTable('rolebinding'); return false;">🔐 Roles</a>
+    <a href="#" class="filter-btn" onclick="filterTable('incidentpromoted'); return false;">🚨 7-Year</a>
   </div>
 
   <table id="evidence-table">
@@ -919,6 +968,7 @@ pnpm perf:verify-signature --artifact "&lt;bundle-name&gt;.zip" --bundle "&lt;bu
         else if (filter === 'tpi') show = tpi;
         else if (filter === 'breakglass') show = breakglass;
         else if (filter === 'rolebinding') show = rolebinding;
+        else if (filter === 'incidentpromoted') show = row.dataset.incidentpromoted === 'true';
         row.style.display = show ? '' : 'none';
       });
       // Update active state

@@ -384,6 +384,53 @@ export interface RoleBindingResult {
 }
 
 /**
+ * Phase 4N26: Incident Promotion result.
+ * Auto-publishes break-glass evidence to 7-year incident retention tier.
+ */
+export interface IncidentPromotion {
+  /** Promotion status */
+  status: 'promoted' | 'skipped' | 'failed' | 'noop';
+  /** Reason for promotion */
+  reason: 'break-glass' | 'manual' | 'policy';
+  /** Retention tier evidence was promoted to */
+  retentionTier: 'incident';
+  /** Incident release tag (autonomy-incident/YYYY/<sha10>) */
+  incidentReleaseTag: string;
+  /** Immutable incident release URL */
+  incidentReleaseUrl: string;
+  /** ISO timestamp when promotion occurred */
+  publishedAt: string;
+  /** Merge SHA (10-char prefix used in tag) */
+  mergeSha: string;
+  /** Full merge commit SHA (40-hex) */
+  mergeCommitSha: string;
+  /** PR number that was merged */
+  prNumber: number;
+  /** Break-glass role binding that authorized promotion */
+  breakGlassRoleBinding: {
+    ok: boolean;
+    securityApprovers: string[];
+    cioApprovers: string[];
+  };
+  /** Verification checks that passed before promotion */
+  prePromotionVerification: {
+    bundleVerified: boolean;
+    custodyVerified: boolean;
+    signaturesVerified: boolean;
+    rekorAnchored: boolean;
+    policyFromIndex: boolean;
+  };
+  /** Assets published to incident release */
+  publishedAssets: string[];
+  /** Idempotency check result */
+  idempotency: {
+    releaseExisted: boolean;
+    assetsMatched: boolean;
+    wasNoop: boolean;
+  };
+}
+
+/**
  * Phase 4N20: Individual pin verification result.
  */
 export interface PinResult {
@@ -463,6 +510,11 @@ export interface EvidenceIndex {
    * Ensures break-glass approvals come from required roles (Security, CIO).
    */
   roleBinding?: RoleBindingResult;
+  /**
+   * Phase 4N26: Incident Promotion result.
+   * Auto-publishes break-glass evidence to 7-year incident retention tier.
+   */
+  incidentPromotion?: IncidentPromotion;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
