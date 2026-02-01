@@ -1,0 +1,23 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/autonomy-approvers.v1.json",
+  "schema": "terrafusion.autonomy.approvers.v1",
+  "version": "1.0.0",
+  "generatedAt": "2026-01-31T00:00:00.000Z",
+  "description": "Canonical source for role-based approval requirements. Used by break-glass guard to verify approver roles.",
+  "repo": "terrafusion/terrafusion_os",
+  "roles": {
+    "cio": ["bsvalues"],
+    "security": ["bsvalues"],
+    "engineering": ["bsvalues"]
+  },
+  "rules": {
+    "normalizeUsernames": true,
+    "allowRoleOverlap": true,
+    "disallowWildcards": true
+  },
+  "audit": {
+    "lastReviewed": "2026-01-31",
+    "reviewedBy": "TerraFusion Governance Board",
+    "nextReviewDue": "2026-04-30"
+  }
+}

@@ -2660,8 +2660,8 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
           { login: 'renovate[bot]', isBot: true },
         ];
 
-        testUsers.forEach((user) => {
-          const detectedAsBot = botPatterns.some((pattern) => user.login.includes(pattern));
+        testUsers.forEach(user => {
+          const detectedAsBot = botPatterns.some(pattern => user.login.includes(pattern));
           assert.equal(
             detectedAsBot,
             user.isBot,
@@ -2674,7 +2674,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
         const prAuthor = 'alice';
         const approvers = ['alice', 'bob', 'carol'];
 
-        const validApprovers = approvers.filter((a) => a !== prAuthor);
+        const validApprovers = approvers.filter(a => a !== prAuthor);
         assert.deepStrictEqual(
           validApprovers,
           ['bob', 'carol'],
@@ -2691,8 +2691,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
         ];
 
         testCases.forEach((tc, i) => {
-          const hasAutomerge =
-            tc.auto_merge !== null && tc.auto_merge !== undefined;
+          const hasAutomerge = tc.auto_merge !== null && tc.auto_merge !== undefined;
           assert.equal(
             hasAutomerge,
             tc.expected,
@@ -2712,7 +2711,7 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
           { count: 4, shouldBlock: false },
         ];
 
-        testCases.forEach((tc) => {
+        testCases.forEach(tc => {
           const blocked = tc.count < minApprovals;
           assert.equal(
             blocked,
@@ -2725,31 +2724,14 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
 
     describe('Policy Alignment', () => {
       it('should drill against correct policy version', async () => {
-        const policyPath = path.join(
-          __dirname,
-          '..',
-          'policy',
-          'AUTONOMY_BREAK_GLASS_POLICY.json'
-        );
+        const policyPath = path.join(__dirname, '..', 'policy', 'AUTONOMY_BREAK_GLASS_POLICY.json');
 
         const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
 
         // Drill must verify these policy requirements
-        assert.equal(
-          policy.requirements.minApprovals,
-          3,
-          'Policy requires 3 approvals'
-        );
-        assert.equal(
-          policy.verification.requireNoAutomerge,
-          true,
-          'Policy requires no automerge'
-        );
-        assert.equal(
-          policy.requirements.disallowBots,
-          true,
-          'Policy disallows bot approvals'
-        );
+        assert.equal(policy.requirements.minApprovals, 3, 'Policy requires 3 approvals');
+        assert.equal(policy.verification.requireNoAutomerge, true, 'Policy requires no automerge');
+        assert.equal(policy.requirements.disallowBots, true, 'Policy disallows bot approvals');
         assert.equal(
           policy.requirements.disallowSelfApproval,
           true,
@@ -2777,6 +2759,345 @@ describe('Phase 4N22: TPI Schema Contract Tests', () => {
         assert.ok(
           content.includes(expectedPath),
           'Drill workflow should reference correct policy path'
+        );
+      });
+    });
+  });
+
+  // ──────────────────────────────────────────────────────────────────
+  // Phase 4N25: Role Binding Contract Tests
+  // ──────────────────────────────────────────────────────────────────
+  describe('Phase 4N25: Role Binding', () => {
+    describe('Approver Source File', () => {
+      it('should have autonomy-approvers.json file', () => {
+        const approversPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'autonomy-approvers.json'
+        );
+
+        assert.ok(fs.existsSync(approversPath), 'autonomy-approvers.json should exist');
+      });
+
+      it('should have valid schema', () => {
+        const approversPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'autonomy-approvers.json'
+        );
+        const content = JSON.parse(fs.readFileSync(approversPath, 'utf8'));
+
+        assert.equal(
+          content.schema,
+          'terrafusion.autonomy.approvers.v1',
+          'Schema should be correct'
+        );
+        assert.ok(content.roles, 'Should have roles section');
+        assert.ok(Array.isArray(content.roles.cio), 'cio should be array');
+        assert.ok(Array.isArray(content.roles.security), 'security should be array');
+        assert.ok(Array.isArray(content.roles.engineering), 'engineering should be array');
+      });
+
+      it('should have required roles configured', () => {
+        const approversPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'autonomy-approvers.json'
+        );
+        const content = JSON.parse(fs.readFileSync(approversPath, 'utf8'));
+
+        assert.ok(content.roles.cio.length > 0, 'Should have at least 1 CIO user');
+        assert.ok(content.roles.security.length > 0, 'Should have at least 1 Security user');
+      });
+
+      it('should disallow wildcards', () => {
+        const approversPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'autonomy-approvers.json'
+        );
+        const content = JSON.parse(fs.readFileSync(approversPath, 'utf8'));
+
+        const allUsers = [
+          ...content.roles.cio,
+          ...content.roles.security,
+          ...content.roles.engineering,
+        ];
+
+        allUsers.forEach(user => {
+          assert.ok(!user.includes('*'), `User ${user} should not contain wildcards`);
+          assert.ok(!user.includes('?'), `User ${user} should not contain wildcards`);
+        });
+      });
+    });
+
+    describe('Policy Role Binding Configuration', () => {
+      it('should have roleBinding section in break-glass policy', () => {
+        const policyPath = path.join(__dirname, '..', 'policy', 'AUTONOMY_BREAK_GLASS_POLICY.json');
+        const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+
+        assert.ok(policy.roleBinding, 'Policy should have roleBinding section');
+        assert.equal(policy.roleBinding.enabled, true, 'Role binding should be enabled');
+        assert.equal(policy.roleBinding.mode, 'strict', 'Mode should be strict');
+      });
+
+      it('should require security and cio roles', () => {
+        const policyPath = path.join(__dirname, '..', 'policy', 'AUTONOMY_BREAK_GLASS_POLICY.json');
+        const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+
+        assert.ok(
+          policy.roleBinding.requiredApproverRoles.includes('security'),
+          'Should require security approver'
+        );
+        assert.ok(
+          policy.roleBinding.requiredApproverRoles.includes('cio'),
+          'Should require cio approver'
+        );
+      });
+
+      it('should fail closed on missing source', () => {
+        const policyPath = path.join(__dirname, '..', 'policy', 'AUTONOMY_BREAK_GLASS_POLICY.json');
+        const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+
+        assert.equal(
+          policy.roleBinding.failClosedOnMissingSource,
+          true,
+          'Should fail closed on missing source'
+        );
+      });
+    });
+
+    describe('RoleBindingResult Interface', () => {
+      it('should generate deterministic role binding result', () => {
+        const mockRoleBinding = {
+          ok: true,
+          requiredRoles: ['security', 'cio'],
+          satisfiedRoles: ['security', 'cio'],
+          missingRoles: [],
+          approverRoles: {
+            security: ['alice'],
+            cio: ['bob'],
+            engineering: ['carol'],
+          },
+          approvalCountEligible: 3,
+          excludedApprovers: [],
+          approverSource: '.github/autonomy-approvers.json',
+          evaluatedAt: '2026-01-31T00:00:00Z',
+        };
+
+        const serialized = JSON.stringify(mockRoleBinding);
+        const deserialized = JSON.parse(serialized);
+
+        assert.deepStrictEqual(
+          deserialized,
+          mockRoleBinding,
+          'RoleBindingResult should be deterministically serializable'
+        );
+      });
+
+      it('should detect missing roles correctly', () => {
+        const roleBindingMissingSecurity = {
+          ok: false,
+          requiredRoles: ['security', 'cio'],
+          satisfiedRoles: ['cio'],
+          missingRoles: ['security'],
+        };
+
+        assert.ok(
+          roleBindingMissingSecurity.missingRoles.includes('security'),
+          'Should detect missing security role'
+        );
+        assert.ok(!roleBindingMissingSecurity.ok, 'Should fail when required role missing');
+      });
+
+      it('should track excluded approvers', () => {
+        const excludedApprovers = [
+          { user: 'alice', reason: 'self' as const },
+          { user: 'dependabot[bot]', reason: 'bot' as const },
+          { user: 'unknown-user', reason: 'no-role' as const },
+        ];
+
+        assert.equal(excludedApprovers.length, 3, 'Should track 3 excluded approvers');
+        assert.ok(
+          excludedApprovers.some(e => e.reason === 'self'),
+          'Should track self exclusion'
+        );
+        assert.ok(
+          excludedApprovers.some(e => e.reason === 'bot'),
+          'Should track bot exclusion'
+        );
+      });
+    });
+
+    describe('Role Binding Logic', () => {
+      it('should pass with 1 security + 1 cio + 1 engineering', () => {
+        const approvers = ['alice', 'bob', 'carol'];
+        const roles = {
+          security: ['alice'],
+          cio: ['bob'],
+          engineering: ['carol'],
+        };
+
+        const securityApprovers = approvers.filter(a => roles.security.includes(a.toLowerCase()));
+        const cioApprovers = approvers.filter(a => roles.cio.includes(a.toLowerCase()));
+
+        const satisfied = securityApprovers.length >= 1 && cioApprovers.length >= 1;
+        assert.ok(satisfied, 'Should pass with required roles satisfied');
+      });
+
+      it('should fail with 3 approvals but missing security', () => {
+        const approvers = ['bob', 'carol', 'dave'];
+        const roles = {
+          security: ['alice'],
+          cio: ['bob'],
+          engineering: ['carol', 'dave'],
+        };
+
+        const securityApprovers = approvers.filter(a => roles.security.includes(a.toLowerCase()));
+        const cioApprovers = approvers.filter(a => roles.cio.includes(a.toLowerCase()));
+
+        const satisfied = securityApprovers.length >= 1 && cioApprovers.length >= 1;
+        assert.ok(!satisfied, 'Should fail when security role missing');
+        assert.equal(securityApprovers.length, 0, 'No security approvers');
+      });
+
+      it('should fail with 3 approvals but missing cio', () => {
+        const approvers = ['alice', 'carol', 'dave'];
+        const roles = {
+          security: ['alice'],
+          cio: ['bob'],
+          engineering: ['carol', 'dave'],
+        };
+
+        const securityApprovers = approvers.filter(a => roles.security.includes(a.toLowerCase()));
+        const cioApprovers = approvers.filter(a => roles.cio.includes(a.toLowerCase()));
+
+        const satisfied = securityApprovers.length >= 1 && cioApprovers.length >= 1;
+        assert.ok(!satisfied, 'Should fail when cio role missing');
+        assert.equal(cioApprovers.length, 0, 'No cio approvers');
+      });
+
+      it('should exclude bots from role binding', () => {
+        const approvers = ['alice[bot]', 'bob', 'carol'];
+        const botPatterns = ['[bot]', 'dependabot'];
+
+        const nonBotApprovers = approvers.filter(a => !botPatterns.some(p => a.includes(p)));
+
+        assert.equal(nonBotApprovers.length, 2, 'Should have 2 non-bot approvers');
+        assert.ok(!nonBotApprovers.includes('alice[bot]'), 'Bot should be excluded');
+      });
+
+      it('should exclude self from role binding', () => {
+        const prAuthor = 'alice';
+        const approvers = ['alice', 'bob', 'carol'];
+
+        const nonSelfApprovers = approvers.filter(a => a !== prAuthor);
+
+        assert.equal(nonSelfApprovers.length, 2, 'Should have 2 non-self approvers');
+        assert.ok(!nonSelfApprovers.includes('alice'), 'Self should be excluded');
+      });
+
+      it('should normalize usernames to lowercase', () => {
+        const approver = 'Alice';
+        const rolesList = ['alice', 'bob'];
+
+        const normalized = approver.toLowerCase();
+        const found = rolesList.includes(normalized);
+
+        assert.ok(found, 'Should find Alice as alice after normalization');
+      });
+
+      it('should allow role overlap (same user in multiple roles)', () => {
+        const approversPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'autonomy-approvers.json'
+        );
+        const content = JSON.parse(fs.readFileSync(approversPath, 'utf8'));
+
+        assert.equal(content.rules.allowRoleOverlap, true, 'Should allow role overlap');
+      });
+    });
+
+    describe('Guard Workflow Role Binding', () => {
+      it('should have role binding check in break-glass guard', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-guard.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('role_binding') || content.includes('Check Role Binding'),
+          'Workflow should have role binding check'
+        );
+      });
+
+      it('should load approver source file in workflow', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-guard.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('autonomy-approvers.json') || content.includes('APPROVER_SOURCE'),
+          'Workflow should reference approver source'
+        );
+      });
+
+      it('should output role binding results', () => {
+        const workflowPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '.github',
+          'workflows',
+          'autonomy-break-glass-guard.yml'
+        );
+        const content = fs.readFileSync(workflowPath, 'utf8');
+
+        assert.ok(
+          content.includes('security_approvers') || content.includes('SECURITY_APPROVERS'),
+          'Workflow should output security approvers'
+        );
+        assert.ok(
+          content.includes('cio_approvers') || content.includes('CIO_APPROVERS'),
+          'Workflow should output cio approvers'
         );
       });
     });

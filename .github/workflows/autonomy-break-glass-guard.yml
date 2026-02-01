@@ -127,6 +127,12 @@ jobs:
           REQUIRED_BODY_FIELDS=$(jq -c '.activation.requiredBodyFields' "$POLICY_PATH")
           REQUIRE_NO_AUTOMERGE=$(jq -r '.verification.requireNoAutomerge' "$POLICY_PATH")
 
+          # Phase 4N25: Role binding settings
+          ROLE_BINDING_ENABLED=$(jq -r '.roleBinding.enabled // false' "$POLICY_PATH")
+          ROLE_BINDING_MODE=$(jq -r '.roleBinding.mode // "strict"' "$POLICY_PATH")
+          APPROVER_SOURCE=$(jq -r '.roleBinding.approverSource // ".github/autonomy-approvers.json"' "$POLICY_PATH")
+          REQUIRED_ROLES=$(jq -r '.roleBinding.requiredApproverRoles | join(",")' "$POLICY_PATH" 2>/dev/null || echo "")
+
           # Compute policy hash for audit trail
           POLICY_HASH=$(sha256sum "$POLICY_PATH" | cut -d' ' -f1)
 
@@ -136,6 +142,9 @@ jobs:
           echo "  Disallow Self: $DISALLOW_SELF"
           echo "  Disallow Bots: $DISALLOW_BOTS"
           echo "  Require No Automerge: $REQUIRE_NO_AUTOMERGE"
+          echo "  Role Binding Enabled: $ROLE_BINDING_ENABLED"
+          echo "  Role Binding Mode: $ROLE_BINDING_MODE"
+          echo "  Required Roles: $REQUIRED_ROLES"
 
           echo "min_approvals=$MIN_APPROVALS" >> $GITHUB_OUTPUT
           echo "disallow_self=$DISALLOW_SELF" >> $GITHUB_OUTPUT
@@ -145,6 +154,10 @@ jobs:
           echo "policy_hash=$POLICY_HASH" >> $GITHUB_OUTPUT
           echo "required_body_fields=$REQUIRED_BODY_FIELDS" >> $GITHUB_OUTPUT
           echo "require_no_automerge=$REQUIRE_NO_AUTOMERGE" >> $GITHUB_OUTPUT
+          echo "role_binding_enabled=$ROLE_BINDING_ENABLED" >> $GITHUB_OUTPUT
+          echo "role_binding_mode=$ROLE_BINDING_MODE" >> $GITHUB_OUTPUT
+          echo "approver_source=$APPROVER_SOURCE" >> $GITHUB_OUTPUT
+          echo "required_roles=$REQUIRED_ROLES" >> $GITHUB_OUTPUT
 
           echo "✅ Policy loaded"
 
@@ -330,6 +343,169 @@ jobs:
             echo "::warning::Break-Glass approval threshold NOT met ($APPROVAL_COUNT < $MIN_APPROVALS)"
           fi
 
+      - name: Check Role Binding (Phase 4N25)
+        id: role_binding
+        env:
+          APPROVER_LOGINS: ${{ steps.approvals.outputs.approver_logins }}
+          ROLE_BINDING_ENABLED: ${{ steps.policy.outputs.role_binding_enabled }}
+          ROLE_BINDING_MODE: ${{ steps.policy.outputs.role_binding_mode }}
+          REQUIRED_ROLES: ${{ steps.policy.outputs.required_roles }}
+          APPROVER_SOURCE: ${{ steps.policy.outputs.approver_source }}
+        run: |
+          echo "🔐 Phase 4N25: Checking Role Binding..."
+          echo ""
+
+          # Check if role binding is enabled
+          if [[ "$ROLE_BINDING_ENABLED" != "true" ]]; then
+            echo "  ℹ️ Role binding not enabled in policy"
+            echo "role_binding_ok=true" >> $GITHUB_OUTPUT
+            echo "role_binding_skipped=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Load approver source file
+          if [[ ! -f "$APPROVER_SOURCE" ]]; then
+            if [[ "$ROLE_BINDING_MODE" == "strict" ]]; then
+              echo "  ❌ Approver source file not found: $APPROVER_SOURCE"
+              echo "  ❌ FAIL CLOSED: strict mode requires approver source"
+              echo "::error::Role binding failed - approver source file not found"
+              echo "role_binding_ok=false" >> $GITHUB_OUTPUT
+              echo "missing_source=true" >> $GITHUB_OUTPUT
+              exit 1
+            else
+              echo "  ⚠️ Approver source file not found, skipping role binding"
+              echo "role_binding_ok=true" >> $GITHUB_OUTPUT
+              echo "role_binding_skipped=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          fi
+
+          echo "  Approver source: $APPROVER_SOURCE"
+
+          # Parse approver roles
+          CIO_USERS=$(jq -r '.roles.cio[]' "$APPROVER_SOURCE" 2>/dev/null | tr '[:upper:]' '[:lower:]' | sort -u)
+          SECURITY_USERS=$(jq -r '.roles.security[]' "$APPROVER_SOURCE" 2>/dev/null | tr '[:upper:]' '[:lower:]' | sort -u)
+          ENGINEERING_USERS=$(jq -r '.roles.engineering[]' "$APPROVER_SOURCE" 2>/dev/null | tr '[:upper:]' '[:lower:]' | sort -u)
+
+          echo "  CIO users: $CIO_USERS"
+          echo "  Security users: $SECURITY_USERS"
+          echo "  Engineering users: $ENGINEERING_USERS"
+          echo ""
+
+          # Parse actual approvers (lowercase normalize)
+          IFS=',' read -ra APPROVERS <<< "$APPROVER_LOGINS"
+          APPROVERS_LOWER=()
+          for a in "${APPROVERS[@]}"; do
+            APPROVERS_LOWER+=("$(echo "$a" | tr '[:upper:]' '[:lower:]')")
+          done
+
+          echo "  Actual approvers (normalized): ${APPROVERS_LOWER[*]}"
+          echo ""
+
+          # Find role matches
+          SECURITY_APPROVERS=()
+          CIO_APPROVERS=()
+          ENGINEERING_APPROVERS=()
+          UNBOUND_APPROVERS=()
+
+          for APPROVER in "${APPROVERS_LOWER[@]}"; do
+            FOUND_ROLE=false
+
+            # Check security
+            if echo "$SECURITY_USERS" | grep -qw "$APPROVER"; then
+              SECURITY_APPROVERS+=("$APPROVER")
+              FOUND_ROLE=true
+              echo "  ✅ $APPROVER → security"
+            fi
+
+            # Check cio
+            if echo "$CIO_USERS" | grep -qw "$APPROVER"; then
+              CIO_APPROVERS+=("$APPROVER")
+              FOUND_ROLE=true
+              echo "  ✅ $APPROVER → cio"
+            fi
+
+            # Check engineering
+            if echo "$ENGINEERING_USERS" | grep -qw "$APPROVER"; then
+              ENGINEERING_APPROVERS+=("$APPROVER")
+              FOUND_ROLE=true
+              echo "  ✅ $APPROVER → engineering"
+            fi
+
+            if [[ "$FOUND_ROLE" == "false" ]]; then
+              UNBOUND_APPROVERS+=("$APPROVER")
+              echo "  ⚠️ $APPROVER → (no role binding)"
+            fi
+          done
+
+          echo ""
+
+          # Check required roles are satisfied
+          REQUIRED_ROLES_ARRAY=()
+          IFS=',' read -ra REQUIRED_ROLES_ARRAY <<< "$REQUIRED_ROLES"
+
+          SATISFIED_ROLES=()
+          MISSING_ROLES=()
+
+          for ROLE in "${REQUIRED_ROLES_ARRAY[@]}"; do
+            case "$ROLE" in
+              security)
+                if [[ ${#SECURITY_APPROVERS[@]} -ge 1 ]]; then
+                  SATISFIED_ROLES+=("security")
+                  echo "  ✅ Required role 'security' satisfied by: ${SECURITY_APPROVERS[*]}"
+                else
+                  MISSING_ROLES+=("security")
+                  echo "  ❌ Required role 'security' NOT satisfied"
+                fi
+                ;;
+              cio)
+                if [[ ${#CIO_APPROVERS[@]} -ge 1 ]]; then
+                  SATISFIED_ROLES+=("cio")
+                  echo "  ✅ Required role 'cio' satisfied by: ${CIO_APPROVERS[*]}"
+                else
+                  MISSING_ROLES+=("cio")
+                  echo "  ❌ Required role 'cio' NOT satisfied"
+                fi
+                ;;
+              engineering)
+                if [[ ${#ENGINEERING_APPROVERS[@]} -ge 1 ]]; then
+                  SATISFIED_ROLES+=("engineering")
+                  echo "  ✅ Required role 'engineering' satisfied"
+                else
+                  MISSING_ROLES+=("engineering")
+                  echo "  ❌ Required role 'engineering' NOT satisfied"
+                fi
+                ;;
+            esac
+          done
+
+          echo ""
+
+          # Output role binding results
+          echo "security_approvers=$(IFS=,; echo "${SECURITY_APPROVERS[*]}")" >> $GITHUB_OUTPUT
+          echo "cio_approvers=$(IFS=,; echo "${CIO_APPROVERS[*]}")" >> $GITHUB_OUTPUT
+          echo "engineering_approvers=$(IFS=,; echo "${ENGINEERING_APPROVERS[*]}")" >> $GITHUB_OUTPUT
+          echo "satisfied_roles=$(IFS=,; echo "${SATISFIED_ROLES[*]}")" >> $GITHUB_OUTPUT
+          echo "missing_roles=$(IFS=,; echo "${MISSING_ROLES[*]}")" >> $GITHUB_OUTPUT
+
+          if [[ ${#MISSING_ROLES[@]} -eq 0 ]]; then
+            echo "role_binding_ok=true" >> $GITHUB_OUTPUT
+            echo ""
+            echo "════════════════════════════════════════════════════════════════"
+            echo "           ✅ ROLE BINDING: ALL REQUIRED ROLES SATISFIED"
+            echo "════════════════════════════════════════════════════════════════"
+          else
+            echo "role_binding_ok=false" >> $GITHUB_OUTPUT
+            echo ""
+            echo "════════════════════════════════════════════════════════════════"
+            echo "           ❌ ROLE BINDING: MISSING REQUIRED ROLES"
+            echo "════════════════════════════════════════════════════════════════"
+            echo ""
+            echo "Missing: ${MISSING_ROLES[*]}"
+            echo ""
+            echo "::error::Role binding failed - missing required roles: ${MISSING_ROLES[*]}"
+          fi
+
       - name: Break-Glass Guard Result
         id: result
         env:
@@ -341,10 +517,16 @@ jobs:
           POLICY_VERSION: ${{ steps.policy.outputs.policy_version }}
           POLICY_HASH: ${{ steps.policy.outputs.policy_hash }}
           REASON_LABEL: ${{ needs.detect.outputs.reason_label }}
+          ROLE_BINDING_OK: ${{ steps.role_binding.outputs.role_binding_ok }}
+          ROLE_BINDING_SKIPPED: ${{ steps.role_binding.outputs.role_binding_skipped }}
+          SATISFIED_ROLES: ${{ steps.role_binding.outputs.satisfied_roles }}
+          MISSING_ROLES: ${{ steps.role_binding.outputs.missing_roles }}
+          SECURITY_APPROVERS: ${{ steps.role_binding.outputs.security_approvers }}
+          CIO_APPROVERS: ${{ steps.role_binding.outputs.cio_approvers }}
         run: |
           echo ""
           echo "════════════════════════════════════════════════════════════════"
-          echo "           🚨 BREAK-GLASS GUARD RESULT (Phase 4N23)"
+          echo "           🚨 BREAK-GLASS GUARD RESULT (Phase 4N23 + 4N25)"
           echo "════════════════════════════════════════════════════════════════"
           echo ""
 
@@ -364,6 +546,20 @@ jobs:
             echo "     Approvers: $APPROVER_LOGINS"
           else
             echo "  ❌ Break-Glass Approvals: FAIL ($APPROVAL_COUNT < $MIN_APPROVALS required)"
+            ALL_PASS=false
+          fi
+
+          # Role binding (Phase 4N25)
+          if [ "$ROLE_BINDING_SKIPPED" = "true" ]; then
+            echo "  ℹ️ Role Binding: SKIPPED (not enabled)"
+          elif [ "$ROLE_BINDING_OK" = "true" ]; then
+            echo "  ✅ Role Binding: PASS"
+            [ -n "$SECURITY_APPROVERS" ] && echo "     Security: $SECURITY_APPROVERS"
+            [ -n "$CIO_APPROVERS" ] && echo "     CIO: $CIO_APPROVERS"
+          else
+            echo "  ❌ Role Binding: FAIL"
+            echo "     Satisfied: $SATISFIED_ROLES"
+            echo "     Missing: $MISSING_ROLES"
             ALL_PASS=false
           fi
 
@@ -405,8 +601,14 @@ jobs:
           POLICY_HASH: ${{ steps.policy.outputs.policy_hash }}
           REASON_LABEL: ${{ needs.detect.outputs.reason_label }}
           BREAK_GLASS_OK: ${{ steps.result.outputs.break_glass_ok }}
+          ROLE_BINDING_OK: ${{ steps.role_binding.outputs.role_binding_ok }}
+          ROLE_BINDING_SKIPPED: ${{ steps.role_binding.outputs.role_binding_skipped }}
+          SATISFIED_ROLES: ${{ steps.role_binding.outputs.satisfied_roles }}
+          MISSING_ROLES: ${{ steps.role_binding.outputs.missing_roles }}
+          SECURITY_APPROVERS: ${{ steps.role_binding.outputs.security_approvers }}
+          CIO_APPROVERS: ${{ steps.role_binding.outputs.cio_approvers }}
         run: |
-          echo "## 🚨 Break-Glass Guard Result (Phase 4N23)" >> $GITHUB_STEP_SUMMARY
+          echo "## 🚨 Break-Glass Guard Result (Phase 4N23 + 4N25)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
           if [ "$BREAK_GLASS_OK" = "true" ]; then
@@ -431,12 +633,42 @@ jobs:
             echo "| Approvals ($APPROVAL_COUNT/$MIN_APPROVALS) | ❌ Fail |" >> $GITHUB_STEP_SUMMARY
           fi
 
+          # Role binding status (Phase 4N25)
+          if [ "$ROLE_BINDING_SKIPPED" = "true" ]; then
+            echo "| Role Binding | ℹ️ Skipped |" >> $GITHUB_STEP_SUMMARY
+          elif [ "$ROLE_BINDING_OK" = "true" ]; then
+            echo "| Role Binding | ✅ Pass |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Role Binding | ❌ Fail |" >> $GITHUB_STEP_SUMMARY
+          fi
+
           echo "" >> $GITHUB_STEP_SUMMARY
 
           if [ -n "$APPROVER_LOGINS" ]; then
             echo "**Approvers:** $APPROVER_LOGINS" >> $GITHUB_STEP_SUMMARY
           else
             echo "**Approvers:** _(none)_" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Role binding details (Phase 4N25)
+          if [ "$ROLE_BINDING_SKIPPED" != "true" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 🔐 Role Binding (Phase 4N25)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            if [ -n "$SECURITY_APPROVERS" ]; then
+              echo "✅ **Security:** $SECURITY_APPROVERS" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **Security:** _(none)_" >> $GITHUB_STEP_SUMMARY
+            fi
+            if [ -n "$CIO_APPROVERS" ]; then
+              echo "✅ **CIO:** $CIO_APPROVERS" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **CIO:** _(none)_" >> $GITHUB_STEP_SUMMARY
+            fi
+            if [ -n "$MISSING_ROLES" ]; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "⚠️ **Missing Roles:** $MISSING_ROLES" >> $GITHUB_STEP_SUMMARY
+            fi
           fi
 
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -450,6 +682,8 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "⚠️ **Break-Glass PRs require:**" >> $GITHUB_STEP_SUMMARY
           echo "- 3+ human approvals (excluding author and bots)" >> $GITHUB_STEP_SUMMARY
+          echo "- ≥1 Security approver (Phase 4N25)" >> $GITHUB_STEP_SUMMARY
+          echo "- ≥1 CIO approver (Phase 4N25)" >> $GITHUB_STEP_SUMMARY
           echo "- Automerge disabled" >> $GITHUB_STEP_SUMMARY
           echo "- All required checklist fields in PR body" >> $GITHUB_STEP_SUMMARY
           echo "- Reason label (break-glass:reason/*)" >> $GITHUB_STEP_SUMMARY

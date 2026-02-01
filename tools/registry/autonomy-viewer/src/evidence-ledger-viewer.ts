@@ -108,6 +108,16 @@ export interface LedgerEntry {
     policySha: string;
     policyVersion: string;
   };
+  /** Phase 4N25: Role Binding status */
+  roleBinding?: {
+    ok: boolean;
+    skipped?: boolean;
+    requiredRoles: string[];
+    satisfiedRoles: string[];
+    missingRoles: string[];
+    securityApprovers: string[];
+    cioApprovers: string[];
+  };
 }
 
 export interface LedgerViewModel {
@@ -142,6 +152,10 @@ export interface LedgerViewModel {
     tpiVerifiedCount: number;
     /** Phase 4N23: Break-Glass activated count */
     breakGlassCount: number;
+    /** Phase 4N25: Role binding verified count */
+    roleBindingCount: number;
+    /** Phase 4N25: Role binding failures */
+    roleBindingFailedCount: number;
   };
 }
 
@@ -381,6 +395,19 @@ export function buildLedgerEntries(
           }
         : undefined;
 
+      // Phase 4N25: Extract Role Binding status from index
+      const roleBinding = index.roleBinding
+        ? {
+            ok: index.roleBinding.ok,
+            skipped: index.roleBinding.skipped,
+            requiredRoles: index.roleBinding.requiredRoles,
+            satisfiedRoles: index.roleBinding.satisfiedRoles,
+            missingRoles: index.roleBinding.missingRoles,
+            securityApprovers: index.roleBinding.approverRoles?.security || [],
+            cioApprovers: index.roleBinding.approverRoles?.cio || [],
+          }
+        : undefined;
+
       const entry: LedgerEntry = {
         runId: index.source.runId,
         date: index.generatedAt,
@@ -407,6 +434,7 @@ export function buildLedgerEntries(
         rekor,
         tpi,
         breakGlass,
+        roleBinding,
       };
 
       entries.push(entry);
@@ -459,6 +487,11 @@ export function buildLedgerViewModel(entries: LedgerEntry[], opts: ViewerOptions
     tpiVerifiedCount: entries.filter(e => e.tpi?.ok).length,
     // Phase 4N23: Break-Glass activated count
     breakGlassCount: entries.filter(e => e.breakGlass?.activated).length,
+    // Phase 4N25: Role binding counts
+    roleBindingCount: entries.filter(e => e.roleBinding?.ok && !e.roleBinding?.skipped).length,
+    roleBindingFailedCount: entries.filter(
+      e => e.roleBinding && !e.roleBinding.ok && !e.roleBinding.skipped
+    ).length,
   };
 
   return {
@@ -715,11 +748,26 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
         ? `<span class="badge badge-error" title="Break-Glass: ${escapeHtml(breakGlassReason)} | Approvers: ${escapeHtml(breakGlassApprovers)}">🚨 Break-Glass</span>`
         : '';
 
+      // Phase 4N25: Role Binding badge
+      const roleBindingOk = entry.roleBinding?.ok ?? false;
+      const roleBindingSkipped = entry.roleBinding?.skipped ?? false;
+      const roleBindingSecurityApprovers = entry.roleBinding?.securityApprovers?.join(', ') || '';
+      const roleBindingCioApprovers = entry.roleBinding?.cioApprovers?.join(', ') || '';
+      const roleBindingMissing = entry.roleBinding?.missingRoles?.join(', ') || '';
+      let roleBindingBadge = '';
+      if (breakGlassActivated && !roleBindingSkipped) {
+        if (roleBindingOk) {
+          roleBindingBadge = `<span class="badge badge-success" title="Security: ${escapeHtml(roleBindingSecurityApprovers)} | CIO: ${escapeHtml(roleBindingCioApprovers)}">🔐 Roles</span>`;
+        } else {
+          roleBindingBadge = `<span class="badge badge-danger" title="Missing roles: ${escapeHtml(roleBindingMissing)}">❌ Roles</span>`;
+        }
+      }
+
       return `
-        <tr class="${rowClass}${breakGlassActivated ? ' row-break-glass' : ''}" data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}" data-rekor="${entry.rekor?.anchored ?? false}" data-tpi="${tpiOk}" data-breakglass="${breakGlassActivated}">
+        <tr class="${rowClass}${breakGlassActivated ? ' row-break-glass' : ''}" data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}" data-rekor="${entry.rekor?.anchored ?? false}" data-tpi="${tpiOk}" data-breakglass="${breakGlassActivated}" data-rolebinding="${roleBindingOk}">
           <td>${formatDate(entry.date)}</td>
           <td>${escapeHtml(entry.runId)}</td>
-          <td>${tierBadge}${incidentInfo}${breakGlassBadge}</td>
+          <td>${tierBadge}${incidentInfo}${breakGlassBadge}${roleBindingBadge}</td>
           <td>${bundleCell}</td>
           <td class="sha">${escapeHtml(entry.manifestSha256.substring(0, 16))}...</td>
           <td>${releaseTagCell}</td>
@@ -795,6 +843,10 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
       <div class="value" style="color: ${vm.summary.breakGlassCount > 0 ? 'var(--color-error)' : 'var(--color-muted)'}">${vm.summary.breakGlassCount}</div>
       <div class="label">${vm.summary.breakGlassCount > 0 ? '🚨' : ''} Break-Glass</div>
     </div>
+    <div class="summary-card">
+      <div class="value" style="color: ${vm.summary.roleBindingCount > 0 ? 'var(--color-success)' : vm.summary.roleBindingFailedCount > 0 ? 'var(--color-error)' : 'var(--color-muted)'}">${vm.summary.roleBindingCount}${vm.summary.roleBindingFailedCount > 0 ? '/' + vm.summary.roleBindingFailedCount + '❌' : ''}</div>
+      <div class="label">🔐 Roles</div>
+    </div>
   </div>
 
   <h2>Evidence Records</h2>
@@ -808,6 +860,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     <a href="#" class="filter-btn" onclick="filterTable('signed'); return false;">Signed</a>
     <a href="#" class="filter-btn" onclick="filterTable('tpi'); return false;">TPI</a>
     <a href="#" class="filter-btn" onclick="filterTable('breakglass'); return false;">Break-Glass</a>
+    <a href="#" class="filter-btn" onclick="filterTable('rolebinding'); return false;">🔐 Roles</a>
   </div>
 
   <table id="evidence-table">
@@ -855,6 +908,7 @@ pnpm perf:verify-signature --artifact "&lt;bundle-name&gt;.zip" --bundle "&lt;bu
         const signed = row.dataset.signed === 'true';
         const tpi = row.dataset.tpi === 'true';
         const breakglass = row.dataset.breakglass === 'true';
+        const rolebinding = row.dataset.rolebinding === 'true';
         let show = true;
         if (filter === 'incident') show = tier === 'incident';
         else if (filter === 'merged') show = tier === 'merged';
@@ -864,6 +918,7 @@ pnpm perf:verify-signature --artifact "&lt;bundle-name&gt;.zip" --bundle "&lt;bu
         else if (filter === 'signed') show = signed;
         else if (filter === 'tpi') show = tpi;
         else if (filter === 'breakglass') show = breakglass;
+        else if (filter === 'rolebinding') show = rolebinding;
         row.style.display = show ? '' : 'none';
       });
       // Update active state

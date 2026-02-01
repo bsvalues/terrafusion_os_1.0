@@ -350,6 +350,40 @@ export interface DrillResult {
 }
 
 /**
+ * Phase 4N25: Role Binding result for Break-Glass approvals.
+ * Ensures approvals come from designated roles (Security, CIO, Engineering).
+ */
+export interface RoleBindingResult {
+  /** Overall role binding check passed */
+  ok: boolean;
+  /** Whether role binding was skipped (not enabled in policy) */
+  skipped?: boolean;
+  /** Required roles from policy */
+  requiredRoles: string[];
+  /** Roles that were satisfied by approvers */
+  satisfiedRoles: string[];
+  /** Roles that were NOT satisfied */
+  missingRoles: string[];
+  /** Map of role → approvers who satisfied that role */
+  approverRoles: {
+    security: string[];
+    cio: string[];
+    engineering: string[];
+  };
+  /** Count of eligible approvals (after exclusions) */
+  approvalCountEligible: number;
+  /** Approvers who were excluded and why */
+  excludedApprovers: Array<{
+    user: string;
+    reason: 'self' | 'bot' | 'no-role';
+  }>;
+  /** Source file for approver roles */
+  approverSource: string;
+  /** ISO timestamp when role binding was evaluated */
+  evaluatedAt: string;
+}
+
+/**
  * Phase 4N20: Individual pin verification result.
  */
 export interface PinResult {
@@ -424,6 +458,11 @@ export interface EvidenceIndex {
    * Proves emergency controls work via periodic live-fire rehearsals.
    */
   drill?: DrillResult;
+  /**
+   * Phase 4N25: Role Binding result.
+   * Ensures break-glass approvals come from required roles (Security, CIO).
+   */
+  roleBinding?: RoleBindingResult;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
