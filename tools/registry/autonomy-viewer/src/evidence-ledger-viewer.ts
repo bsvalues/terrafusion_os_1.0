@@ -90,6 +90,14 @@ export interface LedgerEntry {
     integratedTime?: number;
     entryUrl?: string;
   };
+  /** Phase 4N22: Two-Person Integrity (TPI) verification status */
+  tpi?: {
+    ok: boolean;
+    minApprovals: number;
+    approverLogins: string[];
+    policyVersion: string;
+    evaluatedAt?: string;
+  };
 }
 
 export interface LedgerViewModel {
@@ -120,6 +128,8 @@ export interface LedgerViewModel {
     unpinnedCount: number;
     /** Phase 4N21: Rekor anchored count */
     rekorAnchoredCount: number;
+    /** Phase 4N22: TPI verified count */
+    tpiVerifiedCount: number;
   };
 }
 
@@ -335,6 +345,17 @@ export function buildLedgerEntries(
           }
         : undefined;
 
+      // Phase 4N22: Extract TPI verification from index
+      const tpi = index.tpi
+        ? {
+            ok: index.tpi.ok,
+            minApprovals: index.tpi.minApprovals,
+            approverLogins: index.tpi.approverLogins,
+            policyVersion: index.tpi.policyVersion,
+            evaluatedAt: index.tpi.evaluatedAt,
+          }
+        : undefined;
+
       const entry: LedgerEntry = {
         runId: index.source.runId,
         date: index.generatedAt,
@@ -359,6 +380,7 @@ export function buildLedgerEntries(
         localBundleMissing,
         signature,
         rekor,
+        tpi,
       };
 
       entries.push(entry);
@@ -407,6 +429,8 @@ export function buildLedgerViewModel(entries: LedgerEntry[], opts: ViewerOptions
     unpinnedCount: entries.filter(e => e.signature?.signed && !e.signature?.pinned).length,
     // Phase 4N21: Rekor anchored count
     rekorAnchoredCount: entries.filter(e => e.rekor?.anchored).length,
+    // Phase 4N22: TPI verified count
+    tpiVerifiedCount: entries.filter(e => e.tpi?.ok).length,
   };
 
   return {
@@ -640,8 +664,17 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
           ? '<span class="badge badge-danger" title="No Rekor anchor found">🚨 Missing</span>'
           : '<span class="badge badge-muted">—</span>';
 
+      // Phase 4N22: TPI badge with approver list
+      const tpiOk = entry.tpi?.ok ?? false;
+      const tpiApprovers = entry.tpi?.approverLogins?.join(', ') || '';
+      const tpiBadge = tpiOk
+        ? `<span class="badge badge-success" title="Two-person integrity verified: ${escapeHtml(tpiApprovers)}">👥 TPI</span>`
+        : entry.tier !== 'ci'
+          ? '<span class="badge badge-danger" title="TPI not verified">🚨 Missing</span>'
+          : '<span class="badge badge-muted">—</span>';
+
       return `
-        <tr class="${rowClass}" data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}" data-rekor="${entry.rekor?.anchored ?? false}">
+        <tr class="${rowClass}" data-tier="${entry.tier}" data-verify="${entry.verifyOk}" data-signed="${entry.signature?.signed ?? false}" data-pinned="${entry.signature?.pinned ?? false}" data-rekor="${entry.rekor?.anchored ?? false}" data-tpi="${tpiOk}">
           <td>${formatDate(entry.date)}</td>
           <td>${escapeHtml(entry.runId)}</td>
           <td>${tierBadge}${incidentInfo}</td>
@@ -651,6 +684,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
           <td class="verify-status ${verifyClass}">${verifyText}</td>
           <td class="sig-status ${sigClass}" title="${escapeHtml(sigTitle)}">${sigText}${pinnedBadge}</td>
           <td class="${rekorClass}">${rekorBadge}</td>
+          <td>${tpiBadge}</td>
         </tr>
       `;
     })
@@ -711,6 +745,10 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
       <div class="value" style="color: var(--color-success)">${vm.summary.rekorAnchoredCount}</div>
       <div class="label">🧾 Anchored</div>
     </div>
+    <div class="summary-card">
+      <div class="value" style="color: ${vm.summary.tpiVerifiedCount > 0 ? 'var(--color-success)' : 'var(--color-muted)'}">${vm.summary.tpiVerifiedCount}</div>
+      <div class="label">👥 TPI</div>
+    </div>
   </div>
 
   <h2>Evidence Records</h2>
@@ -722,6 +760,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     <a href="#" class="filter-btn" onclick="filterTable('ci'); return false;">CI</a>
     <a href="#" class="filter-btn" onclick="filterTable('verified'); return false;">Verified</a>
     <a href="#" class="filter-btn" onclick="filterTable('signed'); return false;">Signed</a>
+    <a href="#" class="filter-btn" onclick="filterTable('tpi'); return false;">TPI</a>
   </div>
 
   <table id="evidence-table">
@@ -736,6 +775,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
         <th>Verify</th>
         <th>Signature</th>
         <th>Rekor</th>
+        <th>TPI</th>
       </tr>
     </thead>
     <tbody>
@@ -766,6 +806,7 @@ pnpm perf:verify-signature --artifact "&lt;bundle-name&gt;.zip" --bundle "&lt;bu
         const tier = row.dataset.tier;
         const verify = row.dataset.verify === 'true';
         const signed = row.dataset.signed === 'true';
+        const tpi = row.dataset.tpi === 'true';
         let show = true;
         if (filter === 'incident') show = tier === 'incident';
         else if (filter === 'merged') show = tier === 'merged';
@@ -773,6 +814,7 @@ pnpm perf:verify-signature --artifact "&lt;bundle-name&gt;.zip" --bundle "&lt;bu
         else if (filter === 'verified') show = verify;
         else if (filter === 'failed') show = !verify;
         else if (filter === 'signed') show = signed;
+        else if (filter === 'tpi') show = tpi;
         row.style.display = show ? '' : 'none';
       });
       // Update active state

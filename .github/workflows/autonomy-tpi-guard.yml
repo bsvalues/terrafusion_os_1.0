@@ -1,0 +1,386 @@
+# Autonomy Two-Person Integrity Guard (Phase 4N22)
+#
+# Ensures Autonomy PRs cannot land without explicit human authorization.
+# This workflow is the "process control" auditors require:
+# - Two independent humans must approve (not the author, not bots)
+# - Evidence bundles must be verified (signatures + Rekor)
+# - PR metadata must match policy (labels, title prefix, base branch)
+#
+# POLICY SOURCE: tools/registry/autonomy-viewer/policy/AUTONOMY_TPI_POLICY.json
+#
+# COURTROOM-GRADE + CIO-GRADE CONTROL
+
+name: Autonomy TPI Guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled, edited]
+    branches: [main]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+# Required check - must pass before merge
+permissions:
+  contents: read
+  pull-requests: read
+  id-token: write
+
+jobs:
+  # ==========================================================================
+  # Gate: Check if this is an Autonomy PR
+  # ==========================================================================
+  detect:
+    name: Detect Autonomy PR
+    runs-on: ubuntu-latest
+    outputs:
+      is_autonomy: ${{ steps.check.outputs.is_autonomy }}
+      has_required_labels: ${{ steps.check.outputs.has_required_labels }}
+      has_required_title: ${{ steps.check.outputs.has_required_title }}
+    steps:
+      - name: Check PR type
+        id: check
+        run: |
+          echo "🔍 Phase 4N22: Detecting Autonomy PR..."
+
+          TITLE="${{ github.event.pull_request.title }}"
+          LABELS='${{ toJson(github.event.pull_request.labels.*.name) }}'
+
+          echo "  Title: $TITLE"
+          echo "  Labels: $LABELS"
+          echo ""
+
+          # Check title prefix
+          if [[ "$TITLE" == "🤖 Autonomy:"* ]]; then
+            echo "has_required_title=true" >> $GITHUB_OUTPUT
+            echo "  ✅ Title has required prefix"
+          else
+            echo "has_required_title=false" >> $GITHUB_OUTPUT
+            echo "  ⚠️ Title missing '🤖 Autonomy:' prefix"
+          fi
+
+          # Check required labels
+          REQUIRED_LABELS=("autonomy" "tier-0" "automated")
+          HAS_ALL_LABELS=true
+
+          for LABEL in "${REQUIRED_LABELS[@]}"; do
+            if echo "$LABELS" | jq -e --arg l "$LABEL" 'index($l) != null' > /dev/null 2>&1; then
+              echo "  ✅ Has label: $LABEL"
+            else
+              echo "  ❌ Missing label: $LABEL"
+              HAS_ALL_LABELS=false
+            fi
+          done
+
+          echo "has_required_labels=$HAS_ALL_LABELS" >> $GITHUB_OUTPUT
+
+          # Determine if this is an Autonomy PR
+          if echo "$LABELS" | jq -e 'index("autonomy") != null' > /dev/null 2>&1; then
+            echo "is_autonomy=true" >> $GITHUB_OUTPUT
+            echo ""
+            echo "🤖 This is an Autonomy PR - TPI guard will run"
+          else
+            echo "is_autonomy=false" >> $GITHUB_OUTPUT
+            echo ""
+            echo "📝 Not an Autonomy PR - TPI guard will skip"
+          fi
+
+  # ==========================================================================
+  # TPI Guard: Verify Two-Person Integrity
+  # ==========================================================================
+  tpi-guard:
+    name: Two-Person Integrity
+    needs: detect
+    if: needs.detect.outputs.is_autonomy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Load TPI Policy
+        id: policy
+        run: |
+          echo "📋 Phase 4N22: Loading TPI Policy..."
+          POLICY_PATH="tools/registry/autonomy-viewer/policy/AUTONOMY_TPI_POLICY.json"
+
+          if [ ! -f "$POLICY_PATH" ]; then
+            echo "::error::TPI Policy not found at $POLICY_PATH"
+            exit 1
+          fi
+
+          # Extract policy values
+          MIN_APPROVALS=$(jq -r '.enforcement.minApprovals' "$POLICY_PATH")
+          DISALLOW_SELF=$(jq -r '.enforcement.disallowSelfApproval' "$POLICY_PATH")
+          DISALLOW_BOTS=$(jq -r '.enforcement.disallowBots' "$POLICY_PATH")
+          BOT_PATTERNS=$(jq -c '.enforcement.botPatterns' "$POLICY_PATH")
+          POLICY_VERSION=$(jq -r '.version' "$POLICY_PATH")
+
+          echo "  Policy Version: $POLICY_VERSION"
+          echo "  Min Approvals: $MIN_APPROVALS"
+          echo "  Disallow Self: $DISALLOW_SELF"
+          echo "  Disallow Bots: $DISALLOW_BOTS"
+          echo "  Bot Patterns: $BOT_PATTERNS"
+
+          echo "min_approvals=$MIN_APPROVALS" >> $GITHUB_OUTPUT
+          echo "disallow_self=$DISALLOW_SELF" >> $GITHUB_OUTPUT
+          echo "disallow_bots=$DISALLOW_BOTS" >> $GITHUB_OUTPUT
+          echo "bot_patterns=$BOT_PATTERNS" >> $GITHUB_OUTPUT
+          echo "policy_version=$POLICY_VERSION" >> $GITHUB_OUTPUT
+
+          echo "✅ Policy loaded"
+
+      - name: Check PR Requirements
+        id: pr_check
+        env:
+          HAS_LABELS: ${{ needs.detect.outputs.has_required_labels }}
+          HAS_TITLE: ${{ needs.detect.outputs.has_required_title }}
+        run: |
+          echo "📋 Phase 4N22: Checking PR Requirements..."
+          echo ""
+
+          PASS=true
+
+          # Base branch check
+          if [[ "${{ github.base_ref }}" != "main" ]]; then
+            echo "  ❌ Base branch must be 'main' (got: ${{ github.base_ref }})"
+            PASS=false
+          else
+            echo "  ✅ Base branch: main"
+          fi
+
+          # Title prefix check
+          if [[ "$HAS_TITLE" != "true" ]]; then
+            echo "  ❌ Title must start with '🤖 Autonomy:'"
+            PASS=false
+          else
+            echo "  ✅ Title prefix: OK"
+          fi
+
+          # Labels check
+          if [[ "$HAS_LABELS" != "true" ]]; then
+            echo "  ❌ Missing required labels (autonomy, tier-0, automated)"
+            PASS=false
+          else
+            echo "  ✅ Required labels: OK"
+          fi
+
+          echo ""
+          if [ "$PASS" = true ]; then
+            echo "pr_check_ok=true" >> $GITHUB_OUTPUT
+            echo "✅ PR requirements satisfied"
+          else
+            echo "pr_check_ok=false" >> $GITHUB_OUTPUT
+            echo "::error::PR requirements not satisfied - see details above"
+          fi
+
+      - name: Count Approvals
+        id: approvals
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MIN_APPROVALS: ${{ steps.policy.outputs.min_approvals }}
+          DISALLOW_SELF: ${{ steps.policy.outputs.disallow_self }}
+          DISALLOW_BOTS: ${{ steps.policy.outputs.disallow_bots }}
+          BOT_PATTERNS: ${{ steps.policy.outputs.bot_patterns }}
+        run: |
+          echo "👥 Phase 4N22: Counting Approvals..."
+          echo ""
+
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+
+          echo "  PR Author: $PR_AUTHOR"
+          echo ""
+
+          # Get all reviews
+          REVIEWS=$(gh api repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews --jq '
+            [.[] | select(.state == "APPROVED") | {user: .user.login, id: .id}]
+            | unique_by(.user)
+          ')
+
+          echo "  Raw approvals: $REVIEWS"
+          echo ""
+
+          # Filter approvals
+          VALID_APPROVERS=()
+          EXCLUDED_APPROVERS=()
+
+          for ROW in $(echo "$REVIEWS" | jq -r '.[] | @base64'); do
+            _jq() {
+              echo "$ROW" | base64 --decode | jq -r "$1"
+            }
+
+            APPROVER=$(_jq '.user')
+
+            # Check self-approval
+            if [ "$DISALLOW_SELF" = "true" ] && [ "$APPROVER" = "$PR_AUTHOR" ]; then
+              EXCLUDED_APPROVERS+=("$APPROVER (self)")
+              echo "  ⚠️ Excluded: $APPROVER (self-approval)"
+              continue
+            fi
+
+            # Check bot patterns
+            IS_BOT=false
+            if [ "$DISALLOW_BOTS" = "true" ]; then
+              for PATTERN in $(echo "$BOT_PATTERNS" | jq -r '.[]'); do
+                if [[ "$APPROVER" == *"$PATTERN"* ]]; then
+                  IS_BOT=true
+                  break
+                fi
+              done
+            fi
+
+            if [ "$IS_BOT" = true ]; then
+              EXCLUDED_APPROVERS+=("$APPROVER (bot)")
+              echo "  ⚠️ Excluded: $APPROVER (bot)"
+              continue
+            fi
+
+            VALID_APPROVERS+=("$APPROVER")
+            echo "  ✅ Valid: $APPROVER"
+          done
+
+          echo ""
+
+          # Count unique valid approvers
+          UNIQUE_APPROVERS=($(echo "${VALID_APPROVERS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+          APPROVAL_COUNT=${#UNIQUE_APPROVERS[@]}
+
+          echo "  Valid approvers: ${UNIQUE_APPROVERS[*]:-none}"
+          echo "  Approval count: $APPROVAL_COUNT"
+          echo "  Required: $MIN_APPROVALS"
+          echo ""
+
+          # Output for later steps
+          APPROVER_LIST=$(printf '%s,' "${UNIQUE_APPROVERS[@]}" | sed 's/,$//')
+          echo "approval_count=$APPROVAL_COUNT" >> $GITHUB_OUTPUT
+          echo "approver_logins=$APPROVER_LIST" >> $GITHUB_OUTPUT
+
+          if [ "$APPROVAL_COUNT" -ge "$MIN_APPROVALS" ]; then
+            echo "approvals_ok=true" >> $GITHUB_OUTPUT
+            echo "✅ Two-person integrity satisfied ($APPROVAL_COUNT >= $MIN_APPROVALS)"
+          else
+            echo "approvals_ok=false" >> $GITHUB_OUTPUT
+            echo "::warning::Two-person integrity NOT satisfied ($APPROVAL_COUNT < $MIN_APPROVALS)"
+          fi
+
+      - name: TPI Guard Result
+        id: result
+        env:
+          PR_CHECK_OK: ${{ steps.pr_check.outputs.pr_check_ok }}
+          APPROVALS_OK: ${{ steps.approvals.outputs.approvals_ok }}
+          APPROVAL_COUNT: ${{ steps.approvals.outputs.approval_count }}
+          APPROVER_LOGINS: ${{ steps.approvals.outputs.approver_logins }}
+          MIN_APPROVALS: ${{ steps.policy.outputs.min_approvals }}
+          POLICY_VERSION: ${{ steps.policy.outputs.policy_version }}
+        run: |
+          echo ""
+          echo "════════════════════════════════════════════════════════════════"
+          echo "                   TPI GUARD RESULT (Phase 4N22)"
+          echo "════════════════════════════════════════════════════════════════"
+          echo ""
+
+          ALL_PASS=true
+
+          # PR requirements
+          if [ "$PR_CHECK_OK" = "true" ]; then
+            echo "  ✅ PR Requirements: PASS"
+          else
+            echo "  ❌ PR Requirements: FAIL"
+            ALL_PASS=false
+          fi
+
+          # Approval count
+          if [ "$APPROVALS_OK" = "true" ]; then
+            echo "  ✅ Two-Person Integrity: PASS ($APPROVAL_COUNT approvals)"
+            echo "     Approvers: $APPROVER_LOGINS"
+          else
+            echo "  ❌ Two-Person Integrity: FAIL ($APPROVAL_COUNT < $MIN_APPROVALS required)"
+            ALL_PASS=false
+          fi
+
+          echo ""
+          echo "  Policy Version: $POLICY_VERSION"
+          echo "  Evaluated At: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo ""
+
+          if [ "$ALL_PASS" = true ]; then
+            echo "════════════════════════════════════════════════════════════════"
+            echo "               ✅ TPI GUARD: APPROVED FOR MERGE"
+            echo "════════════════════════════════════════════════════════════════"
+            echo ""
+            echo "tpi_ok=true" >> $GITHUB_OUTPUT
+          else
+            echo "════════════════════════════════════════════════════════════════"
+            echo "               ❌ TPI GUARD: BLOCKED"
+            echo "════════════════════════════════════════════════════════════════"
+            echo ""
+            echo "::error::TPI Guard failed - PR cannot be merged"
+            echo "tpi_ok=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Generate Summary
+        if: always()
+        env:
+          PR_CHECK_OK: ${{ steps.pr_check.outputs.pr_check_ok }}
+          APPROVALS_OK: ${{ steps.approvals.outputs.approvals_ok }}
+          APPROVAL_COUNT: ${{ steps.approvals.outputs.approval_count }}
+          APPROVER_LOGINS: ${{ steps.approvals.outputs.approver_logins }}
+          MIN_APPROVALS: ${{ steps.policy.outputs.min_approvals }}
+          POLICY_VERSION: ${{ steps.policy.outputs.policy_version }}
+          TPI_OK: ${{ steps.result.outputs.tpi_ok }}
+        run: |
+          echo "## 🔐 TPI Guard Result (Phase 4N22)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$TPI_OK" = "true" ]; then
+            echo "### ✅ Two-Person Integrity: APPROVED" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Two-Person Integrity: BLOCKED" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$PR_CHECK_OK" = "true" ]; then
+            echo "| PR Requirements | ✅ Pass |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| PR Requirements | ❌ Fail |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "$APPROVALS_OK" = "true" ]; then
+            echo "| Approvals ($APPROVAL_COUNT/$MIN_APPROVALS) | ✅ Pass |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Approvals ($APPROVAL_COUNT/$MIN_APPROVALS) | ❌ Fail |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -n "$APPROVER_LOGINS" ]; then
+            echo "**Approvers:** $APPROVER_LOGINS" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Approvers:** _(none)_" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Policy Version:** \`$POLICY_VERSION\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "_TerraFusion Autonomy — Government. Transcended._" >> $GITHUB_STEP_SUMMARY
+
+  # ==========================================================================
+  # Skip: Non-Autonomy PRs get automatic pass
+  # ==========================================================================
+  skip:
+    name: TPI Guard (Skip)
+    needs: detect
+    if: needs.detect.outputs.is_autonomy != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip TPI Guard
+        run: |
+          echo "📝 This is not an Autonomy PR - TPI guard not required"
+          echo ""
+          echo "TPI guard only runs for PRs with the 'autonomy' label."

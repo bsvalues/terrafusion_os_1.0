@@ -230,6 +230,29 @@ export interface ExpectedSignaturePolicy {
 }
 
 /**
+ * Phase 4N22: Two-Person Integrity (TPI) verification result.
+ * Ensures Autonomy changes require explicit human authorization.
+ */
+export interface TPIResult {
+  /** Overall TPI check passed */
+  ok: boolean;
+  /** Minimum approvals required (from policy) */
+  minApprovals: number;
+  /** GitHub logins of valid approvers (no PII - logins only) */
+  approverLogins: string[];
+  /** Policy version used for evaluation */
+  policyVersion: string;
+  /** ISO timestamp when TPI was evaluated */
+  evaluatedAt: string;
+  /** PR requirements satisfied (labels, title, base branch) */
+  prRequirements?: {
+    hasRequiredLabels: boolean;
+    hasRequiredTitle: boolean;
+    correctBaseBranch: boolean;
+  };
+}
+
+/**
  * Phase 4N20: Individual pin verification result.
  */
 export interface PinResult {
@@ -289,6 +312,11 @@ export interface EvidenceIndex {
    * Contains issuer, identity, workflow, ref, repo pins for non-spoofable verification.
    */
   expectedSignaturePolicy?: ExpectedSignaturePolicy;
+  /**
+   * Phase 4N22: Two-Person Integrity (TPI) verification result.
+   * Ensures changes require explicit human authorization before landing.
+   */
+  tpi?: TPIResult;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

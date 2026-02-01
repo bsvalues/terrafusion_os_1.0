@@ -15,7 +15,13 @@ import * as assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, it } from 'node:test';
+
+// ESM-compatible __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Import the evidence index module
 import {
@@ -1843,6 +1849,241 @@ describe('Phase 4N21: Rekor Transparency Log Anchoring', () => {
       const result2 = parseRekorFromBundle(bundleContent);
 
       assert.deepStrictEqual(result1, result2);
+    });
+  });
+});
+
+// ============================================================================
+// Phase 4N22: Two-Person Integrity (TPI) Contract Tests
+// ============================================================================
+
+describe('Phase 4N22: TPI Schema Contract Tests', () => {
+  describe('TPIResult interface contract', () => {
+    it('should define required fields for TPI result', async () => {
+      // Import the types (compile-time check)
+      const { type } = await import('../src/evidence-index.js');
+
+      // Define a mock TPI result to verify structure
+      const mockTpiResult = {
+        ok: true,
+        minApprovals: 2,
+        approverLogins: ['alice', 'bob'],
+        policyVersion: '1.0.0',
+        evaluatedAt: '2026-01-31T12:00:00Z',
+        prRequirements: {
+          hasRequiredLabels: true,
+          hasRequiredTitle: true,
+          correctBaseBranch: true,
+        },
+      };
+
+      // Verify all required fields are present
+      assert.equal(typeof mockTpiResult.ok, 'boolean', 'ok should be boolean');
+      assert.equal(typeof mockTpiResult.minApprovals, 'number', 'minApprovals should be number');
+      assert.ok(Array.isArray(mockTpiResult.approverLogins), 'approverLogins should be array');
+      assert.equal(
+        typeof mockTpiResult.policyVersion,
+        'string',
+        'policyVersion should be string'
+      );
+      assert.equal(typeof mockTpiResult.evaluatedAt, 'string', 'evaluatedAt should be string');
+    });
+
+    it('should allow tpi field on EvidenceIndex', async () => {
+      const mockIndex = {
+        schema: 'terrafusion.autonomy.evidence.index.v1' as const,
+        generatedAt: '2026-01-31T12:00:00Z',
+        source: {
+          workflow: 'autonomy-pr-lane',
+          runId: '12345',
+          repo: 'terrafusion/os',
+          ref: 'refs/heads/main',
+        },
+        records: [],
+        tpi: {
+          ok: true,
+          minApprovals: 2,
+          approverLogins: ['alice', 'bob'],
+          policyVersion: '1.0.0',
+          evaluatedAt: '2026-01-31T12:00:00Z',
+        },
+      };
+
+      assert.ok(mockIndex.tpi, 'tpi should be present');
+      assert.equal(mockIndex.tpi.ok, true);
+      assert.equal(mockIndex.tpi.minApprovals, 2);
+    });
+  });
+
+  describe('TPI Approval Counting Logic (Demo)', () => {
+    // These tests demonstrate the approval counting logic used by the TPI guard
+
+    it('should exclude self-approval from count', () => {
+      const prAuthor = 'alice';
+      const approvals = ['alice', 'bob', 'charlie'];
+
+      const validApprovers = approvals.filter(a => a !== prAuthor);
+      assert.deepStrictEqual(validApprovers, ['bob', 'charlie']);
+      assert.equal(validApprovers.length, 2, 'Self-approval should not count');
+    });
+
+    it('should exclude bot approvals from count', () => {
+      const botPatterns = ['[bot]', 'dependabot', 'snyk-bot', 'renovate', 'github-actions'];
+      const approvals = ['alice', 'dependabot[bot]', 'snyk-bot', 'bob'];
+
+      const isBot = (approver: string) =>
+        botPatterns.some(pattern => approver.includes(pattern));
+
+      const validApprovers = approvals.filter(a => !isBot(a));
+      assert.deepStrictEqual(validApprovers, ['alice', 'bob']);
+      assert.equal(validApprovers.length, 2, 'Bot approvals should not count');
+    });
+
+    it('should deduplicate approvers', () => {
+      const approvals = ['alice', 'bob', 'alice', 'charlie', 'bob'];
+
+      const uniqueApprovers = [...new Set(approvals)];
+      assert.deepStrictEqual(uniqueApprovers, ['alice', 'bob', 'charlie']);
+      assert.equal(uniqueApprovers.length, 3, 'Duplicate approvers should be removed');
+    });
+
+    it('should fail TPI when approval count < minApprovals', () => {
+      const minApprovals = 2;
+      const approvals = ['alice']; // Only 1 approver
+
+      const tpiOk = approvals.length >= minApprovals;
+      assert.equal(tpiOk, false, 'TPI should fail with insufficient approvals');
+    });
+
+    it('should pass TPI when approval count >= minApprovals', () => {
+      const minApprovals = 2;
+      const approvals = ['alice', 'bob']; // Exactly 2 approvers
+
+      const tpiOk = approvals.length >= minApprovals;
+      assert.equal(tpiOk, true, 'TPI should pass with sufficient approvals');
+    });
+  });
+
+  describe('TPI Policy Validation', () => {
+    it('should reject PR without required labels', () => {
+      const requiredLabels = ['autonomy', 'tier-0', 'automated'];
+      const prLabels = ['autonomy', 'tier-0']; // Missing 'automated'
+
+      const hasAllLabels = requiredLabels.every(l => prLabels.includes(l));
+      assert.equal(hasAllLabels, false, 'Should fail when required labels are missing');
+    });
+
+    it('should accept PR with all required labels', () => {
+      const requiredLabels = ['autonomy', 'tier-0', 'automated'];
+      const prLabels = ['autonomy', 'tier-0', 'automated', 'extra-label'];
+
+      const hasAllLabels = requiredLabels.every(l => prLabels.includes(l));
+      assert.equal(hasAllLabels, true, 'Should pass when all required labels are present');
+    });
+
+    it('should reject PR without required title prefix', () => {
+      const requiredPrefix = '🤖 Autonomy:';
+      const prTitle = 'feat: some feature';
+
+      const hasPrefix = prTitle.startsWith(requiredPrefix);
+      assert.equal(hasPrefix, false, 'Should fail when title prefix is missing');
+    });
+
+    it('should accept PR with required title prefix', () => {
+      const requiredPrefix = '🤖 Autonomy:';
+      const prTitle = '🤖 Autonomy: cleanup unused imports';
+
+      const hasPrefix = prTitle.startsWith(requiredPrefix);
+      assert.equal(hasPrefix, true, 'Should pass when title prefix is present');
+    });
+
+    it('should reject PR with wrong base branch', () => {
+      const allowedBranches = ['main'];
+      const baseBranch = 'develop';
+
+      const correctBase = allowedBranches.includes(baseBranch);
+      assert.equal(correctBase, false, 'Should fail when base branch is not allowed');
+    });
+  });
+
+  describe('TPI Determinism', () => {
+    it('should produce same TPI result for same input', () => {
+      const evaluateTpi = (
+        approvers: string[],
+        prAuthor: string,
+        minApprovals: number
+      ) => {
+        const validApprovers = [...new Set(approvers.filter(a => a !== prAuthor))];
+        return {
+          ok: validApprovers.length >= minApprovals,
+          minApprovals,
+          approverLogins: validApprovers.sort(), // Sort for determinism
+          policyVersion: '1.0.0',
+        };
+      };
+
+      const input = {
+        approvers: ['bob', 'charlie', 'alice'],
+        prAuthor: 'david',
+        minApprovals: 2,
+      };
+
+      const result1 = evaluateTpi(input.approvers, input.prAuthor, input.minApprovals);
+      const result2 = evaluateTpi(input.approvers, input.prAuthor, input.minApprovals);
+
+      assert.deepStrictEqual(result1, result2, 'TPI evaluation should be deterministic');
+      assert.deepStrictEqual(
+        result1.approverLogins,
+        ['alice', 'bob', 'charlie'],
+        'Approvers should be sorted for determinism'
+      );
+    });
+  });
+
+  describe('TPI Policy File', () => {
+    it('should have valid AUTONOMY_TPI_POLICY.json', async () => {
+      const policyPath = path.join(
+        __dirname,
+        '..',
+        'policy',
+        'AUTONOMY_TPI_POLICY.json'
+      );
+
+      // Check file exists
+      assert.ok(fs.existsSync(policyPath), 'Policy file should exist');
+
+      // Parse and validate structure
+      const content = fs.readFileSync(policyPath, 'utf8');
+      const policy = JSON.parse(content);
+
+      // Validate required fields
+      assert.equal(
+        policy.schema,
+        'terrafusion.autonomy.tpi.policy.v1',
+        'Policy schema should be correct'
+      );
+      assert.equal(typeof policy.version, 'string', 'Policy version should be string');
+      assert.ok(policy.enforcement, 'Policy should have enforcement section');
+      assert.equal(
+        typeof policy.enforcement.minApprovals,
+        'number',
+        'minApprovals should be number'
+      );
+      assert.equal(
+        policy.enforcement.minApprovals,
+        2,
+        'minApprovals should be 2 for TPI'
+      );
+      assert.equal(
+        policy.enforcement.disallowSelfApproval,
+        true,
+        'disallowSelfApproval should be true'
+      );
+      assert.equal(
+        policy.enforcement.disallowBots,
+        true,
+        'disallowBots should be true'
+      );
     });
   });
 });

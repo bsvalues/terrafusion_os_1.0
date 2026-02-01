@@ -1,0 +1,42 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/autonomy-tpi-policy.v1.json",
+  "schema": "terrafusion.autonomy.tpi.policy.v1",
+  "version": "1.0.0",
+  "description": "Two-Person Integrity (TPI) policy for Autonomy PRs. Ensures changes require explicit human authorization before landing.",
+  "enforcement": {
+    "minApprovals": 2,
+    "disallowSelfApproval": true,
+    "disallowBots": true,
+    "botPatterns": [
+      "[bot]",
+      "dependabot",
+      "snyk-bot",
+      "renovate",
+      "github-actions"
+    ]
+  },
+  "prRequirements": {
+    "requiredLabels": ["autonomy", "tier-0", "automated"],
+    "requiredTitlePrefix": "🤖 Autonomy:",
+    "allowedBaseBranches": ["main"]
+  },
+  "requiredChecks": [
+    "seal-gate-fast",
+    "type-check",
+    "phase83-tools",
+    "perf-verify-bundle"
+  ],
+  "evidenceVerification": {
+    "requireEvidence": true,
+    "strictMode": true,
+    "verifySignatures": true,
+    "verifyRekor": true,
+    "policyFromIndex": true
+  },
+  "governance": {
+    "compliance": "FISMA",
+    "auditRetention": "7-years",
+    "lastUpdated": "2026-01-31T00:00:00Z",
+    "approvedBy": "TerraFusion Governance Board"
+  }
+}
