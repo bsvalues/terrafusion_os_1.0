@@ -3,31 +3,41 @@
  * ==============================================
  *
  * Phase IIIc: File-based and offline-capable providers.
+ * Phase IIId: Attestation provider + normalized claims helpers.
  *
  * These providers enable:
  * - Air-gapped exercises (StaticPrincipalProvider)
  * - County offline identity mapping (FilePrincipalProvider)
  * - Evidence-as-artifact chain (FileApprovalEvidenceProvider)
+ * - KMS/HSM attestation seam (NoopAttestationProvider as default)
  *
  * All providers implement fail-closed semantics.
  */
 
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
 import type {
-  ApprovalEvidence,
-  ApprovalEvidenceContext,
-  ApprovalEvidenceProvider,
-  ApprovalEvidenceResult,
-  Principal,
-  PrincipalResolutionContext,
-  PrincipalResolutionProvider,
-  PrincipalResolutionResult,
-  AuditRoutingContext,
-  AuditRoutingProvider,
-  AuditRoutingResult,
-  AuditSinkConfig,
+    ApprovalEvidence,
+    ApprovalEvidenceContext,
+    ApprovalEvidenceProvider,
+    ApprovalEvidenceResult,
+    Attestation,
+    AttestationProvider,
+    AttestationSignContext,
+    AttestationSignResult,
+    AttestationVerifyContext,
+    AttestationVerifyResult,
+    AuditRoutingContext,
+    AuditRoutingProvider,
+    AuditRoutingResult,
+    AuditSinkConfig,
+    NormalizedIdentityClaims,
+    Principal,
+    PrincipalResolutionContext,
+    PrincipalResolutionProvider,
+    PrincipalResolutionResult,
 } from './types.js';
 
 // ============================================================================
@@ -222,8 +232,8 @@ export class EnvPrincipalProvider implements PrincipalResolutionProvider {
     const rolesRaw = context.env[this._rolesEnvKey] ?? '';
     const roles = rolesRaw
       .split(',')
-      .map((r) => r.trim())
-      .filter((r) => r.length > 0);
+      .map(r => r.trim())
+      .filter(r => r.length > 0);
 
     const principal: Principal = {
       id: principalId ?? 'anonymous',
@@ -426,8 +436,8 @@ export class EnvApprovalEvidenceProvider implements ApprovalEvidenceProvider {
     if (roleBindingRaw) {
       const roles = roleBindingRaw
         .split(',')
-        .map((r) => r.trim())
-        .filter((r) => r.length > 0);
+        .map(r => r.trim())
+        .filter(r => r.length > 0);
       Object.assign(evidence, {
         roleBinding: { bound: roles.length > 0, roles, policyVersion: 'env' },
       });
@@ -532,10 +542,7 @@ export class TierBasedAuditRoutingProvider implements AuditRoutingProvider {
     this._mergedSink = options.mergedSink ?? { type: 'file', path: './audit/merged.jsonl' };
     this._incidentSink = options.incidentSink ?? {
       type: 'composite',
-      children: [
-        { type: 'file', path: './audit/incident.jsonl' },
-        { type: 'stdout' },
-      ],
+      children: [{ type: 'file', path: './audit/incident.jsonl' }, { type: 'stdout' }],
     };
     this._defaultSink = options.defaultSink ?? { type: 'memory' };
   }
@@ -569,21 +576,118 @@ export interface CreateSecurityContextOptions {
   principalProvider?: PrincipalResolutionProvider;
   approvalsProvider?: ApprovalEvidenceProvider;
   auditProvider?: AuditRoutingProvider;
+  attestationProvider?: AttestationProvider;
 }
 
 /**
  * Create a security context with default or custom providers.
  */
-export function createSecurityContext(
-  options: CreateSecurityContextOptions = {}
-): {
+export function createSecurityContext(options: CreateSecurityContextOptions = {}): {
   principalProvider: PrincipalResolutionProvider;
   approvalsProvider: ApprovalEvidenceProvider;
   auditProvider: AuditRoutingProvider;
+  attestationProvider: AttestationProvider;
 } {
   return {
     principalProvider: options.principalProvider ?? new EnvPrincipalProvider(),
     approvalsProvider: options.approvalsProvider ?? new EnvApprovalEvidenceProvider(),
     auditProvider: options.auditProvider ?? new EnvAuditRoutingProvider(),
+    attestationProvider: options.attestationProvider ?? new NoopAttestationProvider(),
+  };
+}
+
+// ============================================================================
+// Attestation Provider (Phase IIId)
+// ============================================================================
+
+/**
+ * No-operation attestation provider.
+ * Default for systems without KMS/HSM.
+ * Returns type='none' attestations which pass verification trivially.
+ */
+export class NoopAttestationProvider implements AttestationProvider {
+  readonly name = 'noop';
+
+  async sign(_context: AttestationSignContext): Promise<AttestationSignResult> {
+    const attestation: Attestation = {
+      type: 'none',
+      attestedBy: this.name,
+      attestedAt: new Date().toISOString(),
+    };
+    return { ok: true, attestation };
+  }
+
+  async verify(context: AttestationVerifyContext): Promise<AttestationVerifyResult> {
+    // Noop provider only validates type='none' attestations
+    if (context.attestation.type === 'none') {
+      return { ok: true, valid: true };
+    }
+
+    // External attestations cannot be verified by noop provider
+    return {
+      ok: false,
+      valid: false,
+      errorCode: 'ATTESTATION_PROVIDER_MISMATCH',
+      errorMessage: 'NoopAttestationProvider cannot verify external attestations',
+    };
+  }
+}
+
+// ============================================================================
+// Normalized Identity Claims Helpers (Phase IIId)
+// ============================================================================
+
+/**
+ * Hash a subject identifier to produce a PII-safe hash.
+ */
+export function hashSubjectIdentifier(subjectId: string): string {
+  return 'sha256:' + createHash('sha256').update(subjectId).digest('hex');
+}
+
+/**
+ * Hash a session identifier to produce a PII-safe hash.
+ */
+export function hashSessionIdentifier(sessionId: string): string {
+  return 'sha256:' + createHash('sha256').update(sessionId).digest('hex');
+}
+
+/**
+ * Options for creating normalized identity claims.
+ */
+export interface CreateNormalizedClaimsOptions {
+  /** Raw subject identifier (will be hashed) */
+  readonly subjectId: string;
+  /** Roles to include */
+  readonly roles: readonly string[];
+  /** Assurance level */
+  readonly assuranceLevel?: NormalizedIdentityClaims['assuranceLevel'];
+  /** Authentication context */
+  readonly authnContext?: NormalizedIdentityClaims['authnContext'];
+  /** Authentication time */
+  readonly authnTime?: string;
+  /** Raw session ID (will be hashed if provided) */
+  readonly sessionId?: string;
+  /** IdP issuer */
+  readonly issuer?: string;
+  /** Claims expiration */
+  readonly expiresAt?: string;
+}
+
+/**
+ * Create normalized identity claims from raw inputs.
+ * This ensures all identifiers are hashed and PII-safe.
+ */
+export function createNormalizedClaims(
+  options: CreateNormalizedClaimsOptions
+): NormalizedIdentityClaims {
+  return {
+    subjectHash: hashSubjectIdentifier(options.subjectId),
+    roles: options.roles,
+    assuranceLevel: options.assuranceLevel,
+    authnContext: options.authnContext,
+    authnTime: options.authnTime,
+    sessionHash: options.sessionId ? hashSessionIdentifier(options.sessionId) : undefined,
+    issuer: options.issuer,
+    expiresAt: options.expiresAt,
   };
 }

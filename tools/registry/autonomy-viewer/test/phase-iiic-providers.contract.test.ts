@@ -10,24 +10,24 @@
  */
 
 import assert from 'node:assert/strict';
-import { describe, it, before, after } from 'node:test';
-import { writeFile, mkdir, rm } from 'node:fs/promises';
-import { join } from 'node:path';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { after, before, describe, it } from 'node:test';
 
-import {
-  StaticPrincipalProvider,
-  FilePrincipalProvider,
-  FileApprovalEvidenceProvider,
-  EnvPrincipalProvider,
-  EnvApprovalEvidenceProvider,
-  EnvAuditRoutingProvider,
-  TierBasedAuditRoutingProvider,
-  createSecurityContext,
-} from '../src/security/providers/providers.js';
 import { createAuditDecisionEvent } from '../src/security/audit/audit-log.js';
-import type { RbacDecision } from '../src/security/rbac/rbac.js';
+import {
+    EnvApprovalEvidenceProvider,
+    EnvAuditRoutingProvider,
+    EnvPrincipalProvider,
+    FileApprovalEvidenceProvider,
+    FilePrincipalProvider,
+    StaticPrincipalProvider,
+    TierBasedAuditRoutingProvider,
+    createSecurityContext,
+} from '../src/security/providers/providers.js';
 import type { Principal } from '../src/security/providers/types.js';
+import type { RbacDecision } from '../src/security/rbac/rbac.js';
 
 // ============================================================================
 // Test Fixtures
@@ -446,8 +446,14 @@ describe('Phase IIIc – Audit Attestation Placeholder', () => {
   it('decision digest is deterministic', () => {
     const decision = createTestRbacDecision();
 
-    const event1 = createAuditDecisionEvent(decision, { eventId: 'e1', timestamp: '2026-02-02T08:00:00.000Z' });
-    const event2 = createAuditDecisionEvent(decision, { eventId: 'e2', timestamp: '2026-02-02T08:00:00.000Z' });
+    const event1 = createAuditDecisionEvent(decision, {
+      eventId: 'e1',
+      timestamp: '2026-02-02T08:00:00.000Z',
+    });
+    const event2 = createAuditDecisionEvent(decision, {
+      eventId: 'e2',
+      timestamp: '2026-02-02T08:00:00.000Z',
+    });
 
     assert.equal(event1.decisionDigestSha256, event2.decisionDigestSha256);
   });

@@ -149,12 +149,14 @@ export function createAuditDecisionEvent(
   };
 
   // Compute digests for integrity verification (Phase IIIc envelope hardening)
-  const decisionDigestSha256 = options?.includeDigests !== false
-    ? hashValue(deterministicStringify(decisionSummary, 0))
-    : undefined;
-  const policyDigestSha256 = options?.includeDigests !== false
-    ? hashValue(deterministicStringify(decision.policyRefs, 0))
-    : undefined;
+  const decisionDigestSha256 =
+    options?.includeDigests !== false
+      ? hashValue(deterministicStringify(decisionSummary, 0))
+      : undefined;
+  const policyDigestSha256 =
+    options?.includeDigests !== false
+      ? hashValue(deterministicStringify(decision.policyRefs, 0))
+      : undefined;
 
   return {
     schema: AUDIT_LOG_SCHEMA,
