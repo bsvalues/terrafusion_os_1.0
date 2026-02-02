@@ -133,6 +133,99 @@ export interface RekorAnchor {
   bundleValid: boolean;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 4N38: Two-Channel Anchoring Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Tool version for anchor calculations */
+export const ANCHOR_TOOL_VERSION = '4N38.1';
+
+/** Anchor types for two-channel verification */
+export type AnchorType = 'rekor' | 'release' | 'signature';
+
+/** Tier requirements for anchor verification (min anchors needed) */
+export const ANCHOR_TIER_REQUIREMENTS = {
+  ci: 1,
+  merged: 2,
+  incident: 2,
+} as const;
+
+/** Rekor anchor detail for transparency log */
+export interface RekorAnchorDetail {
+  type: 'rekor';
+  ok: boolean;
+  checkedAt: string;
+  uuid: string;
+  logIndex: number;
+  integratedTime: number;
+  entryUrl: string;
+  error?: string;
+}
+
+/** Release anchor detail for GitHub release */
+export interface ReleaseAnchorDetail {
+  type: 'release';
+  ok: boolean;
+  checkedAt: string;
+  releaseTag: string;
+  assetName: string;
+  expectedSha256: string;
+  actualSha256?: string;
+  shaMatch: boolean;
+  assetUrl: string;
+  error?: string;
+}
+
+/** Signature anchor detail for local bundle */
+export interface SignatureAnchorDetail {
+  type: 'signature';
+  ok: boolean;
+  checkedAt: string;
+  artifact: string;
+  identity: string;
+  issuer: string;
+  tripletComplete: boolean;
+  error?: string;
+}
+
+/** Combined anchor details */
+export type AnchorDetail = RekorAnchorDetail | ReleaseAnchorDetail | SignatureAnchorDetail;
+
+/** Transparency anchors status */
+export type AnchorStatus = 'ok' | 'partial' | 'insufficient' | 'none';
+
+/** Transparency anchors for an artifact */
+export interface TransparencyAnchors {
+  /** Schema identifier */
+  schema: 'terrafusion.autonomy.anchors.v1';
+  /** Tool version */
+  toolVersion: string;
+  /** Timestamp of evaluation */
+  evaluatedAt: string;
+  /** Primary artifact SHA256 */
+  artifactSha256: string;
+  /** Artifact name */
+  artifactName: string;
+  /** Rekor anchor detail (if available) */
+  rekor?: RekorAnchorDetail;
+  /** Release anchor detail (if available) */
+  release?: ReleaseAnchorDetail;
+  /** Signature anchor detail (if available) */
+  signature?: SignatureAnchorDetail;
+  /** Number of verified anchors */
+  anchorCount: number;
+  /** Total possible anchors */
+  anchorTotal: number;
+  /** Overall status */
+  status: AnchorStatus;
+  /** Tier-specific result */
+  tierResult: {
+    required: number;
+    ok: boolean;
+    tier: 'ci' | 'merged' | 'incident';
+  };
+}
+
 /**
  * Phase 4N17: Signing mode for evidence packages.
  * - 'full': All primary artifacts must be signed (bundle, manifest, custody, ledger)

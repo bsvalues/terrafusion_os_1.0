@@ -1,0 +1,27 @@
+{
+  "schema": "terrafusion.autonomy.slo.state.v1",
+  "version": "4N33.1",
+  "generatedAt": "2024-01-01T00:00:00Z",
+  "level": "ok",
+  "budgetPercent": 100,
+  "remaining": {
+    "critical": 1,
+    "warn": 5
+  },
+  "consumed": {
+    "critical": 0,
+    "warn": 0,
+    "weightedScore": 0
+  },
+  "burnRate": 0,
+  "window": {
+    "recordCount": 0,
+    "windowStart": "",
+    "windowEnd": "",
+    "oldestRecordAt": "",
+    "newestRecordAt": ""
+  },
+  "lastExhaustedAt": null,
+  "lastRecoveredAt": null,
+  "history": []
+}

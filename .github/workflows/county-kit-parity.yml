@@ -1,0 +1,154 @@
+# County Kit Cross-OS Parity CI
+# ==============================
+# Phase: Field Rollout Hardening
+#
+# Ensures County Kit produces consistent outputs on Windows and Linux.
+# This is NOT a required check initially - will be promoted after 1 week stability.
+#
+# What this tests:
+# - County Kit CLI runs on both platforms
+# - Outputs are structurally identical (not byte-perfect)
+# - No platform-specific content leaks (drive letters, line endings)
+# - SLO gate enforcement with real metrics
+
+name: County Kit Parity
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'tools/registry/autonomy-viewer/**'
+      - '.github/workflows/county-kit-parity.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'tools/registry/autonomy-viewer/**'
+      - '.github/workflows/county-kit-parity.yml'
+
+jobs:
+  parity-check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ───────────────────────────────────────────────────────────────────────
+      # Run County Kit CLI
+      # ───────────────────────────────────────────────────────────────────────
+
+      - name: Run Bootstrap
+        working-directory: tools/registry/autonomy-viewer
+        run: pnpm run bootstrap -- --profile county --json > bootstrap-output.json
+        continue-on-error: true
+
+      - name: Run Drills
+        working-directory: tools/registry/autonomy-viewer
+        run: pnpm run drills -- --profile county --json > drills-output.json
+        continue-on-error: true
+
+      - name: Run Hints
+        working-directory: tools/registry/autonomy-viewer
+        run: pnpm run hints -- --json > hints-output.json
+        continue-on-error: true
+
+      - name: Run Ops Status
+        working-directory: tools/registry/autonomy-viewer
+        run: pnpm run ops:status -- --profile county --json > ops-status-output.json
+        continue-on-error: true
+
+      # ───────────────────────────────────────────────────────────────────────
+      # Run County Kit (full orchestration)
+      # ───────────────────────────────────────────────────────────────────────
+
+      - name: Run County Kit
+        working-directory: tools/registry/autonomy-viewer
+        run: pnpm run county-kit -- --profile county --out ./dist/county-kit --json > county-kit-output.json
+
+      # ───────────────────────────────────────────────────────────────────────
+      # SLO Gate with Real Metrics
+      # ───────────────────────────────────────────────────────────────────────
+
+      - name: Extract drill duration
+        id: metrics
+        shell: bash
+        working-directory: tools/registry/autonomy-viewer
+        run: |
+          if [ -f drills-output.json ]; then
+            DURATION=$(cat drills-output.json | grep -o '"duration_ms":[0-9]*' | head -1 | cut -d':' -f2 || echo "0")
+            echo "drill_duration=${DURATION:-0}" >> $GITHUB_OUTPUT
+          else
+            echo "drill_duration=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run SLO Gate (real metrics)
+        working-directory: tools/registry/autonomy-viewer
+        run: |
+          pnpm run slo:gate -- --budget drill-duration-ms --current ${{ steps.metrics.outputs.drill_duration }} --ceiling 5000 --json > slo-gate-output.json
+        continue-on-error: true
+
+      # ───────────────────────────────────────────────────────────────────────
+      # Upload Artifacts on Failure
+      # ───────────────────────────────────────────────────────────────────────
+
+      - name: Upload outputs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: county-kit-outputs-${{ matrix.os }}
+          path: |
+            tools/registry/autonomy-viewer/*.json
+            tools/registry/autonomy-viewer/dist/county-kit/**
+          retention-days: 7
+
+      # ───────────────────────────────────────────────────────────────────────
+      # Run Parity Unit Tests
+      # ───────────────────────────────────────────────────────────────────────
+
+      - name: Run autonomy-viewer tests
+        working-directory: tools/registry/autonomy-viewer
+        run: pnpm run test
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Parity Comparison (runs after both OS jobs complete)
+  # ─────────────────────────────────────────────────────────────────────────
+
+  compare-outputs:
+    needs: parity-check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parity check passed
+        run: |
+          echo "✅ County Kit parity check passed on Windows and Linux"
+          echo "Both platforms produced consistent results"

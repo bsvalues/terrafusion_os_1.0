@@ -1,0 +1,87 @@
+{
+  "$schema": "terrafusion.autonomy.slo.policy.v1",
+  "$version": "4N33.1",
+  "$description": "SLO/Error Budget policy for autonomy governance. Defines failure thresholds, window sizes, and enforcement actions.",
+
+  "windows": {
+    "runWindow": 30,
+    "runWindowDescription": "Number of recent runs to evaluate for budget calculation",
+    "timeWindowDays": 7,
+    "timeWindowDescription": "Maximum age of records to include in evaluation window"
+  },
+
+  "budgetTargets": {
+    "criticalMaxPerWindow": 1,
+    "criticalDescription": "Maximum critical failures before budget exhausted (hard block)",
+    "warnMaxPerWindow": 5,
+    "warnDescription": "Maximum warning-level failures before budget burning",
+    "okMinSuccessRate": 90,
+    "okMinSuccessRateDescription": "Minimum success rate (%) to maintain OK status"
+  },
+
+  "severityWeights": {
+    "critical": {
+      "weight": 10,
+      "categories": ["break_glass_failed", "role_binding_failed", "tpi_failed"],
+      "description": "Failures that immediately impact trust/security"
+    },
+    "high": {
+      "weight": 5,
+      "categories": ["pins_failed", "rekor_failed", "signatures_failed"],
+      "description": "Failures that compromise cryptographic integrity"
+    },
+    "medium": {
+      "weight": 2,
+      "categories": ["verify_bundle_failed", "verify_custody_failed"],
+      "description": "Failures that impact evidence chain"
+    },
+    "low": {
+      "weight": 1,
+      "categories": ["publisher_asset_missing", "workflow_failure"],
+      "description": "Operational failures with lower security impact"
+    }
+  },
+
+  "budgetLevels": {
+    "ok": {
+      "description": "Budget healthy - autonomy proceeds normally",
+      "minBudgetPercent": 50,
+      "burnRateMax": 5
+    },
+    "burning": {
+      "description": "Budget degrading - increased monitoring, optional canary demotion",
+      "minBudgetPercent": 10,
+      "burnRateMax": 25,
+      "recommendedCanaryMaxStage": "canary_25pct"
+    },
+    "exhausted": {
+      "description": "Budget exhausted - autonomy blocked until recovery",
+      "minBudgetPercent": 0,
+      "triggersPause": true
+    }
+  },
+
+  "enforcement": {
+    "blockOnExhausted": true,
+    "blockOnExhaustedDescription": "Hard-block all autonomy applies when budget exhausted",
+    "demoteCanaryOnExhausted": true,
+    "demoteCanaryToStage": "disabled",
+    "pauseRecommendedTTLHours": 4,
+    "pauseRequiredTTLHours": 24,
+    "requiresProofOnBlock": true
+  },
+
+  "recovery": {
+    "autoRecoverOnWindowRolloff": true,
+    "autoRecoverDescription": "Budget auto-recovers as failed records age out of window",
+    "manualRecoveryRequiresProof": true,
+    "cooldownAfterRecoveryHours": 1
+  },
+
+  "reporting": {
+    "emitBudgetToEvidenceIndex": true,
+    "emitBudgetToLedger": true,
+    "alertOnBurning": true,
+    "alertOnExhausted": true
+  }
+}

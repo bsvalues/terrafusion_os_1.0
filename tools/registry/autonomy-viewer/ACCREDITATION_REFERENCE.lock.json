@@ -1,0 +1,90 @@
+{
+  "$schema": "terrafusion.autonomy.accreditation-reference.v1",
+  "lockVersion": "1.0.0",
+  "description": "Reference accreditation packet contract lock - ensures future versions remain compatible",
+  "generatedAt": "2026-02-01T00:00:00.000Z",
+  "contract": {
+    "schemaId": "terrafusion.autonomy.accreditation-packet.v1",
+    "schemaVersion": "4N51.1",
+    "manifestSchemaId": "terrafusion.autonomy.manifest.v1",
+    "supportedVersions": ["4N51.1"],
+    "requiredFiles": [
+      "accreditation-packet.json",
+      "manifest.json",
+      "county-kit-summary.json",
+      "steps/bootstrap.json",
+      "steps/drills.json",
+      "steps/hints.json",
+      "steps/ops-status.json",
+      "steps/slo-gate.json"
+    ],
+    "requiredPacketFields": [
+      "schemaId",
+      "schemaVersion",
+      "generatedAt",
+      "profile",
+      "manifest",
+      "evidence",
+      "complianceSummary"
+    ],
+    "requiredManifestFields": [
+      "$schema",
+      "version",
+      "generatedAt",
+      "profile",
+      "files",
+      "totalBytes",
+      "fileCount"
+    ],
+    "requiredManifestFileFields": ["path", "sha256", "sizeBytes"]
+  },
+  "determinismRules": {
+    "sortedKeys": true,
+    "normalizedPaths": true,
+    "lfLineEndings": true,
+    "sha256Hashing": true
+  },
+  "upgradePolicy": {
+    "minor": {
+      "example": "4N51.1 → 4N51.2",
+      "allowedChanges": [
+        "Add optional fields to packet or manifest",
+        "Add new evidence files to steps/",
+        "Extend supportedVersions array"
+      ],
+      "forbidden": [
+        "Remove required fields",
+        "Change SHA256 algorithm",
+        "Change determinism rules"
+      ],
+      "compatibility": "backwards-compatible"
+    },
+    "major": {
+      "example": "4N51.x → 4N52.0",
+      "allowedChanges": [
+        "Add new required fields",
+        "Change file structure",
+        "Update determinism rules"
+      ],
+      "requirements": [
+        "New reference packet must be generated",
+        "Old verifier must accept packets from prior major version",
+        "RC release required before GA"
+      ],
+      "compatibility": "breaking"
+    }
+  },
+  "referencePacket": {
+    "profile": "benton-county",
+    "expectedFileCount": 7,
+    "expectedFileList": [
+      "accreditation-packet.json",
+      "county-kit-summary.json",
+      "steps/bootstrap.json",
+      "steps/drills.json",
+      "steps/hints.json",
+      "steps/ops-status.json",
+      "steps/slo-gate.json"
+    ]
+  }
+}

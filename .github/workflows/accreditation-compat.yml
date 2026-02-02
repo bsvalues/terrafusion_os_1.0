@@ -1,0 +1,166 @@
+# Accreditation Compatibility Gate
+# =================================
+# Ensures accreditation packet generation and verification remain compatible
+# with the reference contract lock.
+#
+# Triggers:
+# - Changes to accreditation paths
+# - Manual dispatch
+#
+# What it does:
+# 1. Generates a fresh accreditation packet
+# 2. Runs verification against it
+# 3. Validates against ACCREDITATION_REFERENCE.lock.json
+# 4. Runs compat test suite
+
+name: Accreditation Compat Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/registry/autonomy-viewer/src/accreditation-*.ts'
+      - 'tools/registry/autonomy-viewer/src/county-kit.ts'
+      - 'tools/registry/autonomy-viewer/bin/accreditation-*.mjs'
+      - 'tools/registry/autonomy-viewer/ACCREDITATION_REFERENCE.lock.json'
+  pull_request:
+    paths:
+      - 'tools/registry/autonomy-viewer/src/accreditation-*.ts'
+      - 'tools/registry/autonomy-viewer/src/county-kit.ts'
+      - 'tools/registry/autonomy-viewer/bin/accreditation-*.mjs'
+      - 'tools/registry/autonomy-viewer/ACCREDITATION_REFERENCE.lock.json'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: tools/registry/autonomy-viewer
+
+jobs:
+  compat-check:
+    name: Accreditation Compat Check
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.2
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate accreditation packet
+        run: |
+          mkdir -p dist/accreditation
+          pnpm run accreditation -- --profile compat-test --out ./dist/accreditation
+
+      - name: Verify generated packet
+        run: pnpm run accreditation:verify -- --dir ./dist/accreditation
+
+      - name: Run compat tests
+        run: npx tsx --test test/accreditation-compat.test.ts
+
+      - name: Validate lock file exists
+        run: |
+          if [ ! -f "ACCREDITATION_REFERENCE.lock.json" ]; then
+            echo "ERROR: ACCREDITATION_REFERENCE.lock.json not found"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Cross-OS verification check
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          echo "Generating packet on Linux for cross-OS verification..."
+          pnpm run accreditation -- --profile cross-os-test --out ./dist/cross-os
+          pnpm run accreditation:verify -- --dir ./dist/cross-os --json > cross-os-result.json
+          cat cross-os-result.json
+          if ! grep -q '"ok": true' cross-os-result.json; then
+            echo "ERROR: Cross-OS verification failed"
+            exit 1
+          fi
+
+  contract-integrity:
+    name: Contract Integrity Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.2
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: tools/registry/autonomy-viewer
+
+      - name: Validate lock file schema
+        run: |
+          node -e "
+            const fs = require('fs');
+            const lock = JSON.parse(fs.readFileSync('ACCREDITATION_REFERENCE.lock.json', 'utf8'));
+            
+            const required = [
+              'lockVersion',
+              'contract',
+              'determinismRules',
+              'upgradePolicy',
+              'referencePacket'
+            ];
+            
+            for (const field of required) {
+              if (!(field in lock)) {
+                console.error('Missing required field:', field);
+                process.exit(1);
+              }
+            }
+            
+            console.log('Lock file schema valid');
+            console.log('Schema version:', lock.contract.schemaVersion);
+            console.log('Supported versions:', lock.contract.supportedVersions);
+          "
+        working-directory: tools/registry/autonomy-viewer
+
+      - name: Verify determinism rules unchanged
+        run: |
+          node -e "
+            const fs = require('fs');
+            const lock = JSON.parse(fs.readFileSync('ACCREDITATION_REFERENCE.lock.json', 'utf8'));
+            
+            const expectedRules = {
+              sortedKeys: true,
+              normalizedPaths: true,
+              lfLineEndings: true,
+              sha256Hashing: true
+            };
+            
+            for (const [key, value] of Object.entries(expectedRules)) {
+              if (lock.determinismRules[key] !== value) {
+                console.error('Determinism rule changed:', key, 'expected:', value, 'got:', lock.determinismRules[key]);
+                process.exit(1);
+              }
+            }
+            
+            console.log('Determinism rules unchanged');
+          "
+        working-directory: tools/registry/autonomy-viewer

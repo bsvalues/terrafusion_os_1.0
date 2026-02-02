@@ -4,6 +4,16 @@
   "description": "County CIO Dashboard - Offline HTML viewer for autonomy artifacts",
   "type": "module",
   "main": "src/generate.ts",
+  "bin": {
+    "tf-bootstrap": "./bin/bootstrap.mjs",
+    "tf-drills": "./bin/drills.mjs",
+    "tf-hints": "./bin/hints.mjs",
+    "tf-county-kit": "./bin/county-kit.mjs",
+    "tf-ops-status": "./bin/ops-status.mjs",
+    "tf-slo-gate": "./bin/slo-gate.mjs",
+    "tf-accreditation": "./bin/accreditation-packet.mjs",
+    "tf-accreditation-verify": "./bin/accreditation-verify.mjs"
+  },
   "scripts": {
     "generate": "npx tsx src/generate.ts",
     "bundle": "npx tsx src/bundle.ts",
@@ -11,6 +21,14 @@
     "custody": "npx tsx src/custody-cli.ts",
     "custody-attest": "npx tsx src/custody-attest.ts",
     "verify-custody": "npx tsx src/verify-custody.ts",
+    "bootstrap": "npx tsx bin/bootstrap.mjs",
+    "drills": "npx tsx bin/drills.mjs",
+    "hints": "npx tsx bin/hints.mjs",
+    "county-kit": "npx tsx bin/county-kit.mjs",
+    "ops:status": "npx tsx bin/ops-status.mjs",
+    "slo:gate": "npx tsx bin/slo-gate.mjs",
+    "accreditation": "npx tsx bin/accreditation-packet.mjs",
+    "accreditation:verify": "npx tsx bin/accreditation-verify.mjs",
     "test": "npx tsx --test test/*.test.ts"
   },
   "keywords": [

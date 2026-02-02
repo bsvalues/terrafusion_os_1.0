@@ -1,0 +1,107 @@
+{
+  "$schema": "terrafusion.autonomy.policy-profile.v1",
+  "profileId": "county-default",
+  "profileName": "County Default Profile",
+  "version": "1.0.0",
+  "description": "Default deployment profile for county-level TerraFusion OS installations. Optimized for typical county assessor workloads with standard retention and moderate size limits.",
+
+  "tierACLs": [
+    {
+      "audience": "internal",
+      "canRead": true,
+      "canRedact": true,
+      "canDelete": false,
+      "requiresApproval": false
+    },
+    {
+      "audience": "county",
+      "canRead": true,
+      "canRedact": false,
+      "canDelete": false,
+      "requiresApproval": false
+    },
+    {
+      "audience": "state",
+      "canRead": true,
+      "canRedact": false,
+      "canDelete": false,
+      "requiresApproval": false
+    },
+    {
+      "audience": "public",
+      "canRead": true,
+      "canRedact": false,
+      "canDelete": false,
+      "requiresApproval": false
+    }
+  ],
+
+  "retention": [
+    {
+      "tier": "standard",
+      "retentionDays": 2555,
+      "deletionRequiresApproval": true,
+      "breakGlassEligible": false
+    },
+    {
+      "tier": "permanent",
+      "retentionDays": -1,
+      "deletionRequiresApproval": true,
+      "breakGlassEligible": true
+    },
+    {
+      "tier": "court",
+      "retentionDays": 3650,
+      "deletionRequiresApproval": true,
+      "breakGlassEligible": true
+    },
+    {
+      "tier": "temporary",
+      "retentionDays": 90,
+      "deletionRequiresApproval": false,
+      "breakGlassEligible": false
+    }
+  ],
+
+  "sizeLimits": {
+    "maxCasefileSizeBytes": 52428800,
+    "maxChunkSizeBytes": 5242880,
+    "maxRollupEntries": 10000
+  },
+
+  "chunkingThresholds": {
+    "enableChunkingAboveBytes": 10485760,
+    "targetChunkSizeBytes": 5242880
+  },
+
+  "telemetrySinks": [
+    {
+      "type": "file",
+      "path": "./telemetry/telemetry.jsonl",
+      "enabled": true
+    },
+    {
+      "type": "stdout",
+      "enabled": false
+    }
+  ],
+
+  "keyRotation": {
+    "cadenceDays": 90,
+    "notifyBeforeDays": 14,
+    "autoRotate": false
+  },
+
+  "auditSettings": {
+    "requireExternalVerification": true,
+    "verificationCadenceDays": 30,
+    "auditPacketAutoGenerate": true
+  },
+
+  "operationalDefaults": {
+    "rollupCadence": "monthly",
+    "externalVerificationProvider": "github-attestation",
+    "distributionPackFormat": "zip",
+    "signatureAlgorithm": "ecdsa-p256-sha256"
+  }
+}

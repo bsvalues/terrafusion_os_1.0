@@ -1,0 +1,24 @@
+{
+  "$schema": "terrafusion.autonomy.canary.state.v1",
+  "$version": "4N32.1",
+  "$description": "Current canary state for autonomy rollout",
+
+  "currentStage": "disabled",
+  "stageEnteredAt": "2025-01-01T00:00:00Z",
+  "successfulRunsAtStage": 0,
+  "lastPromotionAt": null,
+  "lastDemotionAt": null,
+  "locked": false,
+  "lockedAt": null,
+  "lockedReason": null,
+  "lockedBy": null,
+  "lockExpiresAt": null,
+
+  "todayStats": {
+    "date": "2025-01-01",
+    "prsCreated": 0,
+    "appliesExecuted": 0
+  },
+
+  "history": []
+}

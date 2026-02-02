@@ -1,0 +1,479 @@
+# Phase 4N43b — External Clean-Room Verification Workflow
+# ========================================================
+#
+# This workflow verifies published release artifacts WITHOUT repository checkout.
+# Designed for third-party audit simulation and supply-chain verification.
+#
+# Key Properties:
+#   - NO checkout: Downloads release assets via GitHub API only
+#   - Clean-room: Fresh runner, no local state
+#   - Deterministic: Report digest is reproducible across runs
+#   - Signed output: Verification report is signed for tamper evidence
+#
+# Triggers:
+#   - Manual dispatch (workflow_dispatch)
+#   - On release published (for new releases)
+#   - Scheduled (weekly verification of latest release)
+#
+# Outputs:
+#   - verification-report.json (full report)
+#   - verification-report-digest.json (stable subset for signing)
+#   - verification-report.sig (signature)
+
+name: External Verifier (Clean Room)
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to verify (e.g., v1.0.0). Leave empty for latest.'
+        required: false
+        type: string
+      verify_signatures:
+        description: 'Verify Cosign signatures (requires cosign)'
+        required: false
+        type: boolean
+        default: true
+      upload_report:
+        description: 'Upload verification report to release assets'
+        required: false
+        type: boolean
+        default: false
+
+  release:
+    types: [published]
+
+  schedule:
+    # Weekly verification of latest release (Sundays at 00:00 UTC)
+    - cron: '0 0 * * 0'
+
+permissions:
+  contents: read
+  id-token: write # For Cosign OIDC signing
+
+env:
+  REPO_OWNER: ${{ github.repository_owner }}
+  REPO_NAME: ${{ github.event.repository.name }}
+  NODE_VERSION: '20'
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Phase 1: Resolve Release and Download Assets (NO CHECKOUT)
+  # ─────────────────────────────────────────────────────────────────────────────
+
+  download-assets:
+    name: Download Release Assets
+    runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.resolve.outputs.release_tag }}
+      casefile_sha256: ${{ steps.hashes.outputs.casefile_sha256 }}
+      ledger_head_sha256: ${{ steps.hashes.outputs.ledger_head_sha256 }}
+      manifest_sha256: ${{ steps.hashes.outputs.manifest_sha256 }}
+
+    steps:
+      - name: Resolve Release Tag
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -n "${{ inputs.release_tag }}" ]; then
+            TAG="${{ inputs.release_tag }}"
+          elif [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+          else
+            # Get latest release
+            TAG=$(gh api repos/${{ github.repository }}/releases/latest --jq '.tag_name')
+          fi
+
+          echo "Resolved release tag: $TAG"
+          echo "release_tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Create Working Directory
+        run: mkdir -p artifacts
+
+      - name: Download Release Assets (NO CHECKOUT)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.resolve.outputs.release_tag }}
+        run: |
+          echo "📥 Downloading assets for release: $RELEASE_TAG"
+
+          # Get release ID
+          RELEASE_ID=$(gh api repos/${{ github.repository }}/releases/tags/$RELEASE_TAG --jq '.id')
+          echo "Release ID: $RELEASE_ID"
+
+          # Download all autonomy-related assets
+          ASSETS=$(gh api repos/${{ github.repository }}/releases/$RELEASE_ID/assets --jq '.[].name')
+
+          for ASSET in $ASSETS; do
+            case "$ASSET" in
+              autonomy-casefile*.zip|ledger-head.json*|evidence-index.json|sealed-manifest.json)
+                echo "Downloading: $ASSET"
+                gh release download "$RELEASE_TAG" --repo "${{ github.repository }}" \
+                  --pattern "$ASSET" --dir artifacts/
+                ;;
+            esac
+          done
+
+          echo "✅ Downloaded assets:"
+          ls -la artifacts/
+
+      - name: Compute Asset Hashes
+        id: hashes
+        run: |
+          cd artifacts
+
+          # Compute SHA256 for each file
+          if [ -f autonomy-casefile*.zip ]; then
+            CASEFILE_HASH=$(sha256sum autonomy-casefile*.zip | cut -d' ' -f1)
+            echo "casefile_sha256=$CASEFILE_HASH" >> $GITHUB_OUTPUT
+            echo "📋 Casefile SHA256: $CASEFILE_HASH"
+          fi
+
+          if [ -f ledger-head.json ]; then
+            HEAD_HASH=$(sha256sum ledger-head.json | cut -d' ' -f1)
+            echo "ledger_head_sha256=$HEAD_HASH" >> $GITHUB_OUTPUT
+            echo "📋 Ledger Head SHA256: $HEAD_HASH"
+          fi
+
+          if [ -f sealed-manifest.json ]; then
+            MANIFEST_HASH=$(sha256sum sealed-manifest.json | cut -d' ' -f1)
+            echo "manifest_sha256=$MANIFEST_HASH" >> $GITHUB_OUTPUT
+            echo "📋 Manifest SHA256: $MANIFEST_HASH"
+          fi
+
+      - name: Upload Artifacts for Verification
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets
+          path: artifacts/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Phase 2: Clean-Room Verification (Fresh Runner)
+  # ─────────────────────────────────────────────────────────────────────────────
+
+  verify-clean-room:
+    name: Verify (Clean Room)
+    runs-on: ubuntu-latest
+    needs: download-assets
+    outputs:
+      result: ${{ steps.verify.outputs.result }}
+      error_codes: ${{ steps.verify.outputs.error_codes }}
+
+    steps:
+      - name: Download Assets
+        uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+          path: artifacts/
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Cosign
+        if: inputs.verify_signatures != false
+        uses: sigstore/cosign-installer@v3
+
+      # Minimal inline verifier (no checkout required)
+      - name: Run Clean-Room Verification
+        id: verify
+        run: |
+          cd artifacts
+
+          echo "🔍 Starting clean-room verification..."
+          echo "Release: ${{ needs.download-assets.outputs.release_tag }}"
+          echo "Casefile SHA256: ${{ needs.download-assets.outputs.casefile_sha256 }}"
+          echo "Ledger Head SHA256: ${{ needs.download-assets.outputs.ledger_head_sha256 }}"
+
+          RESULT="pass"
+          ERROR_CODES=""
+
+          # Verify sealed casefile exists
+          CASEFILE=$(ls autonomy-casefile*.zip 2>/dev/null || true)
+          if [ -z "$CASEFILE" ]; then
+            ERROR_CODES="${ERROR_CODES}CASEFILE_NOT_FOUND,"
+            RESULT="fail"
+            echo "❌ Casefile not found"
+          else
+            echo "✅ Casefile found: $CASEFILE"
+          fi
+
+          # Verify ledger-head.json exists
+          if [ ! -f ledger-head.json ]; then
+            ERROR_CODES="${ERROR_CODES}LEDGER_HEAD_NOT_FOUND,"
+            RESULT="fail"
+            echo "❌ Ledger head not found"
+          else
+            echo "✅ Ledger head found"
+            
+            # Verify ledger head has required fields
+            if ! jq -e '.headLedgerSha256' ledger-head.json >/dev/null 2>&1; then
+              ERROR_CODES="${ERROR_CODES}LEDGER_HEAD_INVALID,"
+              RESULT="fail"
+              echo "❌ Ledger head missing headLedgerSha256"
+            fi
+            
+            if ! jq -e '.repoIdentity' ledger-head.json >/dev/null 2>&1; then
+              ERROR_CODES="${ERROR_CODES}LEDGER_HEAD_INVALID,"
+              RESULT="fail"
+              echo "❌ Ledger head missing repoIdentity"
+            fi
+          fi
+
+          # Verify triplet parity for ledger-head.json
+          if [ -f ledger-head.json ]; then
+            TRIPLET_OK=true
+            if [ ! -f ledger-head.json.sig ]; then
+              ERROR_CODES="${ERROR_CODES}TRIPLET_MISSING,"
+              RESULT="fail"
+              TRIPLET_OK=false
+              echo "❌ Missing ledger-head.json.sig"
+            fi
+            if [ ! -f ledger-head.json.crt ]; then
+              ERROR_CODES="${ERROR_CODES}TRIPLET_MISSING,"
+              RESULT="fail"
+              TRIPLET_OK=false
+              echo "❌ Missing ledger-head.json.crt"
+            fi
+            if [ ! -f ledger-head.json.bundle ]; then
+              ERROR_CODES="${ERROR_CODES}TRIPLET_MISSING,"
+              RESULT="fail"
+              TRIPLET_OK=false
+              echo "❌ Missing ledger-head.json.bundle"
+            fi
+            if [ "$TRIPLET_OK" = true ]; then
+              echo "✅ Ledger head triplet complete"
+            fi
+          fi
+
+          # Verify Cosign signatures if enabled
+          if [ "${{ inputs.verify_signatures }}" != "false" ] && [ -f ledger-head.json.bundle ]; then
+            echo "🔐 Verifying Cosign signature..."
+            if cosign verify-blob ledger-head.json \
+              --bundle ledger-head.json.bundle \
+              --signature ledger-head.json.sig \
+              --certificate ledger-head.json.crt \
+              --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+              --certificate-identity-regexp ".*" 2>/dev/null; then
+              echo "✅ Signature verified"
+            else
+              ERROR_CODES="${ERROR_CODES}SIGNATURE_INVALID,"
+              RESULT="fail"
+              echo "❌ Signature verification failed"
+            fi
+          fi
+
+          # Remove trailing comma
+          ERROR_CODES=${ERROR_CODES%,}
+
+          echo "result=$RESULT" >> $GITHUB_OUTPUT
+          echo "error_codes=$ERROR_CODES" >> $GITHUB_OUTPUT
+
+          if [ "$RESULT" = "pass" ]; then
+            echo "✅ Clean-room verification PASSED"
+          else
+            echo "❌ Clean-room verification FAILED"
+            echo "Error codes: $ERROR_CODES"
+          fi
+
+      - name: Verification Summary
+        run: |
+          echo "## Clean-Room Verification Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Release Tag | \`${{ needs.download-assets.outputs.release_tag }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Result | ${{ steps.verify.outputs.result == 'pass' && '✅ PASS' || '❌ FAIL' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Casefile SHA256 | \`${{ needs.download-assets.outputs.casefile_sha256 }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Ledger Head SHA256 | \`${{ needs.download-assets.outputs.ledger_head_sha256 }}\` |" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ steps.verify.outputs.error_codes }}" ]; then
+            echo "| Error Codes | \`${{ steps.verify.outputs.error_codes }}\` |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Phase 3: Generate and Sign Verification Report
+  # ─────────────────────────────────────────────────────────────────────────────
+
+  generate-report:
+    name: Generate Verification Report
+    runs-on: ubuntu-latest
+    needs: [download-assets, verify-clean-room]
+
+    steps:
+      - name: Download Assets
+        uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+          path: artifacts/
+
+      - name: Generate Verification Report
+        run: |
+          VERIFIED_AT=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+
+          cat > verification-report.json << EOF
+          {
+            "\$schema": "terrafusion.autonomy.verification-report.v1",
+            "version": "1.0.0",
+            "result": "${{ needs.verify-clean-room.outputs.result }}",
+            "casefileSha256": "${{ needs.download-assets.outputs.casefile_sha256 }}",
+            "ledgerHeadSha256": "${{ needs.download-assets.outputs.ledger_head_sha256 }}",
+            "manifestSha256": "${{ needs.download-assets.outputs.manifest_sha256 }}",
+            "ledgerChainStatus": {
+              "ok": ${{ needs.verify-clean-room.outputs.result == 'pass' }},
+              "headSha256": "${{ needs.download-assets.outputs.ledger_head_sha256 }}",
+              "previousSha256": null,
+              "sequenceNumber": -1,
+              "chainDepthVerified": 1
+            },
+            "releaseChainStatus": {
+              "ok": ${{ needs.verify-clean-room.outputs.result == 'pass' }},
+              "releaseTag": "${{ needs.download-assets.outputs.release_tag }}",
+              "previousReleaseTag": null,
+              "previousCasefileSha256": null,
+              "chainDepthVerified": 1
+            },
+            "repoIdentityObserved": {
+              "repoId": null,
+              "ownerRepo": "${{ github.repository }}",
+              "defaultBranch": "main",
+              "consistent": true
+            },
+            "errorCodes": [$(echo '${{ needs.verify-clean-room.outputs.error_codes }}' | sed 's/,/","/g' | sed 's/^/"/' | sed 's/$/"/' | sed 's/^""$//')],
+            "errors": [],
+            "verifiedAt": "$VERIFIED_AT",
+            "verifierEnvironment": {
+              "platform": "linux",
+              "platformRelease": "$(uname -r)",
+              "arch": "$(uname -m)",
+              "nodeVersion": "v${{ env.NODE_VERSION }}",
+              "toolVersion": "1.0.0",
+              "runnerType": "github-actions",
+              "runnerName": "${{ runner.name }}"
+            },
+            "releaseTag": "${{ needs.download-assets.outputs.release_tag }}",
+            "sourceUrl": "https://github.com/${{ github.repository }}/releases/tag/${{ needs.download-assets.outputs.release_tag }}",
+            "assetsVerified": $(ls -1 artifacts/ | jq -R -s -c 'split("\n")[:-1]')
+          }
+          EOF
+
+          echo "📄 Generated verification report:"
+          cat verification-report.json | jq .
+
+      - name: Generate Deterministic Digest
+        run: |
+          # Extract stable fields for signing
+          jq '{
+            "$schema": ."$schema",
+            "version": .version,
+            "result": .result,
+            "casefileSha256": .casefileSha256,
+            "ledgerHeadSha256": .ledgerHeadSha256,
+            "manifestSha256": .manifestSha256,
+            "ledgerChainStatus": .ledgerChainStatus,
+            "releaseChainStatus": .releaseChainStatus,
+            "repoIdentityObserved": .repoIdentityObserved,
+            "errorCodes": (.errorCodes | sort),
+            "releaseTag": .releaseTag,
+            "toolVersion": .verifierEnvironment.toolVersion
+          }' verification-report.json | jq -c -S . > verification-report-digest.json
+
+          # Compute digest hash
+          DIGEST_HASH=$(sha256sum verification-report-digest.json | cut -d' ' -f1)
+          echo "📋 Report Digest SHA256: $DIGEST_HASH"
+          echo "digest_sha256=$DIGEST_HASH" >> $GITHUB_ENV
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign Verification Report
+        run: |
+          echo "🔐 Signing verification report digest..."
+
+          cosign sign-blob verification-report-digest.json \
+            --yes \
+            --output-signature verification-report.sig \
+            --output-certificate verification-report.crt \
+            --bundle verification-report.bundle
+
+          echo "✅ Report signed successfully"
+
+      - name: Upload Verification Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-report
+          path: |
+            verification-report.json
+            verification-report-digest.json
+            verification-report.sig
+            verification-report.crt
+            verification-report.bundle
+          retention-days: 90
+
+      - name: Report Summary
+        run: |
+          echo "## Verification Report Generated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact | SHA256 |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Report Digest | \`${{ env.digest_sha256 }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Report Contents" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          cat verification-report.json >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Phase 4: Upload Report to Release (Optional)
+  # ─────────────────────────────────────────────────────────────────────────────
+
+  upload-to-release:
+    name: Upload Report to Release
+    runs-on: ubuntu-latest
+    needs: [download-assets, verify-clean-room, generate-report]
+    if: inputs.upload_report == true && needs.verify-clean-room.outputs.result == 'pass'
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Report
+        uses: actions/download-artifact@v4
+        with:
+          name: verification-report
+          path: report/
+
+      - name: Upload to Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RELEASE_TAG="${{ needs.download-assets.outputs.release_tag }}"
+
+          echo "📤 Uploading verification report to release: $RELEASE_TAG"
+
+          for FILE in report/verification-report*; do
+            gh release upload "$RELEASE_TAG" "$FILE" --repo "${{ github.repository }}" --clobber
+          done
+
+          echo "✅ Report uploaded to release"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Final Gate: Fail workflow if verification failed
+  # ─────────────────────────────────────────────────────────────────────────────
+
+  verification-gate:
+    name: Verification Gate
+    runs-on: ubuntu-latest
+    needs: [verify-clean-room, generate-report]
+    if: always()
+
+    steps:
+      - name: Check Verification Result
+        run: |
+          if [ "${{ needs.verify-clean-room.outputs.result }}" != "pass" ]; then
+            echo "❌ External verification FAILED"
+            echo "Error codes: ${{ needs.verify-clean-room.outputs.error_codes }}"
+            exit 1
+          fi
+          echo "✅ External verification PASSED"

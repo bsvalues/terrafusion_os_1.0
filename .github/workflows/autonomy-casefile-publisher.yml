@@ -1,0 +1,507 @@
+# Autonomy Casefile Publisher (Phase 4N35/4N36)
+#
+# Publishes sealed casefile "one auditor artifact" ZIPs to GitHub Releases.
+# This workflow is triggered by the evidence/incident publishers after
+# evidence bundles are published, ensuring every retained release becomes
+# self-contained with the auditor artifact by default.
+#
+# Phase 4N36: Signature Triplet Parity
+# - Casefile ZIP signed with Cosign keyless OIDC (same as evidence bundle)
+# - Signature triplet (.sig, .crt, .bundle) uploaded for each signed asset
+# - Triplet parity verification (all three files must exist)
+# - Rekor anchoring validated for merged/incident tiers
+#
+# SECURITY POSTURE (Non-negotiable):
+# - Only runs after evidence bundle is published
+# - Hard-gates: verify-bundle --strict, verify-custody --strict
+# - Rekor anchoring required for merged/incident tiers
+# - Minimal permissions (contents: write, id-token: write for OIDC)
+# - Fail-closed: cannot publish if casefile generation or signing fails
+#
+# INVARIANTS:
+# - Deterministic ZIP (fixed mtimes, alphabetical ordering)
+# - Same inputs → identical SHA256
+# - Path traversal rejected
+# - Immutable release asset URLs
+# - Signature triplet parity (Phase 4N36)
+
+name: Autonomy Casefile Publisher
+
+on:
+  workflow_call:
+    inputs:
+      release_tag:
+        description: 'Release tag to attach casefile to'
+        required: true
+        type: string
+      run_id:
+        description: 'Run ID for the evidence record'
+        required: true
+        type: string
+      tier:
+        description: 'Retention tier: ci, merged, or incident'
+        required: true
+        type: string
+      evidence_bundle_name:
+        description: 'Name of the evidence bundle ZIP'
+        required: true
+        type: string
+      evidence_index_path:
+        description: 'Path to evidence index JSON'
+        required: false
+        type: string
+        default: 'tools/registry/autonomy-viewer/dist/autonomy-evidence-index.json'
+      artifacts_dir:
+        description: 'Artifacts directory'
+        required: false
+        type: string
+        default: 'tools/registry/autonomy-viewer/dist'
+    outputs:
+      casefile_name:
+        description: 'Name of the generated casefile ZIP'
+        value: ${{ jobs.publish.outputs.casefile_name }}
+      casefile_sha256:
+        description: 'SHA256 of the casefile ZIP'
+        value: ${{ jobs.publish.outputs.casefile_sha256 }}
+      manifest_sha256:
+        description: 'SHA256 of the casefile manifest'
+        value: ${{ jobs.publish.outputs.manifest_sha256 }}
+      signed:
+        description: 'Whether casefile was signed (Phase 4N36)'
+        value: ${{ jobs.publish.outputs.signed }}
+      success:
+        description: 'Whether casefile was successfully published'
+        value: ${{ jobs.publish.outputs.success }}
+
+env:
+  VIEWER_DIR: tools/registry/autonomy-viewer/dist
+
+jobs:
+  # ==========================================================================
+  # Publish Casefile to Release
+  # ==========================================================================
+  publish:
+    name: Publish Casefile (${{ inputs.tier }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    outputs:
+      casefile_name: ${{ steps.casefile.outputs.casefile_name }}
+      casefile_sha256: ${{ steps.casefile.outputs.casefile_sha256 }}
+      manifest_sha256: ${{ steps.casefile.outputs.manifest_sha256 }}
+      signed: ${{ steps.sign.outputs.signed }}
+      success: ${{ steps.casefile.outputs.success }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm -C tools/registry/autonomy-viewer install
+
+      # Phase 4N36: Install cosign for keyless signing (triplet parity with bundle)
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.7.0
+        with:
+          cosign-release: 'v2.4.1'
+
+      # ========================================================================
+      # Step 0: Download evidence artifacts from release
+      # ========================================================================
+      - name: Download Evidence Artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "📥 Downloading evidence artifacts from release..."
+          RELEASE_TAG="${{ inputs.release_tag }}"
+
+          mkdir -p ${{ env.VIEWER_DIR }}
+
+          # Download evidence bundle
+          gh release download "$RELEASE_TAG" \
+            --pattern "${{ inputs.evidence_bundle_name }}" \
+            --dir ${{ env.VIEWER_DIR }} || true
+
+          # Download evidence index
+          gh release download "$RELEASE_TAG" \
+            --pattern "autonomy-evidence-index.json" \
+            --dir ${{ env.VIEWER_DIR }} || true
+
+          # Download custody attestation
+          gh release download "$RELEASE_TAG" \
+            --pattern "custody-attestation.json" \
+            --dir ${{ env.VIEWER_DIR }} || true
+
+          # Download signature files
+          gh release download "$RELEASE_TAG" \
+            --pattern "*.sig" \
+            --dir ${{ env.VIEWER_DIR }} || true
+
+          gh release download "$RELEASE_TAG" \
+            --pattern "*.bundle" \
+            --dir ${{ env.VIEWER_DIR }} || true
+
+          gh release download "$RELEASE_TAG" \
+            --pattern "*.crt" \
+            --dir ${{ env.VIEWER_DIR }} || true
+
+          # Download ledger
+          gh release download "$RELEASE_TAG" \
+            --pattern "autonomy-ledger.html" \
+            --dir ${{ env.VIEWER_DIR }} || true
+
+          echo "✅ Downloaded artifacts:"
+          ls -la ${{ env.VIEWER_DIR }}/
+
+      # ========================================================================
+      # Step 1: Hard Gate - Verify Bundle (strict + signatures + policy)
+      # ========================================================================
+      - name: Verify Evidence Bundle (Phase 4N35 Hard Gate)
+        run: |
+          echo "🔐 Phase 4N35: Hard Gate - Verifying Evidence Bundle..."
+          BUNDLE_PATH="${{ env.VIEWER_DIR }}/${{ inputs.evidence_bundle_name }}"
+          INDEX_PATH="${{ env.VIEWER_DIR }}/autonomy-evidence-index.json"
+
+          if [ ! -f "$BUNDLE_PATH" ]; then
+            echo "::error::Evidence bundle not found: $BUNDLE_PATH"
+            exit 1
+          fi
+
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/verify-bundle.ts \
+            --zip "$BUNDLE_PATH" \
+            --strict \
+            --verify-signatures \
+            --policy-from-index "$INDEX_PATH" \
+            --verbose
+          VERIFY_EXIT=$?
+          set -e
+
+          if [ $VERIFY_EXIT -ne 0 ]; then
+            echo "::error::Phase 4N35: Bundle verification FAILED - cannot publish casefile"
+            exit 1
+          fi
+
+          echo "✅ Phase 4N35: Bundle verification PASSED (strict + signatures)"
+
+      # ========================================================================
+      # Step 2: Hard Gate - Verify Custody (strict + signatures)
+      # ========================================================================
+      - name: Verify Custody Attestation (Phase 4N35 Hard Gate)
+        run: |
+          echo "🔐 Phase 4N35: Hard Gate - Verifying Custody Attestation..."
+
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/verify-custody.ts \
+            --in ${{ env.VIEWER_DIR }} \
+            --strict \
+            --verify-signatures \
+            --verbose
+          VERIFY_EXIT=$?
+          set -e
+
+          if [ $VERIFY_EXIT -ne 0 ]; then
+            echo "::error::Phase 4N35: Custody verification FAILED - cannot publish casefile"
+            exit 1
+          fi
+
+          echo "✅ Phase 4N35: Custody verification PASSED (strict + signatures)"
+
+      # ========================================================================
+      # Step 3: Hard Gate - Rekor Anchoring (required for merged/incident)
+      # ========================================================================
+      - name: Verify Rekor Anchoring (Phase 4N35 Hard Gate)
+        if: inputs.tier == 'merged' || inputs.tier == 'incident'
+        run: |
+          echo "🧾 Phase 4N35: Hard Gate - Verifying Rekor Anchoring..."
+
+          BUNDLE_COUNT=$(find ${{ env.VIEWER_DIR }} -name "*.bundle" -type f | wc -l)
+          if [ "$BUNDLE_COUNT" -eq 0 ]; then
+            echo "::error::Phase 4N35: No .bundle files found - Rekor anchoring required for ${{ inputs.tier }}"
+            exit 1
+          fi
+
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/verify-custody.ts \
+            --in ${{ env.VIEWER_DIR }} \
+            --verify-rekor \
+            --strict \
+            --verbose
+          REKOR_EXIT=$?
+          set -e
+
+          if [ $REKOR_EXIT -ne 0 ]; then
+            echo "::error::Phase 4N35: Rekor verification FAILED - cannot publish casefile for ${{ inputs.tier }}"
+            exit 1
+          fi
+
+          echo "✅ Phase 4N35: Rekor anchoring VERIFIED for ${{ inputs.tier }}"
+
+      # ========================================================================
+      # Step 4: Generate Casefile
+      # ========================================================================
+      - name: Generate Casefile
+        id: casefile
+        run: |
+          echo "📦 Phase 4N35: Generating Casefile..."
+          RUN_ID="${{ inputs.run_id }}"
+          CASEFILE_NAME="autonomy-casefile-${RUN_ID}-sealed.zip"
+
+          set +e
+          npx tsx tools/registry/autonomy-viewer/src/casefile.ts \
+            --record "$RUN_ID" \
+            --out ${{ env.VIEWER_DIR }} \
+            --index ${{ env.VIEWER_DIR }}/autonomy-evidence-index.json \
+            --artifacts ${{ env.VIEWER_DIR }} \
+            --verbose \
+            --json > casefile-result.json 2>&1
+          CASEFILE_EXIT=$?
+          set -e
+
+          if [ $CASEFILE_EXIT -ne 0 ]; then
+            echo "::error::Phase 4N35: Casefile generation FAILED"
+            cat casefile-result.json || true
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          # Parse result
+          CASEFILE_PATH=$(cat casefile-result.json | jq -r '.zipPath // empty')
+          CASEFILE_SHA256=$(cat casefile-result.json | jq -r '.zipSha256 // empty')
+          MANIFEST_SHA256=$(cat casefile-result.json | jq -r '.manifest.files[] | select(.path == "casefile-manifest.json") | .sha256 // empty')
+
+          # Rename to canonical name
+          if [ -f "$CASEFILE_PATH" ]; then
+            FINAL_PATH="${{ env.VIEWER_DIR }}/$CASEFILE_NAME"
+            mv "$CASEFILE_PATH" "$FINAL_PATH"
+            
+            # Recalculate SHA256 after rename (should be same)
+            CASEFILE_SHA256=$(sha256sum "$FINAL_PATH" | cut -d' ' -f1)
+            
+            echo "casefile_name=$CASEFILE_NAME" >> $GITHUB_OUTPUT
+            echo "casefile_path=$FINAL_PATH" >> $GITHUB_OUTPUT
+            echo "casefile_sha256=$CASEFILE_SHA256" >> $GITHUB_OUTPUT
+            echo "manifest_sha256=$MANIFEST_SHA256" >> $GITHUB_OUTPUT
+            echo "success=true" >> $GITHUB_OUTPUT
+            
+            echo "✅ Casefile generated: $CASEFILE_NAME"
+            echo "   SHA256: $CASEFILE_SHA256"
+          else
+            echo "::error::Casefile ZIP not found at expected path"
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      # ========================================================================
+      # Step 5: Extract manifest for separate upload
+      # ========================================================================
+      - name: Extract Casefile Manifest
+        run: |
+          echo "📋 Extracting casefile manifest..."
+          RUN_ID="${{ inputs.run_id }}"
+          CASEFILE_PATH="${{ steps.casefile.outputs.casefile_path }}"
+          MANIFEST_NAME="autonomy-casefile-manifest-${RUN_ID}.json"
+
+          # Extract manifest from ZIP
+          unzip -p "$CASEFILE_PATH" casefile-manifest.json > "${{ env.VIEWER_DIR }}/$MANIFEST_NAME"
+
+          echo "✅ Manifest extracted: $MANIFEST_NAME"
+
+      # ========================================================================
+      # Step 5b: Sign Casefile (Phase 4N36 - Signature Triplet Parity)
+      # ========================================================================
+      - name: Sign Casefile (Phase 4N36)
+        id: sign
+        run: |
+          echo "🔐 Phase 4N36: Signing Casefile with Keyless OIDC..."
+          RUN_ID="${{ inputs.run_id }}"
+          CASEFILE_PATH="${{ steps.casefile.outputs.casefile_path }}"
+          MANIFEST_PATH="${{ env.VIEWER_DIR }}/autonomy-casefile-manifest-${RUN_ID}.json"
+
+          # Sign casefile ZIP
+          echo "  Signing: $(basename $CASEFILE_PATH)"
+          cosign sign-blob "$CASEFILE_PATH" \
+            --yes \
+            --bundle "${CASEFILE_PATH}.bundle" \
+            --output-signature "${CASEFILE_PATH}.sig" \
+            --output-certificate "${CASEFILE_PATH}.crt"
+
+          # Verify triplet exists
+          if [ -f "${CASEFILE_PATH}.sig" ] && [ -f "${CASEFILE_PATH}.crt" ] && [ -f "${CASEFILE_PATH}.bundle" ]; then
+            echo "  ✅ Casefile triplet complete: .sig, .crt, .bundle"
+          else
+            echo "::error::Phase 4N36: Casefile signature triplet incomplete"
+            exit 1
+          fi
+
+          # Sign manifest JSON
+          echo "  Signing: $(basename $MANIFEST_PATH)"
+          cosign sign-blob "$MANIFEST_PATH" \
+            --yes \
+            --bundle "${MANIFEST_PATH}.bundle" \
+            --output-signature "${MANIFEST_PATH}.sig" \
+            --output-certificate "${MANIFEST_PATH}.crt"
+
+          if [ -f "${MANIFEST_PATH}.sig" ] && [ -f "${MANIFEST_PATH}.crt" ] && [ -f "${MANIFEST_PATH}.bundle" ]; then
+            echo "  ✅ Manifest triplet complete: .sig, .crt, .bundle"
+          else
+            echo "::error::Phase 4N36: Manifest signature triplet incomplete"
+            exit 1
+          fi
+
+          echo "signed=true" >> $GITHUB_OUTPUT
+          echo "✅ Phase 4N36: Casefile and manifest signed with keyless OIDC"
+
+      # ========================================================================
+      # Step 6: Upload to Release
+      # ========================================================================
+      - name: Upload Casefile to Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "📤 Uploading casefile to release..."
+          RELEASE_TAG="${{ inputs.release_tag }}"
+          RUN_ID="${{ inputs.run_id }}"
+          CASEFILE_NAME="autonomy-casefile-${RUN_ID}-sealed.zip"
+          MANIFEST_NAME="autonomy-casefile-manifest-${RUN_ID}.json"
+          CASEFILE_PATH="${{ env.VIEWER_DIR }}/$CASEFILE_NAME"
+          MANIFEST_PATH="${{ env.VIEWER_DIR }}/$MANIFEST_NAME"
+
+          # Upload casefile ZIP
+          gh release upload "$RELEASE_TAG" \
+            "$CASEFILE_PATH" \
+            --clobber
+
+          # Upload casefile signature triplet (Phase 4N36)
+          gh release upload "$RELEASE_TAG" \
+            "${CASEFILE_PATH}.sig" \
+            "${CASEFILE_PATH}.crt" \
+            "${CASEFILE_PATH}.bundle" \
+            --clobber
+
+          # Upload manifest
+          gh release upload "$RELEASE_TAG" \
+            "$MANIFEST_PATH" \
+            --clobber
+
+          # Upload manifest signature triplet (Phase 4N36)
+          gh release upload "$RELEASE_TAG" \
+            "${MANIFEST_PATH}.sig" \
+            "${MANIFEST_PATH}.crt" \
+            "${MANIFEST_PATH}.bundle" \
+            --clobber
+
+          echo "✅ Phase 4N36: Casefile + triplet uploaded to release: $RELEASE_TAG"
+
+      # ========================================================================
+      # Step 7: Verify Assets Exist (Phase 4N36: Including Triplet Parity)
+      # ========================================================================
+      - name: Verify Casefile Assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "🔍 Phase 4N36: Verifying casefile assets with triplet parity..."
+          RELEASE_TAG="${{ inputs.release_tag }}"
+          RUN_ID="${{ inputs.run_id }}"
+          CASEFILE="autonomy-casefile-${RUN_ID}-sealed.zip"
+          MANIFEST="autonomy-casefile-manifest-${RUN_ID}.json"
+
+          # Phase 4N36: Full triplet parity check
+          EXPECTED_ASSETS=(
+            # Casefile ZIP + triplet
+            "$CASEFILE"
+            "${CASEFILE}.sig"
+            "${CASEFILE}.crt"
+            "${CASEFILE}.bundle"
+            # Manifest JSON + triplet
+            "$MANIFEST"
+            "${MANIFEST}.sig"
+            "${MANIFEST}.crt"
+            "${MANIFEST}.bundle"
+          )
+
+          ACTUAL_ASSETS=$(gh release view "$RELEASE_TAG" --json assets -q '.assets[].name')
+
+          MISSING=()
+          PRESENT=0
+          for ASSET in "${EXPECTED_ASSETS[@]}"; do
+            if echo "$ACTUAL_ASSETS" | grep -q "^${ASSET}$"; then
+              echo "  ✅ $ASSET"
+              PRESENT=$((PRESENT + 1))
+            else
+              echo "  ❌ $ASSET (MISSING)"
+              MISSING+=("$ASSET")
+            fi
+          done
+
+          echo ""
+          echo "📊 Triplet Parity: $PRESENT/${#EXPECTED_ASSETS[@]} assets present"
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::error::Phase 4N36: Missing casefile assets (triplet parity violated): ${MISSING[*]}"
+            exit 1
+          fi
+
+          echo "✅ Phase 4N36: All casefile assets verified with triplet parity"
+
+      - name: Publish Summary
+        run: |
+          RUN_ID="${{ inputs.run_id }}"
+          CASEFILE_NAME="autonomy-casefile-${RUN_ID}-sealed.zip"
+
+          echo "## 📦 Casefile Published (Phase 4N35/4N36)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Release Tag:** \`${{ inputs.release_tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Tier:** ${{ inputs.tier }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Casefile Details" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **File** | \`$CASEFILE_NAME\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **SHA256** | \`${{ steps.casefile.outputs.casefile_sha256 }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Manifest SHA256** | \`${{ steps.casefile.outputs.manifest_sha256 }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Signed** | ✅ Keyless OIDC (Phase 4N36) |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Signature Triplet (Phase 4N36)" >> $GITHUB_STEP_SUMMARY
+          echo "| Asset | Triplet |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| \`$CASEFILE_NAME\` | .sig, .crt, .bundle |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`autonomy-casefile-manifest-${RUN_ID}.json\` | .sig, .crt, .bundle |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Hard Gates Passed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ \`verify-bundle --strict --verify-signatures --policy-from-index\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ \`verify-custody --strict --verify-signatures\`" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ inputs.tier }}" == "merged" || "${{ inputs.tier }}" == "incident" ]]; then
+            echo "- ✅ Rekor anchoring verified" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "- ✅ Signature triplet parity verified (Phase 4N36)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Verify Casefile" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "# Extract and verify contents" >> $GITHUB_STEP_SUMMARY
+          echo "unzip $CASEFILE_NAME" >> $GITHUB_STEP_SUMMARY
+          echo "cat casefile-manifest.json | jq -r '.files[] | \"\\(.sha256)  \\(.path)\"' | sha256sum -c" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Verify signature (Phase 4N36)" >> $GITHUB_STEP_SUMMARY
+          echo "cosign verify-blob $CASEFILE_NAME \\\\" >> $GITHUB_STEP_SUMMARY
+          echo "  --bundle ${CASEFILE_NAME}.bundle \\\\" >> $GITHUB_STEP_SUMMARY
+          echo "  --certificate-oidc-issuer https://token.actions.githubusercontent.com \\\\" >> $GITHUB_STEP_SUMMARY
+          echo "  --certificate-identity-regexp '.*${{ github.repository }}.*'" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "*TerraFusion Autonomy v1 — Government. Transcended.*" >> $GITHUB_STEP_SUMMARY

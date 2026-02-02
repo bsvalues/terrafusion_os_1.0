@@ -715,7 +715,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
     .map((entry, idx) => {
       const tierBadge = `<span class="badge ${getTierBadgeClass(entry.tier)}">${escapeHtml(getTierLabel(entry.tier))}</span>`;
       const verifyClass = entry.verifyOk ? 'verify-ok' : 'verify-fail';
-      const verifyText = entry.verifyOk ? '✓' : '✗';
+      const verifyText = entry.verifyOk ? '✓ Verified' : '✗ Failed';
       const incidentInfo = entry.incident && entry.incidentPr ? ` (PR #${entry.incidentPr})` : '';
 
       // Phase 4N16: Signature status cell
@@ -813,7 +813,7 @@ export function generateLedgerHtml(vm: LedgerViewModel): string {
           <td>${escapeHtml(entry.runId)}</td>
           <td>${tierBadge}${incidentInfo}${breakGlassBadge}${roleBindingBadge}${incidentPromotionBadge}</td>
           <td>${bundleCell}</td>
-          <td class="sha">${escapeHtml(entry.manifestSha256.substring(0, 16))}...</td>
+          <td class="sha">${escapeHtml(entry.manifestSha256)}</td>
           <td>${releaseTagCell}</td>
           <td class="verify-status ${verifyClass}">${verifyText}</td>
           <td class="sig-status ${sigClass}" title="${escapeHtml(sigTitle)}">${sigText}${pinnedBadge}</td>

@@ -1,0 +1,123 @@
+{
+  "$schema": "terrafusion.autonomy.casefile.v1",
+  "$version": "4N34.1",
+  "$description": "Case file export schema for auditor-ready evidence packets. A single ZIP containing everything needed to audit and reproduce verification offline.",
+
+  "requiredContents": {
+    "manifest": {
+      "file": "casefile-manifest.json",
+      "description": "SHA256 hashes for all files in the case file"
+    },
+    "evidenceIndex": {
+      "file": "autonomy-evidence-index.json",
+      "description": "Evidence record subset for the requested record + policy snapshot"
+    },
+    "verifyInstructions": {
+      "file": "VERIFY.md",
+      "description": "Single-page operator/auditor instructions for offline verification"
+    }
+  },
+
+  "conditionalContents": {
+    "evidenceBundle": {
+      "pattern": "autonomy-evidence-bundle-*.zip",
+      "description": "Sealed evidence bundle (when available)",
+      "requiredForTiers": ["merged", "incident"]
+    },
+    "custodyAttestation": {
+      "file": "custody-attestation.json",
+      "description": "Chain of custody attestation",
+      "requiredForTiers": ["merged", "incident"]
+    },
+    "verifyBundleOutput": {
+      "file": "verify-bundle-output.json",
+      "description": "Output from pnpm perf:verify-bundle --strict",
+      "requiredForTiers": ["merged", "incident"]
+    },
+    "rekorProof": {
+      "file": "rekor-anchor-proof.json",
+      "description": "Rekor transparency log anchor proof",
+      "requiredForTiers": ["merged", "incident"]
+    },
+    "sloProof": {
+      "file": "slo-proof.json",
+      "description": "SLO budget enforcement proof (if action was blocked)",
+      "requiredForTiers": []
+    },
+    "resumeProof": {
+      "file": "resume-proof.json",
+      "description": "Autonomy resume proof (if resumed from pause)",
+      "requiredForTiers": []
+    },
+    "breakGlassProof": {
+      "file": "break-glass-proof.json",
+      "description": "Break-glass activation proof (if break-glass was used)",
+      "requiredForTiers": []
+    },
+    "promotionProof": {
+      "file": "promotion-proof.json",
+      "description": "Canary promotion proof (if promoted)",
+      "requiredForTiers": []
+    },
+    "demotionProof": {
+      "file": "demotion-proof.json",
+      "description": "Canary demotion proof (if demoted)",
+      "requiredForTiers": []
+    },
+    "ledgerSnapshot": {
+      "file": "casefile-ledger.html",
+      "description": "Offline-capable HTML viewer for this record",
+      "requiredForTiers": []
+    }
+  },
+
+  "manifestSchema": {
+    "$schema": "terrafusion.autonomy.casefile.manifest.v1",
+    "required": ["generatedAt", "toolVersion", "recordId", "tier", "files"],
+    "properties": {
+      "generatedAt": { "type": "string", "format": "date-time" },
+      "toolVersion": { "type": "string" },
+      "recordId": { "type": "string" },
+      "runId": { "type": "string" },
+      "tier": { "type": "string", "enum": ["ci", "merged", "incident"] },
+      "files": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "path": { "type": "string" },
+            "sha256": { "type": "string" },
+            "size": { "type": "number" },
+            "required": { "type": "boolean" }
+          }
+        }
+      },
+      "missingOptional": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Optional files that were not present"
+      },
+      "policySnapshot": {
+        "type": "object",
+        "description": "Snapshot of active policies at time of record"
+      }
+    }
+  },
+
+  "invariants": {
+    "deterministicOrdering": "Files must be added in alphabetical order by path",
+    "fixedMtimes": "All files use fixed mtime (2024-01-01T00:00:00Z)",
+    "failClosed": "Missing required artifacts for tier cause hard failure with reason code",
+    "pathTraversalRejected": "Record IDs containing path traversal sequences are rejected",
+    "hashVerifiable": "ZIP hash is reproducible from same inputs"
+  },
+
+  "reasonCodes": {
+    "RECORD_NOT_FOUND": "Requested record ID not found in evidence index",
+    "BUNDLE_MISSING": "Required evidence bundle not found for tier",
+    "CUSTODY_MISSING": "Required custody attestation not found for tier",
+    "VERIFY_FAILED": "Bundle verification failed during case file generation",
+    "PATH_TRAVERSAL": "Record ID contains invalid path characters",
+    "INDEX_INVALID": "Evidence index is missing or malformed"
+  }
+}

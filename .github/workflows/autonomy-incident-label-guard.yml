@@ -1,0 +1,293 @@
+# ============================================================================
+# Phase 4N27 — Incident Auto-Labeling Guardrail
+# ============================================================================
+#
+# Mission: Make `incident` label non-spoofable and auditable
+#
+# Security invariants:
+#   - Labels cannot create an incident path by themselves
+#   - Incident label requires authorized actor (Security/CIO from approvers.json)
+#   - Incident label requires constitutional checks passed (TPI, break-glass)
+#   - Bots and self-approval excluded
+#   - Auditable: ledger shows who applied and whether valid
+#
+# Behavior:
+#   - incident label absent → pass (noop)
+#   - incident label present → enforce all guards
+# ============================================================================
+
+name: Autonomy Incident Label Guard
+
+on:
+  pull_request_target:
+    types: [labeled, unlabeled, opened, synchronize, reopened]
+    branches: [main, master]
+
+concurrency:
+  group: incident-label-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+
+env:
+  APPROVER_SOURCE: .github/autonomy-approvers.json
+  # Known bot patterns to exclude
+  BOT_PATTERNS: 'dependabot[bot],github-actions[bot],renovate[bot],snyk-bot'
+
+jobs:
+  check-incident-label:
+    name: Incident Label Guard
+    runs-on: ubuntu-latest
+    outputs:
+      has_incident_label: ${{ steps.check.outputs.has_incident_label }}
+      labeler_authorized: ${{ steps.guard.outputs.labeler_authorized }}
+      tpi_passed: ${{ steps.guard.outputs.tpi_passed }}
+      break_glass_passed: ${{ steps.guard.outputs.break_glass_passed }}
+      has_break_glass_label: ${{ steps.guard.outputs.has_break_glass_label }}
+      guard_ok: ${{ steps.result.outputs.guard_ok }}
+      guard_errors: ${{ steps.result.outputs.guard_errors }}
+
+    steps:
+      - name: Checkout (for approver source)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          sparse-checkout: |
+            .github/autonomy-approvers.json
+          sparse-checkout-cone-mode: false
+
+      - name: Check for incident label
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+
+          # Get labels on PR
+          LABELS=$(gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name' 2>/dev/null || echo "")
+
+          HAS_INCIDENT=$(echo "$LABELS" | grep -c "^incident$" || echo "0")
+
+          if [ "$HAS_INCIDENT" -gt 0 ]; then
+            echo "has_incident_label=true" >> $GITHUB_OUTPUT
+            echo "🏷️ Incident label detected - enforcing guards"
+          else
+            echo "has_incident_label=false" >> $GITHUB_OUTPUT
+            echo "✅ No incident label - guard passes (noop)"
+          fi
+
+      - name: Enforce Guards (if incident label present)
+        id: guard
+        if: steps.check.outputs.has_incident_label == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          ACTOR="${{ github.actor }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          ERRORS=""
+
+          echo "🔍 Enforcing incident label guards..."
+          echo "Actor: $ACTOR"
+          echo "PR: #$PR_NUMBER"
+          echo "HEAD SHA: $HEAD_SHA"
+
+          # ──────────────────────────────────────────────────────────────────
+          # Guard 1: Authority of the labeler
+          # ──────────────────────────────────────────────────────────────────
+          echo ""
+          echo "📋 Guard 1: Checking labeler authority..."
+
+          LABELER_AUTHORIZED="false"
+
+          # Check if actor is a bot (excluded)
+          BOT_PATTERNS="${{ env.BOT_PATTERNS }}"
+          IS_BOT="false"
+          for pattern in $(echo "$BOT_PATTERNS" | tr ',' ' '); do
+            if [[ "$ACTOR" == *"$pattern"* ]] || [[ "$ACTOR" == *"[bot]"* ]]; then
+              IS_BOT="true"
+              ERRORS="${ERRORS}Bot actors cannot apply incident label. "
+              break
+            fi
+          done
+
+          if [ "$IS_BOT" = "false" ]; then
+            # Check if actor is in approvers.json under Security or CIO
+            if [ -f "${{ env.APPROVER_SOURCE }}" ]; then
+              ACTOR_LOWER=$(echo "$ACTOR" | tr '[:upper:]' '[:lower:]')
+
+              # Parse Security and CIO users
+              SECURITY_USERS=$(jq -r '.roles.security[]? | ascii_downcase' "${{ env.APPROVER_SOURCE }}" 2>/dev/null || echo "")
+              CIO_USERS=$(jq -r '.roles.cio[]? | ascii_downcase' "${{ env.APPROVER_SOURCE }}" 2>/dev/null || echo "")
+
+              if echo "$SECURITY_USERS" | grep -q "^${ACTOR_LOWER}$" || \
+                 echo "$CIO_USERS" | grep -q "^${ACTOR_LOWER}$"; then
+                LABELER_AUTHORIZED="true"
+                echo "✅ Labeler $ACTOR is authorized (Security or CIO)"
+              else
+                ERRORS="${ERRORS}Labeler $ACTOR not in Security or CIO roles. "
+                echo "❌ Labeler $ACTOR not authorized"
+              fi
+            else
+              ERRORS="${ERRORS}Approver source file missing. "
+              echo "❌ Approver source file not found"
+            fi
+          fi
+
+          echo "labeler_authorized=$LABELER_AUTHORIZED" >> $GITHUB_OUTPUT
+
+          # ──────────────────────────────────────────────────────────────────
+          # Guard 2: Constitutional prerequisite checks passed
+          # ──────────────────────────────────────────────────────────────────
+          echo ""
+          echo "📋 Guard 2: Checking constitutional prerequisites..."
+
+          TPI_PASSED="false"
+          BREAK_GLASS_PASSED="false"
+
+          # Check for TPI guard success on HEAD SHA
+          TPI_CHECK=$(gh api repos/${{ github.repository }}/commits/$HEAD_SHA/check-runs \
+            --jq '.check_runs[] | select(.name | test("TPI|tpi|Two-Person"; "i")) | .conclusion' 2>/dev/null | head -1 || echo "")
+
+          if [ "$TPI_CHECK" = "success" ]; then
+            TPI_PASSED="true"
+            echo "✅ TPI guard check passed"
+          else
+            echo "⚠️ TPI guard check not found or not successful (status: ${TPI_CHECK:-not found})"
+            # TPI is optional for incident - break-glass is required
+          fi
+
+          # Check for break-glass guard success on HEAD SHA
+          BG_CHECK=$(gh api repos/${{ github.repository }}/commits/$HEAD_SHA/check-runs \
+            --jq '.check_runs[] | select(.name | test("break-glass|Break-Glass|breakglass"; "i")) | .conclusion' 2>/dev/null | head -1 || echo "")
+
+          if [ "$BG_CHECK" = "success" ]; then
+            BREAK_GLASS_PASSED="true"
+            echo "✅ Break-glass guard check passed"
+          else
+            ERRORS="${ERRORS}Break-glass guard check not successful (${BG_CHECK:-not found}). "
+            echo "❌ Break-glass guard check not found or not successful"
+          fi
+
+          echo "tpi_passed=$TPI_PASSED" >> $GITHUB_OUTPUT
+          echo "break_glass_passed=$BREAK_GLASS_PASSED" >> $GITHUB_OUTPUT
+
+          # ──────────────────────────────────────────────────────────────────
+          # Guard 3: No "label-only incident" - requires break-glass label
+          # ──────────────────────────────────────────────────────────────────
+          echo ""
+          echo "📋 Guard 3: Checking break-glass label requirement..."
+
+          LABELS=$(gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name' 2>/dev/null || echo "")
+          HAS_BG_LABEL=$(echo "$LABELS" | grep -c "^break-glass$" || echo "0")
+
+          if [ "$HAS_BG_LABEL" -gt 0 ]; then
+            echo "has_break_glass_label=true" >> $GITHUB_OUTPUT
+            echo "✅ Break-glass label present"
+          else
+            echo "has_break_glass_label=false" >> $GITHUB_OUTPUT
+            ERRORS="${ERRORS}Incident label requires break-glass label to be present. "
+            echo "❌ Break-glass label not present"
+          fi
+
+          # ──────────────────────────────────────────────────────────────────
+          # Guard 4: Branch/ref sanity
+          # ──────────────────────────────────────────────────────────────────
+          echo ""
+          echo "📋 Guard 4: Checking target branch..."
+
+          BASE_REF="${{ github.event.pull_request.base.ref }}"
+          if [ "$BASE_REF" = "main" ] || [ "$BASE_REF" = "master" ]; then
+            echo "✅ Target branch is $BASE_REF"
+          else
+            ERRORS="${ERRORS}Incident label only valid for PRs targeting main/master. "
+            echo "❌ Target branch $BASE_REF not allowed for incident"
+          fi
+
+          # Output errors for next step
+          echo "guard_errors<<EOF" >> $GITHUB_OUTPUT
+          echo "$ERRORS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Determine Guard Result
+        id: result
+        run: |
+          set -euo pipefail
+
+          HAS_INCIDENT="${{ steps.check.outputs.has_incident_label }}"
+
+          if [ "$HAS_INCIDENT" != "true" ]; then
+            echo "guard_ok=true" >> $GITHUB_OUTPUT
+            echo "guard_errors=" >> $GITHUB_OUTPUT
+            echo "✅ No incident label - guard passes"
+            exit 0
+          fi
+
+          # All guards must pass
+          LABELER_OK="${{ steps.guard.outputs.labeler_authorized }}"
+          BG_PASSED="${{ steps.guard.outputs.break_glass_passed }}"
+          HAS_BG_LABEL="${{ steps.guard.outputs.has_break_glass_label }}"
+          ERRORS="${{ steps.guard.outputs.guard_errors }}"
+
+          if [ "$LABELER_OK" = "true" ] && \
+             [ "$BG_PASSED" = "true" ] && \
+             [ "$HAS_BG_LABEL" = "true" ]; then
+            echo "guard_ok=true" >> $GITHUB_OUTPUT
+            echo "guard_errors=" >> $GITHUB_OUTPUT
+            echo "✅ All incident label guards passed"
+          else
+            echo "guard_ok=false" >> $GITHUB_OUTPUT
+            echo "guard_errors=$ERRORS" >> $GITHUB_OUTPUT
+            echo "❌ Incident label guard failed: $ERRORS"
+            exit 1
+          fi
+
+  summary:
+    name: Generate Summary
+    runs-on: ubuntu-latest
+    needs: check-incident-label
+    if: always()
+
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "## 🏷️ Incident Label Guard Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          HAS_INCIDENT="${{ needs.check-incident-label.outputs.has_incident_label }}"
+          GUARD_OK="${{ needs.check-incident-label.outputs.guard_ok }}"
+
+          if [ "$HAS_INCIDENT" != "true" ]; then
+            echo "✅ **No incident label** - Guard passes (noop)" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
+          echo "### Guard Checks" >> $GITHUB_STEP_SUMMARY
+          echo "| Guard | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 1. Labeler Authorized | ${{ needs.check-incident-label.outputs.labeler_authorized == 'true' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 2a. TPI Check | ${{ needs.check-incident-label.outputs.tpi_passed == 'true' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 2b. Break-Glass Check | ${{ needs.check-incident-label.outputs.break_glass_passed == 'true' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 3. Break-Glass Label | ${{ needs.check-incident-label.outputs.has_break_glass_label == 'true' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$GUARD_OK" = "true" ]; then
+            echo "### ✅ Result: PASS" >> $GITHUB_STEP_SUMMARY
+            echo "Incident label is authorized and all constitutional checks passed." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Result: FAIL" >> $GITHUB_STEP_SUMMARY
+            echo "**Errors:** ${{ needs.check-incident-label.outputs.guard_errors }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The incident label was applied without proper authority or constitutional checks." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Phase 4N27: Autonomy Incident Label Guard*" >> $GITHUB_STEP_SUMMARY

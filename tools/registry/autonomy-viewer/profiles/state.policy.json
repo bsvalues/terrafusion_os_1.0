@@ -1,0 +1,125 @@
+{
+  "$schema": "terrafusion.autonomy.policy-profile.v1",
+  "profileId": "state-dor",
+  "profileName": "State Department of Revenue Profile",
+  "version": "1.0.0",
+  "description": "Deployment profile for state-level TerraFusion OS installations. Stricter retention, larger size limits, enhanced audit requirements for state DOR compliance.",
+
+  "tierACLs": [
+    {
+      "audience": "internal",
+      "canRead": true,
+      "canRedact": true,
+      "canDelete": false,
+      "requiresApproval": false
+    },
+    {
+      "audience": "county",
+      "canRead": true,
+      "canRedact": false,
+      "canDelete": false,
+      "requiresApproval": false
+    },
+    {
+      "audience": "state",
+      "canRead": true,
+      "canRedact": true,
+      "canDelete": false,
+      "requiresApproval": true
+    },
+    {
+      "audience": "public",
+      "canRead": true,
+      "canRedact": false,
+      "canDelete": false,
+      "requiresApproval": true
+    }
+  ],
+
+  "retention": [
+    {
+      "tier": "standard",
+      "retentionDays": 3650,
+      "deletionRequiresApproval": true,
+      "breakGlassEligible": false
+    },
+    {
+      "tier": "permanent",
+      "retentionDays": -1,
+      "deletionRequiresApproval": true,
+      "breakGlassEligible": true
+    },
+    {
+      "tier": "court",
+      "retentionDays": 7300,
+      "deletionRequiresApproval": true,
+      "breakGlassEligible": true
+    },
+    {
+      "tier": "temporary",
+      "retentionDays": 30,
+      "deletionRequiresApproval": false,
+      "breakGlassEligible": false
+    },
+    {
+      "tier": "taxroll",
+      "retentionDays": 5475,
+      "deletionRequiresApproval": true,
+      "breakGlassEligible": true
+    }
+  ],
+
+  "sizeLimits": {
+    "maxCasefileSizeBytes": 104857600,
+    "maxChunkSizeBytes": 10485760,
+    "maxRollupEntries": 50000
+  },
+
+  "chunkingThresholds": {
+    "enableChunkingAboveBytes": 20971520,
+    "targetChunkSizeBytes": 10485760
+  },
+
+  "telemetrySinks": [
+    {
+      "type": "file",
+      "path": "./telemetry/telemetry.jsonl",
+      "enabled": true
+    },
+    {
+      "type": "siem",
+      "endpoint": "${SIEM_ENDPOINT}",
+      "enabled": true
+    },
+    {
+      "type": "stdout",
+      "enabled": false
+    }
+  ],
+
+  "keyRotation": {
+    "cadenceDays": 60,
+    "notifyBeforeDays": 21,
+    "autoRotate": false
+  },
+
+  "auditSettings": {
+    "requireExternalVerification": true,
+    "verificationCadenceDays": 14,
+    "auditPacketAutoGenerate": true,
+    "auditPacketIncludeFullChain": true
+  },
+
+  "operationalDefaults": {
+    "rollupCadence": "monthly",
+    "externalVerificationProvider": "github-attestation",
+    "distributionPackFormat": "zip",
+    "signatureAlgorithm": "ecdsa-p256-sha256"
+  },
+
+  "stateSpecific": {
+    "requireCountyAttestation": true,
+    "aggregationLevel": "county",
+    "crossCountyValidation": true
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "$schema": "terrafusion.autonomy.canary.policy.v1",
+  "$version": "4N32.1",
+  "$description": "Canary rollout policy for autonomy blast radius control",
+
+  "stages": [
+    {
+      "id": "disabled",
+      "label": "Disabled",
+      "blastRadius": 0,
+      "maxPRsPerDay": 0,
+      "maxAppliesPerRun": 0,
+      "description": "Autonomy fully disabled. No automated changes allowed."
+    },
+    {
+      "id": "canary_1pct",
+      "label": "Canary 1%",
+      "blastRadius": 1,
+      "maxPRsPerDay": 1,
+      "maxAppliesPerRun": 1,
+      "description": "Minimal exposure. Single PR per day, single apply per run."
+    },
+    {
+      "id": "canary_5pct",
+      "label": "Canary 5%",
+      "blastRadius": 5,
+      "maxPRsPerDay": 2,
+      "maxAppliesPerRun": 1,
+      "description": "Low exposure. Up to 2 PRs per day."
+    },
+    {
+      "id": "canary_10pct",
+      "label": "Canary 10%",
+      "blastRadius": 10,
+      "maxPRsPerDay": 3,
+      "maxAppliesPerRun": 2,
+      "description": "Medium exposure. Up to 3 PRs per day, 2 applies per run."
+    },
+    {
+      "id": "canary_25pct",
+      "label": "Canary 25%",
+      "blastRadius": 25,
+      "maxPRsPerDay": 5,
+      "maxAppliesPerRun": 3,
+      "description": "Elevated exposure. Requires sustained health."
+    },
+    {
+      "id": "canary_50pct",
+      "label": "Canary 50%",
+      "blastRadius": 50,
+      "maxPRsPerDay": 10,
+      "maxAppliesPerRun": 5,
+      "description": "High exposure. Production-like behavior with limits."
+    },
+    {
+      "id": "full",
+      "label": "Full (100%)",
+      "blastRadius": 100,
+      "maxPRsPerDay": -1,
+      "maxAppliesPerRun": -1,
+      "description": "Full autonomy. No rate limits (still subject to health checks)."
+    }
+  ],
+
+  "promotionRules": {
+    "minSuccessfulRunsForPromotion": 3,
+    "minHoursAtStage": 24,
+    "requiredHealthLevel": "ok",
+    "requiredChecks": [
+      {
+        "id": "verify_ok",
+        "description": "Last 3 records must have verify.ok = true"
+      },
+      {
+        "id": "pins_ok",
+        "description": "Last 3 records must have signature.pinned = true"
+      },
+      {
+        "id": "rekor_ok",
+        "description": "Last 3 records must have rekor.anchored = true"
+      },
+      {
+        "id": "tpi_ok",
+        "description": "Last 3 records must have tpi.ok = true"
+      }
+    ],
+    "promotionCooldownHours": 24
+  },
+
+  "demotionRules": {
+    "immediateDemotionTriggers": [
+      {
+        "condition": "health.level === 'pause_required'",
+        "demoteTo": "disabled",
+        "reason": "Critical health failure"
+      },
+      {
+        "condition": "health.level === 'pause_recommended'",
+        "demoteTo": "canary_1pct",
+        "reason": "Health degradation"
+      },
+      {
+        "condition": "pins_failed",
+        "demoteTo": "canary_1pct",
+        "reason": "Signature pin verification failed"
+      },
+      {
+        "condition": "rekor_failed",
+        "demoteTo": "canary_1pct",
+        "reason": "Rekor transparency log failure"
+      },
+      {
+        "condition": "tpi_failed",
+        "demoteTo": "canary_1pct",
+        "reason": "Two-person integrity check failed"
+      }
+    ],
+    "autoPauseOnDemotion": true,
+    "demotionRequiresProof": true
+  },
+
+  "lockPolicy": {
+    "lockOnManualDemotion": true,
+    "lockDurationHours": 4,
+    "unlockRequiresOperatorApproval": true
+  },
+
+  "defaults": {
+    "initialStage": "disabled",
+    "maxAutoPromotionStage": "canary_50pct",
+    "fullRequiresManualApproval": true
+  }
+}

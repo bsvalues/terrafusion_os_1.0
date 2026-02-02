@@ -1,0 +1,137 @@
+{
+  "$schema": "terrafusion.autonomy.policy-profile.v1",
+  "profileId": "incident-response",
+  "profileName": "Incident Response Profile",
+  "version": "1.0.0",
+  "description": "Emergency deployment profile for incident response scenarios. Enables break-glass procedures, accelerated key rotation, and enhanced logging for post-incident analysis.",
+
+  "tierACLs": [
+    {
+      "audience": "internal",
+      "canRead": true,
+      "canRedact": true,
+      "canDelete": true,
+      "requiresApproval": true
+    },
+    {
+      "audience": "county",
+      "canRead": true,
+      "canRedact": true,
+      "canDelete": false,
+      "requiresApproval": false
+    },
+    {
+      "audience": "state",
+      "canRead": true,
+      "canRedact": true,
+      "canDelete": false,
+      "requiresApproval": false
+    },
+    {
+      "audience": "public",
+      "canRead": false,
+      "canRedact": false,
+      "canDelete": false,
+      "requiresApproval": true
+    }
+  ],
+
+  "retention": [
+    {
+      "tier": "standard",
+      "retentionDays": 2555,
+      "deletionRequiresApproval": false,
+      "breakGlassEligible": true
+    },
+    {
+      "tier": "permanent",
+      "retentionDays": -1,
+      "deletionRequiresApproval": true,
+      "breakGlassEligible": true
+    },
+    {
+      "tier": "court",
+      "retentionDays": 3650,
+      "deletionRequiresApproval": true,
+      "breakGlassEligible": true
+    },
+    {
+      "tier": "temporary",
+      "retentionDays": 7,
+      "deletionRequiresApproval": false,
+      "breakGlassEligible": false
+    },
+    {
+      "tier": "incident",
+      "retentionDays": 365,
+      "deletionRequiresApproval": true,
+      "breakGlassEligible": true
+    }
+  ],
+
+  "sizeLimits": {
+    "maxCasefileSizeBytes": 52428800,
+    "maxChunkSizeBytes": 5242880,
+    "maxRollupEntries": 10000
+  },
+
+  "chunkingThresholds": {
+    "enableChunkingAboveBytes": 10485760,
+    "targetChunkSizeBytes": 5242880
+  },
+
+  "telemetrySinks": [
+    {
+      "type": "file",
+      "path": "./telemetry/telemetry.jsonl",
+      "enabled": true
+    },
+    {
+      "type": "file",
+      "path": "./telemetry/incident-${INCIDENT_ID}.jsonl",
+      "enabled": true
+    },
+    {
+      "type": "siem",
+      "endpoint": "${SIEM_ENDPOINT}",
+      "enabled": true
+    },
+    {
+      "type": "stdout",
+      "enabled": true
+    }
+  ],
+
+  "keyRotation": {
+    "cadenceDays": 1,
+    "notifyBeforeDays": 0,
+    "autoRotate": true,
+    "forceRotationOnActivation": true
+  },
+
+  "auditSettings": {
+    "requireExternalVerification": false,
+    "verificationCadenceDays": 1,
+    "auditPacketAutoGenerate": true,
+    "auditPacketIncludeFullChain": true,
+    "incidentTrackingRequired": true
+  },
+
+  "operationalDefaults": {
+    "rollupCadence": "daily",
+    "externalVerificationProvider": "github-attestation",
+    "distributionPackFormat": "zip",
+    "signatureAlgorithm": "ecdsa-p256-sha256"
+  },
+
+  "incidentSpecific": {
+    "breakGlassEnabled": true,
+    "breakGlassRequiresDualApproval": false,
+    "breakGlassAuditImmediate": true,
+    "revocationPropagationImmediate": true,
+    "chainFreezeOnActivation": false,
+    "requiresIncidentId": true,
+    "maxActiveDurationHours": 72,
+    "escalationContactRequired": true
+  }
+}

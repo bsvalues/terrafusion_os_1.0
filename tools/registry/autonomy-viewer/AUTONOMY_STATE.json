@@ -1,0 +1,15 @@
+{
+  "$schema": "./schemas/autonomy-state.schema.json",
+  "schemaVersion": "1.0.0",
+  "state": "active",
+  "updatedAt": "2025-01-31T00:00:00.000Z",
+  "updatedBy": "system",
+  "reason": null,
+  "expiresAt": null,
+  "policy": {
+    "failClosedOnMissing": true,
+    "failClosedOnInvalid": true,
+    "allowIncidentPublisherWhenPaused": true
+  },
+  "history": []
+}

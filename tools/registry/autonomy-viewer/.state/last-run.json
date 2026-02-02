@@ -1,0 +1,17 @@
+{
+  "drillId": "drill-county-1770011115755",
+  "profile": "county",
+  "overall": "passed",
+  "timestamp": "2026-02-02T05:45:15.755Z",
+  "exercisesRun": [
+    {
+      "name": "COUNTY_PILOT",
+      "status": "passed"
+    },
+    {
+      "name": "INCIDENT_DRILL",
+      "status": "passed"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,216 @@
+# Phase 4N28: Autonomy Incident Triage Workflow
+#
+# Triggers when incident evidence is published (or manual dispatch).
+# Downloads release assets, runs triage, uploads incident packet.
+#
+# @governance SEAL-COMPLIANT
+# @phase 4N28
+
+name: Autonomy Incident Triage
+
+on:
+  # Trigger on incident release publish
+  release:
+    types: [published]
+
+  # Manual dispatch for specific release tag
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to triage (e.g., autonomy-incident/2026)'
+        required: true
+        type: string
+      strict:
+        description: 'Strict mode (fail on verification errors)'
+        required: false
+        type: boolean
+        default: true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Permissions: Minimal required
+# ─────────────────────────────────────────────────────────────────────────────
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  # ───────────────────────────────────────────────────────────────────────────
+  # Gate: Only run for incident releases
+  # ───────────────────────────────────────────────────────────────────────────
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+      release_tag: ${{ steps.check.outputs.release_tag }}
+    steps:
+      - name: Check if incident release
+        id: check
+        run: |
+          # Manual dispatch always runs
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "release_tag=${{ inputs.release_tag }}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # For release events, check if it's an incident release
+          TAG="${{ github.event.release.tag_name }}"
+          if [[ "$TAG" == autonomy-incident/* ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "release_tag=$TAG" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "release_tag=" >> $GITHUB_OUTPUT
+          fi
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Triage: Download, verify, produce packet
+  # ───────────────────────────────────────────────────────────────────────────
+  triage:
+    needs: gate
+    if: needs.gate.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ needs.gate.outputs.release_tag }}
+        run: |
+          mkdir -p ./incident-assets
+          gh release download "$RELEASE_TAG" --pattern "*" --dir ./incident-assets
+
+          echo "📦 Downloaded assets:"
+          ls -la ./incident-assets/
+
+      - name: Find evidence bundle
+        id: find-bundle
+        run: |
+          # Find sealed bundle first, fallback to regular bundle
+          BUNDLE=$(ls ./incident-assets/*-sealed.zip 2>/dev/null | head -1 || ls ./incident-assets/*.zip 2>/dev/null | head -1 || echo "")
+
+          if [[ -z "$BUNDLE" ]]; then
+            echo "::error::No evidence bundle found in release assets"
+            exit 1
+          fi
+
+          echo "bundle_path=$BUNDLE" >> $GITHUB_OUTPUT
+          echo "📦 Found bundle: $BUNDLE"
+
+          # Find evidence index if present
+          INDEX=$(ls ./incident-assets/evidence-index.json 2>/dev/null || ls ./incident-assets/*-evidence-index.json 2>/dev/null | head -1 || echo "")
+          echo "index_path=$INDEX" >> $GITHUB_OUTPUT
+          if [[ -n "$INDEX" ]]; then
+            echo "📋 Found index: $INDEX"
+          fi
+
+      - name: Run triage
+        id: triage
+        env:
+          BUNDLE_PATH: ${{ steps.find-bundle.outputs.bundle_path }}
+          INDEX_PATH: ${{ steps.find-bundle.outputs.index_path }}
+          STRICT: ${{ inputs.strict || 'true' }}
+        run: |
+          cd tools/registry/autonomy-viewer
+
+          # Build triage command
+          TRIAGE_CMD="pnpm run triage --zip ../../../$BUNDLE_PATH --out ../../../dist/triage --emit-packet"
+
+          if [[ -n "$INDEX_PATH" ]]; then
+            TRIAGE_CMD="$TRIAGE_CMD --policy-from-index ../../../$INDEX_PATH"
+          fi
+
+          if [[ "$STRICT" == "true" ]]; then
+            TRIAGE_CMD="$TRIAGE_CMD --strict"
+          fi
+
+          TRIAGE_CMD="$TRIAGE_CMD --verbose"
+
+          echo "🔍 Running: $TRIAGE_CMD"
+          eval "$TRIAGE_CMD" || TRIAGE_EXIT=$?
+
+          # Capture exit code but continue to upload
+          echo "triage_exit=${TRIAGE_EXIT:-0}" >> $GITHUB_OUTPUT
+
+      - name: Upload triage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: incident-triage-packet
+          path: |
+            dist/triage/incident-report.json
+            dist/triage/incident-report.md
+            dist/triage/incident-report.html
+            dist/triage/autonomy-incident-packet-*.zip
+          retention-days: 365
+          if-no-files-found: error
+
+      - name: Generate job summary
+        run: |
+          echo "## 🔍 Incident Triage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Release:** ${{ needs.gate.outputs.release_tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Bundle:** ${{ steps.find-bundle.outputs.bundle_path }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ -f "dist/triage/incident-report.md" ]]; then
+            cat dist/triage/incident-report.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No report generated" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Fail if strict mode and verification failed
+        if: steps.triage.outputs.triage_exit != '0' && (inputs.strict == true || inputs.strict == '')
+        run: |
+          echo "::error::Triage verification failed in strict mode"
+          exit 1
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Attach: Upload packet back to release (optional)
+  # ───────────────────────────────────────────────────────────────────────────
+  attach-to-release:
+    needs: [gate, triage]
+    if: needs.gate.outputs.should_run == 'true' && github.event_name == 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to upload to release
+    steps:
+      - name: Download triage packet
+        uses: actions/download-artifact@v4
+        with:
+          name: incident-triage-packet
+          path: ./triage-output
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ needs.gate.outputs.release_tag }}
+        run: |
+          # Find and upload packet
+          PACKET=$(ls ./triage-output/autonomy-incident-packet-*.zip 2>/dev/null | head -1 || echo "")
+
+          if [[ -n "$PACKET" ]]; then
+            echo "📦 Uploading packet to release: $PACKET"
+            gh release upload "$RELEASE_TAG" "$PACKET" --clobber || echo "::warning::Failed to upload packet"
+          fi
+
+          # Upload report
+          if [[ -f "./triage-output/incident-report.html" ]]; then
+            gh release upload "$RELEASE_TAG" "./triage-output/incident-report.html" --clobber || echo "::warning::Failed to upload HTML report"
+          fi
+
+          echo "✅ Triage artifacts attached to release"

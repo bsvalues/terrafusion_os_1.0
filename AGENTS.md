@@ -30,6 +30,46 @@ Anything outside this scope requires explicit authorization.
 - `pnpm run type-check` (core boundary)
 - `node --test os-platform/core/tests/phase83-tools.test.mjs`
 
+## BRANCH PROTECTION (CONSTITUTIONAL GATES)
+
+The following status checks are **required** on `main` branch:
+
+| Check | Scope | Enforcement |
+|-------|-------|-------------|
+| `🔒 SEAL` | All PRs | Required, admins enforced |
+| `typecheck-core` | All PRs | Required |
+| `phase83-tools` | All PRs | Required |
+| `Accreditation Compat Check` | Accreditation paths only | Required when triggered |
+| `Accreditation Oracle Health` | Scheduled weekly | Non-blocking (monitoring) |
+
+### Two-Tier Oracle Model
+
+1. **OS Evidence-Plane Oracle** (golden corpus)
+   - Enforcement: `oracle-health.yml` + `GOLDEN_CORPUS.lock.json`
+   - Scope: Global governance invariants
+
+2. **County Accreditation Oracle** (reference packet lock)
+   - Enforcement: `accreditation-compat.yml` + `ACCREDITATION_REFERENCE.lock.json`
+   - Scope: County deployment/accreditation invariants
+
+### Branch Protection Settings (GitHub)
+
+```
+main:
+  required_status_checks:
+    strict: true
+    contexts:
+      - "🔒 SEAL"
+      - "typecheck-core"
+      - "phase83-tools"
+      - "Accreditation Compat Check (ubuntu-latest)"
+      - "Accreditation Compat Check (windows-latest)"
+  enforce_admins: true
+  required_pull_request_reviews:
+    required_approving_review_count: 1
+  restrictions: null
+```
+
 ## TOOL GOVERNANCE RULES
 - ToolRegistry must resolve the manifest path canonically (relative to ToolRegistry) and allow env override only:
   - `TERRAFUSION_TOOL_MANIFEST_PATH`
