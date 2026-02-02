@@ -40,6 +40,9 @@ import type {
     PrincipalResolutionResult,
 } from './types.js';
 
+// Import EntraOidcPrincipalProvider for internal use
+import { EntraOidcPrincipalProvider as EntraOidcPrincipalProviderClass } from './identity/entra-oidc.js';
+
 // Re-export Entra provider for convenience
 export {
     createMockIdToken,
@@ -626,10 +629,8 @@ function createPrincipalProviderFromType(
       if (!options.entraConfig) {
         throw new Error(`${idpType} IdP requires entraConfig with tenantId and clientId`);
       }
-      // Dynamic import would be better but for now we use static
-      // EntraOidcPrincipalProvider is re-exported at top
-      const { EntraOidcPrincipalProvider } = require('./identity/entra-oidc.js');
-      return new EntraOidcPrincipalProvider({
+      // EntraOidcPrincipalProviderClass is imported at top of this file
+      return new EntraOidcPrincipalProviderClass({
         tenantId: options.entraConfig.tenantId,
         clientId: options.entraConfig.clientId,
         issuer: options.entraConfig.issuer,
@@ -647,9 +648,41 @@ function createPrincipalProviderFromType(
       });
 
     case 'env':
-    default:
       return new EnvPrincipalProvider();
+
+    default:
+      // Fail-closed: unknown provider type is an error, not a silent fallback
+      throw new Error(
+        `Unknown IdP provider type: '${idpType}'. Supported values: env, file, entra, oidc`
+      );
   }
+}
+
+/**
+ * Validate and normalize IdP provider type.
+ * Empty string or undefined defaults to 'env'.
+ * Whitespace-only or unknown values throw.
+ */
+function validateIdpProviderType(value: string | undefined): IdpProviderType {
+  if (value === undefined || value === '') {
+    return 'env'; // Default
+  }
+
+  const trimmed = value.trim();
+  if (trimmed === '') {
+    throw new Error(
+      `Invalid IdP provider type: whitespace-only value. Supported values: env, file, entra, oidc`
+    );
+  }
+
+  const validTypes: IdpProviderType[] = ['env', 'file', 'entra', 'oidc'];
+  if (!validTypes.includes(trimmed as IdpProviderType)) {
+    throw new Error(
+      `Unknown IdP provider type: '${trimmed}'. Supported values: env, file, entra, oidc`
+    );
+  }
+
+  return trimmed as IdpProviderType;
 }
 
 /**
@@ -660,6 +693,14 @@ function createPrincipalProviderFromType(
  * - 'file': FilePrincipalProvider (air-gapped, county offline)
  * - 'entra': EntraOidcPrincipalProvider (Azure AD / Entra ID)
  * - 'oidc': EntraOidcPrincipalProvider (Generic OIDC, same code path)
+ *
+ * Selection precedence:
+ * 1. options.principalProvider (if provided, bypasses selection entirely)
+ * 2. options.idpProvider
+ * 3. process.env.TF_IDP_PROVIDER
+ * 4. Default: 'env'
+ *
+ * Unknown values throw (fail-closed, no implicit fallback).
  */
 export function createSecurityContext(options: CreateSecurityContextOptions = {}): {
   principalProvider: PrincipalResolutionProvider;
@@ -668,8 +709,8 @@ export function createSecurityContext(options: CreateSecurityContextOptions = {}
   attestationProvider: AttestationProvider;
 } {
   // Determine IdP type from options or environment
-  const idpType: IdpProviderType =
-    options.idpProvider ?? (process.env['TF_IDP_PROVIDER'] as IdpProviderType | undefined) ?? 'env';
+  const rawIdpType = options.idpProvider ?? process.env['TF_IDP_PROVIDER'];
+  const idpType = validateIdpProviderType(rawIdpType);
 
   // Select principal provider
   const principalProvider =

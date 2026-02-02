@@ -320,9 +320,10 @@ export class EntraOidcPrincipalProvider implements PrincipalResolutionProvider {
       };
     }
 
-    let jwks: JwkSet;
+    // Try to find key in JWKS, with one refresh attempt if not found
+    let key: Jwk | undefined;
     try {
-      jwks = await this._fetchJwks();
+      key = await this._findKeyWithRotation(kid);
     } catch (err) {
       return {
         ok: false,
@@ -331,7 +332,6 @@ export class EntraOidcPrincipalProvider implements PrincipalResolutionProvider {
       };
     }
 
-    const key = jwks.keys.find(k => k.kid === kid);
     if (!key) {
       return {
         ok: false,
@@ -478,6 +478,77 @@ export class EntraOidcPrincipalProvider implements PrincipalResolutionProvider {
   }
 
   /**
+   * Force refresh JWKS cache (ignores TTL).
+   */
+  private async _refreshJwks(): Promise<JwkSet> {
+    const fetcher = this._deps.jwksFetcher;
+    if (!fetcher) {
+      throw new Error('JWKS fetcher not configured');
+    }
+
+    let jwksUri =
+      this._discoveryCache?.jwks_uri ??
+      `https://login.microsoftonline.com/${this._config.tenantId}/discovery/v2.0/keys`;
+
+    this._jwksCache = await fetcher(jwksUri);
+    this._jwksCacheTime = Date.now();
+    return this._jwksCache;
+  }
+
+  // Track recently unknown kids to prevent hammering (negative cache)
+  private _unknownKidCache: Map<string, number> = new Map();
+  private static readonly UNKNOWN_KID_TTL_MS = 60 * 1000; // 1 minute negative cache
+
+  /**
+   * Find key by kid with one rotation attempt.
+   *
+   * Rotation flow:
+   * 1. Check current cache for kid
+   * 2. If not found and kid not in negative cache, refresh JWKS once
+   * 3. If still not found, add to negative cache
+   * 4. Return key or undefined
+   */
+  private async _findKeyWithRotation(kid: string): Promise<Jwk | undefined> {
+    // Check negative cache first to prevent hammering
+    const now = Date.now();
+    const negCacheTime = this._unknownKidCache.get(kid);
+    if (negCacheTime && now - negCacheTime < EntraOidcPrincipalProvider.UNKNOWN_KID_TTL_MS) {
+      // Kid was recently not found, don't hammer JWKS endpoint
+      return undefined;
+    }
+
+    // Try cached JWKS first
+    let jwks = await this._fetchJwks();
+    let key = jwks.keys.find(k => k.kid === kid);
+
+    if (key) {
+      // Found in cache, remove from negative cache if present
+      this._unknownKidCache.delete(kid);
+      return key;
+    }
+
+    // Not found - attempt one refresh (rotation scenario)
+    try {
+      jwks = await this._refreshJwks();
+      key = jwks.keys.find(k => k.kid === kid);
+    } catch (refreshError) {
+      // Refresh failed - key is definitely not available
+      this._unknownKidCache.set(kid, now);
+      throw refreshError; // Re-throw to signal JWKS unavailable
+    }
+
+    if (!key) {
+      // Still not found after refresh - add to negative cache
+      this._unknownKidCache.set(kid, now);
+    } else {
+      // Found after refresh - clear from negative cache
+      this._unknownKidCache.delete(kid);
+    }
+
+    return key;
+  }
+
+  /**
    * Clear caches (for testing).
    */
   clearCache(): void {
@@ -485,6 +556,7 @@ export class EntraOidcPrincipalProvider implements PrincipalResolutionProvider {
     this._jwksCacheTime = 0;
     this._discoveryCache = null;
     this._discoveryCacheTime = 0;
+    this._unknownKidCache.clear();
   }
 }
 
@@ -531,6 +603,7 @@ export function createMockIdToken(claims: {
   amr?: string[];
   exp?: number;
   iat?: number;
+  nbf?: number;
 }): string {
   const now = Math.floor(Date.now() / 1000);
   const header = {
@@ -544,6 +617,7 @@ export function createMockIdToken(claims: {
     aud: claims.aud,
     exp: claims.exp ?? now + 3600,
     iat: claims.iat ?? now,
+    nbf: claims.nbf,
     tid: claims.tid,
     oid: claims.oid,
     name: claims.name,

@@ -1,6 +1,6 @@
 # TerraFusion Security Provider Contract Surface
 
-> **Phase IIIe Milestone**: `v1.5.3-entra-oidc` (Phase IIIe)
+> **Phase IIIf Milestone**: `v1.5.4-rotation-policy` (Phase IIIf)
 > **Schema Version**: `terrafusion.security.provider.v2`
 
 This document defines the **invariants**, **contracts**, and **stability rules** for security provider interfaces. These are constitutional properties—they cannot change without an RC gate.
@@ -256,7 +256,57 @@ TF_ENTRA_DISCOVERY=https://login.microsoftonline.com/${TF_ENTRA_TENANT_ID}/v2.0/
 | Malformed token | DENY_TOKEN_INVALID | Invalid JWT structure |
 | Missing token | DENY_PROVIDER_ERROR | TF_BEARER_TOKEN not set |
 
-### 5.4 Default Provider Selection
+### 5.4 JWKS Rotation & Caching (Phase IIIf)
+
+The `EntraOidcPrincipalProvider` implements rotation-aware JWKS caching:
+
+| Property | Value | Description |
+|----------|-------|-------------|
+| Cache TTL | 5 minutes | Normal JWKS refresh interval |
+| Refresh-on-unknown-kid | Enabled | Immediate refresh if kid not in cache |
+| Negative cache TTL | 60 seconds | Prevents re-fetch storms for invalid kids |
+
+**Rotation Resilience:**
+
+1. Cache hit (kid found) → use cached key
+2. Cache miss (kid unknown) → refresh JWKS immediately
+3. Refresh succeeds, kid found → use new key, update cache
+4. Refresh succeeds, kid still unknown → add to negative cache, fail-closed
+5. Refresh fails → fail-closed with DENY_PROVIDER_ERROR
+
+**Clock Skew Tolerance:**
+
+| Claim | Direction | Default Tolerance |
+|-------|-----------|-------------------|
+| `exp` | Past | 300 seconds (token not expired) |
+| `nbf` | Future | 300 seconds (token already valid) |
+| `iat` | Past | 300 seconds (not issued in future) |
+
+Clock skew can be configured via `clockSkewSeconds` option (default: 300).
+
+### 5.5 Provider Denial Codes (Phase IIIf)
+
+Complete list of denial codes emitted by security providers:
+
+| Code | Emitting Provider | Meaning |
+|------|-------------------|---------|
+| `DENY_PROVIDER_ERROR` | All | Generic provider failure |
+| `DENY_PROVIDER_TIMEOUT` | All | Resolution exceeded time budget |
+| `DENY_PROVIDER_CONFIG_ERROR` | All | Invalid configuration |
+| `DENY_TOKEN_MALFORMED` | EntraOidc | JWT structure invalid |
+| `DENY_TOKEN_EXPIRED` | EntraOidc | Token exp claim < now - skew |
+| `DENY_TOKEN_NOT_YET_VALID` | EntraOidc | Token nbf claim > now + skew |
+| `DENY_TOKEN_ISSUER_MISMATCH` | EntraOidc | Token iss ≠ expected issuer |
+| `DENY_TOKEN_AUDIENCE_MISMATCH` | EntraOidc | Token aud ≠ client ID |
+| `DENY_TOKEN_SIGNATURE_INVALID` | EntraOidc | Signature verification failed |
+| `DENY_TOKEN_KEY_UNKNOWN` | EntraOidc | Kid not in JWKS (after refresh) |
+| `DENY_TOKEN_MISSING` | EntraOidc | Bearer token not provided |
+| `DENY_BEARER_ENV_MISSING` | EntraOidc | Bearer token env var not set |
+| `DENY_FILE_MAPPING_MISSING` | FilePrincipal | Mapping file not found |
+| `DENY_FILE_MAPPING_INVALID` | FilePrincipal | Mapping file format invalid |
+| `DENY_OPERATOR_NOT_MAPPED` | FilePrincipal | Operator ID not in mapping |
+
+### 5.6 Default Provider Selection
 
 ```typescript
 function createDefaultSecurityContext(): SecurityContext {
@@ -283,6 +333,10 @@ All providers MUST pass:
 4. `cli-guard.provider-injection.contract.test.ts` – Guard uses SecurityContext
 5. `entra-oidc.contract.test.ts` – EntraOidcPrincipalProvider contract (Phase IIIe)
 6. `provider-outage.failclosed.contract.test.ts` – Fail-closed on all outages (Phase IIIe)
+7. `providers.selection.contract.test.ts` – TF_IDP_PROVIDER selection + fail-closed (Phase IIIf)
+8. `entra-oidc.rotation.contract.test.ts` – JWKS rotation resilience (Phase IIIf)
+9. `oidc.policy.contract.test.ts` – Issuer/audience/clock enforcement (Phase IIIf)
+10. `audit.pii.contract.test.ts` – PII never in audit trail (Phase IIIf)
 
 ### 6.2 Cross-Platform Matrix
 
@@ -326,6 +380,7 @@ Providers MUST handle:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| `v1.5.4-rotation-policy` | 2026-02-02 | JWKS rotation caching, denial codes catalog, policy-tight clock skew |
 | `v1.5.3-entra-oidc` | 2026-02-02 | EntraOidcPrincipalProvider, TF_IDP_PROVIDER, NIST claim normalization |
 | `v1.5.2-security-seams` | 2026-02-02 | Initial provider interfaces |
 
