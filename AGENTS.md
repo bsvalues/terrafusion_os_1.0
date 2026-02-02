@@ -49,8 +49,10 @@ The following status checks are **required** on `main` branch:
    - Scope: Global governance invariants
 
 2. **County Accreditation Oracle** (reference packet lock)
-   - Enforcement: `accreditation-compat.yml` + `ACCREDITATION_REFERENCE.lock.json`
+   - Enforcement: `accreditation-oracle-health.yml` + `ACCREDITATION_REFERENCE.lock.json`
    - Scope: County deployment/accreditation invariants
+
+**Runbook:** See `SUSTAINMENT.md` § "Oracle Workflows: Known Pitfalls & Fixes" for cross-OS hardening patterns.
 
 ### Branch Protection Settings (GitHub)
 

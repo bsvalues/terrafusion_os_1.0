@@ -189,13 +189,84 @@ npx tsx --test test/casefile.test.ts test/verify-casefile.test.ts
 
 ---
 
+## Two-Tier Oracle Model (v1.5.1+)
+
+As of v1.5.1, TerraFusion OS uses a **two-tier oracle model**:
+
+### Tier 1: OS Evidence-Plane Oracle
+- **Workflow:** `.github/workflows/oracle-health.yml`
+- **Schedule:** Sundays 03:00 UTC
+- **Lockfile:** `golden/GOLDEN_CORPUS.lock.json`
+- **Scope:** Global governance invariants, golden corpus integrity
+
+### Tier 2: County Accreditation Oracle
+- **Workflow:** `.github/workflows/accreditation-oracle-health.yml`
+- **Schedule:** Sundays 04:00 UTC
+- **Lockfile:** `tools/registry/autonomy-viewer/ACCREDITATION_REFERENCE.lock.json`
+- **Scope:** County deployment/accreditation contract invariants
+
+Both tiers run on **Ubuntu + Windows matrix** for cross-OS determinism verification.
+
+---
+
+## Oracle Workflows: Known Pitfalls & Fixes
+
+This runbook documents hardening fixes applied during v1.5.1 release validation. Apply these patterns to any new oracle workflow.
+
+### 1. CLI Bin Files Must Be Force-Included
+**Problem:** `bin/` is in `.gitignore` globally, which excludes ESM CLI entry points.
+**Symptom:** `ERR_MODULE_NOT_FOUND: Cannot find module 'bin/accreditation-packet.mjs'`
+**Fix:** Add negation pattern to `.gitignore`:
+```gitignore
+# Force include autonomy-viewer CLI tools (not compiled binaries)
+!tools/registry/autonomy-viewer/bin/
+tools/registry/autonomy-viewer/bin/*.mjs
+```
+Then `git add --force` the bin files.
+
+### 2. Profile Must Exist
+**Problem:** Workflow references a non-existent profile name.
+**Symptom:** `[ACCREDITATION_KIT_FAILED] undefined`
+**Fix:** Use only valid profiles: `county`, `state`, `incident`
+**Valid:** `--profile county`
+**Invalid:** `--profile oracle-health-ubuntu-latest`
+
+### 3. Summary Job Working-Directory Inheritance
+**Problem:** Summary job inherits `working-directory` from defaults but doesn't checkout.
+**Symptom:** `No such file or directory` for working directory
+**Fix:** Override defaults in summary job:
+```yaml
+summary:
+  defaults:
+    run:
+      working-directory: .
+```
+
+### 4. Windows Determinism Requires Bash Shell
+**Problem:** PowerShell interprets `$schema` as a variable, mangling inline JavaScript.
+**Symptom:** `SyntaxError: Invalid or unexpected token` with `manifest.\` (truncated)
+**Fix:** Force bash shell for inline JavaScript:
+```yaml
+- name: Determinism check
+  shell: bash
+  run: |
+    node -e "..."
+```
+
+---
+
 ## Quick Reference
 
 | Asset | Location |
 |-------|----------|
-| Oracle tag | `v1.5.0` |
-| Lockfile | `golden/GOLDEN_CORPUS.lock.json` |
-| Oracle health | `.github/workflows/oracle-health.yml` |
-| Compat gate | `.github/workflows/golden-corpus-compat.yml` |
+| OS oracle tag | `v1.5.0` |
+| Accreditation release | `v1.5.1` |
+| OS lockfile | `golden/GOLDEN_CORPUS.lock.json` |
+| Accreditation lockfile | `tools/registry/autonomy-viewer/ACCREDITATION_REFERENCE.lock.json` |
+| OS oracle health | `.github/workflows/oracle-health.yml` |
+| Accreditation oracle health | `.github/workflows/accreditation-oracle-health.yml` |
+| Compat gate (OS) | `.github/workflows/golden-corpus-compat.yml` |
+| Compat gate (Accreditation) | `.github/workflows/accreditation-compat.yml` |
 | Generator | `scripts/generate-golden-corpus.ts` |
+| Release prep | `scripts/prepare-accreditation-release.mjs` |
 | Contract docs | `golden/README.md` |
