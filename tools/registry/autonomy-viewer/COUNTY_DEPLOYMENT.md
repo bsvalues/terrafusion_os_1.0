@@ -1,7 +1,7 @@
 # County Deployment Runbook
 
-> **Document Version:** 4N51.1  
-> **Last Updated:** 2026-02-01  
+> **Document Version:** 4N51.2  
+> **Last Updated:** 2026-02-02  
 > **Status:** Production-Ready
 
 This runbook provides step-by-step instructions for county operators to:
@@ -15,12 +15,13 @@ This runbook provides step-by-step instructions for county operators to:
 ## Table of Contents
 
 1. [Prerequisites](#prerequisites)
-2. [Quick Start](#quick-start)
-3. [Full Deployment Flow](#full-deployment-flow)
-4. [Accreditation Packet](#accreditation-packet)
-5. [Expected Outputs](#expected-outputs)
-6. [Troubleshooting](#troubleshooting)
-7. [Exit Codes](#exit-codes)
+2. [RBAC Enforcement (Phase IIIa)](#rbac-enforcement-phase-iiia)
+3. [Quick Start](#quick-start)
+4. [Full Deployment Flow](#full-deployment-flow)
+5. [Accreditation Packet](#accreditation-packet)
+6. [Expected Outputs](#expected-outputs)
+7. [Troubleshooting](#troubleshooting)
+8. [Exit Codes](#exit-codes)
 
 ---
 
@@ -48,6 +49,75 @@ pnpm --version  # Expected: 8.x.x
 # Install dependencies (run once)
 pnpm install --frozen-lockfile
 ```
+
+---
+
+## RBAC Enforcement (Phase IIIa)
+
+All mutation-capable CLI commands (bootstrap, drills, county-kit, accreditation-packet, fleet-enroll, airgap-bundle, mirror-publish, closeout-proof) are protected by **deny-by-default RBAC enforcement**. Without proper authorization context, these commands will fail with exit code 1.
+
+### Execution Mode
+
+| Mode | Command Pattern | Notes |
+|------|-----------------|-------|
+| ✅ Supported (Dev) | `pnpm run <cmd> -- ...` | Uses `tsx` for TypeScript execution |
+| ⚠️ Unsupported | `node bin/<cmd>.mjs ...` | Requires build step to emit `src/*.js` |
+
+**Example (correct):**
+```bash
+pnpm -C tools/registry/autonomy-viewer run bootstrap -- --profile county --json
+```
+
+### Required Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `TF_RBAC_TIER` | Yes | Authorization tier: `ci`, `merged`, or `incident` |
+| `TF_RBAC_TPI_OK` | Tier-dependent | `1` if TPI approval is satisfied |
+| `TF_RBAC_TPI_MIN_APPROVALS` | For TPI | Minimum approvals required (e.g., `2`) |
+| `TF_RBAC_TPI_APPROVER_COUNT` | For TPI | Actual approver count (must meet min) |
+| `TF_RBAC_BREAK_GLASS_OK` | For incident | `1` if break-glass is activated |
+| `TF_RBAC_ROLE_BINDING_OK` | Optional | `1` if role binding satisfied |
+
+### Audit Sink (Opt-In)
+
+| Variable | Description |
+|----------|-------------|
+| `TF_AUDIT_LOG_PATH` | File path for append-only audit log (opt-in) |
+| `AUDIT_LOG_PATH` | Alternative variable (same behavior) |
+
+If neither is set, audit events go to an in-memory sink (no persistence).
+
+### Allow Example (Merged Tier with TPI)
+
+```bash
+# Minimum "allow" configuration for merged tier
+TF_RBAC_TIER=merged \
+TF_RBAC_TPI_OK=1 \
+TF_RBAC_TPI_MIN_APPROVALS=2 \
+TF_RBAC_TPI_APPROVER_COUNT=2 \
+pnpm run bootstrap -- --profile county --json
+```
+
+### Deny Behavior
+
+Missing or invalid `TF_RBAC_TIER` produces:
+```
+RBAC denied: RBAC_AMBIGUOUS_CONTEXT
+```
+Exit code: 1 (mutation blocked, no writes performed)
+
+### Reason Codes
+
+| Code | Meaning |
+|------|---------|
+| `RBAC_DENY_DEFAULT` | No authorization context provided |
+| `RBAC_AMBIGUOUS_CONTEXT` | Tier missing or invalid |
+| `RBAC_TPI_INSUFFICIENT_APPROVALS` | TPI approvals below policy minimum |
+| `RBAC_BREAK_GLASS_REQUIRED` | Incident tier requires break-glass |
+| `RBAC_ROLE_BINDING_REQUIRED` | Role binding not satisfied |
+| `RBAC_POLICY_MISSING` | Policy files not found |
+| `RBAC_POLICY_INVALID` | Policy files malformed |
 
 ---
 
