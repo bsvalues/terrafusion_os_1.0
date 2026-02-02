@@ -14,24 +14,24 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import {
-  NoopAttestationProvider,
-  createNormalizedClaims,
-  createSecurityContext,
-  hashSessionIdentifier,
-  hashSubjectIdentifier,
+    NoopAttestationProvider,
+    createNormalizedClaims,
+    createSecurityContext,
+    hashSessionIdentifier,
+    hashSubjectIdentifier,
 } from '../src/security/providers/providers.js';
 import type {
-  Attestation,
-  AttestationAlgorithm,
-  AttestationProvider,
-  AttestationSignContext,
-  AttestationVerifyContext,
-  NistAuditExtensions,
-  NistEventCategory,
-  NistEventOutcome,
-  NormalizedIdentityClaims,
-  SupplyChainAttestationRef,
-  SupplyChainBundle,
+    Attestation,
+    AttestationAlgorithm,
+    AttestationProvider,
+    AttestationSignContext,
+    AttestationVerifyContext,
+    NistAuditExtensions,
+    NistEventCategory,
+    NistEventOutcome,
+    NormalizedIdentityClaims,
+    SupplyChainAttestationRef,
+    SupplyChainBundle,
 } from '../src/security/providers/types.js';
 
 // ============================================================================
@@ -100,9 +100,7 @@ describe('Phase IIId – NoopAttestationProvider Contract', () => {
     const provider = new NoopAttestationProvider();
 
     const results = await Promise.all(
-      Array.from({ length: 10 }, () =>
-        provider.sign({ data: '{"test":"data"}' })
-      )
+      Array.from({ length: 10 }, () => provider.sign({ data: '{"test":"data"}' }))
     );
 
     for (const result of results) {
@@ -219,11 +217,7 @@ describe('Phase IIId – Normalized Identity Claims', () => {
   });
 
   it('all assurance levels are valid', () => {
-    const levels: NormalizedIdentityClaims['assuranceLevel'][] = [
-      'AAL1',
-      'AAL2',
-      'AAL3',
-    ];
+    const levels: NormalizedIdentityClaims['assuranceLevel'][] = ['AAL1', 'AAL2', 'AAL3'];
 
     for (const level of levels) {
       const claims = createNormalizedClaims({
@@ -355,11 +349,7 @@ describe('Phase IIId – SupplyChainAttestationRef Schema', () => {
   });
 
   it('all provenance types are valid', () => {
-    const types: SupplyChainAttestationRef['provenanceType'][] = [
-      'slsa',
-      'sigstore',
-      'in-toto',
-    ];
+    const types: SupplyChainAttestationRef['provenanceType'][] = ['slsa', 'sigstore', 'in-toto'];
 
     for (const pt of types) {
       const ref: SupplyChainAttestationRef = {

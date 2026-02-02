@@ -14,16 +14,15 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import {
-  ALLOWED_LABEL_KEYS,
-  ALLOWED_PROVIDERS,
-  getSecurityMetrics,
-  InMemorySecurityMetrics,
-  NoopSecurityMetrics,
-  resetSecurityMetrics,
-  setSecurityMetrics,
-  validateLabels,
-  type AllowedProvider,
-  type SecurityMetrics,
+    ALLOWED_LABEL_KEYS,
+    ALLOWED_PROVIDERS,
+    getSecurityMetrics,
+    InMemorySecurityMetrics,
+    NoopSecurityMetrics,
+    resetSecurityMetrics,
+    setSecurityMetrics,
+    validateLabels,
+    type SecurityMetrics
 } from '../src/security/telemetry/metrics.js';
 
 // ============================================================================
@@ -250,10 +249,16 @@ describe('Telemetry Deny Counters Contract', () => {
       m2.incrementDeny('entra-oidc', 'DENY_TOKEN_MALFORMED');
 
       assert.strictEqual(m1.snapshot().denyCounters.get('entra-oidc:DENY_TOKEN_EXPIRED'), 1);
-      assert.strictEqual(m1.snapshot().denyCounters.get('entra-oidc:DENY_TOKEN_MALFORMED'), undefined);
+      assert.strictEqual(
+        m1.snapshot().denyCounters.get('entra-oidc:DENY_TOKEN_MALFORMED'),
+        undefined
+      );
 
       assert.strictEqual(m2.snapshot().denyCounters.get('entra-oidc:DENY_TOKEN_MALFORMED'), 1);
-      assert.strictEqual(m2.snapshot().denyCounters.get('entra-oidc:DENY_TOKEN_EXPIRED'), undefined);
+      assert.strictEqual(
+        m2.snapshot().denyCounters.get('entra-oidc:DENY_TOKEN_EXPIRED'),
+        undefined
+      );
     });
 
     it('should use global singleton when using getSecurityMetrics', () => {

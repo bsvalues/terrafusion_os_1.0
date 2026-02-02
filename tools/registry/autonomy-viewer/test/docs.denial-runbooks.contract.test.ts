@@ -85,12 +85,7 @@ export type DenyCode = (typeof CANONICAL_DENY_CODES)[number];
 /**
  * Required sections in each runbook entry.
  */
-const REQUIRED_RUNBOOK_FIELDS = [
-  'Symptoms',
-  'Meaning',
-  'Operator Steps',
-  'Escalation',
-] as const;
+const REQUIRED_RUNBOOK_FIELDS = ['Symptoms', 'Meaning', 'Operator Steps', 'Escalation'] as const;
 
 // ============================================================================
 // Test Utilities
@@ -124,9 +119,7 @@ async function loadSecurityProvidersDocs(): Promise<string> {
  * **Operator Steps:** ...
  * **Escalation:** ...
  */
-function extractRunbookSections(
-  markdown: string
-): Map<string, Map<string, string>> {
+function extractRunbookSections(markdown: string): Map<string, Map<string, string>> {
   const runbooks = new Map<string, Map<string, string>>();
 
   // Match ### DENY_* sections
@@ -182,7 +175,7 @@ describe('Denial Runbooks Sync Contract', () => {
         undocumented,
         [],
         `The following DENY codes are not documented in SECURITY_PROVIDERS.md:\n` +
-          undocumented.map((c) => `  - ${c}`).join('\n') +
+          undocumented.map(c => `  - ${c}`).join('\n') +
           `\n\nPlease add runbook sections for these codes.`
       );
     });
@@ -191,11 +184,7 @@ describe('Denial Runbooks Sync Contract', () => {
       const docs = await loadSecurityProvidersDocs();
 
       // High-severity codes that MUST be mentioned (in any form - table, section, or inline)
-      const highSeverityCodes = [
-        'DENY_PROVIDER_ERROR',
-        'DENY_DEFAULT',
-        'DENY_PROVIDER_TIMEOUT',
-      ];
+      const highSeverityCodes = ['DENY_PROVIDER_ERROR', 'DENY_DEFAULT', 'DENY_PROVIDER_TIMEOUT'];
 
       const runbooks = extractRunbookSections(docs);
       const missing: string[] = [];
@@ -214,7 +203,7 @@ describe('Denial Runbooks Sync Contract', () => {
         missing,
         [],
         `High-severity codes missing from documentation:\n` +
-          missing.map((c) => `  - ${c}`).join('\n')
+          missing.map(c => `  - ${c}`).join('\n')
       );
     });
   });
@@ -230,9 +219,7 @@ describe('Denial Runbooks Sync Contract', () => {
         const incomplete: Array<{ code: string; missing: string[] }> = [];
 
         for (const [code, fields] of runbooks) {
-          const missingFields = REQUIRED_RUNBOOK_FIELDS.filter(
-            (f) => !fields.has(f)
-          );
+          const missingFields = REQUIRED_RUNBOOK_FIELDS.filter(f => !fields.has(f));
           if (missingFields.length > 0) {
             incomplete.push({ code, missing: missingFields });
           }
@@ -242,7 +229,7 @@ describe('Denial Runbooks Sync Contract', () => {
         if (incomplete.length > 0) {
           console.log(
             'Note: Some runbook sections are incomplete:',
-            incomplete.map((i) => `${i.code}: missing ${i.missing.join(', ')}`).join('\n')
+            incomplete.map(i => `${i.code}: missing ${i.missing.join(', ')}`).join('\n')
           );
         }
       }
@@ -259,11 +246,13 @@ describe('Denial Runbooks Sync Contract', () => {
 
       // Check that the canonical list includes expected categories
       const categories = {
-        provider: CANONICAL_DENY_CODES.filter((c) => c.includes('PROVIDER')),
-        token: CANONICAL_DENY_CODES.filter((c) => c.includes('TOKEN') || c.includes('BEARER')),
-        file: CANONICAL_DENY_CODES.filter((c) => c.includes('FILE') || c.includes('OPERATOR') || c.includes('MAPPING')),
-        rbac: CANONICAL_DENY_CODES.filter((c) =>
-          ['DENY_DEFAULT', 'DENY_TPI', 'DENY_BREAK', 'DENY_ROLE', 'DENY_UNKNOWN'].some((p) =>
+        provider: CANONICAL_DENY_CODES.filter(c => c.includes('PROVIDER')),
+        token: CANONICAL_DENY_CODES.filter(c => c.includes('TOKEN') || c.includes('BEARER')),
+        file: CANONICAL_DENY_CODES.filter(
+          c => c.includes('FILE') || c.includes('OPERATOR') || c.includes('MAPPING')
+        ),
+        rbac: CANONICAL_DENY_CODES.filter(c =>
+          ['DENY_DEFAULT', 'DENY_TPI', 'DENY_BREAK', 'DENY_ROLE', 'DENY_UNKNOWN'].some(p =>
             c.startsWith(p)
           )
         ),
@@ -278,22 +267,13 @@ describe('Denial Runbooks Sync Contract', () => {
     it('should have consistent naming convention', () => {
       for (const code of CANONICAL_DENY_CODES) {
         // Must start with DENY_
-        assert.ok(
-          code.startsWith('DENY_'),
-          `Code ${code} should start with DENY_`
-        );
+        assert.ok(code.startsWith('DENY_'), `Code ${code} should start with DENY_`);
 
         // Must be uppercase with underscores
-        assert.ok(
-          /^DENY_[A-Z_]+$/.test(code),
-          `Code ${code} should be DENY_UPPERCASE_UNDERSCORES`
-        );
+        assert.ok(/^DENY_[A-Z_]+$/.test(code), `Code ${code} should be DENY_UPPERCASE_UNDERSCORES`);
 
         // Should not have double underscores
-        assert.ok(
-          !code.includes('__'),
-          `Code ${code} should not have double underscores`
-        );
+        assert.ok(!code.includes('__'), `Code ${code} should not have double underscores`);
       }
     });
   });

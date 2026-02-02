@@ -14,11 +14,10 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import {
-  getSecurityMetrics,
-  InMemorySecurityMetrics,
-  resetSecurityMetrics,
-  setSecurityMetrics,
-  type SecurityMetrics,
+    InMemorySecurityMetrics,
+    resetSecurityMetrics,
+    setSecurityMetrics,
+    type SecurityMetrics
 } from '../src/security/telemetry/metrics.js';
 
 // ============================================================================
@@ -66,11 +65,11 @@ class SingleFlightJwksCache {
       // Start new fetch
       this.refreshCount++;
       inflightPromise = fetchJwks()
-        .then((result) => {
+        .then(result => {
           this._metrics.recordJwksRefresh('entra-oidc', true);
           return result;
         })
-        .catch((err) => {
+        .catch(err => {
           this._metrics.recordJwksRefresh('entra-oidc', false);
           throw err;
         })
@@ -106,7 +105,7 @@ class SingleFlightJwksCache {
  * Delay utility for simulating network latency.
  */
 function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // ============================================================================
@@ -161,25 +160,17 @@ describe('Chaos Concurrent Auth Contract', () => {
       const fetchJwks = async (): Promise<Map<string, object>> => {
         fetchCallCount++;
         await delay(10);
-        return new Map([
-          ['key-1', { kty: 'RSA', kid: 'key-1', version: fetchCallCount }],
-        ]);
+        return new Map([['key-1', { kty: 'RSA', kid: 'key-1', version: fetchCallCount }]]);
       };
 
       // First batch of concurrent requests
-      await Promise.all([
-        cache.getKey('key-1', fetchJwks),
-        cache.getKey('key-1', fetchJwks),
-      ]);
+      await Promise.all([cache.getKey('key-1', fetchJwks), cache.getKey('key-1', fetchJwks)]);
 
       // Clear cache to force refresh
       cache.clear();
 
       // Second batch after clear
-      await Promise.all([
-        cache.getKey('key-1', fetchJwks),
-        cache.getKey('key-1', fetchJwks),
-      ]);
+      await Promise.all([cache.getKey('key-1', fetchJwks), cache.getKey('key-1', fetchJwks)]);
 
       // Two refreshes total (one per batch after clear)
       assert.strictEqual(fetchCallCount, 2, 'Should have 2 fetches (one per batch)');
@@ -255,8 +246,8 @@ describe('Chaos Concurrent Auth Contract', () => {
       }
 
       // Some should succeed, some should fail
-      const successes = results.filter((r) => r.key !== null).length;
-      const failures = results.filter((r) => r.key === null).length;
+      const successes = results.filter(r => r.key !== null).length;
+      const failures = results.filter(r => r.key === null).length;
 
       assert.ok(successes > 0, 'Some requests should succeed');
       assert.ok(failures > 0, 'Some requests should fail');
@@ -302,10 +293,7 @@ describe('Chaos Concurrent Auth Contract', () => {
         cache.clear();
         metrics.reset();
 
-        await Promise.all([
-          cache.getKey('key-1', fetchJwks),
-          cache.getKey('key-1', fetchJwks),
-        ]);
+        await Promise.all([cache.getKey('key-1', fetchJwks), cache.getKey('key-1', fetchJwks)]);
 
         const snapshot = metrics.snapshot();
         const misses = snapshot.jwksCacheMisses.get('entra-oidc') ?? 0;

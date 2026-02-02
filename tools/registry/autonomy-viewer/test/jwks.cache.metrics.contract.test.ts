@@ -14,11 +14,10 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import {
-  getSecurityMetrics,
-  InMemorySecurityMetrics,
-  resetSecurityMetrics,
-  setSecurityMetrics,
-  type SecurityMetrics,
+    InMemorySecurityMetrics,
+    resetSecurityMetrics,
+    setSecurityMetrics,
+    type SecurityMetrics
 } from '../src/security/telemetry/metrics.js';
 
 // ============================================================================
@@ -253,18 +252,9 @@ describe('JWKS Cache Metrics Contract', () => {
 
       // Verify the metric key is provider-only, not kid-derived
       for (const key of snapshot.jwksCacheHits.keys()) {
-        assert.ok(
-          !key.includes('user'),
-          `Metric key should not contain user data: ${key}`
-        );
-        assert.ok(
-          !key.includes('session'),
-          `Metric key should not contain session data: ${key}`
-        );
-        assert.ok(
-          !key.includes('tid'),
-          `Metric key should not contain tenant data: ${key}`
-        );
+        assert.ok(!key.includes('user'), `Metric key should not contain user data: ${key}`);
+        assert.ok(!key.includes('session'), `Metric key should not contain session data: ${key}`);
+        assert.ok(!key.includes('tid'), `Metric key should not contain tenant data: ${key}`);
       }
     });
   });

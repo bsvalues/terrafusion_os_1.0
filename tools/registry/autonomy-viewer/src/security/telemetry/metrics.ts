@@ -36,7 +36,12 @@ export type AllowedProvider = (typeof ALLOWED_PROVIDERS)[number];
 /**
  * Allowed JWKS cache stages (bounded set).
  */
-export const ALLOWED_JWKS_STAGES = ['lookup', 'refresh_start', 'refresh_success', 'refresh_fail'] as const;
+export const ALLOWED_JWKS_STAGES = [
+  'lookup',
+  'refresh_start',
+  'refresh_success',
+  'refresh_fail',
+] as const;
 export type AllowedJwksStage = (typeof ALLOWED_JWKS_STAGES)[number];
 
 /**

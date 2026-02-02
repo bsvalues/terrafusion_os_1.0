@@ -14,11 +14,10 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import {
-  getSecurityMetrics,
-  InMemorySecurityMetrics,
-  resetSecurityMetrics,
-  setSecurityMetrics,
-  type SecurityMetrics,
+    InMemorySecurityMetrics,
+    resetSecurityMetrics,
+    setSecurityMetrics,
+    type SecurityMetrics
 } from '../src/security/telemetry/metrics.js';
 
 // ============================================================================
@@ -224,10 +223,7 @@ describe('Chaos Network Flap Contract', () => {
           !error.toLowerCase().includes('unknown'),
           `Error should be specific, not unknown: ${error}`
         );
-        assert.ok(
-          error.includes('NETWORK_FLAP'),
-          `Error should contain specific code: ${error}`
-        );
+        assert.ok(error.includes('NETWORK_FLAP'), `Error should contain specific code: ${error}`);
       }
     });
 
@@ -259,14 +255,8 @@ describe('Chaos Network Flap Contract', () => {
 
       // Metrics keys should not contain IPs or emails
       for (const key of snapshot.jwksRefreshFail.keys()) {
-        assert.ok(
-          !key.includes('192.168'),
-          `Metric key should not contain IP: ${key}`
-        );
-        assert.ok(
-          !key.includes('@'),
-          `Metric key should not contain email: ${key}`
-        );
+        assert.ok(!key.includes('192.168'), `Metric key should not contain IP: ${key}`);
+        assert.ok(!key.includes('@'), `Metric key should not contain email: ${key}`);
       }
     });
   });
