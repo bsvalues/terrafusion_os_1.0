@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "generatedAt": "2026-02-01T17:45:00Z",
   "description": "Golden corpus compatibility anchor for TerraFusion OS autonomy toolchain",
-  "rcTag": "v1.5.0-rc.1",
-  "releaseUrl": "https://github.com/bsvalues/terrafusion_os_1.0/releases/tag/v1.5.0-rc.1",
+  "releaseTag": "v1.5.0",
+  "releaseUrl": "https://github.com/bsvalues/terrafusion_os_1.0/releases/tag/v1.5.0",
   "profileUsed": "profiles/county.policy.json",
   "repoIdentity": {
     "repoId": null,
