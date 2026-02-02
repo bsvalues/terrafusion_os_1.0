@@ -1,10 +1,10 @@
 {
   "$schema": "terrafusion.autonomy.golden-corpus.v1",
   "version": "1.0.0",
-  "generatedAt": "2026-02-01T00:00:00Z",
+  "generatedAt": "2026-02-01T17:45:00Z",
   "description": "Golden corpus compatibility anchor for TerraFusion OS autonomy toolchain",
   "rcTag": "v1.5.0-rc.1",
-  "releaseUrl": null,
+  "releaseUrl": "https://github.com/bsvalues/terrafusion_os_1.0/releases/tag/v1.5.0-rc.1",
   "profileUsed": "profiles/county.policy.json",
   "repoIdentity": {
     "repoId": null,
@@ -12,16 +12,57 @@
     "defaultBranch": "main"
   },
   "signerEpoch": {
-    "epochId": null,
-    "validFrom": null,
-    "keyFingerprint": null
+    "epochId": 1,
+    "validFrom": "2026-02-01T17:45:00Z",
+    "keyFingerprint": "github-actions-keyless-sigstore"
   },
   "ledgerState": {
-    "ledgerHeadSha256": null,
-    "rollupHeadSha256": null,
-    "sequenceNumber": null
+    "ledgerHeadSha256": "07ae5ac668ddc67740f8532477c238294d4aeaf4163b1724c0e19177fff9ebb4",
+    "rollupHeadSha256": "23825b38f880acf679df23dc46131df8383b444de8eeca9cd03550573fa15c65",
+    "sequenceNumber": 0
   },
-  "artifacts": [],
+  "artifacts": [
+    {
+      "name": "ledger-head.json",
+      "sha256": "07ae5ac668ddc67740f8532477c238294d4aeaf4163b1724c0e19177fff9ebb4",
+      "bytes": 684
+    },
+    {
+      "name": "rollup-head.json",
+      "sha256": "23825b38f880acf679df23dc46131df8383b444de8eeca9cd03550573fa15c65",
+      "bytes": 367
+    },
+    {
+      "name": "key-epoch-summary.json",
+      "sha256": "893e54032db04c7d5878d88ead2d281827335fce2a876920b6f45b5f3aa39df2",
+      "bytes": 360
+    },
+    {
+      "name": "revocation-summary.json",
+      "sha256": "f857c89320bc1e0057e5be730e5282395aed534988bcf679ca77a500719a9090",
+      "bytes": 216
+    },
+    {
+      "name": "policy-profile.json",
+      "sha256": "b1e8f2fb9ef7cd5fdeea677d4df9013b1999eaeef1a9becb53e9761b7b642a5b",
+      "bytes": 619
+    },
+    {
+      "name": "verification-report.json",
+      "sha256": "f47804341eda11a5133634092f38803cfcc106b6bc9d82c14c1e87852502a0ad",
+      "bytes": 612
+    },
+    {
+      "name": "dr-reconstitution-report.json",
+      "sha256": "8757cd7c6d62e7f152f941579e989eae1ac41ba3ff6abaae0c0594752841f3da",
+      "bytes": 562
+    },
+    {
+      "name": "audit-packet-manifest.json",
+      "sha256": "ab09760c120e18d91cf2ecbc42707f1c3aa3cbdec4529cf7d814711f74ace497",
+      "bytes": 1365
+    }
+  ],
   "contracts": {
     "determinismDefinition": "structural",
     "determinismDescription": "Determinism is defined as structural determinism: canonical manifest ordering, stable file count, and consistent content. Byte-perfect ZIP hashes are NOT guaranteed due to manifest.generatedAt timestamps.",
