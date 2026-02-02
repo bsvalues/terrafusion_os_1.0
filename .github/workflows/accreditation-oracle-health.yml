@@ -104,6 +104,7 @@ jobs:
         run: npx tsx --test test/accreditation-compat.test.ts
 
       - name: Determinism check
+        shell: bash
         run: |
           node -e "
             const fs = require('fs');
