@@ -1,0 +1,513 @@
+/**
+ * Service Identity On-Call Contract Tests
+ * ========================================
+ *
+ * Phase VII: Validates on-call notification contracts for identity alerts.
+ *
+ * Contract:
+ * - oncall_enforces_rate_limits: bounded notification volume per window
+ * - oncall_enforces_dedupe_windows: suppress duplicates within window
+ * - oncall_enforces_ack_suppress: acknowledged alerts suppressed until TTL
+ * - oncall_maintains_audit_integrity: audit trail for all alerting decisions
+ */
+
+import assert from 'node:assert/strict';
+import * as crypto from 'node:crypto';
+import { describe, it } from 'node:test';
+
+// ============================================================================
+// Types for On-Call Alerting
+// ============================================================================
+
+/**
+ * Alert severity.
+ */
+type AlertSeverity = 'critical' | 'high' | 'medium' | 'low';
+
+/**
+ * Alert category for identity events.
+ */
+type IdentityAlertCategory =
+  | 'cert_expiry_imminent'
+  | 'cert_rotation_failed'
+  | 'policy_violation'
+  | 'drift_detected'
+  | 'ca_chain_broken'
+  | 'mtls_degraded';
+
+/**
+ * Alert status.
+ */
+type AlertStatus = 'pending' | 'sent' | 'suppressed' | 'acknowledged' | 'resolved';
+
+/**
+ * Suppression reason.
+ */
+type SuppressionReason =
+  | 'rate_limited'
+  | 'dedupe_window'
+  | 'acknowledged'
+  | 'maintenance_window'
+  | 'escalation_pending';
+
+/**
+ * Identity alert.
+ */
+interface IdentityAlert {
+  readonly alertId: string;
+  readonly category: IdentityAlertCategory;
+  readonly severity: AlertSeverity;
+  readonly artifactId: string;
+  readonly environment: string;
+  readonly serviceTier: string;
+  readonly createdAt: string;
+  readonly status: AlertStatus;
+  readonly dedupeKey: string;
+  readonly suppressionReason?: SuppressionReason;
+  readonly suppressedUntil?: string;
+}
+
+/**
+ * Rate limit configuration.
+ */
+interface RateLimitConfig {
+  readonly maxAlertsPerHour: number;
+  readonly maxAlertsPerDay: number;
+  readonly burstLimit: number;
+  readonly burstWindowMinutes: number;
+}
+
+/**
+ * Dedupe configuration.
+ */
+interface DedupeConfig {
+  readonly windowMinutes: number;
+  readonly keyFields: readonly string[];
+}
+
+/**
+ * Acknowledgment record.
+ */
+interface AckRecord {
+  readonly alertId: string;
+  readonly ackedBy: string;
+  readonly ackedAt: string;
+  readonly suppressUntil: string;
+  readonly reason: string;
+}
+
+/**
+ * Alerting decision audit entry.
+ */
+interface AlertingAuditEntry {
+  readonly entryId: string;
+  readonly alertId: string;
+  readonly timestamp: string;
+  readonly decision: 'send' | 'suppress' | 'escalate' | 'defer';
+  readonly reason: string;
+  readonly context: Record<string, unknown>;
+}
+
+/**
+ * Rate limit state.
+ */
+interface RateLimitState {
+  readonly hourlyCount: number;
+  readonly dailyCount: number;
+  readonly burstCount: number;
+  readonly lastBurstReset: string;
+}
+
+/**
+ * On-call engine.
+ */
+interface OnCallEngine {
+  checkRateLimit: (state: RateLimitState, config: RateLimitConfig) => boolean;
+  computeDedupeKey: (alert: IdentityAlert, config: DedupeConfig) => string;
+  shouldSuppress: (
+    alert: IdentityAlert,
+    recentAlerts: readonly IdentityAlert[],
+    config: DedupeConfig
+  ) => boolean;
+  checkAckSuppression: (
+    alertId: string,
+    acks: readonly AckRecord[]
+  ) => { suppressed: boolean; reason?: string };
+  recordDecision: (
+    alert: IdentityAlert,
+    decision: 'send' | 'suppress',
+    reason: string
+  ) => AlertingAuditEntry;
+}
+
+// ============================================================================
+// Mock Implementations
+// ============================================================================
+
+/**
+ * Compute opaque ID.
+ */
+function computeOpaqueId(input: string): string {
+  return `sha256:${crypto.createHash('sha256').update(input).digest('hex').slice(0, 16)}`;
+}
+
+/**
+ * Create on-call engine.
+ */
+function createOnCallEngine(): OnCallEngine {
+  return {
+    checkRateLimit(state, config) {
+      if (state.hourlyCount >= config.maxAlertsPerHour) return false;
+      if (state.dailyCount >= config.maxAlertsPerDay) return false;
+      if (state.burstCount >= config.burstLimit) return false;
+      return true;
+    },
+
+    computeDedupeKey(alert, config) {
+      const parts = config.keyFields.map(field => {
+        const value = (alert as Record<string, unknown>)[field];
+        return String(value ?? '');
+      });
+      return computeOpaqueId(parts.join(':'));
+    },
+
+    shouldSuppress(alert, recentAlerts, config) {
+      const windowMs = config.windowMinutes * 60 * 1000;
+      const now = Date.now();
+
+      for (const recent of recentAlerts) {
+        const recentTime = new Date(recent.createdAt).getTime();
+        if (now - recentTime <= windowMs) {
+          if (recent.dedupeKey === alert.dedupeKey && recent.alertId !== alert.alertId) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
+
+    checkAckSuppression(alertId, acks) {
+      const now = new Date();
+      for (const ack of acks) {
+        if (ack.alertId === alertId) {
+          const suppressUntil = new Date(ack.suppressUntil);
+          if (suppressUntil > now) {
+            return {
+              suppressed: true,
+              reason: `Acknowledged by ${ack.ackedBy} until ${ack.suppressUntil}`,
+            };
+          }
+        }
+      }
+      return { suppressed: false };
+    },
+
+    recordDecision(alert, decision, reason) {
+      return {
+        entryId: computeOpaqueId(`audit-${alert.alertId}-${Date.now()}`),
+        alertId: alert.alertId,
+        timestamp: new Date().toISOString(),
+        decision,
+        reason,
+        context: {
+          category: alert.category,
+          severity: alert.severity,
+          environment: alert.environment,
+        },
+      };
+    },
+  };
+}
+
+/**
+ * Create sample alert.
+ */
+function createSampleAlert(options: Partial<IdentityAlert> = {}): IdentityAlert {
+  const baseId = options.alertId ?? computeOpaqueId(`alert-${Date.now()}`);
+  const base: IdentityAlert = {
+    alertId: baseId,
+    category: options.category ?? 'cert_expiry_imminent',
+    severity: options.severity ?? 'high',
+    artifactId: options.artifactId ?? computeOpaqueId('cert-sample'),
+    environment: options.environment ?? 'production',
+    serviceTier: options.serviceTier ?? 'critical',
+    createdAt: options.createdAt ?? new Date().toISOString(),
+    status: options.status ?? 'pending',
+    dedupeKey: options.dedupeKey ?? computeOpaqueId(`${baseId}:default`),
+    suppressionReason: options.suppressionReason,
+    suppressedUntil: options.suppressedUntil,
+  };
+  return base;
+}
+
+/**
+ * Create sample rate limit config.
+ */
+function createSampleRateLimitConfig(options: Partial<RateLimitConfig> = {}): RateLimitConfig {
+  return {
+    maxAlertsPerHour: options.maxAlertsPerHour ?? 10,
+    maxAlertsPerDay: options.maxAlertsPerDay ?? 50,
+    burstLimit: options.burstLimit ?? 5,
+    burstWindowMinutes: options.burstWindowMinutes ?? 5,
+  };
+}
+
+/**
+ * Create sample dedupe config.
+ */
+function createSampleDedupeConfig(options: Partial<DedupeConfig> = {}): DedupeConfig {
+  return {
+    windowMinutes: options.windowMinutes ?? 15,
+    keyFields: options.keyFields ?? ['category', 'artifactId', 'environment'],
+  };
+}
+
+/**
+ * Create sample ack record.
+ */
+function createSampleAckRecord(alertId: string, options: Partial<AckRecord> = {}): AckRecord {
+  return {
+    alertId,
+    ackedBy: options.ackedBy ?? computeOpaqueId('user-oncall'),
+    ackedAt: options.ackedAt ?? new Date().toISOString(),
+    suppressUntil: options.suppressUntil ?? new Date(Date.now() + 3600000).toISOString(),
+    reason: options.reason ?? 'Will address in next maintenance window',
+  };
+}
+
+// ============================================================================
+// Contract: oncall_enforces_rate_limits
+// ============================================================================
+
+describe('Service Identity On-Call Contract', () => {
+  describe('oncall_enforces_rate_limits', () => {
+    it('should allow alerts under hourly limit', () => {
+      const engine = createOnCallEngine();
+      const config = createSampleRateLimitConfig({ maxAlertsPerHour: 10 });
+      const state: RateLimitState = {
+        hourlyCount: 5,
+        dailyCount: 10,
+        burstCount: 2,
+        lastBurstReset: new Date().toISOString(),
+      };
+
+      assert.strictEqual(engine.checkRateLimit(state, config), true);
+    });
+
+    it('should block alerts at hourly limit', () => {
+      const engine = createOnCallEngine();
+      const config = createSampleRateLimitConfig({ maxAlertsPerHour: 10 });
+      const state: RateLimitState = {
+        hourlyCount: 10,
+        dailyCount: 10,
+        burstCount: 2,
+        lastBurstReset: new Date().toISOString(),
+      };
+
+      assert.strictEqual(engine.checkRateLimit(state, config), false);
+    });
+
+    it('should block alerts at daily limit', () => {
+      const engine = createOnCallEngine();
+      const config = createSampleRateLimitConfig({ maxAlertsPerDay: 50 });
+      const state: RateLimitState = {
+        hourlyCount: 5,
+        dailyCount: 50,
+        burstCount: 2,
+        lastBurstReset: new Date().toISOString(),
+      };
+
+      assert.strictEqual(engine.checkRateLimit(state, config), false);
+    });
+
+    it('should block alerts at burst limit', () => {
+      const engine = createOnCallEngine();
+      const config = createSampleRateLimitConfig({ burstLimit: 5 });
+      const state: RateLimitState = {
+        hourlyCount: 5,
+        dailyCount: 10,
+        burstCount: 5,
+        lastBurstReset: new Date().toISOString(),
+      };
+
+      assert.strictEqual(engine.checkRateLimit(state, config), false);
+    });
+  });
+
+  // ============================================================================
+  // Contract: oncall_enforces_dedupe_windows
+  // ============================================================================
+
+  describe('oncall_enforces_dedupe_windows', () => {
+    it('should compute consistent dedupe keys', () => {
+      const engine = createOnCallEngine();
+      const config = createSampleDedupeConfig();
+
+      const alert1 = createSampleAlert({
+        category: 'cert_expiry_imminent',
+        artifactId: 'sha256:abc123',
+      });
+      const alert2 = createSampleAlert({
+        category: 'cert_expiry_imminent',
+        artifactId: 'sha256:abc123',
+      });
+
+      const key1 = engine.computeDedupeKey(alert1, config);
+      const key2 = engine.computeDedupeKey(alert2, config);
+
+      assert.strictEqual(key1, key2);
+    });
+
+    it('should compute different keys for different artifacts', () => {
+      const engine = createOnCallEngine();
+      const config = createSampleDedupeConfig();
+
+      const alert1 = createSampleAlert({ artifactId: 'sha256:abc' });
+      const alert2 = createSampleAlert({ artifactId: 'sha256:def' });
+
+      const key1 = engine.computeDedupeKey(alert1, config);
+      const key2 = engine.computeDedupeKey(alert2, config);
+
+      assert.notStrictEqual(key1, key2);
+    });
+
+    it('should suppress duplicates within window', () => {
+      const engine = createOnCallEngine();
+      const config = createSampleDedupeConfig({ windowMinutes: 15 });
+
+      const dedupeKey = computeOpaqueId('same-key');
+      const existing = createSampleAlert({
+        alertId: 'sha256:existing',
+        dedupeKey,
+        createdAt: new Date(Date.now() - 5 * 60000).toISOString(),
+      });
+      const current = createSampleAlert({ alertId: 'sha256:current', dedupeKey });
+
+      assert.strictEqual(engine.shouldSuppress(current, [existing], config), true);
+    });
+
+    it('should not suppress after window expires', () => {
+      const engine = createOnCallEngine();
+      const config = createSampleDedupeConfig({ windowMinutes: 15 });
+
+      const dedupeKey = computeOpaqueId('same-key');
+      const existing = createSampleAlert({
+        alertId: 'sha256:existing',
+        dedupeKey,
+        createdAt: new Date(Date.now() - 20 * 60000).toISOString(),
+      });
+      const current = createSampleAlert({ alertId: 'sha256:current', dedupeKey });
+
+      assert.strictEqual(engine.shouldSuppress(current, [existing], config), false);
+    });
+
+    it('should use opaque dedupe keys', () => {
+      const engine = createOnCallEngine();
+      const config = createSampleDedupeConfig();
+      const alert = createSampleAlert();
+
+      const key = engine.computeDedupeKey(alert, config);
+      assert.ok(key.startsWith('sha256:'));
+    });
+  });
+
+  // ============================================================================
+  // Contract: oncall_enforces_ack_suppress
+  // ============================================================================
+
+  describe('oncall_enforces_ack_suppress', () => {
+    it('should suppress acknowledged alerts', () => {
+      const engine = createOnCallEngine();
+      const alertId = 'sha256:alert123';
+      const ack = createSampleAckRecord(alertId, {
+        suppressUntil: new Date(Date.now() + 3600000).toISOString(),
+      });
+
+      const result = engine.checkAckSuppression(alertId, [ack]);
+      assert.strictEqual(result.suppressed, true);
+    });
+
+    it('should not suppress after ack expires', () => {
+      const engine = createOnCallEngine();
+      const alertId = 'sha256:alert123';
+      const ack = createSampleAckRecord(alertId, {
+        suppressUntil: new Date(Date.now() - 3600000).toISOString(),
+      });
+
+      const result = engine.checkAckSuppression(alertId, [ack]);
+      assert.strictEqual(result.suppressed, false);
+    });
+
+    it('should not suppress unacknowledged alerts', () => {
+      const engine = createOnCallEngine();
+      const result = engine.checkAckSuppression('sha256:unknown', []);
+
+      assert.strictEqual(result.suppressed, false);
+    });
+
+    it('should include reason for suppressed alerts', () => {
+      const engine = createOnCallEngine();
+      const alertId = 'sha256:alert123';
+      const ack = createSampleAckRecord(alertId);
+
+      const result = engine.checkAckSuppression(alertId, [ack]);
+      assert.ok(result.reason?.includes('Acknowledged'));
+    });
+
+    it('should use opaque user IDs in ack', () => {
+      const ack = createSampleAckRecord('sha256:alert123');
+
+      assert.ok(ack.ackedBy.startsWith('sha256:'));
+    });
+  });
+
+  // ============================================================================
+  // Contract: oncall_maintains_audit_integrity
+  // ============================================================================
+
+  describe('oncall_maintains_audit_integrity', () => {
+    it('should record send decisions', () => {
+      const engine = createOnCallEngine();
+      const alert = createSampleAlert();
+      const audit = engine.recordDecision(alert, 'send', 'Within rate limits');
+
+      assert.strictEqual(audit.decision, 'send');
+      assert.strictEqual(audit.alertId, alert.alertId);
+    });
+
+    it('should record suppress decisions', () => {
+      const engine = createOnCallEngine();
+      const alert = createSampleAlert();
+      const audit = engine.recordDecision(alert, 'suppress', 'Rate limited');
+
+      assert.strictEqual(audit.decision, 'suppress');
+      assert.ok(audit.reason.includes('Rate'));
+    });
+
+    it('should include timestamp', () => {
+      const engine = createOnCallEngine();
+      const alert = createSampleAlert();
+      const audit = engine.recordDecision(alert, 'send', 'Normal');
+
+      assert.ok(audit.timestamp);
+      assert.ok(new Date(audit.timestamp).getTime() > 0);
+    });
+
+    it('should include alert context', () => {
+      const engine = createOnCallEngine();
+      const alert = createSampleAlert({ category: 'drift_detected', severity: 'critical' });
+      const audit = engine.recordDecision(alert, 'send', 'Normal');
+
+      assert.strictEqual(audit.context.category, 'drift_detected');
+      assert.strictEqual(audit.context.severity, 'critical');
+    });
+
+    it('should use opaque audit entry IDs', () => {
+      const engine = createOnCallEngine();
+      const alert = createSampleAlert();
+      const audit = engine.recordDecision(alert, 'send', 'Normal');
+
+      assert.ok(audit.entryId.startsWith('sha256:'));
+    });
+  });
+});
