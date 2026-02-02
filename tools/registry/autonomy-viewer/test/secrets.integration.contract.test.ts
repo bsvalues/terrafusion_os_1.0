@@ -11,8 +11,8 @@
  * - secrets_access_audited: all access is traceable
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Secrets Integration
@@ -85,7 +85,12 @@ interface SecretAccessResult {
  */
 interface SecretAuditEvent {
   readonly eventId: string;
-  readonly eventType: 'secret_accessed' | 'secret_denied' | 'secret_rotated' | 'secret_created' | 'secret_expired';
+  readonly eventType:
+    | 'secret_accessed'
+    | 'secret_denied'
+    | 'secret_rotated'
+    | 'secret_created'
+    | 'secret_expired';
   readonly secretId: string;
   readonly secretType: SecretType;
   readonly requestedBy: string;
@@ -174,7 +179,7 @@ function resetMocks(): void {
  */
 function isLeastPrivilege(scope: SecretScope): { valid: boolean; excess: string[] } {
   const minimalPerms = MINIMAL_PERMISSIONS[scope.integrationType];
-  const excess = scope.permissions.filter((p) => !minimalPerms.includes(p));
+  const excess = scope.permissions.filter(p => !minimalPerms.includes(p));
 
   return {
     valid: excess.length === 0,
@@ -402,7 +407,7 @@ function rotateSecret(request: RotationRequest): RotationResult {
  * Get audit events for secret.
  */
 function getSecretAuditEvents(secretId: string): readonly SecretAuditEvent[] {
-  return secretAuditEvents.filter((e) => e.secretId === secretId);
+  return secretAuditEvents.filter(e => e.secretId === secretId);
 }
 
 /**
@@ -554,9 +559,11 @@ describe('Secrets Integration Contract', () => {
 
       // Reference should only have checksum, not actual secret
       assert.ok(secret.checksumSha256.startsWith('sha256:'));
-      assert.ok(!Object.values(secret).some((v) =>
-        typeof v === 'string' && v.length > 40 && !/sha256:/.test(v)
-      ));
+      assert.ok(
+        !Object.values(secret).some(
+          v => typeof v === 'string' && v.length > 40 && !/sha256:/.test(v)
+        )
+      );
     });
   });
 
@@ -652,7 +659,7 @@ describe('Secrets Integration Contract', () => {
       });
 
       const events = getSecretAuditEvents(secret.id);
-      assert.ok(events.some((e) => e.eventType === 'secret_rotated'));
+      assert.ok(events.some(e => e.eventType === 'secret_rotated'));
     });
   });
 
@@ -673,7 +680,7 @@ describe('Secrets Integration Contract', () => {
       const secret = createSecretReference('pager_api_key', scope);
       const events = getSecretAuditEvents(secret.id);
 
-      assert.ok(events.some((e) => e.eventType === 'secret_created'));
+      assert.ok(events.some(e => e.eventType === 'secret_created'));
     });
 
     it('should audit secret access', () => {
@@ -698,7 +705,7 @@ describe('Secrets Integration Contract', () => {
       });
 
       const events = getSecretAuditEvents(secret.id);
-      assert.ok(events.some((e) => e.eventType === 'secret_accessed'));
+      assert.ok(events.some(e => e.eventType === 'secret_accessed'));
     });
 
     it('should audit denied access', () => {
@@ -724,7 +731,7 @@ describe('Secrets Integration Contract', () => {
       });
 
       const events = getSecretAuditEvents(secret.id);
-      assert.ok(events.some((e) => e.eventType === 'secret_denied'));
+      assert.ok(events.some(e => e.eventType === 'secret_denied'));
     });
 
     it('should include correlation ID in audit events', () => {
@@ -749,7 +756,7 @@ describe('Secrets Integration Contract', () => {
         timestamp: new Date().toISOString(),
       });
 
-      const events = secretAuditEvents.filter((e) => e.correlationId === correlationId);
+      const events = secretAuditEvents.filter(e => e.correlationId === correlationId);
       assert.ok(events.length > 0);
     });
 
@@ -776,7 +783,7 @@ describe('Secrets Integration Contract', () => {
       });
 
       const events = getSecretAuditEvents(secret.id);
-      assert.ok(events.some((e) => e.requestedBy === requestedBy));
+      assert.ok(events.some(e => e.requestedBy === requestedBy));
     });
   });
 });
