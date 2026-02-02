@@ -84,7 +84,7 @@ jobs:
       - name: Generate fresh accreditation packet
         run: |
           mkdir -p dist/oracle-health
-          pnpm run accreditation -- --profile oracle-health-${{ matrix.os }} --out ./dist/oracle-health
+          pnpm run accreditation -- --profile county --out ./dist/oracle-health
           echo "✅ Fresh packet generated"
 
       - name: Verify fresh packet
@@ -145,6 +145,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: oracle-health
     if: always()
+    defaults:
+      run:
+        working-directory: .
 
     steps:
       - name: Check matrix results
