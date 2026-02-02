@@ -12,7 +12,9 @@
     "tf-ops-status": "./bin/ops-status.mjs",
     "tf-slo-gate": "./bin/slo-gate.mjs",
     "tf-accreditation": "./bin/accreditation-packet.mjs",
-    "tf-accreditation-verify": "./bin/accreditation-verify.mjs"
+    "tf-accreditation-verify": "./bin/accreditation-verify.mjs",
+    "tf-fleet-enroll": "./bin/fleet-enroll.mjs",
+    "tf-airgap-bundle": "./bin/airgap-bundle.mjs"
   },
   "scripts": {
     "generate": "npx tsx src/generate.ts",
@@ -29,6 +31,8 @@
     "slo:gate": "npx tsx bin/slo-gate.mjs",
     "accreditation": "npx tsx bin/accreditation-packet.mjs",
     "accreditation:verify": "npx tsx bin/accreditation-verify.mjs",
+    "fleet:enroll": "npx tsx bin/fleet-enroll.mjs",
+    "airgap:bundle": "npx tsx bin/airgap-bundle.mjs",
     "test": "npx tsx --test test/*.test.ts"
   },
   "keywords": [

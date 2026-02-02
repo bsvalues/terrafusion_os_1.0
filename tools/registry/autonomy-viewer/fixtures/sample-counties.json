@@ -1,0 +1,25 @@
+{
+  "$schema": "terrafusion.autonomy.fleet-counties-input.v1",
+  "description": "Sample county enrollment input for fleet batch operations",
+  "counties": [
+    {
+      "id": "benton-wa",
+      "name": "Benton County",
+      "jurisdiction": "WA",
+      "profile": "county",
+      "notes": "Primary test county"
+    },
+    {
+      "id": "franklin-wa",
+      "name": "Franklin County",
+      "jurisdiction": "WA",
+      "profile": "county"
+    },
+    {
+      "id": "yakima-wa",
+      "name": "Yakima County",
+      "jurisdiction": "WA",
+      "profile": "county"
+    }
+  ]
+}

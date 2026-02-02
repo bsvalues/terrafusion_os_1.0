@@ -71,10 +71,10 @@ export function jsonStructurallyEqual(json1: string, json2: string): boolean {
 }
 
 /**
- * Write JSON to a string with consistent line endings (LF only).
+ * Write JSON to a string with consistent line endings (LF only) and trailing newline.
  */
 export function toJsonWithLF(obj: unknown, indent: number = 2): string {
   const json = deterministicStringify(obj, indent);
-  // Ensure LF line endings, no CRLF
-  return json.replace(/\r\n/g, '\n');
+  // Ensure LF line endings, no CRLF, and trailing newline
+  return json.replace(/\r\n/g, '\n') + '\n';
 }
