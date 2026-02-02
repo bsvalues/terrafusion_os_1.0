@@ -15,7 +15,8 @@
     "tf-accreditation-verify": "./bin/accreditation-verify.mjs",
     "tf-fleet-enroll": "./bin/fleet-enroll.mjs",
     "tf-airgap-bundle": "./bin/airgap-bundle.mjs",
-    "tf-mirror-publish": "./bin/mirror-publish.mjs"
+    "tf-mirror-publish": "./bin/mirror-publish.mjs",
+    "tf-closeout-proof": "./bin/closeout-proof.mjs"
   },
   "scripts": {
     "generate": "npx tsx src/generate.ts",
@@ -35,6 +36,7 @@
     "fleet:enroll": "npx tsx bin/fleet-enroll.mjs",
     "airgap:bundle": "npx tsx bin/airgap-bundle.mjs",
     "mirror:publish": "npx tsx bin/mirror-publish.mjs",
+    "closeout:proof": "npx tsx bin/closeout-proof.mjs",
     "test": "npx tsx --test test/*.test.ts"
   },
   "keywords": [
