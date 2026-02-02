@@ -1,0 +1,273 @@
+# Oracle Health — Weekly Golden Corpus Verification
+# ==================================================
+#
+# This workflow verifies that the published GA golden corpus assets
+# match the hashes pinned in golden/GOLDEN_CORPUS.lock.json.
+#
+# Purpose:
+#   - Detect accidental release asset mutation
+#   - Validate oracle integrity continuously
+#   - Provide early warning if anything drifts
+#
+# Properties:
+#   - Downloads EXACTLY the GA release assets (v1.5.0 pinned)
+#   - Computes SHA256 for each artifact
+#   - Compares against lockfile
+#   - Fails loudly on ANY mismatch
+
+name: oracle-health
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Override release tag (default: reads from lockfile)'
+        required: false
+        type: string
+        default: ''
+      open_issue_on_failure:
+        description: 'Open a GitHub Issue if oracle health fails'
+        required: false
+        type: boolean
+        default: true
+
+  schedule:
+    # Weekly: Sundays at 03:00 UTC
+    - cron: '0 3 * * 0'
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: oracle-health-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # Pinned for determinism
+  NODE_VERSION: '20.11.1'
+  PNPM_VERSION: '9.12.2'
+
+jobs:
+  verify-oracle:
+    name: Verify Golden Corpus Oracle
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (lockfile only)
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            golden/GOLDEN_CORPUS.lock.json
+          sparse-checkout-cone-mode: false
+
+      - name: Read lockfile
+        id: lockfile
+        run: |
+          echo "📖 Reading golden corpus lockfile..."
+
+          # Extract release tag
+          if [ -n "${{ inputs.release_tag }}" ]; then
+            RELEASE_TAG="${{ inputs.release_tag }}"
+          else
+            RELEASE_TAG=$(jq -r '.releaseTag' golden/GOLDEN_CORPUS.lock.json)
+          fi
+
+          echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "📌 Target release: $RELEASE_TAG"
+
+          # Extract expected hashes
+          jq -c '.artifacts[]' golden/GOLDEN_CORPUS.lock.json > expected-artifacts.json
+
+          echo "artifacts_count=$(jq '.artifacts | length' golden/GOLDEN_CORPUS.lock.json)" >> $GITHUB_OUTPUT
+
+      - name: Download release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.lockfile.outputs.release_tag }}
+        run: |
+          echo "📥 Downloading release assets for: $RELEASE_TAG"
+          mkdir -p assets
+
+          # Download all golden corpus artifacts
+          while IFS= read -r artifact; do
+            NAME=$(echo "$artifact" | jq -r '.name')
+            echo "  Downloading: $NAME"
+            gh release download "$RELEASE_TAG" \
+              --repo "${{ github.repository }}" \
+              --pattern "$NAME" \
+              --dir assets/ || echo "⚠️  Failed to download: $NAME"
+          done < expected-artifacts.json
+
+          echo ""
+          echo "✅ Downloaded assets:"
+          ls -la assets/
+
+      - name: Verify SHA256 hashes
+        id: verify
+        run: |
+          echo "🔍 Verifying SHA256 hashes against lockfile..."
+          echo ""
+
+          FAIL=0
+          PASS=0
+
+          # Create report
+          echo '{"results": [' > oracle-health-report.json
+          FIRST=true
+
+          while IFS= read -r artifact; do
+            NAME=$(echo "$artifact" | jq -r '.name')
+            EXPECTED=$(echo "$artifact" | jq -r '.sha256')
+            EXPECTED_BYTES=$(echo "$artifact" | jq -r '.bytes')
+            
+            if [ -f "assets/$NAME" ]; then
+              ACTUAL=$(sha256sum "assets/$NAME" | cut -d' ' -f1)
+              ACTUAL_BYTES=$(stat -c%s "assets/$NAME")
+              
+              if [ "$EXPECTED" = "$ACTUAL" ]; then
+                echo "✅ $NAME"
+                echo "   SHA256: $ACTUAL"
+                STATUS="pass"
+                PASS=$((PASS + 1))
+              else
+                echo "❌ $NAME — HASH MISMATCH"
+                echo "   Expected: $EXPECTED"
+                echo "   Actual:   $ACTUAL"
+                STATUS="fail"
+                FAIL=$((FAIL + 1))
+              fi
+            else
+              echo "❌ $NAME — MISSING"
+              ACTUAL="null"
+              ACTUAL_BYTES=0
+              STATUS="missing"
+              FAIL=$((FAIL + 1))
+            fi
+            
+            # Append to report
+            if [ "$FIRST" = true ]; then
+              FIRST=false
+            else
+              echo ',' >> oracle-health-report.json
+            fi
+            
+            cat >> oracle-health-report.json << EOF
+            {
+              "name": "$NAME",
+              "status": "$STATUS",
+              "expectedSha256": "$EXPECTED",
+              "actualSha256": "$ACTUAL",
+              "expectedBytes": $EXPECTED_BYTES,
+              "actualBytes": $ACTUAL_BYTES
+            }
+          EOF
+          done < expected-artifacts.json
+
+          # Close report
+          VERIFIED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          cat >> oracle-health-report.json << EOF
+          ],
+            "summary": {
+              "releaseTag": "${{ steps.lockfile.outputs.release_tag }}",
+              "totalArtifacts": ${{ steps.lockfile.outputs.artifacts_count }},
+              "passed": $PASS,
+              "failed": $FAIL,
+              "result": "$([ $FAIL -eq 0 ] && echo 'pass' || echo 'fail')",
+              "verifiedAt": "$VERIFIED_AT"
+            }
+          }
+          EOF
+
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📊 Summary: $PASS passed, $FAIL failed"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          echo "passed=$PASS" >> $GITHUB_OUTPUT
+          echo "failed=$FAIL" >> $GITHUB_OUTPUT
+
+          if [ $FAIL -gt 0 ]; then
+            echo "result=fail" >> $GITHUB_OUTPUT
+          else
+            echo "result=pass" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload health report
+        uses: actions/upload-artifact@v4
+        with:
+          name: oracle-health-report
+          path: oracle-health-report.json
+          retention-days: 90
+
+      - name: Job summary
+        run: |
+          echo "## 🔮 Oracle Health Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Release Tag | \`${{ steps.lockfile.outputs.release_tag }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Result | ${{ steps.verify.outputs.result == 'pass' && '✅ HEALTHY' || '❌ DRIFT DETECTED' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Passed | ${{ steps.verify.outputs.passed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Failed | ${{ steps.verify.outputs.failed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Artifacts Verified" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          cat oracle-health-report.json | jq '.results' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Create issue on failure
+        if: steps.verify.outputs.result == 'fail' && inputs.open_issue_on_failure != false
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="🚨 Oracle Health Failure: ${{ steps.lockfile.outputs.release_tag }}"
+
+          BODY="## Oracle Health Check Failed
+
+          **Release Tag:** \`${{ steps.lockfile.outputs.release_tag }}\`
+          **Run:** [View workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          **Detected At:** $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          ### Failure Details
+
+          \`\`\`json
+          $(cat oracle-health-report.json | jq '.results[] | select(.status != "pass")')
+          \`\`\`
+
+          ### Required Action
+
+          1. Investigate whether release assets were mutated
+          2. If legitimate, bump golden corpus via new release tag
+          3. Update \`golden/GOLDEN_CORPUS.lock.json\` with governance approval
+
+          cc: @bsvalues"
+
+          # Check for existing open issue
+          EXISTING=$(gh issue list --repo "${{ github.repository }}" \
+            --search "Oracle Health Failure in:title is:open" \
+            --json number --jq '.[0].number // empty')
+
+          if [ -n "$EXISTING" ]; then
+            echo "📝 Updating existing issue #$EXISTING"
+            gh issue comment "$EXISTING" --repo "${{ github.repository }}" --body "### Update $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          $BODY"
+          else
+            echo "📝 Creating new issue"
+            gh issue create --repo "${{ github.repository }}" \
+              --title "$TITLE" \
+              --body "$BODY" \
+              --label "governance,oracle-health"
+          fi
+
+      - name: Fail on drift
+        if: steps.verify.outputs.result == 'fail'
+        run: |
+          echo ""
+          echo "❌ ORACLE HEALTH CHECK FAILED"
+          echo ""
+          echo "Golden corpus assets have drifted from lockfile."
+          echo "See oracle-health-report.json for details."
+          echo ""
+          exit 1
