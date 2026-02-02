@@ -538,3 +538,7 @@ quantum_performance_results.json
 # Local operator intel outputs
 STATUS.md
 TODO_INTEL.json
+
+# Force include autonomy-viewer CLI tools (not compiled binaries)
+!tools/registry/autonomy-viewer/bin/
+tools/registry/autonomy-viewer/bin/*.mjs
