@@ -15,15 +15,21 @@
 #   - Compares against lockfile
 #   - Fails loudly on ANY mismatch
 
-name: Oracle Health
+name: oracle-health
 
 on:
   workflow_dispatch:
     inputs:
-      force_tag:
+      release_tag:
         description: 'Override release tag (default: reads from lockfile)'
         required: false
         type: string
+        default: ''
+      open_issue_on_failure:
+        description: 'Open a GitHub Issue if oracle health fails'
+        required: false
+        type: boolean
+        default: true
 
   schedule:
     # Weekly: Sundays at 03:00 UTC
@@ -33,8 +39,14 @@ permissions:
   contents: read
   issues: write
 
+concurrency:
+  group: oracle-health-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
-  NODE_VERSION: '20'
+  # Pinned for determinism
+  NODE_VERSION: '20.11.1'
+  PNPM_VERSION: '9.12.2'
 
 jobs:
   verify-oracle:
@@ -55,8 +67,8 @@ jobs:
           echo "📖 Reading golden corpus lockfile..."
 
           # Extract release tag
-          if [ -n "${{ inputs.force_tag }}" ]; then
-            RELEASE_TAG="${{ inputs.force_tag }}"
+          if [ -n "${{ inputs.release_tag }}" ]; then
+            RELEASE_TAG="${{ inputs.release_tag }}"
           else
             RELEASE_TAG=$(jq -r '.releaseTag' golden/GOLDEN_CORPUS.lock.json)
           fi
@@ -205,7 +217,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Create issue on failure
-        if: steps.verify.outputs.result == 'fail'
+        if: steps.verify.outputs.result == 'fail' && inputs.open_issue_on_failure != false
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
