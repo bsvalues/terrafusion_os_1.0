@@ -11,8 +11,8 @@
  * - drift_baseline_is_contract_pinned: baseline is immutable and versioned
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Governance Drift Detection
@@ -220,10 +220,34 @@ function createRoutingBaseline(): RoutingBaseline {
     version: '1.0.0',
     hash: 'sha256:routing-baseline-xyz789',
     routes: [
-      { ruleId: 'ROUTE-001', severity: 'critical', channel: 'pagerduty', escalationMinutes: 5, enabled: true },
-      { ruleId: 'ROUTE-002', severity: 'high', channel: 'opsgenie', escalationMinutes: 15, enabled: true },
-      { ruleId: 'ROUTE-003', severity: 'medium', channel: 'slack', escalationMinutes: 60, enabled: true },
-      { ruleId: 'ROUTE-004', severity: 'low', channel: 'email', escalationMinutes: 240, enabled: true },
+      {
+        ruleId: 'ROUTE-001',
+        severity: 'critical',
+        channel: 'pagerduty',
+        escalationMinutes: 5,
+        enabled: true,
+      },
+      {
+        ruleId: 'ROUTE-002',
+        severity: 'high',
+        channel: 'opsgenie',
+        escalationMinutes: 15,
+        enabled: true,
+      },
+      {
+        ruleId: 'ROUTE-003',
+        severity: 'medium',
+        channel: 'slack',
+        escalationMinutes: 60,
+        enabled: true,
+      },
+      {
+        ruleId: 'ROUTE-004',
+        severity: 'low',
+        channel: 'email',
+        escalationMinutes: 240,
+        enabled: true,
+      },
     ],
     pinnedAt: '2025-01-01T00:00:00Z',
   };
@@ -310,7 +334,7 @@ function detectDrift<T extends { hash: string }>(
   // Check for modified items
   for (const baseItem of baseline.items) {
     const id = getItemId(baseItem);
-    const currItem = current.items.find((i) => getItemId(i) === id);
+    const currItem = current.items.find(i => getItemId(i) === id);
     if (currItem && baseItem.hash !== currItem.hash) {
       deviations.push({
         itemId: id,
@@ -388,7 +412,7 @@ describe('Governance Drift Contract', () => {
         'policy',
         { version: baseline.version, hash: baseline.hash, items: baseline.policies },
         { version: current.version, hash: current.hash, items: current.policies },
-        (p) => p.policyId
+        p => p.policyId
       );
 
       assert.ok(!result.driftDetected);
@@ -409,11 +433,11 @@ describe('Governance Drift Contract', () => {
         'policy',
         { version: baseline.version, hash: baseline.hash, items: baseline.policies },
         { version: current.version, hash: current.hash, items: current.policies },
-        (p) => p.policyId
+        p => p.policyId
       );
 
       assert.ok(result.driftDetected);
-      assert.ok(result.deviations.some((d) => d.changeType === 'added'));
+      assert.ok(result.deviations.some(d => d.changeType === 'added'));
     });
 
     it('should detect drift when policy removed', () => {
@@ -428,11 +452,11 @@ describe('Governance Drift Contract', () => {
         'policy',
         { version: baseline.version, hash: baseline.hash, items: baseline.policies },
         { version: current.version, hash: current.hash, items: current.policies },
-        (p) => p.policyId
+        p => p.policyId
       );
 
       assert.ok(result.driftDetected);
-      assert.ok(result.deviations.some((d) => d.changeType === 'removed'));
+      assert.ok(result.deviations.some(d => d.changeType === 'removed'));
     });
 
     it('should detect drift when policy modified', () => {
@@ -450,11 +474,11 @@ describe('Governance Drift Contract', () => {
         'policy',
         { version: baseline.version, hash: baseline.hash, items: baseline.policies },
         { version: current.version, hash: current.hash, items: current.policies },
-        (p) => p.policyId
+        p => p.policyId
       );
 
       assert.ok(result.driftDetected);
-      assert.ok(result.deviations.some((d) => d.changeType === 'modified'));
+      assert.ok(result.deviations.some(d => d.changeType === 'modified'));
     });
 
     it('should assign high severity to policy drift', () => {
@@ -475,7 +499,7 @@ describe('Governance Drift Contract', () => {
         'routing',
         { version: baseline.version, hash: baseline.hash, items: baseline.routes },
         { version: current.version, hash: current.hash, items: current.routes },
-        (r) => r.ruleId
+        r => r.ruleId
       );
 
       assert.ok(!result.driftDetected);
@@ -496,7 +520,7 @@ describe('Governance Drift Contract', () => {
         'routing',
         { version: baseline.version, hash: baseline.hash, items: baseline.routes },
         { version: current.version, hash: current.hash, items: current.routes },
-        (r) => r.ruleId
+        r => r.ruleId
       );
 
       // Hash-based detection doesn't work here since RoutingRule has no hash field
@@ -515,7 +539,7 @@ describe('Governance Drift Contract', () => {
         'routing',
         { version: baseline.version, hash: baseline.hash, items: baseline.routes },
         { version: current.version, hash: current.hash, items: current.routes },
-        (r) => r.ruleId
+        r => r.ruleId
       );
 
       assert.ok(result.driftDetected);
@@ -533,7 +557,7 @@ describe('Governance Drift Contract', () => {
         'routing',
         { version: baseline.version, hash: baseline.hash, items: baseline.routes },
         { version: current.version, hash: current.hash, items: current.routes },
-        (r) => r.ruleId
+        r => r.ruleId
       );
 
       const event = createDriftEvent(result);
@@ -554,7 +578,7 @@ describe('Governance Drift Contract', () => {
         'runbook',
         { version: baseline.version, hash: baseline.hash, items: baseline.runbooks },
         { version: current.version, hash: current.hash, items: current.runbooks },
-        (r) => r.runbookId
+        r => r.runbookId
       );
 
       assert.ok(!result.driftDetected);
@@ -575,11 +599,11 @@ describe('Governance Drift Contract', () => {
         'runbook',
         { version: baseline.version, hash: baseline.hash, items: baseline.runbooks },
         { version: current.version, hash: current.hash, items: current.runbooks },
-        (r) => r.runbookId
+        r => r.runbookId
       );
 
       assert.ok(result.driftDetected);
-      assert.ok(result.deviations.some((d) => d.changeType === 'modified'));
+      assert.ok(result.deviations.some(d => d.changeType === 'modified'));
     });
 
     it('should detect when checklist items reduced', () => {
@@ -597,7 +621,7 @@ describe('Governance Drift Contract', () => {
         'runbook',
         { version: baseline.version, hash: baseline.hash, items: baseline.runbooks },
         { version: current.version, hash: current.hash, items: current.runbooks },
-        (r) => r.runbookId
+        r => r.runbookId
       );
 
       assert.ok(result.driftDetected);

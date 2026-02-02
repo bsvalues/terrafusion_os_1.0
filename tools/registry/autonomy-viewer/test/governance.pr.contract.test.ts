@@ -11,8 +11,8 @@
  * - pr_is_safe_by_default: No auto-merge, requires human approval
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Governance PRs
