@@ -1,0 +1,338 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/governance-ledger/v1.0.0",
+  "version": "1.0.0",
+  "generated_at": "2026-02-02T00:00:00Z",
+  "phases": [
+    {
+      "id": "III",
+      "name": "Identity/AuthZ Foundation",
+      "status": "sealed",
+      "commit": null,
+      "test_count": 100,
+      "surfaces": ["identity", "authz"]
+    },
+    {
+      "id": "IV",
+      "name": "Advanced AuthZ",
+      "status": "sealed",
+      "commit": null,
+      "test_count": 50,
+      "surfaces": ["authz"]
+    },
+    {
+      "id": "V",
+      "name": "Governance Infrastructure",
+      "status": "sealed",
+      "commit": null,
+      "test_count": 50,
+      "surfaces": ["governance"]
+    },
+    {
+      "id": "VI",
+      "name": "Secrets Posture",
+      "status": "sealed",
+      "commit": "26ab44927",
+      "test_count": 169,
+      "surfaces": ["secrets"]
+    },
+    {
+      "id": "VII",
+      "name": "Service Identity",
+      "status": "sealed",
+      "commit": "c2cfcb3bd",
+      "test_count": 157,
+      "surfaces": ["service_identity"]
+    },
+    {
+      "id": "VIII",
+      "name": "Data Access Governance",
+      "status": "sealed",
+      "commit": "03e8ee35b",
+      "test_count": 166,
+      "surfaces": ["data_access"]
+    },
+    {
+      "id": "VIf",
+      "name": "Scaling Hardening",
+      "status": "sealed",
+      "commit": "08fad1911",
+      "test_count": 97,
+      "surfaces": ["scaling"]
+    }
+  ],
+  "surfaces": {
+    "identity": {
+      "name": "Identity & AuthZ",
+      "contracts": [
+        "authz.inventory.contract.test.ts",
+        "authz.drift.contract.test.ts",
+        "authz.recommendations.contract.test.ts",
+        "authz.governance.pr.contract.test.ts",
+        "authz.oncall.contract.test.ts",
+        "rbac.policy-alignment.contract.test.ts",
+        "rbac.provider-agnostic.contract.test.ts",
+        "entra-oidc.contract.test.ts",
+        "entra-oidc.rotation.contract.test.ts",
+        "oidc.policy.contract.test.ts"
+      ],
+      "dimension_allowlist": [
+        "environment",
+        "principal_type",
+        "role_tier",
+        "permission_scope"
+      ]
+    },
+    "secrets": {
+      "name": "Secrets Posture",
+      "contracts": [
+        "secrets.inventory.contract.test.ts",
+        "secrets.access-anomaly.contract.test.ts",
+        "secrets.rotation.contract.test.ts",
+        "secrets.leastprivilege.evidence.contract.test.ts",
+        "secrets.recommendations.contract.test.ts",
+        "secrets.governance.pr.contract.test.ts",
+        "secrets.oncall.contract.test.ts",
+        "secrets.continuous-assurance.contract.test.ts",
+        "secrets.integration.contract.test.ts"
+      ],
+      "dimension_allowlist": [
+        "environment",
+        "secret_tier",
+        "access_mode",
+        "principal_type"
+      ]
+    },
+    "service_identity": {
+      "name": "Service Identity",
+      "contracts": [
+        "serviceid.inventory.contract.test.ts",
+        "serviceid.lifecycle.contract.test.ts",
+        "serviceid.drift.contract.test.ts",
+        "serviceid.evidence.contract.test.ts",
+        "serviceid.recommendations.contract.test.ts",
+        "serviceid.governance.pr.contract.test.ts",
+        "serviceid.oncall.contract.test.ts",
+        "serviceid.continuous-assurance.contract.test.ts"
+      ],
+      "dimension_allowlist": [
+        "environment",
+        "service_tier",
+        "trust_level",
+        "cert_type"
+      ]
+    },
+    "data_access": {
+      "name": "Data Access Governance",
+      "contracts": [
+        "data.inventory.contract.test.ts",
+        "data.access-anomaly.contract.test.ts",
+        "data.export-controls.contract.test.ts",
+        "data.highrisk.evidence.contract.test.ts",
+        "data.recommendations.contract.test.ts",
+        "data.governance.pr.contract.test.ts",
+        "data.oncall.contract.test.ts",
+        "data.continuous-assurance.contract.test.ts"
+      ],
+      "dimension_allowlist": [
+        "environment",
+        "dataset_tier",
+        "access_mode",
+        "principal_type",
+        "risk_tier"
+      ]
+    },
+    "scaling": {
+      "name": "Scaling Hardening",
+      "contracts": [
+        "scaling.consistency.contract.test.ts",
+        "scaling.retention.contract.test.ts",
+        "scaling.cardinality.contract.test.ts",
+        "scaling.backpressure.contract.test.ts",
+        "scaling.isolation.contract.test.ts"
+      ],
+      "dimension_allowlist": [
+        "region",
+        "service_domain",
+        "failure_domain",
+        "traffic_priority"
+      ]
+    },
+    "governance": {
+      "name": "Governance Infrastructure",
+      "contracts": [
+        "governance.pr.contract.test.ts",
+        "governance.drift.contract.test.ts",
+        "evidence.pack.contract.test.ts",
+        "audit.appendonly.contract.test.ts",
+        "audit.integrity.contract.test.ts",
+        "audit.pii.contract.test.ts",
+        "operator.signoff.contract.test.ts",
+        "paging.policy.contract.test.ts",
+        "ack.suppression.contract.test.ts",
+        "scheduled.verification.contract.test.ts",
+        "rollout.verification.contract.test.ts",
+        "rollback.controller.contract.test.ts",
+        "canary.promotion.contract.test.ts",
+        "pipeline.promotion.contract.test.ts",
+        "pipeline.rollback.contract.test.ts"
+      ],
+      "dimension_allowlist": []
+    }
+  },
+  "invariants": [
+    {
+      "id": "INV-001",
+      "name": "autoMerge=false",
+      "description": "All governance PRs must have autoMerge=false",
+      "surfaces": [
+        "identity",
+        "secrets",
+        "service_identity",
+        "data_access",
+        "scaling",
+        "governance"
+      ],
+      "enforcement": "contract_assertion"
+    },
+    {
+      "id": "INV-002",
+      "name": "requiresApproval=true",
+      "description": "All governed changes require human approval",
+      "surfaces": [
+        "identity",
+        "secrets",
+        "service_identity",
+        "data_access",
+        "scaling",
+        "governance"
+      ],
+      "enforcement": "contract_assertion"
+    },
+    {
+      "id": "INV-003",
+      "name": "PII-clean outputs",
+      "description": "All evidence uses sha256: opaque IDs only, no raw PII",
+      "surfaces": [
+        "identity",
+        "secrets",
+        "service_identity",
+        "data_access",
+        "scaling",
+        "governance"
+      ],
+      "enforcement": "contract_assertion"
+    },
+    {
+      "id": "INV-004",
+      "name": "Dimension allowlist",
+      "description": "Only allowlisted dimensions may appear in evidence/metrics",
+      "surfaces": [
+        "identity",
+        "secrets",
+        "service_identity",
+        "data_access",
+        "scaling"
+      ],
+      "enforcement": "contract_assertion"
+    },
+    {
+      "id": "INV-005",
+      "name": "Suggestions-only remediation",
+      "description": "No auto-block, no auto-revoke; all remediation is suggestions-only",
+      "surfaces": ["identity", "secrets", "service_identity", "data_access"],
+      "enforcement": "contract_assertion"
+    },
+    {
+      "id": "INV-006",
+      "name": "Append-only audit",
+      "description": "Audit log is append-only with checksum chain",
+      "surfaces": [
+        "identity",
+        "secrets",
+        "service_identity",
+        "data_access",
+        "scaling",
+        "governance"
+      ],
+      "enforcement": "contract_assertion"
+    },
+    {
+      "id": "INV-007",
+      "name": "Fail-silent tooling",
+      "description": "Tooling errors do not cascade into auth/data path failures",
+      "surfaces": [
+        "identity",
+        "secrets",
+        "service_identity",
+        "data_access",
+        "scaling",
+        "governance"
+      ],
+      "enforcement": "contract_assertion"
+    },
+    {
+      "id": "INV-008",
+      "name": "Auth path zero-dependency",
+      "description": "Auth path has ZERO hard dependencies on governance control plane",
+      "surfaces": ["scaling"],
+      "enforcement": "contract_assertion"
+    },
+    {
+      "id": "INV-009",
+      "name": "Circuit breaker fail-open",
+      "description": "Circuit breakers fail-open for auth path services",
+      "surfaces": ["scaling"],
+      "enforcement": "contract_assertion"
+    },
+    {
+      "id": "INV-010",
+      "name": "Bounded failure domains",
+      "description": "No failure domain has global blast radius",
+      "surfaces": ["scaling"],
+      "enforcement": "contract_assertion"
+    },
+    {
+      "id": "INV-011",
+      "name": "Secret values never in evidence",
+      "description": "Secret values never appear in logs or evidence packs",
+      "surfaces": ["secrets"],
+      "enforcement": "contract_assertion"
+    },
+    {
+      "id": "INV-012",
+      "name": "Private keys never in evidence",
+      "description": "Certificate private keys never appear in evidence",
+      "surfaces": ["service_identity"],
+      "enforcement": "contract_assertion"
+    }
+  ],
+  "gates": [
+    {
+      "name": "type-check",
+      "command": "pnpm -w run type-check",
+      "required": true
+    },
+    {
+      "name": "phase83-tools",
+      "command": "node --test os-platform/core/tests/phase83-tools.test.mjs",
+      "required": true
+    }
+  ],
+  "next_phases": [
+    {
+      "id": "IX",
+      "name": "Incident Response Governance",
+      "status": "planned"
+    },
+    {
+      "id": "X",
+      "name": "Compliance Evidence Export",
+      "status": "planned"
+    },
+    {
+      "id": "XI",
+      "name": "Multi-Tenant Isolation",
+      "status": "planned"
+    }
+  ]
+}
