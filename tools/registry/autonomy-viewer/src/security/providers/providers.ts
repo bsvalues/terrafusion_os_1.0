@@ -40,6 +40,19 @@ import type {
     PrincipalResolutionResult,
 } from './types.js';
 
+// Re-export Entra provider for convenience
+export {
+    createMockIdToken,
+    createMockJwks,
+    EntraOidcPrincipalProvider,
+    type EntraIdTokenClaims,
+    type EntraOidcProviderConfig,
+    type EntraOidcProviderDependencies,
+    type Jwk,
+    type JwkSet,
+    type OidcDiscoveryDocument
+} from './identity/entra-oidc.js';
+
 // ============================================================================
 // StaticPrincipalProvider
 // ============================================================================
@@ -572,15 +585,81 @@ export class TierBasedAuditRoutingProvider implements AuditRoutingProvider {
 // Security Context Factory
 // ============================================================================
 
+/**
+ * Supported identity provider types.
+ * TF_IDP_PROVIDER environment variable selects which provider to use.
+ */
+export type IdpProviderType = 'env' | 'file' | 'entra' | 'oidc';
+
 export interface CreateSecurityContextOptions {
   principalProvider?: PrincipalResolutionProvider;
   approvalsProvider?: ApprovalEvidenceProvider;
   auditProvider?: AuditRoutingProvider;
   attestationProvider?: AttestationProvider;
+  /** Override IdP provider type (default: from TF_IDP_PROVIDER or 'env') */
+  idpProvider?: IdpProviderType;
+  /** Entra config (required when idpProvider='entra') */
+  entraConfig?: {
+    tenantId: string;
+    clientId: string;
+    issuer?: string;
+    discoveryEndpoint?: string;
+    bearerTokenEnvKey?: string;
+  };
+  /** File principal provider config (required when idpProvider='file') */
+  fileConfig?: {
+    mappingFilePath: string;
+    operatorIdEnvKey?: string;
+  };
+}
+
+/**
+ * Create a principal provider based on IdP type selection.
+ */
+function createPrincipalProviderFromType(
+  idpType: IdpProviderType,
+  options: CreateSecurityContextOptions
+): PrincipalResolutionProvider {
+  switch (idpType) {
+    case 'entra':
+    case 'oidc':
+      if (!options.entraConfig) {
+        throw new Error(`${idpType} IdP requires entraConfig with tenantId and clientId`);
+      }
+      // Dynamic import would be better but for now we use static
+      // EntraOidcPrincipalProvider is re-exported at top
+      const { EntraOidcPrincipalProvider } = require('./identity/entra-oidc.js');
+      return new EntraOidcPrincipalProvider({
+        tenantId: options.entraConfig.tenantId,
+        clientId: options.entraConfig.clientId,
+        issuer: options.entraConfig.issuer,
+        discoveryEndpoint: options.entraConfig.discoveryEndpoint,
+        bearerTokenEnvKey: options.entraConfig.bearerTokenEnvKey,
+      });
+
+    case 'file':
+      if (!options.fileConfig) {
+        throw new Error('file IdP requires fileConfig with mappingFilePath');
+      }
+      return new FilePrincipalProvider({
+        mappingFilePath: options.fileConfig.mappingFilePath,
+        operatorIdEnvKey: options.fileConfig.operatorIdEnvKey,
+      });
+
+    case 'env':
+    default:
+      return new EnvPrincipalProvider();
+  }
 }
 
 /**
  * Create a security context with default or custom providers.
+ *
+ * IdP selection (TF_IDP_PROVIDER or options.idpProvider):
+ * - 'env': EnvPrincipalProvider (CI/CD, default)
+ * - 'file': FilePrincipalProvider (air-gapped, county offline)
+ * - 'entra': EntraOidcPrincipalProvider (Azure AD / Entra ID)
+ * - 'oidc': EntraOidcPrincipalProvider (Generic OIDC, same code path)
  */
 export function createSecurityContext(options: CreateSecurityContextOptions = {}): {
   principalProvider: PrincipalResolutionProvider;
@@ -588,8 +667,16 @@ export function createSecurityContext(options: CreateSecurityContextOptions = {}
   auditProvider: AuditRoutingProvider;
   attestationProvider: AttestationProvider;
 } {
+  // Determine IdP type from options or environment
+  const idpType: IdpProviderType =
+    options.idpProvider ?? (process.env['TF_IDP_PROVIDER'] as IdpProviderType | undefined) ?? 'env';
+
+  // Select principal provider
+  const principalProvider =
+    options.principalProvider ?? createPrincipalProviderFromType(idpType, options);
+
   return {
-    principalProvider: options.principalProvider ?? new EnvPrincipalProvider(),
+    principalProvider,
     approvalsProvider: options.approvalsProvider ?? new EnvApprovalEvidenceProvider(),
     auditProvider: options.auditProvider ?? new EnvAuditRoutingProvider(),
     attestationProvider: options.attestationProvider ?? new NoopAttestationProvider(),

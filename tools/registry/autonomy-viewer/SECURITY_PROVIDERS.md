@@ -1,7 +1,7 @@
 # TerraFusion Security Provider Contract Surface
 
-> **Phase IIIb Milestone**: `v1.5.2-security-seams` (commit `24573d5f9`)
-> **Schema Version**: `terrafusion.security.provider.v1`
+> **Phase IIIe Milestone**: `v1.5.3-entra-oidc` (Phase IIIe)
+> **Schema Version**: `terrafusion.security.provider.v2`
 
 This document defines the **invariants**, **contracts**, and **stability rules** for security provider interfaces. These are constitutional properties—they cannot change without an RC gate.
 
@@ -196,14 +196,67 @@ These are **constitutional properties** enforced by contract tests:
 | `EnvPrincipalProvider` | Default | CI/CD environments |
 | `StaticPrincipalProvider` | Offline | Air-gapped exercises |
 | `FilePrincipalProvider` | County | Offline operator identity |
+| `EntraOidcPrincipalProvider` | Production | Azure AD / Entra ID (OIDC) |
 | **ApprovalEvidence** | | |
 | `EnvApprovalEvidenceProvider` | Default | Environment-based evidence |
 | `FileApprovalEvidenceProvider` | Courtroom | Evidence-as-artifact chain |
 | **AuditRouting** | | |
 | `EnvAuditRoutingProvider` | Default | Environment-based sink |
 | `TierBasedAuditRoutingProvider` | Incident | Tier-specific routing |
+| **Attestation** | | |
+| `NoopAttestationProvider` | Default | Systems without KMS/HSM |
 
-### 5.2 Default Provider Selection
+### 5.2 IdP Provider Selection (TF_IDP_PROVIDER)
+
+The `TF_IDP_PROVIDER` environment variable selects the principal resolution provider:
+
+| Value | Provider | Description |
+|-------|----------|-------------|
+| `env` | EnvPrincipalProvider | Default; reads from environment |
+| `file` | FilePrincipalProvider | Air-gapped; reads from JSON file |
+| `entra` | EntraOidcPrincipalProvider | Azure AD / Entra ID (OIDC) |
+| `oidc` | EntraOidcPrincipalProvider | Generic OIDC (same code path) |
+
+### 5.3 EntraOidcPrincipalProvider Configuration
+
+```bash
+# Required
+TF_ENTRA_TENANT_ID=<azure-tenant-id>
+TF_ENTRA_CLIENT_ID=<application-client-id>
+TF_BEARER_TOKEN=<jwt-id-token>
+
+# Optional (defaults shown)
+TF_ENTRA_ISSUER=https://login.microsoftonline.com/${TF_ENTRA_TENANT_ID}/v2.0
+TF_ENTRA_DISCOVERY=https://login.microsoftonline.com/${TF_ENTRA_TENANT_ID}/v2.0/.well-known/openid-configuration
+```
+
+**Claim Normalization (NIST SP 800-63):**
+
+| IdP Claim | Normalized Field | Notes |
+|-----------|------------------|-------|
+| `sub` | `subjectHash` | SHA-256 hashed, never raw |
+| `oid` | `oidHash` | SHA-256 hashed, never raw |
+| `roles` | `roles` | Direct mapping |
+| `acr`, `amr` | `assuranceLevel` | AAL1/AAL2/AAL3 |
+| `amr` | `authnContext` | password/mfa/certificate/etc |
+| `iat` | `authnTime` | ISO timestamp |
+| `exp` | `expiresAt` | ISO timestamp |
+| `tid` | `tid` | Tenant ID (not PII) |
+
+**Failure Modes (all fail-closed with DENY_PROVIDER_ERROR or DENY_TOKEN_INVALID):**
+
+| Failure | Error Code | Description |
+|---------|------------|-------------|
+| JWKS unavailable | DENY_PROVIDER_ERROR | Network timeout, DNS failure, HTTP 5xx |
+| Discovery unavailable | DENY_PROVIDER_ERROR | Discovery endpoint unreachable |
+| Key not found | DENY_PROVIDER_ERROR | Token kid not in JWKS |
+| Invalid issuer | DENY_TOKEN_INVALID | Token iss ≠ expected issuer |
+| Invalid audience | DENY_TOKEN_INVALID | Token aud ≠ client ID |
+| Token expired | DENY_TOKEN_INVALID | Token exp < now |
+| Malformed token | DENY_TOKEN_INVALID | Invalid JWT structure |
+| Missing token | DENY_PROVIDER_ERROR | TF_BEARER_TOKEN not set |
+
+### 5.4 Default Provider Selection
 
 ```typescript
 function createDefaultSecurityContext(): SecurityContext {
@@ -211,6 +264,7 @@ function createDefaultSecurityContext(): SecurityContext {
     principalProvider: new EnvPrincipalProvider(),
     approvalsProvider: new EnvApprovalEvidenceProvider(),
     auditProvider: new EnvAuditRoutingProvider(),
+    attestationProvider: new NoopAttestationProvider(),
   };
 }
 ```
@@ -227,6 +281,8 @@ All providers MUST pass:
 2. `rbac.provider-agnostic.contract.test.ts` – Decision semantics invariance
 3. `audit.provider-routing.contract.test.ts` – Payload invariance
 4. `cli-guard.provider-injection.contract.test.ts` – Guard uses SecurityContext
+5. `entra-oidc.contract.test.ts` – EntraOidcPrincipalProvider contract (Phase IIIe)
+6. `provider-outage.failclosed.contract.test.ts` – Fail-closed on all outages (Phase IIIe)
 
 ### 6.2 Cross-Platform Matrix
 
@@ -270,6 +326,7 @@ Providers MUST handle:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| `v1.5.3-entra-oidc` | 2026-02-02 | EntraOidcPrincipalProvider, TF_IDP_PROVIDER, NIST claim normalization |
 | `v1.5.2-security-seams` | 2026-02-02 | Initial provider interfaces |
 
 ---
