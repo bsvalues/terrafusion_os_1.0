@@ -15,6 +15,10 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { runDrills, toLastRunSummary } from '../src/drill-runner.js';
+import {
+    enforceMutationBoundary,
+    resolveAuditLoggerFromEnv,
+} from '../src/security/rbac/cli-guard.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,6 +62,17 @@ Examples:
   npx tsx bin/drills.mjs -e COUNTY_PILOT -e INCIDENT_DRILL
 `);
   process.exit(0);
+}
+
+const rbacResult = enforceMutationBoundary(
+  'autonomy.drills.write',
+  values.profile,
+  resolveAuditLoggerFromEnv()
+);
+
+if (!rbacResult.allowed) {
+  console.error(`RBAC denied: ${rbacResult.decision.reasonCodes.join(', ')}`);
+  process.exit(1);
 }
 
 const result = runDrills({

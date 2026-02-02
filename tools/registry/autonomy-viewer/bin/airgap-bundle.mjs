@@ -18,10 +18,14 @@ import { resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 
 import {
-  generateAirgapBundle,
-  AIRGAP_BUNDLE_SCHEMA,
-  AIRGAP_BUNDLE_VERSION,
+    AIRGAP_BUNDLE_SCHEMA,
+    AIRGAP_BUNDLE_VERSION,
+    generateAirgapBundle,
 } from '../src/airgap-bundle.ts';
+import {
+    enforceMutationBoundary,
+    resolveAuditLoggerFromEnv,
+} from '../src/security/rbac/cli-guard.js';
 
 // Strip leading '--' token that pnpm injects
 const rawArgs = process.argv.slice(2);
@@ -81,6 +85,17 @@ if (!values.source) {
   console.error('Error: --source <dir> is required');
   console.error('Run with --help for usage information');
   process.exit(2);
+}
+
+const rbacResult = enforceMutationBoundary(
+  'autonomy.airgap.bundle.write',
+  undefined,
+  resolveAuditLoggerFromEnv()
+);
+
+if (!rbacResult.allowed) {
+  console.error(`RBAC denied: ${rbacResult.decision.reasonCodes.join(', ')}`);
+  process.exit(1);
 }
 
 // Determine options

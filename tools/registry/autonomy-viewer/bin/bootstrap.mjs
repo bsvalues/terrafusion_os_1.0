@@ -12,6 +12,10 @@
 
 import { parseArgs } from 'node:util';
 import { bootstrap } from '../src/bootstrap.js';
+import {
+    enforceMutationBoundary,
+    resolveAuditLoggerFromEnv,
+} from '../src/security/rbac/cli-guard.js';
 
 // Strip leading '--' token that pnpm injects when using 'pnpm run script -- args'
 const rawArgs = process.argv.slice(2);
@@ -46,6 +50,17 @@ Examples:
   npx tsx bin/bootstrap.mjs --profile state --create-dirs
 `);
   process.exit(0);
+}
+
+const rbacResult = enforceMutationBoundary(
+  'autonomy.bootstrap.write',
+  values.profile,
+  resolveAuditLoggerFromEnv()
+);
+
+if (!rbacResult.allowed) {
+  console.error(`RBAC denied: ${rbacResult.decision.reasonCodes.join(', ')}`);
+  process.exit(1);
 }
 
 const result = bootstrap(values.profile, {

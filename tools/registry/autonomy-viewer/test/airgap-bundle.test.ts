@@ -13,16 +13,15 @@
 import assert from 'node:assert';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { describe, test, before, after } from 'node:test';
+import { after, before, describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { execSync } from 'node:child_process';
 
-import {
-  generateAirgapBundle,
-  AIRGAP_BUNDLE_SCHEMA,
-  AIRGAP_BUNDLE_VERSION,
-} from '../src/airgap-bundle.ts';
 import { generateAccreditationPacket } from '../src/accreditation-packet.ts';
+import {
+    AIRGAP_BUNDLE_SCHEMA,
+    AIRGAP_BUNDLE_VERSION,
+    generateAirgapBundle,
+} from '../src/airgap-bundle.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -140,7 +139,10 @@ describe('Air-Gap Bundle — Success Cases', () => {
     assert.ok(existsSync(join(bundleDir, 'verify.sh')), 'verify.sh should exist');
     assert.ok(existsSync(join(bundleDir, 'verify.ps1')), 'verify.ps1 should exist');
     assert.ok(existsSync(join(bundleDir, 'README.txt')), 'README.txt should exist');
-    assert.ok(existsSync(join(bundleDir, 'bundle-manifest.json')), 'bundle-manifest.json should exist');
+    assert.ok(
+      existsSync(join(bundleDir, 'bundle-manifest.json')),
+      'bundle-manifest.json should exist'
+    );
     assert.ok(existsSync(join(bundleDir, 'artifacts')), 'artifacts/ directory should exist');
   });
 

@@ -27,6 +27,10 @@ import * as path from 'node:path';
 import { parseArgs } from 'node:util';
 
 import { generateCloseoutProof, type CloseoutAttestation } from '../src/closeout-proof.js';
+import {
+    enforceMutationBoundary,
+    resolveAuditLoggerFromEnv,
+} from '../src/security/rbac/cli-guard.js';
 
 const { values } = parseArgs({
   options: {
@@ -115,6 +119,17 @@ if (!values.version) {
 
 if (!values.release) {
   console.error('Error: --release is required');
+  process.exit(1);
+}
+
+const rbacResult = enforceMutationBoundary(
+  'autonomy.closeout.proof.write',
+  undefined,
+  resolveAuditLoggerFromEnv()
+);
+
+if (!rbacResult.allowed) {
+  console.error(`RBAC denied: ${rbacResult.decision.reasonCodes.join(', ')}`);
   process.exit(1);
 }
 

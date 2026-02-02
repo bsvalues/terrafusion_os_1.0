@@ -28,6 +28,10 @@ import {
     publishToMirrors,
     writeMirrorManifest,
 } from '../src/mirror-publisher.js';
+import {
+    enforceMutationBoundary,
+    resolveAuditLoggerFromEnv,
+} from '../src/security/rbac/cli-guard.js';
 
 const { values, positionals } = parseArgs({
   options: {
@@ -144,6 +148,17 @@ if (values.target) {
 
 if (targets.length === 0) {
   console.error('Error: No targets specified. Use --targets or --target');
+  process.exit(1);
+}
+
+const rbacResult = enforceMutationBoundary(
+  'autonomy.mirror.publish.write',
+  undefined,
+  resolveAuditLoggerFromEnv()
+);
+
+if (!rbacResult.allowed) {
+  console.error(`RBAC denied: ${rbacResult.decision.reasonCodes.join(', ')}`);
   process.exit(1);
 }
 

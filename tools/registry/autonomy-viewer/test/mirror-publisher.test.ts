@@ -16,19 +16,18 @@
  */
 
 import * as assert from 'node:assert';
-import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 import {
-  loadTargetsFromConfig,
-  MIRROR_MANIFEST_SCHEMA,
-  MIRROR_PUBLISHER_VERSION,
-  publishToMirrors,
-  writeMirrorManifest,
-  type MirrorTarget,
+    loadTargetsFromConfig,
+    MIRROR_MANIFEST_SCHEMA,
+    MIRROR_PUBLISHER_VERSION,
+    publishToMirrors,
+    writeMirrorManifest,
+    type MirrorTarget,
 } from '../src/mirror-publisher.js';
 
 // ESM-compatible __dirname
@@ -370,10 +369,7 @@ describe('Phase 4N52 – Config Loading', () => {
   });
 
   it('loadTargetsFromConfig throws for missing file', () => {
-    assert.throws(
-      () => loadTargetsFromConfig('/nonexistent/config.json'),
-      /not found/
-    );
+    assert.throws(() => loadTargetsFromConfig('/nonexistent/config.json'), /not found/);
   });
 
   it('loadTargetsFromConfig throws for invalid config', () => {

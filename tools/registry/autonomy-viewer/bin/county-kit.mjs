@@ -19,6 +19,10 @@
 import { resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { COUNTY_KIT_SCHEMA, COUNTY_KIT_VERSION, runCountyKit } from '../src/county-kit.ts';
+import {
+    enforceMutationBoundary,
+    resolveAuditLoggerFromEnv,
+} from '../src/security/rbac/cli-guard.js';
 
 // Strip leading '--' token that pnpm injects
 const rawArgs = process.argv.slice(2);
@@ -64,6 +68,17 @@ Examples:
   npx tsx bin/county-kit.mjs --profile county --json
 `);
   process.exit(0);
+}
+
+const rbacResult = enforceMutationBoundary(
+  'autonomy.county_kit.write',
+  values.profile,
+  resolveAuditLoggerFromEnv()
+);
+
+if (!rbacResult.allowed) {
+  console.error(`RBAC denied: ${rbacResult.decision.reasonCodes.join(', ')}`);
+  process.exit(1);
 }
 
 // Run the kit

@@ -22,12 +22,12 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 import {
-  addAttestation,
-  CLOSEOUT_PROOF_SCHEMA,
-  CLOSEOUT_PROOF_VERSION,
-  generateCloseoutProof,
-  loadCloseoutProof,
-  type CloseoutAttestation,
+    addAttestation,
+    CLOSEOUT_PROOF_SCHEMA,
+    CLOSEOUT_PROOF_VERSION,
+    generateCloseoutProof,
+    loadCloseoutProof,
+    type CloseoutAttestation,
 } from '../src/closeout-proof.js';
 
 // ESM-compatible __dirname
@@ -69,7 +69,10 @@ function setupTestFixtures(): void {
     },
     entries: [],
   };
-  fs.writeFileSync(path.join(TEST_FIXTURES, 'fleet-index.json'), JSON.stringify(fleetIndex, null, 2));
+  fs.writeFileSync(
+    path.join(TEST_FIXTURES, 'fleet-index.json'),
+    JSON.stringify(fleetIndex, null, 2)
+  );
 
   // Create mock SLO gate
   const sloGate = {

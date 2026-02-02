@@ -27,6 +27,10 @@ import {
     ACCREDITATION_PACKET_VERSION,
     generateAccreditationPacket,
 } from '../src/accreditation-packet.ts';
+import {
+    enforceMutationBoundary,
+    resolveAuditLoggerFromEnv,
+} from '../src/security/rbac/cli-guard.js';
 
 // Strip leading '--' token that pnpm injects
 const rawArgs = process.argv.slice(2);
@@ -75,6 +79,17 @@ Examples:
   npx tsx bin/accreditation-packet.mjs --profile county --county "Benton County" --jurisdiction WA
 `);
   process.exit(0);
+}
+
+const rbacResult = enforceMutationBoundary(
+  'autonomy.accreditation.packet.write',
+  values.profile,
+  resolveAuditLoggerFromEnv()
+);
+
+if (!rbacResult.allowed) {
+  console.error(`RBAC denied: ${rbacResult.decision.reasonCodes.join(', ')}`);
+  process.exit(1);
 }
 
 // Build options

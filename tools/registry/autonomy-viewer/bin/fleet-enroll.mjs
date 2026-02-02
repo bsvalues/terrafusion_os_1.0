@@ -23,6 +23,10 @@ import {
     FLEET_INDEX_VERSION,
     loadCountiesFromFile,
 } from '../src/fleet-enrollment.ts';
+import {
+    enforceMutationBoundary,
+    resolveAuditLoggerFromEnv,
+} from '../src/security/rbac/cli-guard.js';
 
 // Strip leading '--' token that pnpm injects
 const rawArgs = process.argv.slice(2);
@@ -105,6 +109,17 @@ try {
 } catch (err) {
   console.error(`Error loading counties file: ${(err as Error).message}`);
   process.exit(2);
+}
+
+const rbacResult = enforceMutationBoundary(
+  'autonomy.fleet_enroll.write',
+  values.profile,
+  resolveAuditLoggerFromEnv()
+);
+
+if (!rbacResult.allowed) {
+  console.error(`RBAC denied: ${rbacResult.decision.reasonCodes.join(', ')}`);
+  process.exit(1);
 }
 
 // Determine options
