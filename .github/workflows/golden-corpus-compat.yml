@@ -1,0 +1,149 @@
+name: Golden Corpus Compatibility Gate
+
+on:
+  pull_request:
+    paths:
+      - 'tools/registry/autonomy-viewer/src/**'
+      - 'tools/registry/autonomy-viewer/test/**'
+      - 'golden/**'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/registry/autonomy-viewer/src/**'
+      - 'golden/**'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  schema-compat:
+    name: Schema Compatibility Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Load golden corpus lock
+        id: lock
+        run: |
+          echo "Validating golden corpus lockfile..."
+          cat golden/GOLDEN_CORPUS.lock.json | jq -e '.contracts.schemaVersions' > /dev/null
+          echo "schema_version=$(cat golden/GOLDEN_CORPUS.lock.json | jq -r '.contracts.schemaVersions.casefile')" >> $GITHUB_OUTPUT
+
+      - name: Verify schema constants match lock
+        run: |
+          cd tools/registry/autonomy-viewer
+          npx tsx --eval "
+            import { CASEFILE_SCHEMA } from './src/casefile.js';
+            import { SEALED_CASEFILE_SCHEMA } from './src/verify-casefile.js';
+            import fs from 'fs';
+            
+            const lock = JSON.parse(fs.readFileSync('../../../golden/GOLDEN_CORPUS.lock.json', 'utf-8'));
+            const schemas = lock.contracts.schemaVersions;
+            
+            const checks = [
+              { name: 'casefile', expected: schemas.casefile, actual: CASEFILE_SCHEMA },
+              { name: 'sealedCasefile', expected: schemas.sealedCasefile, actual: SEALED_CASEFILE_SCHEMA },
+            ];
+            
+            let failed = false;
+            for (const check of checks) {
+              if (check.expected !== check.actual) {
+                console.error('❌ Schema mismatch: ' + check.name);
+                console.error('   Expected: ' + check.expected);
+                console.error('   Actual: ' + check.actual);
+                failed = true;
+              } else {
+                console.log('✅ ' + check.name + ': ' + check.actual);
+              }
+            }
+            
+            if (failed) {
+              console.error('\\nSchema compatibility broken! Update golden/GOLDEN_CORPUS.lock.json with governance approval.');
+              process.exit(1);
+            }
+            
+            console.log('\\n✅ All schemas compatible with golden corpus');
+          "
+
+  contract-tests:
+    name: Contract Invariant Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run contract tests
+        run: |
+          cd tools/registry/autonomy-viewer
+          npx tsx --test test/casefile.test.ts test/verify-casefile.test.ts
+        env:
+          CI: true
+
+      - name: Verify triplet schema uses ok field
+        run: |
+          cd tools/registry/autonomy-viewer
+          # Ensure no code uses deprecated triplets.complete
+          if grep -r "triplets\.complete" src/; then
+            echo "❌ Deprecated triplets.complete field found in source"
+            exit 1
+          fi
+          echo "✅ No deprecated triplet fields in source"
+
+      - name: Verify error code semantics
+        run: |
+          cd tools/registry/autonomy-viewer
+          # Ensure HASH_MISMATCH is the error for missing files (per contract)
+          grep -q "code: 'HASH_MISMATCH'" src/verify-casefile.ts
+          echo "✅ Error code semantics match contract"
+
+  determinism-check:
+    name: Determinism Policy Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify determinism is structural
+        run: |
+          cd tools/registry/autonomy-viewer
+          # Run determinism test which asserts structural (file count) not byte-perfect
+          npx tsx --test --test-name-pattern="determinism" test/casefile.test.ts
+          echo "✅ Determinism tests verify structural contract"

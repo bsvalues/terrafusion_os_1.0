@@ -1,0 +1,62 @@
+{
+  "$schema": "terrafusion.autonomy.golden-corpus.v1",
+  "version": "1.0.0",
+  "generatedAt": "2026-02-01T00:00:00Z",
+  "description": "Golden corpus compatibility anchor for TerraFusion OS autonomy toolchain",
+  "rcTag": "v1.5.0-rc.1",
+  "releaseUrl": null,
+  "profileUsed": "profiles/county.policy.json",
+  "repoIdentity": {
+    "repoId": null,
+    "ownerRepo": "bsvalues/terrafusion_os_1.0",
+    "defaultBranch": "main"
+  },
+  "signerEpoch": {
+    "epochId": null,
+    "validFrom": null,
+    "keyFingerprint": null
+  },
+  "ledgerState": {
+    "ledgerHeadSha256": null,
+    "rollupHeadSha256": null,
+    "sequenceNumber": null
+  },
+  "artifacts": [],
+  "contracts": {
+    "determinismDefinition": "structural",
+    "determinismDescription": "Determinism is defined as structural determinism: canonical manifest ordering, stable file count, and consistent content. Byte-perfect ZIP hashes are NOT guaranteed due to manifest.generatedAt timestamps.",
+    "policyFieldMapping": {
+      "indexPolicyField": "expectedSignaturePolicy",
+      "manifestPolicyField": "policySnapshot.signaturePolicy"
+    },
+    "tripletSchema": {
+      "statusField": "triplets.ok",
+      "deprecatedFields": ["triplets.complete"]
+    },
+    "errorCodeSemantics": {
+      "FILE_MISSING_MAPS_TO": "HASH_MISMATCH",
+      "description": "When a file is missing, the verifier returns HASH_MISMATCH (empty hash vs expected) rather than FILE_MISSING. This is intentional: the hash check subsumes presence check."
+    },
+    "schemaVersions": {
+      "casefile": "terrafusion.autonomy.casefile.v1",
+      "casefileManifest": "terrafusion.autonomy.casefile.manifest.v1",
+      "sealedCasefile": "terrafusion.autonomy.casefile.sealed.v1",
+      "evidenceIndex": "terrafusion.autonomy.evidence-index.v1",
+      "auditPacket": "terrafusion.autonomy.audit-packet.v1",
+      "opsSlo": "terrafusion.autonomy.ops-slo.v1",
+      "policyProfile": "terrafusion.autonomy.policy-profile.v1"
+    },
+    "additiveFieldsPolicy": {
+      "allowed": true,
+      "condition": "New fields may be added to schemas in minor versions. Existing fields MUST NOT be removed or have their semantics changed without a major version bump.",
+      "backwardCompatibilityRequired": true
+    }
+  },
+  "compatibilityGate": {
+    "enforced": true,
+    "ciWorkflow": ".github/workflows/golden-corpus-compat.yml",
+    "failureAction": "block_merge",
+    "bypassRequires": ["security-review", "cio-approval"]
+  },
+  "notes": "This lockfile is auto-generated during RC release. Manual edits require governance approval."
+}
