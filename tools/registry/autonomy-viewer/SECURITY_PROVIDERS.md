@@ -1,6 +1,6 @@
 # TerraFusion Security Provider Contract Surface
 
-> **Phase IIIf Milestone**: `v1.5.4-rotation-policy` (Phase IIIf)
+> **Phase IIIg Milestone**: `v1.5.5-ops-hardening` (Phase IIIg)
 > **Schema Version**: `terrafusion.security.provider.v2`
 
 This document defines the **invariants**, **contracts**, and **stability rules** for security provider interfaces. These are constitutional properties—they cannot change without an RC gate.
@@ -306,7 +306,91 @@ Complete list of denial codes emitted by security providers:
 | `DENY_FILE_MAPPING_INVALID` | FilePrincipal | Mapping file format invalid |
 | `DENY_OPERATOR_NOT_MAPPED` | FilePrincipal | Operator ID not in mapping |
 
-### 5.6 Default Provider Selection
+### 5.6 Operator Runbooks (Phase IIIg)
+
+Quick-reference runbooks for on-call operators handling denial codes.
+
+#### DENY_PROVIDER_ERROR
+
+**Symptoms:** Auth requests failing with generic provider error.
+**Meaning:** The identity provider (Entra/file/env) encountered an unexpected error during resolution.
+**Operator Steps:**
+1. Check provider connectivity (network, DNS, firewall)
+2. Verify configuration (tenant ID, client ID, file paths)
+3. Check provider health endpoints if available
+4. Review logs for specific error messages
+
+**Escalation:** Security team if configuration appears correct but errors persist.
+
+#### DENY_PROVIDER_TIMEOUT
+
+**Symptoms:** Auth requests timing out.
+**Meaning:** Provider resolution exceeded the configured time budget.
+**Operator Steps:**
+1. Check network latency to IdP endpoints
+2. Verify no DNS resolution delays
+3. Check if IdP is experiencing an outage
+4. Consider increasing timeout if legitimate slow responses
+
+**Escalation:** Infrastructure team for network issues; IdP vendor for outages.
+
+#### DENY_TOKEN_EXPIRED
+
+**Symptoms:** Valid users suddenly denied with "token expired".
+**Meaning:** The JWT `exp` claim is in the past (beyond clock skew tolerance).
+**Operator Steps:**
+1. Verify server clock is synchronized (NTP)
+2. Check client-side token refresh logic
+3. Verify clock skew tolerance is appropriate (default: 300s)
+
+**Escalation:** Client application team if token refresh is failing.
+
+#### DENY_TOKEN_ISSUER_MISMATCH
+
+**Symptoms:** All tokens from a specific tenant/IdP rejected.
+**Meaning:** Token `iss` claim doesn't match configured issuer.
+**Operator Steps:**
+1. Verify `TF_ENTRA_TENANT_ID` matches the token's tenant
+2. Check if issuer URL has changed (v1.0 vs v2.0 endpoints)
+3. Verify no multi-tenant token is being sent to single-tenant config
+
+**Escalation:** Security team to verify IdP configuration.
+
+#### DENY_TOKEN_AUDIENCE_MISMATCH
+
+**Symptoms:** Tokens rejected despite valid issuer.
+**Meaning:** Token `aud` claim doesn't match configured client ID.
+**Operator Steps:**
+1. Verify `TF_ENTRA_CLIENT_ID` matches the application registration
+2. Check if token was issued for a different application
+3. Verify `additionalAudiences` if using multiple client IDs
+
+**Escalation:** Application registration owner in Azure Portal.
+
+#### DENY_TOKEN_KEY_UNKNOWN
+
+**Symptoms:** Token validation fails after IdP key rotation.
+**Meaning:** Token's `kid` not found in JWKS (even after refresh).
+**Operator Steps:**
+1. Wait 5 minutes for JWKS cache to refresh
+2. Verify JWKS endpoint is accessible
+3. Check if IdP did an emergency key rotation
+4. Force JWKS cache clear if available
+
+**Escalation:** IdP vendor if key rotation timing is causing issues.
+
+#### DENY_DEFAULT
+
+**Symptoms:** Request denied without specific policy match.
+**Meaning:** No allow rule matched; deny-by-default applied.
+**Operator Steps:**
+1. Verify principal has required roles
+2. Check action is in policy
+3. Verify tier is recognized
+
+**Escalation:** Policy administrator to add missing rules.
+
+### 5.7 Default Provider Selection
 
 ```typescript
 function createDefaultSecurityContext(): SecurityContext {
@@ -380,6 +464,7 @@ Providers MUST handle:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| `v1.5.5-ops-hardening` | 2026-02-02 | Telemetry facade, metrics interface, operator runbooks, chaos/load contracts |
 | `v1.5.4-rotation-policy` | 2026-02-02 | JWKS rotation caching, denial codes catalog, policy-tight clock skew |
 | `v1.5.3-entra-oidc` | 2026-02-02 | EntraOidcPrincipalProvider, TF_IDP_PROVIDER, NIST claim normalization |
 | `v1.5.2-security-seams` | 2026-02-02 | Initial provider interfaces |
