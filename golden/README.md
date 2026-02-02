@@ -69,6 +69,61 @@ Bypass requires:
 - `cio-approval` label
 - Documented migration in PR description
 
+## Lockfile Lifecycle Policy
+
+> **Immutability Doctrine:** `GOLDEN_CORPUS.lock.json` is a governance contract, not a configuration file.
+
+### When the Lockfile Can Change
+
+The lockfile MUST only change when a **new release tag** is created. Changes require:
+
+1. **A new RC or GA tag** (e.g., `v1.5.1-rc.1` or `v1.6.0`)
+2. **Regenerated artifacts** uploaded to the new release
+3. **Hash verification** proving lockfile matches release assets
+
+### Change Triggers
+
+Any PR touching `tools/`, `registry/`, or `autonomy-viewer/` that modifies:
+- Verifier schema versions
+- Error code semantics
+- Determinism definition
+- Artifact list or hash computation
+
+Must either:
+- **Remain compatible** with the existing lockfile, OR
+- **Bump the golden corpus** via a new release tag
+
+### Approval Requirements
+
+Lockfile updates require:
+- **CODEOWNERS approval** (minimum 2 maintainers)
+- **Link to release tag** whose assets match the new hashes
+- **Migration notes** if breaking changes
+
+### Forbidden Actions
+
+❌ **No "hot edits"** — Lockfile edits on `main` without a corresponding release tag are disallowed.
+
+❌ **No hash-only updates** — Changing hashes without changing `releaseTag` indicates drift and will be rejected.
+
+❌ **No silent schema bumps** — Schema version changes require explicit documentation.
+
+### Release Coupling
+
+The lockfile MUST include:
+- `releaseTag` field matching an existing GitHub release
+- `artifacts[]` with SHA256 hashes that match release assets byte-for-byte
+- `generatedAt` timestamp from the release process
+
+### Verification Command
+
+```bash
+# Verify lockfile matches release assets
+gh release download v1.5.0 --dir /tmp/verify
+cd /tmp/verify
+shasum -a 256 -c SHA256SUMS.txt
+```
+
 ## Regenerating the Golden Corpus
 
 **Warning:** This is a governance action. Do not regenerate without approval.
@@ -93,8 +148,9 @@ gh release create v1.X.0-rc.N --title "..." dist/*
 
 ## Version History
 
-| RC Tag | Date | Notes |
-|--------|------|-------|
+| Tag | Date | Notes |
+|-----|------|-------|
+| v1.5.0 | 2026-02-01 | GA release (promoted from v1.5.0-rc.1) |
 | v1.5.0-rc.1 | 2026-02-01 | Initial golden corpus anchor (Phase 4N40-4N47) |
 
 ---
