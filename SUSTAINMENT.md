@@ -25,6 +25,8 @@ It answers three questions:
 - GitHub Release: `v1.5.0` (contains the pinned corpus artifacts)
 - Repo lockfile: `golden/GOLDEN_CORPUS.lock.json`
 
+**Source of truth:** Oracle assets must be sourced from the `v1.5.0` GitHub Release artifacts, not local build outputs.
+
 ---
 
 ### Required Merge Gates (Constitutional)
@@ -36,6 +38,7 @@ Merges to `main` are blocked unless all required checks pass:
 Branch protection:
 - Strict status checks enabled
 - ≥1 approving review required
+- Merges cannot bypass constitutional gates
 
 ---
 
