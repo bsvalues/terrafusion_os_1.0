@@ -320,3 +320,47 @@ function isValidTpiPolicy(policy: TpiPolicy): boolean {
     typeof policy.enforcement?.minApprovals === 'number'
   );
 }
+
+/**
+ * Create a mock policy set for testing.
+ * Uses sensible defaults that mirror real policy semantics.
+ */
+export function createMockPolicySet(
+  overrides: Partial<{
+    breakGlass: Partial<BreakGlassPolicy>;
+    tpi: Partial<TpiPolicy>;
+  }> = {}
+): RbacPolicySet {
+  const breakGlass: BreakGlassPolicy = {
+    schema: 'terrafusion.autonomy.break-glass-policy.v1',
+    version: '1.0.0',
+    enabled: true,
+    allowedActions: ['read', 'write', 'unknown'],
+    requirements: {
+      minApprovals: 1,
+    },
+    roleBinding: {
+      enabled: false,
+      requiredApproverRoles: [],
+    },
+    ...overrides.breakGlass,
+  };
+
+  const tpi: TpiPolicy = {
+    schema: 'terrafusion.autonomy.tpi-policy.v1',
+    version: '1.0.0',
+    enforcement: {
+      minApprovals: 2,
+    },
+    ...overrides.tpi,
+  };
+
+  return {
+    breakGlass,
+    tpi,
+    refs: {
+      breakGlass: { path: 'mock://break-glass', version: '1.0.0', sha256: 'mock-sha' },
+      tpi: { path: 'mock://tpi', version: '1.0.0', sha256: 'mock-sha' },
+    },
+  };
+}
