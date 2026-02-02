@@ -257,7 +257,10 @@ describe('Phase IIIb – RBAC Decision Determinism', () => {
 
     assert.equal(decision.schema, 'terrafusion.security.rbac-decision.v1');
     // Version follows semver format (1.0.0, etc.)
-    assert.ok(/^\d+\.\d+\.\d+$/.test(decision.version), `version should match semver: ${decision.version}`);
+    assert.ok(
+      /^\d+\.\d+\.\d+$/.test(decision.version),
+      `version should match semver: ${decision.version}`
+    );
   });
 
   it('evaluatedAt reflects request time, not wall clock', async () => {

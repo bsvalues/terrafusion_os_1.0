@@ -27,6 +27,23 @@ export interface AuditPolicyRefs {
   };
 }
 
+/**
+ * Attestation placeholder for future KMS/HSM signing.
+ * Phase IIIc: Schema field exists; signature generation is deferred.
+ */
+export interface AuditAttestation {
+  /** Attestation type: 'none' (default), 'external' (future KMS) */
+  readonly type: 'none' | 'external';
+  /** Signing key ID (when type is 'external') */
+  readonly keyId?: string;
+  /** Signature algorithm (when type is 'external') */
+  readonly algorithm?: 'ECDSA-P256' | 'RSA-PSS-2048' | 'ED25519';
+  /** Base64-encoded signature (when type is 'external') */
+  readonly signature?: string;
+  /** ISO timestamp of attestation (when type is 'external') */
+  readonly attestedAt?: string;
+}
+
 export interface AuditEvent {
   readonly schema: typeof AUDIT_LOG_SCHEMA;
   readonly version: typeof AUDIT_LOG_VERSION;
@@ -40,6 +57,12 @@ export interface AuditEvent {
   readonly policyRefs: AuditPolicyRefs;
   readonly correlationId?: string;
   readonly actorIdHash?: string;
+  /** Attestation placeholder for future KMS/HSM signing */
+  readonly attestation?: AuditAttestation;
+  /** SHA-256 of decision object for integrity verification */
+  readonly decisionDigestSha256?: string;
+  /** SHA-256 of policy refs for integrity verification */
+  readonly policyDigestSha256?: string;
 }
 
 export interface AuditLogEntry {
@@ -114,10 +137,24 @@ export function createAuditDecisionEvent(
     readonly actorId?: string;
     readonly eventId?: string;
     readonly timestamp?: string;
+    readonly includeDigests?: boolean;
   }
 ): AuditEvent {
   const timestamp = options?.timestamp ?? decision.evaluatedAt;
   const actorIdHash = options?.actorId ? hashValue(options.actorId) : undefined;
+
+  const decisionSummary = {
+    allowed: decision.allowed,
+    reasonCodes: decision.reasonCodes,
+  };
+
+  // Compute digests for integrity verification (Phase IIIc envelope hardening)
+  const decisionDigestSha256 = options?.includeDigests !== false
+    ? hashValue(deterministicStringify(decisionSummary, 0))
+    : undefined;
+  const policyDigestSha256 = options?.includeDigests !== false
+    ? hashValue(deterministicStringify(decision.policyRefs, 0))
+    : undefined;
 
   return {
     schema: AUDIT_LOG_SCHEMA,
@@ -128,13 +165,14 @@ export function createAuditDecisionEvent(
     actionId: decision.actionId,
     profile: decision.profile,
     tier: decision.tier,
-    decision: {
-      allowed: decision.allowed,
-      reasonCodes: decision.reasonCodes,
-    },
+    decision: decisionSummary,
     policyRefs: decision.policyRefs,
     correlationId: options?.correlationId,
     actorIdHash,
+    // Phase IIIc: attestation placeholder (type: 'none' by default)
+    attestation: { type: 'none' },
+    decisionDigestSha256,
+    policyDigestSha256,
   };
 }
 
