@@ -1,0 +1,68 @@
+name: Wave 1 Template Freeze
+
+on:
+  pull_request:
+    paths:
+      - 'docs/ops/WAVE_1_*.md'
+      - 'docs/ops/templates/WAVE_1_*.md'
+
+jobs:
+  freeze-check:
+    name: 🔒 Wave 1 Template Freeze Guard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check freeze period
+        id: freeze
+        run: |
+          FREEZE_DATE="2026-02-21"
+          TODAY=$(date +%Y-%m-%d)
+
+          if [[ "$TODAY" < "$FREEZE_DATE" ]]; then
+            echo "frozen=true" >> $GITHUB_OUTPUT
+            echo "days_remaining=$(( ($(date -d "$FREEZE_DATE" +%s) - $(date +%s)) / 86400 ))" >> $GITHUB_OUTPUT
+          else
+            echo "frozen=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check override
+        id: override
+        run: |
+          if [[ "${{ vars.WAVE1_TEMPLATE_OVERRIDE }}" == "1" ]]; then
+            echo "override=true" >> $GITHUB_OUTPUT
+          else
+            echo "override=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Block if frozen
+        if: steps.freeze.outputs.frozen == 'true' && steps.override.outputs.override != 'true'
+        run: |
+          echo "🔒 WAVE 1 TEMPLATE FREEZE ACTIVE"
+          echo ""
+          echo "Freeze Until: 2026-02-21"
+          echo "Days Remaining: ${{ steps.freeze.outputs.days_remaining }}"
+          echo ""
+          echo "Wave 1 templates are frozen until nominations open."
+          echo "This PR modifies protected Wave 1 template files."
+          echo ""
+          echo "To proceed (emergency only):"
+          echo "  1. Record exception in STEADY_STATE_DECISION_LOG.md"
+          echo "  2. Get dual-approval"
+          echo "  3. Set repository variable WAVE1_TEMPLATE_OVERRIDE=1"
+          echo "  4. Re-run this workflow"
+          echo ""
+          exit 1
+
+      - name: Freeze period passed
+        if: steps.freeze.outputs.frozen != 'true'
+        run: |
+          echo "✅ Wave 1 freeze period has ended (2026-02-21)"
+          echo "   Template modifications are now allowed."
+
+      - name: Override active
+        if: steps.freeze.outputs.frozen == 'true' && steps.override.outputs.override == 'true'
+        run: |
+          echo "⚠️  WAVE 1 TEMPLATE OVERRIDE ACTIVE"
+          echo ""
+          echo "Ensure exception is recorded in STEADY_STATE_DECISION_LOG.md"
+          echo "with dual-approval and time-bound expiry."
