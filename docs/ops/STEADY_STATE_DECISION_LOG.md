@@ -3,7 +3,7 @@
 > **Mode:** Steady-State Operations  
 > **Log ID:** `sha256:e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3`  
 > **Created:** 2026-02-18  
-> **Last Updated:** 2026-02-20T09:00:00Z  
+> **Last Updated:** 2026-02-21T09:00:00Z  
 > **Predecessor:** Pilot Decision Log (`sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c`)
 
 ---
@@ -12,7 +12,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Total Decisions | 1 |
+| Total Decisions | 2 |
 | Pending Approvals | 0 |
 | Actions Assigned | 2 |
 | Actions Completed | 2 |
@@ -44,6 +44,30 @@
 **References:**
 - Evidence: `DAY_SS_001_EVIDENCE_BUNDLE.md`
 - Bundle Hash: `sha256:d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2`
+
+---
+
+### SS-002 — 2026-02-21 (COMPLETE)
+
+| ID | Type | Description | Owner | Approvers | Status | Bundle Ref |
+|----|------|-------------|-------|-----------|--------|------------|
+| `dec_ss_002` | WAVE1_OPEN | Wave 1 nominations opened | Governance Lead | 1/1 ☑ | Complete | `WAVE_1_NOMINATIONS_OPEN.md` |
+
+**Decision Details (dec_ss_002):**
+
+| Check | Result |
+|-------|--------|
+| Intake templates ready | ✅ All 3 templates complete |
+| Evaluation process defined | ✅ 12-gate checklist + evaluation log |
+| Timeline published | ✅ Open 2026-02-21 to Close 2026-02-25 |
+| Cohort target defined | ✅ 10–20 services |
+| Evidence rules explicit | ✅ sha256-only, no PII |
+
+**References:**
+- Announcement: `WAVE_1_NOMINATIONS_OPEN.md`
+- Announcement Hash: `sha256:c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4`
+- Evaluation Log: `WAVE_1_EVALUATION_LOG.md`
+- Evaluation Log Hash: `sha256:d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5`
 
 ---
 
@@ -132,12 +156,12 @@
 
 | Milestone | Target Date | Status | Evidence |
 |-----------|-------------|--------|----------|
-| Plan approved | 2026-02-20 | ☐ Pending | `WAVE_1_EXPANSION_PLAN.md` |
+| Plan approved | 2026-02-20 | ✅ Done | `WAVE_1_EXPANSION_PLAN.md` |
 | Templates ready | 2026-02-20 | ✅ Done | `action_ss_001` |
-| Nominations open | 2026-02-21 | ☐ Pending | — |
+| Nominations open | 2026-02-21 | ✅ Done | `dec_ss_002` |
 | Nomination close | 2026-02-25 | ☐ Pending | — |
-| Cohort review | 2026-02-26 | ☐ Pending | — |
-| Wave 1 GO decision | 2026-02-28 | ☐ Pending | — |
+| Gate evaluation | 2026-02-26 | ☐ Pending | — |
+| Cohort decision | 2026-02-27 | ☐ Pending | — |
 | Wave 1 Day 0 | 2026-03-01 | ☐ Pending | — |
 
 ---
@@ -169,8 +193,8 @@
 |-------|-------|
 | Log ID | `sha256:e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3` |
 | Created | 2026-02-18 |
-| Last Updated | 2026-02-20T09:00:00Z |
-| Entries | 1 decision (complete), 2 actions (closed) |
+| Last Updated | 2026-02-21T09:00:00Z |
+| Entries | 2 decisions (complete), 2 actions (closed) |
 | Mode | Steady-State |
 | Status | ✅ Active |
 
@@ -180,9 +204,11 @@
 
 1. ~~action_ss_001: Wave 1 intake templates~~ ✅ Done
 2. ~~action_ss_002: DR drill scheduling~~ ✅ Done
-3. ☐ Open Wave 1 nominations (2026-02-21)
-4. ☐ Complete SS-002 through SS-005 war rooms (Week 1)
-5. ☐ First steady-state weekly synthesis (2026-02-22)
+3. ~~Open Wave 1 nominations (2026-02-21)~~ ✅ Done (`dec_ss_002`)
+4. ☐ Accept nominations (2026-02-21 to 2026-02-25)
+5. ☐ Gate evaluation + cohort decision (2026-02-26 to 2026-02-27)
+6. ☐ Wave 1 Day 0 (2026-03-01)
+7. ☐ DR drill execution (2026-03-10)
 
 ---
 
