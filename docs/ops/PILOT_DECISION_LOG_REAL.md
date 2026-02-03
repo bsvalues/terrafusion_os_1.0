@@ -3,7 +3,7 @@
 > **Pilot:** Wave 0 (Production)  
 > **Log ID:** `sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c`  
 > **Created:** 2026-02-03  
-> **Last Updated:** 2026-02-11T09:30:00Z (DAY 8 — WEEK-2 START)
+> **Last Updated:** 2026-02-12T09:30:00Z (DAY 9 — SENSITIVITY PROBE COMPLETE)
 
 ---
 
@@ -11,13 +11,13 @@
 
 | Metric | Value |
 |--------|-------|
-| Total Decisions | 9 |
+| Total Decisions | 10 |
 | Pending Approvals | 0 |
 | Actions Assigned | 3 |
-| Actions Completed | 1 |
+| Actions Completed | 2 |
 | Stop-Condition Triggers | 0 |
 | Exceptions Active | 0 |
-| Pilot Status | ✅ Day 8 Complete — Day 9 Authorized (Sensitivity Probe Scheduled) |
+| Pilot Status | ✅ Day 9 Complete — Sensitivity Probe Validated |
 
 ---
 
@@ -289,12 +289,46 @@
 
 ---
 
+### Day 9 — 2026-02-12 (COMPLETE) — SENSITIVITY PROBE
+
+| ID | Type | Description | Owner | Approvers | Status | Bundle Ref |
+|----|------|-------------|-------|-----------|--------|------------|
+| `dec_010` | CONTINUE | Day 9 Continue — sensitivity probe validated observability | IC | 1/1 ☑ | Complete | `bundle_day9` |
+
+**Decision Details (dec_010):**
+
+| Check | Result |
+|-------|--------|
+| Baseline drift | ✅ 4/5 unchanged, 1 intentional probe |
+| Exceptions | ✅ Zero (0 active, 0 expired, 0 expiring) |
+| Stop-watch active | ✅ Armed, 2/2 recovery confirmed |
+| KPIs within threshold | ✅ 4/4 passing (MTTR 22 min ≤ 30 min) |
+| DR freshness | ✅ 59 days (limit 90) |
+| Sensitivity probe | ✅ action_002 complete — observability validated |
+
+**Sensitivity Probe Results (action_002):**
+
+| Metric | Baseline | Probe Value | Threshold | Alert Fired | Stop Triggered |
+|--------|----------|-------------|-----------|-------------|----------------|
+| MTTR | 18 min | 22 min | ≤ 30 min | ✅ Yes | ☑ No |
+
+**Probe Conclusion:** Monitoring correctly detected +4 min variance and alerted without triggering stop conditions. Observability is sensitive and calibrated.
+
+**References:**
+- Evidence: `DAY_9_EVIDENCE_BUNDLE_REAL.md`
+- Bundle Hash: `sha256:24c634788960280bcbc14da7ac1a60ec41f150803f95fc4396e7123c103ca7b3`
+- Probe Evidence: `probe_001`
+
+**Next Event:** Day 10 War Room @ **2026-02-13 09:00 UTC**
+
+---
+
 ## Action Tracker
 
 | Action ID | Description | Owner | Assigned | Due | Status | Resolution |
 |-----------|-------------|-------|----------|-----|--------|------------|
 | `action_001` | Week-1 Synthesis | `sha256:a1c29fd3...` | 2026-02-04 | 2026-02-10 | ✅ DONE | `WEEK_1_SYNTHESIS_REAL.md` |
-| `action_002` | Week-2 Sensitivity Probe | `sha256:a1c29fd3...` | 2026-02-11 | 2026-02-12 | ⏳ Scheduled | — |
+| `action_002` | Week-2 Sensitivity Probe | `sha256:a1c29fd3...` | 2026-02-11 | 2026-02-12 | ✅ DONE | `probe_001` |
 | `action_003` | Week-2 Synthesis | `sha256:a1c29fd3...` | 2026-02-11 | 2026-02-17 | ⏳ Open | — |
 
 ---
@@ -339,8 +373,9 @@
 | 6 | 2026-02-09 | `sha256:4a3e75a9d95cbaa267a5bf3d04eeb188955bb515bc1e9c5647e44b7f5b9e1d62` | ☑ | ☑ |
 | 7 | 2026-02-10 | `sha256:15aba20298f6e839bd79b80c43ddcb06934f33b3925cd13b6ef61063a9235379` | ☑ | ☑ |
 | 8 | 2026-02-11 | `sha256:533f3a95c8595847f9403787b3527e3852143cf49d6b3e0a9c52d32390424242` | ☑ | ☑ |
+| 9 | 2026-02-12 | `sha256:24c634788960280bcbc14da7ac1a60ec41f150803f95fc4396e7123c103ca7b3` | ☑ | ☑ |
 
-**War Room Compliance:** 9/9 (100%) ✔
+**War Room Compliance:** 10/10 (100%) ✔
 
 ---
 
@@ -369,26 +404,20 @@
 |-------|-------|
 | Log ID | `sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c` |
 | Created | 2026-02-03 |
-| Last Updated | 2026-02-11T09:30:00Z |
-| Entries | 9 decisions (complete), 3 actions (1 closed, 2 open) |
-| Status | ✅ Day 8 Complete |
+| Last Updated | 2026-02-12T09:30:00Z |
+| Entries | 10 decisions (complete), 3 actions (2 closed, 1 open) |
+| Status | ✅ Day 9 Complete |
 
 ---
 
 ## Next Steps
 
 1. ~~Obtain 2/2 dual-approval for GO decision (`dec_001`)~~ ✅ Complete
-2. ~~Day 1–7 war rooms + Week-1 synthesis~~ ✅ Complete
+2. ~~Week-1 (Days 1–7 + synthesis)~~ ✅ Complete
 3. ~~Day 8 war room (2026-02-11 09:00 UTC)~~ ✅ Complete
-4. Day 9 war room + **Sensitivity Probe**: **2026-02-12 09:00 UTC** (`action_002`)
-5. Days 10–13: Continue daily war rooms
+4. ~~Day 9 war room + Sensitivity Probe (2026-02-12 09:00 UTC)~~ ✅ Complete (`action_002` done)
+5. Days 10–13: Continue daily war rooms (**in progress**)
 6. Day 14 + Week-2 Synthesis: **2026-02-17** (`action_003` — Pilot exit)
-6. ~~Day 5 war room (2026-02-08 09:00 UTC)~~ ✅ Complete
-7. ~~Day 6 war room (2026-02-09 09:00 UTC)~~ ✅ Complete
-8. ~~Day 7 war room + Week-1 Synthesis (2026-02-10 09:00 UTC)~~ ✅ Complete (`action_001` closed)
-9. Day 8 war room: **2026-02-11 09:00 UTC** (Week-2 begins)
-10. Days 8–14: Continue daily war rooms
-11. Day 14 + Week-2 Synthesis: **2026-02-17** (Pilot exit)
 
 ---
 
