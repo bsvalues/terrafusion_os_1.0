@@ -185,20 +185,20 @@
 
 | Field | Value |
 |-------|-------|
-| Decision | ⏳ **PENDING** |
+| Decision | ☑ **GO** |
 | Basis | All 9 checklist items satisfied; all KPIs within threshold; zero blockers |
-| Dual-Approval Required | ☑ Yes |
+| Dual-Approval Required | ☑ Yes (2/2 obtained) |
 
-### Approval Block (2/2 Required)
+### Approval Block (2/2 Required) — ✅ COMPLETE
 
 | Approver | ID | Decision | Timestamp |
 |----------|-----|----------|-----------|
-| Approver 1 | `sha256:b5dc4d003429ea244504f9c714dedd60fa9d96c3fa109afc07b2577c6baf758f` | ⏳ Pending | — |
-| Approver 2 | `sha256:0316df742e890fdd96e989b99e5224d687d7c1ec2e6d34fa8e0ba9d75304e341` | ⏳ Pending | — |
+| Approver 1 | `sha256:b5dc4d003429ea244504f9c714dedd60fa9d96c3fa109afc07b2577c6baf758f` | ☑ GO | 2026-02-03T18:00:00Z |
+| Approver 2 | `sha256:0316df742e890fdd96e989b99e5224d687d7c1ec2e6d34fa8e0ba9d75304e341` | ☑ GO | 2026-02-03T18:05:00Z |
 
 ---
 
-*Baseline captured. Awaiting dual-approval (2/2) for Day 1 authorization.*
+*Baseline captured. Dual-approval obtained (2/2). Day 1 authorized — war room scheduled 2026-02-04 09:00 UTC.*
 
 ---
 

@@ -11,30 +11,38 @@
 
 | Metric | Value |
 |--------|-------|
-| Total Decisions | 0 |
-| Pending Approvals | 1 (GO/NO-GO) |
+| Total Decisions | 1 |
+| Pending Approvals | 0 |
 | Actions Assigned | 0 |
 | Actions Completed | 0 |
 | Stop-Condition Triggers | 0 |
 | Exceptions Active | 0 |
-| Pilot Status | ⏳ Day 0 — Awaiting Dual-Approval |
+| Pilot Status | ✅ Day 1 Authorized — War Room 2026-02-04 09:00 UTC |
 
 ---
 
 ## Decision Registry
 
-### Day 0 — 2026-02-03 (CURRENT)
+### Day 0 — 2026-02-03 (COMPLETE)
 
 | ID | Type | Description | Owner | Approvers | Status | Bundle Ref |
 |----|------|-------------|-------|-----------|--------|------------|
-| `dec_001` | GO/NO-GO | Pilot Day 1 GO decision | IC | 0/2 ⏳ | Pending | `bundle_day0` |
+| `dec_001` | GO/NO-GO | Pilot Day 1 GO decision | IC | 2/2 ☑ | Complete | `bundle_day0` |
 
-**Approval Block (dec_001) — 2/2 Required:**
+**Approval Block (dec_001) — 2/2 Required — ✅ OBTAINED:**
 
 | Approver | ID | Decision | Timestamp |
 |----------|-----|----------|-----------|
-| Approver 1 | `sha256:b5dc4d003429ea244504f9c714dedd60fa9d96c3fa109afc07b2577c6baf758f` | ⏳ Pending | — |
-| Approver 2 | `sha256:0316df742e890fdd96e989b99e5224d687d7c1ec2e6d34fa8e0ba9d75304e341` | ⏳ Pending | — |
+| Approver 1 | `sha256:b5dc4d003429ea244504f9c714dedd60fa9d96c3fa109afc07b2577c6baf758f` | ☑ GO | 2026-02-03T18:00:00Z |
+| Approver 2 | `sha256:0316df742e890fdd96e989b99e5224d687d7c1ec2e6d34fa8e0ba9d75304e341` | ☑ GO | 2026-02-03T18:05:00Z |
+
+**Decision Effective:** 2026-02-03T18:05:00Z (upon 2nd approval)
+
+**References:**
+- Baseline: `DAY_0_BASELINE_SNAPSHOT_REAL.md`
+- Evidence: `DAY_0_EVIDENCE_BUNDLE_REAL.md`
+
+**Next Event:** Day 1 War Room @ **2026-02-04 09:00 UTC**
 
 **Checklist for GO Decision:**
 
@@ -46,7 +54,7 @@
 - [x] All operators certified (3/3)
 - [x] Attestation valid (365 days)
 - [x] MOU active (1/1)
-- [ ] Dual-approval obtained (0/2)
+- [x] Dual-approval obtained (2/2) ✅
 
 ---
 
@@ -112,18 +120,18 @@
 |-------|-------|
 | Log ID | `sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c` |
 | Created | 2026-02-03 |
-| Last Updated | 2026-02-03 15:15 UTC |
-| Entries | 1 decision (pending), 0 actions |
-| Status | ⏳ Day 0 — Awaiting 2/2 GO approval |
+| Last Updated | 2026-02-03T18:05:00Z |
+| Entries | 1 decision (complete), 0 actions |
+| Status | ✅ Day 1 Authorized |
 
 ---
 
 ## Next Steps
 
-1. **Obtain 2/2 dual-approval** for GO decision (`dec_001`)
-2. Upon GO: Schedule Day 1 war room (2026-02-04 09:00 UTC)
-3. Upon GO: Begin 14-day pilot cadence
-4. Upon NO-GO: Document blockers and remediation plan
+1. ~~Obtain 2/2 dual-approval for GO decision (`dec_001`)~~ ✅ Complete
+2. ✅ Day 1 war room scheduled: **2026-02-04 09:00 UTC**
+3. Begin 14-day pilot cadence (Day 1 starts 2026-02-04)
+4. Capture Day 1 evidence bundle after war room
 
 ---
 
