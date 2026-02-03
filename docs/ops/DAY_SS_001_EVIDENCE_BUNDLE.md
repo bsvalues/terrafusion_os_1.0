@@ -106,15 +106,16 @@
 
 | Milestone | Target Date | Status |
 |-----------|-------------|--------|
-| Plan approved | 2026-02-20 | ☐ Pending |
+| Plan approved | 2026-02-20 | ☑ Done |
 | Nominations open | 2026-02-21 | ☐ Pending |
-| Intake templates ready | 2026-02-21 | ☐ Pending |
+| Intake templates ready | 2026-02-20 | ☑ Done |
 
-**Action Assigned:**
+**Actions Closed (as of 2026-02-20):**
 
-| Action ID | Description | Owner | Due Date | Status |
-|-----------|-------------|-------|----------|--------|
-| `action_ss_001` | Wave 1 intake templates | `sha256:a1c29fd3...` | 2026-02-20 | ⏳ Open |
+| Action ID | Description | Owner | Due Date | Status | Evidence |
+|-----------|-------------|-------|----------|--------|----------|
+| `action_ss_001` | Wave 1 intake templates | `sha256:a1c29fd3...` | 2026-02-20 | ✅ Done | `WAVE_1_NOMINATION_FORM.md`, `WAVE_1_COHORT_INTAKE_PACKET.md`, `WAVE_1_READINESS_GATE_CHECKLIST.md` |
+| `action_ss_002` | DR drill scheduling | `sha256:a1c29fd3...` | 2026-02-20 | ✅ Done | `DR_DRILL_SCHEDULE_2026_Q1.md` |
 
 ---
 
@@ -142,8 +143,8 @@
 
 | Action ID | Description | Owner | Due Date | Status |
 |-----------|-------------|-------|----------|--------|
-| `action_ss_001` | Wave 1 intake templates | `sha256:a1c29fd3...` | 2026-02-20 | ⏳ Open |
-| `action_ss_002` | DR drill scheduling confirmation | `sha256:a1c29fd3...` | 2026-02-20 | ⏳ Open |
+| `action_ss_001` | Wave 1 intake templates | `sha256:a1c29fd3...` | 2026-02-20 | ✅ Done |
+| `action_ss_002` | DR drill scheduling confirmation | `sha256:a1c29fd3...` | 2026-02-20 | ✅ Done |
 
 ---
 
@@ -189,7 +190,7 @@
 | Stop Triggers | 0 |
 | Exceptions | 0 |
 | KPIs Passing | 4/4 |
-| Actions Open | 2 |
+| Actions Closed | 2/2 |
 
 ---
 
