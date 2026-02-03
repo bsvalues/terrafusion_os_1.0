@@ -20,6 +20,32 @@
 
 ---
 
+## Open Day Checklist (2026-02-21)
+
+> **Execute this checklist before accepting any nominations.**
+
+| # | Check | Status |
+|---|-------|--------|
+| 1 | Clock reference confirmed UTC | ☐ |
+| 2 | `WAVE_1_EVALUATION_LOG.md` empty except headers | ☐ |
+| 3 | Slot cap = 20 visible in evaluation log | ☐ |
+| 4 | "REJECT (late)" format line present | ☐ |
+| 5 | Triage artifact = evaluation log only | ☐ |
+| 6 | Decision ID map matches this doc | ☐ |
+
+**All 6 checks must pass before first nomination intake.**
+
+### Scheduled Blocks (Pre-commit)
+
+| Date | Duration | Activity |
+|------|----------|----------|
+| 02-21 to 02-25 | 15 min/day | Daily triage (fixed time) |
+| 02-26 | 60–90 min | Gate evaluation batch |
+| 02-27 | 30 min | Cohort decision + publish |
+| 03-01 | 60 min | Wave 1 Day 0 baseline + Go/No-Go |
+
+---
+
 ## Announcement
 
 **Wave 1 cohort nominations are now open.**
