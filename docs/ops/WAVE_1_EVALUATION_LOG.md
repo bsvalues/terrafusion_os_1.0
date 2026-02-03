@@ -7,6 +7,22 @@
 
 ---
 
+## ⚠️ Freeze Rule
+
+**After 2026-02-25 23:59 UTC, no new slots may be added.**  
+Late submissions must be logged as **REJECT (late)** with sha256 refs and timestamped rejection reason.
+
+---
+
+## Slotting Invariants
+
+1. **One nominee = one slot** — no duplicate entries for the same service ID.
+2. **Append-only** — new slots are added at the next available index only.
+3. **No reordering after close** — slot order is frozen after 2026-02-25 23:59 UTC.
+4. **Index cap: 20** — nominations beyond slot 20 are waitlisted for Wave 2.
+
+---
+
 ## Summary
 
 | Metric | Value |

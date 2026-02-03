@@ -6,6 +6,20 @@
 
 ---
 
+## Decision ID Map
+
+> **Canonical reference — use these IDs in decision log entries.**
+
+| Milestone | Decision ID | Date |
+|-----------|-------------|------|
+| Nominations Opened | `dec_ss_002` (pre-recorded) | 2026-02-21 |
+| Nominations Closed | `dec_ss_003` | 2026-02-25 |
+| Gate Evaluation Complete | `dec_ss_004` | 2026-02-26 |
+| Cohort Finalized | `dec_ss_005` | 2026-02-27 |
+| Wave 1 Day 0 Authorized | `dec_ss_006` | 2026-03-01 |
+
+---
+
 ## Announcement
 
 **Wave 1 cohort nominations are now open.**
