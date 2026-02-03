@@ -3,7 +3,7 @@
 > **Pilot:** Wave 0 (Production)  
 > **Log ID:** `sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c`  
 > **Created:** 2026-02-03  
-> **Last Updated:** 2026-02-16T09:30:00Z (DAY 13 — SYNTHESIS PREFLIGHT COMPLETE)
+> **Last Updated:** 2026-02-17T09:45:00Z (DAY 14 — **PILOT COMPLETE**)
 
 ---
 
@@ -11,13 +11,13 @@
 
 | Metric | Value |
 |--------|-------|
-| Total Decisions | 14 |
+| Total Decisions | 15 |
 | Pending Approvals | 0 |
 | Actions Assigned | 3 |
-| Actions Completed | 2 |
+| Actions Completed | 3 |
 | Stop-Condition Triggers | 0 |
 | Exceptions Active | 0 |
-| Pilot Status | ✅ Day 13 Complete — Day 14 + Week-2 Synthesis Authorized |
+| Pilot Status | ✅ **PILOT COMPLETE** — Exit Authorized |
 
 ---
 
@@ -353,13 +353,58 @@
 
 ---
 
+### Day 14 — 2026-02-17 (COMPLETE) — WEEK-2 SYNTHESIS — **PILOT EXIT**
+
+| ID | Type | Description | Owner | Approvers | Status | Bundle Ref |
+|----|------|-------------|-------|-----------|--------|------------|
+| `dec_015` | COMPLETE | Day 14 Complete — Week-2 Synthesis done, pilot exit authorized | IC | 1/1 ☑ | Complete | `bundle_day14` |
+
+**Decision Details (dec_015):**
+
+| Check | Result |
+|-------|--------|
+| Baseline drift | ✅ All 5 metrics unchanged |
+| Exceptions | ✅ Zero (0 active, 0 expired, 0 expiring) |
+| Stop-watch active | ✅ Armed, 2/2 recovery confirmed |
+| KPIs within threshold | ✅ 4/4 passing |
+| DR freshness | ✅ 64 days (limit 90) |
+| Week-2 synthesis | ✅ Complete — action_003 closed |
+| Exit gates | ✅ 14/14 passing |
+
+**Pilot-Wide KPI Rollup (Days 0–14) — FINAL:**
+
+| KPI | Min | Avg | Max | Threshold | Margin | Status |
+|-----|-----|-----|-----|-----------|--------|--------|
+| MTTR | 18 min | 18.3 min | 22 min | ≤ 30 min | +11.7 min | ☑ Pass |
+| Rollback | 98% | 98% | 98% | ≥ 95% | +3% | ☑ Pass |
+| Availability | 99.7% | 99.7% | 99.7% | ≥ 99.5% | +0.2% | ☑ Pass |
+| Incident Response | 42 min | 42 min | 42 min | ≤ 60 min | +18 min | ☑ Pass |
+
+**Pilot Summary:**
+- War Room Compliance: 15/15 (100%)
+- Stop Triggers: 0
+- Exceptions: 0
+- KPIs: 4/4 passing (single controlled probe on Day 9)
+- DR Freshness: 64 days (limit 90)
+- Actions: 3/3 closed
+
+**References:**
+- Evidence: `DAY_14_EVIDENCE_BUNDLE_REAL.md`
+- Bundle Hash: `sha256:508dab162f83255834b08a05c155f13a039dbf6f77138490ef5e086cc39ca904`
+- Synthesis: `WEEK_2_SYNTHESIS_REAL.md`
+- Synthesis Hash: `sha256:9bb77ea7f2473e7787e0bb15b25d2e52a093296e3ffa6b1273ecfd6e3fd3fc5d`
+
+**Pilot Exit Authorization:** ✅ Approved — All gates passing, steady-state operations authorized.
+
+---
+
 ## Action Tracker
 
 | Action ID | Description | Owner | Assigned | Due | Status | Resolution |
 |-----------|-------------|-------|----------|-----|--------|------------|
 | `action_001` | Week-1 Synthesis | `sha256:a1c29fd3...` | 2026-02-04 | 2026-02-10 | ✅ DONE | `WEEK_1_SYNTHESIS_REAL.md` |
 | `action_002` | Week-2 Sensitivity Probe | `sha256:a1c29fd3...` | 2026-02-11 | 2026-02-12 | ✅ DONE | `probe_001` |
-| `action_003` | Week-2 Synthesis | `sha256:a1c29fd3...` | 2026-02-11 | 2026-02-17 | ⏳ Open | — |
+| `action_003` | Week-2 Synthesis | `sha256:a1c29fd3...` | 2026-02-11 | 2026-02-17 | ✅ DONE | `WEEK_2_SYNTHESIS_REAL.md` |
 
 ---
 
@@ -408,16 +453,18 @@
 | 11 | 2026-02-14 | `sha256:80fa357dcb57ef4208545383ec3934bf0bc3b573e0bc9759c88bf1b312c71129` | ☑ | ☑ |
 | 12 | 2026-02-15 | `sha256:033aab09bfabed45cec73e9165c40b3504e9e7bf6f3831f572036c05ce59c864` | ☑ | ☑ |
 | 13 | 2026-02-16 | `sha256:07368390242ac706a3dfaf1c457ed67eda7923abdd72bcfe3977cb91d626e86b` | ☑ | ☑ |
+| 14 | 2026-02-17 | `sha256:508dab162f83255834b08a05c155f13a039dbf6f77138490ef5e086cc39ca904` | ☑ | ☑ |
 
-**War Room Compliance:** 14/14 (100%) ✔
+**War Room Compliance:** 15/15 (100%) ✔ **COMPLETE**
 
 ---
 
-## Week-1 Synthesis Reference
+## Weekly Synthesis References
 
-| Document | Hash | Status |
-|----------|------|--------|
-| WEEK_1_SYNTHESIS_REAL.md | `sha256:3589c91f5341f963c1e368988cd0828302dca9587e8234e2931e72e2f0a53d9d` | ✅ Complete |
+| Document | Hash | Period | Status |
+|----------|------|--------|--------|
+| WEEK_1_SYNTHESIS_REAL.md | `sha256:3589c91f5341f963c1e368988cd0828302dca9587e8234e2931e72e2f0a53d9d` | Days 0–7 | ✅ Complete |
+| WEEK_2_SYNTHESIS_REAL.md | `sha256:9bb77ea7f2473e7787e0bb15b25d2e52a093296e3ffa6b1273ecfd6e3fd3fc5d` | Days 8–14 | ✅ Complete |
 
 ---
 
@@ -438,19 +485,39 @@
 |-------|-------|
 | Log ID | `sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c` |
 | Created | 2026-02-03 |
-| Last Updated | 2026-02-16T09:30:00Z |
-| Entries | 14 decisions (complete), 3 actions (2 closed, 1 open) |
-| Status | ✅ Day 13 Complete |
+| Last Updated | 2026-02-17T09:45:00Z |
+| Entries | 15 decisions (all complete), 3 actions (all closed) |
+| Status | ✅ **PILOT COMPLETE** |
 
 ---
 
-## Next Steps
+## Pilot Completion Summary
 
-1. ~~Obtain 2/2 dual-approval for GO decision (`dec_001`)~~ ✅ Complete
-2. ~~Week-1 (Days 1–7 + synthesis)~~ ✅ Complete
+### Milestones Achieved
+
+1. ~~Obtain 2/2 dual-approval for GO decision (`dec_001`)~~ ✅ Complete (Day 0)
+2. ~~Week-1 (Days 1–7 + synthesis)~~ ✅ Complete (`action_001`)
 3. ~~Days 8–13 war rooms~~ ✅ Complete
-4. ~~Sensitivity Probe (Day 9)~~ ✅ Complete (`action_002` done)
-5. Day 14 + Week-2 Synthesis: **2026-02-17 09:00 UTC** (`action_003` — **Pilot exit**)
+4. ~~Sensitivity Probe (Day 9)~~ ✅ Complete (`action_002`)
+5. ~~Day 14 + Week-2 Synthesis~~ ✅ Complete (`action_003`)
+
+### Final Metrics
+
+| Metric | Value | Target |
+|--------|-------|--------|
+| War Room Compliance | 15/15 (100%) | 100% |
+| Stop Triggers | 0 | 0 |
+| Exceptions | 0 | 0 |
+| KPIs Passing | 4/4 | 4/4 |
+| Exit Gates | 14/14 | 14/14 |
+| Actions Closed | 3/3 | 3/3 |
+| Observability Validated | ✅ | ✅ |
+
+### Authorization
+
+**The TerraFusion OS Production Pilot Wave 0 (14-day) has completed successfully.**
+
+Steady-state operations are authorized to proceed.
 
 ---
 
