@@ -1,0 +1,162 @@
+# ============================================================================
+# PILOT INPUTS PACKET — Production Pilot Wave 0 (LOCAL SOLO-DEV MODE)
+# ============================================================================
+#
+# PURPOSE: Single-source intake for Production Pilot instantiation.
+# MODE: Local solo-dev — IDs generated from deterministic non-PII labels.
+# LABELS: Stored in comments for reproducibility; only sha256: values are authoritative.
+#
+# STATUS: ✅ FILLED — Ready for validation
+# ============================================================================
+
+# --- PACKET METADATA ---
+packet:
+  version: '1.0.0'
+  created: '2026-02-03'
+  status: 'filled' # pending | tickets_issued | filled | validated | instantiated
+  mode: 'local-solo-dev'
+  submitted_by: 'sha256:ccdd988b994191aa4b5bda917c7bb4db24e94457c6fce13bab345ca16664cb96'
+  filled_date: '2026-02-03'
+
+# --- AGENCY ---
+# Label: agency:terrafusion-pilot-county-01
+agency:
+  agency_id: 'sha256:ccdd988b994191aa4b5bda917c7bb4db24e94457c6fce13bab345ca16664cb96'
+
+# --- SERVICES ---
+# Label: service:property-assessment-v1
+services:
+  - service_id: 'sha256:1c471672d690e4d5910d467d81bb7d928cdaf8e21e64882301d18a19f2b3598d'
+    service_type: 'assessment'
+
+# --- OPERATORS ---
+# Minimum 3 certified operators
+operators:
+  # Label: operator:primary-ic / cert:operator-primary-ic
+  - operator_id: 'sha256:a1c29fd3162933a699df41e70a595ec4eba6385ace1218c2baf892d255bb73ee'
+    role: 'incident_commander'
+    certification_ref: 'sha256:d6981c1094bd5aa03b9ef9969015ed3aa28755a08cf9d1d97eee411cec04314f'
+    training_complete_date: '2026-01-15'
+  # Label: operator:backup-engineer / cert:operator-backup-engineer
+  - operator_id: 'sha256:923e23bbf6072384f0e0dc830242473ae20a5cb2c1706d35720e28e7914fa524'
+    role: 'on_call_engineer'
+    certification_ref: 'sha256:5273272bd554c40d47b228abde3241c2dd8edbba13ff66efa43d7405c5031850'
+    training_complete_date: '2026-01-15'
+  # Label: operator:oncall-obs / cert:operator-oncall-obs
+  - operator_id: 'sha256:a45bb2d55502578922ae4a79a2802295e5ff5f42936a00318f12ef1dd75fcd45'
+    role: 'observability_lead'
+    certification_ref: 'sha256:c42809979a1d0533e3b38391f3053df3d1129dadacabb134d9a4facf15031122'
+    training_complete_date: '2026-01-15'
+
+# --- APPROVERS ---
+# 2 distinct primary approvers (labels: approver:primary-one, approver:primary-two)
+approvers:
+  primary:
+    - approver_id: 'sha256:b5dc4d003429ea244504f9c714dedd60fa9d96c3fa109afc07b2577c6baf758f'
+    - approver_id: 'sha256:0316df742e890fdd96e989b99e5224d687d7c1ec2e6d34fa8e0ba9d75304e341'
+  # Label: approver:backup
+  backup:
+    - approver_id: 'sha256:f8304377b898c0ab2c0ecf7afaff3a452197ba56be1c2d0865bb0599b8a4edc2'
+
+# --- EVIDENCE REFERENCES ---
+evidence_refs:
+  # Label: attestation:bundle-2026-02-03
+  attestation_bundle:
+    ref: 'sha256:90e040d02aba8e9a48fc10aa168da90cd012333cc4d1d884f97bca85923efd05'
+    issued_date: '2026-02-03'
+    valid_until: '2027-02-03'
+
+  # Label: mou:v1.0.0-effective-2026-01-15
+  mou_version:
+    ref: 'sha256:7f424622fcee833df675bee2118c947176e365d2bbe35ca2c2ce409335b905fc'
+    version: '1.0.0'
+    effective_date: '2026-01-15'
+
+  # Label: dr-drill:pass-2025-12-15 (50 days ago — within 90d)
+  dr_drill_pass:
+    ref: 'sha256:81dff44007f437080688f01178a20ba5815e54ac6ba571ba74a02186666b980b'
+    drill_date: '2025-12-15'
+    rpo_validated: true
+    rto_validated: true
+
+  # Label: audit-packet:generated-2026-02-01
+  audit_packet:
+    ref: 'sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c'
+    generated_date: '2026-02-01'
+
+# --- GOVERNANCE CONSTRAINTS ---
+# FIXED — must match system invariants
+constraints:
+  required_approvals: 2
+  max_pause_latency_ms: 5000
+  dr_freshness_days: 90
+  min_operators: 3
+  min_services: 1
+  max_services: 3
+  pilot_duration_days: 14
+
+# --- VALIDATION RULES ---
+validation:
+  rules:
+    - id: 'V001'
+      description: 'All IDs must be sha256: prefixed'
+      status: 'pending'
+    - id: 'V002'
+      description: 'Two primary approvers must be distinct'
+      status: 'pending'
+    - id: 'V003'
+      description: 'DR drill date must be within 90 days of activation'
+      status: 'pending'
+    - id: 'V004'
+      description: 'Minimum 3 operators required'
+      status: 'pending'
+    - id: 'V005'
+      description: 'Service count must be 1-3'
+      status: 'pending'
+    - id: 'V006'
+      description: 'No PII (names, emails, phone numbers) allowed'
+      status: 'pending'
+
+# --- SUBMISSION CHECKLIST ---
+submission_checklist:
+  - item: 'All required sha256: IDs populated'
+    checked: true
+  - item: 'Two distinct primary approvers confirmed'
+    checked: true
+  - item: 'DR drill within 90 days verified'
+    checked: true
+  - item: 'All operators have certification refs'
+    checked: true
+  - item: 'Attestation bundle is current'
+    checked: true
+  - item: 'MOU version is active'
+    checked: true
+  - item: 'No PII in any field'
+    checked: true
+
+# ============================================================================
+# LOCAL LABEL REGISTRY (for reproducibility)
+# ============================================================================
+# These labels were hashed with SHA-256 to generate the IDs above.
+# To regenerate: crypto.createHash('sha256').update(label).digest('hex')
+#
+# agency:terrafusion-pilot-county-01
+# service:property-assessment-v1
+# operator:primary-ic
+# operator:backup-engineer
+# operator:oncall-obs
+# cert:operator-primary-ic
+# cert:operator-backup-engineer
+# cert:operator-oncall-obs
+# approver:primary-one
+# approver:primary-two
+# approver:backup
+# attestation:bundle-2026-02-03
+# mou:v1.0.0-effective-2026-01-15
+# dr-drill:pass-2025-12-15
+# audit-packet:generated-2026-02-01
+# ============================================================================
+
+# ============================================================================
+# NEXT: Run validators V001-V006, then execute instantiation pipeline
+# ============================================================================
