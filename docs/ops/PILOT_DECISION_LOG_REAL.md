@@ -3,7 +3,7 @@
 > **Pilot:** Wave 0 (Production)  
 > **Log ID:** `sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c`  
 > **Created:** 2026-02-03  
-> **Last Updated:** 2026-02-03 (DAY 0 — BASELINE)
+> **Last Updated:** 2026-02-04T09:30:00Z (DAY 1 — OPERATIONAL)
 
 ---
 
@@ -11,13 +11,13 @@
 
 | Metric | Value |
 |--------|-------|
-| Total Decisions | 1 |
+| Total Decisions | 2 |
 | Pending Approvals | 0 |
-| Actions Assigned | 0 |
+| Actions Assigned | 1 |
 | Actions Completed | 0 |
 | Stop-Condition Triggers | 0 |
 | Exceptions Active | 0 |
-| Pilot Status | ✅ Day 1 Authorized — War Room 2026-02-04 09:00 UTC |
+| Pilot Status | ✅ Day 1 Complete — Day 2 Authorized |
 
 ---
 
@@ -58,11 +58,35 @@
 
 ---
 
+### Day 1 — 2026-02-04 (COMPLETE)
+
+| ID | Type | Description | Owner | Approvers | Status | Bundle Ref |
+|----|------|-------------|-------|-----------|--------|------------|
+| `dec_002` | CONTINUE | Day 1 Continue — all baselines stable | IC | 1/1 ☑ | Complete | `bundle_day1` |
+
+**Decision Details (dec_002):**
+
+| Check | Result |
+|-------|--------|
+| Baseline metrics unchanged | ✅ All 5 metrics stable |
+| Exceptions | ✅ Zero (none active/expired) |
+| Stop-watch active | ✅ Armed, 2/2 recovery confirmed |
+| KPIs within threshold | ✅ 4/4 passing |
+| DR freshness | ✅ 51 days (limit 90) |
+
+**References:**
+- Evidence: `DAY_1_EVIDENCE_BUNDLE_REAL.md`
+- Bundle Hash: `sha256:39a8f6e10fcb354cf2c238718cfcf0e6b60e7f8b58476af3c4aded37931f248d`
+
+**Next Event:** Day 2 War Room @ **2026-02-05 09:00 UTC**
+
+---
+
 ## Action Tracker
 
 | Action ID | Description | Owner | Assigned | Due | Status | Resolution |
 |-----------|-------------|-------|----------|-----|--------|------------|
-| — | — | — | — | — | — | — |
+| `action_001` | Prepare Week-1 Synthesis (Day 7) | `sha256:a1c29fd3...` | 2026-02-04 | 2026-02-10 | ⏳ Open | — |
 
 ---
 
@@ -98,8 +122,9 @@
 | Day | Date | Bundle ID | War Room | Signed |
 |-----|------|-----------|----------|--------|
 | 0 | 2026-02-03 | `sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c` | ☑ | ☑ |
+| 1 | 2026-02-04 | `sha256:39a8f6e10fcb354cf2c238718cfcf0e6b60e7f8b58476af3c4aded37931f248d` | ☑ | ☑ |
 
-**War Room Compliance:** 1/1 (100%) ✔
+**War Room Compliance:** 2/2 (100%) ✔
 
 ---
 
@@ -120,18 +145,18 @@
 |-------|-------|
 | Log ID | `sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c` |
 | Created | 2026-02-03 |
-| Last Updated | 2026-02-03T18:05:00Z |
-| Entries | 1 decision (complete), 0 actions |
-| Status | ✅ Day 1 Authorized |
+| Last Updated | 2026-02-04T09:30:00Z |
+| Entries | 2 decisions (complete), 1 action (open) |
+| Status | ✅ Day 1 Complete |
 
 ---
 
 ## Next Steps
 
 1. ~~Obtain 2/2 dual-approval for GO decision (`dec_001`)~~ ✅ Complete
-2. ✅ Day 1 war room scheduled: **2026-02-04 09:00 UTC**
-3. Begin 14-day pilot cadence (Day 1 starts 2026-02-04)
-4. Capture Day 1 evidence bundle after war room
+2. ~~Day 1 war room (2026-02-04 09:00 UTC)~~ ✅ Complete
+3. Day 2 war room: **2026-02-05 09:00 UTC**
+4. ⏳ Week-1 Synthesis due: **2026-02-10** (`action_001`)
 
 ---
 
