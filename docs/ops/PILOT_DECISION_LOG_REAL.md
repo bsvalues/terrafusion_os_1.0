@@ -3,7 +3,7 @@
 > **Pilot:** Wave 0 (Production)  
 > **Log ID:** `sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c`  
 > **Created:** 2026-02-03  
-> **Last Updated:** 2026-02-08T09:30:00Z (DAY 5 — OPERATIONAL)
+> **Last Updated:** 2026-02-09T09:30:00Z (DAY 6 — OPERATIONAL)
 
 ---
 
@@ -11,13 +11,13 @@
 
 | Metric | Value |
 |--------|-------|
-| Total Decisions | 6 |
+| Total Decisions | 7 |
 | Pending Approvals | 0 |
 | Actions Assigned | 1 |
 | Actions Completed | 0 |
 | Stop-Condition Triggers | 0 |
 | Exceptions Active | 0 |
-| Pilot Status | ✅ Day 5 Complete — Day 6 Authorized |
+| Pilot Status | ✅ Day 6 Complete — Day 7 + Week-1 Synthesis Authorized |
 
 ---
 
@@ -181,6 +181,40 @@
 
 ---
 
+### Day 6 — 2026-02-09 (COMPLETE)
+
+| ID | Type | Description | Owner | Approvers | Status | Bundle Ref |
+|----|------|-------------|-------|-----------|--------|------------|
+| `dec_007` | CONTINUE | Day 6 Continue — all baselines stable | IC | 1/1 ☑ | Complete | `bundle_day6` |
+
+**Decision Details (dec_007):**
+
+| Check | Result |
+|-------|--------|
+| Baseline drift | ✅ All 5 metrics unchanged |
+| Exceptions | ✅ Zero (0 active, 0 expired, 0 expiring) |
+| Stop-watch active | ✅ Armed, 2/2 recovery confirmed |
+| KPIs within threshold | ✅ 4/4 passing |
+| DR freshness | ✅ 56 days (limit 90) |
+| Week-1 synthesis staging | ✅ All inputs ready for Day 7 synthesis |
+
+**Week-1 KPI Rollup (Days 0–6):**
+
+| KPI | Min | Avg | Max | Threshold | Status |
+|-----|-----|-----|-----|-----------|--------|
+| MTTR | 18 min | 18 min | 18 min | ≤ 30 min | ☑ Pass |
+| Rollback | 98% | 98% | 98% | ≥ 95% | ☑ Pass |
+| Availability | 99.7% | 99.7% | 99.7% | ≥ 99.5% | ☑ Pass |
+| Incident Response | 42 min | 42 min | 42 min | ≤ 60 min | ☑ Pass |
+
+**References:**
+- Evidence: `DAY_6_EVIDENCE_BUNDLE_REAL.md`
+- Bundle Hash: `sha256:4a3e75a9d95cbaa267a5bf3d04eeb188955bb515bc1e9c5647e44b7f5b9e1d62`
+
+**Next Event:** Day 7 War Room + Week-1 Synthesis @ **2026-02-10 09:00 UTC**
+
+---
+
 ## Action Tracker
 
 | Action ID | Description | Owner | Assigned | Due | Status | Resolution |
@@ -226,8 +260,9 @@
 | 3 | 2026-02-06 | `sha256:c41d1c4f5bfa61246a373d030692971f3d0bb2c099bda44a8240af0df21645c2` | ☑ | ☑ |
 | 4 | 2026-02-07 | `sha256:b83da3156bc8cd5ad3eab5732915ab8ae41b01eebb6ff44afe4bce2673a1f7fd` | ☑ | ☑ |
 | 5 | 2026-02-08 | `sha256:ed02522dce392934d15deeb4a40482fa7b9fcc3a5a046854eeb158a01ccf707b` | ☑ | ☑ |
+| 6 | 2026-02-09 | `sha256:4a3e75a9d95cbaa267a5bf3d04eeb188955bb515bc1e9c5647e44b7f5b9e1d62` | ☑ | ☑ |
 
-**War Room Compliance:** 6/6 (100%) ✔
+**War Room Compliance:** 7/7 (100%) ✔
 
 ---
 
@@ -248,9 +283,9 @@
 |-------|-------|
 | Log ID | `sha256:16f300aadf288497415ccd5697dd7c217d8ce497f2a724e75d4c5fdc2590b10c` |
 | Created | 2026-02-03 |
-| Last Updated | 2026-02-08T09:30:00Z |
-| Entries | 6 decisions (complete), 1 action (open) |
-| Status | ✅ Day 5 Complete |
+| Last Updated | 2026-02-09T09:30:00Z |
+| Entries | 7 decisions (complete), 1 action (open) |
+| Status | ✅ Day 6 Complete |
 
 ---
 
@@ -262,8 +297,8 @@
 4. ~~Day 3 war room (2026-02-06 09:00 UTC)~~ ✅ Complete
 5. ~~Day 4 war room (2026-02-07 09:00 UTC)~~ ✅ Complete
 6. ~~Day 5 war room (2026-02-08 09:00 UTC)~~ ✅ Complete
-7. Day 6 war room: **2026-02-09 09:00 UTC**
-8. Day 7 war room + Week-1 Synthesis: **2026-02-10** (`action_001` — inputs through Day 5)
+7. ~~Day 6 war room (2026-02-09 09:00 UTC)~~ ✅ Complete
+8. Day 7 war room + Week-1 Synthesis: **2026-02-10 09:00 UTC** (`action_001` — all inputs ready)
 
 ---
 
