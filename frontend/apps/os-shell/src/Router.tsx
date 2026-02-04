@@ -35,6 +35,9 @@ const PilotConsole = lazy(() => import('./pages/PilotConsole'));
 const GovernanceDashboard = lazy(() => import('./pages/GovernanceDashboard'));
 const PilotApiDemo = lazy(() => import('./pages/PilotApiDemo'));
 
+// Phase 1: Error Display Demo (visual verification)
+const ErrorDisplayDemo = lazy(() => import('./pages/ErrorDisplayDemo'));
+
 const Router: React.FC = () => {
   return (
     <BrowserRouter
@@ -63,6 +66,9 @@ const Router: React.FC = () => {
           {/* GovernanceLock - Dashboard (role-gated) */}
           <Route path='/pilot/dashboard' element={<GovernanceDashboard />} />
           <Route path='/pilot/api' element={<PilotApiDemo />} />
+
+          {/* Phase 1: Error Display Demo */}
+          <Route path='/error-demo' element={<ErrorDisplayDemo />} />
 
           <Route path='/modules/*' element={<div>Module Loading...</div>} />
         </Routes>
