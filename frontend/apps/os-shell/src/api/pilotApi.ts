@@ -6,6 +6,9 @@
  * All tool invocations MUST go through POST /pilot/invoke.
  * This client enforces the single execution path from the UI.
  *
+ * Phase 1 Day 2: Added error normalization helpers to populate
+ * correlationId into ErrorInfo for consistent UI display.
+ *
  * NOTE: This is the Pilot subsystem (port 5000) - intentionally
  * NOT using centralized apiBase.ts because Pilot has its own
  * URL resolution pattern. Do NOT migrate to buildApiUrl().
@@ -14,6 +17,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { ErrorInfo } from '../hooks/useErrorHandler';
 import { getViteEnv } from '../shared/viteEnv';
 
 // Pilot API Base URL (Pilot subsystem, port 5000 - NOT TerraFusion core telemetry API)
@@ -364,4 +368,88 @@ export function getSuiteBadgeColor(suite: Suite): string {
     default:
       return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
   }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ERROR NORMALIZATION (Phase 1 Day 2)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Normalize PilotInvokeResponse error into ErrorInfo
+ *
+ * Ensures correlationId flows from backend → UI consistently.
+ * Used by error handlers to populate ErrorProvider.
+ */
+export function normalizePilotError(
+  response: PilotInvokeResponse,
+  context?: Record<string, unknown>
+): ErrorInfo {
+  return {
+    message: response.error || 'Tool invocation failed',
+    timestamp: new Date().toISOString(),
+    errorId: `pilot-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+    correlationId: response.correlationId, // ⭐ Key: Flow correlationId to UI
+    context: {
+      errorCode: response.errorCode,
+      component: 'PilotAPI',
+      severity: getSeverityFromErrorCode(response.errorCode),
+      traceEventId: response.traceEventId,
+      ...context,
+    },
+  };
+}
+
+/**
+ * Normalize fetch/network errors into ErrorInfo
+ *
+ * Generates correlationId for client-side errors (network failures, etc.)
+ */
+export function normalizeNetworkError(error: Error, context?: Record<string, unknown>): ErrorInfo {
+  const correlationId = `net-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 9)}`;
+
+  return {
+    message: error.message || 'Network request failed',
+    stack: error.stack,
+    timestamp: new Date().toISOString(),
+    errorId: `network-${Date.now()}`,
+    correlationId,
+    context: {
+      errorCode: 'NETWORK_ERROR',
+      component: 'PilotAPI',
+      severity: 'high',
+      ...context,
+    },
+  };
+}
+
+/**
+ * Determine error severity from errorCode
+ */
+function getSeverityFromErrorCode(errorCode?: string): 'low' | 'medium' | 'high' | 'critical' {
+  if (!errorCode) return 'medium';
+
+  // Critical errors
+  if (errorCode === 'EXECUTION_FAILED' || errorCode === 'HANDLER_ERROR') {
+    return 'critical';
+  }
+
+  // High-risk policy violations
+  if (
+    errorCode === 'WRITE_LANE_MISMATCH' ||
+    errorCode === 'SUPERVISOR_APPROVAL_REQUIRED' ||
+    errorCode === 'REJECTED_PII'
+  ) {
+    return 'high';
+  }
+
+  // Medium validation errors
+  if (
+    errorCode === 'CONFIRMATION_REQUIRED' ||
+    errorCode === 'REASON_CODE_REQUIRED' ||
+    errorCode === 'REJECTED_MISSING_EVIDENCE'
+  ) {
+    return 'medium';
+  }
+
+  return 'low';
 }

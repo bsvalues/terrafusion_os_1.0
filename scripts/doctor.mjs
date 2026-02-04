@@ -353,6 +353,55 @@ const environmentCheck = {
   },
 };
 
+/**
+ * Check 6: Wave 1 Readiness (existence checks only, no writes)
+ */
+const wave1ReadinessCheck = {
+  name: 'wave1-readiness',
+  run: async () => {
+    const OPERATOR_CARD = 'docs/ops/templates/WAVE_1_TRIAGE_OPERATOR_CARD.md';
+    const EVAL_LOG = 'docs/ops/WAVE_1_EVALUATION_LOG.md';
+    const UNFREEZE_DATE = new Date('2026-02-21T00:00:00Z');
+
+    const cardExists = await pathExists(resolve(REPO_ROOT, OPERATOR_CARD));
+    const logExists = await pathExists(resolve(REPO_ROOT, EVAL_LOG));
+
+    const issues = [];
+
+    if (!cardExists) {
+      issues.push('Operator card missing');
+    }
+
+    if (!logExists) {
+      issues.push('Evaluation log missing');
+    }
+
+    // Clock check (UTC)
+    const now = new Date();
+    const daysUntilUnfreeze = Math.ceil((UNFREEZE_DATE - now) / (1000 * 60 * 60 * 24));
+
+    if (issues.length === 0) {
+      if (daysUntilUnfreeze > 0) {
+        return {
+          pass: true,
+          message: `Wave 1 readiness ✓ (${daysUntilUnfreeze} days until unfreeze on 2026-02-21)`,
+        };
+      } else {
+        return {
+          pass: true,
+          message: `Wave 1 readiness ✓ (intake window open since 2026-02-21)`,
+        };
+      }
+    } else {
+      return {
+        pass: false,
+        message: `Wave 1 readiness issues: ${issues.join(', ')}`,
+        fix: 'Run: pwsh scripts/wave1-preflight.ps1 for detailed diagnostics',
+      };
+    }
+  },
+};
+
 // ============================================================================
 // Check Registry
 // ============================================================================
@@ -363,6 +412,7 @@ export const checks = [
   directoryStructureCheck,
   requiredFilesCheck,
   environmentCheck,
+  wave1ReadinessCheck,
 ];
 
 // ============================================================================

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect } from 'react';
+import { useCallback, useContext } from 'react';
 
 import { ErrorContext } from '../contexts/ErrorContext';
 
@@ -8,6 +8,7 @@ export interface ErrorInfo {
   componentStack?: string;
   timestamp: string;
   errorId: string;
+  correlationId?: string; // Phase 1: correlationId-first error UX
   context?: Record<string, any>;
 }
 
