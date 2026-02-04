@@ -77,7 +77,32 @@ main:
   - `TERRAFUSION_TOOL_MANIFEST_PATH`
 - ToolRegistry logging must be silent unless:
   - `DEBUG_TOOLREGISTRY=1`
+## DEBUGGING WORKFLOWS
 
+### Quick Debug: Trace Lookups
+When a tool execution fails, grab the `correlationId` from the error response and query the trace chain:
+
+```bash
+# Full request trace (causal chain: tool_invoked → tool_completed/tool_failed)
+pnpm run trace:query --correlation <correlationId>
+
+# Recent failures
+pnpm run trace:query --recent 10 --type tool_failed
+
+# Tool-specific errors
+pnpm run trace:query --tool <toolId> --type tool_failed
+
+# Error classification
+pnpm run trace:query --error-code EXECUTION_FAILED
+
+# CLI help
+pnpm run trace:query --help
+```
+
+**Structured error fields:**
+- `errorCode`: Error classification (EXECUTION_FAILED, VALIDATION, etc.)
+- `component`: Emitting component (ToolRunner, Handler, ToolRegistry)
+- `stackTrace`: Full stack trace for handler errors (tool_failed events only)
 ## COMMIT HYGIENE
 - Small commits, one logical change per commit.
 - Never fix by exclusion unless the exclusion is policy-backed and documented here.
