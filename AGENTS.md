@@ -67,10 +67,17 @@ main:
       - "Accreditation Compat Check (ubuntu-latest)"
       - "Accreditation Compat Check (windows-latest)"
   enforce_admins: true
+  require_pull_request: true
   required_pull_request_reviews:
-    required_approving_review_count: 1
+    required_approving_review_count: 0  # Solo dev: CI = Constitutional Review
   restrictions: null
 ```
+
+**Solo Dev Governance:**
+- ✅ CI status checks enforce quality (SEAL + gates)
+- ✅ PRs enforce evidence trail (no direct pushes)
+- ✅ Include administrators (cannot bypass own gates)
+- ❌ NO required reviews (prevents merge deadlock)
 
 ## TOOL GOVERNANCE RULES
 - ToolRegistry must resolve the manifest path canonically (relative to ToolRegistry) and allow env override only:
