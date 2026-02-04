@@ -1,0 +1,137 @@
+{
+  "measured_at": "2026-02-04T00:50:00Z",
+  "workflow": "seal-gate-fast.yml",
+  "local_gate": {
+    "type_check_sec": 2.87,
+    "phase83_tests_sec": 0.24,
+    "total_sec": 3.11,
+    "target_sec": 30,
+    "status": "WITHIN_TARGET",
+    "note": "Local gate is already very fast, no optimization needed"
+  },
+  "ci_gate": {
+    "recent_runs": [
+      {
+        "run_id": "21581566440",
+        "conclusion": "success",
+        "created_at": "2026-02-02T07:45:26Z",
+        "display_title": "feat(autonomy-viewer): Phase IV closeout",
+        "total_duration_sec": 123,
+        "jobs": {
+          "classify": { "duration_sec": 35, "status": "success" },
+          "governance-fast": { "duration_sec": 85, "status": "success" },
+          "backend-fast": {
+            "duration_sec": 0,
+            "status": "skipped",
+            "reason": "docs-only"
+          },
+          "frontend-fast": {
+            "duration_sec": 0,
+            "status": "skipped",
+            "reason": "docs-only"
+          },
+          "seal": { "duration_sec": 3, "status": "success" }
+        },
+        "critical_path": "governance-fast",
+        "change_type": "docs-only"
+      },
+      {
+        "run_id": "21581440659",
+        "conclusion": "success",
+        "created_at": "2026-02-02T07:40:22Z",
+        "display_title": "feat(autonomy-viewer): Phase II mirror",
+        "total_duration_sec": 123,
+        "jobs": {
+          "classify": { "duration_sec": 34, "status": "success" },
+          "governance-fast": { "duration_sec": 84, "status": "success" },
+          "backend-fast": {
+            "duration_sec": 0,
+            "status": "skipped",
+            "reason": "docs-only"
+          },
+          "frontend-fast": {
+            "duration_sec": 0,
+            "status": "skipped",
+            "reason": "docs-only"
+          },
+          "seal": { "duration_sec": 5, "status": "success" }
+        },
+        "critical_path": "governance-fast",
+        "change_type": "docs-only"
+      }
+    ],
+    "docs_only_path": {
+      "avg_duration_sec": 123,
+      "target_sec": 300,
+      "status": "WITHIN_TARGET",
+      "note": "Docs-only path is ~2 min, well below 5 min target"
+    },
+    "full_path": {
+      "status": "NOT_MEASURED_YET",
+      "note": "Recent runs were docs-only. Need a code change (frontend or backend) to measure full gate timing.",
+      "estimated_duration_sec": null,
+      "target_sec": 300
+    }
+  },
+  "analysis": {
+    "local_gate_status": "EXCELLENT - 3.11s vs 30s target",
+    "ci_docs_only_status": "EXCELLENT - 123s vs 300s target",
+    "ci_full_path_status": "UNKNOWN - needs measurement with code changes",
+    "bottleneck_prediction": "frontend-fast (has 8 steps: lint, typecheck, unit, ipc, build, bundle analysis)",
+    "cache_effectiveness": "appears good (classify is fast despite fetch-depth: 0)",
+    "parallelization": "excellent (frontend/backend/governance run concurrently)",
+    "next_action": "Wait for next code change to measure full path, or trigger test PR with frontend change"
+  },
+  "optimization_candidates": [
+    {
+      "id": 1,
+      "name": "Shallow clone (fetch-depth: 1)",
+      "target": "classify job",
+      "current_depth": 0,
+      "expected_savings_sec": "10-20",
+      "effort": "LOW",
+      "risk": "LOW",
+      "status": "CANDIDATE",
+      "note": "classify has fetch-depth: 0 but only needs depth: 1 for diff"
+    },
+    {
+      "id": 2,
+      "name": "Shared pnpm install",
+      "target": "frontend-fast + governance-fast",
+      "current": "pnpm install runs 2x independently",
+      "expected_savings_sec": "30-60",
+      "effort": "MEDIUM",
+      "risk": "MEDIUM",
+      "status": "CANDIDATE",
+      "note": "Install once at workspace root, share across jobs via artifact"
+    },
+    {
+      "id": 3,
+      "name": "Move lint to nightly after 2026-02-15",
+      "target": "frontend-fast",
+      "current": "lint runs but is non-blocking",
+      "expected_savings_sec": "30-60",
+      "effort": "LOW",
+      "risk": "LOW",
+      "status": "WAIT_FOR_EXPIRY",
+      "note": "Escape hatch expires 2026-02-15, then move to nightly"
+    },
+    {
+      "id": 4,
+      "name": "Frontend dev build (not prod)",
+      "target": "frontend-fast build step",
+      "current": "unknown if prod or dev build",
+      "expected_savings_sec": "60-120",
+      "effort": "LOW",
+      "risk": "MEDIUM",
+      "status": "NEEDS_INVESTIGATION",
+      "note": "Check if vite.config uses production mode, switch to dev for CI gate"
+    }
+  ],
+  "conclusion": {
+    "current_status": "FAST_ENOUGH_FOR_DOCS_ONLY",
+    "action_required": "Measure full path (with code changes) before optimizing",
+    "recommendation": "Do not optimize prematurely. Wait for full path measurement. If full path < 5 min, Developer Velocity lane is COMPLETE as-is.",
+    "next_step": "Commit this baseline, then either: (A) make a test code change to trigger full gate, or (B) move to Reliability lane if next real PR will provide measurement naturally"
+  }
+}
