@@ -28,9 +28,10 @@ NEVER hardcode ports. ALWAYS use environment variables:
 ```
 
 ## 🖥️ FRONTEND PATHS
+- ✅ frontend/apps/os-shell/** (authorized - Desktop Shell Zone B)
 - ✅ frontend-v2/** (authorized)
 - ✅ experience-suite/temp-extract/experience-suite-v5/** (authorized)
-- ❌ frontend/** (forbidden - legacy, 97+ errors)
+- ❌ frontend/** (forbidden - legacy, 97+ errors, except os-shell)
 
 ## ✓ REQUIRED GATES (MUST PASS)
 ```bash
