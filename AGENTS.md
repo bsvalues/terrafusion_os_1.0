@@ -103,6 +103,39 @@ pnpm run trace:query --help
 - `errorCode`: Error classification (EXECUTION_FAILED, VALIDATION, etc.)
 - `component`: Emitting component (ToolRunner, Handler, ToolRegistry)
 - `stackTrace`: Full stack trace for handler errors (tool_failed events only)
+
+### Wave 1 Intake Debugging
+When Wave 1 intake operations fail (after unfreeze on 2026-02-21), use these patterns:
+
+```bash
+# Nomination rejected → grab correlationId from error response
+pnpm run trace:query --correlation <correlationId>
+
+# Recent intake failures (last 10)
+pnpm run trace:query --recent 10 --error-code REJECTED_PII
+pnpm run trace:query --recent 10 --error-code REJECTED_MISSING_EVIDENCE
+pnpm run trace:query --recent 10 --error-code REJECTED_LATE
+
+# All rejections for a specific slot
+pnpm run trace:query --component IntakeHandler --type nomination_rejected
+
+# Pre-unfreeze dry-run (validates mechanics without touching Zone A)
+node scripts/wave1-dryrun.mjs              # All scenarios
+node scripts/wave1-dryrun.mjs good         # Happy path
+node scripts/wave1-dryrun.mjs pii          # PII rejection
+node scripts/wave1-dryrun.mjs late         # Late submission
+
+# Preflight check (run before 2026-02-21 intake begins)
+pwsh scripts/wave1-preflight.ps1
+```
+
+**Wave 1 Canonical Error Codes:**
+- `REJECTED_PII`: SSN/email/phone detected in title
+- `REJECTED_MISSING_EVIDENCE`: Evidence field empty or null
+- `REJECTED_LATE`: Submitted after 2026-02-21T23:59:59Z (UTC)
+- `REJECTED_INVALID_FORMAT`: Title or evidence format invalid
+- `REJECTED_SLOT_CAP`: Slot cap (20) exceeded
+- `HANDLER_ERROR`: IntakeHandler crash (includes stackTrace)
 ## COMMIT HYGIENE
 - Small commits, one logical change per commit.
 - Never fix by exclusion unless the exclusion is policy-backed and documented here.

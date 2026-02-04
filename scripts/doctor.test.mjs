@@ -69,6 +69,25 @@ describe('Doctor Health Checker', () => {
       }
       assert.ok(result, 'structure check should return a result');
     });
+
+    it('validates Wave 1 readiness files (existence only)', async () => {
+      const { checks } = await import('./doctor.mjs');
+      const wave1Check = checks.find(c => c.name === 'wave1-readiness');
+      assert.ok(wave1Check, 'wave1-readiness check should exist');
+
+      const result = await wave1Check.run();
+      assert.ok(result, 'wave1-readiness check should return a result');
+      assert.ok('pass' in result, 'result should have pass field');
+      assert.ok('message' in result, 'result should have message field');
+
+      // Check message includes unfreeze date information
+      if (result.pass) {
+        assert.ok(
+          result.message.includes('2026-02-21') || result.message.includes('days until'),
+          'Message should reference unfreeze date'
+        );
+      }
+    });
   });
 
   describe('Output Format', () => {
