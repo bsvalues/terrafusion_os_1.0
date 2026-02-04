@@ -10,11 +10,11 @@
  *   pnpm run doctor
  */
 
-import { readFile, access } from 'node:fs/promises';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
+import { access, readFile } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
 import { env, exit, version as nodeVersion } from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

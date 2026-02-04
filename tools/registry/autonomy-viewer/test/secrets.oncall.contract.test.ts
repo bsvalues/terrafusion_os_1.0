@@ -11,9 +11,9 @@
  * - oncall_maintains_audit: checksum integrity for audit trail
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import * as crypto from 'node:crypto';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Secrets On-Call
@@ -190,9 +190,7 @@ function isDuplicate(
 ): boolean {
   const windowStart = new Date(Date.now() - config.windowMinutes * 60 * 1000);
   const duplicates = recentAlerts.filter(
-    (a) =>
-      a.fingerprint === alert.fingerprint &&
-      new Date(a.createdAt) >= windowStart
+    a => a.fingerprint === alert.fingerprint && new Date(a.createdAt) >= windowStart
   );
 
   return duplicates.length >= config.maxDuplicatesPerWindow;
@@ -263,10 +261,7 @@ function createAcknowledgment(
     suppressReason: options.suppressReason,
   };
 
-  const checksum = crypto
-    .createHash('sha256')
-    .update(JSON.stringify(record))
-    .digest('hex');
+  const checksum = crypto.createHash('sha256').update(JSON.stringify(record)).digest('hex');
 
   return { ...record, checksum };
 }
@@ -274,16 +269,14 @@ function createAcknowledgment(
 /**
  * Create sample alert.
  */
-function createSampleAlert(options: {
-  category?: SecretsAlertCategory;
-  severity?: AlertSeverity;
-  status?: AlertStatus;
-} = {}): SecretsAlert {
-  const {
-    category = 'rotation_overdue',
-    severity = 'high',
-    status = 'firing',
-  } = options;
+function createSampleAlert(
+  options: {
+    category?: SecretsAlertCategory;
+    severity?: AlertSeverity;
+    status?: AlertStatus;
+  } = {}
+): SecretsAlert {
+  const { category = 'rotation_overdue', severity = 'high', status = 'firing' } = options;
 
   const partial = {
     category,

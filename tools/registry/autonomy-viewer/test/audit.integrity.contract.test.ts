@@ -12,8 +12,8 @@
  * - integrity_report_generation: Produce audit integrity report
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Audit Integrity
@@ -236,13 +236,13 @@ function verifyChecksumChain(records: readonly AuditRecord[]): IntegrityCheckRes
       });
     }
 
-    if (errors.length === 0 || errors.every((e) => e.sequenceNumber > record.sequenceNumber)) {
+    if (errors.length === 0 || errors.every(e => e.sequenceNumber > record.sequenceNumber)) {
       lastValidSequence = record.sequenceNumber;
     }
   }
 
   return {
-    passed: errors.filter((e) => e.severity === 'critical').length === 0,
+    passed: errors.filter(e => e.severity === 'critical').length === 0,
     recordsChecked: records.length,
     lastValidSequence,
     firstInvalidSequence,
@@ -260,13 +260,13 @@ function generateIntegrityReport(
   periodStart: Date,
   periodEnd: Date
 ): IntegrityReport {
-  const allErrors = checkResults.flatMap((r) => r.errors);
+  const allErrors = checkResults.flatMap(r => r.errors);
   const totalRecords = checkResults.reduce((sum, r) => sum + r.recordsChecked, 0);
-  const lastGoodCheckpoint = Math.max(...checkResults.map((r) => r.lastValidSequence));
+  const lastGoodCheckpoint = Math.max(...checkResults.map(r => r.lastValidSequence));
 
   let recommendation = 'Audit log integrity verified successfully.';
   if (allErrors.length > 0) {
-    const criticalCount = allErrors.filter((e) => e.severity === 'critical').length;
+    const criticalCount = allErrors.filter(e => e.severity === 'critical').length;
     if (criticalCount > 0) {
       recommendation = `CRITICAL: ${criticalCount} integrity violations detected. Immediate investigation required.`;
     } else {
@@ -308,10 +308,7 @@ class IntegrityJobScheduler {
     return now - this.lastFullCheckAt >= this.config.fullCheckIntervalMs;
   }
 
-  runJob(
-    records: readonly AuditRecord[],
-    now: number = Date.now()
-  ): JobExecutionResult {
+  runJob(records: readonly AuditRecord[], now: number = Date.now()): JobExecutionResult {
     const startedAt = new Date(now).toISOString();
     const isFullCheck = this.shouldRunFullCheck(now);
 
@@ -329,7 +326,7 @@ class IntegrityJobScheduler {
       checkResult,
       alertsSent:
         this.config.alertOnFailure && !checkResult.passed
-          ? checkResult.errors.filter((e) => e.severity === 'critical').length
+          ? checkResult.errors.filter(e => e.severity === 'critical').length
           : 0,
     };
 
@@ -394,7 +391,7 @@ describe('Audit Integrity Job Contract', () => {
       const result = verifyChecksumChain(records);
 
       assert.ok(!result.passed);
-      assert.ok(result.errors.some((e) => e.type === 'checksum_mismatch'));
+      assert.ok(result.errors.some(e => e.type === 'checksum_mismatch'));
     });
 
     it('should detect chain break', () => {
@@ -406,7 +403,7 @@ describe('Audit Integrity Job Contract', () => {
       const result = verifyChecksumChain(records);
 
       assert.ok(!result.passed);
-      assert.ok(result.errors.some((e) => e.type === 'chain_break'));
+      assert.ok(result.errors.some(e => e.type === 'chain_break'));
     });
 
     it('should handle empty record set', () => {
@@ -440,7 +437,7 @@ describe('Audit Integrity Job Contract', () => {
 
       const result = verifyChecksumChain(records);
 
-      assert.ok(result.errors.some((e) => e.type === 'sequence_gap'));
+      assert.ok(result.errors.some(e => e.type === 'sequence_gap'));
     });
 
     it('should detect duplicate sequences', () => {
@@ -450,7 +447,7 @@ describe('Audit Integrity Job Contract', () => {
 
       const result = verifyChecksumChain(records);
 
-      assert.ok(result.errors.some((e) => e.type === 'sequence_duplicate'));
+      assert.ok(result.errors.some(e => e.type === 'sequence_duplicate'));
     });
 
     it('should detect timestamp anomalies', () => {
@@ -463,7 +460,7 @@ describe('Audit Integrity Job Contract', () => {
 
       const result = verifyChecksumChain(records);
 
-      assert.ok(result.errors.some((e) => e.type === 'timestamp_anomaly'));
+      assert.ok(result.errors.some(e => e.type === 'timestamp_anomaly'));
     });
 
     it('should classify gap errors as critical', () => {
@@ -471,7 +468,7 @@ describe('Audit Integrity Job Contract', () => {
       records[3] = { ...records[3], sequenceNumber: 10 };
 
       const result = verifyChecksumChain(records);
-      const gapError = result.errors.find((e) => e.type === 'sequence_gap');
+      const gapError = result.errors.find(e => e.type === 'sequence_gap');
 
       assert.ok(gapError);
       assert.strictEqual(gapError.severity, 'critical');

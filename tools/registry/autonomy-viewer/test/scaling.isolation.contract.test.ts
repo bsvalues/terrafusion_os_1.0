@@ -16,8 +16,8 @@
  * - Health probes are independent per domain
  */
 
-import { describe, it, beforeEach } from 'node:test';
 import * as assert from 'node:assert/strict';
+import { beforeEach, describe, it } from 'node:test';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -117,7 +117,10 @@ interface IsolationValidation {
  */
 interface IsolationViolation {
   readonly service_id: string;
-  readonly violation_type: 'hard_dependency_on_governance' | 'shared_failure_domain' | 'unbounded_blast_radius';
+  readonly violation_type:
+    | 'hard_dependency_on_governance'
+    | 'shared_failure_domain'
+    | 'unbounded_blast_radius';
   readonly description: string;
   readonly severity: 'critical' | 'high' | 'medium';
 }
@@ -126,7 +129,9 @@ interface IsolationViolation {
 // MOCK IMPLEMENTATIONS
 // ============================================================================
 
-function createMockServiceDefinition(overrides: Partial<ServiceDefinition> = {}): ServiceDefinition {
+function createMockServiceDefinition(
+  overrides: Partial<ServiceDefinition> = {}
+): ServiceDefinition {
   return {
     service_id: `svc-${Date.now()}`,
     service_name: 'test-service',
@@ -138,7 +143,9 @@ function createMockServiceDefinition(overrides: Partial<ServiceDefinition> = {})
   };
 }
 
-function createMockServiceDependency(overrides: Partial<ServiceDependency> = {}): ServiceDependency {
+function createMockServiceDependency(
+  overrides: Partial<ServiceDependency> = {}
+): ServiceDependency {
   return {
     target_service_id: 'svc-target',
     target_domain: 'data',
@@ -161,7 +168,9 @@ function createMockFailureDomain(overrides: Partial<FailureDomain> = {}): Failur
   };
 }
 
-function createMockHealthCheckResult(overrides: Partial<HealthCheckResult> = {}): HealthCheckResult {
+function createMockHealthCheckResult(
+  overrides: Partial<HealthCheckResult> = {}
+): HealthCheckResult {
   return {
     service_id: `svc-${Date.now()}`,
     domain: 'governance',
@@ -185,7 +194,9 @@ function createMockDegradationMode(overrides: Partial<DegradationMode> = {}): De
   };
 }
 
-function createMockIsolationValidation(overrides: Partial<IsolationValidation> = {}): IsolationValidation {
+function createMockIsolationValidation(
+  overrides: Partial<IsolationValidation> = {}
+): IsolationValidation {
   return {
     is_valid: true,
     auth_path_independent: true,
@@ -314,7 +325,7 @@ function createMockIsolationStore(): IsolationStore {
     createMockFailureDomain({
       domain_id: 'fd-auth',
       domain_name: 'auth-plane',
-      services: authServices.map((s) => s.service_id),
+      services: authServices.map(s => s.service_id),
       blast_radius: 'isolated',
       affects_auth_path: true,
     })
@@ -324,7 +335,7 @@ function createMockIsolationStore(): IsolationStore {
     createMockFailureDomain({
       domain_id: 'fd-governance',
       domain_name: 'governance-plane',
-      services: governanceServices.map((s) => s.service_id),
+      services: governanceServices.map(s => s.service_id),
       blast_radius: 'isolated',
       affects_auth_path: false,
     })
@@ -342,15 +353,15 @@ function createMockIsolationStore(): IsolationStore {
     },
 
     async getServicesByDomain(domain) {
-      return Array.from(services.values()).filter((s) => s.domain === domain);
+      return Array.from(services.values()).filter(s => s.domain === domain);
     },
 
     async getAuthPathServices() {
-      return Array.from(services.values()).filter((s) => s.is_auth_path);
+      return Array.from(services.values()).filter(s => s.is_auth_path);
     },
 
     async getGovernanceServices() {
-      return Array.from(services.values()).filter((s) => s.domain === 'governance');
+      return Array.from(services.values()).filter(s => s.domain === 'governance');
     },
 
     async getServiceDependencies(serviceId) {
@@ -360,7 +371,7 @@ function createMockIsolationStore(): IsolationStore {
 
     async hasHardDependencyOn(serviceId, targetDomain) {
       const deps = await this.getServiceDependencies(serviceId);
-      return deps.some((d) => d.target_domain === targetDomain && d.dependency_type === 'hard');
+      return deps.some(d => d.target_domain === targetDomain && d.dependency_type === 'hard');
     },
 
     async getTransitiveDependencies(serviceId) {
@@ -407,7 +418,7 @@ function createMockIsolationStore(): IsolationStore {
 
     async checkDomainHealth(domain) {
       const domainServices = await this.getServicesByDomain(domain);
-      return Promise.all(domainServices.map((s) => this.checkHealth(s.service_id)));
+      return Promise.all(domainServices.map(s => this.checkHealth(s.service_id)));
     },
 
     async isAuthPathHealthy() {
@@ -474,9 +485,13 @@ function createMockIsolationStore(): IsolationStore {
 
       return createMockIsolationValidation({
         is_valid: violations.length === 0,
-        auth_path_independent: !violations.some((v) => v.violation_type === 'hard_dependency_on_governance'),
+        auth_path_independent: !violations.some(
+          v => v.violation_type === 'hard_dependency_on_governance'
+        ),
         violations,
-        failure_domains_bounded: !violations.some((v) => v.violation_type === 'unbounded_blast_radius'),
+        failure_domains_bounded: !violations.some(
+          v => v.violation_type === 'unbounded_blast_radius'
+        ),
       });
     },
 

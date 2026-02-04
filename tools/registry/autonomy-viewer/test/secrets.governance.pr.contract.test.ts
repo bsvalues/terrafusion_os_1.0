@@ -11,8 +11,8 @@
  * - pr_validates_secrets_posture: secrets-specific validation rules
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Secrets Governance PRs
@@ -211,9 +211,7 @@ function validateSecretsGovernancePR(pr: SecretsGovernancePR): SecretsGovernance
   }
 
   // Compute risk for response
-  const riskLevel = pr.metadata?.changeScope
-    ? computeRiskLevel(pr.metadata.changeScope)
-    : 'high';
+  const riskLevel = pr.metadata?.changeScope ? computeRiskLevel(pr.metadata.changeScope) : 'high';
 
   return {
     valid: errors.length === 0,
@@ -241,20 +239,20 @@ function createSampleSnapshot(options: Partial<SecretStateSnapshot> = {}): Secre
 /**
  * Create sample diff entry.
  */
-function createSampleDiffEntry(options: {
-  category?: SecretsChangeCategory;
-  hasBefore?: boolean;
-  hasAfter?: boolean;
-} = {}): SecretDiffEntry {
+function createSampleDiffEntry(
+  options: {
+    category?: SecretsChangeCategory;
+    hasBefore?: boolean;
+    hasAfter?: boolean;
+  } = {}
+): SecretDiffEntry {
   const { category = 'rotation', hasBefore = true, hasAfter = true } = options;
 
   return {
     secretId: 'sha256:secret-abc123',
     changeCategory: category,
     before: hasBefore ? createSampleSnapshot() : null,
-    after: hasAfter
-      ? createSampleSnapshot({ lastRotated: new Date().toISOString() })
-      : null,
+    after: hasAfter ? createSampleSnapshot({ lastRotated: new Date().toISOString() }) : null,
   };
 }
 
@@ -274,14 +272,15 @@ function createSampleScope(options: Partial<SecretChangeScope> = {}): SecretChan
 /**
  * Create sample risk assessment.
  */
-function createSampleRiskAssessment(
-  scope: SecretChangeScope
-): SecretsRiskAssessment {
+function createSampleRiskAssessment(scope: SecretChangeScope): SecretsRiskAssessment {
   const level = computeRiskLevel(scope);
 
   return {
     level,
-    factors: [`${scope.environments.join(', ')} environment(s)`, `${scope.affectedSecretCount} secret(s)`],
+    factors: [
+      `${scope.environments.join(', ')} environment(s)`,
+      `${scope.affectedSecretCount} secret(s)`,
+    ],
     mitigations: ['Staged rollout', 'Monitoring alerts'],
     requiredApprovals: level === 'critical' ? 2 : 1,
     requiresSecurityReview: level === 'critical' || level === 'high',
@@ -292,11 +291,13 @@ function createSampleRiskAssessment(
 /**
  * Create sample metadata.
  */
-function createSampleMetadata(options: {
-  scope?: SecretChangeScope;
-  justification?: string;
-  rollbackPlan?: string;
-} = {}): SecretsGovernancePRMetadata {
+function createSampleMetadata(
+  options: {
+    scope?: SecretChangeScope;
+    justification?: string;
+    rollbackPlan?: string;
+  } = {}
+): SecretsGovernancePRMetadata {
   const scope = options.scope ?? createSampleScope();
 
   return {
@@ -314,15 +315,17 @@ function createSampleMetadata(options: {
 /**
  * Create sample governance PR.
  */
-function createSampleGovernancePR(options: {
-  autoMerge?: boolean;
-  requiresApproval?: boolean;
-  includeDiff?: boolean;
-  includeMetadata?: boolean;
-  scope?: SecretChangeScope;
-  justification?: string;
-  rollbackPlan?: string;
-} = {}): SecretsGovernancePR {
+function createSampleGovernancePR(
+  options: {
+    autoMerge?: boolean;
+    requiresApproval?: boolean;
+    includeDiff?: boolean;
+    includeMetadata?: boolean;
+    scope?: SecretChangeScope;
+    justification?: string;
+    rollbackPlan?: string;
+  } = {}
+): SecretsGovernancePR {
   const {
     autoMerge = false,
     requiresApproval = true,
@@ -340,7 +343,9 @@ function createSampleGovernancePR(options: {
     createdAt: new Date().toISOString(),
     autoMerge: autoMerge as false,
     requiresApproval: requiresApproval as true,
-    metadata: includeMetadata ? createSampleMetadata({ scope, justification, rollbackPlan }) : undefined as never,
+    metadata: includeMetadata
+      ? createSampleMetadata({ scope, justification, rollbackPlan })
+      : (undefined as never),
     diff: includeDiff ? [createSampleDiffEntry()] : [],
     validationErrors: [],
     validationWarnings: [],
@@ -358,7 +363,7 @@ describe('Secrets Governance PR Contract', () => {
       const result = validateSecretsGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('Diff')));
+      assert.ok(result.errors.some(e => e.includes('Diff')));
     });
 
     it('should include before state for existing secrets', () => {
@@ -404,7 +409,7 @@ describe('Secrets Governance PR Contract', () => {
       const result = validateSecretsGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('neither before nor after')));
+      assert.ok(result.errors.some(e => e.includes('neither before nor after')));
     });
   });
 
@@ -418,7 +423,7 @@ describe('Secrets Governance PR Contract', () => {
       const result = validateSecretsGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('Metadata')));
+      assert.ok(result.errors.some(e => e.includes('Metadata')));
     });
 
     it('should require risk assessment', () => {
@@ -440,11 +445,14 @@ describe('Secrets Governance PR Contract', () => {
       const result = validateSecretsGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('Justification')));
+      assert.ok(result.errors.some(e => e.includes('Justification')));
     });
 
     it('should require rollback plan for high risk', () => {
-      const scope = createSampleScope({ environments: ['production'], secretClasses: ['critical'] });
+      const scope = createSampleScope({
+        environments: ['production'],
+        secretClasses: ['critical'],
+      });
       const pr = createSampleGovernancePR({ scope, rollbackPlan: '' });
 
       // Override to remove rollback plan
@@ -455,7 +463,7 @@ describe('Secrets Governance PR Contract', () => {
       const result = validateSecretsGovernancePR(prWithoutRollback);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('Rollback plan')));
+      assert.ok(result.errors.some(e => e.includes('Rollback plan')));
     });
   });
 
@@ -475,7 +483,7 @@ describe('Secrets Governance PR Contract', () => {
       const result = validateSecretsGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('autoMerge')));
+      assert.ok(result.errors.some(e => e.includes('autoMerge')));
     });
 
     it('should always require approval', () => {
@@ -489,7 +497,7 @@ describe('Secrets Governance PR Contract', () => {
       const result = validateSecretsGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('requiresApproval')));
+      assert.ok(result.errors.some(e => e.includes('requiresApproval')));
     });
   });
 

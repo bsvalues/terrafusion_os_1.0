@@ -187,11 +187,15 @@ class ToolRunner {
             ...enforcePiiPolicy(tool),
         ];
         if (violations.length > 0) {
+            // Extract error code from first violation
+            const errorCode = violations[0].match(/\[([A-Z_]+)\]/)?.[1] ?? exports.ErrorCodes.EXECUTION_FAILED;
             // Trace the enforcement failure
             this.emitTraceEvent(tool, 'tool_failed', correlationId, context, {
                 summary: `Enforcement failed: ${violations.length} violation(s)`,
+                errorCode,
+                component: 'ToolRunner',
             });
-            return this.fail(correlationId, violations[0].match(/\[([A-Z_]+)\]/)?.[1] ?? exports.ErrorCodes.EXECUTION_FAILED, violations.join('; '));
+            return this.fail(correlationId, errorCode, violations.join('; '));
         }
         // Emit invocation trace
         const invokeEvent = this.emitTraceEvent(tool, 'tool_invoked', correlationId, context, {
@@ -219,9 +223,13 @@ class ToolRunner {
         }
         catch (err) {
             const errorMessage = err instanceof Error ? err.message : String(err);
-            // Emit failure trace
+            const stackTrace = err instanceof Error ? err.stack : undefined;
+            // Emit failure trace with stackTrace for handler errors
             this.emitTraceEvent(tool, 'tool_failed', correlationId, context, {
                 summary: `Failed ${toolId}: ${errorMessage}`,
+                errorCode: exports.ErrorCodes.EXECUTION_FAILED,
+                component: 'Handler',
+                stackTrace,
             });
             return this.fail(correlationId, exports.ErrorCodes.EXECUTION_FAILED, errorMessage);
         }
@@ -284,6 +292,9 @@ class ToolRunner {
             correlationId,
             context,
             summary: options.summary,
+            errorCode: options.errorCode,
+            component: options.component,
+            stackTrace: options.stackTrace,
         };
         return this.trace.emitWithPiiHandling(input, piiHandling, payloadToStore, targetStore);
     }

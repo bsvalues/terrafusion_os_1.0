@@ -12,9 +12,9 @@
  * - recommendations_are_pii_clean: opaque IDs
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import * as crypto from 'node:crypto';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Data Access Recommendations
@@ -89,7 +89,9 @@ interface RecommendationEngine {
     datasetRiskTier: DatasetRiskTier
   ) => DataAccessRecommendation;
   calculateConfidence: (evidence: readonly EvidenceItem[]) => ConfidenceLevel;
-  prioritize: (recommendations: readonly DataAccessRecommendation[]) => readonly DataAccessRecommendation[];
+  prioritize: (
+    recommendations: readonly DataAccessRecommendation[]
+  ) => readonly DataAccessRecommendation[];
   validateRecommendation: (rec: DataAccessRecommendation) => { valid: boolean; errors: string[] };
 }
 
@@ -185,7 +187,9 @@ function createRecommendationEngine(): RecommendationEngine {
         low: 3,
       };
 
-      return [...recommendations].sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+      return [...recommendations].sort(
+        (a, b) => severityOrder[a.severity] - severityOrder[b.severity]
+      );
     },
 
     validateRecommendation(rec) {
@@ -241,7 +245,12 @@ describe('Data Access Recommendations Contract', () => {
     it('should have autoApplicable=false', () => {
       const engine = createRecommendationEngine();
       const evidence = [createSampleEvidence()];
-      const rec = engine.generateRecommendation('tighten_export_policy', computeOpaqueId('ds1'), evidence, 'high');
+      const rec = engine.generateRecommendation(
+        'tighten_export_policy',
+        computeOpaqueId('ds1'),
+        evidence,
+        'high'
+      );
 
       assert.strictEqual(rec.autoApplicable, false);
     });
@@ -249,7 +258,12 @@ describe('Data Access Recommendations Contract', () => {
     it('should have autoBlock=false', () => {
       const engine = createRecommendationEngine();
       const evidence = [createSampleEvidence()];
-      const rec = engine.generateRecommendation('tighten_export_policy', computeOpaqueId('ds1'), evidence, 'critical');
+      const rec = engine.generateRecommendation(
+        'tighten_export_policy',
+        computeOpaqueId('ds1'),
+        evidence,
+        'critical'
+      );
 
       assert.strictEqual(rec.autoBlock, false);
     });
@@ -257,7 +271,12 @@ describe('Data Access Recommendations Contract', () => {
     it('should have autoRevoke=false', () => {
       const engine = createRecommendationEngine();
       const evidence = [createSampleEvidence()];
-      const rec = engine.generateRecommendation('narrow_dataset_binding', computeOpaqueId('ds1'), evidence, 'high');
+      const rec = engine.generateRecommendation(
+        'narrow_dataset_binding',
+        computeOpaqueId('ds1'),
+        evidence,
+        'high'
+      );
 
       assert.strictEqual(rec.autoRevoke, false);
     });
@@ -265,7 +284,12 @@ describe('Data Access Recommendations Contract', () => {
     it('should require approval', () => {
       const engine = createRecommendationEngine();
       const evidence = [createSampleEvidence()];
-      const rec = engine.generateRecommendation('add_approval_gate', computeOpaqueId('ds1'), evidence, 'medium');
+      const rec = engine.generateRecommendation(
+        'add_approval_gate',
+        computeOpaqueId('ds1'),
+        evidence,
+        'medium'
+      );
 
       assert.strictEqual(rec.requiresApproval, true);
     });
@@ -294,7 +318,7 @@ describe('Data Access Recommendations Contract', () => {
       const result = engine.validateRecommendation(badRec);
 
       assert.strictEqual(result.valid, false);
-      assert.ok(result.errors.some((e) => e.includes('autoApplicable')));
+      assert.ok(result.errors.some(e => e.includes('autoApplicable')));
     });
   });
 
@@ -306,7 +330,12 @@ describe('Data Access Recommendations Contract', () => {
     it('should include evidence items', () => {
       const engine = createRecommendationEngine();
       const evidence = [createSampleEvidence(), createSampleEvidence()];
-      const rec = engine.generateRecommendation('investigate_anomaly', computeOpaqueId('ds1'), evidence, 'high');
+      const rec = engine.generateRecommendation(
+        'investigate_anomaly',
+        computeOpaqueId('ds1'),
+        evidence,
+        'high'
+      );
 
       assert.strictEqual(rec.evidence.length, 2);
     });
@@ -327,12 +356,17 @@ describe('Data Access Recommendations Contract', () => {
 
     it('should fail validation without evidence', () => {
       const engine = createRecommendationEngine();
-      const rec = engine.generateRecommendation('reduce_access_scope', computeOpaqueId('ds1'), [], 'medium');
+      const rec = engine.generateRecommendation(
+        'reduce_access_scope',
+        computeOpaqueId('ds1'),
+        [],
+        'medium'
+      );
 
       const result = engine.validateRecommendation(rec);
 
       assert.strictEqual(result.valid, false);
-      assert.ok(result.errors.some((e) => e.includes('evidence')));
+      assert.ok(result.errors.some(e => e.includes('evidence')));
     });
 
     it('should include evidence weight', () => {
@@ -350,7 +384,12 @@ describe('Data Access Recommendations Contract', () => {
     it('should include runbook reference', () => {
       const engine = createRecommendationEngine();
       const evidence = [createSampleEvidence()];
-      const rec = engine.generateRecommendation('tighten_export_policy', computeOpaqueId('ds1'), evidence, 'high');
+      const rec = engine.generateRecommendation(
+        'tighten_export_policy',
+        computeOpaqueId('ds1'),
+        evidence,
+        'high'
+      );
 
       assert.ok(rec.runbookRef);
       assert.ok(rec.runbookRef.includes('runbooks/'));
@@ -380,15 +419,25 @@ describe('Data Access Recommendations Contract', () => {
       const result = engine.validateRecommendation(badRec);
 
       assert.strictEqual(result.valid, false);
-      assert.ok(result.errors.some((e) => e.includes('Runbook')));
+      assert.ok(result.errors.some(e => e.includes('Runbook')));
     });
 
     it('should have action-specific runbooks', () => {
       const engine = createRecommendationEngine();
       const evidence = [createSampleEvidence()];
 
-      const rec1 = engine.generateRecommendation('tighten_export_policy', computeOpaqueId('ds1'), evidence, 'high');
-      const rec2 = engine.generateRecommendation('investigate_anomaly', computeOpaqueId('ds1'), evidence, 'high');
+      const rec1 = engine.generateRecommendation(
+        'tighten_export_policy',
+        computeOpaqueId('ds1'),
+        evidence,
+        'high'
+      );
+      const rec2 = engine.generateRecommendation(
+        'investigate_anomaly',
+        computeOpaqueId('ds1'),
+        evidence,
+        'high'
+      );
 
       assert.notStrictEqual(rec1.runbookRef, rec2.runbookRef);
     });
@@ -404,9 +453,24 @@ describe('Data Access Recommendations Contract', () => {
       const evidence = [createSampleEvidence()];
 
       const recs = [
-        engine.generateRecommendation('tighten_export_policy', computeOpaqueId('ds1'), evidence, 'low'),
-        engine.generateRecommendation('tighten_export_policy', computeOpaqueId('ds2'), evidence, 'critical'),
-        engine.generateRecommendation('tighten_export_policy', computeOpaqueId('ds3'), evidence, 'high'),
+        engine.generateRecommendation(
+          'tighten_export_policy',
+          computeOpaqueId('ds1'),
+          evidence,
+          'low'
+        ),
+        engine.generateRecommendation(
+          'tighten_export_policy',
+          computeOpaqueId('ds2'),
+          evidence,
+          'critical'
+        ),
+        engine.generateRecommendation(
+          'tighten_export_policy',
+          computeOpaqueId('ds3'),
+          evidence,
+          'high'
+        ),
       ];
 
       const prioritized = engine.prioritize(recs);
@@ -420,8 +484,18 @@ describe('Data Access Recommendations Contract', () => {
       const engine = createRecommendationEngine();
       const evidence = [createSampleEvidence()];
 
-      const critical = engine.generateRecommendation('tighten_export_policy', computeOpaqueId('ds1'), evidence, 'critical');
-      const low = engine.generateRecommendation('tighten_export_policy', computeOpaqueId('ds2'), evidence, 'low');
+      const critical = engine.generateRecommendation(
+        'tighten_export_policy',
+        computeOpaqueId('ds1'),
+        evidence,
+        'critical'
+      );
+      const low = engine.generateRecommendation(
+        'tighten_export_policy',
+        computeOpaqueId('ds2'),
+        evidence,
+        'low'
+      );
 
       assert.strictEqual(critical.severity, 'critical');
       assert.strictEqual(low.severity, 'low');
@@ -430,7 +504,12 @@ describe('Data Access Recommendations Contract', () => {
     it('should include impact assessment', () => {
       const engine = createRecommendationEngine();
       const evidence = [createSampleEvidence()];
-      const rec = engine.generateRecommendation('reduce_access_scope', computeOpaqueId('ds1'), evidence, 'high');
+      const rec = engine.generateRecommendation(
+        'reduce_access_scope',
+        computeOpaqueId('ds1'),
+        evidence,
+        'high'
+      );
 
       assert.ok(rec.impact);
       assert.ok(rec.impact.length > 0);
@@ -445,7 +524,12 @@ describe('Data Access Recommendations Contract', () => {
     it('should use opaque recommendation ID', () => {
       const engine = createRecommendationEngine();
       const evidence = [createSampleEvidence()];
-      const rec = engine.generateRecommendation('tighten_export_policy', computeOpaqueId('ds1'), evidence, 'high');
+      const rec = engine.generateRecommendation(
+        'tighten_export_policy',
+        computeOpaqueId('ds1'),
+        evidence,
+        'high'
+      );
 
       assert.ok(rec.recommendationId.startsWith('sha256:'));
     });
@@ -454,7 +538,12 @@ describe('Data Access Recommendations Contract', () => {
       const engine = createRecommendationEngine();
       const targetId = computeOpaqueId('dataset-target');
       const evidence = [createSampleEvidence()];
-      const rec = engine.generateRecommendation('narrow_dataset_binding', targetId, evidence, 'high');
+      const rec = engine.generateRecommendation(
+        'narrow_dataset_binding',
+        targetId,
+        evidence,
+        'high'
+      );
 
       assert.ok(rec.targetId.startsWith('sha256:'));
     });
@@ -468,7 +557,12 @@ describe('Data Access Recommendations Contract', () => {
     it('should not expose dataset names in description', () => {
       const engine = createRecommendationEngine();
       const evidence = [createSampleEvidence()];
-      const rec = engine.generateRecommendation('tighten_export_policy', computeOpaqueId('ds1'), evidence, 'high');
+      const rec = engine.generateRecommendation(
+        'tighten_export_policy',
+        computeOpaqueId('ds1'),
+        evidence,
+        'high'
+      );
 
       assert.ok(!rec.description.includes('customer'));
       assert.ok(!rec.description.includes('users'));

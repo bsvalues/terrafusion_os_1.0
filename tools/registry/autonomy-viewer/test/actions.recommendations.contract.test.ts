@@ -11,8 +11,8 @@
  * - runbook_linkage_complete: All recommendations link to runbook sections
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 import { ALLOWED_SLO_DIMENSIONS } from '../src/security/ops/slo/catalog.js';
 
@@ -184,9 +184,7 @@ function getRunbookRef(sloId: string): RunbookRef {
 /**
  * Filter dimensions to allowlist.
  */
-function filterDimensions(
-  dimensions: Record<string, string>
-): Record<string, string> {
+function filterDimensions(dimensions: Record<string, string>): Record<string, string> {
   const filtered: Record<string, string> = {};
   for (const [key, value] of Object.entries(dimensions)) {
     if (ALLOWED_SLO_DIMENSIONS.includes(key as never)) {
@@ -231,10 +229,7 @@ function generateRecommendation(drift: DriftSummary): Recommendation {
 /**
  * Generate ticket payload from recommendation.
  */
-function generateTicketPayload(
-  rec: Recommendation,
-  options: ActionOptions = {}
-): TicketPayload {
+function generateTicketPayload(rec: Recommendation, options: ActionOptions = {}): TicketPayload {
   const { maxBodyLength = DEFAULT_MAX_BODY_LENGTH } = options;
 
   let body = `## ${rec.title}\n\n${rec.description}\n\n`;
@@ -276,10 +271,7 @@ function generateTicketPayload(
 /**
  * Generate Slack payload from recommendation.
  */
-function generateSlackPayload(
-  rec: Recommendation,
-  channel: string
-): SlackPayload {
+function generateSlackPayload(rec: Recommendation, channel: string): SlackPayload {
   const emoji = rec.priority === 'critical' ? '🔴' : rec.priority === 'high' ? '🟠' : '🟡';
 
   return {
@@ -419,12 +411,17 @@ describe('Actions & Recommendations Contract', () => {
       const rec = generateRecommendation(drift);
       const ticket = generateTicketPayload(rec);
 
-      const allowedLabels = ['security', 'slo-drift', 'critical', 'high', 'medium', 'low', 'urgent'];
+      const allowedLabels = [
+        'security',
+        'slo-drift',
+        'critical',
+        'high',
+        'medium',
+        'low',
+        'urgent',
+      ];
       for (const label of ticket.labels) {
-        assert.ok(
-          allowedLabels.includes(label),
-          `Label ${label} should be in allowed set`
-        );
+        assert.ok(allowedLabels.includes(label), `Label ${label} should be in allowed set`);
       }
     });
   });

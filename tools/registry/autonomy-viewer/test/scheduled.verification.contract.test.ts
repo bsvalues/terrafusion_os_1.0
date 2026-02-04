@@ -11,8 +11,8 @@
  * - verification_emits_status_events: all runs emit auditable events
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Scheduled Verification
@@ -85,7 +85,12 @@ interface ScheduleExecutionRecord {
  */
 interface VerificationStatusEvent {
   readonly eventId: string;
-  readonly eventType: 'run_started' | 'run_completed' | 'run_failed' | 'paging_triggered' | 'schedule_updated';
+  readonly eventType:
+    | 'run_started'
+    | 'run_completed'
+    | 'run_failed'
+    | 'paging_triggered'
+    | 'schedule_updated';
   readonly runId: string;
   readonly environment: string;
   readonly timestamp: string;
@@ -186,7 +191,9 @@ function createSchedule(
     consecutiveSuccesses: 0,
     consecutiveFailures: 0,
     totalRuns: 0,
-    enabled: config.enabledEnvironments.includes(environment as 'development' | 'staging' | 'production'),
+    enabled: config.enabledEnvironments.includes(
+      environment as 'development' | 'staging' | 'production'
+    ),
   };
 }
 
@@ -200,7 +207,11 @@ function runScheduledVerification(
     simulateFailure?: boolean;
     checksToRun?: number;
   } = {}
-): { result: VerificationRunResult; events: VerificationStatusEvent[]; updatedSchedule: ScheduleExecutionRecord } {
+): {
+  result: VerificationRunResult;
+  events: VerificationStatusEvent[];
+  updatedSchedule: ScheduleExecutionRecord;
+} {
   const { simulateFailure = false, checksToRun = 10 } = options;
   const events: VerificationStatusEvent[] = [];
   const runId = `run-${Date.now()}`;
@@ -473,7 +484,7 @@ describe('Scheduled Verification Contract', () => {
       const schedule = createSchedule('production', PRODUCTION_SCHEDULE_CONFIG);
       const { events } = runScheduledVerification(schedule, PRODUCTION_SCHEDULE_CONFIG);
 
-      const startEvent = events.find((e) => e.eventType === 'run_started');
+      const startEvent = events.find(e => e.eventType === 'run_started');
       assert.ok(startEvent);
       assert.ok(startEvent.runId);
       assert.ok(startEvent.timestamp);
@@ -483,7 +494,7 @@ describe('Scheduled Verification Contract', () => {
       const schedule = createSchedule('production', PRODUCTION_SCHEDULE_CONFIG);
       const { events } = runScheduledVerification(schedule, PRODUCTION_SCHEDULE_CONFIG);
 
-      const completeEvent = events.find((e) => e.eventType === 'run_completed');
+      const completeEvent = events.find(e => e.eventType === 'run_completed');
       assert.ok(completeEvent);
       assert.ok(completeEvent.details.passed);
     });
@@ -494,7 +505,7 @@ describe('Scheduled Verification Contract', () => {
         simulateFailure: true,
       });
 
-      const failEvent = events.find((e) => e.eventType === 'run_failed');
+      const failEvent = events.find(e => e.eventType === 'run_failed');
       assert.ok(failEvent);
       assert.ok(!failEvent.details.passed);
     });
@@ -503,16 +514,20 @@ describe('Scheduled Verification Contract', () => {
       let schedule = createSchedule('production', PRODUCTION_SCHEDULE_CONFIG);
 
       // First failure
-      const { updatedSchedule: schedule1 } = runScheduledVerification(schedule, PRODUCTION_SCHEDULE_CONFIG, {
-        simulateFailure: true,
-      });
+      const { updatedSchedule: schedule1 } = runScheduledVerification(
+        schedule,
+        PRODUCTION_SCHEDULE_CONFIG,
+        {
+          simulateFailure: true,
+        }
+      );
 
       // Second failure - triggers paging
       const { events } = runScheduledVerification(schedule1, PRODUCTION_SCHEDULE_CONFIG, {
         simulateFailure: true,
       });
 
-      const pageEvent = events.find((e) => e.eventType === 'paging_triggered');
+      const pageEvent = events.find(e => e.eventType === 'paging_triggered');
       assert.ok(pageEvent);
       assert.strictEqual(pageEvent.details.pagingPath, 'ops');
     });

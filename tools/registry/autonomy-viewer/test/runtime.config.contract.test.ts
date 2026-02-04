@@ -12,8 +12,8 @@
  * - config_validation_strict: Invalid config rejected at load time
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Runtime Configuration
@@ -118,8 +118,18 @@ const DEFAULT_CONFIGS: Record<Environment, OpsPlaneConfig> = {
     environment: 'staging',
     dryRun: false,
     channels: {
-      slack: { enabled: true, channel: '#staging-alerts', priority: 'normal', rateLimitPerHour: 50 },
-      email: { enabled: true, channel: 'staging-oncall@example.com', priority: 'normal', rateLimitPerHour: 20 },
+      slack: {
+        enabled: true,
+        channel: '#staging-alerts',
+        priority: 'normal',
+        rateLimitPerHour: 50,
+      },
+      email: {
+        enabled: true,
+        channel: 'staging-oncall@example.com',
+        priority: 'normal',
+        rateLimitPerHour: 20,
+      },
       pagerduty: { enabled: false, channel: '', priority: 'low', rateLimitPerHour: 5 },
     },
     circuitBreaker: { failureThreshold: 5, resetTimeoutMs: 30000, halfOpenRequests: 2 },
@@ -132,8 +142,18 @@ const DEFAULT_CONFIGS: Record<Environment, OpsPlaneConfig> = {
     dryRun: false,
     channels: {
       slack: { enabled: true, channel: '#prod-slo-alerts', priority: 'high', rateLimitPerHour: 20 },
-      email: { enabled: true, channel: 'prod-oncall@example.com', priority: 'high', rateLimitPerHour: 10 },
-      pagerduty: { enabled: true, channel: 'prod-slo-service', priority: 'high', rateLimitPerHour: 5 },
+      email: {
+        enabled: true,
+        channel: 'prod-oncall@example.com',
+        priority: 'high',
+        rateLimitPerHour: 10,
+      },
+      pagerduty: {
+        enabled: true,
+        channel: 'prod-slo-service',
+        priority: 'high',
+        rateLimitPerHour: 5,
+      },
     },
     circuitBreaker: { failureThreshold: 5, resetTimeoutMs: 30000, halfOpenRequests: 1 },
     retry: { maxRetries: 3, baseDelayMs: 500, maxDelayMs: 30000 },
@@ -265,11 +285,7 @@ function validateConfig(config: OpsPlaneConfig): ValidationResult {
 /**
  * Get effective config value with environment variable override.
  */
-function getEnvOverride<T>(
-  key: string,
-  defaultValue: T,
-  parser: (val: string) => T
-): T {
+function getEnvOverride<T>(key: string, defaultValue: T, parser: (val: string) => T): T {
   const envValue = process.env[key];
   if (envValue !== undefined) {
     try {
@@ -358,7 +374,7 @@ describe('Runtime Configuration Contract', () => {
       const config = loadConfig('production', { dryRun: true });
       const result = validateConfig(config);
 
-      assert.ok(result.warnings.some((w) => w.includes('dry-run')));
+      assert.ok(result.warnings.some(w => w.includes('dry-run')));
     });
   });
 
@@ -390,7 +406,12 @@ describe('Runtime Configuration Contract', () => {
     it('should allow channel override via config', () => {
       const config = loadConfig('staging', {
         channels: {
-          slack: { enabled: true, channel: '#custom-alerts', priority: 'high', rateLimitPerHour: 30 },
+          slack: {
+            enabled: true,
+            channel: '#custom-alerts',
+            priority: 'high',
+            rateLimitPerHour: 30,
+          },
           email: { enabled: false, channel: '', priority: 'low', rateLimitPerHour: 10 },
           pagerduty: { enabled: false, channel: '', priority: 'low', rateLimitPerHour: 5 },
         },
@@ -426,7 +447,7 @@ describe('Runtime Configuration Contract', () => {
       const result = validateConfig(config);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('failureThreshold')));
+      assert.ok(result.errors.some(e => e.includes('failureThreshold')));
     });
 
     it('should validate reset timeout minimum', () => {
@@ -436,7 +457,7 @@ describe('Runtime Configuration Contract', () => {
       const result = validateConfig(config);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('resetTimeoutMs')));
+      assert.ok(result.errors.some(e => e.includes('resetTimeoutMs')));
     });
   });
 
@@ -452,7 +473,7 @@ describe('Runtime Configuration Contract', () => {
       const result = validateConfig(config);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('maxRetries')));
+      assert.ok(result.errors.some(e => e.includes('maxRetries')));
     });
 
     it('should validate maxDelay >= baseDelay', () => {
@@ -462,7 +483,7 @@ describe('Runtime Configuration Contract', () => {
       const result = validateConfig(config);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('maxDelayMs')));
+      assert.ok(result.errors.some(e => e.includes('maxDelayMs')));
     });
 
     it('should validate audit buffer size', () => {
@@ -472,7 +493,7 @@ describe('Runtime Configuration Contract', () => {
       const result = validateConfig(config);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('bufferSize')));
+      assert.ok(result.errors.some(e => e.includes('bufferSize')));
     });
 
     it('should validate dedupe window minimum', () => {
@@ -482,7 +503,7 @@ describe('Runtime Configuration Contract', () => {
       const result = validateConfig(config);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('windowMs')));
+      assert.ok(result.errors.some(e => e.includes('windowMs')));
     });
 
     it('should validate enabled channels have targets', () => {
@@ -497,7 +518,7 @@ describe('Runtime Configuration Contract', () => {
       const result = validateConfig(config);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('slack') && e.includes('target')));
+      assert.ok(result.errors.some(e => e.includes('slack') && e.includes('target')));
     });
 
     it('should pass validation for default configs', () => {

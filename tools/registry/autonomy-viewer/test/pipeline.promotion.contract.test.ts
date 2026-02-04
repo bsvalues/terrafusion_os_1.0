@@ -11,8 +11,8 @@
  * - promotion_emits_deployment_event_with_correlation: audit trail
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Pipeline Promotion
@@ -100,7 +100,11 @@ interface PromotionResult {
  */
 interface DeploymentEvent {
   readonly eventId: string;
-  readonly eventType: 'promotion_started' | 'promotion_completed' | 'promotion_blocked' | 'promotion_dry_run';
+  readonly eventType:
+    | 'promotion_started'
+    | 'promotion_completed'
+    | 'promotion_blocked'
+    | 'promotion_dry_run';
   readonly correlationId: string;
   readonly environment: DeploymentEnvironment;
   readonly previousStage: PipelineStage;
@@ -116,7 +120,13 @@ interface DeploymentEvent {
 // Constants
 // ============================================================================
 
-const STAGE_ORDER: PipelineStage[] = ['silent', 'log_only', 'ticket_on_high', 'page_on_critical', 'full_paging'];
+const STAGE_ORDER: PipelineStage[] = [
+  'silent',
+  'log_only',
+  'ticket_on_high',
+  'page_on_critical',
+  'full_paging',
+];
 
 const SLO_TARGETS = {
   notificationSuccess: 0.99,
@@ -163,20 +173,31 @@ function isValidPromotion(current: PipelineStage, target: PipelineStage): boolea
 /**
  * Validate acceptance evaluation.
  */
-function validateAcceptanceEvaluation(eval_: AcceptanceEvaluation): { valid: boolean; issues: string[] } {
+function validateAcceptanceEvaluation(eval_: AcceptanceEvaluation): {
+  valid: boolean;
+  issues: string[];
+} {
   const issues: string[] = [];
 
   if (eval_.sloAttainment.notificationSuccess < SLO_TARGETS.notificationSuccess) {
-    issues.push(`Notification success ${(eval_.sloAttainment.notificationSuccess * 100).toFixed(1)}% < ${(SLO_TARGETS.notificationSuccess * 100).toFixed(1)}%`);
+    issues.push(
+      `Notification success ${(eval_.sloAttainment.notificationSuccess * 100).toFixed(1)}% < ${(SLO_TARGETS.notificationSuccess * 100).toFixed(1)}%`
+    );
   }
   if (eval_.sloAttainment.auditDrainP95Ms > SLO_TARGETS.auditDrainP95Ms) {
-    issues.push(`Audit drain p95 ${eval_.sloAttainment.auditDrainP95Ms}ms > ${SLO_TARGETS.auditDrainP95Ms}ms`);
+    issues.push(
+      `Audit drain p95 ${eval_.sloAttainment.auditDrainP95Ms}ms > ${SLO_TARGETS.auditDrainP95Ms}ms`
+    );
   }
   if (eval_.sloAttainment.dedupeEffectiveness < SLO_TARGETS.dedupeEffectiveness) {
-    issues.push(`Dedupe effectiveness ${(eval_.sloAttainment.dedupeEffectiveness * 100).toFixed(1)}% < ${(SLO_TARGETS.dedupeEffectiveness * 100).toFixed(1)}%`);
+    issues.push(
+      `Dedupe effectiveness ${(eval_.sloAttainment.dedupeEffectiveness * 100).toFixed(1)}% < ${(SLO_TARGETS.dedupeEffectiveness * 100).toFixed(1)}%`
+    );
   }
   if (eval_.sloAttainment.suppressionSuccess < SLO_TARGETS.suppressionSuccess) {
-    issues.push(`Suppression success ${(eval_.sloAttainment.suppressionSuccess * 100).toFixed(1)}% < ${(SLO_TARGETS.suppressionSuccess * 100).toFixed(1)}%`);
+    issues.push(
+      `Suppression success ${(eval_.sloAttainment.suppressionSuccess * 100).toFixed(1)}% < ${(SLO_TARGETS.suppressionSuccess * 100).toFixed(1)}%`
+    );
   }
 
   return { valid: issues.length === 0, issues };
@@ -203,11 +224,15 @@ function validateSignoffArtifact(
   }
 
   if (artifact.targetStage !== targetStage) {
-    issues.push(`Sign-off for stage '${artifact.targetStage}' does not match target '${targetStage}'`);
+    issues.push(
+      `Sign-off for stage '${artifact.targetStage}' does not match target '${targetStage}'`
+    );
   }
 
   if (artifact.environment !== environment) {
-    issues.push(`Sign-off for environment '${artifact.environment}' does not match '${environment}'`);
+    issues.push(
+      `Sign-off for environment '${artifact.environment}' does not match '${environment}'`
+    );
   }
 
   const expiresAt = new Date(artifact.expiresAt);
@@ -266,7 +291,9 @@ function executePromotion(request: PromotionRequest): PromotionResult {
   // Validate observation window for high stages
   if (requiresObservationWindow(request.targetStage)) {
     if (request.acceptanceEvaluation.observationWindow.effectiveDays < 7) {
-      blockedReasons.push(`Observation window ${request.acceptanceEvaluation.observationWindow.effectiveDays}d < 7d required`);
+      blockedReasons.push(
+        `Observation window ${request.acceptanceEvaluation.observationWindow.effectiveDays}d < 7d required`
+      );
     }
   }
 
@@ -309,7 +336,7 @@ function executePromotion(request: PromotionRequest): PromotionResult {
  * Get deployment events by correlation ID.
  */
 function getDeploymentEventsByCorrelation(correlationId: string): readonly DeploymentEvent[] {
-  return deploymentEvents.filter((e) => e.correlationId === correlationId);
+  return deploymentEvents.filter(e => e.correlationId === correlationId);
 }
 
 /**
@@ -497,7 +524,7 @@ describe('Pipeline Promotion Contract', () => {
       const result = executePromotion(request);
 
       assert.ok(!result.success);
-      assert.ok(result.blockedReasons?.some((r) => r.includes('Invalid promotion')));
+      assert.ok(result.blockedReasons?.some(r => r.includes('Invalid promotion')));
     });
   });
 
@@ -523,7 +550,7 @@ describe('Pipeline Promotion Contract', () => {
       const result = executePromotion(request);
 
       assert.ok(!result.success);
-      assert.ok(result.blockedReasons?.some((r) => r.includes('Sign-off')));
+      assert.ok(result.blockedReasons?.some(r => r.includes('Sign-off')));
     });
 
     it('should allow production with valid sign-off', () => {
@@ -562,7 +589,7 @@ describe('Pipeline Promotion Contract', () => {
       const result = executePromotion(request);
 
       assert.ok(!result.success);
-      assert.ok(result.blockedReasons?.some((r) => r.includes('expired')));
+      assert.ok(result.blockedReasons?.some(r => r.includes('expired')));
     });
 
     it('should require sign-off for high stages', () => {
@@ -574,7 +601,11 @@ describe('Pipeline Promotion Contract', () => {
         targetStage: 'page_on_critical',
         correlationId: generateCorrelationId(),
         dryRun: false,
-        acceptanceEvaluation: createPassingEvaluation('staging', 'ticket_on_high', 'page_on_critical'),
+        acceptanceEvaluation: createPassingEvaluation(
+          'staging',
+          'ticket_on_high',
+          'page_on_critical'
+        ),
         triggeredBy: 'ci',
         // Missing signoffArtifact
       };
@@ -582,7 +613,7 @@ describe('Pipeline Promotion Contract', () => {
       const result = executePromotion(request);
 
       assert.ok(!result.success);
-      assert.ok(result.blockedReasons?.some((r) => r.includes('Sign-off')));
+      assert.ok(result.blockedReasons?.some(r => r.includes('Sign-off')));
     });
 
     it('should validate sign-off matches target', () => {
@@ -590,7 +621,7 @@ describe('Pipeline Promotion Contract', () => {
       const result = validateSignoffArtifact(artifact, 'page_on_critical', 'production');
 
       assert.ok(!result.valid);
-      assert.ok(result.issues.some((i) => i.includes('does not match')));
+      assert.ok(result.issues.some(i => i.includes('does not match')));
     });
   });
 
@@ -654,7 +685,7 @@ describe('Pipeline Promotion Contract', () => {
       executePromotion(request);
 
       const events = getDeploymentEventsByCorrelation(correlationId);
-      assert.ok(events.some((e) => e.eventType === 'promotion_dry_run'));
+      assert.ok(events.some(e => e.eventType === 'promotion_dry_run'));
     });
 
     it('should report blockers in dry run', () => {
@@ -700,7 +731,7 @@ describe('Pipeline Promotion Contract', () => {
 
       const events = getDeploymentEventsByCorrelation(correlationId);
       assert.ok(events.length > 0);
-      assert.ok(events.every((e) => e.correlationId === correlationId));
+      assert.ok(events.every(e => e.correlationId === correlationId));
     });
 
     it('should include all required fields in event', () => {
@@ -751,8 +782,8 @@ describe('Pipeline Promotion Contract', () => {
       executePromotion(request);
 
       const events = getDeploymentEventsByCorrelation(correlationId);
-      assert.ok(events.some((e) => e.eventType === 'promotion_blocked'));
-      assert.ok(events.some((e) => e.outcome === 'blocked'));
+      assert.ok(events.some(e => e.eventType === 'promotion_blocked'));
+      assert.ok(events.some(e => e.outcome === 'blocked'));
     });
 
     it('should include blocked reasons in event', () => {
@@ -772,7 +803,7 @@ describe('Pipeline Promotion Contract', () => {
       executePromotion(request);
 
       const events = getDeploymentEventsByCorrelation(correlationId);
-      const blockedEvent = events.find((e) => e.eventType === 'promotion_blocked');
+      const blockedEvent = events.find(e => e.eventType === 'promotion_blocked');
       assert.ok(blockedEvent?.blockedReasons && blockedEvent.blockedReasons.length > 0);
     });
   });

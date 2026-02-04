@@ -1,0 +1,176 @@
+# ============================================================================
+# PILOT INPUTS PACKET — Production Pilot Wave 0
+# ============================================================================
+#
+# PURPOSE: Single-source intake for Production Pilot instantiation.
+# INSTRUCTIONS: Fill all required fields with authoritative sha256: IDs.
+#               Submit completed packet to trigger instantiation.
+#
+# STATUS: ⏳ AWAITING INPUTS
+# ============================================================================
+
+# --- PACKET METADATA ---
+packet:
+  version: '1.0.0'
+  created: '2026-02-03'
+  status: 'tickets_issued' # pending | tickets_issued | validated | instantiated
+  submitted_by: null # sha256:submitter_...
+  tickets_issued_date: '2026-02-03'
+  tickets_due_date: '2026-02-08'
+  tracker: 'docs/ops/PILOT_INTAKE_TRACKER.md'
+
+# --- AGENCY ---
+# Required: Exactly 1 agency ID from authoritative registry
+agency:
+  agency_id: null # sha256:agency_...
+  agency_name_ref: null # Optional: sha256:agency_name_... (for display, not PII)
+
+# --- SERVICES ---
+# Required: 1-3 service IDs from authoritative registry
+services:
+  - service_id: null # sha256:service_...
+    service_type: null # e.g., "assessment", "reporting", "appeals"
+  # - service_id: null  # Uncomment for additional services (max 3)
+  #   service_type: null
+
+# --- OPERATORS ---
+# Required: Minimum 3 certified operators with training verification
+operators:
+  - operator_id: null # sha256:operator_...
+    role: 'incident_commander'
+    certification_ref: null # sha256:cert_...
+    training_complete_date: null # ISO date: YYYY-MM-DD
+  - operator_id: null # sha256:operator_...
+    role: 'on_call_engineer'
+    certification_ref: null # sha256:cert_...
+    training_complete_date: null
+  - operator_id: null # sha256:operator_...
+    role: 'observability_lead'
+    certification_ref: null # sha256:cert_...
+    training_complete_date: null
+
+# --- APPROVERS ---
+# Required: Exactly 2 distinct primary approvers (backup optional)
+approvers:
+  primary:
+    - approver_id: null # sha256:approver_...
+      authority_ref: null # sha256:authority_... (delegation chain)
+    - approver_id: null # sha256:approver_...
+      authority_ref: null
+  backup:
+    - approver_id: null # Optional: sha256:approver_...
+      authority_ref: null
+
+# --- EVIDENCE REFERENCES ---
+# Required: All evidence refs must be current and auditable
+evidence_refs:
+  # Attestation bundle from compliance system
+  attestation_bundle:
+    ref: null # sha256:attestation_...
+    issued_date: null # ISO date
+    valid_until: null # ISO date
+
+  # MOU version from contract management
+  mou_version:
+    ref: null # sha256:mou_...
+    version: null # e.g., "1.2.0"
+    effective_date: null # ISO date
+
+  # DR drill pass (must be within 90 days)
+  dr_drill_pass:
+    ref: null # sha256:dr_drill_...
+    drill_date: null # ISO date (constraint: ≤90 days from activation)
+    rpo_validated: false # true | false
+    rto_validated: false # true | false
+
+  # Audit packet from audit infrastructure
+  audit_packet:
+    ref: null # sha256:audit_packet_...
+    generated_date: null # ISO date
+    control_narrative_ref: null # sha256:narrative_...
+
+# --- GOVERNANCE CONSTRAINTS ---
+# These values are FIXED and must match system invariants
+# DO NOT MODIFY — validation will fail if changed
+constraints:
+  required_approvals: 2
+  max_pause_latency_ms: 5000
+  dr_freshness_days: 90
+  min_operators: 3
+  min_services: 1
+  max_services: 3
+  pilot_duration_days: 14
+
+# --- VALIDATION RULES (for automated checks) ---
+# These are enforced during packet validation before instantiation
+validation:
+  rules:
+    - id: 'V001'
+      description: 'All IDs must be sha256: prefixed'
+      applies_to: ['agency_id', 'service_id', 'operator_id', 'approver_id', '*_ref']
+    - id: 'V002'
+      description: 'Two primary approvers must be distinct'
+      applies_to: 'approvers.primary'
+    - id: 'V003'
+      description: 'DR drill date must be within 90 days of activation'
+      applies_to: 'evidence_refs.dr_drill_pass.drill_date'
+    - id: 'V004'
+      description: 'Minimum 3 operators required'
+      applies_to: 'operators'
+    - id: 'V005'
+      description: 'Service count must be 1-3'
+      applies_to: 'services'
+    - id: 'V006'
+      description: 'No PII (names, emails, phone numbers) allowed'
+      applies_to: '*'
+
+# --- OWNER ASSIGNMENTS ---
+# Each input source has a designated owner for accountability
+owners:
+  registry:
+    responsible_for: ['agency', 'services']
+    contact_ref: null # sha256:owner_registry_...
+  identity:
+    responsible_for: ['operators', 'approvers']
+    contact_ref: null # sha256:owner_identity_...
+  audit:
+    responsible_for: ['evidence_refs.attestation_bundle', 'evidence_refs.audit_packet']
+    contact_ref: null # sha256:owner_audit_...
+  dr:
+    responsible_for: ['evidence_refs.dr_drill_pass']
+    contact_ref: null # sha256:owner_dr_...
+  contracts:
+    responsible_for: ['evidence_refs.mou_version']
+    contact_ref: null # sha256:owner_contracts_...
+
+# --- SUBMISSION CHECKLIST ---
+# All items must be checked before packet is considered complete
+submission_checklist:
+  - item: 'All required sha256: IDs populated'
+    checked: false
+  - item: 'Two distinct primary approvers confirmed'
+    checked: false
+  - item: 'DR drill within 90 days verified'
+    checked: false
+  - item: 'All operators have certification refs'
+    checked: false
+  - item: 'Attestation bundle is current'
+    checked: false
+  - item: 'MOU version is active'
+    checked: false
+  - item: 'No PII in any field'
+    checked: false
+
+# ============================================================================
+# INSTANTIATION PROTOCOL (triggered when packet is validated)
+# ============================================================================
+# 1. Validate packet (structure + constraints)
+# 2. Clone EXAMPLE → REAL artifacts (value-only replacement)
+# 3. Run gates:
+#    - launch.package.contract.test.ts (55/55)
+#    - pilot.readiness.contract.test.ts (45/45)
+#    - type-check
+#    - phase83-tools (32/32)
+# 4. Atomic commit: "docs(ops): instantiate pilot wave 0 with real opaque IDs"
+# 5. Execute Day 0 War Room with 2/2 Go/No-Go approval
+# ============================================================================

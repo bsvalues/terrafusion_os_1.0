@@ -11,9 +11,9 @@
  * - oncall_maintains_audit_integrity: audit trail for all alerting decisions
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import * as crypto from 'node:crypto';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Data Access On-Call
@@ -124,9 +124,20 @@ interface RateLimitState {
 interface OnCallEngine {
   checkRateLimit: (state: RateLimitState, config: RateLimitConfig) => boolean;
   computeDedupeKey: (alert: DataAccessAlert, config: DedupeConfig) => string;
-  shouldSuppress: (alert: DataAccessAlert, recentAlerts: readonly DataAccessAlert[], config: DedupeConfig) => boolean;
-  checkAckSuppression: (alertId: string, acks: readonly AckRecord[]) => { suppressed: boolean; reason?: string };
-  recordDecision: (alert: DataAccessAlert, decision: 'send' | 'suppress', reason: string) => AlertingAuditEntry;
+  shouldSuppress: (
+    alert: DataAccessAlert,
+    recentAlerts: readonly DataAccessAlert[],
+    config: DedupeConfig
+  ) => boolean;
+  checkAckSuppression: (
+    alertId: string,
+    acks: readonly AckRecord[]
+  ) => { suppressed: boolean; reason?: string };
+  recordDecision: (
+    alert: DataAccessAlert,
+    decision: 'send' | 'suppress',
+    reason: string
+  ) => AlertingAuditEntry;
 }
 
 // ============================================================================
@@ -153,7 +164,7 @@ function createOnCallEngine(): OnCallEngine {
     },
 
     computeDedupeKey(alert, config) {
-      const parts = config.keyFields.map((field) => {
+      const parts = config.keyFields.map(field => {
         const value = (alert as Record<string, unknown>)[field];
         return String(value ?? '');
       });
@@ -181,7 +192,10 @@ function createOnCallEngine(): OnCallEngine {
         if (ack.alertId === alertId) {
           const suppressUntil = new Date(ack.suppressUntil);
           if (suppressUntil > now) {
-            return { suppressed: true, reason: `Acknowledged by ${ack.ackedBy} until ${ack.suppressUntil}` };
+            return {
+              suppressed: true,
+              reason: `Acknowledged by ${ack.ackedBy} until ${ack.suppressUntil}`,
+            };
           }
         }
       }

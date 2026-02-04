@@ -17,8 +17,8 @@
  * - Assessment is evidence-backed
  */
 
-import { describe, it, beforeEach } from 'node:test';
 import * as assert from 'node:assert/strict';
+import { beforeEach, describe, it } from 'node:test';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -194,11 +194,19 @@ interface MaturityModelService {
   // Compliance Windows
   startComplianceWindow(agencyId: string, targetTier: TierLevel): Promise<ComplianceWindow>;
   getComplianceWindow(agencyId: string, targetTier: TierLevel): Promise<ComplianceWindow | null>;
-  updateComplianceWindow(agencyId: string, targetTier: TierLevel, consecutiveDays: number): Promise<ComplianceWindow>;
+  updateComplianceWindow(
+    agencyId: string,
+    targetTier: TierLevel,
+    consecutiveDays: number
+  ): Promise<ComplianceWindow>;
   checkSustainedCompliance(agencyId: string, targetTier: TierLevel): Promise<boolean>;
 
   // Tier Promotions
-  requestPromotion(agencyId: string, fromTier: TierLevel, toTier: TierLevel): Promise<TierPromotion>;
+  requestPromotion(
+    agencyId: string,
+    fromTier: TierLevel,
+    toTier: TierLevel
+  ): Promise<TierPromotion>;
   approvePromotion(promotionId: string, approverId: string): Promise<TierPromotion>;
   rejectPromotion(promotionId: string, reason: string): Promise<TierPromotion>;
   getPromotion(promotionId: string): Promise<TierPromotion | null>;
@@ -244,7 +252,7 @@ function createMockMaturityModelService(): MaturityModelService {
     },
 
     async listAgencyAssessments(agencyId) {
-      return Array.from(assessments.values()).filter((a) => a.agency_id === agencyId);
+      return Array.from(assessments.values()).filter(a => a.agency_id === agencyId);
     },
 
     async startComplianceWindow(agencyId, targetTier) {
@@ -432,7 +440,10 @@ describe('Federation Adoption: Interop Maturity Model Contracts', () => {
 
     it('assessment is evidence-backed', async () => {
       const assessment = await service.assessAgency(`sha256:${'a'.repeat(64)}`);
-      const updated = await service.addEvidenceRef(assessment.assessment_id, `sha256:${'e'.repeat(64)}`);
+      const updated = await service.addEvidenceRef(
+        assessment.assessment_id,
+        `sha256:${'e'.repeat(64)}`
+      );
 
       assert.ok(updated.evidence_refs.length >= 1);
     });
@@ -443,10 +454,7 @@ describe('Federation Adoption: Interop Maturity Model Contracts', () => {
   // ==========================================================================
   describe('CONTRACT: compliance_windows', () => {
     it('starts compliance window', async () => {
-      const window = await service.startComplianceWindow(
-        `sha256:${'a'.repeat(64)}`,
-        'defined'
-      );
+      const window = await service.startComplianceWindow(`sha256:${'a'.repeat(64)}`, 'defined');
 
       assert.ok(window.window_id.startsWith('sha256:'));
       assert.strictEqual(window.target_tier, 'defined');
@@ -507,7 +515,10 @@ describe('Federation Adoption: Interop Maturity Model Contracts', () => {
       await service.updateComplianceWindow(agencyId, 'defined', 60);
       const promotion = await service.requestPromotion(agencyId, 'developing', 'defined');
 
-      const approved = await service.approvePromotion(promotion.promotion_id, `sha256:${'o'.repeat(64)}`);
+      const approved = await service.approvePromotion(
+        promotion.promotion_id,
+        `sha256:${'o'.repeat(64)}`
+      );
       assert.strictEqual(approved.status, 'approved');
       assert.ok(approved.approved_by);
     });
@@ -518,7 +529,10 @@ describe('Federation Adoption: Interop Maturity Model Contracts', () => {
       await service.updateComplianceWindow(agencyId, 'defined', 60);
       const promotion = await service.requestPromotion(agencyId, 'developing', 'defined');
 
-      const rejected = await service.rejectPromotion(promotion.promotion_id, 'insufficient evidence');
+      const rejected = await service.rejectPromotion(
+        promotion.promotion_id,
+        'insufficient evidence'
+      );
       assert.strictEqual(rejected.status, 'rejected');
     });
 

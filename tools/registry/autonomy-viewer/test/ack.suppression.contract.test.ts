@@ -12,8 +12,8 @@
  * - no_permanent_silence: Maximum suppression duration enforced
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Acknowledgement & Suppression
@@ -140,9 +140,7 @@ function validateAcknowledgement(
     if (!ack.justification) {
       errors.push('justification is required');
     } else if (ack.justification.length < config.minJustificationLength) {
-      errors.push(
-        `justification must be at least ${config.minJustificationLength} characters`
-      );
+      errors.push(`justification must be at least ${config.minJustificationLength} characters`);
     }
   }
 
@@ -172,9 +170,7 @@ function validateSuppression(
     if (!sup.justification) {
       errors.push('justification is required');
     } else if (sup.justification.length < config.minJustificationLength) {
-      errors.push(
-        `justification must be at least ${config.minJustificationLength} characters`
-      );
+      errors.push(`justification must be at least ${config.minJustificationLength} characters`);
     }
   }
 
@@ -224,15 +220,9 @@ function createSuppression(
   durationDays: number,
   config: SuppressionConfig = DEFAULT_SUPPRESSION_CONFIG
 ): SuppressionRecord {
-  const effectiveDuration = Math.min(
-    durationDays,
-    config.maxDurationDays,
-    MAX_SUPPRESSION_DAYS
-  );
+  const effectiveDuration = Math.min(durationDays, config.maxDurationDays, MAX_SUPPRESSION_DAYS);
   const createdAt = new Date();
-  const expiresAt = new Date(
-    createdAt.getTime() + effectiveDuration * 24 * 60 * 60 * 1000
-  );
+  const expiresAt = new Date(createdAt.getTime() + effectiveDuration * 24 * 60 * 60 * 1000);
 
   return {
     id: generateId(),
@@ -265,10 +255,7 @@ function isTargetSuppressed(
 ): boolean {
   const checkTime = now ?? new Date();
   return suppressions.some(
-    (s) =>
-      s.targetId === targetId &&
-      s.active &&
-      !isSuppressionExpired(s, checkTime)
+    s => s.targetId === targetId && s.active && !isSuppressionExpired(s, checkTime)
   );
 }
 
@@ -331,16 +318,16 @@ class SuppressionLedger {
   getActiveSuppressions(targetId?: string): readonly SuppressionRecord[] {
     const now = new Date();
     const all = Array.from(this.suppressions.values());
-    const active = all.filter((s) => s.active && !isSuppressionExpired(s, now));
+    const active = all.filter(s => s.active && !isSuppressionExpired(s, now));
     if (targetId) {
-      return active.filter((s) => s.targetId === targetId);
+      return active.filter(s => s.targetId === targetId);
     }
     return active;
   }
 
   getLedgerEntries(since?: Date): readonly LedgerEntry[] {
     if (!since) return [...this.entries];
-    return this.entries.filter((e) => new Date(e.timestamp) >= since);
+    return this.entries.filter(e => new Date(e.timestamp) >= since);
   }
 
   getEntryCount(): number {
@@ -364,7 +351,7 @@ describe('Acknowledgement & Suppression Contract', () => {
       });
 
       assert.ok(!result.valid, 'Should reject empty justification');
-      assert.ok(result.errors.some((e) => e.includes('justification')));
+      assert.ok(result.errors.some(e => e.includes('justification')));
     });
 
     it('should reject justification below minimum length', () => {
@@ -377,7 +364,7 @@ describe('Acknowledgement & Suppression Contract', () => {
       });
 
       assert.ok(!result.valid, 'Should reject short justification');
-      assert.ok(result.errors.some((e) => e.includes('20 characters')));
+      assert.ok(result.errors.some(e => e.includes('20 characters')));
     });
 
     it('should accept valid acknowledgement with justification', () => {
@@ -401,7 +388,7 @@ describe('Acknowledgement & Suppression Contract', () => {
       });
 
       assert.ok(!result.valid, 'Should reject missing operatorId');
-      assert.ok(result.errors.some((e) => e.includes('operatorId')));
+      assert.ok(result.errors.some(e => e.includes('operatorId')));
     });
   });
 
@@ -455,10 +442,7 @@ describe('Acknowledgement & Suppression Contract', () => {
         DEFAULT_SUPPRESSION_CONFIG.defaultDurationDays
       );
 
-      assert.strictEqual(
-        suppression.durationDays,
-        DEFAULT_SUPPRESSION_CONFIG.defaultDurationDays
-      );
+      assert.strictEqual(suppression.durationDays, DEFAULT_SUPPRESSION_CONFIG.defaultDurationDays);
     });
 
     it('should calculate correct expiry from duration', () => {
@@ -516,7 +500,7 @@ describe('Acknowledgement & Suppression Contract', () => {
       });
 
       assert.ok(!result.valid, 'Should reject missing targetType');
-      assert.ok(result.errors.some((e) => e.includes('targetType')));
+      assert.ok(result.errors.some(e => e.includes('targetType')));
     });
 
     it('should support different scope types', () => {
@@ -621,13 +605,7 @@ describe('Acknowledgement & Suppression Contract', () => {
         'acknowledge',
         'First acknowledgement in the trail'
       );
-      const sup = createSuppression(
-        'slo-2',
-        'slo',
-        'op-2',
-        'Suppression for full audit trail',
-        7
-      );
+      const sup = createSuppression('slo-2', 'slo', 'op-2', 'Suppression for full audit trail', 7);
 
       ledger.recordAcknowledgement(ack);
       ledger.recordSuppression(sup);
@@ -675,7 +653,7 @@ describe('Acknowledgement & Suppression Contract', () => {
       });
 
       assert.ok(!result.valid, 'Should reject excessive duration');
-      assert.ok(result.errors.some((e) => e.includes('30')));
+      assert.ok(result.errors.some(e => e.includes('30')));
     });
 
     it('should cap duration at maximum even if requested longer', () => {
@@ -704,7 +682,7 @@ describe('Acknowledgement & Suppression Contract', () => {
       });
 
       assert.ok(!result.valid, 'Should reject zero duration');
-      assert.ok(result.errors.some((e) => e.includes('positive')));
+      assert.ok(result.errors.some(e => e.includes('positive')));
     });
 
     it('should require renewal for continued suppression', () => {
@@ -718,9 +696,7 @@ describe('Acknowledgement & Suppression Contract', () => {
       );
 
       // After max days, suppression expires - must create new one
-      const afterMax = new Date(
-        Date.now() + (MAX_SUPPRESSION_DAYS + 1) * 24 * 60 * 60 * 1000
-      );
+      const afterMax = new Date(Date.now() + (MAX_SUPPRESSION_DAYS + 1) * 24 * 60 * 60 * 1000);
       assert.ok(isSuppressionExpired(suppression, afterMax), 'Should expire after max days');
     });
   });

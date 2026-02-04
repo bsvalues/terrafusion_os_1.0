@@ -11,8 +11,8 @@
  * - evidence_pack_includes_required_sections: all mandatory sections present
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Evidence Pack
@@ -37,7 +37,14 @@ type EvidencePackSection =
 /**
  * Allowed dimension for aggregation.
  */
-type AllowedDimension = 'environment' | 'severity' | 'channel' | 'cadence' | 'outcome' | 'week' | 'month';
+type AllowedDimension =
+  | 'environment'
+  | 'severity'
+  | 'channel'
+  | 'cadence'
+  | 'outcome'
+  | 'week'
+  | 'month';
 
 /**
  * SLO attainment record.
@@ -368,8 +375,11 @@ function detectPII(pack: EvidencePack): PIIDetectionResult {
 /**
  * Validate dimensions used in pack.
  */
-function validateDimensions(dimensions: readonly string[]): { valid: boolean; invalidDimensions: string[] } {
-  const invalid = dimensions.filter((d) => !ALLOWED_DIMENSIONS.includes(d as AllowedDimension));
+function validateDimensions(dimensions: readonly string[]): {
+  valid: boolean;
+  invalidDimensions: string[];
+} {
+  const invalid = dimensions.filter(d => !ALLOWED_DIMENSIONS.includes(d as AllowedDimension));
   return {
     valid: invalid.length === 0,
     invalidDimensions: invalid,
@@ -394,7 +404,7 @@ function generateEvidencePack(
   const periodEnd = new Date(periodStart);
   periodEnd.setDate(periodEnd.getDate() + PERIOD_DAYS[period]);
 
-  const sectionsIncluded = REQUIRED_SECTIONS.filter((s) => s !== missingSection);
+  const sectionsIncluded = REQUIRED_SECTIONS.filter(s => s !== missingSection);
   const dimensionsUsed: AllowedDimension[] = ['environment', 'severity', 'outcome'];
   if (invalidDimension) {
     (dimensionsUsed as string[]).push(invalidDimension);
@@ -480,7 +490,7 @@ describe('Evidence Pack Contract', () => {
       const result = detectPII(pack);
 
       assert.ok(!result.clean);
-      assert.ok(result.violations.some((v) => v.section === 'signoff_history'));
+      assert.ok(result.violations.some(v => v.section === 'signoff_history'));
     });
 
     it('should use opaque IDs for signatories', () => {
@@ -503,7 +513,9 @@ describe('Evidence Pack Contract', () => {
 
     it('should mark metadata.piiClean correctly', () => {
       const cleanPack = generateEvidencePack('quarterly', new Date(2025, 0, 1));
-      const dirtyPack = generateEvidencePack('quarterly', new Date(2025, 0, 1), { includePII: true });
+      const dirtyPack = generateEvidencePack('quarterly', new Date(2025, 0, 1), {
+        includePII: true,
+      });
 
       assert.ok(cleanPack.metadata.piiClean);
       assert.ok(!dirtyPack.metadata.piiClean);

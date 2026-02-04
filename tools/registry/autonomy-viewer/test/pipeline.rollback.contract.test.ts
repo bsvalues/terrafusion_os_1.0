@@ -11,8 +11,8 @@
  * - rollback_emits_correlated_events: full traceability
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Pipeline Rollback
@@ -100,7 +100,11 @@ interface AuditRecord {
  */
 interface RollbackEvent {
   readonly eventId: string;
-  readonly eventType: 'rollback_triggered' | 'rollback_executing' | 'rollback_completed' | 'rollback_failed';
+  readonly eventType:
+    | 'rollback_triggered'
+    | 'rollback_executing'
+    | 'rollback_completed'
+    | 'rollback_failed';
   readonly correlationId: string;
   readonly environment: DeploymentEnvironment;
   readonly previousStage: PipelineStage;
@@ -126,7 +130,13 @@ interface BreachMonitorConfig {
 // Constants
 // ============================================================================
 
-const STAGE_ORDER: PipelineStage[] = ['silent', 'log_only', 'ticket_on_high', 'page_on_critical', 'full_paging'];
+const STAGE_ORDER: PipelineStage[] = [
+  'silent',
+  'log_only',
+  'ticket_on_high',
+  'page_on_critical',
+  'full_paging',
+];
 
 const DEFAULT_BREACH_CONFIG: BreachMonitorConfig = {
   notificationFailureThreshold: 0.01, // >1% failure
@@ -226,7 +236,9 @@ function executeRollback(request: RollbackRequest): RollbackResult {
 
   // Validate rollback direction
   if (!isValidRollback(request.currentStage, request.targetStage)) {
-    throw new Error(`Cannot promote via rollback: ${request.currentStage} -> ${request.targetStage}`);
+    throw new Error(
+      `Cannot promote via rollback: ${request.currentStage} -> ${request.targetStage}`
+    );
   }
 
   const rollbackId = `rollback-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -295,7 +307,7 @@ function executeRollback(request: RollbackRequest): RollbackResult {
  * Get rollback events by correlation ID.
  */
 function getRollbackEventsByCorrelation(correlationId: string): readonly RollbackEvent[] {
-  return rollbackEvents.filter((e) => e.correlationId === correlationId);
+  return rollbackEvents.filter(e => e.correlationId === correlationId);
 }
 
 /**
@@ -578,7 +590,7 @@ describe('Pipeline Rollback Contract', () => {
 
       const events = getRollbackEventsByCorrelation(correlationId);
       assert.ok(events.length > 0);
-      assert.ok(events.every((e) => e.correlationId === correlationId));
+      assert.ok(events.every(e => e.correlationId === correlationId));
     });
 
     it('should emit triggered, executing, and completed events', () => {
@@ -598,7 +610,7 @@ describe('Pipeline Rollback Contract', () => {
       executeRollback(request);
 
       const events = getRollbackEventsByCorrelation(correlationId);
-      const types = events.map((e) => e.eventType);
+      const types = events.map(e => e.eventType);
 
       assert.ok(types.includes('rollback_triggered'));
       assert.ok(types.includes('rollback_executing'));
@@ -625,14 +637,15 @@ describe('Pipeline Rollback Contract', () => {
       executeRollback(request);
 
       const events = getRollbackEventsByCorrelation(correlationId);
-      assert.ok(events.some((e) => e.breachType === 'slo_audit_drain_breach'));
+      assert.ok(events.some(e => e.breachType === 'slo_audit_drain_breach'));
     });
 
     it('should include operator hash when present', () => {
       resetMocks();
 
       const correlationId = generateCorrelationId();
-      const operatorHash = 'sha256:abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234';
+      const operatorHash =
+        'sha256:abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234';
 
       const request: RollbackRequest = {
         environment: 'production',
@@ -648,7 +661,7 @@ describe('Pipeline Rollback Contract', () => {
       executeRollback(request);
 
       const events = getRollbackEventsByCorrelation(correlationId);
-      assert.ok(events.some((e) => e.operatorIdHash === operatorHash));
+      assert.ok(events.some(e => e.operatorIdHash === operatorHash));
     });
 
     it('should have consistent timestamps across event chain', () => {
@@ -668,7 +681,7 @@ describe('Pipeline Rollback Contract', () => {
       executeRollback(request);
 
       const events = getRollbackEventsByCorrelation(correlationId);
-      const timestamps = events.map((e) => new Date(e.timestamp).getTime());
+      const timestamps = events.map(e => new Date(e.timestamp).getTime());
 
       // Events should be in chronological order
       for (let i = 1; i < timestamps.length; i++) {

@@ -600,12 +600,15 @@ describe('Canary Promotion Contract', () => {
 
     it('should block critical paging until observation window met', () => {
       // When critical paging is already enabled but observation window is insufficient
-      // The promotion should still be blocked for next stage  
+      // The promotion should still be blocked for next stage
       const status = createHealthyStatus(25, 100); // Stage 25 -> 50 requires observation
       const decision = evaluatePromotion(DEFAULT_CONFIG, status, 5, true); // Critical paging enabled
 
       assert.ok(!decision.canPromote);
-      assert.ok(decision.reason.toLowerCase().includes('observation') || decision.reason.toLowerCase().includes('window'));
+      assert.ok(
+        decision.reason.toLowerCase().includes('observation') ||
+          decision.reason.toLowerCase().includes('window')
+      );
     });
 
     it('should require stricter observation in production', () => {

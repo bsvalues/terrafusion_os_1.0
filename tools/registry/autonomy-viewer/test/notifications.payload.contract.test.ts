@@ -12,8 +12,8 @@
  * - notifications_no_spam: Rate limiting and deduplication enforced
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Notification Payloads
@@ -150,9 +150,7 @@ const DEFAULT_RATE_LIMITS: RateLimitConfig = {
 /**
  * Filter dimensions to allowlist.
  */
-function filterDimensions(
-  dims: Record<string, string>
-): Record<string, string> {
+function filterDimensions(dims: Record<string, string>): Record<string, string> {
   const filtered: Record<string, string> = {};
   for (const key of ALLOWED_NOTIFICATION_DIMENSIONS) {
     if (key in dims) {
@@ -185,7 +183,7 @@ function containsPii(payload: NotificationPayload): boolean {
   ];
 
   const textToScan = `${payload.title} ${payload.body}`;
-  return piiPatterns.some((p) => p.test(textToScan));
+  return piiPatterns.some(p => p.test(textToScan));
 }
 
 /**
@@ -237,7 +235,7 @@ function buildSlackPayload(
       { type: 'divider' },
       {
         type: 'actions',
-        elements: links.map((link) => ({
+        elements: links.map(link => ({
           type: 'button' as const,
           text: { type: 'plain_text' as const, text: link.label },
           url: link.url,
@@ -260,10 +258,8 @@ function buildEmailPayload(
   recipients: readonly string[]
 ): EmailPayload {
   const filteredDims = filterDimensions(dimensions);
-  const linksHtml = links
-    .map((l) => `<a href="${l.url}">${l.label}</a>`)
-    .join(' | ');
-  const linksText = links.map((l) => `${l.label}: ${l.url}`).join('\n');
+  const linksHtml = links.map(l => `<a href="${l.url}">${l.label}</a>`).join(' | ');
+  const linksText = links.map(l => `${l.label}: ${l.url}`).join('\n');
 
   return {
     channel: 'email',
@@ -306,7 +302,7 @@ class RateLimiter {
     const events = this.events.get(key) ?? [];
 
     // Check deduplication window
-    const recentEvents = events.filter((t) => t > dedupeWindow);
+    const recentEvents = events.filter(t => t > dedupeWindow);
     if (recentEvents.length > 0) {
       const oldestRecent = Math.min(...recentEvents);
       const retryAfter = Math.ceil(
@@ -320,7 +316,7 @@ class RateLimiter {
     }
 
     // Check hourly limit
-    const hourlyEvents = events.filter((t) => t > hourAgo);
+    const hourlyEvents = events.filter(t => t > hourAgo);
     if (hourlyEvents.length >= this.config.maxPerHour) {
       return {
         allowed: false,
@@ -330,7 +326,7 @@ class RateLimiter {
     }
 
     // Check daily limit
-    const dailyEvents = events.filter((t) => t > dayAgo);
+    const dailyEvents = events.filter(t => t > dayAgo);
     if (dailyEvents.length >= this.config.maxPerDay) {
       return {
         allowed: false,
@@ -448,13 +444,7 @@ describe('Notifications Payload Contract', () => {
     });
 
     it('should have size limits defined for all channels', () => {
-      const channels: NotificationChannel[] = [
-        'slack',
-        'teams',
-        'email',
-        'pagerduty',
-        'ticket',
-      ];
+      const channels: NotificationChannel[] = ['slack', 'teams', 'email', 'pagerduty', 'ticket'];
 
       for (const channel of channels) {
         assert.ok(channel in MAX_PAYLOAD_SIZES, `Missing limit for ${channel}`);
@@ -495,10 +485,7 @@ describe('Notifications Payload Contract', () => {
       const keys = Object.keys(filtered);
 
       for (const key of keys) {
-        assert.ok(
-          ALLOWED_NOTIFICATION_DIMENSIONS.includes(key as any),
-          `${key} not in allowlist`
-        );
+        assert.ok(ALLOWED_NOTIFICATION_DIMENSIONS.includes(key as any), `${key} not in allowlist`);
       }
     });
 
@@ -550,7 +537,7 @@ describe('Notifications Payload Contract', () => {
       );
 
       assert.ok(
-        payload.links.some((l) => l.type === 'runbook'),
+        payload.links.some(l => l.type === 'runbook'),
         'Should have runbook link'
       );
     });
@@ -572,7 +559,10 @@ describe('Notifications Payload Contract', () => {
         links
       );
 
-      assert.ok(payload.links.some((l) => l.type === 'pr'), 'Should have PR link');
+      assert.ok(
+        payload.links.some(l => l.type === 'pr'),
+        'Should have PR link'
+      );
     });
 
     it('should include correlation ID for tracing', () => {
@@ -605,7 +595,7 @@ describe('Notifications Payload Contract', () => {
         links
       );
 
-      const actionsBlock = payload.blocks.find((b) => b.type === 'actions');
+      const actionsBlock = payload.blocks.find(b => b.type === 'actions');
       assert.ok(actionsBlock, 'Should have actions block');
       assert.ok(actionsBlock.elements, 'Actions block should have elements');
       assert.strictEqual(actionsBlock.elements?.length, 2, 'Should have 2 buttons');
@@ -630,7 +620,11 @@ describe('Notifications Payload Contract', () => {
     });
 
     it('should deduplicate within window', () => {
-      const limiter = new RateLimiter({ maxPerHour: 100, maxPerDay: 100, dedupeWindowSeconds: 300 });
+      const limiter = new RateLimiter({
+        maxPerHour: 100,
+        maxPerDay: 100,
+        dedupeWindowSeconds: 300,
+      });
       const key = 'test:slo:warning';
 
       limiter.record(key);

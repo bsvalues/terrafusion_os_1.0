@@ -17,15 +17,20 @@
  * - IDs are opaque sha256
  */
 
-import { describe, it, beforeEach } from 'node:test';
 import * as assert from 'node:assert/strict';
+import { beforeEach, describe, it } from 'node:test';
 
 // ============================================================================
 // TYPE DEFINITIONS
 // ============================================================================
 
 type IncidentSeverity = 'critical' | 'high' | 'medium' | 'low';
-type IncidentCategory = 'security' | 'data_integrity' | 'availability' | 'compliance' | 'federation';
+type IncidentCategory =
+  | 'security'
+  | 'data_integrity'
+  | 'availability'
+  | 'compliance'
+  | 'federation';
 type IncidentStatus = 'open' | 'investigating' | 'escalated' | 'mitigated' | 'resolved' | 'closed';
 type EscalationType = 'notification' | 'handoff' | 'collaboration' | 'takeover';
 
@@ -154,7 +159,9 @@ function createMockEscalation(overrides: Partial<EscalationRecord> = {}): Escala
   };
 }
 
-function createMockEvidenceShare(overrides: Partial<IncidentEvidenceShare> = {}): IncidentEvidenceShare {
+function createMockEvidenceShare(
+  overrides: Partial<IncidentEvidenceShare> = {}
+): IncidentEvidenceShare {
   const shareId = `share-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   return {
     share_id: `sha256:${Buffer.from(shareId).toString('hex').slice(0, 64)}`,
@@ -190,7 +197,13 @@ function createMockResolution(overrides: Partial<ResolutionRecord> = {}): Resolu
 
 interface CrossAgencyIncidentService {
   // Incident Management
-  createIncident(severity: IncidentSeverity, category: IncidentCategory, title: string, description: string, sourceAgencyId: string): Promise<FederatedIncident>;
+  createIncident(
+    severity: IncidentSeverity,
+    category: IncidentCategory,
+    title: string,
+    description: string,
+    sourceAgencyId: string
+  ): Promise<FederatedIncident>;
   getIncident(incidentId: string): Promise<FederatedIncident | null>;
   updateStatus(incidentId: string, status: IncidentStatus): Promise<FederatedIncident>;
   addAffectedAgency(incidentId: string, agencyId: string): Promise<FederatedIncident>;
@@ -198,24 +211,48 @@ interface CrossAgencyIncidentService {
   listOpenIncidents(): Promise<readonly FederatedIncident[]>;
 
   // Taxonomy
-  defineTaxonomy(category: IncidentCategory, subcategory: string, description: string, severity: IncidentSeverity, slaHours: number): Promise<IncidentTaxonomy>;
+  defineTaxonomy(
+    category: IncidentCategory,
+    subcategory: string,
+    description: string,
+    severity: IncidentSeverity,
+    slaHours: number
+  ): Promise<IncidentTaxonomy>;
   getTaxonomy(category: IncidentCategory, subcategory: string): Promise<IncidentTaxonomy | null>;
   listTaxonomies(): Promise<readonly IncidentTaxonomy[]>;
 
   // Escalation
-  escalate(incidentId: string, fromAgencyId: string, toAgencyId: string, escalationType: EscalationType, reason: string): Promise<EscalationRecord>;
+  escalate(
+    incidentId: string,
+    fromAgencyId: string,
+    toAgencyId: string,
+    escalationType: EscalationType,
+    reason: string
+  ): Promise<EscalationRecord>;
   respondToEscalation(escalationId: string, accepted: boolean): Promise<EscalationRecord>;
   listEscalations(incidentId: string): Promise<readonly EscalationRecord[]>;
   getPendingEscalations(agencyId: string): Promise<readonly EscalationRecord[]>;
 
   // Evidence Sharing
-  shareEvidence(incidentId: string, evidencePackId: string, fromAgencyId: string, toAgencyId: string, scope: 'read' | 'read_copy'): Promise<IncidentEvidenceShare>;
+  shareEvidence(
+    incidentId: string,
+    evidencePackId: string,
+    fromAgencyId: string,
+    toAgencyId: string,
+    scope: 'read' | 'read_copy'
+  ): Promise<IncidentEvidenceShare>;
   revokeShare(shareId: string): Promise<IncidentEvidenceShare>;
   listShares(incidentId: string): Promise<readonly IncidentEvidenceShare[]>;
   getActiveShares(agencyId: string): Promise<readonly IncidentEvidenceShare[]>;
 
   // Resolution
-  resolveIncident(incidentId: string, agencyId: string, summary: string, rootCause: string, preventiveActions: string[]): Promise<ResolutionRecord>;
+  resolveIncident(
+    incidentId: string,
+    agencyId: string,
+    summary: string,
+    rootCause: string,
+    preventiveActions: string[]
+  ): Promise<ResolutionRecord>;
   getResolution(incidentId: string): Promise<ResolutionRecord | null>;
 }
 
@@ -274,12 +311,14 @@ function createMockCrossAgencyIncidentService(): CrossAgencyIncidentService {
 
     async listIncidents(agencyId) {
       return Array.from(incidents.values()).filter(
-        (i) => i.source_agency_id === agencyId || i.affected_agencies.includes(agencyId)
+        i => i.source_agency_id === agencyId || i.affected_agencies.includes(agencyId)
       );
     },
 
     async listOpenIncidents() {
-      return Array.from(incidents.values()).filter((i) => i.status !== 'closed' && i.status !== 'resolved');
+      return Array.from(incidents.values()).filter(
+        i => i.status !== 'closed' && i.status !== 'resolved'
+      );
     },
 
     async defineTaxonomy(category, subcategory, description, severity, slaHours) {
@@ -320,7 +359,7 @@ function createMockCrossAgencyIncidentService(): CrossAgencyIncidentService {
 
     async respondToEscalation(escalationId, accepted) {
       for (const [incidentId, escs] of escalations) {
-        const idx = escs.findIndex((e) => e.escalation_id === escalationId);
+        const idx = escs.findIndex(e => e.escalation_id === escalationId);
         if (idx >= 0) {
           const updated = createMockEscalation({
             ...escs[idx],
@@ -342,7 +381,7 @@ function createMockCrossAgencyIncidentService(): CrossAgencyIncidentService {
     async getPendingEscalations(agencyId) {
       const pending: EscalationRecord[] = [];
       for (const escs of escalations.values()) {
-        pending.push(...escs.filter((e) => e.to_agency_id === agencyId && e.accepted === null));
+        pending.push(...escs.filter(e => e.to_agency_id === agencyId && e.accepted === null));
       }
       return pending;
     },
@@ -365,7 +404,7 @@ function createMockCrossAgencyIncidentService(): CrossAgencyIncidentService {
 
     async revokeShare(shareId) {
       for (const [incidentId, incShares] of shares) {
-        const idx = incShares.findIndex((s) => s.share_id === shareId);
+        const idx = incShares.findIndex(s => s.share_id === shareId);
         if (idx >= 0) {
           const revoked = createMockEvidenceShare({
             ...incShares[idx],
@@ -388,7 +427,10 @@ function createMockCrossAgencyIncidentService(): CrossAgencyIncidentService {
       for (const incShares of shares.values()) {
         active.push(
           ...incShares.filter(
-            (s) => s.shared_with_agency_id === agencyId && !s.revoked_at && new Date(s.expires_at) > new Date()
+            s =>
+              s.shared_with_agency_id === agencyId &&
+              !s.revoked_at &&
+              new Date(s.expires_at) > new Date()
           )
         );
       }
@@ -481,13 +523,28 @@ describe('Federation Deployment: Cross-Agency Incident Contracts', () => {
         `sha256:${'a'.repeat(64)}`
       );
 
-      const updated = await service.addAffectedAgency(incident.incident_id, `sha256:${'b'.repeat(64)}`);
+      const updated = await service.addAffectedAgency(
+        incident.incident_id,
+        `sha256:${'b'.repeat(64)}`
+      );
       assert.ok(updated.affected_agencies.length > 0);
     });
 
     it('lists open incidents', async () => {
-      await service.createIncident('high', 'security', 'Test 1', 'Desc', `sha256:${'a'.repeat(64)}`);
-      await service.createIncident('medium', 'compliance', 'Test 2', 'Desc', `sha256:${'a'.repeat(64)}`);
+      await service.createIncident(
+        'high',
+        'security',
+        'Test 1',
+        'Desc',
+        `sha256:${'a'.repeat(64)}`
+      );
+      await service.createIncident(
+        'medium',
+        'compliance',
+        'Test 2',
+        'Desc',
+        `sha256:${'a'.repeat(64)}`
+      );
 
       const open = await service.listOpenIncidents();
       assert.ok(open.length >= 2);
@@ -512,7 +569,13 @@ describe('Federation Deployment: Cross-Agency Incident Contracts', () => {
     });
 
     it('retrieves taxonomy by category/subcategory', async () => {
-      await service.defineTaxonomy('compliance', 'policy_violation', 'Policy was violated', 'high', 8);
+      await service.defineTaxonomy(
+        'compliance',
+        'policy_violation',
+        'Policy was violated',
+        'high',
+        8
+      );
 
       const taxonomy = await service.getTaxonomy('compliance', 'policy_violation');
       assert.ok(taxonomy);

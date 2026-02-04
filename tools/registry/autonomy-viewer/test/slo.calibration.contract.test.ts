@@ -11,16 +11,15 @@
  * - dimension_cardinality_bounded: No unbounded dimensions
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 import {
-  SECURITY_SLO_CATALOG,
-  SLO_WINDOWS,
-  ALLOWED_SLO_DIMENSIONS,
-  validateSloCatalog,
-  getSloById,
-  type SloDefinition,
+    ALLOWED_SLO_DIMENSIONS,
+    getSloById,
+    SECURITY_SLO_CATALOG,
+    SLO_WINDOWS,
+    validateSloCatalog
 } from '../src/security/ops/slo/catalog.js';
 
 // ============================================================================
@@ -61,7 +60,10 @@ describe('SLO Calibration Contract', () => {
     });
 
     it('should have at least 3 core SLOs', () => {
-      assert.ok(SECURITY_SLO_CATALOG.slos.length >= 3, 'Need at least 3 SLOs for meaningful coverage');
+      assert.ok(
+        SECURITY_SLO_CATALOG.slos.length >= 3,
+        'Need at least 3 SLOs for meaningful coverage'
+      );
     });
 
     it('should have ratio targets within sane bounds based on direction', () => {
@@ -103,7 +105,10 @@ describe('SLO Calibration Contract', () => {
     it('should have latency targets in reasonable millisecond range', () => {
       for (const slo of SECURITY_SLO_CATALOG.slos) {
         if (slo.type === 'latency') {
-          assert.ok(slo.target > 0 && slo.target < 60000, `SLO ${slo.id}: latency should be 0-60000ms`);
+          assert.ok(
+            slo.target > 0 && slo.target < 60000,
+            `SLO ${slo.id}: latency should be 0-60000ms`
+          );
         }
       }
     });

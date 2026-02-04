@@ -12,8 +12,8 @@
  * - slo_correlation_completeness: Track end-to-end correlation chain
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Ops-Plane SLOs
@@ -156,16 +156,13 @@ const OPS_PLANE_SLOS: readonly OpsPlaneSlo[] = [
  * Get SLO by ID.
  */
 function getSloById(sloId: string): OpsPlaneSlo | undefined {
-  return OPS_PLANE_SLOS.find((s) => s.id === sloId);
+  return OPS_PLANE_SLOS.find(s => s.id === sloId);
 }
 
 /**
  * Calculate error budget remaining.
  */
-function calculateErrorBudget(
-  slo: OpsPlaneSlo,
-  currentValue: number
-): number {
+function calculateErrorBudget(slo: OpsPlaneSlo, currentValue: number): number {
   if (slo.direction === 'above') {
     // For "above" targets like success rate
     if (currentValue >= slo.target) {
@@ -208,7 +205,8 @@ function calculateBurnRate(
   const errorBudget = 1 - slo.target;
   if (errorBudget === 0) return 0;
 
-  const shortWindowError = slo.direction === 'above' ? 1 - _shortWindowValue : _shortWindowValue / slo.target;
+  const shortWindowError =
+    slo.direction === 'above' ? 1 - _shortWindowValue : _shortWindowValue / slo.target;
   return shortWindowError / errorBudget;
 }
 
@@ -239,10 +237,7 @@ function computeSloStatus(
 /**
  * Aggregate metrics for SLO calculation.
  */
-function aggregateMetrics(
-  succeeded: number,
-  failed: number
-): MetricAggregation {
+function aggregateMetrics(succeeded: number, failed: number): MetricAggregation {
   const total = succeeded + failed;
   const rate = total > 0 ? succeeded / total : 1.0;
   return { total, succeeded, failed, rate };
@@ -251,12 +246,8 @@ function aggregateMetrics(
 /**
  * Check for SLO alert condition.
  */
-function shouldAlert(
-  slo: OpsPlaneSlo,
-  burnRate: number,
-  alertLevel: 'fast' | 'slow'
-): boolean {
-  const burnRateConfig = slo.burnRates.find((b) => b.name === alertLevel);
+function shouldAlert(slo: OpsPlaneSlo, burnRate: number, alertLevel: 'fast' | 'slow'): boolean {
+  const burnRateConfig = slo.burnRates.find(b => b.name === alertLevel);
   if (!burnRateConfig) return false;
   return burnRate >= burnRateConfig.rate;
 }
@@ -452,11 +443,11 @@ describe('Ops-Plane SLO Contract', () => {
       for (const slo of OPS_PLANE_SLOS) {
         assert.ok(slo.burnRates.length >= 2, `${slo.id} should have burn rates`);
         assert.ok(
-          slo.burnRates.some((b) => b.name === 'fast'),
+          slo.burnRates.some(b => b.name === 'fast'),
           `${slo.id} should have fast burn rate`
         );
         assert.ok(
-          slo.burnRates.some((b) => b.name === 'slow'),
+          slo.burnRates.some(b => b.name === 'slow'),
           `${slo.id} should have slow burn rate`
         );
       }

@@ -1,0 +1,98 @@
+Γû╢ Phase XXIV-C: Stop-Condition Rehearsal Contracts
+  Γû╢ ID Format Invariants
+    Γ£ö should generate rehearsal IDs with sha256: prefix (1.3585ms)
+    Γ£ö should generate trigger event IDs with sha256: prefix (0.366ms)
+    Γ£ö should generate pause event IDs with sha256: prefix (0.1992ms)
+    Γ£ö should generate approval IDs with sha256: prefix (0.3032ms)
+  Γ£ö ID Format Invariants (2.769ms)
+  Γû╢ Trigger Injection ΓåÆ Bounded-Time Auto-Pause
+    Γ£ö should auto-pause on MTTR_REGRESSION trigger (0.3114ms)
+    Γ£ö should auto-pause on ROLLBACK_FAILURE trigger (0.1464ms)
+    Γ£ö should auto-pause on DR_DRILL_FAILURE trigger (0.1404ms)
+    Γ£ö should auto-pause on AUDIT_INTEGRITY_ALERT trigger (0.1242ms)
+    Γ£ö should pause within bounded time (< 5000ms) (0.1321ms)
+    Γ£ö should verify all pause latencies are bounded (0.2773ms)
+    Γ£ö should reject trigger for unregistered condition (0.088ms)
+  Γ£ö Trigger Injection ΓåÆ Bounded-Time Auto-Pause (1.5021ms)
+  Γû╢ Pause State Audit Chain
+    Γ£ö should link trigger to pause event (0.1794ms)
+    Γ£ö should chain multiple triggers with previousEventId (0.1267ms)
+    Γ£ö should update rehearsal status to paused (0.1057ms)
+    Γ£ö should capture all events with sha256: IDs (0.1137ms)
+  Γ£ö Pause State Audit Chain (0.6333ms)
+  Γû╢ Dual-Approval Recovery
+    Γ£ö should require 2 approvals for recovery (0.1536ms)
+    Γ£ö should request approval for paused rehearsal (0.1265ms)
+    Γ£ö should not allow resume with only 1 approval (0.2562ms)
+    Γ£ö should allow resume with 2 approvals (0.2796ms)
+    Γ£ö should track dual-approval status (0.1473ms)
+    Γ£ö should reject approval and not count toward dual-approval (0.144ms)
+  Γ£ö Dual-Approval Recovery (1.2332ms)
+  Γû╢ Audit Chain Integrity on Resume
+    Γ£ö should verify audit chain on resume (0.1686ms)
+    Γ£ö should link resume event to pause event (0.1665ms)
+    Γ£ö should include approval IDs in resume event (0.1765ms)
+    Γ£û should verify full chain integrity after resume (1.4247ms)
+  Γ£û Audit Chain Integrity on Resume (2.0573ms)
+  Γû╢ Compound Failure Semantics
+    Γ£ö should handle multiple triggers with single pause (0.2243ms)
+    Γ£ö should record trigger order (0.5133ms)
+    Γ£ö should use first trigger as primary for pause (0.2081ms)
+    Γ£ö should chain compound triggers with previousEventId (0.1606ms)
+  Γ£ö Compound Failure Semantics (1.2061ms)
+  Γû╢ Evidence Checklist Completeness
+    Γ£ö should track trigger event capture (0.4454ms)
+    Γ£ö should track pause event capture (0.0864ms)
+    Γ£ö should track approvals capture (0.0896ms)
+    Γ£ö should track resume event capture (0.1125ms)
+    Γ£ö should verify all refs are sha256: (0.1ms)
+    Γ£ö should complete rehearsal with portal snapshot and postmortem (0.1546ms)
+  Γ£ö Evidence Checklist Completeness (1.0935ms)
+  Γû╢ Rehearsal Lifecycle
+    Γ£ö should create rehearsal in pending status (0.0907ms)
+    Γ£ö should transition to paused on trigger (0.0667ms)
+    Γ£ö should transition to recovering on approval request (0.0765ms)
+    Γ£ö should transition to resumed after dual-approval + resume (0.1145ms)
+    Γ£ö should transition to completed after evidence capture (0.1111ms)
+    Γ£ö should allow abort at any non-completed state (0.0944ms)
+    Γ£ö should not abort completed rehearsal (0.1197ms)
+  Γ£ö Rehearsal Lifecycle (0.8345ms)
+  Γû╢ Constants Export for Runbook Alignment
+    Γ£ö should export all stop condition codes (0.1068ms)
+    Γ£ö should export max pause latency (0.0643ms)
+    Γ£ö should export required approvals count (0.0501ms)
+  Γ£ö Constants Export for Runbook Alignment (0.2915ms)
+  Γû╢ Read-Only Invariants
+    Γ£ö should return copies of trigger events (0.1388ms)
+    Γ£ö should return copies of pause events (0.093ms)
+    Γ£ö should return copies of approvals (0.0932ms)
+  Γ£ö Read-Only Invariants (0.3951ms)
+Γ£û Phase XXIV-C: Stop-Condition Rehearsal Contracts (12.9583ms)
+Γä╣ tests 48
+Γä╣ suites 11
+Γä╣ pass 47
+Γä╣ fail 1
+Γä╣ cancelled 0
+Γä╣ skipped 0
+Γä╣ todo 0
+Γä╣ duration_ms 137.4884
+
+Γ£û failing tests:
+
+test at tools\registry\autonomy-viewer\test\rehearsal.stop-condition.contract.test.ts:1023:5
+Γ£û should verify full chain integrity after resume (1.4247ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///C:/Users/bsval/terrafusion_os_1.0/tools/registry/autonomy-viewer/test/rehearsal.stop-condition.contract.test.ts:1046:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1081:25)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:763:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

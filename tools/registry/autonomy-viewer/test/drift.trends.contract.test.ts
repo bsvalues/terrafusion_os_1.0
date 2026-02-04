@@ -11,8 +11,8 @@
  * - retention_policy_enforced: Old samples are pruned per policy
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 import { ALLOWED_SLO_DIMENSIONS } from '../src/security/ops/slo/catalog.js';
 
@@ -85,9 +85,7 @@ const DEFAULT_RETENTION: RetentionPolicy = {
 /**
  * Filter stored baseline dimensions (at storage boundary).
  */
-function filterStoredDimensions(
-  dimensions: Record<string, string>
-): Record<string, string> {
+function filterStoredDimensions(dimensions: Record<string, string>): Record<string, string> {
   const filtered: Record<string, string> = {};
   for (const [key, value] of Object.entries(dimensions)) {
     if (ALLOWED_SLO_DIMENSIONS.includes(key as never)) {
@@ -116,9 +114,7 @@ function calculateTrend(
 
   // Filter to window
   const windowStart = Date.now() - windowDays * 24 * 60 * 60 * 1000;
-  const windowSamples = sorted.filter(
-    s => new Date(s.timestamp).getTime() >= windowStart
-  );
+  const windowSamples = sorted.filter(s => new Date(s.timestamp).getTime() >= windowStart);
 
   if (windowSamples.length < 2) {
     return null;
@@ -129,10 +125,8 @@ function calculateTrend(
   const firstHalf = windowSamples.slice(0, mid);
   const secondHalf = windowSamples.slice(mid);
 
-  const firstAvg =
-    firstHalf.reduce((sum, s) => sum + s.observedValue, 0) / firstHalf.length;
-  const secondAvg =
-    secondHalf.reduce((sum, s) => sum + s.observedValue, 0) / secondHalf.length;
+  const firstAvg = firstHalf.reduce((sum, s) => sum + s.observedValue, 0) / firstHalf.length;
+  const secondAvg = secondHalf.reduce((sum, s) => sum + s.observedValue, 0) / secondHalf.length;
 
   const changePercent = firstAvg !== 0 ? ((secondAvg - firstAvg) / firstAvg) * 100 : 0;
 
@@ -169,16 +163,11 @@ function calculateTrend(
 /**
  * Apply retention policy to samples.
  */
-function applyRetention(
-  samples: StoredBaseline[],
-  policy: RetentionPolicy
-): StoredBaseline[] {
+function applyRetention(samples: StoredBaseline[], policy: RetentionPolicy): StoredBaseline[] {
   const cutoff = Date.now() - policy.maxAgeDays * 24 * 60 * 60 * 1000;
 
   // Filter by age
-  let filtered = samples.filter(
-    s => new Date(s.timestamp).getTime() >= cutoff
-  );
+  let filtered = samples.filter(s => new Date(s.timestamp).getTime() >= cutoff);
 
   // Group by SLO and limit count
   const bySlo = new Map<string, StoredBaseline[]>();
@@ -311,7 +300,7 @@ describe('Drift Trends Contract', () => {
         {
           sloId: 'security.denial_rate',
           dimensions: { provider: 'entra' },
-          observedValue: 0.10, // 10% error rate
+          observedValue: 0.1, // 10% error rate
           sampleCount: 1000,
           timestamp: new Date(now - 6 * 24 * 60 * 60 * 1000).toISOString(),
         },
@@ -359,7 +348,7 @@ describe('Drift Trends Contract', () => {
         {
           sloId: 'security.denial_rate',
           dimensions: { provider: 'entra' },
-          observedValue: 0.050,
+          observedValue: 0.05,
           sampleCount: 1000,
           timestamp: new Date(now - 6 * 24 * 60 * 60 * 1000).toISOString(),
         },
@@ -380,13 +369,13 @@ describe('Drift Trends Contract', () => {
     it('should include confidence level based on sample count', () => {
       const now = Date.now();
       const samples: StoredBaseline[] = [];
-      
+
       // Create 14 samples for high confidence
       for (let i = 0; i < 14; i++) {
         samples.push({
           sloId: 'security.denial_rate',
           dimensions: { provider: 'entra' },
-          observedValue: 0.05 - (i * 0.001),
+          observedValue: 0.05 - i * 0.001,
           sampleCount: 1000,
           timestamp: new Date(now - i * 12 * 60 * 60 * 1000).toISOString(),
         });

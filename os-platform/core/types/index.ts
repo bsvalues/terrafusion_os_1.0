@@ -149,6 +149,12 @@ export interface TraceEventInput {
   payloadStore?: PayloadStore;
   /** Fields that were redacted */
   redactedFields?: string[];
+  /** Error code for tool_failed events */
+  errorCode?: string;
+  /** Component that emitted the event (ToolRunner, ToolRegistry, Handler) */
+  component?: string;
+  /** Stack trace for handler errors (tool_failed events only) */
+  stackTrace?: string;
 }
 
 export interface TraceEvent extends TraceEventInput {

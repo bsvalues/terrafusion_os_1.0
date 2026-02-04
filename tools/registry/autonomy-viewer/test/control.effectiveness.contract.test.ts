@@ -11,8 +11,8 @@
  * - dashboard_shows_audit_drain_backlog: audit system capacity trends
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Control Effectiveness
@@ -121,7 +121,10 @@ interface ControlEffectivenessDashboard {
 // Constants
 // ============================================================================
 
-const CONTROL_TARGETS: Record<ControlType, { target: number; unit: string; operator: 'gte' | 'lte' }> = {
+const CONTROL_TARGETS: Record<
+  ControlType,
+  { target: number; unit: string; operator: 'gte' | 'lte' }
+> = {
   dedupe: { target: 0.8, unit: 'percentage', operator: 'gte' },
   suppression: { target: 0.995, unit: 'percentage', operator: 'gte' },
   circuit_breaker: { target: 0.05, unit: 'percentage', operator: 'lte' }, // open rate should be low
@@ -177,7 +180,11 @@ function generateMetricDataPoints(
     }
 
     // Clamp percentage values to [0, 1] range
-    if (controlType === 'suppression' || controlType === 'dedupe' || controlType === 'circuit_breaker') {
+    if (
+      controlType === 'suppression' ||
+      controlType === 'dedupe' ||
+      controlType === 'circuit_breaker'
+    ) {
       value = Math.max(0, Math.min(1, value));
     }
 
@@ -256,8 +263,8 @@ function analyzeTrend(dataPoints: readonly MetricDataPoint[]): TrendAnalysis {
  * Calculate summary from time series.
  */
 function calculateSummary(series: MetricTimeSeries): ControlEffectivenessSummary {
-  const values = series.dataPoints.map((p) => p.value);
-  const breachCount = series.dataPoints.filter((p) => p.breached).length;
+  const values = series.dataPoints.map(p => p.value);
+  const breachCount = series.dataPoints.filter(p => p.breached).length;
 
   const currentValue = values[values.length - 1] ?? 0;
   const averageValue = values.reduce((a, b) => a + b, 0) / values.length;
@@ -344,15 +351,18 @@ function createDashboard(
   days: number = 30,
   options: { degradedControl?: ControlType } = {}
 ): ControlEffectivenessDashboard {
-  const panels = (['dedupe', 'suppression', 'circuit_breaker', 'audit_drain'] as ControlType[]).map((ct) =>
-    createDashboardPanel(ct, days, ct === options.degradedControl ? 'degrading' : 'stable', {
-      withBreaches: ct === options.degradedControl,
-      withAlerts: ct === options.degradedControl,
-    })
+  const panels = (['dedupe', 'suppression', 'circuit_breaker', 'audit_drain'] as ControlType[]).map(
+    ct =>
+      createDashboardPanel(ct, days, ct === options.degradedControl ? 'degrading' : 'stable', {
+        withBreaches: ct === options.degradedControl,
+        withAlerts: ct === options.degradedControl,
+      })
   );
 
-  const hasUnhealthyPanel = panels.some((p) => !p.summary.targetMet);
-  const hasCriticalAlert = panels.some((p) => p.alerts.some((a) => a.severity === 'critical' && !a.resolved));
+  const hasUnhealthyPanel = panels.some(p => !p.summary.targetMet);
+  const hasCriticalAlert = panels.some(p =>
+    p.alerts.some(a => a.severity === 'critical' && !a.resolved)
+  );
 
   const periodEnd = new Date();
   const periodStart = new Date();
@@ -377,7 +387,7 @@ describe('Control Effectiveness Contract', () => {
   describe('dashboard_shows_dedupe_rate', () => {
     it('should include dedupe panel in dashboard', () => {
       const dashboard = createDashboard(30);
-      const dedupePanel = dashboard.panels.find((p) => p.controlType === 'dedupe');
+      const dedupePanel = dashboard.panels.find(p => p.controlType === 'dedupe');
 
       assert.ok(dedupePanel);
       assert.strictEqual(dedupePanel.controlType, 'dedupe');
@@ -417,7 +427,7 @@ describe('Control Effectiveness Contract', () => {
   describe('dashboard_shows_suppression_usage', () => {
     it('should include suppression panel in dashboard', () => {
       const dashboard = createDashboard(30);
-      const suppressionPanel = dashboard.panels.find((p) => p.controlType === 'suppression');
+      const suppressionPanel = dashboard.panels.find(p => p.controlType === 'suppression');
 
       assert.ok(suppressionPanel);
       assert.strictEqual(suppressionPanel.controlType, 'suppression');
@@ -427,7 +437,7 @@ describe('Control Effectiveness Contract', () => {
       const series = createMetricTimeSeries('suppression', 30);
 
       assert.strictEqual(series.controlType, 'suppression');
-      assert.ok(series.dataPoints.every((p) => p.value >= 0 && p.value <= 1));
+      assert.ok(series.dataPoints.every(p => p.value >= 0 && p.value <= 1));
     });
 
     it('should show suppression target of 99.5%', () => {
@@ -459,7 +469,7 @@ describe('Control Effectiveness Contract', () => {
   describe('dashboard_shows_breaker_open_rate', () => {
     it('should include circuit breaker panel in dashboard', () => {
       const dashboard = createDashboard(30);
-      const breakerPanel = dashboard.panels.find((p) => p.controlType === 'circuit_breaker');
+      const breakerPanel = dashboard.panels.find(p => p.controlType === 'circuit_breaker');
 
       assert.ok(breakerPanel);
       assert.strictEqual(breakerPanel.controlType, 'circuit_breaker');
@@ -468,7 +478,7 @@ describe('Control Effectiveness Contract', () => {
     it('should track breaker open rate', () => {
       const series = createMetricTimeSeries('circuit_breaker', 30);
 
-      assert.ok(series.dataPoints.every((p) => p.value >= 0));
+      assert.ok(series.dataPoints.every(p => p.value >= 0));
     });
 
     it('should target breaker open rate below 5%', () => {
@@ -477,7 +487,9 @@ describe('Control Effectiveness Contract', () => {
     });
 
     it('should breach when open rate too high', () => {
-      const series = createMetricTimeSeries('circuit_breaker', 30, 'degrading', { withBreaches: true });
+      const series = createMetricTimeSeries('circuit_breaker', 30, 'degrading', {
+        withBreaches: true,
+      });
       const summary = calculateSummary(series);
 
       // Degrading trend means some breaches
@@ -502,7 +514,7 @@ describe('Control Effectiveness Contract', () => {
   describe('dashboard_shows_audit_drain_backlog', () => {
     it('should include audit drain panel in dashboard', () => {
       const dashboard = createDashboard(30);
-      const drainPanel = dashboard.panels.find((p) => p.controlType === 'audit_drain');
+      const drainPanel = dashboard.panels.find(p => p.controlType === 'audit_drain');
 
       assert.ok(drainPanel);
       assert.strictEqual(drainPanel.controlType, 'audit_drain');
@@ -512,7 +524,7 @@ describe('Control Effectiveness Contract', () => {
       const series = createMetricTimeSeries('audit_drain', 30);
 
       assert.strictEqual(series.unit, 'milliseconds');
-      assert.ok(series.dataPoints.every((p) => p.value > 0));
+      assert.ok(series.dataPoints.every(p => p.value > 0));
     });
 
     it('should target drain latency below 5000ms p95', () => {

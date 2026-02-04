@@ -17,8 +17,8 @@
  * - IDs are opaque sha256
  */
 
-import { describe, it, beforeEach } from 'node:test';
 import * as assert from 'node:assert/strict';
+import { beforeEach, describe, it } from 'node:test';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -236,7 +236,14 @@ interface TrustPostureService {
   listRotationDue(): Promise<readonly CertificateStatus[]>;
 
   // Alerts
-  createAlert(agencyId: string, severity: AlertSeverity, metricType: MetricType, message: string, threshold: number, actual: number): Promise<PostureAlert>;
+  createAlert(
+    agencyId: string,
+    severity: AlertSeverity,
+    metricType: MetricType,
+    message: string,
+    threshold: number,
+    actual: number
+  ): Promise<PostureAlert>;
   acknowledgeAlert(alertId: string): Promise<PostureAlert>;
   listActiveAlerts(agencyId: string): Promise<readonly PostureAlert[]>;
   listAlertsBySeverity(severity: AlertSeverity): Promise<readonly PostureAlert[]>;
@@ -261,16 +268,24 @@ function createMockTrustPostureService(): TrustPostureService {
     },
 
     async listPartnerPostures(trustDomainId) {
-      return Array.from(postures.values()).filter((p) => p.trust_domain_id === trustDomainId);
+      return Array.from(postures.values()).filter(p => p.trust_domain_id === trustDomainId);
     },
 
     async computeOverallLevel(agencyId) {
       const posture = await this.getPartnerPosture(agencyId);
 
-      if (posture.compliance_score >= 90 && posture.drift_score >= 90 && posture.exception_count <= 2) {
+      if (
+        posture.compliance_score >= 90 &&
+        posture.drift_score >= 90 &&
+        posture.exception_count <= 2
+      ) {
         return 'excellent';
       }
-      if (posture.compliance_score >= 75 && posture.drift_score >= 75 && posture.exception_count <= 5) {
+      if (
+        posture.compliance_score >= 75 &&
+        posture.drift_score >= 75 &&
+        posture.exception_count <= 5
+      ) {
         return 'good';
       }
       if (posture.compliance_score >= 50 && posture.drift_score >= 50) {
@@ -291,7 +306,7 @@ function createMockTrustPostureService(): TrustPostureService {
     async listStaleFreshness(trustDomainId) {
       // Return all stale freshness entries for domain
       // In real impl, would filter by trust_domain_id
-      return Array.from(freshness.values()).filter((f) => f.stale);
+      return Array.from(freshness.values()).filter(f => f.stale);
     },
 
     async setStaleThreshold(agencyId, days) {
@@ -359,11 +374,11 @@ function createMockTrustPostureService(): TrustPostureService {
     },
 
     async listExpiringCertificates(days) {
-      return Array.from(certStatuses.values()).filter((s) => s.days_until_expiry <= days);
+      return Array.from(certStatuses.values()).filter(s => s.days_until_expiry <= days);
     },
 
     async listRotationDue() {
-      return Array.from(certStatuses.values()).filter((s) => s.rotation_due);
+      return Array.from(certStatuses.values()).filter(s => s.rotation_due);
     },
 
     async createAlert(agencyId, severity, metricType, message, threshold, actual) {
@@ -393,12 +408,12 @@ function createMockTrustPostureService(): TrustPostureService {
 
     async listActiveAlerts(agencyId) {
       return Array.from(alerts.values()).filter(
-        (a) => a.agency_id === agencyId && !a.acknowledged_at
+        a => a.agency_id === agencyId && !a.acknowledged_at
       );
     },
 
     async listAlertsBySeverity(severity) {
-      return Array.from(alerts.values()).filter((a) => a.severity === severity);
+      return Array.from(alerts.values()).filter(a => a.severity === severity);
     },
   };
 }
@@ -477,7 +492,11 @@ describe('Federation Deployment: Trust Posture Dashboard Contracts', () => {
     });
 
     it('freshness indicates staleness', async () => {
-      const fresh = createMockFreshness({ days_since_assessment: 45, stale_threshold_days: 30, stale: true });
+      const fresh = createMockFreshness({
+        days_since_assessment: 45,
+        stale_threshold_days: 30,
+        stale: true,
+      });
       assert.strictEqual(fresh.stale, true);
     });
 
@@ -627,7 +646,14 @@ describe('Federation Deployment: Trust Posture Dashboard Contracts', () => {
     });
 
     it('lists alerts by severity', async () => {
-      await service.createAlert(`sha256:${'a'.repeat(64)}`, 'critical', 'exception', 'Too many exceptions', 10, 15);
+      await service.createAlert(
+        `sha256:${'a'.repeat(64)}`,
+        'critical',
+        'exception',
+        'Too many exceptions',
+        10,
+        15
+      );
 
       const critical = await service.listAlertsBySeverity('critical');
       assert.ok(critical.length >= 1);

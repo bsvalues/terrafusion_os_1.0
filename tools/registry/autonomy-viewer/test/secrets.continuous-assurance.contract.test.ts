@@ -11,9 +11,9 @@
  * - assurance_is_auditable: evidence integrity and chain-of-custody
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import * as crypto from 'node:crypto';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Secrets Continuous Assurance
@@ -109,7 +109,12 @@ interface PostureDrift {
  */
 interface DriftItem {
   readonly itemId: string;
-  readonly category: 'new_secret' | 'removed_secret' | 'access_change' | 'policy_change' | 'rotation_lapse';
+  readonly category:
+    | 'new_secret'
+    | 'removed_secret'
+    | 'access_change'
+    | 'policy_change'
+    | 'rotation_lapse';
   readonly secretId: string; // Opaque
   readonly description: string;
   readonly severity: 'critical' | 'high' | 'medium' | 'low';
@@ -279,16 +284,14 @@ function detectPostureDrift(
 /**
  * Create sample check result.
  */
-function createSampleCheckResult(options: {
-  checkType?: AssuranceCheckType;
-  status?: CheckStatus;
-  findingCount?: number;
-} = {}): AssuranceCheckResult {
-  const {
-    checkType = 'rotation_compliance',
-    status = 'passed',
-    findingCount = 0,
-  } = options;
+function createSampleCheckResult(
+  options: {
+    checkType?: AssuranceCheckType;
+    status?: CheckStatus;
+    findingCount?: number;
+  } = {}
+): AssuranceCheckResult {
+  const { checkType = 'rotation_compliance', status = 'passed', findingCount = 0 } = options;
 
   const findings: AssuranceFinding[] = Array.from({ length: findingCount }, (_, i) => ({
     findingId: `FIND-${i + 1}`,
@@ -306,7 +309,7 @@ function createSampleCheckResult(options: {
     executedAt: new Date().toISOString(),
     durationMs: Math.floor(Math.random() * 1000) + 100,
     findings,
-    evidenceRefs: findings.map((f) => `evidence/${f.findingId}`),
+    evidenceRefs: findings.map(f => `evidence/${f.findingId}`),
   };
 }
 
@@ -314,11 +317,11 @@ function createSampleCheckResult(options: {
  * Create sample summary.
  */
 function createSampleSummary(checkResults: readonly AssuranceCheckResult[]): AssuranceSummary {
-  const passed = checkResults.filter((c) => c.status === 'passed').length;
-  const failed = checkResults.filter((c) => c.status === 'failed').length;
-  const warnings = checkResults.filter((c) => c.status === 'warning').length;
-  const skipped = checkResults.filter((c) => c.status === 'skipped').length;
-  const allFindings = checkResults.flatMap((c) => c.findings);
+  const passed = checkResults.filter(c => c.status === 'passed').length;
+  const failed = checkResults.filter(c => c.status === 'failed').length;
+  const warnings = checkResults.filter(c => c.status === 'warning').length;
+  const skipped = checkResults.filter(c => c.status === 'skipped').length;
+  const allFindings = checkResults.flatMap(c => c.findings);
 
   return {
     totalChecks: checkResults.length,
@@ -327,28 +330,28 @@ function createSampleSummary(checkResults: readonly AssuranceCheckResult[]): Ass
     warnings,
     skipped,
     totalFindings: allFindings.length,
-    criticalFindings: allFindings.filter((f) => f.severity === 'critical').length,
-    highFindings: allFindings.filter((f) => f.severity === 'high').length,
+    criticalFindings: allFindings.filter(f => f.severity === 'critical').length,
+    highFindings: allFindings.filter(f => f.severity === 'high').length,
   };
 }
 
 /**
  * Create sample evidence pack.
  */
-function createSampleEvidencePack(options: {
-  schedule?: AssuranceSchedule;
-  checkCount?: number;
-  withDrift?: PostureDrift | null;
-} = {}): SecretsAssuranceEvidencePack {
-  const {
-    schedule = 'daily',
-    checkCount = 3,
-    withDrift = null,
-  } = options;
+function createSampleEvidencePack(
+  options: {
+    schedule?: AssuranceSchedule;
+    checkCount?: number;
+    withDrift?: PostureDrift | null;
+  } = {}
+): SecretsAssuranceEvidencePack {
+  const { schedule = 'daily', checkCount = 3, withDrift = null } = options;
 
   const checkResults = Array.from({ length: checkCount }, (_, i) =>
     createSampleCheckResult({
-      checkType: ['rotation_compliance', 'access_review', 'policy_compliance'][i] as AssuranceCheckType,
+      checkType: ['rotation_compliance', 'access_review', 'policy_compliance'][
+        i
+      ] as AssuranceCheckType,
       findingCount: i,
     })
   );
@@ -503,7 +506,7 @@ describe('Secrets Continuous Assurance Contract', () => {
 
       const drift = detectPostureDrift(modCurrent, modBaseline);
 
-      assert.ok(drift.driftItems.some((d) => d.severity === 'critical'));
+      assert.ok(drift.driftItems.some(d => d.severity === 'critical'));
     });
 
     it('should track baseline reference', () => {

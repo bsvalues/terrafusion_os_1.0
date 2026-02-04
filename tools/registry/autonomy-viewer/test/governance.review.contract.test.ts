@@ -17,15 +17,21 @@
  * - Packs are time-bounded and reproducible
  */
 
-import { describe, it, beforeEach } from 'node:test';
 import * as assert from 'node:assert/strict';
+import { beforeEach, describe, it } from 'node:test';
 
 // ============================================================================
 // TYPE DEFINITIONS
 // ============================================================================
 
 type ReviewPeriod = 'Q1' | 'Q2' | 'Q3' | 'Q4';
-type ControlCategory = 'access' | 'change' | 'incident' | 'continuity' | 'compliance' | 'monitoring';
+type ControlCategory =
+  | 'access'
+  | 'change'
+  | 'incident'
+  | 'continuity'
+  | 'compliance'
+  | 'monitoring';
 type OutcomeStatus = 'effective' | 'partially_effective' | 'ineffective' | 'not_tested';
 type EvidenceStatus = 'complete' | 'partial' | 'missing';
 
@@ -170,7 +176,14 @@ function createMockEvidenceSummary(overrides: Partial<EvidenceSummary> = {}): Ev
     complete_items: 145,
     partial_items: 3,
     missing_items: 2,
-    evidence_by_category: { access: 30, change: 45, incident: 25, continuity: 20, compliance: 20, monitoring: 10 },
+    evidence_by_category: {
+      access: 30,
+      change: 45,
+      incident: 25,
+      continuity: 20,
+      compliance: 20,
+      monitoring: 10,
+    },
     retention_compliant: true,
     ...overrides,
   };
@@ -265,7 +278,7 @@ function createMockGovernanceReviewService(): GovernanceReviewService {
     },
 
     async listPacks(year) {
-      return Array.from(packs.values()).filter((p) => p.year === year);
+      return Array.from(packs.values()).filter(p => p.year === year);
     },
 
     async finalizePack(packId) {
@@ -296,7 +309,7 @@ function createMockGovernanceReviewService(): GovernanceReviewService {
       const pack = packs.get(packId);
       if (!pack) return [];
 
-      const section = pack.control_sections.find((s) => s.category === category);
+      const section = pack.control_sections.find(s => s.category === category);
       return section?.controls ?? [];
     },
 
@@ -305,7 +318,7 @@ function createMockGovernanceReviewService(): GovernanceReviewService {
       if (!pack) return null;
 
       for (const section of pack.control_sections) {
-        const control = section.controls.find((c) => c.control_id === controlId);
+        const control = section.controls.find(c => c.control_id === controlId);
         if (control) return control;
       }
       return null;
@@ -333,7 +346,7 @@ function createMockGovernanceReviewService(): GovernanceReviewService {
 
     async getCriticalRecommendations(packId) {
       const recommendations = await this.getRecommendations(packId);
-      return recommendations.filter((r) => r.priority === 'critical');
+      return recommendations.filter(r => r.priority === 'critical');
     },
 
     async isPIIClean(pack) {
@@ -341,7 +354,7 @@ function createMockGovernanceReviewService(): GovernanceReviewService {
       return (
         typeof pack.executive_summary.overall_health_score === 'number' &&
         typeof pack.executive_summary.controls_tested === 'number' &&
-        !pack.executive_summary.key_achievements.some((a) => /\b[A-Z][a-z]+ [A-Z][a-z]+\b/.test(a))
+        !pack.executive_summary.key_achievements.some(a => /\b[A-Z][a-z]+ [A-Z][a-z]+\b/.test(a))
       );
     },
 
@@ -379,7 +392,12 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
   // ==========================================================================
   describe('CONTRACT: pack_generation', () => {
     it('generates review pack', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
 
       assert.ok(pack.pack_id.startsWith('sha256:'));
       assert.strictEqual(pack.period, 'Q4');
@@ -387,14 +405,24 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
     });
 
     it('pack has generation timestamp', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
 
       assert.ok(pack.generated_at);
       assert.ok(new Date(pack.generated_at).getTime() > 0);
     });
 
     it('retrieves pack by ID', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const retrieved = await service.getPack(pack.pack_id);
 
       assert.ok(retrieved);
@@ -402,15 +430,30 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
     });
 
     it('lists packs by year', async () => {
-      await service.generatePack({ period: 'Q1', year: 2025, include_evidence_refs: true, include_recommendations: true });
-      await service.generatePack({ period: 'Q2', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      await service.generatePack({
+        period: 'Q1',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
+      await service.generatePack({
+        period: 'Q2',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
 
       const packs = await service.listPacks(2025);
       assert.ok(packs.length >= 2);
     });
 
     it('finalizes pack', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const finalized = await service.finalizePack(pack.pack_id);
 
       assert.strictEqual(finalized.is_final, true);
@@ -422,14 +465,24 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
   // ==========================================================================
   describe('CONTRACT: executive_summary', () => {
     it('pack has executive summary', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
 
       assert.ok(pack.executive_summary);
       assert.ok(pack.executive_summary.summary_id.startsWith('sha256:'));
     });
 
     it('summary has health score', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const score = await service.getHealthScore(pack.pack_id);
 
       assert.ok(score >= 0);
@@ -437,7 +490,12 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
     });
 
     it('summary has control counts', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const summary = await service.getExecutiveSummary(pack.pack_id);
 
       assert.ok(summary);
@@ -447,7 +505,12 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
     });
 
     it('summary has key achievements and risks', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const summary = await service.getExecutiveSummary(pack.pack_id);
 
       assert.ok(summary);
@@ -461,39 +524,70 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
   // ==========================================================================
   describe('CONTRACT: control_mapping', () => {
     it('pack has control sections', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const sections = await service.getControlSections(pack.pack_id);
 
       assert.ok(sections.length > 0);
     });
 
     it('sections have categories', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const sections = await service.getControlSections(pack.pack_id);
 
       for (const section of sections) {
-        assert.ok(['access', 'change', 'incident', 'continuity', 'compliance', 'monitoring'].includes(section.category));
+        assert.ok(
+          ['access', 'change', 'incident', 'continuity', 'compliance', 'monitoring'].includes(
+            section.category
+          )
+        );
       }
     });
 
     it('gets control outcomes by category', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const outcomes = await service.getControlOutcomes(pack.pack_id, 'access');
 
       assert.ok(outcomes.length > 0);
     });
 
     it('control outcomes have status', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const outcomes = await service.getControlOutcomes(pack.pack_id, 'access');
 
       for (const outcome of outcomes) {
-        assert.ok(['effective', 'partially_effective', 'ineffective', 'not_tested'].includes(outcome.status));
+        assert.ok(
+          ['effective', 'partially_effective', 'ineffective', 'not_tested'].includes(outcome.status)
+        );
       }
     });
 
     it('control IDs are opaque', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const outcomes = await service.getControlOutcomes(pack.pack_id, 'access');
 
       for (const outcome of outcomes) {
@@ -507,7 +601,12 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
   // ==========================================================================
   describe('CONTRACT: evidence_mapping', () => {
     it('pack has evidence summary', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const summary = await service.getEvidenceSummary(pack.pack_id);
 
       assert.ok(summary);
@@ -515,7 +614,12 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
     });
 
     it('evidence summary has counts', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const summary = await service.getEvidenceSummary(pack.pack_id);
 
       assert.ok(summary);
@@ -526,7 +630,12 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
     });
 
     it('controls link to evidence refs', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const outcomes = await service.getControlOutcomes(pack.pack_id, 'access');
 
       for (const outcome of outcomes) {
@@ -535,7 +644,12 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
     });
 
     it('evidence refs are opaque', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const outcomes = await service.getControlOutcomes(pack.pack_id, 'access');
 
       for (const outcome of outcomes) {
@@ -546,7 +660,12 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
     });
 
     it('checks evidence completeness', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const isComplete = await service.isEvidenceComplete(pack.pack_id);
 
       assert.strictEqual(typeof isComplete, 'boolean');
@@ -558,14 +677,24 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
   // ==========================================================================
   describe('CONTRACT: recommendations', () => {
     it('pack has recommendations', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const recommendations = await service.getRecommendations(pack.pack_id);
 
       assert.ok(recommendations.length > 0);
     });
 
     it('recommendations have priority', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const recommendations = await service.getRecommendations(pack.pack_id);
 
       for (const rec of recommendations) {
@@ -574,7 +703,12 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
     });
 
     it('recommendations have remediation target', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const recommendations = await service.getRecommendations(pack.pack_id);
 
       for (const rec of recommendations) {
@@ -583,7 +717,12 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
     });
 
     it('recommendation IDs are opaque', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const recommendations = await service.getRecommendations(pack.pack_id);
 
       for (const rec of recommendations) {
@@ -597,14 +736,24 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
   // ==========================================================================
   describe('CONTRACT: pii_safety', () => {
     it('pack is PII-clean', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const isPIIClean = await service.isPIIClean(pack);
 
       assert.strictEqual(isPIIClean, true);
     });
 
     it('pack contains no user data', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const hasUserData = await service.containsUserData(pack);
 
       assert.strictEqual(hasUserData, false);
@@ -616,14 +765,24 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
   // ==========================================================================
   describe('CONTRACT: reproducibility', () => {
     it('pack is reproducible', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const isReproducible = await service.isReproducible(pack.pack_id);
 
       assert.strictEqual(isReproducible, true);
     });
 
     it('pack has generation timestamp', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
       const timestamp = await service.getGenerationTimestamp(pack.pack_id);
 
       assert.ok(timestamp.length > 0);
@@ -631,7 +790,12 @@ describe('Control Effectiveness: Governance Review Contracts', () => {
     });
 
     it('pack is time-bounded', async () => {
-      const pack = await service.generatePack({ period: 'Q4', year: 2025, include_evidence_refs: true, include_recommendations: true });
+      const pack = await service.generatePack({
+        period: 'Q4',
+        year: 2025,
+        include_evidence_refs: true,
+        include_recommendations: true,
+      });
 
       assert.ok(pack.period);
       assert.ok(pack.year);

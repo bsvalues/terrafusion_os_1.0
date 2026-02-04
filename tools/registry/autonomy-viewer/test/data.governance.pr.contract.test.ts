@@ -11,9 +11,9 @@
  * - pr_validates_data_posture: data-specific validation rules
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import * as crypto from 'node:crypto';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Data Access Governance PRs
@@ -227,9 +227,7 @@ function validateDataGovernancePR(pr: DataGovernancePR): DataGovernancePRValidat
     }
   }
 
-  const riskLevel = pr.metadata?.changeScope
-    ? computeRiskLevel(pr.metadata.changeScope)
-    : 'high';
+  const riskLevel = pr.metadata?.changeScope ? computeRiskLevel(pr.metadata.changeScope) : 'high';
 
   return { valid: errors.length === 0, errors, warnings, riskLevel };
 }
@@ -237,7 +235,9 @@ function validateDataGovernancePR(pr: DataGovernancePR): DataGovernancePRValidat
 /**
  * Create sample policy snapshot.
  */
-function createSamplePolicySnapshot(options: Partial<PolicyStateSnapshot> = {}): PolicyStateSnapshot {
+function createSamplePolicySnapshot(
+  options: Partial<PolicyStateSnapshot> = {}
+): PolicyStateSnapshot {
   return {
     policyId: options.policyId ?? computeOpaqueId('policy-sample'),
     action: options.action ?? 'require_approval',
@@ -250,7 +250,9 @@ function createSamplePolicySnapshot(options: Partial<PolicyStateSnapshot> = {}):
 /**
  * Create sample binding snapshot.
  */
-function createSampleBindingSnapshot(options: Partial<BindingStateSnapshot> = {}): BindingStateSnapshot {
+function createSampleBindingSnapshot(
+  options: Partial<BindingStateSnapshot> = {}
+): BindingStateSnapshot {
   return {
     bindingId: options.bindingId ?? computeOpaqueId('binding-sample'),
     datasetId: options.datasetId ?? computeOpaqueId('dataset-sample'),
@@ -263,12 +265,14 @@ function createSampleBindingSnapshot(options: Partial<BindingStateSnapshot> = {}
 /**
  * Create sample diff entry.
  */
-function createSampleDiffEntry(options: {
-  category?: DataChangeCategory;
-  hasBefore?: boolean;
-  hasAfter?: boolean;
-  artifactType?: 'export_policy' | 'access_binding' | 'classification';
-} = {}): DataDiffEntry {
+function createSampleDiffEntry(
+  options: {
+    category?: DataChangeCategory;
+    hasBefore?: boolean;
+    hasAfter?: boolean;
+    artifactType?: 'export_policy' | 'access_binding' | 'classification';
+  } = {}
+): DataDiffEntry {
   const {
     category = 'export_policy_change',
     hasBefore = true,
@@ -307,7 +311,10 @@ function createSampleRiskAssessment(scope: DataChangeScope): DataRiskAssessment 
 
   return {
     level,
-    factors: [`${scope.environments.join(', ')} environment(s)`, `${scope.affectedDatasetCount} dataset(s)`],
+    factors: [
+      `${scope.environments.join(', ')} environment(s)`,
+      `${scope.affectedDatasetCount} dataset(s)`,
+    ],
     mitigations: ['Staged rollout', 'Monitoring', 'Immediate rollback'],
     requiredApprovals: level === 'critical' ? 2 : 1,
     requiresSecurityReview: level === 'critical' || hasCritical,
@@ -318,11 +325,13 @@ function createSampleRiskAssessment(scope: DataChangeScope): DataRiskAssessment 
 /**
  * Create sample metadata.
  */
-function createSampleMetadata(options: {
-  scope?: DataChangeScope;
-  justification?: string;
-  rollbackPlan?: string;
-} = {}): DataGovernancePRMetadata {
+function createSampleMetadata(
+  options: {
+    scope?: DataChangeScope;
+    justification?: string;
+    rollbackPlan?: string;
+  } = {}
+): DataGovernancePRMetadata {
   const scope = options.scope ?? createSampleScope();
 
   return {
@@ -340,15 +349,17 @@ function createSampleMetadata(options: {
 /**
  * Create sample governance PR.
  */
-function createSampleGovernancePR(options: {
-  autoMerge?: boolean;
-  requiresApproval?: boolean;
-  includeDiff?: boolean;
-  includeMetadata?: boolean;
-  scope?: DataChangeScope;
-  justification?: string;
-  rollbackPlan?: string;
-} = {}): DataGovernancePR {
+function createSampleGovernancePR(
+  options: {
+    autoMerge?: boolean;
+    requiresApproval?: boolean;
+    includeDiff?: boolean;
+    includeMetadata?: boolean;
+    scope?: DataChangeScope;
+    justification?: string;
+    rollbackPlan?: string;
+  } = {}
+): DataGovernancePR {
   const {
     autoMerge = false,
     requiresApproval = true,
@@ -366,7 +377,9 @@ function createSampleGovernancePR(options: {
     createdAt: new Date().toISOString(),
     autoMerge: autoMerge as false,
     requiresApproval: requiresApproval as true,
-    metadata: includeMetadata ? createSampleMetadata({ scope, justification, rollbackPlan }) : undefined as never,
+    metadata: includeMetadata
+      ? createSampleMetadata({ scope, justification, rollbackPlan })
+      : (undefined as never),
     diff: includeDiff ? [createSampleDiffEntry()] : [],
     validationErrors: [],
     validationWarnings: [],
@@ -384,7 +397,7 @@ describe('Data Access Governance PR Contract', () => {
       const result = validateDataGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('Diff')));
+      assert.ok(result.errors.some(e => e.includes('Diff')));
     });
 
     it('should include before state for existing artifacts', () => {
@@ -426,18 +439,20 @@ describe('Data Access Governance PR Contract', () => {
     it('should fail if entry has neither before nor after', () => {
       const pr: DataGovernancePR = {
         ...createSampleGovernancePR(),
-        diff: [{
-          artifactId: 'sha256:x',
-          artifactType: 'export_policy',
-          changeCategory: 'export_policy_change',
-          before: null,
-          after: null,
-        }],
+        diff: [
+          {
+            artifactId: 'sha256:x',
+            artifactType: 'export_policy',
+            changeCategory: 'export_policy_change',
+            before: null,
+            after: null,
+          },
+        ],
       };
       const result = validateDataGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('neither before nor after')));
+      assert.ok(result.errors.some(e => e.includes('neither before nor after')));
     });
   });
 
@@ -451,7 +466,7 @@ describe('Data Access Governance PR Contract', () => {
       const result = validateDataGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('Metadata')));
+      assert.ok(result.errors.some(e => e.includes('Metadata')));
     });
 
     it('should require risk assessment', () => {
@@ -477,11 +492,14 @@ describe('Data Access Governance PR Contract', () => {
       const result = validateDataGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('Justification')));
+      assert.ok(result.errors.some(e => e.includes('Justification')));
     });
 
     it('should require rollback plan for high risk', () => {
-      const scope = createSampleScope({ environments: ['production'], datasetRiskTiers: ['critical'] });
+      const scope = createSampleScope({
+        environments: ['production'],
+        datasetRiskTiers: ['critical'],
+      });
       const pr = createSampleGovernancePR({ scope, rollbackPlan: '' });
 
       const prWithoutRollback: DataGovernancePR = {
@@ -491,7 +509,7 @@ describe('Data Access Governance PR Contract', () => {
       const result = validateDataGovernancePR(prWithoutRollback);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('Rollback plan')));
+      assert.ok(result.errors.some(e => e.includes('Rollback plan')));
     });
   });
 
@@ -511,7 +529,7 @@ describe('Data Access Governance PR Contract', () => {
       const result = validateDataGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('autoMerge')));
+      assert.ok(result.errors.some(e => e.includes('autoMerge')));
     });
 
     it('should always require approval', () => {
@@ -525,7 +543,7 @@ describe('Data Access Governance PR Contract', () => {
       const result = validateDataGovernancePR(pr);
 
       assert.ok(!result.valid);
-      assert.ok(result.errors.some((e) => e.includes('requiresApproval')));
+      assert.ok(result.errors.some(e => e.includes('requiresApproval')));
     });
   });
 

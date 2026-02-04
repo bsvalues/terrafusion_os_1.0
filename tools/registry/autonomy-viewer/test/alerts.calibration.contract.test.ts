@@ -11,18 +11,16 @@
  * - severity_hierarchy_consistent: Critical < Warning < Info thresholds
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 import {
-  SECURITY_ALERT_CATALOG,
-  validateAlertCatalog,
-  getAlertsForSlo,
-  getAlertsBySeverity,
-  hasJwksRefreshFailSpikeAlert,
-  hasDenialRateBurnRateAlert,
-  type AlertRule,
-  type AlertSeverity,
+    SECURITY_ALERT_CATALOG,
+    getAlertsBySeverity,
+    getAlertsForSlo,
+    hasDenialRateBurnRateAlert,
+    hasJwksRefreshFailSpikeAlert,
+    validateAlertCatalog
 } from '../src/security/ops/alerts/rules.js';
 
 import { SECURITY_SLO_CATALOG, getSloById } from '../src/security/ops/slo/catalog.js';

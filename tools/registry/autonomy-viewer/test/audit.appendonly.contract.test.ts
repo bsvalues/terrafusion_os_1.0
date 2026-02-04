@@ -12,8 +12,8 @@
  * - audit_chain_integrity: Sequential IDs, no gaps, tamper detection
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Audit Log
@@ -189,9 +189,7 @@ function validateAuditRecord(record: Partial<AuditRecord>): ValidationResult {
 /**
  * Filter dimensions for PII safety.
  */
-function filterDimensions(
-  details: Record<string, unknown>
-): Record<string, unknown> {
+function filterDimensions(details: Record<string, unknown>): Record<string, unknown> {
   const filtered: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(details)) {
     if (key === 'dimensions' && typeof value === 'object' && value !== null) {
@@ -220,7 +218,7 @@ function containsPii(record: AuditRecord): boolean {
   ];
 
   const textToScan = JSON.stringify(record);
-  return piiPatterns.some((p) => p.test(textToScan));
+  return piiPatterns.some(p => p.test(textToScan));
 }
 
 /**
@@ -265,29 +263,29 @@ class ImmutableAuditLog {
 
     if (params.startTime) {
       const start = new Date(params.startTime);
-      filtered = filtered.filter((r) => new Date(r.timestamp) >= start);
+      filtered = filtered.filter(r => new Date(r.timestamp) >= start);
     }
     if (params.endTime) {
       const end = new Date(params.endTime);
-      filtered = filtered.filter((r) => new Date(r.timestamp) <= end);
+      filtered = filtered.filter(r => new Date(r.timestamp) <= end);
     }
     if (params.actorId) {
-      filtered = filtered.filter((r) => r.actor.id === params.actorId);
+      filtered = filtered.filter(r => r.actor.id === params.actorId);
     }
     if (params.actorType) {
-      filtered = filtered.filter((r) => r.actor.type === params.actorType);
+      filtered = filtered.filter(r => r.actor.type === params.actorType);
     }
     if (params.targetId) {
-      filtered = filtered.filter((r) => r.target.id === params.targetId);
+      filtered = filtered.filter(r => r.target.id === params.targetId);
     }
     if (params.targetType) {
-      filtered = filtered.filter((r) => r.target.type === params.targetType);
+      filtered = filtered.filter(r => r.target.type === params.targetType);
     }
     if (params.action) {
-      filtered = filtered.filter((r) => r.action === params.action);
+      filtered = filtered.filter(r => r.action === params.action);
     }
     if (params.correlationId) {
-      filtered = filtered.filter((r) => r.correlationId === params.correlationId);
+      filtered = filtered.filter(r => r.correlationId === params.correlationId);
     }
 
     const total = filtered.length;
@@ -309,9 +307,7 @@ class ImmutableAuditLog {
 
       // Check sequence continuity
       if (record.sequenceNumber !== i) {
-        errors.push(
-          `Sequence gap: expected ${i}, got ${record.sequenceNumber}`
-        );
+        errors.push(`Sequence gap: expected ${i}, got ${record.sequenceNumber}`);
         break;
       }
 
@@ -355,14 +351,8 @@ describe('Audit Append-Only Contract', () => {
       assert.ok(typeof log.append === 'function', 'Should have append method');
 
       // Verify no delete/update methods exist
-      assert.ok(
-        !('delete' in log) && !('remove' in log),
-        'Should not have delete methods'
-      );
-      assert.ok(
-        !('update' in log) && !('modify' in log),
-        'Should not have update methods'
-      );
+      assert.ok(!('delete' in log) && !('remove' in log), 'Should not have delete methods');
+      assert.ok(!('update' in log) && !('modify' in log), 'Should not have update methods');
     });
 
     it('should increment record count on each append', () => {
@@ -403,8 +393,8 @@ describe('Audit Append-Only Contract', () => {
 
       const result = log.query({});
       assert.strictEqual(result.records.length, 2);
-      assert.ok(result.records.some((r) => r.target.id === 'slo-1'));
-      assert.ok(result.records.some((r) => r.target.id === 'slo-2'));
+      assert.ok(result.records.some(r => r.target.id === 'slo-1'));
+      assert.ok(result.records.some(r => r.target.id === 'slo-2'));
     });
 
     it('should return immutable records', () => {
@@ -469,7 +459,7 @@ describe('Audit Append-Only Contract', () => {
       });
 
       assert.ok(!validation.valid);
-      assert.ok(validation.errors.some((e) => e.includes('actor')));
+      assert.ok(validation.errors.some(e => e.includes('actor')));
     });
 
     it('should require target type and id', () => {
@@ -486,7 +476,7 @@ describe('Audit Append-Only Contract', () => {
       });
 
       assert.ok(!validation.valid);
-      assert.ok(validation.errors.some((e) => e.includes('target')));
+      assert.ok(validation.errors.some(e => e.includes('target')));
     });
 
     it('should require valid timestamp', () => {
@@ -503,7 +493,7 @@ describe('Audit Append-Only Contract', () => {
       });
 
       assert.ok(!validation.valid);
-      assert.ok(validation.errors.some((e) => e.includes('timestamp')));
+      assert.ok(validation.errors.some(e => e.includes('timestamp')));
     });
   });
 

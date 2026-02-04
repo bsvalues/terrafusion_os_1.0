@@ -11,8 +11,8 @@
  * - gate_emits_audit_event_on_decision: all gate decisions are auditable
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for Sign-off Gate
@@ -153,7 +153,10 @@ function validateFreshness(
 /**
  * Validate signoff expiry.
  */
-function validateExpiry(artifact: SignoffArtifact, now: Date = new Date()): { valid: boolean; expiredAgo?: string } {
+function validateExpiry(
+  artifact: SignoffArtifact,
+  now: Date = new Date()
+): { valid: boolean; expiredAgo?: string } {
   const expiresAt = new Date(artifact.expiresAt);
   if (expiresAt > now) {
     return { valid: true };
@@ -307,7 +310,9 @@ function evaluateGate(
   // Validate freshness
   const freshnessResult = validateFreshness(artifact, freshnessConfig, now);
   if (!freshnessResult.fresh) {
-    reasons.push(`Signoff too old: ${freshnessResult.ageHours}h > max ${freshnessResult.maxHours}h`);
+    reasons.push(
+      `Signoff too old: ${freshnessResult.ageHours}h > max ${freshnessResult.maxHours}h`
+    );
   }
 
   const allowed = reasons.length === 0;
@@ -343,7 +348,7 @@ function evaluateGate(
  * Get gate audit events by correlation ID.
  */
 function getGateEventsByCorrelation(correlationId: string): readonly GateAuditEvent[] {
-  return gateAuditEvents.filter((e) => e.correlationId === correlationId);
+  return gateAuditEvents.filter(e => e.correlationId === correlationId);
 }
 
 /**
@@ -441,7 +446,7 @@ describe('Sign-off Gate Contract', () => {
 
       assert.ok(!result.allowed);
       assert.equal(result.decision, 'fail');
-      assert.ok(result.reasons.some((r) => r.includes('required')));
+      assert.ok(result.reasons.some(r => r.includes('required')));
     });
 
     it('should allow production with valid signoff', () => {
@@ -519,7 +524,7 @@ describe('Sign-off Gate Contract', () => {
       const result = evaluateGate(request);
 
       assert.ok(!result.allowed);
-      assert.ok(result.reasons.some((r) => r.includes('decision')));
+      assert.ok(result.reasons.some(r => r.includes('decision')));
     });
   });
 
@@ -544,7 +549,7 @@ describe('Sign-off Gate Contract', () => {
       const result = evaluateGate(request);
 
       assert.ok(!result.allowed);
-      assert.ok(result.reasons.some((r) => r.includes('expired')));
+      assert.ok(result.reasons.some(r => r.includes('expired')));
     });
 
     it('should reject stale signoff', () => {
@@ -563,7 +568,7 @@ describe('Sign-off Gate Contract', () => {
       const result = evaluateGate(request);
 
       assert.ok(!result.allowed);
-      assert.ok(result.reasons.some((r) => r.includes('too old')));
+      assert.ok(result.reasons.some(r => r.includes('too old')));
     });
 
     it('should have stricter freshness for production', () => {
@@ -609,7 +614,7 @@ describe('Sign-off Gate Contract', () => {
       const result = evaluateGate(request);
 
       assert.ok(!result.allowed);
-      assert.ok(result.reasons.some((r) => r.includes('does not match')));
+      assert.ok(result.reasons.some(r => r.includes('does not match')));
     });
 
     it('should reject signoff for wrong stage', () => {
@@ -630,7 +635,7 @@ describe('Sign-off Gate Contract', () => {
       const result = evaluateGate(request);
 
       assert.ok(!result.allowed);
-      assert.ok(result.reasons.some((r) => r.includes('stage')));
+      assert.ok(result.reasons.some(r => r.includes('stage')));
     });
 
     it('should validate scope correctly', () => {
@@ -672,7 +677,7 @@ describe('Sign-off Gate Contract', () => {
 
       const events = getGateEventsByCorrelation(correlationId);
       assert.ok(events.length > 0);
-      assert.ok(events.every((e) => e.correlationId === correlationId));
+      assert.ok(events.every(e => e.correlationId === correlationId));
     });
 
     it('should emit started and passed/failed events', () => {
@@ -692,7 +697,7 @@ describe('Sign-off Gate Contract', () => {
       evaluateGate(request);
 
       const events = getGateEventsByCorrelation(correlationId);
-      const types = events.map((e) => e.eventType);
+      const types = events.map(e => e.eventType);
 
       assert.ok(types.includes('gate_check_started'));
       assert.ok(types.includes('gate_check_passed'));
@@ -715,7 +720,7 @@ describe('Sign-off Gate Contract', () => {
       evaluateGate(request);
 
       const events = getGateEventsByCorrelation(correlationId);
-      assert.ok(events.some((e) => e.eventType === 'gate_check_failed'));
+      assert.ok(events.some(e => e.eventType === 'gate_check_failed'));
     });
 
     it('should include signoff ID in audit event', () => {
@@ -737,7 +742,7 @@ describe('Sign-off Gate Contract', () => {
       evaluateGate(request);
 
       const events = getGateEventsByCorrelation(correlationId);
-      assert.ok(events.some((e) => e.signoffId === signoff.id));
+      assert.ok(events.some(e => e.signoffId === signoff.id));
     });
 
     it('should include rejection reasons in audit event', () => {
@@ -757,7 +762,7 @@ describe('Sign-off Gate Contract', () => {
       evaluateGate(request);
 
       const events = getGateEventsByCorrelation(correlationId);
-      const failedEvent = events.find((e) => e.eventType === 'gate_check_failed');
+      const failedEvent = events.find(e => e.eventType === 'gate_check_failed');
 
       assert.ok(failedEvent);
       assert.ok(failedEvent.reasons.length > 0);

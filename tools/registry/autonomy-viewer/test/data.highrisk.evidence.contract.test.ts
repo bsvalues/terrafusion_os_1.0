@@ -12,9 +12,9 @@
  * - evidence_includes_checksum: tamper-evident
  */
 
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import * as crypto from 'node:crypto';
+import { describe, it } from 'node:test';
 
 // ============================================================================
 // Types for High-Risk Evidence
@@ -54,7 +54,13 @@ type RiskCategory =
 /**
  * Dimension allowlist (bounded).
  */
-const DIMENSION_ALLOWLIST = ['environment', 'dataset_tier', 'access_mode', 'principal_type', 'risk_tier'] as const;
+const DIMENSION_ALLOWLIST = [
+  'environment',
+  'dataset_tier',
+  'access_mode',
+  'principal_type',
+  'risk_tier',
+] as const;
 type AllowedDimension = (typeof DIMENSION_ALLOWLIST)[number];
 
 /**
@@ -153,14 +159,27 @@ function verifyChecksum(pack: DataAccessEvidencePack): boolean {
 /**
  * Create sample effective access summary.
  */
-function createSampleEffectiveAccess(options: Partial<EffectiveAccessSummary> = {}): EffectiveAccessSummary {
+function createSampleEffectiveAccess(
+  options: Partial<EffectiveAccessSummary> = {}
+): EffectiveAccessSummary {
   return {
     totalAccessEvents: options.totalAccessEvents ?? 1000,
     totalExportEvents: options.totalExportEvents ?? 50,
-    byEnvironment: options.byEnvironment ?? { production: 800, staging: 150, development: 50, test: 0 },
+    byEnvironment: options.byEnvironment ?? {
+      production: 800,
+      staging: 150,
+      development: 50,
+      test: 0,
+    },
     byDatasetTier: options.byDatasetTier ?? { critical: 100, high: 300, medium: 400, low: 200 },
     byAccessMode: options.byAccessMode ?? { read: 850, write: 100, export: 50, admin: 0 },
-    byPrincipalType: options.byPrincipalType ?? { user: 200, service: 700, job: 80, bi_tool: 15, api_client: 5 },
+    byPrincipalType: options.byPrincipalType ?? {
+      user: 200,
+      service: 700,
+      job: 80,
+      bi_tool: 15,
+      api_client: 5,
+    },
   };
 }
 
@@ -179,20 +198,25 @@ function createSampleAtRiskSummary(options: Partial<AtRiskSummary> = {}): AtRisk
 /**
  * Create sample aggregation.
  */
-function createSampleAggregation(dimension: AllowedDimension, values: Record<string, number>): DimensionAggregation {
+function createSampleAggregation(
+  dimension: AllowedDimension,
+  values: Record<string, number>
+): DimensionAggregation {
   return { dimension, values };
 }
 
 /**
  * Create sample evidence pack.
  */
-function createSampleEvidencePack(options: {
-  environment?: Environment;
-  scope?: 'full' | 'high_risk_only' | 'exports_only';
-  atRiskSummaries?: readonly AtRiskSummary[];
-  effectiveAccess?: EffectiveAccessSummary;
-  anomalyCount?: number;
-} = {}): DataAccessEvidencePack {
+function createSampleEvidencePack(
+  options: {
+    environment?: Environment;
+    scope?: 'full' | 'high_risk_only' | 'exports_only';
+    atRiskSummaries?: readonly AtRiskSummary[];
+    effectiveAccess?: EffectiveAccessSummary;
+    anomalyCount?: number;
+  } = {}
+): DataAccessEvidencePack {
   const pack = {
     packId: computeOpaqueId(`pack-${Date.now()}`),
     generatedAt: new Date().toISOString(),
@@ -225,15 +249,22 @@ function createSampleEvidencePack(options: {
 /**
  * Check if pack is bounded.
  */
-function isPackBounded(pack: DataAccessEvidencePack, limits: EvidencePackLimits): { valid: boolean; violations: string[] } {
+function isPackBounded(
+  pack: DataAccessEvidencePack,
+  limits: EvidencePackLimits
+): { valid: boolean; violations: string[] } {
   const violations: string[] = [];
 
   if (pack.atRiskSummaries.length > limits.maxAtRiskSummaries) {
-    violations.push(`At-risk summaries exceed limit: ${pack.atRiskSummaries.length} > ${limits.maxAtRiskSummaries}`);
+    violations.push(
+      `At-risk summaries exceed limit: ${pack.atRiskSummaries.length} > ${limits.maxAtRiskSummaries}`
+    );
   }
 
   if (pack.aggregations.length > limits.maxAggregations) {
-    violations.push(`Aggregations exceed limit: ${pack.aggregations.length} > ${limits.maxAggregations}`);
+    violations.push(
+      `Aggregations exceed limit: ${pack.aggregations.length} > ${limits.maxAggregations}`
+    );
   }
 
   const packSize = JSON.stringify(pack).length;
@@ -307,7 +338,7 @@ describe('Data High-Risk Evidence Contract', () => {
         atRiskSummaries: [createSampleAtRiskSummary({ riskCategory: 'new_access_high_risk' })],
       });
 
-      assert.ok(pack.atRiskSummaries.some((s) => s.riskCategory === 'new_access_high_risk'));
+      assert.ok(pack.atRiskSummaries.some(s => s.riskCategory === 'new_access_high_risk'));
     });
 
     it('should highlight export policy weakened', () => {
@@ -315,7 +346,7 @@ describe('Data High-Risk Evidence Contract', () => {
         atRiskSummaries: [createSampleAtRiskSummary({ riskCategory: 'export_policy_weakened' })],
       });
 
-      assert.ok(pack.atRiskSummaries.some((s) => s.riskCategory === 'export_policy_weakened'));
+      assert.ok(pack.atRiskSummaries.some(s => s.riskCategory === 'export_policy_weakened'));
     });
 
     it('should highlight anomalous volume', () => {
@@ -323,7 +354,7 @@ describe('Data High-Risk Evidence Contract', () => {
         atRiskSummaries: [createSampleAtRiskSummary({ riskCategory: 'anomalous_volume' })],
       });
 
-      assert.ok(pack.atRiskSummaries.some((s) => s.riskCategory === 'anomalous_volume'));
+      assert.ok(pack.atRiskSummaries.some(s => s.riskCategory === 'anomalous_volume'));
     });
 
     it('should include severity', () => {
@@ -370,7 +401,7 @@ describe('Data High-Risk Evidence Contract', () => {
       const result = isPackBounded(pack, limits);
 
       assert.strictEqual(result.valid, false);
-      assert.ok(result.violations.some((v) => v.includes('At-risk')));
+      assert.ok(result.violations.some(v => v.includes('At-risk')));
     });
 
     it('should enforce dimension allowlist', () => {
