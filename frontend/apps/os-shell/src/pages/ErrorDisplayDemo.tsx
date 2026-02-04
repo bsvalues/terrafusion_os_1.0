@@ -64,20 +64,14 @@ export const ErrorDisplayDemo: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            🎯 Error Display Demo
-          </h1>
-          <p className="text-gray-600">
-            Phase 1: correlationId-First Error UX Visual Verification
-          </p>
-          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-            <h2 className="text-sm font-semibold text-blue-900 mb-2">
-              Test Checklist:
-            </h2>
-            <ul className="text-sm text-blue-800 space-y-1">
+    <div className='min-h-screen bg-gray-50 p-8'>
+      <div className='max-w-4xl mx-auto'>
+        <div className='mb-8'>
+          <h1 className='text-3xl font-bold text-gray-900 mb-2'>🎯 Error Display Demo</h1>
+          <p className='text-gray-600'>Phase 1: correlationId-First Error UX Visual Verification</p>
+          <div className='mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md'>
+            <h2 className='text-sm font-semibold text-blue-900 mb-2'>Test Checklist:</h2>
+            <ul className='text-sm text-blue-800 space-y-1'>
               <li>✓ CorrelationId visible when present</li>
               <li>✓ Copy button works (click to copy correlationId)</li>
               <li>✓ Dev mode shows trace query hint (expand "Developer Info")</li>
@@ -89,26 +83,32 @@ export const ErrorDisplayDemo: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className='space-y-6'>
           {demoErrors.map((demo, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                {demo.title}
-              </h3>
+            <div key={index} className='bg-white rounded-lg shadow-sm p-6'>
+              <h3 className='text-lg font-semibold text-gray-800 mb-4'>{demo.title}</h3>
               <ErrorDisplay error={demo.error} />
             </div>
           ))}
         </div>
 
-        <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-md">
-          <h2 className="text-lg font-semibold text-green-900 mb-2">
+        <div className='mt-8 p-6 bg-green-50 border border-green-200 rounded-md'>
+          <h2 className='text-lg font-semibold text-green-900 mb-2'>
             ✅ Phase 1 Implementation Complete
           </h2>
-          <div className="text-sm text-green-800 space-y-1">
-            <p><strong>Tests:</strong> 18/18 passing</p>
-            <p><strong>Gates:</strong> type-check PASSED</p>
-            <p><strong>Dev Mode Hint:</strong> Open "Developer Info" to see trace query command</p>
-            <p><strong>Production Mode:</strong> Set NODE_ENV=production to verify hint is hidden</p>
+          <div className='text-sm text-green-800 space-y-1'>
+            <p>
+              <strong>Tests:</strong> 18/18 passing
+            </p>
+            <p>
+              <strong>Gates:</strong> type-check PASSED
+            </p>
+            <p>
+              <strong>Dev Mode Hint:</strong> Open "Developer Info" to see trace query command
+            </p>
+            <p>
+              <strong>Production Mode:</strong> Set NODE_ENV=production to verify hint is hidden
+            </p>
           </div>
         </div>
       </div>

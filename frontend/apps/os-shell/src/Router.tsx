@@ -1,6 +1,8 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import { ErrorBoundary } from './components/errors/ErrorBoundary';
+
 // Loading component for Suspense fallback
 const LoadingFallback = () => (
   <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900'>
@@ -46,8 +48,9 @@ const Router: React.FC = () => {
         v7_relativeSplatPath: true,
       }}
     >
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
           <Route path='/' element={<App />} />
           <Route path='/monitoring' element={<Monitoring />} />
           <Route path='/marketplace' element={<TerraFusionMarketplace />} />
@@ -73,6 +76,7 @@ const Router: React.FC = () => {
           <Route path='/modules/*' element={<div>Module Loading...</div>} />
         </Routes>
       </Suspense>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 };

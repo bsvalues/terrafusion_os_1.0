@@ -13,8 +13,8 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { ErrorDisplay } from '../../components/errors/ErrorDisplay';
 
