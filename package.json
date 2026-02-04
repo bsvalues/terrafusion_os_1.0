@@ -80,6 +80,7 @@
     "lint:check": "eslint \"**/*.{ts,tsx}\"",
     "type-check": "tsc -p tsconfig.core.json",
     "typecheck:core": "tsc -p tsconfig.core.json",
+    "doctor": "node scripts/doctor.mjs",
     "check:generated": "node tools/registry/check-generated-js.mjs",
     "build:core-js": "node tools/registry/build-core-js.mjs",
     "governance:check": "pnpm run typecheck:core && node --test os-platform/core/tests/phase83-tools.test.mjs && node --test os-platform/core/tests/phase85-tools.test.mjs && node --test os-platform/core/tests/phase86-toolrunner.test.mjs && node tools/registry/check-generated-js.mjs",
