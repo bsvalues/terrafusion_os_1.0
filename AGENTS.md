@@ -136,6 +136,74 @@ pwsh scripts/wave1-preflight.ps1
 - `REJECTED_INVALID_FORMAT`: Title or evidence format invalid
 - `REJECTED_SLOT_CAP`: Slot cap (20) exceeded
 - `HANDLER_ERROR`: IntakeHandler crash (includes stackTrace)
+
+### UI Error Debugging (Phase 1: correlationId-First UX)
+When users encounter errors in the UI, all errors display with correlationId for trace chain lookup.
+
+**Three Error Sources:**
+
+1. **Backend Errors** (from Pilot API)
+   - correlationId prefix: `corr-*` (backend-generated)
+   - User sees: ErrorDisplay with correlationId + copy button
+   - Debug: `pnpm run trace:query --correlation <correlationId>`
+   - Example: `corr-abc123-def456` → backend tool execution failure
+
+2. **Network Errors** (fetch failures, timeouts)
+   - correlationId prefix: `net-*` (client-generated)
+   - User sees: ErrorDisplay with generated correlationId
+   - Debug: Check browser DevTools Network tab + correlationId for timing
+   - Example: `net-abc123-def456` → API unreachable, DNS failure
+
+3. **React Errors** (component render crashes)
+   - correlationId prefix: `ebnd-*` (ErrorBoundary-generated)
+   - User sees: ErrorDisplay with correlationId + Reset button
+   - Debug: Browser console has full stack trace + correlationId
+   - Example: `ebnd-abc123-def456` → component threw during render
+
+**Visual Error Demo:**
+```bash
+# Launch dev server with error demo page
+pnpm --filter terrafusion-frontend run dev
+
+# Navigate to: http://localhost:5173/error-demo
+# Shows 5 error scenarios with correlationId display
+```
+
+**Common UI Debug Patterns:**
+```bash
+# User reports correlationId from UI → lookup trace
+pnpm run trace:query --correlation <correlationId>
+
+# Filter by error origin
+pnpm run trace:query --correlation net-*     # Network errors
+pnpm run trace:query --correlation ebnd-*    # React errors
+pnpm run trace:query --correlation corr-*    # Backend errors
+
+# Check recent UI errors (last 10)
+pnpm run trace:query --recent 10 --component PilotAPI
+pnpm run trace:query --recent 10 --component ErrorBoundary
+```
+
+**CorrelationId Flow (UI → Backend):**
+- User action → Pilot API call → Backend generates `corr-*`
+- Backend returns correlationId in response (success or failure)
+- UI displays correlationId in ErrorDisplay component
+- Dev mode: Shows trace query command hint
+- Production: correlationId visible + copyable, trace hint hidden
+
+**Testing Error Flows:**
+```bash
+# Run UI error tests
+pnpm --filter terrafusion-frontend test ErrorDisplay.test
+pnpm --filter terrafusion-frontend test pilotapi-error-normalization.test
+
+# Visual verification
+# 1. Start dev server: pnpm run dev (from frontend/)
+# 2. Navigate to /error-demo
+# 3. Verify correlationId visible + copyable
+# 4. Dev mode: Expand "Developer Info" to see trace query hint
+```
+
 ## COMMIT HYGIENE
 - Small commits, one logical change per commit.
 - Never fix by exclusion unless the exclusion is policy-backed and documented here.

@@ -51,31 +51,31 @@ const Router: React.FC = () => {
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
-          <Route path='/' element={<App />} />
-          <Route path='/monitoring' element={<Monitoring />} />
-          <Route path='/marketplace' element={<TerraFusionMarketplace />} />
-          <Route path='/experiments' element={<ExperimentsList />} />
-          <Route path='/experiments/create' element={<CreateExperiment />} />
-          <Route path='/elite-research' element={<EliteExperimentalResearchInterface />} />
-          <Route path='/codex/preferences' element={<NotificationPreferences />} />
+            <Route path='/' element={<App />} />
+            <Route path='/monitoring' element={<Monitoring />} />
+            <Route path='/marketplace' element={<TerraFusionMarketplace />} />
+            <Route path='/experiments' element={<ExperimentsList />} />
+            <Route path='/experiments/create' element={<CreateExperiment />} />
+            <Route path='/elite-research' element={<EliteExperimentalResearchInterface />} />
+            <Route path='/codex/preferences' element={<NotificationPreferences />} />
 
-          {/* Gen2 Module Routes - Internal OS modules */}
-          <Route path='/gen2/terraforge' element={<TerraForgeGen2 />} />
-          <Route path='/gen2/dossier' element={<TerraDossierGen2 />} />
+            {/* Gen2 Module Routes - Internal OS modules */}
+            <Route path='/gen2/terraforge' element={<TerraForgeGen2 />} />
+            <Route path='/gen2/dossier' element={<TerraDossierGen2 />} />
 
-          {/* GovernanceLock - Single Choke Point UI */}
-          <Route path='/pilot' element={<PilotConsole />} />
+            {/* GovernanceLock - Single Choke Point UI */}
+            <Route path='/pilot' element={<PilotConsole />} />
 
-          {/* GovernanceLock - Dashboard (role-gated) */}
-          <Route path='/pilot/dashboard' element={<GovernanceDashboard />} />
-          <Route path='/pilot/api' element={<PilotApiDemo />} />
+            {/* GovernanceLock - Dashboard (role-gated) */}
+            <Route path='/pilot/dashboard' element={<GovernanceDashboard />} />
+            <Route path='/pilot/api' element={<PilotApiDemo />} />
 
-          {/* Phase 1: Error Display Demo */}
-          <Route path='/error-demo' element={<ErrorDisplayDemo />} />
+            {/* Phase 1: Error Display Demo */}
+            <Route path='/error-demo' element={<ErrorDisplayDemo />} />
 
-          <Route path='/modules/*' element={<div>Module Loading...</div>} />
-        </Routes>
-      </Suspense>
+            <Route path='/modules/*' element={<div>Module Loading...</div>} />
+          </Routes>
+        </Suspense>
       </ErrorBoundary>
     </BrowserRouter>
   );
