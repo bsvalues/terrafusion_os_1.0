@@ -37,7 +37,7 @@
     "@hookform/resolvers": "^3.3.2",
     "papaparse": "^5.4.1",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
-    "jspdf": "^2.5.1"
+    "jspdf": "^4.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
