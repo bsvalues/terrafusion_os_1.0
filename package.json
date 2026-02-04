@@ -82,6 +82,7 @@
     "typecheck:core": "tsc -p tsconfig.core.json",
     "doctor": "node scripts/doctor.mjs",
     "trace:query": "node scripts/trace-query.mjs",
+    "support:bundle": "node scripts/support-bundle.mjs",
     "check:generated": "node tools/registry/check-generated-js.mjs",
     "build:core-js": "node tools/registry/build-core-js.mjs",
     "governance:check": "pnpm run typecheck:core && node --test os-platform/core/tests/phase83-tools.test.mjs && node --test os-platform/core/tests/phase85-tools.test.mjs && node --test os-platform/core/tests/phase86-toolrunner.test.mjs && node tools/registry/check-generated-js.mjs",
