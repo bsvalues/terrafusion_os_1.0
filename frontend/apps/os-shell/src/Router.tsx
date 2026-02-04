@@ -40,6 +40,9 @@ const PilotApiDemo = lazy(() => import('./pages/PilotApiDemo'));
 // Phase 1: Error Display Demo (visual verification)
 const ErrorDisplayDemo = lazy(() => import('./pages/ErrorDisplayDemo'));
 
+// Phase 2: Pilot Tool Invocation Demo (read-only vertical slice)
+const PilotDemo = lazy(() => import('./pages/PilotDemo'));
+
 const Router: React.FC = () => {
   return (
     <BrowserRouter
@@ -72,6 +75,9 @@ const Router: React.FC = () => {
 
             {/* Phase 1: Error Display Demo */}
             <Route path='/error-demo' element={<ErrorDisplayDemo />} />
+
+            {/* Phase 2: Pilot Tool Invocation Demo */}
+            <Route path='/pilot-demo' element={<PilotDemo />} />
 
             <Route path='/modules/*' element={<div>Module Loading...</div>} />
           </Routes>

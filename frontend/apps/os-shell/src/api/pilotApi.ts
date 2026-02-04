@@ -242,6 +242,51 @@ export async function invokePilotTool(request: PilotInvokeRequest): Promise<Pilo
 }
 
 /**
+ * Invoke a tool with normalized response format (Phase 2).
+ * Wrapper around invokePilotTool that provides a simplified success/error interface.
+ *
+ * @param request - Tool invocation request
+ * @returns Normalized response with success flag and correlationId
+ */
+export async function invokeTool(request: PilotInvokeRequest): Promise<{
+  success: boolean;
+  correlationId: string;
+  result?: {
+    toolId: string;
+    output: string;
+  };
+  error?: {
+    code: string;
+    message: string;
+    severity: 'low' | 'medium' | 'high' | 'critical';
+  };
+}> {
+  const response = await invokePilotTool(request);
+
+  if (response.ok && response.result) {
+    return {
+      success: true,
+      correlationId: response.correlationId,
+      result: {
+        toolId: request.toolId,
+        output:
+          typeof response.result === 'string' ? response.result : JSON.stringify(response.result),
+      },
+    };
+  } else {
+    return {
+      success: false,
+      correlationId: response.correlationId,
+      error: {
+        code: response.errorCode || 'UNKNOWN_ERROR',
+        message: response.error || 'Tool invocation failed',
+        severity: getSeverityFromErrorCode(response.errorCode),
+      },
+    };
+  }
+}
+
+/**
  * Validate a tool invocation without executing.
  * Use for pre-flight checks before showing confirmation dialogs.
  *
