@@ -17,9 +17,7 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-import TerraPrimeSuiteWithBoundary, {
-    TerraPrimeSuite,
-} from '../../../pages/suites/TerraPrimeSuite';
+import TerraPrimeSuiteWithBoundary, { TerraPrimeSuite } from '../../pages/suites/TerraPrimeSuite';
 
 // Mock iframe to avoid network calls
 jest.mock('react', () => {
@@ -51,7 +49,9 @@ describe('TerraPrimeSuite - Smoke Tests', () => {
       renderWithRouter(<TerraPrimeSuite />);
 
       await waitFor(() => {
-        expect(screen.getByText(/TerraPrime/i)).toBeInTheDocument();
+        // Multiple elements contain 'TerraPrime' (title + loading text)
+        const elements = screen.getAllByText(/TerraPrime/i);
+        expect(elements.length).toBeGreaterThan(0);
       });
     });
 
@@ -120,7 +120,8 @@ describe('TerraPrimeSuite - Smoke Tests', () => {
 
       await waitFor(() => {
         // We check that the component rendered with the route
-        expect(screen.getByText(/TerraPrime/i)).toBeInTheDocument();
+        const elements = screen.getAllByText(/TerraPrime/i);
+        expect(elements.length).toBeGreaterThan(0);
       });
     });
   });
@@ -157,7 +158,7 @@ describe('TerraPrimeSuite - Smoke Tests', () => {
       });
     });
 
-    it('rejects postMessage from unknown origin', async () => {
+    it('rejects postMessage from unknown origin', () => {
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
       renderWithRouter(<TerraPrimeSuite />);
@@ -170,16 +171,14 @@ describe('TerraPrimeSuite - Smoke Tests', () => {
 
       window.dispatchEvent(unknownOriginEvent);
 
-      // Should not navigate - the handler should reject unknown origins
-      // We can verify by checking the console warning or by checking navigation didn't happen
-      await waitFor(() => {
-        expect(screen.getByText(/TerraPrime/i)).toBeInTheDocument();
-      });
+      // Should not navigate - component should still show TerraPrime content
+      const elements = screen.getAllByText(/TerraPrime/i);
+      expect(elements.length).toBeGreaterThan(0);
 
       consoleSpy.mockRestore();
     });
 
-    it('accepts postMessage only from allowed origin', async () => {
+    it('accepts postMessage only from allowed origin', () => {
       renderWithRouter(<TerraPrimeSuite />);
 
       // Simulate message from allowed origin (localhost:5184)
@@ -191,9 +190,9 @@ describe('TerraPrimeSuite - Smoke Tests', () => {
       // This should be accepted without error
       window.dispatchEvent(allowedOriginEvent);
 
-      await waitFor(() => {
-        expect(screen.getByText(/TerraPrime/i)).toBeInTheDocument();
-      });
+      // Component should still render correctly
+      const elements = screen.getAllByText(/TerraPrime/i);
+      expect(elements.length).toBeGreaterThan(0);
     });
   });
 

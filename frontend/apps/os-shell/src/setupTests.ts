@@ -33,6 +33,7 @@ Object.defineProperty(globalThis, 'import', {
         VITE_QUANTUM_OPTIMIZATION: 'true',
         VITE_REAL_TIME_SYNC: 'true',
         VITE_ADVANCED_ANALYTICS: 'true',
+        VITE_TF_TERRAPRIME_PORT: '5184',
         DEV: true,
         PROD: false,
         MODE: 'test',

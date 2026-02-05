@@ -18,9 +18,11 @@ import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react
 import { useLocation, useNavigate } from 'react-router-dom';
 import ErrorBoundary from '../../components/errors/ErrorBoundary';
 import { ErrorDisplay } from '../../components/errors/ErrorDisplay';
+import { getViteEnv } from '../../shared/viteEnv';
 
-// Get port from env or use default
-const TERRAPRIME_PORT = import.meta.env.VITE_TF_TERRAPRIME_PORT || '5184';
+// Get port from env or use default (Jest-compatible via getViteEnv)
+const env = getViteEnv();
+const TERRAPRIME_PORT = env.VITE_TF_TERRAPRIME_PORT || '5184';
 const TERRAPRIME_URL = `http://localhost:${TERRAPRIME_PORT}`;
 
 /**
