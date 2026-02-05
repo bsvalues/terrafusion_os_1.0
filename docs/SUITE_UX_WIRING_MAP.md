@@ -8,11 +8,43 @@
 
 ## Executive Summary
 
-TerraFusion has **11 Gen2 modules** (active), **3 legacy modules** (deprecated), and dozens of standalone applications scattered across `applications/`. The canonical entry point is `os-shell` (Desktop Shell at `localhost:5173`).
+TerraFusion has **11 Gen2 modules** (active), **3 legacy modules** (deprecated), and dozens of standalone applications scattered across `applications/`. The canonical entry point is `os-shell` at `/` (Shell Home).
+
+**Architecture (Updated):**
+- **`/`** → Shell Home (search, recents, suite launcher)
+- **`/desktop`** → Full Desktop Shell (Windows-like experience)
+- **`/property/:parcelId/*`** → Property Workbench (parcel-context hub)
+- **`/suites/*`** → Suite wrappers
 
 **Problem:** Most modules launch as isolated micro-frontends on separate ports. Error handling, session, and navigation are inconsistent.
 
 **Solution:** Wire all suites through `os-shell` with shared error UX (correlationId), risk gating, and nav contract.
+
+---
+
+## Route Architecture (Phase 5)
+
+### Canonical Routes
+
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/` | ShellHome | OS landing surface - search, recents, suite launcher |
+| `/desktop` | App (Desktop) | Full Windows-like shell with taskbar, windows |
+| `/property/:parcelId` | PropertyWorkbench | Parcel-context hub with suite tabs |
+| `/property/:parcelId/forge` | PropertyForge | TerraForge tab (AI valuation) |
+| `/property/:parcelId/atlas` | PropertyAtlas | TerraAtlas tab (GIS) |
+| `/property/:parcelId/dais` | PropertyDais | TerraDais tab (workflows) |
+| `/property/:parcelId/dossier` | PropertyDossier | TerraDossier tab (documents) |
+| `/property/:parcelId/pilot` | PropertyPilot | Pilot tool execution log |
+| `/suites/*` | SuiteWrappers | Suite iframe bridges |
+| `/pilot` | PilotConsole | Tool execution choke point |
+
+### Legacy Redirects
+
+| Legacy Route | Redirects To |
+|--------------|--------------|
+| `/modules/property-workbench` | `/` |
+| `/modules/*` | `/` |
 
 ---
 

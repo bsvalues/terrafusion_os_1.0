@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
 
@@ -14,7 +14,19 @@ const LoadingFallback = () => (
 );
 
 // Lazy load route components for code splitting
+// Shell Home - OS Landing Surface (Phase 5)
+const ShellHome = lazy(() => import('./shell/home/ShellHome'));
+// Desktop Shell - Full Windows-like experience
 const App = lazy(() => import('./App'));
+// Property Workbench - Parcel-context hub (Tier-0 OS Surface)
+const PropertyWorkbench = lazy(() => import('./pages/workbench/PropertyWorkbench'));
+const PropertySummary = lazy(() => import('./pages/workbench/tabs/PropertySummary'));
+const PropertyForge = lazy(() => import('./pages/workbench/tabs/PropertyForge'));
+const PropertyAtlas = lazy(() => import('./pages/workbench/tabs/PropertyAtlas'));
+const PropertyDais = lazy(() => import('./pages/workbench/tabs/PropertyDais'));
+const PropertyDossier = lazy(() => import('./pages/workbench/tabs/PropertyDossier'));
+const PropertyPilot = lazy(() => import('./pages/workbench/tabs/PropertyPilot'));
+
 const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
   () => import('./components/marketplace/TerraFusionMarketplace')
@@ -57,7 +69,33 @@ const Router: React.FC = () => {
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
-            <Route path='/' element={<App />} />
+            {/* Phase 5: OS Landing Surface */}
+            <Route
+              path='/'
+              element={
+                <div className='min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900'>
+                  <ShellHome />
+                </div>
+              }
+            />
+
+            {/* Desktop Shell - Full Windows-like experience */}
+            <Route path='/desktop' element={<App />} />
+
+            {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
+            <Route path='/property/:parcelId' element={<PropertyWorkbench />}>
+              <Route index element={<PropertySummary />} />
+              <Route path='forge' element={<PropertyForge />} />
+              <Route path='atlas' element={<PropertyAtlas />} />
+              <Route path='dais' element={<PropertyDais />} />
+              <Route path='dossier' element={<PropertyDossier />} />
+              <Route path='pilot' element={<PropertyPilot />} />
+            </Route>
+
+            {/* Legacy Redirects - Demote broken defaults */}
+            <Route path='/modules/property-workbench' element={<Navigate to='/' replace />} />
+            <Route path='/modules/property-workbench/*' element={<Navigate to='/' replace />} />
+
             <Route path='/monitoring' element={<Monitoring />} />
             <Route path='/marketplace' element={<TerraFusionMarketplace />} />
             <Route path='/experiments' element={<ExperimentsList />} />
@@ -85,7 +123,8 @@ const Router: React.FC = () => {
             {/* Phase 2: Pilot Tool Invocation Demo */}
             <Route path='/pilot-demo' element={<PilotDemo />} />
 
-            <Route path='/modules/*' element={<div>Module Loading...</div>} />
+            {/* Legacy module routes - redirect to home */}
+            <Route path='/modules/*' element={<Navigate to='/' replace />} />
           </Routes>
         </Suspense>
       </ErrorBoundary>
