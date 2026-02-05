@@ -14,7 +14,11 @@
 
 import '@testing-library/jest-dom';
 
-import { normalizeNetworkError, normalizePilotError, PilotInvokeResponse } from '../../api/pilotApi';
+import {
+    normalizeNetworkError,
+    normalizePilotError,
+    PilotInvokeResponse,
+} from '../../api/pilotApi';
 
 describe('PilotAPI Error Normalization - CorrelationId Flow', () => {
   describe('Backend Error Normalization', () => {

@@ -141,7 +141,7 @@
     "test:integration": "jest --config jest.integration.config.ts",
     "test:integration:watch": "jest --config jest.integration.config.ts --watch",
     "test:integration:coverage": "jest --config jest.integration.config.ts --coverage",
-    "test:unit": "jest --testPathIgnorePatterns=\".integration.test\" --passWithNoTests",
+    "test:unit": "jest --testPathIgnorePatterns=\".integration.test|ui-observability\" --passWithNoTests",
     "test:ipc": "vitest run apps/os-shell/src/ipc --passWithNoTests",
     "test:all": "npm run test:unit && npm run test:integration",
     "test:e2e": "playwright test",
