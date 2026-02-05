@@ -1,17 +1,22 @@
 /**
  * RiskConfirmationModal.tsx
  *
- * Phase 3: Write-Risk Confirmation Modal
+ * Phase 3 + Phase 4: Write-Risk Confirmation Modal
  * Modal UI for confirming write operations based on risk level.
  *
  * Risk Levels:
  * - write_low: Simple confirmation (1-step)
  * - write_high: Confirmation + reason code required
- * - irreversible: Confirmation + reason code + supervisor approval (Phase 4 stub)
+ * - irreversible: Confirmation + reason code + approval token (Phase 4)
+ *
+ * Phase 4 Solo Override:
+ * - High-friction typed phrase confirmation
+ * - Short-lived approval token generation
+ * - Token expiration tracking and renewal
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import type { Risk } from '../../api/pilotApi';
+import type { ApprovalToken, Risk } from '../../api/pilotApi';
 
 export interface RiskConfirmationModalProps {
   isOpen: boolean;
@@ -22,7 +27,13 @@ export interface RiskConfirmationModalProps {
   requiresReasonCode?: boolean;
   requiresSupervisorApproval?: boolean;
   supervisorRoles?: string[];
-  onConfirm: (options?: { reasonCode?: string }) => void | Promise<void>;
+  /** Phase 4: Approval token state for irreversible tools */
+  approvalToken?: ApprovalToken | null;
+  approvalTokenError?: string;
+  approvalTokenCorrelationId?: string;
+  isGeneratingToken?: boolean;
+  onRequestApprovalToken?: (reasonCode: string) => Promise<void>;
+  onConfirm: (options?: { reasonCode?: string; approvalToken?: string }) => void | Promise<void>;
   onCancel: () => void;
 }
 
@@ -31,6 +42,7 @@ export interface RiskConfirmationModalProps {
  *
  * Displays confirmation dialog for write-risk tools.
  * Enforces policy requirements before allowing confirmation.
+ * Phase 4: Implements approval token flow for irreversible tools.
  */
 export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
   isOpen,
@@ -41,13 +53,27 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
   requiresReasonCode = false,
   requiresSupervisorApproval = false,
   supervisorRoles,
+  approvalToken,
+  approvalTokenError,
+  approvalTokenCorrelationId,
+  isGeneratingToken = false,
+  onRequestApprovalToken,
   onConfirm,
   onCancel,
 }) => {
   const [selectedReasonCode, setSelectedReasonCode] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [typedPhrase, setTypedPhrase] = useState('');
+  const [tokenExpired, setTokenExpired] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const expirationTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Expected confirmation phrase for irreversible tools
+  const expectedPhrase = `EXECUTE ${toolId}`;
+  const isPhraseValid = typedPhrase === expectedPhrase;
+  const isIrreversible = risk === 'irreversible';
 
   // Focus management
   useEffect(() => {
@@ -73,17 +99,73 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
     if (isOpen) {
       setSelectedReasonCode(null);
       setIsLoading(false);
+      setTypedPhrase('');
+      setTokenExpired(false);
+      setTimeRemaining(null);
     }
   }, [isOpen]);
+
+  // Token expiration tracking
+  useEffect(() => {
+    if (expirationTimerRef.current) {
+      clearInterval(expirationTimerRef.current);
+      expirationTimerRef.current = null;
+    }
+
+    if (approvalToken?.expiresAt) {
+      const checkExpiration = () => {
+        const expiresAt = new Date(approvalToken.expiresAt).getTime();
+        const now = Date.now();
+        const remaining = Math.max(0, Math.floor((expiresAt - now) / 1000));
+
+        setTimeRemaining(remaining);
+        if (remaining === 0) {
+          setTokenExpired(true);
+          if (expirationTimerRef.current) {
+            clearInterval(expirationTimerRef.current);
+          }
+        }
+      };
+
+      checkExpiration();
+      expirationTimerRef.current = setInterval(checkExpiration, 1000);
+    }
+
+    return () => {
+      if (expirationTimerRef.current) {
+        clearInterval(expirationTimerRef.current);
+      }
+    };
+  }, [approvalToken?.expiresAt]);
+
+  // Reset token state when token changes
+  useEffect(() => {
+    if (approvalToken) {
+      setTokenExpired(false);
+    }
+  }, [approvalToken]);
 
   const handleConfirm = useCallback(async () => {
     setIsLoading(true);
     try {
-      await onConfirm(selectedReasonCode ? { reasonCode: selectedReasonCode } : undefined);
+      const options: { reasonCode?: string; approvalToken?: string } = {};
+      if (selectedReasonCode) {
+        options.reasonCode = selectedReasonCode;
+      }
+      if (approvalToken?.tokenId) {
+        options.approvalToken = approvalToken.tokenId;
+      }
+      await onConfirm(options);
     } finally {
       setIsLoading(false);
     }
-  }, [onConfirm, selectedReasonCode]);
+  }, [onConfirm, selectedReasonCode, approvalToken]);
+
+  const handleGenerateApproval = useCallback(async () => {
+    if (selectedReasonCode && onRequestApprovalToken) {
+      await onRequestApprovalToken(selectedReasonCode);
+    }
+  }, [selectedReasonCode, onRequestApprovalToken]);
 
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
@@ -94,11 +176,32 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
     [isLoading, onCancel]
   );
 
+  // Validation: Can generate approval token?
+  const canGenerateApproval = (() => {
+    if (!isIrreversible) return false;
+    if (isGeneratingToken) return false;
+    if (!selectedReasonCode) return false;
+    if (!isPhraseValid) return false;
+    return true;
+  })();
+
   // Validation: Can confirm?
   const canConfirm = (() => {
     if (isLoading) return false;
     if (requiresReasonCode && !selectedReasonCode) return false;
-    if (requiresSupervisorApproval) return false; // Phase 4: supervisor workflow
+
+    // Phase 4: Irreversible tools require valid approval token
+    if (isIrreversible) {
+      if (!approvalToken) return false;
+      if (tokenExpired) return false;
+      // Also check if timeRemaining indicates expiration (for test timer scenarios)
+      if (timeRemaining !== null && timeRemaining <= 0) return false;
+      return true;
+    }
+
+    // Phase 3 stub: non-irreversible supervisor approval still blocked
+    if (requiresSupervisorApproval && !isIrreversible) return false;
+
     return true;
   })();
 
@@ -178,8 +281,88 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
             </div>
           )}
 
-          {/* Supervisor Approval Stub (Phase 4) */}
-          {requiresSupervisorApproval && (
+          {/* Phase 4: Irreversible Tools - High Friction Approval Flow */}
+          {isIrreversible && (
+            <div className='approval-section'>
+              <div className='approval-header'>
+                <span className='warning-icon'>🔐</span>
+                <strong>Approval Required</strong>
+              </div>
+
+              {/* Typed phrase input */}
+              <div className='typed-phrase-section'>
+                <label className='section-label'>
+                  Type <code>{expectedPhrase}</code> to confirm
+                </label>
+                <input
+                  type='text'
+                  className={`phrase-input ${isPhraseValid ? 'valid' : ''}`}
+                  placeholder={`Type "${expectedPhrase}" to confirm`}
+                  value={typedPhrase}
+                  onChange={(e) => setTypedPhrase(e.target.value)}
+                  disabled={isLoading || isGeneratingToken}
+                />
+              </div>
+
+              {/* Generate Approval Token button */}
+              {!approvalToken && !tokenExpired && (
+                <button
+                  type='button'
+                  className='btn-generate-approval'
+                  onClick={handleGenerateApproval}
+                  disabled={!canGenerateApproval}
+                >
+                  {isGeneratingToken ? 'Generating...' : 'Generate Approval'}
+                </button>
+              )}
+
+              {/* Token Error */}
+              {approvalTokenError && (
+                <div className='token-error'>
+                  <span className='error-icon'>⚠️</span>
+                  <div>
+                    <p>{approvalTokenError}</p>
+                    {approvalTokenCorrelationId && (
+                      <code className='correlation-id'>{approvalTokenCorrelationId}</code>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Token status / expiration */}
+              {approvalToken && !tokenExpired && timeRemaining !== null && timeRemaining > 0 && (
+                <div className='token-status valid'>
+                  <span className='status-icon'>✅</span>
+                  <div>
+                    <p>Approval valid for {timeRemaining}s</p>
+                    <small>Token: {approvalToken.tokenId.substring(0, 16)}...</small>
+                  </div>
+                </div>
+              )}
+
+              {/* Token expired */}
+              {(tokenExpired ||
+                (approvalToken && timeRemaining !== null && timeRemaining <= 0)) && (
+                <div className='token-status expired'>
+                  <span className='status-icon'>⏰</span>
+                  <div>
+                    <p>Approval expired</p>
+                    <button
+                      type='button'
+                      className='btn-regenerate'
+                      onClick={handleGenerateApproval}
+                      disabled={!canGenerateApproval}
+                    >
+                      {isGeneratingToken ? 'Regenerating...' : 'Regenerate'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Legacy Supervisor Approval Stub (non-irreversible) */}
+          {requiresSupervisorApproval && !isIrreversible && (
             <div className='supervisor-section'>
               <div className='supervisor-warning'>
                 <span className='warning-icon'>🔐</span>
@@ -462,7 +645,173 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
             opacity: 0.5;
             cursor: not-allowed;
           }
-        `}</style>
+          /* Phase 4: Approval Token Styles */
+          .approval-section {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+          }
+
+          .approval-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+          }
+
+          .approval-header strong {
+            color: #b91c1c;
+          }
+
+          .typed-phrase-section {
+            margin-bottom: 1rem;
+          }
+
+          .typed-phrase-section code {
+            background: #fecaca;
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            color: #991b1b;
+          }
+
+          .phrase-input {
+            width: 100%;
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            border: 2px solid #fca5a5;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.875rem;
+          }
+
+          .phrase-input:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+          }
+
+          .phrase-input.valid {
+            border-color: #22c55e;
+            background: #f0fdf4;
+          }
+
+          .btn-generate-approval {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+          }
+
+          .btn-generate-approval:hover:not(:disabled) {
+            background: #b91c1c;
+          }
+
+          .btn-generate-approval:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+
+          .token-error {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 6px;
+            margin-top: 0.75rem;
+          }
+
+          .token-error .error-icon {
+            font-size: 1rem;
+          }
+
+          .token-error p {
+            margin: 0;
+            color: #92400e;
+            font-size: 0.875rem;
+          }
+
+          .token-error .correlation-id {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.75rem;
+            color: #b45309;
+            background: #fef9c3;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+          }
+
+          .token-status {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-top: 0.75rem;
+          }
+
+          .token-status.valid {
+            background: #dcfce7;
+            border: 1px solid #22c55e;
+          }
+
+          .token-status.expired {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+          }
+
+          .token-status .status-icon {
+            font-size: 1rem;
+          }
+
+          .token-status p {
+            margin: 0;
+            font-size: 0.875rem;
+            font-weight: 500;
+          }
+
+          .token-status.valid p {
+            color: #15803d;
+          }
+
+          .token-status.expired p {
+            color: #b45309;
+          }
+
+          .token-status small {
+            display: block;
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-family: monospace;
+          }
+
+          .btn-regenerate {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.875rem;
+          }
+
+          .btn-regenerate:hover:not(:disabled) {
+            background: #d97706;
+          }
+
+          .btn-regenerate:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }        `}</style>
       </div>
     </div>
   );

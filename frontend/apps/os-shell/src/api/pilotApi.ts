@@ -82,6 +82,51 @@ export interface PilotInvokeRequest {
     approvedBy: string;
     role: string;
   };
+  /** Phase 4: Approval token for irreversible tools */
+  approvalToken?: string;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// APPROVAL TOKEN TYPES (Phase 4: Solo Override)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Approval Token - Required for irreversible tool execution.
+ * Short-lived, request-scoped, and auditable.
+ */
+export interface ApprovalToken {
+  /** Unique token identifier */
+  tokenId: string;
+  /** Tool this token authorizes */
+  toolId: string;
+  /** Hash of the request parameters (for scope verification) */
+  requestHash: string;
+  /** Token issuance timestamp */
+  issuedAt: string;
+  /** Token expiration timestamp (short TTL, typically 60-180s) */
+  expiresAt: string;
+  /** Principal who issued the token */
+  issuedBy: string;
+  /** Reason code for the action */
+  reasonCode: string;
+  /** Optional reason text */
+  reasonText?: string;
+}
+
+/** Request to generate an approval token */
+export interface ApprovalTokenRequest {
+  toolId: string;
+  params: Record<string, unknown>;
+  reasonCode: string;
+  reasonText?: string;
+}
+
+/** Response from approval token request */
+export interface ApprovalTokenResponse {
+  success: boolean;
+  token?: ApprovalToken;
+  error?: string;
+  correlationId: string;
 }
 
 /** Response from tool invocation */
@@ -355,6 +400,31 @@ export async function getPilotHealth(): Promise<PilotHealthResponse> {
   }
 
   return (await response.json()) as PilotHealthResponse;
+}
+
+/**
+ * Request an approval token for irreversible tool execution.
+ * Phase 4: Solo Override - high-friction intent verification.
+ *
+ * @param request - Approval token request with tool details and reason
+ * @returns Approval token response with short-lived token or error
+ */
+export async function requestApprovalToken(
+  request: ApprovalTokenRequest
+): Promise<ApprovalTokenResponse> {
+  const url = `${API_BASE_URL}/pilot/approval/token`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  // Always parse JSON response even for errors
+  const data = (await response.json()) as ApprovalTokenResponse;
+  return data;
 }
 
 // ═══════════════════════════════════════════════════════════════

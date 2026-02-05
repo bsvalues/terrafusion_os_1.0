@@ -1,7 +1,7 @@
 /**
  * RiskPolicyGate.tsx
  *
- * Phase 3: Risk Policy Gate Component
+ * Phase 3 + Phase 4: Risk Policy Gate Component
  * Orchestrates the write-risk confirmation workflow:
  * 1. Validate tool via preflight check
  * 2. Show confirmation modal if required
@@ -11,13 +11,15 @@
  * - read_only: Execute immediately
  * - write_low: Require confirmation
  * - write_high: Require confirmation + reason code
- * - irreversible: Require confirmation + reason code + supervisor (Phase 4)
+ * - irreversible: Require confirmation + reason code + approval token (Phase 4)
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
 import {
     invokeTool,
+    requestApprovalToken,
     validatePilotTool,
+    type ApprovalToken,
     type PilotValidateResponse,
     type Risk,
 } from '../../api/pilotApi';
@@ -44,6 +46,14 @@ type GateState =
   | { phase: 'error'; error: ErrorInfo }
   | { phase: 'complete' };
 
+/** Phase 4: Approval token state for irreversible tools */
+interface ApprovalTokenState {
+  token: ApprovalToken | null;
+  error: string | null;
+  correlationId: string | null;
+  isGenerating: boolean;
+}
+
 /**
  * RiskPolicyGate Component
  *
@@ -57,6 +67,14 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
   onCancel,
 }) => {
   const [state, setState] = useState<GateState>({ phase: 'validating' });
+
+  // Phase 4: Approval token state
+  const [tokenState, setTokenState] = useState<ApprovalTokenState>({
+    token: null,
+    error: null,
+    correlationId: null,
+    isGenerating: false,
+  });
 
   // Preflight validation
   useEffect(() => {
@@ -128,9 +146,53 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
     };
   }, [toolId, params, onComplete]);
 
+  // Phase 4: Request approval token for irreversible tools
+  const handleRequestApprovalToken = useCallback(
+    async (reasonCode: string) => {
+      setTokenState((prev) => ({
+        ...prev,
+        isGenerating: true,
+        error: null,
+        correlationId: null,
+      }));
+
+      try {
+        const response = await requestApprovalToken({
+          toolId,
+          params,
+          reasonCode,
+        });
+
+        if (response.success && response.token) {
+          setTokenState({
+            token: response.token,
+            error: null,
+            correlationId: response.correlationId,
+            isGenerating: false,
+          });
+        } else {
+          setTokenState({
+            token: null,
+            error: response.error || 'Failed to generate approval token',
+            correlationId: response.correlationId,
+            isGenerating: false,
+          });
+        }
+      } catch (err) {
+        setTokenState({
+          token: null,
+          error: err instanceof Error ? err.message : 'Failed to generate approval token',
+          correlationId: null,
+          isGenerating: false,
+        });
+      }
+    },
+    [toolId, params]
+  );
+
   // Handle confirmation
   const handleConfirm = useCallback(
-    async (options?: { reasonCode?: string }) => {
+    async (options?: { reasonCode?: string; approvalToken?: string }) => {
       if (state.phase !== 'confirming') return;
 
       setState({ phase: 'executing', reason: options?.reasonCode });
@@ -141,6 +203,7 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
           params,
           confirmation: true,
           reasonCode: options?.reasonCode,
+          approvalToken: options?.approvalToken,
         });
 
         if (!result.success && result.error) {
@@ -326,6 +389,11 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
         requiresReasonCode={preflight?.reasonCodeRequired}
         requiresSupervisorApproval={preflight?.supervisorRequired}
         supervisorRoles={tool?.supervisorRoles}
+        approvalToken={tokenState.token}
+        approvalTokenError={tokenState.error || undefined}
+        approvalTokenCorrelationId={tokenState.correlationId || undefined}
+        isGeneratingToken={tokenState.isGenerating}
+        onRequestApprovalToken={handleRequestApprovalToken}
         onConfirm={handleConfirm}
         onCancel={onCancel}
       />
