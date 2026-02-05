@@ -96,12 +96,21 @@ These are the **enforced invariants** for `main` branch. Any deviation is a gove
 **Drift Detection (periodic audit):**
 ```bash
 # Capture current protection settings
-gh api repos/bsvalues/terrafusion_os_1.0/branches/main/protection > .governance/main.protection.json
+gh api repos/bsvalues/terrafusion_os_1.0/branches/main/protection > .tmp/main.protection.current.json
 
 # Verify invariants
-jq '.required_pull_request_reviews.required_approving_review_count == 0' .governance/main.protection.json
-jq '.required_status_checks.contexts | contains(["🔒 SEAL"])' .governance/main.protection.json
+jq '.required_pull_request_reviews.required_approving_review_count == 0' .tmp/main.protection.current.json
+jq '.required_status_checks.contexts | contains(["🔒 SEAL"])' .tmp/main.protection.current.json
+
+# Diff against canon snapshot
+git diff --no-index .governance/main.protection.json .tmp/main.protection.current.json
 ```
+
+**Snapshot Update Policy:**
+- Only update `.governance/main.protection.json` when governance *intentionally* changes
+- Commit with `docs(governance): update branch protection snapshot`
+- Link to the PR that authorized the change
+- Update "Last verified" date below
 
 **Last verified:** 2026-02-04 (PR #242 merged without `--admin`)
 
