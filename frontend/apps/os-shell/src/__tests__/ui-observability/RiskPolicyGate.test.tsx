@@ -12,6 +12,7 @@
  */
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import * as pilotApi from '../../api/pilotApi';
 import { RiskPolicyGate } from '../../components/pilot/RiskPolicyGate';
 
@@ -329,6 +330,8 @@ describe('RiskPolicyGate', () => {
     });
 
     it('executes write_high tool after confirmation with reason code', async () => {
+      const user = userEvent.setup();
+
       // Arrange
       mockValidatePilotTool.mockResolvedValue({
         valid: true,
@@ -372,16 +375,28 @@ describe('RiskPolicyGate', () => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
       });
 
-      // Select reason code
-      const reasonCodeButton = screen.getByText(/correction/i);
-      fireEvent.click(reasonCodeButton);
+      // Select reason code using userEvent for better simulation
+      const reasonCodeButton = await screen.findByText('correction');
+      await user.click(reasonCodeButton);
 
-      // Now confirm button should be enabled (query inside waitFor for fresh reference after re-render)
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /confirm/i })).not.toBeDisabled();
-      });
+      // Wait for the selected class to be applied to verify click registered
+      await waitFor(
+        () => {
+          expect(reasonCodeButton).toHaveClass('selected');
+        },
+        { timeout: 3000 }
+      );
 
-      fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+      // Now confirm button should be enabled
+      await waitFor(
+        () => {
+          const confirmBtn = screen.getByRole('button', { name: /confirm/i });
+          expect(confirmBtn).not.toBeDisabled();
+        },
+        { timeout: 3000 }
+      );
+
+      await user.click(screen.getByRole('button', { name: /confirm/i }));
 
       // Assert: Tool invoked with confirmation and reason code
       await waitFor(() => {
