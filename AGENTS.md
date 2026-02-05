@@ -77,7 +77,8 @@ main:
 - ✅ CI status checks enforce quality (SEAL + gates)
 - ✅ PRs enforce evidence trail (no direct pushes)
 - ✅ Include administrators (cannot bypass own gates)
-- ❌ NO required reviews (prevents merge deadlock)
+- ✅ Approvals = 0 (CI is constitutional review)
+- ✅ `--admin` not required for routine merges (enforcement matches this spec)
 
 ## TOOL GOVERNANCE RULES
 - ToolRegistry must resolve the manifest path canonically (relative to ToolRegistry) and allow env override only:
