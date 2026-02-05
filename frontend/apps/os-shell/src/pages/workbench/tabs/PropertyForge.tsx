@@ -13,6 +13,7 @@ import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { ParcelContextHeader } from '../../../components/workbench';
 
 /** Current year for default selection */
 const CURRENT_YEAR = new Date().getFullYear();
@@ -197,13 +198,12 @@ export const PropertyForge: React.FC = () => {
   return (
     <div className='space-y-6' data-testid='property-forge-tab'>
       {/* Header */}
-      <div className='flex items-center gap-3'>
-        <span className='text-3xl'>🔥</span>
-        <div>
-          <h2 className='text-2xl font-bold text-white'>TerraForge</h2>
-          <p className='text-white/60 text-sm'>AI-powered valuation analysis for {parcelId}</p>
-        </div>
-      </div>
+      <ParcelContextHeader
+        icon="🔥"
+        title="TerraForge"
+        parcelId={parcelId}
+        subtitle={`AI-powered valuation analysis for ${parcelId}`}
+      />
 
       {/* Main Content Grid */}
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
