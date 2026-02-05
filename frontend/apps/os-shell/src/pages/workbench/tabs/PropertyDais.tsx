@@ -13,6 +13,7 @@ import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { ParcelContextHeader } from '../../../components/workbench';
 
 /** Workflow type options */
 const WORKFLOW_TYPES = [
@@ -218,13 +219,12 @@ export const PropertyDais: React.FC = () => {
   return (
     <div className='space-y-6' data-testid='property-dais-tab'>
       {/* Header */}
-      <div className='flex items-center gap-3'>
-        <span className='text-3xl'>📊</span>
-        <div>
-          <h2 className='text-2xl font-bold text-white'>TerraDais</h2>
-          <p className='text-white/60 text-sm'>Workflow orchestration for {parcelId}</p>
-        </div>
-      </div>
+      <ParcelContextHeader
+        icon="📊"
+        title="TerraDais"
+        parcelId={parcelId}
+        subtitle={`Workflow orchestration for ${parcelId}`}
+      />
 
       {/* Main Content Grid */}
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>

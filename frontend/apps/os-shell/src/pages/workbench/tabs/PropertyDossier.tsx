@@ -13,6 +13,11 @@ import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import {
+  ParcelContextHeader,
+  InvocationHistory,
+  type InvocationRecord,
+} from '../../../components/workbench';
 
 /** Document categories for organization */
 const DOCUMENT_CATEGORIES = [
@@ -69,15 +74,7 @@ const MOCK_DOCUMENTS: DossierDocument[] = [
   },
 ];
 
-interface InvocationRecord {
-  id: string;
-  toolId: string;
-  status: 'success' | 'error';
-  correlationId: string;
-  timestamp: Date;
-  output?: string;
-  error?: ErrorInfo;
-}
+// InvocationRecord type imported from shared components
 
 interface SummarizeState {
   status: 'idle' | 'loading' | 'success' | 'error';
@@ -197,18 +194,12 @@ export const PropertyDossier: React.FC = () => {
   return (
     <div className='space-y-6' data-testid='property-dossier-tab'>
       {/* Header */}
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-3'>
-          <span className='text-3xl'>📁</span>
-          <div>
-            <h2 className='text-2xl font-bold text-white'>TerraDossier</h2>
-            <p className='text-white/60 text-sm'>
-              Documents for parcel{' '}
-              <code className='bg-white/10 px-2 py-0.5 rounded'>{parcelId}</code>
-            </p>
-          </div>
-        </div>
-      </div>
+      <ParcelContextHeader
+        icon="📁"
+        title="TerraDossier"
+        parcelId={parcelId}
+        subtitle={`Documents for parcel ${parcelId}`}
+      />
 
       {/* Document Categories & List */}
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
@@ -371,50 +362,12 @@ export const PropertyDossier: React.FC = () => {
       </div>
 
       {/* Invocation History */}
-      <div className='bg-white/5 rounded-xl p-5 border border-white/10'>
-        <h3 className='text-white font-semibold mb-4 flex items-center gap-2'>
-          <span>📜</span> Summarization History
-        </h3>
-
-        {invocationHistory.length === 0 ? (
-          <p className='text-white/40 text-center py-4'>No summarizations yet.</p>
-        ) : (
-          <div className='space-y-3'>
-            {invocationHistory.map((record) => (
-              <div
-                key={record.id}
-                className={`flex items-center justify-between p-3 rounded-lg ${
-                  record.status === 'success' ? 'bg-emerald-500/10' : 'bg-red-500/10'
-                }`}
-              >
-                <div className='flex items-center gap-3'>
-                  <span
-                    className={record.status === 'success' ? 'text-emerald-400' : 'text-red-400'}
-                  >
-                    {record.status === 'success' ? '✅' : '❌'}
-                  </span>
-                  <div>
-                    <code className='text-white/80 text-sm'>{record.toolId}</code>
-                    <p className='text-white/40 text-xs'>{record.timestamp.toLocaleTimeString()}</p>
-                  </div>
-                </div>
-                <div className='flex items-center gap-2'>
-                  <code className='text-xs text-white/50 bg-black/20 px-2 py-1 rounded'>
-                    {record.correlationId.substring(0, 16)}...
-                  </code>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(record.correlationId)}
-                    className='px-2 py-1 text-xs bg-white/10 text-white/60 rounded hover:bg-white/20'
-                    title='Copy correlation ID'
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <InvocationHistory
+        records={invocationHistory}
+        title="Summarization History"
+        icon="📜"
+        emptyMessage="No summarizations yet."
+      />
     </div>
   );
 };
