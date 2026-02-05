@@ -11,9 +11,13 @@ import React, { useCallback, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
+import {
+    InvocationHistory,
+    ParcelContextHeader,
+    type InvocationRecord,
+} from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
-import { ParcelContextHeader } from '../../../components/workbench';
 
 /** Workflow type options */
 const WORKFLOW_TYPES = [
@@ -40,17 +44,6 @@ interface StatusResult {
   assignedTo?: string;
   dueDate?: string;
   workflowType?: string;
-}
-
-interface InvocationRecord {
-  id: string;
-  toolId: string;
-  status: 'success' | 'error';
-  correlationId: string;
-  timestamp: Date;
-  workflowType: WorkflowType;
-  output?: StatusResult;
-  error?: ErrorInfo;
 }
 
 interface StatusState {
@@ -106,8 +99,7 @@ export const PropertyDais: React.FC = () => {
             status: 'success',
             correlationId: response.correlationId || 'unknown',
             timestamp: new Date(),
-            workflowType,
-            output: parsed,
+            meta: { workflow: workflowType },
           },
           ...prev.slice(0, 9),
         ]);
@@ -132,8 +124,8 @@ export const PropertyDais: React.FC = () => {
             status: 'error',
             correlationId: response.correlationId || 'unknown',
             timestamp: new Date(),
-            workflowType,
-            error: errorInfo,
+            errorCode: response.error?.code || 'STATUS_CHECK_FAILED',
+            meta: { workflow: workflowType },
           },
           ...prev.slice(0, 9),
         ]);
@@ -160,8 +152,8 @@ export const PropertyDais: React.FC = () => {
           status: 'error',
           correlationId: clientCorrelationId,
           timestamp: new Date(),
-          workflowType,
-          error: networkError,
+          errorCode: 'NETWORK_ERROR',
+          meta: { workflow: workflowType },
         },
         ...prev.slice(0, 9),
       ]);
@@ -220,8 +212,8 @@ export const PropertyDais: React.FC = () => {
     <div className='space-y-6' data-testid='property-dais-tab'>
       {/* Header */}
       <ParcelContextHeader
-        icon="📊"
-        title="TerraDais"
+        icon='📊'
+        title='TerraDais'
         parcelId={parcelId}
         subtitle={`Workflow orchestration for ${parcelId}`}
       />
@@ -331,8 +323,8 @@ export const PropertyDais: React.FC = () => {
                           step.status === 'current'
                             ? 'bg-purple-500/20 border border-purple-500/30'
                             : step.status === 'completed'
-                            ? 'bg-green-500/10'
-                            : 'bg-white/5'
+                              ? 'bg-green-500/10'
+                              : 'bg-white/5'
                         }`}
                       >
                         <span>{getStepIcon(step.status)}</span>
@@ -341,8 +333,8 @@ export const PropertyDais: React.FC = () => {
                             step.status === 'current'
                               ? 'text-white font-medium'
                               : step.status === 'completed'
-                              ? 'text-green-400'
-                              : 'text-white/50'
+                                ? 'text-green-400'
+                                : 'text-white/50'
                           }
                         >
                           {step.name}
@@ -416,50 +408,11 @@ export const PropertyDais: React.FC = () => {
       )}
 
       {/* History */}
-      {history.length > 0 && (
-        <div className='bg-white/5 rounded-xl p-4 border border-white/10'>
-          <h3 className='text-white font-semibold mb-3 flex items-center gap-2'>
-            <span>📜</span> History
-          </h3>
-
-          <div className='space-y-2'>
-            {history.map((record) => (
-              <div
-                key={record.id}
-                className={`flex items-center justify-between p-3 rounded-lg border ${
-                  record.status === 'success'
-                    ? 'bg-green-500/10 border-green-500/20'
-                    : 'bg-red-500/10 border-red-500/20'
-                }`}
-              >
-                <div className='flex items-center gap-3'>
-                  <span className={record.status === 'success' ? 'text-green-400' : 'text-red-400'}>
-                    {record.status === 'success' ? '✅' : '❌'}
-                  </span>
-                  <div>
-                    <div className='text-white/80 text-sm font-mono'>{record.toolId}</div>
-                    <div className='text-white/50 text-xs'>
-                      {record.workflowType} • {record.timestamp.toLocaleTimeString()}
-                    </div>
-                  </div>
-                </div>
-                <div className='flex items-center gap-2'>
-                  <code className='text-white/40 text-xs font-mono'>
-                    {record.correlationId.slice(0, 12)}...
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(record.correlationId)}
-                    className='text-white/40 hover:text-white text-sm'
-                    aria-label='Copy correlation ID'
-                  >
-                    📋
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <InvocationHistory
+        records={history}
+        title='Status History'
+        emptyMessage='No workflow status checks yet.'
+      />
     </div>
   );
 };

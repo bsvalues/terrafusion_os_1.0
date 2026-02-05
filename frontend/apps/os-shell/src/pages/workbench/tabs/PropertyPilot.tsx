@@ -6,14 +6,21 @@
  *
  * Architecture: UI → pilotApi.invokeTool(parcelId) → correlationId-first UX
  * Uses ToolInvokePanel pattern with parcel context.
+ *
+ * Phase 6.2: Migrated to shared workbench primitives
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { invokeTool } from '../../../api/pilotApi';
+import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
+import {
+    InvocationHistory,
+    ParcelContextHeader,
+    type InvocationRecord,
+} from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
-import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 
 /** Available parcel-context tools for quick invocation */
 const PARCEL_TOOLS = [
@@ -30,16 +37,6 @@ const PARCEL_TOOLS = [
     icon: '📄',
   },
 ] as const;
-
-interface InvocationRecord {
-  id: string;
-  toolId: string;
-  status: 'success' | 'error';
-  correlationId: string;
-  timestamp: Date;
-  output?: string;
-  error?: ErrorInfo;
-}
 
 interface InvocationState {
   status: 'idle' | 'loading' | 'success' | 'error';
@@ -75,15 +72,7 @@ export const PropertyPilot: React.FC = () => {
           status: response.success ? 'success' : 'error',
           correlationId: response.correlationId,
           timestamp: new Date(),
-          output: response.result?.output,
-          error: response.error
-            ? {
-                message: response.error.message,
-                code: response.error.code,
-                correlationId: response.correlationId,
-                severity: response.error.severity || 'error',
-              }
-            : undefined,
+          errorCode: response.error?.code,
         };
 
         setInvocationHistory((prev) => [record, ...prev]);
@@ -123,7 +112,7 @@ export const PropertyPilot: React.FC = () => {
           status: 'error',
           correlationId,
           timestamp: new Date(),
-          error: errorInfo,
+          errorCode: 'NETWORK_ERROR',
         };
 
         setInvocationHistory((prev) => [record, ...prev]);
@@ -145,23 +134,20 @@ export const PropertyPilot: React.FC = () => {
   return (
     <div className='space-y-6' data-testid='property-pilot-tab'>
       {/* Header */}
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-3'>
-          <span className='text-3xl'>🎮</span>
-          <div>
-            <h2 className='text-2xl font-bold text-white'>Pilot</h2>
-            <p className='text-white/60 text-sm'>
-              Tool execution for parcel <code className='bg-white/10 px-2 py-0.5 rounded'>{parcelId}</code>
-            </p>
-          </div>
-        </div>
-        <button
-          onClick={() => navigate('/pilot')}
-          className='px-3 py-1.5 text-sm bg-white/10 text-white/70 rounded-lg hover:bg-white/20 transition-colors'
-        >
-          Full Console →
-        </button>
-      </div>
+      <ParcelContextHeader
+        icon='🎮'
+        title='Pilot'
+        parcelId={parcelId}
+        subtitle={`Tool execution for parcel ${parcelId}`}
+        actions={
+          <button
+            onClick={() => navigate('/pilot')}
+            className='px-3 py-1.5 text-sm bg-white/10 text-white/70 rounded-lg hover:bg-white/20 transition-colors'
+          >
+            Full Console →
+          </button>
+        }
+      />
 
       {/* Tool Cards */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -275,50 +261,11 @@ export const PropertyPilot: React.FC = () => {
       )}
 
       {/* Invocation History */}
-      <div className='bg-white/5 rounded-xl p-5 border border-white/10'>
-        <h3 className='text-white font-semibold mb-4 flex items-center gap-2'>
-          <span>📜</span> Invocation History
-        </h3>
-
-        {invocationHistory.length === 0 ? (
-          <p className='text-white/40 text-center py-4'>No tool invocations for this parcel yet.</p>
-        ) : (
-          <div className='space-y-3'>
-            {invocationHistory.map((record) => (
-              <div
-                key={record.id}
-                className={`flex items-center justify-between p-3 rounded-lg ${
-                  record.status === 'success' ? 'bg-emerald-500/10' : 'bg-red-500/10'
-                }`}
-              >
-                <div className='flex items-center gap-3'>
-                  <span className={record.status === 'success' ? 'text-emerald-400' : 'text-red-400'}>
-                    {record.status === 'success' ? '✅' : '❌'}
-                  </span>
-                  <div>
-                    <code className='text-white/80 text-sm'>{record.toolId}</code>
-                    <p className='text-white/40 text-xs'>
-                      {record.timestamp.toLocaleTimeString()}
-                    </p>
-                  </div>
-                </div>
-                <div className='flex items-center gap-2'>
-                  <code className='text-xs text-white/50 bg-black/20 px-2 py-1 rounded'>
-                    {record.correlationId.substring(0, 16)}...
-                  </code>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(record.correlationId)}
-                    className='px-2 py-1 text-xs bg-white/10 text-white/60 rounded hover:bg-white/20'
-                    title='Copy correlation ID'
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <InvocationHistory
+        records={invocationHistory}
+        title='Invocation History'
+        emptyMessage='No tool invocations for this parcel yet.'
+      />
     </div>
   );
 };
