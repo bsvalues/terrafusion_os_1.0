@@ -393,6 +393,35 @@
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier"
+    },
+    {
+      "toolId": "query_parcel_layers",
+      "displayName": "Query Parcel Layers",
+      "suite": "atlas",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel"],
+      "description": "Query GIS layers and parcel boundary data for mapping visualization. Returns parcel geometry, available layers, and overlay metadata.",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "layers": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Layers to include (e.g., boundary, zoning, flood, aerial)"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["geojson", "wkt", "summary"],
+            "default": "summary"
+          }
+        },
+        "required": ["parcelId"]
+      }
     }
   ]
 }
