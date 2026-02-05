@@ -23,6 +23,21 @@ import { ErrorDisplay } from '../../components/errors/ErrorDisplay';
 const TERRAPRIME_PORT = import.meta.env.VITE_TF_TERRAPRIME_PORT || '5184';
 const TERRAPRIME_URL = `http://localhost:${TERRAPRIME_PORT}`;
 
+/**
+ * Allowed origins for postMessage communication
+ * Only accept messages from known suite origins
+ */
+const ALLOWED_ORIGINS = new Set([
+  `http://localhost:${TERRAPRIME_PORT}`,
+  `https://localhost:${TERRAPRIME_PORT}`,
+  // Add production origins when deployed
+]);
+
+/**
+ * Valid message types from suites
+ */
+const VALID_MESSAGE_TYPES = new Set(['TF_ERROR', 'TF_NAVIGATE', 'TF_NOTIFY', 'TF_READY']);
+
 interface SuiteError {
   correlationId: string;
   message: string;
@@ -101,12 +116,19 @@ export const TerraPrimeSuite: React.FC = () => {
   // Handle messages from iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // Only accept messages from TerraPrime origin
-      if (!event.origin.includes(`localhost:${TERRAPRIME_PORT}`)) {
+      // SECURITY: Only accept messages from explicitly allowed origins
+      if (!ALLOWED_ORIGINS.has(event.origin)) {
+        console.warn(`[TerraPrimeSuite] Rejected message from unknown origin: ${event.origin}`);
         return;
       }
 
       const { type, payload } = event.data || {};
+
+      // SECURITY: Validate message type
+      if (!type || !VALID_MESSAGE_TYPES.has(type)) {
+        console.warn(`[TerraPrimeSuite] Rejected invalid message type: ${type}`);
+        return;
+      }
 
       switch (type) {
         case 'TF_ERROR':
@@ -116,7 +138,12 @@ export const TerraPrimeSuite: React.FC = () => {
 
         case 'TF_NAVIGATE':
           // Suite requests navigation to another shell route
-          if (payload?.route) {
+          // SECURITY: Only allow navigation to shell routes (not external)
+          if (
+            payload?.route &&
+            typeof payload.route === 'string' &&
+            payload.route.startsWith('/')
+          ) {
             navigate(payload.route);
           }
           break;
