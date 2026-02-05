@@ -94,16 +94,24 @@ These are the **enforced invariants** for `main` branch. Any deviation is a gove
 | Allow force push | **false** | Immutable history |
 
 **Drift Detection (periodic audit):**
+
+If `jq` is not installed, run the raw diff. If it is, prefer the normalized diff.
+
 ```bash
-# Capture current protection settings
+# Capture current branch protection JSON
 gh api repos/bsvalues/terrafusion_os_1.0/branches/main/protection > .tmp/main.protection.current.json
 
 # Verify invariants
 jq '.required_pull_request_reviews.required_approving_review_count == 0' .tmp/main.protection.current.json
 jq '.required_status_checks.contexts | contains(["🔒 SEAL"])' .tmp/main.protection.current.json
 
-# Diff against canon snapshot
+# Raw diff (no dependencies)
 git diff --no-index .governance/main.protection.json .tmp/main.protection.current.json
+
+# Normalized diff (recommended if jq is available)
+jq -S . .governance/main.protection.json > .tmp/main.protection.canon.norm.json
+jq -S . .tmp/main.protection.current.json > .tmp/main.protection.current.norm.json
+git diff --no-index .tmp/main.protection.canon.norm.json .tmp/main.protection.current.norm.json
 ```
 
 **Snapshot Update Policy:**
