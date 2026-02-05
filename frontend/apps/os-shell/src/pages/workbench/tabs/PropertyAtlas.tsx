@@ -11,9 +11,13 @@ import React, { useCallback, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
+import {
+    InvocationHistory,
+    ParcelContextHeader,
+    type InvocationRecord,
+} from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
-import { ParcelContextHeader } from '../../../components/workbench';
 
 /** Available map layers */
 const MAP_LAYERS = [
@@ -49,17 +53,6 @@ interface QueryResult {
   parcelId: string;
   layers: LayerData;
   centroid?: { lat: number; lng: number };
-}
-
-interface InvocationRecord {
-  id: string;
-  toolId: string;
-  status: 'success' | 'error';
-  correlationId: string;
-  timestamp: Date;
-  layers: LayerId[];
-  output?: QueryResult;
-  error?: ErrorInfo;
 }
 
 interface QueryState {
@@ -129,8 +122,7 @@ export const PropertyAtlas: React.FC = () => {
             status: 'success',
             correlationId: response.correlationId || 'unknown',
             timestamp: new Date(),
-            layers: Array.from(selectedLayers),
-            output: parsed,
+            meta: { layers: selectedLayers.size },
           },
           ...prev.slice(0, 9), // Keep last 10
         ]);
@@ -156,8 +148,8 @@ export const PropertyAtlas: React.FC = () => {
             status: 'error',
             correlationId: response.correlationId || 'unknown',
             timestamp: new Date(),
-            layers: Array.from(selectedLayers),
-            error: errorInfo,
+            errorCode: response.error?.code || 'QUERY_FAILED',
+            meta: { layers: selectedLayers.size },
           },
           ...prev.slice(0, 9),
         ]);
@@ -186,8 +178,8 @@ export const PropertyAtlas: React.FC = () => {
           status: 'error',
           correlationId: clientCorrelationId,
           timestamp: new Date(),
-          layers: Array.from(selectedLayers),
-          error: networkError,
+          errorCode: 'NETWORK_ERROR',
+          meta: { layers: selectedLayers.size },
         },
         ...prev.slice(0, 9),
       ]);
@@ -204,8 +196,8 @@ export const PropertyAtlas: React.FC = () => {
     <div className='space-y-6' data-testid='property-atlas-tab'>
       {/* Header */}
       <ParcelContextHeader
-        icon="🗺️"
-        title="TerraAtlas"
+        icon='🗺️'
+        title='TerraAtlas'
         parcelId={parcelId}
         subtitle={`Geospatial analysis for ${parcelId}`}
       />
@@ -236,9 +228,7 @@ export const PropertyAtlas: React.FC = () => {
                   <div className='font-medium'>{layer.label}</div>
                   <div className='text-xs text-white/50'>{layer.description}</div>
                 </div>
-                {selectedLayers.has(layer.id) && (
-                  <span className='ml-auto text-blue-400'>✓</span>
-                )}
+                {selectedLayers.has(layer.id) && <span className='ml-auto text-blue-400'>✓</span>}
               </button>
             ))}
           </div>
@@ -316,11 +306,14 @@ export const PropertyAtlas: React.FC = () => {
                 <h5 className='text-white/80 font-medium mb-2'>📐 Boundary</h5>
                 <div className='text-sm text-white/60 space-y-1'>
                   <p>
-                    Area: <span className='text-white'>{queryState.result.layers.boundary.area}</span>
+                    Area:{' '}
+                    <span className='text-white'>{queryState.result.layers.boundary.area}</span>
                   </p>
                   <p>
                     Perimeter:{' '}
-                    <span className='text-white'>{queryState.result.layers.boundary.perimeter}</span>
+                    <span className='text-white'>
+                      {queryState.result.layers.boundary.perimeter}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -335,7 +328,9 @@ export const PropertyAtlas: React.FC = () => {
                   </p>
                   <p>
                     Description:{' '}
-                    <span className='text-white'>{queryState.result.layers.zoning.description}</span>
+                    <span className='text-white'>
+                      {queryState.result.layers.zoning.description}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -386,59 +381,21 @@ export const PropertyAtlas: React.FC = () => {
 
       {/* Error Display */}
       {queryState.status === 'error' && queryState.error && (
-        <ErrorDisplay error={{
-          message: queryState.error.message,
-          errorCode: queryState.error.code,
-          correlationId: queryState.correlationId,
-        }} />
+        <ErrorDisplay
+          error={{
+            message: queryState.error.message,
+            errorCode: queryState.error.code,
+            correlationId: queryState.correlationId,
+          }}
+        />
       )}
 
       {/* Query History */}
-      {queryHistory.length > 0 && (
-        <div className='bg-white/5 rounded-xl p-4 border border-white/10'>
-          <h3 className='text-white font-semibold mb-3 flex items-center gap-2'>
-            <span>📜</span> Query History
-          </h3>
-
-          <div className='space-y-2'>
-            {queryHistory.map((record) => (
-              <div
-                key={record.id}
-                className={`flex items-center justify-between p-3 rounded-lg border ${
-                  record.status === 'success'
-                    ? 'bg-green-500/10 border-green-500/20'
-                    : 'bg-red-500/10 border-red-500/20'
-                }`}
-              >
-                <div className='flex items-center gap-3'>
-                  <span className={record.status === 'success' ? 'text-green-400' : 'text-red-400'}>
-                    {record.status === 'success' ? '✅' : '❌'}
-                  </span>
-                  <div>
-                    <div className='text-white/80 text-sm font-mono'>{record.toolId}</div>
-                    <div className='text-white/50 text-xs'>
-                      Layers: {record.layers.join(', ')} •{' '}
-                      {record.timestamp.toLocaleTimeString()}
-                    </div>
-                  </div>
-                </div>
-                <div className='flex items-center gap-2'>
-                  <code className='text-white/40 text-xs font-mono'>
-                    {record.correlationId.slice(0, 12)}...
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(record.correlationId)}
-                    className='text-white/40 hover:text-white text-sm'
-                    aria-label='Copy correlation ID'
-                  >
-                    📋
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <InvocationHistory
+        records={queryHistory}
+        title='Query History'
+        emptyMessage='No layer queries yet.'
+      />
     </div>
   );
 };

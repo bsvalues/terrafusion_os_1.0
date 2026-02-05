@@ -11,9 +11,13 @@ import React, { useCallback, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
+import {
+    InvocationHistory,
+    ParcelContextHeader,
+    type InvocationRecord,
+} from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
-import { ParcelContextHeader } from '../../../components/workbench';
 
 /** Current year for default selection */
 const CURRENT_YEAR = new Date().getFullYear();
@@ -43,18 +47,6 @@ interface ExplanationResult {
   explanation?: string;
   drivers?: ValueDriver[];
   confidence?: number;
-}
-
-interface InvocationRecord {
-  id: string;
-  toolId: string;
-  status: 'success' | 'error';
-  correlationId: string;
-  timestamp: Date;
-  taxYear: number;
-  audience: AudienceType;
-  output?: ExplanationResult;
-  error?: ErrorInfo;
 }
 
 interface ExplainState {
@@ -118,9 +110,7 @@ export const PropertyForge: React.FC = () => {
             status: 'success',
             correlationId: response.correlationId || 'unknown',
             timestamp: new Date(),
-            taxYear,
-            audience,
-            output: parsed,
+            meta: { year: taxYear, audience },
           },
           ...prev.slice(0, 9),
         ]);
@@ -145,9 +135,8 @@ export const PropertyForge: React.FC = () => {
             status: 'error',
             correlationId: response.correlationId || 'unknown',
             timestamp: new Date(),
-            taxYear,
-            audience,
-            error: errorInfo,
+            errorCode: response.error?.code || 'EXPLAIN_FAILED',
+            meta: { year: taxYear, audience },
           },
           ...prev.slice(0, 9),
         ]);
@@ -174,9 +163,8 @@ export const PropertyForge: React.FC = () => {
           status: 'error',
           correlationId: clientCorrelationId,
           timestamp: new Date(),
-          taxYear,
-          audience,
-          error: networkError,
+          errorCode: 'NETWORK_ERROR',
+          meta: { year: taxYear, audience },
         },
         ...prev.slice(0, 9),
       ]);
@@ -199,8 +187,8 @@ export const PropertyForge: React.FC = () => {
     <div className='space-y-6' data-testid='property-forge-tab'>
       {/* Header */}
       <ParcelContextHeader
-        icon="🔥"
-        title="TerraForge"
+        icon='🔥'
+        title='TerraForge'
         parcelId={parcelId}
         subtitle={`AI-powered valuation analysis for ${parcelId}`}
       />
@@ -435,50 +423,11 @@ export const PropertyForge: React.FC = () => {
       )}
 
       {/* History */}
-      {history.length > 0 && (
-        <div className='bg-white/5 rounded-xl p-4 border border-white/10'>
-          <h3 className='text-white font-semibold mb-3 flex items-center gap-2'>
-            <span>📜</span> History
-          </h3>
-
-          <div className='space-y-2'>
-            {history.map((record) => (
-              <div
-                key={record.id}
-                className={`flex items-center justify-between p-3 rounded-lg border ${
-                  record.status === 'success'
-                    ? 'bg-green-500/10 border-green-500/20'
-                    : 'bg-red-500/10 border-red-500/20'
-                }`}
-              >
-                <div className='flex items-center gap-3'>
-                  <span className={record.status === 'success' ? 'text-green-400' : 'text-red-400'}>
-                    {record.status === 'success' ? '✅' : '❌'}
-                  </span>
-                  <div>
-                    <div className='text-white/80 text-sm font-mono'>{record.toolId}</div>
-                    <div className='text-white/50 text-xs'>
-                      {record.taxYear} • {record.audience} • {record.timestamp.toLocaleTimeString()}
-                    </div>
-                  </div>
-                </div>
-                <div className='flex items-center gap-2'>
-                  <code className='text-white/40 text-xs font-mono'>
-                    {record.correlationId.slice(0, 12)}...
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(record.correlationId)}
-                    className='text-white/40 hover:text-white text-sm'
-                    aria-label='Copy correlation ID'
-                  >
-                    📋
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <InvocationHistory
+        records={history}
+        title='Explanation History'
+        emptyMessage='No valuation explanations yet.'
+      />
     </div>
   );
 };
