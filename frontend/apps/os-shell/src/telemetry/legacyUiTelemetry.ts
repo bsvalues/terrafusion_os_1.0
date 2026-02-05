@@ -198,3 +198,38 @@ export function resetLegacyUiMetrics(): void {
   sessionId = null;
   loadFromStorage();
 }
+
+/**
+ * Read all aggregated legacy metrics.
+ * Returns the full metrics record keyed by legacyAppId.
+ */
+export function readAllLegacyMetrics(): Record<string, MetricsEntry> {
+  // Ensure state is loaded
+  if (Object.keys(metrics).length === 0) {
+    loadFromStorage();
+  }
+  return { ...metrics };
+}
+
+/**
+ * Clear all legacy metrics and dismissed flags from storage.
+ * Used for dev reset functionality.
+ */
+export function clearAllLegacyMetrics(): void {
+  metrics = {};
+  sessionId = null;
+  try {
+    sessionStorage.removeItem(STORAGE_KEY);
+    // Also clear any dismissed banner flags
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (key?.startsWith('legacy.') && key.endsWith('.dismissed')) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((key) => sessionStorage.removeItem(key));
+  } catch {
+    // Ignore storage errors
+  }
+}

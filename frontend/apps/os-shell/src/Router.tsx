@@ -59,6 +59,26 @@ const ErrorDisplayDemo = lazy(() => import('./pages/ErrorDisplayDemo'));
 // Phase 2: Pilot Tool Invocation Demo (read-only vertical slice)
 const PilotDemo = lazy(() => import('./pages/PilotDemo'));
 
+// Phase 7: Dev-only Legacy Burn-Down Viewer
+const LegacyMetricsViewer = lazy(() => import('./pages/dev/LegacyMetricsViewer'));
+
+// DEV mode check (Vite injects import.meta.env.DEV at build time)
+const isDev = (): boolean => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const meta = (globalThis as any).import_meta_env;
+    if (meta?.DEV !== undefined) {
+      return meta.DEV;
+    }
+    if (typeof process !== 'undefined' && process.env?.NODE_ENV) {
+      return process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
+    }
+  } catch {
+    // Ignore
+  }
+  return true; // Default to dev for safety
+};
+
 const Router: React.FC = () => {
   return (
     <BrowserRouter
@@ -129,6 +149,9 @@ const Router: React.FC = () => {
 
             {/* Phase 2: Pilot Tool Invocation Demo */}
             <Route path='/pilot-demo' element={<PilotDemo />} />
+
+            {/* Phase 7: Dev-only Legacy Burn-Down Viewer */}
+            {isDev() && <Route path='/dev/legacy-metrics' element={<LegacyMetricsViewer />} />}
 
             {/* Legacy module routes - redirect to home with telemetry */}
             <Route
