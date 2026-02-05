@@ -80,6 +80,31 @@ main:
 - ✅ Approvals = 0 (CI is constitutional review)
 - ✅ `--admin` not required for routine merges (enforcement matches this spec)
 
+### Branch Protection Canon (Single Source of Truth)
+
+These are the **enforced invariants** for `main` branch. Any deviation is a governance incident.
+
+| Invariant | Value | Rationale |
+|-----------|-------|-----------|
+| Required checks | `🔒 SEAL`, `typecheck-core`, `phase83-tools` | Constitutional review |
+| Approving reviews | **0** | Solo dev: CI = approval |
+| Require PR | **true** | Evidence trail |
+| Require up-to-date | **true** | No merge race conditions |
+| Include admins | **true** | Cannot bypass own gates |
+| Allow force push | **false** | Immutable history |
+
+**Drift Detection (periodic audit):**
+```bash
+# Capture current protection settings
+gh api repos/bsvalues/terrafusion_os_1.0/branches/main/protection > .governance/main.protection.json
+
+# Verify invariants
+jq '.required_pull_request_reviews.required_approving_review_count == 0' .governance/main.protection.json
+jq '.required_status_checks.contexts | contains(["🔒 SEAL"])' .governance/main.protection.json
+```
+
+**Last verified:** 2026-02-04 (PR #242 merged without `--admin`)
+
 ## TOOL GOVERNANCE RULES
 - ToolRegistry must resolve the manifest path canonically (relative to ToolRegistry) and allow env override only:
   - `TERRAFUSION_TOOL_MANIFEST_PATH`
