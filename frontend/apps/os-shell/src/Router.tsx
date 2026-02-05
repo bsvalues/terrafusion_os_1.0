@@ -30,6 +30,9 @@ const NotificationPreferences = lazy(() => import('./components/codex/Notificati
 const TerraForgeGen2 = lazy(() => import('./pages/gen2/TerraForgeGen2'));
 const TerraDossierGen2 = lazy(() => import('./pages/gen2/TerraDossierGen2'));
 
+// Suite Wrappers (Phase 5: MWUX Slices)
+const TerraPrimeSuite = lazy(() => import('./pages/suites/TerraPrimeSuite'));
+
 // GovernanceLock - Pilot Console (single choke point UI)
 const PilotConsole = lazy(() => import('./pages/PilotConsole'));
 
@@ -65,6 +68,9 @@ const Router: React.FC = () => {
             {/* Gen2 Module Routes - Internal OS modules */}
             <Route path='/gen2/terraforge' element={<TerraForgeGen2 />} />
             <Route path='/gen2/dossier' element={<TerraDossierGen2 />} />
+
+            {/* Suite Routes (Phase 5: MWUX Slices) */}
+            <Route path='/suites/terra-prime/*' element={<TerraPrimeSuite />} />
 
             {/* GovernanceLock - Single Choke Point UI */}
             <Route path='/pilot' element={<PilotConsole />} />
