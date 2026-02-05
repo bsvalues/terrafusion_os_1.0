@@ -1,0 +1,337 @@
+/**
+ * RiskPolicyGate.tsx
+ *
+ * Phase 3: Risk Policy Gate Component
+ * Orchestrates the write-risk confirmation workflow:
+ * 1. Validate tool via preflight check
+ * 2. Show confirmation modal if required
+ * 3. Execute tool with confirmation flags
+ *
+ * Policy Enforcement:
+ * - read_only: Execute immediately
+ * - write_low: Require confirmation
+ * - write_high: Require confirmation + reason code
+ * - irreversible: Require confirmation + reason code + supervisor (Phase 4)
+ */
+
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+    invokeTool,
+    validatePilotTool,
+    type PilotValidateResponse,
+    type Risk,
+} from '../../api/pilotApi';
+import type { ErrorInfo } from '../../hooks/useErrorHandler';
+import { ErrorDisplay } from '../errors/ErrorDisplay';
+import { RiskConfirmationModal } from './RiskConfirmationModal';
+
+export interface RiskPolicyGateProps {
+  toolId: string;
+  params: Record<string, unknown>;
+  onComplete: (result: {
+    success: boolean;
+    correlationId: string;
+    result?: { toolId: string; output: string };
+    error?: { code: string; message: string; severity: string };
+  }) => void;
+  onCancel: () => void;
+}
+
+type GateState =
+  | { phase: 'validating' }
+  | { phase: 'executing'; reason?: string }
+  | { phase: 'confirming'; validation: PilotValidateResponse }
+  | { phase: 'error'; error: ErrorInfo }
+  | { phase: 'complete' };
+
+/**
+ * RiskPolicyGate Component
+ *
+ * Orchestrates the policy-gated tool invocation flow.
+ * Handles preflight validation, confirmation dialogs, and execution.
+ */
+export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
+  toolId,
+  params,
+  onComplete,
+  onCancel,
+}) => {
+  const [state, setState] = useState<GateState>({ phase: 'validating' });
+
+  // Preflight validation
+  useEffect(() => {
+    let isMounted = true;
+
+    const validate = async () => {
+      try {
+        const validation = await validatePilotTool({
+          toolId,
+          params,
+        });
+
+        if (!isMounted) return;
+
+        // Check if confirmation is required
+        if (validation.preflight?.confirmationRequired) {
+          setState({ phase: 'confirming', validation });
+        } else {
+          // No confirmation needed - execute immediately
+          await executeToolDirect();
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        const correlationId = `gate-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+        setState({
+          phase: 'error',
+          error: {
+            message: err instanceof Error ? err.message : 'Validation failed',
+            code: 'VALIDATION_ERROR',
+            correlationId,
+            severity: 'error',
+          },
+        });
+      }
+    };
+
+    const executeToolDirect = async () => {
+      setState({ phase: 'executing' });
+
+      try {
+        const result = await invokeTool({
+          toolId,
+          params,
+        });
+
+        if (!isMounted) return;
+
+        onComplete(result);
+        setState({ phase: 'complete' });
+      } catch (err) {
+        if (!isMounted) return;
+        const correlationId = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+        setState({
+          phase: 'error',
+          error: {
+            message: err instanceof Error ? err.message : 'Execution failed',
+            code: 'NETWORK_ERROR',
+            correlationId,
+            severity: 'error',
+          },
+        });
+      }
+    };
+
+    validate();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [toolId, params, onComplete]);
+
+  // Handle confirmation
+  const handleConfirm = useCallback(
+    async (options?: { reasonCode?: string }) => {
+      if (state.phase !== 'confirming') return;
+
+      setState({ phase: 'executing', reason: options?.reasonCode });
+
+      try {
+        const result = await invokeTool({
+          toolId,
+          params,
+          confirmation: true,
+          reasonCode: options?.reasonCode,
+        });
+
+        if (!result.success && result.error) {
+          // Show error with correlationId
+          setState({
+            phase: 'error',
+            error: {
+              message: result.error.message,
+              code: result.error.code,
+              correlationId: result.correlationId,
+              severity: result.error.severity,
+            },
+          });
+        } else {
+          onComplete(result);
+          setState({ phase: 'complete' });
+        }
+      } catch (err) {
+        const correlationId = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+        setState({
+          phase: 'error',
+          error: {
+            message: err instanceof Error ? err.message : 'Execution failed',
+            code: 'NETWORK_ERROR',
+            correlationId,
+            severity: 'error',
+          },
+        });
+      }
+    },
+    [state.phase, toolId, params, onComplete]
+  );
+
+  // Render based on state
+  if (state.phase === 'validating' || state.phase === 'executing') {
+    return (
+      <div className='policy-gate-loading' role='status' aria-label='Loading'>
+        <span className='spinner'></span>
+        <span>{state.phase === 'validating' ? 'Validating...' : 'Executing...'}</span>
+        <style>{`
+          .policy-gate-loading {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            color: #6b7280;
+          }
+          .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e5e7eb;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+          }
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (state.phase === 'error') {
+    return (
+      <div className='policy-gate-error'>
+        <ErrorDisplay error={state.error} />
+        <div className='error-actions'>
+          <button onClick={onCancel} className='btn-back'>
+            Back
+          </button>
+        </div>
+        <style>{`
+          .policy-gate-error {
+            padding: 1rem;
+          }
+          .error-actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+          }
+          .btn-back {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+          }
+          .btn-back:hover {
+            background: #f3f4f6;
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (state.phase === 'confirming') {
+    const { validation } = state;
+    const tool = validation.tool;
+    const preflight = validation.preflight;
+
+    // Check for validation violations
+    if (validation.violations.length > 0) {
+      return (
+        <div className='policy-gate-violations' role='dialog'>
+          <div className='violations-header'>
+            <span className='icon'>⚠️</span>
+            <h3>Validation Failed</h3>
+          </div>
+          <ul className='violations-list'>
+            {validation.violations.map((v, i) => (
+              <li key={i}>{v}</li>
+            ))}
+          </ul>
+          <div className='violations-footer'>
+            <button onClick={onCancel} className='btn-cancel'>
+              Cancel
+            </button>
+            <button disabled className='btn-confirm' title='Cannot proceed with violations'>
+              Confirm
+            </button>
+          </div>
+          <style>{`
+            .policy-gate-violations {
+              padding: 1.5rem;
+              background: white;
+              border-radius: 8px;
+              border: 1px solid #fbbf24;
+              max-width: 500px;
+              margin: 1rem auto;
+            }
+            .violations-header {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              margin-bottom: 1rem;
+            }
+            .violations-header h3 {
+              margin: 0;
+              color: #b45309;
+            }
+            .violations-list {
+              margin: 0 0 1.5rem 0;
+              padding-left: 1.5rem;
+              color: #92400e;
+            }
+            .violations-list li {
+              margin: 0.5rem 0;
+            }
+            .violations-footer {
+              display: flex;
+              justify-content: flex-end;
+              gap: 0.75rem;
+            }
+            .btn-cancel {
+              padding: 0.5rem 1rem;
+              border: 1px solid #d1d5db;
+              border-radius: 6px;
+              background: white;
+              cursor: pointer;
+            }
+            .btn-confirm {
+              padding: 0.5rem 1rem;
+              border: none;
+              border-radius: 6px;
+              background: #9ca3af;
+              color: white;
+              cursor: not-allowed;
+              opacity: 0.5;
+            }
+          `}</style>
+        </div>
+      );
+    }
+
+    return (
+      <RiskConfirmationModal
+        isOpen={true}
+        toolId={toolId}
+        toolDescription={tool?.toolId}
+        risk={(tool?.risk as Risk) || 'write_low'}
+        reasonCodes={tool?.reasonCodes}
+        requiresReasonCode={preflight?.reasonCodeRequired}
+        requiresSupervisorApproval={preflight?.supervisorRequired}
+        supervisorRoles={tool?.supervisorRoles}
+        onConfirm={handleConfirm}
+        onCancel={onCancel}
+      />
+    );
+  }
+
+  // Complete state - nothing to render
+  return null;
+};
