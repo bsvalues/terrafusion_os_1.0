@@ -241,8 +241,8 @@ describe('RiskConfirmationModal', () => {
     });
   });
 
-  describe('Supervisor Approval Stub (Phase 4)', () => {
-    it('shows supervisor approval required message for irreversible tools', () => {
+  describe('Phase 4: Approval Token Flow (Irreversible)', () => {
+    it('shows approval required section for irreversible tools', () => {
       render(
         <RiskConfirmationModal
           {...defaultProps}
@@ -252,8 +252,9 @@ describe('RiskConfirmationModal', () => {
         />
       );
 
-      expect(screen.getByText(/supervisor approval required/i)).toBeInTheDocument();
-      expect(screen.getByText(/county_admin/i)).toBeInTheDocument();
+      // Phase 4: Now shows "Approval Required" with typed phrase input
+      expect(screen.getByText(/approval required/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/type.*to confirm/i)).toBeInTheDocument();
     });
 
     it('disables confirm button when supervisor approval is required', () => {
@@ -267,6 +268,18 @@ describe('RiskConfirmationModal', () => {
 
       const confirmButton = screen.getByRole('button', { name: /confirm/i });
       expect(confirmButton).toBeDisabled();
+    });
+
+    it('shows generate approval button for irreversible tools', () => {
+      render(
+        <RiskConfirmationModal
+          {...defaultProps}
+          risk='irreversible'
+          requiresSupervisorApproval={true}
+        />
+      );
+
+      expect(screen.getByRole('button', { name: /generate.*approval/i })).toBeInTheDocument();
     });
   });
 });
