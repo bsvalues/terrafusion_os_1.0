@@ -1,7 +1,8 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
+import { LegacyRedirect } from './components/legacy/LegacyRedirect';
 
 // Loading component for Suspense fallback
 const LoadingFallback = () => (
@@ -92,9 +93,15 @@ const Router: React.FC = () => {
               <Route path='pilot' element={<PropertyPilot />} />
             </Route>
 
-            {/* Legacy Redirects - Demote broken defaults */}
-            <Route path='/modules/property-workbench' element={<Navigate to='/' replace />} />
-            <Route path='/modules/property-workbench/*' element={<Navigate to='/' replace />} />
+            {/* Legacy Redirects - Demote broken defaults with telemetry */}
+            <Route
+              path='/modules/property-workbench'
+              element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
+            />
+            <Route
+              path='/modules/property-workbench/*'
+              element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
+            />
 
             <Route path='/monitoring' element={<Monitoring />} />
             <Route path='/marketplace' element={<TerraFusionMarketplace />} />
@@ -123,8 +130,11 @@ const Router: React.FC = () => {
             {/* Phase 2: Pilot Tool Invocation Demo */}
             <Route path='/pilot-demo' element={<PilotDemo />} />
 
-            {/* Legacy module routes - redirect to home */}
-            <Route path='/modules/*' element={<Navigate to='/' replace />} />
+            {/* Legacy module routes - redirect to home with telemetry */}
+            <Route
+              path='/modules/*'
+              element={<LegacyRedirect to='/' legacyAppId='modules.unknown' />}
+            />
           </Routes>
         </Suspense>
       </ErrorBoundary>
