@@ -18,7 +18,9 @@ import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react
 import { useLocation, useNavigate } from 'react-router-dom';
 import ErrorBoundary from '../../components/errors/ErrorBoundary';
 import { ErrorDisplay } from '../../components/errors/ErrorDisplay';
+import { LegacyDeprecationBanner } from '../../components/legacy/LegacyDeprecationBanner';
 import { getViteEnv } from '../../shared/viteEnv';
+import { emitLegacyUiHit } from '../../telemetry/legacyUiTelemetry';
 
 // Get port from env or use default (Jest-compatible via getViteEnv)
 const env = getViteEnv();
@@ -204,12 +206,32 @@ export const TerraPrimeSuite: React.FC = () => {
     }
   }, [isLoading]);
 
+  // Emit legacy.ui_hit telemetry on first visit
+  const handleTelemetry = useCallback(
+    (event: { legacyAppId: string; route: string; action: 'view' | 'dismiss' | 'upgrade' }) => {
+      if (event.action === 'view') {
+        emitLegacyUiHit({
+          legacyAppId: event.legacyAppId,
+          route: event.route,
+        });
+      }
+    },
+    []
+  );
+
   if (hasError) {
     return <ConnectionError onRetry={handleRetry} />;
   }
 
   return (
     <div className='h-full w-full flex flex-col'>
+      {/* Legacy Deprecation Banner */}
+      <LegacyDeprecationBanner
+        legacyAppId='suites.terra-prime'
+        route={location.pathname}
+        onTelemetry={handleTelemetry}
+      />
+
       {/* Suite Header */}
       <div className='bg-white border-b px-4 py-2 flex items-center justify-between'>
         <div className='flex items-center gap-2'>
