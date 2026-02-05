@@ -16,7 +16,11 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
-import { normalizeNetworkError, normalizePilotError, PilotInvokeResponse } from '../../api/pilotApi';
+import {
+    normalizeNetworkError,
+    normalizePilotError,
+    PilotInvokeResponse,
+} from '../../api/pilotApi';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { ErrorProvider } from '../../contexts/ErrorContext';
 
