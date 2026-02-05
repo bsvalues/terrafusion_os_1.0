@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import { invokeTool } from '../../api/pilotApi';
 import type { ErrorInfo } from '../../hooks/useErrorHandler';
+import { getEnv } from '../../runtime/env';
 import { ErrorDisplay } from '../errors/ErrorDisplay';
 
 interface InvocationState {
@@ -132,7 +133,7 @@ export const ToolInvokePanel: React.FC = () => {
             </pre>
           </div>
 
-          {import.meta.env.DEV && (
+          {getEnv().DEV && (
             <details className='dev-trace-hint'>
               <summary>🔍 Developer Info</summary>
               <div className='hint-content'>
