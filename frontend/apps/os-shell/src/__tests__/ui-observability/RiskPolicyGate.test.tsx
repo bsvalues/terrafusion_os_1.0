@@ -11,7 +11,7 @@
  * - irreversible: Requires confirmation + reason code + supervisor approval (Phase 4)
  */
 
-import { fireEvent, render, screen, waitFor, act } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as pilotApi from '../../api/pilotApi';
 import { RiskPolicyGate } from '../../components/pilot/RiskPolicyGate';
@@ -331,7 +331,7 @@ describe('RiskPolicyGate', () => {
 
     it('executes write_high tool after confirmation with reason code', async () => {
       const user = userEvent.setup();
-      
+
       // Arrange
       mockValidatePilotTool.mockResolvedValue({
         valid: true,
