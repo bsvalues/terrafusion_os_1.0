@@ -168,7 +168,7 @@ describe('PropertyAtlas', () => {
         error: {
           code: 'GIS_SERVICE_UNAVAILABLE',
           message: 'GIS service temporarily unavailable',
-          severity: 'error' as const,
+          severity: 'high' as const,
         },
       };
 

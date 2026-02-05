@@ -1,34 +1,484 @@
 /**
- * Property Forge Tab - AI Valuation & Appeals
- * Placeholder - will integrate TerraForge suite
+ * PropertyForge.tsx
+ *
+ * Phase 5.4: Property Forge Tab - Valuation MWUX Slice
+ * Real MWUX with valuation controls and explain_model_results tool invocation.
+ *
+ * Architecture: UI → select params → explain_model_results tool → correlationId UX
  */
 
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { invokeTool } from '../../../api/pilotApi';
+import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
+import type { ErrorInfo } from '../../../hooks/useErrorHandler';
+import { getEnv } from '../../../runtime/env';
+
+/** Current year for default selection */
+const CURRENT_YEAR = new Date().getFullYear();
+
+/** Available tax years */
+const TAX_YEARS = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - i);
+
+/** Audience options */
+const AUDIENCES = [
+  { value: 'internal', label: 'Internal Review', description: 'Detailed technical analysis' },
+  { value: 'taxpayer', label: 'Taxpayer-Friendly', description: 'Plain language explanation' },
+] as const;
+
+type AudienceType = (typeof AUDIENCES)[number]['value'];
+
+interface ValueDriver {
+  factor: string;
+  impact: string;
+}
+
+interface ExplanationResult {
+  parcelId: string;
+  taxYear?: number;
+  compareToYear?: number;
+  assessedValue?: number;
+  marketValue?: number;
+  explanation?: string;
+  drivers?: ValueDriver[];
+  confidence?: number;
+}
+
+interface InvocationRecord {
+  id: string;
+  toolId: string;
+  status: 'success' | 'error';
+  correlationId: string;
+  timestamp: Date;
+  taxYear: number;
+  audience: AudienceType;
+  output?: ExplanationResult;
+  error?: ErrorInfo;
+}
+
+interface ExplainState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  result?: ExplanationResult;
+  correlationId?: string;
+  error?: ErrorInfo;
+}
 
 export const PropertyForge: React.FC = () => {
   const { parcelId } = useOutletContext<{ parcelId: string }>();
 
+  const [taxYear, setTaxYear] = useState<number>(CURRENT_YEAR);
+  const [audience, setAudience] = useState<AudienceType>('internal');
+  const [compareEnabled, setCompareEnabled] = useState(false);
+  const [compareToYear, setCompareToYear] = useState<number>(CURRENT_YEAR - 1);
+  const [explainState, setExplainState] = useState<ExplainState>({ status: 'idle' });
+  const [history, setHistory] = useState<InvocationRecord[]>([]);
+
+  const handleExplain = useCallback(async () => {
+    setExplainState({ status: 'loading' });
+
+    const params: Record<string, unknown> = {
+      parcelId,
+      taxYear,
+      audience,
+    };
+
+    if (compareEnabled) {
+      params.compareToYear = compareToYear;
+    }
+
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_model_results',
+        params,
+        parcelId,
+      });
+
+      if (response.success && response.result) {
+        let parsed: ExplanationResult;
+        try {
+          parsed =
+            typeof response.result.output === 'string'
+              ? JSON.parse(response.result.output)
+              : response.result.output;
+        } catch {
+          parsed = { parcelId };
+        }
+
+        setExplainState({
+          status: 'success',
+          result: parsed,
+          correlationId: response.correlationId,
+        });
+
+        setHistory((prev) => [
+          {
+            id: crypto.randomUUID(),
+            toolId: 'explain_model_results',
+            status: 'success',
+            correlationId: response.correlationId || 'unknown',
+            timestamp: new Date(),
+            taxYear,
+            audience,
+            output: parsed,
+          },
+          ...prev.slice(0, 9),
+        ]);
+      } else {
+        const errorInfo: ErrorInfo = {
+          code: response.error?.code || 'EXPLAIN_FAILED',
+          message: response.error?.message || 'Failed to explain valuation model results',
+          severity: 'error' as const,
+          correlationId: response.correlationId,
+        };
+
+        setExplainState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: errorInfo,
+        });
+
+        setHistory((prev) => [
+          {
+            id: crypto.randomUUID(),
+            toolId: 'explain_model_results',
+            status: 'error',
+            correlationId: response.correlationId || 'unknown',
+            timestamp: new Date(),
+            taxYear,
+            audience,
+            error: errorInfo,
+          },
+          ...prev.slice(0, 9),
+        ]);
+      }
+    } catch (err) {
+      const clientCorrelationId = `net-${crypto.randomUUID().slice(0, 8)}`;
+      const networkError: ErrorInfo = {
+        code: 'NETWORK_ERROR',
+        message: err instanceof Error ? err.message : 'Network error occurred',
+        severity: 'error' as const,
+        correlationId: clientCorrelationId,
+      };
+
+      setExplainState({
+        status: 'error',
+        correlationId: clientCorrelationId,
+        error: networkError,
+      });
+
+      setHistory((prev) => [
+        {
+          id: crypto.randomUUID(),
+          toolId: 'explain_model_results',
+          status: 'error',
+          correlationId: clientCorrelationId,
+          timestamp: new Date(),
+          taxYear,
+          audience,
+          error: networkError,
+        },
+        ...prev.slice(0, 9),
+      ]);
+    }
+  }, [parcelId, taxYear, audience, compareEnabled, compareToYear]);
+
+  const copyToClipboard = useCallback((text: string) => {
+    navigator.clipboard.writeText(text).catch(console.error);
+  }, []);
+
+  const formatCurrency = (value: number | undefined) =>
+    value !== undefined ? `$${value.toLocaleString()}` : 'N/A';
+
+  const formatConfidence = (value: number | undefined) =>
+    value !== undefined ? `${Math.round(value * 100)}%` : 'N/A';
+
+  const isDev = getEnv('MODE') === 'development';
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <span className="text-3xl">🔥</span>
-        <h2 className="text-2xl font-bold text-white">TerraForge</h2>
+    <div className='space-y-6' data-testid='property-forge-tab'>
+      {/* Header */}
+      <div className='flex items-center gap-3'>
+        <span className='text-3xl'>🔥</span>
+        <div>
+          <h2 className='text-2xl font-bold text-white'>TerraForge</h2>
+          <p className='text-white/60 text-sm'>AI-powered valuation analysis for {parcelId}</p>
+        </div>
       </div>
-      <p className="text-white/60">AI-powered valuation and appeals for {parcelId}</p>
-      
-      <div className="bg-gradient-to-br from-orange-500/20 to-red-600/20 rounded-xl p-8 border border-orange-500/30">
-        <h3 className="text-white text-lg font-semibold mb-4">🚧 Integration Pending</h3>
-        <p className="text-white/70">
-          TerraForge suite integration coming soon. This tab will provide:
-        </p>
-        <ul className="list-disc list-inside text-white/60 mt-2 space-y-1">
-          <li>AI valuation analysis</li>
-          <li>Comparable sales</li>
-          <li>Appeal case management</li>
-          <li>Market trend insights</li>
-        </ul>
+
+      {/* Main Content Grid */}
+      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+        {/* Controls Panel */}
+        <div className='bg-white/5 rounded-xl p-4 border border-white/10'>
+          <h3 className='text-white font-semibold mb-4 flex items-center gap-2'>
+            <span>⚙️</span> Valuation Parameters
+          </h3>
+
+          {/* Tax Year Selector */}
+          <div className='mb-4'>
+            <label htmlFor='tax-year' className='block text-white/70 text-sm mb-2'>
+              Tax Year
+            </label>
+            <select
+              id='tax-year'
+              value={taxYear}
+              onChange={(e) => setTaxYear(Number(e.target.value))}
+              className='w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50'
+            >
+              {TAX_YEARS.map((year) => (
+                <option key={year} value={year} className='bg-gray-800'>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Audience Selector */}
+          <div className='mb-4'>
+            <label htmlFor='audience' className='block text-white/70 text-sm mb-2'>
+              Audience
+            </label>
+            <select
+              id='audience'
+              value={audience}
+              onChange={(e) => setAudience(e.target.value as AudienceType)}
+              className='w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50'
+            >
+              {AUDIENCES.map((opt) => (
+                <option key={opt.value} value={opt.value} className='bg-gray-800'>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <p className='text-white/40 text-xs mt-1'>
+              {AUDIENCES.find((a) => a.value === audience)?.description}
+            </p>
+          </div>
+
+          {/* Compare Toggle */}
+          <div className='mb-4'>
+            <button
+              data-testid='compare-year-toggle'
+              onClick={() => setCompareEnabled(!compareEnabled)}
+              className={`flex items-center gap-2 w-full p-3 rounded-lg border transition-all ${
+                compareEnabled
+                  ? 'bg-orange-500/20 border-orange-500/50 text-white'
+                  : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+              }`}
+            >
+              <span>{compareEnabled ? '📊' : '📈'}</span>
+              <span>Year-over-Year Comparison</span>
+              {compareEnabled && <span className='ml-auto text-orange-400'>✓</span>}
+            </button>
+          </div>
+
+          {/* Compare Year Selector (conditional) */}
+          {compareEnabled && (
+            <div className='mb-4'>
+              <label htmlFor='compare-year' className='block text-white/70 text-sm mb-2'>
+                Compare to Year
+              </label>
+              <select
+                id='compare-year'
+                value={compareToYear}
+                onChange={(e) => setCompareToYear(Number(e.target.value))}
+                className='w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50'
+              >
+                {TAX_YEARS.filter((y) => y !== taxYear).map((year) => (
+                  <option key={year} value={year} className='bg-gray-800'>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Explain Button */}
+          <button
+            onClick={handleExplain}
+            disabled={explainState.status === 'loading'}
+            className={`w-full py-2 px-4 rounded-lg font-semibold transition-all ${
+              explainState.status === 'loading'
+                ? 'bg-white/10 text-white/40 cursor-not-allowed'
+                : 'bg-orange-600 hover:bg-orange-500 text-white'
+            }`}
+          >
+            {explainState.status === 'loading' ? 'Analyzing...' : 'Explain Valuation'}
+          </button>
+        </div>
+
+        {/* Results Panel */}
+        <div className='lg:col-span-2 bg-white/5 rounded-xl border border-white/10 p-4'>
+          {explainState.status === 'loading' ? (
+            <div role='status' className='flex flex-col items-center justify-center py-12 gap-3'>
+              <div className='animate-spin rounded-full h-10 w-10 border-2 border-white/20 border-t-orange-500' />
+              <span className='text-white/60'>Analyzing valuation model...</span>
+            </div>
+          ) : explainState.status === 'success' && explainState.result ? (
+            <div className='space-y-4'>
+              {/* Value Summary */}
+              <div className='flex items-center justify-between mb-3'>
+                <h4 className='text-orange-400 font-semibold flex items-center gap-2'>
+                  <span>✅</span> Valuation Explanation
+                </h4>
+                {explainState.correlationId && (
+                  <div className='flex items-center gap-2 text-xs'>
+                    <span className='text-white/50'>ID:</span>
+                    <code className='text-orange-400 font-mono'>
+                      {explainState.correlationId.slice(0, 16)}...
+                    </code>
+                    <button
+                      onClick={() => copyToClipboard(explainState.correlationId!)}
+                      className='text-white/60 hover:text-white'
+                      aria-label='Copy correlation ID'
+                    >
+                      📋
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Value Cards */}
+              <div className='grid grid-cols-2 gap-4'>
+                <div className='bg-white/5 rounded-lg p-4'>
+                  <div className='text-white/60 text-sm'>Assessed Value</div>
+                  <div className='text-2xl font-bold text-white'>
+                    {formatCurrency(explainState.result.assessedValue)}
+                  </div>
+                </div>
+                <div className='bg-white/5 rounded-lg p-4'>
+                  <div className='text-white/60 text-sm'>Market Value</div>
+                  <div className='text-2xl font-bold text-white'>
+                    {formatCurrency(explainState.result.marketValue)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Explanation Text */}
+              {explainState.result.explanation && (
+                <div className='bg-white/5 rounded-lg p-4'>
+                  <h5 className='text-white/80 font-medium mb-2'>📝 Explanation</h5>
+                  <p className='text-white/70'>{explainState.result.explanation}</p>
+                </div>
+              )}
+
+              {/* Drivers */}
+              {explainState.result.drivers && explainState.result.drivers.length > 0 && (
+                <div className='bg-white/5 rounded-lg p-4'>
+                  <h5 className='text-white/80 font-medium mb-3'>📊 Value Drivers</h5>
+                  <div className='space-y-2'>
+                    {explainState.result.drivers.map((driver, idx) => (
+                      <div
+                        key={idx}
+                        className='flex items-center justify-between py-2 px-3 bg-white/5 rounded'
+                      >
+                        <span className='text-white/70'>{driver.factor}</span>
+                        <span
+                          className={`font-mono ${
+                            driver.impact.startsWith('+')
+                              ? 'text-green-400'
+                              : driver.impact.startsWith('-')
+                                ? 'text-red-400'
+                                : 'text-white/70'
+                          }`}
+                        >
+                          {driver.impact}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Confidence */}
+              {explainState.result.confidence !== undefined && (
+                <div className='flex items-center gap-3 text-sm'>
+                  <span className='text-white/60'>Model Confidence:</span>
+                  <span className='text-orange-400 font-semibold'>
+                    {formatConfidence(explainState.result.confidence)}
+                  </span>
+                </div>
+              )}
+
+              {/* Dev Info */}
+              {isDev && explainState.correlationId && (
+                <div className='text-xs text-white/40 border-t border-white/10 pt-3'>
+                  <details>
+                    <summary className='cursor-pointer hover:text-white/60'>Developer Info</summary>
+                    <pre className='mt-2 bg-black/30 rounded p-2 overflow-x-auto'>
+                      pnpm run trace:query --correlation {explainState.correlationId}
+                    </pre>
+                  </details>
+                </div>
+              )}
+            </div>
+          ) : explainState.status === 'idle' ? (
+            <div className='flex flex-col items-center justify-center py-12 text-center'>
+              <div className='text-4xl mb-2'>🔥</div>
+              <p className='text-white/60'>Configure parameters and click Explain Valuation</p>
+              <p className='text-white/40 text-sm mt-1'>
+                Get AI-powered analysis of valuation model results
+              </p>
+            </div>
+          ) : null}
+        </div>
       </div>
+
+      {/* Error Display */}
+      {explainState.status === 'error' && explainState.error && (
+        <ErrorDisplay
+          error={{
+            message: explainState.error.message,
+            errorCode: explainState.error.code,
+            correlationId: explainState.correlationId,
+          }}
+        />
+      )}
+
+      {/* History */}
+      {history.length > 0 && (
+        <div className='bg-white/5 rounded-xl p-4 border border-white/10'>
+          <h3 className='text-white font-semibold mb-3 flex items-center gap-2'>
+            <span>📜</span> History
+          </h3>
+
+          <div className='space-y-2'>
+            {history.map((record) => (
+              <div
+                key={record.id}
+                className={`flex items-center justify-between p-3 rounded-lg border ${
+                  record.status === 'success'
+                    ? 'bg-green-500/10 border-green-500/20'
+                    : 'bg-red-500/10 border-red-500/20'
+                }`}
+              >
+                <div className='flex items-center gap-3'>
+                  <span className={record.status === 'success' ? 'text-green-400' : 'text-red-400'}>
+                    {record.status === 'success' ? '✅' : '❌'}
+                  </span>
+                  <div>
+                    <div className='text-white/80 text-sm font-mono'>{record.toolId}</div>
+                    <div className='text-white/50 text-xs'>
+                      {record.taxYear} • {record.audience} • {record.timestamp.toLocaleTimeString()}
+                    </div>
+                  </div>
+                </div>
+                <div className='flex items-center gap-2'>
+                  <code className='text-white/40 text-xs font-mono'>
+                    {record.correlationId.slice(0, 12)}...
+                  </code>
+                  <button
+                    onClick={() => copyToClipboard(record.correlationId)}
+                    className='text-white/40 hover:text-white text-sm'
+                    aria-label='Copy correlation ID'
+                  >
+                    📋
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
