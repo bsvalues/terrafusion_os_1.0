@@ -6,18 +6,18 @@
  *
  * Phase 9: Desktop now shows only constitutional suites from suiteRegistry.ts
  *
+ * NOTE: Uses window.location for navigation since this component may render
+ * outside Router context (App.tsx is rendered directly by index.tsx).
+ *
  * @module shell/desktop/DesktopIconGrid
  * @see config/suiteRegistry.ts - Single source of truth
  */
 
 import React, { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import type { Category } from '../../config/generatedModules';
-import { 
-  CONSTITUTIONAL_SUITES, 
-  OS_FEATURES,
-  type SuiteDefinition,
-  type OsFeatureDefinition,
+import {
+    CONSTITUTIONAL_SUITES,
+    OS_FEATURES
 } from '../../config/suiteRegistry';
 import { DesktopIcon } from './DesktopIcon';
 
@@ -46,7 +46,7 @@ const DESKTOP_ICONS: Array<{
     route: suite.route,
   })),
   // OS Features (Pilot, Trace)
-  ...OS_FEATURES.filter(f => f.route).map((feature) => ({
+  ...OS_FEATURES.filter((f) => f.route).map((feature) => ({
     id: feature.id,
     name: feature.displayName,
     iconName: feature.iconName,
@@ -94,8 +94,6 @@ export interface DesktopIconGridProps {
  * ```
  */
 export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = '' }) => {
-  const navigate = useNavigate();
-  
   // Track selected icon
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -105,12 +103,16 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = ''
   }, []);
 
   // Handle icon launch (double click) - Navigate to suite route
-  const handleLaunch = useCallback((id: string) => {
-    const icon = DESKTOP_ICONS.find(i => i.id === id);
-    if (icon?.route) {
-      navigate(icon.route);
-    }
-  }, [navigate]);
+  // Uses window.location since component renders outside Router context
+  const handleLaunch = useCallback(
+    (id: string) => {
+      const icon = DESKTOP_ICONS.find((i) => i.id === id);
+      if (icon?.route) {
+        window.location.href = icon.route;
+      }
+    },
+    []
+  );
 
   // Handle click on grid background (deselect)
   const handleBackgroundClick = useCallback((e: React.MouseEvent) => {
