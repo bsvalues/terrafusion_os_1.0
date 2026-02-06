@@ -1,32 +1,60 @@
 /**
  * TerraFusion OS Desktop Icon Grid Component
  *
- * Grid layout of desktop icons for quick module access.
+ * Grid layout of CONSTITUTIONAL SUITES only.
+ * Legacy modules are accessible via Start Menu with [EXT] badge.
+ *
+ * Phase 9: Desktop now shows only constitutional suites from suiteRegistry.ts
  *
  * @module shell/desktop/DesktopIconGrid
- * @see Priority 3: Desktop Icons
+ * @see config/suiteRegistry.ts - Single source of truth
  */
 
 import React, { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Category } from '../../config/generatedModules';
-import { MODULES } from '../../config/modules';
-import { activateModule } from '../../orchestration/moduleActivation';
+import { 
+  CONSTITUTIONAL_SUITES, 
+  OS_FEATURES,
+  type SuiteDefinition,
+  type OsFeatureDefinition,
+} from '../../config/suiteRegistry';
 import { DesktopIcon } from './DesktopIcon';
 
 // ============================================================================
-// Constants
+// Constants - Constitutional Suites ONLY
 // ============================================================================
 
 /**
- * Desktop icon definitions for the 7 working modules.
- * Order determines grid position (top-left to bottom-right).
+ * Desktop icon definitions from Constitutional Suite Registry.
+ * These are the ONLY legitimate suites per Article I.
  */
-const DESKTOP_ICONS = MODULES.filter((module) => module.isCore).map((module) => ({
-  id: module.id,
-  name: module.displayName,
-  iconName: module.icon,
-  category: module.category as Category,
-}));
+const DESKTOP_ICONS: Array<{
+  id: string;
+  name: string;
+  iconName: string;
+  category: Category;
+  route: string;
+  isOsFeature?: boolean;
+}> = [
+  // Constitutional Suites (5)
+  ...CONSTITUTIONAL_SUITES.map((suite) => ({
+    id: suite.id,
+    name: suite.displayName,
+    iconName: suite.iconName,
+    category: 'assessment' as Category, // Default category for suites
+    route: suite.route,
+  })),
+  // OS Features (Pilot, Trace)
+  ...OS_FEATURES.filter(f => f.route).map((feature) => ({
+    id: feature.id,
+    name: feature.displayName,
+    iconName: feature.iconName,
+    category: 'system' as Category,
+    route: feature.route!,
+    isOsFeature: true,
+  })),
+];
 
 // ============================================================================
 // Types
@@ -42,20 +70,21 @@ export interface DesktopIconGridProps {
 // ============================================================================
 
 /**
- * DesktopIconGrid - Grid of desktop icons for module launch
+ * DesktopIconGrid - Grid of CONSTITUTIONAL SUITE icons
  *
  * Features:
  * - Fixed grid layout
  * - Single icon selection
- * - Double-click to launch via activateModule()
+ * - Double-click to navigate to suite route
  * - Keyboard navigation
  * - Click outside to deselect
  *
+ * Phase 9: Shows ONLY constitutional suites, not legacy modules.
+ *
  * Layout:
  * ```
- * [CostForge]   [TerraGaia]   [ATLAS]
- * [Analytics]   [Marketplace] [Counties]
- * [Gov Arch]
+ * [Forge]  [Atlas]   [Dais]
+ * [Dossier] [GPT]    [Pilot]
  * ```
  *
  * @example
@@ -65,6 +94,8 @@ export interface DesktopIconGridProps {
  * ```
  */
 export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = '' }) => {
+  const navigate = useNavigate();
+  
   // Track selected icon
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -73,13 +104,13 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = ''
     setSelectedId(id);
   }, []);
 
-  // Handle icon launch (double click)
+  // Handle icon launch (double click) - Navigate to suite route
   const handleLaunch = useCallback((id: string) => {
-    activateModule(id, {
-      source: 'desktop',
-      focusIfOpen: true,
-    });
-  }, []);
+    const icon = DESKTOP_ICONS.find(i => i.id === id);
+    if (icon?.route) {
+      navigate(icon.route);
+    }
+  }, [navigate]);
 
   // Handle click on grid background (deselect)
   const handleBackgroundClick = useCallback((e: React.MouseEvent) => {

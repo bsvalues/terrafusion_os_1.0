@@ -1,15 +1,17 @@
 /**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - SHELL HOME
- * Phase 5: OS Landing Surface
+ * Phase 5 + Phase 9: OS Landing Surface with Constitutional Suites
  *
  * The canonical landing experience for TerraFusion OS.
  * Provides context-first navigation: search → select → workbench/suite.
  *
+ * Phase 9 Update: Now uses suiteRegistry.ts as single source of truth.
+ *
  * Architecture:
  * - Global Search: Find parcels, cases, persons, documents
  * - Recent Work: Quick access to recent parcels/cases
- * - Suite Launcher: Forge, Atlas, Dais, Dossier, GPT
+ * - Suite Launcher: Forge, Atlas, Dais, Dossier, GPT (from registry)
  * - OS Entrypoints: Pilot, Trace, Settings
  *
  * Success Criteria:
@@ -23,6 +25,7 @@
 
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CONSTITUTIONAL_SUITES, OS_FEATURES } from '../../config/suiteRegistry';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 
@@ -49,51 +52,37 @@ interface RecentItem {
 }
 
 // ============================================================================
-// Suite Configuration
+// Suite Configuration - FROM CONSTITUTIONAL REGISTRY
 // ============================================================================
 
-const SUITES: Suite[] = [
-  {
-    id: 'terraforge',
-    name: 'TerraForge',
-    description: 'AI-powered valuation & appeals',
-    icon: '🔥',
-    route: '/suites/terraforge',
-    color: 'from-orange-500 to-red-600',
-  },
-  {
-    id: 'atlas',
-    name: 'TerraAtlas',
-    description: 'Geospatial analysis & mapping',
-    icon: '🗺️',
-    route: '/suites/atlas',
-    color: 'from-blue-500 to-cyan-600',
-  },
-  {
-    id: 'dais',
-    name: 'TerraDais',
-    description: 'Workflow orchestration',
-    icon: '📊',
-    route: '/suites/dais',
-    color: 'from-purple-500 to-pink-600',
-  },
-  {
-    id: 'dossier',
-    name: 'TerraDossier',
-    description: 'Document management',
-    icon: '📁',
-    route: '/suites/dossier',
-    color: 'from-green-500 to-emerald-600',
-  },
-  {
-    id: 'gpt',
-    name: 'TerraGPT',
-    description: 'AI assistant & insights',
-    icon: '🤖',
-    route: '/suites/gpt',
-    color: 'from-indigo-500 to-violet-600',
-  },
-];
+// Map iconName to emoji (temporary until we wire Lucide icons)
+const ICON_MAP: Record<string, string> = {
+  Hammer: '🔨',
+  Globe: '🗺️',
+  LayoutDashboard: '📊',
+  FileStack: '📁',
+  Bot: '🤖',
+  Compass: '🎮',
+  Activity: '🔍',
+};
+
+// Color map for suites
+const COLOR_MAP: Record<string, string> = {
+  forge: 'from-orange-500 to-red-600',
+  atlas: 'from-blue-500 to-cyan-600',
+  dais: 'from-purple-500 to-pink-600',
+  dossier: 'from-green-500 to-emerald-600',
+  gpt: 'from-indigo-500 to-violet-600',
+};
+
+const SUITES: Suite[] = CONSTITUTIONAL_SUITES.map((suite) => ({
+  id: suite.id,
+  name: suite.displayName,
+  description: suite.description,
+  icon: ICON_MAP[suite.iconName] || '📦',
+  route: suite.route,
+  color: COLOR_MAP[suite.id] || 'from-slate-500 to-slate-600',
+}));
 
 const OS_ENTRYPOINTS = [
   { id: 'pilot', name: 'Pilot Console', icon: '🎮', route: '/pilot', description: 'Tool execution & governance' },
