@@ -51,6 +51,40 @@ const RunningIndicator: React.FC = () => (
 );
 
 /**
+ * Wiring Badge - Shows entry type for suite wiring clarity
+ * Phase 7: Suite wiring transparency
+ * - url → "EXT" (opens external popup/iframe)
+ * - route → "OS" (native OS route)
+ * - mf → "MF" (module federation)
+ */
+const WiringBadge: React.FC<{ entryType?: 'url' | 'route' | 'mf' }> = ({ entryType }) => {
+  if (!entryType) return null;
+
+  const config = {
+    url: {
+      label: 'EXT',
+      color: 'bg-amber-500/30 text-amber-300',
+      title: 'Opens in external window',
+    },
+    route: { label: 'OS', color: 'bg-green-500/30 text-green-300', title: 'Native OS route' },
+    mf: { label: 'MF', color: 'bg-blue-500/30 text-blue-300', title: 'Module federation' },
+  }[entryType];
+
+  return (
+    <span
+      data-testid='wiring-badge'
+      title={config.title}
+      className={cn(
+        'absolute bottom-0.5 right-0.5 px-1 py-0.5 text-[8px] font-bold rounded',
+        config.color
+      )}
+    >
+      {config.label}
+    </span>
+  );
+};
+
+/**
  * Search Input
  */
 const SearchInput: React.FC = () => {
@@ -128,6 +162,7 @@ const AppTile: React.FC<AppTileProps> = ({ module, onLaunch }) => {
   const Icon = getLucideIcon((module as any).iconName ?? module.icon);
   const category = ((module as any).category ?? 'system') as Category;
   const variant = categoryToVariant[category] ?? 'default';
+  const entryType = (module as any).entryType as 'url' | 'route' | 'mf' | undefined;
 
   return (
     <button
@@ -143,6 +178,7 @@ const AppTile: React.FC<AppTileProps> = ({ module, onLaunch }) => {
       )}
     >
       {isRunning && <RunningIndicator />}
+      <WiringBadge entryType={entryType} />
       <div role='img' aria-hidden='true'>
         <TerraSphereIcon size={40} variant={variant} glyph={<Icon className='h-4 w-4' />} />
       </div>
@@ -159,6 +195,7 @@ const AppListItem: React.FC<AppTileProps> = ({ module, onLaunch }) => {
   const Icon = getLucideIcon((module as any).iconName ?? module.icon);
   const category = ((module as any).category ?? 'system') as Category;
   const variant = categoryToVariant[category] ?? 'default';
+  const entryType = (module as any).entryType as 'url' | 'route' | 'mf' | undefined;
 
   return (
     <button
@@ -174,8 +211,9 @@ const AppListItem: React.FC<AppTileProps> = ({ module, onLaunch }) => {
       )}
     >
       {isRunning && <RunningIndicator />}
-      <div className='flex-shrink-0' role='img' aria-hidden='true'>
+      <div className='flex-shrink-0 relative' role='img' aria-hidden='true'>
         <TerraSphereIcon size={32} variant={variant} glyph={<Icon className='h-3.5 w-3.5' />} />
+        <WiringBadge entryType={entryType} />
       </div>
       <div className='flex flex-col items-start min-w-0 flex-1'>
         <span className='text-sm text-white/90 truncate w-full text-left'>{module.name}</span>

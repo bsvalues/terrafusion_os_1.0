@@ -10,6 +10,19 @@ import './utils/consoleErrorFilter';
 import App from './App';
 import { registerPWA } from './pwa';
 
+// ═══════════════════════════════════════════════════════════════
+// PHASE 9: Motion Kill-Switch (Stabilization)
+// In dev mode, disable animations by default to prevent screen jank.
+// Remove class to preview animations: document.documentElement.classList.remove('reduce-motion-force')
+// ═══════════════════════════════════════════════════════════════
+if (import.meta.env.DEV) {
+  document.documentElement.classList.add('reduce-motion-force');
+  console.log(
+    '%c[TerraFusion] Motion reduced in dev mode. Run: document.documentElement.classList.remove("reduce-motion-force") to preview animations.',
+    'color: #00e5ff'
+  );
+}
+
 // Console Badge for IT Admins
 console.log(
   `%c TERRAFUSION OS v1.0 %c SOVEREIGNTY: ${import.meta.env.VITE_SOVEREIGN_DOMAIN || 'unknown'} `,
