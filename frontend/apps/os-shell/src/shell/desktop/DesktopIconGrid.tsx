@@ -6,19 +6,14 @@
  *
  * Phase 9: Desktop now shows only constitutional suites from suiteRegistry.ts
  *
- * NOTE: Uses window.location for navigation since this component may render
- * outside Router context (App.tsx is rendered directly by index.tsx).
- *
  * @module shell/desktop/DesktopIconGrid
  * @see config/suiteRegistry.ts - Single source of truth
  */
 
 import React, { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Category } from '../../config/generatedModules';
-import {
-    CONSTITUTIONAL_SUITES,
-    OS_FEATURES
-} from '../../config/suiteRegistry';
+import { CONSTITUTIONAL_SUITES, OS_FEATURES } from '../../config/suiteRegistry';
 import { DesktopIcon } from './DesktopIcon';
 
 // ============================================================================
@@ -94,6 +89,8 @@ export interface DesktopIconGridProps {
  * ```
  */
 export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = '' }) => {
+  const navigate = useNavigate();
+  
   // Track selected icon
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -103,16 +100,12 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = ''
   }, []);
 
   // Handle icon launch (double click) - Navigate to suite route
-  // Uses window.location since component renders outside Router context
-  const handleLaunch = useCallback(
-    (id: string) => {
-      const icon = DESKTOP_ICONS.find((i) => i.id === id);
-      if (icon?.route) {
-        window.location.href = icon.route;
-      }
-    },
-    []
-  );
+  const handleLaunch = useCallback((id: string) => {
+    const icon = DESKTOP_ICONS.find((i) => i.id === id);
+    if (icon?.route) {
+      navigate(icon.route);
+    }
+  }, [navigate]);
 
   // Handle click on grid background (deselect)
   const handleBackgroundClick = useCallback((e: React.MouseEvent) => {

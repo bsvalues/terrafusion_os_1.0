@@ -7,7 +7,8 @@ import './i18n/config'; // Initialize i18n
 // TerraFusion Elite Console Error Filter - Suppress external extension noise
 import './utils/consoleErrorFilter';
 
-import App from './App';
+// Router is the main entry point - contains all routes including /desktop -> App
+import Router from './Router';
 import { registerPWA } from './pwa';
 
 // ═══════════════════════════════════════════════════════════════
@@ -39,6 +40,6 @@ registerPWA();
 
 root.render(
   <StrictMode>
-    <App />
+    <Router />
   </StrictMode>
 );
