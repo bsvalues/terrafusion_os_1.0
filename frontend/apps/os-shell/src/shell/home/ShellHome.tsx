@@ -52,8 +52,14 @@ interface RecentItem {
 }
 
 // ============================================================================
-// Suite Configuration - FROM CONSTITUTIONAL REGISTRY
+// Suite Configuration - FROM CONSTITUTIONAL REGISTRY (Honest Routing)
 // ============================================================================
+
+/**
+ * Demo parcel for Workbench routing.
+ * Suites route to Workbench tabs (real MWUX) not WIP suite homes.
+ */
+const DEMO_PARCEL_ID = '1234567890';
 
 // Map iconName to emoji (temporary until we wire Lucide icons)
 const ICON_MAP: Record<string, string> = {
@@ -75,12 +81,22 @@ const COLOR_MAP: Record<string, string> = {
   gpt: 'from-indigo-500 to-violet-600',
 };
 
+// Tab mapping for Workbench routes
+const SUITE_TO_TAB: Record<string, string> = {
+  forge: 'forge',
+  atlas: 'atlas',
+  dais: 'dais',
+  dossier: 'dossier',
+  gpt: 'pilot', // TerraGPT uses Pilot tab
+};
+
 const SUITES: Suite[] = CONSTITUTIONAL_SUITES.map((suite) => ({
   id: suite.id,
   name: suite.displayName,
   description: suite.description,
   icon: ICON_MAP[suite.iconName] || '📦',
-  route: suite.route,
+  // Route to Workbench tab (real MWUX) instead of WIP suite home
+  route: `/property/${DEMO_PARCEL_ID}/${SUITE_TO_TAB[suite.id] || ''}`,
   color: COLOR_MAP[suite.id] || 'from-slate-500 to-slate-600',
 }));
 
@@ -180,6 +196,14 @@ const SuiteCard: React.FC<{
                text-left overflow-hidden`}
   >
     <div className='absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity' />
+    {/* Wiring Status Badge - honest launcher UX */}
+    <span
+      className='absolute top-2 right-2 px-1.5 py-0.5 text-[10px] font-bold rounded
+                 bg-emerald-500/90 text-white shadow-sm'
+      title='Opens Property Workbench (real MWUX)'
+    >
+      WB
+    </span>
     <div className='relative z-10'>
       <span className='text-4xl mb-3 block'>{suite.icon}</span>
       <h3 className='text-xl font-bold text-white mb-1'>{suite.name}</h3>

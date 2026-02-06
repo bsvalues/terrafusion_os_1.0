@@ -14,15 +14,26 @@ import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Category } from '../../config/generatedModules';
 import { CONSTITUTIONAL_SUITES, OS_FEATURES } from '../../config/suiteRegistry';
-import { DesktopIcon } from './DesktopIcon';
+import { DesktopIcon, type WiringStatus } from './DesktopIcon';
 
 // ============================================================================
-// Constants - Constitutional Suites ONLY
+// Constants - Constitutional Suites with HONEST Wiring Status
 // ============================================================================
 
 /**
+ * Demo parcel ID for workbench routing.
+ * In production, this would come from user's recent parcels.
+ */
+const DEMO_PARCEL_ID = '1234567890';
+
+/**
  * Desktop icon definitions from Constitutional Suite Registry.
- * These are the ONLY legitimate suites per Article I.
+ * Each suite routes to Workbench (real MWUX) instead of WIP suite homes.
+ *
+ * Wiring Status Legend:
+ * - WB: Opens Workbench tab (BEST - real invokeTool flows)
+ * - OS: Native OS route (live)
+ * - WIP: Work in progress (placeholder page)
  */
 const DESKTOP_ICONS: Array<{
   id: string;
@@ -30,25 +41,58 @@ const DESKTOP_ICONS: Array<{
   iconName: string;
   category: Category;
   route: string;
-  isOsFeature?: boolean;
+  wiringStatus: WiringStatus;
 }> = [
-  // Constitutional Suites (5)
-  ...CONSTITUTIONAL_SUITES.map((suite) => ({
-    id: suite.id,
-    name: suite.displayName,
-    iconName: suite.iconName,
-    category: 'assessment' as Category, // Default category for suites
-    route: suite.route,
-  })),
-  // OS Features (Pilot, Trace)
-  ...OS_FEATURES.filter((f) => f.route).map((feature) => ({
-    id: feature.id,
-    name: feature.displayName,
-    iconName: feature.iconName,
-    category: 'system' as Category,
-    route: feature.route!,
-    isOsFeature: true,
-  })),
+  // Constitutional Suites → Route to Workbench tabs (real MWUX)
+  {
+    id: 'forge',
+    name: 'TerraForge',
+    iconName: 'Hammer',
+    category: 'assessment',
+    route: `/property/${DEMO_PARCEL_ID}/forge`, // Real invokeTool: explain_model_results
+    wiringStatus: 'WB',
+  },
+  {
+    id: 'atlas',
+    name: 'TerraAtlas',
+    iconName: 'Globe',
+    category: 'mapping',
+    route: `/property/${DEMO_PARCEL_ID}/atlas`, // Real invokeTool: query_parcel_layers
+    wiringStatus: 'WB',
+  },
+  {
+    id: 'dais',
+    name: 'TerraDais',
+    iconName: 'LayoutDashboard',
+    category: 'system',
+    route: `/property/${DEMO_PARCEL_ID}/dais`, // Real invokeTool: check_cert_status
+    wiringStatus: 'WB',
+  },
+  {
+    id: 'dossier',
+    name: 'TerraDossier',
+    iconName: 'FileStack',
+    category: 'records',
+    route: `/property/${DEMO_PARCEL_ID}/dossier`, // Real invokeTool: summarize_dossier
+    wiringStatus: 'WB',
+  },
+  {
+    id: 'gpt',
+    name: 'TerraGPT',
+    iconName: 'Bot',
+    category: 'ai',
+    route: `/property/${DEMO_PARCEL_ID}/pilot`, // Real invokeTool: registry.list_tools
+    wiringStatus: 'WB',
+  },
+  // OS Feature: Pilot Console (full standalone route)
+  {
+    id: 'pilot',
+    name: 'TerraPilot',
+    iconName: 'Compass',
+    category: 'system',
+    route: '/pilot', // Native OS route (live)
+    wiringStatus: 'OS',
+  },
 ];
 
 // ============================================================================
@@ -90,7 +134,7 @@ export interface DesktopIconGridProps {
  */
 export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = '' }) => {
   const navigate = useNavigate();
-  
+
   // Track selected icon
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -100,12 +144,15 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = ''
   }, []);
 
   // Handle icon launch (double click) - Navigate to suite route
-  const handleLaunch = useCallback((id: string) => {
-    const icon = DESKTOP_ICONS.find((i) => i.id === id);
-    if (icon?.route) {
-      navigate(icon.route);
-    }
-  }, [navigate]);
+  const handleLaunch = useCallback(
+    (id: string) => {
+      const icon = DESKTOP_ICONS.find((i) => i.id === id);
+      if (icon?.route) {
+        navigate(icon.route);
+      }
+    },
+    [navigate]
+  );
 
   // Handle click on grid background (deselect)
   const handleBackgroundClick = useCallback((e: React.MouseEvent) => {
@@ -131,6 +178,7 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = ''
           name={icon.name}
           iconName={icon.iconName}
           category={icon.category}
+          wiringStatus={icon.wiringStatus}
           isSelected={selectedId === icon.id}
           onSelect={handleSelect}
           onLaunch={handleLaunch}

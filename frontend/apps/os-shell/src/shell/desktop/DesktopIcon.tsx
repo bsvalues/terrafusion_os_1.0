@@ -17,6 +17,19 @@ import { TerraSphereIcon, type TerraSphereIconVariant } from '../../ui/brand/Ter
 // Types
 // ============================================================================
 
+/**
+ * Wiring status badge for honest launcher UX.
+ * Shows what kind of experience you're getting.
+ * @see AGENTS.md - User Interface Compact
+ */
+export type WiringStatus =
+  | 'WB'     // Opens Workbench tab (best - real MWUX)
+  | 'OS'     // Native OS route (live)
+  | 'WIP'    // Work in progress (placeholder)
+  | 'BRIDGE' // iframe wrapper
+  | 'EXT'    // External URL / other port
+  | 'LEGACY'; // Deprecated / redirect
+
 export interface DesktopIconProps {
   /** Module ID */
   id: string;
@@ -26,6 +39,8 @@ export interface DesktopIconProps {
   iconName: string;
   /** Module category (maps to TerraSphere variant) */
   category?: Category;
+  /** Wiring status for honest UX */
+  wiringStatus?: WiringStatus;
   /** Whether icon is selected */
   isSelected?: boolean;
   /** Callback when icon is clicked (select) */
@@ -71,17 +86,29 @@ const categoryToVariant: Record<Category, TerraSphereIconVariant> = {
  * />
  * ```
  */
+// Wiring status badge colors
+const wiringBadgeStyles: Record<WiringStatus, { bg: string; text: string; label: string }> = {
+  WB: { bg: 'bg-emerald-500/80', text: 'text-white', label: 'WB' },
+  OS: { bg: 'bg-cyan-500/80', text: 'text-white', label: 'OS' },
+  WIP: { bg: 'bg-amber-500/80', text: 'text-black', label: 'WIP' },
+  BRIDGE: { bg: 'bg-purple-500/80', text: 'text-white', label: 'BRG' },
+  EXT: { bg: 'bg-slate-500/80', text: 'text-white', label: 'EXT' },
+  LEGACY: { bg: 'bg-red-500/80', text: 'text-white', label: 'OLD' },
+};
+
 export const DesktopIcon: React.FC<DesktopIconProps> = ({
   id,
   name,
   iconName,
   category = 'system',
+  wiringStatus,
   isSelected = false,
   onSelect,
   onLaunch,
 }) => {
   const Icon = getLucideIcon(iconName);
   const variant = categoryToVariant[category] ?? 'default';
+  const badge = wiringStatus ? wiringBadgeStyles[wiringStatus] : null;
 
   // Handle single click (select)
   const handleClick = useCallback(
@@ -132,8 +159,18 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       onKeyDown={handleKeyDown}
     >
       {/* TerraSphere Icon with embedded glyph */}
-      <div className='mb-1' aria-hidden='true'>
+      <div className='mb-1 relative' aria-hidden='true'>
         <TerraSphereIcon size={48} variant={variant} glyph={<Icon className='h-4 w-4' />} />
+        {/* Wiring Status Badge - honest launcher UX */}
+        {badge && (
+          <span
+            className={`absolute -top-1 -right-1 px-1 py-0.5 text-[8px] font-bold rounded
+                       ${badge.bg} ${badge.text} shadow-sm`}
+            title={`Status: ${wiringStatus}`}
+          >
+            {badge.label}
+          </span>
+        )}
       </div>
 
       {/* Label */}
