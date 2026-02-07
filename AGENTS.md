@@ -39,8 +39,12 @@ The following status checks are **required** on `main` branch:
 | `🔒 SEAL` | All PRs | Required, admins enforced |
 | `typecheck-core` | All PRs | Required |
 | `phase83-tools` | All PRs | Required |
+| `SEAL Gate 8 (workflow)` | Triggering paths | Required (part of SEAL) |
+| `SEAL Gate 9 (truth)` | All PRs | Required (part of SEAL) |
 | `Accreditation Compat Check` | Accreditation paths only | Required when triggered |
 | `Accreditation Oracle Health` | Scheduled weekly | Non-blocking (monitoring) |
+
+**NOTE:** Gate 8 and Gate 9 are sub-gates of 🔒 SEAL. If SEAL passes, they passed.
 
 ### Two-Tier Oracle Model
 
@@ -61,7 +65,7 @@ main:
   required_status_checks:
     strict: true
     contexts:
-      - "🔒 SEAL"
+      - "🔒 SEAL"              # Includes Gate 8 (workflow) + Gate 9 (truth)
       - "typecheck-core"
       - "phase83-tools"
       - "Accreditation Compat Check (ubuntu-latest)"

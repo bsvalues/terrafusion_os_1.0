@@ -4,7 +4,7 @@
  * ============================
  * Mechanically verifies that the entrypoint policy matches filesystem reality.
  * Run in CI to prevent drift between policy and actual structure.
- * 
+ *
  * Exit codes:
  *   0 - All checks pass
  *   1 - Truth violation detected
@@ -12,6 +12,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 
 const ROOT = process.cwd();
 const ENTRYPOINT_PATH = path.join(ROOT, '.github', 'AGENT_ENTRYPOINT.md');
@@ -20,6 +21,8 @@ const results = {
   passed: [],
   failed: [],
 };
+
+const fileHashes = {};
 
 function check(name, condition, message) {
   if (condition) {
@@ -41,6 +44,32 @@ function entrypointContains(text) {
 function entrypointDoesNotContain(text) {
   const content = fs.readFileSync(ENTRYPOINT_PATH, 'utf-8');
   return !content.includes(text);
+}
+
+function hashFile(relativePath) {
+  const fullPath = path.join(ROOT, relativePath);
+  if (!fs.existsSync(fullPath)) return null;
+  const content = fs.readFileSync(fullPath, 'utf-8');
+  return crypto.createHash('sha256').update(content).digest('hex').slice(0, 12);
+}
+
+// ============================================================================
+// TAMPER-EVIDENT SNAPSHOT: Hash critical governance files
+// ============================================================================
+
+const CRITICAL_FILES = [
+  '.github/AGENT_ENTRYPOINT.md',
+  '.governance/workflow/README.md',
+  '.governance/workflow/discovery.md',
+  '.governance/workflow/plan.md',
+  '.governance/mesh/MESH_GOVERNANCE.md',
+];
+
+for (const file of CRITICAL_FILES) {
+  const hash = hashFile(file);
+  if (hash) {
+    fileHashes[file] = hash;
+  }
 }
 
 // ============================================================================
@@ -173,6 +202,14 @@ for (const r of results.failed) {
 }
 
 console.log(`\n📊 Results: ${results.passed.length} passed, ${results.failed.length} failed\n`);
+
+// Output tamper-evident snapshot
+console.log('🔐 GOVERNANCE FILE HASHES (tamper-evident snapshot)');
+console.log('────────────────────────────────────────────────────');
+for (const [file, hash] of Object.entries(fileHashes)) {
+  console.log(`  ${hash}  ${file}`);
+}
+console.log('');
 
 if (results.failed.length > 0) {
   console.log('❌ TRUTH CHECK FAILED\n');
