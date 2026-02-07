@@ -14,8 +14,8 @@
 
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, Outlet, Route, Routes, useOutletContext } from 'react-router-dom';
 import React, { Suspense, lazy } from 'react';
+import { MemoryRouter, Route, Routes, useOutletContext } from 'react-router-dom';
 
 // ============================================================================
 // Test Configuration - Constitutional Values
@@ -43,8 +43,8 @@ const MockTabWithContext: React.FC<{ tabName: string }> = ({ tabName }) => {
   const context = useOutletContext<{ parcelId: string }>();
   return (
     <div data-testid={`tab-content-${tabName}`}>
-      <span data-testid="tab-name">{tabName}</span>
-      <span data-testid="parcel-context">{context?.parcelId ?? 'NO_CONTEXT'}</span>
+      <span data-testid='tab-name'>{tabName}</span>
+      <span data-testid='parcel-context'>{context?.parcelId ?? 'NO_CONTEXT'}</span>
     </div>
   );
 };
@@ -52,32 +52,32 @@ const MockTabWithContext: React.FC<{ tabName: string }> = ({ tabName }) => {
 // Lazy-load mocks
 jest.mock('../tabs/PropertySummary', () => ({
   __esModule: true,
-  default: () => <MockTabWithContext tabName="summary" />,
+  default: () => <MockTabWithContext tabName='summary' />,
 }));
 
 jest.mock('../tabs/PropertyForge', () => ({
   __esModule: true,
-  default: () => <MockTabWithContext tabName="forge" />,
+  default: () => <MockTabWithContext tabName='forge' />,
 }));
 
 jest.mock('../tabs/PropertyAtlas', () => ({
   __esModule: true,
-  default: () => <MockTabWithContext tabName="atlas" />,
+  default: () => <MockTabWithContext tabName='atlas' />,
 }));
 
 jest.mock('../tabs/PropertyDais', () => ({
   __esModule: true,
-  default: () => <MockTabWithContext tabName="dais" />,
+  default: () => <MockTabWithContext tabName='dais' />,
 }));
 
 jest.mock('../tabs/PropertyDossier', () => ({
   __esModule: true,
-  default: () => <MockTabWithContext tabName="dossier" />,
+  default: () => <MockTabWithContext tabName='dossier' />,
 }));
 
 jest.mock('../tabs/PropertyPilot', () => ({
   __esModule: true,
-  default: () => <MockTabWithContext tabName="pilot" />,
+  default: () => <MockTabWithContext tabName='pilot' />,
 }));
 
 // Mock ErrorBoundary
@@ -104,13 +104,13 @@ const renderWorkbench = (initialRoute: string = '/property/12345-001') => {
     <MemoryRouter initialEntries={[initialRoute]}>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          <Route path="/property/:parcelId" element={<PropertyWorkbench />}>
+          <Route path='/property/:parcelId' element={<PropertyWorkbench />}>
             <Route index element={<PropertySummary />} />
-            <Route path="forge" element={<PropertyForge />} />
-            <Route path="atlas" element={<PropertyAtlas />} />
-            <Route path="dais" element={<PropertyDais />} />
-            <Route path="dossier" element={<PropertyDossier />} />
-            <Route path="pilot" element={<PropertyPilot />} />
+            <Route path='forge' element={<PropertyForge />} />
+            <Route path='atlas' element={<PropertyAtlas />} />
+            <Route path='dais' element={<PropertyDais />} />
+            <Route path='dossier' element={<PropertyDossier />} />
+            <Route path='pilot' element={<PropertyPilot />} />
           </Route>
         </Routes>
       </Suspense>
@@ -137,7 +137,9 @@ describe('WorkbenchTabBar', () => {
 
       // Get all nav links
       const tabLinks = screen.getAllByRole('link');
-      const tabLabels = tabLinks.map((link) => link.textContent?.replace(/[📊🔥🗺️📋📁🎮]/g, '').trim());
+      const tabLabels = tabLinks.map((link) =>
+        link.textContent?.replace(/[📊🔥🗺️📋📁🎮]/g, '').trim()
+      );
 
       // Verify order matches constitutional order
       CONSTITUTIONAL_TAB_ORDER.forEach((tab, index) => {
@@ -332,7 +334,7 @@ describe('WorkbenchTabBar', () => {
         <MemoryRouter initialEntries={['/property/']}>
           <Suspense fallback={<div>Loading...</div>}>
             <Routes>
-              <Route path="/property/" element={<PropertyWorkbench />} />
+              <Route path='/property/' element={<PropertyWorkbench />} />
             </Routes>
           </Suspense>
         </MemoryRouter>

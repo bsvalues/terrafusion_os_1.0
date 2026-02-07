@@ -129,11 +129,11 @@ describe('Design Gates', () => {
     it('no_infinite_animations_without_explicit_duration', () => {
       // This test documents the contract: infinite animations must be opt-in
       // The actual enforcement happens in CSS via reduce-motion-force class
-      
+
       // Contract: Desktop should not have permanent visual animations
       // When reduce-motion is active, all animations should stop
       const reducedMotionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-      
+
       // If user prefers reduced motion, we should respect it
       if (reducedMotionQuery?.matches) {
         const mode = resolveAmbientMode();
@@ -146,7 +146,7 @@ describe('Design Gates', () => {
       // CSS ambient mode should rely purely on CSS animations
       // No setInterval, no requestAnimationFrame loops
       // This is tested in AmbientCompositor.stability.test.tsx
-      
+
       // Document the contract here
       expect(true).toBe(true); // Contract exists, tested elsewhere
     });
@@ -156,7 +156,7 @@ describe('Design Gates', () => {
     it('default_policy_disables_gpu_for_security', () => {
       // Government environments should default to no GPU
       // to prevent WebGL-based fingerprinting and reduce attack surface
-      
+
       window.matchMedia = jest.fn().mockImplementation(() => ({
         matches: false,
         media: '',
@@ -177,7 +177,7 @@ describe('Design Gates', () => {
     it('policy_can_be_overridden_for_testing', () => {
       // This documents the contract that policy is centralized
       // in ambientPolicy.ts and can be modified for testing/development
-      
+
       // Contract exists: getGovPolicy() returns { allowGpu: boolean, defaultMode: AmbientMode }
       expect(true).toBe(true);
     });
@@ -187,18 +187,18 @@ describe('Design Gates', () => {
     it('detects_low_power_device_by_core_count', () => {
       // Contract: devices with <= 4 cores are considered low power
       // This affects ambient mode selection
-      
+
       const originalConcurrency = (navigator as any).hardwareConcurrency;
-      
+
       // Test low power (4 cores)
       Object.defineProperty(navigator, 'hardwareConcurrency', {
         value: 4,
         configurable: true,
       });
-      
+
       // The function isLowPowerDevice() returns true for <= 4 cores
       // Since we can't call it directly (not exported), we test the outcome
-      
+
       // Restore
       if (originalConcurrency !== undefined) {
         Object.defineProperty(navigator, 'hardwareConcurrency', {
@@ -206,7 +206,7 @@ describe('Design Gates', () => {
           configurable: true,
         });
       }
-      
+
       // Contract documented
       expect(true).toBe(true);
     });
