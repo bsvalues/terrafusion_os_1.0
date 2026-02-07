@@ -678,3 +678,109 @@ describe('Module Registry Store', () => {
     });
   });
 });
+
+// ============================================================================
+// LAUNCHER TRUTH CONTRACTS (Phase A TDD)
+// ============================================================================
+// These tests enforce honest launcher behavior per the TerraFusion Constitution.
+// A "Suite" label is only valid if there's a native route or bridge to real UX.
+
+import {
+    CONSTITUTIONAL_SUITES,
+    OS_FEATURES,
+    getModuleLabel,
+    isConstitutionalSuite,
+    isLegacyModule,
+    isOsFeature,
+} from '../../config/suiteRegistry';
+
+describe('Launcher Truth Contracts', () => {
+  describe('Constitutional Suite Registry', () => {
+    it('has_exactly_5_constitutional_suites', () => {
+      expect(CONSTITUTIONAL_SUITES).toHaveLength(5);
+    });
+
+    it('all_suites_have_required_fields', () => {
+      for (const suite of CONSTITUTIONAL_SUITES) {
+        expect(suite.id).toBeDefined();
+        expect(suite.displayName).toBeDefined();
+        expect(suite.shortName).toBeDefined();
+        expect(suite.description).toBeDefined();
+        expect(suite.iconName).toBeDefined();
+        expect(suite.route).toBeDefined();
+        expect(suite.color).toBeDefined();
+        expect(suite.status).toMatch(/^(live|wip|planned)$/);
+      }
+    });
+
+    it('suite_ids_are_lowercase_slugs', () => {
+      for (const suite of CONSTITUTIONAL_SUITES) {
+        expect(suite.id).toMatch(/^[a-z]+$/);
+      }
+    });
+
+    it('suite_routes_start_with_slash', () => {
+      for (const suite of CONSTITUTIONAL_SUITES) {
+        expect(suite.route.startsWith('/')).toBe(true);
+      }
+    });
+  });
+
+  describe('OS Features Registry', () => {
+    it('has_pilot_as_live_feature', () => {
+      const pilot = OS_FEATURES.find((f) => f.id === 'pilot');
+      expect(pilot).toBeDefined();
+      expect(pilot?.status).toBe('live');
+    });
+
+    it('has_trace_as_wip_feature', () => {
+      const trace = OS_FEATURES.find((f) => f.id === 'trace');
+      expect(trace).toBeDefined();
+      expect(trace?.status).toBe('wip');
+    });
+  });
+
+  describe('Module Classification', () => {
+    it('every_launcher_item_has_entryType_and_behavior_matches', () => {
+      // Constitutional suites → should be labeled "Suite"
+      expect(getModuleLabel('forge')).toBe('Suite');
+      expect(getModuleLabel('atlas')).toBe('Suite');
+      expect(getModuleLabel('dais')).toBe('Suite');
+      expect(getModuleLabel('dossier')).toBe('Suite');
+      expect(getModuleLabel('gpt')).toBe('Suite');
+
+      // OS features → should be labeled "OS Feature"
+      expect(getModuleLabel('pilot')).toBe('OS Feature');
+      expect(getModuleLabel('trace')).toBe('OS Feature');
+    });
+
+    it('no_suite_label_without_native_route_or_bridge', () => {
+      // Random made-up module IDs should NOT be labeled as Suite
+      expect(getModuleLabel('random-module')).toBe('Legacy');
+      expect(getModuleLabel('external-thing')).toBe('Legacy');
+      expect(getModuleLabel('costforge-ai')).toBe('Legacy'); // Even if real, not a constitutional suite
+
+      // Verify the logic functions
+      expect(isConstitutionalSuite('forge')).toBe(true);
+      expect(isConstitutionalSuite('costforge-ai')).toBe(false);
+      expect(isOsFeature('pilot')).toBe(true);
+      expect(isOsFeature('forge')).toBe(false);
+      expect(isLegacyModule('costforge-ai')).toBe(true);
+      expect(isLegacyModule('forge')).toBe(false);
+    });
+
+    it('wip_suites_are_still_suites_not_legacy', () => {
+      // A WIP suite is still a suite (just not live yet)
+      for (const suite of CONSTITUTIONAL_SUITES.filter((s) => s.status === 'wip')) {
+        expect(getModuleLabel(suite.id)).toBe('Suite');
+        expect(isConstitutionalSuite(suite.id)).toBe(true);
+      }
+    });
+
+    it('workbench_tab_suites_have_workbenchTab_true', () => {
+      // All 5 constitutional suites should appear in workbench
+      const workbenchSuites = CONSTITUTIONAL_SUITES.filter((s) => s.workbenchTab === true);
+      expect(workbenchSuites).toHaveLength(5);
+    });
+  });
+});
