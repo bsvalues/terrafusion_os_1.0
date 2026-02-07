@@ -1,0 +1,241 @@
+/**
+ * @fileoverview LiquidPanel CSS
+ * 
+ * Glass effect styles with quality-based degradation.
+ * 
+ * Design Tokens:
+ * - --liquid-blur: Blur intensity (0-24px)
+ * - --liquid-bg: Background color with alpha
+ * - --liquid-border: Border color with alpha
+ * - --liquid-shadow: Inset shadow for depth
+ * 
+ * Quality Classes:
+ * - .liquid-panel--static: No backdrop-filter (low power)
+ * - .liquid-panel--blur: Backdrop blur only (medium)
+ * - .liquid-panel--glass: Full glass effect (high)
+ * 
+ * NO ANIMATIONS ON IDLE - All motion is interaction-driven.
+ */
+
+/* ============================================================================
+   Base Styles
+   ============================================================================ */
+
+.liquid-panel {
+  position: relative;
+
+  /* Performance: will-change only on interaction, not idle */
+  /* will-change is set via JS on hover/focus */
+
+  /* Default glass tokens (dark theme) */
+  --liquid-blur: 12px;
+  --liquid-bg: rgba(10, 15, 25, 0.75);
+  --liquid-border: rgba(255, 255, 255, 0.08);
+  --liquid-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --liquid-glow: rgba(6, 182, 212, 0.1);
+
+  background: var(--liquid-bg);
+  border: 1px solid var(--liquid-border);
+  box-shadow: var(--liquid-shadow);
+
+  /* Ensure text contrast */
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* ============================================================================
+   Quality Tiers
+   ============================================================================ */
+
+/* LOW: Static fallback - no backdrop-filter */
+.liquid-panel--static {
+  --liquid-bg: rgba(10, 15, 25, 0.95);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* MEDIUM: Backdrop blur only */
+.liquid-panel--blur {
+  backdrop-filter: blur(var(--liquid-blur));
+  -webkit-backdrop-filter: blur(var(--liquid-blur));
+}
+
+/* HIGH: Full glass with glow */
+.liquid-panel--glass {
+  backdrop-filter: blur(var(--liquid-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--liquid-blur)) saturate(1.2);
+  box-shadow:
+    var(--liquid-shadow),
+    0 0 40px -10px var(--liquid-glow);
+}
+
+/* HIGH+: With distortion (WebGL effects) */
+.liquid-panel--distortion {
+  /* Reserved for future WebGL glass distortion */
+}
+
+/* ============================================================================
+   Blur Intensity Variants
+   ============================================================================ */
+
+.liquid-panel--blur-0 {
+  --liquid-blur: 0px;
+}
+.liquid-panel--blur-1 {
+  --liquid-blur: 6px;
+}
+.liquid-panel--blur-2 {
+  --liquid-blur: 12px;
+}
+.liquid-panel--blur-3 {
+  --liquid-blur: 24px;
+}
+
+/* ============================================================================
+   Material Hierarchy Variants
+   ============================================================================ */
+
+/* Shell: Infrastructure layer (navigation, sidebars) */
+.liquid-panel--shell {
+  --liquid-bg: rgba(5, 10, 20, 0.85);
+  --liquid-border: rgba(255, 255, 255, 0.06);
+  --liquid-glow: rgba(6, 182, 212, 0.15);
+}
+
+/* Infrastructure: Secondary containers */
+.liquid-panel--infrastructure {
+  --liquid-bg: rgba(15, 20, 30, 0.7);
+  --liquid-border: rgba(255, 255, 255, 0.08);
+  --liquid-glow: rgba(6, 182, 212, 0.08);
+}
+
+/* Interactive: Clickable surfaces (cards, buttons) */
+.liquid-panel--interactive {
+  --liquid-bg: rgba(20, 25, 40, 0.6);
+  --liquid-border: rgba(255, 255, 255, 0.1);
+  --liquid-glow: rgba(6, 182, 212, 0.1);
+
+  /* Interaction states - NO idle animation */
+  transition:
+    border-color 0.15s ease-out,
+    box-shadow 0.15s ease-out;
+}
+
+.liquid-panel--interactive:hover {
+  --liquid-border: rgba(6, 182, 212, 0.3);
+  box-shadow:
+    var(--liquid-shadow),
+    0 0 20px -5px var(--liquid-glow);
+}
+
+.liquid-panel--interactive:focus-within {
+  --liquid-border: rgba(6, 182, 212, 0.5);
+  outline: 2px solid rgba(6, 182, 212, 0.3);
+  outline-offset: 2px;
+}
+
+/* Signal: Feedback/notification surfaces */
+.liquid-panel--signal {
+  --liquid-bg: rgba(6, 182, 212, 0.15);
+  --liquid-border: rgba(6, 182, 212, 0.3);
+  --liquid-glow: rgba(6, 182, 212, 0.2);
+}
+
+/* ============================================================================
+   Border Radius
+   ============================================================================ */
+
+.liquid-panel--radius-sm {
+  border-radius: 4px;
+}
+.liquid-panel--radius-md {
+  border-radius: 8px;
+}
+.liquid-panel--radius-lg {
+  border-radius: 12px;
+}
+.liquid-panel--radius-xl {
+  border-radius: 16px;
+}
+.liquid-panel--radius-full {
+  border-radius: 9999px;
+}
+
+/* ============================================================================
+   Shimmer Effect (Motion-Gated)
+   ============================================================================ */
+
+/* Shimmer is DISABLED by default - only enabled when:
+   1. .liquid-panel--shimmer class is present
+   2. User allows motion (no prefers-reduced-motion)
+   3. Quality tier allows animations
+*/
+
+.liquid-panel--shimmer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.03) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Only animate shimmer on hover, NOT on idle */
+.liquid-panel--shimmer:hover::before {
+  animation: liquid-shimmer 0.6s ease-out forwards;
+}
+
+@keyframes liquid-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ============================================================================
+   Reduced Motion
+   ============================================================================ */
+
+/* When reduced motion is preferred, disable all animations */
+.liquid-panel[data-reduced-motion='true'],
+@media (prefers-reduced-motion: reduce) {
+  .liquid-panel {
+    transition: none !important;
+  }
+
+  .liquid-panel--shimmer::before {
+    animation: none !important;
+    display: none;
+  }
+}
+
+/* ============================================================================
+   Light Theme Variants (optional)
+   ============================================================================ */
+
+.liquid-panel[data-theme='light'] {
+  --liquid-bg: rgba(255, 255, 255, 0.8);
+  --liquid-border: rgba(0, 0, 0, 0.08);
+  --liquid-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --liquid-glow: rgba(6, 182, 212, 0.15);
+  color: rgba(0, 0, 0, 0.9);
+}
+
+/* ============================================================================
+   Print Styles
+   ============================================================================ */
+
+@media print {
+  .liquid-panel {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: white;
+    color: black;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+}

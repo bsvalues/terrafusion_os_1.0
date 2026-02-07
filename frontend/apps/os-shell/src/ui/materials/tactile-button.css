@@ -1,0 +1,277 @@
+/**
+ * @fileoverview TactileButton CSS
+ * 
+ * Physics-based button styles with quality-based degradation.
+ * 
+ * Design Tokens:
+ * - --tactile-bg: Button background
+ * - --tactile-text: Text color
+ * - --tactile-border: Border color
+ * - --tactile-shadow: Box shadow
+ * 
+ * NO ANIMATIONS ON IDLE - All motion is interaction-driven.
+ */
+
+/* ============================================================================
+   Base Styles
+   ============================================================================ */
+
+.tactile-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  /* Performance: transform-origin for springs */
+  transform-origin: center;
+
+  /* Default tokens */
+  --tactile-bg: rgba(6, 182, 212, 1);
+  --tactile-text: rgba(0, 0, 0, 0.9);
+  --tactile-border: transparent;
+  --tactile-shadow: 0 2px 8px rgba(6, 182, 212, 0.25);
+  --tactile-focus-ring: rgba(6, 182, 212, 0.5);
+
+  background: var(--tactile-bg);
+  color: var(--tactile-text);
+  border-color: var(--tactile-border);
+  box-shadow: var(--tactile-shadow);
+
+  /* Transitions for non-spring interactions */
+  transition:
+    background-color 0.15s ease-out,
+    border-color 0.15s ease-out,
+    box-shadow 0.15s ease-out,
+    opacity 0.15s ease-out;
+}
+
+/* ============================================================================
+   Size Variants
+   ============================================================================ */
+
+.tactile-button--sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+.tactile-button--md {
+  height: 40px;
+  padding: 0 16px;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+.tactile-button--lg {
+  height: 48px;
+  padding: 0 24px;
+  font-size: 16px;
+  border-radius: 10px;
+}
+
+/* ============================================================================
+   Variant Styles
+   ============================================================================ */
+
+/* Primary: Cyber cyan, high contrast */
+.tactile-button--primary {
+  --tactile-bg: rgba(6, 182, 212, 1);
+  --tactile-text: rgba(0, 0, 0, 0.9);
+  --tactile-shadow: 0 2px 12px rgba(6, 182, 212, 0.3);
+}
+
+.tactile-button--primary:hover:not(:disabled) {
+  --tactile-bg: rgba(8, 200, 230, 1);
+  --tactile-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+}
+
+.tactile-button--primary:active:not(:disabled) {
+  --tactile-bg: rgba(5, 160, 190, 1);
+}
+
+/* Secondary: Outlined */
+.tactile-button--secondary {
+  --tactile-bg: transparent;
+  --tactile-text: rgba(6, 182, 212, 1);
+  --tactile-border: rgba(6, 182, 212, 0.5);
+  --tactile-shadow: none;
+}
+
+.tactile-button--secondary:hover:not(:disabled) {
+  --tactile-bg: rgba(6, 182, 212, 0.1);
+  --tactile-border: rgba(6, 182, 212, 0.8);
+}
+
+.tactile-button--secondary:active:not(:disabled) {
+  --tactile-bg: rgba(6, 182, 212, 0.15);
+}
+
+/* Ghost: Minimal */
+.tactile-button--ghost {
+  --tactile-bg: transparent;
+  --tactile-text: rgba(255, 255, 255, 0.8);
+  --tactile-border: transparent;
+  --tactile-shadow: none;
+}
+
+.tactile-button--ghost:hover:not(:disabled) {
+  --tactile-bg: rgba(255, 255, 255, 0.08);
+  --tactile-text: rgba(255, 255, 255, 1);
+}
+
+.tactile-button--ghost:active:not(:disabled) {
+  --tactile-bg: rgba(255, 255, 255, 0.12);
+}
+
+/* Danger: Red accent */
+.tactile-button--danger {
+  --tactile-bg: rgba(239, 68, 68, 1);
+  --tactile-text: rgba(255, 255, 255, 1);
+  --tactile-shadow: 0 2px 12px rgba(239, 68, 68, 0.25);
+}
+
+.tactile-button--danger:hover:not(:disabled) {
+  --tactile-bg: rgba(248, 88, 88, 1);
+  --tactile-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+}
+
+.tactile-button--danger:active:not(:disabled) {
+  --tactile-bg: rgba(220, 60, 60, 1);
+}
+
+/* ============================================================================
+   States
+   ============================================================================ */
+
+/* Focus (keyboard navigation) */
+.tactile-button:focus-visible {
+  outline: 2px solid var(--tactile-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Disabled */
+.tactile-button:disabled,
+.tactile-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Full width */
+.tactile-button--full-width {
+  width: 100%;
+}
+
+/* Loading */
+.tactile-button--loading {
+  cursor: wait;
+}
+
+/* ============================================================================
+   Icons
+   ============================================================================ */
+
+.tactile-button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tactile-button__icon--left {
+  margin-right: -0.25rem;
+}
+
+.tactile-button__icon--right {
+  margin-left: -0.25rem;
+}
+
+.tactile-button__icon svg {
+  width: 1em;
+  height: 1em;
+}
+
+/* ============================================================================
+   Loading Spinner
+   ============================================================================ */
+
+.tactile-button__spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tactile-button__spinner-icon {
+  width: 1.25em;
+  height: 1.25em;
+  animation: tactile-spin 0.8s linear infinite;
+}
+
+@keyframes tactile-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================
+   Text
+   ============================================================================ */
+
+.tactile-button__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ============================================================================
+   Reduced Motion
+   ============================================================================ */
+
+/* When reduced motion is preferred, use instant state changes */
+.tactile-button[data-reduced-motion='true'],
+@media (prefers-reduced-motion: reduce) {
+  .tactile-button {
+    transition: none !important;
+  }
+
+  .tactile-button__spinner-icon {
+    animation-duration: 1.5s;
+  }
+}
+
+/* CSS fallback for scale on hover (when springs disabled) */
+.tactile-button[data-reduced-motion='true']:hover:not(:disabled) {
+  /* Subtle brightness change instead of scale */
+  filter: brightness(1.1);
+}
+
+.tactile-button[data-reduced-motion='true']:active:not(:disabled) {
+  filter: brightness(0.95);
+}
+
+/* ============================================================================
+   Print Styles
+   ============================================================================ */
+
+@media print {
+  .tactile-button {
+    background: white;
+    color: black;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+}
