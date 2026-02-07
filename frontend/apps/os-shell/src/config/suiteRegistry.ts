@@ -27,6 +27,30 @@ export type OsFeatureId =
 
 export type OsSurfaceId = 'workbench'; // Property Workbench - Primary parcel-context UX
 
+/**
+ * Canonical Workbench Tab IDs (Slice 8: Single Source of Truth)
+ *
+ * These are the ONLY valid tab identifiers for PropertyWorkbench.
+ * Adding a new tab requires governance review.
+ */
+export type WorkbenchTabId =
+  | 'summary' // Property Overview (default)
+  | 'forge' // TerraForge - AI valuation
+  | 'atlas' // TerraAtlas - GIS mapping
+  | 'dais' // TerraDais - Workflow
+  | 'dossier' // TerraDossier - Documents
+  | 'pilot'; // TerraPilot - Tool execution
+
+/**
+ * Workbench target configuration for suites with workbench intent.
+ */
+export interface WorkbenchTarget {
+  /** The tab id to activate in Property Workbench */
+  tabId: WorkbenchTabId;
+  /** Optional route path override (defaults to tabId) */
+  path?: string;
+}
+
 export interface SuiteDefinition {
   id: SuiteId;
   displayName: string;
@@ -45,6 +69,12 @@ export interface SuiteDefinition {
    * Derived from workbenchTab if not explicitly set.
    */
   intent?: 'workbench' | 'standalone';
+  /**
+   * Workbench target configuration (Slice 8).
+   * Required for suites with workbenchTab=true.
+   * Defines which tab to activate in Property Workbench.
+   */
+  workbenchTarget?: WorkbenchTarget;
 }
 
 /**
@@ -111,6 +141,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     color: '#ff6b35', // Forge orange
     status: 'wip',
     workbenchTab: true,
+    workbenchTarget: { tabId: 'forge' },
   },
   {
     id: 'atlas',
@@ -122,6 +153,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     color: '#00e5ff', // Cyan
     status: 'wip',
     workbenchTab: true,
+    workbenchTarget: { tabId: 'atlas' },
   },
   {
     id: 'dais',
@@ -133,6 +165,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     color: '#a855f7', // Purple
     status: 'wip',
     workbenchTab: true,
+    workbenchTarget: { tabId: 'dais' },
   },
   {
     id: 'dossier',
@@ -144,6 +177,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     color: '#22c55e', // Green
     status: 'wip',
     workbenchTab: true,
+    workbenchTarget: { tabId: 'dossier' },
   },
   {
     id: 'gpt',
@@ -155,6 +189,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     color: '#3b82f6', // Blue
     status: 'wip',
     workbenchTab: true,
+    workbenchTarget: { tabId: 'pilot' }, // TerraGPT uses Pilot tab
   },
 ] as const;
 
@@ -359,4 +394,85 @@ export function isValidPrimaryAction(
 ): boolean {
   const validIntents = ['workbench', 'standalone', 'system'];
   return validIntents.includes(action.intent) && !!action.id && !!action.label;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Workbench Suite Helpers (Slice 8: Registry-Driven Enforcement)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Valid workbench tab ids (mirrored from PropertyWorkbench).
+ * This is the canonical list - PropertyWorkbench should use this.
+ */
+export const VALID_WORKBENCH_TAB_IDS: readonly WorkbenchTabId[] = [
+  'summary',
+  'forge',
+  'atlas',
+  'dais',
+  'dossier',
+  'pilot',
+] as const;
+
+/**
+ * Workbench-ready suite definition.
+ * All required fields are guaranteed present.
+ */
+export interface WorkbenchSuiteDefinition extends SuiteDefinition {
+  workbenchTab: true;
+  workbenchTarget: WorkbenchTarget;
+}
+
+/**
+ * Get all suites that are workbench-ready:
+ * - Has workbenchTab=true
+ * - Has workbenchTarget defined
+ *
+ * Used by tests and UI to iterate over workbench suites without drift.
+ */
+export function getWorkbenchSuites(): WorkbenchSuiteDefinition[] {
+  return CONSTITUTIONAL_SUITES.filter(
+    (s): s is WorkbenchSuiteDefinition => s.workbenchTab === true && !!s.workbenchTarget
+  );
+}
+
+/**
+ * Type guard: Check if a suite is workbench-ready.
+ */
+export function isWorkbenchSuite(suite: SuiteDefinition): suite is WorkbenchSuiteDefinition {
+  return suite.workbenchTab === true && !!suite.workbenchTarget;
+}
+
+/**
+ * Validate workbench target type safety.
+ * Returns true if target has valid tabId.
+ */
+export function isValidWorkbenchTarget(target: WorkbenchTarget): boolean {
+  return VALID_WORKBENCH_TAB_IDS.includes(target.tabId);
+}
+
+/**
+ * Generate canonical workbench href from suite and parcel.
+ * This is the SINGLE place where workbench routes are constructed.
+ *
+ * @param suite - The workbench suite definition
+ * @param parcelId - The parcel identifier
+ * @returns The canonical workbench route
+ */
+export function getWorkbenchHref(suite: WorkbenchSuiteDefinition, parcelId: string): string {
+  const tabPath = suite.workbenchTarget.path ?? suite.workbenchTarget.tabId;
+  return `/property/${parcelId}/${tabPath}`;
+}
+
+/**
+ * Generate workbench href from suite ID and parcel.
+ * Convenience wrapper for getWorkbenchHref.
+ *
+ * @param suiteId - The suite identifier
+ * @param parcelId - The parcel identifier
+ * @returns The canonical workbench route, or null if not a workbench suite
+ */
+export function getWorkbenchHrefById(suiteId: SuiteId, parcelId: string): string | null {
+  const suite = getSuiteById(suiteId);
+  if (!suite || !isWorkbenchSuite(suite)) return null;
+  return getWorkbenchHref(suite, parcelId);
 }

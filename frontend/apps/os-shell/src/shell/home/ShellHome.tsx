@@ -28,6 +28,7 @@ import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     CONSTITUTIONAL_SUITES,
+    getStandaloneSuites,
     getSuiteIntent,
     INTENT_LABELS,
     type SuiteId,
@@ -89,25 +90,29 @@ const COLOR_MAP: Record<string, string> = {
   gpt: 'from-indigo-500 to-violet-600',
 };
 
-// Tab mapping for Workbench routes
-const SUITE_TO_TAB: Record<string, string> = {
-  forge: 'forge',
-  atlas: 'atlas',
-  dais: 'dais',
-  dossier: 'dossier',
-  gpt: 'pilot', // TerraGPT uses Pilot tab
-};
+/**
+ * Demo parcel for Workbench routing.
+ * Suites route to Workbench tabs (real MWUX) not WIP suite homes.
+ */
+const DEMO_PARCEL_ID = '1234567890';
 
-const SUITES: Suite[] = CONSTITUTIONAL_SUITES.map((suite) => ({
-  id: suite.id,
-  name: suite.displayName,
-  description: suite.description,
-  icon: ICON_MAP[suite.iconName] || '📦',
-  // Route to Workbench tab (real MWUX) instead of WIP suite home
-  route: `/property/${DEMO_PARCEL_ID}/${SUITE_TO_TAB[suite.id] || ''}`,
-  color: COLOR_MAP[suite.id] || 'from-slate-500 to-slate-600',
-  intent: getSuiteIntent(suite.id as SuiteId),
-}));
+/**
+ * SUITES - Derived from CONSTITUTIONAL_SUITES registry.
+ * Routes use canonical getWorkbenchHref() for workbench suites (Slice 8).
+ */
+const SUITES: Suite[] = CONSTITUTIONAL_SUITES.map((suite) => {
+  const route = isWorkbenchSuite(suite) ? getWorkbenchHref(suite, DEMO_PARCEL_ID) : suite.route;
+
+  return {
+    id: suite.id,
+    name: suite.displayName,
+    description: suite.description,
+    icon: ICON_MAP[suite.iconName] || '📦',
+    route,
+    color: COLOR_MAP[suite.id] || 'from-slate-500 to-slate-600',
+    intent: getSuiteIntent(suite.id as SuiteId),
+  };
+});
 
 /**
  * OS Entrypoints - Derived from registry (Slice 7: no hardcoding).

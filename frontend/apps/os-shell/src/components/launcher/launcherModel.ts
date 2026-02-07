@@ -11,7 +11,9 @@ import { NavigateFunction } from 'react-router-dom';
 import {
     CONSTITUTIONAL_SUITES,
     getSuiteIntent,
+    getWorkbenchHref,
     INTENT_LABELS,
+    isWorkbenchSuite,
     OS_FEATURES,
     type SuiteId,
 } from '../../config/suiteRegistry';
@@ -75,17 +77,6 @@ export interface LauncherSection {
 const DEMO_PARCEL_ID = '1234567890';
 
 /**
- * Tab mapping for suite → workbench tab.
- */
-const SUITE_TO_TAB: Record<string, string> = {
-  forge: 'forge',
-  atlas: 'atlas',
-  dais: 'dais',
-  dossier: 'dossier',
-  gpt: 'pilot', // TerraGPT uses Pilot tab
-};
-
-/**
  * Icon mapping for iconName → emoji.
  * TODO: Replace with Lucide icons in future.
  */
@@ -145,7 +136,9 @@ export function getLauncherItems(): LauncherItem[] {
   const suiteItems: LauncherItem[] = CONSTITUTIONAL_SUITES.map((suite) => {
     const intent = getSuiteIntent(suite.id as SuiteId);
     const intentLabel = INTENT_LABELS[intent];
-    const tab = SUITE_TO_TAB[suite.id] || suite.id;
+
+    // Use canonical href generator from registry for workbench suites
+    const route = isWorkbenchSuite(suite) ? getWorkbenchHref(suite, DEMO_PARCEL_ID) : suite.route;
 
     return {
       id: suite.id,
@@ -153,7 +146,7 @@ export function getLauncherItems(): LauncherItem[] {
       description: suite.description,
       icon: ICON_MAP[suite.iconName] || '📦',
       intent,
-      route: intent === 'workbench' ? `/property/${DEMO_PARCEL_ID}/${tab}` : suite.route,
+      route,
       keywords: [
         suite.id,
         suite.shortName.toLowerCase(),
