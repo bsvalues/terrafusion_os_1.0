@@ -928,4 +928,199 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 - [x] Risk register complete
 - [x] Git strategy defined
 - [x] Dependencies verified
+
+---
+
+# Slice 6: Standalone Suite Homes Consistency
+
+> **Purpose:** Create consistent shell contract for standalone suite homes.
+> **Strategy:** OS-owned `StandaloneHomeShell` wrapper that suites plug into.
+
+---
+
+## Definition of Done (Slice 6)
+
+> What MUST be true for this to be complete?
+
+- [ ] Every standalone suite home renders a consistent shell contract
+  - Same header structure (title, intent badge "Standalone", optional subtitle)
+  - Same container rhythm (LiquidPanel when gated; clean fallback when not)
+  - Same primary actions pattern (Tactile buttons; keyboard reachable)
+- [ ] Navigation truth stays intact
+  - From ShellHome tile → Standalone home loads without redirect hacks
+  - From Launcher → Standalone home loads identically
+  - Standalone home includes clear "Open Workbench (current parcel)" CTA only when parcel context exists
+- [ ] A11y baseline
+  - h1 present, landmark regions sane, focus order stable, no hidden interactive decorations
+- [ ] No suite boundary violations
+  - OS shell owns chrome + layout; suites own their internal content
+- [ ] All tests pass
+- [ ] Build succeeds
+
+---
+
+## Phases & Tasks (Slice 6)
+
+### Phase 1: Test Harness (TDD)
+
+> Write tests first for standalone home shell contract.
+
+#### Task 1.1: Contract Tests
+
+* **Description:** Test that standalone routes render consistent ShellChromeContract
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/standalone/standaloneHomes.contract.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] each standalone suite route renders h1 title
+  - [ ] renders intent badge "Standalone"
+  - [ ] consistent container structure (header + content + actions)
+  - [ ] materialQualityGate on/off produces no layout shift
+* **Acceptance Criteria:**
+  - [ ] Tests written BEFORE implementation
+  - [ ] Tests fail initially
+
+#### Task 1.2: Navigation Tests
+
+* **Description:** Test navigation parity between ShellHome and Launcher
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/standalone/standaloneHomes.navigation.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] ShellHome → standalone routes match launcher routes
+  - [ ] back/forward preserves state (no full remount loops)
+  - [ ] standalone route -> workbench CTA works when parcel context exists
+* **Acceptance Criteria:**
+  - [ ] Navigation parity verified
+
+#### Task 1.3: Accessibility Tests
+
+* **Description:** Test a11y baseline for standalone homes
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/standalone/standaloneHomes.accessibility.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] landmarks present (banner, main)
+  - [ ] focus order stable
+  - [ ] no interactive elements in aria-hidden layers
+  - [ ] h1 is first heading
+* **Acceptance Criteria:**
+  - [ ] A11y baseline enforced
+
+---
+
+### Phase 2: Shell Contract
+
+> Define types and create StandaloneHomeShell component.
+
+#### Task 2.1: Contract Types
+
+* **Description:** Define type-safe contract interfaces for standalone home
+* **Files:**
+  - `frontend/apps/os-shell/src/components/standalone/standaloneHomeContracts.ts` (NEW)
+* **Implementation:**
+  - `StandaloneHomeMeta`: title, description, icon, primaryActions[]
+  - `StandaloneHomeAction`: id, label, intent, href | handler
+  - `StandaloneHomeProps`: meta + children (content slot)
+* **Acceptance Criteria:**
+  - [ ] Types defined
+  - [ ] Actions support both navigation and callbacks
+
+#### Task 2.2: StandaloneHomeShell Component
+
+* **Description:** Create shared shell wrapper using Liquid/Tactile primitives
+* **Files:**
+  - `frontend/apps/os-shell/src/components/standalone/StandaloneHomeShell.tsx` (NEW)
+* **Implementation:**
+  - Import LiquidPanel, TactileButton, useMaterialQuality
+  - Header: Icon + Title (h1) + "Standalone" badge + description
+  - Primary actions row (Tactile buttons)
+  - Content slot for suite modules
+  - Fallback path without glass effects
+* **Acceptance Criteria:**
+  - [ ] LiquidPanel + materialQualityGate enforced
+  - [ ] Consistent header structure
+  - [ ] Keyboard accessible
+
+---
+
+### Phase 3: Suite Migration
+
+> Migrate standalone suite routes to use shared shell.
+
+#### Task 3.1: PilotConsole Migration
+
+* **Description:** Refactor PilotConsole to use StandaloneHomeShell
+* **Files:**
+  - `frontend/apps/os-shell/src/pages/PilotConsole.tsx`
+* **Implementation:**
+  - Wrap internal content in StandaloneHomeShell
+  - Pass meta: { title: "TerraFusion Pilot Console", description: "...", icon: "🎮", primaryActions: [...] }
+  - Keep existing tool invocation UI as content slot
+* **Acceptance Criteria:**
+  - [ ] Same functionality, consistent chrome
+  - [ ] Tests pass
+
+#### Task 3.2: Extend suiteRegistry with homeMeta
+
+* **Description:** Add homeMeta to OS_FEATURES for standalone items
+* **Files:**
+  - `frontend/apps/os-shell/src/config/suiteRegistry.ts`
+* **Implementation:**
+  - Add `homeMeta?: StandaloneHomeMeta` to `OsFeatureDefinition`
+  - Define homeMeta for pilot: { title, description, icon, primaryActions }
+* **Acceptance Criteria:**
+  - [ ] Registry extended
+  - [ ] Type-safe
+
+---
+
+### Phase 4: Verification
+
+> Final verification before merge.
+
+#### Task 4.1: Run All Gates
+
+* **Description:** Execute full test suite + SEAL gates
+* **Acceptance Criteria:**
+  - [ ] New standalone contract tests pass
+  - [ ] Existing launcher tests pass
+  - [ ] `pnpm type-check` passes
+  - [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
+
+---
+
+## Risk Register (Slice 6)
+
+| ID | Risk | Severity | Likelihood | Mitigation | Rollback |
+|----|------|----------|------------|------------|----------|
+| R1 | PilotConsole functionality breaks | High | Low | Keep internal UI unchanged, only wrap | Revert shell wrapper |
+| R2 | New component causes layout shift | Med | Low | materialQualityGate + tests | Remove LiquidPanel |
+| R3 | A11y regressions | Med | Low | axe tests | Fix violations |
+
+---
+
+## Git Strategy (Slice 6)
+
+1. `test(standalone): contract + navigation + a11y tests for standalone homes`
+2. `feat(standalone): add StandaloneHomeShell with Liquid/Tactile primitives`
+3. `feat(standalone): migrate PilotConsole to shared shell`
+4. `chore(standalone): extend suiteRegistry with homeMeta`
+
+---
+
+## Dependencies (Slice 6)
+
+- [x] Slice 5 complete (Launcher personalization)
+- [x] LiquidPanel + TactileButton primitives available
+- [x] materialQualityGate working
+- [x] OS_FEATURES in suiteRegistry
+
+---
+
+## Document Status (Slice 6)
+
+- [x] Definition of Done defined
+- [x] All phases defined
+- [x] All tasks have acceptance criteria
+- [x] Risk register complete
+- [x] Git strategy defined
+- [x] Dependencies verified
 - [ ] Ready for execution

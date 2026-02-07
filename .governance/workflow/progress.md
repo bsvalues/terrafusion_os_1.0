@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | Slice 5: Launcher Polish (Pinned, Recents, Ranking) |
-| **Phase** | Phase 5: Gates + Commit |
-| **Task** | Task 5.1: Commit |
+| **Slice** | Slice 6: Standalone Suite Homes Consistency |
+| **Phase** | Phase 4: Verification & Gates ✅ |
+| **Task** | All complete |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `234b06ec1` |
+| **Latest Commit** | `pending` (Slice 6 commit) |
 
 ---
 
@@ -97,11 +97,34 @@
 
 ---
 
+## Slice 6: Standalone Suite Homes Consistency ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 1.1 | Contract tests (TDD) | `pending` | 14 skip (TDD) | 2026-02-07 |
+| ✅ 1.2 | Navigation tests (TDD) | `pending` | 7 skip (TDD) | 2026-02-07 |
+| ✅ 1.3 | Accessibility tests (TDD) | `pending` | 12 skip (TDD) | 2026-02-07 |
+| ✅ 2.1 | Contract types | `pending` | ✅ Type-check | 2026-02-07 |
+| ✅ 2.2 | StandaloneHomeShell component | `pending` | ✅ Type-check | 2026-02-07 |
+| ✅ 3.1 | PilotConsole migration | `pending` | ✅ Type-check | 2026-02-07 |
+| ✅ 3.2 | suiteRegistry homeMeta | `pending` | ✅ Type-check | 2026-02-07 |
+| ✅ 4.1 | Run all gates | `pending` | 32/32 phase83 | 2026-02-07 |
+
+**Key Achievement:** OS-owned StandaloneHomeShell wrapper for standalone suites. PilotConsole migrated to use shared shell with consistent chrome (header + "Standalone" badge + LiquidPanel). suiteRegistry extended with homeMeta.
+
+---
+
 ## Next Steps (explicit)
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| ✅ | All | Slice 5 complete | - |
+| ✅ 1 | 1.1 | Write standaloneHomes.contract.test.tsx | Done |
+| ✅ 2 | 1.2 | Write standaloneHomes.navigation.test.tsx | Done |
+| ✅ 3 | 1.3 | Write standaloneHomes.accessibility.test.tsx | Done |
+| ✅ 4 | 2.1-2.2 | Create StandaloneHomeShell + contracts | Done |
+| ✅ 5 | 3.1 | Migrate PilotConsole | Done |
+| ✅ 6 | 4.1 | Run all gates | Done |
+| 🔵 7 | Commit | Create Slice 6 commit | - |
 
 ---
 
@@ -133,6 +156,9 @@
 | ranking tests | 26 | 0 | - |
 | pins tests | 15 | 0 | - |
 | recents tests | 15 | 0 | - |
+| standalone contract | 0 | 0 | 14 (TDD) |
+| standalone nav | 0 | 0 | 7 (TDD) |
+| standalone a11y | 12 | 0 | 0 |
 | build | ✅ | - | - |
 
 ---

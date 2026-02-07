@@ -47,6 +47,30 @@ export interface SuiteDefinition {
   intent?: 'workbench' | 'standalone';
 }
 
+/**
+ * Home metadata for standalone suite homes.
+ * Used by StandaloneHomeShell to render consistent chrome.
+ */
+export interface OsFeatureHomeMeta {
+  /** Page title override (defaults to displayName) */
+  title?: string;
+  /** Short description for the page */
+  description?: string;
+  /** Icon identifier */
+  icon?: string;
+  /** Primary actions displayed in header */
+  primaryActions?: Array<{
+    id: string;
+    label: string;
+    intent: 'workbench' | 'standalone' | 'system';
+    href?: string;
+  }>;
+  /** Optional subtitle or status badge text */
+  subtitle?: string;
+  /** Whether to show "Open in Workbench" CTA (default true) */
+  showWorkbenchCta?: boolean;
+}
+
 export interface OsFeatureDefinition {
   id: OsFeatureId;
   displayName: string;
@@ -55,6 +79,12 @@ export interface OsFeatureDefinition {
   iconName: string;
   route?: string;
   status: 'live' | 'wip' | 'planned';
+  /** Standalone home metadata (for StandaloneHomeShell) */
+  homeMeta?: OsFeatureHomeMeta;
+  /** Label displayed in the launcher (defaults to shortName or displayName) */
+  label?: string;
+  /** Icon override for standalone context */
+  icon?: string;
 }
 
 export interface OsSurfaceDefinition {
@@ -140,6 +170,28 @@ export const OS_FEATURES: readonly OsFeatureDefinition[] = [
     iconName: 'Compass',
     route: '/pilot',
     status: 'live',
+    label: 'TerraPilot',
+    icon: 'terminal',
+    homeMeta: {
+      title: 'TerraPilot Console',
+      description: 'Invoke tools, execute operations, and view trace chains.',
+      subtitle: 'Standalone',
+      primaryActions: [
+        {
+          id: 'view-tools',
+          label: 'View Tools',
+          intent: 'standalone',
+          href: '/pilot/api',
+        },
+        {
+          id: 'view-dashboard',
+          label: 'Dashboard',
+          intent: 'standalone',
+          href: '/pilot/dashboard',
+        },
+      ],
+      showWorkbenchCta: true,
+    },
   },
   {
     id: 'trace',
@@ -148,6 +200,8 @@ export const OS_FEATURES: readonly OsFeatureDefinition[] = [
     description: 'Observability, Audit Trail & Telemetry',
     iconName: 'Activity',
     status: 'wip',
+    label: 'TerraTrace',
+    icon: 'activity',
   },
 ] as const;
 
@@ -171,6 +225,10 @@ export const OS_SURFACES: readonly OsSurfaceDefinition[] = [
 
 export function getSuiteById(id: SuiteId): SuiteDefinition | undefined {
   return CONSTITUTIONAL_SUITES.find((s) => s.id === id);
+}
+
+export function getOsFeatureById(id: OsFeatureId): OsFeatureDefinition | undefined {
+  return OS_FEATURES.find((f) => f.id === id);
 }
 
 export function isConstitutionalSuite(id: string): id is SuiteId {

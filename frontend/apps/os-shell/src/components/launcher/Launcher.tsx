@@ -18,12 +18,11 @@ import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { LiquidPanel, TactileButton } from '../../ui/materials';
 import { MaterialQuality, useMaterialQuality } from '../../ui/materials/materialQualityGate';
 import {
-    filterLauncherItems,
     getIntentBadgeText,
     getLauncherSections,
     navigateToLauncherItem,
     type LauncherItem,
-    type LauncherSection,
+    type LauncherSection
 } from './launcherModel';
 import { initPinsStore, usePinsStore } from './pinsStore';
 import { buildSectionsForEmptyQuery, rankItems, type RankingContext } from './ranking';

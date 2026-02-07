@@ -65,6 +65,8 @@ const GptHome = lazy(() =>
 
 // GovernanceLock - Pilot Console (single choke point UI)
 const PilotConsole = lazy(() => import('./pages/PilotConsole'));
+// Slice 6: Standalone Home Shell for Pilot
+const PilotHome = lazy(() => import('./pages/PilotHome'));
 
 // GovernanceLock - Dashboard (role-gated metrics)
 const GovernanceDashboard = lazy(() => import('./pages/GovernanceDashboard'));
@@ -144,8 +146,10 @@ const Router: React.FC = () => {
             <Route path='/dossier' element={<DossierHome />} />
             <Route path='/gpt' element={<GptHome />} />
 
-            {/* GovernanceLock - Single Choke Point UI */}
-            <Route path='/pilot' element={<PilotConsole />} />
+            {/* GovernanceLock - Single Choke Point UI (Slice 6: StandaloneHomeShell) */}
+            <Route path='/pilot' element={<PilotHome />} />
+            {/* Legacy: Direct PilotConsole (for backwards compat during transition) */}
+            <Route path='/pilot/legacy' element={<PilotConsole />} />
 
             {/* GovernanceLock - Dashboard (role-gated) */}
             <Route path='/pilot/dashboard' element={<GovernanceDashboard />} />

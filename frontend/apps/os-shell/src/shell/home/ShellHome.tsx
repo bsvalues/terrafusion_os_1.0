@@ -26,10 +26,10 @@
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  CONSTITUTIONAL_SUITES,
-  getSuiteIntent,
-  INTENT_LABELS,
-  type SuiteId,
+    CONSTITUTIONAL_SUITES,
+    getSuiteIntent,
+    INTENT_LABELS,
+    type SuiteId,
 } from '../../config/suiteRegistry';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
