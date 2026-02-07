@@ -19,7 +19,7 @@
 | **Phase** | Phase 5: Gates + Commit |
 | **Task** | Task 5.1: Commit |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | Pending |
+| **Latest Commit** | `234b06ec1` |
 
 ---
 
@@ -81,17 +81,17 @@
 
 | Task | Description | Commit | Tests | Date |
 |------|-------------|--------|-------|------|
-| ✅ 1.1 | Pins tests (TDD) | pending | 15 pass | 2026-02-07 |
-| ✅ 1.2 | Recents tests (TDD) | pending | 15 pass | 2026-02-07 |
-| ✅ 1.3 | Ranking tests (TDD) | pending | 26 pass | 2026-02-07 |
-| ✅ 2.1 | Storage adapter | pending | ✅ Pass | 2026-02-07 |
-| ✅ 2.2 | PinsStore | pending | ✅ Pass | 2026-02-07 |
-| ✅ 2.3 | RecentsStore | pending | ✅ Pass | 2026-02-07 |
-| ✅ 3.1 | Ranking logic | pending | ✅ Pass | 2026-02-07 |
-| ✅ 4.1 | Section rendering | pending | ✅ Pass | 2026-02-07 |
-| ✅ 4.2 | Pin affordance | pending | ✅ Pass | 2026-02-07 |
-| ✅ 4.3 | Record activation | pending | ✅ Pass | 2026-02-07 |
-| ✅ 5.1 | Run all gates | pending | 57 launcher, 32 phase83 | 2026-02-07 |
+| ✅ 1.1 | Pins tests (TDD) | `234b06ec1` | 15 pass | 2026-02-07 |
+| ✅ 1.2 | Recents tests (TDD) | `234b06ec1` | 15 pass | 2026-02-07 |
+| ✅ 1.3 | Ranking tests (TDD) | `234b06ec1` | 26 pass | 2026-02-07 |
+| ✅ 2.1 | Storage adapter | `234b06ec1` | ✅ Pass | 2026-02-07 |
+| ✅ 2.2 | PinsStore | `234b06ec1` | ✅ Pass | 2026-02-07 |
+| ✅ 2.3 | RecentsStore | `234b06ec1` | ✅ Pass | 2026-02-07 |
+| ✅ 3.1 | Ranking logic | `234b06ec1` | ✅ Pass | 2026-02-07 |
+| ✅ 4.1 | Section rendering | `234b06ec1` | ✅ Pass | 2026-02-07 |
+| ✅ 4.2 | Pin affordance | `234b06ec1` | ✅ Pass | 2026-02-07 |
+| ✅ 4.3 | Record activation | `234b06ec1` | ✅ Pass | 2026-02-07 |
+| ✅ 5.1 | Run all gates | `234b06ec1` | 57 launcher, 32 phase83 | 2026-02-07 |
 
 **Key Achievement:** Full personalization layer: pinned items (persist, appear in Pinned section), recents (MRU, capped at 10), deterministic search ranking (prefix > word > substring > keyword, + pinned/recent boosts).
 
@@ -144,7 +144,7 @@
 - [x] Build succeeds
 - [x] No blockers
 - [x] Known debt documented
-- [ ] Latest commit hash in this document
+- [x] Latest commit hash in this document (`234b06ec1`)
 
 ---
 
