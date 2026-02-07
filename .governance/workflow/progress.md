@@ -1,12 +1,12 @@
-# Progress: Workbench Shell Materials + Suite UX Clarity + Launcher + Compositor
+# Progress: Workbench Shell Materials + Suite UX Clarity + Launcher + Compositor + Polish
 
-> **Purpose:** Track execution status for Visual Renaissance materials adoption + Suite tile clarity + Launcher redesign + Compositor stabilization.
+> **Purpose:** Track execution status for Visual Renaissance materials adoption + Suite tile clarity + Launcher redesign + Compositor stabilization + Launcher polish.
 
 ---
 
-* **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor
+* **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish
 * **Branch/PR:** main (solo-dev mode)
-* **Last Updated:** 2026-02-07 12:00
+* **Last Updated:** 2026-02-07 13:00
 * **Plan Link:** [plan.md](./plan.md)
 
 ---
@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | Slice 4: Compositor Jitter Stabilization |
-| **Phase** | Phase 1: Test Harness (TDD) |
-| **Task** | Complete - No fixes needed |
-| **Status** | ✅ Complete |
-| **Latest Commit** | `2572aed2f` (Slice 4 Phase 1 complete) |
+| **Slice** | Slice 5: Launcher Polish (Pinned, Recents, Ranking) |
+| **Phase** | Phase 5: Gates + Commit |
+| **Task** | Task 5.1: Commit |
+| **Status** | ✅ COMPLETE |
+| **Latest Commit** | Pending |
 
 ---
 
@@ -77,14 +77,31 @@
 
 ---
 
+## Slice 5: Launcher Polish (Pinned, Recents, Ranking) ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 1.1 | Pins tests (TDD) | pending | 15 pass | 2026-02-07 |
+| ✅ 1.2 | Recents tests (TDD) | pending | 15 pass | 2026-02-07 |
+| ✅ 1.3 | Ranking tests (TDD) | pending | 26 pass | 2026-02-07 |
+| ✅ 2.1 | Storage adapter | pending | ✅ Pass | 2026-02-07 |
+| ✅ 2.2 | PinsStore | pending | ✅ Pass | 2026-02-07 |
+| ✅ 2.3 | RecentsStore | pending | ✅ Pass | 2026-02-07 |
+| ✅ 3.1 | Ranking logic | pending | ✅ Pass | 2026-02-07 |
+| ✅ 4.1 | Section rendering | pending | ✅ Pass | 2026-02-07 |
+| ✅ 4.2 | Pin affordance | pending | ✅ Pass | 2026-02-07 |
+| ✅ 4.3 | Record activation | pending | ✅ Pass | 2026-02-07 |
+| ✅ 5.1 | Run all gates | pending | 57 launcher, 32 phase83 | 2026-02-07 |
+
+**Key Achievement:** Full personalization layer: pinned items (persist, appear in Pinned section), recents (MRU, capped at 10), deterministic search ranking (prefix > word > substring > keyword, + pinned/recent boosts).
+
+---
+
 ## Next Steps (explicit)
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| ✅ | All | Slice 4 complete - no fixes needed | - |
-| ⏳ | TBD | Consider: Start Menu polish (search ranking, recents) | User direction |
-| ⏳ | TBD | Consider: Standalone suite homes consistency | User direction |
-| ⏳ | TBD | Consider: E2E Playwright smoke for layout shift | User direction |
+| ✅ | All | Slice 5 complete | - |
 
 ---
 
@@ -110,20 +127,22 @@
 
 | Suite | Passed | Failed | Skipped |
 |-------|--------|--------|---------|
-| type-check | ⏳ | - | - |
-| phase83-tools | ⏳ | - | - |
-| unit tests | ⏳ | - | - |
-| materials tests | ⏳ | - | - |
-| build | ⏳ | - | - |
+| type-check | ✅ | 0 | - |
+| phase83-tools | 32 | 0 | - |
+| launcher tests | 57 | 0 | - |
+| ranking tests | 26 | 0 | - |
+| pins tests | 15 | 0 | - |
+| recents tests | 15 | 0 | - |
+| build | ✅ | - | - |
 
 ---
 
 ## Gates Before Merge
 
-- [ ] All planned tasks complete
-- [ ] All tests passing
-- [ ] Build succeeds
-- [ ] No blockers
+- [x] All planned tasks complete
+- [x] All tests passing
+- [x] Build succeeds
+- [x] No blockers
 - [x] Known debt documented
 - [ ] Latest commit hash in this document
 
@@ -135,4 +154,4 @@
 - [x] All completed tasks have commits
 - [x] Next steps defined
 - [x] Debt documented
-- [ ] Ready for merge
+- [x] Ready for merge

@@ -7,6 +7,7 @@
  * Keyboard-first design with focus trap.
  *
  * @see Slice 3 plan for requirements
+ * @see Slice 5: Personalization (pins, recents, ranking)
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -24,6 +25,9 @@ import {
     type LauncherItem,
     type LauncherSection,
 } from './launcherModel';
+import { initPinsStore, usePinsStore } from './pinsStore';
+import { buildSectionsForEmptyQuery, rankItems, type RankingContext } from './ranking';
+import { initRecentsStore, useRecentsStore } from './recentsStore';
 
 // ============================================================================
 // Types
@@ -128,15 +132,22 @@ function useArrowNavigation(items: LauncherItem[], onActivate: (item: LauncherIt
 const LauncherItemButton: React.FC<{
   item: LauncherItem;
   isActive: boolean;
+  isPinned: boolean;
+  onTogglePin: () => void;
   onClick: () => void;
   useTactile: boolean;
   prefersReducedMotion: boolean;
-}> = ({ item, isActive, onClick, useTactile, prefersReducedMotion }) => {
+}> = ({ item, isActive, isPinned, onTogglePin, onClick, useTactile, prefersReducedMotion }) => {
   const intentBadge = getIntentBadgeText(item.intent);
 
   const buttonClasses = useTactile
     ? 'tactile-button w-full text-left group'
     : 'launcher-item-fallback w-full text-left group hover:bg-white/10 rounded-lg p-3 transition-colors';
+
+  const handlePinClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onTogglePin();
+  };
 
   const content = (
     <>
@@ -157,6 +168,33 @@ const LauncherItemButton: React.FC<{
         </div>
         <p className='text-white/60 text-sm truncate'>{item.description}</p>
       </div>
+      {/* Pin Toggle Button */}
+      {useTactile ? (
+        <TactileButton
+          variant='ghost'
+          size='sm'
+          className={`ml-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 
+                      focus:opacity-100 transition-opacity ${isPinned ? 'opacity-100 text-cyan-400' : 'text-white/40'}`}
+          onClick={handlePinClick}
+          aria-label={isPinned ? `Unpin ${item.label}` : `Pin ${item.label}`}
+          aria-pressed={isPinned}
+        >
+          {isPinned ? '📌' : '📍'}
+        </TactileButton>
+      ) : (
+        <button
+          type='button'
+          className={`ml-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 
+                      focus:opacity-100 transition-opacity p-1 rounded
+                      ${isPinned ? 'opacity-100 text-cyan-400' : 'text-white/40 hover:text-white/60'}
+                      focus:outline-none focus:ring-2 focus:ring-cyan-400/50`}
+          onClick={handlePinClick}
+          aria-label={isPinned ? `Unpin ${item.label}` : `Pin ${item.label}`}
+          aria-pressed={isPinned}
+        >
+          {isPinned ? '📌' : '📍'}
+        </button>
+      )}
     </>
   );
 
@@ -204,6 +242,8 @@ const LauncherSectionView: React.FC<{
   activeIndex: number;
   sectionStartIndex: number;
   onItemClick: (item: LauncherItem) => void;
+  onTogglePin: (id: string) => void;
+  isPinned: (id: string) => boolean;
   useTactile: boolean;
   prefersReducedMotion: boolean;
 }> = ({
@@ -211,6 +251,8 @@ const LauncherSectionView: React.FC<{
   activeIndex,
   sectionStartIndex,
   onItemClick,
+  onTogglePin,
+  isPinned,
   useTactile,
   prefersReducedMotion,
 }) => (
@@ -227,6 +269,8 @@ const LauncherSectionView: React.FC<{
           key={item.id}
           item={item}
           isActive={sectionStartIndex + index === activeIndex}
+          isPinned={isPinned(item.id)}
+          onTogglePin={() => onTogglePin(item.id)}
           onClick={() => onItemClick(item)}
           useTactile={useTactile}
           prefersReducedMotion={prefersReducedMotion}
@@ -252,6 +296,19 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
   const searchQuery = useCommandPaletteStore((state) => state.searchQuery);
   const setSearchQuery = useCommandPaletteStore((state) => state.setSearchQuery);
 
+  // Personalization stores (Slice 5)
+  const isPinned = usePinsStore((state) => state.isPinned);
+  const togglePin = usePinsStore((state) => state.togglePin);
+  const pinnedIds = usePinsStore((state) => state.pinnedIds);
+  const recordRecent = useRecentsStore((state) => state.record);
+  const recentIds = useRecentsStore((state) => state.recentIds);
+
+  // Hydrate stores on mount
+  useEffect(() => {
+    initPinsStore();
+    initRecentsStore();
+  }, []);
+
   // Material quality checks
   const useLiquid = quality.tier !== MaterialQuality.LOW;
   const useTactile = quality.enableSprings;
@@ -259,21 +316,33 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
 
   // Get launcher items
   const sections = getLauncherSections();
-  const allItems = sections.flatMap((s) => s.items);
-  const filteredItems = testItems || filterLauncherItems(allItems, searchQuery);
+  const allItems = testItems || sections.flatMap((s) => s.items);
 
-  // Filter sections based on search
-  const filteredSections = searchQuery
+  // Build ranking context
+  const rankingContext: RankingContext = {
+    pinnedIds: pinnedIds,
+    recentIds: recentIds,
+  };
+
+  // Filter and rank items
+  const filteredItems = searchQuery.trim()
+    ? rankItems(allItems, searchQuery, rankingContext)
+    : allItems;
+
+  // Build sections based on search state
+  const filteredSections: LauncherSection[] = searchQuery.trim()
     ? [{ id: 'results', label: 'Results', items: filteredItems }]
-    : sections;
+    : buildSectionsForEmptyQuery(allItems, rankingContext);
 
   // Arrow key navigation
   const handleActivate = useCallback(
     (item: LauncherItem) => {
+      // Record in recents before navigating (Slice 5)
+      recordRecent(item.id);
       navigateToLauncherItem(item, navigate);
       close();
     },
-    [navigate, close]
+    [navigate, close, recordRecent]
   );
 
   const { activeIndex, setActiveIndex } = useArrowNavigation(filteredItems, handleActivate);
@@ -371,6 +440,8 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
                   activeIndex={activeIndex}
                   sectionStartIndex={sectionIndices[sectionIdx]}
                   onItemClick={handleActivate}
+                  onTogglePin={togglePin}
+                  isPinned={isPinned}
                   useTactile={useTactile}
                   prefersReducedMotion={quality.prefersReducedMotion}
                 />
@@ -432,6 +503,8 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
                   activeIndex={activeIndex}
                   sectionStartIndex={sectionIndices[sectionIdx]}
                   onItemClick={handleActivate}
+                  onTogglePin={togglePin}
+                  isPinned={isPinned}
                   useTactile={false}
                   prefersReducedMotion={quality.prefersReducedMotion}
                 />
