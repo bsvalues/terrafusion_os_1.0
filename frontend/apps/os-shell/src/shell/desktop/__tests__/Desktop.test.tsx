@@ -10,6 +10,7 @@
 
 import '@testing-library/jest-dom';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { act } from 'react';
 import { useDesktopStore } from '../../../stores/desktopStore';
 import { useStartMenuStore } from '../../../stores/startMenuStore';
@@ -65,25 +66,25 @@ describe('Desktop', () => {
 
   describe('Rendering', () => {
     it('renders without crashing', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.getByTestId('desktop')).toBeInTheDocument();
     });
 
     it('renders DesktopBackground component', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.getByTestId('desktop-background')).toBeInTheDocument();
     });
 
     it('renders WindowManager component', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.getByTestId('window-manager')).toBeInTheDocument();
     });
 
     it('renders Taskbar component', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.getByTestId('taskbar')).toBeInTheDocument();
     });
@@ -93,7 +94,7 @@ describe('Desktop', () => {
         useStartMenuStore.setState({ isOpen: true });
       });
 
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.getByTestId('start-menu')).toBeInTheDocument();
     });
@@ -103,7 +104,7 @@ describe('Desktop', () => {
         useStartMenuStore.setState({ isOpen: false });
       });
 
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.queryByTestId('start-menu')).not.toBeInTheDocument();
     });
@@ -115,7 +116,7 @@ describe('Desktop', () => {
 
   describe('Layout', () => {
     it('fills entire viewport (100vw × 100vh)', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const desktop = screen.getByTestId('desktop');
       expect(desktop).toHaveClass('w-screen');
@@ -127,7 +128,7 @@ describe('Desktop', () => {
         useStartMenuStore.setState({ isOpen: true });
       });
 
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const desktop = screen.getByTestId('desktop');
       const children = Array.from(desktop.children);
@@ -141,21 +142,21 @@ describe('Desktop', () => {
     });
 
     it('prevents scroll/overflow', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const desktop = screen.getByTestId('desktop');
       expect(desktop).toHaveClass('overflow-hidden');
     });
 
     it('uses relative positioning for stacking context', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const desktop = screen.getByTestId('desktop');
       expect(desktop).toHaveClass('relative');
     });
 
     it('has dark background color as fallback', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const desktop = screen.getByTestId('desktop');
       expect(desktop).toHaveClass('bg-transparent');
@@ -168,7 +169,7 @@ describe('Desktop', () => {
 
   describe('Keyboard Shortcuts', () => {
     it('opens StartMenu on Meta (Windows) key press', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(useStartMenuStore.getState().isOpen).toBe(false);
 
@@ -182,7 +183,7 @@ describe('Desktop', () => {
         useStartMenuStore.setState({ isOpen: true });
       });
 
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(useStartMenuStore.getState().isOpen).toBe(true);
 
@@ -196,7 +197,7 @@ describe('Desktop', () => {
         useStartMenuStore.setState({ isOpen: true });
       });
 
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(useStartMenuStore.getState().isOpen).toBe(true);
 
@@ -206,7 +207,7 @@ describe('Desktop', () => {
     });
 
     it('does not open StartMenu on Escape when closed', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(useStartMenuStore.getState().isOpen).toBe(false);
 
@@ -216,7 +217,7 @@ describe('Desktop', () => {
     });
 
     it('handles OS key (alternative Windows key)', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(useStartMenuStore.getState().isOpen).toBe(false);
 
@@ -228,7 +229,7 @@ describe('Desktop', () => {
     it('cleans up keyboard listener on unmount', () => {
       const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
 
-      const { unmount } = render(<Desktop />);
+      const { unmount } = render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
       unmount();
 
       expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
@@ -243,7 +244,7 @@ describe('Desktop', () => {
 
   describe('Store Integration', () => {
     it('reflects startMenuStore isOpen state', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.queryByTestId('start-menu')).not.toBeInTheDocument();
 
@@ -255,7 +256,7 @@ describe('Desktop', () => {
     });
 
     it('updates when store state changes externally', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       // Initially closed
       expect(screen.queryByTestId('start-menu')).not.toBeInTheDocument();
@@ -286,7 +287,7 @@ describe('Desktop', () => {
         useStartMenuStore.setState({ isOpen: true });
       });
 
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(useStartMenuStore.getState().isOpen).toBe(true);
 
@@ -301,7 +302,7 @@ describe('Desktop', () => {
         useStartMenuStore.setState({ isOpen: true });
       });
 
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       // Click on StartMenu (mocked)
       const startMenu = screen.getByTestId('start-menu');
@@ -319,21 +320,21 @@ describe('Desktop', () => {
 
   describe('Accessibility', () => {
     it('has role="main" for primary content', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const desktop = screen.getByTestId('desktop');
       expect(desktop).toHaveAttribute('role', 'main');
     });
 
     it('has accessible name via aria-label', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const desktop = screen.getByTestId('desktop');
       expect(desktop).toHaveAttribute('aria-label', 'TerraFusion Desktop');
     });
 
     it('has tabIndex for focus management', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const desktop = screen.getByTestId('desktop');
       expect(desktop).toHaveAttribute('tabIndex', '-1');
@@ -346,7 +347,7 @@ describe('Desktop', () => {
 
   describe('Edge Cases', () => {
     it('handles rapid keyboard events', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       // Rapid Meta key presses
       fireEvent.keyDown(document, { key: 'Meta' }); // open
@@ -357,7 +358,7 @@ describe('Desktop', () => {
     });
 
     it('handles multiple key types in sequence', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       fireEvent.keyDown(document, { key: 'Meta' }); // open
       expect(useStartMenuStore.getState().isOpen).toBe(true);
@@ -370,7 +371,7 @@ describe('Desktop', () => {
     });
 
     it('ignores other key presses', () => {
-      render(<Desktop />);
+      render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       fireEvent.keyDown(document, { key: 'a' });
       fireEvent.keyDown(document, { key: 'Enter' });

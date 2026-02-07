@@ -15,6 +15,7 @@
 
 import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 
 import { errorTracker } from '../../../hooks/useErrorReporter';
 import { useDesktopStore } from '../../../stores/desktopStore';
@@ -146,7 +147,7 @@ const initializeModuleRegistry = () => {
 describe('Phase 9: Full Stack Integration', () => {
   describe('Desktop → Stores → Components', () => {
     it('Desktop renders with all integrated components', () => {
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.getByTestId('desktop')).toBeInTheDocument();
       expect(screen.getByTestId('window-manager')).toBeInTheDocument();
@@ -156,7 +157,7 @@ describe('Phase 9: Full Stack Integration', () => {
 
     it('Window manager responds to store changes', async () => {
       initializeModuleRegistry();
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       // Initially no windows
       expect(screen.queryByTestId('window')).not.toBeInTheDocument();
@@ -172,7 +173,7 @@ describe('Phase 9: Full Stack Integration', () => {
 
     it('Taskbar shows running windows from store', async () => {
       initializeModuleRegistry();
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       await act(async () => {
         await useModuleRegistryStore.getState().launchModule('government-edition');
@@ -187,7 +188,7 @@ describe('Phase 9: Full Stack Integration', () => {
   describe('Module Launch → Notification Flow', () => {
     it('Module launch shows success notification', async () => {
       initializeModuleRegistry();
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       await act(async () => {
         await useModuleRegistryStore.getState().launchModule('government-edition');
@@ -211,7 +212,7 @@ describe('Phase 9: Full Stack Integration', () => {
 
     it('Multiple module launches show multiple toasts', async () => {
       initializeModuleRegistry();
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       // Add success notifications
       act(() => {
@@ -230,7 +231,7 @@ describe('Phase 9: Full Stack Integration', () => {
 
   describe('Error → Notification Flow', () => {
     it('Error notifications appear in toast container', () => {
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       act(() => {
         useNotificationStore.getState().addNotification({
@@ -245,7 +246,7 @@ describe('Phase 9: Full Stack Integration', () => {
     });
 
     it('Warning notifications appear with correct styling', () => {
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       act(() => {
         useNotificationStore.getState().addNotification({
@@ -264,7 +265,7 @@ describe('Phase 9: Full Stack Integration', () => {
   describe('Window Lifecycle → Store Sync', () => {
     it('Window close updates desktopStore', async () => {
       initializeModuleRegistry();
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       await act(async () => {
         await useModuleRegistryStore.getState().launchModule('government-edition');
@@ -355,7 +356,7 @@ describe('Phase 9: Full Stack Integration', () => {
 
   describe('Start Menu → Module Registry → Desktop', () => {
     it('Start menu toggle via store', () => {
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.queryByTestId('start-menu')).not.toBeInTheDocument();
 
@@ -370,7 +371,7 @@ describe('Phase 9: Full Stack Integration', () => {
       // Start with open
       useStartMenuStore.setState({ ...useStartMenuStore.getState(), isOpen: true });
 
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.getByTestId('start-menu')).toBeInTheDocument();
 
@@ -444,23 +445,23 @@ describe('Phase 9: Full Stack Integration', () => {
 
 describe('Phase 9: Accessibility Integration', () => {
   it('Desktop has main role', () => {
-    render(<DesktopWithErrorBoundary />);
+    render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
   it('Taskbar has navigation role', () => {
-    render(<DesktopWithErrorBoundary />);
+    render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
     expect(screen.getByRole('navigation', { name: /taskbar/i })).toBeInTheDocument();
   });
 
   it('Toast container has live region', () => {
-    render(<DesktopWithErrorBoundary />);
+    render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
     const container = screen.getByTestId('toast-container');
     expect(container).toHaveAttribute('aria-live', 'polite');
   });
 
   it('Window manager has region role', () => {
-    render(<DesktopWithErrorBoundary />);
+    render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
     expect(screen.getByRole('region', { name: /application windows/i })).toBeInTheDocument();
   });
 });
