@@ -28,6 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import { CONSTITUTIONAL_SUITES } from '../../config/suiteRegistry';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
+import { LiquidPanel, TactileButton } from '../../ui/materials';
 
 // ============================================================================
 // Types
@@ -158,21 +159,18 @@ const SearchBar: React.FC<{
                    focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50
                    transition-all duration-200'
         />
-        <button
-          type='submit'
-          className='absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-xl
-                   bg-gradient-to-r from-cyan-500 to-blue-600 text-white
-                   hover:from-cyan-400 hover:to-blue-500 transition-all'
-        >
-          <svg className='w-6 h-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth={2}
-              d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-            />
-          </svg>
-        </button>
+        <div className='absolute right-3 top-1/2 -translate-y-1/2'>
+          <TactileButton type='submit' variant='primary' size='sm'>
+            <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+              />
+            </svg>
+          </TactileButton>
+        </div>
       </div>
       <p className='text-center text-white/40 text-sm mt-2'>
         Press <kbd className='px-1.5 py-0.5 bg-white/10 rounded text-xs'>Ctrl</kbd> +{' '}
@@ -183,33 +181,41 @@ const SearchBar: React.FC<{
 };
 
 /**
- * Suite Card - Clickable suite launcher
+ * Suite Card - Clickable suite launcher with LiquidPanel glass effect
  */
 const SuiteCard: React.FC<{
   suite: Suite;
   onClick: () => void;
 }> = ({ suite, onClick }) => (
-  <button
+  <LiquidPanel
+    variant='interactive'
+    className='group relative cursor-pointer hover:scale-105 transition-transform duration-200'
     onClick={onClick}
-    className={`group relative p-6 rounded-2xl bg-gradient-to-br ${suite.color} 
-               shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200
-               text-left overflow-hidden`}
+    role='button'
+    tabIndex={0}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onClick();
+      }
+    }}
   >
-    <div className='absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity' />
+    {/* Gradient overlay for suite identity */}
+    <div className={`absolute inset-0 bg-gradient-to-br ${suite.color} opacity-60 rounded-xl`} />
     {/* Wiring Status Badge - honest launcher UX */}
     <span
       className='absolute top-2 right-2 px-1.5 py-0.5 text-[10px] font-bold rounded
-                 bg-emerald-500/90 text-white shadow-sm'
+                 bg-emerald-500/90 text-white shadow-sm z-20'
       title='Opens Property Workbench (real MWUX)'
     >
       WB
     </span>
-    <div className='relative z-10'>
+    <div className='relative z-10 p-6'>
       <span className='text-4xl mb-3 block'>{suite.icon}</span>
       <h3 className='text-xl font-bold text-white mb-1'>{suite.name}</h3>
       <p className='text-white/80 text-sm'>{suite.description}</p>
     </div>
-    <div className='absolute bottom-2 right-2 text-white/40 group-hover:text-white/60 transition-colors'>
+    <div className='absolute bottom-2 right-2 text-white/40 group-hover:text-white/60 transition-colors z-10'>
       <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
         <path
           strokeLinecap='round'
@@ -219,27 +225,28 @@ const SuiteCard: React.FC<{
         />
       </svg>
     </div>
-  </button>
+  </LiquidPanel>
 );
 
 /**
- * OS Entrypoint - Smaller utility links
+ * OS Entrypoint - Utility links with TactileButton ghost variant
  */
 const OSEntrypoint: React.FC<{
   item: (typeof OS_ENTRYPOINTS)[0];
   onClick: () => void;
 }> = ({ item, onClick }) => (
-  <button
+  <TactileButton
     onClick={onClick}
-    className='flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10
-               hover:bg-white/10 hover:border-white/20 transition-all text-left w-full'
+    variant='ghost'
+    size='md'
+    className='w-full justify-start gap-3 text-left'
   >
     <span className='text-2xl'>{item.icon}</span>
-    <div>
-      <h4 className='font-semibold text-white'>{item.name}</h4>
-      <p className='text-white/50 text-xs'>{item.description}</p>
+    <div className='flex-1'>
+      <div className='font-semibold text-white'>{item.name}</div>
+      <div className='text-white/50 text-xs'>{item.description}</div>
     </div>
-  </button>
+  </TactileButton>
 );
 
 /**

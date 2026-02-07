@@ -14,7 +14,6 @@
  */
 
 import '@testing-library/jest-dom';
-import { renderHook } from '@testing-library/react';
 
 // Constitutional values used in tests
 const CONSTITUTIONAL_VALUES = {
@@ -177,10 +176,10 @@ describe('Material Quality Gate', () => {
       // Note: We test the hook export exists and has the right shape.
       // Full hook integration is tested in component tests.
       const { useMaterialQuality, getMaterialQuality } = await import('../materialQualityGate');
-      
+
       // Verify the hook is exported as a function
       expect(typeof useMaterialQuality).toBe('function');
-      
+
       // Verify the quality state has required properties
       const quality = getMaterialQuality();
       expect(quality).toHaveProperty('tier');
