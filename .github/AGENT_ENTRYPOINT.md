@@ -54,4 +54,30 @@ AI-Collaboration: [agent_name]
 - Core Rules: .ralph/AGENT_RULES.yml
 - Port Rules: AI_AGENT_PORT_RULES_STRICT.md
 - Frontend: AI_AGENT_FRONTEND_PROTECTION.md
-- Governance: AGENTS.md
+- Governance: AGENTS.md- **Workflow Governance: .governance/workflow/README.md**
+
+## WORKFLOW GOVERNANCE (MANDATORY)
+
+**For any non-trivial change (feature/refactor/UX), you MUST:**
+
+1. **Discovery Phase** - Ask 30+ questions, document intent
+2. **Research Phase** - Parallel sub-agent research
+3. **Plan Phase** - Define phases, tasks, acceptance criteria
+4. **Execute Phase** - TDD, update progress with commits
+
+**Required Artifacts:**
+```
+.governance/workflow/discovery.md  - Intent + constraints + Q/A
+.governance/workflow/research.md   - Domain research + prior art
+.governance/workflow/plan.md       - Phases + tasks + DoD
+.governance/workflow/progress.md   - Status + commits + next steps
+```
+
+**Workflow Sequence:**
+```
+Discovery → Research → Plan → Execute → Progress Updates
+```
+
+**NEVER skip directly to implementation. SEAL will block non-compliant PRs.**
+
+See: `.governance/workflow/README.md` for full requirements.

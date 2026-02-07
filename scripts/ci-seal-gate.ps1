@@ -295,6 +295,45 @@ if ($LASTEXITCODE -eq 0) {
 }
 Write-Host ""
 
+# Gate 8: Workflow Governance Artifacts (for feat/refactor/UX PRs)
+Write-Host "Gate 8: Workflow Governance Artifacts" -ForegroundColor Yellow
+$workflowDir = ".governance/workflow"
+$requiredArtifacts = @("discovery.md", "research.md", "plan.md", "progress.md")
+
+# Check if this is a feature/refactor PR (by checking branch name or PR labels)
+$currentBranch = git rev-parse --abbrev-ref HEAD 2>$null
+$isFeatureBranch = $currentBranch -match "^(feat|feature|refactor|ux)/"
+
+if ($isFeatureBranch) {
+    $allArtifactsExist = $true
+    foreach ($artifact in $requiredArtifacts) {
+        $artifactPath = Join-Path $workflowDir $artifact
+        if (-not (Test-Path $artifactPath)) {
+            Write-Host "   Missing workflow artifact: $artifact" -ForegroundColor Red
+            $allArtifactsExist = $false
+        }
+    }
+    if ($allArtifactsExist) {
+        # Check that discovery.md has minimum 30 Q/A entries
+        $discoveryPath = Join-Path $workflowDir "discovery.md"
+        $discoveryContent = Get-Content $discoveryPath -Raw
+        $qaCount = ([regex]::Matches($discoveryContent, "^\d+\.\s+\*\*Q:", [System.Text.RegularExpressions.RegexOptions]::Multiline)).Count
+        if ($qaCount -ge 30) {
+            Write-Host "   PASS (discovery: $qaCount Q/A entries)" -ForegroundColor Green
+        } else {
+            Write-Host "   FAIL: discovery.md has $qaCount Q/A entries (minimum 30 required)" -ForegroundColor Red
+            $FAIL = 1
+        }
+    } else {
+        Write-Host "   FAIL: Missing workflow governance artifacts" -ForegroundColor Red
+        Write-Host "   See: .governance/workflow/README.md for requirements" -ForegroundColor Yellow
+        $FAIL = 1
+    }
+} else {
+    Write-Host "   SKIP: Not a feature/refactor branch ($currentBranch)" -ForegroundColor DarkYellow
+}
+Write-Host ""
+
 # Final verdict
 Write-Host "====================================="
 if ($FAIL -eq 0) {
@@ -310,5 +349,11 @@ if ($FAIL -eq 0) {
     Write-Host "   3. Run: python scripts/speclock-manifest.py"
     Write-Host "   4. Commit all changes"
     Write-Host "   5. Re-run this gate"
+    Write-Host ""
+    Write-Host "   For workflow governance failures:"
+    Write-Host "   - Create .governance/workflow/discovery.md (30+ Q/A)"
+    Write-Host "   - Create .governance/workflow/research.md"
+    Write-Host "   - Create .governance/workflow/plan.md"
+    Write-Host "   - Create .governance/workflow/progress.md"
     exit 1
 }
