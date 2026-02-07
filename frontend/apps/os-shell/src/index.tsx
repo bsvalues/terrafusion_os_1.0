@@ -7,8 +7,22 @@ import './i18n/config'; // Initialize i18n
 // TerraFusion Elite Console Error Filter - Suppress external extension noise
 import './utils/consoleErrorFilter';
 
-import App from './App';
+// Router is the main entry point - contains all routes including /desktop -> App
+import Router from './Router';
 import { registerPWA } from './pwa';
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 9: Motion Kill-Switch (Stabilization)
+// In dev mode, disable animations by default to prevent screen jank.
+// Remove class to preview animations: document.documentElement.classList.remove('reduce-motion-force')
+// ═══════════════════════════════════════════════════════════════
+if (import.meta.env.DEV) {
+  document.documentElement.classList.add('reduce-motion-force');
+  console.log(
+    '%c[TerraFusion] Motion reduced in dev mode. Run: document.documentElement.classList.remove("reduce-motion-force") to preview animations.',
+    'color: #00e5ff'
+  );
+}
 
 // Console Badge for IT Admins
 console.log(
@@ -26,6 +40,6 @@ registerPWA();
 
 root.render(
   <StrictMode>
-    <App />
+    <Router />
   </StrictMode>
 );

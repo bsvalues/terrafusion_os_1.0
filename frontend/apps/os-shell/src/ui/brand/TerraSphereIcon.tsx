@@ -102,7 +102,9 @@ export const TerraSphereIcon: React.FC<TerraSphereIconProps> = ({
           height: sphereSize,
           position: 'relative',
           transformStyle: 'preserve-3d',
-          animation: 'tsIconRotate 8s linear infinite',
+          // Animation DISABLED - was causing screen jank with many icons
+          // animation: 'tsIconRotate 8s linear infinite',
+          transform: 'rotateY(25deg) rotateX(15deg)',
         }}
       >
         {/* Wireframe rings */}
@@ -133,7 +135,8 @@ export const TerraSphereIcon: React.FC<TerraSphereIconProps> = ({
             background: `radial-gradient(circle, ${colors.core} 0%, transparent 70%)`,
             borderRadius: '50%',
             boxShadow: `0 0 ${size * 0.3}px ${colors.glow}, inset 0 0 ${size * 0.15}px ${colors.glow}`,
-            animation: 'tsIconPulse 3s ease-in-out infinite',
+            // Animation DISABLED - was causing screen jank with many icons
+            // animation: 'tsIconPulse 3s ease-in-out infinite',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

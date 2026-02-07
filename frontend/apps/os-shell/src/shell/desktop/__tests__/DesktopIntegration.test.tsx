@@ -1,33 +1,39 @@
 /**
  * TerraFusion OS Desktop Integration Tests
- * 
+ *
  * Tests for Desktop with error boundary and toast container integrated:
  * - Desktop wrapped in error boundary
  * - Toast container rendered
  * - Full stack protection
- * 
+ *
  * @module shell/desktop/__tests__/DesktopIntegration.test
  * @vitest-environment jsdom
  */
 
 // Vitest imports removed - Jest globals used
 import '@testing-library/jest-dom';
-import { render, screen, cleanup, act } from '@testing-library/react';
-import * as matchers from '@testing-library/jest-dom/matchers';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 
-import { DesktopWithErrorBoundary } from '../Desktop';
-import { useNotificationStore } from '../../../stores/notificationStore';
 import { useDesktopStore } from '../../../stores/desktopStore';
+import { useNotificationStore } from '../../../stores/notificationStore';
 import { useStartMenuStore } from '../../../stores/startMenuStore';
+import { DesktopWithErrorBoundary } from '../Desktop';
 
-
+/**
+ * Test wrapper providing Router context required by DesktopIconGrid
+ * which uses useNavigate() for module launch routing.
+ */
+const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <MemoryRouter initialEntries={['/desktop']}>{children}</MemoryRouter>
+);
 
 // Suppress console.error for error boundary tests
 const originalError = console.error;
 beforeEach(() => {
   console.error = jest.fn();
-  
+
   // Reset stores
   act(() => {
     useDesktopStore.setState({
@@ -56,24 +62,24 @@ afterEach(() => {
 describe('Desktop Integration', () => {
   describe('Desktop Rendering', () => {
     it('renders desktop with all components', () => {
-      render(<DesktopWithErrorBoundary />);
-      
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
+
       expect(screen.getByTestId('desktop')).toBeInTheDocument();
       expect(screen.getByTestId('window-manager')).toBeInTheDocument();
       expect(screen.getByRole('navigation', { name: /taskbar/i })).toBeInTheDocument();
     });
 
     it('renders toast container', () => {
-      render(<DesktopWithErrorBoundary />);
-      
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
+
       expect(screen.getByTestId('toast-container')).toBeInTheDocument();
     });
   });
 
   describe('Toast Display', () => {
     it('displays toast when notification added', () => {
-      render(<DesktopWithErrorBoundary />);
-      
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
+
       // Add a notification
       act(() => {
         useNotificationStore.getState().addNotification({
@@ -82,14 +88,14 @@ describe('Desktop Integration', () => {
           type: 'info',
         });
       });
-      
+
       // Toast should appear
       expect(screen.getByText('Test Toast')).toBeInTheDocument();
     });
 
     it('displays multiple toasts up to max', () => {
-      render(<DesktopWithErrorBoundary />);
-      
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
+
       // Add multiple notifications
       act(() => {
         const store = useNotificationStore.getState();
@@ -97,7 +103,7 @@ describe('Desktop Integration', () => {
         store.addNotification({ title: 'Toast 2', message: 'Message 2', type: 'success' });
         store.addNotification({ title: 'Toast 3', message: 'Message 3', type: 'warning' });
       });
-      
+
       // All 3 should be visible (max is 3)
       expect(screen.getByText('Toast 1')).toBeInTheDocument();
       expect(screen.getByText('Toast 2')).toBeInTheDocument();
@@ -109,22 +115,22 @@ describe('Desktop Integration', () => {
     it('desktop is protected by error boundary', () => {
       // The DesktopWithErrorBoundary should not throw even if there's an error
       // This test verifies the structure is correct
-      render(<DesktopWithErrorBoundary />);
-      
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
+
       expect(screen.getByTestId('desktop')).toBeInTheDocument();
     });
   });
 
   describe('Accessibility', () => {
     it('desktop has proper main role', () => {
-      render(<DesktopWithErrorBoundary />);
-      
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
+
       expect(screen.getByRole('main')).toBeInTheDocument();
     });
 
     it('toast container has live region', () => {
-      render(<DesktopWithErrorBoundary />);
-      
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
+
       const container = screen.getByTestId('toast-container');
       expect(container).toHaveAttribute('aria-live', 'polite');
     });

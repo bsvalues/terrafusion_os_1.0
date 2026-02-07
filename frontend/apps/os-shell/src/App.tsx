@@ -71,7 +71,7 @@ function App() {
     // Register all modules
     registerModules(MODULES);
 
-    // Configure Start Menu
+    // Configure Start Menu (include entryType for wiring status badges)
     const startMenuApps = MODULES.map((m) => ({
       id: m.id,
       name: m.displayName,
@@ -79,6 +79,7 @@ function App() {
       icon: m.icon,
       category: m.category,
       status: m.status,
+      entryType: m.entry?.type as 'url' | 'route' | 'mf' | undefined,
     }));
 
     setAllApps(startMenuApps);

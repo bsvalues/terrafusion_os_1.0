@@ -31,6 +31,14 @@ export type ModuleStatus = 'active' | 'inactive' | 'loading' | 'error';
 
 export type FocusedSection = 'search' | 'pinned' | 'recent' | 'all';
 
+/**
+ * Entry type for wiring status display
+ * - url: Opens external URL (popup/iframe)
+ * - route: Native OS route
+ * - mf: Module federation
+ */
+export type EntryType = 'url' | 'route' | 'mf';
+
 export interface Module {
   id: string;
   name: string;
@@ -38,6 +46,8 @@ export interface Module {
   icon: string;
   category: string;
   status: ModuleStatus;
+  /** Optional: Entry type for wiring status badge (url=external, route=native, mf=federated) */
+  entryType?: EntryType;
 }
 
 export interface StartMenuState {
@@ -47,10 +57,10 @@ export interface StartMenuState {
   pinnedApps: Module[];
   recentApps: Module[];
   allApps: Module[];
-  
+
   // Module launch state (for integration with ModuleLoader)
   selectedModuleId: string | null;
-  
+
   // Keyboard navigation state
   focusedIndex: number;
   focusedSection: FocusedSection;
@@ -65,12 +75,12 @@ export interface StartMenuState {
   setAllApps: (apps: Module[]) => void;
   addPinnedApp: (app: Module) => void;
   removePinnedApp: (appId: string) => void;
-  
+
   // Recent apps actions
   addRecentApp: (app: Module) => void;
   setRecentApps: (apps: Module[]) => void;
   clearRecentApps: () => void;
-  
+
   // Keyboard navigation actions
   setFocusedIndex: (index: number) => void;
   setFocusedSection: (section: FocusedSection) => void;
@@ -163,18 +173,18 @@ export const useStartMenuStore = create<StartMenuState>()(
       // Recent apps actions
       addRecentApp: (app: Module) => {
         const { recentApps } = get();
-        
+
         // Remove if already exists (will re-add at front)
-        const filtered = recentApps.filter(a => a.id !== app.id);
-        
+        const filtered = recentApps.filter((a) => a.id !== app.id);
+
         // Add to front
         const updated = [app, ...filtered];
-        
+
         // Limit to MAX_RECENT
         const limited = updated.slice(0, MAX_RECENT);
-        
+
         set({ recentApps: limited });
-        
+
         // Persist to localStorage
         try {
           persistenceService.addRecentModule(app.id);
@@ -207,12 +217,12 @@ export const useStartMenuStore = create<StartMenuState>()(
       // Module launch actions
       launchModule: (moduleId: string) => {
         // Set the selected module and close the menu
-        set({ 
+        set({
           selectedModuleId: moduleId,
           isOpen: false,
           searchQuery: '',
           focusedIndex: -1,
-          focusedSection: 'search'
+          focusedSection: 'search',
         });
       },
 
@@ -311,10 +321,11 @@ export const useAllApps = () => useStartMenuStore((state) => state.allApps);
 /**
  * Hook to get keyboard navigation state
  */
-export const useFocusState = () => useStartMenuStore((state) => ({
-  focusedIndex: state.focusedIndex,
-  focusedSection: state.focusedSection,
-}));
+export const useFocusState = () =>
+  useStartMenuStore((state) => ({
+    focusedIndex: state.focusedIndex,
+    focusedSection: state.focusedSection,
+  }));
 
 /**
  * Hook to get Start Menu actions
@@ -343,7 +354,6 @@ export const useStartMenuActions = () =>
 /**
  * Hook to get the currently selected module ID (for ModuleLoader integration)
  */
-export const useSelectedModuleId = () => 
-  useStartMenuStore((state) => state.selectedModuleId);
+export const useSelectedModuleId = () => useStartMenuStore((state) => state.selectedModuleId);
 
 export default useStartMenuStore;

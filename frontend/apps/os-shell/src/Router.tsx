@@ -46,6 +46,23 @@ const TerraDossierGen2 = lazy(() => import('./pages/gen2/TerraDossierGen2'));
 // Suite Wrappers (Phase 5: MWUX Slices)
 const TerraPrimeSuite = lazy(() => import('./pages/suites/TerraPrimeSuite'));
 
+// Suite Home Pages (Phase 9: Constitutional Suite Routes)
+const ForgeHome = lazy(() =>
+  import('./pages/suites/SuiteHome').then((m) => ({ default: m.ForgeHome }))
+);
+const AtlasHome = lazy(() =>
+  import('./pages/suites/SuiteHome').then((m) => ({ default: m.AtlasHome }))
+);
+const DaisHome = lazy(() =>
+  import('./pages/suites/SuiteHome').then((m) => ({ default: m.DaisHome }))
+);
+const DossierHome = lazy(() =>
+  import('./pages/suites/SuiteHome').then((m) => ({ default: m.DossierHome }))
+);
+const GptHome = lazy(() =>
+  import('./pages/suites/SuiteHome').then((m) => ({ default: m.GptHome }))
+);
+
 // GovernanceLock - Pilot Console (single choke point UI)
 const PilotConsole = lazy(() => import('./pages/PilotConsole'));
 
@@ -61,23 +78,6 @@ const PilotDemo = lazy(() => import('./pages/PilotDemo'));
 
 // Phase 7: Dev-only Legacy Burn-Down Viewer
 const LegacyMetricsViewer = lazy(() => import('./pages/dev/LegacyMetricsViewer'));
-
-// DEV mode check (Vite injects import.meta.env.DEV at build time)
-const isDev = (): boolean => {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const meta = (globalThis as any).import_meta_env;
-    if (meta?.DEV !== undefined) {
-      return meta.DEV;
-    }
-    if (typeof process !== 'undefined' && process.env?.NODE_ENV) {
-      return process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
-    }
-  } catch {
-    // Ignore
-  }
-  return true; // Default to dev for safety
-};
 
 const Router: React.FC = () => {
   return (
@@ -137,6 +137,13 @@ const Router: React.FC = () => {
             {/* Suite Routes (Phase 5: MWUX Slices) */}
             <Route path='/suites/terra-prime/*' element={<TerraPrimeSuite />} />
 
+            {/* Constitutional Suite Home Routes (Phase 9) */}
+            <Route path='/forge' element={<ForgeHome />} />
+            <Route path='/atlas' element={<AtlasHome />} />
+            <Route path='/dais' element={<DaisHome />} />
+            <Route path='/dossier' element={<DossierHome />} />
+            <Route path='/gpt' element={<GptHome />} />
+
             {/* GovernanceLock - Single Choke Point UI */}
             <Route path='/pilot' element={<PilotConsole />} />
 
@@ -150,8 +157,19 @@ const Router: React.FC = () => {
             {/* Phase 2: Pilot Tool Invocation Demo */}
             <Route path='/pilot-demo' element={<PilotDemo />} />
 
-            {/* Phase 7: Dev-only Legacy Burn-Down Viewer */}
-            {isDev() && <Route path='/dev/legacy-metrics' element={<LegacyMetricsViewer />} />}
+            {/* Phase 7: Dev-only Legacy Burn-Down Viewer (always registered, element guards) */}
+            <Route
+              path='/dev/legacy-metrics'
+              element={
+                import.meta.env.DEV ? (
+                  <LegacyMetricsViewer />
+                ) : (
+                  <div className='p-8 text-center text-gray-400'>
+                    Dev-only route. Not available in production.
+                  </div>
+                )
+              }
+            />
 
             {/* Legacy module routes - redirect to home with telemetry */}
             <Route

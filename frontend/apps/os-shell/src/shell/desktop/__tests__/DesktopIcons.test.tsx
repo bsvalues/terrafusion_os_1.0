@@ -15,6 +15,7 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 
 // ============================================================================
@@ -65,13 +66,13 @@ describe('Desktop Icons (Priority 3)', () => {
 
   describe('grid layout (SC-8.1)', () => {
     it('renders DesktopIconGrid component', () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.getByTestId('desktop-icon-grid')).toBeInTheDocument();
     });
 
     it('renders all desktop icons', () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       DESKTOP_MODULES.forEach(({ displayName }: { displayName: string }) => {
         expect(screen.getByText(displayName)).toBeInTheDocument();
@@ -79,7 +80,7 @@ describe('Desktop Icons (Priority 3)', () => {
     });
 
     it('icons are arranged in a grid', () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const grid = screen.getByTestId('desktop-icon-grid');
       // Grid should have CSS grid or flex layout
@@ -93,7 +94,7 @@ describe('Desktop Icons (Priority 3)', () => {
 
   describe('double-click launch (SC-8.2)', () => {
     it('double-click on icon calls activateModule', async () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.doubleClick(costforgeIcon);
@@ -105,7 +106,7 @@ describe('Desktop Icons (Priority 3)', () => {
     });
 
     it('double-click on second icon launches module', async () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const icon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[1].id}`);
       fireEvent.doubleClick(icon);
@@ -117,7 +118,7 @@ describe('Desktop Icons (Priority 3)', () => {
     });
 
     it('single click does NOT launch module', async () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.click(costforgeIcon);
@@ -156,7 +157,7 @@ describe('Desktop Icons (Priority 3)', () => {
 
   describe('selection state (SC-8.4)', () => {
     it('single click selects the icon', async () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.click(costforgeIcon);
@@ -165,7 +166,7 @@ describe('Desktop Icons (Priority 3)', () => {
     });
 
     it('clicking another icon deselects previous', async () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       const atlasIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[1].id}`);
@@ -179,7 +180,7 @@ describe('Desktop Icons (Priority 3)', () => {
     });
 
     it('selected icon has visual indicator', async () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.click(costforgeIcon);
@@ -195,7 +196,7 @@ describe('Desktop Icons (Priority 3)', () => {
 
   describe('module coverage (SC-8.5)', () => {
     it.each(DESKTOP_MODULES)('has icon for $displayName module', ({ id, displayName }: { id: string; displayName: string }) => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       expect(screen.getByTestId(`desktop-icon-${id}`)).toBeInTheDocument();
       expect(screen.getByText(displayName)).toBeInTheDocument();
@@ -208,7 +209,7 @@ describe('Desktop Icons (Priority 3)', () => {
 
   describe('source tracking (SC-8.6)', () => {
     it('activateModule called with source: desktop', async () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const icon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       fireEvent.doubleClick(icon);
@@ -317,7 +318,7 @@ describe('Desktop Icons (Priority 3)', () => {
 
   describe('keyboard navigation', () => {
     it('Enter key launches selected icon', async () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
 
@@ -334,7 +335,7 @@ describe('Desktop Icons (Priority 3)', () => {
     });
 
     it('icons are focusable', () => {
-      render(<DesktopIconGrid />);
+      render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const costforgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_MODULES[0].id}`);
       expect(costforgeIcon).toHaveAttribute('tabIndex', '0');

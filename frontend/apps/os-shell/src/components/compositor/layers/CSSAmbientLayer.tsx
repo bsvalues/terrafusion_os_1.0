@@ -12,8 +12,8 @@ export const CSSAmbientLayer: React.FC<{ visible?: boolean }> = ({ visible = tru
       <div className='absolute inset-0 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617]' />
 
       {/* 2. The Mesh Orbs - CSS Blurs (Hardware Accelerated) */}
-      {/* Top Left - Indigo */}
-      <div className='absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-indigo-500/20 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow pointer-events-none' />
+      {/* Top Left - Indigo (no animation - pulse was causing screen jank) */}
+      <div className='absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-indigo-500/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none' />
 
       {/* Bottom Right - Teal */}
       <div className='absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-teal-500/10 rounded-full blur-[100px] mix-blend-screen pointer-events-none' />
