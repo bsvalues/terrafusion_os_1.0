@@ -375,6 +375,10 @@ if ($triggersWorkflow -or $isFeatureBranch) {
     } else {
         Write-Host "   FAIL: Missing workflow governance artifacts" -ForegroundColor Red
         Write-Host "   See: .governance/workflow/README.md for requirements" -ForegroundColor Yellow
+        # GitHub Actions annotation for governance outage
+        if ($env:GITHUB_ACTIONS -eq "true") {
+            Write-Host "::error title=GOVERNANCE OUTAGE::Gate 8 failed. Feature work is blocked until workflow governance is restored. See .governance/workflow/README.md"
+        }
         $FAIL = 1
     }
 } else {
@@ -392,6 +396,10 @@ if (Test-Path $truthCheckScript) {
     } else {
         Write-Host "   FAIL: Entrypoint policy drift detected" -ForegroundColor Red
         Write-Host $output
+        # GitHub Actions annotation for governance outage
+        if ($env:GITHUB_ACTIONS -eq "true") {
+            Write-Host "::error title=GOVERNANCE OUTAGE::Gate 9 failed. Feature work is blocked until entrypoint truth is restored. Run: node .governance/entrypoint-truth-check.mjs"
+        }
         $FAIL = 1
     }
 } else {
