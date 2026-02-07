@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/mesh-config.json",
+  "title": "TerraFusion Agent Mesh Configuration",
+  "description": "Configuration schema for agent mesh settings in .vscode/settings.json",
+  "type": "object",
+  "properties": {
+    "terrafusion.agent.mesh.enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable agent mesh for lateral communication. Equivalent to TF_AGENT_MESH=1"
+    },
+    "terrafusion.agent.mesh.mode": {
+      "type": "string",
+      "enum": ["structured", "freeform"],
+      "default": "structured",
+      "description": "Message mode. 'structured' enforces schema; 'freeform' is not recommended."
+    },
+    "terrafusion.agent.mesh.decisionAuthority": {
+      "type": "string",
+      "enum": ["integrator_only", "any"],
+      "default": "integrator_only",
+      "description": "Who can issue DECISION messages. 'any' is not recommended for production."
+    },
+    "terrafusion.agent.mesh.broadcastDefault": {
+      "type": "boolean",
+      "default": false,
+      "description": "Allow broadcast messages by default. Only Integrator can broadcast regardless."
+    },
+    "terrafusion.agent.mesh.rateLimit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "default": 5,
+      "description": "Maximum outbound messages per cycle per agent."
+    },
+    "terrafusion.agent.mesh.sensitivity": {
+      "type": "string",
+      "enum": ["public", "internal", "restricted"],
+      "default": "internal",
+      "description": "Default sensitivity level for messages."
+    },
+    "terrafusion.agent.mesh.docFirst": {
+      "type": "boolean",
+      "default": true,
+      "description": "Require DECISION to have doc_targets. Disabling is not recommended."
+    },
+    "terrafusion.agent.mesh.consensusWindow": {
+      "type": "string",
+      "pattern": "^[0-9]+[mh]$",
+      "default": "30m",
+      "description": "Time between sync windows (e.g., '30m', '1h')."
+    },
+    "terrafusion.agent.mesh.channels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "#discovery",
+          "#research",
+          "#architecture",
+          "#build",
+          "#qa",
+          "#decisions"
+        ]
+      },
+      "default": [
+        "#discovery",
+        "#research",
+        "#architecture",
+        "#build",
+        "#qa",
+        "#decisions"
+      ],
+      "description": "Active channels. Removing channels is not recommended."
+    },
+    "terrafusion.agent.mesh.redaction.enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable automatic PII/credential redaction before transmission."
+    },
+    "terrafusion.agent.mesh.redaction.patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "\\bSSN\\b|\\b\\d{3}-\\d{2}-\\d{4}\\b",
+        "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b",
+        "\\bAPI[_-]?KEY\\b|\\bSECRET\\b|\\bPASSWORD\\b|\\bTOKEN\\b",
+        "\\b\\d{3}[-.]?\\d{3}[-.]?\\d{4}\\b"
+      ],
+      "description": "Regex patterns for content redaction."
+    },
+    "terrafusion.agent.mesh.observability.enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable mesh metrics collection."
+    },
+    "terrafusion.agent.mesh.observability.metrics": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "duplicate_work_rate",
+          "conflict_count",
+          "time_to_decision",
+          "doc_landing_rate",
+          "fyi_ratio",
+          "message_volume"
+        ]
+      },
+      "default": ["conflict_count", "time_to_decision", "doc_landing_rate"],
+      "description": "Metrics to track."
+    }
+  }
+}

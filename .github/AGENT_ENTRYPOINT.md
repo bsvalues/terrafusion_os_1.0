@@ -54,7 +54,9 @@ AI-Collaboration: [agent_name]
 - Core Rules: .ralph/AGENT_RULES.yml
 - Port Rules: AI_AGENT_PORT_RULES_STRICT.md
 - Frontend: AI_AGENT_FRONTEND_PROTECTION.md
-- Governance: AGENTS.md- **Workflow Governance: .governance/workflow/README.md**
+- Governance: AGENTS.md
+- **Workflow Governance: .governance/workflow/README.md**
+- **Mesh Governance: .governance/mesh/MESH_GOVERNANCE.md**
 
 ## WORKFLOW GOVERNANCE (MANDATORY)
 
@@ -81,3 +83,41 @@ Discovery → Research → Plan → Execute → Progress Updates
 **NEVER skip directly to implementation. SEAL will block non-compliant PRs.**
 
 See: `.governance/workflow/README.md` for full requirements.
+
+## AGENT MESH (OPTIONAL - MULTI-AGENT SESSIONS)
+
+Enable lateral agent communication for parallel work:
+
+```bash
+TF_AGENT_MESH=1  # Enable mesh
+```
+
+**When mesh is enabled:**
+
+1. **Structured messages only** - Use defined types: REQUEST, PROPOSAL, DECISION, CONFLICT, BLOCKER, FYI, SYNC
+2. **Single merge authority** - Only Integrator can issue DECISION
+3. **Doc-first law** - DECISION must land in canonical docs
+4. **Rate-limited routing** - Route to channels/roles, not broadcast
+5. **Security by default** - No PII, no credentials, redaction enabled
+
+**Message Channels:**
+- `#discovery` - Intent clarification
+- `#research` - Domain findings
+- `#architecture` - Design decisions
+- `#build` - Implementation coordination
+- `#qa` - Testing, compliance
+- `#decisions` - Final decisions (Integrator only)
+
+**Roles:**
+- **Integrator** - Merge authority, owns plan.md + progress.md
+- **Researcher** - Domain research, evidence gathering
+- **Builder** - Implementation, tests
+- **Reviewer** - Quality gates, compliance
+
+**Conflict Resolution:**
+1. Raise `CONFLICT` with evidence from both sides
+2. Integrator applies rubric: Correctness > Security > Plan Alignment > Simplicity > Performance > Velocity
+3. Integrator issues `DECISION` with rationale
+4. Losing party acknowledges
+
+See: `.governance/mesh/MESH_GOVERNANCE.md` for full specification.
