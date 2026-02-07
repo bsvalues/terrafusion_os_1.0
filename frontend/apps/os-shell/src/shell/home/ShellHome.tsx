@@ -25,7 +25,12 @@
 
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CONSTITUTIONAL_SUITES } from '../../config/suiteRegistry';
+import {
+  CONSTITUTIONAL_SUITES,
+  getSuiteIntent,
+  INTENT_LABELS,
+  type SuiteId,
+} from '../../config/suiteRegistry';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { LiquidPanel, TactileButton } from '../../ui/materials';
@@ -41,6 +46,7 @@ interface Suite {
   icon: string;
   route: string;
   color: string;
+  intent: 'workbench' | 'standalone';
 }
 
 interface RecentItem {
@@ -99,6 +105,7 @@ const SUITES: Suite[] = CONSTITUTIONAL_SUITES.map((suite) => ({
   // Route to Workbench tab (real MWUX) instead of WIP suite home
   route: `/property/${DEMO_PARCEL_ID}/${SUITE_TO_TAB[suite.id] || ''}`,
   color: COLOR_MAP[suite.id] || 'from-slate-500 to-slate-600',
+  intent: getSuiteIntent(suite.id as SuiteId),
 }));
 
 const OS_ENTRYPOINTS = [
@@ -186,47 +193,54 @@ const SearchBar: React.FC<{
 const SuiteCard: React.FC<{
   suite: Suite;
   onClick: () => void;
-}> = ({ suite, onClick }) => (
-  <LiquidPanel
-    variant='interactive'
-    className='group relative cursor-pointer hover:scale-105 transition-transform duration-200'
-    onClick={onClick}
-    role='button'
-    tabIndex={0}
-    onKeyDown={(e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        onClick();
-      }
-    }}
-  >
-    {/* Gradient overlay for suite identity */}
-    <div className={`absolute inset-0 bg-gradient-to-br ${suite.color} opacity-60 rounded-xl`} />
-    {/* Wiring Status Badge - honest launcher UX */}
-    <span
-      className='absolute top-2 right-2 px-1.5 py-0.5 text-[10px] font-bold rounded
-                 bg-emerald-500/90 text-white shadow-sm z-20'
-      title='Opens Property Workbench (real MWUX)'
+}> = ({ suite, onClick }) => {
+  const intentLabel = INTENT_LABELS[suite.intent];
+
+  return (
+    <LiquidPanel
+      variant='interactive'
+      className='group relative cursor-pointer hover:scale-105 transition-transform duration-200'
+      onClick={onClick}
+      role='button'
+      tabIndex={0}
+      data-intent={suite.intent}
+      aria-label={`${suite.name} - ${intentLabel.description}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
     >
-      WB
-    </span>
-    <div className='relative z-10 p-6'>
-      <span className='text-4xl mb-3 block'>{suite.icon}</span>
-      <h3 className='text-xl font-bold text-white mb-1'>{suite.name}</h3>
-      <p className='text-white/80 text-sm'>{suite.description}</p>
-    </div>
-    <div className='absolute bottom-2 right-2 text-white/40 group-hover:text-white/60 transition-colors z-10'>
-      <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-        <path
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          strokeWidth={2}
-          d='M14 5l7 7m0 0l-7 7m7-7H3'
-        />
-      </svg>
-    </div>
-  </LiquidPanel>
-);
+      {/* Gradient overlay for suite identity */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${suite.color} opacity-60 rounded-xl`} />
+      {/* Intent Badge - clear UX indicator */}
+      <span
+        className={`absolute top-2 right-2 px-1.5 py-0.5 text-[10px] font-bold rounded shadow-sm z-20
+                   ${suite.intent === 'workbench' ? 'bg-emerald-500/90' : 'bg-slate-500/90'} text-white`}
+        title={intentLabel.description}
+        aria-label={intentLabel.badge}
+      >
+        {suite.intent === 'workbench' ? 'Workbench' : 'Standalone'}
+      </span>
+      <div className='relative z-10 p-6'>
+        <span className='text-4xl mb-3 block'>{suite.icon}</span>
+        <h3 className='text-xl font-bold text-white mb-1'>{suite.name}</h3>
+        <p className='text-white/80 text-sm'>{suite.description}</p>
+      </div>
+      <div className='absolute bottom-2 right-2 text-white/40 group-hover:text-white/60 transition-colors z-10'>
+        <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth={2}
+            d='M14 5l7 7m0 0l-7 7m7-7H3'
+          />
+        </svg>
+      </div>
+    </LiquidPanel>
+  );
+};
 
 /**
  * OS Entrypoint - Utility links with TactileButton ghost variant

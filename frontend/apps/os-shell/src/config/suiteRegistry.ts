@@ -37,6 +37,14 @@ export interface SuiteDefinition {
   color: string; // Brand accent color
   status: 'live' | 'wip' | 'planned';
   workbenchTab?: boolean; // Appears as tab in Property Workbench
+  /**
+   * Navigation intent for tile UX:
+   * - 'workbench': Opens in Property Workbench tab (parcel-scoped)
+   * - 'standalone': Opens standalone suite home (cross-parcel/operational)
+   *
+   * Derived from workbenchTab if not explicitly set.
+   */
+  intent?: 'workbench' | 'standalone';
 }
 
 export interface OsFeatureDefinition {
@@ -190,3 +198,36 @@ export function getModuleLabel(moduleId: string): 'Suite' | 'OS Feature' | 'Lega
   // Could distinguish legacy vs external by checking GENERATED_MODULES intent
   return 'Legacy';
 }
+
+/**
+ * Get the navigation intent for a suite.
+ * - 'workbench': Opens in Property Workbench tab (parcel-scoped)
+ * - 'standalone': Opens standalone suite home (cross-parcel/operational)
+ */
+export function getSuiteIntent(suiteId: SuiteId): 'workbench' | 'standalone' {
+  const suite = getSuiteById(suiteId);
+  if (!suite) return 'standalone';
+
+  // Explicit intent takes precedence
+  if (suite.intent) return suite.intent;
+
+  // Derive from workbenchTab
+  return suite.workbenchTab ? 'workbench' : 'standalone';
+}
+
+/**
+ * Intent label for UI display
+ */
+export const INTENT_LABELS: Record<
+  'workbench' | 'standalone',
+  { badge: string; description: string }
+> = {
+  workbench: {
+    badge: 'Opens in Workbench',
+    description: 'Opens in Property Workbench tab',
+  },
+  standalone: {
+    badge: 'Standalone',
+    description: 'Opens standalone suite home',
+  },
+};
