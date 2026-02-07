@@ -296,10 +296,224 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 
 ## Document Status
 
-- [ ] Definition of Done complete
-- [ ] All phases defined
-- [ ] All tasks have acceptance criteria
-- [ ] Risk register complete
-- [ ] Git strategy defined
-- [ ] Dependencies verified
+- [x] Definition of Done complete
+- [x] All phases defined
+- [x] All tasks have acceptance criteria
+- [x] Risk register complete
+- [x] Git strategy defined
+- [x] Dependencies verified
+- [x] EXECUTION COMPLETE
+
+---
+
+# SLICE 3: Start Menu / Launcher Redesign
+
+> **Purpose:** Build a unified Launcher surface (Start Menu / Cmd+K equivalent) using the same primitives as suite tiles.
+> **Strategy:** Composition of existing primitives + intent contract from suiteRegistry. One system, not fragmented menus.
+
+---
+
+* **Project:** Launcher Surface (Start Menu / Command Palette Replacement)
+* **Branch/PR:** main (direct, per solo-dev mode)
+* **Date:** 2026-02-07
+* **Prereq:** Suite UX Clarity Pass (Slice 2) complete
+
+---
+
+## Definition of Done
+
+> What MUST be true for this to be complete?
+
+- [ ] Launcher exists as first-class surface (Start Menu equivalent)
+- [ ] Opens/closes deterministically (keyboard shortcut + Start button)
+- [ ] Focus is trapped while open; ESC closes; ENTER activates selection
+- [ ] Items include Workbench targets, Standalone suite homes, and system actions
+- [ ] Each item declares intent (`workbench|standalone|system`) with explicit route/action
+- [ ] Opening launcher does not cause desktop/shell jitter
+- [ ] No idle-pulse regressions; no routing-truth regressions
+- [ ] Launcher uses LiquidPanel + TactileButton behind materialQualityGate
+- [ ] Fallback remains clean on low-power/reduced-motion
+- [ ] Test coverage for behavior, routing, materials
+- [ ] Gate 8 + Gate 9 pass
+
+---
+
+## Phases & Tasks
+
+### Phase 1: Test Harness (TDD)
+
+> Write tests first for launcher behavior + routing + materials.
+
+#### Task 1.1: Behavior Tests
+
+* **Description:** Write keyboard/focus/lifecycle tests for Launcher
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/launcher/launcher.behavior.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] opens with keyboard shortcut (Ctrl+K)
+  - [ ] opens with Start button click
+  - [ ] closes on ESC key
+  - [ ] focus trapped while open (Tab cycles within)
+  - [ ] arrow key navigation changes active item
+  - [ ] Enter activates active item
+  - [ ] restores focus to invoker on close
+* **Acceptance Criteria:**
+  - [ ] Tests written BEFORE implementation
+  - [ ] Tests fail initially (Launcher not yet built)
+
+#### Task 1.2: Routing Tests
+
+* **Description:** Write routing truth tests for launcher items
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/launcher/launcher.routing.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] Workbench items route to /property/:parcelId/tab/<x>
+  - [ ] Standalone items route to suite home routes
+  - [ ] System actions fire the correct handlers (Settings, Docs)
+  - [ ] All launcher items have valid routes (no undefined/# hrefs)
+  - [ ] Intent metadata matches suiteRegistry
+* **Acceptance Criteria:**
+  - [ ] Same routing truth as suite tiles
+  - [ ] Intent contract extends to launcher
+
+#### Task 1.3: Materials Gate Tests
+
+* **Description:** Write materials gating tests
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/launcher/launcher.materials.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] Uses LiquidPanel when materialQualityGate enabled
+  - [ ] Uses TactileButton for action items
+  - [ ] Fallback container renders when gate disabled
+  - [ ] No layout shift on gate toggle
+* **Acceptance Criteria:**
+  - [ ] Material adoption consistent with Workbench
+  - [ ] Reduced-motion respected
+
+---
+
+### Phase 2: Launcher Model
+
+> Define the item model and adapter from suiteRegistry.
+
+#### Task 2.1: LauncherModel Types
+
+* **Description:** Define normalized launcher item interface
+* **Files:**
+  - `frontend/apps/os-shell/src/components/Launcher/launcherModel.ts` (NEW)
+* **Implementation:**
+  - Define `LauncherItem` interface: `{id, label, intent, href|action, icon, keywords, a11yLabel}`
+  - Define `LauncherSection` for grouping: suites, system, recent
+  - Export helper `navigateToLauncherItem(item, navigate)` for unified routing
+* **Acceptance Criteria:**
+  - [ ] Type-safe item model
+  - [ ] Intent inherited from suiteRegistry
+
+#### Task 2.2: Registry Adapter
+
+* **Description:** Create adapter to transform suiteRegistry to LauncherItems
+* **Files:**
+  - `frontend/apps/os-shell/src/config/suiteRegistry.ts` (ADD getLauncherItems)
+* **Implementation:**
+  - Add `getLauncherItems(): LauncherItem[]` function
+  - Include CONSTITUTIONAL_SUITES + OS_ENTRYPOINTS + system actions
+  - Map intent, route, labels consistently
+* **Acceptance Criteria:**
+  - [ ] Single source of truth maintained
+  - [ ] No duplicate routing logic
+
+---
+
+### Phase 3: Launcher Component
+
+> Build the Launcher UI with Liquid/Tactile primitives.
+
+#### Task 3.1: Launcher Component
+
+* **Description:** Build Launcher overlay with search + list
+* **Files:**
+  - `frontend/apps/os-shell/src/components/Launcher/Launcher.tsx` (NEW)
+  - `frontend/apps/os-shell/src/components/Launcher/index.ts` (NEW)
+* **Implementation:**
+  - LiquidPanel container for overlay backdrop
+  - Search input with focus on open
+  - Filtered item list with keyboard navigation
+  - TactileButton for each item
+  - Focus trap implementation
+  - ESC to close, Enter to activate
+* **Acceptance Criteria:**
+  - [ ] Keyboard-first design
+  - [ ] Focus trap working
+  - [ ] No jitter on open/close
+
+#### Task 3.2: Wire to Shell
+
+* **Description:** Connect Launcher to shell root + global shortcuts
+* **Files:**
+  - `frontend/apps/os-shell/src/shell/home/ShellHome.tsx` (or App.tsx)
+  - `frontend/apps/os-shell/src/hooks/useGlobalShortcuts.ts` (if exists)
+* **Implementation:**
+  - Render Launcher conditionally (isOpen from store)
+  - Wire Ctrl+K to toggle launcher
+  - Wire Start button (if present) to open launcher
+  - Update hint text in ShellHome footer
+* **Acceptance Criteria:**
+  - [ ] Launcher accessible from anywhere
+  - [ ] Shortcut works globally
+
+---
+
+### Phase 4: Verification
+
+> Final verification before merge.
+
+#### Task 4.1: Run All Gates
+
+* **Description:** Execute full test suite + SEAL gates
+* **Acceptance Criteria:**
+  - [ ] `pnpm test` passes
+  - [ ] `pnpm type-check` passes
+  - [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
+  - [ ] PR#255 regression harness green
+  - [ ] Gate 8 + Gate 9 pass
+
+---
+
+## Risk Register
+
+| ID | Risk | Severity | Likelihood | Mitigation | Rollback |
+|----|------|----------|------------|------------|----------|
+| R1 | Focus trap breaks outside Launcher | High | Low | Focus trap lib or manual impl | Use dialog element native |
+| R2 | Jitter on overlay render | High | Med | Render in portal layer | Use transform instead of DOM insert |
+| R3 | Shortcut conflicts with browser | Med | Low | Use Ctrl+K not Cmd+K on all | Make shortcut configurable |
+| R4 | Duplicate routing logic | Med | Low | Single getLauncherItems adapter | Delete duplicate if found |
+
+---
+
+## Git Strategy
+
+1. `test(launcher): keyboard behavior + focus trap + routing`
+2. `test(launcher): materials gating coverage`
+3. `feat(launcher): add Start/Launcher surface using Liquid/Tactile primitives`
+4. `chore(launcher): consolidate intent-driven navigation helpers`
+
+---
+
+## Dependencies
+
+- [x] Slice 2 complete (Suite UX Clarity)
+- [x] suiteRegistry has intent metadata
+- [x] LiquidPanel + TactileButton primitives available
+- [x] materialQualityGate working
+
+---
+
+## Document Status
+
+- [x] Definition of Done defined
+- [x] All phases defined
+- [x] All tasks have acceptance criteria
+- [x] Risk register complete
+- [x] Git strategy defined
+- [x] Dependencies verified
 - [ ] Ready for execution
