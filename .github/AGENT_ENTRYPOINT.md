@@ -8,6 +8,8 @@
 Do not destabilize the Core Governance Surface.
 
 ## ALLOWED SCOPE (CAN MODIFY)
+
+### Lane A: Core Governance
 - os-platform/core/pilot/**
 - os-platform/core/types/**
 - tools/registry/**
@@ -15,11 +17,18 @@ Do not destabilize the Core Governance Surface.
 - package.json
 - .github/workflows/** (gate wiring only)
 
+### Lane B: OS Shell UI (Desktop Shell Zone B)
+- frontend/apps/os-shell/** ← ACTIVE UI SURFACE
+- frontend/packages/** (shared UI libs)
+- .governance/workflow/** (workflow docs)
+- .governance/mesh/** (mesh coordination)
+
 ## FORBIDDEN SCOPE (NEVER MODIFY)
 - **/ARCHIVE/**
 - specialized/**
 - applications/**
 - os-platform/ai-systems/ai-systems/ai-swarm/**
+- frontend/src/** ← LEGACY ROOT (97+ errors, do not touch)
 
 ## REQUIRED GATES (MUST PASS)
 ```bash
@@ -33,9 +42,19 @@ NEVER hardcode ports. ALWAYS use environment variables:
 - ❌ localhost:5000 → ✅ localhost:${TF_API_PORT:-5046}
 - ❌ port=3000     → ✅ process.env.TF_FRONTEND_PORT || 3102
 
-## FRONTEND PATHS
-- ✅ ALLOWED: frontend-v2/**, experience-suite/temp-extract/experience-suite-v5/**
-- ❌ FORBIDDEN: frontend/** (legacy, 97+ errors)
+## FRONTEND PATHS (CLARIFIED)
+
+**ALLOWED (active UI surfaces):**
+- ✅ `frontend/apps/os-shell/**` ← OS Shell (Desktop, Workbench, MWUX)
+- ✅ `frontend/packages/**` ← Shared UI primitives
+- ✅ `frontend-v2/**` ← Future migration target
+- ✅ `experience-suite/temp-extract/experience-suite-v5/**`
+
+**FORBIDDEN (legacy dead code):**
+- ❌ `frontend/src/**` ← Legacy root with 97+ errors
+- ❌ `frontend/components/**` ← Old component tree (if exists)
+
+**The Rule:** `frontend/apps/os-shell/**` is NOT legacy. It IS the active UI.
 
 ## COMMIT FORMAT
 ```
@@ -60,14 +79,28 @@ AI-Collaboration: [agent_name]
 
 ## WORKFLOW GOVERNANCE (MANDATORY)
 
-**For any non-trivial change (feature/refactor/UX), you MUST:**
+### Non-Trivial Change Triggers (Deterministic)
+
+Workflow docs required when PR touches:
+- `frontend/apps/os-shell/src/**` (OS Shell UI)
+- `os-platform/core/pilot/**` (Core governance)
+- `tools/registry/**` (Tool infrastructure)
+- Any new "initiative" (design language, auth, new module)
+
+**NOT required for:**
+- Pure doc updates (README, comments)
+- Dependency bumps (automated)
+- CI/CD config tweaks
+- Typo fixes
+
+### Workflow Phases
 
 1. **Discovery Phase** - Ask 30+ questions, document intent
 2. **Research Phase** - Parallel sub-agent research
 3. **Plan Phase** - Define phases, tasks, acceptance criteria
 4. **Execute Phase** - TDD, update progress with commits
 
-**Required Artifacts:**
+### Required Artifacts
 ```
 .governance/workflow/discovery.md  - Intent + constraints + Q/A
 .governance/workflow/research.md   - Domain research + prior art
@@ -75,9 +108,20 @@ AI-Collaboration: [agent_name]
 .governance/workflow/progress.md   - Status + commits + next steps
 ```
 
+### Solo-Dev Mode (`TF_SOLO_DEV=1`)
+
+When enabled, workflow is optimized for single developer:
+
+- **Skip repeated discovery:** If `discovery.md` already has a section for this feature/phase, reuse it
+- **30+ questions:** Only required for NEW initiatives, not incremental work on existing plan
+- **Update minimum:** Must update `plan.md` + `progress.md` for any triggering change
+- **Create all 4 docs:** Only when starting a completely new initiative
+
 **Workflow Sequence:**
 ```
 Discovery → Research → Plan → Execute → Progress Updates
+         ↑                              │
+         └── (solo-dev: reuse) ─────────┘
 ```
 
 **NEVER skip directly to implementation. SEAL will block non-compliant PRs.**
