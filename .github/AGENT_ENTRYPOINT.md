@@ -117,6 +117,24 @@ When enabled, workflow is optimized for single developer:
 - **Update minimum:** Must update `plan.md` + `progress.md` for any triggering change
 - **Create all 4 docs:** Only when starting a completely new initiative
 
+### NEW Initiative Definition (Machine-Checkable)
+
+**NEW initiative** = any of:
+- Introduces a new top-level surface (new page, new module, new tool category)
+- Changes authentication/authorization model
+- Adds a new data write-lane (new database table, new API mutation)
+- Creates a new design language or materials system
+- Adds a new integration (external API, county system connection)
+
+**NOT new initiative** (reuse existing discovery):
+- Bugfix in existing surface
+- Refactor without behavior change
+- Test harness or coverage improvement
+- Design-system primitive adoption (e.g., LiquidPanel → existing component)
+- Route wiring inside existing surfaces
+- Performance optimization
+- Accessibility compliance fix
+
 **Workflow Sequence:**
 ```
 Discovery → Research → Plan → Execute → Progress Updates
@@ -127,6 +145,26 @@ Discovery → Research → Plan → Execute → Progress Updates
 **NEVER skip directly to implementation. SEAL will block non-compliant PRs.**
 
 See: `.governance/workflow/README.md` for full requirements.
+
+## SCOPE BLOCKING PROTOCOL (Silent Punt Prevention)
+
+If an agent is blocked by scope rules, it MUST output:
+
+1. **Attempted path:** The exact file path it tried to touch
+2. **Blocking rule:** The specific rule that blocked it (quote from entrypoint)
+3. **Legal alternative:** The nearest legal alternative path or action
+4. **Recommendation:** Whether to request scope expansion or change approach
+
+**Example output format:**
+```
+🚫 SCOPE BLOCKED
+   Attempted: frontend/src/legacy/Component.tsx
+   Rule: "frontend/src/** ← LEGACY ROOT (97+ errors, do not touch)"
+   Alternative: frontend/apps/os-shell/src/components/NewComponent.tsx
+   Recommendation: Implement in os-shell instead of legacy root
+```
+
+This prevents agents from silently deflecting or handing off without explanation.
 
 ## AGENT MESH (OPTIONAL - MULTI-AGENT SESSIONS)
 

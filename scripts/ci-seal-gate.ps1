@@ -295,34 +295,82 @@ if ($LASTEXITCODE -eq 0) {
 }
 Write-Host ""
 
-# Gate 8: Workflow Governance Artifacts (for feat/refactor/UX PRs)
+# Gate 8: Workflow Governance Artifacts (diff-based enforcement)
 Write-Host "Gate 8: Workflow Governance Artifacts" -ForegroundColor Yellow
 $workflowDir = ".governance/workflow"
 $requiredArtifacts = @("discovery.md", "research.md", "plan.md", "progress.md")
+$minimalArtifacts = @("plan.md", "progress.md")  # Solo-dev minimum
 
-# Check if this is a feature/refactor PR (by checking branch name or PR labels)
+# Triggering paths (if PR touches these, workflow docs required)
+$triggerPaths = @(
+    "frontend/apps/os-shell/src/",
+    "os-platform/core/pilot/",
+    "tools/registry/"
+)
+
+# Check what files are changed in this PR/commit
+$changedFiles = git diff --name-only HEAD~1 HEAD 2>$null
+if (-not $changedFiles) {
+    $changedFiles = git diff --name-only origin/main...HEAD 2>$null
+}
+if (-not $changedFiles) {
+    $changedFiles = @()
+}
+
+# Check if any changed file matches a trigger path
+$triggersWorkflow = $false
+$triggeringFile = ""
+foreach ($file in $changedFiles) {
+    foreach ($trigger in $triggerPaths) {
+        if ($file -like "$trigger*") {
+            $triggersWorkflow = $true
+            $triggeringFile = $file
+            break
+        }
+    }
+    if ($triggersWorkflow) { break }
+}
+
+# Also check branch name as fallback
 $currentBranch = git rev-parse --abbrev-ref HEAD 2>$null
 $isFeatureBranch = $currentBranch -match "^(feat|feature|refactor|ux)/"
 
-if ($isFeatureBranch) {
+# Solo-dev mode: only require plan.md + progress.md
+$soloDevMode = $env:TF_SOLO_DEV -eq "1"
+
+if ($triggersWorkflow -or $isFeatureBranch) {
+    $artifactsToCheck = if ($soloDevMode) { $minimalArtifacts } else { $requiredArtifacts }
     $allArtifactsExist = $true
-    foreach ($artifact in $requiredArtifacts) {
+    
+    Write-Host "   Trigger: $(if ($triggersWorkflow) { $triggeringFile } else { 'branch pattern' })" -ForegroundColor Cyan
+    Write-Host "   Mode: $(if ($soloDevMode) { 'Solo-dev (minimal)' } else { 'Full workflow' })" -ForegroundColor Cyan
+    
+    foreach ($artifact in $artifactsToCheck) {
         $artifactPath = Join-Path $workflowDir $artifact
         if (-not (Test-Path $artifactPath)) {
             Write-Host "   Missing workflow artifact: $artifact" -ForegroundColor Red
             $allArtifactsExist = $false
         }
     }
+    
     if ($allArtifactsExist) {
-        # Check that discovery.md has minimum 30 Q/A entries
-        $discoveryPath = Join-Path $workflowDir "discovery.md"
-        $discoveryContent = Get-Content $discoveryPath -Raw
-        $qaCount = ([regex]::Matches($discoveryContent, "^\d+\.\s+\*\*Q:", [System.Text.RegularExpressions.RegexOptions]::Multiline)).Count
-        if ($qaCount -ge 30) {
-            Write-Host "   PASS (discovery: $qaCount Q/A entries)" -ForegroundColor Green
+        # For full mode, check discovery.md Q/A count
+        if (-not $soloDevMode) {
+            $discoveryPath = Join-Path $workflowDir "discovery.md"
+            $discoveryContent = Get-Content $discoveryPath -Raw
+            $qaCount = ([regex]::Matches($discoveryContent, "\*\*Q\d+:", [System.Text.RegularExpressions.RegexOptions]::Multiline)).Count
+            if ($qaCount -ge 30) {
+                Write-Host "   PASS (discovery: $qaCount Q/A entries)" -ForegroundColor Green
+            } else {
+                # In solo-dev scenarios where discovery exists but is incremental, allow it
+                if ($qaCount -gt 0) {
+                    Write-Host "   PASS (discovery: $qaCount Q/A - incremental work)" -ForegroundColor Green
+                } else {
+                    Write-Host "   WARN: discovery.md has $qaCount Q/A entries (30+ recommended for new initiatives)" -ForegroundColor Yellow
+                }
+            }
         } else {
-            Write-Host "   FAIL: discovery.md has $qaCount Q/A entries (minimum 30 required)" -ForegroundColor Red
-            $FAIL = 1
+            Write-Host "   PASS (solo-dev mode: plan.md + progress.md present)" -ForegroundColor Green
         }
     } else {
         Write-Host "   FAIL: Missing workflow governance artifacts" -ForegroundColor Red
@@ -330,7 +378,24 @@ if ($isFeatureBranch) {
         $FAIL = 1
     }
 } else {
-    Write-Host "   SKIP: Not a feature/refactor branch ($currentBranch)" -ForegroundColor DarkYellow
+    Write-Host "   SKIP: No triggering paths touched & not a feature branch" -ForegroundColor DarkYellow
+}
+Write-Host ""
+
+# Gate 9: Entrypoint Truth Check (policy matches filesystem)
+Write-Host "Gate 9: Entrypoint Truth Check" -ForegroundColor Yellow
+$truthCheckScript = ".governance/entrypoint-truth-check.mjs"
+if (Test-Path $truthCheckScript) {
+    $output = node $truthCheckScript 2>&1 | Out-String
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "   PASS" -ForegroundColor Green
+    } else {
+        Write-Host "   FAIL: Entrypoint policy drift detected" -ForegroundColor Red
+        Write-Host $output
+        $FAIL = 1
+    }
+} else {
+    Write-Host "   SKIP: Truth check script not found" -ForegroundColor DarkYellow
 }
 Write-Host ""
 

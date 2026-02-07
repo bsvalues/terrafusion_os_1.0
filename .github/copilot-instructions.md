@@ -27,11 +27,11 @@ NEVER hardcode ports. ALWAYS use environment variables:
 ❌ port=3000       →  ✅ process.env.TF_FRONTEND_PORT || 3102
 ```
 
-## 🖥️ FRONTEND PATHS
+## 🖥️ FRONTEND PATHS (Lane B: OS Shell UI)
 - ✅ frontend/apps/os-shell/** (authorized - Desktop Shell Zone B)
 - ✅ frontend-v2/** (authorized)
 - ✅ experience-suite/temp-extract/experience-suite-v5/** (authorized)
-- ❌ frontend/** (forbidden - legacy, 97+ errors, except os-shell)
+- ❌ frontend/src/** (forbidden - legacy root, 97+ type errors)
 
 ## ✓ REQUIRED GATES (MUST PASS)
 ```bash
