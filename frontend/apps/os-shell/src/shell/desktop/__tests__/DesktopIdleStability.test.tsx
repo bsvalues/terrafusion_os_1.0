@@ -59,11 +59,7 @@ jest.mock('../../../sentinel/useAgentFeed', () => ({
 }));
 
 // Import harness AFTER mocks are set up
-import {
-    captureStyles,
-    renderDesktopRoute,
-    stylesAreEqual
-} from '../../../test-utils/idleHarness';
+import { captureStyles, renderDesktopRoute, stylesAreEqual } from '../../../test-utils/idleHarness';
 
 describe('Desktop Idle Stability', () => {
   beforeEach(() => {

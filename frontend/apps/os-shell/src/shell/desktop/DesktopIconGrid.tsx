@@ -13,7 +13,6 @@
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Category } from '../../config/generatedModules';
-import { CONSTITUTIONAL_SUITES, OS_FEATURES } from '../../config/suiteRegistry';
 import { DesktopIcon, type WiringStatus } from './DesktopIcon';
 
 // ============================================================================

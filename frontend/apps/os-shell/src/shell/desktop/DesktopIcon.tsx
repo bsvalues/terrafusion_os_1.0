@@ -23,11 +23,11 @@ import { TerraSphereIcon, type TerraSphereIconVariant } from '../../ui/brand/Ter
  * @see AGENTS.md - User Interface Compact
  */
 export type WiringStatus =
-  | 'WB'     // Opens Workbench tab (best - real MWUX)
-  | 'OS'     // Native OS route (live)
-  | 'WIP'    // Work in progress (placeholder)
+  | 'WB' // Opens Workbench tab (best - real MWUX)
+  | 'OS' // Native OS route (live)
+  | 'WIP' // Work in progress (placeholder)
   | 'BRIDGE' // iframe wrapper
-  | 'EXT'    // External URL / other port
+  | 'EXT' // External URL / other port
   | 'LEGACY'; // Deprecated / redirect
 
 export interface DesktopIconProps {
