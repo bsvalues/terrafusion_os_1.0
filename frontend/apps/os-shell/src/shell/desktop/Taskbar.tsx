@@ -11,6 +11,7 @@
 import { cn } from '@/lib/utils';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ParcelContextIndicator } from '../../components/ParcelContext';
 import { getLucideIcon } from '../../config/iconMap';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useWindowPeek } from '../../hooks/useWindowPeek';
@@ -315,6 +316,12 @@ const SystemTray: React.FC<SystemTrayProps> = ({
       role='group'
       aria-label={t('taskbar.systemTray')}
     >
+      {/* Parcel Context (Slice 10: always visible) */}
+      <ParcelContextIndicator compact />
+
+      {/* Divider */}
+      <div className='w-px h-6 bg-white/10 mx-1' />
+
       {/* Backend Health (single source of truth) */}
       <SentinelChip variant='tray' />
 
