@@ -95,6 +95,13 @@ The SEAL governance gate will **block PRs** that:
    See: .governance/workflow/README.md
 ```
 
+### GOVERNANCE OUTAGE POLICY
+
+> **If SEAL Gate 8 (workflow) or Gate 9 (entrypoint truth) fails, treat as governance outage.**
+> **No feature work proceeds until restored.**
+
+This prevents "we'll fix governance later" drift. The gates ARE the constitution.
+
 ## How to Use These Templates
 
 ### Starting a New Initiative

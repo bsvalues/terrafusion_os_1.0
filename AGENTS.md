@@ -80,6 +80,12 @@ main:
 - ✅ Approvals = 0 (CI is constitutional review)
 - ✅ `--admin` not required for routine merges (enforcement matches this spec)
 
+**Governance Outage Policy:**
+> **If SEAL Gate 8 (workflow) or Gate 9 (entrypoint truth) fails, treat as governance outage.**
+> **No feature work proceeds until restored.**
+>
+> This prevents "we'll fix governance later" drift. The gates ARE the constitution.
+
 ### Branch Protection Canon (Single Source of Truth)
 
 These are the **enforced invariants** for `main` branch. Any deviation is a governance incident.
