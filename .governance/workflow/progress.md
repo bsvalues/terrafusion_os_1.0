@@ -1,12 +1,12 @@
-# Progress: Workbench Shell Materials Adoption
+# Progress: Workbench Shell Materials + Suite UX Clarity
 
-> **Purpose:** Track execution status for Visual Renaissance materials adoption.
+> **Purpose:** Track execution status for Visual Renaissance materials adoption + Suite tile clarity.
 
 ---
 
-* **Project:** Workbench Materials Adoption
+* **Project:** Workbench Materials + Suite UX Clarity
 * **Branch/PR:** main (solo-dev mode)
-* **Last Updated:** 2026-02-07 08:30
+* **Last Updated:** 2026-02-07 09:45
 * **Plan Link:** [plan.md](./plan.md)
 
 ---
@@ -15,42 +15,36 @@
 
 | Field | Value |
 |-------|-------|
+| **Slice** | Slice 2: Suite UX Clarity Pass |
 | **Phase** | ✅ Complete |
 | **Task** | All tasks finished |
 | **Status** | 🟢 Complete |
-| **Latest Commit** | `76e2f7bc7` (feat: materials adoption) |
+| **Latest Commit** | `3db061ad2` (feat: suite tiles clarity) |
 
 ---
 
-## Blockers
-
-> None.
-
-| ID | Blocker | Owner | Action Required | ETA |
-|----|---------|-------|-----------------|-----|
-
----
-
-## Completed Tasks (with commit refs)
+## Slice 1: Materials Adoption ✅ COMPLETE
 
 | Task | Description | Commit | Tests | Date |
 |------|-------------|--------|-------|------|
-| ✅ Prereq | Governance hardening complete | `066be828f` | ✅ Pass | 2026-02-07 |
-| ✅ Prereq | PR#256 Visual Renaissance merged | (prior) | ✅ Pass | 2026-02-06 |
 | ✅ 1.1 | Materials gate coverage | `24160466e` | 11 pass | 2026-02-07 |
-| ✅ 1.2 | Regression tests for focus/routing | `24160466e` | 12 pass | 2026-02-07 |
+| ✅ 1.2 | Regression tests | `24160466e` | 12 pass | 2026-02-07 |
 | ✅ 2.1 | ParcelContextHeader LiquidPanel | `76e2f7bc7` | ✅ Pass | 2026-02-07 |
-| ✅ 2.2 | ResultPanel LiquidPanel (4 states) | `76e2f7bc7` | ✅ Pass | 2026-02-07 |
+| ✅ 2.2 | ResultPanel LiquidPanel | `76e2f7bc7` | ✅ Pass | 2026-02-07 |
 | ✅ 2.3 | InvocationHistory Liquid+Tactile | `76e2f7bc7` | ✅ Pass | 2026-02-07 |
-| ✅ 3.1 | Gates pass | `9280f76b3` | 32/32 phase83, type-check | 2026-02-07 |
+| ✅ 3.1 | Gates pass | `3b763bd45` | 32/32 phase83 | 2026-02-07 |
 
 ---
 
-## In Progress
+## Slice 2: Suite UX Clarity ✅ COMPLETE
 
-| Task | Description | Started | Progress |
-|------|-------------|---------|----------|
-| (none) | All tasks complete | - | - |
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 1.1 | Routing coverage tests | `9911b4753` | 10 pass | 2026-02-07 |
+| ✅ 1.2 | Accessibility tests | `9911b4753` | 16 pass | 2026-02-07 |
+| ✅ 2.1 | Define tile contract + intent metadata | `3db061ad2` | ✅ Pass | 2026-02-07 |
+| ✅ 2.2 | Intent badges on tiles | `3db061ad2` | ✅ Pass | 2026-02-07 |
+| ✅ 3.1 | Run all gates | `bab75c2c4` | 32/32 phase83, type-check | 2026-02-07 |
 
 ---
 
@@ -58,10 +52,7 @@
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| ⏭️ 1 | 1.1 | Write workbench.materials.test.tsx | Nothing |
-| ⏭️ 2 | 1.2 | Write workbench.regression.test.tsx | Nothing |
-| ⏭️ 3 | 2.1–2.3 | Apply LiquidPanel + TactileButton to components | Tests written |
-| ⏭️ 4 | 3.1 | Run all gates, commit | Implementation done |
+| ✅ Done | - | All Slice 2 tasks complete | - |
 
 ---
 
