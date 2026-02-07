@@ -67,6 +67,8 @@ const GptHome = lazy(() =>
 const PilotConsole = lazy(() => import('./pages/PilotConsole'));
 // Slice 6: Standalone Home Shell for Pilot
 const PilotHome = lazy(() => import('./pages/PilotHome'));
+// Slice 6.1: Standalone Home Shell for Trace
+const TraceHome = lazy(() => import('./pages/TraceHome'));
 
 // GovernanceLock - Dashboard (role-gated metrics)
 const GovernanceDashboard = lazy(() => import('./pages/GovernanceDashboard'));
@@ -150,6 +152,8 @@ const Router: React.FC = () => {
             <Route path='/pilot' element={<PilotHome />} />
             {/* Legacy: Direct PilotConsole (for backwards compat during transition) */}
             <Route path='/pilot/legacy' element={<PilotConsole />} />
+            {/* Slice 6.1: TerraTrace - Observability & Telemetry */}
+            <Route path='/trace' element={<TraceHome />} />
 
             {/* GovernanceLock - Dashboard (role-gated) */}
             <Route path='/pilot/dashboard' element={<GovernanceDashboard />} />

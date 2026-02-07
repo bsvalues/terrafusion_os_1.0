@@ -11,58 +11,44 @@
  *
  * @module __tests__/standalone/standaloneHomes.contract.test
  * @vitest-environment jsdom
- * @see Slice 6: Standalone Suite Homes Consistency
+ * @see Slice 6.1: Unskip + Harden Standalone Contract Suite
  */
 
 import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 
-// Test data - standalone routes from suiteRegistry
-const STANDALONE_ROUTES = [
-  { path: '/pilot', name: 'TerraPilot', id: 'pilot' },
-  // Add more standalone routes as they are created
-];
+import { StandaloneHomeShell } from '../../components/standalone';
+import { OS_FEATURES } from '../../config/suiteRegistry';
+import { resetMaterialQualityGate } from '../../ui/materials/materialQualityGate';
+
+import {
+    assertShellStructure,
+    getStructuralTestIds,
+    mockMatchMedia,
+    TestStandaloneHome,
+} from './testUtils';
 
 // ============================================================================
-// Test Utilities
+// Test Data
 // ============================================================================
 
-/**
- * Render a standalone route for testing.
- */
-function renderStandaloneRoute(path: string) {
-  return render(
-    <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path='*' element={<StandaloneRouteLoader />} />
-      </Routes>
-    </MemoryRouter>
-  );
-}
-
-/**
- * Lazy loader for standalone routes.
- * This mimics how the actual Router.tsx loads these routes.
- */
-function StandaloneRouteLoader() {
-  // Import the actual route components
-  // For now, we'll use a placeholder since we're testing the contract
-  return (
-    <div data-testid='standalone-shell'>
-      {/* This should be replaced by StandaloneHomeShell once implemented */}
-      <div data-testid='route-loaded'>Route loaded</div>
-    </div>
-  );
-}
+// All OS features with routes (standalone intent)
+const STANDALONE_FEATURES = OS_FEATURES.filter((f) => f.route && f.status === 'live');
 
 // ============================================================================
 // Test Setup
 // ============================================================================
 
 describe('Standalone Homes Contract', () => {
+  beforeEach(() => {
+    mockMatchMedia(false); // Default: no reduced motion
+  });
+
   afterEach(() => {
     cleanup();
+    resetMaterialQualityGate();
+    jest.clearAllMocks();
   });
 
   // ==========================================================================
@@ -70,48 +56,71 @@ describe('Standalone Homes Contract', () => {
   // ==========================================================================
 
   describe('Shell Chrome Contract', () => {
-    // TODO: These tests will fail initially (TDD style)
-    // The implementation should make them pass
+    it('renders h1 title in standalone home', () => {
+      render(
+        <MemoryRouter>
+          <TestStandaloneHome featureId='pilot' title='TerraPilot Console' />
+        </MemoryRouter>
+      );
 
-    it.skip('each standalone route renders h1 title', async () => {
-      // This test will be enabled once StandaloneHomeShell is implemented
-      for (const route of STANDALONE_ROUTES) {
-        cleanup();
-        renderStandaloneRoute(route.path);
-
-        const heading = screen.getByRole('heading', { level: 1 });
-        expect(heading).toBeInTheDocument();
-        expect(heading.textContent).toBeTruthy();
-      }
+      const heading = screen.getByRole('heading', { level: 1 });
+      expect(heading).toBeInTheDocument();
+      expect(heading).toHaveTextContent('TerraPilot Console');
     });
 
-    it.skip('renders intent badge with "Standalone" text', async () => {
-      for (const route of STANDALONE_ROUTES) {
-        cleanup();
-        renderStandaloneRoute(route.path);
+    it('renders intent badge with "Standalone" text', () => {
+      render(
+        <MemoryRouter>
+          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
+        </MemoryRouter>
+      );
 
-        const badge = screen.getByText('Standalone');
-        expect(badge).toBeInTheDocument();
-        expect(badge).toHaveAttribute('data-intent', 'standalone');
-      }
+      // Query by data-intent attribute since there may be multiple "Standalone" texts
+      const badge = document.querySelector('[data-intent="standalone"]');
+      expect(badge).toBeInTheDocument();
+      expect(badge).toHaveTextContent('Standalone');
     });
 
-    it.skip('consistent container structure: header + content + actions', async () => {
-      for (const route of STANDALONE_ROUTES) {
-        cleanup();
-        renderStandaloneRoute(route.path);
+    it('has consistent container structure: shell + header + content + actions', () => {
+      const { container } = render(
+        <MemoryRouter>
+          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
+        </MemoryRouter>
+      );
 
-        // Header section with title and badge
-        const header = screen.getByTestId('standalone-header');
-        expect(header).toBeInTheDocument();
+      // Use assertion helper
+      assertShellStructure(container);
 
-        // Content section
-        const content = screen.getByTestId('standalone-content');
-        expect(content).toBeInTheDocument();
+      // Verify hierarchy
+      const shell = screen.getByTestId('standalone-shell');
+      const header = screen.getByTestId('standalone-header');
+      const content = screen.getByTestId('standalone-content');
+      const actions = screen.getByTestId('standalone-actions');
 
-        // Actions section (may be empty but should exist)
-        const actions = screen.getByTestId('standalone-actions');
-        expect(actions).toBeInTheDocument();
+      expect(shell).toContainElement(header);
+      expect(shell).toContainElement(content);
+      expect(header).toContainElement(actions);
+    });
+
+    it('renders description when provided', () => {
+      render(
+        <MemoryRouter>
+          <TestStandaloneHome
+            featureId='pilot'
+            title='TerraPilot'
+            description='Test description text'
+          />
+        </MemoryRouter>
+      );
+
+      expect(screen.getByText('Test description text')).toBeInTheDocument();
+    });
+
+    it('all live standalone features have homeMeta defined', () => {
+      // Verify registry contract
+      for (const feature of STANDALONE_FEATURES) {
+        expect(feature.homeMeta).toBeDefined();
+        expect(feature.homeMeta?.title).toBeTruthy();
       }
     });
   });
@@ -121,104 +130,71 @@ describe('Standalone Homes Contract', () => {
   // ==========================================================================
 
   describe('Material Quality Gate', () => {
-    it.skip('renders LiquidPanel when quality gate enabled', async () => {
-      // Mock high-quality settings
-      jest.spyOn(window, 'matchMedia').mockImplementation((query) => ({
-        matches: query === '(prefers-reduced-motion: no-preference)',
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      }));
-
-      renderStandaloneRoute('/pilot');
-
-      // Should find liquid-panel class or data attribute
-      const panel = screen.getByTestId('standalone-shell');
-      expect(panel.querySelector('.liquid-panel')).toBeInTheDocument();
-    });
-
-    it.skip('renders fallback container when quality gate disabled', async () => {
-      // Mock reduced motion / low quality
-      jest.spyOn(window, 'matchMedia').mockImplementation((query) => ({
-        matches: query === '(prefers-reduced-motion: reduce)',
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      }));
-
-      renderStandaloneRoute('/pilot');
-
-      // Should find fallback class
-      const panel = screen.getByTestId('standalone-shell');
-      expect(panel.querySelector('.standalone-fallback')).toBeInTheDocument();
-    });
-
-    it.skip('no layout shift between gated and fallback modes', async () => {
-      // Render both versions and compare layout metrics
-      // This test checks that the structure is identical regardless of materials
-
-      // High quality
-      jest.spyOn(window, 'matchMedia').mockImplementation((query) => ({
-        matches: query === '(prefers-reduced-motion: no-preference)',
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      }));
-
-      const { container: highQualityContainer } = render(
-        <MemoryRouter initialEntries={['/pilot']}>
-          <Routes>
-            <Route path='*' element={<StandaloneRouteLoader />} />
-          </Routes>
+    it('renders LiquidPanel wrapper in shell', () => {
+      render(
+        <MemoryRouter>
+          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
         </MemoryRouter>
       );
 
-      const highQualityElements = highQualityContainer.querySelectorAll('[data-testid]');
-      const highQualityStructure = Array.from(highQualityElements).map((el) =>
-        el.getAttribute('data-testid')
+      // LiquidPanel adds liquid-panel class
+      const shell = screen.getByTestId('standalone-shell');
+      expect(shell.querySelector('.liquid-panel')).toBeInTheDocument();
+    });
+
+    it('adds standalone-fallback class when reduced motion enabled', () => {
+      resetMaterialQualityGate();
+      mockMatchMedia(true); // Reduced motion
+
+      render(
+        <MemoryRouter>
+          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
+        </MemoryRouter>
       );
 
+      const shell = screen.getByTestId('standalone-shell');
+      expect(shell).toHaveClass('standalone-fallback');
+    });
+
+    it('no layout shift between high and low quality modes', () => {
+      // High quality
+      mockMatchMedia(false);
+      resetMaterialQualityGate();
+
+      const { container: highQualityContainer } = render(
+        <MemoryRouter>
+          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
+        </MemoryRouter>
+      );
+
+      const highQualityStructure = getStructuralTestIds(highQualityContainer);
       cleanup();
 
       // Low quality
-      jest.spyOn(window, 'matchMedia').mockImplementation((query) => ({
-        matches: query === '(prefers-reduced-motion: reduce)',
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      }));
+      mockMatchMedia(true);
+      resetMaterialQualityGate();
 
       const { container: lowQualityContainer } = render(
-        <MemoryRouter initialEntries={['/pilot']}>
-          <Routes>
-            <Route path='*' element={<StandaloneRouteLoader />} />
-          </Routes>
+        <MemoryRouter>
+          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
         </MemoryRouter>
       );
 
-      const lowQualityElements = lowQualityContainer.querySelectorAll('[data-testid]');
-      const lowQualityStructure = Array.from(lowQualityElements).map((el) =>
-        el.getAttribute('data-testid')
+      const lowQualityStructure = getStructuralTestIds(lowQualityContainer);
+
+      // Structure should be identical
+      expect(highQualityStructure).toEqual(lowQualityStructure);
+    });
+
+    it('LiquidPanel has quality tier data attribute', () => {
+      render(
+        <MemoryRouter>
+          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
+        </MemoryRouter>
       );
 
-      // Same structure in both modes
-      expect(highQualityStructure).toEqual(lowQualityStructure);
+      const liquidPanel = document.querySelector('.liquid-panel');
+      expect(liquidPanel).toHaveAttribute('data-quality-tier');
     });
   });
 
@@ -227,33 +203,112 @@ describe('Standalone Homes Contract', () => {
   // ==========================================================================
 
   describe('Suite Boundary', () => {
-    it.skip('OS shell owns chrome, suite owns content slot', async () => {
-      renderStandaloneRoute('/pilot');
+    it('OS shell owns chrome, suite owns content slot', () => {
+      render(
+        <MemoryRouter>
+          <StandaloneHomeShell featureId='pilot' meta={{ title: 'Test' }}>
+            <div data-testid='suite-specific-content'>Suite Content</div>
+          </StandaloneHomeShell>
+        </MemoryRouter>
+      );
 
-      // Shell-owned elements (header, actions row)
+      // Shell-owned elements
       const header = screen.getByTestId('standalone-header');
       expect(header).toBeInTheDocument();
 
-      // Content slot should contain suite-specific content
+      // Suite-owned content in content slot
       const content = screen.getByTestId('standalone-content');
-      expect(content).toBeInTheDocument();
+      const suiteContent = screen.getByTestId('suite-specific-content');
+      expect(content).toContainElement(suiteContent);
 
-      // Content should be a child of the shell
+      // Content is child of shell
       const shell = screen.getByTestId('standalone-shell');
       expect(shell).toContainElement(content);
     });
 
-    it.skip('suite content does not leak into shell chrome', async () => {
-      renderStandaloneRoute('/pilot');
+    it('suite content does not leak into shell chrome', () => {
+      render(
+        <MemoryRouter>
+          <StandaloneHomeShell featureId='pilot' meta={{ title: 'Test' }}>
+            <div data-testid='suite-specific-content'>Suite Content</div>
+          </StandaloneHomeShell>
+        </MemoryRouter>
+      );
 
       const header = screen.getByTestId('standalone-header');
+      const suiteContent = screen.getByTestId('suite-specific-content');
+
+      // Header should NOT contain suite content
+      expect(header).not.toContainElement(suiteContent);
+    });
+
+    it('content has main landmark role', () => {
+      render(
+        <MemoryRouter>
+          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
+        </MemoryRouter>
+      );
+
       const content = screen.getByTestId('standalone-content');
+      expect(content).toHaveAttribute('role', 'main');
+    });
 
-      // Header should not contain content elements
-      expect(header).not.toContainElement(content);
+    it('header has banner landmark role', () => {
+      render(
+        <MemoryRouter>
+          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
+        </MemoryRouter>
+      );
 
-      // Content should have its own semantic boundary
-      expect(content.getAttribute('role')).toBe('main');
+      const header = screen.getByTestId('standalone-header');
+      expect(header).toHaveAttribute('role', 'banner');
+    });
+  });
+
+  // ==========================================================================
+  // Primary Actions Tests
+  // ==========================================================================
+
+  describe('Primary Actions', () => {
+    it('renders primary actions from meta', () => {
+      render(
+        <MemoryRouter>
+          <StandaloneHomeShell
+            featureId='pilot'
+            meta={{
+              title: 'Test',
+              primaryActions: [
+                { id: 'action-1', label: 'Action One', intent: 'standalone', href: '/action1' },
+                { id: 'action-2', label: 'Action Two', intent: 'standalone', href: '/action2' },
+              ],
+            }}
+          >
+            <div>Content</div>
+          </StandaloneHomeShell>
+        </MemoryRouter>
+      );
+
+      expect(screen.getByText('Action One')).toBeInTheDocument();
+      expect(screen.getByText('Action Two')).toBeInTheDocument();
+    });
+
+    it('merges registry and prop actions', () => {
+      // Pilot has registry actions, we add more
+      render(
+        <MemoryRouter>
+          <StandaloneHomeShell
+            featureId='pilot'
+            meta={{
+              primaryActions: [{ id: 'extra', label: 'Extra Action', intent: 'standalone' }],
+            }}
+          >
+            <div>Content</div>
+          </StandaloneHomeShell>
+        </MemoryRouter>
+      );
+
+      // Should have both registry actions (View Tools, Dashboard) and extra
+      expect(screen.getByText('Extra Action')).toBeInTheDocument();
     });
   });
 });

@@ -244,7 +244,7 @@ export function StandaloneHomeShell({
   // Shell container classes
   const shellClasses = [
     'standalone-shell',
-    quality.tier === 'LOW' ? 'standalone-fallback' : '',
+    quality.tier === 'low' ? 'standalone-fallback' : '',
     className,
   ]
     .filter(Boolean)

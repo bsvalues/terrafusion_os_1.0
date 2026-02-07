@@ -19,18 +19,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  getPilotHealth,
-  getPilotTrace,
-  getRiskBadgeColor,
-  getSuiteBadgeColor,
-  invokePilotTool,
-  listPilotTools,
-  validatePilotTool,
-  type Mode,
-  type PilotInvokeResponse,
-  type PilotTool,
-  type PilotTraceEvent,
-  type PilotValidateResponse,
+    getPilotHealth,
+    getPilotTrace,
+    getRiskBadgeColor,
+    getSuiteBadgeColor,
+    invokePilotTool,
+    listPilotTools,
+    validatePilotTool,
+    type Mode,
+    type PilotInvokeResponse,
+    type PilotTool,
+    type PilotTraceEvent,
+    type PilotValidateResponse,
 } from '../api/pilotApi';
 
 // ═══════════════════════════════════════════════════════════════

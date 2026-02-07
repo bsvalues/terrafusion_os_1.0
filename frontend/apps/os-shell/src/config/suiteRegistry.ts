@@ -199,9 +199,30 @@ export const OS_FEATURES: readonly OsFeatureDefinition[] = [
     shortName: 'Trace',
     description: 'Observability, Audit Trail & Telemetry',
     iconName: 'Activity',
-    status: 'wip',
+    route: '/trace',
+    status: 'live',
     label: 'TerraTrace',
     icon: 'activity',
+    homeMeta: {
+      title: 'TerraTrace Console',
+      description: 'Monitor system telemetry, audit trails, and observability data.',
+      subtitle: 'Standalone',
+      primaryActions: [
+        {
+          id: 'view-events',
+          label: 'View Events',
+          intent: 'standalone',
+          href: '/trace/events',
+        },
+        {
+          id: 'view-metrics',
+          label: 'Metrics',
+          intent: 'standalone',
+          href: '/trace/metrics',
+        },
+      ],
+      showWorkbenchCta: true,
+    },
   },
 ] as const;
 

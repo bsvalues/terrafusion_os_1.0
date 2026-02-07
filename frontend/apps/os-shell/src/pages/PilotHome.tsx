@@ -21,7 +21,7 @@ import { PilotConsoleContent } from './PilotConsoleContent';
 export function PilotHome(): React.ReactElement {
   return (
     <StandaloneHomeShell
-      featureId="pilot"
+      featureId='pilot'
       meta={{
         title: 'TerraPilot Console',
         description: 'Single Choke Point • All invocations via POST /pilot/invoke',
