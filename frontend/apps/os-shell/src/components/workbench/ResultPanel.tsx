@@ -2,6 +2,7 @@
  * ResultPanel.tsx
  *
  * Phase 6.1: Shared component for displaying tool invocation results
+ * Phase 6.2: Visual Renaissance materials adoption
  *
  * Used by: All MWUX tab components
  * Contract:
@@ -10,11 +11,13 @@
  * - Success state: correlationId header + children content
  * - Error state: ErrorDisplay + dismiss button
  * - Dev info panel in development mode
+ * - LiquidPanel wrapper with quality gate fallback
  */
 
 import React, { useCallback } from 'react';
 import type { ErrorInfo } from '../../hooks/useErrorHandler';
 import { getEnv } from '../../runtime/env';
+import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { ErrorDisplay } from '../errors/ErrorDisplay';
 
 export interface IdleContent {
@@ -62,39 +65,40 @@ export const ResultPanel: React.FC<ResultPanelProps> = ({
   // Loading State
   if (status === 'loading') {
     return (
-      <div
-        role='status'
-        className={`flex flex-col items-center justify-center py-12 gap-3 ${className}`}
-      >
-        <div className='animate-spin rounded-full h-10 w-10 border-2 border-white/20 border-t-blue-500' />
-        <span className='text-white/60'>{loadingMessage}</span>
-      </div>
+      <LiquidPanel variant='infrastructure' radius='lg' className={`py-12 ${className}`}>
+        <div role='status' className='flex flex-col items-center justify-center gap-3'>
+          <div className='animate-spin rounded-full h-10 w-10 border-2 border-white/20 border-t-blue-500' />
+          <span className='text-white/60'>{loadingMessage}</span>
+        </div>
+      </LiquidPanel>
     );
   }
 
   // Idle State
   if (status === 'idle') {
     return (
-      <div className={`flex flex-col items-center justify-center py-12 text-center ${className}`}>
-        {idleContent ? (
-          <>
-            <div className='text-4xl mb-2'>{idleContent.icon}</div>
-            <p className='text-white/60'>{idleContent.title}</p>
-            {idleContent.subtitle && (
-              <p className='text-white/40 text-sm mt-1'>{idleContent.subtitle}</p>
-            )}
-          </>
-        ) : (
-          <p className='text-white/60'>Ready to run</p>
-        )}
-      </div>
+      <LiquidPanel variant='infrastructure' radius='lg' className={`py-12 ${className}`}>
+        <div className='flex flex-col items-center justify-center text-center'>
+          {idleContent ? (
+            <>
+              <div className='text-4xl mb-2'>{idleContent.icon}</div>
+              <p className='text-white/60'>{idleContent.title}</p>
+              {idleContent.subtitle && (
+                <p className='text-white/40 text-sm mt-1'>{idleContent.subtitle}</p>
+              )}
+            </>
+          ) : (
+            <p className='text-white/60'>Ready to run</p>
+          )}
+        </div>
+      </LiquidPanel>
     );
   }
 
   // Error State
   if (status === 'error' && error) {
     return (
-      <div className={`bg-red-500/20 rounded-xl p-5 border border-red-500/30 ${className}`}>
+      <LiquidPanel variant='signal' radius='lg' className={`p-5 ${className}`}>
         {onDismiss && (
           <div className='flex justify-end mb-2'>
             <button
@@ -107,56 +111,58 @@ export const ResultPanel: React.FC<ResultPanelProps> = ({
           </div>
         )}
         <ErrorDisplay error={error} />
-      </div>
+      </LiquidPanel>
     );
   }
 
   // Success State
   if (status === 'success') {
     return (
-      <div className={`space-y-4 ${className}`}>
-        {/* Header with correlationId */}
-        <div className='flex items-center justify-between mb-3'>
-          {successHeader ? (
-            <h4 className='text-emerald-400 font-semibold flex items-center gap-2'>
-              <span>{successHeader.icon}</span> {successHeader.title}
-            </h4>
-          ) : (
-            <h4 className='text-emerald-400 font-semibold flex items-center gap-2'>
-              <span>✅</span> Success
-            </h4>
-          )}
+      <LiquidPanel variant='interactive' radius='lg' className={`p-5 ${className}`}>
+        <div className='space-y-4'>
+          {/* Header with correlationId */}
+          <div className='flex items-center justify-between mb-3'>
+            {successHeader ? (
+              <h4 className='text-emerald-400 font-semibold flex items-center gap-2'>
+                <span>{successHeader.icon}</span> {successHeader.title}
+              </h4>
+            ) : (
+              <h4 className='text-emerald-400 font-semibold flex items-center gap-2'>
+                <span>✅</span> Success
+              </h4>
+            )}
 
-          {correlationId && (
-            <div className='flex items-center gap-2 text-xs'>
-              <span className='text-white/50'>ID:</span>
-              <code className='text-emerald-400 font-mono'>{correlationId.slice(0, 16)}...</code>
-              <button
-                onClick={() => copyToClipboard(correlationId)}
-                className='text-white/60 hover:text-white px-2 py-1 rounded bg-white/10 hover:bg-white/20'
-                aria-label='Copy correlation ID'
-              >
-                Copy
-              </button>
+            {correlationId && (
+              <div className='flex items-center gap-2 text-xs'>
+                <span className='text-white/50'>ID:</span>
+                <code className='text-emerald-400 font-mono'>{correlationId.slice(0, 16)}...</code>
+                <button
+                  onClick={() => copyToClipboard(correlationId)}
+                  className='text-white/60 hover:text-white px-2 py-1 rounded bg-white/10 hover:bg-white/20'
+                  aria-label='Copy correlation ID'
+                >
+                  Copy
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Content */}
+          {children}
+
+          {/* Dev Info */}
+          {isDev && correlationId && (
+            <div className='text-xs text-white/40 border-t border-white/10 pt-3'>
+              <details>
+                <summary className='cursor-pointer hover:text-white/60'>Developer Info</summary>
+                <pre className='mt-2 bg-black/30 rounded p-2 overflow-x-auto'>
+                  pnpm run trace:query --correlation {correlationId}
+                </pre>
+              </details>
             </div>
           )}
         </div>
-
-        {/* Content */}
-        {children}
-
-        {/* Dev Info */}
-        {isDev && correlationId && (
-          <div className='text-xs text-white/40 border-t border-white/10 pt-3'>
-            <details>
-              <summary className='cursor-pointer hover:text-white/60'>Developer Info</summary>
-              <pre className='mt-2 bg-black/30 rounded p-2 overflow-x-auto'>
-                pnpm run trace:query --correlation {correlationId}
-              </pre>
-            </details>
-          </div>
-        )}
-      </div>
+      </LiquidPanel>
     );
   }
 

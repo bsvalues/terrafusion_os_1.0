@@ -2,17 +2,21 @@
  * InvocationHistory.tsx
  *
  * Phase 6.1: Shared component for displaying tool invocation history
+ * Phase 6.2: Visual Renaissance materials adoption
  *
  * Used by: PropertyDossier, PropertyAtlas, PropertyForge, PropertyDais
  * Contract:
  * - Display list of invocation records (max 10)
  * - Show status icon (success/error)
  * - Show toolId, timestamp, truncated correlationId
- * - Copy button for full correlationId
+ * - Copy button for full correlationId (TactileButton)
  * - Empty state when no records
+ * - LiquidPanel wrapper with quality gate fallback
  */
 
 import React, { useCallback } from 'react';
+import { LiquidPanel } from '../../ui/materials/LiquidPanel';
+import { TactileButton } from '../../ui/materials/TactileButton';
 
 export interface InvocationRecord {
   id: string;
@@ -48,7 +52,7 @@ export const InvocationHistory: React.FC<InvocationHistoryProps> = ({
   const displayRecords = records.slice(0, maxRecords);
 
   return (
-    <div className='bg-white/5 rounded-xl p-5 border border-white/10'>
+    <LiquidPanel variant='infrastructure' radius='xl' className='p-5'>
       <h3 className='text-white font-semibold mb-4 flex items-center gap-2'>
         <span>{icon}</span> {title}
       </h3>
@@ -84,20 +88,21 @@ export const InvocationHistory: React.FC<InvocationHistoryProps> = ({
                 <code className='text-xs text-white/50 bg-black/20 px-2 py-1 rounded'>
                   {record.correlationId.substring(0, 12)}...
                 </code>
-                <button
+                <TactileButton
+                  variant='ghost'
+                  size='sm'
                   onClick={() => copyToClipboard(record.correlationId)}
-                  className='px-2 py-1 text-xs bg-white/10 text-white/60 rounded hover:bg-white/20'
                   title='Copy correlation ID'
                   aria-label='Copy correlation ID'
                 >
                   Copy
-                </button>
+                </TactileButton>
               </div>
             </div>
           ))}
         </div>
       )}
-    </div>
+    </LiquidPanel>
   );
 };
 
