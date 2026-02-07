@@ -17,9 +17,9 @@
 |-------|-------|
 | **Slice** | Slice 4: Compositor Jitter Stabilization |
 | **Phase** | Phase 1: Test Harness (TDD) |
-| **Task** | Task 1.1: Compositor Jitter Tests |
-| **Status** | 🔵 In Progress |
-| **Latest Commit** | `fc79dc4b3` (Slice 3 complete) |
+| **Task** | Complete - No fixes needed |
+| **Status** | ✅ Complete |
+| **Latest Commit** | `2572aed2f` (Slice 4 Phase 1 complete) |
 
 ---
 
@@ -62,16 +62,18 @@
 
 ---
 
-## Slice 4: Compositor Jitter Stabilization 🔵 IN PROGRESS
+## Slice 4: Compositor Jitter Stabilization ✅ COMPLETE
 
 | Task | Description | Commit | Tests | Date |
 |------|-------------|--------|-------|------|
-| 🔵 1.1 | Compositor jitter tests (TDD) | - | - | - |
-| ⏳ 1.2 | Ambient layer gating tests (TDD) | - | - | - |
-| ⏳ 1.3 | Layout shift probe helper | - | - | - |
-| ⏳ 2.1 | Overlay positioning audit | - | - | - |
-| ⏳ 2.2 | Gate integration consolidation | - | - | - |
-| ⏳ 3.1 | Run all gates | - | - | - |
+| ✅ 1.1 | Compositor jitter tests (TDD) | `2572aed2f` | 15 pass | 2026-02-07 |
+| ✅ 1.2 | Ambient layer gating tests (TDD) | `2572aed2f` | 18 pass | 2026-02-07 |
+| ✅ 1.3 | Layout shift probe helper | `2572aed2f` | ✅ Pass | 2026-02-07 |
+| ✅ 2.1 | Overlay positioning audit | N/A | Already stable | 2026-02-07 |
+| ✅ 2.2 | Gate integration | N/A | Already integrated | 2026-02-07 |
+| ✅ 3.1 | Run all gates | `2572aed2f` | 33/33 compositor, 55/55 launcher, 32/32 phase83 | 2026-02-07 |
+
+**Key Finding:** No jitter observed. Current architecture (fixed inset-0, pointer-events-none, CSS-only ambient) is already stable. Phase 2 fixes skipped per telemetry-driven strategy.
 
 ---
 
@@ -79,12 +81,10 @@
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| 🔵 1 | 1.1 | Write compositor.jitter.test.ts | - |
-| ⏳ 2 | 1.2 | Write ambientLayer.gating.test.tsx | - |
-| ⏳ 3 | 1.3 | Create layoutShiftProbe.ts | - |
-| ⏳ 4 | 2.1 | Audit overlay positioning | Tests reveal issues |
-| ⏳ 5 | 2.2 | Gate integration if needed | Tests reveal issues |
-| ⏳ 6 | 3.1 | Run all gates | All implemented |
+| ✅ | All | Slice 4 complete - no fixes needed | - |
+| ⏳ | TBD | Consider: Start Menu polish (search ranking, recents) | User direction |
+| ⏳ | TBD | Consider: Standalone suite homes consistency | User direction |
+| ⏳ | TBD | Consider: E2E Playwright smoke for layout shift | User direction |
 
 ---
 
