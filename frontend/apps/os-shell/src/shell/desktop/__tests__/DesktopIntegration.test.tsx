@@ -15,11 +15,22 @@ import '@testing-library/jest-dom';
 import { render, screen, cleanup, act } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 
 import { DesktopWithErrorBoundary } from '../Desktop';
 import { useNotificationStore } from '../../../stores/notificationStore';
 import { useDesktopStore } from '../../../stores/desktopStore';
 import { useStartMenuStore } from '../../../stores/startMenuStore';
+
+/**
+ * Test wrapper providing Router context required by DesktopIconGrid
+ * which uses useNavigate() for module launch routing.
+ */
+const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <MemoryRouter initialEntries={['/desktop']}>
+    {children}
+  </MemoryRouter>
+);
 
 
 
@@ -56,7 +67,7 @@ afterEach(() => {
 describe('Desktop Integration', () => {
   describe('Desktop Rendering', () => {
     it('renders desktop with all components', () => {
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
       
       expect(screen.getByTestId('desktop')).toBeInTheDocument();
       expect(screen.getByTestId('window-manager')).toBeInTheDocument();
@@ -64,7 +75,7 @@ describe('Desktop Integration', () => {
     });
 
     it('renders toast container', () => {
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
       
       expect(screen.getByTestId('toast-container')).toBeInTheDocument();
     });
@@ -72,7 +83,7 @@ describe('Desktop Integration', () => {
 
   describe('Toast Display', () => {
     it('displays toast when notification added', () => {
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
       
       // Add a notification
       act(() => {
@@ -88,7 +99,7 @@ describe('Desktop Integration', () => {
     });
 
     it('displays multiple toasts up to max', () => {
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
       
       // Add multiple notifications
       act(() => {
@@ -109,7 +120,7 @@ describe('Desktop Integration', () => {
     it('desktop is protected by error boundary', () => {
       // The DesktopWithErrorBoundary should not throw even if there's an error
       // This test verifies the structure is correct
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
       
       expect(screen.getByTestId('desktop')).toBeInTheDocument();
     });
@@ -117,13 +128,13 @@ describe('Desktop Integration', () => {
 
   describe('Accessibility', () => {
     it('desktop has proper main role', () => {
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
       
       expect(screen.getByRole('main')).toBeInTheDocument();
     });
 
     it('toast container has live region', () => {
-      render(<DesktopWithErrorBoundary />);
+      render(<DesktopWithErrorBoundary />, { wrapper: TestWrapper });
       
       const container = screen.getByTestId('toast-container');
       expect(container).toHaveAttribute('aria-live', 'polite');
