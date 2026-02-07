@@ -508,7 +508,169 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 
 ---
 
-## Document Status
+## Document Status (Slice 3)
+
+- [x] Definition of Done defined
+- [x] All phases defined
+- [x] All tasks have acceptance criteria
+- [x] Risk register complete
+- [x] Git strategy defined
+- [x] Dependencies verified
+- [x] Ready for execution
+
+---
+
+# Slice 4: Compositor Jitter Stabilization
+
+> **Entry:** Slice 3 shipped (Launcher). Now stabilizing desktop/shell visual jitter at the source.
+> **Strategy:** Telemetry-driven. Measure first, fix only what's broken. No aesthetic thrash.
+
+---
+
+## Definition of Done
+
+> What MUST be true for this to be complete?
+
+- [ ] Jitter is measurable (layout shift probe implemented)
+- [ ] No layout shift > threshold during: route change, launcher open/close, idle pulse
+- [ ] Ambient layer renders only when materialQualityGate allows
+- [ ] Reduced-motion forces stable fallback (no compositor animation primitives)
+- [ ] Low-power path bypasses expensive backdrop effects
+- [ ] All existing test harnesses remain green (55 launcher, routing truth, focus order)
+- [ ] `pnpm type-check` passes
+- [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
+
+---
+
+## Phases & Tasks
+
+### Phase 1: Test Harness (TDD)
+
+> Write tests first to measure current jitter state.
+
+#### Task 1.1: Compositor Jitter Tests
+
+* **Description:** Write layout shift detection tests
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/compositor/compositor.jitter.test.ts` (NEW)
+* **Tests (TDD):**
+  - [ ] does not trigger layout shift when opening/closing Launcher
+  - [ ] does not trigger layout shift on route transitions (/desktop -> suite -> workbench)
+  - [ ] reduced-motion forces stable fallback (no compositor animation primitives)
+  - [ ] no reflow during idle state (10 second window)
+* **Acceptance Criteria:**
+  - [ ] Tests written BEFORE any fixes
+  - [ ] Tests reveal current jitter state (pass = no fix needed)
+
+#### Task 1.2: Ambient Layer Gating Tests
+
+* **Description:** Write materialQualityGate integration tests for ambient layer
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/compositor/ambientLayer.gating.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] ambient layer mounts only when materialQualityGate allows
+  - [ ] low-power path bypasses ambient compositor blur effects
+  - [ ] reduced-motion disables looping animations
+  - [ ] fallback is visually consistent (no flash/jump)
+* **Acceptance Criteria:**
+  - [ ] Material gating verified for ambient layer
+  - [ ] Accessibility compliance
+
+#### Task 1.3: Layout Shift Probe Helper
+
+* **Description:** Create measurement utility for layout shift
+* **Files:**
+  - `frontend/apps/os-shell/src/perf/layoutShiftProbe.ts` (NEW)
+* **Implementation:**
+  - Aggregate PerformanceObserver entries for 'layout-shift' type
+  - Export `startMeasuring()`, `stopMeasuring()`, `getShiftScore()` API
+  - Support JSDOM fallback (no PerformanceObserver = return 0)
+* **Acceptance Criteria:**
+  - [ ] Works in browser + graceful degradation in JSDOM
+  - [ ] No polling or RAF loops
+
+---
+
+### Phase 2: Compositor Stabilization
+
+> Fix any observed jitter sources.
+
+#### Task 2.1: Overlay Positioning Audit
+
+* **Description:** Ensure ambient/compositor layers are pure overlays (no document flow impact)
+* **Files:**
+  - `frontend/apps/os-shell/src/shell/ambient/AmbientCompositor.tsx`
+  - `frontend/apps/os-shell/src/components/compositor/layers/CSSAmbientLayer.tsx`
+  - `frontend/apps/os-shell/src/shell/desktop/Desktop.tsx`
+* **Implementation:**
+  - Confirm `fixed inset-0` positioning (already in place)
+  - Confirm `pointer-events-none` on ambient layers
+  - Remove any width/height/top/left animations → transform/opacity only
+  - Ensure no ancestor layout recalc triggered by ambient changes
+* **Acceptance Criteria:**
+  - [ ] No document flow impact
+  - [ ] Transform/opacity only for motion
+
+#### Task 2.2: Gate Integration
+
+* **Description:** Ensure ambient layer respects materialQualityGate
+* **Files:**
+  - `frontend/apps/os-shell/src/shell/ambient/AmbientCompositor.tsx`
+  - `frontend/apps/os-shell/src/shell/ambient/ambientPolicy.ts`
+* **Implementation:**
+  - Check for overlap between ambientPolicy and materialQualityGate
+  - Consolidate if needed: low-power / reduced-motion → same fallback
+  - Ensure blur effects disabled on LOW tier
+* **Acceptance Criteria:**
+  - [ ] Single source of truth for quality gating
+  - [ ] No expensive effects on low-power devices
+
+---
+
+### Phase 3: Verification
+
+> Final verification before merge.
+
+#### Task 3.1: Run All Gates
+
+* **Description:** Execute full test suite + SEAL gates
+* **Acceptance Criteria:**
+  - [ ] New compositor tests pass
+  - [ ] Existing launcher tests (55) pass
+  - [ ] `pnpm type-check` passes
+  - [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
+
+---
+
+## Risk Register
+
+| ID | Risk | Severity | Likelihood | Mitigation | Rollback |
+|----|------|----------|------------|------------|----------|
+| R1 | PerformanceObserver not in JSDOM | Med | High | Graceful fallback in probe | Probe returns 0 in tests |
+| R2 | Blur removal looks bad | Med | Low | Only remove on LOW tier | Gate with GPU detection |
+| R3 | Gate consolidation breaks existing | High | Low | Keep both policies, merge behavior | Revert gate changes |
+| R4 | Testing scope creep | Med | Med | Only fix what tests reveal | Skip fixes if tests pass |
+
+---
+
+## Git Strategy
+
+1. `test(compositor): add layout-shift/jitter regression probes`
+2. `feat(compositor): gate ambient layer + stabilize overlay rendering`
+3. `chore(compositor): reduce-motion/low-power fallbacks + docs`
+
+---
+
+## Dependencies
+
+- [x] Slice 3 complete (Launcher)
+- [x] materialQualityGate implemented
+- [x] AmbientCompositor + ambientPolicy in place
+- [x] Existing stability tests (AmbientCompositor.stability.test.tsx)
+
+---
+
+## Document Status (Slice 4)
 
 - [x] Definition of Done defined
 - [x] All phases defined

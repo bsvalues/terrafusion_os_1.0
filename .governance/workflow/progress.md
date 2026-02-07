@@ -1,12 +1,12 @@
-# Progress: Workbench Shell Materials + Suite UX Clarity + Launcher
+# Progress: Workbench Shell Materials + Suite UX Clarity + Launcher + Compositor
 
-> **Purpose:** Track execution status for Visual Renaissance materials adoption + Suite tile clarity + Launcher redesign.
+> **Purpose:** Track execution status for Visual Renaissance materials adoption + Suite tile clarity + Launcher redesign + Compositor stabilization.
 
 ---
 
-* **Project:** Workbench Materials + Suite UX Clarity + Launcher
+* **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor
 * **Branch/PR:** main (solo-dev mode)
-* **Last Updated:** 2026-02-07 11:00
+* **Last Updated:** 2026-02-07 12:00
 * **Plan Link:** [plan.md](./plan.md)
 
 ---
@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | Slice 3: Launcher Redesign |
+| **Slice** | Slice 4: Compositor Jitter Stabilization |
 | **Phase** | Phase 1: Test Harness (TDD) |
-| **Task** | Task 1.1: Behavior Tests |
+| **Task** | Task 1.1: Compositor Jitter Tests |
 | **Status** | 🔵 In Progress |
-| **Latest Commit** | `bab75c2c4` (Slice 2 complete) |
+| **Latest Commit** | `fc79dc4b3` (Slice 3 complete) |
 
 ---
 
@@ -48,18 +48,30 @@
 
 ---
 
-## Slice 3: Launcher Redesign 🔵 IN PROGRESS
+## Slice 3: Launcher Redesign ✅ COMPLETE
 
 | Task | Description | Commit | Tests | Date |
 |------|-------------|--------|-------|------|
-| 🔵 1.1 | Behavior tests (TDD) | - | - | - |
-| ⏳ 1.2 | Routing tests (TDD) | - | - | - |
-| ⏳ 1.3 | Materials gate tests (TDD) | - | - | - |
-| ⏳ 2.1 | LauncherModel types | - | - | - |
-| ⏳ 2.2 | Registry adapter | - | - | - |
-| ⏳ 3.1 | Launcher component | - | - | - |
-| ⏳ 3.2 | Wire to shell | - | - | - |
-| ⏳ 4.1 | Run all gates | - | - | - |
+| ✅ 1.1 | Behavior tests (TDD) | `fc79dc4b3` | 23 pass | 2026-02-07 |
+| ✅ 1.2 | Routing tests (TDD) | `fc79dc4b3` | 15 pass | 2026-02-07 |
+| ✅ 1.3 | Materials gate tests (TDD) | `fc79dc4b3` | 17 pass | 2026-02-07 |
+| ✅ 2.1 | LauncherModel types | `fc79dc4b3` | ✅ Pass | 2026-02-07 |
+| ✅ 3.1 | Launcher component | `fc79dc4b3` | ✅ Pass | 2026-02-07 |
+| ✅ 3.2 | Wire to Desktop.tsx | `fc79dc4b3` | ✅ Pass | 2026-02-07 |
+| ✅ 4.1 | Run all gates | `fc79dc4b3` | 55/55 launcher, 32/32 phase83 | 2026-02-07 |
+
+---
+
+## Slice 4: Compositor Jitter Stabilization 🔵 IN PROGRESS
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| 🔵 1.1 | Compositor jitter tests (TDD) | - | - | - |
+| ⏳ 1.2 | Ambient layer gating tests (TDD) | - | - | - |
+| ⏳ 1.3 | Layout shift probe helper | - | - | - |
+| ⏳ 2.1 | Overlay positioning audit | - | - | - |
+| ⏳ 2.2 | Gate integration consolidation | - | - | - |
+| ⏳ 3.1 | Run all gates | - | - | - |
 
 ---
 
@@ -67,14 +79,12 @@
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| 🔵 1 | 1.1 | Write launcher.behavior.test.tsx | - |
-| ⏳ 2 | 1.2 | Write launcher.routing.test.tsx | - |
-| ⏳ 3 | 1.3 | Write launcher.materials.test.tsx | - |
-| ⏳ 4 | 2.1 | Create launcherModel.ts | Tests exist |
-| ⏳ 5 | 2.2 | Add getLauncherItems to suiteRegistry | Tests exist |
-| ⏳ 6 | 3.1 | Build Launcher.tsx | Model ready |
-| ⏳ 7 | 3.2 | Wire to ShellHome/global shortcuts | Component ready |
-| ⏳ 8 | 4.1 | Run all gates | All implemented |
+| 🔵 1 | 1.1 | Write compositor.jitter.test.ts | - |
+| ⏳ 2 | 1.2 | Write ambientLayer.gating.test.tsx | - |
+| ⏳ 3 | 1.3 | Create layoutShiftProbe.ts | - |
+| ⏳ 4 | 2.1 | Audit overlay positioning | Tests reveal issues |
+| ⏳ 5 | 2.2 | Gate integration if needed | Tests reveal issues |
+| ⏳ 6 | 3.1 | Run all gates | All implemented |
 
 ---
 
