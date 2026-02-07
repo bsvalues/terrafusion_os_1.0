@@ -46,7 +46,13 @@ export type ParcelContextSource =
   | 'route' // Extracted from URL params
   | 'selection' // User explicitly selected
   | 'session' // Restored from session storage
-  | 'demo'; // Demo/fallback parcel
+  | 'demo' // Demo/fallback parcel
+  | 'indicator_recent'; // Selected from recent parcels in indicator
+
+/**
+ * Maximum number of recent parcels to track.
+ */
+export const MAX_RECENT_PARCELS = 10;
 
 /**
  * Parcel context store state.
@@ -54,12 +60,16 @@ export type ParcelContextSource =
 interface ParcelContextState {
   /** Current parcel context (null if none) */
   context: ParcelContext | null;
+  /** Recent parcels (MRU order, most recent first) */
+  recentParcels: string[];
   /** Set parcel context */
   setContext: (context: ParcelContext | null) => void;
   /** Clear parcel context */
   clearContext: () => void;
   /** Update context from route params */
   setFromRoute: (parcelId: string, parcelName?: string) => void;
+  /** Record a parcel to recents (internal) */
+  recordRecent: (parcelId: string) => void;
 }
 
 // ============================================================================
@@ -69,6 +79,9 @@ interface ParcelContextState {
 /** Session storage key for persisting parcel context */
 const SESSION_STORAGE_KEY = 'tf:parcel-context';
 
+/** Session storage key for persisting recent parcels */
+const RECENT_PARCELS_STORAGE_KEY = 'tf:recent-parcels';
+
 // ============================================================================
 // Store
 // ============================================================================
@@ -77,13 +90,16 @@ const SESSION_STORAGE_KEY = 'tf:parcel-context';
  * Parcel context Zustand store.
  * Manages current parcel context with session persistence.
  */
-export const useParcelContextStore = create<ParcelContextState>((set) => ({
+export const useParcelContextStore = create<ParcelContextState>((set, get) => ({
   context: restoreFromSession(),
+  recentParcels: restoreRecentsFromSession(),
 
   setContext: (context) => {
     set({ context });
     if (context) {
       persistToSession(context);
+      // Also record to recents
+      get().recordRecent(context.parcelId);
     } else {
       clearSessionStorage();
     }
@@ -102,6 +118,21 @@ export const useParcelContextStore = create<ParcelContextState>((set) => ({
     };
     set({ context });
     persistToSession(context);
+    // Also record to recents
+    get().recordRecent(parcelId);
+  },
+
+  recordRecent: (parcelId) => {
+    if (!parcelId) return;
+
+    const { recentParcels } = get();
+    // Remove if already exists (dedupe)
+    const filtered = recentParcels.filter((id) => id !== parcelId);
+    // Add to front
+    const updated = [parcelId, ...filtered].slice(0, MAX_RECENT_PARCELS);
+
+    set({ recentParcels: updated });
+    persistRecentsToSession(updated);
   },
 }));
 
@@ -137,6 +168,33 @@ function clearSessionStorage(): void {
   } catch {
     // Session storage might be unavailable
   }
+}
+
+// ============================================================================
+// Recent Parcels Persistence
+// ============================================================================
+
+function persistRecentsToSession(recents: string[]): void {
+  try {
+    sessionStorage.setItem(RECENT_PARCELS_STORAGE_KEY, JSON.stringify(recents));
+  } catch {
+    // Session storage might be unavailable
+  }
+}
+
+function restoreRecentsFromSession(): string[] {
+  try {
+    const stored = sessionStorage.getItem(RECENT_PARCELS_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed.slice(0, MAX_RECENT_PARCELS);
+      }
+    }
+  } catch {
+    // Session storage might be unavailable
+  }
+  return [];
 }
 
 // ============================================================================
@@ -225,4 +283,76 @@ export function hasParcelContext(): boolean {
  */
 export function getCurrentParcelId(): string | null {
   return getParcelContext()?.parcelId ?? null;
+}
+
+// ============================================================================
+// Recent Parcels API
+// ============================================================================
+
+/**
+ * Get recent parcels list (MRU order).
+ */
+export function getRecentParcels(): string[] {
+  return useParcelContextStore.getState().recentParcels;
+}
+
+/**
+ * Record a parcel to recents (adds to front, dedupes, caps).
+ */
+export function recordRecentParcel(parcelId: string): void {
+  useParcelContextStore.getState().recordRecent(parcelId);
+}
+
+/**
+ * Select a parcel from recents and set as current context.
+ * Emits trace event with source: 'indicator_recent'.
+ */
+export function selectRecentParcel(parcelId: string): void {
+  const { recentParcels, setContext, recordRecent } = useParcelContextStore.getState();
+
+  // Only select if parcel exists in recents
+  if (!recentParcels.includes(parcelId)) {
+    return;
+  }
+
+  // Set context with indicator_recent source
+  setContext({
+    parcelId,
+    source: 'indicator_recent',
+  });
+
+  // Move to front of recents
+  recordRecent(parcelId);
+
+  // Emit trace event synchronously
+  // Using direct event dispatch to avoid circular import
+  const hashParcelId = (id: string): string => {
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) {
+      const char = id.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash;
+    }
+    return `h-${Math.abs(hash).toString(16)}`;
+  };
+
+  window.dispatchEvent(
+    new CustomEvent('terratrace:parcel_context', {
+      detail: {
+        type: 'parcel_context_set',
+        timestamp: Date.now(),
+        payload: {
+          parcelIdHash: hashParcelId(parcelId),
+          source: 'indicator_recent',
+        },
+      },
+    })
+  );
+}
+
+/**
+ * Hook to access recent parcels.
+ */
+export function useRecentParcels(): string[] {
+  return useParcelContextStore((state) => state.recentParcels);
 }

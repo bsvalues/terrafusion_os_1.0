@@ -37,7 +37,8 @@ export type ParcelContextSurface =
   | 'route'
   | 'selection'
   | 'session'
-  | 'user_action';
+  | 'user_action'
+  | 'indicator_recent';
 
 /**
  * TerraTrace event payload for parcel context changes.
