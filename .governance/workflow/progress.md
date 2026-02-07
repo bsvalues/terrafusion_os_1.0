@@ -19,7 +19,7 @@
 | **Phase** | Phase 4: Verification & Gates ✅ |
 | **Task** | All complete |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `pending` (Slice 6 commit) |
+| **Latest Commit** | `6a23b1107` (Slice 6 complete) |
 
 ---
 
@@ -101,14 +101,14 @@
 
 | Task | Description | Commit | Tests | Date |
 |------|-------------|--------|-------|------|
-| ✅ 1.1 | Contract tests (TDD) | `pending` | 14 skip (TDD) | 2026-02-07 |
-| ✅ 1.2 | Navigation tests (TDD) | `pending` | 7 skip (TDD) | 2026-02-07 |
-| ✅ 1.3 | Accessibility tests (TDD) | `pending` | 12 skip (TDD) | 2026-02-07 |
-| ✅ 2.1 | Contract types | `pending` | ✅ Type-check | 2026-02-07 |
-| ✅ 2.2 | StandaloneHomeShell component | `pending` | ✅ Type-check | 2026-02-07 |
-| ✅ 3.1 | PilotConsole migration | `pending` | ✅ Type-check | 2026-02-07 |
-| ✅ 3.2 | suiteRegistry homeMeta | `pending` | ✅ Type-check | 2026-02-07 |
-| ✅ 4.1 | Run all gates | `pending` | 32/32 phase83 | 2026-02-07 |
+| ✅ 1.1 | Contract tests (TDD) | `6a23b1107` | 14 skip (TDD) | 2026-02-07 |
+| ✅ 1.2 | Navigation tests (TDD) | `6a23b1107` | 7 skip (TDD) | 2026-02-07 |
+| ✅ 1.3 | Accessibility tests (TDD) | `6a23b1107` | 12 skip (TDD) | 2026-02-07 |
+| ✅ 2.1 | Contract types | `6a23b1107` | ✅ Type-check | 2026-02-07 |
+| ✅ 2.2 | StandaloneHomeShell component | `6a23b1107` | ✅ Type-check | 2026-02-07 |
+| ✅ 3.1 | PilotConsole migration | `6a23b1107` | ✅ Type-check | 2026-02-07 |
+| ✅ 3.2 | suiteRegistry homeMeta | `6a23b1107` | ✅ Type-check | 2026-02-07 |
+| ✅ 4.1 | Run all gates | `6a23b1107` | 32/32 phase83 | 2026-02-07 |
 
 **Key Achievement:** OS-owned StandaloneHomeShell wrapper for standalone suites. PilotConsole migrated to use shared shell with consistent chrome (header + "Standalone" badge + LiquidPanel). suiteRegistry extended with homeMeta.
 
