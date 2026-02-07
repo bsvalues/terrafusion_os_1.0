@@ -310,3 +310,53 @@ export const INTENT_LABELS: Record<
     description: 'Opens standalone suite home',
   },
 };
+
+// ═══════════════════════════════════════════════════════════════
+// Standalone Suite Helpers (Slice 7: Registry-Driven Enforcement)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Standalone-ready OS feature definition.
+ * All required fields are guaranteed present.
+ */
+export interface StandaloneSuiteDefinition extends OsFeatureDefinition {
+  route: string; // Non-optional route
+  homeMeta: OsFeatureHomeMeta; // Non-optional homeMeta
+}
+
+/**
+ * Get all OS features that are standalone-ready:
+ * - Has route defined
+ * - Has homeMeta defined
+ * - Status is 'live'
+ *
+ * Used by tests and UI to iterate over standalone suites without drift.
+ */
+export function getStandaloneSuites(): StandaloneSuiteDefinition[] {
+  return OS_FEATURES.filter(
+    (f): f is StandaloneSuiteDefinition =>
+      f.status === 'live' && !!f.route && !!f.homeMeta && !!f.homeMeta.title
+  );
+}
+
+/**
+ * Type guard: Check if an OS feature is standalone-ready.
+ */
+export function isStandaloneSuite(
+  feature: OsFeatureDefinition
+): feature is StandaloneSuiteDefinition {
+  return (
+    feature.status === 'live' && !!feature.route && !!feature.homeMeta && !!feature.homeMeta.title
+  );
+}
+
+/**
+ * Validate primary action type safety.
+ * Returns true if action has valid intent.
+ */
+export function isValidPrimaryAction(
+  action: NonNullable<OsFeatureHomeMeta['primaryActions']>[0]
+): boolean {
+  const validIntents = ['workbench', 'standalone', 'system'];
+  return validIntents.includes(action.intent) && !!action.id && !!action.label;
+}

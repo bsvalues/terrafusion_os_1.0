@@ -7,12 +7,13 @@
  * Provides context-first navigation: search → select → workbench/suite.
  *
  * Phase 9 Update: Now uses suiteRegistry.ts as single source of truth.
+ * Slice 7 Update: OS entrypoints derived from registry (no hardcoding).
  *
  * Architecture:
  * - Global Search: Find parcels, cases, persons, documents
  * - Recent Work: Quick access to recent parcels/cases
  * - Suite Launcher: Forge, Atlas, Dais, Dossier, GPT (from registry)
- * - OS Entrypoints: Pilot, Trace, Settings
+ * - OS Entrypoints: Pilot, Trace, etc. (from registry)
  *
  * Success Criteria:
  * - `/` loads Shell Home reliably
@@ -108,21 +109,21 @@ const SUITES: Suite[] = CONSTITUTIONAL_SUITES.map((suite) => ({
   intent: getSuiteIntent(suite.id as SuiteId),
 }));
 
-const OS_ENTRYPOINTS = [
-  {
-    id: 'pilot',
-    name: 'Pilot Console',
-    icon: '🎮',
-    route: '/pilot',
-    description: 'Tool execution & governance',
-  },
-  {
-    id: 'trace',
-    name: 'TerraTrace',
-    icon: '🔍',
-    route: '/pilot/dashboard',
-    description: 'Observability & debugging',
-  },
+/**
+ * OS Entrypoints - Derived from registry (Slice 7: no hardcoding).
+ * Uses getStandaloneSuites() for registry parity with launcher.
+ */
+const OS_ENTRYPOINTS = getStandaloneSuites().map((feature) => ({
+  id: feature.id,
+  name: feature.homeMeta.title || feature.displayName,
+  icon: ICON_MAP[feature.iconName] || '📦',
+  route: feature.route,
+  description: feature.description,
+}));
+
+// Add TerraPrime as a non-standalone system entrypoint
+// (It's a legacy surface, not a StandaloneHomeShell user)
+const LEGACY_ENTRYPOINTS = [
   {
     id: 'prime',
     name: 'TerraPrime',
@@ -131,6 +132,9 @@ const OS_ENTRYPOINTS = [
     description: 'Property viewer',
   },
 ];
+
+// Combined entrypoints (registry-driven + legacy)
+const ALL_ENTRYPOINTS = [...OS_ENTRYPOINTS, ...LEGACY_ENTRYPOINTS];
 
 // ============================================================================
 // Components
@@ -246,7 +250,7 @@ const SuiteCard: React.FC<{
  * OS Entrypoint - Utility links with TactileButton ghost variant
  */
 const OSEntrypoint: React.FC<{
-  item: (typeof OS_ENTRYPOINTS)[0];
+  item: (typeof ALL_ENTRYPOINTS)[0];
   onClick: () => void;
 }> = ({ item, onClick }) => (
   <TactileButton
@@ -350,7 +354,7 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
   );
 
   const handleOSEntrypoint = useCallback(
-    (item: (typeof OS_ENTRYPOINTS)[0]) => {
+    (item: (typeof ALL_ENTRYPOINTS)[0]) => {
       navigate(item.route);
     },
     [navigate]
@@ -423,7 +427,7 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
               <span>⚙️</span> System
             </h2>
             <div className='space-y-2'>
-              {OS_ENTRYPOINTS.map((item) => (
+              {ALL_ENTRYPOINTS.map((item) => (
                 <OSEntrypoint key={item.id} item={item} onClick={() => handleOSEntrypoint(item)} />
               ))}
             </div>

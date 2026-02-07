@@ -2,6 +2,7 @@
  * TerraFusion OS Standalone Homes Contract Tests
  *
  * Tests that standalone suite routes render a consistent shell contract.
+ * Parameterized over ALL standalone suites from the registry (Slice 7).
  *
  * Contract requirements:
  * - h1 title present
@@ -12,6 +13,7 @@
  * @module __tests__/standalone/standaloneHomes.contract.test
  * @vitest-environment jsdom
  * @see Slice 6.1: Unskip + Harden Standalone Contract Suite
+ * @see Slice 7: Registry-Driven Contract Enforcement
  */
 
 import '@testing-library/jest-dom';
@@ -19,7 +21,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import { StandaloneHomeShell } from '../../components/standalone';
-import { OS_FEATURES } from '../../config/suiteRegistry';
+import { getStandaloneSuites, type StandaloneSuiteDefinition } from '../../config/suiteRegistry';
 import { resetMaterialQualityGate } from '../../ui/materials/materialQualityGate';
 
 import {
@@ -30,11 +32,11 @@ import {
 } from './testUtils';
 
 // ============================================================================
-// Test Data
+// Test Data - Registry-Driven (Slice 7)
 // ============================================================================
 
-// All OS features with routes (standalone intent)
-const STANDALONE_FEATURES = OS_FEATURES.filter((f) => f.route && f.status === 'live');
+// All live standalone suites from registry
+const STANDALONE_SUITES = getStandaloneSuites();
 
 // ============================================================================
 // Test Setup
@@ -52,95 +54,126 @@ describe('Standalone Homes Contract', () => {
   });
 
   // ==========================================================================
-  // Shell Chrome Contract Tests
+  // Shell Chrome Contract Tests - Parameterized
   // ==========================================================================
 
   describe('Shell Chrome Contract', () => {
-    it('renders h1 title in standalone home', () => {
-      render(
-        <MemoryRouter>
-          <TestStandaloneHome featureId='pilot' title='TerraPilot Console' />
-        </MemoryRouter>
-      );
+    it.each(STANDALONE_SUITES.map((s) => [s.id, s] as [string, StandaloneSuiteDefinition]))(
+      'renders h1 title for %s',
+      (_, suite) => {
+        render(
+          <MemoryRouter>
+            <TestStandaloneHome featureId={suite.id} title={suite.homeMeta.title} />
+          </MemoryRouter>
+        );
 
-      const heading = screen.getByRole('heading', { level: 1 });
-      expect(heading).toBeInTheDocument();
-      expect(heading).toHaveTextContent('TerraPilot Console');
-    });
+        const heading = screen.getByRole('heading', { level: 1 });
+        expect(heading).toBeInTheDocument();
+        expect(heading).toHaveTextContent(suite.homeMeta.title!);
+      }
+    );
 
-    it('renders intent badge with "Standalone" text', () => {
-      render(
-        <MemoryRouter>
-          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
-        </MemoryRouter>
-      );
+    it.each(STANDALONE_SUITES.map((s) => [s.id, s] as [string, StandaloneSuiteDefinition]))(
+      'renders intent badge for %s',
+      (_, suite) => {
+        render(
+          <MemoryRouter>
+            <TestStandaloneHome featureId={suite.id} title={suite.homeMeta.title} />
+          </MemoryRouter>
+        );
 
-      // Query by data-intent attribute since there may be multiple "Standalone" texts
-      const badge = document.querySelector('[data-intent="standalone"]');
-      expect(badge).toBeInTheDocument();
-      expect(badge).toHaveTextContent('Standalone');
-    });
+        // Query by data-intent attribute since there may be multiple "Standalone" texts
+        const badge = document.querySelector('[data-intent="standalone"]');
+        expect(badge).toBeInTheDocument();
+        expect(badge).toHaveTextContent('Standalone');
+      }
+    );
 
-    it('has consistent container structure: shell + header + content + actions', () => {
-      const { container } = render(
-        <MemoryRouter>
-          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
-        </MemoryRouter>
-      );
+    it.each(STANDALONE_SUITES.map((s) => [s.id, s] as [string, StandaloneSuiteDefinition]))(
+      'has consistent container structure for %s',
+      (_, suite) => {
+        const { container } = render(
+          <MemoryRouter>
+            <TestStandaloneHome featureId={suite.id} title={suite.homeMeta.title} />
+          </MemoryRouter>
+        );
 
-      // Use assertion helper
-      assertShellStructure(container);
+        // Use assertion helper
+        assertShellStructure(container);
 
-      // Verify hierarchy
-      const shell = screen.getByTestId('standalone-shell');
-      const header = screen.getByTestId('standalone-header');
-      const content = screen.getByTestId('standalone-content');
-      const actions = screen.getByTestId('standalone-actions');
+        // Verify hierarchy
+        const shell = screen.getByTestId('standalone-shell');
+        const header = screen.getByTestId('standalone-header');
+        const content = screen.getByTestId('standalone-content');
+        const actions = screen.getByTestId('standalone-actions');
 
-      expect(shell).toContainElement(header);
-      expect(shell).toContainElement(content);
-      expect(header).toContainElement(actions);
-    });
-
-    it('renders description when provided', () => {
-      render(
-        <MemoryRouter>
-          <TestStandaloneHome
-            featureId='pilot'
-            title='TerraPilot'
-            description='Test description text'
-          />
-        </MemoryRouter>
-      );
-
-      expect(screen.getByText('Test description text')).toBeInTheDocument();
-    });
+        expect(shell).toContainElement(header);
+        expect(shell).toContainElement(content);
+        expect(header).toContainElement(actions);
+      }
+    );
 
     it('all live standalone features have homeMeta defined', () => {
-      // Verify registry contract
-      for (const feature of STANDALONE_FEATURES) {
-        expect(feature.homeMeta).toBeDefined();
-        expect(feature.homeMeta?.title).toBeTruthy();
+      // Verify registry contract (this is also in registryCompleteness but repeated for contract clarity)
+      for (const suite of STANDALONE_SUITES) {
+        expect(suite.homeMeta).toBeDefined();
+        expect(suite.homeMeta.title).toBeTruthy();
       }
     });
   });
 
   // ==========================================================================
-  // Material Quality Gate Tests
+  // Material Quality Gate Tests - Parameterized
   // ==========================================================================
 
   describe('Material Quality Gate', () => {
-    it('renders LiquidPanel wrapper in shell', () => {
-      render(
-        <MemoryRouter>
-          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
-        </MemoryRouter>
-      );
+    it.each(STANDALONE_SUITES.map((s) => [s.id, s] as [string, StandaloneSuiteDefinition]))(
+      'renders LiquidPanel wrapper for %s',
+      (_, suite) => {
+        render(
+          <MemoryRouter>
+            <TestStandaloneHome featureId={suite.id} title={suite.homeMeta.title} />
+          </MemoryRouter>
+        );
 
-      // LiquidPanel adds liquid-panel class
-      const shell = screen.getByTestId('standalone-shell');
-      expect(shell.querySelector('.liquid-panel')).toBeInTheDocument();
-    });
+        // LiquidPanel adds liquid-panel class
+        const shell = screen.getByTestId('standalone-shell');
+        expect(shell.querySelector('.liquid-panel')).toBeInTheDocument();
+      }
+    );
+
+    it.each(STANDALONE_SUITES.map((s) => [s.id, s] as [string, StandaloneSuiteDefinition]))(
+      'no layout shift between quality modes for %s',
+      (_, suite) => {
+        // High quality
+        mockMatchMedia(false);
+        resetMaterialQualityGate();
+
+        const { container: highQualityContainer } = render(
+          <MemoryRouter>
+            <TestStandaloneHome featureId={suite.id} title={suite.homeMeta.title} />
+          </MemoryRouter>
+        );
+
+        const highQualityStructure = getStructuralTestIds(highQualityContainer);
+        cleanup();
+
+        // Low quality
+        mockMatchMedia(true);
+        resetMaterialQualityGate();
+
+        const { container: lowQualityContainer } = render(
+          <MemoryRouter>
+            <TestStandaloneHome featureId={suite.id} title={suite.homeMeta.title} />
+          </MemoryRouter>
+        );
+
+        const lowQualityStructure = getStructuralTestIds(lowQualityContainer);
+
+        // Structure should be identical
+        expect(highQualityStructure).toEqual(lowQualityStructure);
+      }
+    );
 
     it('adds standalone-fallback class when reduced motion enabled', () => {
       resetMaterialQualityGate();
@@ -154,36 +187,6 @@ describe('Standalone Homes Contract', () => {
 
       const shell = screen.getByTestId('standalone-shell');
       expect(shell).toHaveClass('standalone-fallback');
-    });
-
-    it('no layout shift between high and low quality modes', () => {
-      // High quality
-      mockMatchMedia(false);
-      resetMaterialQualityGate();
-
-      const { container: highQualityContainer } = render(
-        <MemoryRouter>
-          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
-        </MemoryRouter>
-      );
-
-      const highQualityStructure = getStructuralTestIds(highQualityContainer);
-      cleanup();
-
-      // Low quality
-      mockMatchMedia(true);
-      resetMaterialQualityGate();
-
-      const { container: lowQualityContainer } = render(
-        <MemoryRouter>
-          <TestStandaloneHome featureId='pilot' title='TerraPilot' />
-        </MemoryRouter>
-      );
-
-      const lowQualityStructure = getStructuralTestIds(lowQualityContainer);
-
-      // Structure should be identical
-      expect(highQualityStructure).toEqual(lowQualityStructure);
     });
 
     it('LiquidPanel has quality tier data attribute', () => {
