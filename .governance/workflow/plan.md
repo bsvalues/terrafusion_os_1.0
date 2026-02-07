@@ -1,145 +1,156 @@
-# Plan Document Template
+# Plan: Workbench Shell Materials Adoption
 
-> **Purpose:** Define phases, tasks, acceptance criteria, and risk mitigation BEFORE execution.
-> This is a REQUIRED artifact for any non-trivial change (feature/refactor/UX).
+> **Purpose:** Apply Visual Renaissance materials (LiquidPanel, TactileButton) to Workbench shell components.
+> **Strategy:** "Skin the shell, not the suites" - OS-owned Tier-0 surface only.
 
 ---
 
-* **Project:** [Name of initiative]
-* **Branch/PR:** [Branch name or PR #]
-* **Date:** [YYYY-MM-DD]
-* **Discovery Link:** [Link to discovery.md sections]
-* **Research Link:** [Link to research.md sections]
+* **Project:** Workbench Materials Adoption (Visual Renaissance)
+* **Branch/PR:** main (direct, per solo-dev mode)
+* **Date:** 2026-02-07
+* **Discovery Link:** Reusing PR#255/256 research (design-system primitive adoption = NOT new initiative)
+* **Research Link:** PR#256 merged LiquidPanel + TactileButton primitives
 
 ---
 
 ## Definition of Done
 
-> What MUST be true for this to be complete? Reference discovery objectives.
+> What MUST be true for this to be complete?
 
-- [ ] [Criterion 1 - linked to Objective A.1]
-- [ ] [Criterion 2 - linked to Objective A.2]
-- [ ] [Criterion 3 - linked to Research finding]
-- [ ] All tests pass (type-check, unit, phase83-tools)
-- [ ] Build succeeds
-- [ ] No regressions to existing harness tests
-- [ ] Documentation updated
+- [x] Workbench shell adopts Liquid/Tactile primitives for 3 high-salience surfaces
+- [x] ParcelContextHeader uses LiquidPanel (no raw legacy panels)
+- [x] ResultPanel uses LiquidPanel with consistent padding/radius/shadow
+- [x] InvocationHistory uses TactileButton; keyboard focus states intact
+- [x] materialQualityGate enforced (fallback path without layout shift)
+- [x] All tests pass (type-check, unit, phase83-tools)
+- [x] Build succeeds
+- [x] No regressions to routing truth, idle pulse, or tab order (PR#255 protections)
+- [x] Gate 8 + Gate 9 pass (no GOVERNANCE OUTAGE)
 
 ---
 
 ## Phases & Tasks
 
-### Phase 1: [Foundation / Setup]
+### Phase 1: Test Harness (TDD)
 
-> First phase - typically scaffolding, tests, configuration.
+> Write tests first for materials adoption + regression protection.
 
-#### Task 1.1: [Task name]
+#### Task 1.1: Materials Gate Coverage
 
-* **Description:** [What to do]
-* **Files:** [Which files to create/modify]
+* **Description:** Write tests for LiquidPanel/TactileButton adoption in Workbench components
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/workbench/workbench.materials.test.tsx` (NEW)
 * **Tests (TDD):**
-  - [ ] [Test case 1]
-  - [ ] [Test case 2]
+  - [x] renders ParcelContextHeader with LiquidPanel when gate enabled
+  - [x] falls back to legacy container when gate disabled
+  - [x] InvocationHistory TactileButton preserves keyboard focus order
+  - [x] ResultPanel uses LiquidPanel with consistent spacing
 * **Acceptance Criteria:**
-  - [ ] [Criterion 1]
-  - [ ] [Criterion 2]
+  - [x] Tests written BEFORE implementation
+  - [x] Tests fail initially (no materials applied yet)
 
-#### Task 1.2: [Task name]
+#### Task 1.2: Regression Protection
 
-* **Description:** [What to do]
-* **Files:** [Which files to create/modify]
+* **Description:** Add regression assertions for focus + routing stability
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/workbench/workbench.regression.test.tsx` (NEW)
 * **Tests (TDD):**
-  - [ ] [Test case 1]
+  - [x] does not change tab order in Workbench shell scaffold
+  - [x] route /property/:parcelId defaults to Summary without extra re-renders
 * **Acceptance Criteria:**
-  - [ ] [Criterion 1]
+  - [x] Tab order assertions from PR#255 extended
+  - [x] Routing truth assertions remain stable
 
 ---
 
-### Phase 2: [Implementation]
+### Phase 2: Materials Implementation
 
-> Core implementation phase.
+> Apply Liquid/Tactile primitives behind quality gate.
 
-#### Task 2.1: [Task name]
+#### Task 2.1: ParcelContextHeader Materials
 
-* **Description:** [What to do]
-* **Files:** [Which files to create/modify]
-* **Tests (TDD):**
-  - [ ] [Test case 1]
+* **Description:** Wrap header in LiquidPanel behind materialQualityGate
+* **Files:**
+  - `frontend/apps/os-shell/src/components/workbench/ParcelContextHeader.tsx`
+* **Implementation:**
+  - Import LiquidPanel, useMaterialQuality
+  - Wrap outer div in LiquidPanel variant="infrastructure"
+  - Preserve data-testid and aria attributes
+  - Status chips keep semantic contrast in fallback
 * **Acceptance Criteria:**
-  - [ ] [Criterion 1]
-* **Risk Reference:** [Link to risk register if applicable]
+  - [x] LiquidPanel applied
+  - [x] Fallback renders without layout shift
+  - [x] Existing tests still pass
 
-#### Task 2.2: [Task name]
+#### Task 2.2: ResultPanel Materials
 
-* **Description:** [What to do]
-* **Files:** [Which files to create/modify]
-* **Tests (TDD):**
-  - [ ] [Test case 1]
+* **Description:** Replace legacy panel container with LiquidPanel
+* **Files:**
+  - `frontend/apps/os-shell/src/components/workbench/ResultPanel.tsx`
+* **Implementation:**
+  - Import LiquidPanel
+  - Apply to idle, loading, success, error states with appropriate variants
+  - Normalize spacing with Liquid tokens
 * **Acceptance Criteria:**
-  - [ ] [Criterion 1]
+  - [x] All 4 states use LiquidPanel
+  - [x] Consistent padding/radius/shadow semantics
+  - [x] Error state contrast meets WCAG AA
+
+#### Task 2.3: InvocationHistory TactileButtons
+
+* **Description:** Convert action buttons to TactileButton
+* **Files:**
+  - `frontend/apps/os-shell/src/components/workbench/InvocationHistory.tsx`
+* **Implementation:**
+  - Import TactileButton
+  - Replace Copy button with TactileButton variant="ghost"
+  - Preserve aria-label and focus ring
+  - Ensure keyboard tabbing order unchanged
+* **Acceptance Criteria:**
+  - [x] Copy buttons are TactileButtons
+  - [x] Focus order preserved (regression test passes)
+  - [x] Spring animation respects reduced-motion
 
 ---
 
-### Phase 3: [Integration / Migration]
+### Phase 3: Verification
 
-> Integration with existing systems, migration of surfaces.
+> Final verification before merge.
 
-#### Task 3.1: [Task name]
+#### Task 3.1: Run All Gates
 
-* **Description:** [What to do]
-* **Files:** [Which files to create/modify]
-* **Tests (TDD):**
-  - [ ] [Test case 1]
+* **Description:** Execute full test suite + SEAL gates
 * **Acceptance Criteria:**
-  - [ ] [Criterion 1]
-
----
-
-### Phase 4: [Verification / Cleanup]
-
-> Final verification, cleanup, documentation.
-
-#### Task 4.1: [Task name]
-
-* **Description:** [What to do]
-* **Acceptance Criteria:**
-  - [ ] All gates pass
-  - [ ] PR approved
-  - [ ] Merged to main
+  - [x] `pnpm test` passes
+  - [x] `pnpm type-check` passes
+  - [x] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
+  - [x] Gate 8 + Gate 9 pass
 
 ---
 
 ## Risk Register
 
-> Document known risks with mitigation and rollback strategies.
-
 | ID | Risk | Severity | Likelihood | Mitigation | Rollback |
 |----|------|----------|------------|------------|----------|
-| R1 | [Risk description] | High/Med/Low | High/Med/Low | [What to do to prevent] | [How to undo if it happens] |
-| R2 | [Risk description] | High/Med/Low | High/Med/Low | [Mitigation] | [Rollback] |
-| R3 | [Risk description] | High/Med/Low | High/Med/Low | [Mitigation] | [Rollback] |
+| R1 | Focus order broken by TactileButton | High | Low | Regression test catches it | Revert InvocationHistory change |
+| R2 | Layout shift on fallback | Med | Low | Test both gate on/off states | Use static backdrop instead |
+| R3 | WCAG contrast failure on glass | Med | Low | LiquidPanel has built-in contrast | Use getGlassTextColor() |
 
 ---
 
 ## Git Strategy
 
-> How commits should be structured.
-
-1. `test(scope): [description]` - Write tests first (TDD)
-2. `feat(scope): [description]` - Implement features
-3. `refactor(scope): [description]` - Migrate existing code
-4. `docs(scope): [description]` - Documentation updates
+1. `test(workbench): materials gate coverage for header/panels`
+2. `test(workbench): regression assertions for focus + routing`
+3. `feat(workbench): apply Liquid/Tactile materials behind quality gate`
 
 ---
 
 ## Dependencies
 
-> What must be true/complete before this work can proceed?
-
-- [ ] [Dependency 1 - e.g., PR #XXX merged]
-- [ ] [Dependency 2 - e.g., main branch green]
-- [x] Discovery complete
-- [x] Research complete
+- [x] PR#256 merged (Visual Renaissance primitives)
+- [x] main branch green
+- [x] Governance hardening complete (commit 066be828f)
 
 ---
 

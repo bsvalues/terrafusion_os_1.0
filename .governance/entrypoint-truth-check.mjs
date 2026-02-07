@@ -10,9 +10,9 @@
  *   1 - Truth violation detected
  */
 
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import crypto from 'node:crypto';
 
 const ROOT = process.cwd();
 const ENTRYPOINT_PATH = path.join(ROOT, '.github', 'AGENT_ENTRYPOINT.md');
