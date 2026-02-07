@@ -228,12 +228,22 @@ describe('Workbench Registry Completeness', () => {
       }
     });
 
-    it('workbench launcher routes follow /property/:parcelId/:tab pattern', () => {
+    it('workbench launcher routes follow context-aware pattern (Slice 9)', () => {
+      // Slice 9: Without parcel context, launcher routes to fallback
+      // With context: /property/:parcelId/:tab
+      // Without context: /property/search?openTab=:tab
       const launcherItems = getLauncherItems();
       const workbenchItems = launcherItems.filter((item) => item.intent === 'workbench');
 
+      // In test environment without parcel context, expect fallback pattern
+      const workbenchPattern = /^\/property\/[^/]+\/[^/]+$/;
+      const fallbackPattern = /^\/property\/search\?openTab=[a-z]+$/;
+
       for (const item of workbenchItems) {
-        expect(item.route).toMatch(/^\/property\/[^/]+\/[^/]+$/);
+        // Route should match one of the valid patterns
+        const isWorkbenchRoute = workbenchPattern.test(item.route);
+        const isFallbackRoute = fallbackPattern.test(item.route);
+        expect(isWorkbenchRoute || isFallbackRoute).toBe(true);
       }
     });
   });

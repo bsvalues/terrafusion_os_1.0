@@ -476,3 +476,98 @@ export function getWorkbenchHrefById(suiteId: SuiteId, parcelId: string): string
   if (!suite || !isWorkbenchSuite(suite)) return null;
   return getWorkbenchHref(suite, parcelId);
 }
+
+// ============================================================================
+// Context-Aware Workbench Navigation (Slice 9)
+// ============================================================================
+
+/**
+ * Fallback route prefix for workbench when no parcel context exists.
+ * Format: /property/search?openTab=<tabId>
+ */
+export const WORKBENCH_FALLBACK_BASE = '/property/search';
+
+/**
+ * Generate fallback workbench route when parcel context is absent.
+ * Preserves tab intent via query param so parcel selection can redirect correctly.
+ *
+ * @param suite - The workbench suite definition
+ * @returns Fallback route with preserved tab intent
+ */
+export function getWorkbenchFallbackRoute(suite: WorkbenchSuiteDefinition): string {
+  const tabId = suite.workbenchTarget.tabId;
+  return `${WORKBENCH_FALLBACK_BASE}?openTab=${tabId}`;
+}
+
+/**
+ * Generate fallback workbench route by suite ID.
+ *
+ * @param suiteId - The suite identifier
+ * @returns Fallback route, or null if not a workbench suite
+ */
+export function getWorkbenchFallbackById(suiteId: SuiteId): string | null {
+  const suite = getSuiteById(suiteId);
+  if (!suite || !isWorkbenchSuite(suite)) return null;
+  return getWorkbenchFallbackRoute(suite);
+}
+
+/**
+ * Result of context-aware workbench href generation.
+ */
+export interface WorkbenchHrefResult {
+  /** The generated href */
+  href: string;
+  /** Whether a real parcel context was used */
+  hasParcelContext: boolean;
+  /** The parcel ID used (if any) */
+  parcelId: string | null;
+  /** Whether this routes to fallback (parcel selection) */
+  isFallback: boolean;
+}
+
+/**
+ * Generate context-aware workbench href.
+ *
+ * If parcel context exists: `/property/<parcelId>/<tab>`
+ * If not: `/property/search?openTab=<tabId>` (fallback to parcel selection)
+ *
+ * @param suite - The workbench suite definition
+ * @param parcelId - Optional parcel ID (if null, generates fallback)
+ * @returns WorkbenchHrefResult with href and context info
+ */
+export function getWorkbenchHrefWithContext(
+  suite: WorkbenchSuiteDefinition,
+  parcelId: string | null
+): WorkbenchHrefResult {
+  if (parcelId) {
+    return {
+      href: getWorkbenchHref(suite, parcelId),
+      hasParcelContext: true,
+      parcelId,
+      isFallback: false,
+    };
+  }
+
+  return {
+    href: getWorkbenchFallbackRoute(suite),
+    hasParcelContext: false,
+    parcelId: null,
+    isFallback: true,
+  };
+}
+
+/**
+ * Generate context-aware workbench href by suite ID.
+ *
+ * @param suiteId - The suite identifier
+ * @param parcelId - Optional parcel ID
+ * @returns WorkbenchHrefResult, or null if not a workbench suite
+ */
+export function getWorkbenchHrefByIdWithContext(
+  suiteId: SuiteId,
+  parcelId: string | null
+): WorkbenchHrefResult | null {
+  const suite = getSuiteById(suiteId);
+  if (!suite || !isWorkbenchSuite(suite)) return null;
+  return getWorkbenchHrefWithContext(suite, parcelId);
+}

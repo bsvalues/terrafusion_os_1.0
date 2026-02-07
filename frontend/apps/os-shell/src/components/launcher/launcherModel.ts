@@ -11,12 +11,13 @@ import { NavigateFunction } from 'react-router-dom';
 import {
     CONSTITUTIONAL_SUITES,
     getSuiteIntent,
-    getWorkbenchHref,
+    getWorkbenchHrefWithContext,
     INTENT_LABELS,
     isWorkbenchSuite,
     OS_FEATURES,
     type SuiteId,
 } from '../../config/suiteRegistry';
+import { getCurrentParcelId } from '../../context/parcelContext';
 
 // ============================================================================
 // Types
@@ -69,12 +70,6 @@ export interface LauncherSection {
 // ============================================================================
 // Constants
 // ============================================================================
-
-/**
- * Demo parcel for Workbench routing.
- * In production, this would come from context (last selected parcel).
- */
-const DEMO_PARCEL_ID = '1234567890';
 
 /**
  * Icon mapping for iconName → emoji.
@@ -131,14 +126,24 @@ export const SYSTEM_ACTIONS: LauncherItem[] = [
 /**
  * Get launcher items from the suite registry.
  * This adapts the constitutional registry to the launcher model.
+ * Uses context-aware workbench href generation (Slice 9).
  */
 export function getLauncherItems(): LauncherItem[] {
+  // Get current parcel context (may be null if no parcel selected)
+  const currentParcelId = getCurrentParcelId();
+
   const suiteItems: LauncherItem[] = CONSTITUTIONAL_SUITES.map((suite) => {
     const intent = getSuiteIntent(suite.id as SuiteId);
     const intentLabel = INTENT_LABELS[intent];
 
-    // Use canonical href generator from registry for workbench suites
-    const route = isWorkbenchSuite(suite) ? getWorkbenchHref(suite, DEMO_PARCEL_ID) : suite.route;
+    // Use context-aware href generator (falls back to parcel selection if no context)
+    let route: string;
+    if (isWorkbenchSuite(suite)) {
+      const hrefResult = getWorkbenchHrefWithContext(suite, currentParcelId);
+      route = hrefResult.href;
+    } else {
+      route = suite.route;
+    }
 
     return {
       id: suite.id,

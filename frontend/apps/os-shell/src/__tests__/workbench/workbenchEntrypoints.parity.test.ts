@@ -8,13 +8,21 @@
  * - ShellHome tile href === Launcher item route for same suite
  * - Both derive from getWorkbenchHref canonical generator
  * - No hardcoded tab mappings outside registry
+ * - Slice 9: Context-aware navigation (fallback when no parcel context)
  *
  * @module __tests__/workbench/workbenchEntrypoints.parity.test
  * @see Slice 8: Workbench Entry Contract + Cross-Surface Deep-Link Truth
+ * @see Slice 9: Unified "Open Context" Contract
  */
 
 import { getLauncherItems } from '../../components/launcher/launcherModel';
-import { getWorkbenchHref, getWorkbenchSuites } from '../../config/suiteRegistry';
+import {
+    getWorkbenchFallbackRoute,
+    getWorkbenchHref,
+    getWorkbenchSuites,
+    WORKBENCH_FALLBACK_BASE
+} from '../../config/suiteRegistry';
+import { setParcelContext, useParcelContextStore } from '../../context/parcelContext';
 
 // ============================================================================
 // Test Constants
@@ -27,16 +35,51 @@ import { getWorkbenchHref, getWorkbenchSuites } from '../../config/suiteRegistry
 const DEMO_PARCEL_ID = '1234567890';
 
 // ============================================================================
+// Test Helpers
+// ============================================================================
+
+function resetParcelContext() {
+  useParcelContextStore.setState({ context: null });
+}
+
+function setTestParcelContext(parcelId: string) {
+  setParcelContext({ parcelId, source: 'selection' });
+}
+
+// ============================================================================
 // Parity Tests
 // ============================================================================
 
 describe('Workbench Entrypoints Parity', () => {
+  // Reset parcel context between tests
+  beforeEach(() => {
+    resetParcelContext();
+  });
+
   // ==========================================================================
   // Cross-Surface Href Parity
   // ==========================================================================
 
   describe('Launcher ↔ Registry Parity', () => {
-    it('launcher routes match registry-generated hrefs', () => {
+    it('launcher routes use context-aware href generation (Slice 9)', () => {
+      // Without parcel context, launcher uses fallback routes
+      const suites = getWorkbenchSuites();
+      const launcherItems = getLauncherItems();
+
+      for (const suite of suites) {
+        const launcherItem = launcherItems.find((item) => item.id === suite.id);
+        expect(launcherItem).toBeDefined();
+
+        // Slice 9: Without context, expect fallback route
+        const expectedFallback = getWorkbenchFallbackRoute(suite);
+        expect(launcherItem?.route).toBe(expectedFallback);
+      }
+    });
+
+    it('launcher routes match registry when parcel context exists', () => {
+      // With parcel context, launcher uses workbench routes
+      setTestParcelContext(DEMO_PARCEL_ID);
+
       const suites = getWorkbenchSuites();
       const launcherItems = getLauncherItems();
 
@@ -45,8 +88,6 @@ describe('Workbench Entrypoints Parity', () => {
         expect(launcherItem).toBeDefined();
 
         const registryHref = getWorkbenchHref(suite, DEMO_PARCEL_ID);
-
-        // Launcher should use same parcel ID and generate same route
         expect(launcherItem?.route).toBe(registryHref);
       }
     });
@@ -109,11 +150,25 @@ describe('Workbench Entrypoints Parity', () => {
   });
 
   // ==========================================================================
-  // Demo Parcel Consistency
+  // Context-Aware Demo Consistency (Slice 9)
   // ==========================================================================
 
-  describe('Demo Parcel Consistency', () => {
-    it('all launcher workbench items use same demo parcel', () => {
+  describe('Context-Aware Demo Consistency', () => {
+    it('without context: launcher workbench items use fallback route', () => {
+      // No parcel context set
+      const launcherItems = getLauncherItems();
+      const workbenchItems = launcherItems.filter((item) => item.intent === 'workbench');
+
+      for (const item of workbenchItems) {
+        // Fallback routes start with /property/search
+        expect(item.route).toContain(WORKBENCH_FALLBACK_BASE);
+      }
+    });
+
+    it('with context: launcher workbench items use parcel route', () => {
+      // Set parcel context
+      setTestParcelContext(DEMO_PARCEL_ID);
+
       const launcherItems = getLauncherItems();
       const workbenchItems = launcherItems.filter((item) => item.intent === 'workbench');
 

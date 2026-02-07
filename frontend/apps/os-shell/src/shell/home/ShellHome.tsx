@@ -31,6 +31,7 @@ import {
     getStandaloneSuites,
     getSuiteIntent,
     INTENT_LABELS,
+    isWorkbenchSuite,
     type SuiteId,
 } from '../../config/suiteRegistry';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
@@ -64,12 +65,6 @@ interface RecentItem {
 // Suite Configuration - FROM CONSTITUTIONAL REGISTRY (Honest Routing)
 // ============================================================================
 
-/**
- * Demo parcel for Workbench routing.
- * Suites route to Workbench tabs (real MWUX) not WIP suite homes.
- */
-const DEMO_PARCEL_ID = '1234567890';
-
 // Map iconName to emoji (temporary until we wire Lucide icons)
 const ICON_MAP: Record<string, string> = {
   Hammer: '🔨',
@@ -91,28 +86,30 @@ const COLOR_MAP: Record<string, string> = {
 };
 
 /**
- * Demo parcel for Workbench routing.
- * Suites route to Workbench tabs (real MWUX) not WIP suite homes.
+ * Build suites array with context-aware routing (Slice 9).
+ * Uses parcel context for workbench suites, fallback route when absent.
  */
-const DEMO_PARCEL_ID = '1234567890';
+function buildSuites(parcelId: string | null): Suite[] {
+  return CONSTITUTIONAL_SUITES.map((suite) => {
+    let route: string;
+    if (isWorkbenchSuite(suite)) {
+      const hrefResult = getWorkbenchHrefWithContext(suite, parcelId);
+      route = hrefResult.href;
+    } else {
+      route = suite.route;
+    }
 
-/**
- * SUITES - Derived from CONSTITUTIONAL_SUITES registry.
- * Routes use canonical getWorkbenchHref() for workbench suites (Slice 8).
- */
-const SUITES: Suite[] = CONSTITUTIONAL_SUITES.map((suite) => {
-  const route = isWorkbenchSuite(suite) ? getWorkbenchHref(suite, DEMO_PARCEL_ID) : suite.route;
-
-  return {
-    id: suite.id,
-    name: suite.displayName,
-    description: suite.description,
-    icon: ICON_MAP[suite.iconName] || '📦',
-    route,
-    color: COLOR_MAP[suite.id] || 'from-slate-500 to-slate-600',
-    intent: getSuiteIntent(suite.id as SuiteId),
-  };
-});
+    return {
+      id: suite.id,
+      name: suite.displayName,
+      description: suite.description,
+      icon: ICON_MAP[suite.iconName] || '📦',
+      route,
+      color: COLOR_MAP[suite.id] || 'from-slate-500 to-slate-600',
+      intent: getSuiteIntent(suite.id as SuiteId),
+    };
+  });
+}
 
 /**
  * OS Entrypoints - Derived from registry (Slice 7: no hardcoding).
@@ -312,6 +309,15 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
   const navigate = useNavigate();
   const recentApps = useStartMenuStore((state) => state.recentApps);
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
+
+  // Get current parcel context (Slice 9: context-aware navigation)
+  const parcelContext = useParcelContext();
+
+  // Build suites with context-aware workbench routes
+  const SUITES = useMemo(
+    () => buildSuites(parcelContext?.parcelId ?? null),
+    [parcelContext?.parcelId]
+  );
 
   // Mock recent items (in production, this would come from a store)
   const recentItems: RecentItem[] = [

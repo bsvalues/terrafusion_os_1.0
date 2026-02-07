@@ -19,7 +19,8 @@
 import { createContext, useContext, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-import { getOsFeatureById } from '../../config/suiteRegistry';
+import { getOsFeatureById, WORKBENCH_FALLBACK_BASE } from '../../config/suiteRegistry';
+import { useParcelContext } from '../../context/parcelContext';
 import { LiquidPanel, TactileButton, useMaterialQuality } from '../../ui/materials';
 import { Badge } from '../ui/badge';
 import {
@@ -58,15 +59,18 @@ export function useStandaloneHome(): StandaloneHomeContext {
 
 /**
  * Header section with title, badge, and primary actions.
+ * Slice 9: Supports both "Open in Workbench" (with parcel) and "Choose parcel" (without).
  */
 function ShellHeader({
   meta,
   parcelContext,
   onOpenWorkbench,
+  onChooseParcel,
 }: {
   meta: StandaloneHomeMeta;
   parcelContext: StandaloneParcelContext | null;
   onOpenWorkbench: () => void;
+  onChooseParcel: () => void;
 }) {
   const quality = useMaterialQuality();
 
@@ -109,17 +113,30 @@ function ShellHeader({
           <ActionButton key={action.id} action={action} />
         ))}
 
-        {/* Workbench CTA (when parcel context exists) */}
+        {/* Workbench CTA - Slice 9: Context-aware behavior */}
         {meta.showWorkbenchCta && parcelContext && (
           <TactileButton
             variant='primary'
             onClick={onOpenWorkbench}
             className='standalone-shell__workbench-cta'
+            data-testid='workbench-cta-open'
           >
             Open in Workbench
             {parcelContext.parcelName && (
               <span className='standalone-shell__parcel-hint'>({parcelContext.parcelName})</span>
             )}
+          </TactileButton>
+        )}
+
+        {/* Fallback CTA when no parcel context - Slice 9 */}
+        {meta.showWorkbenchCta && !parcelContext && (
+          <TactileButton
+            variant='secondary'
+            onClick={onChooseParcel}
+            className='standalone-shell__workbench-cta standalone-shell__workbench-cta--fallback'
+            data-testid='workbench-cta-choose'
+          >
+            Choose parcel to open in Workbench
           </TactileButton>
         )}
       </div>
@@ -210,9 +227,15 @@ export function StandaloneHomeShell({
     };
   }, [featureDefinition, metaOverrides]);
 
+  // Get parcel context from store (Slice 9: unified parcel context)
+  const storeParcelContext = useParcelContext();
+
   // Extract parcel context from location state (if navigated from workbench)
+  // Location state takes precedence over store (reflects navigation intent)
   const parcelContext = useMemo<StandaloneParcelContext | null>(() => {
     const state = location.state as { parcelId?: string; parcelName?: string } | null;
+
+    // Priority 1: Location state (explicit navigation)
     if (state?.parcelId) {
       return {
         parcelId: state.parcelId,
@@ -220,14 +243,30 @@ export function StandaloneHomeShell({
         targetSuite: featureId,
       };
     }
-    return null;
-  }, [location.state, featureId]);
 
-  // Open in Workbench handler
+    // Priority 2: Store context (session-persisted parcel)
+    if (storeParcelContext?.parcelId) {
+      return {
+        parcelId: storeParcelContext.parcelId,
+        parcelName: storeParcelContext.parcelName,
+        targetSuite: featureId,
+      };
+    }
+
+    return null;
+  }, [location.state, storeParcelContext, featureId]);
+
+  // Open in Workbench handler (with parcel context)
   const openInWorkbench = () => {
     if (parcelContext) {
       navigate(`/property/${parcelContext.parcelId}/${featureId}`);
     }
+  };
+
+  // Choose parcel handler (without parcel context - Slice 9 fallback)
+  const chooseParcelForWorkbench = () => {
+    // Navigate to parcel selection with intent to open this tab
+    navigate(`${WORKBENCH_FALLBACK_BASE}?openTab=${featureId}`);
   };
 
   // Build context value
@@ -258,6 +297,7 @@ export function StandaloneHomeShell({
             meta={resolvedMeta}
             parcelContext={parcelContext}
             onOpenWorkbench={openInWorkbench}
+            onChooseParcel={chooseParcelForWorkbench}
           />
 
           <main role='main' data-testid='standalone-content' className='standalone-shell__content'>
