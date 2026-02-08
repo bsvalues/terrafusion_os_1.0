@@ -27,151 +27,6 @@ interface SerializedPolicyStore {
   updatedAt: string;
 }
 
-/**
- * Export/Import JSON Schema (v1.0)
- *
- * Enables reproducibility, disaster recovery, cross-environment consistency
- */
-export interface PolicyExportSchema {
-  version: '1.0';
-  exportedAt: string;
-  rules: PolicyRule[];
-}
-
-/**
- * Import validation error
- */
-export interface ImportValidationError {
-  code: 'INVALID_JSON' | 'INVALID_SCHEMA' | 'UNSUPPORTED_VERSION' | 'INVALID_RULE';
-  message: string;
-}
-
-/**
- * Import result (success or error)
- */
-export type ImportResult =
-  | { success: true; rules: PolicyRule[] }
-  | { success: false; error: ImportValidationError };
-
-// ============================================================================
-// Pure Import Logic (for deterministic testing)
-// ============================================================================
-
-/**
- * Imports policy rules from JSON string (pure function, no side effects)
- *
- * This is extracted from the PolicyStore to enable deterministic testing
- * without FileReader timing dependencies.
- *
- * @param jsonString - JSON string to parse and validate
- * @returns Import result with rules or validation error
- */
-export function importRulesFromJson(jsonString: string): ImportResult {
-  // Parse JSON
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(jsonString);
-  } catch (error) {
-    return {
-      success: false,
-      error: {
-        code: 'INVALID_JSON',
-        message: 'Invalid JSON format. Please upload a valid policy export file.',
-      },
-    };
-  }
-
-  // Validate schema structure
-  if (typeof parsed !== 'object' || parsed === null) {
-    return {
-      success: false,
-      error: {
-        code: 'INVALID_SCHEMA',
-        message: 'Invalid schema: expected an object.',
-      },
-    };
-  }
-
-  const obj = parsed as Record<string, unknown>;
-
-  // Check version
-  if (!obj.version) {
-    return {
-      success: false,
-      error: {
-        code: 'INVALID_SCHEMA',
-        message: 'Missing schema version. Please upload a valid policy export file.',
-      },
-    };
-  }
-
-  if (obj.version !== '1.0') {
-    return {
-      success: false,
-      error: {
-        code: 'UNSUPPORTED_VERSION',
-        message: `Unsupported schema version: ${obj.version}. This app supports version 1.0.`,
-      },
-    };
-  }
-
-  // Check rules array
-  if (!Array.isArray(obj.rules)) {
-    return {
-      success: false,
-      error: {
-        code: 'INVALID_SCHEMA',
-        message: 'Invalid schema: expected rules array.',
-      },
-    };
-  }
-
-  // Validate each rule
-  for (const rule of obj.rules) {
-    if (typeof rule !== 'object' || rule === null) {
-      return {
-        success: false,
-        error: {
-          code: 'INVALID_RULE',
-          message: 'Invalid rule structure: expected object.',
-        },
-      };
-    }
-
-    const r = rule as Record<string, unknown>;
-
-    // Validate rule has at least one selector
-    const hasSelector = r.surface || r.suiteId || r.actionId;
-    if (!hasSelector) {
-      return {
-        success: false,
-        error: {
-          code: 'INVALID_RULE',
-          message:
-            'Invalid rule structure: rules must specify at least one selector (surface, suiteId, or actionId).',
-        },
-      };
-    }
-
-    // Validate effect
-    if (r.effect && r.effect !== 'deny') {
-      return {
-        success: false,
-        error: {
-          code: 'INVALID_RULE',
-          message: `Invalid rule effect: ${r.effect}. Only 'deny' is supported.`,
-        },
-      };
-    }
-  }
-
-  // Success
-  return {
-    success: true,
-    rules: obj.rules as PolicyRule[],
-  };
-}
-
 // ============================================================================
 // Policy Store Interface
 // ============================================================================
@@ -194,21 +49,6 @@ export interface PolicyStore {
    * Clears all policy rules from storage
    */
   clear(): void;
-
-  /**
-   * Exports policy rules as JSON (v1.0 schema)
-   *
-   * @returns JSON string for download
-   */
-  exportRules(rules: PolicyRule[]): string;
-
-  /**
-   * Imports policy rules from JSON with validation
-   *
-   * @param jsonString - JSON string from uploaded file
-   * @returns Import result with rules or error
-   */
-  importRules(jsonString: string): ImportResult;
 }
 
 // ============================================================================
@@ -267,20 +107,6 @@ export function createPolicyStore(): PolicyStore {
         throw error;
       }
     },
-
-    exportRules(rules: PolicyRule[]): string {
-      const exportSchema: PolicyExportSchema = {
-        version: '1.0',
-        exportedAt: new Date().toISOString(),
-        rules,
-      };
-
-      return JSON.stringify(exportSchema, null, 2);
-    },
-
-    importRules(jsonString: string): ImportResult {
-      return importRulesFromJson(jsonString);
-    },
   };
 }
 
@@ -294,9 +120,6 @@ export function createPolicyStore(): PolicyStore {
 export function createMockPolicyStore(): PolicyStore {
   let mockData: PolicyRule[] = [];
 
-  // Reuse real implementation for export/import (pure functions)
-  const realStore = createPolicyStore();
-
   return {
     save(rules: PolicyRule[]): void {
       mockData = rules;
@@ -309,8 +132,5 @@ export function createMockPolicyStore(): PolicyStore {
     clear(): void {
       mockData = [];
     },
-
-    exportRules: realStore.exportRules,
-    importRules: realStore.importRules,
   };
 }
