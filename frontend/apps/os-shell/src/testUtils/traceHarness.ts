@@ -11,12 +11,12 @@
  */
 
 import {
-  subscribeToAllTraces,
-  setTraceClock,
-  resetTraceClock,
-  type OsActionAnyTraceEvent,
-  type OsActionTraceEvent,
-  type OsActionBlockedEvent,
+    resetTraceClock,
+    setTraceClock,
+    subscribeToAllTraces,
+    type OsActionAnyTraceEvent,
+    type OsActionBlockedEvent,
+    type OsActionTraceEvent,
 } from '../services/osActions';
 
 // ============================================================================
@@ -28,7 +28,10 @@ import {
  * @param startTime - Starting timestamp (default: 1000000000000)
  * @param step - Increment per call (default: 100ms)
  */
-export function createMockClock(startTime = 1000000000000, step = 100): { now: () => number; reset: () => void } {
+export function createMockClock(
+  startTime = 1000000000000,
+  step = 100
+): { now: () => number; reset: () => void } {
   let currentTime = startTime;
   return {
     now: () => {
@@ -80,7 +83,7 @@ export function withMockClockSync<T>(
 }
 
 // Re-export clock management for direct usage
-export { setTraceClock, resetTraceClock };
+export { resetTraceClock, setTraceClock };
 
 // ============================================================================
 // Trace Collection
@@ -118,7 +121,10 @@ export async function collectTracesDuring<T>(
 /**
  * Collect traces synchronously (for non-async scenarios)
  */
-export function collectTracesDuringSync<T>(fn: () => T): { result: T; traces: OsActionAnyTraceEvent[] } {
+export function collectTracesDuringSync<T>(fn: () => T): {
+  result: T;
+  traces: OsActionAnyTraceEvent[];
+} {
   const traces: OsActionAnyTraceEvent[] = [];
   const unsubscribe = subscribeToAllTraces((event) => {
     traces.push(event);
@@ -148,9 +154,7 @@ export interface NormalizedTraceEvent {
 /**
  * Normalized payload with all stable fields preserved
  */
-export type NormalizedPayload =
-  | NormalizedInvokedPayload
-  | NormalizedBlockedPayload;
+export type NormalizedPayload = NormalizedInvokedPayload | NormalizedBlockedPayload;
 
 export interface NormalizedInvokedPayload {
   actionId: string;
@@ -162,6 +166,7 @@ export interface NormalizedInvokedPayload {
   parcelIdHash?: 'NORMALIZED' | undefined; // Replace hash with marker if present
   href?: string;
   handlerKey?: string;
+  tabId?: string; // Optional workbench tab ID
 }
 
 export interface NormalizedBlockedPayload {
@@ -197,6 +202,7 @@ export function normalizeTraceEvent(event: OsActionAnyTraceEvent): NormalizedTra
         ...(invoked.payload.parcelIdHash && { parcelIdHash: 'NORMALIZED' }),
         ...(invoked.payload.href && { href: invoked.payload.href }),
         ...(invoked.payload.handlerKey && { handlerKey: invoked.payload.handlerKey }),
+        ...(invoked.payload.tabId && { tabId: invoked.payload.tabId }),
       },
     };
   } else {
