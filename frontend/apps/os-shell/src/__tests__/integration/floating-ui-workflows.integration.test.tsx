@@ -5,7 +5,6 @@
  * @testCategory Integration Testing
  */
 
-import { vi } from 'vitest';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -224,7 +223,7 @@ const MultipleTooltips = () => {
 describe('Integration: Tooltip + Button Workflow', () => {
   describe('Component Integration', () => {
     it('should render buttons with tooltip triggers', () => {
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       render(<IconButtonsWithTooltips onButtonClick={handleClick} />);
 
       const buttons = screen.getAllByRole('button');
@@ -232,7 +231,7 @@ describe('Integration: Tooltip + Button Workflow', () => {
     });
 
     it('should render button icons', () => {
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       render(<IconButtonsWithTooltips onButtonClick={handleClick} />);
 
       expect(screen.getByText('💾')).toBeInTheDocument();
@@ -244,7 +243,7 @@ describe('Integration: Tooltip + Button Workflow', () => {
   describe('User Workflow: Tooltip Display', () => {
     it('should show tooltip on hover', async () => {
       const user = userEvent.setup();
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       render(<IconButtonsWithTooltips onButtonClick={handleClick} />);
 
       const saveButton = screen.getByText('💾');
@@ -257,7 +256,7 @@ describe('Integration: Tooltip + Button Workflow', () => {
 
     it('should hide tooltip on unhover', async () => {
       const user = userEvent.setup();
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       render(<IconButtonsWithTooltips onButtonClick={handleClick} />);
 
       const saveButton = screen.getByText('💾');
@@ -278,7 +277,7 @@ describe('Integration: Tooltip + Button Workflow', () => {
 
     it('should show different tooltips for different buttons', async () => {
       const user = userEvent.setup();
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       render(<IconButtonsWithTooltips onButtonClick={handleClick} />);
 
       // Hover over undo button
@@ -298,7 +297,7 @@ describe('Integration: Tooltip + Button Workflow', () => {
   describe('User Workflow: Button Click with Tooltip', () => {
     it('should handle button click', async () => {
       const user = userEvent.setup();
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       render(<IconButtonsWithTooltips onButtonClick={handleClick} />);
 
       await user.click(screen.getByText('💾'));
@@ -308,7 +307,7 @@ describe('Integration: Tooltip + Button Workflow', () => {
 
     it('should handle click even with tooltip visible', async () => {
       const user = userEvent.setup();
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       render(<IconButtonsWithTooltips onButtonClick={handleClick} />);
 
       const saveButton = screen.getByText('💾');
@@ -328,7 +327,7 @@ describe('Integration: Tooltip + Button Workflow', () => {
 
   describe('Accessibility: Tooltip', () => {
     it('should have no accessibility violations', async () => {
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       const { container } = render(<IconButtonsWithTooltips onButtonClick={handleClick} />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -336,7 +335,7 @@ describe('Integration: Tooltip + Button Workflow', () => {
 
     it('should have no accessibility violations with tooltip visible', async () => {
       const user = userEvent.setup();
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       const { container } = render(<IconButtonsWithTooltips onButtonClick={handleClick} />);
 
       await user.hover(screen.getByText('💾'));
@@ -357,7 +356,7 @@ describe('Integration: Tooltip + Button Workflow', () => {
 describe('Integration: Popover + Form Workflow', () => {
   describe('Component Integration', () => {
     it('should render popover trigger button', () => {
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       render(<PopoverWithForm onSubmit={handleSubmit} />);
 
       expect(screen.getByRole('button', { name: /set dimensions/i })).toBeInTheDocument();
@@ -365,7 +364,7 @@ describe('Integration: Popover + Form Workflow', () => {
 
     it('should open popover with form', async () => {
       const user = userEvent.setup();
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       render(<PopoverWithForm onSubmit={handleSubmit} />);
 
       await user.click(screen.getByRole('button', { name: /set dimensions/i }));
@@ -379,7 +378,7 @@ describe('Integration: Popover + Form Workflow', () => {
   describe('User Workflow: Form Submission', () => {
     it('should handle form submission from popover', async () => {
       const user = userEvent.setup();
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       render(<PopoverWithForm onSubmit={handleSubmit} />);
 
       // Open popover
@@ -407,7 +406,7 @@ describe('Integration: Popover + Form Workflow', () => {
 
     it('should close popover after submission', async () => {
       const user = userEvent.setup();
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       render(<PopoverWithForm onSubmit={handleSubmit} />);
 
       await user.click(screen.getByRole('button', { name: /set dimensions/i }));
@@ -421,7 +420,7 @@ describe('Integration: Popover + Form Workflow', () => {
 
     it('should cancel without submitting', async () => {
       const user = userEvent.setup();
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       render(<PopoverWithForm onSubmit={handleSubmit} />);
 
       await user.click(screen.getByRole('button', { name: /set dimensions/i }));
@@ -441,7 +440,7 @@ describe('Integration: Popover + Form Workflow', () => {
   describe('User Workflow: Popover State', () => {
     it('should preserve form values when reopened', async () => {
       const user = userEvent.setup();
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       render(<PopoverWithForm onSubmit={handleSubmit} />);
 
       // Open and check initial values
@@ -459,7 +458,7 @@ describe('Integration: Popover + Form Workflow', () => {
 
   describe('Accessibility: Popover + Form', () => {
     it('should have no accessibility violations', async () => {
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       const { container } = render(<PopoverWithForm onSubmit={handleSubmit} />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -467,7 +466,7 @@ describe('Integration: Popover + Form Workflow', () => {
 
     it('should have no accessibility violations when open', async () => {
       const user = userEvent.setup();
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       const { container } = render(<PopoverWithForm onSubmit={handleSubmit} />);
 
       await user.click(screen.getByRole('button', { name: /set dimensions/i }));
@@ -485,7 +484,7 @@ describe('Integration: Popover + Form Workflow', () => {
 describe('Integration: DropdownMenu Workflow', () => {
   describe('Component Integration', () => {
     it('should render dropdown trigger', () => {
-      const handleAction = vi.fn();
+      const handleAction = jest.fn();
       render(<UserMenu onAction={handleAction} />);
 
       expect(screen.getByRole('button', { name: /my account/i })).toBeInTheDocument();
@@ -493,7 +492,7 @@ describe('Integration: DropdownMenu Workflow', () => {
 
     it('should open dropdown menu', async () => {
       const user = userEvent.setup();
-      const handleAction = vi.fn();
+      const handleAction = jest.fn();
       render(<UserMenu onAction={handleAction} />);
 
       await user.click(screen.getByRole('button', { name: /my account/i }));
@@ -508,7 +507,7 @@ describe('Integration: DropdownMenu Workflow', () => {
   describe('User Workflow: Menu Selection', () => {
     it('should handle menu item selection', async () => {
       const user = userEvent.setup();
-      const handleAction = vi.fn();
+      const handleAction = jest.fn();
       render(<UserMenu onAction={handleAction} />);
 
       await user.click(screen.getByRole('button', { name: /my account/i }));
@@ -519,7 +518,7 @@ describe('Integration: DropdownMenu Workflow', () => {
 
     it('should handle different menu items', async () => {
       const user = userEvent.setup();
-      const handleAction = vi.fn();
+      const handleAction = jest.fn();
       render(<UserMenu onAction={handleAction} />);
 
       await user.click(screen.getByRole('button', { name: /my account/i }));
@@ -530,7 +529,7 @@ describe('Integration: DropdownMenu Workflow', () => {
 
     it('should close menu after selection', async () => {
       const user = userEvent.setup();
-      const handleAction = vi.fn();
+      const handleAction = jest.fn();
       render(<UserMenu onAction={handleAction} />);
 
       await user.click(screen.getByRole('button', { name: /my account/i }));
@@ -545,7 +544,7 @@ describe('Integration: DropdownMenu Workflow', () => {
   describe('Keyboard Navigation: Dropdown', () => {
     it('should navigate menu items with arrow keys', async () => {
       const user = userEvent.setup();
-      const handleAction = vi.fn();
+      const handleAction = jest.fn();
       render(<UserMenu onAction={handleAction} />);
 
       await user.click(screen.getByRole('button', { name: /my account/i }));
@@ -559,7 +558,7 @@ describe('Integration: DropdownMenu Workflow', () => {
 
     it('should close menu on Escape', async () => {
       const user = userEvent.setup();
-      const handleAction = vi.fn();
+      const handleAction = jest.fn();
       render(<UserMenu onAction={handleAction} />);
 
       await user.click(screen.getByRole('button', { name: /my account/i }));
@@ -575,7 +574,7 @@ describe('Integration: DropdownMenu Workflow', () => {
 
   describe('Accessibility: DropdownMenu', () => {
     it('should have no accessibility violations', async () => {
-      const handleAction = vi.fn();
+      const handleAction = jest.fn();
       const { container } = render(<UserMenu onAction={handleAction} />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -583,7 +582,7 @@ describe('Integration: DropdownMenu Workflow', () => {
 
     it('should have no accessibility violations when open', async () => {
       const user = userEvent.setup();
-      const handleAction = vi.fn();
+      const handleAction = jest.fn();
       const { container } = render(<UserMenu onAction={handleAction} />);
 
       await user.click(screen.getByRole('button', { name: /my account/i }));

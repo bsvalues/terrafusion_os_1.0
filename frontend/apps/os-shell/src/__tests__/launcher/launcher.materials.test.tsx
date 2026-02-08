@@ -8,17 +8,16 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock stores
-vi.mock('../../stores/commandPaletteStore', () => ({
-  useCommandPaletteStore: vi.fn(),
+jest.mock('../../stores/commandPaletteStore', () => ({
+  useCommandPaletteStore: jest.fn(),
 }));
 
 // Mock launcherModel
-vi.mock('../../components/Launcher/launcherModel', () => {
+jest.mock('../../components/Launcher/launcherModel', () => {
   const mockItems = [
     {
       id: 'forge',
@@ -45,7 +44,7 @@ vi.mock('../../components/Launcher/launcherModel', () => {
     getLauncherSections: () => [{ id: 'suites', label: 'Suites', items: mockItems }],
     filterLauncherItems: (items: typeof mockItems, query: string) =>
       query ? items.filter((i) => i.label.toLowerCase().includes(query.toLowerCase())) : items,
-    navigateToLauncherItem: vi.fn(
+    navigateToLauncherItem: jest.fn(
       (item: (typeof mockItems)[0], navigate: (route: string) => void) => navigate(item.route)
     ),
     getIntentBadgeText: (intent: string) =>
@@ -54,9 +53,9 @@ vi.mock('../../components/Launcher/launcherModel', () => {
 });
 
 // Mock navigation
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
-  useNavigate: () => vi.fn(),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
 }));
 
 // Components and imports (AFTER mocks)
@@ -70,10 +69,10 @@ import * as materialQualityGate from '../../ui/materials/materialQualityGate';
 
 const mockStore = {
   isOpen: true,
-  close: vi.fn(),
-  toggle: vi.fn(),
+  close: jest.fn(),
+  toggle: jest.fn(),
   searchQuery: '',
-  setSearchQuery: vi.fn(),
+  setSearchQuery: jest.fn(),
 };
 
 function renderLauncher(qualityOverride?: Partial<materialQualityGate.MaterialQualityState>) {
@@ -89,9 +88,9 @@ function renderLauncher(qualityOverride?: Partial<materialQualityGate.MaterialQu
     ...qualityOverride,
   };
 
-  vi.spyOn(materialQualityGate, 'useMaterialQuality').mockReturnValue(mockQuality);
+  jest.spyOn(materialQualityGate, 'useMaterialQuality').mockReturnValue(mockQuality);
 
-  (useCommandPaletteStore as unknown as Mock).mockImplementation((selector) =>
+  (useCommandPaletteStore as unknown as jest.Mock).mockImplementation((selector) =>
     selector ? selector(mockStore) : mockStore
   );
 
@@ -108,7 +107,7 @@ function renderLauncher(qualityOverride?: Partial<materialQualityGate.MaterialQu
 
 describe('Launcher Materials: LiquidPanel', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockStore.isOpen = true;
   });
 
@@ -158,7 +157,7 @@ describe('Launcher Materials: LiquidPanel', () => {
 
 describe('Launcher Materials: TactileButton', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockStore.isOpen = true;
   });
 
@@ -208,7 +207,7 @@ describe('Launcher Materials: TactileButton', () => {
 
 describe('Launcher Materials: Reduced Motion', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockStore.isOpen = true;
   });
 
@@ -247,7 +246,7 @@ describe('Launcher Materials: Reduced Motion', () => {
 
 describe('Launcher Materials: No Layout Shift', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockStore.isOpen = true;
   });
 
@@ -299,7 +298,7 @@ describe('Launcher Materials: No Layout Shift', () => {
 
 describe('Launcher Materials: Accessibility Contrast', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockStore.isOpen = true;
   });
 

@@ -13,7 +13,6 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -21,8 +20,8 @@ import { MemoryRouter } from 'react-router-dom';
 import TerraPrimeSuiteWithBoundary, { TerraPrimeSuite } from '../../pages/suites/TerraPrimeSuite';
 
 // Mock iframe to avoid network calls
-vi.mock('react', () => {
-  const React = vi.importActual('react');
+jest.mock('react', () => {
+  const React = jest.requireActual('react');
   return {
     ...React,
     // Allow Suspense to work in tests
@@ -92,7 +91,7 @@ describe('TerraPrimeSuite - Smoke Tests', () => {
 
     it('ErrorBoundary catches render errors', () => {
       // Suppress console.error for this test
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
       // Create a component that throws
       const ThrowingComponent = () => {
@@ -160,7 +159,7 @@ describe('TerraPrimeSuite - Smoke Tests', () => {
     });
 
     it('rejects postMessage from unknown origin', () => {
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
       renderWithRouter(<TerraPrimeSuite />);
 

@@ -1,11 +1,10 @@
 // frontend/apps/os-shell/src/__tests__/smoke/gpt-studio-smoke.test.tsx
-import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { act, render, screen, waitFor } from '@testing-library/react';
 
 // Mock all API modules that use import.meta.env BEFORE any imports
-vi.mock('../../api/explainApi', () => ({
-  explainContext: vi.fn().mockResolvedValue({
+jest.mock('../../api/explainApi', () => ({
+  explainContext: jest.fn().mockResolvedValue({
     explanation: 'Mock explanation',
     summary: 'Mock summary',
     keyPoints: ['Point 1'],
@@ -17,16 +16,16 @@ vi.mock('../../api/explainApi', () => ({
 }));
 
 // Mock the correct path that GptStudioView imports from
-vi.mock('../../api/gptClient', () => ({
-  getSystemGpts: vi.fn(),
-  createConversation: vi.fn(),
-  sendMessage: vi.fn(),
-  getMessages: vi.fn(),
+jest.mock('../../api/gptClient', () => ({
+  getSystemGpts: jest.fn(),
+  createConversation: jest.fn(),
+  sendMessage: jest.fn(),
+  getMessages: jest.fn(),
   API_BASE_URL: 'http://localhost:5000',
 }));
 
 // Mock PropertyAssessmentFlows component
-vi.mock('../../features/gpt/components/PropertyAssessmentFlows', () => ({
+jest.mock('../../features/gpt/components/PropertyAssessmentFlows', () => ({
   PropertyAssessmentFlows: () => <div data-testid='mock-flows'>Mock Flows</div>,
 }));
 
@@ -63,11 +62,11 @@ const mockMessages = [
 
 describe('GptStudioView Smoke Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('renders loading state initially', () => {
-    (gptClient.getSystemGpts as Mock).mockReturnValue(new Promise(() => {})); // Never resolves
+    (gptClient.getSystemGpts as jest.Mock).mockReturnValue(new Promise(() => {})); // Never resolves
 
     render(<GptStudioView />);
 
@@ -77,9 +76,9 @@ describe('GptStudioView Smoke Tests', () => {
   // TODO: This test has async timing issues with React state updates
   // The component works correctly in the browser, but the test mock timing is unreliable
   it.skip('renders GPT list after loading', async () => {
-    (gptClient.getSystemGpts as Mock).mockResolvedValue(mockGpts);
-    (gptClient.createConversation as Mock).mockResolvedValue(mockConversation);
-    (gptClient.getMessages as Mock).mockResolvedValue(mockMessages);
+    (gptClient.getSystemGpts as jest.Mock).mockResolvedValue(mockGpts);
+    (gptClient.createConversation as jest.Mock).mockResolvedValue(mockConversation);
+    (gptClient.getMessages as jest.Mock).mockResolvedValue(mockMessages);
 
     await act(async () => {
       render(<GptStudioView />);
@@ -102,9 +101,9 @@ describe('GptStudioView Smoke Tests', () => {
   });
 
   it('displays GPT Suite header', async () => {
-    (gptClient.getSystemGpts as Mock).mockResolvedValue(mockGpts);
-    (gptClient.createConversation as Mock).mockResolvedValue(mockConversation);
-    (gptClient.getMessages as Mock).mockResolvedValue(mockMessages);
+    (gptClient.getSystemGpts as jest.Mock).mockResolvedValue(mockGpts);
+    (gptClient.createConversation as jest.Mock).mockResolvedValue(mockConversation);
+    (gptClient.getMessages as jest.Mock).mockResolvedValue(mockMessages);
 
     render(<GptStudioView />);
 
@@ -112,7 +111,7 @@ describe('GptStudioView Smoke Tests', () => {
   });
 
   it('shows error state when API fails', async () => {
-    (gptClient.getSystemGpts as Mock).mockRejectedValue(new Error('API unavailable'));
+    (gptClient.getSystemGpts as jest.Mock).mockRejectedValue(new Error('API unavailable'));
 
     render(<GptStudioView />);
 
@@ -122,7 +121,7 @@ describe('GptStudioView Smoke Tests', () => {
   });
 
   it('shows empty state when no GPTs available', async () => {
-    (gptClient.getSystemGpts as Mock).mockResolvedValue([]);
+    (gptClient.getSystemGpts as jest.Mock).mockResolvedValue([]);
 
     render(<GptStudioView />);
 
@@ -132,9 +131,9 @@ describe('GptStudioView Smoke Tests', () => {
   });
 
   it('auto-selects PropertyAssessmentGPT when available', async () => {
-    (gptClient.getSystemGpts as Mock).mockResolvedValue(mockGpts);
-    (gptClient.createConversation as Mock).mockResolvedValue(mockConversation);
-    (gptClient.getMessages as Mock).mockResolvedValue(mockMessages);
+    (gptClient.getSystemGpts as jest.Mock).mockResolvedValue(mockGpts);
+    (gptClient.createConversation as jest.Mock).mockResolvedValue(mockConversation);
+    (gptClient.getMessages as jest.Mock).mockResolvedValue(mockMessages);
 
     render(<GptStudioView />);
 
@@ -144,9 +143,9 @@ describe('GptStudioView Smoke Tests', () => {
   });
 
   it('renders send button', async () => {
-    (gptClient.getSystemGpts as Mock).mockResolvedValue(mockGpts);
-    (gptClient.createConversation as Mock).mockResolvedValue(mockConversation);
-    (gptClient.getMessages as Mock).mockResolvedValue([]);
+    (gptClient.getSystemGpts as jest.Mock).mockResolvedValue(mockGpts);
+    (gptClient.createConversation as jest.Mock).mockResolvedValue(mockConversation);
+    (gptClient.getMessages as jest.Mock).mockResolvedValue([]);
 
     render(<GptStudioView />);
 
@@ -156,9 +155,9 @@ describe('GptStudioView Smoke Tests', () => {
   });
 
   it('renders textarea for input', async () => {
-    (gptClient.getSystemGpts as Mock).mockResolvedValue(mockGpts);
-    (gptClient.createConversation as Mock).mockResolvedValue(mockConversation);
-    (gptClient.getMessages as Mock).mockResolvedValue([]);
+    (gptClient.getSystemGpts as jest.Mock).mockResolvedValue(mockGpts);
+    (gptClient.createConversation as jest.Mock).mockResolvedValue(mockConversation);
+    (gptClient.getMessages as jest.Mock).mockResolvedValue([]);
 
     render(<GptStudioView />);
 

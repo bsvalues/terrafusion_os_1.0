@@ -6,11 +6,11 @@
  */
 
 // Extend default test timeout for integration tests
-vi.setConfig({ testTimeout: 10000 }); // 10 seconds
+jest.setTimeout(10000); // 10 seconds
 
 // Mock timers for integration tests with animations
 // Uncomment if needed for specific workflows
-// vi.useFakeTimers();
+// jest.useFakeTimers();
 
 // Global setup for integration tests
 beforeAll(() => {
@@ -26,7 +26,7 @@ afterAll(() => {
 // Reset state between integration tests to avoid side effects
 beforeEach(() => {
   // Clear all mocks before each test
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 afterEach(() => {
@@ -37,15 +37,15 @@ afterEach(() => {
 // Mock window.matchMedia for responsive components
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation((query) => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(), // Deprecated
-    removeListener: vi.fn(), // Deprecated
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
+    addListener: jest.fn(), // Deprecated
+    removeListener: jest.fn(), // Deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
   })),
 });
 
@@ -72,13 +72,13 @@ global.ResizeObserver = class ResizeObserver {
 // Uncomment if you want cleaner test output
 // const originalWarn = console.warn;
 // beforeAll(() => {
-//   console.warn = vi.fn();
+//   console.warn = jest.fn();
 // });
 // afterAll(() => {
 //   console.warn = originalWarn;
 // });
 
-export { };
+export {};
 
 describe('integrationSetup.setup', () => {
   it('loads integration test setup', () => {

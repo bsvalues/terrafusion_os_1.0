@@ -5,20 +5,19 @@
  * Tests the end-to-end flow: UI → pilotApi.invokeTool() → correlationId display
  */
 
-import { vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import * as pilotApi from '../../api/pilotApi';
 import { ToolInvokePanel } from '../../components/pilot/ToolInvokePanel';
 
 // Mock the pilotApi module
-vi.mock('../../api/pilotApi');
+jest.mock('../../api/pilotApi');
 
 // Cast to Jest mock for type-safe mock access
-const mockInvokeTool = pilotApi.invokeTool as Mock<typeof pilotApi.invokeTool>;
+const mockInvokeTool = pilotApi.invokeTool as jest.MockedFunction<typeof pilotApi.invokeTool>;
 
 describe('ToolInvokePanel', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Read-Only Tool Invocation', () => {

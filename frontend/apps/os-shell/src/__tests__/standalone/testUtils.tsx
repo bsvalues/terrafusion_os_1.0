@@ -7,7 +7,6 @@
  * @see Slice 6.1: Unskip + Harden Standalone Contract Suite
  */
 
-import { vi } from 'vitest';
 import type { ReactNode } from 'react';
 import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -69,15 +68,15 @@ export const LOW_QUALITY_STATE: MaterialQualityState = {
 export function mockMatchMedia(reducedMotion: boolean): void {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
+    value: jest.fn().mockImplementation((query: string) => ({
       matches: query === '(prefers-reduced-motion: reduce)' ? reducedMotion : false,
       media: query,
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
     })),
   });
 }
@@ -87,7 +86,7 @@ export function mockMatchMedia(reducedMotion: boolean): void {
  */
 export function resetMocks(): void {
   resetMaterialQualityGate();
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 }
 
 // ============================================================================

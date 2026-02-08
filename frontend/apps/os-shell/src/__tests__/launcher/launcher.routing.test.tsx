@@ -8,18 +8,17 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock stores
-vi.mock('../../stores/commandPaletteStore', () => ({
-  useCommandPaletteStore: vi.fn(),
+jest.mock('../../stores/commandPaletteStore', () => ({
+  useCommandPaletteStore: jest.fn(),
 }));
 
 // Mock materials gate
-vi.mock('../../ui/materials/materialQualityGate', () => ({
+jest.mock('../../ui/materials/materialQualityGate', () => ({
   useMaterialQuality: () => ({
     tier: 'high',
     enableBackdropBlur: true,
@@ -78,7 +77,7 @@ const mockLauncherItems = [
   },
 ];
 
-vi.mock('../../components/Launcher/launcherModel', () => ({
+jest.mock('../../components/Launcher/launcherModel', () => ({
   getLauncherItems: () => mockLauncherItems,
   getLauncherSections: () => [
     {
@@ -94,7 +93,7 @@ vi.mock('../../components/Launcher/launcherModel', () => ({
   ],
   filterLauncherItems: (items: typeof mockLauncherItems, query: string) =>
     query ? items.filter((i) => i.label.toLowerCase().includes(query.toLowerCase())) : items,
-  navigateToLauncherItem: vi.fn(
+  navigateToLauncherItem: jest.fn(
     (item: (typeof mockLauncherItems)[0], navigate: (route: string) => void) => navigate(item.route)
   ),
   getIntentBadgeText: (intent: string) =>
@@ -102,9 +101,9 @@ vi.mock('../../components/Launcher/launcherModel', () => ({
 }));
 
 // Mock navigation
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }));
 
@@ -119,14 +118,14 @@ import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 
 const mockStore = {
   isOpen: true,
-  close: vi.fn(),
-  toggle: vi.fn(),
+  close: jest.fn(),
+  toggle: jest.fn(),
   searchQuery: '',
-  setSearchQuery: vi.fn(),
+  setSearchQuery: jest.fn(),
 };
 
 function renderLauncher() {
-  (useCommandPaletteStore as unknown as Mock).mockImplementation((selector) =>
+  (useCommandPaletteStore as unknown as jest.Mock).mockImplementation((selector) =>
     selector ? selector(mockStore) : mockStore
   );
 
@@ -143,7 +142,7 @@ function renderLauncher() {
 
 describe('Launcher: Routing Truth', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockStore.isOpen = true;
   });
 
@@ -184,7 +183,7 @@ describe('Launcher: Routing Truth', () => {
 
 describe('Launcher: Workbench Items', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockStore.isOpen = true;
   });
 
@@ -227,7 +226,7 @@ describe('Launcher: Workbench Items', () => {
 
 describe('Launcher: Standalone Items', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockStore.isOpen = true;
   });
 
@@ -266,7 +265,7 @@ describe('Launcher: Standalone Items', () => {
 
 describe('Launcher: System Actions', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockStore.isOpen = true;
   });
 
@@ -302,7 +301,7 @@ describe('Launcher: System Actions', () => {
 
 describe('Launcher: No Dead Links', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockStore.isOpen = true;
   });
 
@@ -338,7 +337,7 @@ describe('Launcher: No Dead Links', () => {
 
 describe('Launcher: Section Organization', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockStore.isOpen = true;
   });
 

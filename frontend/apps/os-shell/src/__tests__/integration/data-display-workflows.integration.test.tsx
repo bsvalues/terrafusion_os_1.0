@@ -5,7 +5,6 @@
  * @testCategory Integration Testing
  */
 
-import { vi } from 'vitest';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -422,7 +421,7 @@ describe('Integration: Table + Sorting + Selection Workflow', () => {
   describe('User Workflow: Row Click', () => {
     it('should handle row click events', async () => {
       const user = userEvent.setup();
-      const handleRowClick = vi.fn();
+      const handleRowClick = jest.fn();
       render(<UserTable onRowClick={handleRowClick} />);
 
       const rows = screen.getAllByRole('row');

@@ -9,10 +9,10 @@
  */
 
 import { describe, expect, it, vi } from 'vitest';
-import { traceToOsAction } from '../../components/Trace/traceToOsAction';
-import type { ActionStreamEvent } from '../../hooks/useActionStream';
 import { executeOsAction, type OsActionContext } from '../../services/osActions';
 import { collectTracesDuringSync } from '../../testUtils/traceHarness';
+import { traceToOsAction } from '../../components/Trace/traceToOsAction';
+import type { ActionStreamEvent } from '../../hooks/useActionStream';
 
 // ============================================================================
 // Test Helpers

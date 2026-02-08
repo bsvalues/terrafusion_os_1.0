@@ -1,8 +1,7 @@
-import { vi } from 'vitest';
 import { useCostForgeAPI } from '@/hooks/useCostForgeAPI';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-const mockFetch = vi.fn() as Mock<typeof fetch>;
+const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 
 describe('useCostForgeAPI - Integration (fetch + headers)', () => {
   beforeEach(() => {

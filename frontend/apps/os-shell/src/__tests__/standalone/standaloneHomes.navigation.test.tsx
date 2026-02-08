@@ -15,7 +15,6 @@
  * @see Slice 6.1: Unskip + Harden Standalone Contract Suite
  */
 
-import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -118,7 +117,7 @@ describe('Standalone Homes Navigation', () => {
   afterEach(() => {
     cleanup();
     resetMaterialQualityGate();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ==========================================================================

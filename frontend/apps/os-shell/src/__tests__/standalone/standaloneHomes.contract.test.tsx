@@ -16,7 +16,6 @@
  * @see Slice 7: Registry-Driven Contract Enforcement
  */
 
-import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -51,7 +50,7 @@ describe('Standalone Homes Contract', () => {
   afterEach(() => {
     cleanup();
     resetMaterialQualityGate();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ==========================================================================

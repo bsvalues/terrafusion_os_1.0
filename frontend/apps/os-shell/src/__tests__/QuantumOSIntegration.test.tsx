@@ -4,8 +4,8 @@
  */
 
 // Mock ALL APIs with import.meta.env BEFORE any imports
-vi.mock('../api/systemDiagnosticsApi', () => ({
-  getSystemDiagnostics: vi.fn().mockResolvedValue({
+jest.mock('../api/systemDiagnosticsApi', () => ({
+  getSystemDiagnostics: jest.fn().mockResolvedValue({
     overallHealth: 'Healthy',
     timestamp: new Date().toISOString(),
     gptConfigs: [],
@@ -15,8 +15,8 @@ vi.mock('../api/systemDiagnosticsApi', () => ({
   }),
 }));
 
-vi.mock('../api/explainApi', () => ({
-  explainContext: vi.fn().mockResolvedValue({
+jest.mock('../api/explainApi', () => ({
+  explainContext: jest.fn().mockResolvedValue({
     explanation: 'Mock explanation',
     summary: 'Mock summary',
     keyPoints: [],
@@ -27,16 +27,15 @@ vi.mock('../api/explainApi', () => ({
   }),
 }));
 
-vi.mock('../api/gptClient', () => ({
-  getSystemGpts: vi.fn().mockResolvedValue([]),
-  createConversation: vi.fn().mockResolvedValue({ id: 'test-conv' }),
-  sendMessage: vi.fn().mockResolvedValue({ content: 'Test' }),
-  getMessages: vi.fn().mockResolvedValue([]),
+jest.mock('../api/gptClient', () => ({
+  getSystemGpts: jest.fn().mockResolvedValue([]),
+  createConversation: jest.fn().mockResolvedValue({ id: 'test-conv' }),
+  sendMessage: jest.fn().mockResolvedValue({ content: 'Test' }),
+  getMessages: jest.fn().mockResolvedValue([]),
 }));
 
-// Mock GptStudioView entirely to avoid deep import { vi } from 'vitest';
-import chain
-vi.mock('../features/gpt/GptStudioView', () => ({
+// Mock GptStudioView entirely to avoid deep import chain
+jest.mock('../features/gpt/GptStudioView', () => ({
   GptStudioView: () => <div data-testid='mock-gpt-studio'>GPT Studio Mock</div>,
 }));
 

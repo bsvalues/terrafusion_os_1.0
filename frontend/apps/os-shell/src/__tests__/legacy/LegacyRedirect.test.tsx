@@ -4,7 +4,6 @@
  * Phase 6.4: Tests for legacy redirect component with telemetry.
  */
 
-import { vi } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 
@@ -12,8 +11,8 @@ import { LegacyRedirect } from '../../components/legacy/LegacyRedirect';
 import * as telemetry from '../../telemetry/legacyUiTelemetry';
 
 // Mock telemetry module
-vi.mock('../../telemetry/legacyUiTelemetry', () => ({
-  emitLegacyUiHit: vi.fn(() => ({
+jest.mock('../../telemetry/legacyUiTelemetry', () => ({
+  emitLegacyUiHit: jest.fn(() => ({
     eventType: 'legacy.ui_hit',
     legacyAppId: 'test.app',
     route: '/test',
@@ -29,7 +28,7 @@ function LocationDisplay() {
 
 describe('LegacyRedirect', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Telemetry Emission', () => {

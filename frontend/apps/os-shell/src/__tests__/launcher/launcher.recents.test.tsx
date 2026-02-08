@@ -8,7 +8,6 @@
  * @see Slice 5: Launcher Polish
  */
 
-import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
 
@@ -267,7 +266,7 @@ describe('Launcher Recents', () => {
 
   describe('Zustand Reactivity', () => {
     it('subscribers_notified_on_record', () => {
-      const listener = vi.fn();
+      const listener = jest.fn();
 
       const unsub = useRecentsStore.subscribe(listener);
 
@@ -281,7 +280,7 @@ describe('Launcher Recents', () => {
     it('subscribers_notified_on_clear', () => {
       useRecentsStore.getState().record('forge');
 
-      const listener = vi.fn();
+      const listener = jest.fn();
       const unsub = useRecentsStore.subscribe(listener);
 
       useRecentsStore.getState().clear();

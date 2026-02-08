@@ -13,7 +13,6 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
@@ -22,7 +21,7 @@ import { ErrorDisplay } from '../../components/errors/ErrorDisplay';
 // Mock clipboard API
 Object.assign(navigator, {
   clipboard: {
-    writeText: vi.fn(() => Promise.resolve()),
+    writeText: jest.fn(() => Promise.resolve()),
   },
 });
 
@@ -36,7 +35,7 @@ describe('ErrorDisplay - correlationId Contract', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('correlationId Display', () => {

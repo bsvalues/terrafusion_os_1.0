@@ -18,7 +18,6 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -29,17 +28,17 @@ import { CONSTITUTIONAL_SUITES } from '../../config/suiteRegistry';
 import { ShellHome } from '../../shell/home/ShellHome';
 
 // Mock navigation
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
-  useNavigate: () => vi.fn(),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
 }));
 
 // Mock stores
-vi.mock('../../stores/commandPaletteStore', () => ({
-  useCommandPaletteStore: () => vi.fn(),
+jest.mock('../../stores/commandPaletteStore', () => ({
+  useCommandPaletteStore: () => jest.fn(),
 }));
 
-vi.mock('../../stores/startMenuStore', () => ({
+jest.mock('../../stores/startMenuStore', () => ({
   useStartMenuStore: () => [],
 }));
 

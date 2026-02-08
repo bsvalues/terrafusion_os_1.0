@@ -3,7 +3,6 @@
  *
  * Phase 6.1: Shared component for displaying tool invocation results
  * Phase 6.2: Visual Renaissance materials adoption
- * Slice 21: OS action trace emission for user interactions
  *
  * Used by: All MWUX tab components
  * Contract:
@@ -13,19 +12,13 @@
  * - Error state: ErrorDisplay + dismiss button
  * - Dev info panel in development mode
  * - LiquidPanel wrapper with quality gate fallback
- * - User interactions emit OS action traces (copy, dismiss, dev info toggle)
  */
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import type { ErrorInfo } from '../../hooks/useErrorHandler';
 import { getEnv } from '../../runtime/env';
-import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { ErrorDisplay } from '../errors/ErrorDisplay';
-
-// ============================================================================
-// Types
-// ============================================================================
 
 export interface IdleContent {
   icon: string;
@@ -50,47 +43,7 @@ export interface ResultPanelProps {
   onDismiss?: () => void;
   children?: React.ReactNode;
   className?: string;
-  /** Optional result type for trace metadata (privacy-safe) */
-  resultType?: string;
 }
-
-// ============================================================================
-// Trace Helpers
-// ============================================================================
-
-/**
- * Emit OS action trace for ResultPanel user interactions
- * Only called on explicit user actions, not on render/mount
- */
-function emitResultPanelTrace(actionId: string, resultType?: string): void {
-  const action: OsAction = {
-    id: actionId,
-    label: actionId.replace(/_/g, ' '),
-    intent: 'workbench',
-    handlerKey: `result_panel:${actionId}`,
-  };
-
-  const context: OsActionContext = {
-    navigate: () => {
-      // No navigation for handler actions
-    },
-    suiteId: 'workbench',
-    surface: 'workbench',
-    moduleId: 'result_panel',
-  };
-
-  // Add resultType to context if available
-  if (resultType) {
-    // Extend context with resultType (additive field)
-    (context as OsActionContext & { resultType?: string }).resultType = resultType;
-  }
-
-  executeOsAction(action, context);
-}
-
-// ============================================================================
-// Component
-// ============================================================================
 
 export const ResultPanel: React.FC<ResultPanelProps> = ({
   status,
@@ -102,41 +55,10 @@ export const ResultPanel: React.FC<ResultPanelProps> = ({
   onDismiss,
   children,
   className = '',
-  resultType,
 }) => {
-  // Track details element open state for expand/collapse trace
-  const detailsRef = useRef<HTMLDetailsElement>(null);
-
-  const copyToClipboard = useCallback(
-    (text: string) => {
-      // Emit trace for user interaction
-      emitResultPanelTrace('result_panel_copy_correlation_id', resultType);
-      navigator.clipboard.writeText(text).catch(console.error);
-    },
-    [resultType]
-  );
-
-  const handleDismiss = useCallback(() => {
-    // Emit trace for user interaction
-    emitResultPanelTrace('result_panel_dismiss_error', resultType);
-    onDismiss?.();
-  }, [onDismiss, resultType]);
-
-  const handleDevInfoToggle = useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
-      // Determine if we're expanding or collapsing based on current state
-      const details = detailsRef.current;
-      const isCurrentlyOpen = details?.open ?? false;
-
-      // Emit appropriate trace (details.open is the state BEFORE the toggle)
-      const actionId = isCurrentlyOpen
-        ? 'result_panel_dev_info_collapse'
-        : 'result_panel_dev_info_expand';
-
-      emitResultPanelTrace(actionId, resultType);
-    },
-    [resultType]
-  );
+  const copyToClipboard = useCallback((text: string) => {
+    navigator.clipboard.writeText(text).catch(console.error);
+  }, []);
 
   const isDev = getEnv('MODE') === 'development';
 
@@ -180,7 +102,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = ({
         {onDismiss && (
           <div className='flex justify-end mb-2'>
             <button
-              onClick={handleDismiss}
+              onClick={onDismiss}
               className='px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20'
               aria-label='Dismiss error'
             >
@@ -231,13 +153,8 @@ export const ResultPanel: React.FC<ResultPanelProps> = ({
           {/* Dev Info */}
           {isDev && correlationId && (
             <div className='text-xs text-white/40 border-t border-white/10 pt-3'>
-              <details ref={detailsRef}>
-                <summary
-                  className='cursor-pointer hover:text-white/60'
-                  onClick={handleDevInfoToggle}
-                >
-                  Developer Info
-                </summary>
+              <details>
+                <summary className='cursor-pointer hover:text-white/60'>Developer Info</summary>
                 <pre className='mt-2 bg-black/30 rounded p-2 overflow-x-auto'>
                   pnpm run trace:query --correlation {correlationId}
                 </pre>

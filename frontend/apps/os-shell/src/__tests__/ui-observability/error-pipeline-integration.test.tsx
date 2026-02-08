@@ -12,7 +12,6 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
@@ -182,7 +181,7 @@ describe('Error Pipeline Integration', () => {
 
   describe('Error Context Integration', () => {
     it('reports errors with correlationId to ErrorProvider', () => {
-      const handleError = vi.fn();
+      const handleError = jest.fn();
 
       render(
         <ErrorProvider>
