@@ -6,7 +6,7 @@
 
 * **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions
 * **Branch/PR:** main (solo-dev mode)
-* **Last Updated:** 2026-02-07 23:58
+* **Last Updated:** 2026-02-08 02:30
 * **Plan Link:** [plan.md](./plan.md)
 
 ---
@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | Slice 22: Trace-to-UI Correlation (Jump-to-Surface Actions) |
-| **Phase** | Phase 4: Verification & Gates ✅ |
+| **Slice** | Slice 24.1: PolicyPanel Integration Tests + DI Telemetry |
+| **Phase** | Phase 3: Execute ✅ |
 | **Task** | All complete |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | Pending (Slice 22 complete) |
+| **Latest Commit** | `661b70b10` (Slice 24.1 complete) |
 
 ---
 
@@ -139,6 +139,122 @@
 - 16 Jump Actions tests (mapper + execution + PII safety + history mode)
 - 3 Golden Journey 9 tests (Trace → Workbench/Standalone navigation)
 - 23 existing golden journeys still pass (no regressions)
+
+---
+
+## Slice 23: Policy UI for Visual Rule Management ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 1.1 | Policy Rules Engine tests (TDD) | Pending | 12 pass | 2026-02-08 |
+| ✅ 1.2 | Policy Store tests (TDD) | Pending | 12 pass | 2026-02-08 |
+| ✅ 1.3 | PolicyPanel UI tests (TDD) | Pending | 14 pass | 2026-02-08 |
+| ✅ 2.1 | policyEngine.ts implementation | Pending | ✅ Pass | 2026-02-08 |
+| ✅ 2.2 | policyStore.ts implementation | Pending | ✅ Pass | 2026-02-08 |
+| ✅ 2.3 | PolicyPanel.tsx implementation | Pending | ✅ Pass | 2026-02-08 |
+| ✅ 3.1 | emitTrace helper for custom events | Pending | ✅ Pass | 2026-02-08 |
+| ✅ 4.1 | Run all gates | Pending | 32/32 phase83, type-check | 2026-02-08 |
+
+**Key Achievement:** Policy system now operable through visual UI (not code-only). PolicyPanel provides "see → act" interface for rule management: view active rules, add/remove deny rules with surface/suiteId/actionId selectors, reset to default-allow. All changes emit audit traces (`policy_updated`, `policy_reset`) with rule hashes for forensic tie-off. Rules persist via local Storage with versioning.
+
+**Policy Engine:** Deterministic rule compilation with specificity-based precedence (surface+suiteId+actionId=3, suiteId+actionId=2, single field=1). Most specific matching rule wins. Empty rules → default-allow. Validates all rules have at least one selector.
+
+**Files Created:**
+- `frontend/apps/os-shell/src/__tests__/policy/policy.rulesEngine.test.ts` (NEW) - 12 tests for rule compilation + precedence
+- `frontend/apps/os-shell/src/__tests__/policy/policy.store.test.ts` (NEW) - 12 tests for persistence
+- `frontend/apps/os-shell/src/__tests__/policy/policy.ui.test.tsx` (NEW) - 14 tests for PolicyPanel UI
+- `frontend/apps/os-shell/src/services/policyEngine.ts` (NEW) - compilePolicyRules() + rule matching
+- `frontend/apps/os-shell/src/services/policyStore.ts` (NEW) - localStorage persistence with versioning
+- `frontend/apps/os-shell/src/components/Trace/PolicyPanel/PolicyPanel.tsx` (NEW) - Visual rule editor
+- `frontend/apps/os-shell/src/components/Trace/PolicyPanel/index.ts` (NEW) - Module exports
+
+**Files Modified:**
+- `frontend/apps/os-shell/src/services/osActions.ts` - Added `emitTrace()` helper for custom trace events + `CustomTraceEvent` type
+
+**Test Coverage:**
+- 12 policy engine tests (compilation, precedence, validation, specificity scoring)
+- 12 policy store tests (save/load, persistence, serialization)
+- 14 PolicyPanel UI tests (add/remove rules, reset, audit traces)
+- Total: 38 policy tests, all passing
+
+---
+
+## Slice 24: TerraTrace Policy Module Integration + Golden Journey 10 ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 1.1 | Policy engine + store + tests | `0b589be66` | 64 pass | 2026-02-08 |
+| ✅ 1.2 | Golden Journey 10 tests (TDD) | `cc47fe1a2` | 3 pass | 2026-02-08 |
+| ✅ 2.1 | TraceHome PolicyPanel module | `cc47fe1a2` | ✅ Pass | 2026-02-08 |
+| ✅ 2.2 | ActionStream custom event support | `cc47fe1a2` | ✅ Pass | 2026-02-08 |
+| ✅ 2.3 | traceHarness normalization for policy events | `cc47fe1a2` | ✅ Pass | 2026-02-08 |
+| ✅ 3.1 | Run all gates | `cc47fe1a2` | 32/32 phase83, type-check, 64 policy+journey | 2026-02-08 |
+
+**Key Achievement:** PolicyPanel is now first-class TerraTrace module. Operators can manage policy rules directly inside TerraTrace observability surface. Policy events (policy_updated, policy_reset) appear in Action Stream with purple "⚡ Custom" badge, PII-safe payloadsrulesHash + ruleCount). Full policy control loop locked with Golden Journey 10: set deny rule → blocked trace → reset policy → allowed trace (deterministic replay).
+
+**Architecture:**
+- **TraceHome Integration:** PolicyPanel renders as module in trace console (below Action Stream)
+- **Custom Event Support:** ActionStream displays custom events (policy + future telemetry types) with type badge + payload preview
+- **Golden Journey 10:** Policy block → reset → retry sequence with normalized traces (rulesHash, addedRuleId, previousRuleCount)
+- **Normalization Extended:** traceHarness now handles policy_updated/policy_reset with hash/ID normalization
+
+**Files Modified:**
+- `frontend/apps/os-shell/src/pages/TraceHome.tsx` - Added PolicyPanel as Policy Management section
+- `frontend/apps/os-shell/src/hooks/useActionStream.ts` - Extended for custom events (type, customType, customPayload)
+- `frontend/apps/os-shell/src/components/Trace/ActionStreamModule.tsx` - Custom event badge + payload rendering
+- `frontend/apps/os-shell/src/testUtils/traceHarness.ts` - Normalization for policy events
+- `frontend/apps/os-shell/src/__tests__/trace/trace.goldenJourneys.test.tsx` - Added GOLDEN_POLICY_BLOCK_RESET fixture + Journey 10 tests
+
+**Files Created:**
+- `frontend/apps/os-shell/src/__tests__/trace/trace.policyPanel.integration.test.tsx` (NEW) - 12 integration tests (deferred due to telemetry mocking needs)
+
+**Test Coverage:**
+- 3 Golden Journey 10 tests (block→reset→allow deterministic sequence, policyReason validation, reset allows action)
+- 26 total golden journey tests (includes Journey 1-9 + Journey 10), all passing
+- 38 policy tests (Slice 23), still passing
+- Total: 64 tests (policy + golden journeys)
+
+**Integration Test Status:** 7 integration tests created but deferred (require getTelemetryStore mock setup). Core functionality verified through golden journeys + unit tests.
+
+---
+
+## Slice 24.1: PolicyPanel Integration Tests + DI Telemetry ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 1.1 | Deterministic telemetry store mock | `69bc30f86` | Utilities created | 2026-02-08 |
+| ✅ 1.2 | DI seams (useActionStream/ActionStreamModule/TraceHome) | `661b70b10` | ✅ Pass | 2026-02-08 |
+| ✅ 1.3 | Enable PolicyPanel integration tests | `661b70b10` | 7 pass | 2026-02-08 |
+| ✅ 2.1 | Run all gates | `661b70b10` | 111 pass (7 integration, 64 policy, 40 trace) | 2026-02-08 |
+
+**Key Achievement:** Closed integration test gap by implementing dependency injection for telemetry store. Replaced brittle `vi.mock()` with clean prop injection pattern. All 7 integration tests now pass and validate real component tree wiring + History mode persistence.
+
+**Architectural Improvement:**
+- **DI Seams Added:** `useActionStream`, `ActionStreamModule`, `TraceHome` now accept optional `telemetryStore` param
+- **Test Utilities:** Created `mockTelemetryStore.ts` with 3 factory functions (mock/stub/spy patterns)
+- **Zero Module Mocking:** Removed all `vi.mock()` usage, pure prop injection
+- **Backward Compatible:** Optional params default to singleton getTelemetryStore()
+
+**Integration Tests Validate:**
+- PolicyPanel renders in TraceHome ✅
+- policy_updated/policy_reset events appear in Action Stream ✅
+- History mode persistence wiring ✅
+- PII-safe event payloads (rulesHash/ruleCount only) ✅
+- Policy rule survival across reload ✅
+
+**Files Modified:**
+- `frontend/apps/os-shell/src/hooks/useActionStream.ts` - Added optional telemetryStore param
+- `frontend/apps/os-shell/src/components/Trace/ActionStreamModule.tsx` - Added optional telemetryStore prop
+- `frontend/apps/os-shell/src/pages/TraceHome.tsx` - Added optional telemetryStore prop
+
+**Files Created:**
+- `frontend/apps/os-shell/src/testUtils/mockTelemetryStore.ts` - Mock store factories (createMockTelemetryStore, createStubTelemetryStore, createSpyTelemetryStore)
+- `frontend/apps/os-shell/src/__tests__/trace/trace.policyPanel.integration.test.tsx` - 7 integration tests (enabled, all passing)
+
+**Test Evidence:**
+- **111/111 tests passing** (7 integration NEW, 64 policy, 40 trace)
+- **Gates:** type-check PASS, phase83-tools 32/32 PASS
+- **Codex:** 12/12 (zero vi.mock, pure dependency injection)
 
 ---
 
