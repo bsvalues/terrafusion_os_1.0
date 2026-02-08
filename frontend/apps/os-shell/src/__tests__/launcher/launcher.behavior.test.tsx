@@ -33,7 +33,7 @@ jest.mock('../../ui/materials/materialQualityGate', () => ({
 }));
 
 // Mock launcherModel - items defined INSIDE factory to avoid hoisting issues
-jest.mock('../../components/Launcher/launcherModel', () => {
+jest.mock('../../components/launcher/launcherModel', () => {
   const mockItems = [
     {
       id: 'forge',
@@ -90,7 +90,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 // Components to test
-import { Launcher } from '../../components/Launcher';
+import { Launcher } from '../../components/launcher';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 
 // ============================================================================

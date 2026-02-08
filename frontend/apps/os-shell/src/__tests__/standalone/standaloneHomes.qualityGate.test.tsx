@@ -15,15 +15,10 @@
 
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { beforeEach, describe, expect, it } from 'vitest';
 
 // Import from registry and shell
 import { StandaloneHomeShell } from '../../components/standalone/StandaloneHomeShell';
-import {
-    getStandaloneSuites,
-    isValidPrimaryAction,
-    OS_FEATURES
-} from '../../config/suiteRegistry';
+import { getStandaloneSuites, isValidPrimaryAction, OS_FEATURES } from '../../config/suiteRegistry';
 import { useParcelContextStore } from '../../context/parcelContext';
 
 // ============================================================================

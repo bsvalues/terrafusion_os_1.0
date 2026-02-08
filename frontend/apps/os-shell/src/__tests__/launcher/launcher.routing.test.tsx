@@ -77,7 +77,7 @@ const mockLauncherItems = [
   },
 ];
 
-jest.mock('../../components/Launcher/launcherModel', () => ({
+jest.mock('../../components/launcher/launcherModel', () => ({
   getLauncherItems: () => mockLauncherItems,
   getLauncherSections: () => [
     {
@@ -108,8 +108,8 @@ jest.mock('react-router-dom', () => ({
 }));
 
 // Components to test
-import { Launcher } from '../../components/Launcher';
-import { getLauncherItems } from '../../components/Launcher/launcherModel';
+import { Launcher } from '../../components/launcher';
+import { getLauncherItems } from '../../components/launcher/launcherModel';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 
 // ============================================================================
