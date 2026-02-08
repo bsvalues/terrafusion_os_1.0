@@ -15,10 +15,10 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | Slice 24.1: PolicyPanel Integration Tests + DI Telemetry |
-| **Phase** | Phase 3: Execute ✅ |
-| **Task** | All complete |
-| **Status** | ✅ COMPLETE |
+| **Slice** | Slice 24.2: Policy Export/Import |
+| **Phase** | Phase 1: TDD (Writing Tests) |
+| **Task** | 1.1 - Export/Import Tests |
+| **Status** | 🔵 IN PROGRESS |
 | **Latest Commit** | `661b70b10` (Slice 24.1 complete) |
 
 ---
@@ -255,6 +255,78 @@
 - **111/111 tests passing** (7 integration NEW, 64 policy, 40 trace)
 - **Gates:** type-check PASS, phase83-tools 32/32 PASS
 - **Codex:** 12/12 (zero vi.mock, pure dependency injection)
+
+---
+
+## Slice 24.2: Policy Export/Import for Reproducibility 🔵 IN PROGRESS
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 1.1 | Export/Import UI tests (TDD) | Pending | **15 fail (TDD)**, 14 pass | 2026-02-08 |
+| 🔵 1.2 | Export button + JSON generation | Pending | Pending | - |
+| 🔵 1.3 | Import button + validation | Pending | Pending | - |
+| 🔵 1.4 | Audit traces (policy_exported/imported) | Pending | Pending | - |
+| 🔵 2.1 | Run all gates | Pending | Pending | - |
+
+**Goal:** Enable export/import of policy rules for reproducibility, disaster recovery, and cross-environment consistency.
+
+**Operational Value:**
+- **Disaster Recovery:** Export rules before system changes, restore if needed
+- **Reproducibility:** Share exact policy state across environments (dev/staging/prod)
+- **Compliance Auditing:** Export rules as JSON-sealed evidence for audit trails
+- **Cross-Team Consistency:** Import validated rule templates from central governance
+
+**Features:**
+- **Export Rules:** Button downloads current rules as JSON file (`policy-rules-{timestamp}.json`)
+- **Import Rules:** Button + file picker validates and loads JSON rules
+- **Schema Versioning:** v1.0 JSON schema with forward-compatible extensibility
+- **Validation Errors:** Clear error messages for malformed JSON, schema mismatches, invalid rules
+- **Audit Traces:** `policy_exported` and `policy_imported` custom events in Action Stream
+
+**Files To Modify:**
+- `frontend/apps/os-shell/src/components/Trace/PolicyPanel/PolicyPanel.tsx` - Add Export/Import buttons
+- `frontend/apps/os-shell/src/services/policyStore.ts` - Add exportRules(), importRules()
+- `frontend/apps/os-shell/src/__tests__/policy/policy.ui.test.tsx` - Add export/import tests
+- `frontend/apps/os-shell/src/shell/os-actions/osActions.ts` - Add policy_exported, policy_imported custom events
+- `frontend/apps/os-shell/src/services/traceToOsAction.ts` - Map custom events to OS actions
+
+**Test Plan (TDD):**
+1. **Export Tests:**
+   - ✅ Export button exists and is clickable
+   - ✅ Click triggers JSON file download
+   - ✅ Exported JSON matches current rule state
+   - ✅ Exported JSON has valid v1.0 schema
+   - ✅ policy_exported event emitted with rulesHash
+
+2. **Import Tests:**
+   - ✅ Import button exists with file picker
+   - ✅ Valid JSON + v1.0 schema → rules loaded successfully
+   - ✅ Invalid JSON → clear error message shown
+   - ✅ Schema version mismatch → clear error message
+   - ✅ Invalid rule structure → clear error message  
+   - ✅ policy_imported event emitted with rulesHash + ruleCount
+
+3. **Integration Tests:**
+   - ✅ Export → Import → rules match exactly
+   - ✅ policy_exported/policy_imported appear in Action Stream
+   - ✅ Imported rules persist to localStorage
+   - ✅ Imported rules take effect immediately (no reload needed)
+
+**JSON Schema (v1.0):**
+```json
+{
+  "version": "1.0",
+  "exportedAt": "2026-02-08T10:30:00Z",
+  "rules": [
+    {
+      "surface": "workbench",
+      "suiteId": "parcel",
+      "actionId": "export_pdf",
+      "effect": "deny"
+    }
+  ]
+}
+```
 
 ---
 

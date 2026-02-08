@@ -48,6 +48,7 @@ export function PolicyPanel() {
   const [rules, setRules] = useState<PolicyRule[]>([]);
   const [isAddingRule, setIsAddingRule] = useState(false);
   const [formError, setFormError] = useState<string>('');
+  const [importError, setImportError] = useState<string>('');
 
   // Form fields
   const [actionId, setActionId] = useState('');
@@ -163,6 +164,79 @@ export function PolicyPanel() {
       },
     });
   }, [rules]);
+
+  const handleExportRules = useCallback(() => {
+    const jsonString = policyStore.exportRules(rules);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const filename = `policy-rules-${timestamp}.json`;
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Revoke URL (if supported)
+    if (URL.revokeObjectURL) {
+      URL.revokeObjectURL(url);
+    }
+
+    // Emit audit trace
+    emitTrace({
+      type: 'policy_exported',
+      timestamp: Date.now(),
+      payload: {
+        ruleCount: rules.length,
+        rulesHash: hashRules(rules),
+      },
+    });
+  }, [rules]);
+
+  const handleImportRules = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) {
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const jsonString = e.target?.result as string;
+        const result = policyStore.importRules(jsonString);
+
+        if (result.success) {
+          setRules(result.rules);
+          setImportError('');
+
+          // Emit audit trace
+          emitTrace({
+            type: 'policy_imported',
+            timestamp: Date.now(),
+            payload: {
+              ruleCount: result.rules.length,
+              rulesHash: hashRules(result.rules),
+            },
+          });
+        } else {
+          setImportError(result.error.message);
+        }
+      };
+
+      reader.onerror = () => {
+        setImportError('Failed to read file. Please try again.');
+      };
+
+      reader.readAsText(file);
+
+      // Reset input so same file can be re-selected
+      event.target.value = '';
+    },
+    []
+  );
 
   const policyMode = rules.length === 0 ? 'Default Allow' : 'Custom';
 
@@ -288,11 +362,57 @@ export function PolicyPanel() {
         <button onClick={handleAddRule}>Add Rule</button>
       )}
 
-      {/* Reset Policy Button */}
-      {rules.length > 0 && !isAddingRule && (
-        <button onClick={handleResetPolicy} style={{ marginLeft: '8px', color: 'red' }}>
-          Reset Policy
-        </button>
+      {/* Import Error Display */}
+      {importError && (
+        <div
+          style={{
+            color: 'red',
+            marginTop: '8px',
+            padding: '8px',
+            border: '1px solid red',
+            borderRadius: '4px',
+            fontSize: '0.9em',
+          }}
+        >
+          {importError}
+        </div>
+      )}
+
+      {/* Actions: Reset, Export, Import */}
+      {!isAddingRule && (
+        <div style={{ marginTop: '16px' }}>
+          {rules.length > 0 && (
+            <button onClick={handleResetPolicy} style={{ marginRight: '8px', color: 'red' }}>
+              Reset Policy
+            </button>
+          )}
+
+          <button onClick={handleExportRules} style={{ marginRight: '8px' }}>
+            Export Rules
+          </button>
+
+          <label
+            htmlFor='import-rules-input'
+            style={{
+              display: 'inline-block',
+              padding: '2px 8px',
+              background: '#007bff',
+              color: 'white',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            Import Rules
+            <input
+              id='import-rules-input'
+              type='file'
+              accept='application/json,.json'
+              onChange={handleImportRules}
+              aria-label='Import Rules'
+              style={{ display: 'none' }}
+            />
+          </label>
+        </div>
       )}
     </div>
   );

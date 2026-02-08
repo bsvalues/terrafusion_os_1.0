@@ -283,4 +283,398 @@ describe('Policy Panel UI', () => {
       unsubscribe();
     });
   });
+
+  // ============================================================================
+  // Export/Import Tests (Slice 24.2)
+  // ============================================================================
+
+  describe('export rules', () => {
+    it('renders export button', () => {
+      renderPolicyPanel();
+      expect(screen.getByRole('button', { name: /Export Rules/i })).toBeInTheDocument();
+    });
+
+    it('exports empty rules as valid JSON', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      // Mock URL.createObjectURL + click to capture JSON
+      const blobs: Blob[] = [];
+      URL.createObjectURL = vi.fn((blob: Blob) => {
+        blobs.push(blob);
+        return 'blob:mock-url';
+      });
+      URL.revokeObjectURL = vi.fn();
+
+      await user.click(screen.getByRole('button', { name: /Export Rules/i }));
+
+      await waitFor(() => {
+        expect(blobs.length).toBe(1);
+      });
+
+      // Read blob content using FileReader simulation
+      const reader = new FileReader();
+      const textPromise = new Promise<string>((resolve) => {
+        reader.onload = () => resolve(reader.result as string);
+      });
+      reader.readAsText(blobs[0]);
+      const jsonString = await textPromise;
+
+      const json = JSON.parse(jsonString);
+      expect(json.version).toBe('1.0');
+      expect(json.exportedAt).toBeDefined();
+      expect(json.rules).toEqual([]);
+    });
+
+    it('exports added rules with full schema', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      // Add one rule
+      await user.click(screen.getByRole('button', { name: /Add Rule/i }));
+      await user.type(screen.getByLabelText(/Surface/i), 'workbench');
+      await user.type(screen.getByLabelText(/Action ID/i), 'export_pdf');
+      await user.type(screen.getByLabelText(/Reason/i), 'Test export');
+      await user.click(screen.getByRole('button', { name: /Save Rule/i }));
+
+      // Export rules
+      const blobs: Blob[] = [];
+      URL.createObjectURL = vi.fn((blob: Blob) => {
+        blobs.push(blob);
+        return 'blob:mock-url';
+      });
+      URL.revokeObjectURL = vi.fn();
+
+      await user.click(screen.getByRole('button', { name: /Export Rules/i }));
+
+      await waitFor(() => {
+        expect(blobs.length).toBe(1);
+      });
+
+      // Read blob content
+      const reader = new FileReader();
+      const textPromise = new Promise<string>((resolve) => {
+        reader.onload = () => resolve(reader.result as string);
+      });
+      reader.readAsText(blobs[0]);
+      const jsonString = await textPromise;
+
+      const json = JSON.parse(jsonString);
+      expect(json.version).toBe('1.0');
+      expect(json.exportedAt).toBeDefined();
+      expect(json.rules).toHaveLength(1);
+      expect(json.rules[0]).toMatchObject({
+        surface: 'workbench',
+        actionId: 'export_pdf',
+        effect: 'deny',
+      });
+    });
+
+    it('emits policy_exported trace on export', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      const traces: OsActionAnyTraceEvent[] = [];
+      const unsubscribe = subscribeToAllTraces((event) => {
+        traces.push(event);
+      });
+
+      // Mock URL APIs
+      URL.createObjectURL = vi.fn(() => 'blob:mock');
+      URL.revokeObjectURL = vi.fn();
+
+      await user.click(screen.getByRole('button', { name: /Export Rules/i }));
+
+      await waitFor(() => {
+        const policyExported = traces.find((t) => t.type === 'policy_exported');
+        expect(policyExported).toBeDefined();
+        expect((policyExported as any).payload.rulesHash).toBeDefined();
+        expect((policyExported as any).payload.ruleCount).toBeGreaterThanOrEqual(0);
+      });
+
+      unsubscribe();
+    });
+
+    it('generates timestamped filename', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      // Spy on document.createElement('a')
+      const links: HTMLAnchorElement[] = [];
+      const originalCreateElement = document.createElement.bind(document);
+      vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
+        const element = originalCreateElement(tagName);
+        if (tagName === 'a') {
+          links.push(element as HTMLAnchorElement);
+        }
+        return element;
+      });
+
+      URL.createObjectURL = vi.fn(() => 'blob:mock');
+      URL.revokeObjectURL = vi.fn();
+
+      await user.click(screen.getByRole('button', { name: /Export Rules/i }));
+
+      await waitFor(() => {
+        expect(links.length).toBeGreaterThan(0);
+        const downloadLink = links.find((a) => a.download.startsWith('policy-rules-'));
+        expect(downloadLink).toBeDefined();
+        expect(downloadLink!.download).toMatch(/^policy-rules-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.json$/);
+      });
+
+      vi.restoreAllMocks();
+    });
+  });
+
+  describe('import rules', () => {
+    it('renders import button', () => {
+      renderPolicyPanel();
+      expect(screen.getByLabelText(/Import Rules/i)).toBeInTheDocument();
+    });
+
+    it('imports valid JSON rules successfully', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      const validJSON = JSON.stringify({
+        version: '1.0',
+        exportedAt: '2026-02-08T10:30:00Z',
+        rules: [
+          {
+            surface: 'workbench',
+            suiteId: 'parcel',
+            actionId: 'export_pdf',
+            effect: 'deny',
+          },
+        ],
+      });
+
+      const file = new File([validJSON], 'policy-rules.json', { type: 'application/json' });
+      const input = screen.getByLabelText(/Import Rules/i) as HTMLInputElement;
+
+      await user.upload(input, file);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Custom \(1 rules?\)/i)).toBeInTheDocument();
+        expect(screen.getByText(/workbench/i)).toBeInTheDocument();
+        expect(screen.getByText(/export_pdf/i)).toBeInTheDocument();
+      });
+    });
+
+    it('shows error for invalid JSON', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      const invalidJSON = 'not valid json';
+      const file = new File([invalidJSON], 'bad.json', { type: 'application/json' });
+      const input = screen.getByLabelText(/Import Rules/i) as HTMLInputElement;
+
+      await user.upload(input, file);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Invalid JSON/i)).toBeInTheDocument();
+      });
+    });
+
+    it('shows error for missing version', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      const invalidSchema = JSON.stringify({
+        rules: [],
+      });
+
+      const file = new File([invalidSchema], 'no-version.json', { type: 'application/json' });
+      const input = screen.getByLabelText(/Import Rules/i) as HTMLInputElement;
+
+      await user.upload(input, file);
+
+      await waitFor(() => {
+        expect(screen.getByText(/schema version/i)).toBeInTheDocument();
+      });
+    });
+
+    it('shows error for unsupported version', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      const futureVersion = JSON.stringify({
+        version: '2.0',
+        rules: [],
+      });
+
+      const file = new File([futureVersion], 'future.json', { type: 'application/json' });
+      const input = screen.getByLabelText(/Import Rules/i) as HTMLInputElement;
+
+      await user.upload(input, file);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Unsupported schema version/i)).toBeInTheDocument();
+      });
+    });
+
+    it('shows error for invalid rule structure', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      const invalidRule = JSON.stringify({
+        version: '1.0',
+        rules: [{ surface: 'workbench' }], // Missing required fields
+      });
+
+      const file = new File([invalidRule], 'bad-rule.json', { type: 'application/json' });
+      const input = screen.getByLabelText(/Import Rules/i) as HTMLInputElement;
+
+      await user.upload(input, file);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Invalid rule structure/i)).toBeInTheDocument();
+      });
+    });
+
+    it('emits policy_imported trace on successful import', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      const traces: OsActionAnyTraceEvent[] = [];
+      const unsubscribe = subscribeToAllTraces((event) => {
+        traces.push(event);
+      });
+
+      const validJSON = JSON.stringify({
+        version: '1.0',
+        exportedAt: '2026-02-08T10:30:00Z',
+        rules: [
+          {
+            surface: 'workbench',
+            actionId: 'test_import',
+            effect: 'deny',
+          },
+        ],
+      });
+
+      const file = new File([validJSON], 'import.json', { type: 'application/json' });
+      const input = screen.getByLabelText(/Import Rules/i) as HTMLInputElement;
+
+      await user.upload(input, file);
+
+      await waitFor(() => {
+        const policyImported = traces.find((t) => t.type === 'policy_imported');
+        expect(policyImported).toBeDefined();
+        expect((policyImported as any).payload.rulesHash).toBeDefined();
+        expect((policyImported as any).payload.ruleCount).toBe(1);
+      });
+
+      unsubscribe();
+    });
+
+    it('imported rules persist to localStorage', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      const validJSON = JSON.stringify({
+        version: '1.0',
+        rules: [
+          {
+            surface: 'test_persist',
+            actionId: 'test_action',
+            effect: 'deny',
+          },
+        ],
+      });
+
+      const file = new File([validJSON], 'persist.json', { type: 'application/json' });
+      const input = screen.getByLabelText(/Import Rules/i) as HTMLInputElement;
+
+      await user.upload(input, file);
+
+      await waitFor(() => {
+        const storedRules = localStorage.getItem('terrafusion:policy:rules');
+        expect(storedRules).toBeDefined();
+        const parsed = JSON.parse(storedRules!);
+        expect(parsed.rules).toHaveLength(1);
+        expect(parsed.rules[0].surface).toBe('test_persist');
+      });
+    });
+
+    it('imported rules take effect immediately', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      const validJSON = JSON.stringify({
+        version: '1.0',
+        rules: [
+          {
+            surface: 'immediate',
+            actionId: 'immediate_test',
+            effect: 'deny',
+          },
+        ],
+      });
+
+      const file = new File([validJSON], 'immediate.json', { type: 'application/json' });
+      const input = screen.getByLabelText(/Import Rules/i) as HTMLInputElement;
+
+      await user.upload(input, file);
+
+      await waitFor(() => {
+        expect(screen.getByText(/immediate/i)).toBeInTheDocument();
+        expect(screen.getByText(/immediate_test/i)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('export-import round-trip', () => {
+    it('exported rules can be re-imported exactly', async () => {
+      const user = userEvent.setup();
+      renderPolicyPanel();
+
+      // Add original rules
+      await user.click(screen.getByRole('button', { name: /Add Rule/i }));
+      await user.type(screen.getByLabelText(/Surface/i), 'roundtrip');
+      await user.type(screen.getByLabelText(/Action ID/i), 'test_roundtrip');
+      await user.type(screen.getByLabelText(/Reason/i), 'Roundtrip test');
+      await user.click(screen.getByRole('button', { name: /Save Rule/i }));
+
+      // Export rules
+      const blobs: Blob[] = [];
+      URL.createObjectURL = vi.fn((blob: Blob) => {
+        blobs.push(blob);
+        return 'blob:mock-url';
+      });
+      URL.revokeObjectURL = vi.fn();
+
+      await user.click(screen.getByRole('button', { name: /Export Rules/i }));
+
+      await waitFor(() => {
+        expect(blobs.length).toBe(1);
+      });
+
+      // Read blob content
+      const reader = new FileReader();
+      const textPromise = new Promise<string>((resolve) => {
+        reader.onload = () => resolve(reader.result as string);
+      });
+      reader.readAsText(blobs[0]);
+      const exportedJSON = await textPromise;
+
+      // Reset policy
+      await user.click(screen.getByRole('button', { name: /Reset/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Default Allow/i)).toBeInTheDocument();
+      });
+
+      // Re-import exported rules
+      const file = new File([exportedJSON], 'roundtrip.json', { type: 'application/json' });
+      const input = screen.getByLabelText(/Import Rules/i) as HTMLInputElement;
+
+      await user.upload(input, file);
+
+      await waitFor(() => {
+        expect(screen.getByText(/roundtrip/i)).toBeInTheDocument();
+        expect(screen.getByText(/test_roundtrip/i)).toBeInTheDocument();
+      });
+    });
+  });
 });
