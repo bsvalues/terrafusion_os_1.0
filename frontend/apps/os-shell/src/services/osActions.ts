@@ -3,11 +3,13 @@
  *
  * Central dispatcher for all OS-level actions. Every action execution:
  * 1. Validates action structure
- * 2. Emits TerraTrace event for audit trail
- * 3. Routes to navigation or handler registry
+ * 2. Checks disabled state and policy gate
+ * 3. Emits TerraTrace event for audit trail (invoked or blocked)
+ * 4. Routes to navigation or handler registry
  *
  * @module services/osActions
  * @see Slice 15: Module Action Wiring + Telemetry Truth
+ * @see Slice 16: Cross-Surface Action Parity + Disabled/Policy Enforcement
  */
 
 // ============================================================================
@@ -28,6 +30,8 @@ export interface OsActionBase {
   intent: OsActionIntent;
   icon?: string;
   disabled?: boolean;
+  /** Reason why action is disabled (for a11y and trace) */
+  disabledReason?: string;
   description?: string;
 }
 
@@ -61,7 +65,7 @@ export interface OsActionContext {
   /** Current suite ID (e.g., 'pilot', 'trace') */
   suiteId: string;
   /** Surface type where action was invoked */
-  surface: 'launcher' | 'standalone_home' | 'module' | 'workbench';
+  surface: 'launcher' | 'standalone_home' | 'shellhome' | 'module' | 'workbench';
   /** Optional module ID if action is from a module */
   moduleId?: string;
   /** Hash of parcel ID if parcel context exists (PII-safe) */
@@ -69,10 +73,34 @@ export interface OsActionContext {
 }
 
 // ============================================================================
+// Policy Types
+// ============================================================================
+
+/**
+ * Policy decision result
+ */
+export interface PolicyDecision {
+  allowed: boolean;
+  reason?: string;
+}
+
+/**
+ * Policy gate for action execution
+ */
+export interface OsActionPolicy {
+  /**
+   * Check if action can be executed in given context
+   * @returns PolicyDecision with allowed status and optional reason
+   */
+  canExecute: (action: OsAction, context: OsActionContext) => PolicyDecision;
+}
+
+// ============================================================================
 // Trace Event Types
 // ============================================================================
 
 export const OS_ACTION_EVENT_NAME = 'terratrace:os_action';
+export const OS_ACTION_BLOCKED_EVENT_NAME = 'terratrace:os_action_blocked';
 
 export interface OsActionTracePayload {
   actionId: string;
@@ -90,6 +118,29 @@ export interface OsActionTraceEvent {
   type: 'os_action_invoked';
   timestamp: number;
   payload: OsActionTracePayload;
+}
+
+/**
+ * Blocked action trace event payload
+ */
+export interface OsActionBlockedPayload {
+  actionId: string;
+  actionType: 'navigation' | 'handler';
+  intent: OsActionIntent;
+  surface: OsActionContext['surface'];
+  suiteId: string;
+  /** Reason for blocking: 'disabled' or 'policy' */
+  blockReason: 'disabled' | 'policy';
+  /** User-facing reason if action was disabled */
+  disabledReason?: string;
+  /** Policy-provided reason if blocked by policy */
+  policyReason?: string;
+}
+
+export interface OsActionBlockedEvent {
+  type: 'os_action_blocked';
+  timestamp: number;
+  payload: OsActionBlockedPayload;
 }
 
 // ============================================================================
@@ -169,9 +220,66 @@ function emitActionTrace(action: OsAction, context: OsActionContext): void {
     payload,
   };
 
-  window.dispatchEvent(
-    new CustomEvent(OS_ACTION_EVENT_NAME, { detail: event })
-  );
+  window.dispatchEvent(new CustomEvent(OS_ACTION_EVENT_NAME, { detail: event }));
+}
+
+/**
+ * Emit blocked action trace event
+ */
+function emitBlockedTrace(
+  action: OsAction,
+  context: OsActionContext,
+  blockReason: 'disabled' | 'policy',
+  reasonDetail?: string
+): void {
+  const payload: OsActionBlockedPayload = {
+    actionId: action.id,
+    actionType: isNavigationAction(action) ? 'navigation' : 'handler',
+    intent: action.intent,
+    surface: context.surface,
+    suiteId: context.suiteId,
+    blockReason,
+  };
+
+  if (blockReason === 'disabled') {
+    payload.disabledReason = reasonDetail ?? action.disabledReason;
+  } else if (blockReason === 'policy') {
+    payload.policyReason = reasonDetail;
+  }
+
+  const event: OsActionBlockedEvent = {
+    type: 'os_action_blocked',
+    timestamp: Date.now(),
+    payload,
+  };
+
+  window.dispatchEvent(new CustomEvent(OS_ACTION_BLOCKED_EVENT_NAME, { detail: event }));
+}
+
+// ============================================================================
+// Policy Registry
+// ============================================================================
+
+/** Default permissive policy */
+const DEFAULT_POLICY: OsActionPolicy = {
+  canExecute: () => ({ allowed: true }),
+};
+
+/** Current active policy */
+let currentPolicy: OsActionPolicy = DEFAULT_POLICY;
+
+/**
+ * Set custom action policy gate
+ */
+export function setActionPolicy(policy: OsActionPolicy): void {
+  currentPolicy = policy;
+}
+
+/**
+ * Reset to default permissive policy
+ */
+export function resetActionPolicy(): void {
+  currentPolicy = DEFAULT_POLICY;
 }
 
 // ============================================================================
@@ -213,8 +321,16 @@ function executeHandler(handlerKey: string, context: OsActionContext): void {
  * @param context - Execution context including navigate function and metadata
  */
 export function executeOsAction(action: OsAction, context: OsActionContext): void {
-  // Skip disabled actions silently
+  // Check 1: Disabled actions emit blocked trace and return
   if (action.disabled) {
+    emitBlockedTrace(action, context, 'disabled', action.disabledReason);
+    return;
+  }
+
+  // Check 2: Policy gate can block action
+  const policyDecision = currentPolicy.canExecute(action, context);
+  if (!policyDecision.allowed) {
+    emitBlockedTrace(action, context, 'policy', policyDecision.reason);
     return;
   }
 
@@ -232,9 +348,7 @@ export function executeOsAction(action: OsAction, context: OsActionContext): voi
 /**
  * Subscribe to OS action trace events
  */
-export function subscribeToActionTrace(
-  callback: (event: OsActionTraceEvent) => void
-): () => void {
+export function subscribeToActionTrace(callback: (event: OsActionTraceEvent) => void): () => void {
   const handler = (e: CustomEvent<OsActionTraceEvent>) => callback(e.detail);
 
   window.addEventListener(OS_ACTION_EVENT_NAME, handler as EventListener);
