@@ -24,7 +24,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     CONSTITUTIONAL_SUITES,
@@ -34,6 +34,7 @@ import {
     isWorkbenchSuite,
     type SuiteId,
 } from '../../config/suiteRegistry';
+import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { LiquidPanel, TactileButton } from '../../ui/materials';
@@ -357,25 +358,53 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
     [navigate]
   );
 
+  // Build action context for shellhome surface (Slice 16)
+  const actionContext: OsActionContext = useMemo(
+    () => ({
+      navigate,
+      suiteId: 'shell',
+      surface: 'shellhome',
+    }),
+    [navigate]
+  );
+
   const handleSuiteLaunch = useCallback(
     (suite: Suite) => {
-      navigate(suite.route);
+      const action: OsAction = {
+        id: suite.id,
+        label: suite.name,
+        intent: suite.intent,
+        href: suite.route,
+      };
+      executeOsAction(action, { ...actionContext, suiteId: suite.id });
     },
-    [navigate]
+    [actionContext]
   );
 
   const handleOSEntrypoint = useCallback(
     (item: (typeof ALL_ENTRYPOINTS)[0]) => {
-      navigate(item.route);
+      const action: OsAction = {
+        id: item.id,
+        label: item.label,
+        intent: item.intent,
+        href: item.route,
+      };
+      executeOsAction(action, { ...actionContext, suiteId: item.id });
     },
-    [navigate]
+    [actionContext]
   );
 
   const handleRecentItem = useCallback(
     (item: RecentItem) => {
-      navigate(item.route);
+      const action: OsAction = {
+        id: item.id,
+        label: item.title,
+        intent: 'workbench',
+        href: item.route,
+      };
+      executeOsAction(action, actionContext);
     },
-    [navigate]
+    [actionContext]
   );
 
   return (

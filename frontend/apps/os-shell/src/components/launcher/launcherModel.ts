@@ -18,6 +18,7 @@ import {
     type SuiteId,
 } from '../../config/suiteRegistry';
 import { getCurrentParcelId } from '../../context/parcelContext';
+import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 
 // ============================================================================
 // Types
@@ -226,14 +227,38 @@ export function filterLauncherItems(items: LauncherItem[], query: string): Launc
 }
 
 /**
+ * Convert a LauncherItem to an OsAction for dispatch.
+ */
+export function launcherItemToOsAction(item: LauncherItem): OsAction {
+  return {
+    id: item.id,
+    label: item.label,
+    intent: item.intent,
+    href: item.route,
+  };
+}
+
+/**
  * Navigate to a launcher item.
- * Handles both route-based and action-based items.
+ * Routes through executeOsAction for consistent telemetry.
+ * Slice 16: Unified OS action dispatch.
  */
 export function navigateToLauncherItem(item: LauncherItem, navigate: NavigateFunction): void {
+  // Legacy action items still execute directly (for backward compat)
   if (item.action) {
     item.action();
-  } else if (item.route) {
-    navigate(item.route);
+    return;
+  }
+
+  // Route items go through OS action dispatcher for telemetry
+  if (item.route) {
+    const action = launcherItemToOsAction(item);
+    const context: OsActionContext = {
+      navigate,
+      suiteId: item.id,
+      surface: 'launcher',
+    };
+    executeOsAction(action, context);
   }
 }
 
