@@ -8,7 +8,6 @@
  * @vitest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 // Vitest imports removed - Jest globals used
@@ -28,7 +27,6 @@ const renderTaskbar = () => {
 };
 
 // Extend vitest expect with jest-dom matchers
-
 
 // Clean up DOM after each test
 afterEach(() => {
@@ -154,7 +152,9 @@ describe('Taskbar Component', () => {
     });
 
     it('displays window title on app button', () => {
-      useDesktopStore.getState().openWindow('government-edition', 'Government Edition', 'Building2');
+      useDesktopStore
+        .getState()
+        .openWindow('government-edition', 'Government Edition', 'Building2');
 
       renderTaskbar();
 
@@ -162,7 +162,9 @@ describe('Taskbar Component', () => {
     });
 
     it('displays window icon on app button', () => {
-      useDesktopStore.getState().openWindow('government-edition', 'Government Edition', 'Building2');
+      useDesktopStore
+        .getState()
+        .openWindow('government-edition', 'Government Edition', 'Building2');
 
       renderTaskbar();
 
@@ -293,7 +295,11 @@ describe('Taskbar Component', () => {
     it('truncates long window titles', () => {
       useDesktopStore
         .getState()
-        .openWindow('module-1', 'This Is A Very Long Module Title That Should Be Truncated', 'BarChart3');
+        .openWindow(
+          'module-1',
+          'This Is A Very Long Module Title That Should Be Truncated',
+          'BarChart3'
+        );
 
       renderTaskbar();
 
