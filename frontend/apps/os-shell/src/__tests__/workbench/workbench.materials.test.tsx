@@ -16,7 +16,6 @@
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, type Mock } from 'vitest';
 import { InvocationHistory, InvocationRecord } from '../../components/workbench/InvocationHistory';
 import { ParcelContextHeader } from '../../components/workbench/ParcelContextHeader';
 import { ResultPanel } from '../../components/workbench/ResultPanel';
@@ -24,17 +23,12 @@ import * as materialQualityGate from '../../ui/materials/materialQualityGate';
 import { MaterialQuality } from '../../ui/materials/materialQualityGate';
 
 // Mock the quality gate
-vi.mock('../../ui/materials/materialQualityGate', async () => {
-  const actual = await vi.importActual<typeof import('../../ui/materials/materialQualityGate')>(
-    '../../ui/materials/materialQualityGate'
-  );
-  return {
-    ...actual,
-    useMaterialQuality: vi.fn(),
-  };
-});
+jest.mock('../../ui/materials/materialQualityGate', () => ({
+  ...jest.requireActual('../../ui/materials/materialQualityGate'),
+  useMaterialQuality: jest.fn(),
+}));
 
-const mockUseMaterialQuality = materialQualityGate.useMaterialQuality as Mock<
+const mockUseMaterialQuality = materialQualityGate.useMaterialQuality as jest.MockedFunction<
   typeof materialQualityGate.useMaterialQuality
 >;
 
@@ -64,7 +58,7 @@ const LOW_QUALITY_STATE: materialQualityGate.MaterialQualityState = {
 
 describe('Workbench Materials Adoption', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockUseMaterialQuality.mockReturnValue(HIGH_QUALITY_STATE);
   });
 

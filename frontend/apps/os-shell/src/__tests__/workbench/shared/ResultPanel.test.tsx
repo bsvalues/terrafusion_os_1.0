@@ -12,19 +12,18 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
 import { ResultPanel } from '../../../components/workbench/ResultPanel';
 
 // Mock ErrorDisplay
-vi.mock('../../../components/errors/ErrorDisplay', () => ({
+jest.mock('../../../components/errors/ErrorDisplay', () => ({
   ErrorDisplay: ({ error }: { error: { message: string } }) => (
     <div data-testid='error-display'>{error.message}</div>
   ),
 }));
 
 // Mock getEnv
-vi.mock('../../../runtime/env', () => ({
-  getEnv: vi.fn((key?: string) => {
+jest.mock('../../../runtime/env', () => ({
+  getEnv: jest.fn((key?: string) => {
     if (key === 'MODE') return 'development';
     if (key === 'DEV') return true;
     return { DEV: true, MODE: 'development' };
@@ -35,7 +34,7 @@ describe('ResultPanel', () => {
   beforeEach(() => {
     Object.assign(navigator, {
       clipboard: {
-        writeText: vi.fn().mockResolvedValue(undefined),
+        writeText: jest.fn().mockResolvedValue(undefined),
       },
     });
   });
@@ -144,7 +143,7 @@ describe('ResultPanel', () => {
     });
 
     it('shows dismiss button when onDismiss provided', () => {
-      const onDismiss = vi.fn();
+      const onDismiss = jest.fn();
       render(
         <ResultPanel
           status='error'

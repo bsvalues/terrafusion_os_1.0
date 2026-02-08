@@ -7,14 +7,13 @@
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
-import { vi, type Mock } from 'vitest';
 import * as pilotApi from '../../api/pilotApi';
 import PropertyDais from '../../pages/workbench/tabs/PropertyDais';
 
 // Mock the pilotApi module
-vi.mock('../../api/pilotApi');
+jest.mock('../../api/pilotApi');
 
-const mockInvokeTool = pilotApi.invokeTool as Mock<typeof pilotApi.invokeTool>;
+const mockInvokeTool = pilotApi.invokeTool as jest.MockedFunction<typeof pilotApi.invokeTool>;
 
 // Test wrapper providing parcel context via outlet
 const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
@@ -38,7 +37,7 @@ const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
 
 describe('PropertyDais', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Rendering', () => {
