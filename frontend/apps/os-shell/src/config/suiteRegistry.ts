@@ -234,6 +234,20 @@ export const OS_FEATURES: readonly OsFeatureDefinition[] = [
         },
       ],
       showWorkbenchCta: true,
+      modules: [
+        {
+          id: 'overview',
+          title: 'Pilot Overview',
+          kind: 'info',
+          icon: '📋',
+        },
+        {
+          id: 'quick-actions',
+          title: 'Quick Actions',
+          kind: 'actions',
+          icon: '⚡',
+        },
+      ],
     },
   },
   {
@@ -265,6 +279,20 @@ export const OS_FEATURES: readonly OsFeatureDefinition[] = [
         },
       ],
       showWorkbenchCta: true,
+      modules: [
+        {
+          id: 'overview',
+          title: 'Trace Overview',
+          kind: 'info',
+          icon: '📊',
+        },
+        {
+          id: 'quick-actions',
+          title: 'Quick Actions',
+          kind: 'actions',
+          icon: '🔍',
+        },
+      ],
     },
   },
 ] as const;
