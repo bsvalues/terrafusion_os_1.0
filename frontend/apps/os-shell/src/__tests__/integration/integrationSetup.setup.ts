@@ -6,7 +6,7 @@
  */
 
 // Extend default test timeout for integration tests
-vi.setConfig({ testTimeout: 10000); // 10 seconds
+vi.setConfig({ testTimeout: 10000 }); // 10 seconds
 
 // Mock timers for integration tests with animations
 // Uncomment if needed for specific workflows

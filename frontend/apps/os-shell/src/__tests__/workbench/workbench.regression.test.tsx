@@ -22,7 +22,9 @@ import { MaterialQuality } from '../../ui/materials/materialQualityGate';
 
 // Mock the quality gate
 vi.mock('../../ui/materials/materialQualityGate', async () => {
-  const actual = await vi.importActual<typeof import('../../ui/materials/materialQualityGate')>('../../ui/materials/materialQualityGate');
+  const actual = await vi.importActual<typeof import('../../ui/materials/materialQualityGate')>(
+    '../../ui/materials/materialQualityGate'
+  );
   return {
     ...actual,
     useMaterialQuality: vi.fn(),
