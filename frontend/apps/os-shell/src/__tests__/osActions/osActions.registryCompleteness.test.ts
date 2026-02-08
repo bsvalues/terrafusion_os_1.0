@@ -15,8 +15,8 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { isValidOsAction, isNavigationAction, isHandlerKeyAction } from '../../services/osActions';
 import { getQualifiedStandaloneSuites, OS_FEATURES } from '../../config/suiteRegistry';
+import { isHandlerKeyAction, isNavigationAction, isValidOsAction } from '../../services/osActions';
 
 // ============================================================================
 // Action Registry Completeness
@@ -33,10 +33,16 @@ describe('OS Actions Registry Completeness', () => {
         for (const action of actions) {
           expect(action.id, `Suite "${suite.id}" action missing id`).toBeTruthy();
           expect(action.id.length, `Suite "${suite.id}" action has empty id`).toBeGreaterThan(0);
-          
-          expect(action.label, `Suite "${suite.id}" action "${action.id}" missing label`).toBeTruthy();
-          expect(action.label.length, `Suite "${suite.id}" action "${action.id}" has empty label`).toBeGreaterThan(0);
-          
+
+          expect(
+            action.label,
+            `Suite "${suite.id}" action "${action.id}" missing label`
+          ).toBeTruthy();
+          expect(
+            action.label.length,
+            `Suite "${suite.id}" action "${action.id}" has empty label`
+          ).toBeGreaterThan(0);
+
           const validIntents = ['workbench', 'standalone', 'system'];
           expect(
             validIntents.includes(action.intent),
@@ -114,10 +120,10 @@ describe('OS Actions Registry Completeness', () => {
     it('registry actions do not contain inline handler functions', () => {
       // Registry data (OS_FEATURES) should NOT contain handler functions
       // Handlers should be registered in osActionRegistry and referenced by key
-      
+
       for (const feature of OS_FEATURES) {
         if (!feature.homeMeta) continue;
-        
+
         const actions = feature.homeMeta.primaryActions ?? [];
         for (const action of actions) {
           // Registry actions should use href OR handlerKey, not inline handler
@@ -137,7 +143,12 @@ describe('OS Actions Registry Completeness', () => {
     });
 
     it('handler key actions are correctly identified', () => {
-      const handlerAction = { id: 'test', label: 'Test', intent: 'system' as const, handlerKey: 'openSettings' };
+      const handlerAction = {
+        id: 'test',
+        label: 'Test',
+        intent: 'system' as const,
+        handlerKey: 'openSettings',
+      };
       expect(isHandlerKeyAction(handlerAction)).toBe(true);
     });
 

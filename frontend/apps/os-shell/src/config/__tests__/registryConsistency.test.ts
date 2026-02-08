@@ -1,14 +1,14 @@
-import { MODULES } from '../modules';
 import { ModuleRenderer } from '../moduleComponents';
+import { MODULES } from '../modules';
 import {
-  CONSTITUTIONAL_SUITES,
-  OS_FEATURES,
-  getStandaloneSuites,
-  getWorkbenchSuites,
-  getQualifiedStandaloneSuites,
-  isValidPrimaryAction,
-  isValidWorkbenchTarget,
-  VALID_WORKBENCH_TAB_IDS,
+    CONSTITUTIONAL_SUITES,
+    getQualifiedStandaloneSuites,
+    getStandaloneSuites,
+    getWorkbenchSuites,
+    isValidPrimaryAction,
+    isValidWorkbenchTarget,
+    OS_FEATURES,
+    VALID_WORKBENCH_TAB_IDS,
 } from '../suiteRegistry';
 
 describe('registry consistency', () => {
@@ -75,7 +75,10 @@ describe('suiteRegistry quality invariants', () => {
       const liveWithRoute = OS_FEATURES.filter((f) => f.status === 'live' && f.route);
 
       for (const feature of liveWithRoute) {
-        expect(feature.homeMeta, `Feature "${feature.id}" live with route but no homeMeta`).toBeTruthy();
+        expect(
+          feature.homeMeta,
+          `Feature "${feature.id}" live with route but no homeMeta`
+        ).toBeTruthy();
       }
     });
   });
@@ -144,7 +147,9 @@ describe('suiteRegistry quality invariants', () => {
       const featureIds = new Set(OS_FEATURES.map((f) => f.id));
 
       for (const id of featureIds) {
-        expect(suiteIds.has(id as any), `ID "${id}" exists in both suites and features`).toBe(false);
+        expect(suiteIds.has(id as any), `ID "${id}" exists in both suites and features`).toBe(
+          false
+        );
       }
     });
   });

@@ -13,13 +13,13 @@
  * @see Slice 15: Module Action Wiring + Telemetry Truth
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
-  executeOsAction,
-  OS_ACTION_EVENT_NAME,
-  type OsActionTraceEvent,
-  type OsAction,
+    executeOsAction,
+    OS_ACTION_EVENT_NAME,
+    type OsAction,
+    type OsActionTraceEvent,
 } from '../../services/osActions';
 
 // ============================================================================
@@ -91,10 +91,13 @@ describe('OS Actions Telemetry', () => {
         href: '/pilot/dashboard',
       };
 
-      executeOsAction(action, createMockActionContext({
-        surface: 'launcher',
-        suiteId: 'pilot',
-      }));
+      executeOsAction(
+        action,
+        createMockActionContext({
+          surface: 'launcher',
+          suiteId: 'pilot',
+        })
+      );
 
       expect(events[0].payload.intent).toBe('standalone');
       expect(events[0].payload.surface).toBe('launcher');
@@ -172,9 +175,12 @@ describe('OS Actions Telemetry', () => {
         href: '/property/123/forge',
       };
 
-      executeOsAction(action, createMockActionContext({
-        parcelIdHash: 'h-abc123',
-      }));
+      executeOsAction(
+        action,
+        createMockActionContext({
+          parcelIdHash: 'h-abc123',
+        })
+      );
 
       expect(events[0].payload.parcelIdHash).toBe('h-abc123');
 
@@ -191,9 +197,12 @@ describe('OS Actions Telemetry', () => {
         href: '/pilot',
       };
 
-      executeOsAction(action, createMockActionContext({
-        parcelIdHash: undefined,
-      }));
+      executeOsAction(
+        action,
+        createMockActionContext({
+          parcelIdHash: undefined,
+        })
+      );
 
       expect(events[0].payload.parcelIdHash).toBeUndefined();
 
@@ -233,9 +242,12 @@ describe('OS Actions Telemetry', () => {
         handlerKey: 'metrics:refresh',
       };
 
-      executeOsAction(action, createMockActionContext({
-        moduleId: 'metrics-panel',
-      }));
+      executeOsAction(
+        action,
+        createMockActionContext({
+          moduleId: 'metrics-panel',
+        })
+      );
 
       expect(events[0].payload.moduleId).toBe('metrics-panel');
 

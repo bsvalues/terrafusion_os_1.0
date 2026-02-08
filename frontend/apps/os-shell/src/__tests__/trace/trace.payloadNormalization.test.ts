@@ -10,15 +10,15 @@
  * @see Slice 18: Deterministic Replay + Golden Trace Regression
  */
 
-import { describe, expect, it, vi, afterEach } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import type { OsActionBlockedEvent, OsActionTraceEvent } from '../../services/osActions';
 import {
-  normalizeTraceEvent,
-  normalizeTraces,
-  compareTraces,
-  assertTracesMatch,
-  type NormalizedTraceEvent,
+    assertTracesMatch,
+    compareTraces,
+    normalizeTraceEvent,
+    normalizeTraces,
+    type NormalizedTraceEvent,
 } from '../../testUtils/traceHarness';
-import type { OsActionTraceEvent, OsActionBlockedEvent } from '../../services/osActions';
 
 // ============================================================================
 // Invoked Event Normalization
@@ -258,7 +258,14 @@ describe('Trace Comparison', () => {
         {
           type: 'os_action_invoked',
           timestamp: 'NORMALIZED',
-          payload: { actionId: 'a', actionType: 'navigation', intent: 'standalone', surface: 'launcher', suiteId: 'pilot', href: '/a' },
+          payload: {
+            actionId: 'a',
+            actionType: 'navigation',
+            intent: 'standalone',
+            surface: 'launcher',
+            suiteId: 'pilot',
+            href: '/a',
+          },
         },
       ];
       const expected = [...actual];
@@ -273,7 +280,14 @@ describe('Trace Comparison', () => {
         {
           type: 'os_action_invoked',
           timestamp: 'NORMALIZED',
-          payload: { actionId: 'a', actionType: 'navigation', intent: 'standalone', surface: 'launcher', suiteId: 'pilot', href: '/a' },
+          payload: {
+            actionId: 'a',
+            actionType: 'navigation',
+            intent: 'standalone',
+            surface: 'launcher',
+            suiteId: 'pilot',
+            href: '/a',
+          },
         },
       ];
       const expected: NormalizedTraceEvent[] = [];
@@ -291,14 +305,28 @@ describe('Trace Comparison', () => {
         {
           type: 'os_action_invoked',
           timestamp: 'NORMALIZED',
-          payload: { actionId: 'a', actionType: 'navigation', intent: 'standalone', surface: 'launcher', suiteId: 'pilot', href: '/a' },
+          payload: {
+            actionId: 'a',
+            actionType: 'navigation',
+            intent: 'standalone',
+            surface: 'launcher',
+            suiteId: 'pilot',
+            href: '/a',
+          },
         },
       ];
       const expected: NormalizedTraceEvent[] = [
         {
           type: 'os_action_invoked',
           timestamp: 'NORMALIZED',
-          payload: { actionId: 'b', actionType: 'navigation', intent: 'standalone', surface: 'launcher', suiteId: 'pilot', href: '/b' },
+          payload: {
+            actionId: 'b',
+            actionType: 'navigation',
+            intent: 'standalone',
+            surface: 'launcher',
+            suiteId: 'pilot',
+            href: '/b',
+          },
         },
       ];
 
@@ -315,14 +343,28 @@ describe('Trace Comparison', () => {
         {
           type: 'os_action_invoked',
           timestamp: 'NORMALIZED',
-          payload: { actionId: 'a', actionType: 'navigation', intent: 'standalone', surface: 'launcher', suiteId: 'pilot', href: '/a' },
+          payload: {
+            actionId: 'a',
+            actionType: 'navigation',
+            intent: 'standalone',
+            surface: 'launcher',
+            suiteId: 'pilot',
+            href: '/a',
+          },
         },
       ];
       const expected: NormalizedTraceEvent[] = [
         {
           type: 'os_action_blocked',
           timestamp: 'NORMALIZED',
-          payload: { actionId: 'a', actionType: 'navigation', intent: 'standalone', surface: 'launcher', suiteId: 'pilot', blockReason: 'disabled' },
+          payload: {
+            actionId: 'a',
+            actionType: 'navigation',
+            intent: 'standalone',
+            surface: 'launcher',
+            suiteId: 'pilot',
+            blockReason: 'disabled',
+          },
         },
       ];
 
@@ -352,7 +394,14 @@ describe('Trace Comparison', () => {
         {
           type: 'os_action_invoked',
           timestamp: 'NORMALIZED',
-          payload: { actionId: 'test', actionType: 'navigation', intent: 'standalone', surface: 'launcher', suiteId: 'pilot', href: '/test' },
+          payload: {
+            actionId: 'test',
+            actionType: 'navigation',
+            intent: 'standalone',
+            surface: 'launcher',
+            suiteId: 'pilot',
+            href: '/test',
+          },
         },
       ];
 
@@ -378,7 +427,14 @@ describe('Trace Comparison', () => {
         {
           type: 'os_action_invoked',
           timestamp: 'NORMALIZED',
-          payload: { actionId: 'expected', actionType: 'navigation', intent: 'standalone', surface: 'launcher', suiteId: 'pilot', href: '/expected' },
+          payload: {
+            actionId: 'expected',
+            actionType: 'navigation',
+            intent: 'standalone',
+            surface: 'launcher',
+            suiteId: 'pilot',
+            href: '/expected',
+          },
         },
       ];
 

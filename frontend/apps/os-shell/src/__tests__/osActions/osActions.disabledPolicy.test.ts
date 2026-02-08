@@ -12,19 +12,19 @@
  * @see Slice 16: Disabled/Policy Enforcement
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  executeOsAction,
-  OS_ACTION_EVENT_NAME,
-  OS_ACTION_BLOCKED_EVENT_NAME,
-  setActionPolicy,
-  resetActionPolicy,
-  type OsAction,
-  type OsActionContext,
-  type OsActionTraceEvent,
-  type OsActionBlockedEvent,
-  type OsActionPolicy,
+    executeOsAction,
+    OS_ACTION_BLOCKED_EVENT_NAME,
+    OS_ACTION_EVENT_NAME,
+    resetActionPolicy,
+    setActionPolicy,
+    type OsAction,
+    type OsActionBlockedEvent,
+    type OsActionContext,
+    type OsActionPolicy,
+    type OsActionTraceEvent,
 } from '../../services/osActions';
 
 // ============================================================================
@@ -35,7 +35,9 @@ function createMockNavigate() {
   return vi.fn();
 }
 
-function createActionContext(surface: OsActionContext['surface'] = 'standalone_home'): OsActionContext {
+function createActionContext(
+  surface: OsActionContext['surface'] = 'standalone_home'
+): OsActionContext {
   return {
     navigate: createMockNavigate(),
     suiteId: 'pilot',
@@ -67,7 +69,8 @@ function captureBlockedEvents(): { events: OsActionBlockedEvent[]; cleanup: () =
 
   return {
     events,
-    cleanup: () => window.removeEventListener(OS_ACTION_BLOCKED_EVENT_NAME, handler as EventListener),
+    cleanup: () =>
+      window.removeEventListener(OS_ACTION_BLOCKED_EVENT_NAME, handler as EventListener),
   };
 }
 

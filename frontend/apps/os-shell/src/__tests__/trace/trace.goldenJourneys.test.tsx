@@ -747,11 +747,17 @@ describe('Golden Journey Trace Regression', () => {
       ];
 
       const { traces: traces1 } = collectTracesDuringSync(() => {
-        executeOsAction(actionsWithDifferentHashes[0].action, actionsWithDifferentHashes[0].context);
+        executeOsAction(
+          actionsWithDifferentHashes[0].action,
+          actionsWithDifferentHashes[0].context
+        );
       });
 
       const { traces: traces2 } = collectTracesDuringSync(() => {
-        executeOsAction(actionsWithDifferentHashes[1].action, actionsWithDifferentHashes[1].context);
+        executeOsAction(
+          actionsWithDifferentHashes[1].action,
+          actionsWithDifferentHashes[1].context
+        );
       });
 
       const normalized1 = normalizeTraces(traces1);

@@ -15,13 +15,13 @@
  */
 
 import {
-  clearParcelContext,
-  getRecentParcels,
-  recordRecentParcel,
-  selectRecentParcel,
-  setParcelContext,
-  useParcelContextStore,
-  MAX_RECENT_PARCELS,
+    clearParcelContext,
+    getRecentParcels,
+    MAX_RECENT_PARCELS,
+    recordRecentParcel,
+    selectRecentParcel,
+    setParcelContext,
+    useParcelContextStore,
 } from '../../context/parcelContext';
 import { PARCEL_CONTEXT_EVENT_NAME } from '../../context/parcelContextTrace';
 

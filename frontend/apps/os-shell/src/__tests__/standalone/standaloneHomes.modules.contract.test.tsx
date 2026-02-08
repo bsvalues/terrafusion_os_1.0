@@ -19,7 +19,10 @@ import { BrowserRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { StandaloneHomeShell } from '../../components/standalone/StandaloneHomeShell';
-import { MODULE_KINDS, type StandaloneHomeModule } from '../../components/standalone/standaloneHomeContracts';
+import {
+    MODULE_KINDS,
+    type StandaloneHomeModule,
+} from '../../components/standalone/standaloneHomeContracts';
 import { getStandaloneSuites, OS_FEATURES } from '../../config/suiteRegistry';
 import { useParcelContextStore } from '../../context/parcelContext';
 
@@ -98,10 +101,7 @@ describe('Standalone Homes Modules Contract', () => {
       ];
 
       const { unmount } = renderWithRouter(
-        <StandaloneHomeShell
-          featureId={suite.id}
-          meta={{ modules: testModules }}
-        >
+        <StandaloneHomeShell featureId={suite.id} meta={{ modules: testModules }}>
           <div>Content</div>
         </StandaloneHomeShell>
       );
@@ -129,10 +129,7 @@ describe('Standalone Homes Modules Contract', () => {
       ];
 
       const { unmount } = renderWithRouter(
-        <StandaloneHomeShell
-          featureId={suite.id}
-          meta={{ modules: testModules }}
-        >
+        <StandaloneHomeShell featureId={suite.id} meta={{ modules: testModules }}>
           <div>Content</div>
         </StandaloneHomeShell>
       );
@@ -152,10 +149,7 @@ describe('Standalone Homes Modules Contract', () => {
       ];
 
       const { unmount, container } = renderWithRouter(
-        <StandaloneHomeShell
-          featureId={suite.id}
-          meta={{ modules: testModules }}
-        >
+        <StandaloneHomeShell featureId={suite.id} meta={{ modules: testModules }}>
           <div>Content</div>
         </StandaloneHomeShell>
       );
@@ -163,7 +157,7 @@ describe('Standalone Homes Modules Contract', () => {
       // Verify LiquidPanel wrapper exists (by class or data attribute)
       const moduleCard = container.querySelector('[data-testid="standalone-module-test-module"]');
       expect(moduleCard).toBeInTheDocument();
-      
+
       // Should be inside a liquid-panel or have fallback wrapper
       const panel = moduleCard?.closest('.liquid-panel, .standalone-module-panel');
       expect(panel).not.toBeNull();
@@ -182,10 +176,7 @@ describe('Standalone Homes Modules Contract', () => {
       ];
 
       const { unmount, container } = renderWithRouter(
-        <StandaloneHomeShell
-          featureId={suite.id}
-          meta={{ modules: testModules }}
-        >
+        <StandaloneHomeShell featureId={suite.id} meta={{ modules: testModules }}>
           <div>Content</div>
         </StandaloneHomeShell>
       );
@@ -216,7 +207,7 @@ describe('Standalone Homes Modules Contract', () => {
     it('module kind is limited to enum values', () => {
       // This is a compile-time check mostly, but we verify the type
       const validKinds = ['info', 'actions', 'metrics', 'links'] as const;
-      
+
       for (const kind of MODULE_KINDS) {
         expect(validKinds).toContain(kind);
       }
@@ -233,8 +224,14 @@ describe('Standalone Homes Modules Contract', () => {
         const modules = feature.homeMeta?.modules;
         if (modules && modules.length > 0) {
           for (const mod of modules) {
-            expect(mod.title, `Feature "${feature.id}" module "${mod.id}" has empty title`).toBeTruthy();
-            expect(mod.title.length, `Feature "${feature.id}" module "${mod.id}" title is empty string`).toBeGreaterThan(0);
+            expect(
+              mod.title,
+              `Feature "${feature.id}" module "${mod.id}" has empty title`
+            ).toBeTruthy();
+            expect(
+              mod.title.length,
+              `Feature "${feature.id}" module "${mod.id}" title is empty string`
+            ).toBeGreaterThan(0);
           }
         }
       }
@@ -260,7 +257,7 @@ describe('Standalone Homes Modules Contract', () => {
         if (modules && modules.length > 0) {
           for (const mod of modules) {
             expect(
-              MODULE_KINDS.includes(mod.kind as typeof MODULE_KINDS[number]),
+              MODULE_KINDS.includes(mod.kind as (typeof MODULE_KINDS)[number]),
               `Feature "${feature.id}" module "${mod.id}" has invalid kind: ${mod.kind}`
             ).toBe(true);
           }
@@ -282,10 +279,7 @@ describe('Standalone Homes Modules Contract', () => {
       ];
 
       const { unmount } = renderWithRouter(
-        <StandaloneHomeShell
-          featureId={suite.id}
-          meta={{ modules: testModules }}
-        >
+        <StandaloneHomeShell featureId={suite.id} meta={{ modules: testModules }}>
           <div>Content</div>
         </StandaloneHomeShell>
       );
@@ -307,10 +301,7 @@ describe('Standalone Homes Modules Contract', () => {
       ];
 
       const { unmount, container } = renderWithRouter(
-        <StandaloneHomeShell
-          featureId={suite.id}
-          meta={{ modules: testModules }}
-        >
+        <StandaloneHomeShell featureId={suite.id} meta={{ modules: testModules }}>
           <div>Content</div>
         </StandaloneHomeShell>
       );
@@ -350,10 +341,7 @@ describe('Standalone Homes Modules Contract', () => {
 
       rerender(
         <BrowserRouter>
-          <StandaloneHomeShell
-            featureId={suite.id}
-            meta={{ modules: testModules }}
-          >
+          <StandaloneHomeShell featureId={suite.id} meta={{ modules: testModules }}>
             <div>Content</div>
           </StandaloneHomeShell>
         </BrowserRouter>

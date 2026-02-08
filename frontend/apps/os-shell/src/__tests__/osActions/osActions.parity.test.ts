@@ -10,14 +10,14 @@
  * @see Slice 16: Cross-Surface Action Parity
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
-  executeOsAction,
-  OS_ACTION_EVENT_NAME,
-  type OsAction,
-  type OsActionContext,
-  type OsActionTraceEvent,
+    executeOsAction,
+    OS_ACTION_EVENT_NAME,
+    type OsAction,
+    type OsActionContext,
+    type OsActionTraceEvent,
 } from '../../services/osActions';
 
 // ============================================================================

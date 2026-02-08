@@ -39,9 +39,7 @@ describe('Standalone Homes Minimum Useful Modules', () => {
     });
 
     it('live standalone suites all have modules defined', () => {
-      const liveSuites = OS_FEATURES.filter(
-        (f) => f.status === 'live' && f.route && f.homeMeta
-      );
+      const liveSuites = OS_FEATURES.filter((f) => f.status === 'live' && f.route && f.homeMeta);
 
       for (const suite of liveSuites) {
         expect(
@@ -64,10 +62,9 @@ describe('Standalone Homes Minimum Useful Modules', () => {
         const modules = suite.homeMeta?.modules ?? [];
         const hasInfoModule = modules.some((m) => m.kind === 'info');
 
-        expect(
-          hasInfoModule,
-          `Suite "${suite.id}" must have at least one 'info' module`
-        ).toBe(true);
+        expect(hasInfoModule, `Suite "${suite.id}" must have at least one 'info' module`).toBe(
+          true
+        );
       }
     });
 
@@ -93,7 +90,7 @@ describe('Standalone Homes Minimum Useful Modules', () => {
 
         for (const mod of modules) {
           expect(
-            MODULE_KINDS.includes(mod.kind as typeof MODULE_KINDS[number]),
+            MODULE_KINDS.includes(mod.kind as (typeof MODULE_KINDS)[number]),
             `Suite "${suite.id}" module "${mod.id}" has invalid kind: ${mod.kind}`
           ).toBe(true);
         }
@@ -141,7 +138,10 @@ describe('Standalone Homes Minimum Useful Modules', () => {
 
         for (const mod of modules) {
           expect(mod.id, `Suite "${suite.id}" has module with empty id`).toBeTruthy();
-          expect(mod.id.length, `Suite "${suite.id}" has module with empty id string`).toBeGreaterThan(0);
+          expect(
+            mod.id.length,
+            `Suite "${suite.id}" has module with empty id string`
+          ).toBeGreaterThan(0);
         }
       }
     });

@@ -18,17 +18,15 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ParcelContextIndicator } from '../../components/ParcelContext/ParcelContextIndicator';
 import {
-  clearParcelContext,
-  setParcelContext,
-  useParcelContextStore,
+    setParcelContext,
+    useParcelContextStore
 } from '../../context/parcelContext';
 import {
-  resolveParcelLabel,
-  setLabelResolver,
-  clearLabelCache,
-  getLabelFromCache,
-  type ParcelLabelData,
-  type ParcelLabelResolver,
+    clearLabelCache,
+    getLabelFromCache,
+    resolveParcelLabel,
+    setLabelResolver,
+    type ParcelLabelResolver
 } from '../../context/parcelLabelResolver';
 
 // ============================================================================

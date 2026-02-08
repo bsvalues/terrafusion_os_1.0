@@ -15,17 +15,15 @@
 
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { describe, expect, it, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 // Import from registry and shell
-import {
-  getStandaloneSuites,
-  isValidPrimaryAction,
-  OS_FEATURES,
-  type OsFeatureDefinition,
-  type StandaloneSuiteDefinition,
-} from '../../config/suiteRegistry';
 import { StandaloneHomeShell } from '../../components/standalone/StandaloneHomeShell';
+import {
+    getStandaloneSuites,
+    isValidPrimaryAction,
+    OS_FEATURES
+} from '../../config/suiteRegistry';
 import { useParcelContextStore } from '../../context/parcelContext';
 
 // ============================================================================
@@ -53,10 +51,7 @@ describe('Standalone Homes Quality Gate', () => {
       expect(suites.length).toBeGreaterThan(0);
 
       for (const suite of suites) {
-        expect(
-          suite.homeMeta.description,
-          `Suite "${suite.id}" missing description`
-        ).toBeTruthy();
+        expect(suite.homeMeta.description, `Suite "${suite.id}" missing description`).toBeTruthy();
         expect(
           suite.homeMeta.description.length,
           `Suite "${suite.id}" has empty description`
@@ -80,10 +75,9 @@ describe('Standalone Homes Quality Gate', () => {
 
       for (const suite of suites) {
         expect(suite.homeMeta.title, `Suite "${suite.id}" missing title`).toBeTruthy();
-        expect(
-          suite.homeMeta.title.length,
-          `Suite "${suite.id}" has empty title`
-        ).toBeGreaterThan(0);
+        expect(suite.homeMeta.title.length, `Suite "${suite.id}" has empty title`).toBeGreaterThan(
+          0
+        );
       }
     });
 
@@ -140,7 +134,10 @@ describe('Standalone Homes Quality Gate', () => {
 
         for (const action of actions) {
           expect(action.id, `Suite "${suite.id}" action missing id`).toBeTruthy();
-          expect(action.label, `Suite "${suite.id}" action "${action.id}" missing label`).toBeTruthy();
+          expect(
+            action.label,
+            `Suite "${suite.id}" action "${action.id}" missing label`
+          ).toBeTruthy();
           expect(
             action.label.length,
             `Suite "${suite.id}" action "${action.id}" has empty label`
@@ -287,7 +284,7 @@ describe('Standalone Homes Quality Gate', () => {
       for (const suite of suites) {
         const { unmount } = renderWithRouter(
           <StandaloneHomeShell featureId={suite.id}>
-            <div data-testid="suite-content">Suite Content</div>
+            <div data-testid='suite-content'>Suite Content</div>
           </StandaloneHomeShell>
         );
 
