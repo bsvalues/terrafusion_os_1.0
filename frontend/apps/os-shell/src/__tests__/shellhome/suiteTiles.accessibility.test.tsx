@@ -27,12 +27,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { CONSTITUTIONAL_SUITES } from '../../config/suiteRegistry';
 import { ShellHome } from '../../shell/home/ShellHome';
 
-// Mock navigation
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn(),
-}));
-
 // Mock stores
 jest.mock('../../stores/commandPaletteStore', () => ({
   useCommandPaletteStore: () => jest.fn(),
