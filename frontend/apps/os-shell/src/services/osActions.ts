@@ -102,6 +102,40 @@ export interface OsActionPolicy {
 export const OS_ACTION_EVENT_NAME = 'terratrace:os_action';
 export const OS_ACTION_BLOCKED_EVENT_NAME = 'terratrace:os_action_blocked';
 
+// ============================================================================
+// Clock Injection (for deterministic testing)
+// ============================================================================
+
+/**
+ * Internal clock function - defaults to Date.now()
+ * Can be overridden for deterministic testing via setTraceClock()
+ */
+let traceClock: () => number = () => Date.now();
+
+/**
+ * Set a custom clock function for trace timestamps
+ * Used for deterministic testing - replaces Date.now() in trace emission
+ * @returns Cleanup function to restore default clock
+ */
+export function setTraceClock(clockFn: () => number): () => void {
+  const previous = traceClock;
+  traceClock = clockFn;
+  return () => {
+    traceClock = previous;
+  };
+}
+
+/**
+ * Reset trace clock to default (Date.now())
+ */
+export function resetTraceClock(): void {
+  traceClock = () => Date.now();
+}
+
+// ============================================================================
+// Trace Payload Types
+// ============================================================================
+
 export interface OsActionTracePayload {
   actionId: string;
   actionType: 'navigation' | 'handler';
@@ -216,7 +250,7 @@ function emitActionTrace(action: OsAction, context: OsActionContext): void {
 
   const event: OsActionTraceEvent = {
     type: 'os_action_invoked',
-    timestamp: Date.now(),
+    timestamp: traceClock(),
     payload,
   };
 
@@ -249,7 +283,7 @@ function emitBlockedTrace(
 
   const event: OsActionBlockedEvent = {
     type: 'os_action_blocked',
-    timestamp: Date.now(),
+    timestamp: traceClock(),
     payload,
   };
 
@@ -377,9 +411,7 @@ export type OsActionAnyTraceEvent = OsActionTraceEvent | OsActionBlockedEvent;
 /**
  * Subscribe to all OS action trace events (invoked and blocked)
  */
-export function subscribeToAllTraces(
-  callback: (event: OsActionAnyTraceEvent) => void
-): () => void {
+export function subscribeToAllTraces(callback: (event: OsActionAnyTraceEvent) => void): () => void {
   const invokedHandler = (e: CustomEvent<OsActionTraceEvent>) => callback(e.detail);
   const blockedHandler = (e: CustomEvent<OsActionBlockedEvent>) => callback(e.detail);
 
