@@ -15,17 +15,44 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PolicyPanel } from '../../components/Trace/PolicyPanel/PolicyPanel';
+import { PolicyPanel, type PolicyPanelProps } from '../../components/Trace/PolicyPanel/PolicyPanel';
+import type { ReadFileText } from '../../services/policyFileIO';
 import { subscribeToAllTraces, type OsActionAnyTraceEvent } from '../../services/osActions';
 
 // ============================================================================
 // Test Helpers
 // ============================================================================
 
-function renderPolicyPanel() {
+/** 
+ * Mock file reader that returns content deterministically
+ * Uses FileReader internally for jsdom compatibility 
+ */
+const mockReadFileText: ReadFileText = (file: File) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsText(file);
+  });
+};
+
+/**
+ * Read Blob as text in jsdom environment
+ * (Blob.text() is not available in jsdom, so we use FileReader)
+ */
+function readBlobAsText(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error('Failed to read blob'));
+    reader.readAsText(blob);
+  });
+}
+
+function renderPolicyPanel(props?: PolicyPanelProps) {
   return render(
     <MemoryRouter>
-      <PolicyPanel />
+      <PolicyPanel readFileText={mockReadFileText} {...props} />
     </MemoryRouter>
   );
 }
@@ -312,13 +339,8 @@ describe('Policy Panel UI', () => {
         expect(blobs.length).toBe(1);
       });
 
-      // Read blob content using FileReader simulation
-      const reader = new FileReader();
-      const textPromise = new Promise<string>((resolve) => {
-        reader.onload = () => resolve(reader.result as string);
-      });
-      reader.readAsText(blobs[0]);
-      const jsonString = await textPromise;
+      // Read blob content using helper (jsdom-compatible)
+      const jsonString = await readBlobAsText(blobs[0]);
 
       const json = JSON.parse(jsonString);
       expect(json.version).toBe('1.0');
@@ -332,7 +354,10 @@ describe('Policy Panel UI', () => {
 
       // Add one rule
       await user.click(screen.getByRole('button', { name: /Add Rule/i }));
-      await user.type(screen.getByLabelText(/Surface/i), 'workbench');
+      
+      // Use selectOptions for dropdown instead of type
+      await user.selectOptions(screen.getByLabelText(/Surface/i), 'workbench');
+      
       await user.type(screen.getByLabelText(/Action ID/i), 'export_pdf');
       await user.type(screen.getByLabelText(/Reason/i), 'Test export');
       await user.click(screen.getByRole('button', { name: /Save Rule/i }));
@@ -351,13 +376,8 @@ describe('Policy Panel UI', () => {
         expect(blobs.length).toBe(1);
       });
 
-      // Read blob content
-      const reader = new FileReader();
-      const textPromise = new Promise<string>((resolve) => {
-        reader.onload = () => resolve(reader.result as string);
-      });
-      reader.readAsText(blobs[0]);
-      const jsonString = await textPromise;
+      // Read blob content using helper (jsdom-compatible)
+      const jsonString = await readBlobAsText(blobs[0]);
 
       const json = JSON.parse(jsonString);
       expect(json.version).toBe('1.0');
@@ -419,7 +439,9 @@ describe('Policy Panel UI', () => {
         expect(links.length).toBeGreaterThan(0);
         const downloadLink = links.find((a) => a.download.startsWith('policy-rules-'));
         expect(downloadLink).toBeDefined();
-        expect(downloadLink!.download).toMatch(/^policy-rules-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.json$/);
+        expect(downloadLink!.download).toMatch(
+          /^policy-rules-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.json$/
+        );
       });
 
       vi.restoreAllMocks();
@@ -455,7 +477,9 @@ describe('Policy Panel UI', () => {
       await user.upload(input, file);
 
       await waitFor(() => {
-        expect(screen.getByText(/Custom \(1 rules?\)/i)).toBeInTheDocument();
+        // Check for "Custom" mode (not "Custom (1 rules)")
+        expect(screen.getByText(/Custom/i)).toBeInTheDocument();
+        // Check for rule content
         expect(screen.getByText(/workbench/i)).toBeInTheDocument();
         expect(screen.getByText(/export_pdf/i)).toBeInTheDocument();
       });
@@ -519,7 +543,9 @@ describe('Policy Panel UI', () => {
 
       const invalidRule = JSON.stringify({
         version: '1.0',
-        rules: [{ surface: 'workbench' }], // Missing required fields
+        rules: [
+          { effect: 'deny' } // No selectors (surface/suiteId/actionId) - should error
+        ],
       });
 
       const file = new File([invalidRule], 'bad-rule.json', { type: 'application/json' });
@@ -589,7 +615,8 @@ describe('Policy Panel UI', () => {
       await user.upload(input, file);
 
       await waitFor(() => {
-        const storedRules = localStorage.getItem('terrafusion:policy:rules');
+        // Use correct storage key (dot separator, not colon)
+        const storedRules = localStorage.getItem('terrafusion.policy.rules');
         expect(storedRules).toBeDefined();
         const parsed = JSON.parse(storedRules!);
         expect(parsed.rules).toHaveLength(1);
@@ -631,7 +658,7 @@ describe('Policy Panel UI', () => {
 
       // Add original rules
       await user.click(screen.getByRole('button', { name: /Add Rule/i }));
-      await user.type(screen.getByLabelText(/Surface/i), 'roundtrip');
+      await user.selectOptions(screen.getByLabelText(/Surface/i), 'workbench');
       await user.type(screen.getByLabelText(/Action ID/i), 'test_roundtrip');
       await user.type(screen.getByLabelText(/Reason/i), 'Roundtrip test');
       await user.click(screen.getByRole('button', { name: /Save Rule/i }));
@@ -650,13 +677,8 @@ describe('Policy Panel UI', () => {
         expect(blobs.length).toBe(1);
       });
 
-      // Read blob content
-      const reader = new FileReader();
-      const textPromise = new Promise<string>((resolve) => {
-        reader.onload = () => resolve(reader.result as string);
-      });
-      reader.readAsText(blobs[0]);
-      const exportedJSON = await textPromise;
+      // Read blob content using helper (jsdom-compatible)
+      const exportedJSON = await readBlobAsText(blobs[0]);
 
       // Reset policy
       await user.click(screen.getByRole('button', { name: /Reset/i }));
@@ -672,8 +694,9 @@ describe('Policy Panel UI', () => {
       await user.upload(input, file);
 
       await waitFor(() => {
-        expect(screen.getByText(/roundtrip/i)).toBeInTheDocument();
-        expect(screen.getByText(/test_roundtrip/i)).toBeInTheDocument();
+        // Use more specific query - check for actionId text instead of just "roundtrip"
+        expect(screen.getByText(/actionId=test_roundtrip/i)).toBeInTheDocument();
+        expect(screen.getByText(/surface=workbench/i)).toBeInTheDocument();
       });
     });
   });

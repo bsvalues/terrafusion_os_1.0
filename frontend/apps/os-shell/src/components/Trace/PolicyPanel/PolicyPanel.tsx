@@ -14,6 +14,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { emitTrace, resetActionPolicy, setActionPolicy } from '../../../services/osActions';
 import { compilePolicyRules, type PolicyRule } from '../../../services/policyEngine';
+import { readFileText as defaultReadFileText, type ReadFileText } from '../../../services/policyFileIO';
 import { createPolicyStore } from '../../../services/policyStore';
 
 // ============================================================================
@@ -41,10 +42,22 @@ function hashRules(rules: PolicyRule[]): string {
 }
 
 // ============================================================================
+// PolicyPanel Component Props
+// ============================================================================
+
+export interface PolicyPanelProps {
+  /**
+   * Injectable file reader for deterministic testing
+   * @default readFileText (browser FileReader)
+   */
+  readFileText?: ReadFileText;
+}
+
+// ============================================================================
 // PolicyPanel Component
 // ============================================================================
 
-export function PolicyPanel() {
+export function PolicyPanel({ readFileText = defaultReadFileText }: PolicyPanelProps = {}) {
   const [rules, setRules] = useState<PolicyRule[]>([]);
   const [isAddingRule, setIsAddingRule] = useState(false);
   const [formError, setFormError] = useState<string>('');
@@ -179,7 +192,7 @@ export function PolicyPanel() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     // Revoke URL (if supported)
     if (URL.revokeObjectURL) {
       URL.revokeObjectURL(url);
@@ -196,47 +209,39 @@ export function PolicyPanel() {
     });
   }, [rules]);
 
-  const handleImportRules = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (!file) {
-        return;
+  const handleImportRules = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    try {
+      const jsonString = await readFileText(file);
+      const result = policyStore.importRules(jsonString);
+
+      if (result.success) {
+        setRules(result.rules);
+        setImportError('');
+
+        // Emit audit trace
+        emitTrace({
+          type: 'policy_imported',
+          timestamp: Date.now(),
+          payload: {
+            ruleCount: result.rules.length,
+            rulesHash: hashRules(result.rules),
+          },
+        });
+      } else {
+        setImportError(result.error.message);
       }
+    } catch (error) {
+      setImportError('Failed to read file. Please try again.');
+    }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const jsonString = e.target?.result as string;
-        const result = policyStore.importRules(jsonString);
-
-        if (result.success) {
-          setRules(result.rules);
-          setImportError('');
-
-          // Emit audit trace
-          emitTrace({
-            type: 'policy_imported',
-            timestamp: Date.now(),
-            payload: {
-              ruleCount: result.rules.length,
-              rulesHash: hashRules(result.rules),
-            },
-          });
-        } else {
-          setImportError(result.error.message);
-        }
-      };
-
-      reader.onerror = () => {
-        setImportError('Failed to read file. Please try again.');
-      };
-
-      reader.readAsText(file);
-
-      // Reset input so same file can be re-selected
-      event.target.value = '';
-    },
-    []
-  );
+    // Reset input so same file can be re-selected
+    event.target.value = '';
+  }, [readFileText]);
 
   const policyMode = rules.length === 0 ? 'Default Allow' : 'Custom';
 
