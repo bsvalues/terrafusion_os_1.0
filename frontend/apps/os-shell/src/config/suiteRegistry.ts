@@ -93,7 +93,12 @@ export interface OsFeatureHomeMeta {
     id: string;
     label: string;
     intent: 'workbench' | 'standalone' | 'system';
+    /** Navigation target (mutually exclusive with handlerKey) */
     href?: string;
+    /** Handler key for registered action (mutually exclusive with href) */
+    handlerKey?: string;
+    /** Whether action is currently disabled */
+    disabled?: boolean;
   }>;
   /** Optional subtitle or status badge text */
   subtitle?: string;

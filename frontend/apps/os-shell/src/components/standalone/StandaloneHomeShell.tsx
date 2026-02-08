@@ -21,19 +21,20 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { getOsFeatureById, WORKBENCH_FALLBACK_BASE } from '../../config/suiteRegistry';
 import { useParcelContext } from '../../context/parcelContext';
+import { executeOsAction, type OsActionContext } from '../../services/osActions';
 import { LiquidPanel, TactileButton, useMaterialQuality } from '../../ui/materials';
 import { Badge } from '../ui/badge';
 import {
     DEFAULT_STANDALONE_META,
     isHandlerAction,
+    isHandlerKeyAction,
     isNavigationAction,
-    MODULE_KINDS,
     type StandaloneHomeAction,
     type StandaloneHomeContext,
     type StandaloneHomeMeta,
     type StandaloneHomeModule,
     type StandaloneHomeShellProps,
-    type StandaloneParcelContext,
+    type StandaloneParcelContext
 } from './standaloneHomeContracts';
 
 import './standalone-home-shell.css';
@@ -62,17 +63,20 @@ export function useStandaloneHome(): StandaloneHomeContext {
 /**
  * Header section with title, badge, and primary actions.
  * Slice 9: Supports both "Open in Workbench" (with parcel) and "Choose parcel" (without).
+ * Slice 15: Passes action context for telemetry.
  */
 function ShellHeader({
   meta,
   parcelContext,
   onOpenWorkbench,
   onChooseParcel,
+  actionContext,
 }: {
   meta: StandaloneHomeMeta;
   parcelContext: StandaloneParcelContext | null;
   onOpenWorkbench: () => void;
   onChooseParcel: () => void;
+  actionContext?: OsActionContext;
 }) {
   const quality = useMaterialQuality();
 
@@ -112,7 +116,7 @@ function ShellHeader({
       <div data-testid='standalone-actions' className='standalone-shell__actions'>
         {/* Primary Actions */}
         {meta.primaryActions.map((action) => (
-          <ActionButton key={action.id} action={action} />
+          <ActionButton key={action.id} action={action} context={actionContext} />
         ))}
 
         {/* Workbench CTA - Slice 9: Context-aware behavior */}
@@ -147,9 +151,34 @@ function ShellHeader({
 }
 
 /**
- * Renders a single action button.
+ * Props for ActionButton component.
  */
-function ActionButton({ action }: { action: StandaloneHomeAction }) {
+interface ActionButtonProps {
+  action: StandaloneHomeAction;
+  context?: OsActionContext;
+}
+
+/**
+ * Renders a single action button.
+ * Uses dispatcher for telemetry when handlerKey is present or context is provided.
+ */
+function ActionButton({ action, context }: ActionButtonProps) {
+  const navigate = useNavigate();
+
+  // Handler for dispatched actions (handlerKey-based)
+  const handleDispatchedAction = () => {
+    if (!context) return;
+    // Convert to OsAction format for dispatcher
+    const osAction = {
+      id: action.id,
+      label: action.label,
+      intent: action.intent,
+      ...(action.handlerKey ? { handlerKey: action.handlerKey } : { href: action.href || '' }),
+    };
+    executeOsAction(osAction as Parameters<typeof executeOsAction>[0], context);
+  };
+
+  // Navigation action with Link (inline) - still emits trace via context if available
   if (isNavigationAction(action)) {
     return (
       <TactileButton
@@ -157,12 +186,31 @@ function ActionButton({ action }: { action: StandaloneHomeAction }) {
         asChild
         disabled={action.disabled}
         aria-label={action.ariaLabel}
+        onClick={context ? () => {
+          // Emit trace before navigation
+          executeOsAction({ id: action.id, label: action.label, intent: action.intent, href: action.href }, context);
+        } : undefined}
       >
         <Link to={action.href}>{action.label}</Link>
       </TactileButton>
     );
   }
 
+  // Handler key action (preferred) - uses dispatcher
+  if (isHandlerKeyAction(action) && context) {
+    return (
+      <TactileButton
+        variant='secondary'
+        onClick={handleDispatchedAction}
+        disabled={action.disabled}
+        aria-label={action.ariaLabel}
+      >
+        {action.label}
+      </TactileButton>
+    );
+  }
+
+  // Legacy inline handler action (backward compatibility)
   if (isHandlerAction(action)) {
     return (
       <TactileButton
@@ -209,9 +257,7 @@ function ModulesRegion({ modules }: { modules: StandaloneHomeModule[] }) {
           className='standalone-shell__modules-empty'
           aria-label='No additional modules available'
         >
-          <span className='standalone-shell__modules-empty-text'>
-            No additional modules
-          </span>
+          <span className='standalone-shell__modules-empty-text'>No additional modules</span>
         </div>
       )}
     </section>
@@ -245,7 +291,9 @@ function ModuleCard({ module }: { module: StandaloneHomeModule }) {
 
         {/* Module content (render function or placeholder) */}
         <div className='standalone-shell__module-content'>
-          {module.render ? module.render() : (
+          {module.render ? (
+            module.render()
+          ) : (
             <span className='standalone-shell__module-placeholder'>
               {/* Default content based on kind */}
               {module.kind === 'info' && 'Information will appear here'}
@@ -349,6 +397,19 @@ export function StandaloneHomeShell({
     navigate(`${WORKBENCH_FALLBACK_BASE}?openTab=${featureId}`);
   };
 
+  // Build action context for telemetry (Slice 15)
+  const actionContext = useMemo<OsActionContext>(
+    () => ({
+      navigate,
+      suiteId: featureId,
+      surface: 'standalone_home',
+      parcelIdHash: parcelContext?.parcelId
+        ? `h-${parcelContext.parcelId.slice(0, 8)}`
+        : undefined,
+    }),
+    [navigate, featureId, parcelContext]
+  );
+
   // Build context value
   const contextValue = useMemo<StandaloneHomeContext>(
     () => ({
@@ -378,6 +439,7 @@ export function StandaloneHomeShell({
             parcelContext={parcelContext}
             onOpenWorkbench={openInWorkbench}
             onChooseParcel={chooseParcelForWorkbench}
+            actionContext={actionContext}
           />
 
           {/* Modules region: always renders (grid or empty state) - Slice 13 */}

@@ -25,7 +25,7 @@ import type { OsFeatureId } from '../../config/suiteRegistry';
  * - links: Navigation links or resources
  */
 export const MODULE_KINDS = ['info', 'actions', 'metrics', 'links'] as const;
-export type ModuleKind = typeof MODULE_KINDS[number];
+export type ModuleKind = (typeof MODULE_KINDS)[number];
 
 /**
  * Module for standalone home pages.
@@ -64,10 +64,12 @@ export interface StandaloneHomeAction {
   icon?: string;
   /** Navigation intent */
   intent: 'workbench' | 'standalone' | 'system';
-  /** Route path for navigation (mutually exclusive with handler) */
+  /** Route path for navigation (mutually exclusive with handler/handlerKey) */
   href?: string;
-  /** Click handler for in-place actions (mutually exclusive with href) */
+  /** Click handler for in-place actions (legacy - prefer handlerKey) */
   handler?: () => void;
+  /** Handler key referencing a registered action (preferred over handler) */
+  handlerKey?: string;
   /** Whether the action is currently disabled */
   disabled?: boolean;
   /** Aria-label override for accessibility */
@@ -176,10 +178,19 @@ export function isNavigationAction(
 }
 
 /**
- * Type guard to check if an action has a click handler.
+ * Type guard to check if an action has a click handler (legacy inline).
  */
 export function isHandlerAction(
   action: StandaloneHomeAction
 ): action is StandaloneHomeAction & { handler: () => void } {
   return typeof action.handler === 'function';
+}
+
+/**
+ * Type guard to check if an action references a registered handler key.
+ */
+export function isHandlerKeyAction(
+  action: StandaloneHomeAction
+): action is StandaloneHomeAction & { handlerKey: string } {
+  return typeof action.handlerKey === 'string' && action.handlerKey.length > 0;
 }
