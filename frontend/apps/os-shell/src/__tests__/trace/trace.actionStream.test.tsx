@@ -11,19 +11,24 @@
  * @see Slice 17: Action Observability Surface
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
+
+// Mock telemetry before importing components
+vi.mock('../../services/telemetry', () => ({
+  getTelemetryStore: vi.fn(() => ({
+    list: vi.fn().mockResolvedValue([]),
+    wipe: vi.fn().mockResolvedValue(undefined),
+    stats: vi.fn().mockResolvedValue({ eventCount: 0 }),
+    append: vi.fn().mockResolvedValue(undefined),
+  })),
+  createTelemetryStore: vi.fn(),
+}));
 
 import { ActionStreamModule } from '../../components/Trace/ActionStreamModule';
 import { ACTION_STREAM_CAP } from '../../hooks/useActionStream';
-import {
-  executeOsAction,
-  OS_ACTION_EVENT_NAME,
-  OS_ACTION_BLOCKED_EVENT_NAME,
-  type OsAction,
-  type OsActionContext,
-} from '../../services/osActions';
+import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 
 // ============================================================================
 // Test Helpers
@@ -257,7 +262,7 @@ describe('Action Stream Module', () => {
     it('shows empty state when no events', () => {
       renderActionStream();
 
-      expect(screen.getByText(/no actions recorded/i)).toBeInTheDocument();
+      expect(screen.getByText(/no events.*recorded/i)).toBeInTheDocument();
     });
   });
 });

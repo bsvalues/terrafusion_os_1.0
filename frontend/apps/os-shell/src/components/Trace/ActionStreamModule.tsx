@@ -3,17 +3,20 @@
  *
  * Displays a real-time stream of OS action trace events.
  * Shows invoked and blocked actions with filtering capabilities.
+ * Supports Live mode (real-time) and History mode (persisted events).
  *
  * @module components/Trace/ActionStreamModule
  * @see Slice 17: Action Observability Surface
+ * @see Slice 20: Persisted Telemetry Backend
  */
 
 import React, { useCallback } from 'react';
 import {
-  useActionStream,
-  ACTION_STREAM_CAP,
-  type ActionStreamEvent,
-  type ActionStreamFilter,
+    ACTION_STREAM_CAP,
+    useActionStream,
+    type ActionStreamEvent,
+    type ActionStreamFilter,
+    type StreamMode,
 } from '../../hooks/useActionStream';
 
 // ============================================================================
@@ -33,18 +36,74 @@ export interface ActionStreamModuleProps {
 // Sub-Components
 // ============================================================================
 
+interface ModeToggleProps {
+  mode: StreamMode;
+  onModeChange: (mode: StreamMode) => void;
+  historyCount: number;
+  isLoading: boolean;
+}
+
+const ModeToggle: React.FC<ModeToggleProps> = ({ mode, onModeChange, historyCount, isLoading }) => (
+  <div className='flex items-center gap-1 bg-slate-800 rounded-lg p-0.5'>
+    <button
+      type='button'
+      role='button'
+      aria-pressed={mode === 'live'}
+      onClick={() => onModeChange('live')}
+      className={`
+        px-3 py-1 text-xs font-medium rounded-md transition-all
+        ${
+          mode === 'live'
+            ? 'bg-emerald-500/20 text-emerald-400'
+            : 'text-slate-400 hover:text-slate-200'
+        }
+      `}
+    >
+      Live
+    </button>
+    <button
+      type='button'
+      role='button'
+      aria-pressed={mode === 'history'}
+      onClick={() => onModeChange('history')}
+      className={`
+        px-3 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1.5
+        ${
+          mode === 'history'
+            ? 'bg-blue-500/20 text-blue-400'
+            : 'text-slate-400 hover:text-slate-200'
+        }
+      `}
+    >
+      History
+      {mode === 'history' && !isLoading && historyCount > 0 && (
+        <span className='bg-blue-500/30 text-blue-300 text-[10px] px-1.5 py-0.5 rounded-full'>
+          {historyCount}
+        </span>
+      )}
+      {isLoading && <span className='animate-pulse'>...</span>}
+    </button>
+  </div>
+);
+
 interface FilterControlsProps {
   filter: ActionStreamFilter;
   onFilterChange: (filter: ActionStreamFilter) => void;
   onClear: () => void;
+  onWipe?: () => void;
   totalCount: number;
+  mode: StreamMode;
+  maxCount: number;
 }
 
 const FilterControls: React.FC<FilterControlsProps> = ({
   filter,
   onFilterChange,
   onClear,
+  onWipe,
   totalCount,
+  mode,
+  maxCount,
 }) => (
   <div className='flex flex-wrap items-center gap-3 p-3 bg-slate-800/50 border-b border-slate-700/50'>
     {/* Surface filter */}
@@ -59,7 +118,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         onChange={(e) =>
           onFilterChange({
             ...filter,
-            surface: e.target.value as ActionStreamFilter['surface'] || undefined,
+            surface: (e.target.value as ActionStreamFilter['surface']) || undefined,
           })
         }
         className='px-2 py-1 text-xs rounded bg-slate-700 text-slate-200 border border-slate-600 focus:border-cyan-400 focus:outline-none'
@@ -117,21 +176,31 @@ const FilterControls: React.FC<FilterControlsProps> = ({
       </select>
     </div>
 
-    {/* Clear button */}
-    <button
-      type='button'
-      onClick={onClear}
-      className='ml-auto px-3 py-1 text-xs rounded bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white transition-colors'
-    >
-      Clear
-    </button>
+    {/* Clear button (Live mode) */}
+    {mode === 'live' && (
+      <button
+        type='button'
+        onClick={onClear}
+        className='ml-auto px-3 py-1 text-xs rounded bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white transition-colors'
+      >
+        Clear
+      </button>
+    )}
+
+    {/* Wipe button (History mode) */}
+    {mode === 'history' && onWipe && (
+      <button
+        type='button'
+        onClick={onWipe}
+        className='ml-auto px-3 py-1 text-xs rounded bg-red-900/30 text-red-400 hover:bg-red-800/40 hover:text-red-300 transition-colors'
+      >
+        Wipe
+      </button>
+    )}
 
     {/* Count indicator */}
-    <div
-      data-testid='action-stream-count'
-      className='text-xs text-slate-500'
-    >
-      {totalCount} / {ACTION_STREAM_CAP}
+    <div data-testid='action-stream-count' className='text-xs text-slate-500'>
+      {totalCount} {mode === 'history' ? 'events' : `/ ${maxCount}`}
     </div>
   </div>
 );
@@ -168,31 +237,21 @@ const EventItem: React.FC<EventItemProps> = ({ event }) => {
         <div className='flex-1 min-w-0'>
           {/* Action ID and badge */}
           <div className='flex items-center gap-2 mb-1'>
-            <code className='text-sm font-mono text-cyan-400 truncate'>
-              {event.actionId}
-            </code>
+            <code className='text-sm font-mono text-cyan-400 truncate'>{event.actionId}</code>
             <EventBadge type={event.type} />
           </div>
 
           {/* Details */}
           <div className='flex flex-wrap items-center gap-2 text-xs text-slate-400'>
-            <span className='bg-slate-700/50 px-1.5 py-0.5 rounded'>
-              {event.surface}
-            </span>
+            <span className='bg-slate-700/50 px-1.5 py-0.5 rounded'>{event.surface}</span>
             <span>→</span>
             <span className='text-slate-500'>
               {event.actionType === 'navigation' ? 'navigation' : 'handler'}
             </span>
             {event.href && (
-              <span className='text-slate-500 truncate max-w-[200px]'>
-                {event.href}
-              </span>
+              <span className='text-slate-500 truncate max-w-[200px]'>{event.href}</span>
             )}
-            {event.handlerKey && (
-              <span className='text-slate-500'>
-                @{event.handlerKey}
-              </span>
-            )}
+            {event.handlerKey && <span className='text-slate-500'>@{event.handlerKey}</span>}
           </div>
 
           {/* Block reason if blocked */}
@@ -205,20 +264,20 @@ const EventItem: React.FC<EventItemProps> = ({ event }) => {
         </div>
 
         {/* Timestamp */}
-        <div className='text-xs text-slate-500 whitespace-nowrap'>
-          {time}
-        </div>
+        <div className='text-xs text-slate-500 whitespace-nowrap'>{time}</div>
       </div>
     </div>
   );
 };
 
-const EmptyState: React.FC = () => (
+const EmptyState: React.FC<{ mode: StreamMode }> = ({ mode }) => (
   <div className='flex flex-col items-center justify-center h-48 text-slate-500'>
-    <div className='text-3xl mb-2 opacity-50'>📡</div>
-    <p className='text-sm'>No actions recorded</p>
+    <div className='text-3xl mb-2 opacity-50'>{mode === 'live' ? '📡' : '📂'}</div>
+    <p className='text-sm'>No events {mode === 'history' ? 'in history' : 'recorded'}</p>
     <p className='text-xs mt-1 text-slate-600'>
-      Action events will appear here in real-time
+      {mode === 'live'
+        ? 'Action events will appear here in real-time'
+        : 'Persisted events will appear here after navigation'}
     </p>
   </div>
 );
@@ -246,6 +305,11 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
     setFilter,
     clear,
     totalCount,
+    mode,
+    setMode,
+    wipeHistory,
+    historyStats,
+    isLoadingHistory,
   } = useActionStream();
 
   const handleFilterChange = useCallback(
@@ -255,6 +319,17 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
     [setFilter]
   );
 
+  const handleModeChange = useCallback(
+    (newMode: StreamMode) => {
+      setMode(newMode);
+    },
+    [setMode]
+  );
+
+  const handleWipe = useCallback(() => {
+    void wipeHistory();
+  }, [wipeHistory]);
+
   return (
     <div
       data-testid='action-stream-module'
@@ -263,9 +338,17 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
     >
       {/* Header */}
       <div className='flex items-center gap-2 px-4 py-3 bg-slate-800/80 border-b border-slate-700/50'>
-        <span className='text-lg'>📡</span>
+        <span className='text-lg'>{mode === 'live' ? '📡' : '📂'}</span>
         <h3 className='text-sm font-medium text-slate-200'>Action Stream</h3>
         <span className='text-xs text-slate-500'>TerraTrace</span>
+        <div className='ml-auto'>
+          <ModeToggle
+            mode={mode}
+            onModeChange={handleModeChange}
+            historyCount={historyStats.eventCount}
+            isLoading={isLoadingHistory}
+          />
+        </div>
       </div>
 
       {/* Filters */}
@@ -274,18 +357,23 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
           filter={filter}
           onFilterChange={handleFilterChange}
           onClear={clear}
+          onWipe={mode === 'history' ? handleWipe : undefined}
           totalCount={totalCount}
+          mode={mode}
+          maxCount={ACTION_STREAM_CAP}
         />
       )}
 
       {/* Event list */}
       <div className='flex-1 overflow-auto'>
-        {filteredEvents.length === 0 ? (
-          <EmptyState />
+        {isLoadingHistory && mode === 'history' ? (
+          <div className='flex items-center justify-center h-48 text-slate-500'>
+            <div className='animate-pulse'>Loading history...</div>
+          </div>
+        ) : filteredEvents.length === 0 ? (
+          <EmptyState mode={mode} />
         ) : (
-          filteredEvents.map((event) => (
-            <EventItem key={event.id} event={event} />
-          ))
+          filteredEvents.map((event) => <EventItem key={event.id} event={event} />)
         )}
       </div>
     </div>

@@ -3,19 +3,22 @@
  *
  * Subscribes to OS action trace events and maintains a capped in-memory list.
  * Supports filtering by surface, suiteId, and action type.
+ * Supports Live mode (real-time) and History mode (persisted events).
  *
  * @module hooks/useActionStream
  * @see Slice 17: Action Observability Surface
+ * @see Slice 20: Persisted Telemetry Backend
  */
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  subscribeToAllTraces,
-  type OsActionTraceEvent,
-  type OsActionBlockedEvent,
-  type OsActionAnyTraceEvent,
-  type OsActionContext,
+    subscribeToAllTraces,
+    type OsActionAnyTraceEvent,
+    type OsActionBlockedEvent,
+    type OsActionContext,
+    type OsActionTraceEvent,
 } from '../services/osActions';
+import { getTelemetryStore, type StoredTraceEvent } from '../services/telemetry';
 
 // ============================================================================
 // Constants
@@ -58,6 +61,11 @@ export interface ActionStreamFilter {
 }
 
 /**
+ * Stream mode (Live or History)
+ */
+export type StreamMode = 'live' | 'history';
+
+/**
  * Return type from useActionStream hook
  */
 export interface UseActionStreamResult {
@@ -69,10 +77,22 @@ export interface UseActionStreamResult {
   filter: ActionStreamFilter;
   /** Update filter */
   setFilter: (filter: ActionStreamFilter) => void;
-  /** Clear all events */
+  /** Clear all events (Live mode only) */
   clear: () => void;
   /** Total event count (before filtering) */
   totalCount: number;
+  /** Current mode (live or history) */
+  mode: StreamMode;
+  /** Switch mode */
+  setMode: (mode: StreamMode) => void;
+  /** History-only: wipe persisted events */
+  wipeHistory: () => Promise<void>;
+  /** History-only: refresh from store */
+  refreshHistory: () => Promise<void>;
+  /** History stats from store */
+  historyStats: { eventCount: number };
+  /** Loading state for history */
+  isLoadingHistory: boolean;
 }
 
 // ============================================================================
@@ -119,6 +139,24 @@ function traceEventToStreamEvent(event: OsActionAnyTraceEvent): ActionStreamEven
   }
 }
 
+function storedEventToStreamEvent(stored: StoredTraceEvent): ActionStreamEvent {
+  return {
+    id: stored.id,
+    type: stored.type === 'os_action_invoked' ? 'invoked' : 'blocked',
+    timestamp: stored.timestamp,
+    actionId: stored.payload.actionId,
+    actionType: stored.payload.actionType as 'navigation' | 'handler',
+    intent: stored.payload.intent,
+    surface: stored.payload.surface as OsActionContext['surface'],
+    suiteId: stored.payload.suiteId,
+    moduleId: stored.payload.moduleId as string | undefined,
+    href: stored.payload.href,
+    handlerKey: stored.payload.handlerKey as string | undefined,
+    blockReason: stored.payload.blockReason as 'disabled' | 'policy' | undefined,
+    blockReasonDetail: stored.payload.blockReasonDetail as string | undefined,
+  };
+}
+
 function matchesFilter(event: ActionStreamEvent, filter: ActionStreamFilter): boolean {
   // Surface filter
   if (filter.surface && event.surface !== filter.surface) {
@@ -126,10 +164,7 @@ function matchesFilter(event: ActionStreamEvent, filter: ActionStreamFilter): bo
   }
 
   // SuiteId filter (case-insensitive contains)
-  if (
-    filter.suiteId &&
-    !event.suiteId.toLowerCase().includes(filter.suiteId.toLowerCase())
-  ) {
+  if (filter.suiteId && !event.suiteId.toLowerCase().includes(filter.suiteId.toLowerCase())) {
     return false;
   }
 
@@ -151,15 +186,22 @@ function matchesFilter(event: ActionStreamEvent, filter: ActionStreamFilter): bo
  * @returns UseActionStreamResult with events, filtering, and controls
  */
 export function useActionStream(): UseActionStreamResult {
-  const [events, setEvents] = useState<ActionStreamEvent[]>([]);
+  const [liveEvents, setLiveEvents] = useState<ActionStreamEvent[]>([]);
+  const [historyEvents, setHistoryEvents] = useState<ActionStreamEvent[]>([]);
   const [filter, setFilter] = useState<ActionStreamFilter>({ status: 'all' });
+  const [mode, setMode] = useState<StreamMode>('live');
+  const [historyStats, setHistoryStats] = useState({ eventCount: 0 });
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
-  // Subscribe to all trace events
+  // Get the telemetry store (for history mode)
+  const store = useMemo(() => getTelemetryStore(), []);
+
+  // Subscribe to live trace events
   useEffect(() => {
     const unsubscribe = subscribeToAllTraces((event) => {
       const streamEvent = traceEventToStreamEvent(event);
 
-      setEvents((prev) => {
+      setLiveEvents((prev) => {
         // Add to front (newest first), cap at max
         const next = [streamEvent, ...prev];
         if (next.length > ACTION_STREAM_CAP) {
@@ -172,15 +214,59 @@ export function useActionStream(): UseActionStreamResult {
     return unsubscribe;
   }, []);
 
+  // Load history when mode changes to 'history'
+  const loadHistory = useCallback(async () => {
+    setIsLoadingHistory(true);
+    try {
+      const events = await store.list({ limit: 500 });
+      const stats = await store.stats();
+
+      setHistoryEvents(events.map(storedEventToStreamEvent));
+      setHistoryStats(stats);
+    } catch (error) {
+      console.warn('[useActionStream] Failed to load history:', error);
+      setHistoryEvents([]);
+      setHistoryStats({ eventCount: 0 });
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  }, [store]);
+
+  useEffect(() => {
+    if (mode === 'history') {
+      void loadHistory();
+    }
+  }, [mode, loadHistory]);
+
+  // Get current events based on mode
+  const events = mode === 'live' ? liveEvents : historyEvents;
+
   // Filter events
   const filteredEvents = useMemo(() => {
     return events.filter((e) => matchesFilter(e, filter));
   }, [events, filter]);
 
-  // Clear function
+  // Clear function (live mode only)
   const clear = useCallback(() => {
-    setEvents([]);
-  }, []);
+    if (mode === 'live') {
+      setLiveEvents([]);
+    }
+  }, [mode]);
+
+  // Wipe history (history mode only)
+  const wipeHistory = useCallback(async () => {
+    if (mode === 'history') {
+      await store.wipe();
+      await loadHistory();
+    }
+  }, [mode, store, loadHistory]);
+
+  // Refresh history
+  const refreshHistory = useCallback(async () => {
+    if (mode === 'history') {
+      await loadHistory();
+    }
+  }, [mode, loadHistory]);
 
   return {
     events,
@@ -189,5 +275,11 @@ export function useActionStream(): UseActionStreamResult {
     setFilter,
     clear,
     totalCount: events.length,
+    mode,
+    setMode,
+    wipeHistory,
+    refreshHistory,
+    historyStats,
+    isLoadingHistory,
   };
 }
