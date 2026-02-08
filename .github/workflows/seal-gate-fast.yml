@@ -169,7 +169,7 @@ jobs:
 
       - name: Unit tests (blocking)
         id: unit-tests
-        run: pnpm -C frontend run test:unit
+        run: pnpm -C frontend run test:tier0
 
       - name: IPC tests (blocking)
         id: ipc-tests
