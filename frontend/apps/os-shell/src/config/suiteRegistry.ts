@@ -360,6 +360,33 @@ export interface StandaloneSuiteDefinition extends OsFeatureDefinition {
 }
 
 /**
+ * Quality-gate homeMeta: requires description and at least one action.
+ * Used by Slice 12 quality gate enforcement.
+ */
+export interface QualifiedHomeMeta extends OsFeatureHomeMeta {
+  /** Non-empty page title */
+  title: string;
+  /** Non-empty description (required for quality gate) */
+  description: string;
+  /** At least one primary action (required for quality gate) */
+  primaryActions: Array<{
+    id: string;
+    label: string;
+    intent: 'workbench' | 'standalone' | 'system';
+    href?: string;
+  }>;
+}
+
+/**
+ * Qualified standalone suite: passes Slice 12 quality gate.
+ * - Has route, homeMeta, title, description, and >= 1 primaryAction
+ */
+export interface QualifiedStandaloneSuiteDefinition extends OsFeatureDefinition {
+  route: string;
+  homeMeta: QualifiedHomeMeta;
+}
+
+/**
  * Get all OS features that are standalone-ready:
  * - Has route defined
  * - Has homeMeta defined
@@ -375,6 +402,27 @@ export function getStandaloneSuites(): StandaloneSuiteDefinition[] {
 }
 
 /**
+ * Get all OS features that pass the quality gate:
+ * - Has route, homeMeta, title, description, and >= 1 primaryAction
+ * - Status is 'live'
+ *
+ * Slice 12: Quality gate enforcement. Suites not meeting this bar
+ * will fail CI tests.
+ */
+export function getQualifiedStandaloneSuites(): QualifiedStandaloneSuiteDefinition[] {
+  return OS_FEATURES.filter(
+    (f): f is QualifiedStandaloneSuiteDefinition =>
+      f.status === 'live' &&
+      !!f.route &&
+      !!f.homeMeta &&
+      !!f.homeMeta.title &&
+      !!f.homeMeta.description &&
+      Array.isArray(f.homeMeta.primaryActions) &&
+      f.homeMeta.primaryActions.length >= 1
+  );
+}
+
+/**
  * Type guard: Check if an OS feature is standalone-ready.
  */
 export function isStandaloneSuite(
@@ -382,6 +430,24 @@ export function isStandaloneSuite(
 ): feature is StandaloneSuiteDefinition {
   return (
     feature.status === 'live' && !!feature.route && !!feature.homeMeta && !!feature.homeMeta.title
+  );
+}
+
+/**
+ * Type guard: Check if an OS feature passes the quality gate.
+ * Slice 12: Enforces description + actions requirement.
+ */
+export function isQualifiedStandaloneSuite(
+  feature: OsFeatureDefinition
+): feature is QualifiedStandaloneSuiteDefinition {
+  return (
+    feature.status === 'live' &&
+    !!feature.route &&
+    !!feature.homeMeta &&
+    !!feature.homeMeta.title &&
+    !!feature.homeMeta.description &&
+    Array.isArray(feature.homeMeta.primaryActions) &&
+    feature.homeMeta.primaryActions.length >= 1
   );
 }
 
