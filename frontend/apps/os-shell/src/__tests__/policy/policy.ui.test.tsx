@@ -16,16 +16,16 @@ import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PolicyPanel, type PolicyPanelProps } from '../../components/Trace/PolicyPanel/PolicyPanel';
-import type { ReadFileText } from '../../services/policyFileIO';
 import { subscribeToAllTraces, type OsActionAnyTraceEvent } from '../../services/osActions';
+import type { ReadFileText } from '../../services/policyFileIO';
 
 // ============================================================================
 // Test Helpers
 // ============================================================================
 
-/** 
+/**
  * Mock file reader that returns content deterministically
- * Uses FileReader internally for jsdom compatibility 
+ * Uses FileReader internally for jsdom compatibility
  */
 const mockReadFileText: ReadFileText = (file: File) => {
   return new Promise((resolve, reject) => {
@@ -354,10 +354,10 @@ describe('Policy Panel UI', () => {
 
       // Add one rule
       await user.click(screen.getByRole('button', { name: /Add Rule/i }));
-      
+
       // Use selectOptions for dropdown instead of type
       await user.selectOptions(screen.getByLabelText(/Surface/i), 'workbench');
-      
+
       await user.type(screen.getByLabelText(/Action ID/i), 'export_pdf');
       await user.type(screen.getByLabelText(/Reason/i), 'Test export');
       await user.click(screen.getByRole('button', { name: /Save Rule/i }));
@@ -544,7 +544,7 @@ describe('Policy Panel UI', () => {
       const invalidRule = JSON.stringify({
         version: '1.0',
         rules: [
-          { effect: 'deny' } // No selectors (surface/suiteId/actionId) - should error
+          { effect: 'deny' }, // No selectors (surface/suiteId/actionId) - should error
         ],
       });
 

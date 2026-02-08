@@ -14,7 +14,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { emitTrace, resetActionPolicy, setActionPolicy } from '../../../services/osActions';
 import { compilePolicyRules, type PolicyRule } from '../../../services/policyEngine';
-import { readFileText as defaultReadFileText, type ReadFileText } from '../../../services/policyFileIO';
+import {
+    readFileText as defaultReadFileText,
+    type ReadFileText,
+} from '../../../services/policyFileIO';
 import { createPolicyStore } from '../../../services/policyStore';
 
 // ============================================================================
@@ -209,39 +212,42 @@ export function PolicyPanel({ readFileText = defaultReadFileText }: PolicyPanelP
     });
   }, [rules]);
 
-  const handleImportRules = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
-
-    try {
-      const jsonString = await readFileText(file);
-      const result = policyStore.importRules(jsonString);
-
-      if (result.success) {
-        setRules(result.rules);
-        setImportError('');
-
-        // Emit audit trace
-        emitTrace({
-          type: 'policy_imported',
-          timestamp: Date.now(),
-          payload: {
-            ruleCount: result.rules.length,
-            rulesHash: hashRules(result.rules),
-          },
-        });
-      } else {
-        setImportError(result.error.message);
+  const handleImportRules = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) {
+        return;
       }
-    } catch (error) {
-      setImportError('Failed to read file. Please try again.');
-    }
 
-    // Reset input so same file can be re-selected
-    event.target.value = '';
-  }, [readFileText]);
+      try {
+        const jsonString = await readFileText(file);
+        const result = policyStore.importRules(jsonString);
+
+        if (result.success) {
+          setRules(result.rules);
+          setImportError('');
+
+          // Emit audit trace
+          emitTrace({
+            type: 'policy_imported',
+            timestamp: Date.now(),
+            payload: {
+              ruleCount: result.rules.length,
+              rulesHash: hashRules(result.rules),
+            },
+          });
+        } else {
+          setImportError(result.error.message);
+        }
+      } catch (error) {
+        setImportError('Failed to read file. Please try again.');
+      }
+
+      // Reset input so same file can be re-selected
+      event.target.value = '';
+    },
+    [readFileText]
+  );
 
   const policyMode = rules.length === 0 ? 'Default Allow' : 'Custom';
 
