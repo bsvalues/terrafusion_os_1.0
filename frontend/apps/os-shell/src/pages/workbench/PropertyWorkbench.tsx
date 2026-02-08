@@ -16,13 +16,16 @@
  * 5. Dossier - Documents
  * 6. Pilot - Tool execution log
  *
+ * @see Slice 19: Workbench action instrumentation with trace emission
+ *
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { Suspense, lazy, useCallback, useMemo } from 'react';
+import React, { Suspense, lazy, useCallback, useMemo, useRef } from 'react';
 import { useParams, useNavigate, useLocation, Outlet, NavLink } from 'react-router-dom';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
+import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 
 // ============================================================================
 // Types
@@ -34,6 +37,41 @@ interface WorkbenchTab {
   icon: string;
   path: string;
   enabled: boolean;
+}
+
+// ============================================================================
+// Utilities
+// ============================================================================
+
+/**
+ * Simple hash function for parcel ID (PII-safe)
+ * Uses a simple djb2-like hash for deterministic output
+ */
+function hashParcelId(parcelId: string): string {
+  let hash = 5381;
+  for (let i = 0; i < parcelId.length; i++) {
+    hash = (hash * 33) ^ parcelId.charCodeAt(i);
+  }
+  return `hash_${(hash >>> 0).toString(16)}`;
+}
+
+/**
+ * Determine current tab from path
+ */
+function getCurrentTabFromPath(pathname: string, parcelId: string): string {
+  const basePath = `/property/${parcelId}`;
+  const pathAfterBase = pathname.replace(basePath, '').replace(/^\//, '');
+
+  // Map path to tab ID
+  if (!pathAfterBase || pathAfterBase === '') return 'summary';
+  const tabPathMap: Record<string, string> = {
+    forge: 'forge',
+    atlas: 'atlas',
+    dais: 'dais',
+    dossier: 'dossier',
+    pilot: 'pilot',
+  };
+  return tabPathMap[pathAfterBase] ?? 'summary';
 }
 
 // ============================================================================
@@ -117,33 +155,46 @@ const PropertyHeader: React.FC<{
 );
 
 /**
- * Tab Navigation - Locked order tabs
+ * Tab Navigation - Locked order tabs with trace emission
  */
 const TabNavigation: React.FC<{
   parcelId: string;
   tabs: WorkbenchTab[];
-}> = ({ parcelId, tabs }) => (
+  currentTabId: string;
+  onTabClick: (tab: WorkbenchTab, isActive: boolean) => void;
+}> = ({ parcelId, tabs, currentTabId, onTabClick }) => (
   <nav className="bg-slate-900/50 border-b border-white/10 px-6">
     <div className="flex gap-1 overflow-x-auto">
-      {tabs.map((tab) => (
-        <NavLink
-          key={tab.id}
-          to={tab.path ? `/property/${parcelId}/${tab.path}` : `/property/${parcelId}`}
-          end={tab.path === ''}
-          className={({ isActive }) =>
-            `flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap
-            ${isActive 
-              ? 'text-cyan-400 border-b-2 border-cyan-400 bg-cyan-400/5' 
-              : 'text-white/60 hover:text-white/80 hover:bg-white/5'
+      {tabs.map((tab) => {
+        const isCurrentTab = tab.id === currentTabId;
+        return (
+          <NavLink
+            key={tab.id}
+            to={tab.path ? `/property/${parcelId}/${tab.path}` : `/property/${parcelId}`}
+            end={tab.path === ''}
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap
+              ${
+                isActive
+                  ? 'text-cyan-400 border-b-2 border-cyan-400 bg-cyan-400/5'
+                  : 'text-white/60 hover:text-white/80 hover:bg-white/5'
+              }
+              ${!tab.enabled ? 'opacity-50 cursor-not-allowed' : ''}`
             }
-            ${!tab.enabled ? 'opacity-50 cursor-not-allowed' : ''}`
-          }
-          onClick={(e) => !tab.enabled && e.preventDefault()}
-        >
-          <span>{tab.icon}</span>
-          <span>{tab.label}</span>
-        </NavLink>
-      ))}
+            onClick={(e) => {
+              if (!tab.enabled) {
+                e.preventDefault();
+                return;
+              }
+              // Emit trace for user-initiated tab switch (not current tab)
+              onTabClick(tab, isCurrentTab);
+            }}
+          >
+            <span>{tab.icon}</span>
+            <span>{tab.label}</span>
+          </NavLink>
+        );
+      })}
     </div>
   </nav>
 );
@@ -169,17 +220,79 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Track whether this is initial mount (to avoid trace on mount)
+  const isInitialMount = useRef(true);
+
+  // Calculate current tab from path
+  const currentTabId = useMemo(
+    () => (parcelId ? getCurrentTabFromPath(location.pathname, parcelId) : 'summary'),
+    [location.pathname, parcelId]
+  );
+
   // Mock property data (in production, fetch from API)
-  const propertyData = useMemo(() => ({
-    parcelId: parcelId || 'Unknown',
-    address: '123 Main Street, Richland, WA 99352',
-    owner: 'John Doe',
-    assessedValue: 425000,
-  }), [parcelId]);
+  const propertyData = useMemo(
+    () => ({
+      parcelId: parcelId || 'Unknown',
+      address: '123 Main Street, Richland, WA 99352',
+      owner: 'John Doe',
+      assessedValue: 425000,
+    }),
+    [parcelId]
+  );
 
   const handleBack = useCallback(() => {
     navigate('/');
   }, [navigate]);
+
+  /**
+   * Handle tab click - emits OS action trace for user-initiated tab switches
+   * Only emits if:
+   * 1. Tab is not currently active (no duplicate trace)
+   * 2. Tab is enabled (disabled tabs emit blocked trace)
+   */
+  const handleTabClick = useCallback(
+    (tab: WorkbenchTab, isCurrentTab: boolean) => {
+      // Mark as no longer initial mount after first interaction
+      isInitialMount.current = false;
+
+      // Don't emit trace if clicking current tab
+      if (isCurrentTab) {
+        return;
+      }
+
+      // Build target href
+      const targetHref = tab.path
+        ? `/property/${parcelId}/${tab.path}`
+        : `/property/${parcelId}`;
+
+      // Create action for tab switch
+      const action: OsAction = {
+        id: 'workbench_tab_switch',
+        label: `Switch to ${tab.label}`,
+        intent: 'workbench',
+        href: targetHref,
+        disabled: !tab.enabled,
+        disabledReason: !tab.enabled ? 'Tab is currently disabled' : undefined,
+      };
+
+      // Create context with workbench surface and tab metadata
+      const context: OsActionContext = {
+        navigate: () => {
+          // Navigation is handled by NavLink's default behavior
+          // We just need to emit the trace
+        },
+        suiteId: 'workbench',
+        surface: 'workbench',
+        moduleId: 'workbench_tabs',
+        parcelIdHash: parcelId ? hashParcelId(parcelId) : undefined,
+        tabId: tab.id,
+      };
+
+      // Execute action (emits trace, but navigation is handled by NavLink)
+      executeOsAction(action, context);
+    },
+    [parcelId]
+  );
 
   if (!parcelId) {
     return (
@@ -208,7 +321,12 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
       />
 
       {/* Tab Navigation */}
-      <TabNavigation parcelId={parcelId} tabs={WORKBENCH_TABS} />
+      <TabNavigation
+        parcelId={parcelId}
+        tabs={WORKBENCH_TABS}
+        currentTabId={currentTabId}
+        onTabClick={handleTabClick}
+      />
 
       {/* Tab Content */}
       <main className="flex-1 overflow-auto p-6">

@@ -70,6 +70,8 @@ export interface OsActionContext {
   moduleId?: string;
   /** Hash of parcel ID if parcel context exists (PII-safe) */
   parcelIdHash?: string;
+  /** Optional tab ID for workbench tab interactions */
+  tabId?: string;
 }
 
 // ============================================================================
@@ -146,6 +148,8 @@ export interface OsActionTracePayload {
   parcelIdHash?: string;
   href?: string;
   handlerKey?: string;
+  /** Optional additional metadata (e.g., tabId for workbench tabs) */
+  tabId?: string;
 }
 
 export interface OsActionTraceEvent {
@@ -240,6 +244,10 @@ function emitActionTrace(action: OsAction, context: OsActionContext): void {
 
   if (context.parcelIdHash) {
     payload.parcelIdHash = context.parcelIdHash;
+  }
+
+  if (context.tabId) {
+    payload.tabId = context.tabId;
   }
 
   if (isNavigationAction(action)) {
