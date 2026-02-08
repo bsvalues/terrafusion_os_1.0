@@ -12,22 +12,22 @@
  * @see Slice 18: Deterministic Replay + Golden Trace Regression
  */
 
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  executeOsAction,
-  setActionPolicy,
-  resetActionPolicy,
-  setTraceClock,
-  resetTraceClock,
-  type OsAction,
-  type OsActionContext,
+    executeOsAction,
+    resetActionPolicy,
+    resetTraceClock,
+    setActionPolicy,
+    setTraceClock,
+    type OsAction,
+    type OsActionContext,
 } from '../../services/osActions';
 import {
-  collectTracesDuringSync,
-  normalizeTraces,
-  assertTracesMatch,
-  createMockClock,
-  type NormalizedTraceEvent,
+    assertTracesMatch,
+    collectTracesDuringSync,
+    createMockClock,
+    normalizeTraces,
+    type NormalizedTraceEvent,
 } from '../../testUtils/traceHarness';
 
 // ============================================================================
@@ -186,6 +186,90 @@ const GOLDEN_MIXED_SEQUENCE: NormalizedTraceEvent[] = [
       surface: 'launcher',
       suiteId: 'pilot',
       href: '/pilot/another',
+    },
+  },
+];
+
+/**
+ * Golden trace sequence: Standalone → Workbench → Tab Switch
+ * Simulates: User navigates to parcel, then switches tabs within workbench
+ */
+const GOLDEN_STANDALONE_TO_WORKBENCH_TAB_SWITCH: NormalizedTraceEvent[] = [
+  {
+    type: 'os_action_invoked',
+    timestamp: 'NORMALIZED',
+    payload: {
+      actionId: 'open-parcel-workbench',
+      actionType: 'navigation',
+      intent: 'workbench',
+      surface: 'standalone_home',
+      suiteId: 'forge',
+      parcelIdHash: 'NORMALIZED',
+      href: '/property/12345-001',
+    },
+  },
+  {
+    type: 'os_action_invoked',
+    timestamp: 'NORMALIZED',
+    payload: {
+      actionId: 'workbench_tab_switch',
+      actionType: 'navigation',
+      intent: 'workbench',
+      surface: 'workbench',
+      suiteId: 'workbench',
+      moduleId: 'workbench_tabs',
+      parcelIdHash: 'NORMALIZED',
+      tabId: 'atlas',
+      href: '/property/12345-001/atlas',
+    },
+  },
+  {
+    type: 'os_action_invoked',
+    timestamp: 'NORMALIZED',
+    payload: {
+      actionId: 'workbench_tab_switch',
+      actionType: 'navigation',
+      intent: 'workbench',
+      surface: 'workbench',
+      suiteId: 'workbench',
+      moduleId: 'workbench_tabs',
+      parcelIdHash: 'NORMALIZED',
+      tabId: 'dossier',
+      href: '/property/12345-001/dossier',
+    },
+  },
+];
+
+/**
+ * Golden trace sequence: Launcher → Workbench → Tab Interaction
+ * Simulates: User opens workbench from launcher, then interacts with tabs
+ */
+const GOLDEN_LAUNCHER_TO_WORKBENCH_INTERACTION: NormalizedTraceEvent[] = [
+  {
+    type: 'os_action_invoked',
+    timestamp: 'NORMALIZED',
+    payload: {
+      actionId: 'launcher-to-workbench',
+      actionType: 'navigation',
+      intent: 'workbench',
+      surface: 'launcher',
+      suiteId: 'forge',
+      href: '/property/99999-002/forge',
+    },
+  },
+  {
+    type: 'os_action_invoked',
+    timestamp: 'NORMALIZED',
+    payload: {
+      actionId: 'workbench_tab_switch',
+      actionType: 'navigation',
+      intent: 'workbench',
+      surface: 'workbench',
+      suiteId: 'workbench',
+      moduleId: 'workbench_tabs',
+      parcelIdHash: 'NORMALIZED',
+      tabId: 'pilot',
+      href: '/property/99999-002/pilot',
     },
   },
 ];
@@ -401,7 +485,13 @@ describe('Golden Journey Trace Regression', () => {
     it('produces correct sequence of invoked and blocked traces', () => {
       const actions: OsAction[] = [
         { id: 'allowed-action', label: 'Allowed', intent: 'standalone', href: '/pilot/allowed' },
-        { id: 'disabled-action', label: 'Disabled', intent: 'standalone', href: '/pilot/disabled', disabled: true },
+        {
+          id: 'disabled-action',
+          label: 'Disabled',
+          intent: 'standalone',
+          href: '/pilot/disabled',
+          disabled: true,
+        },
         { id: 'another-allowed', label: 'Another', intent: 'standalone', href: '/pilot/another' },
       ];
 
@@ -480,15 +570,196 @@ describe('Golden Journey Trace Regression', () => {
 
       const { traces } = collectTracesDuringSync(() => {
         for (const id of ids) {
-          executeOsAction(
-            { id, label: id, intent: 'standalone', href: `/${id}` },
-            createContext()
-          );
+          executeOsAction({ id, label: id, intent: 'standalone', href: `/${id}` }, createContext());
         }
       });
 
       const collectedIds = traces.map((t) => t.payload.actionId);
       expect(collectedIds).toEqual(ids);
+    });
+  });
+
+  // ==========================================================================
+  // Slice 19: Workbench Interaction Journeys
+  // ==========================================================================
+
+  describe('Journey 6: Standalone → Workbench → Tab Switch', () => {
+    it('produces deterministic trace sequence for parcel navigation and tab switching', () => {
+      // Simulated context with workbench surface and tabId
+      function createWorkbenchContext(tabId: string): OsActionContext {
+        return {
+          navigate: vi.fn(),
+          suiteId: 'workbench',
+          surface: 'workbench',
+          moduleId: 'workbench_tabs',
+          parcelIdHash: 'hash_abc123',
+          tabId,
+        };
+      }
+
+      const actions: Array<{ action: OsAction; context: OsActionContext }> = [
+        {
+          action: {
+            id: 'open-parcel-workbench',
+            label: 'Open Property',
+            intent: 'workbench',
+            href: '/property/12345-001',
+          },
+          context: {
+            navigate: vi.fn(),
+            suiteId: 'forge',
+            surface: 'standalone_home',
+            parcelIdHash: 'hash_abc123',
+          },
+        },
+        {
+          action: {
+            id: 'workbench_tab_switch',
+            label: 'Switch to Atlas',
+            intent: 'workbench',
+            href: '/property/12345-001/atlas',
+          },
+          context: createWorkbenchContext('atlas'),
+        },
+        {
+          action: {
+            id: 'workbench_tab_switch',
+            label: 'Switch to Dossier',
+            intent: 'workbench',
+            href: '/property/12345-001/dossier',
+          },
+          context: createWorkbenchContext('dossier'),
+        },
+      ];
+
+      const { traces } = collectTracesDuringSync(() => {
+        for (const { action, context } of actions) {
+          executeOsAction(action, context);
+        }
+      });
+
+      assertTracesMatch(traces, GOLDEN_STANDALONE_TO_WORKBENCH_TAB_SWITCH);
+    });
+
+    it('workbench tab switch includes tabId in payload', () => {
+      const action: OsAction = {
+        id: 'workbench_tab_switch',
+        label: 'Switch Tab',
+        intent: 'workbench',
+        href: '/property/12345/forge',
+      };
+
+      const context: OsActionContext = {
+        navigate: vi.fn(),
+        suiteId: 'workbench',
+        surface: 'workbench',
+        moduleId: 'workbench_tabs',
+        parcelIdHash: 'hash_test',
+        tabId: 'forge',
+      };
+
+      const { traces } = collectTracesDuringSync(() => {
+        executeOsAction(action, context);
+      });
+
+      expect(traces).toHaveLength(1);
+      expect(traces[0].type).toBe('os_action_invoked');
+      expect((traces[0].payload as Record<string, unknown>).tabId).toBe('forge');
+      expect(traces[0].payload.moduleId).toBe('workbench_tabs');
+    });
+  });
+
+  describe('Journey 7: Launcher → Workbench → Tab Interaction', () => {
+    it('produces deterministic trace sequence for launcher to workbench workflow', () => {
+      const actions: Array<{ action: OsAction; context: OsActionContext }> = [
+        {
+          action: {
+            id: 'launcher-to-workbench',
+            label: 'Open Forge',
+            intent: 'workbench',
+            href: '/property/99999-002/forge',
+          },
+          context: {
+            navigate: vi.fn(),
+            suiteId: 'forge',
+            surface: 'launcher',
+          },
+        },
+        {
+          action: {
+            id: 'workbench_tab_switch',
+            label: 'Switch to Pilot',
+            intent: 'workbench',
+            href: '/property/99999-002/pilot',
+          },
+          context: {
+            navigate: vi.fn(),
+            suiteId: 'workbench',
+            surface: 'workbench',
+            moduleId: 'workbench_tabs',
+            parcelIdHash: 'hash_99999002',
+            tabId: 'pilot',
+          },
+        },
+      ];
+
+      const { traces } = collectTracesDuringSync(() => {
+        for (const { action, context } of actions) {
+          executeOsAction(action, context);
+        }
+      });
+
+      assertTracesMatch(traces, GOLDEN_LAUNCHER_TO_WORKBENCH_INTERACTION);
+    });
+
+    it('parcelIdHash is normalized for deterministic comparison', () => {
+      const actionsWithDifferentHashes = [
+        {
+          action: {
+            id: 'workbench_tab_switch',
+            label: 'Switch Tab',
+            intent: 'workbench' as const,
+            href: '/property/12345/forge',
+          },
+          context: {
+            navigate: vi.fn(),
+            suiteId: 'workbench',
+            surface: 'workbench' as const,
+            parcelIdHash: 'hash_different_parcel_1',
+            tabId: 'forge',
+          },
+        },
+        {
+          action: {
+            id: 'workbench_tab_switch',
+            label: 'Switch Tab',
+            intent: 'workbench' as const,
+            href: '/property/54321/forge',
+          },
+          context: {
+            navigate: vi.fn(),
+            suiteId: 'workbench',
+            surface: 'workbench' as const,
+            parcelIdHash: 'hash_different_parcel_2',
+            tabId: 'forge',
+          },
+        },
+      ];
+
+      const { traces: traces1 } = collectTracesDuringSync(() => {
+        executeOsAction(actionsWithDifferentHashes[0].action, actionsWithDifferentHashes[0].context);
+      });
+
+      const { traces: traces2 } = collectTracesDuringSync(() => {
+        executeOsAction(actionsWithDifferentHashes[1].action, actionsWithDifferentHashes[1].context);
+      });
+
+      const normalized1 = normalizeTraces(traces1);
+      const normalized2 = normalizeTraces(traces2);
+
+      // Both should normalize parcelIdHash to 'NORMALIZED'
+      expect((normalized1[0].payload as Record<string, unknown>).parcelIdHash).toBe('NORMALIZED');
+      expect((normalized2[0].payload as Record<string, unknown>).parcelIdHash).toBe('NORMALIZED');
     });
   });
 });
