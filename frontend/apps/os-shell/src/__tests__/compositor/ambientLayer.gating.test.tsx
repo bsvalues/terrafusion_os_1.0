@@ -9,6 +9,7 @@
  * @see Slice 4: Compositor Jitter Stabilization
  */
 
+import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import { act } from 'react';
@@ -20,12 +21,12 @@ import * as ambientPolicy from '../../shell/ambient/ambientPolicy';
 // Mocks
 // ============================================================================
 
-jest.mock('../../shell/ambient/ambientPolicy', () => ({
-  ...jest.requireActual('../../shell/ambient/ambientPolicy'),
-  resolveAmbientMode: jest.fn(),
+vi.mock('../../shell/ambient/ambientPolicy', () => ({
+  ...vi.importActual('../../shell/ambient/ambientPolicy'),
+  resolveAmbientMode: vi.fn(),
 }));
 
-const mockResolveAmbientMode = ambientPolicy.resolveAmbientMode as jest.MockedFunction<
+const mockResolveAmbientMode = ambientPolicy.resolveAmbientMode as Mock<
   typeof ambientPolicy.resolveAmbientMode
 >;
 
@@ -35,7 +36,7 @@ const mockResolveAmbientMode = ambientPolicy.resolveAmbientMode as jest.MockedFu
 
 describe('Ambient Layer Gating', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     // Default to CSS mode
     mockResolveAmbientMode.mockReturnValue('css');
   });

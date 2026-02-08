@@ -8,6 +8,7 @@
  * @see Slice 5: Launcher Polish
  */
 
+import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
 
@@ -204,7 +205,7 @@ describe('Launcher Pins', () => {
 
   describe('Zustand Reactivity', () => {
     it('subscribers_notified_on_pin', () => {
-      const listener = jest.fn();
+      const listener = vi.fn();
 
       // Subscribe to store changes
       const unsub = usePinsStore.subscribe(listener);
@@ -220,7 +221,7 @@ describe('Launcher Pins', () => {
     it('subscribers_notified_on_unpin', () => {
       usePinsStore.getState().pin('forge');
 
-      const listener = jest.fn();
+      const listener = vi.fn();
       const unsub = usePinsStore.subscribe(listener);
 
       usePinsStore.getState().unpin('forge');

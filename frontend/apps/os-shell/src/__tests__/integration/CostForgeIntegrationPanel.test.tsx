@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import CostForgeIntegrationPanel from '@/components/costforge/CostForgeIntegrationPanel';
 import { jest } from '@jest/globals';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -6,17 +7,17 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 // Mock the useCostForgeAPI hook
-const mockUseCostForgeAPI = jest.fn();
-jest.mock('@/hooks/useCostForgeAPI', () => ({
+const mockUseCostForgeAPI = vi.fn();
+vi.mock('@/hooks/useCostForgeAPI', () => ({
   useCostForgeAPI: () => mockUseCostForgeAPI(),
 }));
 
 // Mock react-hot-toast
-jest.mock('react-hot-toast', () => ({
+vi.mock('react-hot-toast', () => ({
   toast: {
-    success: jest.fn(),
-    error: jest.fn(),
-    loading: jest.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    loading: vi.fn(),
   },
 }));
 
@@ -25,7 +26,7 @@ describe('CostForge Integration Panel - Championship Testing', () => {
   let user: ReturnType<typeof userEvent.setup>;
 
   const mockAPIResponse = {
-    calculateCost: jest.fn(),
+    calculateCost: vi.fn(),
     isConnected: true,
     connectionStatus: 'online',
     performanceMetrics: {
@@ -53,7 +54,7 @@ describe('CostForge Integration Panel - Championship Testing', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const renderWithProviders = (component: React.ReactElement) => {
@@ -128,7 +129,7 @@ describe('CostForge Integration Panel - Championship Testing', () => {
         assessorOffice: 'King County Assessor',
       };
 
-      mockAPIResponse.validateCounty = jest.fn().mockResolvedValue(mockCountyValidation);
+      mockAPIResponse.validateCounty = vi.fn().mockResolvedValue(mockCountyValidation);
 
       renderWithProviders(<CostForgeIntegrationPanel />);
 
@@ -302,7 +303,7 @@ describe('CostForge Integration Panel - Championship Testing', () => {
     });
 
     test('validates data integrity on errors', async () => {
-      mockAPIResponse.validateData = jest.fn().mockResolvedValue({
+      mockAPIResponse.validateData = vi.fn().mockResolvedValue({
         valid: false,
         errors: ['Invalid county code', 'Property value out of range'],
         suggestions: ['Use valid Washington State county', 'Check property value format'],

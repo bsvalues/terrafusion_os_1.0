@@ -5,6 +5,7 @@
  * @testCategory Integration Testing
  */
 
+import { vi } from 'vitest';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -279,7 +280,7 @@ const ProfileForm = ({ onSubmit }: { onSubmit: (data: any) => void }) => {
 describe('Integration: Login Form Workflow', () => {
   describe('Component Integration', () => {
     it('should render all form components together', () => {
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<LoginForm onSubmit={handleSubmit} />);
 
       expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -288,7 +289,7 @@ describe('Integration: Login Form Workflow', () => {
     });
 
     it('should connect labels to inputs properly', () => {
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<LoginForm onSubmit={handleSubmit} />);
 
       const emailInput = screen.getByLabelText(/email/i);
@@ -302,7 +303,7 @@ describe('Integration: Login Form Workflow', () => {
   describe('User Workflow: Valid Submission', () => {
     it('should handle complete valid form submission workflow', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<LoginForm onSubmit={handleSubmit} />);
 
       // Fill out form
@@ -321,7 +322,7 @@ describe('Integration: Login Form Workflow', () => {
 
     it('should handle tab navigation through all form fields', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<LoginForm onSubmit={handleSubmit} />);
 
       const emailInput = screen.getByLabelText(/email/i);
@@ -343,7 +344,7 @@ describe('Integration: Login Form Workflow', () => {
   describe('User Workflow: Validation Errors', () => {
     it('should show validation errors when submitting empty form', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<LoginForm onSubmit={handleSubmit} />);
 
       // Submit empty form
@@ -359,7 +360,7 @@ describe('Integration: Login Form Workflow', () => {
 
     it('should validate email format', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<LoginForm onSubmit={handleSubmit} />);
 
       // Enter invalid email
@@ -374,7 +375,7 @@ describe('Integration: Login Form Workflow', () => {
 
     it('should validate password length', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<LoginForm onSubmit={handleSubmit} />);
 
       // Enter short password
@@ -389,7 +390,7 @@ describe('Integration: Login Form Workflow', () => {
 
     it('should clear errors when user corrects input', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<LoginForm onSubmit={handleSubmit} />);
 
       // Submit empty form to trigger errors
@@ -409,7 +410,7 @@ describe('Integration: Login Form Workflow', () => {
 
   describe('Accessibility: Form Integration', () => {
     it('should have no accessibility violations', async () => {
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       const { container } = render(<LoginForm onSubmit={handleSubmit} />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -417,7 +418,7 @@ describe('Integration: Login Form Workflow', () => {
 
     it('should have no accessibility violations with errors', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       const { container } = render(<LoginForm onSubmit={handleSubmit} />);
 
       // Trigger errors
@@ -429,7 +430,7 @@ describe('Integration: Login Form Workflow', () => {
 
     it('should connect error messages to inputs via aria-describedby', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<LoginForm onSubmit={handleSubmit} />);
 
       // Trigger errors
@@ -448,7 +449,7 @@ describe('Integration: Login Form Workflow', () => {
   describe('Real-world Workflow: User Corrections', () => {
     it('should handle user typing, backspacing, and retyping', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<LoginForm onSubmit={handleSubmit} />);
 
       const emailInput = screen.getByLabelText(/email/i);
@@ -481,7 +482,7 @@ describe('Integration: Login Form Workflow', () => {
 describe('Integration: Contact Form Workflow', () => {
   describe('Component Integration', () => {
     it('should render all form components together', () => {
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ContactForm onSubmit={handleSubmit} />);
 
       expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
@@ -494,7 +495,7 @@ describe('Integration: Contact Form Workflow', () => {
   describe('User Workflow: Valid Submission', () => {
     it('should handle complete form submission with checkbox', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ContactForm onSubmit={handleSubmit} />);
 
       // Fill out form
@@ -518,7 +519,7 @@ describe('Integration: Contact Form Workflow', () => {
 
     it('should require checkbox to be checked', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ContactForm onSubmit={handleSubmit} />);
 
       // Fill out form without checking checkbox
@@ -535,7 +536,7 @@ describe('Integration: Contact Form Workflow', () => {
   describe('User Workflow: Textarea Validation', () => {
     it('should validate textarea minimum length', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ContactForm onSubmit={handleSubmit} />);
 
       // Enter short message
@@ -551,7 +552,7 @@ describe('Integration: Contact Form Workflow', () => {
 
     it('should handle multiline textarea input', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ContactForm onSubmit={handleSubmit} />);
 
       const multilineMessage = 'Line 1\nLine 2\nLine 3 with enough characters';
@@ -571,7 +572,7 @@ describe('Integration: Contact Form Workflow', () => {
 
   describe('Accessibility: Contact Form', () => {
     it('should have no accessibility violations', async () => {
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       const { container } = render(<ContactForm onSubmit={handleSubmit} />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -579,7 +580,7 @@ describe('Integration: Contact Form Workflow', () => {
 
     it('should have no accessibility violations with errors', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       const { container } = render(<ContactForm onSubmit={handleSubmit} />);
 
       await user.click(screen.getByRole('button', { name: /submit/i }));
@@ -597,7 +598,7 @@ describe('Integration: Contact Form Workflow', () => {
 describe('Integration: Profile Form Workflow', () => {
   describe('Component Integration: Select + RadioGroup', () => {
     it('should render all form components together', () => {
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ProfileForm onSubmit={handleSubmit} />);
 
       expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
@@ -608,7 +609,7 @@ describe('Integration: Profile Form Workflow', () => {
 
     it('should integrate Select component in form', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ProfileForm onSubmit={handleSubmit} />);
 
       // Open select and choose option
@@ -621,7 +622,7 @@ describe('Integration: Profile Form Workflow', () => {
 
     it('should integrate RadioGroup component in form', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ProfileForm onSubmit={handleSubmit} />);
 
       // Select radio option
@@ -636,7 +637,7 @@ describe('Integration: Profile Form Workflow', () => {
   describe('User Workflow: Complete Profile Submission', () => {
     it('should handle complete form with Select and RadioGroup', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ProfileForm onSubmit={handleSubmit} />);
 
       // Fill out form
@@ -658,7 +659,7 @@ describe('Integration: Profile Form Workflow', () => {
 
     it('should validate required fields in integrated form', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ProfileForm onSubmit={handleSubmit} />);
 
       // Submit without filling required fields
@@ -674,7 +675,7 @@ describe('Integration: Profile Form Workflow', () => {
   describe('User Workflow: Form State Synchronization', () => {
     it('should synchronize state across all form inputs', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ProfileForm onSubmit={handleSubmit} />);
 
       // Change multiple fields
@@ -704,7 +705,7 @@ describe('Integration: Profile Form Workflow', () => {
 
   describe('Accessibility: Profile Form', () => {
     it('should have no accessibility violations', async () => {
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       const { container } = render(<ProfileForm onSubmit={handleSubmit} />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -712,7 +713,7 @@ describe('Integration: Profile Form Workflow', () => {
 
     it('should maintain accessibility with Select open', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       const { container } = render(<ProfileForm onSubmit={handleSubmit} />);
 
       await user.click(screen.getByRole('combobox', { name: /country/i }));
@@ -725,7 +726,7 @@ describe('Integration: Profile Form Workflow', () => {
   describe('Edge Cases: Form Integration', () => {
     it('should handle rapid input changes across components', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn();
+      const handleSubmit = vi.fn();
       render(<ProfileForm onSubmit={handleSubmit} />);
 
       // Rapid typing
