@@ -422,7 +422,7 @@ export function subscribeToBlockedTrace(
 /**
  * Union type for all trace events
  */
-export type OsActionAnyTraceEvent = OsActionTraceEvent | OsActionBlockedEvent;
+export type OsActionAnyTraceEvent = OsActionTraceEvent | OsActionBlockedEvent | CustomTraceEvent;
 
 /**
  * Subscribe to all OS action trace events (invoked and blocked)
@@ -430,12 +430,38 @@ export type OsActionAnyTraceEvent = OsActionTraceEvent | OsActionBlockedEvent;
 export function subscribeToAllTraces(callback: (event: OsActionAnyTraceEvent) => void): () => void {
   const invokedHandler = (e: CustomEvent<OsActionTraceEvent>) => callback(e.detail);
   const blockedHandler = (e: CustomEvent<OsActionBlockedEvent>) => callback(e.detail);
+  const customHandler = (e: CustomEvent<CustomTraceEvent>) => callback(e.detail);
 
   window.addEventListener(OS_ACTION_EVENT_NAME, invokedHandler as EventListener);
   window.addEventListener(OS_ACTION_BLOCKED_EVENT_NAME, blockedHandler as EventListener);
+  window.addEventListener('terratrace:custom', customHandler as EventListener);
 
   return () => {
     window.removeEventListener(OS_ACTION_EVENT_NAME, invokedHandler as EventListener);
     window.removeEventListener(OS_ACTION_BLOCKED_EVENT_NAME, blockedHandler as EventListener);
+    window.removeEventListener('terratrace:custom', customHandler as EventListener);
   };
+}
+
+// ============================================================================
+// Custom Trace Events (for policy updates, etc.)
+// ============================================================================
+
+/**
+ * Custom trace event structure
+ */
+export interface CustomTraceEvent {
+  type: string;
+  timestamp: number;
+  payload: Record<string, unknown>;
+}
+
+/**
+ * Emit a custom trace event for audit purposes
+ * Used for policy updates, system events, etc.
+ *
+ * @param event - Custom trace event with type, timestamp, and payload
+ */
+export function emitTrace(event: CustomTraceEvent): void {
+  window.dispatchEvent(new CustomEvent('terratrace:custom', { detail: event }));
 }

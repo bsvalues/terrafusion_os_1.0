@@ -19,11 +19,7 @@
 import React, { useCallback, useRef } from 'react';
 import type { ErrorInfo } from '../../hooks/useErrorHandler';
 import { getEnv } from '../../runtime/env';
-import {
-  executeOsAction,
-  type OsAction,
-  type OsActionContext,
-} from '../../services/osActions';
+import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { ErrorDisplay } from '../errors/ErrorDisplay';
 
@@ -66,10 +62,7 @@ export interface ResultPanelProps {
  * Emit OS action trace for ResultPanel user interactions
  * Only called on explicit user actions, not on render/mount
  */
-function emitResultPanelTrace(
-  actionId: string,
-  resultType?: string
-): void {
+function emitResultPanelTrace(actionId: string, resultType?: string): void {
   const action: OsAction = {
     id: actionId,
     label: actionId.replace(/_/g, ' '),

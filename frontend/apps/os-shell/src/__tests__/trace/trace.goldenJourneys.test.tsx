@@ -14,6 +14,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+    emitTrace,
     executeOsAction,
     resetActionPolicy,
     resetTraceClock,
@@ -22,6 +23,7 @@ import {
     type OsAction,
     type OsActionContext,
 } from '../../services/osActions';
+import { compilePolicyRules } from '../../services/policyEngine';
 import {
     assertTracesMatch,
     collectTracesDuringSync,
@@ -338,6 +340,59 @@ const GOLDEN_TRACE_JUMP_NAVIGATION: NormalizedTraceEvent[] = [
       surface: 'trace',
       suiteId: 'trace',
       href: '/property/12345-001/forge',
+    },
+  },
+];
+
+/**
+ * Golden trace sequence: Policy block → reset → allow
+ * Slice 24: Full policy control loop
+ *
+ * 1. Add deny rule
+ * 2. Attempt action → blocked by policy
+ * 3. Reset policy
+ * 4. Retry action → now allowed
+ */
+const GOLDEN_POLICY_BLOCK_RESET: NormalizedTraceEvent[] = [
+  {
+    type: 'policy_updated',
+    timestamp: 'NORMALIZED',
+    payload: {
+      ruleCount: 1,
+      rulesHash: 'HASH_NORMALIZED',
+      addedRuleId: 'RULE_ID_NORMALIZED',
+    },
+  },
+  {
+    type: 'os_action_blocked',
+    timestamp: 'NORMALIZED',
+    payload: {
+      actionId: 'restricted-action',
+      actionType: 'navigation',
+      intent: 'workbench',
+      surface: 'launcher',
+      suiteId: 'forge',
+      blockReason: 'policy',
+      policyReason: 'Operator denied this action',
+    },
+  },
+  {
+    type: 'policy_reset',
+    timestamp: 'NORMALIZED',
+    payload: {
+      previousRuleCount: 1,
+    },
+  },
+  {
+    type: 'os_action_invoked',
+    timestamp: 'NORMALIZED',
+    payload: {
+      actionId: 'restricted-action',
+      actionType: 'navigation',
+      intent: 'workbench',
+      surface: 'launcher',
+      suiteId: 'forge',
+      href: '/property/99999-001/forge',
     },
   },
 ];
@@ -1015,6 +1070,153 @@ describe('Golden Journey Trace Regression', () => {
       expect(traces).toHaveLength(1);
       expect(traces[0].payload.intent).toBe('standalone');
       expect(traces[0].payload.href).toBe('/pilot/home');
+    });
+  });
+
+  // ==========================================================================
+  // Slice 24: Policy Block → Reset → Allow Journey
+  // ==========================================================================
+
+  describe('Journey 10: Policy Control Loop', () => {
+    it('produces deterministic trace for policy block → reset → allow', () => {
+      const action: OsAction = {
+        id: 'restricted-action',
+        label: 'Restricted Action',
+        intent: 'workbench',
+        href: '/property/99999-001/forge',
+      };
+
+      const context: OsActionContext = {
+        navigate: vi.fn(),
+        suiteId: 'forge',
+        surface: 'launcher',
+      };
+
+      // Collect all traces from the full journey
+      const { traces } = collectTracesDuringSync(() => {
+        // Step 1: Add deny rule (simulates PolicyPanel.addRule)
+        emitTrace({
+          type: 'policy_updated',
+          timestamp: Date.now(),
+          payload: {
+            ruleCount: 1,
+            rulesHash: 'test-hash-123',
+            addedRuleId: 'deny-rule-1',
+          },
+        });
+
+        // Set policy to deny this action
+        setActionPolicy(
+          compilePolicyRules([
+            {
+              id: 'deny-rule-1',
+              effect: 'deny',
+              actionId: 'restricted-action',
+              reason: 'Operator denied this action',
+            },
+          ])
+        );
+
+        // Step 2: Attempt action → should be blocked
+        executeOsAction(action, context);
+
+        // Step 3: Reset policy (simulates PolicyPanel.resetPolicy)
+        emitTrace({
+          type: 'policy_reset',
+          timestamp: Date.now(),
+          payload: {
+            previousRuleCount: 1,
+          },
+        });
+        resetActionPolicy();
+
+        // Step 4: Retry action → should succeed
+        executeOsAction(action, context);
+      });
+
+      // Match against golden fixture (normalized)
+      assertTracesMatch(traces, GOLDEN_POLICY_BLOCK_RESET);
+    });
+
+    it('policy block trace includes policyReason from deny rule', () => {
+      const action: OsAction = {
+        id: 'admin-panel',
+        label: 'Admin Panel',
+        intent: 'standalone',
+        href: '/admin',
+      };
+
+      const context: OsActionContext = {
+        navigate: vi.fn(),
+        suiteId: 'admin',
+        surface: 'launcher',
+      };
+
+      // Set policy with custom reason
+      setActionPolicy(
+        compilePolicyRules([
+          {
+            id: 'deny-admin',
+            effect: 'deny',
+            actionId: 'admin-panel',
+            reason: 'Requires admin role',
+          },
+        ])
+      );
+
+      const { traces } = collectTracesDuringSync(() => {
+        executeOsAction(action, context);
+      });
+
+      expect(traces).toHaveLength(1);
+      expect(traces[0].type).toBe('os_action_blocked');
+      expect(traces[0].payload.blockReason).toBe('policy');
+      expect(traces[0].payload.policyReason).toBe('Requires admin role');
+    });
+
+    it('reset policy allows previously blocked action', () => {
+      const action: OsAction = {
+        id: 'forge-launch',
+        label: 'Launch Forge',
+        intent: 'workbench',
+        href: '/property/12345-001/forge',
+      };
+
+      const context: OsActionContext = {
+        navigate: vi.fn(),
+        suiteId: 'forge',
+        surface: 'launcher',
+      };
+
+      // Block action with policy
+      setActionPolicy(
+        compilePolicyRules([
+          {
+            id: 'block-forge',
+            effect: 'deny',
+            actionId: 'forge-launch',
+            reason: 'Maintenance mode',
+          },
+        ])
+      );
+
+      const { traces: blockedTraces } = collectTracesDuringSync(() => {
+        executeOsAction(action, context);
+      });
+
+      expect(blockedTraces).toHaveLength(1);
+      expect(blockedTraces[0].type).toBe('os_action_blocked');
+
+      // Reset policy and retry
+      resetActionPolicy();
+
+      const { traces: allowedTraces } = collectTracesDuringSync(() => {
+        executeOsAction(action, context);
+      });
+
+      expect(allowedTraces).toHaveLength(1);
+      expect(allowedTraces[0].type).toBe('os_action_invoked');
+      expect(allowedTraces[0].payload.actionId).toBe('forge-launch');
     });
   });
 });

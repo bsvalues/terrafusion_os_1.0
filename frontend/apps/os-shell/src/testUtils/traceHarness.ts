@@ -14,6 +14,7 @@ import {
     resetTraceClock,
     setTraceClock,
     subscribeToAllTraces,
+    type CustomTraceEvent,
     type OsActionAnyTraceEvent,
     type OsActionBlockedEvent,
     type OsActionTraceEvent,
@@ -207,7 +208,7 @@ export function normalizeTraceEvent(event: OsActionAnyTraceEvent): NormalizedTra
         ...(invoked.payload.resultType && { resultType: invoked.payload.resultType }),
       },
     };
-  } else {
+  } else if (event.type === 'os_action_blocked') {
     const blocked = event as OsActionBlockedEvent;
     return {
       type: 'os_action_blocked',
@@ -223,6 +224,36 @@ export function normalizeTraceEvent(event: OsActionAnyTraceEvent): NormalizedTra
         ...(blocked.payload.policyReason && { policyReason: blocked.payload.policyReason }),
       },
     };
+  } else {
+    // Handle custom events (policy_updated, policy_reset)
+    const custom = event as CustomTraceEvent;
+    if (custom.type === 'policy_updated') {
+      return {
+        type: 'policy_updated',
+        timestamp: 'NORMALIZED',
+        payload: {
+          ruleCount: custom.payload.ruleCount,
+          rulesHash: 'HASH_NORMALIZED',
+          ...(custom.payload.addedRuleId && { addedRuleId: 'RULE_ID_NORMALIZED' }),
+          ...(custom.payload.removedRuleId && { removedRuleId: 'RULE_ID_NORMALIZED' }),
+        },
+      };
+    } else if (custom.type === 'policy_reset') {
+      return {
+        type: 'policy_reset',
+        timestamp: 'NORMALIZED',
+        payload: {
+          previousRuleCount: custom.payload.previousRuleCount,
+        },
+      };
+    } else {
+      // Fallback for unknown custom events
+      return {
+        type: custom.type,
+        timestamp: 'NORMALIZED',
+        payload: custom.payload,
+      };
+    }
   }
 }
 

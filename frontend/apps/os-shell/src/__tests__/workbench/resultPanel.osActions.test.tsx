@@ -17,11 +17,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  OS_ACTION_EVENT_NAME,
-  type OsActionTraceEvent,
-} from '../../services/osActions';
 import { ResultPanel } from '../../components/workbench/ResultPanel';
+import { OS_ACTION_EVENT_NAME, type OsActionTraceEvent } from '../../services/osActions';
 
 // ============================================================================
 // Test Utilities
@@ -270,8 +267,8 @@ describe('ResultPanel OS Action Traces', () => {
 
     it('includes privacy-safe resultType in trace if provided', async () => {
       render(
-        <ResultPanel 
-          status='success' 
+        <ResultPanel
+          status='success'
           correlationId='corr-result-type'
           resultType='valuation_explanation'
         >
@@ -293,9 +290,7 @@ describe('ResultPanel OS Action Traces', () => {
 
   describe('No Double-Counting', () => {
     it('does not emit trace on status change (state update)', async () => {
-      const { rerender } = render(
-        <ResultPanel status='loading' loadingMessage='Loading...' />
-      );
+      const { rerender } = render(<ResultPanel status='loading' loadingMessage='Loading...' />);
 
       expect(events).toHaveLength(0);
 

@@ -14,8 +14,8 @@
  * @see Slice 22: Trace-to-UI Correlation + Deep Link Replay
  */
 
-import type { OsAction } from '../../services/osActions';
 import type { ActionStreamEvent } from '../../hooks/useActionStream';
+import type { OsAction } from '../../services/osActions';
 
 /**
  * Convert a trace event to a navigable OS action
