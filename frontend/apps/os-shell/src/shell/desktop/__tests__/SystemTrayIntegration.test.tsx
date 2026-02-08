@@ -14,10 +14,16 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 // Vitest imports removed - Jest globals used
 import '@testing-library/jest-dom';
+import { MemoryRouter } from 'react-router-dom';
 
 import { SentinelPanel } from '../../../sentinel/SentinelPanel';
 import { useSentinelStore } from '../../../sentinel/sentinelStore';
 import { Taskbar } from '../Taskbar';
+
+// Test helper: Wrap components with Router context for useNavigate() support
+const renderWithRouter = (ui: React.ReactElement) => {
+  return render(<MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>);
+};
 
 const TaskbarWithPanels = () => {
   const { panelOpen, setPanelOpen } = useSentinelStore();
@@ -63,31 +69,31 @@ afterEach(() => {
 describe('System Tray Integration', () => {
   describe('Taskbar Rendering', () => {
     it('renders system tray section', () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       expect(screen.getByTestId('system-tray')).toBeInTheDocument();
     });
 
     it('renders AI status indicator', () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       expect(screen.getByTestId('ai-status-indicator')).toBeInTheDocument();
     });
 
     it('renders system health indicator', () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       expect(screen.getByTestId('system-health-indicator')).toBeInTheDocument();
     });
 
     it('renders notification bell', () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       expect(screen.getByTestId('notification-bell')).toBeInTheDocument();
     });
 
     it('renders clock', () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       expect(screen.getByTestId('clock')).toBeInTheDocument();
     });
@@ -95,7 +101,7 @@ describe('System Tray Integration', () => {
 
   describe('AI Status Panel', () => {
     it('opens AI status panel on click', async () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       await userEvent.click(screen.getByTestId('ai-status-indicator'));
 
@@ -103,7 +109,7 @@ describe('System Tray Integration', () => {
     });
 
     it('shows agent count in panel', async () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       await userEvent.click(screen.getByTestId('ai-status-indicator'));
 
@@ -115,7 +121,7 @@ describe('System Tray Integration', () => {
 
   describe('System Health Panel', () => {
     it('opens system health panel on click', async () => {
-      render(<TaskbarWithPanels />);
+      renderWithRouter(<TaskbarWithPanels />);
 
       await userEvent.click(screen.getByTestId('system-health-indicator'));
 
@@ -123,7 +129,7 @@ describe('System Tray Integration', () => {
     });
 
     it('shows latency in panel', async () => {
-      render(<TaskbarWithPanels />);
+      renderWithRouter(<TaskbarWithPanels />);
 
       await userEvent.click(screen.getByTestId('system-health-indicator'));
 
@@ -133,7 +139,7 @@ describe('System Tray Integration', () => {
 
   describe('Notification Panel', () => {
     it('opens notification panel on click', async () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       await userEvent.click(screen.getByTestId('notification-bell'));
 
@@ -141,7 +147,7 @@ describe('System Tray Integration', () => {
     });
 
     it('shows notification badge', () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       // Default notifications have 2 unread
       expect(screen.getByTestId('notification-badge')).toBeInTheDocument();
@@ -150,7 +156,7 @@ describe('System Tray Integration', () => {
 
   describe('Panel Interactions', () => {
     it('only one panel open at a time - AI closes when Health opens', async () => {
-      render(<TaskbarWithPanels />);
+      renderWithRouter(<TaskbarWithPanels />);
 
       // Open AI panel
       await userEvent.click(screen.getByTestId('ai-status-indicator'));
@@ -164,7 +170,7 @@ describe('System Tray Integration', () => {
     });
 
     it('Escape closes open panel', async () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       // Open AI panel
       await userEvent.click(screen.getByTestId('ai-status-indicator'));
@@ -179,13 +185,13 @@ describe('System Tray Integration', () => {
 
   describe('Clock', () => {
     it('displays time in clock', () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       expect(screen.getByTestId('clock-time')).toBeInTheDocument();
     });
 
     it('displays date in clock', () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       expect(screen.getByTestId('clock-date')).toBeInTheDocument();
     });
@@ -193,7 +199,7 @@ describe('System Tray Integration', () => {
 
   describe('Accessibility', () => {
     it('system tray has proper group role', () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       const systemTray = screen.getByTestId('system-tray');
       expect(systemTray).toHaveAttribute('role', 'group');
@@ -201,7 +207,7 @@ describe('System Tray Integration', () => {
     });
 
     it('all indicators are keyboard accessible', () => {
-      render(<Taskbar />);
+      renderWithRouter(<Taskbar />);
 
       const aiButton = screen.getByTestId('ai-status-indicator');
       const healthButton = screen.getByTestId('system-health-indicator');

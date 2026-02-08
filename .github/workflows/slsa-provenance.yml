@@ -3,18 +3,18 @@ name: SLSA Provenance Generation
 # Purpose: Generate SLSA Level 3 provenance attestations for all build artifacts
 # Compliance: Supply chain security, vendor requirements, FedRAMP
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# RELEASE ASSURANCE LANE - NOT A MERGE BLOCKER
+# ═══════════════════════════════════════════════════════════════════════════════
+# Runs on: main branch, tags, manual trigger
+# Does NOT run on: pull_request (moved to release lane per Two-Lane CI Architecture)
+# See: .github/TWO_LANE_CI_ARCHITECTURE.md
+# ═══════════════════════════════════════════════════════════════════════════════
+
 on:
   push:
     branches: [main, release/**]
     tags: ['v*']
-    paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - '.github/workflows/slsa-provenance.yml'
-  pull_request:
-    branches: [main]
     paths:
       - 'backend/**'
       - 'frontend/**'
