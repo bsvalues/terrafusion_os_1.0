@@ -23,7 +23,7 @@
  */
 
 import React, { Suspense, lazy, useCallback, useMemo, useRef } from 'react';
-import { useParams, useNavigate, useLocation, Outlet, NavLink } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 
@@ -107,10 +107,10 @@ const PropertyPilot = lazy(() => import('./tabs/PropertyPilot'));
  * Loading skeleton for tab content
  */
 const TabLoader: React.FC = () => (
-  <div className="flex items-center justify-center h-64">
-    <div className="text-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500 mx-auto mb-2"></div>
-      <p className="text-white/60 text-sm">Loading...</p>
+  <div className='flex items-center justify-center h-64'>
+    <div className='text-center'>
+      <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500 mx-auto mb-2'></div>
+      <p className='text-white/60 text-sm'>Loading...</p>
     </div>
   </div>
 );
@@ -123,30 +123,38 @@ const PropertyHeader: React.FC<{
   address?: string;
   onBack: () => void;
 }> = ({ parcelId, address, onBack }) => (
-  <header className="bg-gradient-to-r from-slate-800 to-slate-900 border-b border-white/10 px-6 py-4">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
+  <header className='bg-gradient-to-r from-slate-800 to-slate-900 border-b border-white/10 px-6 py-4'>
+    <div className='flex items-center justify-between'>
+      <div className='flex items-center gap-4'>
         <button
           onClick={onBack}
-          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
-          title="Back to Home"
+          className='p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors'
+          title='Back to Home'
         >
-          <svg className="w-5 h-5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className='w-5 h-5 text-white/70'
+            fill='none'
+            viewBox='0 0 24 24'
+            stroke='currentColor'
+          >
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth={2}
+              d='M15 19l-7-7 7-7'
+            />
           </svg>
         </button>
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
+          <h1 className='text-xl font-bold text-white flex items-center gap-2'>
             <span>🏠</span>
             <span>Parcel {parcelId}</span>
           </h1>
-          {address && (
-            <p className="text-white/60 text-sm">{address}</p>
-          )}
+          {address && <p className='text-white/60 text-sm'>{address}</p>}
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">
+      <div className='flex items-center gap-2'>
+        <span className='px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full'>
           Active
         </span>
       </div>
@@ -163,8 +171,8 @@ const TabNavigation: React.FC<{
   currentTabId: string;
   onTabClick: (tab: WorkbenchTab, isActive: boolean) => void;
 }> = ({ parcelId, tabs, currentTabId, onTabClick }) => (
-  <nav className="bg-slate-900/50 border-b border-white/10 px-6">
-    <div className="flex gap-1 overflow-x-auto">
+  <nav className='bg-slate-900/50 border-b border-white/10 px-6'>
+    <div className='flex gap-1 overflow-x-auto'>
       {tabs.map((tab) => {
         const isCurrentTab = tab.id === currentTabId;
         return (
@@ -261,9 +269,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
       }
 
       // Build target href
-      const targetHref = tab.path
-        ? `/property/${parcelId}/${tab.path}`
-        : `/property/${parcelId}`;
+      const targetHref = tab.path ? `/property/${parcelId}/${tab.path}` : `/property/${parcelId}`;
 
       // Create action for tab switch
       const action: OsAction = {
@@ -296,13 +302,13 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
   if (!parcelId) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-900">
-        <div className="text-center p-8">
-          <h2 className="text-2xl font-bold text-white mb-2">No Parcel Selected</h2>
-          <p className="text-white/60 mb-4">Search for a parcel to view the Property Workbench.</p>
+      <div className='flex items-center justify-center min-h-screen bg-slate-900'>
+        <div className='text-center p-8'>
+          <h2 className='text-2xl font-bold text-white mb-2'>No Parcel Selected</h2>
+          <p className='text-white/60 mb-4'>Search for a parcel to view the Property Workbench.</p>
           <button
             onClick={handleBack}
-            className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500 transition-colors"
+            className='px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500 transition-colors'
           >
             ← Back to Home
           </button>
@@ -329,7 +335,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
       />
 
       {/* Tab Content */}
-      <main className="flex-1 overflow-auto p-6">
+      <main className='flex-1 overflow-auto p-6'>
         <ErrorBoundary>
           <Suspense fallback={<TabLoader />}>
             <Outlet context={{ parcelId, propertyData }} />

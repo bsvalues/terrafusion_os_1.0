@@ -34,7 +34,7 @@ import {
     type StandaloneHomeMeta,
     type StandaloneHomeModule,
     type StandaloneHomeShellProps,
-    type StandaloneParcelContext
+    type StandaloneParcelContext,
 } from './standaloneHomeContracts';
 
 import './standalone-home-shell.css';
@@ -186,10 +186,17 @@ function ActionButton({ action, context }: ActionButtonProps) {
         asChild
         disabled={action.disabled}
         aria-label={action.ariaLabel}
-        onClick={context ? () => {
-          // Emit trace before navigation
-          executeOsAction({ id: action.id, label: action.label, intent: action.intent, href: action.href }, context);
-        } : undefined}
+        onClick={
+          context
+            ? () => {
+                // Emit trace before navigation
+                executeOsAction(
+                  { id: action.id, label: action.label, intent: action.intent, href: action.href },
+                  context
+                );
+              }
+            : undefined
+        }
       >
         <Link to={action.href}>{action.label}</Link>
       </TactileButton>
@@ -403,9 +410,7 @@ export function StandaloneHomeShell({
       navigate,
       suiteId: featureId,
       surface: 'standalone_home',
-      parcelIdHash: parcelContext?.parcelId
-        ? `h-${parcelContext.parcelId.slice(0, 8)}`
-        : undefined,
+      parcelIdHash: parcelContext?.parcelId ? `h-${parcelContext.parcelId.slice(0, 8)}` : undefined,
     }),
     [navigate, featureId, parcelContext]
   );

@@ -22,13 +22,17 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { WorkbenchTabId } from '../../config/suiteRegistry';
 import { WORKBENCH_FALLBACK_BASE } from '../../config/suiteRegistry';
-import { selectRecentParcel, useParcelContext, useRecentParcels } from '../../context/parcelContext';
+import {
+    selectRecentParcel,
+    useParcelContext,
+    useRecentParcels,
+} from '../../context/parcelContext';
 import { clearParcelContextWithTrace } from '../../context/parcelContextTrace';
 import {
-  formatParcelLabel,
-  resolveParcelLabel,
-  resolveParcelLabelSync,
-  type ParcelLabelData,
+    formatParcelLabel,
+    resolveParcelLabel,
+    resolveParcelLabelSync,
+    type ParcelLabelData,
 } from '../../context/parcelLabelResolver';
 
 // ============================================================================
@@ -242,10 +246,7 @@ export const ParcelContextIndicator: React.FC<ParcelContextIndicatorProps> = ({
 
         {/* Recents Dropdown */}
         {recentsOpen && filteredRecents.length > 0 && (
-          <RecentsDropdown
-            recents={filteredRecents}
-            onSelect={handleSelectRecent}
-          />
+          <RecentsDropdown recents={filteredRecents} onSelect={handleSelectRecent} />
         )}
       </div>
     );
@@ -283,10 +284,7 @@ export const ParcelContextIndicator: React.FC<ParcelContextIndicatorProps> = ({
 
       {/* Friendly Label (hidden in compact mode) */}
       {!compact && displayLabel && displayLabel !== context.parcelId && (
-        <span
-          data-testid='parcel-context-label'
-          className='text-white/70 truncate max-w-[150px]'
-        >
+        <span data-testid='parcel-context-label' className='text-white/70 truncate max-w-[150px]'>
           {displayLabel}
         </span>
       )}
@@ -357,10 +355,7 @@ export const ParcelContextIndicator: React.FC<ParcelContextIndicatorProps> = ({
 
       {/* Recents Dropdown */}
       {recentsOpen && filteredRecents.length > 0 && (
-        <RecentsDropdown
-          recents={filteredRecents}
-          onSelect={handleSelectRecent}
-        />
+        <RecentsDropdown recents={filteredRecents} onSelect={handleSelectRecent} />
       )}
     </div>
   );
