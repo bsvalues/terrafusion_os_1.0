@@ -44,7 +44,7 @@ RUN npm run build && \
     npm run build:analyze || true
 
 # Stage 2: Nginx Production Server
-FROM nginx:1.25-alpine AS runtime
+FROM nginx:1.29.5-alpine AS runtime
 LABEL org.opencontainers.image.title="TerraFusion OS Frontend"
 LABEL org.opencontainers.image.description="Government React UI with quantum performance"
 LABEL org.opencontainers.image.vendor="TerraFusion Technologies"
