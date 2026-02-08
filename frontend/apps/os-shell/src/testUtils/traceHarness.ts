@@ -167,6 +167,7 @@ export interface NormalizedInvokedPayload {
   href?: string;
   handlerKey?: string;
   tabId?: string; // Optional workbench tab ID
+  resultType?: string; // Optional privacy-safe result type (for ResultPanel traces)
 }
 
 export interface NormalizedBlockedPayload {
@@ -203,6 +204,7 @@ export function normalizeTraceEvent(event: OsActionAnyTraceEvent): NormalizedTra
         ...(invoked.payload.href && { href: invoked.payload.href }),
         ...(invoked.payload.handlerKey && { handlerKey: invoked.payload.handlerKey }),
         ...(invoked.payload.tabId && { tabId: invoked.payload.tabId }),
+        ...(invoked.payload.resultType && { resultType: invoked.payload.resultType }),
       },
     };
   } else {

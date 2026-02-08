@@ -274,6 +274,55 @@ const GOLDEN_LAUNCHER_TO_WORKBENCH_INTERACTION: NormalizedTraceEvent[] = [
   },
 ];
 
+/**
+ * Golden trace sequence: ResultPanel Interaction (Slice 21)
+ * Simulates: User expands dev info, copies correlationId, dismisses error
+ */
+const GOLDEN_RESULT_PANEL_INTERACTION: NormalizedTraceEvent[] = [
+  {
+    type: 'os_action_invoked',
+    timestamp: 'NORMALIZED',
+    payload: {
+      actionId: 'result_panel_dev_info_expand',
+      actionType: 'handler',
+      intent: 'workbench',
+      surface: 'workbench',
+      suiteId: 'result_panel',
+      moduleId: 'result_panel',
+      handlerKey: 'result_panel:result_panel_dev_info_expand',
+      resultType: 'valuation_result',
+    },
+  },
+  {
+    type: 'os_action_invoked',
+    timestamp: 'NORMALIZED',
+    payload: {
+      actionId: 'result_panel_copy_correlation_id',
+      actionType: 'handler',
+      intent: 'workbench',
+      surface: 'workbench',
+      suiteId: 'result_panel',
+      moduleId: 'result_panel',
+      handlerKey: 'result_panel:result_panel_copy_correlation_id',
+      resultType: 'valuation_result',
+    },
+  },
+  {
+    type: 'os_action_invoked',
+    timestamp: 'NORMALIZED',
+    payload: {
+      actionId: 'result_panel_dev_info_collapse',
+      actionType: 'handler',
+      intent: 'workbench',
+      surface: 'workbench',
+      suiteId: 'result_panel',
+      moduleId: 'result_panel',
+      handlerKey: 'result_panel:result_panel_dev_info_collapse',
+      resultType: 'valuation_result',
+    },
+  },
+];
+
 // ============================================================================
 // Golden Journey Tests
 // ============================================================================
@@ -766,6 +815,112 @@ describe('Golden Journey Trace Regression', () => {
       // Both should normalize parcelIdHash to 'NORMALIZED'
       expect((normalized1[0].payload as Record<string, unknown>).parcelIdHash).toBe('NORMALIZED');
       expect((normalized2[0].payload as Record<string, unknown>).parcelIdHash).toBe('NORMALIZED');
+    });
+  });
+
+  // ==========================================================================
+  // Slice 21: ResultPanel Interaction Journey
+  // ==========================================================================
+
+  describe('Journey 8: ResultPanel Interactions', () => {
+    it('produces deterministic trace sequence for ResultPanel expand/copy/collapse', () => {
+      function createResultPanelContext(resultType: string): OsActionContext {
+        const ctx: OsActionContext & { resultType?: string } = {
+          navigate: vi.fn(),
+          suiteId: 'result_panel',
+          surface: 'workbench',
+          moduleId: 'result_panel',
+        };
+        ctx.resultType = resultType;
+        return ctx;
+      }
+
+      const actions: Array<{ action: OsAction; context: OsActionContext }> = [
+        {
+          action: {
+            id: 'result_panel_dev_info_expand',
+            label: 'Expand Dev Info',
+            intent: 'workbench',
+            handlerKey: 'result_panel:result_panel_dev_info_expand',
+          },
+          context: createResultPanelContext('valuation_result'),
+        },
+        {
+          action: {
+            id: 'result_panel_copy_correlation_id',
+            label: 'Copy CorrelationId',
+            intent: 'workbench',
+            handlerKey: 'result_panel:result_panel_copy_correlation_id',
+          },
+          context: createResultPanelContext('valuation_result'),
+        },
+        {
+          action: {
+            id: 'result_panel_dev_info_collapse',
+            label: 'Collapse Dev Info',
+            intent: 'workbench',
+            handlerKey: 'result_panel:result_panel_dev_info_collapse',
+          },
+          context: createResultPanelContext('valuation_result'),
+        },
+      ];
+
+      const { traces } = collectTracesDuringSync(() => {
+        for (const { action, context } of actions) {
+          executeOsAction(action, context);
+        }
+      });
+
+      assertTracesMatch(traces, GOLDEN_RESULT_PANEL_INTERACTION);
+    });
+
+    it('resultType is included in trace payload for ResultPanel actions', () => {
+      const action: OsAction = {
+        id: 'result_panel_copy_correlation_id',
+        label: 'Copy',
+        intent: 'workbench',
+        handlerKey: 'result_panel:result_panel_copy_correlation_id',
+      };
+
+      const context: OsActionContext & { resultType?: string } = {
+        navigate: vi.fn(),
+        suiteId: 'result_panel',
+        surface: 'workbench',
+        moduleId: 'result_panel',
+        resultType: 'explanation_result',
+      };
+
+      const { traces } = collectTracesDuringSync(() => {
+        executeOsAction(action, context);
+      });
+
+      expect(traces).toHaveLength(1);
+      expect(traces[0].type).toBe('os_action_invoked');
+      expect((traces[0].payload as Record<string, unknown>).resultType).toBe('explanation_result');
+    });
+
+    it('ResultPanel traces without resultType work correctly', () => {
+      const action: OsAction = {
+        id: 'result_panel_dismiss_error',
+        label: 'Dismiss',
+        intent: 'workbench',
+        handlerKey: 'result_panel:result_panel_dismiss_error',
+      };
+
+      const context: OsActionContext = {
+        navigate: vi.fn(),
+        suiteId: 'result_panel',
+        surface: 'workbench',
+        moduleId: 'result_panel',
+      };
+
+      const { traces } = collectTracesDuringSync(() => {
+        executeOsAction(action, context);
+      });
+
+      expect(traces).toHaveLength(1);
+      expect(traces[0].type).toBe('os_action_invoked');
+      expect((traces[0].payload as Record<string, unknown>).resultType).toBeUndefined();
     });
   });
 });
