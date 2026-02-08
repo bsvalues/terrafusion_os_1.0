@@ -150,6 +150,8 @@ export interface OsActionTracePayload {
   handlerKey?: string;
   /** Optional additional metadata (e.g., tabId for workbench tabs) */
   tabId?: string;
+  /** Privacy-safe result type for ResultPanel traces */
+  resultType?: string;
 }
 
 export interface OsActionTraceEvent {
@@ -248,6 +250,12 @@ function emitActionTrace(action: OsAction, context: OsActionContext): void {
 
   if (context.tabId) {
     payload.tabId = context.tabId;
+  }
+
+  // Add privacy-safe resultType if provided (for ResultPanel traces)
+  const extContext = context as OsActionContext & { resultType?: string };
+  if (extContext.resultType) {
+    payload.resultType = extContext.resultType;
   }
 
   if (isNavigationAction(action)) {
