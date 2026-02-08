@@ -19,7 +19,7 @@ import {
     type OsActionContext,
     type OsActionTraceEvent,
 } from '../services/osActions';
-import { getTelemetryStore, type StoredTraceEvent } from '../services/telemetry';
+import { getTelemetryStore, type StoredTraceEvent } from '../services/telemetry/telemetryStore';
 
 // ============================================================================
 // Constants
