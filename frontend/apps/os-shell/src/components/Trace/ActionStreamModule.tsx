@@ -35,6 +35,8 @@ export interface ActionStreamModuleProps {
   showFilters?: boolean;
   /** Optional class name */
   className?: string;
+  /** Optional telemetry store for testing (defaults to singleton) */
+  telemetryStore?: ReturnType<typeof import('../../services/telemetry').getTelemetryStore>;
 }
 
 // ============================================================================
@@ -179,6 +181,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         <option value='all'>All</option>
         <option value='invoked'>Invoked</option>
         <option value='blocked'>Blocked</option>
+        <option value='custom'>Custom</option>
       </select>
     </div>
 
@@ -212,20 +215,34 @@ const FilterControls: React.FC<FilterControlsProps> = ({
 );
 
 interface EventBadgeProps {
-  type: 'invoked' | 'blocked';
+  type: 'invoked' | 'blocked' | 'custom';
+  customType?: string;
 }
 
-const EventBadge: React.FC<EventBadgeProps> = ({ type }) => (
-  <span
-    data-testid={`event-badge-${type}`}
-    className={`
+const EventBadge: React.FC<EventBadgeProps> = ({ type, customType }) => {
+  if (type === 'custom') {
+    return (
+      <span
+        data-testid='event-badge-custom'
+        className='inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-500/20 text-purple-400'
+      >
+        ⚡ {customType || 'Custom'}
+      </span>
+    );
+  }
+
+  return (
+    <span
+      data-testid={`event-badge-${type}`}
+      className={`
       inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
       ${type === 'invoked' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}
     `}
-  >
-    {type === 'invoked' ? '✓ Invoked' : '✗ Blocked'}
-  </span>
-);
+    >
+      {type === 'invoked' ? '✓ Invoked' : '✗ Blocked'}
+    </span>
+  );
+};
 
 interface EventItemProps {
   event: ActionStreamEvent;
@@ -255,27 +272,47 @@ const EventItem: React.FC<EventItemProps> = ({ event, onJump }) => {
           {/* Action ID and badge */}
           <div className='flex items-center gap-2 mb-1'>
             <code className='text-sm font-mono text-cyan-400 truncate'>{event.actionId}</code>
-            <EventBadge type={event.type} />
+            <EventBadge type={event.type} customType={event.customType} />
           </div>
 
           {/* Details */}
-          <div className='flex flex-wrap items-center gap-2 text-xs text-slate-400'>
-            <span className='bg-slate-700/50 px-1.5 py-0.5 rounded'>{event.surface}</span>
-            <span>→</span>
-            <span className='text-slate-500'>
-              {event.actionType === 'navigation' ? 'navigation' : 'handler'}
-            </span>
-            {event.href && (
-              <span className='text-slate-500 truncate max-w-[200px]'>{event.href}</span>
-            )}
-            {event.handlerKey && <span className='text-slate-500'>@{event.handlerKey}</span>}
-          </div>
+          {event.type === 'custom' ? (
+            <div className='flex flex-wrap items-center gap-2 text-xs text-slate-400'>
+              <span className='bg-slate-700/50 px-1.5 py-0.5 rounded'>{event.surface}</span>
+              <span>→</span>
+              <span className='text-slate-500'>custom event</span>
+              {event.customPayload && (
+                <span className='text-slate-500'>
+                  {Object.keys(event.customPayload).length} fields
+                </span>
+              )}
+            </div>
+          ) : (
+            <div className='flex flex-wrap items-center gap-2 text-xs text-slate-400'>
+              <span className='bg-slate-700/50 px-1.5 py-0.5 rounded'>{event.surface}</span>
+              <span>→</span>
+              <span className='text-slate-500'>
+                {event.actionType === 'navigation' ? 'navigation' : 'handler'}
+              </span>
+              {event.href && (
+                <span className='text-slate-500 truncate max-w-[200px]'>{event.href}</span>
+              )}
+              {event.handlerKey && <span className='text-slate-500'>@{event.handlerKey}</span>}
+            </div>
+          )}
 
           {/* Block reason if blocked */}
           {event.type === 'blocked' && (
             <div className='mt-1 text-xs text-red-400/80'>
               {event.blockReason === 'disabled' ? 'Disabled: ' : 'Policy: '}
               {event.blockReasonDetail || '(no reason provided)'}
+            </div>
+          )}
+
+          {/* Custom payload display */}
+          {event.type === 'custom' && event.customPayload && (
+            <div className='mt-1 text-xs text-purple-400/80'>
+              {JSON.stringify(event.customPayload, null, 2).split('\n').slice(0, 3).join('\n')}
             </div>
           )}
 
@@ -330,6 +367,7 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
   maxHeight = '100%',
   showFilters = true,
   className = '',
+  telemetryStore,
 }) => {
   const {
     filteredEvents,
@@ -342,7 +380,7 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
     wipeHistory,
     historyStats,
     isLoadingHistory,
-  } = useActionStream();
+  } = useActionStream({ telemetryStore });
 
   const navigate = useNavigate();
 
@@ -378,7 +416,7 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
       executeOsAction(action, context);
     },
     [navigate]
-  ); 
+  );
   return (
     <div
       data-testid='action-stream-module'
@@ -422,7 +460,9 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
         ) : filteredEvents.length === 0 ? (
           <EmptyState mode={mode} />
         ) : (
-          filteredEvents.map((event) => <EventItem key={event.id} event={event} onJump={handleJump} />)
+          filteredEvents.map((event) => (
+            <EventItem key={event.id} event={event} onJump={handleJump} />
+          ))
         )}
       </div>
     </div>

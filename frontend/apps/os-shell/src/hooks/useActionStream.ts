@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     subscribeToAllTraces,
+    type CustomTraceEvent,
     type OsActionAnyTraceEvent,
     type OsActionBlockedEvent,
     type OsActionContext,
@@ -36,10 +37,10 @@ export const ACTION_STREAM_CAP = 100;
  */
 export interface ActionStreamEvent {
   id: string;
-  type: 'invoked' | 'blocked';
+  type: 'invoked' | 'blocked' | 'custom';
   timestamp: number;
   actionId: string;
-  actionType: 'navigation' | 'handler';
+  actionType: 'navigation' | 'handler' | 'custom';
   intent: string;
   surface: OsActionContext['surface'];
   suiteId: string;
@@ -49,6 +50,9 @@ export interface ActionStreamEvent {
   /** Blocked events only */
   blockReason?: 'disabled' | 'policy';
   blockReasonDetail?: string;
+  /** Custom events only */
+  customType?: string;
+  customPayload?: Record<string, unknown>;
 }
 
 /**
@@ -57,7 +61,7 @@ export interface ActionStreamEvent {
 export interface ActionStreamFilter {
   surface?: OsActionContext['surface'];
   suiteId?: string;
-  status?: 'invoked' | 'blocked' | 'all';
+  status?: 'invoked' | 'blocked' | 'custom' | 'all';
 }
 
 /**
@@ -119,7 +123,7 @@ function traceEventToStreamEvent(event: OsActionAnyTraceEvent): ActionStreamEven
       href: invoked.payload.href,
       handlerKey: invoked.payload.handlerKey,
     };
-  } else {
+  } else if (event.type === 'os_action_blocked') {
     const blocked = event as OsActionBlockedEvent;
     return {
       id: `stream-${eventIdCounter}`,
@@ -135,6 +139,21 @@ function traceEventToStreamEvent(event: OsActionAnyTraceEvent): ActionStreamEven
         blocked.payload.blockReason === 'disabled'
           ? blocked.payload.disabledReason
           : blocked.payload.policyReason,
+    };
+  } else {
+    // Handle custom events (policy_updated, policy_reset, etc.)
+    const custom = event as CustomTraceEvent;
+    return {
+      id: `stream-${eventIdCounter}`,
+      type: 'custom',
+      timestamp: custom.timestamp,
+      actionId: custom.type, // Use custom event type as actionId
+      actionType: 'custom',
+      intent: 'system',
+      surface: 'trace' as OsActionContext['surface'],
+      suiteId: 'policy',
+      customType: custom.type,
+      customPayload: custom.payload,
     };
   }
 }
@@ -183,9 +202,13 @@ function matchesFilter(event: ActionStreamEvent, filter: ActionStreamFilter): bo
 /**
  * Hook to subscribe to action stream events
  *
+ * @param options - Optional configuration options
+ * @param options.telemetryStore - Optional telemetry store for testing (defaults to singleton)
  * @returns UseActionStreamResult with events, filtering, and controls
  */
-export function useActionStream(): UseActionStreamResult {
+export function useActionStream(options?: {
+  telemetryStore?: ReturnType<typeof getTelemetryStore>;
+}): UseActionStreamResult {
   const [liveEvents, setLiveEvents] = useState<ActionStreamEvent[]>([]);
   const [historyEvents, setHistoryEvents] = useState<ActionStreamEvent[]>([]);
   const [filter, setFilter] = useState<ActionStreamFilter>({ status: 'all' });
@@ -193,8 +216,11 @@ export function useActionStream(): UseActionStreamResult {
   const [historyStats, setHistoryStats] = useState({ eventCount: 0 });
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
-  // Get the telemetry store (for history mode)
-  const store = useMemo(() => getTelemetryStore(), []);
+  // Get the telemetry store (for history mode) - injectable for testing
+  const store = useMemo(
+    () => options?.telemetryStore ?? getTelemetryStore(),
+    [options?.telemetryStore]
+  );
 
   // Subscribe to live trace events
   useEffect(() => {

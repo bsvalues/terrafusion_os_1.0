@@ -13,12 +13,18 @@ import React from 'react';
 
 import { StandaloneHomeShell } from '../components/standalone';
 import { ActionStreamModule } from '../components/Trace/ActionStreamModule';
+import { PolicyPanel } from '../components/Trace/PolicyPanel';
+
+export interface TraceHomeProps {
+  /** Optional telemetry store for testing (defaults to singleton) */
+  telemetryStore?: ReturnType<typeof import('../services/telemetry').getTelemetryStore>;
+}
 
 /**
  * Placeholder content for TerraTrace.
  * Includes Action Stream module for real-time action visibility.
  */
-function TraceConsoleContent(): React.ReactElement {
+function TraceConsoleContent({ telemetryStore }: TraceHomeProps): React.ReactElement {
   return (
     <div className='trace-console' data-testid='trace-console-content'>
       <section className='trace-console__overview'>
@@ -43,7 +49,13 @@ function TraceConsoleContent(): React.ReactElement {
 
       {/* Action Stream - Real-time OS action visibility */}
       <section className='trace-console__action-stream'>
-        <ActionStreamModule maxHeight='400px' showFilters />
+        <ActionStreamModule maxHeight='400px' showFilters telemetryStore={telemetryStore} />
+      </section>
+
+      {/* Policy Panel - Visual rule management */}
+      <section className='trace-console__policy-panel'>
+        <h3>Policy Management</h3>
+        <PolicyPanel />
       </section>
 
       <section className='trace-console__placeholder'>
@@ -61,7 +73,7 @@ function TraceConsoleContent(): React.ReactElement {
  * Uses StandaloneHomeShell for consistent chrome (header, badge, actions)
  * and renders TraceConsoleContent inside the content slot.
  */
-export function TraceHome(): React.ReactElement {
+export function TraceHome(props: TraceHomeProps = {}): React.ReactElement {
   return (
     <StandaloneHomeShell
       featureId='trace'
@@ -82,7 +94,7 @@ export function TraceHome(): React.ReactElement {
         ],
       }}
     >
-      <TraceConsoleContent />
+      <TraceConsoleContent {...props} />
     </StandaloneHomeShell>
   );
 }
