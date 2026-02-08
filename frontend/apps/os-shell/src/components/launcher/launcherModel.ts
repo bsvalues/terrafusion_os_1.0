@@ -166,7 +166,8 @@ export function getLauncherItems(): LauncherItem[] {
   const osFeatureItems: LauncherItem[] = OS_FEATURES.filter((f) => f.route).map((feature) => ({
     id: feature.id,
     label: feature.displayName,
-    description: feature.description,
+    // Description truth: prefer homeMeta.description when available (Slice 13)
+    description: feature.homeMeta?.description ?? feature.description,
     icon: ICON_MAP[feature.iconName] || '📦',
     intent: 'standalone',
     route: feature.route!,
