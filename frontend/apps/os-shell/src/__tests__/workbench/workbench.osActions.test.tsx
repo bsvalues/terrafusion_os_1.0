@@ -8,20 +8,19 @@
  * @see Slice 19: Workbench Action Instrumentation + End-to-End Golden Journeys
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  resetTraceClock,
-  setTraceClock,
-  subscribeToAllTraces,
-  type OsActionAnyTraceEvent,
+    resetTraceClock,
+    setTraceClock,
+    subscribeToAllTraces,
+    type OsActionAnyTraceEvent,
 } from '../../services/osActions';
 import {
-  createMockClock,
-  collectTracesDuringSync,
-  normalizeTraces,
+    createMockClock,
+    normalizeTraces
 } from '../../testUtils/traceHarness';
 
 // ============================================================================
@@ -38,8 +37,8 @@ function renderWithRouter(
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <Routes>
-        <Route path="/property/:parcelId/*" element={component} />
-        <Route path="/property/:parcelId" element={component} />
+        <Route path='/property/:parcelId/*' element={component} />
+        <Route path='/property/:parcelId' element={component} />
       </Routes>
     </MemoryRouter>
   );
@@ -132,9 +131,7 @@ describe('Workbench OS Action Instrumentation', () => {
       await screen.findByText('Summary');
 
       // No traces should be emitted on mount
-      const tabSwitchTraces = traces.filter(
-        (t) => t.payload.actionId === 'workbench_tab_switch'
-      );
+      const tabSwitchTraces = traces.filter((t) => t.payload.actionId === 'workbench_tab_switch');
       expect(tabSwitchTraces).toHaveLength(0);
     });
 
@@ -147,9 +144,7 @@ describe('Workbench OS Action Instrumentation', () => {
       await screen.findByText('Summary'); // Wait for render
 
       // No tab switch trace should be emitted for URL navigation
-      const tabSwitchTraces = traces.filter(
-        (t) => t.payload.actionId === 'workbench_tab_switch'
-      );
+      const tabSwitchTraces = traces.filter((t) => t.payload.actionId === 'workbench_tab_switch');
       expect(tabSwitchTraces).toHaveLength(0);
     });
 
@@ -168,9 +163,7 @@ describe('Workbench OS Action Instrumentation', () => {
       await user.click(summaryTab);
 
       // No trace should be emitted for clicking active tab
-      const tabSwitchTraces = traces.filter(
-        (t) => t.payload.actionId === 'workbench_tab_switch'
-      );
+      const tabSwitchTraces = traces.filter((t) => t.payload.actionId === 'workbench_tab_switch');
       expect(tabSwitchTraces).toHaveLength(0);
     });
   });
@@ -259,8 +252,9 @@ describe('Workbench OS Action Instrumentation', () => {
 
       // Find a disabled tab if any exist (check for opacity-50 or cursor-not-allowed)
       const allTabs = screen.getAllByRole('link');
-      const disabledTab = allTabs.find((tab) =>
-        tab.className.includes('cursor-not-allowed') || tab.className.includes('opacity-50')
+      const disabledTab = allTabs.find(
+        (tab) =>
+          tab.className.includes('cursor-not-allowed') || tab.className.includes('opacity-50')
       );
 
       // Skip test if no disabled tabs

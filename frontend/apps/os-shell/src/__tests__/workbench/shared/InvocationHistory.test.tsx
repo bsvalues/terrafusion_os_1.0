@@ -13,6 +13,7 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import {
     InvocationHistory,
     type InvocationRecord,
@@ -40,7 +41,7 @@ describe('InvocationHistory', () => {
   beforeEach(() => {
     Object.assign(navigator, {
       clipboard: {
-        writeText: jest.fn().mockResolvedValue(undefined),
+        writeText: vi.fn().mockResolvedValue(undefined),
       },
     });
   });
