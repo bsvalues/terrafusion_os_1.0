@@ -15,8 +15,18 @@
 
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 
 import { useNotificationStore } from '../../../stores/notificationStore';
+
+// ============================================================================
+// Test Helper
+// ============================================================================
+
+// Test helper: Wrap components with Router context for useNavigate() support
+const renderWithRouter = (ui: React.ReactElement) => {
+  return render(<MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>);
+};
 
 // ============================================================================
 // Mocks
@@ -83,13 +93,13 @@ describe('Taskbar ↔ Notification Store Integration', () => {
 
   describe('store connection (SC-10.1)', () => {
     it('renders NotificationBell', () => {
-      render(<TaskbarWithNotifications />);
+      renderWithRouter(<TaskbarWithNotifications />);
 
       expect(screen.getByTestId('notification-bell')).toBeInTheDocument();
     });
 
     it('shows zero badge when store is empty', () => {
-      render(<TaskbarWithNotifications />);
+      renderWithRouter(<TaskbarWithNotifications />);
 
       expect(screen.queryByTestId('notification-badge')).not.toBeInTheDocument();
     });
@@ -101,7 +111,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
 
   describe('adding notifications (SC-10.2)', () => {
     it('shows badge when notification added to store', () => {
-      render(<TaskbarWithNotifications />);
+      renderWithRouter(<TaskbarWithNotifications />);
 
       act(() => {
         useNotificationStore.getState().addNotification({
@@ -115,7 +125,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
     });
 
     it('updates badge count when multiple notifications added', () => {
-      render(<TaskbarWithNotifications />);
+      renderWithRouter(<TaskbarWithNotifications />);
 
       act(() => {
         useNotificationStore.getState().addNotification({
@@ -135,7 +145,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
 
     it('shows notification in panel when opened', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<TaskbarWithNotifications />);
+      renderWithRouter(<TaskbarWithNotifications />);
 
       act(() => {
         useNotificationStore.getState().addNotification({
@@ -158,7 +168,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
   describe('dismissing notifications (SC-10.3)', () => {
     it('dismissing notification removes from store', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<TaskbarWithNotifications />);
+      renderWithRouter(<TaskbarWithNotifications />);
 
       // Add notification
       act(() => {
@@ -195,7 +205,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
   describe('clear all (SC-10.4)', () => {
     it('clear all button removes all notifications from store', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<TaskbarWithNotifications />);
+      renderWithRouter(<TaskbarWithNotifications />);
 
       // Add multiple notifications
       act(() => {
@@ -224,7 +234,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
 
     it('badge disappears after clear all', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<TaskbarWithNotifications />);
+      renderWithRouter(<TaskbarWithNotifications />);
 
       act(() => {
         useNotificationStore.getState().addNotification({
@@ -252,7 +262,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
   describe('reactive updates (SC-10.5)', () => {
     it('badge updates when notification marked as read', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<TaskbarWithNotifications />);
+      renderWithRouter(<TaskbarWithNotifications />);
 
       // Add notification
       let notifId: string;
@@ -277,7 +287,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
 
     it('clicking notification marks it as read', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<TaskbarWithNotifications />);
+      renderWithRouter(<TaskbarWithNotifications />);
 
       act(() => {
         useNotificationStore.getState().addNotification({
@@ -317,7 +327,7 @@ describe('Notification Type Styling', () => {
     ['error', '🔴'],
   ])('displays %s notification with correct styling', async (type) => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    render(<TaskbarWithNotifications />);
+    renderWithRouter(<TaskbarWithNotifications />);
 
     act(() => {
       useNotificationStore.getState().addNotification({
