@@ -4,13 +4,16 @@
  * Displays a real-time stream of OS action trace events.
  * Shows invoked and blocked actions with filtering capabilities.
  * Supports Live mode (real-time) and History mode (persisted events).
+ * Slice 22: Added Jump-to-Surface affordances for navigable traces.
  *
  * @module components/Trace/ActionStreamModule
  * @see Slice 17: Action Observability Surface
  * @see Slice 20: Persisted Telemetry Backend
+ * @see Slice 22: Trace-to-UI Correlation + Deep Link Replay
  */
 
 import React, { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     ACTION_STREAM_CAP,
     useActionStream,
@@ -18,6 +21,8 @@ import {
     type ActionStreamFilter,
     type StreamMode,
 } from '../../hooks/useActionStream';
+import { executeOsAction, type OsActionContext } from '../../services/osActions';
+import { traceToOsAction } from './traceToOsAction';
 
 // ============================================================================
 // Types
@@ -129,6 +134,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         <option value='shellhome'>ShellHome</option>
         <option value='module'>Module</option>
         <option value='workbench'>Workbench</option>
+        <option value='trace'>Trace</option>
       </select>
     </div>
 
@@ -223,10 +229,21 @@ const EventBadge: React.FC<EventBadgeProps> = ({ type }) => (
 
 interface EventItemProps {
   event: ActionStreamEvent;
+  onJump?: (event: ActionStreamEvent) => void;
 }
 
-const EventItem: React.FC<EventItemProps> = ({ event }) => {
+const EventItem: React.FC<EventItemProps> = ({ event, onJump }) => {
   const time = new Date(event.timestamp).toLocaleTimeString();
+
+  // Check if event is navigable
+  const jumpAction = traceToOsAction(event);
+  const isNavigable = jumpAction !== null;
+
+  const handleJumpClick = () => {
+    if (onJump) {
+      onJump(event);
+    }
+  };
 
   return (
     <div
@@ -259,6 +276,21 @@ const EventItem: React.FC<EventItemProps> = ({ event }) => {
             <div className='mt-1 text-xs text-red-400/80'>
               {event.blockReason === 'disabled' ? 'Disabled: ' : 'Policy: '}
               {event.blockReasonDetail || '(no reason provided)'}
+            </div>
+          )}
+
+          {/* Jump button if navigable */}
+          {isNavigable && jumpAction && (
+            <div className='mt-2'>
+              <button
+                type='button'
+                data-testid={`jump-button-${event.id}`}
+                onClick={handleJumpClick}
+                className='inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 hover:text-cyan-300 transition-colors'
+              >
+                <span>↗</span>
+                <span>{jumpAction.label}</span>
+              </button>
             </div>
           )}
         </div>
@@ -312,6 +344,8 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
     isLoadingHistory,
   } = useActionStream();
 
+  const navigate = useNavigate();
+
   const handleFilterChange = useCallback(
     (newFilter: ActionStreamFilter) => {
       setFilter(newFilter);
@@ -330,6 +364,21 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
     void wipeHistory();
   }, [wipeHistory]);
 
+  const handleJump = useCallback(
+    (event: ActionStreamEvent) => {
+      const action = traceToOsAction(event);
+      if (!action) return;
+
+      const context: OsActionContext = {
+        navigate,
+        suiteId: 'trace',
+        surface: 'trace',
+      };
+
+      executeOsAction(action, context);
+    },
+    [navigate]
+  ); 
   return (
     <div
       data-testid='action-stream-module'
@@ -373,7 +422,7 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
         ) : filteredEvents.length === 0 ? (
           <EmptyState mode={mode} />
         ) : (
-          filteredEvents.map((event) => <EventItem key={event.id} event={event} />)
+          filteredEvents.map((event) => <EventItem key={event.id} event={event} onJump={handleJump} />)
         )}
       </div>
     </div>

@@ -65,7 +65,7 @@ export interface OsActionContext {
   /** Current suite ID (e.g., 'pilot', 'trace') */
   suiteId: string;
   /** Surface type where action was invoked */
-  surface: 'launcher' | 'standalone_home' | 'shellhome' | 'module' | 'workbench';
+  surface: 'launcher' | 'standalone_home' | 'shellhome' | 'module' | 'workbench' | 'trace';
   /** Optional module ID if action is from a module */
   moduleId?: string;
   /** Hash of parcel ID if parcel context exists (PII-safe) */
