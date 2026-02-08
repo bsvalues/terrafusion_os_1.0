@@ -6,15 +6,17 @@
  *
  * @module pages/TraceHome
  * @see Slice 6.1: Unskip + Harden Standalone Contract Suite
+ * @see Slice 17: Action Observability Surface
  */
 
 import React from 'react';
 
 import { StandaloneHomeShell } from '../components/standalone';
+import { ActionStreamModule } from '../components/Trace/ActionStreamModule';
 
 /**
  * Placeholder content for TerraTrace.
- * This will be replaced with actual telemetry UI in a future slice.
+ * Includes Action Stream module for real-time action visibility.
  */
 function TraceConsoleContent(): React.ReactElement {
   return (
@@ -39,9 +41,14 @@ function TraceConsoleContent(): React.ReactElement {
         </div>
       </section>
 
+      {/* Action Stream - Real-time OS action visibility */}
+      <section className='trace-console__action-stream'>
+        <ActionStreamModule maxHeight='400px' showFilters />
+      </section>
+
       <section className='trace-console__placeholder'>
         <p>
-          <em>Coming soon: Live trace viewer, metrics dashboard, and audit log search.</em>
+          <em>Coming soon: Metrics dashboard and audit log search.</em>
         </p>
       </section>
     </div>

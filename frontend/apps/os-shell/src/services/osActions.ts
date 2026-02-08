@@ -346,7 +346,7 @@ export function executeOsAction(action: OsAction, context: OsActionContext): voi
 }
 
 /**
- * Subscribe to OS action trace events
+ * Subscribe to OS action trace events (invoked)
  */
 export function subscribeToActionTrace(callback: (event: OsActionTraceEvent) => void): () => void {
   const handler = (e: CustomEvent<OsActionTraceEvent>) => callback(e.detail);
@@ -354,4 +354,40 @@ export function subscribeToActionTrace(callback: (event: OsActionTraceEvent) => 
   window.addEventListener(OS_ACTION_EVENT_NAME, handler as EventListener);
 
   return () => window.removeEventListener(OS_ACTION_EVENT_NAME, handler as EventListener);
+}
+
+/**
+ * Subscribe to OS action blocked trace events
+ */
+export function subscribeToBlockedTrace(
+  callback: (event: OsActionBlockedEvent) => void
+): () => void {
+  const handler = (e: CustomEvent<OsActionBlockedEvent>) => callback(e.detail);
+
+  window.addEventListener(OS_ACTION_BLOCKED_EVENT_NAME, handler as EventListener);
+
+  return () => window.removeEventListener(OS_ACTION_BLOCKED_EVENT_NAME, handler as EventListener);
+}
+
+/**
+ * Union type for all trace events
+ */
+export type OsActionAnyTraceEvent = OsActionTraceEvent | OsActionBlockedEvent;
+
+/**
+ * Subscribe to all OS action trace events (invoked and blocked)
+ */
+export function subscribeToAllTraces(
+  callback: (event: OsActionAnyTraceEvent) => void
+): () => void {
+  const invokedHandler = (e: CustomEvent<OsActionTraceEvent>) => callback(e.detail);
+  const blockedHandler = (e: CustomEvent<OsActionBlockedEvent>) => callback(e.detail);
+
+  window.addEventListener(OS_ACTION_EVENT_NAME, invokedHandler as EventListener);
+  window.addEventListener(OS_ACTION_BLOCKED_EVENT_NAME, blockedHandler as EventListener);
+
+  return () => {
+    window.removeEventListener(OS_ACTION_EVENT_NAME, invokedHandler as EventListener);
+    window.removeEventListener(OS_ACTION_BLOCKED_EVENT_NAME, blockedHandler as EventListener);
+  };
 }
