@@ -99,6 +99,14 @@ export interface OsFeatureHomeMeta {
   subtitle?: string;
   /** Whether to show "Open in Workbench" CTA (default true) */
   showWorkbenchCta?: boolean;
+  /** Optional modules displayed in the home page (Slice 13) */
+  modules?: Array<{
+    id: string;
+    title: string;
+    kind: 'info' | 'actions' | 'metrics' | 'links';
+    icon?: string;
+    collapsed?: boolean;
+  }>;
 }
 
 export interface OsFeatureDefinition {

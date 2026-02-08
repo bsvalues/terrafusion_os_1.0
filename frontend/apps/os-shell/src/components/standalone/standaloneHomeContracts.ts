@@ -14,6 +14,41 @@ import type { ReactNode } from 'react';
 import type { OsFeatureId } from '../../config/suiteRegistry';
 
 // ============================================================================
+// Module Contracts (Slice 13)
+// ============================================================================
+
+/**
+ * Allowed module kinds. Limited enum for governance.
+ * - info: Static information display (text, stats)
+ * - actions: Quick action buttons or links
+ * - metrics: Numeric metrics with optional charts
+ * - links: Navigation links or resources
+ */
+export const MODULE_KINDS = ['info', 'actions', 'metrics', 'links'] as const;
+export type ModuleKind = typeof MODULE_KINDS[number];
+
+/**
+ * Module for standalone home pages.
+ * Suites provide descriptors; shell owns layout.
+ */
+export interface StandaloneHomeModule {
+  /** Unique identifier within the suite (must be unique per homeMeta) */
+  id: string;
+  /** Display title for the module */
+  title: string;
+  /** Module kind - determines rendering style */
+  kind: ModuleKind;
+  /** Optional icon name */
+  icon?: string;
+  /** Optional render function for custom content */
+  render?: () => ReactNode;
+  /** Optional data for data-driven rendering */
+  data?: Record<string, unknown>;
+  /** Whether the module is collapsed by default */
+  collapsed?: boolean;
+}
+
+// ============================================================================
 // Action Contracts
 // ============================================================================
 
@@ -60,6 +95,8 @@ export interface StandaloneHomeMeta {
   subtitle?: string;
   /** Whether to show the "Open in Workbench" CTA (requires parcel context) */
   showWorkbenchCta?: boolean;
+  /** Optional modules displayed in the home page (Slice 13) */
+  modules?: StandaloneHomeModule[];
 }
 
 // ============================================================================
