@@ -13,6 +13,7 @@
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 // Mock telemetry before importing components
@@ -50,7 +51,11 @@ function createActionContext(
 }
 
 function renderActionStream(props: Partial<Parameters<typeof ActionStreamModule>[0]> = {}) {
-  return render(<ActionStreamModule {...props} />);
+  return render(
+    <MemoryRouter>
+      <ActionStreamModule {...props} />
+    </MemoryRouter>
+  );
 }
 
 // ============================================================================
