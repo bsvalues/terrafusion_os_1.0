@@ -27,9 +27,11 @@ import {
     DEFAULT_STANDALONE_META,
     isHandlerAction,
     isNavigationAction,
+    MODULE_KINDS,
     type StandaloneHomeAction,
     type StandaloneHomeContext,
     type StandaloneHomeMeta,
+    type StandaloneHomeModule,
     type StandaloneHomeShellProps,
     type StandaloneParcelContext,
 } from './standaloneHomeContracts';
@@ -182,6 +184,82 @@ function ActionButton({ action }: { action: StandaloneHomeAction }) {
   );
 }
 
+/**
+ * Modules region: renders a grid of modules or accessible empty state.
+ * Slice 13: Always renders a region (with content or empty state).
+ */
+function ModulesRegion({ modules }: { modules: StandaloneHomeModule[] }) {
+  const hasModules = modules.length > 0;
+
+  return (
+    <section
+      data-testid='standalone-modules-region'
+      className='standalone-shell__modules-region'
+      aria-label='Feature modules'
+    >
+      {hasModules ? (
+        <div data-testid='standalone-modules-grid' className='standalone-shell__modules-grid'>
+          {modules.map((mod) => (
+            <ModuleCard key={mod.id} module={mod} />
+          ))}
+        </div>
+      ) : (
+        <div
+          data-testid='standalone-modules-empty'
+          className='standalone-shell__modules-empty'
+          aria-label='No additional modules available'
+        >
+          <span className='standalone-shell__modules-empty-text'>
+            No additional modules
+          </span>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/**
+ * Renders a single module card with LiquidPanel wrapper.
+ */
+function ModuleCard({ module }: { module: StandaloneHomeModule }) {
+  return (
+    <LiquidPanel
+      variant='card'
+      radius='md'
+      className='standalone-shell__module-panel standalone-module-panel'
+    >
+      <div
+        data-testid={`standalone-module-${module.id}`}
+        data-module-kind={module.kind}
+        className='standalone-shell__module'
+      >
+        {/* Module header */}
+        <div className='standalone-shell__module-header'>
+          {module.icon && (
+            <span className='standalone-shell__module-icon' aria-hidden='true'>
+              {module.icon}
+            </span>
+          )}
+          <h3 className='standalone-shell__module-title'>{module.title}</h3>
+        </div>
+
+        {/* Module content (render function or placeholder) */}
+        <div className='standalone-shell__module-content'>
+          {module.render ? module.render() : (
+            <span className='standalone-shell__module-placeholder'>
+              {/* Default content based on kind */}
+              {module.kind === 'info' && 'Information will appear here'}
+              {module.kind === 'actions' && 'Quick actions available'}
+              {module.kind === 'metrics' && 'Metrics loading...'}
+              {module.kind === 'links' && 'Related resources'}
+            </span>
+          )}
+        </div>
+      </div>
+    </LiquidPanel>
+  );
+}
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -224,6 +302,8 @@ export function StandaloneHomeShell({
         ...(registryMeta.primaryActions ?? []),
         ...(metaOverrides?.primaryActions ?? []),
       ],
+      // Merge modules (prop overrides take precedence, or use registry)
+      modules: metaOverrides?.modules ?? registryMeta.modules ?? [],
     };
   }, [featureDefinition, metaOverrides]);
 
@@ -299,6 +379,9 @@ export function StandaloneHomeShell({
             onOpenWorkbench={openInWorkbench}
             onChooseParcel={chooseParcelForWorkbench}
           />
+
+          {/* Modules region: always renders (grid or empty state) - Slice 13 */}
+          <ModulesRegion modules={resolvedMeta.modules ?? []} />
 
           <main role='main' data-testid='standalone-content' className='standalone-shell__content'>
             {children}
