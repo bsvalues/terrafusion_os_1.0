@@ -4,9 +4,9 @@
 
 ---
 
-* **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish
+* **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions
 * **Branch/PR:** main (solo-dev mode)
-* **Last Updated:** 2026-02-07 13:00
+* **Last Updated:** 2026-02-07 23:58
 * **Plan Link:** [plan.md](./plan.md)
 
 ---
@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | Slice 6: Standalone Suite Homes Consistency |
+| **Slice** | Slice 22: Trace-to-UI Correlation (Jump-to-Surface Actions) |
 | **Phase** | Phase 4: Verification & Gates ✅ |
 | **Task** | All complete |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `6a23b1107` (Slice 6 complete) |
+| **Latest Commit** | Pending (Slice 22 complete) |
 
 ---
 
@@ -111,6 +111,34 @@
 | ✅ 4.1 | Run all gates | `6a23b1107` | 32/32 phase83 | 2026-02-07 |
 
 **Key Achievement:** OS-owned StandaloneHomeShell wrapper for standalone suites. PilotConsole migrated to use shared shell with consistent chrome (header + "Standalone" badge + LiquidPanel). suiteRegistry extended with homeMeta.
+
+---
+
+## Slice 22: Trace-to-UI Correlation (Jump-to-Surface Actions) ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 1.1 | Jump Actions tests (TDD) | Pending | 16 pass | 2026-02-07 |
+| ✅ 1.2 | Golden Journey 9 (TDD) | Pending | 3 pass | 2026-02-07 |
+| ✅ 2.1 | traceToOsAction mapper | Pending | ✅ Pass | 2026-02-07 |
+| ✅ 2.2 | Add 'trace' to surface union | Pending | ✅ Type-check | 2026-02-07 |
+| ✅ 3.1 | ActionStreamModule Jump buttons | Pending | ✅ Pass | 2026-02-07 |
+| ✅ 3.2 | Wire handleJump callback | Pending | ✅ Pass | 2026-02-07 |
+| ✅ 4.1 | Run all gates | Pending | 32/32 phase83, type-check | 2026-02-07 |
+
+**Key Achievement:** TerraTrace now operational - Jump buttons convert trace events into policy-gated, telemetry-tracked navigation actions. From any trace event (Live or History mode), operators can jump directly to implicated surfaces (Workbench tabs, Standalone homes). Execution flows through `executeOsAction()` with `surface: 'trace'`, ensuring full policy enforcement + audit trail. No PII leakage (uses existing routes + parcelIdHash patterns).
+
+**Files Modified:**
+- `frontend/apps/os-shell/src/__tests__/trace/trace.jumpActions.test.tsx` (NEW) - 16 tests for mapper + execution
+- `frontend/apps/os-shell/src/__tests__/trace/trace.goldenJourneys.test.tsx` - Added Journey 9 (Trace Jump)
+- `frontend/apps/os-shell/src/components/Trace/traceToOsAction.ts` (NEW) - Trace-to-action mapper
+- `frontend/apps/os-shell/src/components/Trace/ActionStreamModule.tsx` - Jump button UI + handleJump callback
+- `frontend/apps/os-shell/src/services/osActions.ts` - Added 'trace' to surface union
+
+**Test Coverage:**
+- 16 Jump Actions tests (mapper + execution + PII safety + history mode)
+- 3 Golden Journey 9 tests (Trace → Workbench/Standalone navigation)
+- 23 existing golden journeys still pass (no regressions)
 
 ---
 

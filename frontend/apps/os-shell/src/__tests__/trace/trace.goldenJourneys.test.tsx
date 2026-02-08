@@ -323,6 +323,25 @@ const GOLDEN_RESULT_PANEL_INTERACTION: NormalizedTraceEvent[] = [
   },
 ];
 
+/**
+ * Golden trace sequence: Trace Jump Navigation (Slice 22)
+ * Simulates: User clicks Jump button from TerraTrace to navigate to workbench
+ */
+const GOLDEN_TRACE_JUMP_NAVIGATION: NormalizedTraceEvent[] = [
+  {
+    type: 'os_action_invoked',
+    timestamp: 'NORMALIZED',
+    payload: {
+      actionId: 'jump-workbench-forge',
+      actionType: 'navigation',
+      intent: 'workbench',
+      surface: 'trace',
+      suiteId: 'trace',
+      href: '/property/12345-001/forge',
+    },
+  },
+];
+
 // ============================================================================
 // Golden Journey Tests
 // ============================================================================
@@ -921,6 +940,81 @@ describe('Golden Journey Trace Regression', () => {
       expect(traces).toHaveLength(1);
       expect(traces[0].type).toBe('os_action_invoked');
       expect((traces[0].payload as Record<string, unknown>).resultType).toBeUndefined();
+    });
+  });
+
+  // ==========================================================================
+  // Slice 22: Trace Jump Navigation Journey
+  // ==========================================================================
+
+  describe('Journey 9: Trace → Jump to Workbench', () => {
+    it('produces deterministic trace sequence for Jump action from TerraTrace', () => {
+      // Simulates clicking Jump button from trace viewer
+      const action: OsAction = {
+        id: 'jump-workbench-forge',
+        label: 'Open Workbench: Forge',
+        intent: 'workbench',
+        href: '/property/12345-001/forge',
+      };
+
+      const context: OsActionContext = {
+        navigate: vi.fn(),
+        suiteId: 'trace',
+        surface: 'trace',
+      };
+
+      const { traces } = collectTracesDuringSync(() => {
+        executeOsAction(action, context);
+      });
+
+      assertTracesMatch(traces, GOLDEN_TRACE_JUMP_NAVIGATION);
+    });
+
+    it('Jump action from trace surface emits os_action_invoked', () => {
+      const action: OsAction = {
+        id: 'jump-workbench-atlas',
+        label: 'Open Workbench: Atlas',
+        intent: 'workbench',
+        href: '/property/99999-002/atlas',
+      };
+
+      const context: OsActionContext = {
+        navigate: vi.fn(),
+        suiteId: 'trace',
+        surface: 'trace',
+      };
+
+      const { traces } = collectTracesDuringSync(() => {
+        executeOsAction(action, context);
+      });
+
+      expect(traces).toHaveLength(1);
+      expect(traces[0].type).toBe('os_action_invoked');
+      expect(traces[0].payload.surface).toBe('trace');
+      expect(traces[0].payload.actionId).toBe('jump-workbench-atlas');
+    });
+
+    it('Jump action with standalone intent emits correct trace', () => {
+      const action: OsAction = {
+        id: 'jump-standalone-pilot',
+        label: 'Open Suite Home: Pilot',
+        intent: 'standalone',
+        href: '/pilot/home',
+      };
+
+      const context: OsActionContext = {
+        navigate: vi.fn(),
+        suiteId: 'trace',
+        surface: 'trace',
+      };
+
+      const { traces } = collectTracesDuringSync(() => {
+        executeOsAction(action, context);
+      });
+
+      expect(traces).toHaveLength(1);
+      expect(traces[0].payload.intent).toBe('standalone');
+      expect(traces[0].payload.href).toBe('/pilot/home');
     });
   });
 });
