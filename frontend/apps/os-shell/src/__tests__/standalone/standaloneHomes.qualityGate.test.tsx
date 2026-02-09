@@ -46,11 +46,10 @@ describe('Standalone Homes Quality Gate', () => {
       expect(suites.length).toBeGreaterThan(0);
 
       for (const suite of suites) {
-        expect(suite.homeMeta.description, `Suite "${suite.id}" missing description`).toBeTruthy();
-        expect(
-          suite.homeMeta.description.length,
-          `Suite "${suite.id}" has empty description`
-        ).toBeGreaterThan(0);
+        if (!suite.homeMeta.description) throw new Error(`Suite "${suite.id}" missing description`);
+        expect(suite.homeMeta.description).toBeTruthy();
+        if (suite.homeMeta.description.length === 0) throw new Error(`Suite "${suite.id}" has empty description`);
+        expect(suite.homeMeta.description.length).toBeGreaterThan(0);
       }
     });
 
@@ -58,10 +57,8 @@ describe('Standalone Homes Quality Gate', () => {
       const suites = getStandaloneSuites();
 
       for (const suite of suites) {
-        expect(
-          suite.homeMeta.primaryActions?.length,
-          `Suite "${suite.id}" must have at least 1 primary action`
-        ).toBeGreaterThanOrEqual(1);
+        if ((suite.homeMeta.primaryActions?.length ?? 0) < 1) throw new Error(`Suite "${suite.id}" must have at least 1 primary action`);
+        expect(suite.homeMeta.primaryActions?.length).toBeGreaterThanOrEqual(1);
       }
     });
 
@@ -69,10 +66,10 @@ describe('Standalone Homes Quality Gate', () => {
       const suites = getStandaloneSuites();
 
       for (const suite of suites) {
-        expect(suite.homeMeta.title, `Suite "${suite.id}" missing title`).toBeTruthy();
-        expect(suite.homeMeta.title.length, `Suite "${suite.id}" has empty title`).toBeGreaterThan(
-          0
-        );
+        if (!suite.homeMeta.title) throw new Error(`Suite "${suite.id}" missing title`);
+        expect(suite.homeMeta.title).toBeTruthy();
+        if (suite.homeMeta.title.length === 0) throw new Error(`Suite "${suite.id}" has empty title`);
+        expect(suite.homeMeta.title.length).toBeGreaterThan(0);
       }
     });
 
@@ -97,10 +94,8 @@ describe('Standalone Homes Quality Gate', () => {
         const actions = suite.homeMeta.primaryActions ?? [];
 
         for (const action of actions) {
-          expect(
-            isValidPrimaryAction(action),
-            `Suite "${suite.id}" action "${action.id}" fails type guard`
-          ).toBe(true);
+          if (!isValidPrimaryAction(action)) throw new Error(`Suite "${suite.id}" action "${action.id}" fails type guard`);
+          expect(isValidPrimaryAction(action)).toBe(true);
         }
       }
     });
@@ -113,10 +108,8 @@ describe('Standalone Homes Quality Gate', () => {
         const actions = suite.homeMeta.primaryActions ?? [];
 
         for (const action of actions) {
-          expect(
-            validIntents.includes(action.intent),
-            `Suite "${suite.id}" action "${action.id}" has invalid intent: ${action.intent}`
-          ).toBe(true);
+          if (!validIntents.includes(action.intent)) throw new Error(`Suite "${suite.id}" action "${action.id}" has invalid intent: ${action.intent}`);
+          expect(validIntents.includes(action.intent)).toBe(true);
         }
       }
     });
@@ -128,15 +121,12 @@ describe('Standalone Homes Quality Gate', () => {
         const actions = suite.homeMeta.primaryActions ?? [];
 
         for (const action of actions) {
-          expect(action.id, `Suite "${suite.id}" action missing id`).toBeTruthy();
-          expect(
-            action.label,
-            `Suite "${suite.id}" action "${action.id}" missing label`
-          ).toBeTruthy();
-          expect(
-            action.label.length,
-            `Suite "${suite.id}" action "${action.id}" has empty label`
-          ).toBeGreaterThan(0);
+          if (!action.id) throw new Error(`Suite "${suite.id}" action missing id`);
+          expect(action.id).toBeTruthy();
+          if (!action.label) throw new Error(`Suite "${suite.id}" action "${action.id}" missing label`);
+          expect(action.label).toBeTruthy();
+          if (action.label.length === 0) throw new Error(`Suite "${suite.id}" action "${action.id}" has empty label`);
+          expect(action.label.length).toBeGreaterThan(0);
         }
       }
     });
@@ -150,14 +140,10 @@ describe('Standalone Homes Quality Gate', () => {
         for (const action of actions) {
           // If action has href, it should be a valid string
           if (action.href !== undefined) {
-            expect(
-              typeof action.href,
-              `Suite "${suite.id}" action "${action.id}" href is not string`
-            ).toBe('string');
-            expect(
-              action.href.startsWith('/'),
-              `Suite "${suite.id}" action "${action.id}" href should start with /`
-            ).toBe(true);
+            if (typeof action.href !== 'string') throw new Error(`Suite "${suite.id}" action "${action.id}" href is not string`);
+            expect(typeof action.href).toBe('string');
+            if (!action.href.startsWith('/')) throw new Error(`Suite "${suite.id}" action "${action.id}" href should start with /`);
+            expect(action.href.startsWith('/')).toBe(true);
           }
         }
       }
@@ -263,10 +249,8 @@ describe('Standalone Homes Quality Gate', () => {
         for (const action of actions) {
           // Each action should render as accessible element
           const actionElement = screen.getByText(action.label);
-          expect(
-            actionElement,
-            `Suite "${suite.id}" action "${action.label}" not rendered`
-          ).toBeInTheDocument();
+          if (!actionElement) throw new Error(`Suite "${suite.id}" action "${action.label}" not rendered`);
+          expect(actionElement).toBeInTheDocument();
         }
 
         unmount();
@@ -339,10 +323,8 @@ describe('Standalone Homes Quality Gate', () => {
       for (const action of actions) {
         const element = screen.getByText(action.label);
         // Should be focusable (button or link)
-        expect(
-          element.closest('button, a'),
-          `Action "${action.label}" is not keyboard accessible`
-        ).not.toBeNull();
+        if (!element.closest('button, a')) throw new Error(`Action "${action.label}" is not keyboard accessible`);
+        expect(element.closest('button, a')).not.toBeNull();
       }
     });
 
